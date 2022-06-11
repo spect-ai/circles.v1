@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "postbuild": "next-sitemap --config sitemap-generator.js",
+    "postbuild": "next-sitemap --config public/sitemap-generator.js",
     "start": "next start",
     "lint": "next lint",
     "prepare": "husky install"
