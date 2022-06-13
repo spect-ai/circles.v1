@@ -62,7 +62,7 @@ function Sidebar({ setIsExpanded }: props): ReactElement {
       borderRightWidth="0.375"
       paddingX="3"
       onMouseEnter={() => {
-        setIsExpanded(true);
+        // setIsExpanded(true);
         // setIsSidebarExpanded(true);
       }}
       transitionDuration="700"

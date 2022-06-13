@@ -86,30 +86,6 @@ function ExtendedSidebar({ isExpanded, setIsExpanded }: props): ReactElement {
           <Container>
             {/* {bid && <SpaceSidebar />} */}
             {/* {id && !bid && <TribeSidebar />} */}
-            {isSuccess && (
-              <Box paddingY="3" borderBottomWidth="0.375">
-                <Stack>
-                  <Button
-                    prefix={<IconDocuments />}
-                    center
-                    width="full"
-                    variant="transparent"
-                    size="small"
-                  >
-                    Your tasks
-                  </Button>
-                  <Button
-                    prefix={<IconUserSolid />}
-                    center
-                    width="full"
-                    variant="transparent"
-                    size="small"
-                  >
-                    Your profile
-                  </Button>
-                </Stack>
-              </Box>
-            )}
             <Box paddingY="3">
               {/* {id && !bid && <TribeSettingsModal />}
               {bid && <SpaceSettingsModal />} */}

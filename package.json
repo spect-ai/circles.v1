@@ -23,6 +23,7 @@
     "next-seo": "^5.4.0",
     "react": "^17",
     "react-dom": "^17",
+    "react-grid-system": "^8.1.5",
     "react-query": "^3.39.1",
     "styled-components": "^5.3.5",
     "wagmi": "^0.4.2",

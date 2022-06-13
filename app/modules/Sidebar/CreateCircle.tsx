@@ -12,9 +12,30 @@ import React, { useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
 import Modal from "@/app/common/components/Modal";
-import { Web3Storage } from "web3.storage";
 import { storeImage } from "@/app/common/utils/ipfs";
 import Tabs from "@/app/common/components/Tabs";
+import Loader from "@/app/common/components/Loader";
+import { useMutation } from "react-query";
+
+type CreateCircleDto = {
+  name: string;
+  description: string;
+  avatar: string;
+  private: boolean;
+};
+
+const createCircle = async (body: CreateCircleDto) => {
+  await (
+    await fetch("http://localhost:3000/circles", {
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      method: "POST",
+      body: JSON.stringify(body),
+    })
+  ).json();
+};
 
 function CreateCircle() {
   const [modalOpen, setModalOpen] = useState(false);
@@ -24,14 +45,14 @@ function CreateCircle() {
   const open = () => setModalOpen(true);
 
   const [name, setName] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
   const [description, setDescription] = useState("");
   const [logo, setLogo] = useState("");
   const [uploading, setUploading] = useState(false);
-  const router = useRouter();
+  // const router = useRouter();
+
+  const { mutate, isLoading } = useMutation("createCircle", createCircle);
 
   const uploadFile = async (file: File) => {
-    console.log("uploading file");
     if (file) {
       setUploading(true);
       const { imageGatewayURL } = await storeImage(file, "circleLogo");
@@ -41,32 +62,9 @@ function CreateCircle() {
     }
   };
 
-  const onSubmit = () => {
-    setIsLoading(true);
-    //   runMoralisFunction('createTribe', {
-    //     name,
-    //     description,
-    //     isPublic: visibilityTab === 0,
-    //     logo,
-    //   })
-    //     .then((res: any) => {
-    //       console.log(res);
-    //       setIsLoading(false);
-    //       close();
-    //       router.push({
-    //         pathname: `/tribe/${res.get('teamId')}`,
-    //       });
-    //     })
-    //     .catch((err: any) => {
-    //       setIsLoading(false);
-    //       close();
-    //       console.log({ err });
-    //     });
-  };
-
   return (
     <>
-      {/* <Loader loading={isLoading} text="Creating your tribe" /> */}
+      <Loader loading={isLoading} text="Creating your tribe" />
       <Box paddingY="3">
         <Button shape="circle" variant="secondary" size="small" onClick={open}>
           <IconPlus />
@@ -116,7 +114,14 @@ function CreateCircle() {
                     width="1/2"
                     size="small"
                     variant="primary"
-                    onClick={onSubmit}
+                    onClick={() =>
+                      mutate({
+                        name,
+                        description,
+                        avatar: logo,
+                        private: visibilityTab === 1,
+                      })
+                    }
                   >
                     <Text>Create Circle</Text>
                   </Button>
