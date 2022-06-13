@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Story, Meta } from "@storybook/react";
 import Modal, { ModalProps } from ".";
 import { Box, Button } from "degen";
+import { AnimatePresence } from "framer-motion";
 
 // import * as DependentStories from './Dependent.stories'
 
@@ -11,6 +12,7 @@ export default {
   args: {
     title: "Modal Title",
     handleClose: () => {},
+    size: "medium",
   },
 } as Meta;
 
@@ -22,11 +24,13 @@ const Template: Story<ModalProps> = ({ handleClose, ...args }: ModalProps) => {
       <Button size="small" onClick={() => setIsOpen(true)}>
         Open Modal
       </Button>
-      {isOpen && (
-        <Modal {...args} handleClose={() => setIsOpen(false)}>
-          <Box />
-        </Modal>
-      )}
+      <AnimatePresence>
+        {isOpen && (
+          <Modal {...args} handleClose={() => setIsOpen(false)}>
+            <Box />
+          </Modal>
+        )}
+      </AnimatePresence>
     </>
   );
 };
@@ -34,12 +38,20 @@ const Template: Story<ModalProps> = ({ handleClose, ...args }: ModalProps) => {
 export const Default = Template.bind({});
 Default.args = {
   //   ...DependentStories.Default.args,
+  title: "Default Modal",
+  size: "medium",
 };
 
 export const SmallModal = Template.bind({});
 SmallModal.args = {
   //   ...DependentStories.Default.args,
-  modalWidth: "30rem",
-  modalHeight: "30rem",
   title: "Small Modal",
+  size: "small",
+};
+
+export const LargeModal = Template.bind({});
+LargeModal.args = {
+  //   ...DependentStories.Default.args,
+  title: "Large Modal",
+  size: "large",
 };

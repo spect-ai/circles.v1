@@ -4,7 +4,7 @@ import { ReactNodeNoStrings } from "degen/dist/types/types";
 import { Box } from "degen";
 import { motion, AnimatePresence } from "framer-motion";
 import ExtendedSidebar from "./ExtendedSidebar/ExtendedSidebar";
-import Header from "./Header";
+import Header from "../Header";
 import Sidebar from "@/app/modules/Sidebar";
 
 type PublicLayoutProps = {

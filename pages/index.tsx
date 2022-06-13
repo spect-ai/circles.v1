@@ -3,7 +3,7 @@ import Explore from "@/app/modules/Explore";
 import { Box } from "degen";
 import type { NextPage } from "next";
 import { dehydrate, QueryClient } from "react-query";
-import MetaHead from "../app/common/SEO/MetaHead/MetaHead";
+import MetaHead from "../app/common/seo/MetaHead/MetaHead";
 
 const fetchCircle = async () =>
   await (await fetch("http://localhost:3000/circles/allPublicParents")).json();

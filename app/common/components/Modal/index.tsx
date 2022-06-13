@@ -30,8 +30,6 @@ const Container = styled(Box)<{
   modalWidth?: string;
   modalHeight?: string;
 }>`
-  height: ${(props) => props.modalHeight || "40rem"};
-  width: ${(props) => props.modalWidth || "60rem"};
   overflow-y: auto;
   ::-webkit-scrollbar {
     display: none;
@@ -45,17 +43,23 @@ type props = {
   children: React.ReactNode;
   title: string;
   handleClose: () => void;
-  modalWidth?: string;
-  modalHeight?: string;
+  size?: "small" | "medium" | "large";
 };
 
-function Modal({
-  handleClose,
-  title,
-  children,
-  modalWidth,
-  modalHeight,
-}: props) {
+const getResponsiveWidth = (size: "small" | "medium" | "large") => {
+  switch (size) {
+    case "small":
+      return { xs: "full", md: "128" };
+    case "medium":
+      return { xs: "full", md: "192" };
+    case "large":
+      return { xs: "full", md: "224" };
+    default:
+      return { xs: "full", md: "192" };
+  }
+};
+
+function Modal({ handleClose, title, children, size = "medium" }: props) {
   return (
     <Backdrop onClick={handleClose}>
       <motion.div
@@ -69,10 +73,20 @@ function Modal({
           backgroundColor="backgroundTertiary"
           borderWidth="0.375"
           borderRadius="extraLarge"
-          modalWidth={modalWidth}
-          modalHeight={modalHeight}
+          width={getResponsiveWidth(size) as any}
+          minHeight="48"
         >
-          <Box borderBottomWidth="0.375" paddingX="8" paddingY="5">
+          <Box
+            borderBottomWidth="0.375"
+            paddingX={{
+              xs: "4",
+              md: "8",
+            }}
+            paddingY={{
+              xs: "2",
+              md: "5",
+            }}
+          >
             <Heading>{title}</Heading>
           </Box>
           {children}

@@ -1,19 +1,48 @@
-import Link from "next/link";
-import React, { ReactElement } from "react";
-import { Box, Button, Heading, IconUserSolid, Skeleton, Stack } from "degen";
+import React, { ReactElement, useEffect } from "react";
+import { Box, Heading, Stack } from "degen";
 import { useRouter } from "next/router";
-import { ethers } from "ethers";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { ConnectComponent } from "../ConnectButton";
+import { useNetwork, useSigner } from "wagmi";
+import { useMutation, useQuery } from "react-query";
+import { connectAccount, getUser } from "./api";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const Web3Token = require("web3-token");
 
 function Header(): ReactElement {
-  // const { authenticate, user, logout } = useMoralis();
-  // const { tribe, space, globalLoading } = useDataContext();
-
+  const { activeChain } = useNetwork();
+  const { mutate } = useMutation("connectAccount", connectAccount, {
+    onSuccess: (res) => console.log({ res }),
+  });
+  const { data: currentUser } = useQuery<User>("getMyUser", getUser);
+  const { data: signer } = useSigner();
   const router = useRouter();
-  const { id, bid, tid } = router.query;
+  const { id, bid } = router.query;
+  const connect = async (): Promise<void> => {
+    const token = await Web3Token.sign(
+      async (msg: any) => signer?.signMessage(msg),
+      "365d"
+    );
+    mutate(
+      { token, data: "App Login" },
+      {
+        onSuccess: (res) => {
+          console.log({ res });
+          localStorage.setItem("web3token", token);
+        },
+      }
+    );
+  };
+
+  useEffect(() => {
+    if (activeChain?.id && !localStorage.getItem("web3token")) {
+      setTimeout(() => {
+        connect()
+          .then((res) => console.log(res))
+          .catch((err) => console.log(err));
+      }, 1000);
+    }
+  }, [activeChain]);
 
   // if (globalLoading) {
   //   console.log({ globalLoading });
@@ -100,7 +129,7 @@ function Header(): ReactElement {
             Connect
           </Button>
         )} */}
-        <ConnectButton showBalance={false} chainStatus="icon" />
+        <ConnectComponent />
       </Stack>
     </Box>
   );

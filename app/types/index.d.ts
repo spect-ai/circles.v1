@@ -1,3 +1,12 @@
+interface User {
+  accounts: string[];
+  createdAt: string;
+  ethAddress: string;
+  id: string;
+  updatedAt: string;
+  username: string;
+  _id: string;
+}
 interface Payment {
   chain: {
     chainId: string;
