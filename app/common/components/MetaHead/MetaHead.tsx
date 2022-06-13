@@ -8,7 +8,7 @@ export default function MetaHead(): JSX.Element {
   const ogImgRelativePath = "/og.jpg";
 
   const siteURL = "https://circles.spect.network";
-  const ogImageURL = `${siteURL}${ogImgRelativePath}`;
+  const ogImageURL = `${ogImgRelativePath}`;
   const pathName = useRouter().pathname;
   const pageURL = pathName === "/" ? siteURL : siteURL + pathName;
   const twitterHandle = "@JoinSpect";
@@ -49,7 +49,7 @@ export default function MetaHead(): JSX.Element {
       additionalLinkTags={[
         {
           rel: "icon",
-          href: `${siteURL}/favicon.ico`,
+          href: `/favicon.ico`,
         },
         // {
         //   rel: "manifest",
