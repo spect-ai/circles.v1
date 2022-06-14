@@ -2,6 +2,7 @@ import { PublicLayout } from "@/app/common/layout";
 import Explore from "@/app/modules/Explore";
 import { Box } from "degen";
 import type { NextPage } from "next";
+import { useEffect, useState } from "react";
 import { dehydrate, QueryClient } from "react-query";
 import MetaHead from "../app/common/seo/MetaHead/MetaHead";
 
@@ -9,6 +10,16 @@ const fetchCircle = async () =>
   await (await fetch("http://localhost:3000/circles/allPublicParents")).json();
 
 const Home: NextPage = () => {
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  if (!isMounted) {
+    return null;
+  }
+
   return (
     <>
       <MetaHead />

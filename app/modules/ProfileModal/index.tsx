@@ -10,7 +10,9 @@ type Props = {
 
 export default function ProfileModal({ handleClose }: Props) {
   const { disconnect } = useDisconnect();
-  const { data: currentUser } = useQuery<User>("getMyUser");
+  const { data: currentUser } = useQuery<User>("getMyUser", {
+    enabled: false,
+  });
   return (
     <Modal title="Profile" handleClose={handleClose}>
       <Box padding="8">

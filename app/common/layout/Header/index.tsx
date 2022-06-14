@@ -2,47 +2,52 @@ import React, { ReactElement, useEffect } from "react";
 import { Box, Heading, Stack } from "degen";
 import { useRouter } from "next/router";
 import { ConnectComponent } from "../ConnectButton";
-import { useNetwork, useSigner } from "wagmi";
-import { useMutation, useQuery } from "react-query";
+import { useSigner } from "wagmi";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 import { connectAccount, getUser } from "./api";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const Web3Token = require("web3-token");
 
 function Header(): ReactElement {
-  const { activeChain } = useNetwork();
-  const { mutate } = useMutation("connectAccount", connectAccount, {
-    onSuccess: (res) => console.log({ res }),
-  });
-  const { data: currentUser } = useQuery<User>("getMyUser", getUser);
+  const { mutate } = useMutation("connectAccount", connectAccount);
   const { data: signer } = useSigner();
   const router = useRouter();
   const { id, bid } = router.query;
+  const queryClient = useQueryClient();
+  void useQuery<User>("getMyUser", getUser);
   const connect = async (): Promise<void> => {
     const token = await Web3Token.sign(
-      async (msg: any) => signer?.signMessage(msg),
-      "365d"
+      async (msg: string) => await signer?.signMessage(msg),
+      {
+        domain: "spect.network",
+        statement: "Login to Circles",
+        expire_in: "7 days",
+      }
     );
+    console.log({ token });
     mutate(
       { token, data: "App Login" },
       {
         onSuccess: (res) => {
-          console.log({ res });
-          localStorage.setItem("web3token", token);
+          if (res.ethAddress) {
+            localStorage.setItem("web3token", token);
+            queryClient.setQueryData("getMyUser", res);
+          }
         },
       }
     );
+    //
   };
 
   useEffect(() => {
-    if (activeChain?.id && !localStorage.getItem("web3token")) {
+    if (signer && !localStorage.getItem("web3token")) {
+      console.log("useeffect");
       setTimeout(() => {
-        connect()
-          .then((res) => console.log(res))
-          .catch((err) => console.log(err));
+        void connect();
       }, 1000);
     }
-  }, [activeChain]);
+  }, [signer]);
 
   // if (globalLoading) {
   //   console.log({ globalLoading });
