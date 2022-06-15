@@ -16,11 +16,8 @@ import { motion } from "framer-motion";
 // import TribeSidebar from "./TribeSidebar";
 import { useAccount } from "wagmi";
 import TribeSidebar from "./TribeSidebar";
-
-type props = {
-  isExpanded: boolean;
-  setIsExpanded: (isExpanded: boolean) => void;
-};
+import SpaceSidebar from "./SpaceSidebar";
+import { useGlobalContext } from "@/app/context/globalContext";
 
 export const Container = styled(Box)`
   ::-webkit-scrollbar {
@@ -32,10 +29,10 @@ export const Container = styled(Box)`
   overflow-y: auto;
 `;
 
-function ExtendedSidebar({ isExpanded, setIsExpanded }: props): ReactElement {
-  // const { space, setIsSidebarExpanded, globalLoading } = useDataContext();
+function ExtendedSidebar(): ReactElement {
+  const { setIsSidebarExpanded } = useGlobalContext();
   const router = useRouter();
-  const { circle: cId, bid } = router.query;
+  const { circle: cId, project: pId } = router.query;
 
   return (
     <motion.div
@@ -76,15 +73,14 @@ function ExtendedSidebar({ isExpanded, setIsExpanded }: props): ReactElement {
               variant="transparent"
               size="small"
               onClick={() => {
-                setIsExpanded(false);
-                // setIsSidebarExpanded(false);
+                setIsSidebarExpanded(false);
               }}
             >
               <IconChevronLeft />
             </Button>
           </Box>
           <Container>
-            {/* {bid && <SpaceSidebar />} */}
+            {pId && <SpaceSidebar />}
             {cId && <TribeSidebar />}
             <Box paddingY="3">
               {/* {id && !bid && <TribeSettingsModal />}

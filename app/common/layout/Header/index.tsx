@@ -1,10 +1,9 @@
 import React, { ReactElement } from "react";
-import { Box, Heading, Stack, Text } from "degen";
+import { Box, Heading, Stack } from "degen";
 import { useRouter } from "next/router";
-import { useAccount } from "wagmi";
 import { useQuery } from "react-query";
-import ConnectModal from "@/app/modules/ConnectModal";
-import ProfileModal from "@/app/modules/ProfileModal";
+import ConnectModal from "@/app/common/layout/Header/ConnectModal";
+import ProfileModal from "./ProfileModal";
 
 const getUser = async () => {
   const res = await fetch("http://localhost:3000/users/me", {
@@ -17,7 +16,7 @@ function Header(): ReactElement {
   const router = useRouter();
   const { circle: cId } = router.query;
   const { data: currentUser } = useQuery<User>("getMyUser", getUser);
-  const { data: circle } = useQuery<Circle>("circle", {
+  const { data: circle } = useQuery<Circle>(["circle", cId], {
     enabled: false,
   });
 
@@ -29,9 +28,6 @@ function Header(): ReactElement {
       borderBottomWidth="0.375"
       padding="3"
       marginX="4"
-      style={{
-        width: "calc(100vw - 5rem)",
-      }}
     >
       <Box display="flex" flexDirection="row" alignItems="center">
         {/* {id && !bid && tribe && (

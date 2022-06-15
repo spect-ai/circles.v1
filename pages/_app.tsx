@@ -28,6 +28,9 @@ import { CoinbaseWalletConnector } from "wagmi/connectors/coinbaseWallet";
 import { InjectedConnector } from "wagmi/connectors/injected";
 import { MetaMaskConnector } from "wagmi/connectors/metaMask";
 import { WalletConnectConnector } from "wagmi/connectors/walletConnect";
+import { AnimatePresence } from "framer-motion";
+import { useRouter } from "next/router";
+import GlobalContextProvider from "@/app/context/globalContext";
 
 const alchemyId = process.env.ALCHEMY_KEY;
 
@@ -69,14 +72,23 @@ const wagmiClient = createClient({
 
 function MyApp({ Component, pageProps }: AppProps) {
   const queryClient = useRef(new QueryClient());
-
+  const router = useRouter();
+  const url = `https:/circles.spect.network/${router.route}`;
   return (
     <WagmiConfig client={wagmiClient}>
       <ThemeProvider defaultMode="dark" defaultAccent="purple">
         <QueryClientProvider client={queryClient.current}>
-          <Hydrate state={pageProps.dehydratedState}>
-            <Component {...pageProps} />
-          </Hydrate>
+          <GlobalContextProvider>
+            <Hydrate state={pageProps.dehydratedState}>
+              <AnimatePresence
+                exitBeforeEnter
+                initial={false}
+                onExitComplete={() => window.scrollTo(0, 0)}
+              >
+                <Component {...pageProps} canonical={url} key={url} />
+              </AnimatePresence>
+            </Hydrate>
+          </GlobalContextProvider>
         </QueryClientProvider>
       </ThemeProvider>
     </WagmiConfig>

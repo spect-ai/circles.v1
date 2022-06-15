@@ -1,44 +1,63 @@
 import { PublicLayout } from "@/app/common/layout";
 import MetaHead from "@/app/common/seo/MetaHead/MetaHead";
-import Explore from "@/app/modules/Explore";
-import { Heading } from "degen";
+import { useGlobalContext } from "@/app/context/globalContext";
+import Project from "@/app/modules/Project/Project";
+import { ProjectType } from "@/app/types";
+import { Box } from "degen";
 import type { NextPage } from "next";
-import { useEffect, useState } from "react";
-import { dehydrate, QueryClient } from "react-query";
+import { useRouter } from "next/router";
+import { useQuery } from "react-query";
+import styled from "styled-components";
 
-// const fetchCircle = async () =>
-//   await (await fetch("http://localhost:3000/circles/allPublicParents")).json();
+const Container = styled(Box)<{ isSidebarExpanded: boolean }>`
+  max-width: ${(props) =>
+    props.isSidebarExpanded ? "calc(100vw - 23rem)" : "calc(100vw - 2rem)"};
+`;
 
-const Project: NextPage = () => {
-  const [isMounted, setIsMounted] = useState(false);
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  if (!isMounted) {
-    return null;
-  }
-
+const ProjectPage: NextPage = () => {
+  const router = useRouter();
+  const { project: pId } = router.query;
+  const { isSidebarExpanded } = useGlobalContext();
+  useQuery<ProjectType>(["project", pId], () =>
+    fetch(`http://localhost:3000/projects/slug/${pId as string}`).then((res) =>
+      res.json()
+    )
+  );
   return (
     <>
       <MetaHead />
       <PublicLayout>
-        <Heading>Project</Heading>
+        <Container isSidebarExpanded={isSidebarExpanded}>
+          <Project />
+        </Container>
       </PublicLayout>
     </>
   );
 };
 
-// export async function getStaticProps() {
-//   const queryClient = new QueryClient();
-//   await queryClient.prefetchQuery<Circle[]>("circle", fetchCircle);
+// export async function getStaticProps(context: any) {
+//   const { project } = context.params;
+//   console.log({ project });
+//   if (project !== "window-provider.js.map") {
+//     const fetchProject = async () =>
+//       await (
+//         await fetch(`http://localhost:3000/projects/slug/${project as string}`)
+//       ).json();
+//     const queryClient = new QueryClient();
+//     await queryClient.prefetchQuery<Project>("project", fetchProject);
 
-//   return {
-//     props: {
-//       dehydratedState: dehydrate(queryClient),
-//     },
-//   };
+//     return {
+//       props: {
+//         dehydratedState: dehydrate(queryClient),
+//       },
+//     };
+//   } else {
+//     return {
+//       props: {
+//         dehydratedState: {},
+//       },
+//     };
+//   }
 // }
 
-export default Project;
+export default ProjectPage;

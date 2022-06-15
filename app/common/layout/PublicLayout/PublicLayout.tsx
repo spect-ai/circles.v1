@@ -7,20 +7,21 @@ import ExtendedSidebar from "./ExtendedSidebar/ExtendedSidebar";
 import Header from "../Header";
 import Sidebar from "@/app/modules/Sidebar";
 import { useRouter } from "next/router";
+import { useGlobalContext } from "@/app/context/globalContext";
 
 type PublicLayoutProps = {
   children: ReactNodeNoStrings;
 };
 
 const variants = {
-  hidden: { opacity: 0, x: -200, y: 0 },
+  hidden: { opacity: 0, x: 0, y: 0 },
   enter: { opacity: 1, x: 0, y: 0 },
-  exit: { opacity: 0, x: 0, y: -100 },
+  exit: { opacity: 0, x: 0, y: 0 },
 };
 
 function PublicLayout(props: PublicLayoutProps) {
   const { children } = props;
-  const [isExpanded, setIsExpanded] = useState(true);
+  const { isSidebarExpanded } = useGlobalContext();
 
   const router = useRouter();
   const { circle: cId } = router.query;
@@ -45,15 +46,10 @@ function PublicLayout(props: PublicLayoutProps) {
         flexDirection: "row",
       }}
     >
-      <Sidebar setIsExpanded={setIsExpanded} />
+      <Sidebar />
 
-      <AnimatePresence initial={true}>
-        {isExpanded && cId && (
-          <ExtendedSidebar
-            isExpanded={isExpanded}
-            setIsExpanded={setIsExpanded}
-          />
-        )}
+      <AnimatePresence initial={false}>
+        {isSidebarExpanded && cId && <ExtendedSidebar />}
       </AnimatePresence>
       <Box display="flex" flexDirection="column" width="full">
         <Header />

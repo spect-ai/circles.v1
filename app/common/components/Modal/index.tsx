@@ -72,7 +72,7 @@ function Modal({ handleClose, title, children, size = "medium" }: props) {
         <Container
           backgroundColor="backgroundTertiary"
           borderWidth="0.375"
-          borderRadius="extraLarge"
+          borderRadius="2xLarge"
           width={getResponsiveWidth(size) as any}
           minHeight="48"
         >

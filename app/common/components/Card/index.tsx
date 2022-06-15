@@ -22,7 +22,7 @@ const Card: FC<Props> = ({ onClick, height, children, dashed = false }) => {
   return (
     <Container
       borderWidth="0.5"
-      padding={{ xs: "4", md: "8" }}
+      padding={{ xs: "2", md: "4" }}
       borderRadius="2xLarge"
       display="flex"
       flexDirection="column"

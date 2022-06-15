@@ -32,10 +32,63 @@ interface Circle {
   name: string;
   parents: Circle[];
   private: boolean;
-  projects: any[];
+  projects: Project[];
   roles: any[];
   slug: string;
   templates: any[];
   updatedAt: string;
   whitelistedTokens: any;
+}
+
+interface ProjectType {
+  archived: boolean;
+  columnOrder: string[];
+  createdAt: string;
+  id: string;
+  name: string;
+  parents: Circle[];
+  private: boolean;
+  slug: string;
+  templates: any[];
+  updatedAt: string;
+}
+
+//temp
+export interface BoardData {
+  objectId: string;
+  name: string;
+  tasks: {
+    [key: string]: Task;
+  };
+  columns: {
+    [key: string]: Column;
+  };
+  columnOrder: string[];
+  teamId: string;
+  createdAt: string;
+  updatedAt: string;
+  statusList: string[];
+  members: string[];
+  memberDetails: MemberDetails;
+  access: string;
+  roles: {
+    [key: string]: number;
+  };
+  roleMapping: {
+    [key: string]: number;
+  };
+  userRole: number;
+  epochs: Epoch[];
+  _id: string;
+  _createdAt: string;
+  // eslint-disable-next-line no-use-before-define
+  team: Team[];
+  defaultPayment: DefaultPayment;
+  tokenGating: TokenGate;
+  description: string;
+  private: boolean;
+  creatingEpoch: boolean;
+  guildId: string;
+  discussionChannel: Channel;
+  githubRepos: string[];
 }

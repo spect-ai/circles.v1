@@ -6,10 +6,7 @@ import { motion } from "framer-motion";
 import CreateCircle from "./CreateCircle";
 import Logo from "@/app/common/components/Logo";
 import { HomeOutlined } from "@ant-design/icons";
-
-type props = {
-  setIsExpanded: (isExpanded: boolean) => void;
-};
+import { useGlobalContext } from "@/app/context/globalContext";
 
 const containerAnimation = {
   hidden: { rotate: 90 },
@@ -22,14 +19,9 @@ const containerAnimation = {
   },
 };
 
-const itemAnimation = {
-  hidden: { opacity: 0 },
-  show: { opacity: 1 },
-};
-
-function Sidebar({ setIsExpanded }: props): ReactElement {
+function Sidebar(): ReactElement {
   // const [myTribes, setMyTribes] = useState<Team[]>({} as Team[]);
-
+  const { setIsSidebarExpanded } = useGlobalContext();
   const [isLoading, setIsLoading] = useState(true);
 
   // const { setIsSidebarExpanded, tribe, space } = useDataContext();
@@ -62,8 +54,7 @@ function Sidebar({ setIsExpanded }: props): ReactElement {
       borderRightWidth="0.375"
       paddingX="3"
       onMouseEnter={() => {
-        // setIsExpanded(true);
-        // setIsSidebarExpanded(true);
+        setIsSidebarExpanded(true);
       }}
       transitionDuration="700"
     >

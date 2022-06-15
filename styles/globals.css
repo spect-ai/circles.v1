@@ -14,3 +14,37 @@ a {
 * {
   box-sizing: border-box;
 }
+
+.ProseMirror-focused > * {
+  margin-bottom: 12px !important;
+}
+
+.ProseMirror > * {
+  margin-bottom: 12px !important;
+}
+
+.block-menu-trigger {
+  display: none !important;
+}
+
+/* width */
+::-webkit-scrollbar {
+  /* width: 5px; */
+  height: 8px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 1rem;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
