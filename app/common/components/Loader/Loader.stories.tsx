@@ -7,16 +7,12 @@ import Loader, { LoaderProps } from ".";
 export default {
   title: "Loader",
   component: Loader,
-  args: {
-    loading: true,
-    text: "Loading...",
-  },
 } as Meta;
 
 const Template: Story<LoaderProps> = (args) => <Loader {...args} />;
 
 export const Default = Template.bind({});
 Default.args = {
-  //   ...DependentStories.Default.args,
   loading: true,
+  text: "Loading...",
 };

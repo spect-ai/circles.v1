@@ -15,8 +15,11 @@ const getUser = async () => {
 
 function Header(): ReactElement {
   const router = useRouter();
-  const { id, bid } = router.query;
+  const { circle: cId } = router.query;
   const { data: currentUser } = useQuery<User>("getMyUser", getUser);
+  const { data: circle } = useQuery<Circle>("circle", {
+    enabled: false,
+  });
 
   return (
     <Box
@@ -26,6 +29,9 @@ function Header(): ReactElement {
       borderBottomWidth="0.375"
       padding="3"
       marginX="4"
+      style={{
+        width: "calc(100vw - 5rem)",
+      }}
     >
       <Box display="flex" flexDirection="row" alignItems="center">
         {/* {id && !bid && tribe && (
@@ -41,15 +47,9 @@ function Header(): ReactElement {
             />
           </Box>
         )} */}
-        <Heading>{!id && "Tribes"}</Heading>
+        <Heading>{!cId && "Circles"}</Heading>
+        <Heading>{cId && circle?.name}</Heading>
         {/* <Heading>
-          {id && !bid && (
-            <Link href={`/tribe/${id}`} passHref>
-              {tribe?.name ? tribe.name : '.'}
-            </Link>
-          )}
-        </Heading>
-        <Heading>
           {space?.name && bid && (
             <Link href={`/tribe/${id}/space/${bid}`} passHref>
               Dev Project
@@ -57,12 +57,10 @@ function Header(): ReactElement {
           )}
         </Heading> */}
         <Box marginLeft="4" />
-        {bid && (
-          <Stack direction="horizontal">
-            {/* <ProjectSettings />
-            <PaymentModal /> */}
-          </Stack>
-        )}
+        {/* <Stack direction="horizontal">
+          <ProjectSettings />
+          <PaymentModal />
+        </Stack> */}
       </Box>
       <Stack direction="horizontal">
         {currentUser?.id ? <ProfileModal /> : <ConnectModal />}

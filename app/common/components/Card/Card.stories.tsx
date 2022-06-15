@@ -8,17 +8,12 @@ import { Avatar, Box, Button, Stack, Text } from "degen";
 export default {
   title: "Card",
   component: Card,
-  args: {
-    href: "/",
-    height: "60",
-  },
 } as Meta;
 
 const Template: Story<CardProps> = (args) => <Card {...args} />;
 
 export const Default = Template.bind({});
 Default.args = {
-  href: "/",
   height: "60",
   children: (
     <Box marginBottom="4">
@@ -43,12 +38,24 @@ Default.args = {
 
 export const CardButton = Template.bind({});
 CardButton.args = {
-  href: "/",
   height: "32",
   children: (
     <Box width="32">
       <Stack align="center">
         <Text>Test Project 1</Text>
+      </Stack>
+    </Box>
+  ),
+};
+
+export const DashedButton = Template.bind({});
+DashedButton.args = {
+  height: "32",
+  dashed: true,
+  children: (
+    <Box width="32">
+      <Stack align="center">
+        <Text>Test Project 2</Text>
       </Stack>
     </Box>
   ),

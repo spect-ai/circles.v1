@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import ExtendedSidebar from "./ExtendedSidebar/ExtendedSidebar";
 import Header from "../Header";
 import Sidebar from "@/app/modules/Sidebar";
+import { useRouter } from "next/router";
 
 type PublicLayoutProps = {
   children: ReactNodeNoStrings;
@@ -20,6 +21,9 @@ const variants = {
 function PublicLayout(props: PublicLayoutProps) {
   const { children } = props;
   const [isExpanded, setIsExpanded] = useState(true);
+
+  const router = useRouter();
+  const { circle: cId } = router.query;
 
   // const { dispatch } = useGlobal();
   // const { isInitialized, Moralis } = useMoralis();
@@ -42,8 +46,9 @@ function PublicLayout(props: PublicLayoutProps) {
       }}
     >
       <Sidebar setIsExpanded={setIsExpanded} />
-      <AnimatePresence initial={false}>
-        {isExpanded && (
+
+      <AnimatePresence initial={true}>
+        {isExpanded && cId && (
           <ExtendedSidebar
             isExpanded={isExpanded}
             setIsExpanded={setIsExpanded}

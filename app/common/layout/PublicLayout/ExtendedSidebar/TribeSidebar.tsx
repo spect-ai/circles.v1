@@ -1,23 +1,19 @@
+import Accordian from "@/app/common/components/Accordian";
+import { AppstoreOutlined } from "@ant-design/icons";
 import {
   Box,
   Button,
   IconCollection,
-  IconEth,
   Skeleton,
   SkeletonGroup,
   Stack,
-  Text,
 } from "degen";
 import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
-// import useMoralisFunction from "../../../../hooks/useMoralisFunction";
-// import { BoardData } from "../../../../types";
-// import Accordian from "../../../elements/accordian/Accordian";
+import React, { useState } from "react";
 
 export default function TribeSidebar() {
   const [mySpaces, setMySpaces] = useState([] as any);
-  const [isLoading, setIsLoading] = useState(true);
-  // const { runMoralisFunction } = useMoralisFunction();
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const { id } = router.query;
 
@@ -58,25 +54,31 @@ export default function TribeSidebar() {
   }
 
   return (
-    // <Box borderBottomWidth="0.375" paddingBottom="2">
-    //   <Accordian name="My Spaces" defaultOpen>
-    //     <Stack>
-    //       {mySpaces.map((space: BoardData) => (
-    //         <Button
-    //           key={space._id}
-    //           prefix={<IconCollection />}
-    //           center
-    //           width="full"
-    //           variant="transparent"
-    //           size="small"
-    //           onClick={() => router.push(`/tribe/${id}/space/${space._id}`)}
-    //         >
-    //           {space.name}
-    //         </Button>
-    //       ))}
-    //     </Stack>
-    //   </Accordian>
-    // </Box>
-    <Box />
+    <Box marginTop="4">
+      <Button
+        prefix={<AppstoreOutlined style={{ fontSize: "1.3rem" }} />}
+        center
+        width="full"
+        variant="transparent"
+        size="small"
+      >
+        Overview
+      </Button>
+      <Accordian name="Workspaces" defaultOpen>
+        <Stack>
+          {/* {mySpaces.map((space: BoardData) => ( */}
+          <Button
+            prefix={<IconCollection />}
+            center
+            width="full"
+            variant="transparent"
+            size="small"
+          >
+            {"Workspace 1"}
+          </Button>
+          {/* ))} */}
+        </Stack>
+      </Accordian>
+    </Box>
   );
 }

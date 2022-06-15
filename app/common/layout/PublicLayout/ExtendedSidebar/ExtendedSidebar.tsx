@@ -15,6 +15,7 @@ import { motion } from "framer-motion";
 // import SpaceSidebar from "./SpaceSidebar";
 // import TribeSidebar from "./TribeSidebar";
 import { useAccount } from "wagmi";
+import TribeSidebar from "./TribeSidebar";
 
 type props = {
   isExpanded: boolean;
@@ -33,9 +34,8 @@ export const Container = styled(Box)`
 
 function ExtendedSidebar({ isExpanded, setIsExpanded }: props): ReactElement {
   // const { space, setIsSidebarExpanded, globalLoading } = useDataContext();
-  const { isSuccess } = useAccount();
   const router = useRouter();
-  const { id, bid } = router.query;
+  const { circle: cId, bid } = router.query;
 
   return (
     <motion.div
@@ -85,7 +85,7 @@ function ExtendedSidebar({ isExpanded, setIsExpanded }: props): ReactElement {
           </Box>
           <Container>
             {/* {bid && <SpaceSidebar />} */}
-            {/* {id && !bid && <TribeSidebar />} */}
+            {cId && <TribeSidebar />}
             <Box paddingY="3">
               {/* {id && !bid && <TribeSettingsModal />}
               {bid && <SpaceSettingsModal />} */}
