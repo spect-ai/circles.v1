@@ -1,49 +1,60 @@
 import Modal from "@/app/common/components/Modal";
-import { Box, Button, Input, MediaPicker, Stack, Text } from "degen";
-import React from "react";
-import { useQuery } from "react-query";
+import { Avatar, Box, Button, Input, MediaPicker, Stack, Text } from "degen";
+import { AnimatePresence } from "framer-motion";
+import React, { useState } from "react";
+import { useQuery, useQueryClient } from "react-query";
 import { useDisconnect } from "wagmi";
 
-type Props = {
-  handleClose: () => void;
-};
-
-export default function ProfileModal({ handleClose }: Props) {
+export default function ProfileModal() {
   const { disconnect } = useDisconnect();
   const { data: currentUser } = useQuery<User>("getMyUser", {
     enabled: false,
   });
+  const [isOpen, setIsOpen] = useState(false);
+  const handleClose = () => setIsOpen(false);
+  const queryClient = useQueryClient();
   return (
-    <Modal title="Profile" handleClose={handleClose}>
-      <Box padding="8">
-        <Stack>
-          <Text variant="label">Profile Picture</Text>
-          <MediaPicker
-            compact
-            // defaultValue={{
-            //   type: "image/png",
-            //   url: avatar,
-            // }}
-            label="Choose or drag and drop media"
-            // uploaded={!!avatar}
-            // onChange={uploadFile}
-            // uploading={uploading}
-          />
-          <Text variant="label">Username</Text>
-          <Input
-            label=""
-            placeholder="Username"
-            value={currentUser?.username}
-            // onChange={(e) => setUsername(e.target.value)}
-            // onBlur={() => {
-            //   user?.set("username", username);
-            //   user?.save();
-            //   toast("Profile updated", {
-            //     theme: "dark",
-            //   });
-            // }}
-          />
-          {/* <Button
+    <>
+      <Button shape="circle" size="small" onClick={() => setIsOpen(true)}>
+        <Avatar
+          src={currentUser?.avatar}
+          placeholder={!currentUser?.avatar}
+          label={currentUser?.username || ""}
+          size="9"
+        />
+      </Button>
+      <AnimatePresence>
+        {isOpen && (
+          <Modal title="Profile" handleClose={handleClose}>
+            <Box padding="8">
+              <Stack>
+                <Text variant="label">Profile Picture</Text>
+                <MediaPicker
+                  compact
+                  // defaultValue={{
+                  //   type: "image/png",
+                  //   url: avatar,
+                  // }}
+                  label="Choose or drag and drop media"
+                  // uploaded={!!avatar}
+                  // onChange={uploadFile}
+                  // uploading={uploading}
+                />
+                <Text variant="label">Username</Text>
+                <Input
+                  label=""
+                  placeholder="Username"
+                  value={currentUser?.username}
+                  // onChange={(e) => setUsername(e.target.value)}
+                  // onBlur={() => {
+                  //   user?.set("username", username);
+                  //   user?.save();
+                  //   toast("Profile updated", {
+                  //     theme: "dark",
+                  //   });
+                  // }}
+                />
+                {/* <Button
             size="small"
             variant="secondary"
             width="full"
@@ -63,21 +74,29 @@ export default function ProfileModal({ handleClose }: Props) {
                 : "Link Discord"}
             </Text>
           </Button> */}
-          <Box marginTop="6" />
-          <Button
-            size="small"
-            width="full"
-            variant="tertiary"
-            onClick={() => {
-              disconnect();
-              handleClose();
-              localStorage.removeItem("web3token");
-            }}
-          >
-            Logout
-          </Button>
-        </Stack>
-      </Box>
-    </Modal>
+                <Box marginTop="6" />
+                <Button
+                  size="small"
+                  width="full"
+                  variant="tertiary"
+                  onClick={async () => {
+                    await fetch("http://localhost:3000/auth/disconnect", {
+                      method: "POST",
+                      credentials: "include",
+                    });
+                    disconnect();
+                    queryClient.setQueryData("getMyUser", null);
+                    await queryClient.invalidateQueries("getMyUser");
+                    handleClose();
+                  }}
+                >
+                  Logout
+                </Button>
+              </Stack>
+            </Box>
+          </Modal>
+        )}
+      </AnimatePresence>
+    </>
   );
 }

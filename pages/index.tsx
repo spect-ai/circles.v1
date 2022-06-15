@@ -6,20 +6,7 @@ import { useEffect, useState } from "react";
 import { dehydrate, QueryClient } from "react-query";
 import MetaHead from "../app/common/seo/MetaHead/MetaHead";
 
-const fetchCircle = async () =>
-  await (await fetch("http://localhost:3000/circles/allPublicParents")).json();
-
 const Home: NextPage = () => {
-  const [isMounted, setIsMounted] = useState(false);
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  if (!isMounted) {
-    return null;
-  }
-
   return (
     <>
       <MetaHead />
@@ -31,8 +18,15 @@ const Home: NextPage = () => {
 };
 
 export async function getStaticProps() {
+  const fetchExploreCircles = async () =>
+    await (
+      await fetch("http://localhost:3000/circles/allPublicParents")
+    ).json();
   const queryClient = new QueryClient();
-  await queryClient.prefetchQuery<Circle[]>("circle", fetchCircle);
+  await queryClient.prefetchQuery<Circle[]>(
+    "exploreCircles",
+    fetchExploreCircles
+  );
 
   return {
     props: {

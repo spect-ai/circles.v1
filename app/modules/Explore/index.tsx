@@ -3,11 +3,13 @@ import { Avatar, Box, Button, Stack, Text } from "degen";
 import React from "react";
 import { Container, Row, Col } from "react-grid-system";
 import { useQuery } from "react-query";
+import { ToastContainer } from "react-toastify";
 
 export default function Explore() {
-  const { data: circles } = useQuery<Circle[]>("circle");
+  const { data: circles } = useQuery<Circle[]>("exploreCircles");
   return (
     <Box padding="8">
+      <ToastContainer />
       <Container style={{ width: "60rem" }}>
         <Row>
           {circles?.map((circle: Circle) => (

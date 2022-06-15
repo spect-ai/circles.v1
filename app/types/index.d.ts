@@ -5,6 +5,7 @@ interface User {
   id: string;
   updatedAt: string;
   username: string;
+  avatar: string;
   _id: string;
 }
 interface Payment {
