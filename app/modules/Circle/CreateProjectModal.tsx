@@ -4,10 +4,10 @@ import { AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
 import Loader from "@/app/common/components/Loader";
 import Modal from "@/app/common/components/Modal";
-import Tabs from "@/app/common/components/Tabs";
 import Card from "@/app/common/components/Card";
 import Select from "@/app/common/components/Select";
 import { useMutation, useQuery } from "react-query";
+import { CircleType } from "@/app/types";
 
 const templates = [
   {
@@ -37,7 +37,7 @@ type CreateProjectDto = {
 function CreateProjectModal() {
   const [modalOpen, setModalOpen] = useState(false);
   const close = () => setModalOpen(false);
-  const { data: circle } = useQuery<Circle>("circle", { enabled: false });
+  const { data: circle } = useQuery<CircleType>("circle", { enabled: false });
   const { mutateAsync, isLoading } = useMutation(
     (project: CreateProjectDto) => {
       return fetch("http://localhost:3000/projects", {

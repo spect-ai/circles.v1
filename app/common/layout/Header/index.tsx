@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 import { useQuery } from "react-query";
 import ConnectModal from "@/app/common/layout/Header/ConnectModal";
 import ProfileModal from "./ProfileModal";
+import { CircleType, UserType } from "@/app/types";
 
 const getUser = async () => {
   const res = await fetch("http://localhost:3000/users/me", {
@@ -15,8 +16,8 @@ const getUser = async () => {
 function Header(): ReactElement {
   const router = useRouter();
   const { circle: cId } = router.query;
-  const { data: currentUser } = useQuery<User>("getMyUser", getUser);
-  const { data: circle } = useQuery<Circle>(["circle", cId], {
+  const { data: currentUser } = useQuery<UserType>("getMyUser", getUser);
+  const { data: circle } = useQuery<CircleType>(["circle", cId], {
     enabled: false,
   });
 

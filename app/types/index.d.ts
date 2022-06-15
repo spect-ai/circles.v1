@@ -1,4 +1,4 @@
-interface User {
+interface UserType {
   accounts: string[];
   createdAt: string;
   ethAddress: string;
@@ -19,7 +19,7 @@ interface Payment {
   };
 }
 
-interface Circle {
+interface CircleType {
   activity: string[];
   archived: boolean;
   avatar: string;

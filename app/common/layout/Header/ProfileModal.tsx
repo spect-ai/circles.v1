@@ -1,4 +1,5 @@
 import Modal from "@/app/common/components/Modal";
+import { UserType } from "@/app/types";
 import { Avatar, Box, Button, Input, MediaPicker, Stack, Text } from "degen";
 import { AnimatePresence } from "framer-motion";
 import React, { useState } from "react";
@@ -7,7 +8,7 @@ import { useDisconnect } from "wagmi";
 
 export default function ProfileModal() {
   const { disconnect } = useDisconnect();
-  const { data: currentUser } = useQuery<User>("getMyUser", {
+  const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
   const [isOpen, setIsOpen] = useState(false);

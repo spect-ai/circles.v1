@@ -1,5 +1,6 @@
 import { PublicLayout } from "@/app/common/layout";
 import Explore from "@/app/modules/Explore";
+import { CircleType } from "@/app/types";
 import { Box } from "degen";
 import type { NextPage } from "next";
 import { useEffect, useState } from "react";
@@ -23,7 +24,7 @@ export async function getStaticProps() {
       await fetch("http://localhost:3000/circles/allPublicParents")
     ).json();
   const queryClient = new QueryClient();
-  await queryClient.prefetchQuery<Circle[]>(
+  await queryClient.prefetchQuery<CircleType[]>(
     "exploreCircles",
     fetchExploreCircles
   );

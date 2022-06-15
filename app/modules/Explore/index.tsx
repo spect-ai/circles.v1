@@ -1,4 +1,5 @@
 import Card from "@/app/common/components/Card";
+import { CircleType } from "@/app/types";
 import { Avatar, Box, Button, Stack, Text } from "degen";
 import { useRouter } from "next/router";
 import React from "react";
@@ -27,7 +28,7 @@ const GridContainer = styled(Container)`
 `;
 
 export default function Explore() {
-  const { data: circles } = useQuery<Circle[]>("exploreCircles");
+  const { data: circles } = useQuery<CircleType[]>("exploreCircles");
   const router = useRouter();
   return (
     <ScrollContainer>
@@ -35,7 +36,7 @@ export default function Explore() {
         <ToastContainer />
         <GridContainer>
           <Row>
-            {circles?.map((circle: Circle) => (
+            {circles?.map((circle: CircleType) => (
               <Col key={circle.id} xs={10} sm={6} md={3}>
                 <Card
                   height={{ xs: "48", md: "60" }}

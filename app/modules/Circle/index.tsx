@@ -1,5 +1,6 @@
 import Card from "@/app/common/components/Card";
 import Loader from "@/app/common/components/Loader";
+import { CircleType } from "@/app/types";
 import { Box, Heading, Stack, Text } from "degen";
 import { useRouter } from "next/router";
 import React from "react";
@@ -11,7 +12,7 @@ import CreateSpaceModal from "./CreateSpaceModal";
 export default function Circle() {
   const router = useRouter();
   const { circle: cId } = router.query;
-  const { data: circle, isLoading } = useQuery<Circle>(["circle", cId], {
+  const { data: circle, isLoading } = useQuery<CircleType>(["circle", cId], {
     enabled: false,
   });
 
@@ -30,6 +31,7 @@ export default function Circle() {
               <Col sm={3} key={project.id}>
                 <Card
                   onClick={() =>
+                    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
                     router.push(`${window.location.href}/${project.slug}`)
                   }
                   height="32"
