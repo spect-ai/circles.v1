@@ -35,6 +35,8 @@ export default function ConnectModal() {
     const signer = await connector.getSigner();
     const signature = await signer.signMessage(message.prepareMessage());
 
+    console.log(JSON.stringify({ message, signature }));
+
     const verifyRes = await fetch("http://localhost:3000/auth/connect", {
       method: "POST",
       headers: {
