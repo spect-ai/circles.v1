@@ -1,9 +1,9 @@
-import { BoardData } from "@/app/types";
+import { ProjectType } from "@/app/types";
 import React, { useState } from "react";
 import { DropResult } from "react-beautiful-dnd";
 
 export default function useDragEnd() {
-  const mockData: BoardData = {
+  const mockData: ProjectType = {
     columnOrder: ["column-0", "column-1", "column-2", "column-3"],
     columns: {
       "column-0": {

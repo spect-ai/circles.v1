@@ -29,6 +29,7 @@ function Header(): ReactElement {
       borderBottomWidth="0.375"
       padding="3"
       marginX="4"
+      transitionDuration="1000"
     >
       <Box display="flex" flexDirection="row" alignItems="center">
         {/* {id && !bid && tribe && (

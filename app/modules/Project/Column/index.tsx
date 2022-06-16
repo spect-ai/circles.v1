@@ -9,11 +9,13 @@ import {
   Tag,
   Text,
 } from "degen";
+import { AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { Draggable, Droppable } from "react-beautiful-dnd";
 import styled from "styled-components";
 import CardComponent from "../Card";
+import CreateCardModal from "../CreateCardModal";
 
 type Props = {
   tasks: any[];
@@ -28,7 +30,7 @@ const Container = styled(Box)`
   }
   -ms-overflow-style: none;
   scrollbar-width: none;
-  height: calc(100vh - 8rem);
+  height: calc(100vh - 7.4rem);
   overflow-y: none;
   width: 22rem;
 `;
@@ -73,10 +75,6 @@ export default function ColumnComponent({ tasks, id, column, index }: Props) {
   const [columnTitle, setColumnTitle] = useState(column.title);
   const [isOpen, setIsOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
-  const handleModalClose = () => {
-    setIsOpen(false);
-  };
-  const open = Boolean(anchorEl);
 
   const handleCreateCardClose = () => {
     setShowCreateTask(false);
@@ -107,89 +105,83 @@ export default function ColumnComponent({ tasks, id, column, index }: Props) {
   // }, [space]);
 
   return (
-    <Draggable
-      draggableId={id}
-      index={index}
-      // isDragDisabled={space.roles[user?.id as string] !== 3}
-    >
-      {(provided, snapshot) => (
-        <Container
-          {...provided.draggableProps}
-          {...provided.dragHandleProps}
-          ref={provided.innerRef}
-          borderWidth="0.375"
-          borderRadius="large"
-          padding="2"
-          borderColor="backgroundTertiary"
-          backgroundColor="foregroundTertiary"
-          display="flex"
-          flexDirection="column"
-          justifyContent="space-between"
-        >
-          <Box>
-            <Stack direction="horizontal">
-              <NameInput
-                placeholder="Add Title"
-                value={columnTitle}
-                onChange={(e) => setColumnTitle(e.target.value)}
-                onBlur={() => updateColumn()}
-                //   disabled={space.roles[user?.id as string] !== 3}
-              />
-              <Button
-                shape="circle"
-                size="small"
-                variant="transparent"
-                //   onClick={() => {
-                //     if (
-                //       !column.createCard[space.roles[user?.id as string]] &&
-                //       !column.createCard[0]
-                //     ) {
-                //       notify(
-                //         "Your role doesn't have permission to create cards in this column",
-                //         'error'
-                //       );
-                //       return;
-                //     }
-                //     router.push(
-                //       `/tribe/${tribeId}/space/${bid}/createCard?columnId=${id}`
-                //     );
-                //   }}
-              >
-                <IconPlusSmall />
-              </Button>
-              {/* <Button shape="circle" size="small" variant="transparent">
+    <>
+      <AnimatePresence>
+        {isOpen && (
+          <CreateCardModal column={id} handleClose={() => setIsOpen(false)} />
+        )}
+      </AnimatePresence>
+      <Draggable
+        draggableId={id}
+        index={index}
+        // isDragDisabled={space.roles[user?.id as string] !== 3}
+      >
+        {(provided, snapshot) => (
+          <Container
+            {...provided.draggableProps}
+            {...provided.dragHandleProps}
+            ref={provided.innerRef}
+            borderWidth="0.375"
+            borderRadius="large"
+            padding="2"
+            borderColor="backgroundTertiary"
+            backgroundColor="foregroundTertiary"
+            display="flex"
+            flexDirection="column"
+            justifyContent="space-between"
+          >
+            <Box>
+              <Stack direction="horizontal">
+                <NameInput
+                  placeholder="Add Title"
+                  value={columnTitle}
+                  onChange={(e) => setColumnTitle(e.target.value)}
+                  onBlur={() => updateColumn()}
+                  //   disabled={space.roles[user?.id as string] !== 3}
+                />
+
+                {/* <Button shape="circle" size="small" variant="transparent">
                     <IconCog size="5" />
                   </Button> */}
-              {/* <ColumnSettings column={column} /> */}
-            </Stack>
-          </Box>
-          <Droppable droppableId={id} type="task">
-            {(provided2) => (
-              <ScrollContainer
-                {...provided2.droppableProps}
-                ref={provided2.innerRef}
-              >
-                <Box>
-                  {tasks?.map((task, idx) => {
-                    if (task) {
-                      return (
-                        <CardComponent
-                          key={task?.taskId}
-                          task={task}
-                          index={idx}
-                          column={column}
-                        />
-                      );
-                    }
-                    return <div key={task?.taskId} />;
-                  })}
-                  {provided2.placeholder}
-                </Box>
-              </ScrollContainer>
-            )}
-          </Droppable>
-        </Container>
-      )}
-    </Draggable>
+                {/* <ColumnSettings column={column} /> */}
+                <Button
+                  shape="circle"
+                  size="small"
+                  variant="transparent"
+                  onClick={() => setIsOpen(true)}
+                >
+                  <IconPlusSmall />
+                </Button>
+              </Stack>
+            </Box>
+            <Droppable droppableId={id} type="task">
+              {(provided2) => (
+                <ScrollContainer
+                  {...provided2.droppableProps}
+                  ref={provided2.innerRef}
+                >
+                  <Box>
+                    {tasks?.map((task, idx) => {
+                      if (task) {
+                        return (
+                          <CardComponent
+                            key={task?.taskId}
+                            task={task}
+                            index={idx}
+                            column={column}
+                          />
+                        );
+                      }
+                      return <div key={task?.taskId} />;
+                    })}
+                    {provided2.placeholder}
+                  </Box>
+                </ScrollContainer>
+              )}
+            </Droppable>
+          </Container>
+        )}
+      </Draggable>
+    </>
   );
 }

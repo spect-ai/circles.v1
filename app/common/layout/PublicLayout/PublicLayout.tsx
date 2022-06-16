@@ -8,6 +8,7 @@ import Header from "../Header";
 import Sidebar from "@/app/modules/Sidebar";
 import { useRouter } from "next/router";
 import { useGlobalContext } from "@/app/context/globalContext";
+import styled from "styled-components";
 
 type PublicLayoutProps = {
   children: ReactNodeNoStrings;
@@ -18,6 +19,12 @@ const variants = {
   enter: { opacity: 1, x: 0, y: 0 },
   exit: { opacity: 0, x: 0, y: 0 },
 };
+
+const Container = styled(Box)<{ isSidebarExpanded: boolean }>`
+  max-width: ${(props) =>
+    props.isSidebarExpanded ? "calc(100vw - 23rem)" : "calc(100vw - 2rem)"};
+  flex-grow: 1;
+`;
 
 function PublicLayout(props: PublicLayoutProps) {
   const { children } = props;
@@ -61,7 +68,12 @@ function PublicLayout(props: PublicLayoutProps) {
           transition={{ type: "linear" }} // Set the transition to linear
           className=""
         >
-          <Box style={{ flexGrow: 1 }}>{children}</Box>
+          <Container
+            isSidebarExpanded={isSidebarExpanded}
+            transitionDuration="1000"
+          >
+            {children}
+          </Container>
         </motion.main>
       </Box>
     </Box>

@@ -1,4 +1,5 @@
 import Card from "@/app/common/components/Card";
+import Loader from "@/app/common/components/Loader";
 import { CircleType } from "@/app/types";
 import { Avatar, Box, Button, Stack, Text } from "degen";
 import { useRouter } from "next/router";

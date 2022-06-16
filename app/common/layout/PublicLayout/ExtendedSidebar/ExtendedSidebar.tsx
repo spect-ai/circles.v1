@@ -44,7 +44,7 @@ function ExtendedSidebar(): ReactElement {
         open: { width: "300px", opacity: 1, minWidth: "300px" },
         collapsed: { width: 0, opacity: 0, minWidth: "0px" },
       }}
-      transition={{ duration: 1 }}
+      transition={{ duration: 0.5 }}
     >
       <Box
         display="flex"

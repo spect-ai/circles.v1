@@ -3,7 +3,7 @@ import React, { ReactElement, useEffect, useState } from "react";
 import { Box, Button, IconPlus, IconUserSolid, Skeleton, Stack } from "degen";
 import { useRouter } from "next/router";
 import { motion } from "framer-motion";
-import CreateCircle from "./CreateCircle";
+import CreateCircle from "./CreateCircleModal";
 import Logo from "@/app/common/components/Logo";
 import { HomeOutlined } from "@ant-design/icons";
 import { useGlobalContext } from "@/app/context/globalContext";
@@ -29,7 +29,7 @@ function Sidebar(): ReactElement {
   // const { isInitialized, isAuthenticated } = useMoralis();
 
   const router = useRouter();
-  const { id, bid, tid } = router.query;
+  const { circle: cId } = router.query;
 
   // useEffect(() => {
   //   setIsLoading(true);
@@ -54,7 +54,7 @@ function Sidebar(): ReactElement {
       borderRightWidth="0.375"
       paddingX="3"
       onMouseEnter={() => {
-        setIsSidebarExpanded(true);
+        cId && setIsSidebarExpanded(true);
       }}
       transitionDuration="700"
     >

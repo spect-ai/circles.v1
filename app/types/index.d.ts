@@ -40,21 +40,21 @@ interface CircleType {
   whitelistedTokens: any;
 }
 
-interface ProjectType {
-  archived: boolean;
-  columnOrder: string[];
-  createdAt: string;
-  id: string;
-  name: string;
-  parents: Circle[];
-  private: boolean;
-  slug: string;
-  templates: any[];
-  updatedAt: string;
-}
+// interface ProjectType {
+//   archived: boolean;
+//   columnOrder: string[];
+//   createdAt: string;
+//   id: string;
+//   name: string;
+//   parents: Circle[];
+//   private: boolean;
+//   slug: string;
+//   templates: any[];
+//   updatedAt: string;
+// }
 
 //temp
-export interface BoardData {
+export interface ProjectType {
   objectId: string;
   name: string;
   tasks: {
@@ -92,3 +92,30 @@ export interface BoardData {
   discussionChannel: Channel;
   githubRepos: string[];
 }
+
+export interface Chain {
+  chainId: string;
+  name: string;
+}
+
+export interface Token {
+  address: string;
+  symbol: string;
+}
+
+export type Registry = {
+  [chainId: string]: NetworkInfo;
+};
+
+export type NetworkInfo = {
+  tokenAddresses: string[];
+  distributorAddress?: string;
+  name: string;
+  mainnet: boolean;
+  chainId: string;
+  nativeCurrency: string;
+  pictureUrl: string;
+  blockExplorer?: string;
+  provider: string;
+  tokens: { [tokenAddress: string]: TokenInfo };
+};

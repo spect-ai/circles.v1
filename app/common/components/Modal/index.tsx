@@ -53,7 +53,7 @@ const getResponsiveWidth = (size: "small" | "medium" | "large") => {
     case "medium":
       return { xs: "full", md: "192" };
     case "large":
-      return { xs: "full", md: "224" };
+      return { xs: "full", md: "256" };
     default:
       return { xs: "full", md: "192" };
   }

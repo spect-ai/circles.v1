@@ -20,11 +20,8 @@ const Container = styled(Box)`
 `;
 
 export default function CardComponent({ task, index, column }: Props) {
-  const [isOpen, setIsOpen] = useState(false);
-  const handleClose = () => setIsOpen(false);
-  const router = useRouter();
-  const { id, bid } = router.query;
-  console.log({ task });
+  // const router = useRouter();
+  // const { id, bid } = router.query;
   return (
     <Draggable draggableId={task.taskId} index={index}>
       {(provided, snapshot) => (

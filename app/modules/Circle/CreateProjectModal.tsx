@@ -1,4 +1,4 @@
-import { Box, Button, IconPlus, Input, Stack, Text, Textarea } from "degen";
+import { Box, Button, Input, Stack, Text } from "degen";
 import React, { useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
@@ -37,7 +37,11 @@ type CreateProjectDto = {
 function CreateProjectModal() {
   const [modalOpen, setModalOpen] = useState(false);
   const close = () => setModalOpen(false);
-  const { data: circle } = useQuery<CircleType>("circle", { enabled: false });
+  const router = useRouter();
+  const { circle: cId } = router.query;
+  const { data: circle } = useQuery<CircleType>(["circle", cId], {
+    enabled: false,
+  });
   const { mutateAsync, isLoading } = useMutation(
     (project: CreateProjectDto) => {
       return fetch("http://localhost:3000/projects", {
@@ -53,9 +57,9 @@ function CreateProjectModal() {
 
   const [template, setTemplate] = useState(templates[0]);
   const [name, setName] = useState("");
-  const router = useRouter();
 
   const onSubmit = () => {
+    console.log({ circle });
     mutateAsync({
       name,
       circleId: circle?.id as string,

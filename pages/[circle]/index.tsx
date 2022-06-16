@@ -10,7 +10,7 @@ const CirclePage: NextPage = () => {
   const router = useRouter();
   const { circle: cId } = router.query;
   useQuery<CircleType>(["circle", cId], () =>
-    fetch(`http://localhost:3000/circles/slug/${cId as string}`).then((res) =>
+    fetch(`http://localhost:3000/circle/slug/${cId as string}`).then((res) =>
       res.json()
     )
   );

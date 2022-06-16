@@ -12,7 +12,7 @@ import useDragEnd from "./Hooks/useDragEnd";
 const Container = styled.div`
   display: flex;
   flex-direction: row;
-  height: calc(100vh - 7rem);
+  height: calc(100vh - 6.5rem);
   @media only screen and (min-width: 0px) {
     max-width: calc(100vw - 5rem);
     padding: 0 0.1rem;
@@ -44,7 +44,7 @@ export default function Project() {
           {(provided, snapshot) => (
             <Container {...provided.droppableProps} ref={provided.innerRef}>
               <Stack direction="horizontal">
-                {space.columnOrder.map((columnId, index) => {
+                {space.columnOrder.map((columnId, index): any => {
                   const column = space.columns[columnId];
                   console.log({ column, space });
                   const tasks = column.taskIds?.map(
