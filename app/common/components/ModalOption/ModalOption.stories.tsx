@@ -1,23 +1,17 @@
-import React from 'react'
-import { Story, Meta } from '@storybook/react'
+import React from "react";
+import { Story, Meta } from "@storybook/react";
 
-import ModalOption from '.'
+import ModalOption, { ModalOptionProps } from ".";
 // import * as DependentStories from './Dependent.stories'
 
 export default {
-  title: 'ModalOption',
+  title: "ModalOption",
   component: ModalOption,
-} as Meta
+} as Meta;
 
-const Template: Story = (args) => <ModalOption title="ModalOption Story" {...args} />
+const Template: Story<ModalOptionProps> = (args) => <ModalOption {...args} />;
 
-export const Default = Template.bind({})
+export const Default = Template.bind({});
 Default.args = {
   //   ...DependentStories.Default.args,
-}
-
-export const Preview = Template.bind({})
-Preview.args = {
-  //   ...DependentStories.Default.args,
-  preview: true,
-}
+};

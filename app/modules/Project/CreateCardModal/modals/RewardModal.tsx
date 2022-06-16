@@ -1,8 +1,5 @@
 import EditTag from "@/app/common/components/EditTag";
-import {
-  getFlattenedCurrencies,
-  getFlattenedNetworks,
-} from "@/app/common/utils/constants";
+import { getFlattenedCurrencies } from "@/app/common/utils/constants";
 import { Box, Input, Stack, Tag, Text } from "degen";
 import { motion } from "framer-motion";
 import React, { useState } from "react";
