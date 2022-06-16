@@ -32,6 +32,7 @@ type CreateProjectDto = {
   name: string;
   circleId: string;
   template?: string;
+  description: string;
 };
 
 function CreateProjectModal() {
@@ -44,7 +45,7 @@ function CreateProjectModal() {
   });
   const { mutateAsync, isLoading } = useMutation(
     (project: CreateProjectDto) => {
-      return fetch("http://localhost:3000/projects", {
+      return fetch("http://localhost:3000/project", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -57,16 +58,19 @@ function CreateProjectModal() {
 
   const [template, setTemplate] = useState(templates[0]);
   const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
 
   const onSubmit = () => {
     console.log({ circle });
     mutateAsync({
       name,
       circleId: circle?.id as string,
+      description,
     })
       .then(async (res) => {
         const resJson = await res.json();
         console.log({ resJson });
+        void router.push(`/${cId}/${resJson.slug}`);
       })
       .catch((err) => {
         console.log({ err });
@@ -103,6 +107,12 @@ function CreateProjectModal() {
                   placeholder="Name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
+                />
+                <Input
+                  label=""
+                  placeholder="Description"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
                 />
                 <Text variant="extraLarge">Template</Text>
                 <Select

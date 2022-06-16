@@ -26,7 +26,7 @@ type CreateCircleDto = {
 
 const createCircle = async (body: CreateCircleDto) => {
   await (
-    await fetch("http://localhost:3000/circles", {
+    await fetch("http://localhost:3000/circle", {
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
@@ -48,9 +48,18 @@ function CreateCircle() {
   const [description, setDescription] = useState("");
   const [logo, setLogo] = useState("");
   const [uploading, setUploading] = useState(false);
-  // const router = useRouter();
+  const router = useRouter();
 
-  const { mutate, isLoading } = useMutation("createCircle", createCircle);
+  const { mutateAsync, isLoading } = useMutation((circle: CreateCircleDto) => {
+    return fetch("http://localhost:3000/circle", {
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      method: "POST",
+      body: JSON.stringify(circle),
+    });
+  });
 
   const uploadFile = async (file: File) => {
     if (file) {
@@ -76,18 +85,18 @@ function CreateCircle() {
         onExitComplete={() => null}
       >
         {modalOpen && (
-          <Modal handleClose={close} title="Create Tribe">
+          <Modal handleClose={close} title="Create Circle">
             <Box width="full" padding="8">
               <Stack>
                 <Input
                   label=""
-                  placeholder="Tribe Name"
+                  placeholder="Circle Name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                 />
                 <Textarea
                   label=""
-                  placeholder="Tribe Description"
+                  placeholder="Circle Description"
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                 />
@@ -114,12 +123,17 @@ function CreateCircle() {
                     width="1/2"
                     size="small"
                     variant="primary"
-                    onClick={() =>
-                      mutate({
+                    disabled={uploading}
+                    onClick={async () =>
+                      mutateAsync({
                         name,
                         description,
                         avatar: logo,
                         private: visibilityTab === 1,
+                      }).then(async (res) => {
+                        const resJson = await res.json();
+                        console.log({ resJson });
+                        void router.push(`/${resJson.slug}`);
                       })
                     }
                   >

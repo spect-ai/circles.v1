@@ -35,7 +35,7 @@ export default function Circle() {
     <BoxContainer padding="8">
       <Stack>
         <Heading>Description</Heading>
-        <Text>This is a test project</Text>
+        <Text>{circle?.description}</Text>
         <Heading>Projects</Heading>
         <Container
           style={{
@@ -56,7 +56,7 @@ export default function Circle() {
                 >
                   <Text>{project.name}</Text>
                   <Text variant="label" align="center">
-                    This is our sprint board
+                    {project.description}
                   </Text>
                 </Card>
               </Col>
