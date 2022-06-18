@@ -1,26 +1,19 @@
 import EditTag from "@/app/common/components/EditTag";
 import ModalOption from "@/app/common/components/ModalOption";
-import { ProjectType } from "@/app/types";
 import { Box, IconSearch, Input, Text } from "degen";
-import { useRouter } from "next/router";
 import React, { useState } from "react";
-import { useQuery } from "react-query";
-import useDragEnd from "../../Hooks/useDragEnd";
+import { useLocalProject } from "../../Context/LocalProjectContext";
 import { useCreateCard } from "../hooks/createCardContext";
 import { getOptions } from "../utils";
 
 export default function CardColumn() {
   const { columnId, setColumnId } = useCreateCard();
-  const router = useRouter();
-  const { project: pId } = router.query;
-  const { data: project } = useQuery<ProjectType>(["project", pId], {
-    enabled: false,
-  });
-  const { space } = useDragEnd();
   const [modalOpen, setModalOpen] = useState(false);
+
+  const { localProject: project } = useLocalProject();
   return (
     <EditTag
-      name={space?.columns[columnId]?.title}
+      name={project?.columnDetails[columnId]?.name}
       modalTitle="Select Card Type"
       tagLabel="Change"
       modalOpen={modalOpen}
@@ -36,7 +29,7 @@ export default function CardColumn() {
           />
         </Box>
         <Box>
-          {getOptions("column", space).map((item: any) => (
+          {getOptions("column", project).map((item: any) => (
             <ModalOption
               key={item.value}
               isSelected={columnId === item.value}

@@ -3,8 +3,8 @@ import React, { useState } from "react";
 import { ReactNodeNoStrings } from "degen/dist/types/types";
 import { Box } from "degen";
 import { motion, AnimatePresence } from "framer-motion";
-import ExtendedSidebar from "./ExtendedSidebar/ExtendedSidebar";
-import Header from "../Header";
+import ExtendedSidebar from "../../../modules/ExtendedSidebar/ExtendedSidebar";
+import Header from "../../../modules/Header";
 import Sidebar from "@/app/modules/Sidebar";
 import { useRouter } from "next/router";
 import { useGlobalContext } from "@/app/context/globalContext";
@@ -20,9 +20,9 @@ const variants = {
   exit: { opacity: 0, x: 0, y: 0 },
 };
 
-const Container = styled(Box)<{ isSidebarExpanded: boolean }>`
+const Container = styled(Box)<{ issidebarexpanded: boolean }>`
   max-width: ${(props) =>
-    props.isSidebarExpanded ? "calc(100vw - 23rem)" : "calc(100vw - 2rem)"};
+    props.issidebarexpanded ? "calc(100vw - 23rem)" : "calc(100vw - 2rem)"};
   flex-grow: 1;
 `;
 
@@ -69,7 +69,7 @@ function PublicLayout(props: PublicLayoutProps) {
           className=""
         >
           <Container
-            isSidebarExpanded={isSidebarExpanded}
+            issidebarexpanded={isSidebarExpanded}
             transitionDuration="1000"
           >
             {children}

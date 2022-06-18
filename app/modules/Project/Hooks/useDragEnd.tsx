@@ -1,97 +1,9 @@
-import { ProjectType } from "@/app/types";
-import React, { useState } from "react";
+import { ColumnType } from "@/app/types";
 import { DropResult } from "react-beautiful-dnd";
+import { useLocalProject } from "../Context/LocalProjectContext";
 
 export default function useDragEnd() {
-  const mockData: ProjectType = {
-    columnOrder: ["column-0", "column-1", "column-2", "column-3"],
-    columns: {
-      "column-0": {
-        id: "column-0",
-        title: "To Do",
-        taskIds: ["task-0", "task-1", "task-2", "task-3", "task-4"],
-      },
-      "column-1": {
-        id: "column-1",
-        title: "In Progress",
-        taskIds: ["task-5", "task-6", "task-7"],
-      },
-      "column-2": {
-        id: "column-2",
-        title: "In Review",
-        taskIds: ["task-8", "task-9"],
-      },
-      "column-3": {
-        id: "column-3",
-        title: "Done",
-        taskIds: ["task-10"],
-      },
-    },
-    tasks: {
-      "task-0": {
-        id: "task-0",
-        title: "Task 1",
-      },
-      "task-1": {
-        id: "Task 1",
-        title: "Task 1",
-      },
-      "task-2": {
-        id: "Task 2",
-        title: "Task 2",
-      },
-      "task-3": {
-        id: "Task 2",
-        title: "Task 2",
-      },
-      "task-4": {
-        id: "Task 2",
-        title: "Task 2",
-      },
-      "task-5": {
-        id: "task-5",
-        title: "Task 5",
-      },
-      "task-6": {
-        id: "task-5",
-        title: "Task 5",
-      },
-      "task-7": {
-        id: "task-5",
-        title: "Task 5",
-      },
-      "task-8": {
-        id: "task-5",
-        title: "Task 5",
-      },
-    },
-    objectId: "",
-    name: "",
-    teamId: "",
-    createdAt: "",
-    updatedAt: "",
-    statusList: [],
-    members: [],
-    memberDetails: undefined,
-    access: "",
-    roles: {},
-    roleMapping: {},
-    userRole: 0,
-    epochs: [],
-    _id: "",
-    _createdAt: "",
-    team: [],
-    defaultPayment: undefined,
-    tokenGating: undefined,
-    description: "",
-    private: false,
-    creatingEpoch: false,
-    guildId: "",
-    discussionChannel: undefined,
-    githubRepos: [],
-  };
-
-  const [space, setSpace] = useState(mockData);
+  const { localProject, setLocalProject } = useLocalProject();
 
   const reorder = (list: string[], startIndex: number, endIndex: number) => {
     const result = Array.from(list);
@@ -106,16 +18,17 @@ export default function useDragEnd() {
     if (!destination) {
       return;
     }
-    const task = space.tasks[draggableId];
-    if (
-      type !== "column" &&
-      !(
-        (task.access.assignee || task.access.creator || task.access.reviewer)
-        // [2, 3].includes(space.roles[user?.id as string])
-      )
-    ) {
-      return;
-    }
+    // console.log({ localProject });
+    // const task = localProject.cards[draggableId];
+    // if (
+    //   type !== "column" &&
+    //   !(
+    //     (task.access.assignee || task.access.creator || task.access.reviewer)
+    //     // [2, 3].includes(localProject.roles[user?.id as string])
+    //   )
+    // ) {
+    //   return;
+    // }
     if (
       destination.droppableId === source.droppableId &&
       destination.index === source.index
@@ -124,55 +37,60 @@ export default function useDragEnd() {
     }
     if (type === "column") {
       const newColumnOrder = reorder(
-        space.columnOrder,
+        localProject.columnOrder,
         source.index,
         destination.index
       );
-      const tempData = { ...space };
-      setSpace({
-        ...space,
+      const tempData = { ...localProject };
+      setLocalProject({
+        ...localProject,
         columnOrder: newColumnOrder,
       });
       return;
     }
 
-    const start = space.columns[source.droppableId];
-    const finish = space.columns[destination.droppableId];
+    const start = localProject.columnDetails[source.droppableId];
+    const finish = localProject.columnDetails[destination.droppableId];
 
     if (start === finish) {
-      const newList = reorder(start.taskIds, source.index, destination.index);
-      const tempData = { ...space };
-      setSpace({
-        ...space,
-        columns: {
-          ...space.columns,
+      const newList = reorder(start.cards, source.index, destination.index);
+      const tempData = { ...localProject };
+      setLocalProject({
+        ...localProject,
+        columnDetails: {
+          ...localProject.columnDetails,
           [result.source.droppableId]: {
-            ...space.columns[result.source.droppableId],
-            taskIds: newList,
+            ...localProject.columnDetails[result.source.droppableId],
+            cards: newList,
           },
         },
       });
     } else {
-      const startTaskIds = Array.from(start.taskIds); // copy
+      const startTaskIds = Array.from(start.cards); // copy
+      console.log({ source });
       startTaskIds.splice(source.index, 1);
-      const newStart = {
+      console.log({ startTaskIds });
+      const newStart: ColumnType = {
         ...start,
-        taskIds: startTaskIds,
+        cards: startTaskIds,
       };
+      console.log({ newStart });
 
-      const finishTaskIds = Array.from(finish.taskIds); // copy
+      const finishTaskIds = Array.from(finish.cards); // copy
       finishTaskIds.splice(destination.index, 0, draggableId);
-      const newFinish = {
+      const newFinish: ColumnType = {
         ...finish,
-        taskIds: finishTaskIds,
+        cards: finishTaskIds,
       };
-      const tempData = { ...space };
-      setSpace({
-        ...space,
-        columns: {
-          ...space.columns,
-          [newStart.id]: newStart,
-          [newFinish.id]: newFinish,
+      const tempData = { ...localProject };
+
+      console.log({ newStart, newFinish });
+      setLocalProject({
+        ...localProject,
+        columnDetails: {
+          ...localProject.columnDetails,
+          [newStart.columnId]: newStart,
+          [newFinish.columnId]: newFinish,
         },
       });
     }
@@ -180,6 +98,6 @@ export default function useDragEnd() {
 
   return {
     handleDragEnd,
-    space,
+    localProject,
   };
 }

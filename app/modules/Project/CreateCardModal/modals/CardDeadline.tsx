@@ -3,6 +3,7 @@ import { Box } from "degen";
 import React, { useState } from "react";
 import styled from "styled-components";
 import { useCreateCard } from "../hooks/createCardContext";
+import DateTimePicker from "react-datetime-picker/dist/entry.nostyle";
 
 const DatePicker = styled.input`
   border: none;
@@ -28,12 +29,12 @@ const DatePicker = styled.input`
 
 export default function CardDeadline() {
   const [modalOpen, setModalOpen] = useState(false);
-  const { date, setDate } = useCreateCard();
+  const { deadline, setDeadline } = useCreateCard();
   return (
     <EditTag
-      name={date || "Add Deadline"}
+      name={"Add Deadline"}
       modalTitle="Select Deadline"
-      tagLabel={date ? "Change" : ""}
+      tagLabel={deadline ? "Change" : ""}
       modalOpen={modalOpen}
       setModalOpen={setModalOpen}
     >
@@ -48,8 +49,10 @@ export default function CardDeadline() {
         >
           <DatePicker
             type="datetime-local"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
+            value={deadline.toISOString().substring(0, 10)}
+            onChange={(e) => {
+              setDeadline(new Date(e.target.value));
+            }}
           />
         </Box>
       </Box>

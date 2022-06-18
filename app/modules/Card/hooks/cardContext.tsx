@@ -4,7 +4,6 @@ import { useRouter } from "next/router";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "react-query";
 import { toast } from "react-toastify";
-import { useLocalProject } from "../../Context/LocalProjectContext";
 
 type Props = {
   handleClose: () => void;
@@ -68,7 +67,6 @@ export function useProviderCreateCard({ handleClose }: Props) {
 
   const queryClient = useQueryClient();
 
-  const { localProject: project, setLocalProject } = useLocalProject();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [labels, setLabels] = useState([] as string[]);
@@ -119,52 +117,6 @@ export function useProviderCreateCard({ handleClose }: Props) {
   //       });
   //   }
   // }, [taskId]);
-
-  const onSubmit = () => {
-    console.log({ circle });
-    fetch("http://localhost:3000/card", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        title,
-        description,
-        reviewer,
-        assignee: [],
-        project: project.id,
-        circle: project.parents[0].id,
-        type: cardType,
-        // deadline,
-        labels,
-        priority: 0,
-        columnId,
-      }),
-      credentials: "include",
-    })
-      .then(async (res) => {
-        const data = await res.json();
-        console.log({ data });
-        handleClose();
-        toast(
-          <Stack>
-            Card created
-            <Stack direction="horizontal">
-              <Button size="small" variant="secondary">
-                View Card
-              </Button>
-            </Stack>
-          </Stack>,
-          {
-            theme: "dark",
-          }
-        );
-        queryClient.setQueryData(["project", project.slug], data);
-      })
-      .catch((err) => {
-        console.log({ err });
-      });
-  };
 
   // setLoading(true);
   // console.log({
@@ -272,7 +224,6 @@ export function useProviderCreateCard({ handleClose }: Props) {
     setDeadline,
     priority,
     setPriority,
-    onSubmit,
     onSave,
     loading,
     setLoading,

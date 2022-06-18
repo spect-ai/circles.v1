@@ -66,7 +66,7 @@ function Accordian({ name, children, defaultOpen, buttonComponent }: Props) {
               open: { height: "auto" },
               collapsed: { height: 0 },
             }}
-            transition={{ duration: 1, ease: [0.04, 0.62, 0.23, 0.98] }}
+            transition={{ duration: 0.4 }}
             style={{
               overflowY: "hidden",
             }}

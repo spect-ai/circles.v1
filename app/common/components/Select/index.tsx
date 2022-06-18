@@ -3,7 +3,7 @@ import type { FC } from "react";
 import { Box, Stack, Text } from "degen";
 import styled from "styled-components";
 
-type option = {
+export type option = {
   label: string;
   value: string;
 };
@@ -39,8 +39,9 @@ const Select: FC<Props> = ({ options, value, onChange }) => {
             borderRadius="2xLarge"
             padding="4"
             borderColor={value.value === val ? "accent" : "foregroundSecondary"}
+            width="32"
           >
-            <Text>{label}</Text>
+            <Text align="center">{label}</Text>
           </OptionContainer>
         ))}
       </Stack>

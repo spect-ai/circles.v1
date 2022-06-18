@@ -12,6 +12,7 @@ import "@fontsource/inter/800.css";
 import "@fontsource/inter/900.css";
 
 import "../styles/globals.css";
+import "@/app/styles/DateTimePicker.css";
 import "react-toastify/dist/ReactToastify.css";
 
 import {

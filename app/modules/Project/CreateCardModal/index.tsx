@@ -55,12 +55,12 @@ const NameInput = styled.input`
 `;
 
 export default function CreateCardModal({ column, handleClose }: Props) {
-  const context = useProviderCreateCard({});
+  const context = useProviderCreateCard({ handleClose });
   const {
     columnId,
     cardType,
-    assignees,
-    date,
+    assignee,
+    deadline,
     setColumnId,
     value,
     token,
@@ -98,12 +98,6 @@ export default function CreateCardModal({ column, handleClose }: Props) {
               <CardColumn />
               <CardAssignee />
               <CardDeadline />
-              {/*
-                <TagModal
-                  name={value ? `${value} ${token.symbol}` : "Reward"}
-                  type="reward"
-                  label={value ? "Change" : "Add"}
-                /> */}
             </Stack>
             <Stack direction="horizontal" wrap>
               <CardLabels />
@@ -138,8 +132,8 @@ export default function CreateCardModal({ column, handleClose }: Props) {
           </Stack>
         </Container>
         <Box borderTopWidth="0.375" paddingX="8" paddingY="4">
-          <Button size="small" width="1/3">
-            <Text>Save</Text>
+          <Button size="small" width="1/3" onClick={onSubmit}>
+            Create Card
           </Button>
         </Box>
       </Modal>

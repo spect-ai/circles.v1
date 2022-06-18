@@ -1,3 +1,4 @@
+import { CardType, ColumnType } from "@/app/types";
 import {
   Box,
   Button,
@@ -10,17 +11,19 @@ import {
   Text,
 } from "degen";
 import { AnimatePresence } from "framer-motion";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { Draggable, Droppable } from "react-beautiful-dnd";
+import { toast } from "react-toastify";
 import styled from "styled-components";
 import CardComponent from "../Card";
 import CreateCardModal from "../CreateCardModal";
 
 type Props = {
-  tasks: any[];
+  cards: CardType[];
   id: string;
-  column: any;
+  column: ColumnType;
   index: number;
 };
 
@@ -62,17 +65,16 @@ const NameInput = styled.input`
   margin-left: 0.1rem;
 `;
 
-export default function ColumnComponent({ tasks, id, column, index }: Props) {
+export default function ColumnComponent({ cards, id, column, index }: Props) {
   const router = useRouter();
-  const { id: tribeId, bid } = router.query;
 
   const [showCreateTask, setShowCreateTask] = useState(false);
   // const [showCreateGithubTask, setShowCreateGithubTask] = useState(false);
   const [isTaskOpen, setIsTaskOpen] = useState(false);
   const handleTaskClose = () => setIsTaskOpen(false);
   const [taskId, setTaskId] = useState("");
-  const [currentColumnTitle, setCurrentColumnTitle] = useState(column.title);
-  const [columnTitle, setColumnTitle] = useState(column.title);
+  const [currentColumnTitle, setCurrentColumnTitle] = useState(column.name);
+  const [columnTitle, setColumnTitle] = useState(column.name);
   const [isOpen, setIsOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
 
@@ -122,7 +124,7 @@ export default function ColumnComponent({ tasks, id, column, index }: Props) {
             {...provided.dragHandleProps}
             ref={provided.innerRef}
             borderWidth="0.375"
-            borderRadius="large"
+            borderRadius="2xLarge"
             padding="2"
             borderColor="backgroundTertiary"
             backgroundColor="foregroundTertiary"
@@ -148,7 +150,9 @@ export default function ColumnComponent({ tasks, id, column, index }: Props) {
                   shape="circle"
                   size="small"
                   variant="transparent"
-                  onClick={() => setIsOpen(true)}
+                  onClick={() => {
+                    setIsOpen(true);
+                  }}
                 >
                   <IconPlusSmall />
                 </Button>
@@ -161,18 +165,17 @@ export default function ColumnComponent({ tasks, id, column, index }: Props) {
                   ref={provided2.innerRef}
                 >
                   <Box>
-                    {tasks?.map((task, idx) => {
-                      if (task) {
+                    {cards?.map((card, idx) => {
+                      if (card) {
                         return (
                           <CardComponent
-                            key={task?.taskId}
-                            task={task}
+                            card={card}
                             index={idx}
                             column={column}
                           />
                         );
                       }
-                      return <div key={task?.taskId} />;
+                      return <div key="key" />;
                     })}
                     {provided2.placeholder}
                   </Box>

@@ -1,6 +1,6 @@
 import { labelsMapping } from "@/app/common/utils/constants";
 import { IconBookOpen, IconEth } from "degen";
-import { ProjectType } from "../../../types";
+import { CircleType, ProjectType } from "../../../types";
 
 export const cardTypes = [
   {
@@ -26,8 +26,7 @@ export const typeMapping = {
   labels: "Set Labels",
 };
 
-export const getOptions = (type: string, space: ProjectType) => {
-  console.log({ space });
+export const getOptions = (type: string, project: ProjectType) => {
   switch (type) {
     case "card":
       return cardTypes;
@@ -39,12 +38,15 @@ export const getOptions = (type: string, space: ProjectType) => {
         };
       });
     case "column":
-      return space.columnOrder.map((column: any) => ({
-        name: space.columns[column].title,
+      return project.columnOrder.map((column: any) => ({
+        name: project.columnDetails[column].name,
         value: column,
       }));
     case "assignee":
-      return space.members.map((member: any) => space.memberDetails[member]);
+      return project.parents[0].members.map((member: any) => ({
+        name: member,
+        value: member,
+      }));
     default:
       return [];
   }

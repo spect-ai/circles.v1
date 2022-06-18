@@ -21,7 +21,7 @@ const dropIn = {
     y: "100vh",
     opacity: 0,
     transition: {
-      duration: 0.4,
+      duration: 0.2,
     },
   },
 };
@@ -37,12 +37,14 @@ const Container = styled(Box)<{
   -ms-overflow-style: none;
   scrollbar-width: none;
   margin-bottom: 2rem;
+  height: ${(props) => props.modalHeight};
 `;
 
 type props = {
   children: React.ReactNode;
   title: string;
   handleClose: () => void;
+  height?: string;
   size?: "small" | "medium" | "large";
 };
 
@@ -59,7 +61,13 @@ const getResponsiveWidth = (size: "small" | "medium" | "large") => {
   }
 };
 
-function Modal({ handleClose, title, children, size = "medium" }: props) {
+function Modal({
+  handleClose,
+  title,
+  children,
+  height,
+  size = "medium",
+}: props) {
   return (
     <Backdrop onClick={handleClose}>
       <motion.div
@@ -75,6 +83,7 @@ function Modal({ handleClose, title, children, size = "medium" }: props) {
           borderRadius="2xLarge"
           width={getResponsiveWidth(size) as any}
           minHeight="48"
+          modalHeight={height}
         >
           <Box
             borderBottomWidth="0.375"

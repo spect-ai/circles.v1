@@ -24,19 +24,6 @@ type CreateCircleDto = {
   private: boolean;
 };
 
-const createCircle = async (body: CreateCircleDto) => {
-  await (
-    await fetch("http://localhost:3000/circle", {
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      method: "POST",
-      body: JSON.stringify(body),
-    })
-  ).json();
-};
-
 function CreateCircle() {
   const [modalOpen, setModalOpen] = useState(false);
   const [visibilityTab, setVisibilityTab] = useState(0);
@@ -58,6 +45,7 @@ function CreateCircle() {
       },
       method: "POST",
       body: JSON.stringify(circle),
+      credentials: "include",
     });
   });
 
@@ -130,11 +118,13 @@ function CreateCircle() {
                         description,
                         avatar: logo,
                         private: visibilityTab === 1,
-                      }).then(async (res) => {
-                        const resJson = await res.json();
-                        console.log({ resJson });
-                        void router.push(`/${resJson.slug}`);
                       })
+                        .then(async (res) => {
+                          const resJson = await res.json();
+                          console.log({ resJson });
+                          void router.push(`/${resJson.slug}`);
+                        })
+                        .catch((err) => console.log({ err }))
                     }
                   >
                     <Text>Create Circle</Text>

@@ -7,6 +7,11 @@ import { useQuery } from "react-query";
 import { ToastContainer } from "react-toastify";
 import styled from "styled-components";
 import ColumnComponent from "./Column";
+import {
+  LocalProjectContext,
+  useLocalProject,
+  useProviderLocalProject,
+} from "./Context/LocalProjectContext";
 import useDragEnd from "./Hooks/useDragEnd";
 
 const Container = styled.div`
@@ -26,12 +31,13 @@ const Container = styled.div`
 `;
 
 export default function Project() {
-  const router = useRouter();
-  const { project: pId } = router.query;
-  const { data: project } = useQuery<ProjectType>(["project", pId], {
-    enabled: false,
-  });
-  const { space, handleDragEnd } = useDragEnd();
+  const { handleDragEnd } = useDragEnd();
+
+  const { loading, localProject: project } = useLocalProject();
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
   return (
     <Box padding="4">
       <ToastContainer />
@@ -44,17 +50,16 @@ export default function Project() {
           {(provided, snapshot) => (
             <Container {...provided.droppableProps} ref={provided.innerRef}>
               <Stack direction="horizontal">
-                {space.columnOrder.map((columnId, index): any => {
-                  const column = space.columns[columnId];
-                  console.log({ column, space });
-                  const tasks = column.taskIds?.map(
-                    (taskId: any) => space.tasks[taskId]
+                {project?.columnOrder.map((columnId, index): any => {
+                  const column = project.columnDetails[columnId];
+                  const cards = column.cards?.map(
+                    (cardId: any) => project.cards[cardId]
                   );
                   return (
                     <ColumnComponent
                       key={columnId}
                       column={column}
-                      tasks={tasks}
+                      cards={cards}
                       id={columnId}
                       index={index}
                     />
@@ -63,7 +68,7 @@ export default function Project() {
                 {provided.placeholder}
                 <Box style={{ width: "20rem" }}>
                   <Button
-                    // disabled={space.roles[user?.id as string] !== 3}
+                    // disabled={project.roles[user?.id as string] !== 3}
                     width="full"
                     size="small"
                     variant="secondary"

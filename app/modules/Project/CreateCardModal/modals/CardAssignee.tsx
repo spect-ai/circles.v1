@@ -1,28 +1,21 @@
 import EditTag from "@/app/common/components/EditTag";
 import ModalOption from "@/app/common/components/ModalOption";
-import { ProjectType } from "@/app/types";
 import { Box, IconSearch, Input, Text } from "degen";
-import { useRouter } from "next/router";
 import React, { useState } from "react";
-import { useQuery } from "react-query";
-import useDragEnd from "../../Hooks/useDragEnd";
+import { useLocalProject } from "../../Context/LocalProjectContext";
 import { useCreateCard } from "../hooks/createCardContext";
 import { getOptions } from "../utils";
 
 export default function CardAssignee() {
-  const { assignees, setAssignees } = useCreateCard();
-  const router = useRouter();
-  const { project: pId } = router.query;
-  const { data: project } = useQuery<ProjectType>(["project", pId], {
-    enabled: false,
-  });
-  const { space } = useDragEnd();
+  const { assignee, setAssignee } = useCreateCard();
   const [modalOpen, setModalOpen] = useState(false);
+
+  const { localProject: project } = useLocalProject();
   return (
     <EditTag
-      name={assignees || "Add Assignee"}
+      name={assignee || "Add Assignee"}
       modalTitle="Select Card Type"
-      tagLabel={assignees ? "Change" : ""}
+      tagLabel={assignee ? "Change" : ""}
       modalOpen={modalOpen}
       setModalOpen={setModalOpen}
     >
@@ -36,13 +29,13 @@ export default function CardAssignee() {
           />
         </Box>
         <Box>
-          {getOptions("assignee", space).map((item: any) => (
+          {getOptions("assignee", project).map((item: any) => (
             <ModalOption
               key={item.value}
-              isSelected={assignees === item.value}
+              isSelected={assignee === item.value}
               item={item}
               onClick={() => {
-                setAssignees(item.value);
+                setAssignee(item.value);
                 setModalOpen(false);
               }}
             >
@@ -56,7 +49,7 @@ export default function CardAssignee() {
               >
                 <Text
                   size="small"
-                  color={assignees === item.value ? "accent" : "text"}
+                  color={assignee === item.value ? "accent" : "text"}
                   weight="bold"
                 >
                   {item.name}

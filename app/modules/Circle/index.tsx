@@ -6,6 +6,7 @@ import { useRouter } from "next/router";
 import React from "react";
 import { Col, Container, Row } from "react-grid-system";
 import { useQuery } from "react-query";
+import { ToastContainer } from "react-toastify";
 import styled from "styled-components";
 import CreateProjectModal from "./CreateProjectModal";
 import CreateSpaceModal from "./CreateSpaceModal";
@@ -27,12 +28,12 @@ export default function Circle() {
   const { data: circle, isLoading } = useQuery<CircleType>(["circle", cId], {
     enabled: false,
   });
-
   if (isLoading) {
     return <Loader text="...." loading />;
   }
   return (
     <BoxContainer padding="8">
+      <ToastContainer />
       <Stack>
         <Heading>Description</Heading>
         <Text>{circle?.description}</Text>
@@ -54,7 +55,7 @@ export default function Circle() {
                   }
                   height="32"
                 >
-                  <Text>{project.name}</Text>
+                  <Text align="center">{project.name}</Text>
                   <Text variant="label" align="center">
                     {project.description}
                   </Text>

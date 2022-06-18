@@ -5,33 +5,14 @@ import { useRouter } from "next/router";
 import Loader from "@/app/common/components/Loader";
 import Modal from "@/app/common/components/Modal";
 import Card from "@/app/common/components/Card";
-import Select from "@/app/common/components/Select";
+import Select, { option } from "@/app/common/components/Select";
 import { useMutation, useQuery } from "react-query";
-import { CircleType } from "@/app/types";
-
-const templates = [
-  {
-    label: "Default",
-    value: "default",
-  },
-  {
-    label: "Sprint Board",
-    value: "sprint",
-  },
-  {
-    label: "Roadmap",
-    value: "roadmap",
-  },
-  {
-    label: "Bug Tracking",
-    value: "bugtracking",
-  },
-];
+import { CircleType, Template } from "@/app/types";
 
 type CreateProjectDto = {
   name: string;
   circleId: string;
-  template?: string;
+  fromTemplateId: string;
   description: string;
 };
 
@@ -43,6 +24,28 @@ function CreateProjectModal() {
   const { data: circle } = useQuery<CircleType>(["circle", cId], {
     enabled: false,
   });
+  const { data: templates } = useQuery<option[]>(
+    ["projectTemplates", cId],
+    () =>
+      fetch(
+        `http://localhost:3000/template/allProjectTemplates/${circle?.id}`
+      ).then(async (res) => {
+        const data = await res.json();
+        const filteredData = data.map((t: Template) => {
+          const rt: option = {
+            label: t.name,
+            value: t._id,
+          };
+          return rt;
+        });
+        return filteredData;
+      }),
+    {
+      onSuccess: (res: option[]) => {
+        setTemplate(res[0]);
+      },
+    }
+  );
   const { mutateAsync, isLoading } = useMutation(
     (project: CreateProjectDto) => {
       return fetch("http://localhost:3000/project", {
@@ -56,7 +59,7 @@ function CreateProjectModal() {
     }
   );
 
-  const [template, setTemplate] = useState(templates[0]);
+  const [template, setTemplate] = useState({} as option);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
 
@@ -66,6 +69,7 @@ function CreateProjectModal() {
       name,
       circleId: circle?.id as string,
       description,
+      fromTemplateId: template.value,
     })
       .then(async (res) => {
         const resJson = await res.json();
@@ -115,11 +119,13 @@ function CreateProjectModal() {
                   onChange={(e) => setDescription(e.target.value)}
                 />
                 <Text variant="extraLarge">Template</Text>
-                <Select
-                  options={templates}
-                  value={template}
-                  onChange={setTemplate}
-                />
+                {templates && (
+                  <Select
+                    options={templates}
+                    value={template}
+                    onChange={setTemplate}
+                  />
+                )}
                 <Box display="flex" justifyContent="center">
                   <Button
                     width="1/2"

@@ -1,21 +1,16 @@
 import EditTag from "@/app/common/components/EditTag";
 import ModalOption from "@/app/common/components/ModalOption";
-import { CircleType, ProjectType } from "@/app/types";
 import { Box, IconSearch, Input, Text } from "degen";
-import { useRouter } from "next/router";
 import React, { useState } from "react";
-import { useQuery } from "react-query";
+import { useLocalProject } from "../../Context/LocalProjectContext";
 import { useCreateCard } from "../hooks/createCardContext";
 import { getOptions } from "../utils";
 
 export default function CardType() {
   const { cardType, setCardType } = useCreateCard();
-  const router = useRouter();
-  const { project: pId } = router.query;
-  const { data: project } = useQuery<ProjectType>(["project", pId], {
-    enabled: false,
-  });
   const [modalOpen, setModalOpen] = useState(false);
+
+  const { localProject: project } = useLocalProject();
   return (
     <EditTag
       name={cardType}
@@ -34,7 +29,7 @@ export default function CardType() {
           />
         </Box>
         <Box>
-          {getOptions("card", project as ProjectType).map((item: any) => (
+          {getOptions("card", project).map((item: any) => (
             <ModalOption
               key={item.value}
               isSelected={cardType === item.value}

@@ -1,6 +1,10 @@
 import { PublicLayout } from "@/app/common/layout";
 import MetaHead from "@/app/common/seo/MetaHead/MetaHead";
-import Project from "@/app/modules/Project/Project";
+import Project from "@/app/modules/Project";
+import {
+  LocalProjectContext,
+  useProviderLocalProject,
+} from "@/app/modules/Project/Context/LocalProjectContext";
 import { ProjectType } from "@/app/types";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
@@ -14,11 +18,16 @@ const ProjectPage: NextPage = () => {
       res.json()
     )
   );
+
+  const context = useProviderLocalProject();
+
   return (
     <>
       <MetaHead />
       <PublicLayout>
-        <Project />
+        <LocalProjectContext.Provider value={context}>
+          <Project />
+        </LocalProjectContext.Provider>
       </PublicLayout>
     </>
   );

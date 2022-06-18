@@ -7,6 +7,8 @@ import CreateCircle from "./CreateCircleModal";
 import Logo from "@/app/common/components/Logo";
 import { HomeOutlined } from "@ant-design/icons";
 import { useGlobalContext } from "@/app/context/globalContext";
+import { useQuery } from "react-query";
+import { CircleType, ProjectType } from "@/app/types";
 
 const containerAnimation = {
   hidden: { rotate: 90 },
@@ -20,32 +22,15 @@ const containerAnimation = {
 };
 
 function Sidebar(): ReactElement {
-  // const [myTribes, setMyTribes] = useState<Team[]>({} as Team[]);
-  const { setIsSidebarExpanded } = useGlobalContext();
-  const [isLoading, setIsLoading] = useState(true);
-
-  // const { setIsSidebarExpanded, tribe, space } = useDataContext();
-  // const { runMoralisFunction } = useMoralisFunction();
-  // const { isInitialized, isAuthenticated } = useMoralis();
-
   const router = useRouter();
-  const { circle: cId } = router.query;
-
-  // useEffect(() => {
-  //   setIsLoading(true);
-  //   if (isInitialized && isAuthenticated) {
-  //     runMoralisFunction('getMyTeams', {})
-  //       .then((res: Team[]) => {
-  //         setMyTribes(res);
-  //         console.log({ res });
-  //         setIsLoading(false);
-  //       })
-  //       .catch((err) => {
-  //         console.log(err);
-  //         setIsLoading(false);
-  //       });
-  //   }
-  // }, [isInitialized, isAuthenticated]);
+  const { circle: cId, project: pId } = router.query;
+  const { data: circle, isLoading } = useQuery<CircleType>(["circle", cId], {
+    enabled: false,
+  });
+  const { data: project } = useQuery<ProjectType>(["project", pId], {
+    enabled: false,
+  });
+  const { setIsSidebarExpanded } = useGlobalContext();
 
   return (
     <Box
@@ -59,10 +44,17 @@ function Sidebar(): ReactElement {
       transitionDuration="700"
     >
       <Box borderBottomWidth="0.375" paddingY="3">
-        <Logo
-          href="/"
-          src="https://ipfs.moralis.io:2053/ipfs/QmVYsa4KQyRwBSJxQCmD1rDjyqYd1HJKrDfqLk3KMKLEhn"
-        />
+        {cId ? (
+          <Logo
+            href="/"
+            src={circle?.avatar || project?.parents[0].avatar || ""}
+          />
+        ) : (
+          <Logo
+            href="/"
+            src="https://ipfs.moralis.io:2053/ipfs/QmVYsa4KQyRwBSJxQCmD1rDjyqYd1HJKrDfqLk3KMKLEhn"
+          />
+        )}
       </Box>
       <Box marginTop="2">
         <Link href="/" passHref>

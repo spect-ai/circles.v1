@@ -19,7 +19,17 @@ interface Payment {
   };
 }
 
-interface CircleType {
+export interface ColumnType {
+  columnId: string;
+  name: string;
+  cards: string[];
+  defaultCardType: "Task" | "Bounty";
+  access: {
+    canCreateCard: string;
+  };
+}
+
+export interface CircleType {
   activity: string[];
   archived: boolean;
   avatar: string;
@@ -32,7 +42,7 @@ interface CircleType {
   name: string;
   parents: Circle[];
   private: boolean;
-  projects: Project[];
+  projects: ProjectType[];
   roles: any[];
   slug: string;
   templates: any[];
@@ -53,44 +63,84 @@ interface CircleType {
 //   updatedAt: string;
 // }
 
-//temp
-export interface ProjectType {
-  objectId: string;
-  name: string;
-  tasks: {
-    [key: string]: Task;
+export interface CardType {
+  issuer: string;
+  id: string;
+  slug: string;
+  title: string;
+  description: any;
+  submission: {
+    link: string;
+    name: string;
   };
-  columns: {
-    [key: string]: Column;
+  deadline: Date | null;
+  labels: string[];
+  assignee: Array<string>;
+  reviewer: Array<string>;
+  creator: string;
+  chain: Chain;
+  value: number;
+  token: Token;
+  activity: [
+    {
+      actor: string;
+      action: number;
+      timestamp: Date;
+      username: string;
+      profilePicture: any;
+    }
+  ];
+  status: number;
+  members: Member[];
+  access: {
+    creator: boolean;
+    reviewer: boolean;
+    assignee: boolean;
+    applicant: boolean;
+    canApply: boolean;
+  };
+  issueLink?: string;
+  boardId: string;
+  createdAt: string;
+  type: string;
+  submissions: Array<SubmissionData>;
+  proposals: Array<Proposal>;
+  numProposals: number;
+  selectedProposals: Array<string>;
+  updates: Array<object>;
+  columnId: string;
+  comments: Array<Comment>;
+  votes: string[];
+  subTasks: {
+    title: string;
+    assignee: string;
+  }[];
+  onChainBountyId?: number;
+  nftAddress?: string;
+  attested?: boolean;
+  ipfsUrl?: string;
+  claimedBy?: string[];
+  issuer?: string;
+  priority?: number;
+}
+
+export interface ProjectType {
+  id: string;
+  name: string;
+  cards: {
+    [key: string]: CardType;
+  };
+  columnDetails: {
+    [key: string]: ColumnType;
   };
   columnOrder: string[];
-  teamId: string;
   createdAt: string;
   updatedAt: string;
-  statusList: string[];
-  members: string[];
-  memberDetails: MemberDetails;
-  access: string;
-  roles: {
-    [key: string]: number;
-  };
-  roleMapping: {
-    [key: string]: number;
-  };
-  userRole: number;
-  epochs: Epoch[];
-  _id: string;
-  _createdAt: string;
-  // eslint-disable-next-line no-use-before-define
-  team: Team[];
-  defaultPayment: DefaultPayment;
-  tokenGating: TokenGate;
   description: string;
+  archived: boolean;
+  slug: string;
   private: boolean;
-  creatingEpoch: boolean;
-  guildId: string;
-  discussionChannel: Channel;
-  githubRepos: string[];
+  parents: CircleType[];
 }
 
 export interface Chain {
@@ -119,3 +169,15 @@ export type NetworkInfo = {
   provider: string;
   tokens: { [tokenAddress: string]: TokenInfo };
 };
+
+export interface Template {
+  _id: string;
+  name: string;
+  type: string;
+  data: {
+    columnOrder: string[];
+    columnDetails: {
+      [key: string]: Column;
+    };
+  };
+}

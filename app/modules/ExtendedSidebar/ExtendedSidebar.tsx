@@ -1,23 +1,12 @@
-import Link from "next/link";
-import React, { ReactElement, useState } from "react";
-import {
-  Box,
-  Button,
-  Heading,
-  IconChevronLeft,
-  IconDocuments,
-  IconUserSolid,
-  Stack,
-} from "degen";
+import React, { ReactElement } from "react";
+import { Box, Button, Heading, IconChevronLeft } from "degen";
 import { useRouter } from "next/router";
 import styled from "styled-components";
 import { motion } from "framer-motion";
-// import SpaceSidebar from "./SpaceSidebar";
-// import TribeSidebar from "./TribeSidebar";
-import { useAccount } from "wagmi";
-import TribeSidebar from "./TribeSidebar";
-import SpaceSidebar from "./SpaceSidebar";
+import CircleSidebar from "./CircleSidebar";
 import { useGlobalContext } from "@/app/context/globalContext";
+import { useQuery } from "react-query";
+import { CircleType, ProjectType } from "@/app/types";
 
 export const Container = styled(Box)`
   ::-webkit-scrollbar {
@@ -33,6 +22,12 @@ function ExtendedSidebar(): ReactElement {
   const { setIsSidebarExpanded } = useGlobalContext();
   const router = useRouter();
   const { circle: cId, project: pId } = router.query;
+  const { data: circle } = useQuery<CircleType>(["circle", cId], {
+    enabled: false,
+  });
+  const { data: project } = useQuery<ProjectType>(["project", pId], {
+    enabled: false,
+  });
 
   return (
     <motion.div
@@ -61,17 +56,13 @@ function ExtendedSidebar(): ReactElement {
             flexDirection="row"
             justifyContent="space-between"
           >
-            {/* <Heading>{bid && space.team[0].name}</Heading> */}
-            {/* <Heading>
-              {bid && space.team && (
-                <Link href={`/tribe/${id}`} passHref>
-                  {space.name ? space.name : ''}
-                </Link>
-              )}
-            </Heading> */}
+            <Heading>
+              {cId && pId && (circle?.name || project?.parents[0].name)}
+            </Heading>
             <Button
               variant="transparent"
               size="small"
+              shape="circle"
               onClick={() => {
                 setIsSidebarExpanded(false);
               }}
@@ -79,14 +70,7 @@ function ExtendedSidebar(): ReactElement {
               <IconChevronLeft />
             </Button>
           </Box>
-          <Container>
-            {pId && <SpaceSidebar />}
-            {cId && <TribeSidebar />}
-            <Box paddingY="3">
-              {/* {id && !bid && <TribeSettingsModal />}
-              {bid && <SpaceSettingsModal />} */}
-            </Box>
-          </Container>
+          <Container>{cId && <CircleSidebar />}</Container>
         </Box>
       </Box>
     </motion.div>
