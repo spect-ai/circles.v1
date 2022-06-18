@@ -8,7 +8,6 @@ import { useCreateCard } from "../hooks/createCardContext";
 
 export default function CardReward() {
   const [modalOpen, setModalOpen] = useState(false);
-  const { date, setDate } = useCreateCard();
   return (
     <div />
     // <EditTag
