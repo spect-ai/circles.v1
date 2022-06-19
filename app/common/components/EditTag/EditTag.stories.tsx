@@ -16,7 +16,7 @@ export const Default = Template.bind({});
 Default.args = {
   name: "Tag",
   tone: "accent",
-  tagLabel: "Edit",
+  label: "Edit",
   modalTitle: "Edit Tag",
   children: (
     <Box>
