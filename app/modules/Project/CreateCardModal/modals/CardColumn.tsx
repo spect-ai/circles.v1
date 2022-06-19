@@ -3,15 +3,12 @@ import ModalOption from "@/app/common/components/ModalOption";
 import { MenuOutlined } from "@ant-design/icons";
 import { Box, IconSearch, Input, Text } from "degen";
 import React, { useState } from "react";
-import { useLocalProject } from "../../Context/LocalProjectContext";
-import { useCreateCard } from "../hooks/createCardContext";
+import { useLocalCard } from "../hooks/LocalCardContext";
 import { getOptions } from "../utils";
 
 export default function CardColumn() {
-  const { columnId, setColumnId } = useCreateCard();
+  const { columnId, setColumnId, project } = useLocalCard();
   const [modalOpen, setModalOpen] = useState(false);
-
-  const { localProject: project } = useLocalProject();
   return (
     <EditTag
       name={project?.columnDetails[columnId]?.name}

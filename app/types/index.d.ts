@@ -69,18 +69,18 @@ export interface CardType {
   slug: string;
   title: string;
   description: any;
-  submission: {
-    link: string;
-    name: string;
-  };
-  deadline: Date | null;
+  submission: string[];
+  deadline: string;
   labels: string[];
   assignee: Array<string>;
   reviewer: Array<string>;
   creator: string;
-  chain: Chain;
-  value: number;
-  token: Token;
+  reward: {
+    chain: Chain;
+    token: Token;
+    value: string;
+    transactionHash: string;
+  };
   activity: [
     {
       actor: string;

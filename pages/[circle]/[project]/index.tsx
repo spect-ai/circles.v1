@@ -82,29 +82,4 @@ const ProjectPage: NextPage = () => {
   );
 };
 
-// export async function getStaticProps(context: any) {
-//   const { project } = context.params;
-//   console.log({ project });
-//   if (project !== "window-provider.js.map") {
-//     const fetchProject = async () =>
-//       await (
-//         await fetch(`http://localhost:3000/projects/slug/${project as string}`)
-//       ).json();
-//     const queryClient = new QueryClient();
-//     await queryClient.prefetchQuery<Project>("project", fetchProject);
-
-//     return {
-//       props: {
-//         dehydratedState: dehydrate(queryClient),
-//       },
-//     };
-//   } else {
-//     return {
-//       props: {
-//         dehydratedState: {},
-//       },
-//     };
-//   }
-// }
-
 export default ProjectPage;

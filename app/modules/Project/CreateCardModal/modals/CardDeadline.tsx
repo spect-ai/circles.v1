@@ -2,7 +2,7 @@ import EditTag from "@/app/common/components/EditTag";
 import { Box } from "degen";
 import React, { useState } from "react";
 import styled from "styled-components";
-import { useCreateCard } from "../hooks/createCardContext";
+import { useLocalCard } from "../hooks/LocalCardContext";
 import { CalendarOutlined } from "@ant-design/icons";
 import { toIsoString } from "@/app/common/utils/utils";
 
@@ -30,7 +30,7 @@ const DatePicker = styled.input`
 
 export default function CardDeadline() {
   const [modalOpen, setModalOpen] = useState(false);
-  const { deadline, setDeadline } = useCreateCard();
+  const { deadline, setDeadline } = useLocalCard();
   return (
     <EditTag
       name={deadline?.toDateString ? deadline.toDateString() : "None"}

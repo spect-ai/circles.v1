@@ -4,15 +4,12 @@ import { MemberDetails } from "@/app/types";
 import { Avatar, Box, IconSearch, IconUserSolid, Input, Text } from "degen";
 import React, { useState } from "react";
 import { useQuery } from "react-query";
-import { useLocalProject } from "../../Context/LocalProjectContext";
-import { useCreateCard } from "../hooks/createCardContext";
+import { useLocalCard } from "../hooks/LocalCardContext";
 import { getOptions } from "../utils";
 
 export default function CardAssignee() {
-  const { assignee, setAssignee } = useCreateCard();
+  const { assignee, setAssignee, project } = useLocalCard();
   const [modalOpen, setModalOpen] = useState(false);
-
-  const { localProject: project } = useLocalProject();
   const { data: memberDetails } = useQuery<MemberDetails>("memberDetails", {
     enabled: false,
   });

@@ -26,9 +26,7 @@ const Container = styled.div`
 
 export default function Project() {
   const { handleDragEnd } = useDragEnd();
-  useQuery("memberDetails", { enabled: false });
   const { loading, localProject: project } = useLocalProject();
-  console.log({ project });
   if (loading) {
     return <div>Loading...</div>;
   }

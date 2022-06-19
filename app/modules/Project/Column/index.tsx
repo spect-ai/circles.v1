@@ -17,7 +17,7 @@ import React, { useEffect, useState } from "react";
 import { Draggable, Droppable } from "react-beautiful-dnd";
 import { toast } from "react-toastify";
 import styled from "styled-components";
-import CardComponent from "../Card";
+import CardComponent from "../CardComponent";
 import CreateCardModal from "../CreateCardModal";
 
 type Props = {
@@ -118,7 +118,7 @@ export default function ColumnComponent({ cards, id, column, index }: Props) {
         index={index}
         // isDragDisabled={space.roles[user?.id as string] !== 3}
       >
-        {(provided, snapshot) => (
+        {(provided) => (
           <Container
             {...provided.draggableProps}
             {...provided.dragHandleProps}

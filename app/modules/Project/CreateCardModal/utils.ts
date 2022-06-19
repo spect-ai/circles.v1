@@ -62,12 +62,12 @@ export const getOptions = (
         };
       });
     case "column":
-      return project.columnOrder?.map((column: string) => ({
+      return project?.columnOrder?.map((column: string) => ({
         name: project.columnDetails[column].name,
         value: column,
       }));
     case "assignee":
-      return project.parents[0].members?.map((member: string) => ({
+      return project?.parents[0].members?.map((member: string) => ({
         name: memberDetails && memberDetails[member]?.username,
         avatar: memberDetails && memberDetails[member]?.avatar,
         value: member,

@@ -7,12 +7,12 @@ import { useGlobalContext } from "@/app/context/globalContext";
 import { Box, IconEth, Input, Stack, Tag, Text } from "degen";
 import { motion } from "framer-motion";
 import React, { useState } from "react";
-import { useCreateCard } from "../hooks/createCardContext";
+import { useLocalCard } from "../hooks/LocalCardContext";
 
 export default function CardReward() {
   const [modalOpen, setModalOpen] = useState(false);
   const { registry } = useGlobalContext();
-  const { chain, setChain, token, setToken, value, setValue } = useCreateCard();
+  const { chain, setChain, token, setToken, value, setValue } = useLocalCard();
   return (
     <EditTag
       name={value ? `${value} ${token.symbol}` : "No Reward"}

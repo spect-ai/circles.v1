@@ -1,25 +1,11 @@
 import Editor from "@/app/common/components/Editor";
-import EditTag from "@/app/common/components/EditTag";
 import Modal from "@/app/common/components/Modal";
-import { SnippetsOutlined, TagOutlined } from "@ant-design/icons";
-import {
-  Box,
-  Button,
-  IconCheck,
-  IconPlus,
-  IconPlusSmall,
-  Stack,
-  Tag,
-  Text,
-} from "degen";
+import { SnippetsOutlined } from "@ant-design/icons";
+import { Box, Button, Stack, Tag } from "degen";
 import { AnimatePresence } from "framer-motion";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import styled from "styled-components";
 import EditableSubTask from "./EditableSubTask";
-import {
-  CreateCardContext,
-  useProviderCreateCard,
-} from "./hooks/createCardContext";
 import CardAssignee from "./modals/CardAssignee";
 import CardColumn from "./modals/CardColumn";
 import CardDeadline from "./modals/CardDeadline";
@@ -28,6 +14,10 @@ import CardType from "./modals/CardType";
 import CardReward from "./modals/CardReward";
 import ClickableTag from "@/app/common/components/EditTag/ClickableTag";
 import CardPriority from "./modals/CardPriority";
+import {
+  LocalCardContext,
+  useProviderLocalCard,
+} from "./hooks/LocalCardContext";
 
 type Props = {
   column: string;
@@ -60,7 +50,7 @@ const NameInput = styled.input`
 `;
 
 export default function CreateCardModal({ column, handleClose }: Props) {
-  const context = useProviderCreateCard({ handleClose });
+  const context = useProviderLocalCard({ handleClose });
   const {
     setColumnId,
     onSubmit,
@@ -77,7 +67,7 @@ export default function CreateCardModal({ column, handleClose }: Props) {
     setColumnId(column);
   }, []);
   return (
-    <CreateCardContext.Provider value={context}>
+    <LocalCardContext.Provider value={context}>
       <Modal size="large" title="Create Card" handleClose={handleClose}>
         <Stack direction="horizontal">
           <Box width="2/3">
@@ -99,16 +89,6 @@ export default function CreateCardModal({ column, handleClose }: Props) {
                     <Tag key={label}>{label}</Tag>
                   ))}
                 </Stack>
-                {/* <Button
-                  size="small"
-                  variant="secondary"
-                  onClick={() => {
-                    setSubTasks([...subTasks, { title: "", assignee: "" }]);
-                  }}
-                  prefix={<IconPlusSmall />}
-                >
-                  Add Subtasks
-                </Button> */}
                 <Box width="fit">
                   <ClickableTag
                     name="Add Subtasks"
@@ -161,6 +141,6 @@ export default function CreateCardModal({ column, handleClose }: Props) {
           </Button>
         </Box>
       </Modal>
-    </CreateCardContext.Provider>
+    </LocalCardContext.Provider>
   );
 }

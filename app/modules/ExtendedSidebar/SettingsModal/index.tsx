@@ -138,7 +138,7 @@ export default function SettingsModal({ handleClose }: Props) {
                   loading={isLoading}
                   disabled={uploading}
                 >
-                  <Text>Update Space</Text>
+                  <Text>Update Circle</Text>
                 </Button>
               </Box>
             </Stack>

@@ -1,13 +1,14 @@
-import { Chain, CircleType, Token } from "@/app/types";
+import { CardType, Chain, CircleType, ProjectType, Token } from "@/app/types";
 import { Button, Stack } from "degen";
 import { useRouter } from "next/router";
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "react-query";
 import { toast } from "react-toastify";
 import { useLocalProject } from "../../Context/LocalProjectContext";
 
 type Props = {
-  handleClose: () => void;
+  handleClose?: () => void;
+  createCard?: boolean;
 };
 
 type CreateCardContextType = {
@@ -50,23 +51,36 @@ type CreateCardContextType = {
       }[]
     >
   >;
-  submission: string;
-  setSubmission: React.Dispatch<React.SetStateAction<string>>;
+  submission: string[];
+  setSubmission: React.Dispatch<React.SetStateAction<string[]>>;
+  project: ProjectType;
 };
 
-export const CreateCardContext = createContext<CreateCardContextType>(
+export const LocalCardContext = createContext<CreateCardContextType>(
   {} as CreateCardContextType
 );
 
-export function useProviderCreateCard({ handleClose }: Props) {
+export function useProviderLocalCard({
+  handleClose,
+  createCard = false,
+}: Props) {
   const router = useRouter();
-  const { circle: cId } = router.query;
+  const { circle: cId, project: pId, card: tId } = router.query;
   const { data: circle } = useQuery<CircleType>(["circle", cId], {
+    enabled: false,
+  });
+  const { data: project, isLoading }: any = useQuery<ProjectType>(
+    ["project", pId],
+    {
+      enabled: false,
+    }
+  );
+
+  const { data: card } = useQuery<CardType>(["card", tId], {
     enabled: false,
   });
 
   const queryClient = useQueryClient();
-  const { localProject: project } = useLocalProject();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [labels, setLabels] = useState([] as string[]);
@@ -79,14 +93,36 @@ export function useProviderCreateCard({ handleClose }: Props) {
   const [value, setValue] = useState("");
   const [deadline, setDeadline] = useState<Date>({} as Date);
   const [priority, setPriority] = useState(0);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [subTasks, setSubTasks] = useState<
     {
       title: string;
       assignee: string;
     }[]
   >([] as any);
-  const [submission, setSubmission] = useState("");
+  const [submission, setSubmission] = useState([] as string[]);
+
+  useEffect(() => {
+    if (!createCard && card && !isLoading) {
+      console.log({ card });
+      setLoading(true);
+      setTitle(card.title);
+      setDescription(card.description);
+      setLabels(card.labels);
+      setAssignee(card.assignee[0]);
+      setReviewer(card.reviewer);
+      setColumnId(card.columnId);
+      setCardType(card.type);
+      setChain(card.reward.chain);
+      setToken(card.reward.token);
+      setValue(card.reward.value?.toString() || "");
+      setDeadline(new Date(card.deadline));
+      setPriority(card.priority || 0);
+      setSubTasks(card.subTasks);
+      setSubmission(card.submission);
+      setLoading(false);
+    }
+  }, [card, createCard, isLoading]);
 
   const onSubmit = () => {
     // console.log({
@@ -113,8 +149,8 @@ export function useProviderCreateCard({ handleClose }: Props) {
         description,
         reviewer,
         assignee: [assignee],
-        project: project.id,
-        circle: project.parents[0].id,
+        project: project?.id,
+        circle: project?.parents[0].id,
         type: cardType,
         deadline,
         labels,
@@ -126,7 +162,7 @@ export function useProviderCreateCard({ handleClose }: Props) {
       .then(async (res) => {
         const data = await res.json();
         console.log({ data });
-        handleClose();
+        handleClose && handleClose();
         toast(
           <Stack>
             Card created
@@ -140,7 +176,7 @@ export function useProviderCreateCard({ handleClose }: Props) {
             theme: "dark",
           }
         );
-        queryClient.setQueryData(["project", project.slug], data);
+        queryClient.setQueryData(["project", pId], data);
       })
       .catch((err) => {
         console.log({ err });
@@ -179,7 +215,8 @@ export function useProviderCreateCard({ handleClose }: Props) {
     setSubTasks,
     submission,
     setSubmission,
+    project,
   };
 }
 
-export const useCreateCard = () => useContext(CreateCardContext);
+export const useLocalCard = () => useContext(LocalCardContext);

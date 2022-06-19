@@ -33,12 +33,17 @@ export default function ProfileModal() {
   };
   return (
     <>
-      <Button shape="circle" size="small" onClick={() => setIsOpen(true)}>
+      <Button
+        shape="circle"
+        size="small"
+        onClick={() => setIsOpen(true)}
+        variant="secondary"
+      >
         <Avatar
           src={currentUser?.avatar}
           placeholder={!currentUser?.avatar}
           label={currentUser?.username || ""}
-          size="9"
+          size="10"
         />
       </Button>
       <AnimatePresence>

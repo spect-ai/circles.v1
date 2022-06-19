@@ -1,21 +1,14 @@
 import EditTag from "@/app/common/components/EditTag";
 import { ProjectType } from "@/app/types";
 import { TagOutlined } from "@ant-design/icons";
-import { Box, IconCheck, IconSearch, Input, Stack, Tag, Text } from "degen";
+import { Box, IconCheck, IconSearch, Input, Stack, Tag } from "degen";
 import { motion } from "framer-motion";
-import { useRouter } from "next/router";
 import React, { useState } from "react";
-import { useQuery } from "react-query";
-import { useCreateCard } from "../hooks/createCardContext";
+import { useLocalCard } from "../hooks/LocalCardContext";
 import { getOptions } from "../utils";
 
 export default function CardLabels() {
-  const { labels, setLabels } = useCreateCard();
-  const router = useRouter();
-  const { project: pId } = router.query;
-  const { data: project } = useQuery<ProjectType>(["project", pId], {
-    enabled: false,
-  });
+  const { labels, setLabels } = useLocalCard();
   const [modalOpen, setModalOpen] = useState(false);
   return (
     <EditTag

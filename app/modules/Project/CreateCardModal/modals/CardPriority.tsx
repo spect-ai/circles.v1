@@ -1,17 +1,15 @@
 import EditTag from "@/app/common/components/EditTag";
 import ModalOption from "@/app/common/components/ModalOption";
-import { DashboardOutlined, MenuOutlined } from "@ant-design/icons";
+import { DashboardOutlined } from "@ant-design/icons";
 import { Box, IconSearch, Input, Text } from "degen";
 import React, { useState } from "react";
-import { useLocalProject } from "../../Context/LocalProjectContext";
-import { useCreateCard } from "../hooks/createCardContext";
+import { useLocalCard } from "../hooks/LocalCardContext";
 import { getOptions, priorityMapping } from "../utils";
 
 export default function CardPriority() {
-  const { priority, setPriority } = useCreateCard();
+  const { priority, setPriority, project } = useLocalCard();
   const [modalOpen, setModalOpen] = useState(false);
 
-  const { localProject: project } = useLocalProject();
   return (
     <EditTag
       name={priorityMapping[priority]}

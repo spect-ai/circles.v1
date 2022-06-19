@@ -1,8 +1,8 @@
-import { Box, Button, IconTrash, Stack, Tag, Text } from "degen";
+import { Box, Button, IconTrash, Stack } from "degen";
 import React from "react";
 import styled from "styled-components";
-import { useCreateCard } from "./hooks/createCardContext";
 import { motion } from "framer-motion";
+import { useLocalCard } from "./hooks/LocalCardContext";
 
 const TitleInput = styled.input`
   width: 100%;
@@ -37,7 +37,7 @@ const variants = {
 };
 
 export default function EditableSubTask({ subTaskIndex }: Props) {
-  const { subTasks, setSubTasks } = useCreateCard();
+  const { subTasks, setSubTasks } = useLocalCard();
   return (
     <motion.main
       variants={variants} // Pass the variant object into Framer Motion

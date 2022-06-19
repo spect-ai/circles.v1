@@ -1,156 +1,179 @@
-import { Box, Heading } from "degen";
-import React from "react";
+import Accordian from "@/app/common/components/Accordian";
+import Editor from "@/app/common/components/Editor";
+import Loader from "@/app/common/components/Loader";
+import Tabs from "@/app/common/components/Tabs";
+import { ProjectType } from "@/app/types";
+import {
+  Box,
+  Button,
+  Heading,
+  IconCheck,
+  IconClose,
+  Stack,
+  Tag,
+  Text,
+  Textarea,
+} from "degen";
+import { useRouter } from "next/router";
+import React, { useState } from "react";
+import { useQuery } from "react-query";
+import { ToastContainer } from "react-toastify";
+import styled from "styled-components";
+import EditableSubTask from "../Project/CreateCardModal/EditableSubTask";
+import { useLocalCard } from "../Project/CreateCardModal/hooks/LocalCardContext";
+import CardAssignee from "../Project/CreateCardModal/modals/CardAssignee";
+import CardColumn from "../Project/CreateCardModal/modals/CardColumn";
+import CardDeadline from "../Project/CreateCardModal/modals/CardDeadline";
+import CardLabels from "../Project/CreateCardModal/modals/CardLabels";
+import CardPriority from "../Project/CreateCardModal/modals/CardPriority";
+import CardReward from "../Project/CreateCardModal/modals/CardReward";
+import CardType from "../Project/CreateCardModal/modals/CardType";
+
+const Container = styled(Box)`
+  ::-webkit-scrollbar {
+    display: none;
+  }
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  height: 80vh;
+  overflow-y: auto;
+`;
+
+const NameInput = styled.input`
+  width: 100%;
+  background: transparent;
+  border: 0;
+  border-style: none;
+  border-color: transparent;
+  outline: none;
+  outline-offset: 0;
+  box-shadow: none;
+  font-size: 1.8rem;
+  caret-color: rgb(255, 255, 255, 0.85);
+  color: rgb(255, 255, 255, 0.85);
+  font-weight: 600;
+`;
 
 export default function Card() {
+  const [selectedTab, setSelectedTab] = useState(0);
+  const handleTabClick = (index: number) => setSelectedTab(index);
+  const {
+    loading,
+    title,
+    setTitle,
+    labels,
+    subTasks,
+    description,
+    setDescription,
+    submission,
+    setSubmission,
+  } = useLocalCard();
+  if (loading) {
+    return <Loader loading={loading} text="" />;
+  }
+
   return (
     <Box padding="8">
-      {/* <ToastContainer />
-      <Loader loading={loading} text="" />
-      <Box padding="8" display="flex">
-        <Container
-          borderRightWidth="0.375"
-          height="full"
-          style={{ width: "75%" }}
-        >
-          <Stack direction="vertical">
-            <NameInput
-              placeholder="Enter card name"
-              value={title}
-              onChange={(e) => {
-                setTitle(e.target.value);
-              }}
-            />
-            <Stack direction="horizontal" wrap>
-              <TagModal
-                name={cardType}
-                type="card"
-                label="Change"
-                selectedOption="Task"
+      <ToastContainer />
+      <Stack direction="horizontal">
+        <Box width="3/4">
+          <Container>
+            <Stack direction="vertical">
+              <NameInput
+                placeholder="Enter card name"
+                value={title}
+                onChange={(e) => {
+                  setTitle(e.target.value);
+                }}
               />
-              <TagModal
-                name={space.columns && space.columns[columnId as string]?.title}
-                type="column"
-                label="Change"
-                selectedOption={columnId as string}
-              />
-              <TagModal
-                name={
-                  assignees
-                    ? space.memberDetails &&
-                      space.memberDetails[assignees]?.username
-                    : "Assignee"
-                }
-                type="assignee"
-                label={assignees ? "Change" : "Add"}
-              />
-              <TagModal
-                name={new Date(date).toDateString() || "Deadline"}
-                type="deadline"
-                label="Add"
-              />
-              <TagModal
-                name={value ? `${value} ${token.symbol}` : "Reward"}
-                type="reward"
-                label={value ? "Change" : "Add"}
-              />
-            </Stack>
-            <Stack direction="horizontal">
-              <TagModal name="Labels" type="labels" tone="accent" label="Add" />
-              {labels.map((label) => (
-                <TagModal name={label} type="labels" tone="accent" />
-              ))}
-            </Stack>
-            <Button
-              size="small"
-              prefix={<IconPlusSmall />}
-              variant="tertiary"
-              center
-              width="1/4"
-              onClick={() => {
-                setSubTasks([...subTasks, { title: "", assignee: "" }]);
-              }}
-            >
-              Add Subtasks
-            </Button>
-            <Accordian
-              name={`Sub Tasks (${subTasks.length})`}
-              defaultOpen={false}
-            >
-              <Stack>
-                {subTasks?.map((subTask, index) => (
-                  <EditableSubTask subTaskIndex={index} key={index} />
+              <Stack direction="horizontal" wrap>
+                <CardLabels />
+                {labels.map((label) => (
+                  <Tag key={label}>{label}</Tag>
                 ))}
               </Stack>
-            </Accordian>
-            <Box style={{ minHeight: "10rem" }} marginRight="4" paddingLeft="4">
-              {!loading && (
-                <TextEditor
-                  value={description}
+              <Accordian
+                name={`Sub Tasks (${subTasks?.length || 0})`}
+                defaultOpen={false}
+              >
+                <Stack>
+                  {subTasks?.map((subTask, index) => (
+                    <EditableSubTask subTaskIndex={index} key={index} />
+                  ))}
+                </Stack>
+              </Accordian>
+              <Box
+                style={{ minHeight: "10rem" }}
+                marginRight="4"
+                paddingLeft="4"
+              >
+                {!loading && (
+                  <Editor
+                    value={description}
+                    onChange={(txt) => {
+                      setDescription(txt);
+                    }}
+                  />
+                )}
+              </Box>
+              <Tabs
+                tabs={["Submissions", "Comments", "Activity"]}
+                selectedTab={selectedTab}
+                onTabClick={handleTabClick}
+                orientation="horizontal"
+                unselectedColor="transparent"
+              />
+              {selectedTab === 0 && !loading && (
+                <Editor
+                  value={submission[0] || ""}
                   onChange={(txt) => {
-                    setDescription(txt);
+                    setSubmission([txt]);
                   }}
                 />
               )}
-            </Box>
-            <Tabs
-              tabs={["Submissions", "Comments", "Activity"]}
-              selectedTab={selectedTab}
-              onTabClick={handleTabClick}
-              orientatation="horizontal"
-              unselectedColor="transparent"
-            />
-            {selectedTab === 0 && !loading && (
-              <TextEditor
-                value={submission}
-                onChange={(txt) => {
-                  setSubmission(txt);
-                }}
-              />
-            )}
-            {selectedTab === 1 && (
-              <Box style={{ width: "50%" }}>
-                <Textarea label="comment" />
-              </Box>
-            )}
-            {selectedTab === 2 && <Text>0xavp created this card</Text>}
-          </Stack>
-        </Container>
-        <Box style={{ width: "25%" }}>
-          <Stack direction="vertical">
-            <Box style={{ width: "100%" }} paddingX="4">
-              <Stack>
-                <Stack>
-                  <Button
-                    center
-                    prefix={<IconCheck />}
-                    width="full"
-                    size="small"
-                    variant="secondary"
-                    onClick={() => {
-                      onSave(tid as string);
-                    }}
-                  >
-                    <Text>Save!</Text>
-                  </Button>
-                </Stack>
-                <Stack>
-                  <Button
-                    center
-                    prefix={<IconClose />}
-                    width="full"
-                    size="small"
-                    variant="secondary"
-                    tone="red"
-                  >
-                    <Text>Close Task</Text>
-                  </Button>
-                </Stack>
-                <DiscordThread />
-              </Stack>
-            </Box>
+              {selectedTab === 1 && (
+                <Box style={{ width: "50%" }}>
+                  <Textarea label="comment" />
+                </Box>
+              )}
+              {selectedTab === 2 && <Text>0xavp created this card</Text>}
+            </Stack>
+          </Container>
+        </Box>
+        <Box width="1/4" borderLeftWidth="0.375" padding="8">
+          <Stack>
+            <CardType />
+            <CardColumn />
+            <CardAssignee />
+            <CardDeadline />
+            <CardPriority />
+            <CardReward />
+            <Button
+              center
+              prefix={<IconCheck />}
+              width="full"
+              size="small"
+              variant="secondary"
+              onClick={() => {
+                // onSave(tid as string);
+              }}
+            >
+              <Text>Save!</Text>
+            </Button>
+            <Button
+              center
+              prefix={<IconClose />}
+              width="full"
+              size="small"
+              variant="secondary"
+              tone="red"
+            >
+              <Text>Close Task</Text>
+            </Button>
+            {/* <DiscordThread /> */}
           </Stack>
         </Box>
-      </Box> */}
+      </Stack>
     </Box>
   );
 }

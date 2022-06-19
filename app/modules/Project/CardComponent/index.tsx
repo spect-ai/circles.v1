@@ -1,8 +1,10 @@
-import { CardType, ColumnType } from "@/app/types";
+import { monthMap } from "@/app/common/utils/constants";
+import { CardType, ColumnType, MemberDetails } from "@/app/types";
 import { Avatar, Box, Stack, Tag, Text } from "degen";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
 import { Draggable } from "react-beautiful-dnd";
+import { useQuery } from "react-query";
 import styled from "styled-components";
 
 type Props = {
@@ -11,9 +13,10 @@ type Props = {
   column: ColumnType;
 };
 
-const Container = styled(Box)`
+const Container = styled(Box)<{ isDragging: boolean }>`
   border-width: 4px;
-  border-color: rgb(255, 255, 255, 0.04);
+  border-color: ${(props) =>
+    props.isDragging ? "rgb(175, 82, 222, 1)" : "rgb(255, 255, 255, 0.04)"};
   &:hover {
     border-color: rgb(255, 255, 255, 0.1);
   }
@@ -22,6 +25,11 @@ const Container = styled(Box)`
 export default function CardComponent({ card, index, column }: Props) {
   const router = useRouter();
   const { circle: cId, project: pId } = router.query;
+  const { data: memberDetails } = useQuery<MemberDetails>("memberDetails", {
+    enabled: false,
+  });
+
+  const deadline = new Date(card.deadline);
   return (
     <Draggable draggableId={card.slug} index={index}>
       {(provided, snapshot) => (
@@ -33,27 +41,28 @@ export default function CardComponent({ card, index, column }: Props) {
           padding="2"
           marginBottom="2"
           borderRadius="2xLarge"
+          isDragging={snapshot.isDragging}
           onClick={() => router.push(`/${cId}/${pId}/${card.slug}`)}
         >
           <Box>
             <Box
               marginTop="1"
-              marginBottom="6"
+              marginBottom="4"
               display="flex"
               flexDirection="row"
               justifyContent="space-between"
             >
               <Text>{card.title}</Text>
-              {/* {card.assignee[0] !== '' && (
+              {card.assignee.length > 0 && (
                 <Avatar
-                  src={getAvatar(space.memberDetails[card.assignee[0]])}
+                  src={memberDetails && memberDetails[card.assignee[0]]?.avatar}
                   label=""
-                  size="8"
+                  size="6"
                   placeholder={
-                    !getAvatar(space.memberDetails[card.assignee[0]])
+                    !(memberDetails && memberDetails[card.assignee[0]]?.avatar)
                   }
                 />
-              )} */}
+              )}
             </Box>
             {/* <MemberAvatarGroup
                 memberIds={card.assignee}
@@ -76,20 +85,16 @@ export default function CardComponent({ card, index, column }: Props) {
                   </Tag>
                 </Box>
               ) : null}
-              {/* {card.deadline && (
+              {card.deadline && (
                 <Box marginRight="2" marginBottom="2">
                   <Tag size="small">
                     <Text>
-                      {card.deadline.getDate()}{' '}
-                      {
-                        monthMap[
-                          card.deadline.getMonth() as keyof typeof monthMap
-                        ]
-                      }
+                      {deadline.getDate()}{" "}
+                      {monthMap[deadline.getMonth() as keyof typeof monthMap]}
                     </Text>
                   </Tag>
                 </Box>
-              )} */}
+              )}
               {card.status === 300 && <Tag>{card.type}</Tag>}
               {card?.labels?.map((label) => (
                 <Box marginRight="2" marginBottom="2" key={label}>
