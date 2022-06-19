@@ -1,5 +1,6 @@
 import EditTag from "@/app/common/components/EditTag";
 import ModalOption from "@/app/common/components/ModalOption";
+import { MenuOutlined } from "@ant-design/icons";
 import { Box, IconSearch, Input, Text } from "degen";
 import React, { useState } from "react";
 import { useLocalProject } from "../../Context/LocalProjectContext";
@@ -14,10 +15,20 @@ export default function CardColumn() {
   return (
     <EditTag
       name={project?.columnDetails[columnId]?.name}
-      modalTitle="Select Card Type"
-      tagLabel="Change"
+      modalTitle="Select Column"
+      label="Column"
       modalOpen={modalOpen}
       setModalOpen={setModalOpen}
+      icon={
+        <MenuOutlined
+          style={{
+            fontSize: "1rem",
+            marginLeft: "0.2rem",
+            marginRight: "0.2rem",
+            color: "rgb(175, 82, 222, 1)",
+          }}
+        />
+      }
     >
       <Box height="96">
         <Box borderBottomWidth="0.375" paddingX="8" paddingY="5">

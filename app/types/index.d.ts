@@ -151,6 +151,7 @@ export interface Chain {
 export interface Token {
   address: string;
   symbol: string;
+  name: string;
 }
 
 export type Registry = {
@@ -158,7 +159,6 @@ export type Registry = {
 };
 
 export type NetworkInfo = {
-  tokenAddresses: string[];
   distributorAddress?: string;
   name: string;
   mainnet: boolean;
@@ -167,7 +167,7 @@ export type NetworkInfo = {
   pictureUrl: string;
   blockExplorer?: string;
   provider: string;
-  tokens: { [tokenAddress: string]: TokenInfo };
+  tokenDetails: { [tokenAddress: string]: Token };
 };
 
 export interface Template {
@@ -180,4 +180,8 @@ export interface Template {
       [key: string]: Column;
     };
   };
+}
+
+export interface MemberDetails {
+  [key: string]: UserType;
 }

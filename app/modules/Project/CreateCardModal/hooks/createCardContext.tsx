@@ -1,7 +1,7 @@
 import { Chain, CircleType, Token } from "@/app/types";
 import { Button, Stack } from "degen";
 import { useRouter } from "next/router";
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useState } from "react";
 import { useQuery, useQueryClient } from "react-query";
 import { toast } from "react-toastify";
 import { useLocalProject } from "../../Context/LocalProjectContext";
@@ -33,10 +33,9 @@ type CreateCardContextType = {
   setValue: React.Dispatch<React.SetStateAction<string>>;
   deadline: Date;
   setDeadline: React.Dispatch<React.SetStateAction<Date>>;
-  priority: string;
-  setPriority: React.Dispatch<React.SetStateAction<string>>;
+  priority: number;
+  setPriority: React.Dispatch<React.SetStateAction<number>>;
   onSubmit: () => void;
-  onSave: (tid: string) => void;
   loading: boolean;
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
   subTasks: {
@@ -67,8 +66,7 @@ export function useProviderCreateCard({ handleClose }: Props) {
   });
 
   const queryClient = useQueryClient();
-
-  const { localProject: project, setLocalProject } = useLocalProject();
+  const { localProject: project } = useLocalProject();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [labels, setLabels] = useState([] as string[]);
@@ -79,8 +77,8 @@ export function useProviderCreateCard({ handleClose }: Props) {
   const [chain, setChain] = useState(circle?.defaultPayment?.chain as Chain);
   const [token, setToken] = useState(circle?.defaultPayment?.token as Token);
   const [value, setValue] = useState("");
-  const [deadline, setDeadline] = useState<Date>(new Date());
-  const [priority, setPriority] = useState("");
+  const [deadline, setDeadline] = useState<Date>({} as Date);
+  const [priority, setPriority] = useState(0);
   const [loading, setLoading] = useState(false);
   const [subTasks, setSubTasks] = useState<
     {
@@ -90,38 +88,21 @@ export function useProviderCreateCard({ handleClose }: Props) {
   >([] as any);
   const [submission, setSubmission] = useState("");
 
-  // useEffect(() => {
-  //   if (taskId) {
-  //     console.log({ taskId });
-  //     setLoading(true);
-  //     runMoralisFunction("getTask", {
-  //       taskId,
-  //     })
-  //       .then((taskRes: Task) => {
-  //         console.log({ taskRes });
-  //         setTitle(taskRes.title);
-  //         setDescription(taskRes.description);
-  //         setLabels(taskRes.tags);
-  //         setAssignees(taskRes.assignee as any);
-  //         setReviewers(taskRes.reviewer);
-  //         setColumnId(taskRes.columnId);
-  //         setCardType(taskRes.type);
-  //         setChain(taskRes.chain);
-  //         setToken(taskRes.token);
-  //         setValue(taskRes.value?.toString());
-  //         setDate(taskRes.deadline?.toString() || "");
-  //         setSubTasks(taskRes.subTasks);
-  //         setLoading(false);
-  //       })
-  //       .catch((err: any) => {
-  //         console.log(err);
-  //         setLoading(false);
-  //       });
-  //   }
-  // }, [taskId]);
-
   const onSubmit = () => {
-    console.log({ circle });
+    // console.log({
+    //   title,
+    //   description,
+    //   assignee,
+    //   cardType,
+    //   labels,
+    //   columnId,
+    //   token,
+    //   chain,
+    //   value,
+    //   priority,
+    //   deadline,
+    // });
+    // return;
     fetch("http://localhost:3000/card", {
       method: "POST",
       headers: {
@@ -131,13 +112,13 @@ export function useProviderCreateCard({ handleClose }: Props) {
         title,
         description,
         reviewer,
-        assignee: [],
+        assignee: [assignee],
         project: project.id,
         circle: project.parents[0].id,
         type: cardType,
-        // deadline,
+        deadline,
         labels,
-        priority: 0,
+        priority,
         columnId,
       }),
       credentials: "include",
@@ -166,87 +147,6 @@ export function useProviderCreateCard({ handleClose }: Props) {
       });
   };
 
-  // setLoading(true);
-  // console.log({
-  //   subTasks,
-  // });
-  // runMoralisFunction("addTask", {
-  //   boardId: bid as string,
-  //   title,
-  //   description,
-  //   type: cardType,
-  //   tags: labels,
-  //   deadline: date,
-  //   chain,
-  //   token,
-  //   value,
-  //   assignee: [assignees],
-  //   reviewer: reviewers,
-  //   columnId,
-  //   subTasks,
-  // })
-  //   .then((res: any) => {
-  //     setLoading(false);
-  //     console.log({ res });
-  //     router.push(`/tribe/${id}/space/${bid}`);
-  //     setTimeout(() => {
-  //       toast("Task created", {
-  //         position: "top-right",
-  //         autoClose: 5000,
-  //         hideProgressBar: false,
-  //         closeOnClick: true,
-  //         pauseOnHover: true,
-  //         draggable: true,
-  //         progress: undefined,
-  //         theme: "dark",
-  //       });
-  //     }, 500);
-  //   })
-  //   .catch((err: any) => {
-  //     console.log({ err });
-  //     setLoading(false);
-  //   });
-
-  const onSave = async (tid: string) => {
-    // setLoading(true);
-    // console.log({
-    //   title,
-    //   description,
-    //   labels,
-    //   assignees,
-    //   reviewers,
-    //   columnId,
-    //   cardType,
-    //   chain,
-    //   token,
-    //   value,
-    //   date,
-    // });
-    // runMoralisFunction("updateCardSimple", {
-    //   boardId: bid as string,
-    //   taskId: tid,
-    //   title,
-    //   description,
-    //   type: cardType,
-    //   tags: labels,
-    //   deadline: date,
-    //   chain,
-    //   token,
-    //   value,
-    //   assignee: [assignees],
-    //   reviewer: reviewers,
-    //   columnId,
-    // })
-    //   .then((res: any) => {
-    //     setLoading(false);
-    //     console.log({ res });
-    //   })
-    //   .catch((err: any) => {
-    //     console.log({ err });
-    //     setLoading(false);
-    //   });
-  };
-
   return {
     title,
     setTitle,
@@ -273,7 +173,6 @@ export function useProviderCreateCard({ handleClose }: Props) {
     priority,
     setPriority,
     onSubmit,
-    onSave,
     loading,
     setLoading,
     subTasks,

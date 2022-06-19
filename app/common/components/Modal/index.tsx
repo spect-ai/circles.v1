@@ -36,7 +36,6 @@ const Container = styled(Box)<{
   }
   -ms-overflow-style: none;
   scrollbar-width: none;
-  margin-bottom: 2rem;
   height: ${(props) => props.modalHeight};
 `;
 

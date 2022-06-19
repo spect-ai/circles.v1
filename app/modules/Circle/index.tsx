@@ -46,7 +46,7 @@ export default function Circle() {
           }}
         >
           <Row>
-            {circle?.projects.map((project) => (
+            {circle?.projects?.map((project) => (
               <Col sm={6} md={4} lg={3} key={project.id}>
                 <Card
                   onClick={() =>

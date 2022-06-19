@@ -1,8 +1,8 @@
 import { labelsMapping } from "@/app/common/utils/constants";
 import { IconBookOpen, IconEth } from "degen";
-import { CircleType, ProjectType } from "../../../types";
+import { MemberDetails, ProjectType } from "../../../types";
 
-export const cardTypes = [
+const cardTypes = [
   {
     name: "Task",
     icon: IconBookOpen,
@@ -17,19 +17,43 @@ export const cardTypes = [
   },
 ];
 
-export const typeMapping = {
-  card: "Set Card type",
-  column: "Set Column",
-  assignee: "Choose Assignee(s)",
-  deadline: "Set Deadline",
-  reward: "Set Reward",
-  labels: "Set Labels",
+const priority = [
+  {
+    name: "Low",
+    value: 1,
+  },
+  {
+    name: "Medium",
+    value: 2,
+  },
+  {
+    name: "High",
+    value: 3,
+  },
+  {
+    name: "Urgent",
+    value: 4,
+  },
+];
+
+export const priorityMapping: { [key: number]: string } = {
+  0: "No Priority",
+  1: "Low",
+  2: "Medium",
+  3: "High",
+  4: "Urgent",
 };
 
-export const getOptions = (type: string, project: ProjectType) => {
+export const getOptions = (
+  type: string,
+  project: ProjectType,
+  memberDetails?: MemberDetails
+) => {
   switch (type) {
     case "card":
       return cardTypes;
+    case "priority":
+      return priority;
     case "labels":
       return Object.keys(labelsMapping).map((label) => {
         return {
@@ -38,13 +62,14 @@ export const getOptions = (type: string, project: ProjectType) => {
         };
       });
     case "column":
-      return project.columnOrder.map((column: any) => ({
+      return project.columnOrder?.map((column: string) => ({
         name: project.columnDetails[column].name,
         value: column,
       }));
     case "assignee":
-      return project.parents[0].members.map((member: any) => ({
-        name: member,
+      return project.parents[0].members?.map((member: string) => ({
+        name: memberDetails && memberDetails[member]?.username,
+        avatar: memberDetails && memberDetails[member]?.avatar,
         value: member,
       }));
     default:

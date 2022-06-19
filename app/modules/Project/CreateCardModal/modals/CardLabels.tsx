@@ -1,5 +1,6 @@
 import EditTag from "@/app/common/components/EditTag";
 import { ProjectType } from "@/app/types";
+import { TagOutlined } from "@ant-design/icons";
 import { Box, IconCheck, IconSearch, Input, Stack, Tag, Text } from "degen";
 import { motion } from "framer-motion";
 import { useRouter } from "next/router";
@@ -18,10 +19,20 @@ export default function CardLabels() {
   const [modalOpen, setModalOpen] = useState(false);
   return (
     <EditTag
-      name={"Add Label"}
+      name="Add Tags"
       modalTitle="Select Card Type"
       modalOpen={modalOpen}
       setModalOpen={setModalOpen}
+      icon={
+        <TagOutlined
+          style={{
+            fontSize: "1rem",
+            marginLeft: "0.2rem",
+            marginRight: "0.2rem",
+            color: "rgb(175, 82, 222, 1)",
+          }}
+        />
+      }
     >
       <Box>
         <Box borderBottomWidth="0.375" paddingX="8" paddingY="5">

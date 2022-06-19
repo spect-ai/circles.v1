@@ -1,17 +1,11 @@
-import { ProjectType } from "@/app/types";
-import { Box, Button, Heading, IconPlusSmall, Stack, Text } from "degen";
-import { useRouter } from "next/router";
+import { Box, Button, IconPlusSmall, Stack, Text } from "degen";
 import React from "react";
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
-import { useQuery } from "react-query";
+import { useMutation, useQuery } from "react-query";
 import { ToastContainer } from "react-toastify";
 import styled from "styled-components";
 import ColumnComponent from "./Column";
-import {
-  LocalProjectContext,
-  useLocalProject,
-  useProviderLocalProject,
-} from "./Context/LocalProjectContext";
+import { useLocalProject } from "./Context/LocalProjectContext";
 import useDragEnd from "./Hooks/useDragEnd";
 
 const Container = styled.div`
@@ -32,12 +26,13 @@ const Container = styled.div`
 
 export default function Project() {
   const { handleDragEnd } = useDragEnd();
-
+  useQuery("memberDetails", { enabled: false });
   const { loading, localProject: project } = useLocalProject();
-
+  console.log({ project });
   if (loading) {
     return <div>Loading...</div>;
   }
+
   return (
     <Box padding="4">
       <ToastContainer />
@@ -50,7 +45,7 @@ export default function Project() {
           {(provided, snapshot) => (
             <Container {...provided.droppableProps} ref={provided.innerRef}>
               <Stack direction="horizontal">
-                {project?.columnOrder.map((columnId, index): any => {
+                {project?.columnOrder?.map((columnId, index): any => {
                   const column = project.columnDetails[columnId];
                   const cards = column.cards?.map(
                     (cardId: any) => project.cards[cardId]

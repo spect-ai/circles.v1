@@ -3,7 +3,8 @@ import { Box } from "degen";
 import React, { useState } from "react";
 import styled from "styled-components";
 import { useCreateCard } from "../hooks/createCardContext";
-import DateTimePicker from "react-datetime-picker/dist/entry.nostyle";
+import { CalendarOutlined } from "@ant-design/icons";
+import { toIsoString } from "@/app/common/utils/utils";
 
 const DatePicker = styled.input`
   border: none;
@@ -32,25 +33,36 @@ export default function CardDeadline() {
   const { deadline, setDeadline } = useCreateCard();
   return (
     <EditTag
-      name={"Add Deadline"}
+      name={deadline?.toDateString ? deadline.toDateString() : "None"}
       modalTitle="Select Deadline"
-      tagLabel={deadline ? "Change" : ""}
+      label="Deadline"
       modalOpen={modalOpen}
       setModalOpen={setModalOpen}
+      icon={
+        <CalendarOutlined
+          style={{
+            fontSize: "1rem",
+            marginLeft: "0.2rem",
+            marginRight: "0.2rem",
+            color: "rgb(175, 82, 222, 1)",
+          }}
+        />
+      }
     >
-      <Box height="96">
+      <Box height="44">
         <Box
           padding="16"
           display="flex"
           flexDirection="column"
           alignItems="center"
           justifyContent="space-between"
-          style={{ height: "90%" }}
+          style={{ height: "100%" }}
         >
           <DatePicker
             type="datetime-local"
-            value={deadline.toISOString().substring(0, 10)}
+            value={toIsoString(deadline).substring(0, 16)}
             onChange={(e) => {
+              const d = new Date(e.target.value);
               setDeadline(new Date(e.target.value));
             }}
           />

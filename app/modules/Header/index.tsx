@@ -7,7 +7,7 @@ import ProfileModal from "./ProfileModal";
 import { CircleType, ProjectType, UserType } from "@/app/types";
 
 const getUser = async () => {
-  const res = await fetch("http://localhost:3000/users/me", {
+  const res = await fetch("http://localhost:3000/user/me", {
     credentials: "include",
   });
   return await res.json();

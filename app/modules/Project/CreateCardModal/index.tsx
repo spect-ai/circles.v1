@@ -1,5 +1,7 @@
 import Editor from "@/app/common/components/Editor";
+import EditTag from "@/app/common/components/EditTag";
 import Modal from "@/app/common/components/Modal";
+import { SnippetsOutlined, TagOutlined } from "@ant-design/icons";
 import {
   Box,
   Button,
@@ -23,6 +25,9 @@ import CardColumn from "./modals/CardColumn";
 import CardDeadline from "./modals/CardDeadline";
 import CardLabels from "./modals/CardLabels";
 import CardType from "./modals/CardType";
+import CardReward from "./modals/CardReward";
+import ClickableTag from "@/app/common/components/EditTag/ClickableTag";
+import CardPriority from "./modals/CardPriority";
 
 type Props = {
   column: string;
@@ -57,80 +62,99 @@ const NameInput = styled.input`
 export default function CreateCardModal({ column, handleClose }: Props) {
   const context = useProviderCreateCard({ handleClose });
   const {
-    columnId,
-    cardType,
-    assignee,
-    deadline,
     setColumnId,
-    value,
-    token,
     onSubmit,
     title,
     setTitle,
-    loading,
     labels,
     subTasks,
     setSubTasks,
-    submission,
-    setSubmission,
+    description,
+    setDescription,
   } = context;
 
   useEffect(() => {
-    console.log({ column });
     setColumnId(column);
   }, []);
   return (
     <CreateCardContext.Provider value={context}>
       <Modal size="large" title="Create Card" handleClose={handleClose}>
-        <Container height="full" padding="8" width="full">
-          <Stack direction="vertical">
-            {/* <Heading>{task.title}</Heading> */}
-            <NameInput
-              placeholder="Enter card name"
-              autoFocus
-              value={title}
-              onChange={(e) => {
-                setTitle(e.target.value);
-              }}
-            />
-            <Stack direction="horizontal" wrap>
+        <Stack direction="horizontal">
+          <Box width="2/3">
+            <Container height="full" padding="8" width="full">
+              <Stack direction="vertical">
+                {/* <Heading>{task.title}</Heading> */}
+                <NameInput
+                  placeholder="Enter card name"
+                  autoFocus
+                  value={title}
+                  onChange={(e) => {
+                    setTitle(e.target.value);
+                  }}
+                />
+
+                <Stack direction="horizontal" wrap>
+                  <CardLabels />
+                  {labels.map((label) => (
+                    <Tag key={label}>{label}</Tag>
+                  ))}
+                </Stack>
+                {/* <Button
+                  size="small"
+                  variant="secondary"
+                  onClick={() => {
+                    setSubTasks([...subTasks, { title: "", assignee: "" }]);
+                  }}
+                  prefix={<IconPlusSmall />}
+                >
+                  Add Subtasks
+                </Button> */}
+                <Box width="fit">
+                  <ClickableTag
+                    name="Add Subtasks"
+                    icon={
+                      <SnippetsOutlined
+                        style={{
+                          fontSize: "1rem",
+                          marginLeft: "0.2rem",
+                          marginRight: "0.2rem",
+                          color: "rgb(175, 82, 222, 1)",
+                        }}
+                      />
+                    }
+                    onClick={() =>
+                      setSubTasks([...subTasks, { title: "", assignee: "" }])
+                    }
+                    tone="accentTertiary"
+                  />
+                </Box>
+                <AnimatePresence>
+                  {subTasks?.map((subTask, index) => (
+                    <EditableSubTask subTaskIndex={index} key={index} />
+                  ))}
+                </AnimatePresence>
+                <Box style={{ minHeight: "10rem" }} marginTop="2">
+                  <Editor
+                    value={description}
+                    onChange={(txt) => {
+                      setDescription(txt);
+                    }}
+                  />
+                </Box>
+              </Stack>
+            </Container>
+          </Box>
+          <Box width="1/3" borderLeftWidth="0.375" padding="8">
+            <Stack>
               <CardType />
               <CardColumn />
               <CardAssignee />
               <CardDeadline />
+              <CardPriority />
+              <CardReward />
             </Stack>
-            <Stack direction="horizontal" wrap>
-              <CardLabels />
-              {labels.map((label) => (
-                <Tag key={label}>{label}</Tag>
-              ))}
-            </Stack>
-            <Stack direction="horizontal" align="center">
-              <Button
-                size="small"
-                shape="circle"
-                variant="secondary"
-                onClick={() => {
-                  setSubTasks([...subTasks, { title: "", assignee: "" }]);
-                }}
-              >
-                <IconPlus />
-              </Button>
-              <Text variant="label">Add Subtasks</Text>
-            </Stack>
-            {subTasks?.map((subTask, index) => (
-              <EditableSubTask subTaskIndex={index} key={index} />
-            ))}
-            <Box style={{ minHeight: "10rem" }} marginTop="2">
-              <Editor
-                value={submission}
-                onChange={(txt) => {
-                  setSubmission(txt);
-                }}
-              />
-            </Box>
-          </Stack>
-        </Container>
+          </Box>
+        </Stack>
         <Box borderTopWidth="0.375" paddingX="8" paddingY="4">
           <Button size="small" width="1/3" onClick={onSubmit}>
             Create Card

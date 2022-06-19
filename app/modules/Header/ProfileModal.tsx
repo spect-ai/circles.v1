@@ -1,9 +1,11 @@
 import Modal from "@/app/common/components/Modal";
+import { storeImage } from "@/app/common/utils/ipfs";
 import { UserType } from "@/app/types";
 import { Avatar, Box, Button, Input, MediaPicker, Stack, Text } from "degen";
 import { AnimatePresence } from "framer-motion";
 import React, { useState } from "react";
 import { useQuery, useQueryClient } from "react-query";
+import { toast } from "react-toastify";
 import { useDisconnect } from "wagmi";
 
 export default function ProfileModal() {
@@ -14,6 +16,21 @@ export default function ProfileModal() {
   const [isOpen, setIsOpen] = useState(false);
   const handleClose = () => setIsOpen(false);
   const queryClient = useQueryClient();
+
+  const [uploading, setUploading] = useState(false);
+  const [avatar, setAvatar] = useState(currentUser?.avatar);
+  const [username, setUsername] = useState(currentUser?.username);
+
+  const uploadFile = async (file: File) => {
+    console.log({ file });
+    if (file) {
+      setUploading(true);
+      const { imageGatewayURL } = await storeImage(file, "avatar");
+      console.log({ imageGatewayURL });
+      setAvatar(imageGatewayURL);
+      setUploading(false);
+    }
+  };
   return (
     <>
       <Button shape="circle" size="small" onClick={() => setIsOpen(true)}>
@@ -32,28 +49,24 @@ export default function ProfileModal() {
                 <Text variant="label">Profile Picture</Text>
                 <MediaPicker
                   compact
-                  // defaultValue={{
-                  //   type: "image/png",
-                  //   url: avatar,
-                  // }}
+                  defaultValue={{
+                    type: "image/png",
+                    url: avatar as string,
+                  }}
                   label="Choose or drag and drop media"
-                  // uploaded={!!avatar}
-                  // onChange={uploadFile}
-                  // uploading={uploading}
+                  uploaded={!!avatar}
+                  onChange={uploadFile}
+                  uploading={uploading}
                 />
                 <Text variant="label">Username</Text>
                 <Input
                   label=""
                   placeholder="Username"
-                  value={currentUser?.username}
-                  // onChange={(e) => setUsername(e.target.value)}
-                  // onBlur={() => {
-                  //   user?.set("username", username);
-                  //   user?.save();
-                  //   toast("Profile updated", {
-                  //     theme: "dark",
-                  //   });
-                  // }}
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  onBlur={() => {
+                    console.log("saving");
+                  }}
                 />
                 {/* <Button
             size="small"
@@ -75,7 +88,43 @@ export default function ProfileModal() {
                 : "Link Discord"}
             </Text>
           </Button> */}
-                <Box marginTop="6" />
+                <Box marginTop="2" />
+                <Button
+                  size="small"
+                  width="full"
+                  variant="secondary"
+                  onClick={() => {
+                    fetch("http://localhost:3000/user/me", {
+                      headers: {
+                        Accept: "application/json",
+                        "Content-Type": "application/json",
+                      },
+                      method: "PATCH",
+                      body: JSON.stringify({
+                        username,
+                        avatar,
+                      }),
+                      credentials: "include",
+                    })
+                      .then(async (res) => {
+                        const data = await res.json();
+                        console.log({ data });
+                        if (data.id) {
+                          queryClient.setQueryData("getMyUser", data);
+                          handleClose();
+                        } else {
+                          toast("Profile update failed", {
+                            theme: "dark",
+                          });
+                        }
+                      })
+                      .catch((err) => {
+                        console.log({ err });
+                      });
+                  }}
+                >
+                  Save
+                </Button>
                 <Button
                   size="small"
                   width="full"

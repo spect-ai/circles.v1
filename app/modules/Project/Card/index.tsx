@@ -22,8 +22,6 @@ const Container = styled(Box)`
 export default function CardComponent({ card, index, column }: Props) {
   const router = useRouter();
   const { circle: cId, project: pId } = router.query;
-
-  console.log({ card });
   return (
     <Draggable draggableId={card.slug} index={index}>
       {(provided, snapshot) => (

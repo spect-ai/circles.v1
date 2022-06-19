@@ -1,40 +1,33 @@
 import EditTag from "@/app/common/components/EditTag";
 import ModalOption from "@/app/common/components/ModalOption";
-import { MemberDetails } from "@/app/types";
-import { Avatar, Box, IconSearch, IconUserSolid, Input, Text } from "degen";
+import { DashboardOutlined, MenuOutlined } from "@ant-design/icons";
+import { Box, IconSearch, Input, Text } from "degen";
 import React, { useState } from "react";
-import { useQuery } from "react-query";
 import { useLocalProject } from "../../Context/LocalProjectContext";
 import { useCreateCard } from "../hooks/createCardContext";
-import { getOptions } from "../utils";
+import { getOptions, priorityMapping } from "../utils";
 
-export default function CardAssignee() {
-  const { assignee, setAssignee } = useCreateCard();
+export default function CardPriority() {
+  const { priority, setPriority } = useCreateCard();
   const [modalOpen, setModalOpen] = useState(false);
 
   const { localProject: project } = useLocalProject();
-  const { data: memberDetails } = useQuery<MemberDetails>("memberDetails", {
-    enabled: false,
-  });
   return (
     <EditTag
-      name={
-        (memberDetails && memberDetails[assignee]?.username) || "Unassigned"
-      }
-      modalTitle="Select Card Type"
-      label="Assignee"
+      name={priorityMapping[priority]}
+      modalTitle="Select Priority"
+      label="Priority"
       modalOpen={modalOpen}
       setModalOpen={setModalOpen}
       icon={
-        assignee ? (
-          <Avatar
-            src={memberDetails && memberDetails[assignee].avatar}
-            label=""
-            size="5"
-          />
-        ) : (
-          <IconUserSolid color="accent" size="5" />
-        )
+        <DashboardOutlined
+          style={{
+            fontSize: "1rem",
+            marginLeft: "0.2rem",
+            marginRight: "0.2rem",
+            color: "rgb(175, 82, 222, 1)",
+          }}
+        />
       }
     >
       <Box height="96">
@@ -47,30 +40,27 @@ export default function CardAssignee() {
           />
         </Box>
         <Box>
-          {getOptions("assignee", project, memberDetails).map((item: any) => (
+          {getOptions("priority", project).map((item: any) => (
             <ModalOption
               key={item.value}
-              isSelected={assignee === item.value}
+              isSelected={priority === item.value}
               item={item}
               onClick={() => {
-                setAssignee(item.value);
+                setPriority(item.value);
                 setModalOpen(false);
               }}
             >
               <Box
                 style={{
                   display: "flex",
-                  flexDirection: "row",
+                  flexDirection: "column",
                   alignItems: "center",
                   width: "100%",
-                  justifyContent: "center",
                 }}
               >
-                <Avatar size="6" src={item.avatar} label="avatar" />
-                <Box marginRight="2" />
                 <Text
                   size="small"
-                  color={assignee === item.value ? "accent" : "text"}
+                  color={priority === item.value ? "accent" : "text"}
                   weight="bold"
                 >
                   {item.name}

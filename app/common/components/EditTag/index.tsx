@@ -1,66 +1,50 @@
-import {
-  Avatar,
-  Box,
-  Button,
-  IconSearch,
-  Input,
-  Stack,
-  Tag,
-  Text,
-} from "degen";
-import React, { useState } from "react";
+import { Box, IconBellSolid, Stack, Tag, Text } from "degen";
+import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import styled from "styled-components";
 import Modal from "../Modal";
+import styled from "styled-components";
+import ClickableTag from "./ClickableTag";
 
 type Props = {
   name: string;
   modalTitle: string;
   children: React.ReactNode;
-  tone?: string;
-  tagLabel?: string;
+  label?: string;
   modalOpen: boolean;
   setModalOpen: (modalOpen: boolean) => void;
+  icon?: React.ReactNode;
+  tone?: string;
 };
+
+// const TagContainer = styled(Box)`
 
 function EditTag({
   name,
-  tone = "accent",
-  tagLabel,
   modalTitle,
   children,
+  label,
   modalOpen,
+  icon,
   setModalOpen,
+  tone = "accentTertiary",
 }: Props) {
   return (
     <>
-      <motion.button
-        whileHover={{
-          scale: 1.03,
-        }}
-        whileTap={{ scale: 0.97 }}
-        onClick={() => setModalOpen(true)}
-        style={{
-          background: "transparent",
-          border: "none",
-          cursor: "pointer",
-          padding: "0rem",
-        }}
-      >
-        {!tagLabel ? (
-          <Tag tone={tone as any}>
-            <Box paddingX="2">
-              <Text>{name}</Text>
-            </Box>
-          </Tag>
-        ) : (
-          <Tag tone={tone as any} label={tagLabel} hover>
-            <Box paddingX="2">
-              <Text>{name}</Text>
-            </Box>
-          </Tag>
+      <Stack direction="horizontal">
+        {label && (
+          <Box width="1/3">
+            <Text variant="label">{label}</Text>
+          </Box>
         )}
-      </motion.button>
+        <Box width={label ? "2/3" : "full"}>
+          <ClickableTag
+            name={name}
+            tone={tone}
+            icon={icon}
+            onClick={() => setModalOpen(true)}
+          />
+        </Box>
+      </Stack>
       <AnimatePresence
         initial={false}
         exitBeforeEnter
