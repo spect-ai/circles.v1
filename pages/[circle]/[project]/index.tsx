@@ -51,7 +51,7 @@ const ProjectPage: NextPage = () => {
   }, []);
 
   useEffect(() => {
-    if (project) {
+    if (project?.id) {
       // do we need parents populated??
       const parents = project.parents?.map((parent) => parent.id);
       mutateAsync({
@@ -60,7 +60,6 @@ const ProjectPage: NextPage = () => {
         .then(async (res) => {
           const data = await res.json();
           queryClient.setQueriesData("memberDetails", data);
-          console.log({ data });
         })
         .catch((err) => {
           console.log({ err });

@@ -9,14 +9,8 @@ interface UserType {
   _id: string;
 }
 interface Payment {
-  chain: {
-    chainId: string;
-    name: string;
-  };
-  token: {
-    address: string;
-    symbol: string;
-  };
+  chain: Chain;
+  token: Token;
 }
 
 export interface ColumnType {
@@ -38,7 +32,7 @@ export interface CircleType {
   defaultPayment: Payment;
   description: string;
   id: string;
-  members: any[];
+  members: string[];
   name: string;
   parents: Circle[];
   private: boolean;
@@ -48,6 +42,12 @@ export interface CircleType {
   templates: any[];
   updatedAt: string;
   whitelistedTokens: any;
+  memberRoles: {
+    [key: string]: string;
+  };
+  memberDetails: {
+    [key: string]: UserType;
+  };
 }
 
 // interface ProjectType {

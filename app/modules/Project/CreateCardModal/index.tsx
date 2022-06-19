@@ -18,6 +18,7 @@ import {
   LocalCardContext,
   useProviderLocalCard,
 } from "./hooks/LocalCardContext";
+import { ProjectType } from "@/app/types";
 
 type Props = {
   column: string;
@@ -61,6 +62,7 @@ export default function CreateCardModal({ column, handleClose }: Props) {
     setSubTasks,
     description,
     setDescription,
+    project,
   } = context;
 
   useEffect(() => {
@@ -125,14 +127,16 @@ export default function CreateCardModal({ column, handleClose }: Props) {
             </Container>
           </Box>
           <Box width="1/3" borderLeftWidth="0.375" padding="8">
-            <Stack>
-              <CardType />
-              <CardColumn />
-              <CardAssignee />
-              <CardDeadline />
-              <CardPriority />
-              <CardReward />
-            </Stack>
+            {(project as ProjectType).id && (
+              <Stack>
+                <CardType />
+                <CardColumn />
+                <CardAssignee />
+                <CardDeadline />
+                <CardPriority />
+                <CardReward />
+              </Stack>
+            )}
           </Box>
         </Stack>
         <Box borderTopWidth="0.375" paddingX="8" paddingY="4">

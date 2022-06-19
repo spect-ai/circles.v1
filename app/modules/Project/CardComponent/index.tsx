@@ -31,7 +31,7 @@ export default function CardComponent({ card, index, column }: Props) {
 
   const deadline = new Date(card.deadline);
   return (
-    <Draggable draggableId={card.slug} index={index}>
+    <Draggable draggableId={card.id} index={index}>
       {(provided, snapshot) => (
         <Container
           {...provided.draggableProps}
@@ -76,18 +76,18 @@ export default function CardComponent({ card, index, column }: Props) {
                   </Tag>
                 </Box>
               )}
-              {card.value ? (
+              {card.reward.value ? (
                 <Box marginRight="2" marginBottom="2">
                   <Tag size="small">
                     <Text>
-                      {card.value} {card.token.symbol}
+                      {card.reward.value} {card.reward.token.symbol}
                     </Text>
                   </Tag>
                 </Box>
               ) : null}
               {card.deadline && (
                 <Box marginRight="2" marginBottom="2">
-                  <Tag size="small">
+                  <Tag size="small" tone="accent">
                     <Text>
                       {deadline.getDate()}{" "}
                       {monthMap[deadline.getMonth() as keyof typeof monthMap]}

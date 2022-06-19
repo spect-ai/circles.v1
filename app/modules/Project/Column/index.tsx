@@ -166,16 +166,14 @@ export default function ColumnComponent({ cards, id, column, index }: Props) {
                 >
                   <Box>
                     {cards?.map((card, idx) => {
-                      if (card) {
-                        return (
-                          <CardComponent
-                            card={card}
-                            index={idx}
-                            column={column}
-                          />
-                        );
-                      }
-                      return <div key="key" />;
+                      return (
+                        <CardComponent
+                          card={card}
+                          index={idx}
+                          column={column}
+                          key={card.id}
+                        />
+                      );
                     })}
                     {provided2.placeholder}
                   </Box>

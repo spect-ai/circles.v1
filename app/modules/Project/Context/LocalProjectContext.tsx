@@ -18,20 +18,26 @@ export const LocalProjectContext = createContext<LocalProjectContextType>(
 export function useProviderLocalProject() {
   const router = useRouter();
   const { project: pId } = router.query;
-  const { data: project, isLoading } = useQuery<ProjectType>(["project", pId], {
+  const {
+    data: project,
+    isLoading,
+    isFetching,
+    isFetched,
+  } = useQuery<ProjectType>(["project", pId], {
     enabled: false,
   });
 
   const [localProject, setLocalProject] = useState({} as ProjectType);
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(true);
+
   useEffect(() => {
-    if (!isLoading) {
+    if (!isLoading && !isFetching && project?.id) {
       setLoading(true);
-      setLocalProject(project as ProjectType);
+      setLocalProject(project);
       setLoading(false);
     }
-  }, [isLoading, project]);
+  }, [isLoading, project, isFetching]);
 
   return {
     localProject,

@@ -67,6 +67,7 @@ export default function Card() {
     setDescription,
     submission,
     setSubmission,
+    project,
   } = useLocalCard();
   if (loading) {
     return <Loader loading={loading} text="" />;
@@ -140,38 +141,40 @@ export default function Card() {
             </Stack>
           </Container>
         </Box>
-        <Box width="1/4" borderLeftWidth="0.375" padding="8">
-          <Stack>
-            <CardType />
-            <CardColumn />
-            <CardAssignee />
-            <CardDeadline />
-            <CardPriority />
-            <CardReward />
-            <Button
-              center
-              prefix={<IconCheck />}
-              width="full"
-              size="small"
-              variant="secondary"
-              onClick={() => {
-                // onSave(tid as string);
-              }}
-            >
-              <Text>Save!</Text>
-            </Button>
-            <Button
-              center
-              prefix={<IconClose />}
-              width="full"
-              size="small"
-              variant="secondary"
-              tone="red"
-            >
-              <Text>Close Task</Text>
-            </Button>
-            {/* <DiscordThread /> */}
-          </Stack>
+        <Box width="1/4" borderLeftWidth="0.375" paddingY="8" paddingLeft="4">
+          {project?.id && (
+            <Stack>
+              <CardType />
+              <CardColumn />
+              <CardAssignee />
+              <CardDeadline />
+              <CardPriority />
+              <CardReward />
+              <Button
+                center
+                prefix={<IconCheck />}
+                width="full"
+                size="small"
+                variant="secondary"
+                onClick={() => {
+                  // onSave(tid as string);
+                }}
+              >
+                <Text>Save!</Text>
+              </Button>
+              <Button
+                center
+                prefix={<IconClose />}
+                width="full"
+                size="small"
+                variant="secondary"
+                tone="red"
+              >
+                <Text>Close Task</Text>
+              </Button>
+              {/* <DiscordThread /> */}
+            </Stack>
+          )}
         </Box>
       </Stack>
     </Box>

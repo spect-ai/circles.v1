@@ -103,8 +103,7 @@ export function useProviderLocalCard({
   const [submission, setSubmission] = useState([] as string[]);
 
   useEffect(() => {
-    if (!createCard && card && !isLoading) {
-      console.log({ card });
+    if (!createCard && card && card.id && !isLoading) {
       setLoading(true);
       setTitle(card.title);
       setDescription(card.description);
@@ -156,6 +155,11 @@ export function useProviderLocalCard({
         labels,
         priority,
         columnId,
+        reward: {
+          chain,
+          token,
+          value: Number(value),
+        },
       }),
       credentials: "include",
     })

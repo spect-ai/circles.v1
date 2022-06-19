@@ -1,12 +1,14 @@
 import Modal from "@/app/common/components/Modal";
 import Tabs from "@/app/common/components/Tabs";
 import { storeImage } from "@/app/common/utils/ipfs";
-import { CircleType } from "@/app/types";
+import { CircleType, MemberDetails } from "@/app/types";
 import { Box, Button, Input, MediaPicker, Stack, Text, Textarea } from "degen";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { toast } from "react-toastify";
+import Contributors from "../Contributors";
+import DefaultPayment from "../DefaultPayment";
 
 interface Props {
   handleClose: () => void;
@@ -143,21 +145,21 @@ export default function SettingsModal({ handleClose }: Props) {
               </Box>
             </Stack>
           )}
-          {/* {tab === 1 && <Integrations />}
+          {/* {tab === 1 && <Integrations />} */}
           {tab === 2 && <DefaultPayment />}
           {tab === 3 && (
             <Stack>
-              <Box display="flex" flexDirection="row" marginLeft="8">
+              {/* <Box display="flex" flexDirection="row" marginLeft="8">
                 {space.roles[user?.id as string] === 3 && <SpaceRoleMapping />}
                 {space.roles[user?.id as string] === 3 && <InviteMemberModal />}
-              </Box>
-              <MemberTable
-                members={space.members}
-                memberDetails={space.memberDetails}
-                roles={space.roles}
+              </Box> */}
+              <Contributors
+                members={circle?.members || []}
+                memberDetails={circle?.memberDetails || {}}
+                roles={circle?.memberRoles || {}}
               />
             </Stack>
-          )} */}
+          )}
         </Box>
       </Box>
     </Modal>

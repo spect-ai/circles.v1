@@ -16,7 +16,8 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
 import { useQuery } from "react-query";
-import SettingsModal from "./SettingsModal";
+import SettingsModal from "../Circle/CircleSettingsModal";
+import ContributorsModal from "../Circle/ContributorsModal";
 
 export default function CircleSidebar() {
   const router = useRouter();
@@ -26,7 +27,7 @@ export default function CircleSidebar() {
   });
 
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
-  const [isContributorsModalOpen, setisContributorsModalOpen] = useState(false);
+  const [isContributorsModalOpen, setIsContributorsModalOpen] = useState(false);
 
   const overviewTab = cId && !pId ? true : false;
 
@@ -48,6 +49,11 @@ export default function CircleSidebar() {
       <AnimatePresence>
         {isSettingsModalOpen && (
           <SettingsModal handleClose={() => setIsSettingsModalOpen(false)} />
+        )}
+        {isContributorsModalOpen && (
+          <ContributorsModal
+            handleClose={() => setIsContributorsModalOpen(false)}
+          />
         )}
       </AnimatePresence>
       <Stack>
@@ -85,11 +91,16 @@ export default function CircleSidebar() {
               Settings
             </Button>
             <Button
-              prefix={<IconUsersSolid />}
+              prefix={
+                <IconUsersSolid
+                  color={isContributorsModalOpen ? "accent" : "current"}
+                />
+              }
               center
               width="full"
-              variant="transparent"
+              variant={isContributorsModalOpen ? "tertiary" : "transparent"}
               size="small"
+              onClick={() => setIsContributorsModalOpen(true)}
             >
               Contributors
             </Button>
