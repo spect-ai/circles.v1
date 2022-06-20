@@ -9,15 +9,10 @@ import Sidebar from "@/app/modules/Sidebar";
 import { useRouter } from "next/router";
 import { useGlobalContext } from "@/app/context/globalContext";
 import styled from "styled-components";
+import { variants } from "@/app/modules/Card";
 
 type PublicLayoutProps = {
   children: ReactNodeNoStrings;
-};
-
-const variants = {
-  hidden: { opacity: 0, x: 0, y: 0 },
-  enter: { opacity: 1, x: 0, y: 0 },
-  exit: { opacity: 0, x: 0, y: 0 },
 };
 
 const Container = styled(Box)<{ issidebarexpanded: boolean }>`

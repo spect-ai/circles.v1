@@ -6,6 +6,7 @@ import ConnectModal from "@/app/modules/Header/ConnectModal";
 import ProfileModal from "./ProfileModal";
 import { CircleType, ProjectType, UserType } from "@/app/types";
 import ProjectSettings from "../Project/ProjectSettings";
+import Link from "next/link";
 
 const getUser = async () => {
   const res = await fetch("http://localhost:3000/user/me", {
@@ -39,7 +40,11 @@ function Header(): ReactElement {
       <Stack direction="horizontal" align="center">
         {!cId && <Heading>Circles</Heading>}
         {cId && !pId && <Heading>{circle?.name}</Heading>}
-        {pId && <Heading>{project?.name}</Heading>}
+        {pId && project?.name && (
+          <Heading>
+            <Link href={`/${cId}/${pId}`}>{project?.name}</Link>
+          </Heading>
+        )}
         {pId && project?.name && <ProjectSettings />}
         <Box marginLeft="4" />
       </Stack>

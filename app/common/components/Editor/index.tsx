@@ -7,9 +7,10 @@ import { storeImage } from "../../utils/ipfs";
 type Props = {
   value: string;
   onChange: (val: string) => void;
+  placeholder?: string;
 };
 
-function Editor({ value, onChange }: Props) {
+function Editor({ value, onChange, placeholder }: Props) {
   return (
     <RichMarkdownEditor
       dark
@@ -22,6 +23,7 @@ function Editor({ value, onChange }: Props) {
           theme: "dark",
         });
       }}
+      placeholder={placeholder}
       uploadImage={async (file) => {
         const { imageGatewayURL } = await storeImage(file, "circleLogo");
         console.log({ imageGatewayURL });

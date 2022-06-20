@@ -1,10 +1,17 @@
-import { CardType, Chain, CircleType, ProjectType, Token } from "@/app/types";
+import {
+  Activity,
+  CardType,
+  Chain,
+  CircleType,
+  ProjectType,
+  Token,
+} from "@/app/types";
 import { Button, Stack } from "degen";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "react-query";
 import { toast } from "react-toastify";
-import { useLocalProject } from "../../Context/LocalProjectContext";
 
 type Props = {
   handleClose?: () => void;
@@ -55,6 +62,10 @@ type CreateCardContextType = {
   setSubmission: React.Dispatch<React.SetStateAction<string[]>>;
   project: ProjectType;
   onCardUpdate: () => void;
+  activity: Activity[];
+  setActivity: React.Dispatch<React.SetStateAction<Activity[]>>;
+  card?: CardType;
+  setCard: (card: CardType) => void;
 };
 
 export const LocalCardContext = createContext<CreateCardContextType>(
@@ -82,6 +93,10 @@ export function useProviderLocalCard({
   });
 
   const queryClient = useQueryClient();
+
+  const setCard = (card: CardType) => {
+    queryClient.setQueryData(["card", tId], card);
+  };
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [labels, setLabels] = useState([] as string[]);
@@ -102,6 +117,7 @@ export function useProviderLocalCard({
     }[]
   >([] as any);
   const [submission, setSubmission] = useState([] as string[]);
+  const [activity, setActivity] = useState<Activity[]>({} as Activity[]);
 
   useEffect(() => {
     if (!createCard && card && card.id && !isLoading) {
@@ -120,6 +136,7 @@ export function useProviderLocalCard({
       setPriority(card.priority || 0);
       setSubTasks(card.subTasks);
       setSubmission(card.submission);
+      setActivity(card.activity.reverse());
       setLoading(false);
     }
   }, [card, createCard, isLoading]);
@@ -177,7 +194,9 @@ export function useProviderLocalCard({
             Card created
             <Stack direction="horizontal">
               <Button size="small" variant="secondary">
-                View Card
+                <Link href={`/${cId}/${pId}/${data.card?.slug}`}>
+                  View Card
+                </Link>
               </Button>
             </Stack>
           </Stack>,
@@ -185,7 +204,7 @@ export function useProviderLocalCard({
             theme: "dark",
           }
         );
-        queryClient.setQueryData(["project", pId], data);
+        queryClient.setQueryData(["project", pId], data.project);
         resetData();
       })
       .catch((err) => {
@@ -319,6 +338,10 @@ export function useProviderLocalCard({
     setSubmission,
     project,
     onCardUpdate,
+    activity,
+    setActivity,
+    card,
+    setCard,
   };
 }
 

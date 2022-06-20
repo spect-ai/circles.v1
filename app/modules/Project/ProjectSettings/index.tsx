@@ -1,15 +1,22 @@
 import Modal from "@/app/common/components/Modal";
+import { ProjectType } from "@/app/types";
 import { SaveOutlined } from "@ant-design/icons";
 import { Box, Button, IconCog, IconTrash, Input, Stack, Text } from "degen";
 import { AnimatePresence } from "framer-motion";
+import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
+import { useQuery, useQueryClient } from "react-query";
 import { toast } from "react-toastify";
-import { useLocalProject } from "../Context/LocalProjectContext";
 
 export default function ProjectSettings() {
   const [isOpen, setIsOpen] = useState(false);
   const handleClose = () => setIsOpen(false);
-  const { localProject: project, updateProject } = useLocalProject();
+  const router = useRouter();
+  const { project: pId } = router.query;
+  const { data: project } = useQuery<ProjectType>(["project", pId], {
+    enabled: false,
+  });
+  const queryClient = useQueryClient();
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
 
@@ -24,7 +31,7 @@ export default function ProjectSettings() {
 
   const onSubmit = () => {
     setIsLoading(true);
-    fetch(`http://localhost:3000/project/${project.id}`, {
+    fetch(`http://localhost:3000/project/${project?.id}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -38,11 +45,12 @@ export default function ProjectSettings() {
       .then(async (res) => {
         const data = await res.json();
         if (data.id) {
-          updateProject(data);
           toast("Project updated successfully", { theme: "dark" });
         }
+        queryClient.setQueryData(["project", pId], data);
         console.log({ data });
         setIsLoading(false);
+        handleClose();
       })
       .catch((err) => {
         console.log({ err });
@@ -86,7 +94,7 @@ export default function ProjectSettings() {
                     onClick={onSubmit}
                     loading={isLoading}
                     center
-                    prefix={<SaveOutlined />}
+                    prefix={<SaveOutlined style={{ fontSize: "1.3rem" }} />}
                   >
                     <Text>Save</Text>
                   </Button>

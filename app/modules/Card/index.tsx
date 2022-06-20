@@ -2,18 +2,10 @@ import Accordian from "@/app/common/components/Accordian";
 import Editor from "@/app/common/components/Editor";
 import Loader from "@/app/common/components/Loader";
 import Tabs from "@/app/common/components/Tabs";
-import {
-  Box,
-  Button,
-  IconCheck,
-  IconClose,
-  Stack,
-  Tag,
-  Text,
-  Textarea,
-} from "degen";
+import { SaveOutlined } from "@ant-design/icons";
+import { Box, Button, IconCheck, IconClose, Stack, Tag, Text } from "degen";
 import { motion, AnimatePresence } from "framer-motion";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ToastContainer } from "react-toastify";
 import styled from "styled-components";
 import EditableSubTask from "../Project/CreateCardModal/EditableSubTask";
@@ -25,6 +17,7 @@ import CardLabels from "../Project/CreateCardModal/modals/CardLabels";
 import CardPriority from "../Project/CreateCardModal/modals/CardPriority";
 import CardReward from "../Project/CreateCardModal/modals/CardReward";
 import CardType from "../Project/CreateCardModal/modals/CardType";
+import Activity from "./Activity";
 
 const Container = styled(Box)`
   ::-webkit-scrollbar {
@@ -51,7 +44,7 @@ const NameInput = styled.input`
   font-weight: 600;
 `;
 
-const variants = {
+export const variants = {
   hidden: { opacity: 0, x: 0, y: 0 },
   enter: {
     opacity: 1,
@@ -132,11 +125,12 @@ export default function Card() {
                       onChange={(txt) => {
                         setDescription(txt);
                       }}
+                      placeholder="Describe your card"
                     />
                   )}
                 </Box>
                 <Tabs
-                  tabs={["Submissions", "Comments", "Activity"]}
+                  tabs={["Activity", "Submissions"]}
                   selectedTab={selectedTab}
                   onTabClick={handleTabClick}
                   orientation="horizontal"
@@ -144,8 +138,8 @@ export default function Card() {
                   border
                   shape="circle"
                 />
-                <AnimatePresence exitBeforeEnter>
-                  {selectedTab === 0 && !loading && (
+                <AnimatePresence initial={false}>
+                  {selectedTab === 1 && !loading && (
                     <motion.main
                       variants={variants} // Pass the variant object into Framer Motion
                       initial="hidden" // Set the initial state to variants.hidden
@@ -169,38 +163,20 @@ export default function Card() {
                           onChange={(txt) => {
                             setSubmission([txt]);
                           }}
+                          placeholder="Add your submission"
                         />
+                        <Button
+                          prefix={<IconCheck />}
+                          size="small"
+                          variant="secondary"
+                          disabled={!submission}
+                        >
+                          Submit
+                        </Button>
                       </Box>
                     </motion.main>
                   )}
-                  {selectedTab === 1 && (
-                    <motion.main
-                      variants={variants} // Pass the variant object into Framer Motion
-                      initial="hidden" // Set the initial state to variants.hidden
-                      animate="enter" // Animated state to variants.enter
-                      exit="exit" // Exit state (used later) to variants.exit
-                      transition={{ type: "linear" }} // Set the transition to linear
-                      className=""
-                      key="comments"
-                    >
-                      <Box style={{ width: "50%" }}>
-                        <Textarea label="comment" />
-                      </Box>
-                    </motion.main>
-                  )}
-                  {selectedTab === 2 && (
-                    <motion.main
-                      variants={variants} // Pass the variant object into Framer Motion
-                      initial="hidden" // Set the initial state to variants.hidden
-                      animate="enter" // Animated state to variants.enter
-                      exit="exit" // Exit state (used later) to variants.exit
-                      transition={{ type: "linear" }} // Set the transition to linear
-                      className=""
-                      key="activity"
-                    >
-                      <Text>0xavp created this card</Text>
-                    </motion.main>
-                  )}
+                  {selectedTab === 0 && <Activity />}
                 </AnimatePresence>
               </Stack>
             </Container>
@@ -216,7 +192,7 @@ export default function Card() {
                 <CardReward />
                 <Button
                   center
-                  prefix={<IconCheck />}
+                  prefix={<SaveOutlined style={{ fontSize: "1.3rem" }} />}
                   width="full"
                   size="small"
                   variant="secondary"

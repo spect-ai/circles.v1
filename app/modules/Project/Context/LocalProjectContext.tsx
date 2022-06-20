@@ -23,7 +23,6 @@ export function useProviderLocalProject() {
     data: project,
     isLoading,
     isFetching,
-    isFetched,
   } = useQuery<ProjectType>(["project", pId], {
     enabled: false,
   });

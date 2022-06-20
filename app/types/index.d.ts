@@ -81,15 +81,7 @@ export interface CardType {
     value: string;
     transactionHash: string;
   };
-  activity: [
-    {
-      actor: string;
-      action: number;
-      timestamp: Date;
-      username: string;
-      profilePicture: any;
-    }
-  ];
+  activity: Activity[];
   status: number;
   members: Member[];
   access: {
@@ -187,4 +179,12 @@ export interface MemberDetails {
     [key: string]: UserType;
   };
   members: string[];
+}
+
+export interface Activity {
+  content: string;
+  timestamp: string;
+  actorId: string;
+  commitId: string;
+  comment: boolean;
 }
