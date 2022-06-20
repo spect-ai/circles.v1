@@ -183,5 +183,8 @@ export interface Template {
 }
 
 export interface MemberDetails {
-  [key: string]: UserType;
+  memberDetails: {
+    [key: string]: UserType;
+  };
+  members: string[];
 }

@@ -1,15 +1,30 @@
 import EditTag from "@/app/common/components/EditTag";
 import { ProjectType } from "@/app/types";
 import { TagOutlined } from "@ant-design/icons";
-import { Box, IconCheck, IconSearch, Input, Stack, Tag } from "degen";
+import { Box, IconCheck, IconSearch, Input, Stack, Tag, Text } from "degen";
 import { motion } from "framer-motion";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { matchSorter } from "match-sorter";
 import { useLocalCard } from "../hooks/LocalCardContext";
 import { getOptions } from "../utils";
+
+type Option = {
+  name: string;
+  value: string;
+};
 
 export default function CardLabels() {
   const { labels, setLabels } = useLocalCard();
   const [modalOpen, setModalOpen] = useState(false);
+
+  const [options, setOptions] = useState<Option[]>();
+  const [filteredOptions, setFilteredOptions] = useState<Option[]>();
+
+  useEffect(() => {
+    setOptions(getOptions("labels", {} as ProjectType) as Option[]);
+    setFilteredOptions(options);
+  }, []);
+
   return (
     <EditTag
       name="Add Tags"
@@ -34,11 +49,18 @@ export default function CardLabels() {
             label=""
             placeholder="Search"
             prefix={<IconSearch />}
+            onChange={(e) => {
+              setFilteredOptions(
+                matchSorter(options as Option[], e.target.value, {
+                  keys: ["name"],
+                })
+              );
+            }}
           />
         </Box>
         <Box padding="8">
           <Stack direction="horizontal" wrap>
-            {getOptions("labels", {} as ProjectType).map((item: any) => (
+            {filteredOptions?.map((item: any) => (
               <motion.button
                 style={{
                   background: "transparent",
@@ -66,6 +88,9 @@ export default function CardLabels() {
                 </Tag>
               </motion.button>
             ))}
+            {!filteredOptions?.length && (
+              <Text variant="label">No Labels found</Text>
+            )}
           </Stack>
         </Box>
       </Box>

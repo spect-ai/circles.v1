@@ -70,6 +70,7 @@ function CreateSpaceModal({ accordian }: Props) {
         console.log({ resJson });
         void refetch();
         void router.push(`/${resJson.slug}`);
+        void close();
       })
       .catch((err) => console.log({ err }));
   };

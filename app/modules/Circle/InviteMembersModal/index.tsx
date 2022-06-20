@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
 import { useQuery } from "react-query";
+import { toast } from "react-toastify";
 import { expiryOptions, roleOptions, usesOptions } from "./constants";
 
 function InviteMemberModal() {
@@ -20,7 +21,7 @@ function InviteMemberModal() {
   const handleClose = () => setIsOpen(false);
   const [role, setRole] = useState<any>({
     name: "Member",
-    role: 0,
+    role: "member",
   });
   const [uses, setUses] = useState<any>({
     name: "No Limit",
@@ -143,6 +144,36 @@ function InviteMemberModal() {
                   size="small"
                   width="full"
                   variant="secondary"
+                  onClick={() => {
+                    const expire = new Date().getTime() + expiry.expiry * 1000;
+                    setIsLoading(true);
+                    fetch(`http://localhost:3000/circle/invite/${circle?.id}`, {
+                      method: "PATCH",
+                      headers: {
+                        "Content-Type": "application/json",
+                      },
+                      body: JSON.stringify({
+                        role: role.role,
+                        uses: uses.uses,
+                        expires: new Date(expire).toISOString(),
+                      }),
+                    })
+                      .then(async (res) => {
+                        console.log({ res });
+                        const invite = await res.text();
+                        const link = `${window.location.origin}?inviteCode=${invite}&circleId=${circle?.id}`;
+                        void navigator.clipboard.writeText(link);
+                        toast("Invite link copied", {
+                          theme: "dark",
+                        });
+                        setIsLoading(false);
+                        setIsOpen(false);
+                      })
+                      .catch((err) => {
+                        console.log({ err });
+                        setIsLoading(false);
+                      });
+                  }}
                 >
                   Generate Link
                 </Button>

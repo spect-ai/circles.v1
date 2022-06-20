@@ -94,7 +94,6 @@ export default function useDragEnd() {
         ...start,
         cards: startTaskIds,
       };
-      console.log({ newStart });
 
       const finishTaskIds = Array.from(finish.cards); // copy
       finishTaskIds.splice(destination.index, 0, draggableId);
@@ -104,7 +103,6 @@ export default function useDragEnd() {
       };
       const tempData = { ...localProject };
 
-      console.log({ newStart, newFinish });
       setLocalProject({
         ...localProject,
         columnDetails: {
@@ -133,7 +131,6 @@ export default function useDragEnd() {
         if (data.id) {
           updateProject(data);
         }
-        console.log({ data });
       })
       .catch((err) => {
         console.log({ err });

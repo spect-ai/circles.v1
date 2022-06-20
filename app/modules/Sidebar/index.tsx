@@ -8,7 +8,7 @@ import Logo from "@/app/common/components/Logo";
 import { HomeOutlined } from "@ant-design/icons";
 import { useGlobalContext } from "@/app/context/globalContext";
 import { useQuery } from "react-query";
-import { CircleType, ProjectType } from "@/app/types";
+import { CircleType, ProjectType, UserType } from "@/app/types";
 
 const containerAnimation = {
   hidden: { rotate: 90 },
@@ -33,6 +33,9 @@ function Sidebar(): ReactElement {
     enabled: false,
   });
   const { data: project } = useQuery<ProjectType>(["project", pId], {
+    enabled: false,
+  });
+  const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
 
@@ -81,6 +84,7 @@ function Sidebar(): ReactElement {
       ) : (
         <Box paddingY="3" borderBottomWidth="0.375">
           {!myCirclesLoading &&
+            currentUser?.id &&
             myCircles?.map((aCircle) => (
               <Box paddingY="2" key={aCircle.id}>
                 <Logo

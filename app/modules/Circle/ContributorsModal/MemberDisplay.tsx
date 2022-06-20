@@ -1,12 +1,10 @@
 import React from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Avatar, Box, Tag, Text } from "degen";
+import { Avatar, Box, Text } from "degen";
 import styled from "styled-components";
 
 type Props = {
   member: string;
   memberDetails: any;
-  handleOnClick: (event: any, mem: string) => void;
 };
 
 const Container = styled(Box)`
@@ -16,12 +14,7 @@ const Container = styled(Box)`
   }
 `;
 
-export default function MemberDisplay({
-  member,
-  memberDetails,
-  handleOnClick,
-}: Props) {
-  console.log({ member, memberDetails });
+export default function MemberDisplay({ member, memberDetails }: Props) {
   return (
     <Container
       paddingY="1"

@@ -140,9 +140,24 @@ export default function CreateCardModal({ column, handleClose }: Props) {
           </Box>
         </Stack>
         <Box borderTopWidth="0.375" paddingX="8" paddingY="4">
-          <Button size="small" width="1/3" onClick={onSubmit}>
-            Create Card
-          </Button>
+          <Stack direction="horizontal">
+            <Button
+              size="small"
+              width="1/3"
+              onClick={() => onSubmit(false)}
+              variant="secondary"
+            >
+              Create Card
+            </Button>
+            <Button
+              size="small"
+              width="1/3"
+              onClick={() => onSubmit(true)}
+              variant="secondary"
+            >
+              Save and Create Again
+            </Button>
+          </Stack>
         </Box>
       </Modal>
     </LocalCardContext.Provider>

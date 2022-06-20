@@ -62,6 +62,7 @@ export default function ProfileModal() {
                   uploaded={!!avatar}
                   onChange={uploadFile}
                   uploading={uploading}
+                  maxSize={10}
                 />
                 <Text variant="label">Username</Text>
                 <Input
@@ -98,6 +99,7 @@ export default function ProfileModal() {
                   size="small"
                   width="full"
                   variant="secondary"
+                  disabled={uploading}
                   onClick={() => {
                     fetch("http://localhost:3000/user/me", {
                       headers: {

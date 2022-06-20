@@ -123,6 +123,7 @@ export default function SettingsModal({ handleClose }: Props) {
                 uploaded={!!logo}
                 onChange={uploadFile}
                 uploading={uploading}
+                maxSize={10}
               />
               <Tabs
                 selectedTab={visibilityTab}

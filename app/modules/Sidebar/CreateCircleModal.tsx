@@ -98,6 +98,7 @@ function CreateCircle() {
                   uploaded={!!logo}
                   onChange={uploadFile}
                   uploading={uploading}
+                  maxSize={10}
                 />
                 <Tabs
                   selectedTab={visibilityTab}
@@ -123,6 +124,7 @@ function CreateCircle() {
                           const resJson = await res.json();
                           console.log({ resJson });
                           void router.push(`/${resJson.slug}`);
+                          close();
                         })
                         .catch((err) => console.log({ err }))
                     }

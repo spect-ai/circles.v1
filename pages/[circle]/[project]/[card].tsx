@@ -5,22 +5,15 @@ import {
   LocalCardContext,
   useProviderLocalCard,
 } from "@/app/modules/Project/CreateCardModal/hooks/LocalCardContext";
-import { CircleType, ProjectType, UserType } from "@/app/types";
+import { CircleType, MemberDetails, ProjectType, UserType } from "@/app/types";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
-import { useMutation, useQuery, useQueryClient } from "react-query";
+import { useQuery } from "react-query";
 
 const CardPage: NextPage = () => {
   const router = useRouter();
   const { circle: cId, project: pId, card: tId } = router.query;
-  const { data: card } = useQuery<UserType>(["card", tId], () =>
-    fetch(
-      `http://localhost:3000/card/byProjectAndSlug/${pId as string}/${
-        tId as string
-      }`
-    ).then((res) => res.json())
-  );
   const { data: project, refetch: refetchProject } = useQuery<ProjectType>(
     ["project", pId],
     () =>
@@ -31,6 +24,18 @@ const CardPage: NextPage = () => {
       enabled: false,
     }
   );
+  useQuery<UserType>(
+    ["card", tId],
+    () =>
+      fetch(
+        `http://localhost:3000/card/byProjectAndSlug/${project?.id}/${
+          tId as string
+        }`
+      ).then((res) => res.json()),
+    {
+      enabled: !!project?.id,
+    }
+  );
   const { data: circle, refetch: refetchCircle } = useQuery<CircleType>(
     ["circle", cId],
     () =>
@@ -38,52 +43,32 @@ const CardPage: NextPage = () => {
         res.json()
       ),
     {
-      enabled: false,
+      enabled: !!cId,
     }
   );
 
-  const queryClient = useQueryClient();
-
-  const { mutateAsync, data } = useMutation((body: { circleIds: string[] }) => {
-    return fetch("http://localhost:3000/circle/getMemberDetailsOfCircles", {
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      method: "POST",
-      body: JSON.stringify(body),
-      credentials: "include",
-    });
-  });
+  useQuery<MemberDetails>(
+    ["memberDetails", cId],
+    () =>
+      fetch(
+        `http://localhost:3000/circle/${circle?.id}/memberDetails?circleIds=${circle?.id}`
+      ).then((res) => res.json()),
+    {
+      enabled: !!circle?.id,
+    }
+  );
 
   useEffect(() => {
-    if (!circle) {
+    if (!circle && cId) {
       void refetchCircle();
     }
-  }, []);
+  }, [circle, cId, refetchCircle]);
 
   useEffect(() => {
-    if (!project) {
+    if (!project && pId) {
       void refetchProject();
     }
-  }, []);
-
-  useEffect(() => {
-    if (project) {
-      // do we need parents populated??
-      const parents = project.parents?.map((parent) => parent.id);
-      mutateAsync({
-        circleIds: parents,
-      })
-        .then(async (res) => {
-          const data = await res.json();
-          queryClient.setQueriesData("memberDetails", data);
-        })
-        .catch((err) => {
-          console.log({ err });
-        });
-    }
-  }, [project]);
+  }, [project, pId, refetchProject]);
 
   const context = useProviderLocalCard({ createCard: false });
   return (

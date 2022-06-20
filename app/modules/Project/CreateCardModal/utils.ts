@@ -67,9 +67,9 @@ export const getOptions = (
         value: column,
       }));
     case "assignee":
-      return project.parents[0].members?.map((member: string) => ({
-        name: memberDetails && memberDetails[member]?.username,
-        avatar: memberDetails && memberDetails[member]?.avatar,
+      return memberDetails?.members?.map((member: string) => ({
+        name: memberDetails && memberDetails.memberDetails[member]?.username,
+        avatar: memberDetails && memberDetails.memberDetails[member]?.avatar,
         value: member,
       }));
     default:

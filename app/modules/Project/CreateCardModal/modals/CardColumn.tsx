@@ -37,7 +37,7 @@ export default function CardColumn() {
           />
         </Box>
         <Box>
-          {getOptions("column", project).map((item: any) => (
+          {getOptions("column", project)?.map((item: any) => (
             <ModalOption
               key={item.value}
               isSelected={columnId === item.value}

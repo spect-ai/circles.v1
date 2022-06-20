@@ -1,7 +1,7 @@
 import { PriorityIcon } from "@/app/common/components/PriorityIcon";
 import { monthMap } from "@/app/common/utils/constants";
 import { CardType, ColumnType, MemberDetails } from "@/app/types";
-import { Avatar, Box, Stack, Tag, Text } from "degen";
+import { Avatar, Box, IconEth, Stack, Tag, Text } from "degen";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
 import { Draggable } from "react-beautiful-dnd";
@@ -26,9 +26,12 @@ const Container = styled(Box)<{ isDragging: boolean }>`
 export default function CardComponent({ card, index, column }: Props) {
   const router = useRouter();
   const { circle: cId, project: pId } = router.query;
-  const { data: memberDetails } = useQuery<MemberDetails>("memberDetails", {
-    enabled: false,
-  });
+  const { data: memberDetails } = useQuery<MemberDetails>(
+    ["memberDetails", cId],
+    {
+      enabled: false,
+    }
+  );
 
   const deadline = new Date(card.deadline);
   return (
@@ -56,11 +59,17 @@ export default function CardComponent({ card, index, column }: Props) {
               <Text>{card.title}</Text>
               {card.assignee.length > 0 && (
                 <Avatar
-                  src={memberDetails && memberDetails[card.assignee[0]]?.avatar}
+                  src={
+                    memberDetails &&
+                    memberDetails.memberDetails[card.assignee[0]]?.avatar
+                  }
                   label=""
                   size="6"
                   placeholder={
-                    !(memberDetails && memberDetails[card.assignee[0]]?.avatar)
+                    !(
+                      memberDetails &&
+                      memberDetails.memberDetails[card.assignee[0]]?.avatar
+                    )
                   }
                 />
               )}
@@ -76,10 +85,13 @@ export default function CardComponent({ card, index, column }: Props) {
                 </Tag>
               )}
               {card.reward.value ? (
-                <Tag size="small">
-                  <Text>
-                    {card.reward.value} {card.reward.token.symbol}
-                  </Text>
+                <Tag size="small" tone="accent">
+                  <Stack direction="horizontal" space="0" align="center">
+                    <IconEth size="4" />
+                    <Text>
+                      {card.reward.value} {card.reward.token.symbol}
+                    </Text>
+                  </Stack>
                 </Tag>
               ) : null}
               {card.deadline && (

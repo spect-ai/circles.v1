@@ -48,6 +48,7 @@ function CreateProjectModal({ accordian }: Props) {
       onSuccess: (res: option[]) => {
         setTemplate(res[0]);
       },
+      enabled: !!circle?.id,
     }
   );
   const { mutateAsync, isLoading } = useMutation(
@@ -80,6 +81,7 @@ function CreateProjectModal({ accordian }: Props) {
         console.log({ resJson });
         void refetch();
         void router.push(`/${cId}/${resJson.slug}`);
+        void close();
       })
       .catch((err) => {
         console.log({ err });

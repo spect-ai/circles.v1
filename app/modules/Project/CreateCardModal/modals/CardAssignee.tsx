@@ -2,6 +2,7 @@ import EditTag from "@/app/common/components/EditTag";
 import ModalOption from "@/app/common/components/ModalOption";
 import { MemberDetails } from "@/app/types";
 import { Avatar, Box, IconSearch, IconUserSolid, Input, Text } from "degen";
+import { useRouter } from "next/router";
 import React, { useState } from "react";
 import { useQuery } from "react-query";
 import { useLocalCard } from "../hooks/LocalCardContext";
@@ -10,13 +11,19 @@ import { getOptions } from "../utils";
 export default function CardAssignee() {
   const { assignee, setAssignee, project } = useLocalCard();
   const [modalOpen, setModalOpen] = useState(false);
-  const { data: memberDetails } = useQuery<MemberDetails>("memberDetails", {
-    enabled: false,
-  });
+  const router = useRouter();
+  const { circle: cId } = router.query;
+  const { data: memberDetails } = useQuery<MemberDetails>(
+    ["memberDetails", cId],
+    {
+      enabled: false,
+    }
+  );
   return (
     <EditTag
       name={
-        (memberDetails && memberDetails[assignee]?.username) || "Unassigned"
+        (memberDetails && memberDetails.memberDetails[assignee]?.username) ||
+        "Unassigned"
       }
       modalTitle="Select Card Type"
       label="Assignee"
@@ -25,7 +32,7 @@ export default function CardAssignee() {
       icon={
         assignee ? (
           <Avatar
-            src={memberDetails && memberDetails[assignee].avatar}
+            src={memberDetails && memberDetails.memberDetails[assignee]?.avatar}
             label=""
             size="5"
           />
@@ -44,7 +51,7 @@ export default function CardAssignee() {
           />
         </Box>
         <Box>
-          {getOptions("assignee", project, memberDetails).map((item: any) => (
+          {getOptions("assignee", project, memberDetails)?.map((item: any) => (
             <ModalOption
               key={item.value}
               isSelected={assignee === item.value}

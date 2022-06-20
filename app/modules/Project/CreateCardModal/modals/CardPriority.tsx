@@ -38,7 +38,7 @@ export default function CardPriority() {
           />
         </Box>
         <Box>
-          {getOptions("priority", project).map((item: any) => (
+          {getOptions("priority", project)?.map((item: any) => (
             <ModalOption
               key={item.value}
               isSelected={priority === item.value}

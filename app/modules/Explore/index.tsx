@@ -1,9 +1,11 @@
 import Card from "@/app/common/components/Card";
 import Loader from "@/app/common/components/Loader";
+import { joinCircleFromInvite } from "@/app/services/JoinCircle";
+import useJoinCircle from "@/app/services/JoinCircle/useJoinCircle";
 import { CircleType } from "@/app/types";
 import { Avatar, Box, Button, Stack, Text } from "degen";
 import { useRouter } from "next/router";
-import React from "react";
+import React, { useEffect } from "react";
 import { Container, Row, Col } from "react-grid-system";
 import { useQuery } from "react-query";
 import { ToastContainer } from "react-toastify";
@@ -31,6 +33,9 @@ const GridContainer = styled(Container)`
 export default function Explore() {
   const { data: circles } = useQuery<CircleType[]>("exploreCircles");
   const router = useRouter();
+
+  useJoinCircle();
+
   return (
     <ScrollContainer padding="8">
       <ToastContainer />

@@ -1,33 +1,18 @@
-import { MemberDetails } from "@/app/types";
+import { UserType } from "@/app/types";
 import { Box, Heading, Stack } from "degen";
-import React, { useState } from "react";
-import styled from "styled-components";
+import React from "react";
 import InviteMemberModal from "../InviteMembersModal";
 import MemberDisplay from "./MemberDisplay";
 
 type Props = {
   members: string[];
-  memberDetails: MemberDetails;
+  memberDetails: {
+    [key: string]: UserType;
+  };
   roles: { [key: string]: string };
 };
 
 function Contributors({ members, memberDetails, roles }: Props) {
-  const [member, setMember] = useState<any>();
-  const [anchorEl, setAnchorEl] = useState<any>();
-  const [isOpen, setIsOpen] = useState(false);
-  const handleClose = () => setIsOpen(false);
-
-  const handleOnClick = (event: any, mem: string) => {
-    setMember({
-      id: mem,
-      role: roles[mem],
-    });
-    setAnchorEl(event.currentTarget);
-    setIsOpen(true);
-  };
-
-  console.log({ members, roles, memberDetails });
-
   return (
     <Box padding="2">
       <InviteMemberModal />
@@ -41,7 +26,6 @@ function Contributors({ members, memberDetails, roles }: Props) {
                   key={mem}
                   member={mem}
                   memberDetails={memberDetails}
-                  handleOnClick={handleOnClick}
                 />
               );
             }
@@ -56,7 +40,6 @@ function Contributors({ members, memberDetails, roles }: Props) {
                   key={mem}
                   member={mem}
                   memberDetails={memberDetails}
-                  handleOnClick={handleOnClick}
                 />
               );
             }
@@ -71,7 +54,6 @@ function Contributors({ members, memberDetails, roles }: Props) {
                   key={mem}
                   member={mem}
                   memberDetails={memberDetails}
-                  handleOnClick={handleOnClick}
                 />
               );
             }

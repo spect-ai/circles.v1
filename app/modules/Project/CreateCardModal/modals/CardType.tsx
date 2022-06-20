@@ -37,7 +37,7 @@ export default function CardType() {
           />
         </Box>
         <Box>
-          {getOptions("card", project).map((item: any) => (
+          {getOptions("card", project)?.map((item: any) => (
             <ModalOption
               key={item.value}
               isSelected={cardType === item.value}

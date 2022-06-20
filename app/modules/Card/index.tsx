@@ -2,11 +2,9 @@ import Accordian from "@/app/common/components/Accordian";
 import Editor from "@/app/common/components/Editor";
 import Loader from "@/app/common/components/Loader";
 import Tabs from "@/app/common/components/Tabs";
-import { ProjectType } from "@/app/types";
 import {
   Box,
   Button,
-  Heading,
   IconCheck,
   IconClose,
   Stack,
@@ -14,9 +12,7 @@ import {
   Text,
   Textarea,
 } from "degen";
-import { useRouter } from "next/router";
 import React, { useState } from "react";
-import { useQuery } from "react-query";
 import { ToastContainer } from "react-toastify";
 import styled from "styled-components";
 import EditableSubTask from "../Project/CreateCardModal/EditableSubTask";
@@ -68,115 +64,117 @@ export default function Card() {
     submission,
     setSubmission,
     project,
+    onCardUpdate,
   } = useLocalCard();
-  if (loading) {
-    return <Loader loading={loading} text="" />;
-  }
 
   return (
     <Box padding="8">
       <ToastContainer />
-      <Stack direction="horizontal">
-        <Box width="3/4">
-          <Container>
-            <Stack direction="vertical">
-              <NameInput
-                placeholder="Enter card name"
-                value={title}
-                onChange={(e) => {
-                  setTitle(e.target.value);
-                }}
-              />
-              <Stack direction="horizontal" wrap>
-                <CardLabels />
-                {labels.map((label) => (
-                  <Tag key={label}>{label}</Tag>
-                ))}
-              </Stack>
-              <Accordian
-                name={`Sub Tasks (${subTasks?.length || 0})`}
-                defaultOpen={false}
-              >
-                <Stack>
-                  {subTasks?.map((subTask, index) => (
-                    <EditableSubTask subTaskIndex={index} key={index} />
+      {loading && <Loader loading={loading} text="" />}
+      {!loading && (
+        <Stack direction="horizontal">
+          <Box width="3/4">
+            <Container>
+              <Stack direction="vertical">
+                <NameInput
+                  placeholder="Enter card name"
+                  value={title}
+                  onChange={(e) => {
+                    setTitle(e.target.value);
+                  }}
+                />
+                <Stack direction="horizontal" wrap>
+                  <CardLabels />
+                  {labels.map((label) => (
+                    <Tag key={label}>{label}</Tag>
                   ))}
                 </Stack>
-              </Accordian>
-              <Box
-                style={{ minHeight: "10rem" }}
-                marginRight="4"
-                paddingLeft="4"
-              >
-                {!loading && (
+                <Accordian
+                  name={`Sub Tasks (${subTasks?.length || 0})`}
+                  defaultOpen={false}
+                >
+                  <Stack>
+                    {subTasks?.map((subTask, index) => (
+                      <EditableSubTask subTaskIndex={index} key={index} />
+                    ))}
+                  </Stack>
+                </Accordian>
+                <Box
+                  style={{ minHeight: "10rem" }}
+                  marginRight="4"
+                  paddingLeft="4"
+                >
+                  {!loading && (
+                    <Editor
+                      value={description}
+                      onChange={(txt) => {
+                        setDescription(txt);
+                      }}
+                    />
+                  )}
+                </Box>
+                <Tabs
+                  tabs={["Submissions", "Comments", "Activity"]}
+                  selectedTab={selectedTab}
+                  onTabClick={handleTabClick}
+                  orientation="horizontal"
+                  unselectedColor="transparent"
+                />
+                {selectedTab === 0 && !loading && (
                   <Editor
-                    value={description}
+                    value={submission ? submission[0] : ""}
                     onChange={(txt) => {
-                      setDescription(txt);
+                      setSubmission([txt]);
                     }}
                   />
                 )}
-              </Box>
-              <Tabs
-                tabs={["Submissions", "Comments", "Activity"]}
-                selectedTab={selectedTab}
-                onTabClick={handleTabClick}
-                orientation="horizontal"
-                unselectedColor="transparent"
-              />
-              {selectedTab === 0 && !loading && (
-                <Editor
-                  value={submission[0] || ""}
-                  onChange={(txt) => {
-                    setSubmission([txt]);
+                {selectedTab === 1 && (
+                  <Box style={{ width: "50%" }}>
+                    <Textarea label="comment" />
+                  </Box>
+                )}
+                {selectedTab === 2 && <Text>0xavp created this card</Text>}
+              </Stack>
+            </Container>
+          </Box>
+          <Box width="1/4" borderLeftWidth="0.375" paddingLeft="4">
+            {project?.id && (
+              <Stack>
+                <CardType />
+                <CardColumn />
+                <CardAssignee />
+                <CardDeadline />
+                <CardPriority />
+                <CardReward />
+                <Button
+                  center
+                  prefix={<IconCheck />}
+                  width="full"
+                  size="small"
+                  variant="secondary"
+                  loading={loading}
+                  onClick={() => {
+                    onCardUpdate();
                   }}
-                />
-              )}
-              {selectedTab === 1 && (
-                <Box style={{ width: "50%" }}>
-                  <Textarea label="comment" />
-                </Box>
-              )}
-              {selectedTab === 2 && <Text>0xavp created this card</Text>}
-            </Stack>
-          </Container>
-        </Box>
-        <Box width="1/4" borderLeftWidth="0.375" paddingLeft="4">
-          {project?.id && (
-            <Stack>
-              <CardType />
-              <CardColumn />
-              <CardAssignee />
-              <CardDeadline />
-              <CardPriority />
-              <CardReward />
-              <Button
-                center
-                prefix={<IconCheck />}
-                width="full"
-                size="small"
-                variant="secondary"
-                onClick={() => {
-                  // onSave(tid as string);
-                }}
-              >
-                <Text>Save!</Text>
-              </Button>
-              <Button
-                center
-                prefix={<IconClose />}
-                width="full"
-                size="small"
-                variant="secondary"
-                tone="red"
-              >
-                <Text>Close Task</Text>
-              </Button>
-              {/* <DiscordThread /> */}
-            </Stack>
-          )}
-        </Box>
-      </Stack>
+                >
+                  <Text>Save!</Text>
+                </Button>
+                <Button
+                  center
+                  prefix={<IconClose />}
+                  width="full"
+                  size="small"
+                  variant="secondary"
+                  tone="red"
+                >
+                  <Text>Close Task</Text>
+                </Button>
+                {/* <DiscordThread /> */}
+              </Stack>
+            )}
+          </Box>
+        </Stack>
+      )}
     </Box>
   );
 }

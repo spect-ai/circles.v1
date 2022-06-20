@@ -15,7 +15,7 @@ export default function CardReward() {
   const { chain, setChain, token, setToken, value, setValue } = useLocalCard();
   return (
     <EditTag
-      name={value ? `${value} ${token.symbol}` : "No Reward"}
+      name={value !== "0" ? `${value} ${token.symbol}` : "No Reward"}
       modalTitle="Select Deadline"
       label="Reward"
       modalOpen={modalOpen}

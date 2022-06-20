@@ -5,19 +5,24 @@ import {
   LocalProjectContext,
   useProviderLocalProject,
 } from "@/app/modules/Project/Context/LocalProjectContext";
-import { CircleType, ProjectType, UserType } from "@/app/types";
+import { CircleType, MemberDetails, ProjectType } from "@/app/types";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
-import { useMutation, useQuery, useQueryClient } from "react-query";
+import { useQuery } from "react-query";
 
 const ProjectPage: NextPage = () => {
   const router = useRouter();
   const { circle: cId, project: pId } = router.query;
-  const { data: project } = useQuery<ProjectType>(["project", pId], () =>
-    fetch(`http://localhost:3000/project/slug/${pId as string}`).then((res) =>
-      res.json()
-    )
+  useQuery<ProjectType>(
+    ["project", pId],
+    () =>
+      fetch(`http://localhost:3000/project/slug/${pId as string}`).then((res) =>
+        res.json()
+      ),
+    {
+      enabled: pId !== undefined,
+    }
   );
   const { data: circle, refetch } = useQuery<CircleType>(
     ["circle", cId],
@@ -30,42 +35,22 @@ const ProjectPage: NextPage = () => {
     }
   );
 
-  const queryClient = useQueryClient();
-
-  const { mutateAsync, data } = useMutation((body: { circleIds: string[] }) => {
-    return fetch("http://localhost:3000/circle/getMemberDetailsOfCircles", {
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      method: "POST",
-      body: JSON.stringify(body),
-      credentials: "include",
-    });
-  });
+  useQuery<MemberDetails>(
+    ["memberDetails", cId],
+    () =>
+      fetch(
+        `http://localhost:3000/circle/${circle?.id}/memberDetails?circleIds=${circle?.id}`
+      ).then((res) => res.json()),
+    {
+      enabled: !!circle?.id,
+    }
+  );
 
   useEffect(() => {
-    if (!circle) {
+    if (!circle && cId) {
       void refetch();
     }
-  }, []);
-
-  useEffect(() => {
-    if (project?.id) {
-      // do we need parents populated??
-      const parents = project.parents?.map((parent) => parent.id);
-      mutateAsync({
-        circleIds: parents,
-      })
-        .then(async (res) => {
-          const data = await res.json();
-          queryClient.setQueriesData("memberDetails", data);
-        })
-        .catch((err) => {
-          console.log({ err });
-        });
-    }
-  }, [project]);
+  }, [circle, refetch, cId]);
 
   const context = useProviderLocalProject();
 
