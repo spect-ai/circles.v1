@@ -1,23 +1,23 @@
-import React from 'react'
-import { Story, Meta } from '@storybook/react'
+import React from "react";
+import { Story, Meta } from "@storybook/react";
+import { PriorityIcon } from ".";
 
-import PriorityIcon from '.'
 // import * as DependentStories from './Dependent.stories'
 
 export default {
-  title: 'PriorityIcon',
+  title: "PriorityIcon",
   component: PriorityIcon,
-} as Meta
+} as Meta;
 
-const Template: Story = (args) => <PriorityIcon title="PriorityIcon Story" {...args} />
+const Template: Story = (args) => <PriorityIcon priority={0} {...args} />;
 
-export const Default = Template.bind({})
+export const Default = Template.bind({});
 Default.args = {
   //   ...DependentStories.Default.args,
-}
+};
 
-export const Preview = Template.bind({})
+export const Preview = Template.bind({});
 Preview.args = {
   //   ...DependentStories.Default.args,
   preview: true,
-}
+};
