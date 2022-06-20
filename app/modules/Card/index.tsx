@@ -53,8 +53,19 @@ const NameInput = styled.input`
 
 const variants = {
   hidden: { opacity: 0, x: 0, y: 0 },
-  enter: { opacity: 1, x: 0, y: 0 },
-  exit: { opacity: 0, x: 0, y: 0 },
+  enter: {
+    opacity: 1,
+    x: 0,
+    y: 0,
+  },
+  exit: {
+    opacity: 0,
+    x: 0,
+    y: 0,
+    transition: {
+      duration: 0.1,
+    },
+  },
 };
 
 export default function Card() {
@@ -107,7 +118,11 @@ export default function Card() {
                   </Stack>
                 </Accordian>
                 <Box
-                  style={{ minHeight: "10rem" }}
+                  style={{
+                    minHeight: "10rem",
+                    maxHeight: "25rem",
+                    overflowY: "auto",
+                  }}
                   marginRight="4"
                   paddingLeft="4"
                 >
@@ -140,12 +155,22 @@ export default function Card() {
                       className=""
                       key="editor"
                     >
-                      <Editor
-                        value={submission ? submission[0] : ""}
-                        onChange={(txt) => {
-                          setSubmission([txt]);
+                      <Box
+                        style={{
+                          minHeight: "10rem",
+                          maxHeight: "25rem",
+                          overflowY: "auto",
                         }}
-                      />
+                        marginRight="4"
+                        paddingLeft="4"
+                      >
+                        <Editor
+                          value={submission ? submission[0] : ""}
+                          onChange={(txt) => {
+                            setSubmission([txt]);
+                          }}
+                        />
+                      </Box>
                     </motion.main>
                   )}
                   {selectedTab === 1 && (
