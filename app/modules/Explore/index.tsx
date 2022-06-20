@@ -9,7 +9,7 @@ import { useQuery } from "react-query";
 import { ToastContainer } from "react-toastify";
 import styled from "styled-components";
 
-const ScrollContainer = styled.div`
+const ScrollContainer = styled(Box)`
   ::-webkit-scrollbar {
     display: none;
   }
@@ -32,46 +32,44 @@ export default function Explore() {
   const { data: circles } = useQuery<CircleType[]>("exploreCircles");
   const router = useRouter();
   return (
-    <ScrollContainer>
-      <Box padding="8">
-        <ToastContainer />
-        <GridContainer>
-          <Row>
-            {circles?.map((circle: CircleType) => (
-              <Col key={circle.id} xs={10} sm={6} md={3}>
-                <Card
-                  height={{ xs: "48", md: "60" }}
-                  onClick={() => {
-                    void router.push(`/${circle.slug}`);
-                  }}
-                >
-                  <Box marginBottom="4">
-                    <Stack align="center">
-                      <Avatar
-                        label={circle.name}
-                        src={circle.avatar}
-                        size={{ xs: "16", lg: "20" }}
-                        placeholder={!circle.avatar}
-                      />
-                      <Text
-                        color="textPrimary"
-                        size={{ sm: "base", md: "base", lg: "large" }}
-                        letterSpacing="0.03"
-                        ellipsis
-                      >
-                        {circle.name}
-                      </Text>
-                      <Button variant="tertiary" size="small">
-                        Follow
-                      </Button>
-                    </Stack>
-                  </Box>
-                </Card>
-              </Col>
-            ))}
-          </Row>
-        </GridContainer>
-      </Box>
+    <ScrollContainer padding="8">
+      <ToastContainer />
+      <GridContainer>
+        <Row>
+          {circles?.map((circle: CircleType) => (
+            <Col key={circle.id} xs={10} sm={6} md={3}>
+              <Card
+                height={{ xs: "48", md: "60" }}
+                onClick={() => {
+                  void router.push(`/${circle.slug}`);
+                }}
+              >
+                <Box marginBottom="4">
+                  <Stack align="center">
+                    <Avatar
+                      label={circle.name}
+                      src={circle.avatar}
+                      size={{ xs: "16", lg: "20" }}
+                      placeholder={!circle.avatar}
+                    />
+                    <Text
+                      color="textPrimary"
+                      size={{ sm: "base", md: "base", lg: "large" }}
+                      letterSpacing="0.03"
+                      ellipsis
+                    >
+                      {circle.name}
+                    </Text>
+                    <Button variant="tertiary" size="small">
+                      Follow
+                    </Button>
+                  </Stack>
+                </Box>
+              </Card>
+            </Col>
+          ))}
+        </Row>
+      </GridContainer>
     </ScrollContainer>
   );
 }

@@ -31,8 +31,9 @@ function Header(): ReactElement {
       flexDirection="row"
       borderBottomWidth="0.375"
       padding="3"
-      marginX="4"
+      paddingX="4"
       transitionDuration="1000"
+      backgroundColor="background"
     >
       <Box display="flex" flexDirection="row" alignItems="center">
         <Heading>{!cId && "Circles"}</Heading>

@@ -141,7 +141,7 @@ export default function Card() {
             </Stack>
           </Container>
         </Box>
-        <Box width="1/4" borderLeftWidth="0.375" paddingY="8" paddingLeft="4">
+        <Box width="1/4" borderLeftWidth="0.375" paddingLeft="4">
           {project?.id && (
             <Stack>
               <CardType />

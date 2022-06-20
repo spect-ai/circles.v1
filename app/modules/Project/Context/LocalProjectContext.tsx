@@ -1,7 +1,7 @@
 import { ProjectType } from "@/app/types";
 import { useRouter } from "next/router";
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { useQuery } from "react-query";
+import { useQuery, useQueryClient } from "react-query";
 
 type LocalProjectContextType = {
   localProject: ProjectType;
@@ -9,6 +9,7 @@ type LocalProjectContextType = {
   error: boolean;
   setError: React.Dispatch<React.SetStateAction<boolean>>;
   loading: boolean;
+  updateProject: (project: ProjectType) => void;
 };
 
 export const LocalProjectContext = createContext<LocalProjectContextType>(
@@ -27,9 +28,15 @@ export function useProviderLocalProject() {
     enabled: false,
   });
 
+  const queryClient = useQueryClient();
+
   const [localProject, setLocalProject] = useState({} as ProjectType);
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(true);
+
+  const updateProject = (project: ProjectType) => {
+    queryClient.setQueryData(["project", pId], project);
+  };
 
   useEffect(() => {
     if (!isLoading && !isFetching && project?.id) {
@@ -45,6 +52,7 @@ export function useProviderLocalProject() {
     error,
     setError,
     loading,
+    updateProject,
   };
 }
 

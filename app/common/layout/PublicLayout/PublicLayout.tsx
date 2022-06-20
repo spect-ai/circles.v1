@@ -58,7 +58,12 @@ function PublicLayout(props: PublicLayoutProps) {
       <AnimatePresence initial={false}>
         {isSidebarExpanded && cId && <ExtendedSidebar />}
       </AnimatePresence>
-      <Box display="flex" flexDirection="column" width="full">
+      <Box
+        display="flex"
+        flexDirection="column"
+        width="full"
+        backgroundColor="foregroundTertiary"
+      >
         <Header />
         <motion.main
           variants={variants} // Pass the variant object into Framer Motion

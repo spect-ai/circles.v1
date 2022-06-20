@@ -29,3 +29,11 @@ export const monthMap = {
   10: "Nov",
   11: "Dec",
 };
+
+export const Priority = {
+  0: "no_priority",
+  1: "low",
+  2: "medium",
+  3: "high",
+  4: "urgent",
+};

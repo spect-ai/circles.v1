@@ -3,7 +3,7 @@ import { DropResult } from "react-beautiful-dnd";
 import { useLocalProject } from "../Context/LocalProjectContext";
 
 export default function useDragEnd() {
-  const { localProject, setLocalProject } = useLocalProject();
+  const { localProject, setLocalProject, updateProject } = useLocalProject();
 
   const reorder = (list: string[], startIndex: number, endIndex: number) => {
     const result = Array.from(list);
@@ -46,6 +46,26 @@ export default function useDragEnd() {
         ...localProject,
         columnOrder: newColumnOrder,
       });
+      fetch(`http://localhost:3000/project/${localProject.id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          columnOrder: newColumnOrder,
+        }),
+        credentials: "include",
+      })
+        .then(async (res) => {
+          const data = await res.json();
+          if (data.id) {
+            updateProject(data);
+          }
+          console.log({ data });
+        })
+        .catch((err) => {
+          console.log({ err });
+        });
       return;
     }
 
@@ -94,6 +114,30 @@ export default function useDragEnd() {
         },
       });
     }
+    fetch(
+      `http://localhost:3000/project/${localProject.id}/reorderCard/${draggableId}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          destinationColumnId: destination.droppableId,
+          destinationCardIndex: destination.index,
+        }),
+        credentials: "include",
+      }
+    )
+      .then(async (res) => {
+        const data = await res.json();
+        if (data.id) {
+          updateProject(data);
+        }
+        console.log({ data });
+      })
+      .catch((err) => {
+        console.log({ err });
+      });
   };
 
   return {

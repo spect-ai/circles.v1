@@ -1,3 +1,4 @@
+import { PriorityIcon } from "@/app/common/components/PriorityIcon";
 import { monthMap } from "@/app/common/utils/constants";
 import { CardType, ColumnType, MemberDetails } from "@/app/types";
 import { Avatar, Box, Stack, Tag, Text } from "degen";
@@ -16,7 +17,7 @@ type Props = {
 const Container = styled(Box)<{ isDragging: boolean }>`
   border-width: 4px;
   border-color: ${(props) =>
-    props.isDragging ? "rgb(175, 82, 222, 1)" : "rgb(255, 255, 255, 0.04)"};
+    props.isDragging ? "rgb(175, 82, 222, 1)" : "rgb(255, 255, 255, 0)"};
   &:hover {
     border-color: rgb(255, 255, 255, 0.1);
   }
@@ -37,7 +38,7 @@ export default function CardComponent({ card, index, column }: Props) {
           {...provided.draggableProps}
           {...provided.dragHandleProps}
           ref={provided.innerRef}
-          backgroundColor="background"
+          backgroundColor="foregroundTertiary"
           padding="2"
           marginBottom="2"
           borderRadius="2xLarge"
@@ -68,42 +69,34 @@ export default function CardComponent({ card, index, column }: Props) {
                 memberIds={card.assignee}
                 memberDetails={space.memberDetails}
               /> */}
-            <Box display="flex" flexWrap="wrap">
+            <Stack direction="horizontal" wrap space="2">
               {card.type === "Bounty" && (
-                <Box marginRight="2" marginBottom="2">
-                  <Tag size="small">
-                    <Text>{card.type}</Text>
-                  </Tag>
-                </Box>
+                <Tag size="small">
+                  <Text>{card.type}</Text>
+                </Tag>
               )}
               {card.reward.value ? (
-                <Box marginRight="2" marginBottom="2">
-                  <Tag size="small">
-                    <Text>
-                      {card.reward.value} {card.reward.token.symbol}
-                    </Text>
-                  </Tag>
-                </Box>
+                <Tag size="small">
+                  <Text>
+                    {card.reward.value} {card.reward.token.symbol}
+                  </Text>
+                </Tag>
               ) : null}
               {card.deadline && (
-                <Box marginRight="2" marginBottom="2">
-                  <Tag size="small" tone="accent">
-                    <Text>
-                      {deadline.getDate()}{" "}
-                      {monthMap[deadline.getMonth() as keyof typeof monthMap]}
-                    </Text>
-                  </Tag>
-                </Box>
+                <Tag size="small" tone="accent">
+                  <Text>
+                    {deadline.getDate()}{" "}
+                    {monthMap[deadline.getMonth() as keyof typeof monthMap]}
+                  </Text>
+                </Tag>
               )}
-              {card.status === 300 && <Tag>{card.type}</Tag>}
+              {card.priority ? <PriorityIcon priority={card.priority} /> : null}
               {card?.labels?.map((label) => (
-                <Box marginRight="2" marginBottom="2" key={label}>
-                  <Tag size="small">
-                    <Text>{label}</Text>
-                  </Tag>
-                </Box>
+                <Tag size="small" key={label}>
+                  <Text>{label}</Text>
+                </Tag>
               ))}
-            </Box>
+            </Stack>
           </Box>
         </Container>
       )}

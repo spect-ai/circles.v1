@@ -34,6 +34,7 @@ const Card: FC<Props> = ({ onClick, height, children, dashed = false }) => {
       transitionDuration="700"
       dashed={dashed}
       onClick={onClick}
+      backgroundColor="background"
     >
       {children}
     </Container>

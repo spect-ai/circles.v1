@@ -77,7 +77,7 @@ function Modal({
         exit="exit"
       >
         <Container
-          backgroundColor="backgroundTertiary"
+          backgroundColor="background"
           borderWidth="0.375"
           borderRadius="2xLarge"
           width={getResponsiveWidth(size) as any}
