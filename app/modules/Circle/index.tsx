@@ -64,15 +64,31 @@ export default function Circle() {
               </Col>
             ))}
             <Col sm={6} md={4} lg={3}>
-              <CreateProjectModal />
+              <CreateProjectModal accordian={false} />
             </Col>
           </Row>
         </Container>
         <Heading>Workspaces</Heading>
         <Container style={{ width: "75%", padding: "0px", margin: "0px" }}>
           <Row>
+            {circle?.children?.map((space) => (
+              <Col sm={6} md={4} lg={3} key={space.id}>
+                <Card
+                  onClick={() =>
+                    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+                    router.push(`/${space.slug}`)
+                  }
+                  height="32"
+                >
+                  <Text align="center">{space.name}</Text>
+                  <Text variant="label" align="center">
+                    {space.description}
+                  </Text>
+                </Card>
+              </Col>
+            ))}
             <Col sm={6} md={4} lg={3}>
-              <CreateSpaceModal />
+              <CreateSpaceModal accordian={false} />
             </Col>
           </Row>
         </Container>

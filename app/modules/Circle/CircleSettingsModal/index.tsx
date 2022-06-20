@@ -7,7 +7,7 @@ import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { toast } from "react-toastify";
-import Contributors from "../Contributors";
+import Contributors from "../ContributorsModal/Contributors";
 import DefaultPayment from "../DefaultPayment";
 
 interface Props {
@@ -154,7 +154,7 @@ export default function SettingsModal({ handleClose }: Props) {
                 {space.roles[user?.id as string] === 3 && <InviteMemberModal />}
               </Box> */}
               <Contributors
-                members={circle?.members || []}
+                members={circle?.members.map((member) => member.id) || []}
                 memberDetails={circle?.memberDetails || {}}
                 roles={circle?.memberRoles || {}}
               />

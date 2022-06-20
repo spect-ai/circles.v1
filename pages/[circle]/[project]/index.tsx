@@ -72,11 +72,11 @@ const ProjectPage: NextPage = () => {
   return (
     <>
       <MetaHead />
-      <PublicLayout>
-        <LocalProjectContext.Provider value={context}>
+      <LocalProjectContext.Provider value={context}>
+        <PublicLayout>
           <Project />
-        </LocalProjectContext.Provider>
-      </PublicLayout>
+        </PublicLayout>
+      </LocalProjectContext.Provider>
     </>
   );
 };

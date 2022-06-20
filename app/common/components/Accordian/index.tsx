@@ -51,7 +51,6 @@ function Accordian({ name, children, defaultOpen, buttonComponent }: Props) {
               {name}
             </Text>
           </Box>
-          {/* {name} */}
         </CollapseButton>
         {buttonComponent}
       </Box>

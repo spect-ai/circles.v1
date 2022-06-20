@@ -1,4 +1,13 @@
-import { Box, Button, IconPlus, Input, Stack, Text, Textarea } from "degen";
+import {
+  Box,
+  Button,
+  IconPlus,
+  IconPlusSmall,
+  Input,
+  Stack,
+  Text,
+  Textarea,
+} from "degen";
 import React, { useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
@@ -6,8 +15,21 @@ import Loader from "@/app/common/components/Loader";
 import Modal from "@/app/common/components/Modal";
 import Tabs from "@/app/common/components/Tabs";
 import Card from "@/app/common/components/Card";
+import { useMutation, useQuery } from "react-query";
+import { CircleType } from "@/app/types";
 
-function CreateSpaceModal() {
+type CreateWorkspaceDto = {
+  name: string;
+  description: string;
+  private: boolean;
+  parent: string;
+};
+
+interface Props {
+  accordian: boolean;
+}
+
+function CreateSpaceModal({ accordian }: Props) {
   const [modalOpen, setModalOpen] = useState(false);
   const [visibilityTab, setVisibilityTab] = useState(0);
   const onVisibilityTabClick = (id: number) => setVisibilityTab(id);
@@ -15,46 +37,73 @@ function CreateSpaceModal() {
   const open = () => setModalOpen(true);
 
   const [name, setName] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
   const [description, setDescription] = useState("");
   const router = useRouter();
+  const { circle: cId } = router.query;
+  const { data: circle, refetch } = useQuery<CircleType>(["circle", cId], {
+    enabled: false,
+  });
+
+  const { mutateAsync, isLoading } = useMutation(
+    (circle: CreateWorkspaceDto) => {
+      return fetch("http://localhost:3000/circle", {
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        method: "POST",
+        body: JSON.stringify(circle),
+        credentials: "include",
+      });
+    }
+  );
 
   const onSubmit = () => {
-    // setIsLoading(true);
-    // runMoralisFunction('initBoard', {
-    //   name,
-    //   teamId: tribe.teamId,
-    //   isPrivate: visibilityTab === 1,
-    //   description,
-    // })
-    //   .then((res: any) => {
-    //     if (res) {
-    //       router.push(`/tribe/${tribe.teamId}/space/${res.id}`, undefined);
-    //     }
-    //     setIsLoading(false);
-    //   })
-    //   .catch((err: any) => {
-    //     console.log(err);
-    //     setIsLoading(false);
-    //   });
+    mutateAsync({
+      name,
+      description,
+      private: visibilityTab === 1,
+      parent: circle?.id as string,
+    })
+      .then(async (res) => {
+        const resJson = await res.json();
+        console.log({ resJson });
+        void refetch();
+        void router.push(`/${resJson.slug}`);
+      })
+      .catch((err) => console.log({ err }));
   };
 
   return (
     <>
       <Loader loading={isLoading} text="Creating your space" />
-      <Card
-        height="32"
-        dashed
-        onClick={() => {
-          setModalOpen(true);
-        }}
-      >
-        <Box width="32">
-          <Stack align="center">
-            <Text align="center">Create Workspace</Text>
-          </Stack>
-        </Box>
-      </Card>
+      {accordian ? (
+        <Button
+          size="small"
+          variant="transparent"
+          shape="circle"
+          onClick={(e) => {
+            e.stopPropagation();
+            setModalOpen(true);
+          }}
+        >
+          <IconPlusSmall />
+        </Button>
+      ) : (
+        <Card
+          height="32"
+          dashed
+          onClick={() => {
+            setModalOpen(true);
+          }}
+        >
+          <Box width="32">
+            <Stack align="center">
+              <Text align="center">Create Workspace</Text>
+            </Stack>
+          </Box>
+        </Card>
+      )}
       <AnimatePresence
         initial={false}
         exitBeforeEnter

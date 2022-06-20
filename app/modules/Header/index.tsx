@@ -5,6 +5,7 @@ import { useQuery } from "react-query";
 import ConnectModal from "@/app/modules/Header/ConnectModal";
 import ProfileModal from "./ProfileModal";
 import { CircleType, ProjectType, UserType } from "@/app/types";
+import ProjectSettings from "../Project/ProjectSettings";
 
 const getUser = async () => {
   const res = await fetch("http://localhost:3000/user/me", {
@@ -35,13 +36,13 @@ function Header(): ReactElement {
       transitionDuration="1000"
       backgroundColor="background"
     >
-      <Box display="flex" flexDirection="row" alignItems="center">
-        <Heading>{!cId && "Circles"}</Heading>
-        <Heading>{cId && !pId && circle?.name}</Heading>
-        <Heading>{pId && project?.name}</Heading>
-
+      <Stack direction="horizontal" align="center">
+        {!cId && <Heading>Circles</Heading>}
+        {cId && !pId && <Heading>{circle?.name}</Heading>}
+        {pId && <Heading>{project?.name}</Heading>}
+        {pId && project?.name && <ProjectSettings />}
         <Box marginLeft="4" />
-      </Box>
+      </Stack>
       <Stack direction="horizontal">
         {currentUser?.id ? <ProfileModal /> : <ConnectModal />}
       </Stack>

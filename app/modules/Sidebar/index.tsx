@@ -21,6 +21,11 @@ const containerAnimation = {
   },
 };
 
+const itemAnimation = {
+  hidden: { opacity: 0 },
+  show: { opacity: 1 },
+};
+
 function Sidebar(): ReactElement {
   const router = useRouter();
   const { circle: cId, project: pId } = router.query;
@@ -30,6 +35,14 @@ function Sidebar(): ReactElement {
   const { data: project } = useQuery<ProjectType>(["project", pId], {
     enabled: false,
   });
+
+  const { data: myCircles, isLoading: myCirclesLoading } = useQuery<
+    CircleType[]
+  >("myOrganizations", () =>
+    fetch(`http://localhost:3000/circle/myOrganizations`, {
+      credentials: "include",
+    }).then((res) => res.json())
+  );
   const { setIsSidebarExpanded } = useGlobalContext();
 
   return (
@@ -47,7 +60,7 @@ function Sidebar(): ReactElement {
         {cId ? (
           <Logo
             href="/"
-            src={circle?.avatar || project?.parents[0].avatar || ""}
+            src={circle?.avatar || (pId && project?.parents[0].avatar) || ""}
           />
         ) : (
           <Logo
@@ -67,23 +80,16 @@ function Sidebar(): ReactElement {
         <div />
       ) : (
         <Box paddingY="3" borderBottomWidth="0.375">
-          <motion.div
-            variants={containerAnimation}
-            initial="hidden"
-            animate="show"
-          >
-            {/* {myTribes?.map((aTribe) => (
-              <motion.div key={aTribe.teamId} variants={itemAnimation}>
-                <Box paddingY="2">
-                  <Logo
-                    key={aTribe._id}
-                    href={`/tribe/${aTribe.teamId}`}
-                    src={aTribe.logo}
-                  />
-                </Box>
-              </motion.div>
-            ))} */}
-          </motion.div>
+          {!myCirclesLoading &&
+            myCircles?.map((aCircle) => (
+              <Box paddingY="2" key={aCircle.id}>
+                <Logo
+                  key={aCircle.id}
+                  href={`/${aCircle.slug}`}
+                  src={aCircle.avatar}
+                />
+              </Box>
+            ))}
         </Box>
       )}
       <CreateCircle />

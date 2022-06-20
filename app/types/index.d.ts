@@ -27,12 +27,12 @@ export interface CircleType {
   activity: string[];
   archived: boolean;
   avatar: string;
-  children: Circle[];
+  children: CircleType[];
   createdAt: string;
   defaultPayment: Payment;
   description: string;
   id: string;
-  members: string[];
+  members: UserType[];
   name: string;
   parents: Circle[];
   private: boolean;

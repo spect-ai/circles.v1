@@ -1,4 +1,4 @@
-import { Box, Button, Input, Stack, Text } from "degen";
+import { Box, Button, IconPlusSmall, Input, Stack, Text } from "degen";
 import React, { useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
@@ -16,12 +16,16 @@ type CreateProjectDto = {
   description: string;
 };
 
-function CreateProjectModal() {
+interface Props {
+  accordian: boolean;
+}
+
+function CreateProjectModal({ accordian }: Props) {
   const [modalOpen, setModalOpen] = useState(false);
   const close = () => setModalOpen(false);
   const router = useRouter();
   const { circle: cId } = router.query;
-  const { data: circle } = useQuery<CircleType>(["circle", cId], {
+  const { data: circle, refetch } = useQuery<CircleType>(["circle", cId], {
     enabled: false,
   });
   const { data: templates } = useQuery<option[]>(
@@ -74,6 +78,7 @@ function CreateProjectModal() {
       .then(async (res) => {
         const resJson = await res.json();
         console.log({ resJson });
+        void refetch();
         void router.push(`/${cId}/${resJson.slug}`);
       })
       .catch((err) => {
@@ -84,19 +89,33 @@ function CreateProjectModal() {
   return (
     <>
       <Loader loading={isLoading} text="Creating your space" />
-      <Card
-        height="32"
-        dashed
-        onClick={() => {
-          setModalOpen(true);
-        }}
-      >
-        <Box width="32">
-          <Stack align="center">
-            <Text align="center">Create Project</Text>
-          </Stack>
-        </Box>
-      </Card>
+      {accordian ? (
+        <Button
+          size="small"
+          variant="transparent"
+          shape="circle"
+          onClick={(e) => {
+            e.stopPropagation();
+            setModalOpen(true);
+          }}
+        >
+          <IconPlusSmall />
+        </Button>
+      ) : (
+        <Card
+          height="32"
+          dashed
+          onClick={() => {
+            setModalOpen(true);
+          }}
+        >
+          <Box width="32">
+            <Stack align="center">
+              <Text align="center">Create Project</Text>
+            </Stack>
+          </Box>
+        </Card>
+      )}
       <AnimatePresence
         initial={false}
         exitBeforeEnter

@@ -10,6 +10,7 @@ import {
   Skeleton,
   SkeletonGroup,
   Stack,
+  Text,
 } from "degen";
 import { AnimatePresence } from "framer-motion";
 import Link from "next/link";
@@ -18,6 +19,8 @@ import React, { useState } from "react";
 import { useQuery } from "react-query";
 import SettingsModal from "../Circle/CircleSettingsModal";
 import ContributorsModal from "../Circle/ContributorsModal";
+import CreateProjectModal from "../Circle/CreateProjectModal";
+import CreateSpaceModal from "../Circle/CreateSpaceModal";
 
 export default function CircleSidebar() {
   const router = useRouter();
@@ -106,7 +109,11 @@ export default function CircleSidebar() {
             </Button>
           </Stack>
         </Accordian>
-        <Accordian name="Projects" defaultOpen>
+        <Accordian
+          name="Projects"
+          defaultOpen
+          buttonComponent={<CreateProjectModal accordian />}
+        >
           <Stack>
             {circle?.projects.map((proj) => (
               <Link key={proj.id} href={`/${cId}/${proj.slug}`}>
@@ -117,6 +124,7 @@ export default function CircleSidebar() {
                         fontSize: "1.3rem",
                         marginLeft: "2px",
                         color: pId === proj.slug ? "rgb(175, 82, 222, 1)" : "",
+                        marginTop: "5px",
                       }}
                     />
                   }
@@ -129,21 +137,37 @@ export default function CircleSidebar() {
                 </Button>
               </Link>
             ))}
+            {!circle?.projects.length && (
+              <Box paddingLeft="7" paddingY="2">
+                <Text variant="label">No projects created</Text>
+              </Box>
+            )}
           </Stack>
         </Accordian>
-        <Accordian name="Workspaces" defaultOpen>
+        <Accordian
+          name="Workspaces"
+          defaultOpen
+          buttonComponent={<CreateSpaceModal accordian />}
+        >
           <Stack>
-            {/* {mySpaces.map((space: BoardData) => ( */}
-            <Button
-              prefix={<IconCollection />}
-              center
-              width="full"
-              variant="transparent"
-              size="small"
-            >
-              {"Workspace 1"}
-            </Button>
-            {/* ))} */}
+            {circle?.children.map((space) => (
+              <Link href={`/${space.slug}`} key={space.id}>
+                <Button
+                  prefix={<IconCollection />}
+                  center
+                  width="full"
+                  variant="transparent"
+                  size="small"
+                >
+                  {space.name}
+                </Button>
+              </Link>
+            ))}
+            {!circle?.children.length && (
+              <Box paddingLeft="7" paddingY="2">
+                <Text variant="label">No workspaces created</Text>
+              </Box>
+            )}
           </Stack>
         </Accordian>
       </Stack>
