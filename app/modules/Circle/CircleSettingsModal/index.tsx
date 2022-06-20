@@ -132,11 +132,11 @@ export default function SettingsModal({ handleClose }: Props) {
                 orientation="horizontal"
                 unselectedColor="transparent"
               />
-              <Box display="flex" justifyContent="center">
+              <Box display="flex" justifyContent="center" marginTop="4">
                 <Button
                   width="1/2"
                   size="small"
-                  variant="primary"
+                  variant="secondary"
                   onClick={onSubmit}
                   loading={isLoading}
                   disabled={uploading}

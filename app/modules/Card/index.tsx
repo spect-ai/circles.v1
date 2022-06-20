@@ -12,6 +12,7 @@ import {
   Text,
   Textarea,
 } from "degen";
+import { motion, AnimatePresence } from "framer-motion";
 import React, { useState } from "react";
 import { ToastContainer } from "react-toastify";
 import styled from "styled-components";
@@ -49,6 +50,12 @@ const NameInput = styled.input`
   color: rgb(255, 255, 255, 0.85);
   font-weight: 600;
 `;
+
+const variants = {
+  hidden: { opacity: 0, x: 0, y: 0 },
+  enter: { opacity: 1, x: 0, y: 0 },
+  exit: { opacity: 0, x: 0, y: 0 },
+};
 
 export default function Card() {
   const [selectedTab, setSelectedTab] = useState(0);
@@ -119,21 +126,57 @@ export default function Card() {
                   onTabClick={handleTabClick}
                   orientation="horizontal"
                   unselectedColor="transparent"
+                  border
+                  shape="circle"
                 />
-                {selectedTab === 0 && !loading && (
-                  <Editor
-                    value={submission ? submission[0] : ""}
-                    onChange={(txt) => {
-                      setSubmission([txt]);
-                    }}
-                  />
-                )}
-                {selectedTab === 1 && (
-                  <Box style={{ width: "50%" }}>
-                    <Textarea label="comment" />
-                  </Box>
-                )}
-                {selectedTab === 2 && <Text>0xavp created this card</Text>}
+                <AnimatePresence exitBeforeEnter>
+                  {selectedTab === 0 && !loading && (
+                    <motion.main
+                      variants={variants} // Pass the variant object into Framer Motion
+                      initial="hidden" // Set the initial state to variants.hidden
+                      animate="enter" // Animated state to variants.enter
+                      exit="exit" // Exit state (used later) to variants.exit
+                      transition={{ type: "linear" }} // Set the transition to linear
+                      className=""
+                      key="editor"
+                    >
+                      <Editor
+                        value={submission ? submission[0] : ""}
+                        onChange={(txt) => {
+                          setSubmission([txt]);
+                        }}
+                      />
+                    </motion.main>
+                  )}
+                  {selectedTab === 1 && (
+                    <motion.main
+                      variants={variants} // Pass the variant object into Framer Motion
+                      initial="hidden" // Set the initial state to variants.hidden
+                      animate="enter" // Animated state to variants.enter
+                      exit="exit" // Exit state (used later) to variants.exit
+                      transition={{ type: "linear" }} // Set the transition to linear
+                      className=""
+                      key="comments"
+                    >
+                      <Box style={{ width: "50%" }}>
+                        <Textarea label="comment" />
+                      </Box>
+                    </motion.main>
+                  )}
+                  {selectedTab === 2 && (
+                    <motion.main
+                      variants={variants} // Pass the variant object into Framer Motion
+                      initial="hidden" // Set the initial state to variants.hidden
+                      animate="enter" // Animated state to variants.enter
+                      exit="exit" // Exit state (used later) to variants.exit
+                      transition={{ type: "linear" }} // Set the transition to linear
+                      className=""
+                      key="activity"
+                    >
+                      <Text>0xavp created this card</Text>
+                    </motion.main>
+                  )}
+                </AnimatePresence>
               </Stack>
             </Container>
           </Box>

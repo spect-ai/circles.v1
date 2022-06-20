@@ -6,12 +6,7 @@ import { motion } from "framer-motion";
 import React, { useEffect, useState } from "react";
 import { matchSorter } from "match-sorter";
 import { useLocalCard } from "../hooks/LocalCardContext";
-import { getOptions } from "../utils";
-
-type Option = {
-  name: string;
-  value: string;
-};
+import { getOptions, Option } from "../utils";
 
 export default function CardLabels() {
   const { labels, setLabels } = useLocalCard();
@@ -21,8 +16,9 @@ export default function CardLabels() {
   const [filteredOptions, setFilteredOptions] = useState<Option[]>();
 
   useEffect(() => {
-    setOptions(getOptions("labels", {} as ProjectType) as Option[]);
-    setFilteredOptions(options);
+    const ops = getOptions("labels", {} as ProjectType) as Option[];
+    setOptions(ops);
+    setFilteredOptions(ops);
   }, []);
 
   return (

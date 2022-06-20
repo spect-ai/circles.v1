@@ -44,6 +44,11 @@ export const priorityMapping: { [key: number]: string } = {
   4: "Urgent",
 };
 
+export type Option = {
+  name: string;
+  value: string;
+};
+
 export const getOptions = (
   type: string,
   project: ProjectType,

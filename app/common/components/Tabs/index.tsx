@@ -1,4 +1,4 @@
-import { Box, Button, Text } from "degen";
+import { Box, Button, Stack, Text } from "degen";
 import React from "react";
 
 type Props = {
@@ -7,6 +7,8 @@ type Props = {
   tabs: string[];
   orientation: "horizontal" | "vertical";
   unselectedColor: "transparent" | "tertiary";
+  shape?: string;
+  border?: boolean;
 };
 
 export default function Tabs({
@@ -15,25 +17,34 @@ export default function Tabs({
   tabs,
   orientation,
   unselectedColor,
+  shape = "square",
+  border = false,
 }: Props) {
   return (
     <Box
       display="flex"
       width="full"
       flexDirection={orientation === "horizontal" ? "row" : "column"}
+      borderWidth={border ? "0.5" : "0"}
+      borderRadius="3xLarge"
     >
       {tabs.map((tab, index) => (
-        <Box marginRight="4" marginBottom="4" width="full" key={tab}>
+        <Box width="full" key={tab}>
           <Button
             variant={
-              selectedTab === index ? "secondary" : (unselectedColor as any)
+              selectedTab === index ? "tertiary" : (unselectedColor as any)
             }
             center
+            shape={shape as any}
             width="full"
             onClick={() => onTabClick(index)}
             size="small"
           >
-            <Text>{tab}</Text>
+            <Text
+              color={selectedTab === index ? "textPrimary" : "textTertiary"}
+            >
+              {tab}
+            </Text>
           </Button>
         </Box>
       ))}

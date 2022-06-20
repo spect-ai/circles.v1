@@ -2,13 +2,23 @@ import EditTag from "@/app/common/components/EditTag";
 import ModalOption from "@/app/common/components/ModalOption";
 import { MenuOutlined } from "@ant-design/icons";
 import { Box, IconSearch, Input, Text } from "degen";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useLocalCard } from "../hooks/LocalCardContext";
-import { getOptions } from "../utils";
+import { getOptions, Option } from "../utils";
+import { matchSorter } from "match-sorter";
 
 export default function CardColumn() {
   const { columnId, setColumnId, project } = useLocalCard();
   const [modalOpen, setModalOpen] = useState(false);
+
+  const [options, setOptions] = useState<Option[]>();
+  const [filteredOptions, setFilteredOptions] = useState<Option[]>();
+
+  useEffect(() => {
+    const ops = getOptions("column", project) as Option[];
+    setOptions(ops);
+    setFilteredOptions(ops);
+  }, []);
   return (
     <EditTag
       name={project?.columnDetails[columnId]?.name}
@@ -34,10 +44,17 @@ export default function CardColumn() {
             label=""
             placeholder="Search"
             prefix={<IconSearch />}
+            onChange={(e) => {
+              setFilteredOptions(
+                matchSorter(options as Option[], e.target.value, {
+                  keys: ["name"],
+                })
+              );
+            }}
           />
         </Box>
         <Box>
-          {getOptions("column", project)?.map((item: any) => (
+          {filteredOptions?.map((item: any) => (
             <ModalOption
               key={item.value}
               isSelected={columnId === item.value}
@@ -65,6 +82,9 @@ export default function CardColumn() {
               </Box>
             </ModalOption>
           ))}
+          {!filteredOptions?.length && (
+            <Text variant="label">No Column found</Text>
+          )}
         </Box>
       </Box>
     </EditTag>

@@ -2,13 +2,23 @@ import EditTag from "@/app/common/components/EditTag";
 import ModalOption from "@/app/common/components/ModalOption";
 import { AuditOutlined } from "@ant-design/icons";
 import { Box, IconSearch, Input, Text } from "degen";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { matchSorter } from "match-sorter";
 import { useLocalCard } from "../hooks/LocalCardContext";
-import { getOptions } from "../utils";
+import { getOptions, Option } from "../utils";
 
 export default function CardType() {
   const { cardType, setCardType, project } = useLocalCard();
   const [modalOpen, setModalOpen] = useState(false);
+
+  const [options, setOptions] = useState<Option[]>();
+  const [filteredOptions, setFilteredOptions] = useState<Option[]>();
+
+  useEffect(() => {
+    const ops = getOptions("card", project) as Option[];
+    setOptions(ops);
+    setFilteredOptions(ops);
+  }, []);
   return (
     <EditTag
       name={cardType}
@@ -34,10 +44,17 @@ export default function CardType() {
             label=""
             placeholder="Search"
             prefix={<IconSearch />}
+            onChange={(e) => {
+              setFilteredOptions(
+                matchSorter(options as Option[], e.target.value, {
+                  keys: ["name"],
+                })
+              );
+            }}
           />
         </Box>
         <Box>
-          {getOptions("card", project)?.map((item: any) => (
+          {filteredOptions?.map((item: any) => (
             <ModalOption
               key={item.value}
               isSelected={cardType === item.value}
@@ -75,6 +92,9 @@ export default function CardType() {
               </Box>
             </ModalOption>
           ))}
+          {!filteredOptions?.length && (
+            <Text variant="label">No Card type found</Text>
+          )}
         </Box>
       </Box>
     </EditTag>

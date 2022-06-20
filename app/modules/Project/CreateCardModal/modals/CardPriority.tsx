@@ -2,13 +2,23 @@ import EditTag from "@/app/common/components/EditTag";
 import ModalOption from "@/app/common/components/ModalOption";
 import { DashboardOutlined } from "@ant-design/icons";
 import { Box, IconSearch, Input, Text } from "degen";
-import React, { useState } from "react";
+import { matchSorter } from "match-sorter";
+import React, { useEffect, useState } from "react";
 import { useLocalCard } from "../hooks/LocalCardContext";
-import { getOptions, priorityMapping } from "../utils";
+import { getOptions, Option, priorityMapping } from "../utils";
 
 export default function CardPriority() {
   const { priority, setPriority, project } = useLocalCard();
   const [modalOpen, setModalOpen] = useState(false);
+
+  const [options, setOptions] = useState<Option[]>();
+  const [filteredOptions, setFilteredOptions] = useState<Option[]>();
+
+  useEffect(() => {
+    const ops = getOptions("priority", project) as Option[];
+    setOptions(ops);
+    setFilteredOptions(ops);
+  }, []);
 
   return (
     <EditTag
@@ -35,10 +45,17 @@ export default function CardPriority() {
             label=""
             placeholder="Search"
             prefix={<IconSearch />}
+            onChange={(e) => {
+              setFilteredOptions(
+                matchSorter(options as Option[], e.target.value, {
+                  keys: ["name"],
+                })
+              );
+            }}
           />
         </Box>
         <Box>
-          {getOptions("priority", project)?.map((item: any) => (
+          {filteredOptions?.map((item: any) => (
             <ModalOption
               key={item.value}
               isSelected={priority === item.value}
@@ -66,6 +83,9 @@ export default function CardPriority() {
               </Box>
             </ModalOption>
           ))}
+          {!filteredOptions?.length && (
+            <Text variant="label">No Priority found</Text>
+          )}
         </Box>
       </Box>
     </EditTag>

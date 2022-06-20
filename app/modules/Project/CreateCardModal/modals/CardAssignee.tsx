@@ -3,10 +3,11 @@ import ModalOption from "@/app/common/components/ModalOption";
 import { MemberDetails } from "@/app/types";
 import { Avatar, Box, IconSearch, IconUserSolid, Input, Text } from "degen";
 import { useRouter } from "next/router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { useLocalCard } from "../hooks/LocalCardContext";
-import { getOptions } from "../utils";
+import { getOptions, Option } from "../utils";
+import { matchSorter } from "match-sorter";
 
 export default function CardAssignee() {
   const { assignee, setAssignee, project } = useLocalCard();
@@ -19,6 +20,15 @@ export default function CardAssignee() {
       enabled: false,
     }
   );
+
+  const [options, setOptions] = useState<Option[]>();
+  const [filteredOptions, setFilteredOptions] = useState<Option[]>();
+
+  useEffect(() => {
+    const ops = getOptions("assignee", project, memberDetails) as Option[];
+    setOptions(ops);
+    setFilteredOptions(ops);
+  }, []);
   return (
     <EditTag
       name={
@@ -48,10 +58,17 @@ export default function CardAssignee() {
             label=""
             placeholder="Search"
             prefix={<IconSearch />}
+            onChange={(e) => {
+              setFilteredOptions(
+                matchSorter(options as Option[], e.target.value, {
+                  keys: ["name"],
+                })
+              );
+            }}
           />
         </Box>
         <Box>
-          {getOptions("assignee", project, memberDetails)?.map((item: any) => (
+          {filteredOptions?.map((item: any) => (
             <ModalOption
               key={item.value}
               isSelected={assignee === item.value}
@@ -82,6 +99,9 @@ export default function CardAssignee() {
               </Box>
             </ModalOption>
           ))}
+          {!filteredOptions?.length && (
+            <Text variant="label">No Contributors found</Text>
+          )}
         </Box>
       </Box>
     </EditTag>
