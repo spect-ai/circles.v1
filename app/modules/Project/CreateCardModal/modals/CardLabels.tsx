@@ -7,6 +7,7 @@ import React, { useEffect, useState } from "react";
 import { matchSorter } from "match-sorter";
 import { useLocalCard } from "../hooks/LocalCardContext";
 import { getOptions, Option } from "../utils";
+import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 
 export default function CardLabels() {
   const { labels, setLabels } = useLocalCard();
@@ -14,6 +15,8 @@ export default function CardLabels() {
 
   const [options, setOptions] = useState<Option[]>();
   const [filteredOptions, setFilteredOptions] = useState<Option[]>();
+
+  const { canTakeAction } = useRoleGate();
 
   useEffect(() => {
     const ops = getOptions("labels", {} as ProjectType) as Option[];
@@ -37,6 +40,7 @@ export default function CardLabels() {
           }}
         />
       }
+      disabled={!canTakeAction("cardLabels")}
     >
       <Box>
         <Box borderBottomWidth="0.375" paddingX="8" paddingY="5">

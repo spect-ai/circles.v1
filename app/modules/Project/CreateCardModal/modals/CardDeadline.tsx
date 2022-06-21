@@ -5,6 +5,7 @@ import styled from "styled-components";
 import { useLocalCard } from "../hooks/LocalCardContext";
 import { CalendarOutlined } from "@ant-design/icons";
 import { toIsoString } from "@/app/common/utils/utils";
+import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 
 const DatePicker = styled.input`
   border: none;
@@ -31,6 +32,9 @@ const DatePicker = styled.input`
 export default function CardDeadline() {
   const [modalOpen, setModalOpen] = useState(false);
   const { deadline, setDeadline } = useLocalCard();
+
+  const { canTakeAction } = useRoleGate();
+
   return (
     <EditTag
       name={deadline?.toDateString ? deadline.toDateString() : "None"}
@@ -48,6 +52,7 @@ export default function CardDeadline() {
           }}
         />
       }
+      disabled={!canTakeAction("cardDeadline")}
     >
       <Box height="44">
         <Box

@@ -8,9 +8,10 @@ type Props = {
   value: string;
   onChange: (val: string) => void;
   placeholder?: string;
+  disabled?: boolean;
 };
 
-function Editor({ value, onChange, placeholder }: Props) {
+function Editor({ value, onChange, placeholder, disabled }: Props) {
   return (
     <RichMarkdownEditor
       dark
@@ -29,6 +30,7 @@ function Editor({ value, onChange, placeholder }: Props) {
         console.log({ imageGatewayURL });
         return imageGatewayURL;
       }}
+      readOnly={disabled || false}
     />
   );
 }

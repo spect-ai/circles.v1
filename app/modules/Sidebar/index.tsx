@@ -39,15 +39,21 @@ function Sidebar(): ReactElement {
     enabled: false,
   });
 
-  const { data: myCircles, isLoading: myCirclesLoading } = useQuery<
-    CircleType[]
-  >("myOrganizations", () =>
-    fetch(`http://localhost:3000/circle/myOrganizations`, {
-      credentials: "include",
-    }).then((res) => res.json())
+  const {
+    data: myCircles,
+    isLoading: myCirclesLoading,
+    error,
+  } = useQuery<CircleType[]>(
+    "myOrganizations",
+    () =>
+      fetch(`http://localhost:3000/circle/myOrganizations`, {
+        credentials: "include",
+      }).then((res) => res.json()),
+    {
+      enabled: !!currentUser?.id,
+    }
   );
   const { setIsSidebarExpanded } = useGlobalContext();
-
   return (
     <Box
       display="flex"

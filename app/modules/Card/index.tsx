@@ -2,10 +2,11 @@ import Accordian from "@/app/common/components/Accordian";
 import Editor from "@/app/common/components/Editor";
 import Loader from "@/app/common/components/Loader";
 import Tabs from "@/app/common/components/Tabs";
+import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { SaveOutlined } from "@ant-design/icons";
-import { Box, Button, IconCheck, IconClose, Stack, Tag, Text } from "degen";
-import { motion, AnimatePresence } from "framer-motion";
-import React, { useEffect, useState } from "react";
+import { Box, Button, IconClose, Stack, Tag, Text } from "degen";
+import { AnimatePresence } from "framer-motion";
+import React, { useState } from "react";
 import { ToastContainer } from "react-toastify";
 import styled from "styled-components";
 import EditableSubTask from "../Project/CreateCardModal/EditableSubTask";
@@ -15,9 +16,11 @@ import CardColumn from "../Project/CreateCardModal/modals/CardColumn";
 import CardDeadline from "../Project/CreateCardModal/modals/CardDeadline";
 import CardLabels from "../Project/CreateCardModal/modals/CardLabels";
 import CardPriority from "../Project/CreateCardModal/modals/CardPriority";
+import CardReviewer from "../Project/CreateCardModal/modals/CardReviewer";
 import CardReward from "../Project/CreateCardModal/modals/CardReward";
 import CardType from "../Project/CreateCardModal/modals/CardType";
 import Activity from "./Activity";
+import Submission from "./Submission";
 
 const Container = styled(Box)`
   ::-webkit-scrollbar {
@@ -66,17 +69,18 @@ export default function Card() {
   const handleTabClick = (index: number) => setSelectedTab(index);
   const {
     loading,
+    updating,
     title,
     setTitle,
     labels,
     subTasks,
     description,
     setDescription,
-    submission,
-    setSubmission,
     project,
     onCardUpdate,
   } = useLocalCard();
+
+  const { canTakeAction } = useRoleGate();
 
   return (
     <Box padding="8">
@@ -90,6 +94,7 @@ export default function Card() {
                 <NameInput
                   placeholder="Enter card name"
                   value={title}
+                  disabled={!canTakeAction("cardTitle")}
                   onChange={(e) => {
                     setTitle(e.target.value);
                   }}
@@ -126,6 +131,7 @@ export default function Card() {
                         setDescription(txt);
                       }}
                       placeholder="Describe your card"
+                      disabled={!canTakeAction("cardDescription")}
                     />
                   )}
                 </Box>
@@ -139,44 +145,8 @@ export default function Card() {
                   shape="circle"
                 />
                 <AnimatePresence initial={false}>
-                  {selectedTab === 1 && !loading && (
-                    <motion.main
-                      variants={variants} // Pass the variant object into Framer Motion
-                      initial="hidden" // Set the initial state to variants.hidden
-                      animate="enter" // Animated state to variants.enter
-                      exit="exit" // Exit state (used later) to variants.exit
-                      transition={{ type: "linear" }} // Set the transition to linear
-                      className=""
-                      key="editor"
-                    >
-                      <Box
-                        style={{
-                          minHeight: "10rem",
-                          maxHeight: "25rem",
-                          overflowY: "auto",
-                        }}
-                        marginRight="4"
-                        paddingLeft="4"
-                      >
-                        <Editor
-                          value={submission ? submission[0] : ""}
-                          onChange={(txt) => {
-                            setSubmission([txt]);
-                          }}
-                          placeholder="Add your submission"
-                        />
-                        <Button
-                          prefix={<IconCheck />}
-                          size="small"
-                          variant="secondary"
-                          disabled={!submission}
-                        >
-                          Submit
-                        </Button>
-                      </Box>
-                    </motion.main>
-                  )}
                   {selectedTab === 0 && <Activity />}
+                  {selectedTab === 1 && !loading && <Submission />}
                 </AnimatePresence>
               </Stack>
             </Container>
@@ -187,6 +157,7 @@ export default function Card() {
                 <CardType />
                 <CardColumn />
                 <CardAssignee />
+                <CardReviewer />
                 <CardDeadline />
                 <CardPriority />
                 <CardReward />
@@ -196,7 +167,7 @@ export default function Card() {
                   width="full"
                   size="small"
                   variant="secondary"
-                  loading={loading}
+                  loading={updating}
                   onClick={() => {
                     onCardUpdate();
                   }}

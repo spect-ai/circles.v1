@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import Modal from "../Modal";
 import styled from "styled-components";
 import ClickableTag from "./ClickableTag";
+import { toast } from "react-toastify";
 
 type Props = {
   name: string;
@@ -14,6 +15,7 @@ type Props = {
   setModalOpen: (modalOpen: boolean) => void;
   icon?: React.ReactNode;
   tone?: string;
+  disabled?: boolean;
 };
 
 // const TagContainer = styled(Box)`
@@ -27,6 +29,7 @@ function EditTag({
   icon,
   setModalOpen,
   tone = "accentTertiary",
+  disabled = true,
 }: Props) {
   return (
     <>
@@ -41,7 +44,13 @@ function EditTag({
             name={name}
             tone={tone}
             icon={icon}
-            onClick={() => setModalOpen(true)}
+            onClick={() => {
+              if (disabled) {
+                toast.error("Cannot edit", { theme: "dark" });
+                return;
+              }
+              setModalOpen(true);
+            }}
           />
         </Box>
       </Stack>

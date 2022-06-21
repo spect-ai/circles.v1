@@ -5,6 +5,7 @@ import {
   CircleType,
   ProjectType,
   Token,
+  WorkThreadType,
 } from "@/app/types";
 import { Button, Stack } from "degen";
 import Link from "next/link";
@@ -27,8 +28,8 @@ type CreateCardContextType = {
   setLabels: React.Dispatch<React.SetStateAction<string[]>>;
   assignee: string;
   setAssignee: React.Dispatch<React.SetStateAction<string>>;
-  reviewer: string[];
-  setReviewer: React.Dispatch<React.SetStateAction<string[]>>;
+  reviewer: string;
+  setReviewer: React.Dispatch<React.SetStateAction<string>>;
   columnId: string;
   setColumnId: React.Dispatch<React.SetStateAction<string>>;
   cardType: string;
@@ -44,8 +45,6 @@ type CreateCardContextType = {
   priority: number;
   setPriority: React.Dispatch<React.SetStateAction<number>>;
   onSubmit: (createAnother: boolean) => void;
-  loading: boolean;
-  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
   subTasks: {
     title: string;
     assignee: string;
@@ -58,14 +57,26 @@ type CreateCardContextType = {
       }[]
     >
   >;
-  submission: string[];
-  setSubmission: React.Dispatch<React.SetStateAction<string[]>>;
   project: ProjectType;
   onCardUpdate: () => void;
   activity: Activity[];
   setActivity: React.Dispatch<React.SetStateAction<Activity[]>>;
+  workThreads: {
+    [key: string]: WorkThreadType;
+  };
+  setWorkThreads: React.Dispatch<
+    React.SetStateAction<{
+      [key: string]: WorkThreadType;
+    }>
+  >;
+  workThreadOrder: string[];
+  setWorkThreadOrder: React.Dispatch<React.SetStateAction<string[]>>;
   card?: CardType;
   setCard: (card: CardType) => void;
+  loading: boolean;
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  updating: boolean;
+  setUpdating: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export const LocalCardContext = createContext<CreateCardContextType>(
@@ -97,11 +108,12 @@ export function useProviderLocalCard({
   const setCard = (card: CardType) => {
     queryClient.setQueryData(["card", tId], card);
   };
+
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [labels, setLabels] = useState([] as string[]);
   const [assignee, setAssignee] = useState("");
-  const [reviewer, setReviewer] = useState([] as string[]);
+  const [reviewer, setReviewer] = useState("");
   const [columnId, setColumnId] = useState("");
   const [cardType, setCardType] = useState("Task");
   const [chain, setChain] = useState(circle?.defaultPayment?.chain as Chain);
@@ -109,15 +121,22 @@ export function useProviderLocalCard({
   const [value, setValue] = useState("0");
   const [deadline, setDeadline] = useState<Date>({} as Date);
   const [priority, setPriority] = useState(0);
-  const [loading, setLoading] = useState(true);
   const [subTasks, setSubTasks] = useState<
     {
       title: string;
       assignee: string;
     }[]
   >([] as any);
-  const [submission, setSubmission] = useState([] as string[]);
   const [activity, setActivity] = useState<Activity[]>({} as Activity[]);
+  const [workThreads, setWorkThreads] = useState(
+    {} as {
+      [key: string]: WorkThreadType;
+    }
+  );
+  const [workThreadOrder, setWorkThreadOrder] = useState([] as string[]);
+
+  const [loading, setLoading] = useState(true);
+  const [updating, setUpdating] = useState(false);
 
   useEffect(() => {
     if (!createCard && card && card.id && !isLoading) {
@@ -126,17 +145,17 @@ export function useProviderLocalCard({
       setDescription(card.description);
       setLabels(card.labels);
       setAssignee(card.assignee[0]);
-      setReviewer(card.reviewer);
+      setReviewer(card.reviewer[0]);
       setColumnId(card.columnId);
       setCardType(card.type);
       setChain(card.reward.chain);
       setToken(card.reward.token);
-      setValue(card.reward.value?.toString() || "");
-      setDeadline(new Date(card.deadline));
+      setValue(card.reward.value?.toString() || "0");
+      setDeadline(card.deadline ? new Date(card.deadline) : ({} as Date));
       setPriority(card.priority || 0);
-      setSubTasks(card.subTasks);
-      setSubmission(card.submission);
-      setActivity(card.activity.reverse());
+      setActivity(card.activity);
+      setWorkThreads(card.workThreads);
+      setWorkThreadOrder(card.workThreadOrder);
       setLoading(false);
     }
   }, [card, createCard, isLoading]);
@@ -145,7 +164,7 @@ export function useProviderLocalCard({
     const payload: { [key: string]: any } = {
       title,
       description,
-      reviewer,
+      reviewer: [reviewer],
       assignee: [assignee],
       project: project?.id,
       circle: project?.parents[0].id,
@@ -176,7 +195,6 @@ export function useProviderLocalCard({
         delete payload[key];
       }
     });
-    console.log({ payload });
     fetch("http://localhost:3000/card", {
       method: "POST",
       headers: {
@@ -187,7 +205,6 @@ export function useProviderLocalCard({
     })
       .then(async (res) => {
         const data = await res.json();
-        console.log({ data });
         !createAnother && handleClose && handleClose();
         toast(
           <Stack>
@@ -213,11 +230,11 @@ export function useProviderLocalCard({
   };
 
   const onCardUpdate = () => {
-    setLoading(true);
+    setUpdating(true);
     const payload: { [key: string]: any } = {
       title,
       description,
-      reviewer,
+      reviewer: [reviewer],
       assignee: [assignee],
       project: project?.id,
       circle: project?.parents[0].id,
@@ -232,25 +249,6 @@ export function useProviderLocalCard({
         value: Number(value),
       },
     };
-    // temp fix
-    Object.keys(payload).forEach((key) => {
-      if (
-        typeof payload[key] === "object" &&
-        Object.keys(payload[key]).length === 0
-      ) {
-        delete payload[key];
-      } else if (
-        Array.isArray(payload[key]) &&
-        (payload[key].length === 0 ||
-          payload[key][0]?.length === 0 ||
-          payload[key][0] === undefined)
-      ) {
-        delete payload[key];
-      }
-      if (payload[key] === null || payload[key] === undefined) {
-        delete payload[key];
-      }
-    });
     console.log({ payload });
     fetch(`http://localhost:3000/card/${card?.id}`, {
       method: "PATCH",
@@ -262,27 +260,31 @@ export function useProviderLocalCard({
     })
       .then(async (res) => {
         const data = await res.json();
-        console.log({ data });
 
-        toast(
-          <Stack>
-            Card saved
-            <Stack direction="horizontal">
-              <Button size="small" variant="secondary">
-                Undo
-              </Button>
-            </Stack>
-          </Stack>,
-          {
-            theme: "dark",
-          }
-        );
-        queryClient.setQueryData(["card", tId], data);
-        setLoading(false);
+        if (data.id) {
+          queryClient.setQueryData(["card", tId], data);
+          toast(
+            <Stack>
+              Card saved
+              <Stack direction="horizontal">
+                <Button size="small" variant="secondary">
+                  Undo
+                </Button>
+              </Stack>
+            </Stack>,
+            {
+              theme: "dark",
+            }
+          );
+        } else {
+          toast.error("Error saving card", { theme: "dark" });
+        }
+
+        setUpdating(false);
       })
       .catch((err) => {
         console.log({ err });
-        setLoading(false);
+        setUpdating(false);
         toast.error("Error updating card", { theme: "dark" });
       });
   };
@@ -292,16 +294,15 @@ export function useProviderLocalCard({
     setDescription("");
     setLabels([]);
     setAssignee("");
-    setReviewer([]);
-    setColumnId("");
+    setReviewer("");
+    // setColumnId("");
     setCardType("Task");
     setChain(circle?.defaultPayment?.chain as Chain);
     setToken(circle?.defaultPayment?.token as Token);
-    setValue("");
+    setValue("0");
     setDeadline({} as Date);
     setPriority(0);
     setSubTasks([]);
-    setSubmission([]);
   };
 
   return {
@@ -332,14 +333,18 @@ export function useProviderLocalCard({
     onSubmit,
     loading,
     setLoading,
+    updating,
+    setUpdating,
     subTasks,
     setSubTasks,
-    submission,
-    setSubmission,
     project,
     onCardUpdate,
     activity,
     setActivity,
+    workThreads,
+    setWorkThreads,
+    workThreadOrder,
+    setWorkThreadOrder,
     card,
     setCard,
   };

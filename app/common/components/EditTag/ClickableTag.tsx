@@ -1,6 +1,6 @@
 import React from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import { Box, Text } from "degen";
+import styled from "styled-components";
 
 type Props = {
   onClick: () => void;
@@ -9,36 +9,30 @@ type Props = {
   icon?: React.ReactNode;
 };
 
+const TagContainer = styled(Box)`
+  &:hover {
+    cursor: pointer;
+    box-shadow: 0 0 0 0.4rem rgb(175, 82, 222, 0.1);
+  }
+`;
+
 export default function ClickableTag({ name, icon, tone, onClick }: Props) {
   return (
-    <motion.button
-      whileHover={{
-        scale: 1.03,
-      }}
-      whileTap={{ scale: 0.97 }}
+    <TagContainer
+      backgroundColor={tone as any}
+      borderRadius="3xLarge"
+      paddingY="0.5"
+      paddingX="2"
+      fontWeight="medium"
+      fontSize="small"
+      display="flex"
+      alignItems="center"
+      width="fit"
+      transitionDuration="300"
       onClick={onClick}
-      style={{
-        background: "transparent",
-        border: "none",
-        cursor: "pointer",
-        padding: "0rem",
-        width: "100%",
-        display: "flex",
-      }}
     >
-      <Box
-        backgroundColor={tone as any}
-        borderRadius="3xLarge"
-        paddingY="0.5"
-        paddingX="2"
-        fontWeight="medium"
-        fontSize="small"
-        display="flex"
-        alignItems="center"
-      >
-        {icon}
-        <Text>{name}</Text>
-      </Box>
-    </motion.button>
+      {icon}
+      <Text>{name}</Text>
+    </TagContainer>
   );
 }

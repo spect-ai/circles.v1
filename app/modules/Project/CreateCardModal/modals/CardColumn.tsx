@@ -6,6 +6,7 @@ import React, { useEffect, useState } from "react";
 import { useLocalCard } from "../hooks/LocalCardContext";
 import { getOptions, Option } from "../utils";
 import { matchSorter } from "match-sorter";
+import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 
 export default function CardColumn() {
   const { columnId, setColumnId, project } = useLocalCard();
@@ -13,6 +14,8 @@ export default function CardColumn() {
 
   const [options, setOptions] = useState<Option[]>();
   const [filteredOptions, setFilteredOptions] = useState<Option[]>();
+
+  const { canTakeAction } = useRoleGate();
 
   useEffect(() => {
     const ops = getOptions("column", project) as Option[];
@@ -36,6 +39,7 @@ export default function CardColumn() {
           }}
         />
       }
+      disabled={!canTakeAction("cardColumn")}
     >
       <Box height="96">
         <Box borderBottomWidth="0.375" paddingX="8" paddingY="5">

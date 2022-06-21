@@ -8,6 +8,7 @@ import { useQuery } from "react-query";
 import { useLocalCard } from "../hooks/LocalCardContext";
 import { getOptions, Option } from "../utils";
 import { matchSorter } from "match-sorter";
+import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 
 export default function CardAssignee() {
   const { assignee, setAssignee, project } = useLocalCard();
@@ -24,6 +25,8 @@ export default function CardAssignee() {
   const [options, setOptions] = useState<Option[]>();
   const [filteredOptions, setFilteredOptions] = useState<Option[]>();
 
+  const { canTakeAction } = useRoleGate();
+
   useEffect(() => {
     const ops = getOptions("assignee", project, memberDetails) as Option[];
     setOptions(ops);
@@ -35,7 +38,7 @@ export default function CardAssignee() {
         (memberDetails && memberDetails.memberDetails[assignee]?.username) ||
         "Unassigned"
       }
-      modalTitle="Select Card Type"
+      modalTitle="Select Assignee"
       label="Assignee"
       modalOpen={modalOpen}
       setModalOpen={setModalOpen}
@@ -50,6 +53,7 @@ export default function CardAssignee() {
           <IconUserSolid color="accent" size="5" />
         )
       }
+      disabled={!canTakeAction("cardAssignee")}
     >
       <Box height="96">
         <Box borderBottomWidth="0.375" paddingX="8" paddingY="5">

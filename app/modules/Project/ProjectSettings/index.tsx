@@ -96,7 +96,7 @@ export default function ProjectSettings() {
                     center
                     prefix={<SaveOutlined style={{ fontSize: "1.3rem" }} />}
                   >
-                    <Text>Save</Text>
+                    Save
                   </Button>
                   <Button
                     width="1/2"
@@ -108,7 +108,7 @@ export default function ProjectSettings() {
                     tone="red"
                     prefix={<IconTrash />}
                   >
-                    <Text>Delete</Text>
+                    Delete
                   </Button>
                 </Stack>
               </Stack>

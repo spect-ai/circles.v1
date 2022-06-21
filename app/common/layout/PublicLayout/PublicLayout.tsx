@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 
 import { ReactNodeNoStrings } from "degen/dist/types/types";
 import { Box } from "degen";

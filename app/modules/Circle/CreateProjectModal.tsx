@@ -151,11 +151,11 @@ function CreateProjectModal({ accordian }: Props) {
                   <Button
                     width="1/2"
                     size="small"
-                    variant="primary"
+                    variant="secondary"
                     onClick={onSubmit}
                     loading={isLoading}
                   >
-                    <Text>Create Project</Text>
+                    Create Project
                   </Button>
                 </Box>
               </Stack>

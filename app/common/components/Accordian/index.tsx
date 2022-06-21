@@ -8,6 +8,7 @@ type Props = {
   children: React.ReactNode;
   defaultOpen: boolean;
   buttonComponent?: React.ReactNode;
+  showButton?: boolean;
 };
 
 const CollapseButton = styled.button`
@@ -25,7 +26,13 @@ const CollapseButton = styled.button`
   padding: 0.5rem 0rem;
 `;
 
-function Accordian({ name, children, defaultOpen, buttonComponent }: Props) {
+function Accordian({
+  name,
+  children,
+  defaultOpen,
+  buttonComponent,
+  showButton = true,
+}: Props) {
   const [isExpanded, setIsExpanded] = useState(defaultOpen);
   return (
     <Box>
@@ -52,7 +59,7 @@ function Accordian({ name, children, defaultOpen, buttonComponent }: Props) {
             </Text>
           </Box>
         </CollapseButton>
-        {buttonComponent}
+        {showButton && buttonComponent}
       </Box>
       <AnimatePresence initial={false}>
         {isExpanded && (

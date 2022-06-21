@@ -1,4 +1,5 @@
 import Accordian from "@/app/common/components/Accordian";
+import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { CircleType } from "@/app/types";
 import { AppstoreOutlined, ProjectOutlined } from "@ant-design/icons";
 import {
@@ -28,12 +29,12 @@ export default function CircleSidebar() {
   const { data: circle, isLoading } = useQuery<CircleType>(["circle", cId], {
     enabled: false,
   });
+  const { canDo } = useRoleGate();
 
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [isContributorsModalOpen, setIsContributorsModalOpen] = useState(false);
 
   const overviewTab = cId && !pId ? true : false;
-
   if (isLoading) {
     return (
       <SkeletonGroup loading>
@@ -81,18 +82,20 @@ export default function CircleSidebar() {
                 Overview
               </Button>
             </Link>
-            <Button
-              prefix={
-                <IconCog color={isSettingsModalOpen ? "accent" : "current"} />
-              }
-              center
-              width="full"
-              variant={isSettingsModalOpen ? "tertiary" : "transparent"}
-              size="small"
-              onClick={() => setIsSettingsModalOpen(true)}
-            >
-              Settings
-            </Button>
+            {canDo("steward") && (
+              <Button
+                prefix={
+                  <IconCog color={isSettingsModalOpen ? "accent" : "current"} />
+                }
+                center
+                width="full"
+                variant={isSettingsModalOpen ? "tertiary" : "transparent"}
+                size="small"
+                onClick={() => setIsSettingsModalOpen(true)}
+              >
+                Settings
+              </Button>
+            )}
             <Button
               prefix={
                 <IconUsersSolid
@@ -113,6 +116,7 @@ export default function CircleSidebar() {
           name="Projects"
           defaultOpen
           buttonComponent={<CreateProjectModal accordian />}
+          showButton={canDo("steward")}
         >
           <Stack>
             {circle?.projects.map((proj) => (
@@ -148,6 +152,7 @@ export default function CircleSidebar() {
           name="Workspaces"
           defaultOpen
           buttonComponent={<CreateSpaceModal accordian />}
+          showButton={canDo("steward")}
         >
           <Stack>
             {circle?.children.map((space) => (

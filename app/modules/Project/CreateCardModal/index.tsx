@@ -19,6 +19,7 @@ import {
   useProviderLocalCard,
 } from "./hooks/LocalCardContext";
 import { ProjectType } from "@/app/types";
+import CardReviewer from "./modals/CardReviewer";
 
 type Props = {
   column: string;
@@ -132,6 +133,7 @@ export default function CreateCardModal({ column, handleClose }: Props) {
                 <CardType />
                 <CardColumn />
                 <CardAssignee />
+                <CardReviewer />
                 <CardDeadline />
                 <CardPriority />
                 <CardReward />

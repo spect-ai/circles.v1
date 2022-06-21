@@ -1,9 +1,12 @@
+import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { ColumnType } from "@/app/types";
 import { DropResult } from "react-beautiful-dnd";
+import { toast } from "react-toastify";
 import { useLocalProject } from "../Context/LocalProjectContext";
 
 export default function useDragEnd() {
   const { localProject, setLocalProject, updateProject } = useLocalProject();
+  const { canMoveCard } = useRoleGate();
 
   const reorder = (list: string[], startIndex: number, endIndex: number) => {
     const result = Array.from(list);
@@ -15,6 +18,12 @@ export default function useDragEnd() {
 
   const handleDragEnd = (result: DropResult) => {
     const { destination, source, draggableId, type } = result;
+    if (!canMoveCard(localProject.cards[draggableId])) {
+      toast.error("You don't have permission to move cards", {
+        theme: "dark",
+      });
+      return;
+    }
     if (!destination) {
       return;
     }
@@ -112,6 +121,8 @@ export default function useDragEnd() {
         },
       });
     }
+    console.log(destination.droppableId);
+    console.log(destination.index);
     fetch(
       `http://localhost:3000/project/${localProject.id}/reorderCard/${draggableId}`,
       {

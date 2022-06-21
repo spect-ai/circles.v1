@@ -1,3 +1,4 @@
+import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { UserType } from "@/app/types";
 import { Box, Heading, Stack } from "degen";
 import React from "react";
@@ -13,9 +14,10 @@ type Props = {
 };
 
 function Contributors({ members, memberDetails, roles }: Props) {
+  const { canDo } = useRoleGate();
   return (
     <Box padding="2">
-      <InviteMemberModal />
+      {canDo("steward") && <InviteMemberModal />}
       <Stack>
         <Heading>Stewards</Heading>
         <Box display="flex" flexWrap="wrap">

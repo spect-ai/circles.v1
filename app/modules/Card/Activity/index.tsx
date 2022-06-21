@@ -7,6 +7,8 @@ import { useQuery } from "react-query";
 import { useLocalCard } from "../../Project/CreateCardModal/hooks/LocalCardContext";
 import { variants } from "..";
 import Comment from "./Comment";
+import { timeSince } from "@/app/common/utils/utils";
+import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 
 export default function Activity() {
   const { activity } = useLocalCard();
@@ -18,6 +20,8 @@ export default function Activity() {
       enabled: false,
     }
   );
+
+  const { canTakeAction } = useRoleGate();
   return (
     <motion.main
       variants={variants} // Pass the variant object into Framer Motion
@@ -29,7 +33,7 @@ export default function Activity() {
       key="editor"
     >
       <Stack>
-        <Comment editable />
+        {canTakeAction("cardComment") && <Comment newComment />}
         <Stack>
           {activity.map((item) => {
             if (!item.comment) {
@@ -43,25 +47,35 @@ export default function Activity() {
                     <Avatar
                       label=""
                       placeholder={
-                        !memberDetails?.memberDetails[item.actorId].avatar
+                        !memberDetails?.memberDetails[item.actorId]?.avatar
                       }
-                      src={memberDetails?.memberDetails[item.actorId].avatar}
+                      src={memberDetails?.memberDetails[item.actorId]?.avatar}
                       size="8"
                     />
                     <Stack space="1">
-                      <Stack direction="horizontal" align="baseline">
-                        <Text variant="label">
-                          {memberDetails?.memberDetails[item.actorId].username}
+                      <Stack direction="horizontal" align="baseline" space="2">
+                        <Text>
+                          {memberDetails?.memberDetails[item.actorId]?.username}
                         </Text>
-                        <Text>{item.content}</Text>
+                        <Text color="textSecondary">{item.content}</Text>
+                        <Text variant="label">
+                          {timeSince(new Date(item.timestamp))} ago
+                        </Text>
                       </Stack>
-                      <Text>{new Date(item.timestamp).toDateString()}</Text>
                     </Stack>
                   </Stack>
                 </Stack>
               );
             } else {
-              return <Comment editable={false} commentContent={item.content} />;
+              return (
+                <Comment
+                  newComment={false}
+                  commentContent={item.content}
+                  actorId={item.actorId}
+                  commitId={item.commitId}
+                  timestamp={item.timestamp}
+                />
+              );
             }
           })}
         </Stack>

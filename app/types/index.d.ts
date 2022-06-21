@@ -37,7 +37,6 @@ export interface CircleType {
   parents: Circle[];
   private: boolean;
   projects: ProjectType[];
-  roles: any[];
   slug: string;
   templates: any[];
   updatedAt: string;
@@ -64,56 +63,52 @@ export interface CircleType {
 // }
 
 export interface CardType {
-  issuer: string;
   id: string;
-  slug: string;
   title: string;
-  description: any;
-  submission: string[];
-  deadline: string;
-  labels: string[];
-  assignee: Array<string>;
-  reviewer: Array<string>;
+  slug: string;
+  description: string;
   creator: string;
+  reviewer: string[];
+  assignee: string[];
+  project: string;
+  circle: string;
   reward: {
     chain: Chain;
     token: Token;
     value: string;
     transactionHash: string;
   };
-  activity: Activity[];
-  status: number;
-  members: Member[];
-  access: {
-    creator: boolean;
-    reviewer: boolean;
-    assignee: boolean;
-    applicant: boolean;
-    canApply: boolean;
-  };
-  issueLink?: string;
-  boardId: string;
-  createdAt: string;
-  type: string;
-  submissions: Array<SubmissionData>;
-  proposals: Array<Proposal>;
-  numProposals: number;
-  selectedProposals: Array<string>;
-  updates: Array<object>;
+  type: "Task" | "Bounty";
+  deadline: string;
+  labels: string[];
+  priority: number;
   columnId: string;
-  comments: Array<Comment>;
-  votes: string[];
-  subTasks: {
-    title: string;
-    assignee: string;
-  }[];
-  onChainBountyId?: number;
-  nftAddress?: string;
-  attested?: boolean;
-  ipfsUrl?: string;
-  claimedBy?: string[];
-  issuer?: string;
-  priority?: number;
+  activity: Activity[];
+  status: any;
+  workThreadOrder: string[];
+  workThreads: {
+    [key: string]: WorkThreadType;
+  };
+}
+
+export interface WorkThreadType {
+  workUnitOrder: string[];
+  workUnits: {
+    [key: string]: WorkUnitType;
+  };
+  active: boolean;
+  status: "accepted" | "inRevision" | "inReview" | "draft";
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface WorkUnitType {
+  user: string;
+  content: string;
+  workUnitId: string;
+  createdAt: string;
+  updatedAt: string;
+  type: "submission" | "revision" | "feedback";
 }
 
 export interface ProjectType {

@@ -33,7 +33,7 @@ const CardPage: NextPage = () => {
         }`
       ).then((res) => res.json()),
     {
-      enabled: !!project?.id,
+      enabled: !!project?.id && !!tId,
     }
   );
   const { data: circle, refetch: refetchCircle } = useQuery<CircleType>(

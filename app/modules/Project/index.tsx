@@ -1,12 +1,15 @@
+import { addColumn } from "@/app/services/Column";
+import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { Box, Button, IconPlusSmall, Stack, Text } from "degen";
 import React from "react";
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
-import { useMutation, useQuery } from "react-query";
-import { ToastContainer } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
+import { motion, AnimatePresence } from "framer-motion";
 import styled from "styled-components";
 import ColumnComponent from "./Column";
 import { useLocalProject } from "./Context/LocalProjectContext";
 import useDragEnd from "./Hooks/useDragEnd";
+import { SkeletonLoader } from "./SkeletonLoader";
 
 const Container = styled.div`
   display: flex;
@@ -26,56 +29,94 @@ const Container = styled.div`
 
 export default function Project() {
   const { handleDragEnd } = useDragEnd();
-  const { loading, localProject: project } = useLocalProject();
+  const { loading, localProject: project, setLocalProject } = useLocalProject();
+
+  const { canDo } = useRoleGate();
   if (loading) {
-    return <div>Loading...</div>;
+    return <SkeletonLoader />;
   }
 
+  const variants = {
+    hidden: { opacity: 0, x: 0, y: 0 },
+    enter: {
+      opacity: 1,
+      x: 0,
+      y: 0,
+      transition: {
+        duration: 0.4,
+      },
+    },
+    exit: {
+      opacity: 0,
+      x: 0,
+      y: 0,
+    },
+  };
   return (
-    <Box padding="4">
-      <ToastContainer />
-      <DragDropContext onDragEnd={handleDragEnd}>
-        <Droppable
-          droppableId="all-columns"
-          direction="horizontal"
-          type="column"
-        >
-          {(provided, snapshot) => (
-            <Container {...provided.droppableProps} ref={provided.innerRef}>
-              <Stack direction="horizontal">
-                {project?.columnOrder?.map((columnId, index): any => {
-                  const column = project.columnDetails[columnId];
-                  const cards = column.cards?.map(
-                    (cardId: any) => project.cards[cardId]
-                  );
-                  return (
-                    <ColumnComponent
-                      key={columnId}
-                      column={column}
-                      cards={cards}
-                      id={columnId}
-                      index={index}
-                    />
-                  );
-                })}
-                {provided.placeholder}
-                <Box style={{ width: "20rem" }}>
-                  <Button
-                    // disabled={project.roles[user?.id as string] !== 3}
-                    width="full"
-                    size="small"
-                    variant="secondary"
-                    prefix={<IconPlusSmall />}
-                    center
-                  >
-                    <Text>Add new column</Text>
-                  </Button>
-                </Box>
-              </Stack>
-            </Container>
-          )}
-        </Droppable>
-      </DragDropContext>
-    </Box>
+    <motion.main
+      variants={variants} // Pass the variant object into Framer Motion
+      initial="hidden" // Set the initial state to variants.hidden
+      animate="enter" // Animated state to variants.enter
+      exit="exit" // Exit state (used later) to variants.exit
+      transition={{ type: "linear" }} // Set the transition to linear
+      className=""
+    >
+      <Box padding="4">
+        <ToastContainer />
+        <DragDropContext onDragEnd={handleDragEnd}>
+          <Droppable
+            droppableId="all-columns"
+            direction="horizontal"
+            type="column"
+          >
+            {(provided, snapshot) => (
+              <Container {...provided.droppableProps} ref={provided.innerRef}>
+                <Stack direction="horizontal">
+                  {project?.columnOrder?.map((columnId, index): any => {
+                    const column = project.columnDetails[columnId];
+                    const cards = column.cards?.map(
+                      (cardId: any) => project.cards[cardId]
+                    );
+                    return (
+                      <ColumnComponent
+                        key={columnId}
+                        column={column}
+                        cards={cards}
+                        id={columnId}
+                        index={index}
+                      />
+                    );
+                  })}
+                  {provided.placeholder}
+                  {canDo("steward") && (
+                    <Box style={{ width: "20rem" }}>
+                      <Button
+                        // disabled={project.roles[user?.id as string] !== 3}
+                        width="full"
+                        size="small"
+                        variant="secondary"
+                        prefix={<IconPlusSmall />}
+                        center
+                        onClick={async () => {
+                          const updatedProject = await addColumn(project.id);
+                          if (!updatedProject) {
+                            toast.error("Error adding column", {
+                              theme: "dark",
+                            });
+                          }
+                          setLocalProject(updatedProject);
+                        }}
+                      >
+                        <Text>Add new column</Text>
+                      </Button>
+                    </Box>
+                  )}
+                </Stack>
+              </Container>
+            )}
+          </Droppable>
+        </DragDropContext>
+      </Box>
+    </motion.main>
   );
 }

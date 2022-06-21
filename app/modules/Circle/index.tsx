@@ -1,5 +1,6 @@
 import Card from "@/app/common/components/Card";
 import Loader from "@/app/common/components/Loader";
+import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { CircleType } from "@/app/types";
 import { Box, Heading, Stack, Text } from "degen";
 import { useRouter } from "next/router";
@@ -28,7 +29,8 @@ export default function Circle() {
   const { data: circle, isLoading } = useQuery<CircleType>(["circle", cId], {
     enabled: false,
   });
-  console.log({ circle });
+
+  const { canDo } = useRoleGate();
   if (isLoading) {
     return <Loader text="...." loading />;
   }
@@ -64,7 +66,7 @@ export default function Circle() {
               </Col>
             ))}
             <Col sm={6} md={4} lg={3}>
-              <CreateProjectModal accordian={false} />
+              {canDo("steward") && <CreateProjectModal accordian={false} />}
             </Col>
           </Row>
         </Container>
@@ -88,7 +90,7 @@ export default function Circle() {
               </Col>
             ))}
             <Col sm={6} md={4} lg={3}>
-              <CreateSpaceModal accordian={false} />
+              {canDo("steward") && <CreateSpaceModal accordian={false} />}
             </Col>
           </Row>
         </Container>

@@ -7,6 +7,8 @@ import ProfileModal from "./ProfileModal";
 import { CircleType, ProjectType, UserType } from "@/app/types";
 import ProjectSettings from "../Project/ProjectSettings";
 import Link from "next/link";
+import { useAccount } from "wagmi";
+import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 
 const getUser = async () => {
   const res = await fetch("http://localhost:3000/user/me", {
@@ -18,13 +20,18 @@ const getUser = async () => {
 function Header(): ReactElement {
   const router = useRouter();
   const { circle: cId, project: pId } = router.query;
-  const { data: currentUser } = useQuery<UserType>("getMyUser", getUser);
+  const { data } = useAccount();
+  const { data: currentUser } = useQuery<UserType>("getMyUser", getUser, {
+    enabled: !!data?.address,
+  });
   const { data: circle } = useQuery<CircleType>(["circle", cId], {
     enabled: false,
   });
   const { data: project } = useQuery<ProjectType>(["project", pId], {
     enabled: false,
   });
+
+  const { canDo } = useRoleGate();
 
   return (
     <Box
@@ -45,7 +52,7 @@ function Header(): ReactElement {
             <Link href={`/${cId}/${pId}`}>{project?.name}</Link>
           </Heading>
         )}
-        {pId && project?.name && <ProjectSettings />}
+        {pId && project?.name && canDo("steward") && <ProjectSettings />}
         <Box marginLeft="4" />
       </Stack>
       <Stack direction="horizontal">

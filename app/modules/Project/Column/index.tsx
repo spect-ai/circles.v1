@@ -1,24 +1,16 @@
+import { updateColumnDetails } from "@/app/services/Column";
+import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { CardType, ColumnType } from "@/app/types";
-import {
-  Box,
-  Button,
-  IconCog,
-  IconPlus,
-  IconPlusSmall,
-  Input,
-  Stack,
-  Tag,
-  Text,
-} from "degen";
+import { Box, Button, IconPlusSmall, Stack } from "degen";
 import { AnimatePresence } from "framer-motion";
-import Link from "next/link";
-import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Draggable, Droppable } from "react-beautiful-dnd";
 import { toast } from "react-toastify";
 import styled from "styled-components";
 import CardComponent from "../CardComponent";
+import { useLocalProject } from "../Context/LocalProjectContext";
 import CreateCardModal from "../CreateCardModal";
+import ColumnSettings from "./ColumnSettings";
 
 type Props = {
   cards: CardType[];
@@ -66,40 +58,24 @@ const NameInput = styled.input`
 `;
 
 export default function ColumnComponent({ cards, id, column, index }: Props) {
-  const router = useRouter();
-
-  const [showCreateTask, setShowCreateTask] = useState(false);
-  // const [showCreateGithubTask, setShowCreateGithubTask] = useState(false);
-  const [isTaskOpen, setIsTaskOpen] = useState(false);
-  const handleTaskClose = () => setIsTaskOpen(false);
-  const [taskId, setTaskId] = useState("");
-  const [currentColumnTitle, setCurrentColumnTitle] = useState(column.name);
   const [columnTitle, setColumnTitle] = useState(column.name);
   const [isOpen, setIsOpen] = useState(false);
-  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+  const { localProject: project, setLocalProject } = useLocalProject();
+  const { canDo } = useRoleGate();
 
-  const handleCreateCardClose = () => {
-    setShowCreateTask(false);
-  };
-
-  function updateColumn() {
-    //   if (currentColumnTitle !== columnTitle) {
-    //     runMoralisFunction('updateColumnName', {
-    //       boardId: bid,
-    //       columnId: id,
-    //       newName: columnTitle,
-    //     })
-    //       .then((res: BoardData) => {
-    //         console.log(res);
-    //         setSpace(res);
-    //       })
-    //       .catch((err: any) => {
-    //         notify(
-    //           'Sorry! There was an error while updating column name',
-    //           'error'
-    //         );
-    //       });
-    //   }
+  async function updateColumn() {
+    const updatedProject = await updateColumnDetails(
+      project.id,
+      column.columnId,
+      {
+        name: columnTitle,
+      }
+    );
+    if (!updatedProject) {
+      toast.error("Error updating column", { theme: "dark" });
+      return;
+    }
+    setLocalProject(updatedProject);
   }
 
   // useEffect(() => {
@@ -132,7 +108,7 @@ export default function ColumnComponent({ cards, id, column, index }: Props) {
             justifyContent="space-between"
           >
             <Box>
-              <Stack direction="horizontal">
+              <Stack direction="horizontal" space="0">
                 <NameInput
                   placeholder="Add Title"
                   value={columnTitle}
@@ -140,21 +116,25 @@ export default function ColumnComponent({ cards, id, column, index }: Props) {
                   onBlur={() => updateColumn()}
                   //   disabled={space.roles[user?.id as string] !== 3}
                 />
-
-                {/* <Button shape="circle" size="small" variant="transparent">
-                    <IconCog size="5" />
-                  </Button> */}
-                {/* <ColumnSettings column={column} /> */}
                 <Button
                   shape="circle"
                   size="small"
                   variant="transparent"
                   onClick={() => {
+                    // allow more roles to edit
+                    if (!canDo("steward")) {
+                      toast.error(
+                        "You don't have permission to add cards in this column",
+                        { theme: "dark" }
+                      );
+                      return;
+                    }
                     setIsOpen(true);
                   }}
                 >
                   <IconPlusSmall />
                 </Button>
+                {canDo("steward") && <ColumnSettings column={column} />}
               </Stack>
             </Box>
             <Droppable droppableId={id} type="task">

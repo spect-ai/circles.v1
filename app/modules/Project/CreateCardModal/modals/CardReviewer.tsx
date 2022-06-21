@@ -1,16 +1,30 @@
 import EditTag from "@/app/common/components/EditTag";
 import ModalOption from "@/app/common/components/ModalOption";
-import useRoleGate from "@/app/services/RoleGate/useRoleGate";
-import { DashboardOutlined } from "@ant-design/icons";
-import { Box, IconSearch, Input, Text } from "degen";
-import { matchSorter } from "match-sorter";
+import { MemberDetails, UserType } from "@/app/types";
+import { Avatar, Box, IconSearch, IconUserSolid, Input, Text } from "degen";
+import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
+import { useQuery } from "react-query";
 import { useLocalCard } from "../hooks/LocalCardContext";
-import { getOptions, Option, priorityMapping } from "../utils";
+import { getOptions, Option } from "../utils";
+import { matchSorter } from "match-sorter";
+import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 
-export default function CardPriority() {
-  const { priority, setPriority, project } = useLocalCard();
+export default function CardReviewer() {
+  const { reviewer, setReviewer, project } = useLocalCard();
   const [modalOpen, setModalOpen] = useState(false);
+  const router = useRouter();
+  const { circle: cId } = router.query;
+  const { data: memberDetails } = useQuery<MemberDetails>(
+    ["memberDetails", cId],
+    {
+      enabled: false,
+    }
+  );
+
+  const { data: currentUser } = useQuery<UserType>("getMyUser", {
+    enabled: false,
+  });
 
   const [options, setOptions] = useState<Option[]>();
   const [filteredOptions, setFilteredOptions] = useState<Option[]>();
@@ -18,29 +32,35 @@ export default function CardPriority() {
   const { canTakeAction } = useRoleGate();
 
   useEffect(() => {
-    const ops = getOptions("priority", project) as Option[];
+    const ops = getOptions("assignee", project, memberDetails) as Option[];
     setOptions(ops);
     setFilteredOptions(ops);
+    if (currentUser && !reviewer) {
+      setReviewer(currentUser.id);
+    }
   }, []);
-
   return (
     <EditTag
-      name={priorityMapping[priority]}
-      modalTitle="Select Priority"
-      label="Priority"
+      name={
+        (memberDetails && memberDetails.memberDetails[reviewer]?.username) ||
+        "Unassigned"
+      }
+      modalTitle="Select Reviewer"
+      label="Reviewer"
       modalOpen={modalOpen}
       setModalOpen={setModalOpen}
       icon={
-        <DashboardOutlined
-          style={{
-            fontSize: "1rem",
-            marginLeft: "0.2rem",
-            marginRight: "0.2rem",
-            color: "rgb(175, 82, 222, 1)",
-          }}
-        />
+        reviewer ? (
+          <Avatar
+            src={memberDetails && memberDetails.memberDetails[reviewer]?.avatar}
+            label=""
+            size="5"
+          />
+        ) : (
+          <IconUserSolid color="accent" size="5" />
+        )
       }
-      disabled={!canTakeAction("cardPriority")}
+      disabled={!canTakeAction("cardReviewer")}
     >
       <Box height="96">
         <Box borderBottomWidth="0.375" paddingX="8" paddingY="5">
@@ -62,24 +82,27 @@ export default function CardPriority() {
           {filteredOptions?.map((item: any) => (
             <ModalOption
               key={item.value}
-              isSelected={priority === item.value}
+              isSelected={reviewer === item.value}
               item={item}
               onClick={() => {
-                setPriority(item.value);
+                setReviewer(item.value);
                 setModalOpen(false);
               }}
             >
               <Box
                 style={{
                   display: "flex",
-                  flexDirection: "column",
+                  flexDirection: "row",
                   alignItems: "center",
                   width: "100%",
+                  justifyContent: "center",
                 }}
               >
+                <Avatar size="6" src={item.avatar} label="avatar" />
+                <Box marginRight="2" />
                 <Text
                   size="small"
-                  color={priority === item.value ? "accent" : "text"}
+                  color={reviewer === item.value ? "accent" : "text"}
                   weight="bold"
                 >
                   {item.name}
@@ -88,7 +111,7 @@ export default function CardPriority() {
             </ModalOption>
           ))}
           {!filteredOptions?.length && (
-            <Text variant="label">No Priority found</Text>
+            <Text variant="label">No Contributors found</Text>
           )}
         </Box>
       </Box>
