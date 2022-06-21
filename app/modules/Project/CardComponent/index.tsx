@@ -79,7 +79,7 @@ export default function CardComponent({ card, index, column }: Props) {
                 memberDetails={space.memberDetails}
               /> */}
             <Stack direction="horizontal" wrap space="2">
-              {card.type === "bounty" && (
+              {card.type === "Bounty" && (
                 <Tag size="small">
                   <Text>{card.type}</Text>
                 </Tag>
