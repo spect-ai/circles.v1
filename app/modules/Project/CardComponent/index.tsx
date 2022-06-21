@@ -80,7 +80,7 @@ export default function CardComponent({ card, index, column }: Props) {
               /> */}
             <Stack direction="horizontal" wrap space="2">
               {card.type === "Bounty" && (
-                <Tag size="small">
+                <Tag size="small" tone="accent">
                   <Text>{card.type}</Text>
                 </Tag>
               )}

@@ -50,7 +50,7 @@ export function useProviderLocalProject() {
     setLocalProject,
     error,
     setError,
-    loading: loading || isLoading || isFetching,
+    loading: loading || isLoading,
     updateProject,
   };
 }

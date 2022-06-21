@@ -36,87 +36,62 @@ export default function Project() {
     return <SkeletonLoader />;
   }
 
-  const variants = {
-    hidden: { opacity: 0, x: 0, y: 0 },
-    enter: {
-      opacity: 1,
-      x: 0,
-      y: 0,
-      transition: {
-        duration: 0.4,
-      },
-    },
-    exit: {
-      opacity: 0,
-      x: 0,
-      y: 0,
-    },
-  };
   return (
-    <motion.main
-      variants={variants} // Pass the variant object into Framer Motion
-      initial="hidden" // Set the initial state to variants.hidden
-      animate="enter" // Animated state to variants.enter
-      exit="exit" // Exit state (used later) to variants.exit
-      transition={{ type: "linear" }} // Set the transition to linear
-      className=""
-    >
-      <Box padding="4">
-        <ToastContainer />
-        <DragDropContext onDragEnd={handleDragEnd}>
-          <Droppable
-            droppableId="all-columns"
-            direction="horizontal"
-            type="column"
-          >
-            {(provided, snapshot) => (
-              <Container {...provided.droppableProps} ref={provided.innerRef}>
-                <Stack direction="horizontal">
-                  {project?.columnOrder?.map((columnId, index): any => {
-                    const column = project.columnDetails[columnId];
-                    const cards = column.cards?.map(
-                      (cardId: any) => project.cards[cardId]
-                    );
-                    return (
-                      <ColumnComponent
-                        key={columnId}
-                        column={column}
-                        cards={cards}
-                        id={columnId}
-                        index={index}
-                      />
-                    );
-                  })}
-                  {provided.placeholder}
-                  {canDo("steward") && (
-                    <Box style={{ width: "20rem" }}>
-                      <Button
-                        // disabled={project.roles[user?.id as string] !== 3}
-                        width="full"
-                        size="small"
-                        variant="secondary"
-                        prefix={<IconPlusSmall />}
-                        center
-                        onClick={async () => {
-                          const updatedProject = await addColumn(project.id);
-                          if (!updatedProject) {
-                            toast.error("Error adding column", {
-                              theme: "dark",
-                            });
-                          }
-                          setLocalProject(updatedProject);
-                        }}
-                      >
-                        <Text>Add new column</Text>
-                      </Button>
-                    </Box>
-                  )}
-                </Stack>
-              </Container>
-            )}
-          </Droppable>
-        </DragDropContext>
-      </Box>
-    </motion.main>
+    <Box padding="4">
+      <ToastContainer />
+      <DragDropContext onDragEnd={handleDragEnd}>
+        <Droppable
+          droppableId="all-columns"
+          direction="horizontal"
+          type="column"
+        >
+          {(provided, snapshot) => (
+            <Container {...provided.droppableProps} ref={provided.innerRef}>
+              <Stack direction="horizontal">
+                {project?.columnOrder?.map((columnId, index): any => {
+                  const column = project.columnDetails[columnId];
+                  const cards = column.cards?.map(
+                    (cardId: any) => project.cards[cardId]
+                  );
+                  return (
+                    <ColumnComponent
+                      key={columnId}
+                      column={column}
+                      cards={cards}
+                      id={columnId}
+                      index={index}
+                    />
+                  );
+                })}
+                {provided.placeholder}
+                {canDo("steward") && (
+                  <Box style={{ width: "20rem" }}>
+                    <Button
+                      // disabled={project.roles[user?.id as string] !== 3}
+                      width="full"
+                      size="small"
+                      variant="secondary"
+                      prefix={<IconPlusSmall />}
+                      center
+                      onClick={async () => {
+                        const updatedProject = await addColumn(project.id);
+                        if (!updatedProject) {
+                          toast.error("Error adding column", {
+                            theme: "dark",
+                          });
+                        }
+                        setLocalProject(updatedProject);
+                      }}
+                    >
+                      <Text>Add new column</Text>
+                    </Button>
+                  </Box>
+                )}
+              </Stack>
+            </Container>
+          )}
+        </Droppable>
+      </DragDropContext>
+    </Box>
   );
 }
