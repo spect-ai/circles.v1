@@ -45,7 +45,7 @@ export default function Project() {
           direction="horizontal"
           type="column"
         >
-          {(provided, snapshot) => (
+          {(provided) => (
             <Container {...provided.droppableProps} ref={provided.innerRef}>
               <Stack direction="horizontal">
                 {project?.columnOrder?.map((columnId, index): any => {

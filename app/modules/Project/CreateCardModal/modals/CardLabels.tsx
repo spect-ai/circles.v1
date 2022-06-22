@@ -11,7 +11,7 @@ import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
 
 export default function CardLabels() {
-  const { labels, setLabels } = useLocalCard();
+  const { labels, setLabels, setIsDirty } = useLocalCard();
   const [modalOpen, setModalOpen] = useState(false);
 
   const [options, setOptions] = useState<Option[]>();
@@ -77,6 +77,7 @@ export default function CardLabels() {
                   } else {
                     setLabels([...labels, item.value]);
                   }
+                  setIsDirty(true);
                 }}
               >
                 <Tag

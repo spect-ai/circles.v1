@@ -2,6 +2,7 @@ import { timeSince } from "@/app/common/utils/utils";
 import useComment from "@/app/services/Comment/useComment";
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
 import { UserType } from "@/app/types";
+import { SendOutlined } from "@ant-design/icons";
 import { Avatar, Box, Button, Stack, Text } from "degen";
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -128,6 +129,7 @@ export default function Comment({
                 <Button
                   size="small"
                   variant="secondary"
+                  prefix={<SendOutlined />}
                   loading={loading}
                   onClick={() => {
                     void addComment(content);
@@ -135,7 +137,7 @@ export default function Comment({
                     setIsDisabled(true);
                   }}
                 >
-                  Save
+                  Send
                 </Button>
               </motion.div>
             </Box>

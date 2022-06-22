@@ -10,7 +10,7 @@ import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
 
 export default function CardType() {
-  const { cardType, setCardType, project } = useLocalCard();
+  const { cardType, setCardType, setIsDirty } = useLocalCard();
   const [modalOpen, setModalOpen] = useState(false);
 
   const [options, setOptions] = useState<Option[]>();
@@ -67,6 +67,7 @@ export default function CardType() {
               item={item}
               onClick={() => {
                 setCardType(item.value);
+                setIsDirty(true);
                 setModalOpen(false);
               }}
             >

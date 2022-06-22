@@ -13,7 +13,8 @@ import { useLocalCard } from "../hooks/LocalCardContext";
 export default function CardReward() {
   const [modalOpen, setModalOpen] = useState(false);
   const { registry } = useGlobalContext();
-  const { chain, setChain, token, setToken, value, setValue } = useLocalCard();
+  const { chain, setChain, token, setToken, value, setValue, setIsDirty } =
+    useLocalCard();
   const { canTakeAction } = useRoleGate();
 
   return (
@@ -85,7 +86,10 @@ export default function CardReward() {
               placeholder="10"
               type="number"
               value={value}
-              onChange={(e) => setValue(e.target.value)}
+              onChange={(e) => {
+                setValue(e.target.value);
+                setIsDirty(true);
+              }}
             />
             {/* <Button width="full" size="small">
           Save

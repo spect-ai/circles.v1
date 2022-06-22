@@ -12,7 +12,7 @@ import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
 
 export default function CardReviewer() {
-  const { reviewer, setReviewer } = useLocalCard();
+  const { reviewer, setReviewer, setIsDirty } = useLocalCard();
   const [modalOpen, setModalOpen] = useState(false);
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
@@ -72,6 +72,7 @@ export default function CardReviewer() {
               item={item}
               onClick={() => {
                 setReviewer(item.value);
+                setIsDirty(true);
                 setModalOpen(false);
               }}
             >

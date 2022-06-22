@@ -4,8 +4,8 @@ import Loader from "@/app/common/components/Loader";
 import Tabs from "@/app/common/components/Tabs";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { SaveOutlined } from "@ant-design/icons";
-import { Box, Button, IconClose, Stack, Tag, Text } from "degen";
-import { AnimatePresence } from "framer-motion";
+import { Box, Button, Stack, Tag, Text } from "degen";
+import { motion, AnimatePresence } from "framer-motion";
 import React, { useState } from "react";
 import { ToastContainer } from "react-toastify";
 import styled from "styled-components";
@@ -78,6 +78,8 @@ export default function Card() {
     setDescription,
     project,
     onCardUpdate,
+    isDirty,
+    setIsDirty,
   } = useLocalCard();
 
   const { canTakeAction } = useRoleGate();
@@ -128,6 +130,7 @@ export default function Card() {
                     <Editor
                       value={description}
                       onChange={(txt) => {
+                        setIsDirty(true);
                         setDescription(txt);
                       }}
                       placeholder="Describe your card"
@@ -160,29 +163,33 @@ export default function Card() {
                 <CardDeadline />
                 <CardPriority />
                 <CardReward />
-                <Button
-                  center
-                  prefix={<SaveOutlined style={{ fontSize: "1.3rem" }} />}
-                  width="full"
-                  size="small"
-                  variant="secondary"
-                  loading={updating}
-                  onClick={() => {
-                    onCardUpdate();
-                  }}
-                >
-                  <Text>Save!</Text>
-                </Button>
-                <Button
-                  center
-                  prefix={<IconClose />}
-                  width="full"
-                  size="small"
-                  variant="secondary"
-                  tone="red"
-                >
-                  <Text>Close Task</Text>
-                </Button>
+                {isDirty && (
+                  <motion.div
+                    key="content"
+                    initial="collapsed"
+                    animate="open"
+                    exit="collapsed"
+                    variants={{
+                      open: { height: "2rem", opacity: 1 },
+                      collapsed: { height: 0, opacity: 0 },
+                    }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <Button
+                      center
+                      prefix={<SaveOutlined style={{ fontSize: "1.3rem" }} />}
+                      width="full"
+                      size="small"
+                      variant="secondary"
+                      loading={updating}
+                      onClick={() => {
+                        onCardUpdate();
+                      }}
+                    >
+                      <Text>Save!</Text>
+                    </Button>
+                  </motion.div>
+                )}
                 {/* <DiscordThread /> */}
               </Stack>
             )}

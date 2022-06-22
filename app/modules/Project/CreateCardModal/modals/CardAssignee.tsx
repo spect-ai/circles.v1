@@ -9,7 +9,7 @@ import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
 
 export default function CardAssignee() {
-  const { assignee, setAssignee } = useLocalCard();
+  const { assignee, setAssignee, setIsDirty } = useLocalCard();
   const [modalOpen, setModalOpen] = useState(false);
   const [options, setOptions] = useState<Option[]>();
   const [filteredOptions, setFilteredOptions] = useState<Option[]>();
@@ -61,6 +61,7 @@ export default function CardAssignee() {
               item={item}
               onClick={() => {
                 setAssignee(item.value);
+                setIsDirty(true);
                 setModalOpen(false);
               }}
             >

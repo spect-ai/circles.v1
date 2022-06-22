@@ -10,7 +10,7 @@ import { Option, priorityMapping } from "../constants";
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
 
 export default function CardPriority() {
-  const { priority, setPriority, project } = useLocalCard();
+  const { priority, setPriority, setIsDirty } = useLocalCard();
   const [modalOpen, setModalOpen] = useState(false);
 
   const [options, setOptions] = useState<Option[]>();
@@ -68,6 +68,7 @@ export default function CardPriority() {
               item={item}
               onClick={() => {
                 setPriority(item.value);
+                setIsDirty(true);
                 setModalOpen(false);
               }}
             >

@@ -77,6 +77,8 @@ type CreateCardContextType = {
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
   updating: boolean;
   setUpdating: React.Dispatch<React.SetStateAction<boolean>>;
+  isDirty: boolean;
+  setIsDirty: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export const LocalCardContext = createContext<CreateCardContextType>(
@@ -134,6 +136,7 @@ export function useProviderLocalCard({
     }
   );
   const [workThreadOrder, setWorkThreadOrder] = useState([] as string[]);
+  const [isDirty, setIsDirty] = useState(false);
 
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
@@ -156,6 +159,7 @@ export function useProviderLocalCard({
       setActivity(card.activity);
       setWorkThreads(card.workThreads);
       setWorkThreadOrder(card.workThreadOrder);
+      setIsDirty(false);
       setLoading(false);
     }
   }, [card, createCard, isLoading]);
@@ -179,22 +183,6 @@ export function useProviderLocalCard({
         value: Number(value),
       },
     };
-    // Object.keys(payload).forEach((key) => {
-    //   if (
-    //     typeof payload[key] === "object" &&
-    //     Object.keys(payload[key]).length === 0
-    //   ) {
-    //     delete payload[key];
-    //   } else if (
-    //     Array.isArray(payload[key]) &&
-    //     (payload[key].length === 0 || payload[key][0]?.length === 0)
-    //   ) {
-    //     delete payload[key];
-    //   }
-    //   if (payload[key] === null) {
-    //     delete payload[key];
-    //   }
-    // });
     console.log({ payload });
     fetch("http://localhost:3000/card", {
       method: "POST",
@@ -352,6 +340,7 @@ export function useProviderLocalCard({
     setDeadline({} as Date);
     setPriority(0);
     setSubTasks([]);
+    setIsDirty(false);
   };
 
   return {
@@ -396,6 +385,8 @@ export function useProviderLocalCard({
     setWorkThreadOrder,
     card,
     setCard,
+    isDirty,
+    setIsDirty,
   };
 }
 

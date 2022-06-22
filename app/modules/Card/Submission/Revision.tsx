@@ -1,6 +1,7 @@
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
 import useSubmission from "@/app/services/Submission/useSubmission";
 import { UserType } from "@/app/types";
+import { SendOutlined } from "@ant-design/icons";
 import { Avatar, Box, Button, Stack } from "degen";
 import { motion, AnimatePresence } from "framer-motion";
 import React, { useEffect, useState } from "react";
@@ -118,6 +119,7 @@ export default function Revision({
                 <Button
                   size="small"
                   variant="secondary"
+                  prefix={<SendOutlined />}
                   loading={loading}
                   onClick={() => {
                     void createWorkUnit(
@@ -131,7 +133,7 @@ export default function Revision({
                     setContent("");
                   }}
                 >
-                  Save
+                  Send
                 </Button>
               </motion.div>
             </Box>
