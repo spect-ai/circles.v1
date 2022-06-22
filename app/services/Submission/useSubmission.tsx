@@ -105,9 +105,11 @@ export default function useSubmission() {
       const data = await res.json();
       console.log({ data });
       setCard(data);
-      toast("Success", {
-        theme: "dark",
-      });
+      if (body.type !== "revision") {
+        toast("Success", {
+          theme: "dark",
+        });
+      }
       return true;
     } else {
       toast.error("Error", {

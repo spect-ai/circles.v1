@@ -173,7 +173,6 @@ export default function Comment({
                         commitId as string
                       );
                       if (res) {
-                        setContent("");
                         setIsDisabled(true);
                       }
                     }}

@@ -1,5 +1,5 @@
 import React, { ReactElement } from "react";
-import { Box, Heading, Stack } from "degen";
+import { Box, Button, Heading, Stack } from "degen";
 import { useRouter } from "next/router";
 import { useQuery } from "react-query";
 import ConnectModal from "@/app/modules/Header/ConnectModal";
@@ -9,6 +9,8 @@ import ProjectSettings from "../Project/ProjectSettings";
 import Link from "next/link";
 import { useAccount } from "wagmi";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
+import { DoubleRightOutlined } from "@ant-design/icons";
+import { useGlobalContext } from "@/app/context/globalContext";
 
 const getUser = async () => {
   const res = await fetch("http://localhost:3000/user/me", {
@@ -18,6 +20,7 @@ const getUser = async () => {
 };
 
 function Header(): ReactElement {
+  const { setIsSidebarExpanded, isSidebarExpanded } = useGlobalContext();
   const router = useRouter();
   const { circle: cId, project: pId } = router.query;
   const { data } = useAccount();
@@ -45,6 +48,18 @@ function Header(): ReactElement {
       backgroundColor="background"
     >
       <Stack direction="horizontal" align="center">
+        <Box
+          transitionDuration="300"
+          style={{
+            transform: isSidebarExpanded ? "rotate(180deg)" : "rotate(0deg)",
+          }}
+          marginLeft="-2"
+          cursor="pointer"
+          color="textSecondary"
+          onClick={() => setIsSidebarExpanded(!isSidebarExpanded)}
+        >
+          <DoubleRightOutlined />
+        </Box>
         {!cId && <Heading>Circles</Heading>}
         {cId && !pId && <Heading>{circle?.name}</Heading>}
         {pId && project?.name && (

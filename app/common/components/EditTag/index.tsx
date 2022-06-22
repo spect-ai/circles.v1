@@ -1,8 +1,7 @@
-import { Box, IconBellSolid, Stack, Tag, Text } from "degen";
+import { Box, Stack, Text } from "degen";
 import React from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 import Modal from "../Modal";
-import styled from "styled-components";
 import ClickableTag from "./ClickableTag";
 import { toast } from "react-toastify";
 
@@ -17,8 +16,6 @@ type Props = {
   tone?: string;
   disabled?: boolean;
 };
-
-// const TagContainer = styled(Box)`
 
 function EditTag({
   name,

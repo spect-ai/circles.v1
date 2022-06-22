@@ -59,7 +59,7 @@ function ExtendedSidebar(): ReactElement {
             <Heading>
               {cId && pId && (circle?.name || project?.parents[0].name)}
             </Heading>
-            <Button
+            {/* <Button
               variant="transparent"
               size="small"
               shape="circle"
@@ -68,7 +68,7 @@ function ExtendedSidebar(): ReactElement {
               }}
             >
               <IconChevronLeft />
-            </Button>
+            </Button> */}
           </Box>
           <Container>{cId && <CircleSidebar />}</Container>
         </Box>

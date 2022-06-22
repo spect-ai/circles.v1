@@ -3,7 +3,7 @@ import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import useSubmission from "@/app/services/Submission/useSubmission";
 import { UserType, WorkUnitType } from "@/app/types";
-import { SaveOutlined } from "@ant-design/icons";
+import { SaveOutlined, SendOutlined } from "@ant-design/icons";
 import { Avatar, Box, Button } from "degen";
 import { motion, AnimatePresence } from "framer-motion";
 import React, { useState } from "react";
@@ -27,10 +27,13 @@ export default function EditorSubmission({
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
+  const [canSave, setCanSave] = useState(false);
+
+  const savebuttonRef = React.useRef<HTMLButtonElement>(null);
   return (
     <Box
       style={{
-        minHeight: "10rem",
+        minHeight: "5rem",
       }}
       marginRight="2"
       paddingLeft="4"
@@ -55,12 +58,18 @@ export default function EditorSubmission({
         value={content}
         onChange={(txt) => {
           setContent(txt);
+          setCanSave(true);
+          savebuttonRef.current?.scrollIntoView({
+            behavior: "smooth",
+            block: "end",
+            inline: "nearest",
+          });
         }}
         placeholder="Add your submission"
         disabled={!canTakeAction("cardSubmission") || isDisabled}
       />
       <AnimatePresence>
-        {canTakeAction("cardSubmission") && !isDisabled && (
+        {canTakeAction("cardSubmission") && !isDisabled && canSave && (
           <motion.div
             key="content"
             initial="collapsed"
@@ -72,33 +81,47 @@ export default function EditorSubmission({
             }}
             transition={{ duration: 0.3 }}
           >
-            <Button
-              prefix={<SaveOutlined />}
-              size="small"
-              variant="secondary"
-              disabled={!content}
-              onClick={() => {
-                void createWorkUnit(
-                  {
-                    content,
-                    type: "submission",
-                    status: "inReview",
-                  },
-                  workThreadId as string
-                );
-                setContent("");
-                // void updateWorkUnit(
-                //   {
-                //     type: "submission",
-                //     content,
-                //   },
-                //   workThreadId,
-                //   workUnit?.workUnitId as string
-                // );
-              }}
-            >
-              Save
-            </Button>
+            {workUnit ? (
+              <Button
+                ref={savebuttonRef}
+                prefix={<SaveOutlined />}
+                size="small"
+                variant="secondary"
+                disabled={!content}
+                onClick={() => {
+                  void updateWorkUnit(
+                    {
+                      type: "submission",
+                      content,
+                    },
+                    workThreadId as string,
+                    workUnit?.workUnitId
+                  );
+                }}
+              >
+                Save
+              </Button>
+            ) : (
+              <Button
+                prefix={<SendOutlined />}
+                size="small"
+                variant="secondary"
+                disabled={!content}
+                onClick={() => {
+                  void createWorkUnit(
+                    {
+                      content,
+                      type: "submission",
+                      status: "inReview",
+                    },
+                    workThreadId as string
+                  );
+                  setContent("");
+                }}
+              >
+                Send
+              </Button>
+            )}
           </motion.div>
         )}
       </AnimatePresence>

@@ -27,23 +27,20 @@ export default function WorkThread({ workThread }: Props) {
           </Box>
         }
       >
-        {workThread.workUnitOrder.map((workUnitId, index) => (
+        {workThread.workUnitOrder.map((workUnitId) => (
           <WorkUnit
             key={workUnitId}
             workUnit={workThread.workUnits[workUnitId]}
             workThreadId={workThread.threadId}
-            nextWorkUnitType={
-              workThread.workUnits[workThread.workUnitOrder[index + 1]]?.type ||
-              ""
-            }
+            status={workThread.status}
+            workUnitOrder={workThread.workUnitOrder}
           />
         ))}
         {canTakeAction("cardRevision") && (
           <Revision newRevision workThreadId={workThread.threadId} />
         )}
         {canTakeAction("cardSubmission") &&
-          workThread.workUnits[workThread.workUnitOrder[-1]]?.type ===
-            "revision" && (
+          workThread.status === "inRevision" && (
             <EditorSubmission
               isDisabled={false}
               workThreadId={workThread.threadId}

@@ -31,7 +31,10 @@ export default function useRoleGate() {
     if (!currentUser?.id) {
       return false;
     }
-    if (circle?.memberRoles[currentUser?.id]?.includes("steward")) {
+    if (
+      circle?.memberRoles[currentUser?.id]?.includes("steward") &&
+      action !== "cardSubmission"
+    ) {
       return true;
     }
     switch (action) {

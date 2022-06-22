@@ -5,13 +5,15 @@ import EditorSubmission from "./EditorSubmission";
 type Props = {
   workUnit: WorkUnitType;
   workThreadId: string;
-  nextWorkUnitType?: string;
+  status: "accepted" | "inRevision" | "inReview" | "draft";
+  workUnitOrder: string[];
 };
 
 export default function WorkUnit({
   workUnit,
   workThreadId,
-  nextWorkUnitType,
+  status,
+  workUnitOrder,
 }: Props) {
   return (
     <>
@@ -19,7 +21,10 @@ export default function WorkUnit({
         <EditorSubmission
           workUnit={workUnit}
           workThreadId={workThreadId}
-          isDisabled={nextWorkUnitType === "revision"}
+          isDisabled={
+            status !== "draft" &&
+            workUnitOrder[workUnitOrder.length - 1] !== workUnit.workUnitId
+          }
         />
       )}
       {workUnit.type === "revision" && (

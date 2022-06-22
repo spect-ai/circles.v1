@@ -129,7 +129,6 @@ export default function Revision({
                       workThreadId as string
                     );
                     setContent("");
-                    setIsDisabled(true);
                   }}
                 >
                   Save

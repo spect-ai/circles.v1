@@ -142,9 +142,8 @@ export default function ProfileModal() {
                       credentials: "include",
                     });
                     disconnect();
-                    setTimeout(() => {
-                      queryClient.setQueryData("getMyUser", null);
-                    }, 500);
+                    queryClient.setQueryData("getMyUser", null);
+                    void queryClient.invalidateQueries("getMyUser");
                     console.log("disconnected");
                     handleClose();
                   }}
