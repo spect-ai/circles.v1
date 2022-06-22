@@ -10,7 +10,7 @@ type Props = {
   memberDetails: {
     [key: string]: UserType;
   };
-  roles: { [key: string]: string };
+  roles: { [key: string]: string[] };
 };
 
 function Contributors({ members, memberDetails, roles }: Props) {
