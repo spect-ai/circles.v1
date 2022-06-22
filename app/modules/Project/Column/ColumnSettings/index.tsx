@@ -3,6 +3,7 @@ import { deleteColumn, updateColumnDetails } from "@/app/services/Column";
 import { ColumnType } from "@/app/types";
 import { SaveOutlined } from "@ant-design/icons";
 import { Box, Button, IconCog, IconTrash, Input, Stack } from "degen";
+import { AnimatePresence } from "framer-motion";
 import React, { useState } from "react";
 import { toast } from "react-toastify";
 import { useLocalProject } from "../../Context/LocalProjectContext";
@@ -52,42 +53,44 @@ export default function ColumnSettings({ column }: Props) {
       >
         <IconCog />
       </Button>
-      {isOpen && (
-        <Modal handleClose={() => setIsOpen(false)} title="Column Settings">
-          <Box padding="8">
-            <Stack>
-              <Input
-                label=""
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-              />
-              <Stack direction="horizontal">
-                <Button
-                  width="1/2"
-                  size="small"
-                  variant="secondary"
-                  onClick={onSave}
-                  center
-                  prefix={<SaveOutlined style={{ fontSize: "1.3rem" }} />}
-                >
-                  Save
-                </Button>
-                <Button
-                  width="1/2"
-                  size="small"
-                  variant="secondary"
-                  onClick={onDelete}
-                  center
-                  tone="red"
-                  prefix={<IconTrash />}
-                >
-                  Delete
-                </Button>
+      <AnimatePresence>
+        {isOpen && (
+          <Modal handleClose={() => setIsOpen(false)} title="Column Settings">
+            <Box padding="8">
+              <Stack>
+                <Input
+                  label=""
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                />
+                <Stack direction="horizontal">
+                  <Button
+                    width="1/2"
+                    size="small"
+                    variant="secondary"
+                    onClick={onSave}
+                    center
+                    prefix={<SaveOutlined style={{ fontSize: "1.3rem" }} />}
+                  >
+                    Save
+                  </Button>
+                  <Button
+                    width="1/2"
+                    size="small"
+                    variant="secondary"
+                    onClick={onDelete}
+                    center
+                    tone="red"
+                    prefix={<IconTrash />}
+                  >
+                    Delete
+                  </Button>
+                </Stack>
               </Stack>
-            </Stack>
-          </Box>
-        </Modal>
-      )}
+            </Box>
+          </Modal>
+        )}
+      </AnimatePresence>
     </>
   );
 }

@@ -205,6 +205,10 @@ export function useProviderLocalCard({
       credentials: "include",
     })
       .then(async (res) => {
+        if (!res.ok) {
+          toast.error("Error creating card");
+          return;
+        }
         const data = await res.json();
         !createAnother && handleClose && handleClose();
         toast(
