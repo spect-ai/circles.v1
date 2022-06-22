@@ -15,11 +15,15 @@ export default function useRoleGate() {
 
   const { card } = useLocalCard();
 
-  const canDo = (role: string) => {
+  const canDo = (roles: string[]) => {
     if (!currentUser?.id) {
       return false;
     }
-    return circle?.memberRoles[currentUser?.id]?.includes(role) || false;
+    const arr1 = circle?.memberRoles[currentUser?.id];
+    const arr2 = roles;
+    const filteredArray = arr1?.filter((value) => arr2.includes(value));
+    return (filteredArray && filteredArray?.length > 0) || false;
+    // return circle?.memberRoles[currentUser?.id]?.includes(roles) || false;
   };
 
   const canTakeAction = (action: string) => {

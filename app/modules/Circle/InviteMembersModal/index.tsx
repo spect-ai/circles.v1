@@ -34,7 +34,7 @@ function InviteMemberModal() {
   const [isLoading, setIsLoading] = useState(false);
   return (
     <>
-      <Box width="1/2">
+      <Box width="1/3" marginBottom="2">
         <Button
           onClick={() => {
             setIsOpen(true);
@@ -45,7 +45,7 @@ function InviteMemberModal() {
           prefix={<SendOutlined />}
           center
         >
-          Invite Member
+          Invite
         </Button>
       </Box>
       <AnimatePresence>
@@ -157,17 +157,26 @@ function InviteMemberModal() {
                         uses: uses.uses,
                         expires: new Date(expire).toISOString(),
                       }),
+                      credentials: "include",
                     })
                       .then(async (res) => {
                         console.log({ res });
                         const invite = await res.text();
-                        const link = `${window.location.origin}?inviteCode=${invite}&circleId=${circle?.id}`;
-                        void navigator.clipboard.writeText(link);
-                        toast("Invite link copied", {
-                          theme: "dark",
-                        });
-                        setIsLoading(false);
-                        setIsOpen(false);
+                        console.log({ invite });
+                        if (res.ok) {
+                          const link = `${window.location.origin}?inviteCode=${invite}&circleId=${circle?.id}`;
+                          void navigator.clipboard.writeText(link);
+                          toast("Invite link copied", {
+                            theme: "dark",
+                          });
+                          setIsLoading(false);
+                          setIsOpen(false);
+                        } else {
+                          toast.error("Something went wrong", {
+                            theme: "dark",
+                          });
+                          setIsLoading(false);
+                        }
                       })
                       .catch((err) => {
                         console.log({ err });

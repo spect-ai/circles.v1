@@ -66,7 +66,7 @@ export default function Circle() {
               </Col>
             ))}
             <Col sm={6} md={4} lg={3}>
-              {canDo("steward") && <CreateProjectModal accordian={false} />}
+              {canDo(["steward"]) && <CreateProjectModal accordian={false} />}
             </Col>
           </Row>
         </Container>
@@ -90,7 +90,7 @@ export default function Circle() {
               </Col>
             ))}
             <Col sm={6} md={4} lg={3}>
-              {canDo("steward") && <CreateSpaceModal accordian={false} />}
+              {canDo(["steward"]) && <CreateSpaceModal accordian={false} />}
             </Col>
           </Row>
         </Container>

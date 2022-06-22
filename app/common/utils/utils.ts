@@ -36,7 +36,7 @@ export function downloadCSV(content: Array<Array<any>>, filename: string) {
 }
 
 export function toIsoString(date: Date) {
-  if (!date.getDate) {
+  if (!date?.getDate) {
     return "";
   }
   const tzo = -date.getTimezoneOffset(),

@@ -4,6 +4,7 @@ import {
   getFlattenedNetworks,
 } from "@/app/common/utils/registry";
 import { useGlobalContext } from "@/app/context/globalContext";
+import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { Box, IconEth, Input, Stack, Tag, Text } from "degen";
 import { motion } from "framer-motion";
 import React, { useState } from "react";
@@ -13,6 +14,8 @@ export default function CardReward() {
   const [modalOpen, setModalOpen] = useState(false);
   const { registry } = useGlobalContext();
   const { chain, setChain, token, setToken, value, setValue } = useLocalCard();
+  const { canTakeAction } = useRoleGate();
+
   return (
     <EditTag
       name={value !== "0" ? `${value} ${token.symbol}` : "No Reward"}
@@ -21,6 +24,7 @@ export default function CardReward() {
       modalOpen={modalOpen}
       setModalOpen={setModalOpen}
       icon={<IconEth color="accent" size="5" />}
+      disabled={!canTakeAction("cardReward")}
     >
       <Box height="96">
         <Box padding="8">

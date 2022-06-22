@@ -28,8 +28,8 @@ function EditTag({
   modalOpen,
   icon,
   setModalOpen,
-  tone = "accentTertiary",
-  disabled = true,
+  tone = "accentSecondary",
+  disabled = false,
 }: Props) {
   return (
     <>

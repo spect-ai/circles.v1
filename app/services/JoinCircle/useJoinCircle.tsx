@@ -15,6 +15,8 @@ export default function useJoinCircle() {
     if (res.id) {
       void router.push(`/${res.slug}`);
       toast("You have joined the circle!", { theme: "dark" });
+    } else {
+      toast.error("Something went wrong", { theme: "dark" });
     }
   };
 

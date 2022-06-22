@@ -121,8 +121,7 @@ export default function ColumnComponent({ cards, id, column, index }: Props) {
                   size="small"
                   variant="transparent"
                   onClick={() => {
-                    // allow more roles to edit
-                    if (!canDo("steward")) {
+                    if (!canDo(["steward", "contributor"])) {
                       toast.error(
                         "You don't have permission to add cards in this column",
                         { theme: "dark" }
@@ -134,7 +133,7 @@ export default function ColumnComponent({ cards, id, column, index }: Props) {
                 >
                   <IconPlusSmall />
                 </Button>
-                {canDo("steward") && <ColumnSettings column={column} />}
+                {canDo(["steward"]) && <ColumnSettings column={column} />}
               </Stack>
             </Box>
             <Droppable droppableId={id} type="task">

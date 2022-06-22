@@ -40,8 +40,8 @@ type CreateCardContextType = {
   setToken: React.Dispatch<React.SetStateAction<Token>>;
   value: string;
   setValue: React.Dispatch<React.SetStateAction<string>>;
-  deadline: Date;
-  setDeadline: React.Dispatch<React.SetStateAction<Date>>;
+  deadline: Date | null;
+  setDeadline: React.Dispatch<React.SetStateAction<Date | null>>;
   priority: number;
   setPriority: React.Dispatch<React.SetStateAction<number>>;
   onSubmit: (createAnother: boolean) => void;
@@ -119,7 +119,7 @@ export function useProviderLocalCard({
   const [chain, setChain] = useState(circle?.defaultPayment?.chain as Chain);
   const [token, setToken] = useState(circle?.defaultPayment?.token as Token);
   const [value, setValue] = useState("0");
-  const [deadline, setDeadline] = useState<Date>({} as Date);
+  const [deadline, setDeadline] = useState<Date | null>(null);
   const [priority, setPriority] = useState(0);
   const [subTasks, setSubTasks] = useState<
     {
@@ -179,22 +179,23 @@ export function useProviderLocalCard({
         value: Number(value),
       },
     };
-    Object.keys(payload).forEach((key) => {
-      if (
-        typeof payload[key] === "object" &&
-        Object.keys(payload[key]).length === 0
-      ) {
-        delete payload[key];
-      } else if (
-        Array.isArray(payload[key]) &&
-        (payload[key].length === 0 || payload[key][0]?.length === 0)
-      ) {
-        delete payload[key];
-      }
-      if (payload[key] === null) {
-        delete payload[key];
-      }
-    });
+    // Object.keys(payload).forEach((key) => {
+    //   if (
+    //     typeof payload[key] === "object" &&
+    //     Object.keys(payload[key]).length === 0
+    //   ) {
+    //     delete payload[key];
+    //   } else if (
+    //     Array.isArray(payload[key]) &&
+    //     (payload[key].length === 0 || payload[key][0]?.length === 0)
+    //   ) {
+    //     delete payload[key];
+    //   }
+    //   if (payload[key] === null) {
+    //     delete payload[key];
+    //   }
+    // });
+    console.log({ payload });
     fetch("http://localhost:3000/card", {
       method: "POST",
       headers: {
@@ -239,7 +240,7 @@ export function useProviderLocalCard({
       project: project?.id,
       circle: project?.parents[0].id,
       type: cardType,
-      deadline,
+      deadline: deadline?.getDate ? deadline : null,
       labels,
       priority,
       columnId,

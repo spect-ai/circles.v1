@@ -17,7 +17,7 @@ function Contributors({ members, memberDetails, roles }: Props) {
   const { canDo } = useRoleGate();
   return (
     <Box padding="2">
-      {canDo("steward") && <InviteMemberModal />}
+      {canDo(["steward"]) && <InviteMemberModal />}
       <Stack>
         <Heading>Stewards</Heading>
         <Box display="flex" flexWrap="wrap">

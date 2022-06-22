@@ -64,7 +64,7 @@ export default function Project() {
                   );
                 })}
                 {provided.placeholder}
-                {canDo("steward") && (
+                {canDo(["steward"]) && (
                   <Box style={{ width: "20rem" }}>
                     <Button
                       // disabled={project.roles[user?.id as string] !== 3}

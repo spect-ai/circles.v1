@@ -3,7 +3,7 @@ export const joinCircleFromInvite = async (
   inviteCode: string
 ) => {
   const response = await fetch(
-    `http://localhost:3000/circle/join/${circleId}`,
+    `http://localhost:3000/circle/joinUsingInvitation/${circleId}`,
     {
       method: "PATCH",
       headers: {
@@ -11,7 +11,6 @@ export const joinCircleFromInvite = async (
       },
       body: JSON.stringify({
         invitationId: inviteCode,
-        joinUsing: "invitation",
       }),
       credentials: "include",
     }

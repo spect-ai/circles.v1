@@ -4,9 +4,10 @@ import { MenuOutlined } from "@ant-design/icons";
 import { Box, IconSearch, Input, Text } from "degen";
 import React, { useEffect, useState } from "react";
 import { useLocalCard } from "../hooks/LocalCardContext";
-import { getOptions, Option } from "../utils";
+import { Option } from "../constants";
 import { matchSorter } from "match-sorter";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
+import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
 
 export default function CardColumn() {
   const { columnId, setColumnId, project } = useLocalCard();
@@ -16,9 +17,10 @@ export default function CardColumn() {
   const [filteredOptions, setFilteredOptions] = useState<Option[]>();
 
   const { canTakeAction } = useRoleGate();
+  const { getOptions } = useModalOptions();
 
   useEffect(() => {
-    const ops = getOptions("column", project) as Option[];
+    const ops = getOptions("column") as Option[];
     setOptions(ops);
     setFilteredOptions(ops);
   }, []);

@@ -6,7 +6,8 @@ import { Box, IconSearch, Input, Text } from "degen";
 import { matchSorter } from "match-sorter";
 import React, { useEffect, useState } from "react";
 import { useLocalCard } from "../hooks/LocalCardContext";
-import { getOptions, Option, priorityMapping } from "../utils";
+import { Option, priorityMapping } from "../constants";
+import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
 
 export default function CardPriority() {
   const { priority, setPriority, project } = useLocalCard();
@@ -16,9 +17,10 @@ export default function CardPriority() {
   const [filteredOptions, setFilteredOptions] = useState<Option[]>();
 
   const { canTakeAction } = useRoleGate();
+  const { getOptions } = useModalOptions();
 
   useEffect(() => {
-    const ops = getOptions("priority", project) as Option[];
+    const ops = getOptions("priority") as Option[];
     setOptions(ops);
     setFilteredOptions(ops);
   }, []);

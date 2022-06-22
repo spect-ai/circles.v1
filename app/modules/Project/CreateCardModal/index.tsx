@@ -108,7 +108,7 @@ export default function CreateCardModal({ column, handleClose }: Props) {
                     onClick={() =>
                       setSubTasks([...subTasks, { title: "", assignee: "" }])
                     }
-                    tone="accentTertiary"
+                    tone="accentSecondary"
                   />
                 </Box>
                 <AnimatePresence>
@@ -128,7 +128,7 @@ export default function CreateCardModal({ column, handleClose }: Props) {
             </Container>
           </Box>
           <Box width="1/3" borderLeftWidth="0.375" padding="8">
-            {(project as ProjectType).id && (
+            {(project as ProjectType)?.id && (
               <Stack>
                 <CardType />
                 <CardColumn />

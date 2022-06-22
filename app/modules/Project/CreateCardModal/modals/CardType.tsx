@@ -5,8 +5,9 @@ import { Box, IconSearch, Input, Text } from "degen";
 import React, { useEffect, useState } from "react";
 import { matchSorter } from "match-sorter";
 import { useLocalCard } from "../hooks/LocalCardContext";
-import { getOptions, Option } from "../utils";
+import { Option } from "../constants";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
+import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
 
 export default function CardType() {
   const { cardType, setCardType, project } = useLocalCard();
@@ -16,9 +17,10 @@ export default function CardType() {
   const [filteredOptions, setFilteredOptions] = useState<Option[]>();
 
   const { canTakeAction } = useRoleGate();
+  const { getOptions } = useModalOptions();
 
   useEffect(() => {
-    const ops = getOptions("card", project) as Option[];
+    const ops = getOptions("card") as Option[];
     setOptions(ops);
     setFilteredOptions(ops);
   }, []);

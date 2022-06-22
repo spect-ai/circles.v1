@@ -82,7 +82,7 @@ export default function CircleSidebar() {
                 Overview
               </Button>
             </Link>
-            {canDo("steward") && (
+            {canDo(["steward"]) && (
               <Button
                 prefix={
                   <IconCog color={isSettingsModalOpen ? "accent" : "current"} />
@@ -116,7 +116,7 @@ export default function CircleSidebar() {
           name="Projects"
           defaultOpen
           buttonComponent={<CreateProjectModal accordian />}
-          showButton={canDo("steward")}
+          showButton={canDo(["steward"])}
         >
           <Stack>
             {circle?.projects.map((proj) => (
@@ -152,7 +152,7 @@ export default function CircleSidebar() {
           name="Workspaces"
           defaultOpen
           buttonComponent={<CreateSpaceModal accordian />}
-          showButton={canDo("steward")}
+          showButton={canDo(["steward"])}
         >
           <Stack>
             {circle?.children.map((space) => (

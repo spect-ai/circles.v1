@@ -3,7 +3,7 @@ import { monthMap } from "@/app/common/utils/constants";
 import { CardType, ColumnType, MemberDetails } from "@/app/types";
 import { Avatar, Box, IconEth, Stack, Tag, Text } from "degen";
 import { useRouter } from "next/router";
-import React, { useState } from "react";
+import React from "react";
 import { Draggable } from "react-beautiful-dnd";
 import { useQuery } from "react-query";
 import styled from "styled-components";
@@ -34,6 +34,7 @@ export default function CardComponent({ card, index, column }: Props) {
   );
 
   const deadline = new Date(card.deadline);
+
   return (
     <Draggable draggableId={card.id} index={index}>
       {(provided, snapshot) => (
@@ -57,7 +58,7 @@ export default function CardComponent({ card, index, column }: Props) {
               justifyContent="space-between"
             >
               <Text>{card.title}</Text>
-              {card.assignee.length > 0 && (
+              {card.assignee.length > 0 && card.assignee[0] && (
                 <Avatar
                   src={
                     memberDetails &&

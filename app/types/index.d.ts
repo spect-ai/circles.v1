@@ -42,7 +42,7 @@ export interface CircleType {
   updatedAt: string;
   whitelistedTokens: any;
   memberRoles: {
-    [key: string]: string;
+    [key: string]: string[];
   };
   memberDetails: {
     [key: string]: UserType;

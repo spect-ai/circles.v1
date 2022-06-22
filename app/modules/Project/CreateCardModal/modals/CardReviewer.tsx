@@ -6,22 +6,14 @@ import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { useLocalCard } from "../hooks/LocalCardContext";
-import { getOptions, Option } from "../utils";
+import { Option } from "../constants";
 import { matchSorter } from "match-sorter";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
+import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
 
 export default function CardReviewer() {
-  const { reviewer, setReviewer, project } = useLocalCard();
+  const { reviewer, setReviewer } = useLocalCard();
   const [modalOpen, setModalOpen] = useState(false);
-  const router = useRouter();
-  const { circle: cId } = router.query;
-  const { data: memberDetails } = useQuery<MemberDetails>(
-    ["memberDetails", cId],
-    {
-      enabled: false,
-    }
-  );
-
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
@@ -30,9 +22,10 @@ export default function CardReviewer() {
   const [filteredOptions, setFilteredOptions] = useState<Option[]>();
 
   const { canTakeAction } = useRoleGate();
+  const { getOptions, getMemberDetails } = useModalOptions();
 
   useEffect(() => {
-    const ops = getOptions("assignee", project, memberDetails) as Option[];
+    const ops = getOptions("assignee") as Option[];
     setOptions(ops);
     setFilteredOptions(ops);
     if (currentUser && !reviewer) {
@@ -41,21 +34,14 @@ export default function CardReviewer() {
   }, []);
   return (
     <EditTag
-      name={
-        (memberDetails && memberDetails.memberDetails[reviewer]?.username) ||
-        "Unassigned"
-      }
+      name={getMemberDetails(reviewer)?.username || "Unassigned"}
       modalTitle="Select Reviewer"
       label="Reviewer"
       modalOpen={modalOpen}
       setModalOpen={setModalOpen}
       icon={
         reviewer ? (
-          <Avatar
-            src={memberDetails && memberDetails.memberDetails[reviewer]?.avatar}
-            label=""
-            size="5"
-          />
+          <Avatar src={getMemberDetails(reviewer)?.avatar} label="" size="5" />
         ) : (
           <IconUserSolid color="accent" size="5" />
         )
@@ -98,7 +84,12 @@ export default function CardReviewer() {
                   justifyContent: "center",
                 }}
               >
-                <Avatar size="6" src={item.avatar} label="avatar" />
+                <Avatar
+                  size="6"
+                  src={item.avatar}
+                  label="avatar"
+                  placeholder={!item.avatar}
+                />
                 <Box marginRight="2" />
                 <Text
                   size="small"

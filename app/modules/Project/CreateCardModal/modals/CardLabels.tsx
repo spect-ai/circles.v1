@@ -6,8 +6,9 @@ import { motion } from "framer-motion";
 import React, { useEffect, useState } from "react";
 import { matchSorter } from "match-sorter";
 import { useLocalCard } from "../hooks/LocalCardContext";
-import { getOptions, Option } from "../utils";
+import { Option } from "../constants";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
+import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
 
 export default function CardLabels() {
   const { labels, setLabels } = useLocalCard();
@@ -17,9 +18,10 @@ export default function CardLabels() {
   const [filteredOptions, setFilteredOptions] = useState<Option[]>();
 
   const { canTakeAction } = useRoleGate();
+  const { getOptions } = useModalOptions();
 
   useEffect(() => {
-    const ops = getOptions("labels", {} as ProjectType) as Option[];
+    const ops = getOptions("labels") as Option[];
     setOptions(ops);
     setFilteredOptions(ops);
   }, []);

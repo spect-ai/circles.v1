@@ -65,10 +65,14 @@ export default function CardDeadline() {
         >
           <DatePicker
             type="datetime-local"
-            value={toIsoString(deadline).substring(0, 16)}
+            value={toIsoString(deadline as Date).substring(0, 16)}
             onChange={(e) => {
-              const d = new Date(e.target.value);
-              setDeadline(new Date(e.target.value));
+              console.log(e.target.value);
+              if (e.target.value) {
+                setDeadline(new Date(e.target.value));
+              } else {
+                setDeadline(null);
+              }
             }}
           />
         </Box>

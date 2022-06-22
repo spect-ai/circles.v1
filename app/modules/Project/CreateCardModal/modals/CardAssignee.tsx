@@ -1,54 +1,36 @@
 import EditTag from "@/app/common/components/EditTag";
 import ModalOption from "@/app/common/components/ModalOption";
-import { MemberDetails } from "@/app/types";
 import { Avatar, Box, IconSearch, IconUserSolid, Input, Text } from "degen";
-import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
-import { useQuery } from "react-query";
 import { useLocalCard } from "../hooks/LocalCardContext";
-import { getOptions, Option } from "../utils";
+import { Option } from "../constants";
 import { matchSorter } from "match-sorter";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
+import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
 
 export default function CardAssignee() {
-  const { assignee, setAssignee, project } = useLocalCard();
+  const { assignee, setAssignee } = useLocalCard();
   const [modalOpen, setModalOpen] = useState(false);
-  const router = useRouter();
-  const { circle: cId } = router.query;
-  const { data: memberDetails } = useQuery<MemberDetails>(
-    ["memberDetails", cId],
-    {
-      enabled: false,
-    }
-  );
-
   const [options, setOptions] = useState<Option[]>();
   const [filteredOptions, setFilteredOptions] = useState<Option[]>();
-
   const { canTakeAction } = useRoleGate();
+  const { getOptions, getMemberDetails } = useModalOptions();
 
   useEffect(() => {
-    const ops = getOptions("assignee", project, memberDetails) as Option[];
+    const ops = getOptions("assignee") as Option[];
     setOptions(ops);
     setFilteredOptions(ops);
   }, []);
   return (
     <EditTag
-      name={
-        (memberDetails && memberDetails.memberDetails[assignee]?.username) ||
-        "Unassigned"
-      }
+      name={getMemberDetails(assignee)?.username || "Unassigned"}
       modalTitle="Select Assignee"
       label="Assignee"
       modalOpen={modalOpen}
       setModalOpen={setModalOpen}
       icon={
         assignee ? (
-          <Avatar
-            src={memberDetails && memberDetails.memberDetails[assignee]?.avatar}
-            label=""
-            size="5"
-          />
+          <Avatar src={getMemberDetails(assignee)?.avatar} label="" size="5" />
         ) : (
           <IconUserSolid color="accent" size="5" />
         )
@@ -91,7 +73,12 @@ export default function CardAssignee() {
                   justifyContent: "center",
                 }}
               >
-                <Avatar size="6" src={item.avatar} label="avatar" />
+                <Avatar
+                  size="6"
+                  src={item.avatar}
+                  label="avatar"
+                  placeholder={!item.avatar}
+                />
                 <Box marginRight="2" />
                 <Text
                   size="small"

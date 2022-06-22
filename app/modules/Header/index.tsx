@@ -52,7 +52,7 @@ function Header(): ReactElement {
             <Link href={`/${cId}/${pId}`}>{project?.name}</Link>
           </Heading>
         )}
-        {pId && project?.name && canDo("steward") && <ProjectSettings />}
+        {pId && project?.name && canDo(["steward"]) && <ProjectSettings />}
         <Box marginLeft="4" />
       </Stack>
       <Stack direction="horizontal">
