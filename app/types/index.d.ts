@@ -98,6 +98,8 @@ export interface WorkThreadType {
   };
   active: boolean;
   status: "accepted" | "inRevision" | "inReview" | "draft";
+  threadId: string;
+  name: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -109,6 +111,7 @@ export interface WorkUnitType {
   createdAt: string;
   updatedAt: string;
   type: "submission" | "revision" | "feedback";
+  workUnitId: string;
 }
 
 export interface ProjectType {

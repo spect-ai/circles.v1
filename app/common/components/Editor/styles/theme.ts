@@ -100,7 +100,7 @@ export const dark = {
   divider: colors.almostWhite,
   placeholder: "rgb(255, 255, 255,0.4)",
 
-  toolbarBackground: colors.almostWhite,
+  toolbarBackground: colors.lightBlack,
   toolbarHoverBackground: colors.white,
   toolbarInput: colors.white,
   toolbarItem: colors.white,

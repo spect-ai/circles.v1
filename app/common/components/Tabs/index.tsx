@@ -29,7 +29,7 @@ export default function Tabs({
       borderRadius="3xLarge"
     >
       {tabs.map((tab, index) => (
-        <Box width="full" key={tab}>
+        <Box width="full" marginX="0.5" key={tab}>
           <Button
             variant={
               selectedTab === index ? "tertiary" : (unselectedColor as any)

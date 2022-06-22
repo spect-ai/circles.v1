@@ -83,13 +83,13 @@ export default function Card() {
   const { canTakeAction } = useRoleGate();
 
   return (
-    <Box padding="8">
+    <Box padding="4">
       <ToastContainer />
       {loading && <Loader loading={loading} text="" />}
       {!loading && (
         <Stack direction="horizontal">
           <Box width="3/4">
-            <Container>
+            <Container padding="2">
               <Stack direction="vertical">
                 <NameInput
                   placeholder="Enter card name"
@@ -141,7 +141,6 @@ export default function Card() {
                   onTabClick={handleTabClick}
                   orientation="horizontal"
                   unselectedColor="transparent"
-                  border
                   shape="circle"
                 />
                 <AnimatePresence initial={false}>

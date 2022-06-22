@@ -54,7 +54,7 @@ function Accordian({
             alignItems="center"
             paddingRight="1"
           >
-            <Text weight="medium" color="textTertiary">
+            <Text weight="medium" variant="label">
               {name}
             </Text>
           </Box>

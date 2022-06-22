@@ -1,17 +1,17 @@
 import { timeSince } from "@/app/common/utils/utils";
-import { MemberDetails, UserType } from "@/app/types";
+import useComment from "@/app/services/Comment/useComment";
+import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
+import { UserType } from "@/app/types";
 import { Avatar, Box, Button, Stack, Text } from "degen";
 import { AnimatePresence, motion } from "framer-motion";
-import { useRouter } from "next/router";
 
 import React, { useEffect, useState } from "react";
 import ContentEditable from "react-contenteditable";
 import { useQuery } from "react-query";
 import styled from "styled-components";
 import { variants } from "..";
-import { useLocalCard } from "../../Project/CreateCardModal/hooks/LocalCardContext";
 
-const TextArea = styled(ContentEditable)`
+export const TextArea = styled(ContentEditable)`
   color: rgb(255, 255, 255, 0.85);
   border: 2px solid rgb(255, 255, 255, 0.1);
   background: ${(props) =>
@@ -56,18 +56,10 @@ export default function Comment({
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
-  const router = useRouter();
-  const { circle: cId } = router.query;
-  const { data: memberDetails } = useQuery<MemberDetails>(
-    ["memberDetails", cId],
-    {
-      enabled: false,
-    }
-  );
-  const { card, setCard } = useLocalCard();
-  const [loading, setLoading] = useState(false);
   const [isDisabled, setIsDisabled] = useState(true);
   const [content, setContent] = useState("");
+  const { addComment, updateComment, deleteComment, loading } = useComment();
+  const { getMemberDetails } = useModalOptions();
 
   useEffect(() => {
     if (commentContent) {
@@ -80,11 +72,11 @@ export default function Comment({
 
   return (
     <motion.main
-      variants={variants} // Pass the variant object into Framer Motion
-      initial="hidden" // Set the initial state to variants.hidden
-      animate="enter" // Animated state to variants.enter
-      exit="exit" // Exit state (used later) to variants.exit
-      transition={{ type: "linear" }} // Set the transition to linear
+      variants={variants}
+      initial="hidden"
+      animate="enter"
+      exit="exit"
+      transition={{ type: "linear" }}
       className=""
       key="editor"
     >
@@ -100,16 +92,8 @@ export default function Comment({
           ) : (
             <Avatar
               label=""
-              placeholder={
-                !(
-                  memberDetails &&
-                  memberDetails.memberDetails[actorId as string]?.avatar
-                )
-              }
-              src={
-                memberDetails &&
-                memberDetails.memberDetails[actorId as string]?.avatar
-              }
+              placeholder={!getMemberDetails(actorId as string)?.avatar}
+              src={getMemberDetails(actorId as string)?.avatar}
               size="8"
             />
           )}
@@ -146,27 +130,9 @@ export default function Comment({
                   variant="secondary"
                   loading={loading}
                   onClick={() => {
-                    setLoading(true);
-                    fetch(`http://localhost:3000/card/${card?.id}/addComment`, {
-                      method: "PATCH",
-                      headers: {
-                        "Content-Type": "application/json",
-                      },
-                      body: JSON.stringify({
-                        comment: content,
-                      }),
-                      credentials: "include",
-                    })
-                      .then(async (res) => {
-                        const data = await res.json();
-                        setCard(data);
-                        setContent("");
-                        setLoading(false);
-                      })
-                      .catch((err) => {
-                        setLoading(false);
-                        console.log(err);
-                      });
+                    void addComment(content);
+                    setContent("");
+                    setIsDisabled(true);
                   }}
                 >
                   Save
@@ -201,31 +167,15 @@ export default function Comment({
                     size="small"
                     variant="secondary"
                     loading={loading}
-                    onClick={() => {
-                      fetch(
-                        `http://localhost:3000/card/${card?.id}/updateComment?commitId=${commitId}`,
-                        {
-                          method: "PATCH",
-                          headers: {
-                            "Content-Type": "application/json",
-                          },
-                          body: JSON.stringify({
-                            comment: content,
-                          }),
-                          credentials: "include",
-                        }
-                      )
-                        .then(async (res) => {
-                          const data = await res.json();
-                          console.log({ data });
-                          setCard(data);
-                          setContent("");
-                          setIsDisabled(true);
-                          setLoading(false);
-                        })
-                        .catch((err) => {
-                          console.log(err);
-                        });
+                    onClick={async () => {
+                      const res = await updateComment(
+                        content,
+                        commitId as string
+                      );
+                      if (res) {
+                        setContent("");
+                        setIsDisabled(true);
+                      }
                     }}
                   >
                     Save
@@ -234,12 +184,14 @@ export default function Comment({
                 <Button
                   size="small"
                   variant="secondary"
+                  tone="red"
                   onClick={() => {
-                    commentContent && setContent(commentContent);
+                    void deleteComment(commitId as string);
+                    setContent("");
                     setIsDisabled(true);
                   }}
                 >
-                  Discard
+                  Delete
                 </Button>
               </Stack>
             </motion.div>

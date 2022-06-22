@@ -79,9 +79,11 @@ export default function useRoleGate() {
       case "cardComment":
         return circleMembers?.includes(currentUser?.id) || false;
       case "cardSubmission":
+        return card?.assignee[0] === currentUser?.id;
+      case "cardRevision":
         return (
-          card?.reviewer[0] === currentUser?.id ||
-          card?.assignee[0] === currentUser?.id
+          card?.creator === currentUser?.id ||
+          card?.reviewer[0] === currentUser?.id
         );
       default:
         return false;

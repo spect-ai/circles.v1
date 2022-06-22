@@ -19,7 +19,7 @@ export default function useDragEnd() {
   const handleDragEnd = (result: DropResult) => {
     const { destination, source, draggableId, type } = result;
     if (!canMoveCard(localProject.cards[draggableId])) {
-      toast.error("You don't have permission to move cards", {
+      toast.error("You don't have permission to move this card", {
         theme: "dark",
       });
       return;
