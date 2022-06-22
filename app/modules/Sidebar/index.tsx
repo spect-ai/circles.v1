@@ -60,9 +60,9 @@ function Sidebar(): ReactElement {
       flexDirection="column"
       borderRightWidth="0.375"
       paddingX="3"
-      onMouseEnter={() => {
-        cId && setIsSidebarExpanded(true);
-      }}
+      // onMouseEnter={() => {
+      //   cId && setIsSidebarExpanded(true);
+      // }}
       transitionDuration="700"
     >
       <Box borderBottomWidth="0.375" paddingY="3">

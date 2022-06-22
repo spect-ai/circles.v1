@@ -78,10 +78,6 @@ export default function ColumnComponent({ cards, id, column, index }: Props) {
     setLocalProject(updatedProject);
   }
 
-  // useEffect(() => {
-  //   setColumnTitle(space.columns[column.id].title);
-  // }, [space]);
-
   return (
     <>
       <AnimatePresence>

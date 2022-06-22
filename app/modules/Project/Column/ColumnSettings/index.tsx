@@ -17,6 +17,7 @@ export default function ColumnSettings({ column }: Props) {
   const { localProject: project, setLocalProject } = useLocalProject();
 
   const onSave = async () => {
+    console.log({ column });
     const updatedProject = await updateColumnDetails(
       project.id,
       column.columnId,
@@ -24,9 +25,9 @@ export default function ColumnSettings({ column }: Props) {
         name,
       }
     );
-    console.log({ updatedProject });
     if (!updatedProject) {
       toast.error("Error updating column", { theme: "dark" });
+      return;
     }
     setLocalProject(updatedProject);
   };

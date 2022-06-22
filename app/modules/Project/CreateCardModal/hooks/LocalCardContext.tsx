@@ -230,6 +230,50 @@ export function useProviderLocalCard({
       });
   };
 
+  const onCardUndo = () => {
+    setUpdating(true);
+    const payload: { [key: string]: any } = {
+      title: card?.title,
+      description: card?.description,
+      reviewer: card?.reviewer,
+      assignee: card?.assignee,
+      project: project?.id,
+      circle: project?.parents[0].id,
+      type: card?.type,
+      deadline: card?.deadline,
+      labels: card?.labels,
+      priority: card?.priority,
+      columnId: card?.columnId,
+      reward: card?.reward,
+    };
+    console.log({ payload });
+    fetch(`http://localhost:3000/card/${card?.id}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+      credentials: "include",
+    })
+      .then(async (res) => {
+        const data = await res.json();
+        if (data.id) {
+          queryClient.setQueryData(["card", tId], data);
+          toast("Undo Successful", {
+            theme: "dark",
+          });
+        } else {
+          toast.error("Error saving card", { theme: "dark" });
+        }
+        setUpdating(false);
+      })
+      .catch((err) => {
+        console.log({ err });
+        setUpdating(false);
+        toast.error("Error undoing card changes", { theme: "dark" });
+      });
+  };
+
   const onCardUpdate = () => {
     setUpdating(true);
     const payload: { [key: string]: any } = {
@@ -268,7 +312,7 @@ export function useProviderLocalCard({
             <Stack>
               Card saved
               <Stack direction="horizontal">
-                <Button size="small" variant="secondary">
+                <Button size="small" variant="secondary" onClick={onCardUndo}>
                   Undo
                 </Button>
               </Stack>

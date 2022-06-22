@@ -121,8 +121,6 @@ export default function useDragEnd() {
         },
       });
     }
-    console.log(destination.droppableId);
-    console.log(destination.index);
     fetch(
       `http://localhost:3000/project/${localProject.id}/reorderCard/${draggableId}`,
       {

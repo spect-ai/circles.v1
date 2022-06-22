@@ -12,7 +12,7 @@ export default function ProjectSettings() {
   const [isOpen, setIsOpen] = useState(false);
   const handleClose = () => setIsOpen(false);
   const router = useRouter();
-  const { project: pId } = router.query;
+  const { circle: cId, project: pId } = router.query;
   const { data: project } = useQuery<ProjectType>(["project", pId], {
     enabled: false,
   });
@@ -57,6 +57,33 @@ export default function ProjectSettings() {
         setIsLoading(false);
       });
   };
+
+  const onDelete = () => {
+    setIsLoading(true);
+    fetch(`http://localhost:3000/project/${project?.id}/delete`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+    })
+      .then(async (res) => {
+        const data = await res.json();
+        if (data.id) {
+          toast("Project deleted successfully", { theme: "dark" });
+        }
+        queryClient.setQueryData(["project", pId], null);
+        console.log({ data });
+        setIsLoading(false);
+        handleClose();
+        void router.push(`/${cId}`);
+      })
+      .catch((err) => {
+        console.log({ err });
+        setIsLoading(false);
+      });
+  };
+
   return (
     <>
       <Button
@@ -102,7 +129,7 @@ export default function ProjectSettings() {
                     width="1/2"
                     size="small"
                     variant="secondary"
-                    onClick={onSubmit}
+                    onClick={onDelete}
                     loading={isLoading}
                     center
                     tone="red"
