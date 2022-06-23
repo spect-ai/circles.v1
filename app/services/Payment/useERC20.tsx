@@ -1,19 +1,17 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { useGlobalContext } from "@/app/context/globalContext";
-import { ethers, Signer } from "ethers";
-import { erc20ABI, useSigner } from "wagmi";
+import { ethers } from "ethers";
+import { erc20ABI } from "wagmi";
 
 export default function useERC20() {
   const { registry } = useGlobalContext();
-
-  const { data: signer } = useSigner();
-
   function isCurrency(address: string) {
     return address === "0x0";
   }
 
   function getERC20Contract(address: string) {
-    return new ethers.Contract(address, erc20ABI, signer as Signer);
+    const provider = new ethers.providers.Web3Provider(window.ethereum as any);
+    return new ethers.Contract(address, erc20ABI, provider.getSigner());
   }
 
   function getERC20ContractWithCustomProvider(
@@ -149,7 +147,9 @@ export default function useERC20() {
     if (isCurrency(erc20Address)) {
       return 18;
     }
+    console.log({ erc20Address });
     const contract = getERC20Contract(erc20Address);
+    console.log({ contract });
     // eslint-disable-next-line no-return-await
     return await contract.decimals();
   }

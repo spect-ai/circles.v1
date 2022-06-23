@@ -109,9 +109,9 @@ function CreateCircle() {
                 />
                 <Box display="flex" justifyContent="center">
                   <Button
-                    width="1/2"
+                    width="full"
                     size="small"
-                    variant="primary"
+                    variant="secondary"
                     disabled={uploading}
                     onClick={async () =>
                       mutateAsync({
@@ -129,7 +129,7 @@ function CreateCircle() {
                         .catch((err) => console.log({ err }))
                     }
                   >
-                    <Text>Create Circle</Text>
+                    Create Circle
                   </Button>
                 </Box>
               </Stack>

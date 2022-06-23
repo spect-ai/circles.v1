@@ -7,13 +7,13 @@ import DistributorABI from "@/app/common/contracts/mumbai/distributor.json";
 export default function useDistributor() {
   const { registry } = useGlobalContext();
   const { isCurrency, decimals, balanceOf } = useERC20();
-  const { data: signer } = useSigner();
 
   function getDistributorContract(chainId: string) {
+    const provider = new ethers.providers.Web3Provider(window.ethereum as any);
     return new ethers.Contract(
       registry[chainId].distributorAddress as string,
       DistributorABI.abi,
-      signer as Signer
+      provider.getSigner()
     );
   }
 
@@ -89,6 +89,7 @@ export default function useDistributor() {
     // eslint-disable-next-line no-restricted-syntax
     for (const tokenAddress of tokenAddresses) {
       // eslint-disable-next-line no-await-in-loop
+      console.log({ tokenAddress });
       numDecimals.push(await decimals(tokenAddress));
     }
     return numDecimals;
@@ -104,12 +105,14 @@ export default function useDistributor() {
     const { filteredTokenAddresses, filteredRecipients, filteredValues } =
       filterInvalidValues(tokenAddresses, recipients, values);
     const numDecimals = await getDecimals(filteredTokenAddresses);
+    console.log({ numDecimals });
     const valuesInWei = filteredValues.map((v, index) =>
       ethers.BigNumber.from(
         (v * 10 ** numDecimals[index]).toFixed(0).toString()
       )
     );
     const contract = getDistributorContract(chainId);
+    console.log({ contract });
     const tx = await contract.distributeTokens(
       filteredTokenAddresses,
       filteredRecipients,

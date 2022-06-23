@@ -2,10 +2,10 @@ import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import Tabs from "@/app/common/components/Tabs";
 import { storeImage } from "@/app/common/utils/ipfs";
-import { CircleType, MemberDetails } from "@/app/types";
-import { Box, Button, Input, MediaPicker, Stack, Text, Textarea } from "degen";
+import { CircleType } from "@/app/types";
+import { Box, Input, MediaPicker, Stack, Textarea } from "degen";
 import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { toast } from "react-toastify";
 import Contributors from "../ContributorsModal/Contributors";
@@ -19,7 +19,7 @@ export default function SettingsModal({ handleClose }: Props) {
   const queryClient = useQueryClient();
 
   const router = useRouter();
-  const { circle: cId, project: pId } = router.query;
+  const { circle: cId } = router.query;
   const { data: circle } = useQuery<CircleType>(["circle", cId], {
     enabled: false,
   });
@@ -133,7 +133,7 @@ export default function SettingsModal({ handleClose }: Props) {
                 orientation="horizontal"
                 unselectedColor="transparent"
               />
-              <Box marginTop="4" width="1/2">
+              <Box marginTop="4" width="full">
                 <PrimaryButton
                   onClick={onSubmit}
                   loading={isLoading}

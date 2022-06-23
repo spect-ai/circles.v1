@@ -24,6 +24,7 @@ import CardReviewer from "../Project/CreateCardModal/modals/CardReviewer";
 import CardReward from "../Project/CreateCardModal/modals/CardReward";
 import CardType from "../Project/CreateCardModal/modals/CardType";
 import Activity from "./Activity";
+import Payment from "./Payment";
 import Submission from "./Submission";
 
 const Container = styled(Box)`
@@ -194,7 +195,7 @@ export default function Card() {
                   </PrimaryButton>
                 )}
                 {/* <DiscordThread /> */}
-                <PrimaryButton onClick={async () => {}}>Pay</PrimaryButton>
+                <Payment />
               </Stack>
             )}
           </Box>
