@@ -20,10 +20,15 @@ import {
 } from "./hooks/LocalCardContext";
 import { ProjectType } from "@/app/types";
 import CardReviewer from "./modals/CardReviewer";
+import ConfirmModal from "@/app/common/components/Modal/ConfirmModal";
 
 type Props = {
   column: string;
+  setIsDirty: (isDirty: boolean) => void;
+  showConfirm: boolean;
+  setShowConfirm: (showConfirm: boolean) => void;
   handleClose: () => void;
+  setIsOpen: (isOpen: boolean) => void;
 };
 
 const Container = styled(Box)`
@@ -51,8 +56,16 @@ const NameInput = styled.input`
   font-weight: 600;
 `;
 
-export default function CreateCardModal({ column, handleClose }: Props) {
-  const context = useProviderLocalCard({ handleClose });
+export default function CreateCardModal({
+  column,
+  setIsDirty,
+  showConfirm,
+  setShowConfirm,
+  handleClose,
+  setIsOpen,
+}: Props) {
+  const closeModal = () => setIsOpen(false);
+  const context = useProviderLocalCard({ handleClose: closeModal });
   const {
     setColumnId,
     onSubmit,
@@ -72,6 +85,20 @@ export default function CreateCardModal({ column, handleClose }: Props) {
   return (
     <LocalCardContext.Provider value={context}>
       <Modal size="large" title="Create Card" handleClose={handleClose}>
+        <AnimatePresence>
+          {showConfirm && (
+            <ConfirmModal
+              title="Are you sure you want to discard the changes?"
+              handleClose={() => setShowConfirm(false)}
+              onConfirm={() => {
+                setIsDirty(false);
+                setShowConfirm(false);
+                handleClose();
+              }}
+              onCancel={() => setShowConfirm(false)}
+            />
+          )}
+        </AnimatePresence>
         <Stack direction="horizontal">
           <Box width="2/3">
             <Container height="full" padding="8" width="full">
@@ -82,6 +109,7 @@ export default function CreateCardModal({ column, handleClose }: Props) {
                   autoFocus
                   value={title}
                   onChange={(e) => {
+                    setIsDirty(true);
                     setTitle(e.target.value);
                   }}
                 />
@@ -108,7 +136,6 @@ export default function CreateCardModal({ column, handleClose }: Props) {
                     onClick={() =>
                       setSubTasks([...subTasks, { title: "", assignee: "" }])
                     }
-                    tone="accentSecondary"
                   />
                 </Box>
                 <AnimatePresence>
@@ -146,7 +173,10 @@ export default function CreateCardModal({ column, handleClose }: Props) {
             <Button
               size="small"
               width="1/3"
-              onClick={() => onSubmit(false)}
+              onClick={() => {
+                onSubmit(false);
+                setIsDirty(false);
+              }}
               variant="secondary"
             >
               Create Card
@@ -154,7 +184,10 @@ export default function CreateCardModal({ column, handleClose }: Props) {
             <Button
               size="small"
               width="1/3"
-              onClick={() => onSubmit(true)}
+              onClick={() => {
+                onSubmit(true);
+                setIsDirty(false);
+              }}
               variant="secondary"
             >
               Save and Create Again

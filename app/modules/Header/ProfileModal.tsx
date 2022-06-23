@@ -1,4 +1,5 @@
 import Modal from "@/app/common/components/Modal";
+import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { storeImage } from "@/app/common/utils/ipfs";
 import { UserType } from "@/app/types";
 import { Avatar, Box, Button, Input, MediaPicker, Stack, Text } from "degen";
@@ -95,10 +96,7 @@ export default function ProfileModal() {
             </Text>
           </Button> */}
                 <Box marginTop="2" />
-                <Button
-                  size="small"
-                  width="full"
-                  variant="secondary"
+                <PrimaryButton
                   disabled={uploading}
                   onClick={() => {
                     fetch("http://localhost:3000/user/me", {
@@ -131,10 +129,8 @@ export default function ProfileModal() {
                   }}
                 >
                   Save
-                </Button>
-                <Button
-                  size="small"
-                  width="full"
+                </PrimaryButton>
+                <PrimaryButton
                   variant="tertiary"
                   onClick={async () => {
                     await fetch("http://localhost:3000/auth/disconnect", {
@@ -149,7 +145,7 @@ export default function ProfileModal() {
                   }}
                 >
                   Logout
-                </Button>
+                </PrimaryButton>
               </Stack>
             </Box>
           </Modal>

@@ -10,10 +10,10 @@ import { useLocalProject } from "../../Context/LocalProjectContext";
 
 interface Props {
   column: ColumnType;
+  handleClose: () => void;
 }
 
-export default function ColumnSettings({ column }: Props) {
-  const [isOpen, setIsOpen] = useState(false);
+export default function ColumnSettings({ column, handleClose }: Props) {
   const [name, setName] = useState(column.name);
   const { localProject: project, setLocalProject } = useLocalProject();
 
@@ -42,55 +42,39 @@ export default function ColumnSettings({ column }: Props) {
     setLocalProject(updatedProject);
   };
   return (
-    <>
-      <Button
-        shape="circle"
-        size="small"
-        variant="transparent"
-        onClick={() => {
-          setIsOpen(true);
-        }}
-      >
-        <IconCog />
-      </Button>
-      <AnimatePresence>
-        {isOpen && (
-          <Modal handleClose={() => setIsOpen(false)} title="Column Settings">
-            <Box padding="8">
-              <Stack>
-                <Input
-                  label=""
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                />
-                <Stack direction="horizontal">
-                  <Button
-                    width="1/2"
-                    size="small"
-                    variant="secondary"
-                    onClick={onSave}
-                    center
-                    prefix={<SaveOutlined style={{ fontSize: "1.3rem" }} />}
-                  >
-                    Save
-                  </Button>
-                  <Button
-                    width="1/2"
-                    size="small"
-                    variant="secondary"
-                    onClick={onDelete}
-                    center
-                    tone="red"
-                    prefix={<IconTrash />}
-                  >
-                    Delete
-                  </Button>
-                </Stack>
-              </Stack>
-            </Box>
-          </Modal>
-        )}
-      </AnimatePresence>
-    </>
+    <Modal handleClose={handleClose} title="Column Settings">
+      <Box padding="8">
+        <Stack>
+          <Input
+            label=""
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+          <Stack direction="horizontal">
+            <Button
+              width="1/2"
+              size="small"
+              variant="secondary"
+              onClick={onSave}
+              center
+              prefix={<SaveOutlined style={{ fontSize: "1.3rem" }} />}
+            >
+              Save
+            </Button>
+            <Button
+              width="1/2"
+              size="small"
+              variant="secondary"
+              onClick={onDelete}
+              center
+              tone="red"
+              prefix={<IconTrash />}
+            >
+              Delete
+            </Button>
+          </Stack>
+        </Stack>
+      </Box>
+    </Modal>
   );
 }

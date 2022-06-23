@@ -1,4 +1,5 @@
 import Modal from "@/app/common/components/Modal";
+import PrimaryButton from "@/app/common/components/PrimaryButton";
 import Tabs from "@/app/common/components/Tabs";
 import { storeImage } from "@/app/common/utils/ipfs";
 import { CircleType, MemberDetails } from "@/app/types";
@@ -132,17 +133,14 @@ export default function SettingsModal({ handleClose }: Props) {
                 orientation="horizontal"
                 unselectedColor="transparent"
               />
-              <Box display="flex" justifyContent="center" marginTop="4">
-                <Button
-                  width="1/2"
-                  size="small"
-                  variant="secondary"
+              <Box marginTop="4" width="1/2">
+                <PrimaryButton
                   onClick={onSubmit}
                   loading={isLoading}
                   disabled={uploading}
                 >
-                  <Text>Update Circle</Text>
-                </Button>
+                  Update Circle
+                </PrimaryButton>
               </Box>
             </Stack>
           )}

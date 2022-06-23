@@ -1,3 +1,4 @@
+import PrimaryButton from "@/app/common/components/PrimaryButton";
 import {
   Activity,
   CardType,
@@ -7,7 +8,8 @@ import {
   Token,
   WorkThreadType,
 } from "@/app/types";
-import { Button, Stack } from "degen";
+import { SaveOutlined } from "@ant-design/icons";
+import { Box, Stack } from "degen";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { createContext, useContext, useEffect, useState } from "react";
@@ -79,6 +81,7 @@ type CreateCardContextType = {
   setUpdating: React.Dispatch<React.SetStateAction<boolean>>;
   isDirty: boolean;
   setIsDirty: React.Dispatch<React.SetStateAction<boolean>>;
+  onArchive: () => Promise<boolean>;
 };
 
 export const LocalCardContext = createContext<CreateCardContextType>(
@@ -203,11 +206,11 @@ export function useProviderLocalCard({
           <Stack>
             Card created
             <Stack direction="horizontal">
-              <Button size="small" variant="secondary">
+              <PrimaryButton>
                 <Link href={`/${cId}/${pId}/${data.card?.slug}`}>
                   View Card
                 </Link>
-              </Button>
+              </PrimaryButton>
             </Stack>
           </Stack>,
           {
@@ -304,9 +307,11 @@ export function useProviderLocalCard({
             <Stack>
               Card saved
               <Stack direction="horizontal">
-                <Button size="small" variant="secondary" onClick={onCardUndo}>
-                  Undo
-                </Button>
+                <Box width="full">
+                  <PrimaryButton onClick={onCardUndo} icon={<SaveOutlined />}>
+                    Undo
+                  </PrimaryButton>
+                </Box>
               </Stack>
             </Stack>,
             {
@@ -324,6 +329,22 @@ export function useProviderLocalCard({
         setUpdating(false);
         toast.error("Error updating card", { theme: "dark" });
       });
+  };
+
+  const onArchive = async () => {
+    const res = await fetch(`http://localhost:3000/card/${card?.id}/archive`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+    });
+    if (res.ok) {
+      void router.push(`/${cId}/${pId}`);
+      return true;
+    }
+    toast.error("Error archiving card", { theme: "dark" });
+    return false;
   };
 
   const resetData = () => {
@@ -387,6 +408,7 @@ export function useProviderLocalCard({
     setCard,
     isDirty,
     setIsDirty,
+    onArchive,
   };
 }
 

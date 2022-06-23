@@ -25,7 +25,6 @@ function EditTag({
   modalOpen,
   icon,
   setModalOpen,
-  tone = "accentSecondary",
   disabled = false,
 }: Props) {
   return (
@@ -39,7 +38,6 @@ function EditTag({
         <Box width={label ? "2/3" : "full"}>
           <ClickableTag
             name={name}
-            tone={tone}
             icon={icon}
             onClick={() => {
               if (disabled) {

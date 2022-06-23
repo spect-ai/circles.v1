@@ -10,6 +10,7 @@ import ColumnComponent from "./Column";
 import { useLocalProject } from "./Context/LocalProjectContext";
 import useDragEnd from "./Hooks/useDragEnd";
 import { SkeletonLoader } from "./SkeletonLoader";
+import PrimaryButton from "@/app/common/components/PrimaryButton";
 
 const Container = styled.div`
   display: flex;
@@ -66,13 +67,9 @@ export default function Project() {
                 {provided.placeholder}
                 {canDo(["steward"]) && (
                   <Box style={{ width: "20rem" }}>
-                    <Button
+                    <PrimaryButton
                       // disabled={project.roles[user?.id as string] !== 3}
-                      width="full"
-                      size="small"
-                      variant="secondary"
-                      prefix={<IconPlusSmall />}
-                      center
+                      icon={<IconPlusSmall />}
                       onClick={async () => {
                         const updatedProject = await addColumn(project.id);
                         if (!updatedProject) {
@@ -83,8 +80,8 @@ export default function Project() {
                         setLocalProject(updatedProject);
                       }}
                     >
-                      <Text>Add new column</Text>
-                    </Button>
+                      Add new column
+                    </PrimaryButton>
                   </Box>
                 )}
               </Stack>

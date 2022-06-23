@@ -17,6 +17,7 @@ import Tabs from "@/app/common/components/Tabs";
 import Card from "@/app/common/components/Card";
 import { useMutation, useQuery } from "react-query";
 import { CircleType } from "@/app/types";
+import PrimaryButton from "@/app/common/components/PrimaryButton";
 
 type CreateWorkspaceDto = {
   name: string;
@@ -133,15 +134,10 @@ function CreateSpaceModal({ accordian }: Props) {
                   orientation="horizontal"
                   unselectedColor="transparent"
                 />
-                <Box display="flex" justifyContent="center">
-                  <Button
-                    width="1/2"
-                    size="small"
-                    variant="primary"
-                    onClick={onSubmit}
-                  >
-                    <Text>Create Workspace</Text>
-                  </Button>
+                <Box width="full" marginTop="4">
+                  <PrimaryButton onClick={onSubmit}>
+                    Create Workspace
+                  </PrimaryButton>
                 </Box>
               </Stack>
             </Box>

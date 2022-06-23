@@ -1,25 +1,16 @@
-import { MemberDetails } from "@/app/types";
 import { Avatar, Stack, Text } from "degen";
-import { useRouter } from "next/router";
 import React from "react";
 import { motion } from "framer-motion";
-import { useQuery } from "react-query";
 import { useLocalCard } from "../../Project/CreateCardModal/hooks/LocalCardContext";
 import { variants } from "..";
 import Comment from "./Comment";
 import { timeSince } from "@/app/common/utils/utils";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
+import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
 
 export default function Activity() {
   const { activity } = useLocalCard();
-  const router = useRouter();
-  const { circle: cId } = router.query;
-  const { data: memberDetails } = useQuery<MemberDetails>(
-    ["memberDetails", cId],
-    {
-      enabled: false,
-    }
-  );
+  const { getMemberDetails } = useModalOptions();
 
   const { canTakeAction } = useRoleGate();
   return (
@@ -46,17 +37,13 @@ export default function Activity() {
                   >
                     <Avatar
                       label=""
-                      placeholder={
-                        !memberDetails?.memberDetails[item.actorId]?.avatar
-                      }
-                      src={memberDetails?.memberDetails[item.actorId]?.avatar}
+                      placeholder={!getMemberDetails(item.actorId)?.avatar}
+                      src={getMemberDetails(item.actorId)?.avatar}
                       size="8"
                     />
                     <Stack space="1">
                       <Stack direction="horizontal" align="baseline" space="2">
-                        <Text>
-                          {memberDetails?.memberDetails[item.actorId]?.username}
-                        </Text>
+                        <Text>{getMemberDetails(item.actorId)?.username}</Text>
                         <Text color="textSecondary">{item.content}</Text>
                         <Text variant="label">
                           {timeSince(new Date(item.timestamp))} ago

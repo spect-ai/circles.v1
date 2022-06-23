@@ -1,7 +1,8 @@
+import ConfirmModal from "@/app/common/components/Modal/ConfirmModal";
 import { updateColumnDetails } from "@/app/services/Column";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { CardType, ColumnType } from "@/app/types";
-import { Box, Button, IconPlusSmall, Stack } from "degen";
+import { Box, Button, IconCog, IconPlusSmall, Stack } from "degen";
 import { AnimatePresence } from "framer-motion";
 import React, { useState } from "react";
 import { Draggable, Droppable } from "react-beautiful-dnd";
@@ -60,6 +61,9 @@ const NameInput = styled.input`
 export default function ColumnComponent({ cards, id, column, index }: Props) {
   const [columnTitle, setColumnTitle] = useState(column.name);
   const [isOpen, setIsOpen] = useState(false);
+  const [isDirty, setIsDirty] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const { localProject: project, setLocalProject } = useLocalProject();
   const { canDo } = useRoleGate();
 
@@ -82,7 +86,27 @@ export default function ColumnComponent({ cards, id, column, index }: Props) {
     <>
       <AnimatePresence>
         {isOpen && (
-          <CreateCardModal column={id} handleClose={() => setIsOpen(false)} />
+          <CreateCardModal
+            column={id}
+            handleClose={() => {
+              console.log(showConfirm);
+              if (isDirty && !showConfirm) {
+                setShowConfirm(true);
+              } else {
+                setIsOpen(false);
+              }
+            }}
+            setIsDirty={setIsDirty}
+            showConfirm={showConfirm}
+            setShowConfirm={setShowConfirm}
+            setIsOpen={setIsOpen}
+          />
+        )}
+        {isSettingsOpen && (
+          <ColumnSettings
+            column={column}
+            handleClose={() => setIsSettingsOpen(false)}
+          />
         )}
       </AnimatePresence>
       <Draggable
@@ -129,7 +153,18 @@ export default function ColumnComponent({ cards, id, column, index }: Props) {
                 >
                   <IconPlusSmall />
                 </Button>
-                {canDo(["steward"]) && <ColumnSettings column={column} />}
+                {canDo(["steward"]) && (
+                  <Button
+                    shape="circle"
+                    size="small"
+                    variant="transparent"
+                    onClick={() => {
+                      setIsSettingsOpen(true);
+                    }}
+                  >
+                    <IconCog />
+                  </Button>
+                )}
               </Stack>
             </Box>
             <Droppable droppableId={id} type="task">

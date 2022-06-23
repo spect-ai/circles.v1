@@ -78,9 +78,6 @@ export default function DefaultPayment() {
             </motion.button>
           ))}
         </Stack>
-        {/* <Button width="full" size="small">
-          Save
-        </Button> */}
       </Stack>
     </Stack>
   );

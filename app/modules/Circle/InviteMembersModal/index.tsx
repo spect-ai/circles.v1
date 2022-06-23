@@ -1,5 +1,6 @@
 import Accordian from "@/app/common/components/Accordian";
 import Modal from "@/app/common/components/Modal";
+import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { CircleType } from "@/app/types";
 import { SendOutlined } from "@ant-design/icons";
 import { Box, Button, Stack, Tag, Text } from "degen";
@@ -35,18 +36,14 @@ function InviteMemberModal() {
   return (
     <>
       <Box width="1/3" marginBottom="2">
-        <Button
+        <PrimaryButton
           onClick={() => {
             setIsOpen(true);
           }}
-          width="full"
-          size="small"
-          variant="secondary"
-          prefix={<SendOutlined />}
-          center
+          icon={<SendOutlined />}
         >
           Invite
-        </Button>
+        </PrimaryButton>
       </Box>
       <AnimatePresence>
         {isOpen && (
@@ -139,11 +136,8 @@ function InviteMemberModal() {
                     ))}
                   </Stack>
                 </Accordian>
-                <Button
+                <PrimaryButton
                   loading={isLoading}
-                  size="small"
-                  width="full"
-                  variant="secondary"
                   onClick={() => {
                     const expire = new Date().getTime() + expiry.expiry * 1000;
                     setIsLoading(true);
@@ -185,7 +179,7 @@ function InviteMemberModal() {
                   }}
                 >
                   Generate Link
-                </Button>
+                </PrimaryButton>
               </Stack>
             </Box>
           </Modal>

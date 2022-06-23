@@ -8,6 +8,7 @@ import Card from "@/app/common/components/Card";
 import Select, { option } from "@/app/common/components/Select";
 import { useMutation, useQuery } from "react-query";
 import { CircleType, Template } from "@/app/types";
+import PrimaryButton from "@/app/common/components/PrimaryButton";
 
 type CreateProjectDto = {
   name: string;
@@ -147,16 +148,10 @@ function CreateProjectModal({ accordian }: Props) {
                     onChange={setTemplate}
                   />
                 )}
-                <Box display="flex" justifyContent="center">
-                  <Button
-                    width="1/2"
-                    size="small"
-                    variant="secondary"
-                    onClick={onSubmit}
-                    loading={isLoading}
-                  >
+                <Box width="full" marginTop="4">
+                  <PrimaryButton onClick={onSubmit} loading={isLoading}>
                     Create Project
-                  </Button>
+                  </PrimaryButton>
                 </Box>
               </Stack>
             </Box>

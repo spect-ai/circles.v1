@@ -1,9 +1,10 @@
+import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { timeSince } from "@/app/common/utils/utils";
 import useComment from "@/app/services/Comment/useComment";
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
 import { UserType } from "@/app/types";
-import { SendOutlined } from "@ant-design/icons";
-import { Avatar, Box, Button, Stack, Text } from "degen";
+import { SaveOutlined, SendOutlined } from "@ant-design/icons";
+import { Avatar, Box, Button, IconTrash, Stack, Text } from "degen";
 import { AnimatePresence, motion } from "framer-motion";
 
 import React, { useEffect, useState } from "react";
@@ -61,7 +62,6 @@ export default function Comment({
   const [content, setContent] = useState("");
   const { addComment, updateComment, deleteComment, loading } = useComment();
   const { getMemberDetails } = useModalOptions();
-
   useEffect(() => {
     if (commentContent) {
       setContent(commentContent);
@@ -114,32 +114,19 @@ export default function Comment({
         </Stack>
         <AnimatePresence>
           {newComment && content.length > 0 && (
-            <Box marginLeft="12">
-              <motion.div
-                key="content"
-                initial="collapsed"
-                animate="open"
-                exit="collapsed"
-                variants={{
-                  open: { height: "2rem", opacity: 1 },
-                  collapsed: { height: 0, opacity: 0 },
+            <Box marginLeft="12" width="1/2" marginTop="1">
+              <PrimaryButton
+                icon={<SendOutlined />}
+                loading={loading}
+                animation="slide"
+                onClick={() => {
+                  void addComment(content);
+                  setContent("");
+                  setIsDisabled(true);
                 }}
-                transition={{ duration: 0.3 }}
               >
-                <Button
-                  size="small"
-                  variant="secondary"
-                  prefix={<SendOutlined />}
-                  loading={loading}
-                  onClick={() => {
-                    void addComment(content);
-                    setContent("");
-                    setIsDisabled(true);
-                  }}
-                >
-                  Send
-                </Button>
-              </motion.div>
+                Send
+              </PrimaryButton>
             </Box>
           )}
         </AnimatePresence>
@@ -164,10 +151,9 @@ export default function Comment({
               transition={{ duration: 0.3 }}
             >
               <Stack direction="horizontal">
-                <Box marginLeft="12">
-                  <Button
-                    size="small"
-                    variant="secondary"
+                <Box marginLeft="12" width="1/3">
+                  <PrimaryButton
+                    icon={<SaveOutlined />}
                     loading={loading}
                     onClick={async () => {
                       const res = await updateComment(
@@ -180,20 +166,21 @@ export default function Comment({
                     }}
                   >
                     Save
-                  </Button>
+                  </PrimaryButton>
                 </Box>
-                <Button
-                  size="small"
-                  variant="secondary"
-                  tone="red"
-                  onClick={() => {
-                    void deleteComment(commitId as string);
-                    setContent("");
-                    setIsDisabled(true);
-                  }}
-                >
-                  Delete
-                </Button>
+                <Box width="1/3">
+                  <PrimaryButton
+                    tone="red"
+                    icon={<IconTrash />}
+                    onClick={() => {
+                      void deleteComment(commitId as string);
+                      setContent("");
+                      setIsDisabled(true);
+                    }}
+                  >
+                    Delete
+                  </PrimaryButton>
+                </Box>
               </Stack>
             </motion.div>
           )}

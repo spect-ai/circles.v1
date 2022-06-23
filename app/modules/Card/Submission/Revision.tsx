@@ -1,3 +1,4 @@
+import PrimaryButton from "@/app/common/components/PrimaryButton";
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
 import useSubmission from "@/app/services/Submission/useSubmission";
 import { UserType } from "@/app/types";
@@ -104,38 +105,24 @@ export default function Revision({
         </Stack>
         <AnimatePresence>
           {newRevision && content.length > 0 && (
-            <Box marginLeft="12">
-              <motion.div
-                key="content"
-                initial="collapsed"
-                animate="open"
-                exit="collapsed"
-                variants={{
-                  open: { height: "2rem", opacity: 1 },
-                  collapsed: { height: 0, opacity: 0 },
+            <Box marginLeft="12" width="1/3" marginTop="2">
+              <PrimaryButton
+                icon={<SendOutlined />}
+                loading={loading}
+                onClick={() => {
+                  void createWorkUnit(
+                    {
+                      content,
+                      type: "revision",
+                      status: "inRevision",
+                    },
+                    workThreadId as string
+                  );
+                  setContent("");
                 }}
-                transition={{ duration: 0.3 }}
               >
-                <Button
-                  size="small"
-                  variant="secondary"
-                  prefix={<SendOutlined />}
-                  loading={loading}
-                  onClick={() => {
-                    void createWorkUnit(
-                      {
-                        content,
-                        type: "revision",
-                        status: "inRevision",
-                      },
-                      workThreadId as string
-                    );
-                    setContent("");
-                  }}
-                >
-                  Send
-                </Button>
-              </motion.div>
+                Send
+              </PrimaryButton>
             </Box>
           )}
         </AnimatePresence>

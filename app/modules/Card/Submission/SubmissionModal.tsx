@@ -1,8 +1,9 @@
 import Editor from "@/app/common/components/Editor";
 import Modal from "@/app/common/components/Modal";
+import PrimaryButton from "@/app/common/components/PrimaryButton";
 import useSubmission from "@/app/services/Submission/useSubmission";
 import { SendOutlined } from "@ant-design/icons";
-import { Box, Button, Stack } from "degen";
+import { Box, Button, IconDocuments, Stack } from "degen";
 import { AnimatePresence } from "framer-motion";
 import React, { useState } from "react";
 import styled from "styled-components";
@@ -29,9 +30,9 @@ export default function SubmissionModal() {
   const { createWorkThread, loading } = useSubmission();
   return (
     <>
-      <Button size="small" variant="secondary" onClick={() => setIsOpen(true)}>
+      <PrimaryButton icon={<IconDocuments />} onClick={() => setIsOpen(true)}>
         Create Submission
-      </Button>
+      </PrimaryButton>
       <AnimatePresence>
         {isOpen && (
           <Modal handleClose={() => setIsOpen(false)} title="Create Submission">
@@ -61,11 +62,9 @@ export default function SubmissionModal() {
                     placeholder="Write your submission here"
                   />
                 </Box>
-                <Button
-                  size="small"
-                  variant="secondary"
+                <PrimaryButton
                   loading={loading}
-                  prefix={<SendOutlined style={{ fontSize: "1.2rem" }} />}
+                  icon={<SendOutlined style={{ fontSize: "1.2rem" }} />}
                   onClick={async () => {
                     const res = await createWorkThread({
                       name: title,
@@ -76,7 +75,7 @@ export default function SubmissionModal() {
                   }}
                 >
                   Send
-                </Button>
+                </PrimaryButton>
               </Stack>
             </Box>
           </Modal>

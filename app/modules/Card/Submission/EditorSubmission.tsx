@@ -1,4 +1,5 @@
 import Editor from "@/app/common/components/Editor";
+import PrimaryButton from "@/app/common/components/PrimaryButton";
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import useSubmission from "@/app/services/Submission/useSubmission";
@@ -102,10 +103,8 @@ export default function EditorSubmission({
                 Save
               </Button>
             ) : (
-              <Button
-                prefix={<SendOutlined />}
-                size="small"
-                variant="secondary"
+              <PrimaryButton
+                icon={<SendOutlined />}
                 disabled={!content}
                 onClick={() => {
                   void createWorkUnit(
@@ -120,7 +119,7 @@ export default function EditorSubmission({
                 }}
               >
                 Send
-              </Button>
+              </PrimaryButton>
             )}
           </motion.div>
         )}

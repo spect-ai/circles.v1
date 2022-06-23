@@ -1,12 +1,16 @@
 import Accordian from "@/app/common/components/Accordian";
 import Editor from "@/app/common/components/Editor";
 import Loader from "@/app/common/components/Loader";
+import PrimaryButton from "@/app/common/components/PrimaryButton";
 import Tabs from "@/app/common/components/Tabs";
+import usePayment from "@/app/services/Payment/usePayment";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
+import { UserType } from "@/app/types";
 import { SaveOutlined } from "@ant-design/icons";
-import { Box, Button, Stack, Tag, Text } from "degen";
-import { motion, AnimatePresence } from "framer-motion";
-import React, { useState } from "react";
+import { Box, IconTrash, Stack, Tag } from "degen";
+import { AnimatePresence } from "framer-motion";
+import React, { useEffect, useState } from "react";
+import { useQuery } from "react-query";
 import { ToastContainer } from "react-toastify";
 import styled from "styled-components";
 import EditableSubTask from "../Project/CreateCardModal/EditableSubTask";
@@ -69,7 +73,6 @@ export default function Card() {
   const handleTabClick = (index: number) => setSelectedTab(index);
   const {
     loading,
-    updating,
     title,
     setTitle,
     labels,
@@ -80,10 +83,16 @@ export default function Card() {
     onCardUpdate,
     isDirty,
     setIsDirty,
+    onArchive,
+    token,
+    value,
   } = useLocalCard();
 
   const { canTakeAction } = useRoleGate();
 
+  const { data: currentUser } = useQuery<UserType>("getMyUser", {
+    enabled: false,
+  });
   return (
     <Box padding="4">
       <ToastContainer />
@@ -164,33 +173,28 @@ export default function Card() {
                 <CardPriority />
                 <CardReward />
                 {isDirty && (
-                  <motion.div
-                    key="content"
-                    initial="collapsed"
-                    animate="open"
-                    exit="collapsed"
-                    variants={{
-                      open: { height: "2rem", opacity: 1 },
-                      collapsed: { height: 0, opacity: 0 },
+                  <PrimaryButton
+                    icon={<SaveOutlined style={{ fontSize: "1.3rem" }} />}
+                    loading={loading}
+                    onClick={() => {
+                      onCardUpdate();
                     }}
-                    transition={{ duration: 0.3 }}
+                    animation="slide"
                   >
-                    <Button
-                      center
-                      prefix={<SaveOutlined style={{ fontSize: "1.3rem" }} />}
-                      width="full"
-                      size="small"
-                      variant="secondary"
-                      loading={updating}
-                      onClick={() => {
-                        onCardUpdate();
-                      }}
-                    >
-                      <Text>Save!</Text>
-                    </Button>
-                  </motion.div>
+                    Save
+                  </PrimaryButton>
+                )}
+                {canTakeAction("cardArchive") && (
+                  <PrimaryButton
+                    icon={<IconTrash />}
+                    tone="red"
+                    onClick={() => onArchive()}
+                  >
+                    Archive
+                  </PrimaryButton>
                 )}
                 {/* <DiscordThread /> */}
+                <PrimaryButton onClick={async () => {}}>Pay</PrimaryButton>
               </Stack>
             )}
           </Box>

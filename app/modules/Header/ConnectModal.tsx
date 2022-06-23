@@ -1,4 +1,5 @@
 import Modal from "@/app/common/components/Modal";
+import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { Box, Button, Stack } from "degen";
 import { AnimatePresence } from "framer-motion";
 import React, { useState } from "react";
@@ -57,9 +58,7 @@ export default function ConnectModal() {
 
   return (
     <>
-      <Button size="small" onClick={() => setIsOpen(true)}>
-        Connect
-      </Button>
+      <PrimaryButton onClick={() => setIsOpen(true)}>Connect</PrimaryButton>
       <AnimatePresence>
         {isOpen && (
           <Modal title="Choose Wallet" handleClose={handleClose} size="small">
@@ -67,6 +66,8 @@ export default function ConnectModal() {
               <Stack>
                 {connectors.map((connector) => (
                   <Button
+                    width="full"
+                    variant="tertiary"
                     disabled={!connector.ready}
                     key={connector.id}
                     onClick={() => {
@@ -86,8 +87,6 @@ export default function ConnectModal() {
                           setIsLoading(false);
                         });
                     }}
-                    width="full"
-                    variant="tertiary"
                     loading={isLoading && connector.id === pendingConnector?.id}
                   >
                     {connector.name}

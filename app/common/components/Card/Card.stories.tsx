@@ -3,6 +3,7 @@ import { Story, Meta } from "@storybook/react";
 
 import Card, { CardProps } from ".";
 import { Avatar, Box, Button, Stack, Text } from "degen";
+import PrimaryButton from "../PrimaryButton";
 // import * as DependentStories from './Dependent.stories'
 
 export default {
@@ -28,9 +29,9 @@ Default.args = {
         <Text color="textPrimary" size="large" letterSpacing="0.03" ellipsis>
           {"Spect Circle"}
         </Text>
-        <Button variant="tertiary" size="small">
+        <PrimaryButton onClick={() => console.log("follow")} variant="tertiary">
           Follow
-        </Button>
+        </PrimaryButton>
       </Stack>
     </Box>
   ),
