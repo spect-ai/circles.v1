@@ -37,8 +37,8 @@ const Table: FC<Props> = ({
                 </Box>
               )}
               {columns.map((column, index) => (
-                <Col key={index} xs={12} sm={6} md={3}>
-                  <Text>{column}</Text>
+                <Col key={index} xs={12} sm={6}>
+                  <Text variant="label">{column}</Text>
                 </Col>
               ))}
             </Stack>
@@ -65,8 +65,10 @@ const Table: FC<Props> = ({
                   </Box>
                 )}
                 {row.map((cell, index) => (
-                  <Col key={index} xs={12} sm={6} md={3}>
-                    <Text>{cell}</Text>
+                  <Col key={index} xs={12} sm={6}>
+                    <Text weight="semiBold" variant="base">
+                      {cell}
+                    </Text>
                   </Col>
                 ))}
               </Stack>

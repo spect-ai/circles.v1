@@ -307,10 +307,8 @@ export function useProviderLocalCard({
             <Stack>
               Card saved
               <Stack direction="horizontal">
-                <Box width="full">
-                  <PrimaryButton onClick={onCardUndo} icon={<SaveOutlined />}>
-                    Undo
-                  </PrimaryButton>
+                <Box width="fit">
+                  <PrimaryButton onClick={onCardUndo}>Undo</PrimaryButton>
                 </Box>
               </Stack>
             </Stack>,

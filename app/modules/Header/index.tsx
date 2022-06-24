@@ -11,6 +11,7 @@ import { useAccount } from "wagmi";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { DoubleRightOutlined } from "@ant-design/icons";
 import { useGlobalContext } from "@/app/context/globalContext";
+import BatchPay from "../Project/BatchPay";
 
 const getUser = async () => {
   const res = await fetch("http://localhost:3000/user/me", {
@@ -67,7 +68,10 @@ function Header(): ReactElement {
             <Link href={`/${cId}/${pId}`}>{project?.name}</Link>
           </Heading>
         )}
-        {pId && project?.name && canDo(["steward"]) && <ProjectSettings />}
+        <Stack direction="horizontal" align="center" space="1">
+          {pId && project?.name && canDo(["steward"]) && <ProjectSettings />}
+          {pId && project?.name && canDo(["steward"]) && <BatchPay />}
+        </Stack>
         <Box marginLeft="4" />
       </Stack>
       <Stack direction="horizontal">
