@@ -7,11 +7,11 @@ import ProfileModal from "./ProfileModal";
 import { CircleType, ProjectType, UserType } from "@/app/types";
 import ProjectSettings from "../Project/ProjectSettings";
 import Link from "next/link";
-import { useAccount, useConnect } from "wagmi";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { DoubleRightOutlined } from "@ant-design/icons";
 import { useGlobalContext } from "@/app/context/globalContext";
 import BatchPay from "../Project/BatchPay";
+import styled from "styled-components";
 
 const getUser = async () => {
   const res = await fetch("http://localhost:3000/user/me", {
@@ -19,6 +19,12 @@ const getUser = async () => {
   });
   return await res.json();
 };
+
+export const SlideButtonContainer = styled(Box)`
+  &:hover {
+    color: rgb(175, 82, 222, 1);
+  }
+`;
 
 function Header(): ReactElement {
   const { setIsSidebarExpanded, isSidebarExpanded } = useGlobalContext();
@@ -46,18 +52,22 @@ function Header(): ReactElement {
       backgroundColor="background"
     >
       <Stack direction="horizontal" align="center">
-        <Box
-          transitionDuration="300"
-          style={{
-            transform: isSidebarExpanded ? "rotate(180deg)" : "rotate(0deg)",
-          }}
-          marginLeft="-2"
-          cursor="pointer"
-          color="textSecondary"
-          onClick={() => setIsSidebarExpanded(!isSidebarExpanded)}
-        >
-          <DoubleRightOutlined />
-        </Box>
+        {!isSidebarExpanded && cId && (
+          <SlideButtonContainer
+            transitionDuration="300"
+            style={{
+              transform: isSidebarExpanded ? "rotate(180deg)" : "rotate(0deg)",
+            }}
+            marginLeft="-3"
+            marginRight="-2"
+            cursor="pointer"
+            color="textSecondary"
+            onClick={() => setIsSidebarExpanded(!isSidebarExpanded)}
+          >
+            <DoubleRightOutlined style={{ fontSize: "1.1rem" }} />
+          </SlideButtonContainer>
+        )}
+        {isSidebarExpanded && <Box />}
         {!cId && <Heading>Circles</Heading>}
         {cId && !pId && <Heading>{circle?.name}</Heading>}
         {pId && project?.name && (

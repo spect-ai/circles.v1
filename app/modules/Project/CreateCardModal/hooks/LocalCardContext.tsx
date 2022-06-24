@@ -286,7 +286,7 @@ export function useProviderLocalCard({
       reward: {
         chain,
         token,
-        value: Number(value),
+        value: parseFloat(value),
       },
     };
     console.log({ payload });
@@ -350,13 +350,13 @@ export function useProviderLocalCard({
     setDescription("");
     setLabels([]);
     setAssignee("");
-    setReviewer("");
+    // setReviewer("");
     // setColumnId("");
     setCardType("Task");
     setChain(circle?.defaultPayment?.chain as Chain);
     setToken(circle?.defaultPayment?.token as Token);
     setValue("0");
-    setDeadline({} as Date);
+    setDeadline(null);
     setPriority(0);
     setSubTasks([]);
     setIsDirty(false);

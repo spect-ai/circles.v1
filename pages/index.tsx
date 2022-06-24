@@ -11,7 +11,7 @@ const Home: NextPage = () => {
   const { setIsSidebarExpanded } = useGlobalContext();
   useEffect(() => {
     setIsSidebarExpanded(false);
-  }, []);
+  }, [setIsSidebarExpanded]);
 
   return (
     <>

@@ -3,14 +3,11 @@ import Editor from "@/app/common/components/Editor";
 import Loader from "@/app/common/components/Loader";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import Tabs from "@/app/common/components/Tabs";
-import usePayment from "@/app/services/Payment/usePayment";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
-import { UserType } from "@/app/types";
 import { SaveOutlined } from "@ant-design/icons";
 import { Box, IconTrash, Stack, Tag } from "degen";
 import { AnimatePresence } from "framer-motion";
-import React, { useEffect, useState } from "react";
-import { useQuery } from "react-query";
+import React, { useState } from "react";
 import { ToastContainer } from "react-toastify";
 import styled from "styled-components";
 import EditableSubTask from "../Project/CreateCardModal/EditableSubTask";
@@ -85,11 +82,9 @@ export default function Card() {
     isDirty,
     setIsDirty,
     onArchive,
-    card,
   } = useLocalCard();
 
   const { canTakeAction } = useRoleGate();
-  console.log({ card });
 
   return (
     <Box padding="4">

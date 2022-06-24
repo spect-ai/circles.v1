@@ -7,6 +7,8 @@ import CircleSidebar from "./CircleSidebar";
 import { useGlobalContext } from "@/app/context/globalContext";
 import { useQuery } from "react-query";
 import { CircleType, ProjectType } from "@/app/types";
+import { DoubleRightOutlined } from "@ant-design/icons";
+import { SlideButtonContainer } from "../Header";
 
 export const Container = styled(Box)`
   ::-webkit-scrollbar {
@@ -19,7 +21,7 @@ export const Container = styled(Box)`
 `;
 
 function ExtendedSidebar(): ReactElement {
-  const { setIsSidebarExpanded } = useGlobalContext();
+  const { setIsSidebarExpanded, isSidebarExpanded } = useGlobalContext();
   const router = useRouter();
   const { circle: cId, project: pId } = router.query;
   const { data: circle } = useQuery<CircleType>(["circle", cId], {
@@ -59,6 +61,21 @@ function ExtendedSidebar(): ReactElement {
             <Heading>
               {cId && pId && (circle?.name || project?.parents[0].name)}
             </Heading>
+            <SlideButtonContainer
+              transitionDuration="300"
+              style={{
+                transform: isSidebarExpanded
+                  ? "rotate(180deg)"
+                  : "rotate(0deg)",
+              }}
+              marginTop="2"
+              marginBottom="2.5"
+              cursor="pointer"
+              color="textSecondary"
+              onClick={() => setIsSidebarExpanded(!isSidebarExpanded)}
+            >
+              <DoubleRightOutlined style={{ fontSize: "1.1rem" }} />
+            </SlideButtonContainer>
             {/* <Button
               variant="transparent"
               size="small"
