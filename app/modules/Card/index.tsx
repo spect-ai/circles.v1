@@ -85,15 +85,12 @@ export default function Card() {
     isDirty,
     setIsDirty,
     onArchive,
-    token,
-    value,
+    card,
   } = useLocalCard();
 
   const { canTakeAction } = useRoleGate();
+  console.log({ card });
 
-  const { data: currentUser } = useQuery<UserType>("getMyUser", {
-    enabled: false,
-  });
   return (
     <Box padding="4">
       <ToastContainer />

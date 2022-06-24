@@ -13,6 +13,22 @@ interface Payment {
   token: Token;
 }
 
+type BatchPayInfo = {
+  approval: {
+    tokenAddresses: string[];
+    values: number[];
+  };
+  currency: {
+    userIds: string[];
+    values: number[];
+  };
+  tokens: {
+    tokenAddresses: string[];
+    userIds: string[];
+    values: number[];
+  };
+};
+
 export interface ColumnType {
   columnId: string;
   name: string;

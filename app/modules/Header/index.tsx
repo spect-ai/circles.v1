@@ -7,7 +7,7 @@ import ProfileModal from "./ProfileModal";
 import { CircleType, ProjectType, UserType } from "@/app/types";
 import ProjectSettings from "../Project/ProjectSettings";
 import Link from "next/link";
-import { useAccount } from "wagmi";
+import { useAccount, useConnect } from "wagmi";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { DoubleRightOutlined } from "@ant-design/icons";
 import { useGlobalContext } from "@/app/context/globalContext";
@@ -23,11 +23,8 @@ const getUser = async () => {
 function Header(): ReactElement {
   const { setIsSidebarExpanded, isSidebarExpanded } = useGlobalContext();
   const router = useRouter();
-  const { circle: cId, project: pId } = router.query;
-  const { data } = useAccount();
-  const { data: currentUser } = useQuery<UserType>("getMyUser", getUser, {
-    enabled: !!data?.address,
-  });
+  const { circle: cId, project: pId, card: tId } = router.query;
+  const { data: currentUser } = useQuery<UserType>("getMyUser", getUser);
   const { data: circle } = useQuery<CircleType>(["circle", cId], {
     enabled: false,
   });
@@ -70,7 +67,7 @@ function Header(): ReactElement {
         )}
         <Stack direction="horizontal" align="center" space="1">
           {pId && project?.name && canDo(["steward"]) && <ProjectSettings />}
-          {pId && project?.name && canDo(["steward"]) && <BatchPay />}
+          {pId && !tId && project?.name && canDo(["steward"]) && <BatchPay />}
         </Stack>
         <Box marginLeft="4" />
       </Stack>

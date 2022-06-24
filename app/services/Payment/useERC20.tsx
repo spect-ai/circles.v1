@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { useGlobalContext } from "@/app/context/globalContext";
 import { ethers } from "ethers";
+import { toast } from "react-toastify";
 import { erc20ABI } from "wagmi";
 
 export default function useERC20() {
@@ -24,12 +25,20 @@ export default function useERC20() {
 
   async function approve(chainId: string, erc20Address: string) {
     const contract = getERC20Contract(erc20Address);
-
-    const tx = await contract.approve(
-      registry[chainId].distributorAddress,
-      ethers.constants.MaxInt256
-    );
-    return tx.wait();
+    try {
+      const tx = await contract.approve(
+        registry[chainId].distributorAddress,
+        ethers.constants.MaxInt256
+      );
+      await tx.wait();
+      return true;
+    } catch (err: any) {
+      console.error(err);
+      toast.error(err.message, {
+        theme: "dark",
+      });
+      return false;
+    }
   }
 
   function aggregateBalances(

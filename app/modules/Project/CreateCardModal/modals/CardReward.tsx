@@ -41,7 +41,10 @@ export default function CardReward() {
                     cursor: "pointer",
                     padding: "0rem",
                   }}
-                  onClick={() => setChain(aChain)}
+                  onClick={() => {
+                    setChain(aChain);
+                    setIsDirty(true);
+                  }}
                 >
                   <Tag
                     hover
@@ -65,7 +68,10 @@ export default function CardReward() {
                     cursor: "pointer",
                     padding: "0rem",
                   }}
-                  onClick={() => setToken(aToken)}
+                  onClick={() => {
+                    setToken(aToken);
+                    setIsDirty(true);
+                  }}
                 >
                   <Tag
                     hover

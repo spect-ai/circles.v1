@@ -14,7 +14,7 @@ interface Props {
   loading?: boolean;
   animation?: "fade" | "slide" | "none";
   shape?: "circle" | "square";
-  tone?: "red" | "accent";
+  tone?: "red" | "accent" | "green" | "blue";
 }
 
 export const slide = {

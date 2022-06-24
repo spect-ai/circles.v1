@@ -31,7 +31,6 @@ const Container = styled.div`
 export default function Project() {
   const { handleDragEnd } = useDragEnd();
   const { loading, localProject: project, setLocalProject } = useLocalProject();
-
   const { canDo } = useRoleGate();
   if (loading) {
     return <SkeletonLoader />;

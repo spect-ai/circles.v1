@@ -1,29 +1,18 @@
 import Modal from "@/app/common/components/Modal";
-import Table from "@/app/common/components/Table";
-import { CardType } from "@/app/types";
-import { Box, Button, IconEth } from "degen";
+import { BatchPayInfo } from "@/app/types";
+import { Button, IconEth } from "degen";
 import { AnimatePresence } from "framer-motion";
 import React, { useState } from "react";
-import { useLocalProject } from "../Context/LocalProjectContext";
+import ApproveToken from "./ApproveToken";
+import CurrencyPayment from "./CurrencyPayment";
+import SelectCards from "./SelectCards";
+import TokenPayment from "./TokenPayment";
 
 export default function BatchPay() {
   const [isOpen, setIsOpen] = useState(false);
-  const { localProject: project } = useLocalProject();
-  const [checked, setChecked] = useState([true, true]);
+  const [batchPayInfo, setBatchPayInfo] = useState<BatchPayInfo>();
 
-  const formatRows = (
-    cards: {
-      [key: string]: CardType;
-    },
-    cardIds: string[]
-  ) => {
-    // convert cards to string[][]
-    const rows = cardIds.map((id) => {
-      const card = cards[id];
-      return [card.title, `${card.reward.value} ${card.reward.token.symbol}`];
-    });
-    return rows;
-  };
+  const [step, setStep] = useState(0);
 
   return (
     <>
@@ -31,7 +20,7 @@ export default function BatchPay() {
         size="small"
         variant="transparent"
         shape="circle"
-        onClick={(e) => {
+        onClick={(e: any) => {
           setIsOpen(true);
         }}
       >
@@ -42,22 +31,35 @@ export default function BatchPay() {
           <Modal
             title="Batch Payment"
             handleClose={() => setIsOpen(false)}
-            height="30rem"
+            height="40rem"
+            size="large"
           >
-            <Box padding="8">
-              <Table
-                columns={["Card Name", "Reward"]}
-                rows={formatRows(
-                  project.cards,
-                  project.columnDetails[project.columnOrder[1]].cards
-                )}
-                showButton
-                checked={checked}
-                onClick={(checked) => {
-                  setChecked(checked);
-                }}
+            {step === 0 && (
+              <SelectCards
+                setIsOpen={setIsOpen}
+                setStep={setStep}
+                setBatchPayInfo={setBatchPayInfo}
               />
-            </Box>
+            )}
+            {step === 1 && (
+              <CurrencyPayment
+                setStep={setStep}
+                batchPayInfo={batchPayInfo as BatchPayInfo}
+              />
+            )}
+            {step === 2 && (
+              <ApproveToken
+                setStep={setStep}
+                batchPayInfo={batchPayInfo as BatchPayInfo}
+              />
+            )}
+            {step === 3 && (
+              <TokenPayment
+                setStep={setStep}
+                batchPayInfo={batchPayInfo as BatchPayInfo}
+                setIsOpen={setIsOpen}
+              />
+            )}
           </Modal>
         )}
       </AnimatePresence>

@@ -6,7 +6,7 @@ import CheckBox from "./Checkbox";
 
 interface Props {
   columns: string[];
-  rows: string[][];
+  rows: React.ReactNode[][];
   checked?: boolean[];
   showButton?: boolean;
   onClick?: (checked: boolean[]) => void;
@@ -21,12 +21,12 @@ const Table: FC<Props> = ({
 }) => {
   return (
     <Box width="full">
-      <Stack>
+      <Stack space="6">
         <Row>
           <Box width="full">
             <Stack direction="horizontal" align="center">
               {showButton && checked && (
-                <Box marginRight="4">
+                <Box marginRight="4" marginLeft="4" marginTop="0.5">
                   <CheckBox
                     isChecked={checked.every((ele) => ele === true)}
                     onClick={() => {
@@ -49,7 +49,7 @@ const Table: FC<Props> = ({
             <Box width="full">
               <Stack direction="horizontal" align="center">
                 {showButton && checked && (
-                  <Box marginRight="4">
+                  <Box marginRight="4" marginLeft="4" marginTop="0.5">
                     <CheckBox
                       isChecked={checked[index]}
                       onClick={() => {
@@ -66,9 +66,7 @@ const Table: FC<Props> = ({
                 )}
                 {row.map((cell, index) => (
                   <Col key={index} xs={12} sm={6}>
-                    <Text weight="semiBold" variant="base">
-                      {cell}
-                    </Text>
+                    {cell}
                   </Col>
                 ))}
               </Stack>

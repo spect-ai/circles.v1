@@ -77,14 +77,13 @@ export default function usePaymentGateway(
 
   async function batchPay(
     chainId: string,
-    type: string,
+    type: "tokens" | "currency",
     ethAddresses: Array<string>,
     tokenValues: Array<number>,
     tokenAddresses: Array<string>,
     cardIds?: string[],
     epochId?: string
   ) {
-    setIsLoading(true);
     try {
       const tx = await executeBatchPay(
         type,
@@ -98,20 +97,16 @@ export default function usePaymentGateway(
       }
       // notify('Payment done succesfully!', 'success');
       toast("Payment done succesfully!", {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
         theme: "dark",
       });
-      if (handleNextStep) {
-        handleNextStep();
-      }
-      setIsLoading(false);
+      return true;
     } catch (err: any) {
       void handlePaymentError(err, chainId, tokenAddresses, tokenValues);
-      setIsLoading(false);
       console.log(err);
+      toast.error(err.message, {
+        theme: "dark",
+      });
+      return false;
     }
   }
 
