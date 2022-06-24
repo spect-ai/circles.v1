@@ -1,8 +1,9 @@
 import Modal from "@/app/common/components/Modal";
 import { BatchPayInfo } from "@/app/types";
-import { Button, IconEth } from "degen";
+import { Box, Button, IconEth, Text } from "degen";
 import { AnimatePresence } from "framer-motion";
 import React, { useState } from "react";
+import { Tooltip } from "react-tippy";
 import ApproveToken from "./ApproveToken";
 import CurrencyPayment from "./CurrencyPayment";
 import SelectCards from "./SelectCards";
@@ -16,16 +17,18 @@ export default function BatchPay() {
 
   return (
     <>
-      <Button
-        size="small"
-        variant="transparent"
-        shape="circle"
-        onClick={(e: any) => {
-          setIsOpen(true);
-        }}
-      >
-        <IconEth />
-      </Button>
+      <Tooltip html={<Text>Batch Pay</Text>}>
+        <Button
+          size="small"
+          variant="transparent"
+          shape="circle"
+          onClick={(e: any) => {
+            setIsOpen(true);
+          }}
+        >
+          <IconEth />
+        </Button>
+      </Tooltip>
       <AnimatePresence>
         {isOpen && (
           <Modal

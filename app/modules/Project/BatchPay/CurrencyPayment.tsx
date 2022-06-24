@@ -5,6 +5,7 @@ import usePaymentGateway from "@/app/services/Payment/usePayment";
 import { BatchPayInfo } from "@/app/types";
 import { Avatar, Box, Stack, Text } from "degen";
 import React, { useState } from "react";
+import { useLocalProject } from "../Context/LocalProjectContext";
 import { ScrollContainer } from "./SelectCards";
 
 type Props = {
@@ -16,6 +17,7 @@ export default function CurrencyPayment({ setStep, batchPayInfo }: Props) {
   const { getMemberDetails } = useModalOptions();
   const { batchPay } = usePaymentGateway();
   const [loading, setLoading] = useState(false);
+  const { localProject: project } = useLocalProject();
 
   const formatRows = () => {
     const rows: any[] = [];
@@ -73,7 +75,7 @@ export default function CurrencyPayment({ setStep, batchPayInfo }: Props) {
               onClick={async () => {
                 setLoading(true);
                 const res = await batchPay(
-                  "80001",
+                  project.parents[0].defaultPayment.chain.chainId,
                   "currency",
                   getEthAddress() as string[],
                   batchPayInfo.currency.values,

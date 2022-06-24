@@ -4,6 +4,7 @@ import useERC20 from "@/app/services/Payment/useERC20";
 import { BatchPayInfo } from "@/app/types";
 import { Box, IconCheck, Stack, Text } from "degen";
 import React, { useEffect, useState } from "react";
+import { useLocalProject } from "../Context/LocalProjectContext";
 import { ScrollContainer } from "./SelectCards";
 
 type Props = {
@@ -14,6 +15,7 @@ type Props = {
 export default function ApproveToken({ batchPayInfo, setStep }: Props) {
   const { approve } = useERC20();
   const { registry } = useGlobalContext();
+  const { localProject: project } = useLocalProject();
 
   const [tokenStatus, settokenStatus] = useState<{
     [tokenAddress: string]: {
@@ -48,7 +50,10 @@ export default function ApproveToken({ batchPayInfo, setStep }: Props) {
             <Box key={index}>
               <Stack>
                 <Text variant="base" weight="semiBold">
-                  {registry["80001"].tokenDetails[tokenAddress].symbol}
+                  {
+                    registry[project.parents[0].defaultPayment.chain.chainId]
+                      .tokenDetails[tokenAddress].symbol
+                  }
                 </Text>
                 <Box width="1/3">
                   <PrimaryButton
@@ -70,7 +75,10 @@ export default function ApproveToken({ batchPayInfo, setStep }: Props) {
                           loading: true,
                         },
                       });
-                      const res = await approve("80001", tokenAddress);
+                      const res = await approve(
+                        project.parents[0].defaultPayment.chain.chainId,
+                        tokenAddress
+                      );
                       // set approved for this token status
                       if (res) {
                         // set loading for this token status

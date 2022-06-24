@@ -27,6 +27,9 @@ export function getFlattenedNetworks(registry: Registry) {
 // }
 
 export function getFlattenedCurrencies(registry: Registry, chainId: string) {
+  if (!chainId) {
+    return [];
+  }
   //   const currencies = getFlattenedTokens(registry, chainId);
   const currencies = Object.values(registry[chainId].tokenDetails);
   // currencies = [...currencies, { symbol: registry[chainId].nativeCurrency }];

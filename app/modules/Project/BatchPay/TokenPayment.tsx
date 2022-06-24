@@ -7,6 +7,7 @@ import { BatchPayInfo } from "@/app/types";
 import { Avatar, Box, Stack, Text } from "degen";
 import React, { useState } from "react";
 import { toast } from "react-toastify";
+import { useLocalProject } from "../Context/LocalProjectContext";
 import { ScrollContainer } from "./SelectCards";
 
 type Props = {
@@ -24,6 +25,7 @@ export default function TokenPayment({
   const { batchPay } = usePaymentGateway();
   const [loading, setLoading] = useState(false);
   const { registry } = useGlobalContext();
+  const { localProject: project } = useLocalProject();
 
   const formatRows = () => {
     const rows: any[] = [];
@@ -43,9 +45,8 @@ export default function TokenPayment({
         <Text variant="base" weight="semiBold" key={userId}>
           {batchPayInfo.tokens.values[index]}{" "}
           {
-            registry["80001"].tokenDetails[
-              batchPayInfo.tokens.tokenAddresses[index]
-            ].symbol
+            registry[project.parents[0].defaultPayment.chain.chainId]
+              .tokenDetails[batchPayInfo.tokens.tokenAddresses[index]].symbol
           }
         </Text>,
       ]);
@@ -86,7 +87,7 @@ export default function TokenPayment({
               onClick={async () => {
                 setLoading(true);
                 const res = await batchPay(
-                  "80001",
+                  project.parents[0].defaultPayment.chain.chainId,
                   "tokens",
                   getEthAddress() as string[],
                   batchPayInfo.tokens.values,

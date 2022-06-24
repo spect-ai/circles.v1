@@ -91,7 +91,7 @@ export interface CardType {
   reward: {
     chain: Chain;
     token: Token;
-    value: string;
+    value: number;
     transactionHash: string;
   };
   type: "Task" | "Bounty";

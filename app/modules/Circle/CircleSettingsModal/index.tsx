@@ -89,7 +89,7 @@ export default function SettingsModal({ handleClose }: Props) {
           borderRightWidth="0.375"
           paddingY="8"
           height="full"
-          paddingX="1"
+          paddingRight="1"
         >
           <Tabs
             selectedTab={tab}

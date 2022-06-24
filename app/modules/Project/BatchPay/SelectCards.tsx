@@ -3,8 +3,13 @@ import PrimaryButton from "@/app/common/components/PrimaryButton";
 import Table from "@/app/common/components/Table";
 import { useLocalProject } from "@/app/modules/Project/Context/LocalProjectContext";
 import { BatchPayInfo, CardType } from "@/app/types";
-import { Box, Heading, Stack, Text } from "degen";
+import {
+  QuestionCircleFilled,
+  QuestionCircleOutlined,
+} from "@ant-design/icons";
+import { Box, Button, Heading, Stack, Text } from "degen";
 import React, { useEffect, useState } from "react";
+import { Tooltip } from "react-tippy";
 import styled from "styled-components";
 import { getAgregatedPaymentInfo } from "../../../services/BatchPay";
 
@@ -38,7 +43,7 @@ export default function SelectCards({
     cardIds: string[]
   ) => {
     // convert cards to string[][]
-    const rows = cardIds.map((id) => {
+    const rows = cardIds?.map((id) => {
       const card = cards[id];
       return [
         <Text key={id} variant="base" weight="semiBold">
@@ -55,7 +60,7 @@ export default function SelectCards({
   const [checked, setChecked] = useState<boolean[]>([]);
   const [column, setColumn] = useState({ label: "Done", value: "column-3" });
   const [rows, setRows] = useState<React.ReactNode[][]>(
-    formatRows(project.cards, project.columnDetails[column.value].cards)
+    formatRows(project.cards, project.columnDetails[column.value]?.cards)
   );
 
   // get project columns in option format
@@ -66,52 +71,60 @@ export default function SelectCards({
 
   useEffect(() => {
     if (project?.columnDetails) {
-      setRows(
-        formatRows(project.cards, project.columnDetails[column.value].cards)
+      // filter the project cards to show only the cards with assignee and reward
+      const cards = project.columnDetails[column.value]?.cards.filter(
+        (card) =>
+          project.cards[card].assignee && project.cards[card].reward.value > 0
       );
-      setChecked(
-        formatRows(
-          project.cards,
-          project.columnDetails[column.value].cards
-        ).map(() => true)
-      );
+      setRows(formatRows(project.cards, cards));
+      setChecked(formatRows(project.cards, cards)?.map(() => true));
     }
   }, [project]);
   return (
     <Box>
       <ScrollContainer paddingX="8" paddingY="4">
-        <Text variant="extraLarge" weight="semiBold">
-          Select Cards
-        </Text>
+        <Stack direction="horizontal" space="1" align="center">
+          <Text variant="extraLarge" weight="semiBold">
+            Select Cards
+          </Text>
+          <Tooltip html={<Text>Batch Pay</Text>}>
+            <Button shape="circle" size="small" variant="transparent">
+              <QuestionCircleFilled style={{ fontSize: "1rem" }} />
+            </Button>
+          </Tooltip>
+        </Stack>
         <Dropdown
           options={columns}
           selected={column}
           onChange={(option) => {
+            console.log({ option });
             setColumn(option);
-            setRows(
-              formatRows(
-                project.cards,
-                project.columnDetails[option.value].cards
-              )
+            const cards = project.columnDetails[option.value].cards.filter(
+              (card) =>
+                project.cards[card].assignee &&
+                project.cards[card].reward.value > 0
             );
-            setChecked(
-              formatRows(
-                project.cards,
-                project.columnDetails[option.value].cards
-              ).map(() => true)
-            );
+            setRows(formatRows(project.cards, cards));
+            setChecked(formatRows(project.cards, cards).map(() => true));
           }}
         />
         <Box paddingY="4" />
-        <Table
-          columns={["Card Name", "Reward"]}
-          rows={rows}
-          showButton
-          checked={checked}
-          onClick={(checked) => {
-            setChecked(checked);
-          }}
-        />
+        {rows && (
+          <Table
+            columns={["Card Name", "Reward"]}
+            rows={rows}
+            showButton
+            checked={checked}
+            onClick={(checked) => {
+              setChecked(checked);
+            }}
+          />
+        )}
+        {!rows && (
+          <Text variant="base" weight="semiBold">
+            No cards found
+          </Text>
+        )}
       </ScrollContainer>
       <Box borderTopWidth="0.375" paddingX="8" paddingY="4">
         <Stack direction="horizontal">
@@ -135,7 +148,7 @@ export default function SelectCards({
                 console.log({ selectedCards });
                 const res = await getAgregatedPaymentInfo(
                   selectedCards,
-                  "80001" // to do change the network to the current network
+                  project.parents[0].defaultPayment.chain.chainId
                 );
                 console.log({ res });
                 setBatchPayInfo(res as BatchPayInfo);

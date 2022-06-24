@@ -1,11 +1,13 @@
+import PrimaryButton from "@/app/common/components/PrimaryButton";
 import {
   getFlattenedCurrencies,
   getFlattenedNetworks,
 } from "@/app/common/utils/registry";
 import { useGlobalContext } from "@/app/context/globalContext";
-import { Chain, CircleType, ProjectType, Token } from "@/app/types";
-import { Box, Heading, Input, Stack, Tag, Text } from "degen";
-import { motion, AnimatePresence } from "framer-motion";
+import { Chain, CircleType, Token } from "@/app/types";
+import { SaveOutlined } from "@ant-design/icons";
+import { Box, Heading, Stack, Tag, Text } from "degen";
+import { motion } from "framer-motion";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { useQuery } from "react-query";
@@ -19,20 +21,26 @@ export default function DefaultPayment() {
     enabled: false,
   });
 
-  const [chain, setChain] = useState({} as Chain);
-  const [token, setToken] = useState({} as Token);
+  const [chain, setChain] = useState(circle?.defaultPayment.chain);
+  const [token, setToken] = useState(circle?.defaultPayment.token);
 
-  useEffect(() => {
-    if (circle?.id) {
-      setChain(circle.defaultPayment.chain);
-      setToken(circle.defaultPayment.token);
-    }
-  }, [circle]);
+  // useEffect(() => {
+  //   if (circle?.id) {
+  //     setChain(
+  //       circle.defaultPayment.chain ||
+  //     );
+  //     setToken(
+  //       circle.defaultPayment.token ||
+  //     );
+  //   }
+  // }, [circle]);
 
   return (
     <Stack>
-      <Heading>Default Payment</Heading>
-      <Text>Set the default way of getting paid for cards</Text>
+      <Box>
+        <Heading>Default Payment</Heading>
+        <Text>Set the default way of getting paid for cards</Text>
+      </Box>
       <Stack>
         <Text size="extraLarge">Chain</Text>
         <Stack direction="horizontal">
@@ -49,7 +57,9 @@ export default function DefaultPayment() {
             >
               <Tag
                 hover
-                tone={chain.chainId === aChain.chainId ? "accent" : "secondary"}
+                tone={
+                  chain?.chainId === aChain.chainId ? "accent" : "secondary"
+                }
               >
                 {aChain.name}
               </Tag>
@@ -58,26 +68,33 @@ export default function DefaultPayment() {
         </Stack>
         <Text size="extraLarge">Token</Text>
         <Stack direction="horizontal">
-          {getFlattenedCurrencies(registry, chain.chainId).map((aToken) => (
-            <motion.button
-              style={{
-                background: "transparent",
-                border: "none",
-                cursor: "pointer",
-                padding: "0rem",
-              }}
-              onClick={() => setToken(aToken)}
-              key={aToken.symbol}
-            >
-              <Tag
-                hover
-                tone={token.address === aToken.address ? "accent" : "secondary"}
+          {getFlattenedCurrencies(registry, chain?.chainId as string)?.map(
+            (aToken) => (
+              <motion.button
+                style={{
+                  background: "transparent",
+                  border: "none",
+                  cursor: "pointer",
+                  padding: "0rem",
+                }}
+                onClick={() => setToken(aToken)}
+                key={aToken.symbol}
               >
-                {aToken.symbol}
-              </Tag>
-            </motion.button>
-          ))}
+                <Tag
+                  hover
+                  tone={
+                    token?.address === aToken.address ? "accent" : "secondary"
+                  }
+                >
+                  {aToken.symbol}
+                </Tag>
+              </motion.button>
+            )
+          )}
         </Stack>
+        <Box width="1/3" marginTop="4">
+          <PrimaryButton icon={<SaveOutlined />}>Save</PrimaryButton>
+        </Box>
       </Stack>
     </Stack>
   );
