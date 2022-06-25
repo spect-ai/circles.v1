@@ -33,7 +33,7 @@ function CreateProjectModal({ accordian }: Props) {
     ["projectTemplates", cId],
     () =>
       fetch(
-        `http://localhost:3000/template/allProjectTemplates/${circle?.id}`
+        `${process.env.API_HOST}/template/allProjectTemplates/${circle?.id}`
       ).then(async (res) => {
         const data = await res.json();
         const filteredData = data.map((t: Template) => {
@@ -54,7 +54,7 @@ function CreateProjectModal({ accordian }: Props) {
   );
   const { mutateAsync, isLoading } = useMutation(
     (project: CreateProjectDto) => {
-      return fetch("http://localhost:3000/project", {
+      return fetch(`${process.env.API_HOST}/project`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

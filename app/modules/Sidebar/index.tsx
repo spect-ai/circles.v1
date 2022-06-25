@@ -46,7 +46,7 @@ function Sidebar(): ReactElement {
   } = useQuery<CircleType[]>(
     "myOrganizations",
     () =>
-      fetch(`http://localhost:3000/circle/myOrganizations`, {
+      fetch(`${process.env.API_HOST}/circle/myOrganizations`, {
         credentials: "include",
       }).then((res) => res.json()),
     {

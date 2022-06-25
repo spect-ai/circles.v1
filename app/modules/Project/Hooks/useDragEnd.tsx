@@ -55,7 +55,7 @@ export default function useDragEnd() {
         ...localProject,
         columnOrder: newColumnOrder,
       });
-      fetch(`http://localhost:3000/project/${localProject.id}`, {
+      fetch(`${process.env.API_HOST}/project/${localProject.id}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -120,7 +120,7 @@ export default function useDragEnd() {
       });
     }
     fetch(
-      `http://localhost:3000/project/${localProject.id}/reorderCard/${draggableId}`,
+      `${process.env.API_HOST}/project/${localProject.id}/reorderCard/${draggableId}`,
       {
         method: "PATCH",
         headers: {

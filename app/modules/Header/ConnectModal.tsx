@@ -20,7 +20,7 @@ export default function ConnectModal() {
 
   const connectAndLogin = async (connector: any, connectorIndex: number) => {
     const res = await connectAsync(connector); // `connectAsync` from `useConnect`
-    const nonceRes = await fetch("http://localhost:3000/auth/nonce", {
+    const nonceRes = await fetch(`${process.env.API_HOST}/auth/nonce`, {
       credentials: "include",
     });
     const message = new SiweMessage({
@@ -38,7 +38,7 @@ export default function ConnectModal() {
 
     console.log(JSON.stringify({ message, signature }));
 
-    const verifyRes = await fetch("http://localhost:3000/auth/connect", {
+    const verifyRes = await fetch(`${process.env.API_HOST}/auth/connect`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

@@ -186,7 +186,7 @@ export function useProviderLocalCard({
       },
     };
     console.log({ payload });
-    fetch("http://localhost:3000/card", {
+    fetch(`${process.env.API_HOST}/card`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -241,7 +241,7 @@ export function useProviderLocalCard({
       reward: card?.reward,
     };
     console.log({ payload });
-    fetch(`http://localhost:3000/card/${card?.id}`, {
+    fetch(`${process.env.API_HOST}/card/${card?.id}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -289,7 +289,7 @@ export function useProviderLocalCard({
       },
     };
     console.log({ payload });
-    fetch(`http://localhost:3000/card/${card?.id}`, {
+    fetch(`${process.env.API_HOST}/card/${card?.id}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -329,13 +329,16 @@ export function useProviderLocalCard({
   };
 
   const onArchive = async () => {
-    const res = await fetch(`http://localhost:3000/card/${card?.id}/archive`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-    });
+    const res = await fetch(
+      `${process.env.API_HOST}/card/${card?.id}/archive`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      }
+    );
     if (res.ok) {
       void router.push(`/${cId}/${pId}`);
       return true;

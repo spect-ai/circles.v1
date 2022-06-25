@@ -9,7 +9,7 @@ export const getAgregatedPaymentInfo = async (
   const cardIds = cards.map((cardId) => `cardIds=${cardId}`).join("&");
   console.log({ cardIds });
   const res = await fetch(
-    `http://localhost:3000/card/aggregatedPaymentInfo?${cardIds}&chainId=${chainId}`
+    `${process.env.API_HOST}/card/aggregatedPaymentInfo?${cardIds}&chainId=${chainId}`
   );
   if (res.ok) {
     const data = await res.json();
@@ -23,7 +23,7 @@ export const updatePaymentInfo = async (
   transactionHash: string
 ) => {
   const res = await fetch(
-    `http://localhost:3000/card/updatePaymentInfoAndClose`,
+    `${process.env.API_HOST}/card/updatePaymentInfoAndClose`,
     {
       method: "PATCH",
       headers: {

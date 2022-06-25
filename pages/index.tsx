@@ -25,7 +25,9 @@ const Home: NextPage = () => {
 
 export async function getStaticProps() {
   const fetchExploreCircles = async () =>
-    await (await fetch("http://localhost:3000/circle/allPublicParents")).json();
+    await (
+      await fetch(`${process.env.API_HOST}/circle/allPublicParents`)
+    ).json();
   const queryClient = new QueryClient();
   await queryClient.prefetchQuery<CircleType[]>(
     "exploreCircles",

@@ -47,7 +47,7 @@ function CreateSpaceModal({ accordian }: Props) {
 
   const { mutateAsync, isLoading } = useMutation(
     (circle: CreateWorkspaceDto) => {
-      return fetch("http://localhost:3000/circle", {
+      return fetch(`${process.env.API_HOST}/circle`, {
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",

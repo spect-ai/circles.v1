@@ -17,8 +17,8 @@ const ProjectPage: NextPage = () => {
   useQuery<ProjectType>(
     ["project", pId],
     () =>
-      fetch(`http://localhost:3000/project/slug/${pId as string}`).then((res) =>
-        res.json()
+      fetch(`${process.env.API_HOST}/project/slug/${pId as string}`).then(
+        (res) => res.json()
       ),
     {
       enabled: pId !== undefined,
@@ -27,8 +27,8 @@ const ProjectPage: NextPage = () => {
   const { data: circle, refetch } = useQuery<CircleType>(
     ["circle", cId],
     () =>
-      fetch(`http://localhost:3000/circle/slug/${cId as string}`).then((res) =>
-        res.json()
+      fetch(`${process.env.API_HOST}/circle/slug/${cId as string}`).then(
+        (res) => res.json()
       ),
     {
       enabled: false,
@@ -39,7 +39,7 @@ const ProjectPage: NextPage = () => {
     ["memberDetails", cId],
     () =>
       fetch(
-        `http://localhost:3000/circle/${circle?.id}/memberDetails?circleIds=${circle?.id}`
+        `${process.env.API_HOST}/circle/${circle?.id}/memberDetails?circleIds=${circle?.id}`
       ).then((res) => res.json()),
     {
       enabled: !!circle?.id,

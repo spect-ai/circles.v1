@@ -99,7 +99,7 @@ export default function ProfileModal() {
                 <PrimaryButton
                   disabled={uploading}
                   onClick={() => {
-                    fetch("http://localhost:3000/user/me", {
+                    fetch(`${process.env.API_HOST}/user/me`, {
                       headers: {
                         Accept: "application/json",
                         "Content-Type": "application/json",
@@ -133,7 +133,7 @@ export default function ProfileModal() {
                 <PrimaryButton
                   variant="tertiary"
                   onClick={async () => {
-                    await fetch("http://localhost:3000/auth/disconnect", {
+                    await fetch(`${process.env.API_HOST}/auth/disconnect`, {
                       method: "POST",
                       credentials: "include",
                     });

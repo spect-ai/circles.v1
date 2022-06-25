@@ -38,7 +38,7 @@ function CreateCircle() {
   const router = useRouter();
 
   const { mutateAsync, isLoading } = useMutation((circle: CreateCircleDto) => {
-    return fetch("http://localhost:3000/circle", {
+    return fetch(`${process.env.API_HOST}/circle`, {
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",

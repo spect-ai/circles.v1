@@ -9,7 +9,7 @@ export default function useComment() {
   const addComment = async (comment: string): Promise<boolean> => {
     setLoading(true);
     const res = await fetch(
-      `http://localhost:3000/card/${card?.id}/addComment`,
+      `${process.env.API_HOST}/card/${card?.id}/addComment`,
       {
         method: "PATCH",
         headers: {
@@ -42,7 +42,7 @@ export default function useComment() {
   ): Promise<boolean> => {
     setLoading(true);
     const res = await fetch(
-      `http://localhost:3000/card/${card?.id}/updateComment?commitId=${commitId}`,
+      `${process.env.API_HOST}/card/${card?.id}/updateComment?commitId=${commitId}`,
       {
         method: "PATCH",
         headers: {
@@ -72,7 +72,7 @@ export default function useComment() {
   const deleteComment = async (commitId: string): Promise<boolean> => {
     setLoading(true);
     const res = await fetch(
-      `http://localhost:3000/card/${card?.id}/deleteComment?commitId=${commitId}`,
+      `${process.env.API_HOST}/card/${card?.id}/deleteComment?commitId=${commitId}`,
       {
         method: "PATCH",
         headers: {

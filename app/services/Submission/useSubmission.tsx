@@ -23,7 +23,7 @@ export default function useSubmission() {
   ): Promise<boolean> => {
     setloading(true);
     const res = await fetch(
-      `http://localhost:3000/card/${card?.id}/createWorkThread`,
+      `${process.env.API_HOST}/card/${card?.id}/createWorkThread`,
       {
         method: "PATCH",
         headers: {
@@ -57,7 +57,7 @@ export default function useSubmission() {
   ): Promise<boolean> => {
     setloading(true);
     const res = await fetch(
-      `http://localhost:3000/card/${card?.id}/updateWorkUnit?threadId=${workThreadId}&workUnitId=${workUnitId}`,
+      `${process.env.API_HOST}/card/${card?.id}/updateWorkUnit?threadId=${workThreadId}&workUnitId=${workUnitId}`,
       {
         method: "PATCH",
         headers: {
@@ -90,7 +90,7 @@ export default function useSubmission() {
   ): Promise<boolean> => {
     setloading(true);
     const res = await fetch(
-      `http://localhost:3000/card/${card?.id}/createWorkUnit?threadId=${workThreadId}`,
+      `${process.env.API_HOST}/card/${card?.id}/createWorkUnit?threadId=${workThreadId}`,
       {
         method: "PATCH",
         headers: {

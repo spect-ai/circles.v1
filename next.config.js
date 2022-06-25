@@ -5,6 +5,7 @@ const nextConfig = {
     ALCHEMY_KEY: process.env.ALCHEMY_KEY,
     DEV_ENV: process.env.DEV_ENV,
     WEB3_STORAGE_TOKEN: process.env.WEB3_STORAGE_TOKEN,
+    API_HOST: process.env.API_HOST,
   },
   webpack(config) {
     config.module.rules.push({

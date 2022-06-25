@@ -32,7 +32,7 @@ export default function ProjectSettings() {
 
   const onSubmit = () => {
     setIsLoading(true);
-    fetch(`http://localhost:3000/project/${project?.id}`, {
+    fetch(`${process.env.API_HOST}/project/${project?.id}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -61,7 +61,7 @@ export default function ProjectSettings() {
 
   const onDelete = () => {
     setIsLoading(true);
-    fetch(`http://localhost:3000/project/${project?.id}/delete`, {
+    fetch(`${process.env.API_HOST}/project/${project?.id}/delete`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

@@ -12,8 +12,8 @@ const CirclePage: NextPage = () => {
   useQuery<CircleType>(
     ["circle", cId],
     () =>
-      fetch(`http://localhost:3000/circle/slug/${cId as string}`).then((res) =>
-        res.json()
+      fetch(`${process.env.API_HOST}/circle/slug/${cId as string}`).then(
+        (res) => res.json()
       ),
     {
       enabled: !!cId,

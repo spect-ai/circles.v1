@@ -4,7 +4,7 @@ export async function updateColumnDetails(
   body: any
 ) {
   const response = await fetch(
-    `http://localhost:3000/project/${projectId}/column/${columnId}`,
+    `${process.env.API_HOST}/project/${projectId}/column/${columnId}`,
     {
       method: "PATCH",
       headers: {
@@ -24,7 +24,7 @@ export async function updateColumnDetails(
 
 export async function addColumn(projectId: string) {
   const response = await fetch(
-    `http://localhost:3000/project/${projectId}/column/add`,
+    `${process.env.API_HOST}/project/${projectId}/column/add`,
     {
       method: "PATCH",
       headers: {
@@ -43,7 +43,7 @@ export async function addColumn(projectId: string) {
 
 export async function deleteColumn(projectId: string, columnId: string) {
   const response = await fetch(
-    `http://localhost:3000/project/${projectId}/column/${columnId}/delete`,
+    `${process.env.API_HOST}/project/${projectId}/column/${columnId}/delete`,
     {
       method: "POST",
       headers: {

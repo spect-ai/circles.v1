@@ -14,7 +14,7 @@ import BatchPay from "../Project/BatchPay";
 import styled from "styled-components";
 
 const getUser = async () => {
-  const res = await fetch("http://localhost:3000/user/me", {
+  const res = await fetch(`${process.env.API_HOST}/user/me`, {
     credentials: "include",
   });
   return await res.json();

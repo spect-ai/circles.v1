@@ -3,7 +3,7 @@ export const joinCircleFromInvite = async (
   inviteCode: string
 ) => {
   const response = await fetch(
-    `http://localhost:3000/circle/joinUsingInvitation/${circleId}`,
+    `${process.env.API_HOST}/circle/joinUsingInvitation/${circleId}`,
     {
       method: "PATCH",
       headers: {

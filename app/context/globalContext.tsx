@@ -12,7 +12,7 @@ const useProviderGlobalContext = () => {
   const [registry, setRegistry] = useState<Registry>({} as Registry);
 
   useEffect(() => {
-    fetch("http://localhost:3000/registry/getGlobalRegistry")
+    fetch(`${process.env.API_HOST}/registry/getGlobalRegistry`)
       .then(async (res) => {
         const data = await res.json();
         setRegistry(data);

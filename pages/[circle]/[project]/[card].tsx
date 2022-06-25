@@ -17,8 +17,8 @@ const CardPage: NextPage = () => {
   const { data: project, refetch: refetchProject } = useQuery<ProjectType>(
     ["project", pId],
     () =>
-      fetch(`http://localhost:3000/project/slug/${pId as string}`).then((res) =>
-        res.json()
+      fetch(`${process.env.API_HOST}/project/slug/${pId as string}`).then(
+        (res) => res.json()
       ),
     {
       enabled: false,
@@ -28,7 +28,7 @@ const CardPage: NextPage = () => {
     ["card", tId],
     () =>
       fetch(
-        `http://localhost:3000/card/byProjectAndSlug/${project?.id}/${
+        `${process.env.API_HOST}/card/byProjectAndSlug/${project?.id}/${
           tId as string
         }`
       ).then((res) => res.json()),
@@ -39,8 +39,8 @@ const CardPage: NextPage = () => {
   const { data: circle, refetch: refetchCircle } = useQuery<CircleType>(
     ["circle", cId],
     () =>
-      fetch(`http://localhost:3000/circle/slug/${cId as string}`).then((res) =>
-        res.json()
+      fetch(`${process.env.API_HOST}/circle/slug/${cId as string}`).then(
+        (res) => res.json()
       ),
     {
       enabled: !!cId,
@@ -51,7 +51,7 @@ const CardPage: NextPage = () => {
     ["memberDetails", cId],
     () =>
       fetch(
-        `http://localhost:3000/circle/${circle?.id}/memberDetails?circleIds=${circle?.id}`
+        `${process.env.API_HOST}/circle/${circle?.id}/memberDetails?circleIds=${circle?.id}`
       ).then((res) => res.json()),
     {
       enabled: !!circle?.id,

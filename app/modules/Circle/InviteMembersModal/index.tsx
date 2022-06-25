@@ -141,18 +141,21 @@ function InviteMemberModal() {
                   onClick={() => {
                     const expire = new Date().getTime() + expiry.expiry * 1000;
                     setIsLoading(true);
-                    fetch(`http://localhost:3000/circle/invite/${circle?.id}`, {
-                      method: "PATCH",
-                      headers: {
-                        "Content-Type": "application/json",
-                      },
-                      body: JSON.stringify({
-                        role: role.role,
-                        uses: uses.uses,
-                        expires: new Date(expire).toISOString(),
-                      }),
-                      credentials: "include",
-                    })
+                    fetch(
+                      `${process.env.API_HOST}/circle/invite/${circle?.id}`,
+                      {
+                        method: "PATCH",
+                        headers: {
+                          "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                          role: role.role,
+                          uses: uses.uses,
+                          expires: new Date(expire).toISOString(),
+                        }),
+                        credentials: "include",
+                      }
+                    )
                       .then(async (res) => {
                         console.log({ res });
                         const invite = await res.text();
