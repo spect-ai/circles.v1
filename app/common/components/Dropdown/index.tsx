@@ -10,6 +10,7 @@ type OptionType = {
 };
 
 interface Props {
+  title?: string;
   options: OptionType[];
   selected: OptionType;
   onChange: (option: OptionType) => void;
@@ -45,7 +46,7 @@ const slide = {
   collapsed: { height: 0, opacity: 0 },
 };
 
-const Dropdown: FC<Props> = ({ options, selected, onChange }) => {
+const Dropdown: FC<Props> = ({ options, selected, onChange, title }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   // use input ref
   const inputRef = useRef<HTMLInputElement>(null);
@@ -56,7 +57,7 @@ const Dropdown: FC<Props> = ({ options, selected, onChange }) => {
       <Box style={{ width: "20rem" }}>
         <Input
           ref={inputRef}
-          label={""}
+          label={title}
           value={inputValue}
           onChange={(e) => {
             setInputValue(e.target.value);
@@ -86,11 +87,6 @@ const Dropdown: FC<Props> = ({ options, selected, onChange }) => {
               </Box>
             </Button>
           }
-          onBlur={() =>
-            setTimeout(() => {
-              setIsExpanded(false);
-            }, 100)
-          }
           onFocus={() => setIsExpanded(true)}
         />
       </Box>
@@ -119,6 +115,7 @@ const Dropdown: FC<Props> = ({ options, selected, onChange }) => {
                     onClick={() => {
                       onChange(option);
                       setInputValue(option.label);
+                      setIsExpanded(false);
                     }}
                   >
                     <Stack align="center">

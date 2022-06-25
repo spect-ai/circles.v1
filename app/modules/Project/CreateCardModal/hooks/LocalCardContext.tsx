@@ -8,7 +8,6 @@ import {
   Token,
   WorkThreadType,
 } from "@/app/types";
-import { SaveOutlined } from "@ant-design/icons";
 import { Box, Stack } from "degen";
 import Link from "next/link";
 import { useRouter } from "next/router";

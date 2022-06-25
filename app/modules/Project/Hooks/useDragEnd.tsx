@@ -96,9 +96,7 @@ export default function useDragEnd() {
       });
     } else {
       const startTaskIds = Array.from(start.cards); // copy
-      console.log({ source });
       startTaskIds.splice(source.index, 1);
-      console.log({ startTaskIds });
       const newStart: ColumnType = {
         ...start,
         cards: startTaskIds,

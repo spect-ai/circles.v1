@@ -1,10 +1,9 @@
 import { addColumn } from "@/app/services/Column";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
-import { Box, Button, IconPlusSmall, Stack, Text } from "degen";
+import { Box, IconPlusSmall, Stack } from "degen";
 import React from "react";
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
 import { toast, ToastContainer } from "react-toastify";
-import { motion, AnimatePresence } from "framer-motion";
 import styled from "styled-components";
 import ColumnComponent from "./Column";
 import { useLocalProject } from "./Context/LocalProjectContext";
@@ -32,6 +31,7 @@ export default function Project() {
   const { handleDragEnd } = useDragEnd();
   const { loading, localProject: project, setLocalProject } = useLocalProject();
   const { canDo } = useRoleGate();
+
   if (loading) {
     return <SkeletonLoader />;
   }

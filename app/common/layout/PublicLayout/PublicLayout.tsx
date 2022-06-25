@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 import { ReactNodeNoStrings } from "degen/dist/types/types";
 import { Box } from "degen";
@@ -10,6 +10,7 @@ import { useRouter } from "next/router";
 import { useGlobalContext } from "@/app/context/globalContext";
 import styled from "styled-components";
 import { variants } from "@/app/modules/Card";
+import { useConnect } from "wagmi";
 
 type PublicLayoutProps = {
   children: ReactNodeNoStrings;
@@ -27,16 +28,16 @@ function PublicLayout(props: PublicLayoutProps) {
 
   const router = useRouter();
   const { circle: cId } = router.query;
+  const { connect, connectors } = useConnect();
 
-  // const { dispatch } = useGlobal();
-  // const { isInitialized, Moralis } = useMoralis();
+  useEffect(() => {
+    if (localStorage.getItem("connectorIndex")) {
+      console.log("connecting");
+      const index = parseInt(localStorage.getItem("connectorIndex") as string);
+      connect(connectors[index]);
+    }
+  }, [connect, connectors]);
 
-  // useEffect(() => {
-  //   if (isInitialized) {
-  //     initContracts(dispatch);
-  //     initRegistry(dispatch, Moralis);
-  //   }
-  // }, [isInitialized]);
   return (
     <Box
       backgroundColor="background"

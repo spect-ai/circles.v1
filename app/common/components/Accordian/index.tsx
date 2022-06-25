@@ -36,7 +36,7 @@ function Accordian({
   const [isExpanded, setIsExpanded] = useState(defaultOpen);
   return (
     <Box>
-      <Box display="flex" flexDirection="row">
+      <Box display="flex" flexDirection="row" paddingRight="2">
         <CollapseButton onClick={() => setIsExpanded(!isExpanded)}>
           <Box
             marginRight="2"

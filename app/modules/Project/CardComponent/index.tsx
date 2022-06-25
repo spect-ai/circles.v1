@@ -80,33 +80,34 @@ export default function CardComponent({ card, index, column }: Props) {
                 memberDetails={space.memberDetails}
               /> */}
             <Stack direction="horizontal" wrap space="2">
+              {card.status.paid && (
+                <Tag size="small">
+                  <Text color="green">Paid</Text>
+                </Tag>
+              )}
               {card.type === "Bounty" && (
                 <Tag size="small" tone="accent">
-                  <Text>{card.type}</Text>
+                  {card.type}
                 </Tag>
               )}
               {card.reward.value ? (
                 <Tag size="small" tone="accent">
                   <Stack direction="horizontal" space="0" align="center">
-                    <IconEth size="4" />
-                    <Text>
-                      {card.reward.value} {card.reward.token.symbol}
-                    </Text>
+                    <IconEth size="3.5" />
+                    {card.reward.value} {card.reward.token.symbol}
                   </Stack>
                 </Tag>
               ) : null}
               {card.deadline && (
                 <Tag size="small" tone="accent">
-                  <Text>
-                    {deadline.getDate()}{" "}
-                    {monthMap[deadline.getMonth() as keyof typeof monthMap]}
-                  </Text>
+                  {deadline.getDate()}{" "}
+                  {monthMap[deadline.getMonth() as keyof typeof monthMap]}
                 </Tag>
               )}
               {card.priority ? <PriorityIcon priority={card.priority} /> : null}
               {card?.labels?.map((label) => (
                 <Tag size="small" key={label}>
-                  <Text>{label}</Text>
+                  {label}
                 </Tag>
               ))}
             </Stack>

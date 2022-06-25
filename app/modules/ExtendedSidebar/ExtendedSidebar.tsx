@@ -1,5 +1,5 @@
 import React, { ReactElement } from "react";
-import { Box, Button, Heading, IconChevronLeft } from "degen";
+import { Box, Button, Heading, IconChevronLeft, Text } from "degen";
 import { useRouter } from "next/router";
 import styled from "styled-components";
 import { motion } from "framer-motion";
@@ -47,7 +47,8 @@ function ExtendedSidebar(): ReactElement {
         display="flex"
         flexDirection="column"
         borderRightWidth="0.375"
-        paddingX="3"
+        paddingLeft="3"
+        paddingRight="1"
         height="full"
       >
         <Box>
@@ -58,9 +59,14 @@ function ExtendedSidebar(): ReactElement {
             flexDirection="row"
             justifyContent="space-between"
           >
-            <Heading>
+            <Text
+              size="headingTwo"
+              weight="semiBold"
+              color="accentText"
+              ellipsis
+            >
               {cId && pId && (circle?.name || project?.parents[0].name)}
-            </Heading>
+            </Text>
             <SlideButtonContainer
               transitionDuration="300"
               style={{
@@ -76,16 +82,6 @@ function ExtendedSidebar(): ReactElement {
             >
               <DoubleRightOutlined style={{ fontSize: "1.1rem" }} />
             </SlideButtonContainer>
-            {/* <Button
-              variant="transparent"
-              size="small"
-              shape="circle"
-              onClick={() => {
-                setIsSidebarExpanded(false);
-              }}
-            >
-              <IconChevronLeft />
-            </Button> */}
           </Box>
           <Container>{cId && <CircleSidebar />}</Container>
         </Box>

@@ -2,6 +2,7 @@ import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import Tabs from "@/app/common/components/Tabs";
 import { storeImage } from "@/app/common/utils/ipfs";
+import { updateCircle } from "@/app/services/UpdateCircle";
 import { CircleType } from "@/app/types";
 import { Box, Input, MediaPicker, Stack, Textarea } from "degen";
 import { useRouter } from "next/router";
@@ -23,19 +24,6 @@ export default function SettingsModal({ handleClose }: Props) {
   const { data: circle } = useQuery<CircleType>(["circle", cId], {
     enabled: false,
   });
-  const { mutateAsync, isLoading } = useMutation(
-    (circleUpdate: Partial<CircleType>) => {
-      return fetch(`http://localhost:3000/circle/${circle?.id}`, {
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        method: "PATCH",
-        body: JSON.stringify(circleUpdate),
-        credentials: "include",
-      });
-    }
-  );
 
   const [tab, setTab] = useState(0);
   const [visibilityTab, setVisibilityTab] = useState(0);
@@ -47,23 +35,24 @@ export default function SettingsModal({ handleClose }: Props) {
   const [description, setDescription] = useState(circle?.description || "");
   const [logo, setLogo] = useState(circle?.avatar || "");
 
-  const onSubmit = () => {
-    mutateAsync({
-      name,
-      description,
-      avatar: logo,
-      private: visibilityTab === 1,
-    })
-      .then(async (res) => {
-        const updatedCircle = await res.json();
-        console.log({ updatedCircle });
-        queryClient.setQueryData(["circle", cId], updatedCircle);
-        handleClose();
-        toast("Circle updated successfully", { theme: "dark" });
-      })
-      .catch((err) => {
-        console.log({ err });
-      });
+  const [isLoading, setIsLoading] = useState(false);
+
+  const onSubmit = async () => {
+    setIsLoading(true);
+    const res = await updateCircle(
+      {
+        name,
+        description,
+        avatar: logo,
+        private: visibilityTab === 1,
+      },
+      circle?.id as string
+    );
+    setIsLoading(false);
+    if (res) {
+      handleClose();
+      queryClient.setQueryData(["circle", cId], res);
+    }
   };
 
   const uploadFile = async (file: File) => {

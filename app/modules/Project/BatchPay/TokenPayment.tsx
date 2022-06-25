@@ -2,30 +2,30 @@ import PrimaryButton from "@/app/common/components/PrimaryButton";
 import Table from "@/app/common/components/Table";
 import { useGlobalContext } from "@/app/context/globalContext";
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
+import { updatePaymentInfo } from "@/app/services/Payment";
 import usePaymentGateway from "@/app/services/Payment/usePayment";
 import { BatchPayInfo } from "@/app/types";
 import { Avatar, Box, Stack, Text } from "degen";
+import { useRouter } from "next/router";
 import React, { useState } from "react";
-import { toast } from "react-toastify";
+import { useQueryClient } from "react-query";
 import { useLocalProject } from "../Context/LocalProjectContext";
+import { useBatchPayContext } from "./context/batchPayContext";
 import { ScrollContainer } from "./SelectCards";
 
-type Props = {
-  setStep: (step: number) => void;
-  setIsOpen: (isOpen: boolean) => void;
-  batchPayInfo: BatchPayInfo;
-};
-
-export default function TokenPayment({
-  setStep,
-  batchPayInfo,
-  setIsOpen,
-}: Props) {
+export default function TokenPayment() {
   const { getMemberDetails } = useModalOptions();
   const { batchPay } = usePaymentGateway();
   const [loading, setLoading] = useState(false);
   const { registry } = useGlobalContext();
   const { localProject: project } = useLocalProject();
+
+  const { batchPayInfo, setStep, setIsOpen, tokenCards, setBatchPayInfo } =
+    useBatchPayContext();
+
+  const queryClient = useQueryClient();
+  const router = useRouter();
+  const { project: pId } = router.query;
 
   const formatRows = () => {
     const rows: any[] = [];
@@ -55,7 +55,7 @@ export default function TokenPayment({
   };
 
   const getEthAddress = () => {
-    return batchPayInfo.tokens.userIds.map((userId) => {
+    return batchPayInfo?.tokens.userIds.map((userId) => {
       return getMemberDetails(userId)?.ethAddress;
     });
   };
@@ -86,17 +86,30 @@ export default function TokenPayment({
               loading={loading}
               onClick={async () => {
                 setLoading(true);
-                const res = await batchPay(
+                const txnHash = await batchPay(
                   project.parents[0].defaultPayment.chain.chainId,
                   "tokens",
                   getEthAddress() as string[],
-                  batchPayInfo.tokens.values,
-                  batchPayInfo.tokens.tokenAddresses
+                  batchPayInfo?.tokens.values as number[],
+                  batchPayInfo?.tokens.tokenAddresses as string[]
                 );
-                setLoading(false);
-                if (res) {
-                  setIsOpen(false);
+                if (txnHash) {
+                  const res = await updatePaymentInfo(
+                    tokenCards as string[],
+                    txnHash
+                  );
+                  console.log({ res });
+                  if (res) {
+                    await queryClient.setQueryData(["project", pId], res);
+                    setLoading(false);
+                    setIsOpen(false);
+                    setStep(0);
+                    setBatchPayInfo({} as BatchPayInfo);
+                  } else {
+                    setLoading(false);
+                  }
                 }
+                setLoading(false);
               }}
             >
               Pay

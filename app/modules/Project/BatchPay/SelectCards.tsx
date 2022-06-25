@@ -3,21 +3,13 @@ import PrimaryButton from "@/app/common/components/PrimaryButton";
 import Table from "@/app/common/components/Table";
 import { useLocalProject } from "@/app/modules/Project/Context/LocalProjectContext";
 import { BatchPayInfo, CardType } from "@/app/types";
-import {
-  QuestionCircleFilled,
-  QuestionCircleOutlined,
-} from "@ant-design/icons";
-import { Box, Button, Heading, Stack, Text } from "degen";
+import { QuestionCircleFilled } from "@ant-design/icons";
+import { Box, Button, Stack, Text } from "degen";
 import React, { useEffect, useState } from "react";
 import { Tooltip } from "react-tippy";
 import styled from "styled-components";
-import { getAgregatedPaymentInfo } from "../../../services/BatchPay";
-
-type Props = {
-  setBatchPayInfo: (batchPayInfo: BatchPayInfo) => void;
-  setIsOpen: (isOpen: boolean) => void;
-  setStep: (step: number) => void;
-};
+import { getAgregatedPaymentInfo } from "../../../services/Payment";
+import { useBatchPayContext } from "./context/batchPayContext";
 
 export const ScrollContainer = styled(Box)`
   ::-webkit-scrollbar {
@@ -29,12 +21,15 @@ export const ScrollContainer = styled(Box)`
   overflow-y: auto;
 `;
 
-export default function SelectCards({
-  setBatchPayInfo,
-  setIsOpen,
-  setStep,
-}: Props) {
+export default function SelectCards() {
   const { localProject: project } = useLocalProject();
+  const {
+    setIsOpen,
+    setBatchPayInfo,
+    setCurrencyCards,
+    setTokenCards,
+    setStep,
+  } = useBatchPayContext();
 
   const formatRows = (
     cards: {
@@ -62,6 +57,9 @@ export default function SelectCards({
   const [rows, setRows] = useState<React.ReactNode[][]>(
     formatRows(project.cards, project.columnDetails[column.value]?.cards)
   );
+  const [filteredCards, setFilteredCards] = useState<string[]>(
+    project.columnDetails[column.value]?.cards
+  );
 
   // get project columns in option format
   const columns = project?.columnOrder?.map((column) => ({
@@ -73,13 +71,20 @@ export default function SelectCards({
     if (project?.columnDetails) {
       // filter the project cards to show only the cards with assignee and reward
       const cards = project.columnDetails[column.value]?.cards.filter(
-        (card) =>
-          project.cards[card].assignee && project.cards[card].reward.value > 0
+        (card) => {
+          return (
+            project.cards[card].assignee.length > 0 &&
+            project.cards[card].assignee[0] !== "" &&
+            project.cards[card].reward.value > 0 &&
+            project.cards[card].status.paid === false
+          );
+        }
       );
+      setFilteredCards(cards);
       setRows(formatRows(project.cards, cards));
       setChecked(formatRows(project.cards, cards)?.map(() => true));
     }
-  }, [project]);
+  }, [project, column.value]);
   return (
     <Box>
       <ScrollContainer paddingX="8" paddingY="4">
@@ -87,31 +92,26 @@ export default function SelectCards({
           <Text variant="extraLarge" weight="semiBold">
             Select Cards
           </Text>
-          <Tooltip html={<Text>Batch Pay</Text>}>
-            <Button shape="circle" size="small" variant="transparent">
+
+          <Button shape="circle" size="small" variant="transparent">
+            <Tooltip
+              html={<Text>Select the cards you want to batch pay for</Text>}
+            >
               <QuestionCircleFilled style={{ fontSize: "1rem" }} />
-            </Button>
-          </Tooltip>
+            </Tooltip>
+          </Button>
         </Stack>
         <Dropdown
           options={columns}
           selected={column}
           onChange={(option) => {
-            console.log({ option });
             setColumn(option);
-            const cards = project.columnDetails[option.value].cards.filter(
-              (card) =>
-                project.cards[card].assignee &&
-                project.cards[card].reward.value > 0
-            );
-            setRows(formatRows(project.cards, cards));
-            setChecked(formatRows(project.cards, cards).map(() => true));
           }}
         />
         <Box paddingY="4" />
-        {rows && (
+        {rows?.length > 0 && (
           <Table
-            columns={["Card Name", "Reward"]}
+            columns={[`Cards (${rows.length})`, "Reward"]}
             rows={rows}
             showButton
             checked={checked}
@@ -120,10 +120,15 @@ export default function SelectCards({
             }}
           />
         )}
-        {!rows && (
-          <Text variant="base" weight="semiBold">
-            No cards found
-          </Text>
+        {(rows?.length === 0 || !rows) && (
+          <Stack space="1">
+            <Text variant="base" weight="semiBold">
+              {`No eligible cards found in ${column.label} column`}
+            </Text>
+            {/* <Text variant="base" weight="semiBold">
+              Card needs to have an assignee and reward
+            </Text> */}
+          </Stack>
         )}
       </ScrollContainer>
       <Box borderTopWidth="0.375" paddingX="8" paddingY="4">
@@ -140,19 +145,33 @@ export default function SelectCards({
           </Box>
           <Box width="1/2">
             <PrimaryButton
+              disabled={!checked?.filter((c) => c === true)?.length}
               onClick={async () => {
                 // get selected cards
-                const selectedCards = project.columnDetails[
-                  column.value
-                ].cards.filter((_, index) => checked[index]);
-                console.log({ selectedCards });
+                const selectedCards = filteredCards?.filter(
+                  (_, index) => checked[index]
+                );
                 const res = await getAgregatedPaymentInfo(
                   selectedCards,
                   project.parents[0].defaultPayment.chain.chainId
                 );
                 console.log({ res });
+                // cards with token address 0x0
+                const currencyCards = selectedCards?.filter(
+                  (card) => project.cards[card].reward.token.address === "0x0"
+                );
+                // cards with token address not 0x0
+                const tokenCards = selectedCards?.filter(
+                  (card) => project.cards[card].reward.token.address !== "0x0"
+                );
+                setCurrencyCards(currencyCards);
+                setTokenCards(tokenCards);
                 setBatchPayInfo(res as BatchPayInfo);
-                setStep(1);
+                if (res?.currency && res.currency.userIds.length > 0) {
+                  setStep(1);
+                } else {
+                  setStep(2);
+                }
               }}
             >
               Continue

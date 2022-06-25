@@ -100,7 +100,11 @@ export interface CardType {
   priority: number;
   columnId: string;
   activity: Activity[];
-  status: any;
+  status: {
+    active: boolean;
+    archived: boolean;
+    paid: boolean;
+  };
   workThreadOrder: string[];
   workThreads: {
     [key: string]: WorkThreadType;

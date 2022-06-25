@@ -3,7 +3,7 @@ import SignalMediumIcon from "@/app/assets/icons/signal-medium.svg";
 import SignalStrongIcon from "@/app/assets/icons/signal-strong.svg";
 import SignalWeakIcon from "@/app/assets/icons/signal-weak.svg";
 import { Priority } from "../../utils/constants";
-import { Box, Tag } from "degen";
+import { Box, Tag, Text } from "degen";
 
 interface Props {
   priority: number;
@@ -25,7 +25,9 @@ export const PriorityIcon: React.FC<Props> = ({ priority }) => {
   return (
     <Tag size="small" tone={priority > 2 ? "red" : "secondary"}>
       <Box marginTop="0.5" />
-      <Icon />
+      <Text color={priority > 2 ? "red" : "accentText"}>
+        <Icon />
+      </Text>
     </Tag>
   );
 };

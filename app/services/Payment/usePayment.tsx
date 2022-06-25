@@ -1,21 +1,17 @@
-import { useGlobalContext } from "@/app/context/globalContext";
-import { useState } from "react";
 import { toast } from "react-toastify";
-import { useAccount } from "wagmi";
+import { useAccount, useNetwork } from "wagmi";
 import useDistributor from "./useDistributor";
 import useERC20 from "./useERC20";
 
 declare let window: any;
 
 export default function usePaymentGateway(
-  handleStatusUpdate?: (status: any, txHash: string) => Promise<void>,
-  handleNextStep?: () => void
+  handleStatusUpdate?: (status: any, txHash: string) => Promise<void>
 ) {
   const { distributeEther, distributeTokens } = useDistributor();
   const { hasBalances } = useERC20();
-  const [isLoading, setIsLoading] = useState(false);
   const { data } = useAccount();
-  const { registry } = useGlobalContext();
+  const { activeChain, switchNetworkAsync } = useNetwork();
   async function handlePaymentError(
     err: any,
     expectedNetwork: string,
@@ -85,6 +81,10 @@ export default function usePaymentGateway(
     epochId?: string
   ) {
     try {
+      if (activeChain?.id.toString() !== chainId) {
+        switchNetworkAsync && (await switchNetworkAsync(parseInt(chainId)));
+      }
+      console.log({ ethAddresses, tokenValues, type, chainId });
       const tx = await executeBatchPay(
         type,
         chainId,
@@ -99,7 +99,7 @@ export default function usePaymentGateway(
       toast("Payment done succesfully!", {
         theme: "dark",
       });
-      return true;
+      return tx.transactionHash;
     } catch (err: any) {
       void handlePaymentError(err, chainId, tokenAddresses, tokenValues);
       console.log(err);
@@ -112,6 +112,5 @@ export default function usePaymentGateway(
 
   return {
     batchPay,
-    isLoading,
   };
 }

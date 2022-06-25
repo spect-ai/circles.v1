@@ -4,15 +4,17 @@ import {
   getFlattenedNetworks,
 } from "@/app/common/utils/registry";
 import { useGlobalContext } from "@/app/context/globalContext";
+import { updateCircle } from "@/app/services/UpdateCircle";
 import { Chain, CircleType, Token } from "@/app/types";
 import { SaveOutlined } from "@ant-design/icons";
 import { Box, Heading, Stack, Tag, Text } from "degen";
 import { motion } from "framer-motion";
 import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
-import { useQuery } from "react-query";
+import React, { useState } from "react";
+import { useQuery, useQueryClient } from "react-query";
 
 export default function DefaultPayment() {
+  const queryClient = useQueryClient();
   const { registry } = useGlobalContext();
 
   const router = useRouter();
@@ -24,17 +26,24 @@ export default function DefaultPayment() {
   const [chain, setChain] = useState(circle?.defaultPayment.chain);
   const [token, setToken] = useState(circle?.defaultPayment.token);
 
-  // useEffect(() => {
-  //   if (circle?.id) {
-  //     setChain(
-  //       circle.defaultPayment.chain ||
-  //     );
-  //     setToken(
-  //       circle.defaultPayment.token ||
-  //     );
-  //   }
-  // }, [circle]);
+  const [isLoading, setIsLoading] = useState(false);
 
+  const onSubmit = async () => {
+    setIsLoading(true);
+    const res = await updateCircle(
+      {
+        defaultPayment: {
+          chain: chain as Chain,
+          token: token as Token,
+        },
+      },
+      circle?.id as string
+    );
+    setIsLoading(false);
+    if (res) {
+      queryClient.setQueryData(["circle", cId], res);
+    }
+  };
   return (
     <Stack>
       <Box>
@@ -93,7 +102,13 @@ export default function DefaultPayment() {
           )}
         </Stack>
         <Box width="1/3" marginTop="4">
-          <PrimaryButton icon={<SaveOutlined />}>Save</PrimaryButton>
+          <PrimaryButton
+            icon={<SaveOutlined />}
+            onClick={onSubmit}
+            loading={isLoading}
+          >
+            Save
+          </PrimaryButton>
         </Box>
       </Stack>
     </Stack>

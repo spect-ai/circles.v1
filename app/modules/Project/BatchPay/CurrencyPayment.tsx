@@ -1,23 +1,28 @@
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import Table from "@/app/common/components/Table";
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
+import { updatePaymentInfo } from "@/app/services/Payment";
 import usePaymentGateway from "@/app/services/Payment/usePayment";
-import { BatchPayInfo } from "@/app/types";
-import { Avatar, Box, Stack, Text } from "degen";
+import { QuestionCircleFilled } from "@ant-design/icons";
+import { Avatar, Box, Button, Stack, Text } from "degen";
+import { useRouter } from "next/router";
 import React, { useState } from "react";
+import { useQueryClient } from "react-query";
+import { Tooltip } from "react-tippy";
 import { useLocalProject } from "../Context/LocalProjectContext";
+import { useBatchPayContext } from "./context/batchPayContext";
 import { ScrollContainer } from "./SelectCards";
 
-type Props = {
-  setStep: (step: number) => void;
-  batchPayInfo: BatchPayInfo;
-};
-
-export default function CurrencyPayment({ setStep, batchPayInfo }: Props) {
+export default function CurrencyPayment() {
   const { getMemberDetails } = useModalOptions();
   const { batchPay } = usePaymentGateway();
   const [loading, setLoading] = useState(false);
   const { localProject: project } = useLocalProject();
+  const { batchPayInfo, setStep, currencyCards, tokenCards, setIsOpen } =
+    useBatchPayContext();
+  const queryClient = useQueryClient();
+  const router = useRouter();
+  const { project: pId } = router.query;
 
   const formatRows = () => {
     const rows: any[] = [];
@@ -43,18 +48,38 @@ export default function CurrencyPayment({ setStep, batchPayInfo }: Props) {
   };
 
   const getEthAddress = () => {
-    return batchPayInfo.currency.userIds.map((userId) => {
+    return batchPayInfo?.currency.userIds.map((userId) => {
       return getMemberDetails(userId)?.ethAddress;
     });
   };
 
   return (
     <Box>
-      <ScrollContainer padding="8">
-        <Text variant="extraLarge" weight="semiBold">
-          Currency Payment
-        </Text>
-        <Box paddingY="4" />
+      <ScrollContainer paddingX="8" paddingY="4">
+        <Stack direction="horizontal" space="1" align="center">
+          <Text variant="extraLarge" weight="semiBold">
+            Currency Payment
+          </Text>
+          <Button shape="circle" size="small" variant="transparent">
+            <Tooltip
+              html={
+                <Stack>
+                  <Text>
+                    Currency payment (network gas token) and token payment need
+                    to happen separately
+                  </Text>
+                  <Text>
+                    First we will payout the currency as it doesn&apos;t require
+                    approvals
+                  </Text>
+                </Stack>
+              }
+            >
+              <QuestionCircleFilled style={{ fontSize: "1rem" }} />
+            </Tooltip>
+          </Button>
+        </Stack>
+        <Box paddingY="2" />
         <Table columns={["Member", "Amount"]} rows={formatRows()} />
       </ScrollContainer>
       <Box borderTopWidth="0.375" paddingX="8" paddingY="4">
@@ -66,7 +91,7 @@ export default function CurrencyPayment({ setStep, batchPayInfo }: Props) {
                 setStep(0);
               }}
             >
-              Cancel
+              Back
             </PrimaryButton>
           </Box>
           <Box width="1/2">
@@ -74,15 +99,39 @@ export default function CurrencyPayment({ setStep, batchPayInfo }: Props) {
               loading={loading}
               onClick={async () => {
                 setLoading(true);
-                const res = await batchPay(
-                  project.parents[0].defaultPayment.chain.chainId,
-                  "currency",
-                  getEthAddress() as string[],
-                  batchPayInfo.currency.values,
-                  []
-                );
-                setLoading(false);
-                res && setStep(2);
+                try {
+                  const txnHash = await batchPay(
+                    project.parents[0].defaultPayment.chain.chainId,
+                    "currency",
+                    getEthAddress() as string[],
+                    batchPayInfo?.currency.values as number[],
+                    []
+                  );
+                  console.log({ txnHash });
+                  if (txnHash) {
+                    const res = await updatePaymentInfo(
+                      currencyCards as string[],
+                      txnHash
+                    );
+                    console.log({ res });
+                    if (res) {
+                      await queryClient.setQueryData(["project", pId], res);
+                      setLoading(false);
+                      if (tokenCards && tokenCards?.length > 0) {
+                        setStep(2);
+                      } else {
+                        setStep(0);
+                        setIsOpen(false);
+                      }
+                    } else {
+                      setLoading(false);
+                    }
+                  }
+                  setLoading(false);
+                } catch (error) {
+                  setLoading(false);
+                  console.log(error);
+                }
               }}
             >
               Pay

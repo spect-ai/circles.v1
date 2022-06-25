@@ -6,6 +6,7 @@ import { AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "react-query";
+import { Tooltip } from "react-tippy";
 import { toast } from "react-toastify";
 
 export default function ProjectSettings() {
@@ -94,7 +95,9 @@ export default function ProjectSettings() {
           setIsOpen(true);
         }}
       >
-        <IconCog />
+        <Tooltip html={<Text>Project Settings</Text>}>
+          <IconCog />
+        </Tooltip>
       </Button>
       <AnimatePresence>
         {isOpen && (

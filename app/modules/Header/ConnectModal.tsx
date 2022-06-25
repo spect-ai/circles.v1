@@ -18,7 +18,7 @@ export default function ConnectModal() {
 
   const [isLoading, setIsLoading] = useState(false);
 
-  const connectAndLogin = async (connector: any) => {
+  const connectAndLogin = async (connector: any, connectorIndex: number) => {
     const res = await connectAsync(connector); // `connectAsync` from `useConnect`
     const nonceRes = await fetch("http://localhost:3000/auth/nonce", {
       credentials: "include",
@@ -54,6 +54,7 @@ export default function ConnectModal() {
     } else {
       throw new Error("Error verifying message");
     }
+    localStorage.setItem("connectorIndex", connectorIndex.toString());
   };
 
   return (
@@ -64,7 +65,7 @@ export default function ConnectModal() {
           <Modal title="Choose Wallet" handleClose={handleClose} size="small">
             <Box padding="8">
               <Stack>
-                {connectors.map((connector) => (
+                {connectors.map((connector, index) => (
                   <Button
                     width="full"
                     variant="tertiary"
@@ -72,7 +73,7 @@ export default function ConnectModal() {
                     key={connector.id}
                     onClick={() => {
                       setIsLoading(true);
-                      connectAndLogin(connector)
+                      connectAndLogin(connector, index)
                         .then(() => {
                           handleClose();
                         })
