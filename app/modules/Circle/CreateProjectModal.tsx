@@ -94,6 +94,7 @@ function CreateProjectModal({ accordian }: Props) {
       <Loader loading={isLoading} text="Creating your space" />
       {accordian ? (
         <Button
+          data-tour="circle-sidebar-create-project-button"
           size="small"
           variant="transparent"
           shape="circle"
@@ -108,6 +109,7 @@ function CreateProjectModal({ accordian }: Props) {
         <Card
           height="32"
           dashed
+          tourId="circle-create-project-card"
           onClick={() => {
             setModalOpen(true);
           }}

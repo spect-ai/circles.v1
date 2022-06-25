@@ -22,7 +22,7 @@ const getUser = async () => {
 
 export const SlideButtonContainer = styled(Box)`
   &:hover {
-    color: rgb(175, 82, 222, 1);
+    color: rgb(191, 90, 242, 1);
   }
 `;
 

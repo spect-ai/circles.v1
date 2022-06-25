@@ -34,6 +34,7 @@ export default function CardReviewer() {
   }, []);
   return (
     <EditTag
+      tourId="create-card-modal-reviewer"
       name={getMemberDetails(reviewer)?.username || "Unassigned"}
       modalTitle="Select Reviewer"
       label="Reviewer"

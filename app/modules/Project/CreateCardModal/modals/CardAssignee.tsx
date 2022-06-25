@@ -23,6 +23,7 @@ export default function CardAssignee() {
   }, []);
   return (
     <EditTag
+      tourId="create-card-modal-assignee"
       name={getMemberDetails(assignee)?.username || "Unassigned"}
       modalTitle="Select Assignee"
       label="Assignee"

@@ -26,6 +26,7 @@ export default function CardType() {
   }, []);
   return (
     <EditTag
+      tourId="create-card-modal-type"
       name={cardType}
       modalTitle="Select Card Type"
       label="Card Type"
@@ -37,7 +38,7 @@ export default function CardType() {
             fontSize: "1rem",
             marginLeft: "0.2rem",
             marginRight: "0.2rem",
-            color: "rgb(175, 82, 222, 1)",
+            color: "rgb(191, 90, 242, 1)",
           }}
         />
       }

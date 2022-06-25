@@ -84,6 +84,12 @@ export default function SettingsModal({ handleClose }: Props) {
             selectedTab={tab}
             onTabClick={onTabClick}
             tabs={["Info", "Integrations", "Payments", "Members"]}
+            tabTourIds={[
+              "circle-settings-info",
+              "circle-settings-integrations",
+              "circle-settings-payments",
+              "circle-settings-members",
+            ]}
             orientation="vertical"
             unselectedColor="transparent"
           />

@@ -19,6 +19,7 @@ export default function CardReward() {
 
   return (
     <EditTag
+      tourId="create-card-modal-reward"
       name={value !== "0" ? `${value} ${token.symbol}` : "No Reward"}
       modalTitle="Select Deadline"
       label="Reward"

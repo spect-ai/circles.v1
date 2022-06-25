@@ -15,6 +15,7 @@ type Props = {
   icon?: React.ReactNode;
   tone?: string;
   disabled?: boolean;
+  tourId?: string;
 };
 
 function EditTag({
@@ -26,6 +27,7 @@ function EditTag({
   icon,
   setModalOpen,
   disabled = false,
+  tourId,
 }: Props) {
   return (
     <>
@@ -37,6 +39,7 @@ function EditTag({
         )}
         <Box width={label ? "2/3" : "full"}>
           <ClickableTag
+            tourId={tourId}
             name={name}
             icon={icon}
             onClick={() => {

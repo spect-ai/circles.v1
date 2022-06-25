@@ -5,6 +5,7 @@ type Props = {
   selectedTab: number;
   onTabClick: (index: number) => void;
   tabs: string[];
+  tabTourIds?: string[];
   orientation: "horizontal" | "vertical";
   unselectedColor: "transparent" | "tertiary";
   shape?: string;
@@ -15,6 +16,7 @@ export default function Tabs({
   selectedTab,
   onTabClick,
   tabs,
+  tabTourIds,
   orientation,
   unselectedColor,
   shape = "square",
@@ -31,6 +33,7 @@ export default function Tabs({
       {tabs.map((tab, index) => (
         <Box width="full" marginX="0.5" key={tab}>
           <Button
+            data-tour={tabTourIds?.[index]}
             variant={
               selectedTab === index ? "tertiary" : (unselectedColor as any)
             }

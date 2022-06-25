@@ -28,6 +28,7 @@ export default function CardLabels() {
 
   return (
     <EditTag
+      tourId="create-card-modal-labels"
       name="Add Tags"
       modalTitle="Select Card Type"
       modalOpen={modalOpen}
@@ -38,7 +39,7 @@ export default function CardLabels() {
             fontSize: "1rem",
             marginLeft: "0.2rem",
             marginRight: "0.2rem",
-            color: "rgb(175, 82, 222, 1)",
+            color: "rgb(191, 90, 242, 1)",
           }}
         />
       }

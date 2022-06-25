@@ -26,6 +26,7 @@ export default function CardColumn() {
   }, []);
   return (
     <EditTag
+      tourId="create-card-modal-column"
       name={project?.columnDetails[columnId]?.name}
       modalTitle="Select Column"
       label="Column"
@@ -37,7 +38,7 @@ export default function CardColumn() {
             fontSize: "1rem",
             marginLeft: "0.2rem",
             marginRight: "0.2rem",
-            color: "rgb(175, 82, 222, 1)",
+            color: "rgb(191, 90, 242, 1)",
           }}
         />
       }

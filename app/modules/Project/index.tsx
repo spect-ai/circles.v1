@@ -10,6 +10,7 @@ import { useLocalProject } from "./Context/LocalProjectContext";
 import useDragEnd from "./Hooks/useDragEnd";
 import { SkeletonLoader } from "./SkeletonLoader";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
+import Onboarding from "./ProjectOnboarding";
 
 const Container = styled.div`
   display: flex;
@@ -39,6 +40,7 @@ export default function Project() {
   return (
     <Box padding="4">
       <ToastContainer />
+      {/* <Onboarding /> */}
       <DragDropContext onDragEnd={handleDragEnd}>
         <Droppable
           droppableId="all-columns"

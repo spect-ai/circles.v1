@@ -137,6 +137,7 @@ export default function ColumnComponent({ cards, id, column, index }: Props) {
                   //   disabled={space.roles[user?.id as string] !== 3}
                 />
                 <Button
+                  data-tour={`add-card-${column.columnId}-button`}
                   shape="circle"
                   size="small"
                   variant="transparent"

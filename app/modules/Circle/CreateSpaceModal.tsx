@@ -81,6 +81,7 @@ function CreateSpaceModal({ accordian }: Props) {
       <Loader loading={isLoading} text="Creating your space" />
       {accordian ? (
         <Button
+          data-tour="circle-sidebar-create-space-button"
           size="small"
           variant="transparent"
           shape="circle"
@@ -93,6 +94,7 @@ function CreateSpaceModal({ accordian }: Props) {
         </Button>
       ) : (
         <Card
+          tourId="circle-create-space-card"
           height="32"
           dashed
           onClick={() => {

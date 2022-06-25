@@ -17,7 +17,7 @@ interface Props {
 const OptionContainer = styled(Box)`
   cursor: pointer;
   &:hover {
-    border-color: rgb(175, 82, 222, 1);
+    border-color: rgb(191, 90, 242, 1);
   }
 `;
 

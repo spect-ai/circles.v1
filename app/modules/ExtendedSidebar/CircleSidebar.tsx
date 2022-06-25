@@ -65,12 +65,13 @@ export default function CircleSidebar() {
           <Stack>
             <Link href={`/${cId}`}>
               <Button
+                data-tour="circle-sidebar-overview-button"
                 prefix={
                   <AppstoreOutlined
                     style={{
                       fontSize: "1.3rem",
                       marginLeft: "2px",
-                      color: overviewTab ? "rgb(175, 82, 222, 1)" : "",
+                      color: overviewTab ? "rgb(191, 90, 242, 1)" : "",
                     }}
                   />
                 }
@@ -84,6 +85,7 @@ export default function CircleSidebar() {
             </Link>
             {canDo(["steward"]) && (
               <Button
+                data-tour="circle-sidebar-settings-button"
                 prefix={
                   <IconCog color={isSettingsModalOpen ? "accent" : "current"} />
                 }
@@ -97,6 +99,7 @@ export default function CircleSidebar() {
               </Button>
             )}
             <Button
+              data-tour="circle-sidebar-contributors-button"
               prefix={
                 <IconUsersSolid
                   color={isContributorsModalOpen ? "accent" : "current"}
@@ -127,7 +130,7 @@ export default function CircleSidebar() {
                       style={{
                         fontSize: "1.3rem",
                         marginLeft: "2px",
-                        color: pId === proj.slug ? "rgb(175, 82, 222, 1)" : "",
+                        color: pId === proj.slug ? "rgb(191, 90, 242, 1)" : "",
                         marginTop: "5px",
                       }}
                     />

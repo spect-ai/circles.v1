@@ -9,6 +9,7 @@ import { Col, Container, Row } from "react-grid-system";
 import { useQuery } from "react-query";
 import { ToastContainer } from "react-toastify";
 import styled from "styled-components";
+import Onboarding from "./CircleOnboarding";
 import CreateProjectModal from "./CreateProjectModal";
 import CreateSpaceModal from "./CreateSpaceModal";
 
@@ -36,6 +37,7 @@ export default function Circle() {
   }
   return (
     <BoxContainer padding="8">
+      {/* <Onboarding /> */}
       <ToastContainer />
       <Stack>
         <Heading>Description</Heading>

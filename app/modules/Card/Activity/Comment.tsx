@@ -27,10 +27,10 @@ export const TextArea = styled(ContentEditable)`
   outline: none;
   padding: 1rem;
   &:focus {
-    border: 2px solid rgb(175, 82, 222, 1);
+    border: 2px solid rgb(191, 90, 242, 1);
   }
   &:hover {
-    border: 2px solid rgb(175, 82, 222, 1);
+    border: 2px solid rgb(191, 90, 242, 1);
   }
   transition: all 0.2s ease-in-out;
 

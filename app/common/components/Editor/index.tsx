@@ -9,11 +9,13 @@ type Props = {
   onChange: (val: string) => void;
   placeholder?: string;
   disabled?: boolean;
+  tourId?: string;
 };
 
-function Editor({ value, onChange, placeholder, disabled }: Props) {
+function Editor({ value, onChange, placeholder, disabled, tourId }: Props) {
   return (
     <RichMarkdownEditor
+      data-tour={tourId}
       dark
       theme={dark}
       disableExtensions={[]}

@@ -88,6 +88,7 @@ export default function ProjectSettings() {
   return (
     <>
       <Button
+        data-tour="header-project-settings-button"
         size="small"
         variant="transparent"
         shape="circle"

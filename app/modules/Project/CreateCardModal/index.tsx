@@ -129,7 +129,7 @@ export default function CreateCardModal({
                           fontSize: "1rem",
                           marginLeft: "0.2rem",
                           marginRight: "0.2rem",
-                          color: "rgb(175, 82, 222, 1)",
+                          color: "rgb(191, 90, 242, 1)",
                         }}
                       />
                     }
@@ -145,6 +145,7 @@ export default function CreateCardModal({
                 </AnimatePresence>
                 <Box style={{ minHeight: "10rem" }} marginTop="2">
                   <Editor
+                    tourId="create-card-modal-description"
                     value={description}
                     onChange={(txt) => {
                       setDescription(txt);
@@ -171,6 +172,7 @@ export default function CreateCardModal({
         <Box borderTopWidth="0.375" paddingX="8" paddingY="4">
           <Stack direction="horizontal">
             <Button
+              data-tour="create-card-modal-button"
               size="small"
               width="1/3"
               onClick={() => {

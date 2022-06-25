@@ -18,6 +18,7 @@ export default function BatchPay() {
   return (
     <BatchPayContext.Provider value={context}>
       <Button
+        data-tour="header-batch-pay-button"
         size="small"
         variant="transparent"
         shape="circle"

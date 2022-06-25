@@ -37,6 +37,7 @@ export default function CardDeadline() {
 
   return (
     <EditTag
+      tourId="create-card-modal-deadline"
       name={deadline?.toDateString ? deadline.toDateString() : "None"}
       modalTitle="Select Deadline"
       label="Deadline"
@@ -48,7 +49,7 @@ export default function CardDeadline() {
             fontSize: "1rem",
             marginLeft: "0.2rem",
             marginRight: "0.2rem",
-            color: "rgb(175, 82, 222, 1)",
+            color: "rgb(191, 90, 242, 1)",
           }}
         />
       }

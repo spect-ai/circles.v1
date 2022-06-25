@@ -8,19 +8,27 @@ interface Props {
   height: string | any;
   children: React.ReactNode;
   dashed?: boolean;
+  tourId?: string;
 }
 
 const Container = styled(Box)<{ dashed: boolean }>`
   cursor: pointer;
   &:hover {
-    border-color: rgb(175, 82, 222, 1);
+    border-color: rgb(191, 90, 242, 1);
   }
   border-style: ${(props) => (props.dashed ? "dashed" : "solid")};
 `;
 
-const Card: FC<Props> = ({ onClick, height, children, dashed = false }) => {
+const Card: FC<Props> = ({
+  onClick,
+  height,
+  children,
+  dashed = false,
+  tourId,
+}) => {
   return (
     <Container
+      data-tour={tourId}
       borderWidth="0.5"
       padding={{ xs: "2", md: "4" }}
       borderRadius="2xLarge"

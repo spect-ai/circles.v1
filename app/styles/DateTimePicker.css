@@ -72,7 +72,7 @@
   .react-datetime-picker__button__icon,
 .react-datetime-picker__button:enabled:focus
   .react-datetime-picker__button__icon {
-  stroke: rgb(175, 82, 222, 1);
+  stroke: rgb(191, 90, 242, 1);
 }
 .react-datetime-picker__button:disabled .react-datetime-picker__button__icon {
   stroke: #6d6d6d;
