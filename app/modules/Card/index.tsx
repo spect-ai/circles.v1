@@ -101,6 +101,7 @@ export default function Card() {
                   disabled={!canTakeAction("cardTitle")}
                   onChange={(e) => {
                     setTitle(e.target.value);
+                    setIsDirty(true);
                   }}
                 />
                 <Stack direction="horizontal" wrap>
