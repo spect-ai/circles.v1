@@ -96,7 +96,7 @@ export default function Card() {
             <Container padding="2">
               <Stack direction="vertical">
                 <NameInput
-                  placeholder="Enter card name"
+                  placeholder="Card name"
                   value={title}
                   disabled={!canTakeAction("cardTitle")}
                   onChange={(e) => {
