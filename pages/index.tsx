@@ -4,7 +4,7 @@ import Explore from "@/app/modules/Explore";
 import { CircleType } from "@/app/types";
 import type { NextPage } from "next";
 import { useEffect } from "react";
-import { dehydrate, QueryClient } from "react-query";
+import { useQuery } from "react-query";
 import MetaHead from "../app/common/seo/MetaHead/MetaHead";
 
 const Home: NextPage = () => {
@@ -12,6 +12,12 @@ const Home: NextPage = () => {
   useEffect(() => {
     setIsSidebarExpanded(false);
   }, [setIsSidebarExpanded]);
+
+  useQuery<CircleType>("exploreCircles", () =>
+    fetch(`${process.env.API_HOST}/circle/allPublicParents`).then((res) =>
+      res.json()
+    )
+  );
 
   return (
     <>
@@ -22,23 +28,5 @@ const Home: NextPage = () => {
     </>
   );
 };
-
-export async function getStaticProps() {
-  const fetchExploreCircles = async () =>
-    await (
-      await fetch(`${process.env.API_HOST}/circle/allPublicParents`)
-    ).json();
-  const queryClient = new QueryClient();
-  await queryClient.prefetchQuery<CircleType[]>(
-    "exploreCircles",
-    fetchExploreCircles
-  );
-
-  return {
-    props: {
-      dehydratedState: dehydrate(queryClient),
-    },
-  };
-}
 
 export default Home;

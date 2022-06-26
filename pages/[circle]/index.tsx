@@ -1,7 +1,7 @@
 import { PublicLayout } from "@/app/common/layout";
 import MetaHead from "@/app/common/seo/MetaHead/MetaHead";
 import Circle from "@/app/modules/Circle";
-import { CircleType, MemberDetails } from "@/app/types";
+import { CircleType } from "@/app/types";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useQuery } from "react-query";

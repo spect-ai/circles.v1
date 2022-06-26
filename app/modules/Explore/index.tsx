@@ -31,49 +31,56 @@ const GridContainer = styled(Container)`
 `;
 
 export default function Explore() {
-  const { data: circles } = useQuery<CircleType[]>("exploreCircles");
+  const { data: circles, isLoading } = useQuery<CircleType[]>(
+    "exploreCircles",
+    {
+      enabled: false,
+    }
+  );
   const router = useRouter();
 
   useJoinCircle();
+  if (isLoading) {
+    return <Loader text="" loading />;
+  }
 
   return (
     <ScrollContainer padding="8">
       <ToastContainer />
       <GridContainer>
         <Row>
-          {circles?.map &&
-            circles?.map((circle: CircleType) => (
-              <Col key={circle.id} xs={10} sm={6} md={3}>
-                <Card
-                  height={{ xs: "48", md: "60" }}
-                  onClick={() => {
-                    void router.push(`/${circle.slug}`);
-                  }}
-                >
-                  <Box marginBottom="4">
-                    <Stack align="center">
-                      <Avatar
-                        label={circle.name}
-                        src={circle.avatar}
-                        size={{ xs: "16", lg: "20" }}
-                        placeholder={!circle.avatar}
-                      />
-                      <Text
-                        color="textPrimary"
-                        size={{ sm: "base", md: "base", lg: "large" }}
-                        letterSpacing="0.03"
-                        ellipsis
-                      >
-                        {circle.name}
-                      </Text>
-                      <Button variant="tertiary" size="small">
-                        Follow
-                      </Button>
-                    </Stack>
-                  </Box>
-                </Card>
-              </Col>
-            ))}
+          {circles?.map((circle: CircleType) => (
+            <Col key={circle.id} xs={10} sm={6} md={3}>
+              <Card
+                height={{ xs: "48", md: "60" }}
+                onClick={() => {
+                  void router.push(`/${circle.slug}`);
+                }}
+              >
+                <Box marginBottom="4">
+                  <Stack align="center">
+                    <Avatar
+                      label={circle.name}
+                      src={circle.avatar}
+                      size={{ xs: "16", lg: "20" }}
+                      placeholder={!circle.avatar}
+                    />
+                    <Text
+                      color="textPrimary"
+                      size={{ sm: "base", md: "base", lg: "large" }}
+                      letterSpacing="0.03"
+                      ellipsis
+                    >
+                      {circle.name}
+                    </Text>
+                    <Button variant="tertiary" size="small">
+                      Follow
+                    </Button>
+                  </Stack>
+                </Box>
+              </Card>
+            </Col>
+          ))}
         </Row>
       </GridContainer>
     </ScrollContainer>
