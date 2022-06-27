@@ -9,6 +9,8 @@ import Select, { option } from "@/app/common/components/Select";
 import { useMutation, useQuery } from "react-query";
 import { CircleType, Template } from "@/app/types";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
+import { Tooltip } from "react-tippy";
+import { QuestionCircleFilled } from "@ant-design/icons";
 
 type CreateProjectDto = {
   name: string;
@@ -142,7 +144,23 @@ function CreateProjectModal({ accordian }: Props) {
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                 />
-                <Text variant="extraLarge">Template</Text>
+                <Stack direction="horizontal" space="1" align="center">
+                  <Text variant="extraLarge" weight="semiBold">
+                    Template
+                  </Text>
+
+                  <Button shape="circle" size="small" variant="transparent">
+                    <Tooltip
+                      html={
+                        <Text>
+                          Pre built board with columns and automations set
+                        </Text>
+                      }
+                    >
+                      <QuestionCircleFilled style={{ fontSize: "1rem" }} />
+                    </Tooltip>
+                  </Button>
+                </Stack>
                 {templates && (
                   <Select
                     options={templates}

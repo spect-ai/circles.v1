@@ -77,6 +77,7 @@ export default function ColumnComponent({ cards, id, column, index }: Props) {
     );
     if (!updatedProject) {
       toast.error("Error updating column", { theme: "dark" });
+      setColumnTitle(project.columnDetails[column.columnId].name);
       return;
     }
     setLocalProject(updatedProject);

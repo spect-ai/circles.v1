@@ -1,29 +1,38 @@
+import { UserType } from "@/app/types";
 import { useRouter } from "next/router";
 import React, { useEffect } from "react";
+import { useQuery } from "react-query";
 import { toast } from "react-toastify";
 import { joinCircleFromInvite } from ".";
 
 export default function useJoinCircle() {
   const router = useRouter();
   const { inviteCode, circleId } = router.query;
-
-  const asyncJoin = async () => {
-    const res = await joinCircleFromInvite(
-      circleId as string,
-      inviteCode as string
-    );
-    if (res.id) {
-      void router.push(`/${res.slug}`);
-      toast("You have joined the circle!", { theme: "dark" });
-    } else {
-      toast.error("Something went wrong", { theme: "dark" });
-    }
-  };
+  const { data: currentUser } = useQuery<UserType>("getMyUser", {
+    enabled: false,
+  });
 
   useEffect(() => {
-    if (inviteCode) {
+    if (inviteCode && currentUser?.id) {
       console.log({ inviteCode, circleId });
+      const asyncJoin = async () => {
+        const res = await joinCircleFromInvite(
+          circleId as string,
+          inviteCode as string
+        );
+        if (res.id) {
+          void router.push(`/${res.slug}`);
+          toast("You have joined the circle!", { theme: "dark" });
+        } else {
+          toast.error("Something went wrong", { theme: "dark" });
+        }
+      };
       void asyncJoin();
     }
-  }, [inviteCode, circleId]);
+    if (inviteCode && !currentUser?.id) {
+      toast.error("You must connect your wallet to join a circle", {
+        theme: "dark",
+      });
+    }
+  }, [inviteCode, circleId, currentUser]);
 }

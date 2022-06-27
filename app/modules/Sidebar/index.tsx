@@ -56,7 +56,7 @@ function Sidebar(): ReactElement {
 
   useEffect(() => {
     void refetch();
-  }, [refetch]);
+  }, [refetch, currentUser]);
 
   return (
     <Box
@@ -95,6 +95,7 @@ function Sidebar(): ReactElement {
         <Box paddingY="3" borderBottomWidth="0.375">
           {!myCirclesLoading &&
             currentUser?.id &&
+            myCircles?.map &&
             myCircles?.map((aCircle) => (
               <Box paddingY="2" key={aCircle.id}>
                 <Logo

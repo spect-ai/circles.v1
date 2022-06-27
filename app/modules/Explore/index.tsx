@@ -1,15 +1,15 @@
 import Card from "@/app/common/components/Card";
 import Loader from "@/app/common/components/Loader";
-import { joinCircleFromInvite } from "@/app/services/JoinCircle";
 import useJoinCircle from "@/app/services/JoinCircle/useJoinCircle";
-import { CircleType } from "@/app/types";
+import useExploreOnboarding from "@/app/services/Onboarding/useExploreOnboarding";
+import { CircleType, UserType } from "@/app/types";
 import { Avatar, Box, Button, Stack, Text } from "degen";
 import { useRouter } from "next/router";
-import React, { useEffect } from "react";
 import { Container, Row, Col } from "react-grid-system";
 import { useQuery } from "react-query";
 import { ToastContainer } from "react-toastify";
 import styled from "styled-components";
+import Onboarding from "./ExploreOnboarding";
 
 const ScrollContainer = styled(Box)`
   ::-webkit-scrollbar {
@@ -37,15 +37,21 @@ export default function Explore() {
       enabled: false,
     }
   );
+  const { data: currentUser } = useQuery<UserType>("getMyUser", {
+    enabled: false,
+  });
   const router = useRouter();
 
   useJoinCircle();
+  const { onboarded } = useExploreOnboarding();
+
   if (isLoading) {
     return <Loader text="" loading />;
   }
 
   return (
     <ScrollContainer padding="8">
+      {/* {!onboarded && currentUser?.id && <Onboarding />} */}
       <ToastContainer />
       <GridContainer>
         <Row>

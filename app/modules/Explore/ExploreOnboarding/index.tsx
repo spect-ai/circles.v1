@@ -1,11 +1,12 @@
 import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { useGlobalContext } from "@/app/context/globalContext";
-import useCircleOnboarding from "@/app/services/Onboarding/useCircleOnboarding";
+import useExploreOnboarding from "@/app/services/Onboarding/useExploreOnboarding";
+import { UserType } from "@/app/types";
 import { CloseCircleOutlined } from "@ant-design/icons";
 import {
   Box,
   Button,
+  Heading,
   IconCheck,
   IconChevronLeft,
   IconChevronRight,
@@ -13,30 +14,33 @@ import {
   Text,
 } from "degen";
 import { AnimatePresence } from "framer-motion";
+import dynamic from "next/dynamic";
 import React, { useState } from "react";
-import Tour from "reactour";
 import { tourConfig } from "./tourConfig";
+
+const Tour = dynamic(() => import("reactour"), {
+  ssr: false,
+});
 
 export default function Onboarding() {
   const [isOpen, setIsOpen] = useState(true);
   const [isTourOpen, setIsTourOpen] = useState(false);
-
-  const { setIsSidebarExpanded } = useGlobalContext();
-  const { finishOnboarding } = useCircleOnboarding();
+  const { finishOnboarding } = useExploreOnboarding();
 
   return (
     <>
-      {/* <PrimaryButton onClick={() => setIsTourOpen(true)}>Show</PrimaryButton> */}
+      {/* <Button onClick={() => setIsTourOpen(true)}>open</Button> */}
       <AnimatePresence>
         {isOpen && (
           <Modal title="Onboarding" handleClose={() => setIsOpen(false)}>
             <Box padding="8">
-              <Stack>
+              <Stack space="2">
                 <Text size="large" weight="semiBold">
                   Welcome fren!
                 </Text>
                 <Text size="large" weight="semiBold">
-                  Wanna go through circle onboarding?
+                  Looks like you are new, would you like to take our onboarding
+                  guide?
                 </Text>
                 <Stack direction="horizontal">
                   <Box width="full">
@@ -60,10 +64,7 @@ export default function Onboarding() {
                     <PrimaryButton
                       onClick={() => {
                         setIsOpen(false);
-                        setIsSidebarExpanded(true);
-                        setTimeout(() => {
-                          setIsTourOpen(true);
-                        }, 500);
+                        setIsTourOpen(true);
                       }}
                       icon={<IconCheck />}
                     >
@@ -78,7 +79,7 @@ export default function Onboarding() {
       </AnimatePresence>
       <Tour
         accentColor="rgb(191, 90, 242, 0.66)"
-        steps={tourConfig as any}
+        steps={tourConfig}
         isOpen={isTourOpen}
         onRequestClose={() => {
           setIsTourOpen(false);

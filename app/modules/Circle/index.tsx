@@ -1,5 +1,6 @@
 import Card from "@/app/common/components/Card";
 import Loader from "@/app/common/components/Loader";
+import useCircleOnboarding from "@/app/services/Onboarding/useCircleOnboarding";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { CircleType } from "@/app/types";
 import { Box, Heading, Stack, Text } from "degen";
@@ -32,12 +33,14 @@ export default function Circle() {
   });
   console.log({ circle });
   const { canDo } = useRoleGate();
+
+  const { onboarded } = useCircleOnboarding();
   if (isLoading) {
     return <Loader text="...." loading />;
   }
   return (
     <BoxContainer padding="8">
-      {/* <Onboarding /> */}
+      {/* {!onboarded && <Onboarding />} */}
       <ToastContainer />
       <Stack>
         <Heading>Description</Heading>

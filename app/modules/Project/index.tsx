@@ -11,6 +11,7 @@ import useDragEnd from "./Hooks/useDragEnd";
 import { SkeletonLoader } from "./SkeletonLoader";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import Onboarding from "./ProjectOnboarding";
+import useProjectOnboarding from "@/app/services/Onboarding/useProjectOnboarding";
 
 const Container = styled.div`
   display: flex;
@@ -32,6 +33,7 @@ export default function Project() {
   const { handleDragEnd } = useDragEnd();
   const { loading, localProject: project, setLocalProject } = useLocalProject();
   const { canDo } = useRoleGate();
+  const { onboarded } = useProjectOnboarding();
 
   if (loading) {
     return <SkeletonLoader />;
@@ -40,7 +42,7 @@ export default function Project() {
   return (
     <Box padding="4">
       <ToastContainer />
-      {/* <Onboarding /> */}
+      {/* {!onboarded && <Onboarding />} */}
       <DragDropContext onDragEnd={handleDragEnd}>
         <Droppable
           droppableId="all-columns"

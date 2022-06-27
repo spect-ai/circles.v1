@@ -63,7 +63,13 @@ function CreateCircle() {
     <>
       <Loader loading={isLoading} text="Creating your tribe" />
       <Box paddingY="3">
-        <Button shape="circle" variant="secondary" size="small" onClick={open}>
+        <Button
+          shape="circle"
+          variant="secondary"
+          size="small"
+          onClick={open}
+          data-tour="create-circle-sidebar-button"
+        >
           <IconPlus />
         </Button>
       </Box>

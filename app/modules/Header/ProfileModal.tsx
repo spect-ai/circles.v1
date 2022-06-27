@@ -39,6 +39,7 @@ export default function ProfileModal() {
         size="small"
         onClick={() => setIsOpen(true)}
         variant="secondary"
+        data-tour="profile-header-button"
       >
         <Avatar
           src={currentUser?.avatar}
@@ -71,9 +72,6 @@ export default function ProfileModal() {
                   placeholder="Username"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  onBlur={() => {
-                    console.log("saving");
-                  }}
                 />
                 {/* <Button
             size="small"
@@ -129,6 +127,9 @@ export default function ProfileModal() {
                   }}
                 >
                   Save
+                </PrimaryButton>
+                <PrimaryButton tourId="connect-discord-button">
+                  Connect Discord
                 </PrimaryButton>
                 <PrimaryButton
                   variant="tertiary"
