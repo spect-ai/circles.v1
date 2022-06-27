@@ -267,6 +267,7 @@ export function useProviderLocalCard({
   const onCardUpdate = () => {
     if (!card) return;
     setUpdating(true);
+    console.log({ deadline });
     const payload: { [key: string]: any } = {
       title,
       description,
