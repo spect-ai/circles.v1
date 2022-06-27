@@ -88,6 +88,11 @@ export default function useRoleGate() {
           card?.creator === currentUser?.id ||
           card?.reviewer.includes(currentUser?.id)
         );
+      case "cardSubTask":
+        return (
+          card?.creator === currentUser?.id ||
+          card?.reviewer.includes(currentUser?.id)
+        );
       default:
         return false;
     }

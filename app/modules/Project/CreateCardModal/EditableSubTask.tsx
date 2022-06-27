@@ -1,8 +1,13 @@
 import { Box, Button, IconTrash, Stack } from "degen";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { motion } from "framer-motion";
 import { useLocalCard } from "./hooks/LocalCardContext";
+import { SaveOutlined } from "@ant-design/icons";
+import { callCreateCard } from "@/app/services/Card";
+import { CircleType } from "@/app/types";
+import { useRouter } from "next/router";
+import { useQuery } from "react-query";
 
 const TitleInput = styled.input`
   width: 100%;
@@ -20,7 +25,8 @@ const TitleInput = styled.input`
 `;
 
 type Props = {
-  subTaskIndex: number;
+  newSubTask?: boolean;
+  subTaskIndex?: number;
 };
 
 const variants = {
@@ -36,8 +42,23 @@ const variants = {
   },
 };
 
-export default function EditableSubTask({ subTaskIndex }: Props) {
-  const { subTasks, setSubTasks } = useLocalCard();
+export default function EditableSubTask({ subTaskIndex, newSubTask }: Props) {
+  const { subTasks, setSubTasks, card } = useLocalCard();
+  const [title, setTitle] = useState("");
+  const [editable, setEditable] = useState(false);
+
+  const router = useRouter();
+  const { circle: cId, project: pId, card: tId } = router.query;
+  const { data: circle } = useQuery<CircleType>(["circle", cId], {
+    enabled: false,
+  });
+
+  useEffect(() => {
+    if (newSubTask) {
+      setEditable(true);
+    }
+  }, []);
+
   return (
     <motion.main
       variants={variants} // Pass the variant object into Framer Motion
@@ -46,49 +67,92 @@ export default function EditableSubTask({ subTaskIndex }: Props) {
       exit="exit" // Exit state (used later) to variants.exit
       transition={{ type: "linear" }} // Set the transition to linear
     >
-      <Stack direction="horizontal">
-        <Box
-          display="flex"
-          borderWidth="0.375"
-          width="full"
-          padding="1"
-          borderRadius="2xLarge"
-          justifyContent="space-between"
-          alignItems="center"
-          // backgroundColor="foregroundTertiary"
-        >
-          <TitleInput
-            placeholder="Enter title"
-            value={subTasks[subTaskIndex]?.title}
-            onChange={(e) => {
-              console.log({ subTaskIndex });
-              console.log();
-              setSubTasks(
-                subTasks.map((subTask, index) => {
-                  if (index === subTaskIndex) {
-                    return {
-                      ...subTask,
-                      title: e.target.value,
-                    };
-                  }
-                  return subTask;
-                })
-              );
-            }}
-          />
-        </Box>
-        <Button
-          shape="circle"
-          size="small"
-          tone="red"
-          variant="secondary"
-          onClick={() => {
-            // delete sub task
-            setSubTasks(subTasks.filter((_, index) => index !== subTaskIndex));
-          }}
-        >
-          <IconTrash />
-        </Button>
+      <Stack>
+        <Stack direction="horizontal">
+          <Box
+            display="flex"
+            borderWidth="0.375"
+            width="full"
+            padding="1"
+            borderRadius="2xLarge"
+            justifyContent="space-between"
+            alignItems="center"
+            // backgroundColor="foregroundTertiary"
+          >
+            {subTaskIndex && (
+              <TitleInput
+                placeholder="Enter title"
+                value={subTasks[subTaskIndex]?.title}
+                onChange={(e) => {
+                  console.log({ subTaskIndex });
+                  console.log();
+                  setSubTasks(
+                    subTasks.map((subTask, index) => {
+                      if (index === subTaskIndex) {
+                        return {
+                          ...subTask,
+                          title: e.target.value,
+                        };
+                      }
+                      return subTask;
+                    })
+                  );
+                }}
+              />
+            )}
+            {newSubTask && (
+              <TitleInput
+                placeholder="Enter title"
+                value={title}
+                onChange={(e) => {
+                  setTitle(e.target.value);
+                }}
+              />
+            )}
+          </Box>
+          {editable && (
+            <Box paddingY="1" paddingRight="1">
+              <Stack direction="horizontal" space="1">
+                <Button
+                  shape="circle"
+                  size="small"
+                  variant="secondary"
+                  onClick={async () => {
+                    const data = await callCreateCard({
+                      title,
+                      parent: card?.id,
+                      columnId: card?.columnId,
+                      project: card?.project.id,
+                      circle: card?.circle,
+                      reward: {
+                        chain: circle?.defaultPayment.chain,
+                        token: circle?.defaultPayment.token,
+                        value: 0,
+                      },
+                    });
+                    console.log({ data });
+                  }}
+                >
+                  <SaveOutlined />
+                </Button>
+                <Button
+                  shape="circle"
+                  size="small"
+                  tone="red"
+                  variant="secondary"
+                  onClick={() => {
+                    // delete sub task
+                    setSubTasks(
+                      subTasks.filter((_, index) => index !== subTaskIndex)
+                    );
+                  }}
+                >
+                  <IconTrash />
+                </Button>
+              </Stack>
+            </Box>
+          )}
+        </Stack>
       </Stack>
     </motion.main>
   );

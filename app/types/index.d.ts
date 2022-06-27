@@ -86,7 +86,7 @@ export interface CardType {
   creator: string;
   reviewer: string[];
   assignee: string[];
-  project: string;
+  project: ProjectType;
   circle: string;
   reward: {
     chain: Chain;

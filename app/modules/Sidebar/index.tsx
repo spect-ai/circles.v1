@@ -42,7 +42,7 @@ function Sidebar(): ReactElement {
   const {
     data: myCircles,
     isLoading: myCirclesLoading,
-    error,
+    refetch,
   } = useQuery<CircleType[]>(
     "myOrganizations",
     () =>
@@ -50,10 +50,14 @@ function Sidebar(): ReactElement {
         credentials: "include",
       }).then((res) => res.json()),
     {
-      enabled: !!currentUser?.id,
+      enabled: false,
     }
   );
-  const { setIsSidebarExpanded } = useGlobalContext();
+
+  useEffect(() => {
+    void refetch();
+  }, [refetch]);
+
   return (
     <Box
       display="flex"

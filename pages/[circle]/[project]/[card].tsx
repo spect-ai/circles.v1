@@ -24,6 +24,26 @@ const CardPage: NextPage = () => {
       enabled: false,
     }
   );
+  const { data: circle, refetch: refetchCircle } = useQuery<CircleType>(
+    ["circle", cId],
+    () =>
+      fetch(`${process.env.API_HOST}/circle/slug/${cId as string}`).then(
+        (res) => res.json()
+      ),
+    {
+      enabled: false,
+    }
+  );
+  useQuery<MemberDetails>(
+    ["memberDetails", cId],
+    () =>
+      fetch(
+        `${process.env.API_HOST}/circle/${circle?.id}/memberDetails?circleIds=${circle?.id}`
+      ).then((res) => res.json()),
+    {
+      enabled: !!circle?.id,
+    }
+  );
   useQuery<UserType>(
     ["card", tId],
     () =>
@@ -34,27 +54,6 @@ const CardPage: NextPage = () => {
       ).then((res) => res.json()),
     {
       enabled: !!project?.id && !!tId,
-    }
-  );
-  const { data: circle, refetch: refetchCircle } = useQuery<CircleType>(
-    ["circle", cId],
-    () =>
-      fetch(`${process.env.API_HOST}/circle/slug/${cId as string}`).then(
-        (res) => res.json()
-      ),
-    {
-      enabled: !!cId,
-    }
-  );
-
-  useQuery<MemberDetails>(
-    ["memberDetails", cId],
-    () =>
-      fetch(
-        `${process.env.API_HOST}/circle/${circle?.id}/memberDetails?circleIds=${circle?.id}`
-      ).then((res) => res.json()),
-    {
-      enabled: !!circle?.id,
     }
   );
 

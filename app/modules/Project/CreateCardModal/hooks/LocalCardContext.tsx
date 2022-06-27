@@ -1,4 +1,5 @@
 import PrimaryButton from "@/app/common/components/PrimaryButton";
+import { callCreateCard } from "@/app/services/Card";
 import {
   Activity,
   CardType,
@@ -8,7 +9,7 @@ import {
   Token,
   WorkThreadType,
 } from "@/app/types";
-import { Box, Stack } from "degen";
+import { Stack } from "degen";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { createContext, useContext, useEffect, useState } from "react";
@@ -162,7 +163,7 @@ export function useProviderLocalCard({
     }
   }, [card, createCard, isLoading]);
 
-  const onSubmit = (createAnother: boolean) => {
+  const onSubmit = async (createAnother: boolean) => {
     const payload: { [key: string]: any } = {
       title,
       description,
@@ -180,44 +181,26 @@ export function useProviderLocalCard({
         token,
         value: Number(value),
       },
+      parent: card?.id,
     };
     console.log({ payload });
-    fetch(`${process.env.API_HOST}/card`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
-      credentials: "include",
-    })
-      .then(async (res) => {
-        if (!res.ok) {
-          toast.error("Error creating card");
-          return;
-        }
-        const data = await res.json();
-        !createAnother && handleClose && handleClose();
-        toast(
-          <Stack>
-            Card created
-            <Stack direction="horizontal">
-              <PrimaryButton>
-                <Link href={`/${cId}/${pId}/${data.card?.slug}`}>
-                  View Card
-                </Link>
-              </PrimaryButton>
-            </Stack>
-          </Stack>,
-          {
-            theme: "dark",
-          }
-        );
-        queryClient.setQueryData(["project", pId], data.project);
-        resetData();
-      })
-      .catch((err) => {
-        console.log({ err });
-      });
+    const data = await callCreateCard(payload);
+    toast(
+      <Stack>
+        Card created
+        <Stack direction="horizontal">
+          <PrimaryButton>
+            <Link href={`/${cId}/${pId}/${data.card?.slug}`}>View Card</Link>
+          </PrimaryButton>
+        </Stack>
+      </Stack>,
+      {
+        theme: "dark",
+      }
+    );
+    !createAnother && handleClose && handleClose();
+    queryClient.setQueryData(["project", pId], data.project);
+    resetData();
   };
 
   const onCardUndo = () => {

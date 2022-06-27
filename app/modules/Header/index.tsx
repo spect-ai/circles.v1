@@ -1,4 +1,4 @@
-import React, { ReactElement } from "react";
+import React, { ReactElement, useEffect } from "react";
 import { Box, Button, Heading, Stack } from "degen";
 import { useRouter } from "next/router";
 import { useQuery } from "react-query";
@@ -30,7 +30,13 @@ function Header(): ReactElement {
   const { setIsSidebarExpanded, isSidebarExpanded } = useGlobalContext();
   const router = useRouter();
   const { circle: cId, project: pId, card: tId } = router.query;
-  const { data: currentUser } = useQuery<UserType>("getMyUser", getUser);
+  const { data: currentUser, refetch } = useQuery<UserType>(
+    "getMyUser",
+    getUser,
+    {
+      enabled: false,
+    }
+  );
   const { data: circle } = useQuery<CircleType>(["circle", cId], {
     enabled: false,
   });
@@ -39,6 +45,10 @@ function Header(): ReactElement {
   });
 
   const { canDo } = useRoleGate();
+
+  useEffect(() => {
+    void refetch();
+  }, []);
 
   return (
     <Box

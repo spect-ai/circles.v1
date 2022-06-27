@@ -5,7 +5,6 @@ import ConfirmModal from "@/app/common/components/Modal/ConfirmModal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import Tabs from "@/app/common/components/Tabs";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
-import { SaveOutlined } from "@ant-design/icons";
 import { Box, IconTrash, Stack, Tag } from "degen";
 import { AnimatePresence } from "framer-motion";
 import React, { useState } from "react";
@@ -22,6 +21,7 @@ import CardReviewer from "../Project/CreateCardModal/modals/CardReviewer";
 import CardReward from "../Project/CreateCardModal/modals/CardReward";
 import CardType from "../Project/CreateCardModal/modals/CardType";
 import Activity from "./Activity";
+import CreateSubTask from "./CreateSubTask";
 import Payment from "./Payment";
 import Submission from "./Submission";
 
@@ -128,9 +128,12 @@ export default function Card() {
                 </Stack>
                 <Accordian
                   name={`Sub Tasks (${subTasks?.length || 0})`}
-                  defaultOpen={false}
+                  defaultOpen={subTasks.length === 0}
+                  // buttonComponent={<CreateSubTask />}
+                  // showButton={canTakeAction("cardSubTask")}
                 >
                   <Stack>
+                    <EditableSubTask newSubTask />
                     {subTasks?.map((subTask, index) => (
                       <EditableSubTask subTaskIndex={index} key={index} />
                     ))}

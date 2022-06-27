@@ -115,20 +115,20 @@ export default function CardDeadline() {
           ref={dateRef}
           selected={deadline?.getDay ? deadline : new Date()}
           onChange={(date: Date) => {
-            setDeadline(date);
-            console.log({ date });
-            if (!date) {
+            if (date === deadline) {
+              setDeadline(null);
               setTimeout(() => {
                 onCardUpdate();
               }, 500);
+              return;
             }
+            setDeadline(date);
           }}
           customInput={<ExampleCustomInput />}
           disabled={!canTakeAction("cardDeadline")}
           onCalendarClose={() => {
             onCardUpdate();
           }}
-          isClearable
         />
       </Box>
     </Stack>
