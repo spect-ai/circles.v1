@@ -10,7 +10,7 @@ import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
 
 export default function CardColumn() {
-  const { columnId, setColumnId, project, setIsDirty } = useLocalCard();
+  const { columnId, setColumnId, project, onCardUpdate } = useLocalCard();
   const [modalOpen, setModalOpen] = useState(false);
 
   const [options, setOptions] = useState<Option[]>();
@@ -43,6 +43,10 @@ export default function CardColumn() {
         />
       }
       disabled={!canTakeAction("cardColumn")}
+      handleClose={() => {
+        onCardUpdate();
+        setModalOpen(false);
+      }}
     >
       <Box height="96">
         <Box borderBottomWidth="0.375" paddingX="8" paddingY="5">
@@ -68,8 +72,6 @@ export default function CardColumn() {
               item={item}
               onClick={() => {
                 setColumnId(item.value);
-                setIsDirty(true);
-                setModalOpen(false);
               }}
             >
               <Box

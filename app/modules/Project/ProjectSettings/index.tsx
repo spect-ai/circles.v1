@@ -1,4 +1,5 @@
 import Modal from "@/app/common/components/Modal";
+import ConfirmModal from "@/app/common/components/Modal/ConfirmModal";
 import { ProjectType } from "@/app/types";
 import { SaveOutlined } from "@ant-design/icons";
 import { Box, Button, IconCog, IconTrash, Input, Stack, Text } from "degen";
@@ -22,6 +23,7 @@ export default function ProjectSettings() {
   const [description, setDescription] = useState("");
 
   const [isLoading, setIsLoading] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   useEffect(() => {
     if (project?.id) {
@@ -87,6 +89,19 @@ export default function ProjectSettings() {
 
   return (
     <>
+      <AnimatePresence>
+        {showConfirm && (
+          <ConfirmModal
+            title="Are you sure you want to delete the project, this cannot be undone?"
+            handleClose={() => setShowConfirm(false)}
+            onConfirm={() => {
+              setShowConfirm(false);
+              onDelete();
+            }}
+            onCancel={() => setShowConfirm(false)}
+          />
+        )}
+      </AnimatePresence>
       <Button
         data-tour="header-project-settings-button"
         size="small"
@@ -133,7 +148,7 @@ export default function ProjectSettings() {
                     width="1/2"
                     size="small"
                     variant="secondary"
-                    onClick={onDelete}
+                    onClick={() => setShowConfirm(true)}
                     loading={isLoading}
                     center
                     tone="red"

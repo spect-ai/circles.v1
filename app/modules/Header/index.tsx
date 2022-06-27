@@ -40,8 +40,6 @@ function Header(): ReactElement {
 
   const { canDo } = useRoleGate();
 
-  console.log("host", process.env.API_HOST);
-
   return (
     <Box
       display="flex"

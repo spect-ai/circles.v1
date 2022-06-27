@@ -42,51 +42,51 @@ export default function useRoleGate() {
         return card?.creator === currentUser?.id;
       case "cardColumn":
         return (
-          card?.reviewer[0] === currentUser?.id ||
-          card?.assignee[0] === currentUser?.id
+          card?.reviewer.includes(currentUser?.id) ||
+          card?.assignee.includes(currentUser?.id)
         );
       case "cardAssignee":
         return (
           card?.creator === currentUser?.id ||
-          card?.reviewer[0] === currentUser?.id
+          card?.reviewer.includes(currentUser?.id)
         );
       case "cardReviewer":
         return card?.creator === currentUser?.id;
       case "cardReward":
         return (
           card?.creator === currentUser?.id ||
-          card?.reviewer[0] === currentUser?.id
+          card?.reviewer.includes(currentUser?.id)
         );
       case "cardDelete":
         return card?.creator === currentUser?.id;
       case "cardDescription":
         return (
           card?.creator === currentUser?.id ||
-          card?.reviewer[0] === currentUser?.id
+          card?.reviewer.includes(currentUser?.id)
         );
       case "cardTitle":
         return (
           card?.creator === currentUser?.id ||
-          card?.reviewer[0] === currentUser?.id
+          card?.reviewer.includes(currentUser?.id)
         );
       case "cardLabels":
         return (
           card?.creator === currentUser?.id ||
-          card?.reviewer[0] === currentUser?.id
+          card?.reviewer.includes(currentUser?.id)
         );
       case "cardPriority":
         return (
           card?.creator === currentUser?.id ||
-          card?.reviewer[0] === currentUser?.id
+          card?.reviewer.includes(currentUser?.id)
         );
       case "cardComment":
         return circleMembers?.includes(currentUser?.id) || false;
       case "cardSubmission":
-        return card?.assignee[0] === currentUser?.id;
+        return card?.assignee.includes(currentUser?.id);
       case "cardRevision":
         return (
           card?.creator === currentUser?.id ||
-          card?.reviewer[0] === currentUser?.id
+          card?.reviewer.includes(currentUser?.id)
         );
       default:
         return false;
@@ -102,8 +102,8 @@ export default function useRoleGate() {
     }
     return (
       projectCard?.creator === currentUser?.id ||
-      projectCard.reviewer[0] === currentUser?.id ||
-      projectCard.assignee[0] === currentUser?.id
+      projectCard.reviewer.includes(currentUser?.id) ||
+      projectCard.assignee.includes(currentUser?.id)
     );
   };
 

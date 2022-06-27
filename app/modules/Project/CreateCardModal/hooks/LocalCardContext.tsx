@@ -27,10 +27,10 @@ type CreateCardContextType = {
   setDescription: React.Dispatch<React.SetStateAction<string>>;
   labels: string[];
   setLabels: React.Dispatch<React.SetStateAction<string[]>>;
-  assignee: string;
-  setAssignee: React.Dispatch<React.SetStateAction<string>>;
-  reviewer: string;
-  setReviewer: React.Dispatch<React.SetStateAction<string>>;
+  assignees: string[];
+  setAssignees: React.Dispatch<React.SetStateAction<string[]>>;
+  reviewers: string[];
+  setReviewers: React.Dispatch<React.SetStateAction<string[]>>;
   columnId: string;
   setColumnId: React.Dispatch<React.SetStateAction<string>>;
   cardType: string;
@@ -78,8 +78,6 @@ type CreateCardContextType = {
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
   updating: boolean;
   setUpdating: React.Dispatch<React.SetStateAction<boolean>>;
-  isDirty: boolean;
-  setIsDirty: React.Dispatch<React.SetStateAction<boolean>>;
   onArchive: () => Promise<boolean>;
 };
 
@@ -116,8 +114,8 @@ export function useProviderLocalCard({
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [labels, setLabels] = useState([] as string[]);
-  const [assignee, setAssignee] = useState("");
-  const [reviewer, setReviewer] = useState("");
+  const [assignees, setAssignees] = useState([] as string[]);
+  const [reviewers, setReviewers] = useState([] as string[]);
   const [columnId, setColumnId] = useState("");
   const [cardType, setCardType] = useState("Task");
   const [chain, setChain] = useState(circle?.defaultPayment?.chain as Chain);
@@ -138,7 +136,6 @@ export function useProviderLocalCard({
     }
   );
   const [workThreadOrder, setWorkThreadOrder] = useState([] as string[]);
-  const [isDirty, setIsDirty] = useState(false);
 
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
@@ -149,8 +146,8 @@ export function useProviderLocalCard({
       setTitle(card.title);
       setDescription(card.description);
       setLabels(card.labels);
-      setAssignee(card.assignee[0]);
-      setReviewer(card.reviewer[0]);
+      setAssignees(card.assignee);
+      setReviewers(card.reviewer);
       setColumnId(card.columnId);
       setCardType(card.type);
       setChain(card.reward.chain);
@@ -161,7 +158,6 @@ export function useProviderLocalCard({
       setActivity(card.activity);
       setWorkThreads(card.workThreads);
       setWorkThreadOrder(card.workThreadOrder);
-      setIsDirty(false);
       setLoading(false);
     }
   }, [card, createCard, isLoading]);
@@ -170,8 +166,8 @@ export function useProviderLocalCard({
     const payload: { [key: string]: any } = {
       title,
       description,
-      reviewer: [reviewer],
-      assignee: [assignee],
+      reviewer: reviewers,
+      assignee: assignees,
       project: project?.id,
       circle: project?.parents[0].id,
       type: cardType,
@@ -269,12 +265,13 @@ export function useProviderLocalCard({
   };
 
   const onCardUpdate = () => {
+    if (!card) return;
     setUpdating(true);
     const payload: { [key: string]: any } = {
       title,
       description,
-      reviewer: [reviewer],
-      assignee: [assignee],
+      reviewer: reviewers,
+      assignee: assignees,
       project: project?.id,
       circle: project?.parents[0].id,
       type: cardType,
@@ -298,27 +295,12 @@ export function useProviderLocalCard({
       credentials: "include",
     })
       .then(async (res) => {
-        const data = await res.json();
-
-        if (data.id) {
-          queryClient.setQueryData(["card", tId], data);
-          toast(
-            <Stack>
-              Card saved
-              <Stack direction="horizontal">
-                <Box width="fit">
-                  <PrimaryButton onClick={onCardUndo}>Undo</PrimaryButton>
-                </Box>
-              </Stack>
-            </Stack>,
-            {
-              theme: "dark",
-            }
-          );
-        } else {
-          toast.error("Error saving card", { theme: "dark" });
+        if (!res.ok) {
+          throw new Error("Error updating card");
         }
-
+        const data = await res.json();
+        setCard(data);
+        console.log("update complete");
         setUpdating(false);
       })
       .catch((err) => {
@@ -351,7 +333,7 @@ export function useProviderLocalCard({
     setTitle("");
     setDescription("");
     setLabels([]);
-    setAssignee("");
+    setAssignees([]);
     // setReviewer("");
     // setColumnId("");
     setCardType("Task");
@@ -361,7 +343,6 @@ export function useProviderLocalCard({
     setDeadline(null);
     setPriority(0);
     setSubTasks([]);
-    setIsDirty(false);
   };
 
   return {
@@ -371,10 +352,10 @@ export function useProviderLocalCard({
     setDescription,
     labels,
     setLabels,
-    assignee,
-    setAssignee,
-    reviewer,
-    setReviewer,
+    assignees,
+    setAssignees,
+    reviewers,
+    setReviewers,
     columnId,
     setColumnId,
     cardType,
@@ -406,8 +387,6 @@ export function useProviderLocalCard({
     setWorkThreadOrder,
     card,
     setCard,
-    isDirty,
-    setIsDirty,
     onArchive,
   };
 }

@@ -31,7 +31,7 @@ const DatePicker = styled.input`
 
 export default function CardDeadline() {
   const [modalOpen, setModalOpen] = useState(false);
-  const { deadline, setDeadline, setIsDirty } = useLocalCard();
+  const { deadline, setDeadline, onCardUpdate } = useLocalCard();
 
   const { canTakeAction } = useRoleGate();
 
@@ -54,6 +54,10 @@ export default function CardDeadline() {
         />
       }
       disabled={!canTakeAction("cardDeadline")}
+      handleClose={() => {
+        onCardUpdate();
+        setModalOpen(false);
+      }}
     >
       <Box height="44">
         <Box
@@ -69,7 +73,6 @@ export default function CardDeadline() {
             value={toIsoString(deadline as Date).substring(0, 16)}
             onChange={(e) => {
               console.log(e.target.value);
-              setIsDirty(true);
               if (e.target.value) {
                 setDeadline(new Date(e.target.value));
               } else {

@@ -30,9 +30,11 @@ export default function SubmissionModal() {
   const { createWorkThread, loading } = useSubmission();
   return (
     <>
-      <PrimaryButton icon={<IconDocuments />} onClick={() => setIsOpen(true)}>
-        Create Submission
-      </PrimaryButton>
+      <Box width="1/3">
+        <PrimaryButton icon={<IconDocuments />} onClick={() => setIsOpen(true)}>
+          Create Submission
+        </PrimaryButton>
+      </Box>
       <AnimatePresence>
         {isOpen && (
           <Modal handleClose={() => setIsOpen(false)} title="Create Submission">

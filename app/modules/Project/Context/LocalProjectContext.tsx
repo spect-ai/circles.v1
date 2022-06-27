@@ -39,9 +39,7 @@ export function useProviderLocalProject() {
 
   useEffect(() => {
     if (!isLoading && !isFetching && project?.id) {
-      setLoading(true);
       setLocalProject(project);
-      setLoading(false);
     }
   }, [isLoading, project, isFetching]);
 
@@ -50,7 +48,7 @@ export function useProviderLocalProject() {
     setLocalProject,
     error,
     setError,
-    loading: loading || isLoading,
+    loading: isLoading,
     updateProject,
   };
 }

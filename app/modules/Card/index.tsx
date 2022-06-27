@@ -1,6 +1,7 @@
 import Accordian from "@/app/common/components/Accordian";
 import Editor from "@/app/common/components/Editor";
 import Loader from "@/app/common/components/Loader";
+import ConfirmModal from "@/app/common/components/Modal/ConfirmModal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import Tabs from "@/app/common/components/Tabs";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
@@ -78,17 +79,30 @@ export default function Card() {
     description,
     setDescription,
     project,
-    onCardUpdate,
-    isDirty,
-    setIsDirty,
     onArchive,
+    onCardUpdate,
   } = useLocalCard();
 
   const { canTakeAction } = useRoleGate();
 
+  const [showConfirm, setShowConfirm] = useState(false);
+
   return (
     <Box padding="4">
       <ToastContainer />
+      <AnimatePresence>
+        {showConfirm && (
+          <ConfirmModal
+            title="Are you sure you want to archive this task?"
+            handleClose={() => setShowConfirm(false)}
+            onConfirm={() => {
+              setShowConfirm(false);
+              void onArchive();
+            }}
+            onCancel={() => setShowConfirm(false)}
+          />
+        )}
+      </AnimatePresence>
       {loading && <Loader loading={loading} text="" />}
       {!loading && (
         <Stack direction="horizontal">
@@ -101,7 +115,9 @@ export default function Card() {
                   disabled={!canTakeAction("cardTitle")}
                   onChange={(e) => {
                     setTitle(e.target.value);
-                    setIsDirty(true);
+                  }}
+                  onBlur={() => {
+                    onCardUpdate();
                   }}
                 />
                 <Stack direction="horizontal" wrap>
@@ -133,11 +149,13 @@ export default function Card() {
                     <Editor
                       value={description}
                       onChange={(txt) => {
-                        setIsDirty(true);
                         setDescription(txt);
                       }}
                       placeholder="Describe your card"
                       disabled={!canTakeAction("cardDescription")}
+                      onBlur={() => {
+                        onCardUpdate();
+                      }}
                     />
                   )}
                 </Box>
@@ -166,23 +184,11 @@ export default function Card() {
                 <CardDeadline />
                 <CardPriority />
                 <CardReward />
-                {isDirty && (
-                  <PrimaryButton
-                    icon={<SaveOutlined style={{ fontSize: "1.3rem" }} />}
-                    loading={loading}
-                    onClick={() => {
-                      onCardUpdate();
-                    }}
-                    animation="slide"
-                  >
-                    Save
-                  </PrimaryButton>
-                )}
                 {canTakeAction("cardArchive") && (
                   <PrimaryButton
                     icon={<IconTrash />}
                     tone="red"
-                    onClick={() => onArchive()}
+                    onClick={() => setShowConfirm(true)}
                   >
                     Archive
                   </PrimaryButton>

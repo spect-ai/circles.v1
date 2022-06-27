@@ -106,6 +106,7 @@ export default function Comment({
             }}
             disabled={isDisabled}
             onClick={() => {
+              console.log("hi");
               if (actorId === currentUser?.id) {
                 setIsDisabled(false);
               }
@@ -114,7 +115,7 @@ export default function Comment({
         </Stack>
         <AnimatePresence>
           {newComment && content.length > 0 && (
-            <Box marginLeft="12" width="1/2" marginTop="1">
+            <Box marginLeft="12" width="1/3" marginTop="1">
               <PrimaryButton
                 icon={<SendOutlined />}
                 loading={loading}
@@ -122,7 +123,6 @@ export default function Comment({
                 onClick={() => {
                   void addComment(content);
                   setContent("");
-                  setIsDisabled(true);
                 }}
               >
                 Send

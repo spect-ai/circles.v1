@@ -1,4 +1,4 @@
-import { Box, Button, Stack, Text } from "degen";
+import { Box, Stack, Text } from "degen";
 import React from "react";
 import Modal from ".";
 import PrimaryButton from "../PrimaryButton";
@@ -17,7 +17,7 @@ export default function ConfirmModal({
   onCancel,
 }: Props) {
   return (
-    <Modal title="Confirm?" handleClose={handleClose}>
+    <Modal title="Confirm?" handleClose={handleClose} zIndex={2} size="small">
       <Box paddingX="8" paddingY="4">
         <Stack>
           <Text variant="large" weight="semiBold">

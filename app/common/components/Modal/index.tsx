@@ -46,6 +46,7 @@ type props = {
   handleClose: () => void;
   height?: string;
   size?: "small" | "medium" | "large";
+  zIndex?: number;
 };
 
 const getResponsiveWidth = (size: "small" | "medium" | "large") => {
@@ -67,9 +68,10 @@ function Modal({
   children,
   height,
   size = "medium",
+  zIndex,
 }: props) {
   return (
-    <Backdrop onClick={handleClose}>
+    <Backdrop onClick={handleClose} zIndex={zIndex}>
       <motion.div
         onClick={(e) => e.stopPropagation()}
         variants={dropIn}

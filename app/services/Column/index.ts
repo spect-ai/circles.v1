@@ -45,7 +45,7 @@ export async function deleteColumn(projectId: string, columnId: string) {
   const response = await fetch(
     `${process.env.API_HOST}/project/${projectId}/column/${columnId}/delete`,
     {
-      method: "POST",
+      method: "PATCH",
       headers: {
         "Content-Type": "application/json",
       },

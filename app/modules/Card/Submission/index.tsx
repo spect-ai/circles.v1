@@ -5,6 +5,7 @@ import { useLocalCard } from "../../Project/CreateCardModal/hooks/LocalCardConte
 import WorkThread from "./WorkThread";
 import SubmissionModal from "./SubmissionModal";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
+import { Text } from "degen";
 
 export default function Submission() {
   const { workThreadOrder, workThreads } = useLocalCard();
@@ -23,6 +24,11 @@ export default function Submission() {
       {workThreadOrder.map((workThreadId) => (
         <WorkThread key={workThreadId} workThread={workThreads[workThreadId]} />
       ))}
+      {workThreadOrder.length === 0 && (
+        <Text variant="large" weight="semiBold">
+          No Submissions received yet
+        </Text>
+      )}
     </motion.main>
   );
 }

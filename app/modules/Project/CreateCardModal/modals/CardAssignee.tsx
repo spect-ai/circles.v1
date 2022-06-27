@@ -9,7 +9,7 @@ import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
 
 export default function CardAssignee() {
-  const { assignee, setAssignee, setIsDirty } = useLocalCard();
+  const { assignees, setAssignees, onCardUpdate } = useLocalCard();
   const [modalOpen, setModalOpen] = useState(false);
   const [options, setOptions] = useState<Option[]>();
   const [filteredOptions, setFilteredOptions] = useState<Option[]>();
@@ -21,22 +21,43 @@ export default function CardAssignee() {
     setOptions(ops);
     setFilteredOptions(ops);
   }, []);
+
+  const getTagLabel = () => {
+    if (!assignees[0]) {
+      return null;
+    }
+    let name = "";
+    name += getMemberDetails(assignees[0])?.username;
+    if (assignees.length > 1) {
+      name += ` + ${assignees.length - 1}`;
+    }
+    return name;
+  };
+
   return (
     <EditTag
       tourId="create-card-modal-assignee"
-      name={getMemberDetails(assignee)?.username || "Unassigned"}
+      name={getTagLabel() || "Unassigned"}
       modalTitle="Select Assignee"
       label="Assignee"
       modalOpen={modalOpen}
       setModalOpen={setModalOpen}
       icon={
-        assignee ? (
-          <Avatar src={getMemberDetails(assignee)?.avatar} label="" size="5" />
+        assignees[0] ? (
+          <Avatar
+            src={getMemberDetails(assignees[0])?.avatar}
+            label=""
+            size="5"
+          />
         ) : (
           <IconUserSolid color="accent" size="5" />
         )
       }
       disabled={!canTakeAction("cardAssignee")}
+      handleClose={() => {
+        onCardUpdate();
+        setModalOpen(false);
+      }}
     >
       <Box height="96">
         <Box borderBottomWidth="0.375" paddingX="8" paddingY="5">
@@ -58,12 +79,28 @@ export default function CardAssignee() {
           {filteredOptions?.map((item: any) => (
             <ModalOption
               key={item.value}
-              isSelected={assignee === item.value}
+              isSelected={
+                item.value === ""
+                  ? !assignees.length
+                  : assignees.includes(item.value)
+              }
               item={item}
               onClick={() => {
-                setAssignee(item.value);
-                setIsDirty(true);
-                setModalOpen(false);
+                if (item.value === "") {
+                  setAssignees([]);
+                  return;
+                }
+                // set assignee if not selected already unselect if selected
+                if (assignees.includes(item.value)) {
+                  setAssignees(assignees.filter((i) => i !== item.value));
+                } else {
+                  if (assignees.length) {
+                    setAssignees([...assignees, item.value]);
+                  } else {
+                    setAssignees([item.value]);
+                  }
+                  console.log({ assignees });
+                }
               }}
             >
               <Box
@@ -84,7 +121,7 @@ export default function CardAssignee() {
                 <Box marginRight="2" />
                 <Text
                   size="small"
-                  color={assignee === item.value ? "accent" : "text"}
+                  color={assignees.includes(item.value) ? "accent" : "text"}
                   weight="bold"
                 >
                   {item.name}

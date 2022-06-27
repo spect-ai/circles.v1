@@ -13,7 +13,7 @@ import { useLocalCard } from "../hooks/LocalCardContext";
 export default function CardReward() {
   const [modalOpen, setModalOpen] = useState(false);
   const { registry } = useGlobalContext();
-  const { chain, setChain, token, setToken, value, setValue, setIsDirty } =
+  const { chain, setChain, token, setToken, value, setValue, onCardUpdate } =
     useLocalCard();
   const { canTakeAction } = useRoleGate();
 
@@ -27,6 +27,10 @@ export default function CardReward() {
       setModalOpen={setModalOpen}
       icon={<IconEth color="accent" size="5" />}
       disabled={!canTakeAction("cardReward")}
+      handleClose={() => {
+        onCardUpdate();
+        setModalOpen(false);
+      }}
     >
       <Box height="96">
         <Box padding="8">
@@ -44,7 +48,6 @@ export default function CardReward() {
                   }}
                   onClick={() => {
                     setChain(aChain);
-                    setIsDirty(true);
                   }}
                 >
                   <Tag
@@ -71,7 +74,6 @@ export default function CardReward() {
                   }}
                   onClick={() => {
                     setToken(aToken);
-                    setIsDirty(true);
                   }}
                 >
                   <Tag
@@ -95,7 +97,6 @@ export default function CardReward() {
               value={value}
               onChange={(e) => {
                 setValue(e.target.value);
-                setIsDirty(true);
               }}
             />
             {/* <Button width="full" size="small">
