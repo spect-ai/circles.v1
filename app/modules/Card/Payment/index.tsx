@@ -12,10 +12,8 @@ export default function Payment() {
   const [isOpen, setIsOpen] = useState(false);
   const [step, setStep] = useState(0);
   const { approve } = useERC20();
-  const { batchPay } = usePaymentGateway();
-  const { chain, token, value, assignee } = useLocalCard();
+  const { chain, token } = useLocalCard();
   const [loading, setLoading] = useState(false);
-  const { getMemberDetails } = useModalOptions();
   return (
     <>
       <PrimaryButton onClick={() => setIsOpen(true)} icon={<IconEth />}>
