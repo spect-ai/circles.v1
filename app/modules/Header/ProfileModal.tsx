@@ -1,12 +1,13 @@
 import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { storeImage } from "@/app/common/utils/ipfs";
+import useProfileUpdate from "@/app/services/Profile/useProfileUpdate";
 import { UserType } from "@/app/types";
 import { Avatar, Box, Button, Input, MediaPicker, Stack, Text } from "degen";
 import { AnimatePresence } from "framer-motion";
-import React, { useState } from "react";
+import Link from "next/link";
+import React, { useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "react-query";
-import { toast } from "react-toastify";
 import { useDisconnect } from "wagmi";
 
 export default function ProfileModal() {
@@ -15,12 +16,22 @@ export default function ProfileModal() {
     enabled: false,
   });
   const [isOpen, setIsOpen] = useState(false);
-  const handleClose = () => setIsOpen(false);
+
   const queryClient = useQueryClient();
 
   const [uploading, setUploading] = useState(false);
-  const [avatar, setAvatar] = useState(currentUser?.avatar);
-  const [username, setUsername] = useState(currentUser?.username);
+  const [avatar, setAvatar] = useState("");
+  const [username, setUsername] = useState("");
+
+  const { updateProfile } = useProfileUpdate();
+
+  const handleClose = () => {
+    void updateProfile({
+      username,
+      avatar,
+    });
+    setIsOpen(false);
+  };
 
   const uploadFile = async (file: File) => {
     console.log({ file });
@@ -32,6 +43,12 @@ export default function ProfileModal() {
       setUploading(false);
     }
   };
+
+  useEffect(() => {
+    setAvatar(currentUser?.avatar || "");
+    setUsername(currentUser?.username || "");
+  }, [isOpen]);
+
   return (
     <>
       <Button
@@ -58,7 +75,7 @@ export default function ProfileModal() {
                   compact
                   defaultValue={{
                     type: "image/png",
-                    url: avatar as string,
+                    url: avatar,
                   }}
                   label="Choose or drag and drop media"
                   uploaded={!!avatar}
@@ -94,43 +111,24 @@ export default function ProfileModal() {
             </Text>
           </Button> */}
                 <Box marginTop="2" />
-                <PrimaryButton
-                  disabled={uploading}
-                  onClick={() => {
-                    fetch(`${process.env.API_HOST}/user/me`, {
-                      headers: {
-                        Accept: "application/json",
-                        "Content-Type": "application/json",
-                      },
-                      method: "PATCH",
-                      body: JSON.stringify({
-                        username,
-                        avatar,
-                      }),
-                      credentials: "include",
-                    })
-                      .then(async (res) => {
-                        const data = await res.json();
-                        console.log({ data });
-                        if (data.id) {
-                          queryClient.setQueryData("getMyUser", data);
-                          handleClose();
-                        } else {
-                          toast("Profile update failed", {
-                            theme: "dark",
-                          });
-                        }
-                      })
-                      .catch((err) => {
-                        console.log({ err });
-                      });
-                  }}
-                >
-                  Save
-                </PrimaryButton>
-                <PrimaryButton tourId="connect-discord-button">
-                  Connect Discord
-                </PrimaryButton>
+                {!currentUser?.discordId && (
+                  <Link
+                    href={`https://discord.com/api/oauth2/authorize?client_id=942494607239958609&redirect_uri=${
+                      process.env.NODE_ENV === "development"
+                        ? "http%3A%2F%2Flocalhost%3A3000%2F"
+                        : "https%3A%2F%2Fdev.spect.network%2F"
+                    }&response_type=code&scope=identify`}
+                  >
+                    <PrimaryButton tourId="connect-discord-button">
+                      Connect Discord
+                    </PrimaryButton>
+                  </Link>
+                )}
+                {currentUser?.discordId && (
+                  <PrimaryButton tourId="connect-discord-button">
+                    Discord Connected
+                  </PrimaryButton>
+                )}
                 <PrimaryButton
                   variant="tertiary"
                   onClick={async () => {

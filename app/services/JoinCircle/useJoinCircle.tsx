@@ -1,6 +1,6 @@
 import { UserType } from "@/app/types";
 import { useRouter } from "next/router";
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { useQuery } from "react-query";
 import { toast } from "react-toastify";
 import { joinCircleFromInvite } from ".";

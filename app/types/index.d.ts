@@ -6,6 +6,7 @@ interface UserType {
   updatedAt: string;
   username: string;
   avatar: string;
+  discordId?: string;
   _id: string;
 }
 interface Payment {

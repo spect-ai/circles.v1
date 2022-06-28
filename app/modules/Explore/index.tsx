@@ -2,6 +2,7 @@ import Card from "@/app/common/components/Card";
 import Loader from "@/app/common/components/Loader";
 import useJoinCircle from "@/app/services/JoinCircle/useJoinCircle";
 import useExploreOnboarding from "@/app/services/Onboarding/useExploreOnboarding";
+import useConnectDiscord from "@/app/services/Profile/useConnectDiscord";
 import { CircleType, UserType } from "@/app/types";
 import { Avatar, Box, Button, Stack, Text } from "degen";
 import { useRouter } from "next/router";
@@ -43,6 +44,7 @@ export default function Explore() {
   const router = useRouter();
 
   useJoinCircle();
+  useConnectDiscord();
   const { onboarded } = useExploreOnboarding();
 
   if (isLoading) {
