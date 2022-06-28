@@ -28,8 +28,8 @@ export default function CardLabels() {
   return (
     <EditTag
       tourId="create-card-modal-labels"
-      name="Add Tags"
-      modalTitle="Select Card Type"
+      name="Add Labels"
+      modalTitle="Add Labels"
       modalOpen={modalOpen}
       setModalOpen={setModalOpen}
       icon={

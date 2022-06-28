@@ -66,7 +66,7 @@ export default function EditorSubmission({
             inline: "nearest",
           });
         }}
-        placeholder="Add your submission"
+        placeholder="Add a submission"
         disabled={!canTakeAction("cardSubmission") || isDisabled}
       />
       <AnimatePresence>

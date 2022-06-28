@@ -105,7 +105,7 @@ export default function CreateCardModal({
               <Stack direction="vertical">
                 {/* <Heading>{task.title}</Heading> */}
                 <NameInput
-                  placeholder="Enter card name"
+                  placeholder="Enter title"
                   autoFocus
                   value={title}
                   onChange={(e) => {
@@ -145,6 +145,7 @@ export default function CreateCardModal({
                 </AnimatePresence>
                 <Box style={{ minHeight: "10rem" }} marginTop="2">
                   <Editor
+                    placeholder="Add a description"
                     tourId="create-card-modal-description"
                     value={description}
                     onChange={(txt) => {
@@ -192,7 +193,7 @@ export default function CreateCardModal({
               }}
               variant="secondary"
             >
-              Save and Create Again
+              Save and Create Another
             </Button>
           </Stack>
         </Box>

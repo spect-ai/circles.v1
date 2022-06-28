@@ -5,13 +5,14 @@ export const cardTypes = [
     name: "Task",
     icon: IconBookOpen,
     value: "Task",
-    secondary: "Create task to be completed internally",
+    secondary: "Tasks can be claimed by anyone that is part of the circle",
   },
   {
     name: "Bounty",
     icon: IconEth,
     value: "Bounty",
-    secondary: "Create bounty which can be taken up by any user",
+    secondary:
+      "Bounties can be claimed only when someone is picked to fulfill the bounty through an application process",
   },
 ];
 
