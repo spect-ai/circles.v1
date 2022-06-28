@@ -48,7 +48,7 @@ export default function DefaultPayment() {
     <Stack>
       <Box>
         <Heading>Default Payment</Heading>
-        <Text>Set the default way of getting paid for cards</Text>
+        <Text>Set the default way that contributors get paid</Text>
       </Box>
       <Stack>
         <Text size="extraLarge">Chain</Text>
