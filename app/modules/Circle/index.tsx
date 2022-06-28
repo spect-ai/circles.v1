@@ -40,7 +40,7 @@ export default function Circle() {
   }
   return (
     <BoxContainer padding="8">
-      {/* {!onboarded && <Onboarding />} */}
+      {!onboarded && <Onboarding />}
       <ToastContainer />
       <Stack>
         <Heading>Description</Heading>

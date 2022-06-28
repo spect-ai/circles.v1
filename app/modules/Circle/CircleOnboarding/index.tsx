@@ -13,9 +13,13 @@ import {
   Text,
 } from "degen";
 import { AnimatePresence } from "framer-motion";
+import dynamic from "next/dynamic";
 import React, { useState } from "react";
-import Tour from "reactour";
 import { tourConfig } from "./tourConfig";
+
+const Tour = dynamic(() => import("reactour"), {
+  ssr: false,
+});
 
 export default function Onboarding() {
   const [isOpen, setIsOpen] = useState(true);

@@ -42,7 +42,7 @@ export default function Project() {
   return (
     <Box padding="4">
       <ToastContainer />
-      {/* {!onboarded && <Onboarding />} */}
+      {!onboarded && <Onboarding />}
       <DragDropContext onDragEnd={handleDragEnd}>
         <Droppable
           droppableId="all-columns"

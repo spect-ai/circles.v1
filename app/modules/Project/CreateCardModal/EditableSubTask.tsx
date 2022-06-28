@@ -19,8 +19,8 @@ const TitleInput = styled.input`
   outline-offset: 0;
   box-shadow: none;
   font-size: 1rem;
-  caret-color: rgb(255, 255, 255, 0.85);
-  color: rgb(255, 255, 255, 0.85);
+  caret-color: rgb(255, 255, 255, 0.8);
+  color: rgb(255, 255, 255, 0.8);
   font-weight: 600;
 `;
 
@@ -70,11 +70,12 @@ export default function EditableSubTask({ subTaskIndex, newSubTask }: Props) {
       <Stack>
         <Stack direction="horizontal">
           <Box
+            backgroundColor="background"
             display="flex"
-            borderWidth="0.375"
+            borderWidth="0.5"
             width="full"
-            padding="1"
-            borderRadius="2xLarge"
+            paddingX="4"
+            borderRadius="large"
             justifyContent="space-between"
             alignItems="center"
             // backgroundColor="foregroundTertiary"

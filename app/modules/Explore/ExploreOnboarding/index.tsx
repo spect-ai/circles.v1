@@ -1,12 +1,10 @@
 import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import useExploreOnboarding from "@/app/services/Onboarding/useExploreOnboarding";
-import { UserType } from "@/app/types";
 import { CloseCircleOutlined } from "@ant-design/icons";
 import {
   Box,
   Button,
-  Heading,
   IconCheck,
   IconChevronLeft,
   IconChevronRight,

@@ -77,7 +77,7 @@ function Header(): ReactElement {
             <DoubleRightOutlined style={{ fontSize: "1.1rem" }} />
           </SlideButtonContainer>
         )}
-        {isSidebarExpanded && <Box />}
+        {isSidebarExpanded && <Box marginLeft="1" />}
         {!cId && <Heading>Circles</Heading>}
         {cId && !pId && <Heading>{circle?.name}</Heading>}
         {pId && project?.name && (

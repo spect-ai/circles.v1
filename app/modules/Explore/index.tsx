@@ -53,7 +53,7 @@ export default function Explore() {
 
   return (
     <ScrollContainer padding="8">
-      {/* {!onboarded && currentUser?.id && <Onboarding />} */}
+      {!onboarded && currentUser?.id && <Onboarding />}
       <ToastContainer />
       <GridContainer>
         <Row>

@@ -25,6 +25,7 @@ import Activity from "./Activity";
 import Application from "./Application";
 import Apply from "./Apply";
 import Submission from "./Submission";
+import SubTasks from "./SubTasks";
 
 const Container = styled(Box)`
   ::-webkit-scrollbar {
@@ -32,7 +33,7 @@ const Container = styled(Box)`
   }
   -ms-overflow-style: none;
   scrollbar-width: none;
-  height: 80vh;
+  height: calc(100vh - 7rem);
   overflow-y: auto;
 `;
 
@@ -76,7 +77,6 @@ export default function Card() {
     title,
     setTitle,
     labels,
-    subTasks,
     description,
     setDescription,
     project,
@@ -92,11 +92,10 @@ export default function Card() {
   return (
     <Box padding="4">
       <ToastContainer />
-
       {loading && <Loader loading={loading} text="" />}
       {!loading && (
         <Stack direction="horizontal">
-          <Box width="3/4">
+          <Box width="3/4" paddingX={{ xs: "4" }}>
             <Container padding="2">
               <Stack direction="vertical">
                 <Stack direction="horizontal">
@@ -119,19 +118,7 @@ export default function Card() {
                     <Tag key={label}>{label}</Tag>
                   ))}
                 </Stack>
-                <Accordian
-                  name={`Sub Tasks (${subTasks?.length || 0})`}
-                  defaultOpen={subTasks.length === 0}
-                  // buttonComponent={<CreateSubTask />}
-                  // showButton={canTakeAction("cardSubTask")}
-                >
-                  <Stack>
-                    <EditableSubTask newSubTask />
-                    {subTasks?.map((subTask, index) => (
-                      <EditableSubTask subTaskIndex={index} key={index} />
-                    ))}
-                  </Stack>
-                </Accordian>
+                <SubTasks />
                 <Box
                   style={{
                     minHeight: "10rem",
@@ -173,7 +160,12 @@ export default function Card() {
               </Stack>
             </Container>
           </Box>
-          <Box width="1/4" borderLeftWidth="0.375" paddingLeft="4">
+          <Box
+            width="1/4"
+            borderLeftWidth="0.375"
+            paddingLeft="4"
+            paddingTop="4"
+          >
             {project?.id && (
               <Stack>
                 <CardType />

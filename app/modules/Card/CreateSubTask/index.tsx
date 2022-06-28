@@ -15,7 +15,7 @@ export default function CreateSubTask() {
       <Button
         data-tour="circle-sidebar-create-project-button"
         size="small"
-        variant="transparent"
+        variant="tertiary"
         shape="circle"
         onClick={(e) => {
           e.stopPropagation();
