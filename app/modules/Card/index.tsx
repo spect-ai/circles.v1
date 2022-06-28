@@ -154,7 +154,7 @@ export default function Card() {
                       onChange={(txt) => {
                         setDescription(txt);
                       }}
-                      placeholder="Describe your card"
+                      placeholder="Add a description"
                       disabled={!canTakeAction("cardDescription")}
                       onBlur={() => {
                         onCardUpdate();

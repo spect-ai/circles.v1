@@ -61,7 +61,7 @@ export default function SubmissionModal() {
                     onChange={(txt) => {
                       setContent(txt);
                     }}
-                    placeholder="Write your submission here"
+                    placeholder="Add submission here"
                   />
                 </Box>
                 <PrimaryButton

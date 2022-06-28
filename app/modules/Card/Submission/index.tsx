@@ -26,7 +26,7 @@ export default function Submission() {
       ))}
       {workThreadOrder.length === 0 && (
         <Text variant="large" weight="semiBold">
-          No Submissions received yet
+          No Submissions yet
         </Text>
       )}
     </motion.main>
