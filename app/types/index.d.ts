@@ -109,6 +109,19 @@ export interface CardType {
   workThreads: {
     [key: string]: WorkThreadType;
   };
+  application: {
+    [applicationId: string]: ApplicationType;
+  };
+  applicationOrder: string[];
+}
+
+export interface ApplicationType {
+  applicationId: string;
+  content: string;
+  createdAt: string;
+  sstatus: "active" | "rejected" | "picked";
+  updatedAt: string;
+  user: string;
 }
 
 export interface WorkThreadType {

@@ -2,23 +2,31 @@ import Loader from "@/app/common/components/Loader";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { useGlobalContext } from "@/app/context/globalContext";
 import useERC20 from "@/app/services/Payment/useERC20";
+import { ProjectType } from "@/app/types";
 import { QuestionCircleFilled } from "@ant-design/icons";
 import { Box, Button, IconCheck, Stack, Text } from "degen";
+import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
+import { useQuery } from "react-query";
 import { Tooltip } from "react-tippy";
-import { useAccount } from "wagmi";
+import { useAccount, useNetwork } from "wagmi";
 
-import { useLocalProject } from "../Context/LocalProjectContext";
 import { useBatchPayContext } from "./context/batchPayContext";
 import { ScrollContainer } from "./SelectCards";
 
 export default function ApproveToken() {
   const { approve, isApproved } = useERC20();
   const { registry } = useGlobalContext();
-  const { localProject: project } = useLocalProject();
+  const router = useRouter();
+  const { project: pId } = router.query;
+  const { data: project } = useQuery<ProjectType>(["project", pId], {
+    enabled: false,
+  });
   const { data } = useAccount();
   const [loading, setLoading] = useState(true);
   const { batchPayInfo, setStep, setIsOpen } = useBatchPayContext();
+
+  const { activeChain, switchNetworkAsync } = useNetwork();
 
   const [tokenStatus, setTokenStatus] = useState<{
     [tokenAddress: string]: {
@@ -32,37 +40,55 @@ export default function ApproveToken() {
     console.log("useeffect");
     // initialize tokenStatus
     setLoading(true);
-    const tokenStatus: any = {};
-    let index = 0;
-    batchPayInfo?.approval.tokenAddresses.forEach(async (address: string) => {
-      const approvalStatus = await isApproved(
-        address,
-        registry[project.parents[0].defaultPayment.chain.chainId]
-          .distributorAddress as string,
-        batchPayInfo.approval.values[index],
-        data?.address as string
-      );
-      tokenStatus[address] = {
-        loading: false,
-        approved: approvalStatus,
-        error: "",
-      };
-      if (index === batchPayInfo.approval.tokenAddresses.length - 1) {
-        setTokenStatus(tokenStatus);
-        setLoading(false);
-        console.log({ tokenStatus });
-        if (
-          batchPayInfo.approval.tokenAddresses.every(
-            (address: string) => tokenStatus[address]?.approved
-          )
-        ) {
-          setStep(3);
+    if (
+      project &&
+      activeChain?.id.toString() ===
+        project.parents[0].defaultPayment.chain.chainId
+    ) {
+      const tokenStatus: any = {};
+      let index = 0;
+
+      batchPayInfo?.approval.tokenAddresses.forEach(async (address: string) => {
+        console.log({ address });
+        console.log(project?.parents[0].defaultPayment.chain.chainId);
+        console.log(
+          registry[project?.parents[0].defaultPayment.chain.chainId]
+            ?.tokenDetails[address]
+        );
+        const approvalStatus = await isApproved(
+          address,
+          registry[project.parents[0].defaultPayment.chain.chainId]
+            .distributorAddress as string,
+          batchPayInfo.approval.values[index],
+          data?.address as string
+        );
+        tokenStatus[address] = {
+          loading: false,
+          approved: approvalStatus,
+          error: "",
+        };
+        if (index === batchPayInfo.approval.tokenAddresses.length - 1) {
+          setTokenStatus(tokenStatus);
+          setLoading(false);
+          console.log({ tokenStatus });
+          if (
+            batchPayInfo.approval.tokenAddresses.every(
+              (address: string) => tokenStatus[address]?.approved
+            )
+          ) {
+            setStep(3);
+          }
         }
-      }
-      index++;
-    });
+        index++;
+      });
+    } else {
+      switchNetworkAsync &&
+        void switchNetworkAsync(
+          parseInt(project?.parents[0].defaultPayment.chain.chainId as string)
+        );
+    }
     // set to final step if all tokens approved
-  }, [batchPayInfo]);
+  }, [batchPayInfo, activeChain]);
 
   return (
     <Box display="flex" flexDirection="column" justifyContent="space-between">
@@ -97,8 +123,9 @@ export default function ApproveToken() {
                       <Text variant="base" weight="semiBold">
                         {
                           registry[
-                            project.parents[0].defaultPayment.chain.chainId
-                          ].tokenDetails[tokenAddress].symbol
+                            project?.parents[0].defaultPayment.chain
+                              .chainId as string
+                          ]?.tokenDetails[tokenAddress]?.symbol
                         }
                       </Text>
                       <Box width="1/3">
@@ -127,7 +154,8 @@ export default function ApproveToken() {
                               },
                             });
                             const res = await approve(
-                              project.parents[0].defaultPayment.chain.chainId,
+                              project?.parents[0].defaultPayment.chain
+                                .chainId as string,
                               tokenAddress
                             );
                             // set approved for this token status

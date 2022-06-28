@@ -1,15 +1,15 @@
 import Accordian from "@/app/common/components/Accordian";
 import Editor from "@/app/common/components/Editor";
 import Loader from "@/app/common/components/Loader";
-import ConfirmModal from "@/app/common/components/Modal/ConfirmModal";
-import PrimaryButton from "@/app/common/components/PrimaryButton";
 import Tabs from "@/app/common/components/Tabs";
+import useCardDynamism from "@/app/services/Card/useCardDynamism";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
-import { Box, IconTrash, Stack, Tag } from "degen";
+import { Box, Stack, Tag } from "degen";
 import { AnimatePresence } from "framer-motion";
 import React, { useState } from "react";
 import { ToastContainer } from "react-toastify";
 import styled from "styled-components";
+import BatchPay from "../Project/BatchPay";
 import EditableSubTask from "../Project/CreateCardModal/EditableSubTask";
 import { useLocalCard } from "../Project/CreateCardModal/hooks/LocalCardContext";
 import CardAssignee from "../Project/CreateCardModal/modals/CardAssignee";
@@ -20,9 +20,10 @@ import CardPriority from "../Project/CreateCardModal/modals/CardPriority";
 import CardReviewer from "../Project/CreateCardModal/modals/CardReviewer";
 import CardReward from "../Project/CreateCardModal/modals/CardReward";
 import CardType from "../Project/CreateCardModal/modals/CardType";
+import ActionPopover from "./ActionPopover";
 import Activity from "./Activity";
-import CreateSubTask from "./CreateSubTask";
-import Payment from "./Payment";
+import Application from "./Application";
+import Apply from "./Apply";
 import Submission from "./Submission";
 
 const Container = styled(Box)`
@@ -79,47 +80,39 @@ export default function Card() {
     description,
     setDescription,
     project,
-    onArchive,
     onCardUpdate,
+    card,
   } = useLocalCard();
 
   const { canTakeAction } = useRoleGate();
 
-  const [showConfirm, setShowConfirm] = useState(false);
+  const { getTabs, activityTab, applicationTab, submissionTab } =
+    useCardDynamism();
 
   return (
     <Box padding="4">
       <ToastContainer />
-      <AnimatePresence>
-        {showConfirm && (
-          <ConfirmModal
-            title="Are you sure you want to archive this task?"
-            handleClose={() => setShowConfirm(false)}
-            onConfirm={() => {
-              setShowConfirm(false);
-              void onArchive();
-            }}
-            onCancel={() => setShowConfirm(false)}
-          />
-        )}
-      </AnimatePresence>
+
       {loading && <Loader loading={loading} text="" />}
       {!loading && (
         <Stack direction="horizontal">
           <Box width="3/4">
             <Container padding="2">
               <Stack direction="vertical">
-                <NameInput
-                  placeholder="Card name"
-                  value={title}
-                  disabled={!canTakeAction("cardTitle")}
-                  onChange={(e) => {
-                    setTitle(e.target.value);
-                  }}
-                  onBlur={() => {
-                    onCardUpdate();
-                  }}
-                />
+                <Stack direction="horizontal">
+                  <NameInput
+                    placeholder="Card name"
+                    value={title}
+                    disabled={!canTakeAction("cardTitle")}
+                    onChange={(e) => {
+                      setTitle(e.target.value);
+                    }}
+                    onBlur={() => {
+                      onCardUpdate();
+                    }}
+                  />
+                  {canTakeAction("cardPopoverActions") && <ActionPopover />}
+                </Stack>
                 <Stack direction="horizontal" wrap>
                   <CardLabels />
                   {labels.map((label) => (
@@ -163,7 +156,7 @@ export default function Card() {
                   )}
                 </Box>
                 <Tabs
-                  tabs={["Activity", "Submissions"]}
+                  tabs={getTabs()}
                   selectedTab={selectedTab}
                   onTabClick={handleTabClick}
                   orientation="horizontal"
@@ -171,8 +164,11 @@ export default function Card() {
                   shape="circle"
                 />
                 <AnimatePresence initial={false}>
-                  {selectedTab === 0 && <Activity />}
-                  {selectedTab === 1 && !loading && <Submission />}
+                  {selectedTab === activityTab && <Activity />}
+                  {selectedTab === applicationTab && !loading && (
+                    <Application />
+                  )}
+                  {selectedTab === submissionTab && !loading && <Submission />}
                 </AnimatePresence>
               </Stack>
             </Container>
@@ -187,7 +183,7 @@ export default function Card() {
                 <CardDeadline />
                 <CardPriority />
                 <CardReward />
-                {canTakeAction("cardArchive") && (
+                {/* {canTakeAction("cardArchive") && (
                   <PrimaryButton
                     icon={<IconTrash />}
                     tone="red"
@@ -195,9 +191,10 @@ export default function Card() {
                   >
                     Archive
                   </PrimaryButton>
-                )}
+                )} */}
                 {/* <DiscordThread /> */}
-                <Payment />
+                {canTakeAction("cardPayment") && <BatchPay card={card} />}
+                {canTakeAction("cardApply") && <Apply />}
               </Stack>
             )}
           </Box>

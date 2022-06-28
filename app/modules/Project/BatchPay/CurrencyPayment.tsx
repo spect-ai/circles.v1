@@ -3,13 +3,13 @@ import Table from "@/app/common/components/Table";
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
 import { updatePaymentInfo } from "@/app/services/Payment";
 import usePaymentGateway from "@/app/services/Payment/usePayment";
+import { ProjectType } from "@/app/types";
 import { QuestionCircleFilled } from "@ant-design/icons";
 import { Avatar, Box, Button, Stack, Text } from "degen";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
-import { useQueryClient } from "react-query";
+import { useQuery, useQueryClient } from "react-query";
 import { Tooltip } from "react-tippy";
-import { useLocalProject } from "../Context/LocalProjectContext";
 import { useBatchPayContext } from "./context/batchPayContext";
 import { ScrollContainer } from "./SelectCards";
 
@@ -17,12 +17,14 @@ export default function CurrencyPayment() {
   const { getMemberDetails } = useModalOptions();
   const { batchPay } = usePaymentGateway();
   const [loading, setLoading] = useState(false);
-  const { localProject: project } = useLocalProject();
   const { batchPayInfo, setStep, currencyCards, tokenCards, setIsOpen } =
     useBatchPayContext();
   const queryClient = useQueryClient();
   const router = useRouter();
   const { project: pId } = router.query;
+  const { data: project } = useQuery<ProjectType>(["project", pId], {
+    enabled: false,
+  });
 
   const formatRows = () => {
     const rows: any[] = [];
@@ -101,7 +103,7 @@ export default function CurrencyPayment() {
                 setLoading(true);
                 try {
                   const txnHash = await batchPay(
-                    project.parents[0].defaultPayment.chain.chainId,
+                    project?.parents[0].defaultPayment.chain.chainId as string,
                     "currency",
                     getEthAddress() as string[],
                     batchPayInfo?.currency.values as number[],

@@ -2,14 +2,16 @@ import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { callCreateCard } from "@/app/services/Card";
 import {
   Activity,
+  ApplicationType,
   CardType,
   Chain,
   CircleType,
   ProjectType,
   Token,
+  UserType,
   WorkThreadType,
 } from "@/app/types";
-import { Stack } from "degen";
+import { Box, Stack } from "degen";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { createContext, useContext, useEffect, useState } from "react";
@@ -73,6 +75,16 @@ type CreateCardContextType = {
   >;
   workThreadOrder: string[];
   setWorkThreadOrder: React.Dispatch<React.SetStateAction<string[]>>;
+  application: {
+    [key: string]: ApplicationType;
+  };
+  setApplication: React.Dispatch<
+    React.SetStateAction<{
+      [key: string]: ApplicationType;
+    }>
+  >;
+  applicationOrder: string[];
+  setApplicationOrder: React.Dispatch<React.SetStateAction<string[]>>;
   card?: CardType;
   setCard: (card: CardType) => void;
   loading: boolean;
@@ -106,6 +118,9 @@ export function useProviderLocalCard({
     enabled: false,
   });
 
+  const { data: currentUser } = useQuery<UserType>("getMyUser", {
+    enabled: false,
+  });
   const queryClient = useQueryClient();
 
   const setCard = (card: CardType) => {
@@ -116,7 +131,7 @@ export function useProviderLocalCard({
   const [description, setDescription] = useState("");
   const [labels, setLabels] = useState([] as string[]);
   const [assignees, setAssignees] = useState([] as string[]);
-  const [reviewers, setReviewers] = useState([] as string[]);
+  const [reviewers, setReviewers] = useState([currentUser?.id] as string[]);
   const [columnId, setColumnId] = useState("");
   const [cardType, setCardType] = useState("Task");
   const [chain, setChain] = useState(circle?.defaultPayment?.chain as Chain);
@@ -137,6 +152,12 @@ export function useProviderLocalCard({
     }
   );
   const [workThreadOrder, setWorkThreadOrder] = useState([] as string[]);
+  const [application, setApplication] = useState(
+    {} as {
+      [key: string]: ApplicationType;
+    }
+  );
+  const [applicationOrder, setApplicationOrder] = useState([] as string[]);
 
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
@@ -159,6 +180,8 @@ export function useProviderLocalCard({
       setActivity(card.activity);
       setWorkThreads(card.workThreads);
       setWorkThreadOrder(card.workThreadOrder);
+      setApplication(card.application);
+      setApplicationOrder(card.applicationOrder);
       setLoading(false);
     }
   }, [card, createCard, isLoading]);
@@ -369,6 +392,10 @@ export function useProviderLocalCard({
     setWorkThreads,
     workThreadOrder,
     setWorkThreadOrder,
+    application,
+    setApplication,
+    applicationOrder,
+    setApplicationOrder,
     card,
     setCard,
     onArchive,

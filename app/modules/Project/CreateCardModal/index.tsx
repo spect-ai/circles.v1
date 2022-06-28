@@ -176,7 +176,7 @@ export default function CreateCardModal({
               size="small"
               width="1/3"
               onClick={() => {
-                onSubmit(false);
+                void onSubmit(false);
                 setIsDirty(false);
               }}
               variant="secondary"
@@ -187,7 +187,7 @@ export default function CreateCardModal({
               size="small"
               width="1/3"
               onClick={() => {
-                onSubmit(true);
+                void onSubmit(true);
                 setIsDirty(false);
               }}
               variant="secondary"

@@ -1,4 +1,4 @@
-import { Avatar, Box, Stack, Text } from "degen";
+import { Avatar, Stack, Text } from "degen";
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { useLocalCard } from "../../Project/CreateCardModal/hooks/LocalCardContext";

@@ -1,9 +1,7 @@
 import EditTag from "@/app/common/components/EditTag";
 import ModalOption from "@/app/common/components/ModalOption";
-import { UserType } from "@/app/types";
 import { Avatar, Box, IconSearch, IconUserSolid, Input, Text } from "degen";
 import React, { useEffect, useState } from "react";
-import { useQuery } from "react-query";
 import { useLocalCard } from "../hooks/LocalCardContext";
 import { Option } from "../constants";
 import { matchSorter } from "match-sorter";
@@ -13,9 +11,6 @@ import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
 export default function CardReviewer() {
   const { reviewers, setReviewers, onCardUpdate } = useLocalCard();
   const [modalOpen, setModalOpen] = useState(false);
-  const { data: currentUser } = useQuery<UserType>("getMyUser", {
-    enabled: false,
-  });
 
   const [options, setOptions] = useState<Option[]>();
   const [filteredOptions, setFilteredOptions] = useState<Option[]>();
@@ -27,9 +22,6 @@ export default function CardReviewer() {
     const ops = getOptions("assignee") as Option[];
     setOptions(ops);
     setFilteredOptions(ops);
-    if (currentUser && !reviewers) {
-      setReviewers([currentUser.id]);
-    }
   }, []);
 
   const getTagLabel = () => {

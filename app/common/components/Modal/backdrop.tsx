@@ -25,6 +25,7 @@ function Backdrop({ children, onClick, zIndex }: props) {
         justifyContent: "center",
         alignItems: "center",
         zIndex: zIndex || 1,
+        backdropFilter: "blur(4px)",
       }}
     >
       {children}

@@ -4,12 +4,11 @@ import { useGlobalContext } from "@/app/context/globalContext";
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
 import { updatePaymentInfo } from "@/app/services/Payment";
 import usePaymentGateway from "@/app/services/Payment/usePayment";
-import { BatchPayInfo } from "@/app/types";
+import { BatchPayInfo, ProjectType } from "@/app/types";
 import { Avatar, Box, Stack, Text } from "degen";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
-import { useQueryClient } from "react-query";
-import { useLocalProject } from "../Context/LocalProjectContext";
+import { useQuery, useQueryClient } from "react-query";
 import { useBatchPayContext } from "./context/batchPayContext";
 import { ScrollContainer } from "./SelectCards";
 
@@ -18,14 +17,17 @@ export default function TokenPayment() {
   const { batchPay } = usePaymentGateway();
   const [loading, setLoading] = useState(false);
   const { registry } = useGlobalContext();
-  const { localProject: project } = useLocalProject();
+  const router = useRouter();
+
+  const { project: pId } = router.query;
+  const { data: project } = useQuery<ProjectType>(["project", pId], {
+    enabled: false,
+  });
 
   const { batchPayInfo, setStep, setIsOpen, tokenCards, setBatchPayInfo } =
     useBatchPayContext();
 
   const queryClient = useQueryClient();
-  const router = useRouter();
-  const { project: pId } = router.query;
 
   const formatRows = () => {
     const rows: any[] = [];
@@ -45,7 +47,7 @@ export default function TokenPayment() {
         <Text variant="base" weight="semiBold" key={userId}>
           {batchPayInfo.tokens.values[index]}{" "}
           {
-            registry[project.parents[0].defaultPayment.chain.chainId]
+            registry[project?.parents[0].defaultPayment.chain.chainId as string]
               .tokenDetails[batchPayInfo.tokens.tokenAddresses[index]].symbol
           }
         </Text>,
@@ -75,6 +77,7 @@ export default function TokenPayment() {
             <PrimaryButton
               tone="red"
               onClick={() => {
+                setIsOpen(false);
                 setStep(0);
               }}
             >
@@ -87,7 +90,7 @@ export default function TokenPayment() {
               onClick={async () => {
                 setLoading(true);
                 const txnHash = await batchPay(
-                  project.parents[0].defaultPayment.chain.chainId,
+                  project?.parents[0].defaultPayment.chain.chainId as string,
                   "tokens",
                   getEthAddress() as string[],
                   batchPayInfo?.tokens.values as number[],

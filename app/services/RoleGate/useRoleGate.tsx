@@ -93,6 +93,21 @@ export default function useRoleGate() {
           card?.creator === currentUser?.id ||
           card?.reviewer.includes(currentUser?.id)
         );
+      case "cardPayment":
+        return (
+          card?.creator === currentUser?.id ||
+          card?.reviewer.includes(currentUser?.id)
+        );
+      case "cardPopoverActions":
+        return (
+          card?.creator === currentUser?.id ||
+          card?.reviewer.includes(currentUser?.id)
+        );
+      case "cardApply":
+        return !(
+          card?.creator === currentUser?.id ||
+          card?.reviewer.includes(currentUser?.id)
+        );
       default:
         return false;
     }

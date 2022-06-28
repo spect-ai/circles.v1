@@ -23,11 +23,19 @@ a {
 } */
 
 .ProseMirror-focused > * {
-  margin-bottom: 12px !important;
+  margin-bottom: 10px !important;
 }
 
 .ProseMirror > * {
-  margin-bottom: 12px !important;
+  margin-bottom: 10px !important;
+}
+
+.ProseMirror > h1 {
+  margin-top: 0 !important;
+}
+
+.ProseMirror > h2 {
+  margin-top: 0 !important;
 }
 
 .block-menu-trigger {

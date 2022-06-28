@@ -1,5 +1,5 @@
 import React, { ReactElement } from "react";
-import { Box, Button, Heading, IconChevronLeft, Text } from "degen";
+import { Box, Text } from "degen";
 import { useRouter } from "next/router";
 import styled from "styled-components";
 import { motion } from "framer-motion";
@@ -48,43 +48,34 @@ function ExtendedSidebar(): ReactElement {
         flexDirection="column"
         borderRightWidth="0.375"
         paddingLeft="3"
-        paddingRight="1"
+        paddingRight="3"
         height="full"
       >
-        <Box>
-          <Box
-            borderBottomWidth="0.375"
-            paddingY="3"
-            display="flex"
-            flexDirection="row"
-            justifyContent="space-between"
+        <Box
+          borderBottomWidth="0.375"
+          paddingY="3"
+          display="flex"
+          flexDirection="row"
+          justifyContent="space-between"
+        >
+          <Text size="headingTwo" weight="semiBold" color="accentText" ellipsis>
+            {cId && pId && (circle?.name || project?.parents[0].name)}
+          </Text>
+          <SlideButtonContainer
+            transitionDuration="300"
+            style={{
+              transform: isSidebarExpanded ? "rotate(180deg)" : "rotate(0deg)",
+            }}
+            marginTop="2"
+            marginBottom="2.5"
+            cursor="pointer"
+            color="textSecondary"
+            onClick={() => setIsSidebarExpanded(!isSidebarExpanded)}
           >
-            <Text
-              size="headingTwo"
-              weight="semiBold"
-              color="accentText"
-              ellipsis
-            >
-              {cId && pId && (circle?.name || project?.parents[0].name)}
-            </Text>
-            <SlideButtonContainer
-              transitionDuration="300"
-              style={{
-                transform: isSidebarExpanded
-                  ? "rotate(180deg)"
-                  : "rotate(0deg)",
-              }}
-              marginTop="2"
-              marginBottom="2.5"
-              cursor="pointer"
-              color="textSecondary"
-              onClick={() => setIsSidebarExpanded(!isSidebarExpanded)}
-            >
-              <DoubleRightOutlined style={{ fontSize: "1.1rem" }} />
-            </SlideButtonContainer>
-          </Box>
-          <Container>{cId && <CircleSidebar />}</Container>
+            <DoubleRightOutlined style={{ fontSize: "1.1rem" }} />
+          </SlideButtonContainer>
         </Box>
+        <Container>{cId && <CircleSidebar />}</Container>
       </Box>
     </motion.div>
   );
