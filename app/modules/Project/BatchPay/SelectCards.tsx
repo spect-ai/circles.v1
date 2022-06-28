@@ -123,7 +123,7 @@ export default function SelectCards() {
         {(rows?.length === 0 || !rows) && (
           <Stack space="1">
             <Text variant="base" weight="semiBold">
-              {`No eligible cards found in ${column.label} column`}
+              {`For cards to show up here, they must have a reward value and at least one assignee. No such cards were found in ${column.label} column.`}
             </Text>
             {/* <Text variant="base" weight="semiBold">
               Card needs to have an assignee and reward

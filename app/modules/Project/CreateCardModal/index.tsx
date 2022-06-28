@@ -192,7 +192,7 @@ export default function CreateCardModal({
               }}
               variant="secondary"
             >
-              Save and Create Again
+              Save and Create Another
             </Button>
           </Stack>
         </Box>
