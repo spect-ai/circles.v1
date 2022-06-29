@@ -1,5 +1,5 @@
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { callCreateCard } from "@/app/services/Card";
+import useCardService from "@/app/services/Card/useCardService";
 import {
   Activity,
   ApplicationType,
@@ -11,7 +11,7 @@ import {
   UserType,
   WorkThreadType,
 } from "@/app/types";
-import { Box, Stack } from "degen";
+import { Stack } from "degen";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { createContext, useContext, useEffect, useState } from "react";
@@ -62,7 +62,7 @@ type CreateCardContextType = {
     >
   >;
   project: ProjectType;
-  onCardUpdate: () => void;
+  onCardUpdate: () => Promise<void>;
   activity: Activity[];
   setActivity: React.Dispatch<React.SetStateAction<Activity[]>>;
   workThreads: {
@@ -90,7 +90,6 @@ type CreateCardContextType = {
   loading: boolean;
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
   updating: boolean;
-  setUpdating: React.Dispatch<React.SetStateAction<boolean>>;
   onArchive: () => Promise<boolean>;
 };
 
@@ -127,6 +126,8 @@ export function useProviderLocalCard({
     queryClient.setQueryData(["card", tId], card);
   };
 
+  const { callCreateCard, updateCard, updating } = useCardService();
+
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [labels, setLabels] = useState([] as string[]);
@@ -160,7 +161,6 @@ export function useProviderLocalCard({
   const [applicationOrder, setApplicationOrder] = useState([] as string[]);
 
   const [loading, setLoading] = useState(true);
-  const [updating, setUpdating] = useState(false);
 
   useEffect(() => {
     if (!createCard && card && card.id && !isLoading) {
@@ -226,54 +226,8 @@ export function useProviderLocalCard({
     resetData();
   };
 
-  const onCardUndo = () => {
-    setUpdating(true);
-    const payload: { [key: string]: any } = {
-      title: card?.title,
-      description: card?.description,
-      reviewer: card?.reviewer,
-      assignee: card?.assignee,
-      project: project?.id,
-      circle: project?.parents[0].id,
-      type: card?.type,
-      deadline: card?.deadline,
-      labels: card?.labels,
-      priority: card?.priority,
-      columnId: card?.columnId,
-      reward: card?.reward,
-    };
-    console.log({ payload });
-    fetch(`${process.env.API_HOST}/card/${card?.id}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
-      credentials: "include",
-    })
-      .then(async (res) => {
-        const data = await res.json();
-        if (data.id) {
-          queryClient.setQueryData(["card", tId], data);
-          toast("Undo Successful", {
-            theme: "dark",
-          });
-        } else {
-          toast.error("Error saving card", { theme: "dark" });
-        }
-        setUpdating(false);
-      })
-      .catch((err) => {
-        console.log({ err });
-        setUpdating(false);
-        toast.error("Error undoing card changes", { theme: "dark" });
-      });
-  };
-
-  const onCardUpdate = () => {
+  const onCardUpdate = async () => {
     if (!card) return;
-    setUpdating(true);
-    console.log({ deadline });
     const payload: { [key: string]: any } = {
       title,
       description,
@@ -292,29 +246,10 @@ export function useProviderLocalCard({
         value: parseFloat(value),
       },
     };
-    console.log({ payload });
-    fetch(`${process.env.API_HOST}/card/${card?.id}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
-      credentials: "include",
-    })
-      .then(async (res) => {
-        if (!res.ok) {
-          throw new Error("Error updating card");
-        }
-        const data = await res.json();
-        setCard(data);
-        console.log("update complete");
-        setUpdating(false);
-      })
-      .catch((err) => {
-        console.log({ err });
-        setUpdating(false);
-        toast.error("Error updating card", { theme: "dark" });
-      });
+    const res = await updateCard(payload, card.id);
+    if (res) {
+      setCard(res);
+    }
   };
 
   const onArchive = async () => {
@@ -381,7 +316,6 @@ export function useProviderLocalCard({
     loading,
     setLoading,
     updating,
-    setUpdating,
     subTasks,
     setSubTasks,
     project,

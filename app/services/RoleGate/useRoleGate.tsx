@@ -31,6 +31,9 @@ export default function useRoleGate() {
     if (!currentUser?.id) {
       return false;
     }
+    if (!card?.id) {
+      return true;
+    }
     switch (action) {
       case "cardType":
         return card?.creator === currentUser?.id;

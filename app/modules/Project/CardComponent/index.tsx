@@ -15,7 +15,7 @@ type Props = {
 };
 
 const Container = styled(Box)<{ isDragging: boolean }>`
-  border-width: 4px;
+  border-width: 2px;
   border-color: ${(props) =>
     props.isDragging ? "rgb(191, 90, 242, 1)" : "rgb(255, 255, 255, 0)"};
   &:hover {

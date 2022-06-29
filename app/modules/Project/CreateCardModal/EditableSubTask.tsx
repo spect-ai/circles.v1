@@ -4,10 +4,10 @@ import styled from "styled-components";
 import { motion } from "framer-motion";
 import { useLocalCard } from "./hooks/LocalCardContext";
 import { SaveOutlined } from "@ant-design/icons";
-import { callCreateCard } from "@/app/services/Card";
 import { CircleType } from "@/app/types";
 import { useRouter } from "next/router";
 import { useQuery } from "react-query";
+import useCardService from "@/app/services/Card/useCardService";
 
 const TitleInput = styled.input`
   width: 100%;
@@ -46,9 +46,10 @@ export default function EditableSubTask({ subTaskIndex, newSubTask }: Props) {
   const { subTasks, setSubTasks, card } = useLocalCard();
   const [title, setTitle] = useState("");
   const [editable, setEditable] = useState(false);
+  const { callCreateCard } = useCardService();
 
   const router = useRouter();
-  const { circle: cId, project: pId, card: tId } = router.query;
+  const { circle: cId } = router.query;
   const { data: circle } = useQuery<CircleType>(["circle", cId], {
     enabled: false,
   });
