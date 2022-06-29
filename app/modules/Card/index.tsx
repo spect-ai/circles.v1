@@ -1,3 +1,4 @@
+import Breadcrumbs from "@/app/common/components/Breadcrumbs";
 import Editor from "@/app/common/components/Editor";
 import Loader from "@/app/common/components/Loader";
 import Tabs from "@/app/common/components/Tabs";
@@ -5,6 +6,7 @@ import useCardDynamism from "@/app/services/Card/useCardDynamism";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { Box, Stack, Tag } from "degen";
 import { AnimatePresence } from "framer-motion";
+import { useRouter } from "next/router";
 import React, { useState } from "react";
 import { ToastContainer } from "react-toastify";
 import styled from "styled-components";
@@ -65,11 +67,15 @@ export default function Card() {
     card,
     cardType,
   } = useLocalCard();
+  console.log({ card });
 
   const { canTakeAction } = useRoleGate();
 
   const { getTabs, activityTab, applicationTab, submissionTab } =
     useCardDynamism();
+
+  const router = useRouter();
+  const { circle: cId, project: pId } = router.query;
 
   return (
     <Box padding="4">
@@ -79,6 +85,22 @@ export default function Card() {
         <Stack direction="horizontal">
           <Box width="3/4" paddingX={{ xs: "4" }}>
             <Container padding="2">
+              <Box marginLeft="1">
+                {card?.parent && (
+                  <Breadcrumbs
+                    crumbs={[
+                      {
+                        name: card?.parent.title,
+                        href: `/${cId}/${pId}/${card?.parent.slug}`,
+                      },
+                      {
+                        name: `#${card?.slug}`,
+                        href: "",
+                      },
+                    ]}
+                  />
+                )}
+              </Box>
               <Stack direction="vertical">
                 <Stack direction="horizontal">
                   <NameInput
@@ -89,7 +111,7 @@ export default function Card() {
                       setTitle(e.target.value);
                     }}
                     onBlur={() => {
-                      onCardUpdate();
+                      void onCardUpdate();
                     }}
                   />
                   {canTakeAction("cardPopoverActions") && <ActionPopover />}
@@ -119,7 +141,7 @@ export default function Card() {
                       placeholder="Add a description"
                       disabled={!canTakeAction("cardDescription")}
                       onBlur={() => {
-                        onCardUpdate();
+                        void onCardUpdate();
                       }}
                     />
                   )}

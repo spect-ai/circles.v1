@@ -3,8 +3,10 @@ import { toast } from "react-toastify";
 
 export default function useCardService() {
   const [updating, setUpdating] = useState(false);
+  const [creating, setCreating] = useState(false);
 
   const callCreateCard = async (payload: any): Promise<any> => {
+    setCreating(true);
     const res = await fetch(`${process.env.API_HOST}/card`, {
       method: "POST",
       headers: {
@@ -13,7 +15,7 @@ export default function useCardService() {
       body: JSON.stringify(payload),
       credentials: "include",
     });
-
+    setCreating(false);
     if (!res.ok) {
       toast.error("Error creating card");
       return null;
@@ -47,6 +49,7 @@ export default function useCardService() {
     callCreateCard,
     updateCard,
     updating,
+    creating,
   };
 }
 

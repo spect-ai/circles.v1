@@ -74,7 +74,7 @@ export default function ActionPopover() {
         setIsOpen={setIsOpen}
       >
         <ScrollContainer
-          backgroundColor="backgroundSecondary"
+          backgroundColor="background"
           borderWidth="0.5"
           borderRadius="2xLarge"
           width="36"

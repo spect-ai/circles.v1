@@ -61,6 +61,10 @@ type CreateCardContextType = {
       }[]
     >
   >;
+  childrenTasks: CardType[];
+  setChildrenTasks: React.Dispatch<React.SetStateAction<CardType[]>>;
+  parent: string;
+  setParent: React.Dispatch<React.SetStateAction<string>>;
   project: ProjectType;
   onCardUpdate: () => Promise<void>;
   activity: Activity[];
@@ -146,6 +150,8 @@ export function useProviderLocalCard({
       assignee: string;
     }[]
   >([] as any);
+  const [childrenTasks, setChildrenTasks] = useState<CardType[]>([]);
+  const [parent, setParent] = useState("");
   const [activity, setActivity] = useState<Activity[]>({} as Activity[]);
   const [workThreads, setWorkThreads] = useState(
     {} as {
@@ -182,6 +188,8 @@ export function useProviderLocalCard({
       setWorkThreadOrder(card.workThreadOrder);
       setApplication(card.application);
       setApplicationOrder(card.applicationOrder);
+      setChildrenTasks(card.children);
+      setParent(card.parent);
       setLoading(false);
     }
   }, [card, createCard, isLoading]);
@@ -318,6 +326,10 @@ export function useProviderLocalCard({
     updating,
     subTasks,
     setSubTasks,
+    childrenTasks,
+    setChildrenTasks,
+    parent,
+    setParent,
     project,
     onCardUpdate,
     activity,

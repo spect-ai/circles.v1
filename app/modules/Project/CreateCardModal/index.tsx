@@ -5,7 +5,7 @@ import { Box, Button, Stack, Tag } from "degen";
 import { AnimatePresence } from "framer-motion";
 import React, { useEffect } from "react";
 import styled from "styled-components";
-import EditableSubTask from "./EditableSubTask";
+import EditableSubTask from "../../Card/SubTasks/NewSubTask";
 import CardAssignee from "./modals/CardAssignee";
 import CardColumn from "./modals/CardColumn";
 import CardDeadline from "./modals/CardDeadline";
@@ -181,6 +181,7 @@ export default function CreateCardModal({
                 setIsDirty(false);
               }}
               variant="secondary"
+              disabled={!title}
             >
               Create Card
             </Button>
@@ -192,6 +193,7 @@ export default function CreateCardModal({
                 setIsDirty(false);
               }}
               variant="secondary"
+              disabled={!title}
             >
               Save and Create Another
             </Button>

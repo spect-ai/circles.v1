@@ -4,14 +4,14 @@ import useComment from "@/app/services/Comment/useComment";
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
 import { UserType } from "@/app/types";
 import { SaveOutlined, SendOutlined } from "@ant-design/icons";
-import { Avatar, Box, Button, IconTrash, Stack, Text } from "degen";
+import { Avatar, Box, IconTrash, Stack, Text } from "degen";
 import { AnimatePresence, motion } from "framer-motion";
 
 import React, { useEffect, useState } from "react";
 import ContentEditable from "react-contenteditable";
 import { useQuery } from "react-query";
 import styled from "styled-components";
-import { variants } from "..";
+import { fadeVariant } from "../Utils/variants";
 
 export const TextArea = styled(ContentEditable)`
   color: rgb(255, 255, 255, 0.85);
@@ -73,7 +73,7 @@ export default function Comment({
 
   return (
     <motion.main
-      variants={variants}
+      variants={fadeVariant}
       initial="hidden"
       animate="enter"
       exit="exit"

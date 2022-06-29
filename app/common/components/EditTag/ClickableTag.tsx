@@ -12,7 +12,7 @@ type Props = {
 const TagContainer = styled(Box)`
   &:hover {
     cursor: pointer;
-    box-shadow: 0 0 0 0.4rem rgb(191, 90, 242, 0.25);
+    box-shadow: 0 0 0 0.4rem rgb(191, 90, 242, 0.26);
   }
 `;
 
