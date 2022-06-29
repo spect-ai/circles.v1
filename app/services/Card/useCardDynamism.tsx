@@ -11,9 +11,11 @@ export default function useCardDynamism() {
   useEffect(() => {
     if (cardType === "Task") {
       setSubmissionTab(1);
+      setApplicationTab(2);
     }
     if (cardType === "Bounty") {
       setSubmissionTab(2);
+      setApplicationTab(1);
     }
   }, [cardType]);
 

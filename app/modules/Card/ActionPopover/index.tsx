@@ -42,7 +42,7 @@ const PopoverOption = ({ children, onClick }: PopoverOptionProps) => (
     cursor="pointer"
     onClick={onClick}
   >
-    <Text variant="small" weight="semiBold" ellipsis>
+    <Text variant="small" weight="semiBold" ellipsis color="textSecondary">
       {children}
     </Text>
   </PopoverOptionContainer>
@@ -69,7 +69,7 @@ export default function ActionPopover() {
       </AnimatePresence>
 
       <Popover
-        icon={<IconDotsHorizontal />}
+        icon={<IconDotsHorizontal color="textSecondary" />}
         isOpen={isOpen}
         setIsOpen={setIsOpen}
       >
@@ -79,17 +79,6 @@ export default function ActionPopover() {
           borderRadius="2xLarge"
           width="36"
         >
-          <PopoverOption
-            onClick={() => {
-              setIsOpen(false);
-              setShowConfirm(true);
-            }}
-          >
-            <Stack direction="horizontal" space="2">
-              <IconTrash color="red" />
-              Archive
-            </Stack>
-          </PopoverOption>
           <PopoverOption onClick={() => {}}>
             <Stack direction="horizontal" space="2">
               <IconDuplicate />
@@ -104,6 +93,17 @@ export default function ActionPopover() {
                 }}
               />
               Share
+            </Stack>
+          </PopoverOption>
+          <PopoverOption
+            onClick={() => {
+              setIsOpen(false);
+              setShowConfirm(true);
+            }}
+          >
+            <Stack direction="horizontal" space="2">
+              <IconTrash color="red" />
+              Archive
             </Stack>
           </PopoverOption>
         </ScrollContainer>

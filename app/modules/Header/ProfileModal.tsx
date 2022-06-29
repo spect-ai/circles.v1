@@ -141,7 +141,7 @@ export default function ProfileModal() {
                     void queryClient.invalidateQueries("getMyUser");
                     console.log("disconnected");
                     localStorage.removeItem("connectorIndex");
-                    handleClose();
+                    setIsOpen(false);
                   }}
                 >
                   Logout

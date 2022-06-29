@@ -31,12 +31,6 @@ export default function useRoleGate() {
     if (!currentUser?.id) {
       return false;
     }
-    if (
-      circle?.memberRoles[currentUser?.id]?.includes("steward") &&
-      action !== "cardSubmission"
-    ) {
-      return true;
-    }
     switch (action) {
       case "cardType":
         return card?.creator === currentUser?.id;
@@ -95,8 +89,9 @@ export default function useRoleGate() {
         );
       case "cardPayment":
         return (
-          card?.creator === currentUser?.id ||
-          card?.reviewer.includes(currentUser?.id)
+          (card?.creator === currentUser?.id ||
+            card?.reviewer.includes(currentUser?.id)) &&
+          card.reward.value > 0
         );
       case "cardPopoverActions":
         return (

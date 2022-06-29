@@ -2,13 +2,13 @@ import { Avatar, Stack, Text } from "degen";
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { useLocalCard } from "../../Project/CreateCardModal/hooks/LocalCardContext";
-import { variants } from "..";
 import Comment from "./Comment";
 import { timeSince } from "@/app/common/utils/utils";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
 import ClickableTag from "@/app/common/components/EditTag/ClickableTag";
 import { EyeInvisibleOutlined, EyeOutlined } from "@ant-design/icons";
+import { fadeVariant } from "../Utils/variants";
 
 export default function Activity() {
   const { activity } = useLocalCard();
@@ -18,7 +18,7 @@ export default function Activity() {
   const [showActivity, setShowActivity] = useState(false);
   return (
     <motion.main
-      variants={variants}
+      variants={fadeVariant}
       initial="hidden"
       animate="enter"
       exit="exit"

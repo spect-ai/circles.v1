@@ -1,4 +1,3 @@
-import Accordian from "@/app/common/components/Accordian";
 import Editor from "@/app/common/components/Editor";
 import Loader from "@/app/common/components/Loader";
 import Tabs from "@/app/common/components/Tabs";
@@ -10,7 +9,6 @@ import React, { useState } from "react";
 import { ToastContainer } from "react-toastify";
 import styled from "styled-components";
 import BatchPay from "../Project/BatchPay";
-import EditableSubTask from "../Project/CreateCardModal/EditableSubTask";
 import { useLocalCard } from "../Project/CreateCardModal/hooks/LocalCardContext";
 import CardAssignee from "../Project/CreateCardModal/modals/CardAssignee";
 import CardColumn from "../Project/CreateCardModal/modals/CardColumn";
@@ -52,23 +50,6 @@ const NameInput = styled.input`
   font-weight: 600;
 `;
 
-export const variants = {
-  hidden: { opacity: 0, x: 0, y: 0 },
-  enter: {
-    opacity: 1,
-    x: 0,
-    y: 0,
-  },
-  exit: {
-    opacity: 0,
-    x: 0,
-    y: 0,
-    transition: {
-      duration: 0.1,
-    },
-  },
-};
-
 export default function Card() {
   const [selectedTab, setSelectedTab] = useState(0);
   const handleTabClick = (index: number) => setSelectedTab(index);
@@ -82,6 +63,7 @@ export default function Card() {
     project,
     onCardUpdate,
     card,
+    cardType,
   } = useLocalCard();
 
   const { canTakeAction } = useRoleGate();
@@ -164,7 +146,7 @@ export default function Card() {
             width="1/4"
             borderLeftWidth="0.375"
             paddingLeft="4"
-            paddingTop="4"
+            paddingTop="3"
           >
             {project?.id && (
               <Stack>
@@ -175,18 +157,11 @@ export default function Card() {
                 <CardDeadline />
                 <CardPriority />
                 <CardReward />
-                {/* {canTakeAction("cardArchive") && (
-                  <PrimaryButton
-                    icon={<IconTrash />}
-                    tone="red"
-                    onClick={() => setShowConfirm(true)}
-                  >
-                    Archive
-                  </PrimaryButton>
-                )} */}
                 {/* <DiscordThread /> */}
                 {canTakeAction("cardPayment") && <BatchPay card={card} />}
-                {canTakeAction("cardApply") && <Apply />}
+                {cardType === "Bounty" && canTakeAction("cardApply") && (
+                  <Apply />
+                )}
               </Stack>
             )}
           </Box>
