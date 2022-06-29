@@ -1,4 +1,3 @@
-import ConfirmModal from "@/app/common/components/Modal/ConfirmModal";
 import { updateColumnDetails } from "@/app/services/Column";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { CardType, ColumnType } from "@/app/types";
@@ -33,10 +32,8 @@ const Container = styled(Box)`
 
 const ScrollContainer = styled(Box)`
   ::-webkit-scrollbar {
-    display: none;
+    width: 0px;
   }
-  -ms-overflow-style: none;
-  scrollbar-width: none;
   height: calc(100vh - 12rem);
   border-radius: 0.5rem;
   overflow-y: auto;
@@ -120,10 +117,7 @@ export default function ColumnComponent({ cards, id, column, index }: Props) {
             {...provided.draggableProps}
             {...provided.dragHandleProps}
             ref={provided.innerRef}
-            borderWidth="0.375"
-            borderRadius="2xLarge"
             padding="2"
-            backgroundColor="background"
             display="flex"
             flexDirection="column"
             justifyContent="space-between"

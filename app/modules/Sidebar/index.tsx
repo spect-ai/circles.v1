@@ -1,30 +1,13 @@
 import Link from "next/link";
-import React, { ReactElement, useEffect, useState } from "react";
-import { Box, Button, IconPlus, IconUserSolid, Skeleton, Stack } from "degen";
+import React, { ReactElement, useEffect } from "react";
+import { Box, Button } from "degen";
 import { useRouter } from "next/router";
-import { motion } from "framer-motion";
 import CreateCircle from "./CreateCircleModal";
 import Logo from "@/app/common/components/Logo";
 import { HomeOutlined } from "@ant-design/icons";
 import { useGlobalContext } from "@/app/context/globalContext";
 import { useQuery } from "react-query";
 import { CircleType, ProjectType, UserType } from "@/app/types";
-
-const containerAnimation = {
-  hidden: { rotate: 90 },
-  show: {
-    rotate: 0,
-    transition: {
-      staggerChildren: 0.1,
-      delayChildren: 0.3,
-    },
-  },
-};
-
-const itemAnimation = {
-  hidden: { opacity: 0 },
-  show: { opacity: 1 },
-};
 
 function Sidebar(): ReactElement {
   const router = useRouter();
@@ -38,6 +21,8 @@ function Sidebar(): ReactElement {
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
+
+  const { setIsSidebarExpanded } = useGlobalContext();
 
   const {
     data: myCircles,
@@ -63,13 +48,13 @@ function Sidebar(): ReactElement {
       display="flex"
       flexDirection="column"
       borderRightWidth="0.375"
-      paddingX="3"
-      // onMouseEnter={() => {
-      //   cId && setIsSidebarExpanded(true);
-      // }}
+      paddingX="2"
+      onMouseEnter={() => {
+        setIsSidebarExpanded(true);
+      }}
       transitionDuration="700"
     >
-      <Box borderBottomWidth="0.375" paddingY="3">
+      {/* <Box borderBottomWidth="0.375" paddingTop="3">
         {cId ? (
           <Logo
             href="/"
@@ -81,8 +66,8 @@ function Sidebar(): ReactElement {
             src="https://ipfs.moralis.io:2053/ipfs/QmVYsa4KQyRwBSJxQCmD1rDjyqYd1HJKrDfqLk3KMKLEhn"
           />
         )}
-      </Box>
-      <Box marginTop="2">
+      </Box> */}
+      <Box marginTop="3">
         <Link href="/" passHref>
           <Button shape="circle" variant="secondary" size="small">
             <HomeOutlined style={{ fontSize: "1.3rem" }} />

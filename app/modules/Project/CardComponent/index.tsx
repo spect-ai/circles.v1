@@ -42,10 +42,11 @@ export default function CardComponent({ card, index, column }: Props) {
           {...provided.draggableProps}
           {...provided.dragHandleProps}
           ref={provided.innerRef}
-          backgroundColor="foregroundTertiary"
+          // backgroundColor="foregroundTertiary"
+          backgroundColor="background"
           padding="2"
           marginBottom="2"
-          borderRadius="2xLarge"
+          borderRadius="large"
           isDragging={snapshot.isDragging}
           onClick={() => router.push(`/${cId}/${pId}/${card.slug}`)}
         >

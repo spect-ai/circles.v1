@@ -61,7 +61,7 @@ export default function CircleSidebar() {
         )}
       </AnimatePresence>
       <Stack>
-        <Accordian name={circle?.name as string} defaultOpen>
+        {/* <Accordian name={circle?.name as string} defaultOpen>
           <Stack>
             <Link href={`/${cId}`}>
               <Button
@@ -114,7 +114,7 @@ export default function CircleSidebar() {
               Contributors
             </Button>
           </Stack>
-        </Accordian>
+        </Accordian> */}
         <Accordian
           name="Projects"
           defaultOpen

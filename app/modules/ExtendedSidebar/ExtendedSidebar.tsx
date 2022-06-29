@@ -1,5 +1,5 @@
 import React, { ReactElement } from "react";
-import { Box, Text } from "degen";
+import { Box, Stack, Text } from "degen";
 import { useRouter } from "next/router";
 import styled from "styled-components";
 import { motion } from "framer-motion";
@@ -9,6 +9,7 @@ import { useQuery } from "react-query";
 import { CircleType, ProjectType } from "@/app/types";
 import { DoubleRightOutlined } from "@ant-design/icons";
 import { SlideButtonContainer } from "../Header";
+import Logo from "@/app/common/components/Logo";
 
 export const Container = styled(Box)`
   ::-webkit-scrollbar {
@@ -18,6 +19,14 @@ export const Container = styled(Box)`
   scrollbar-width: none;
   height: calc(100vh - 5rem);
   overflow-y: auto;
+`;
+
+const HeaderButton = styled(Box)`
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  &:hover {
+    background-color: rgb(255, 255, 255, 0.1);
+  }
 `;
 
 function ExtendedSidebar(): ReactElement {
@@ -52,15 +61,30 @@ function ExtendedSidebar(): ReactElement {
         height="full"
       >
         <Box
-          borderBottomWidth="0.375"
-          paddingY="3"
+          paddingY="2"
           display="flex"
           flexDirection="row"
           justifyContent="space-between"
+          alignItems="center"
         >
-          <Text size="headingTwo" weight="semiBold" color="accentText" ellipsis>
-            {cId && pId && (circle?.name || project?.parents[0].name)}
-          </Text>
+          <HeaderButton padding="1" borderRadius="large" width="full">
+            <Stack direction="horizontal" align="center">
+              <Logo
+                href="/"
+                src={
+                  circle?.avatar || (pId && project?.parents[0].avatar) || ""
+                }
+              />
+              <Text
+                size="extraLarge"
+                weight="semiBold"
+                color="textPrimary"
+                ellipsis
+              >
+                {cId && pId && (circle?.name || project?.parents[0].name)}
+              </Text>
+            </Stack>
+          </HeaderButton>
           <SlideButtonContainer
             transitionDuration="300"
             style={{

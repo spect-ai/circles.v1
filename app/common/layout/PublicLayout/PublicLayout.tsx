@@ -9,8 +9,8 @@ import Sidebar from "@/app/modules/Sidebar";
 import { useRouter } from "next/router";
 import { useGlobalContext } from "@/app/context/globalContext";
 import styled from "styled-components";
-import { variants } from "@/app/modules/Card";
 import { useConnect } from "wagmi";
+import { fadeVariant } from "@/app/modules/Card/Utils/variants";
 
 type PublicLayoutProps = {
   children: ReactNodeNoStrings;
@@ -27,7 +27,7 @@ function PublicLayout(props: PublicLayoutProps) {
   const { isSidebarExpanded } = useGlobalContext();
 
   const router = useRouter();
-  const { circle: cId } = router.query;
+  const { circle: cId, card: tId } = router.query;
   const { connect, connectors } = useConnect();
 
   useEffect(() => {
@@ -51,7 +51,7 @@ function PublicLayout(props: PublicLayoutProps) {
     >
       <Sidebar />
       <AnimatePresence initial={false}>
-        {isSidebarExpanded && cId && <ExtendedSidebar />}
+        {isSidebarExpanded && <ExtendedSidebar />}
       </AnimatePresence>
       <Box
         display="flex"
@@ -59,9 +59,9 @@ function PublicLayout(props: PublicLayoutProps) {
         width="full"
         backgroundColor="foregroundTertiary"
       >
-        <Header />
+        {/* <Header /> */}
         <motion.main
-          variants={variants}
+          variants={fadeVariant}
           initial="hidden"
           animate="enter"
           exit="exit"

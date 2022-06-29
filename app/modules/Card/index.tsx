@@ -1,11 +1,13 @@
 import Breadcrumbs from "@/app/common/components/Breadcrumbs";
 import Editor from "@/app/common/components/Editor";
 import Loader from "@/app/common/components/Loader";
+import PrimaryButton from "@/app/common/components/PrimaryButton";
 import Tabs from "@/app/common/components/Tabs";
 import useCardDynamism from "@/app/services/Card/useCardDynamism";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
-import { Box, Stack, Tag } from "degen";
+import { Box, IconArrowDown, IconArrowUp, IconClose, Stack, Tag } from "degen";
 import { AnimatePresence } from "framer-motion";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
 import { ToastContainer } from "react-toastify";
@@ -29,11 +31,9 @@ import SubTasks from "./SubTasks";
 
 const Container = styled(Box)`
   ::-webkit-scrollbar {
-    display: none;
+    width: 0px;
   }
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-  height: calc(100vh - 7rem);
+  height: calc(100vh - 5.5rem);
   overflow-y: auto;
 `;
 
@@ -67,7 +67,6 @@ export default function Card() {
     card,
     cardType,
   } = useLocalCard();
-  console.log({ card });
 
   const { canTakeAction } = useRoleGate();
 
@@ -79,116 +78,146 @@ export default function Card() {
 
   return (
     <Box padding="4">
-      <ToastContainer />
-      {loading && <Loader loading={loading} text="" />}
-      {!loading && (
-        <Stack direction="horizontal">
-          <Box width="3/4" paddingX={{ xs: "4" }}>
-            <Container padding="2">
-              <Box marginLeft="1">
-                {card?.parent && (
-                  <Breadcrumbs
-                    crumbs={[
-                      {
-                        name: card?.parent.title,
-                        href: `/${cId}/${pId}/${card?.parent.slug}`,
-                      },
-                      {
-                        name: `#${card?.slug}`,
-                        href: "",
-                      },
-                    ]}
-                  />
-                )}
-              </Box>
-              <Stack direction="vertical">
-                <Stack direction="horizontal">
-                  <NameInput
-                    placeholder="Card name"
-                    value={title}
-                    disabled={!canTakeAction("cardTitle")}
-                    onChange={(e) => {
-                      setTitle(e.target.value);
-                    }}
-                    onBlur={() => {
-                      void onCardUpdate();
-                    }}
-                  />
-                  {canTakeAction("cardPopoverActions") && <ActionPopover />}
-                </Stack>
-                <Stack direction="horizontal" wrap>
-                  <CardLabels />
-                  {labels.map((label) => (
-                    <Tag key={label}>{label}</Tag>
-                  ))}
-                </Stack>
-                <SubTasks />
-                <Box
-                  style={{
-                    minHeight: "10rem",
-                    maxHeight: "25rem",
-                    overflowY: "auto",
-                  }}
-                  marginRight="4"
-                  paddingLeft="4"
-                >
-                  {!loading && (
-                    <Editor
-                      value={description}
-                      onChange={(txt) => {
-                        setDescription(txt);
+      <Box
+        borderWidth="0.375"
+        borderRadius="large"
+        backgroundColor="background"
+        style={{
+          // elevation effect using box-shadow
+          boxShadow: "0px 0px 10px 0.1rem rgba(0, 0, 0, 0.1)",
+        }}
+      >
+        <ToastContainer />
+        <Box padding="1" borderBottomWidth="0.375">
+          <Stack direction="horizontal">
+            <Link href={`/${cId}/${pId}`}>
+              <PrimaryButton variant="transparent">
+                <IconClose />
+              </PrimaryButton>
+            </Link>
+
+            <Box display="flex" borderWidth="0.375" borderRadius="large">
+              <PrimaryButton variant="transparent">
+                <IconArrowUp />
+              </PrimaryButton>
+              <PrimaryButton variant="transparent">
+                <IconArrowDown />
+              </PrimaryButton>
+            </Box>
+          </Stack>
+        </Box>
+        {loading && <Loader loading={loading} text="" />}
+        {!loading && (
+          <Stack direction="horizontal">
+            <Box width="3/4">
+              <Container padding="2" paddingX={{ xs: "4" }}>
+                <Box marginLeft="1">
+                  {card?.parent && (
+                    <Breadcrumbs
+                      crumbs={[
+                        {
+                          name: card?.parent.title,
+                          href: `/${cId}/${pId}/${card?.parent.slug}`,
+                        },
+                        {
+                          name: `#${card?.slug}`,
+                          href: "",
+                        },
+                      ]}
+                    />
+                  )}
+                </Box>
+                <Stack direction="vertical">
+                  <Stack direction="horizontal">
+                    <NameInput
+                      placeholder="Card name"
+                      value={title}
+                      disabled={!canTakeAction("cardTitle")}
+                      onChange={(e) => {
+                        setTitle(e.target.value);
                       }}
-                      placeholder="Add a description"
-                      disabled={!canTakeAction("cardDescription")}
                       onBlur={() => {
                         void onCardUpdate();
                       }}
                     />
+                    {canTakeAction("cardPopoverActions") && <ActionPopover />}
+                  </Stack>
+                  <Stack direction="horizontal" wrap>
+                    <CardLabels />
+                    {labels.map((label) => (
+                      <Tag key={label}>{label}</Tag>
+                    ))}
+                  </Stack>
+                  <SubTasks />
+                  <Box
+                    style={{
+                      minHeight: "10rem",
+                      maxHeight: "25rem",
+                      overflowY: "auto",
+                    }}
+                    marginRight="4"
+                    paddingLeft="4"
+                  >
+                    {!loading && (
+                      <Editor
+                        value={description}
+                        onChange={(txt) => {
+                          setDescription(txt);
+                        }}
+                        placeholder="Add a description"
+                        disabled={!canTakeAction("cardDescription")}
+                        onBlur={() => {
+                          void onCardUpdate();
+                        }}
+                      />
+                    )}
+                  </Box>
+                  <Tabs
+                    tabs={getTabs()}
+                    selectedTab={selectedTab}
+                    onTabClick={handleTabClick}
+                    orientation="horizontal"
+                    unselectedColor="transparent"
+                    shape="circle"
+                  />
+                  <AnimatePresence initial={false}>
+                    {selectedTab === activityTab && <Activity />}
+                    {selectedTab === applicationTab && !loading && (
+                      <Application />
+                    )}
+                    {selectedTab === submissionTab && !loading && (
+                      <Submission />
+                    )}
+                  </AnimatePresence>
+                </Stack>
+              </Container>
+            </Box>
+            <Box
+              width="1/4"
+              borderLeftWidth="0.375"
+              paddingLeft="4"
+              paddingTop="3"
+            >
+              {project?.id && (
+                <Stack>
+                  <CardType />
+                  <CardColumn />
+                  <CardAssignee />
+                  <CardReviewer />
+                  <CardDeadline />
+                  <CardPriority />
+                  <CardReward />
+                  {/* <DiscordThread /> */}
+                  {canTakeAction("cardPayment") && <BatchPay card={card} />}
+                  {cardType === "Bounty" && canTakeAction("cardApply") && (
+                    <Apply />
                   )}
-                </Box>
-                <Tabs
-                  tabs={getTabs()}
-                  selectedTab={selectedTab}
-                  onTabClick={handleTabClick}
-                  orientation="horizontal"
-                  unselectedColor="transparent"
-                  shape="circle"
-                />
-                <AnimatePresence initial={false}>
-                  {selectedTab === activityTab && <Activity />}
-                  {selectedTab === applicationTab && !loading && (
-                    <Application />
-                  )}
-                  {selectedTab === submissionTab && !loading && <Submission />}
-                </AnimatePresence>
-              </Stack>
-            </Container>
-          </Box>
-          <Box
-            width="1/4"
-            borderLeftWidth="0.375"
-            paddingLeft="4"
-            paddingTop="3"
-          >
-            {project?.id && (
-              <Stack>
-                <CardType />
-                <CardColumn />
-                <CardAssignee />
-                <CardReviewer />
-                <CardDeadline />
-                <CardPriority />
-                <CardReward />
-                {/* <DiscordThread /> */}
-                {canTakeAction("cardPayment") && <BatchPay card={card} />}
-                {cardType === "Bounty" && canTakeAction("cardApply") && (
-                  <Apply />
-                )}
-              </Stack>
-            )}
-          </Box>
-        </Stack>
-      )}
+                </Stack>
+              )}
+            </Box>
+          </Stack>
+        )}
+      </Box>
     </Box>
   );
 }
