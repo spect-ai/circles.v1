@@ -137,7 +137,7 @@ function Card() {
         {!loading && (
           <Stack direction="horizontal">
             <Box width="3/4">
-              <Container paddingY="4" paddingX="4">
+              <Container padding="8">
                 <Box marginLeft="1">
                   {card?.parent && (
                     <Breadcrumbs
@@ -223,7 +223,7 @@ function Card() {
               width="1/4"
               borderLeftWidth="0.375"
               paddingLeft="4"
-              paddingTop="5"
+              paddingTop="8"
             >
               {project?.id && (
                 <Stack>

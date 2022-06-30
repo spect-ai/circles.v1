@@ -134,7 +134,7 @@ function CircleSidebar() {
               </Stack>
             </Accordian>
             <Accordian
-              name="Workspaces"
+              name="Workstreams"
               defaultOpen
               buttonComponent={<CreateSpaceModal accordian />}
               showButton={canDo(["steward"])}
@@ -155,7 +155,7 @@ function CircleSidebar() {
                 ))}
                 {!circle?.children.length && (
                   <Box paddingLeft="7" paddingY="2">
-                    <Text variant="label">No workspaces created</Text>
+                    <Text variant="label">No workstreams created</Text>
                   </Box>
                 )}
               </Stack>

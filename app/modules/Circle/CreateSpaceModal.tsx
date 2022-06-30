@@ -103,7 +103,7 @@ function CreateSpaceModal({ accordian }: Props) {
         >
           <Box width="32">
             <Stack align="center">
-              <Text align="center">Create Workspace</Text>
+              <Text align="center">Create Workstream</Text>
             </Stack>
           </Box>
         </Card>
