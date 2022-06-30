@@ -49,10 +49,10 @@ function Sidebar(): ReactElement {
       flexDirection="column"
       borderRightWidth="0.375"
       paddingX="2"
-      onMouseEnter={() => {
-        setIsSidebarExpanded(true);
-      }}
-      transitionDuration="700"
+      // onMouseEnter={() => {
+      //   setIsSidebarExpanded(true);
+      // }}
+      transitionDuration="500"
     >
       {/* <Box borderBottomWidth="0.375" paddingTop="3">
         {cId ? (

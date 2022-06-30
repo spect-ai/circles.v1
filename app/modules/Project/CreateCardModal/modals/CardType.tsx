@@ -90,7 +90,7 @@ export default function CardType() {
                 <Text
                   size="small"
                   color={cardType === item.value ? "accent" : "text"}
-                  weight="bold"
+                  weight="semiBold"
                 >
                   {item.name}
                 </Text>

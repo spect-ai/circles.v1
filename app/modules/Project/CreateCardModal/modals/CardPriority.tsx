@@ -45,7 +45,7 @@ export default function CardPriority() {
       }
       disabled={!canTakeAction("cardPriority")}
       handleClose={() => {
-        onCardUpdate();
+        void onCardUpdate();
         setModalOpen(false);
       }}
     >
@@ -86,7 +86,7 @@ export default function CardPriority() {
                 <Text
                   size="small"
                   color={priority === item.value ? "accent" : "text"}
-                  weight="bold"
+                  weight="semiBold"
                 >
                   {item.name}
                 </Text>

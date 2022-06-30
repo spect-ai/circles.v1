@@ -16,13 +16,13 @@ import useProjectOnboarding from "@/app/services/Onboarding/useProjectOnboarding
 const Container = styled.div`
   display: flex;
   flex-direction: row;
-  height: calc(100vh - 6.5rem);
+  height: calc(100vh - 4.5rem);
   @media only screen and (min-width: 0px) {
     max-width: calc(100vw - 5rem);
     padding: 0 0.1rem;
   }
   @media only screen and (min-width: 768px) {
-    max-width: calc(100vw - 6.5rem);
+    max-width: calc(100vw - 4rem);
     padding: 0 0.5rem;
   }
   overflow-x: auto;
@@ -40,7 +40,7 @@ export default function Project() {
   }
 
   return (
-    <Box padding="4">
+    <Box paddingY="1">
       <ToastContainer />
       {!onboarded && <Onboarding />}
       <DragDropContext onDragEnd={handleDragEnd}>
@@ -69,9 +69,8 @@ export default function Project() {
                 })}
                 {provided.placeholder}
                 {canDo(["steward"]) && (
-                  <Box style={{ width: "20rem" }}>
+                  <Box style={{ width: "20rem" }} marginTop="2">
                     <PrimaryButton
-                      // disabled={project.roles[user?.id as string] !== 3}
                       icon={<IconPlusSmall />}
                       onClick={async () => {
                         const updatedProject = await addColumn(project.id);

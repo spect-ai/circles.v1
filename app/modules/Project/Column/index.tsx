@@ -25,7 +25,7 @@ const Container = styled(Box)`
   }
   -ms-overflow-style: none;
   scrollbar-width: none;
-  height: calc(100vh - 7.4rem);
+  height: calc(100vh - 5rem);
   overflow-y: none;
   width: 22rem;
 `;
@@ -34,7 +34,7 @@ const ScrollContainer = styled(Box)`
   ::-webkit-scrollbar {
     width: 0px;
   }
-  height: calc(100vh - 12rem);
+  height: calc(100vh - 6rem);
   border-radius: 0.5rem;
   overflow-y: auto;
 `;
@@ -50,7 +50,7 @@ const NameInput = styled.input`
   box-shadow: none;
   font-size: 1.1rem;
   caret-color: rgb(255, 255, 255, 0.85);
-  color: rgb(255, 255, 255, 0.85);
+  color: rgb(255, 255, 255, 0.6);
   font-weight: 400;
   margin-left: 0.1rem;
 `;

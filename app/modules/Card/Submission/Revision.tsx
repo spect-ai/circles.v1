@@ -11,10 +11,10 @@ import { useQuery } from "react-query";
 import styled from "styled-components";
 
 export const TextArea = styled(ContentEditable)`
-  color: rgb(255, 255, 255, 0.85);
+  color: rgb(255, 255, 255, 0.7);
   border: 2px solid rgb(255, 255, 255, 0.1);
   background: ${(props) =>
-    props.disabled ? "rgb(255, 255, 255, 0)" : "rgb(20,20,20)"};
+    props.disabled ? "rgb(20,20,20)" : "rgb(255, 255, 255, 0.05)"};
   border-radius: 1rem;
   width: 100%;
   overflow: hidden;

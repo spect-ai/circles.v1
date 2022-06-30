@@ -118,7 +118,7 @@ export default function CardDeadline() {
             if (date === deadline) {
               setDeadline(null);
               setTimeout(() => {
-                onCardUpdate();
+                void onCardUpdate();
               }, 500);
               return;
             }
@@ -127,7 +127,7 @@ export default function CardDeadline() {
           customInput={<ExampleCustomInput />}
           disabled={!canTakeAction("cardDeadline")}
           onCalendarClose={() => {
-            onCardUpdate();
+            void onCardUpdate();
           }}
         />
       </Box>

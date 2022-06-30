@@ -1,42 +1,18 @@
 import React, { ReactElement } from "react";
-import { Box, Stack, Text } from "degen";
-import { useRouter } from "next/router";
-import styled from "styled-components";
+import { Box } from "degen";
 import { motion } from "framer-motion";
+import { useRouter } from "next/router";
+import ExploreSidebar from "./ExploreSidebar";
 import CircleSidebar from "./CircleSidebar";
-import { useGlobalContext } from "@/app/context/globalContext";
+import ProfileModal from "../Header/ProfileModal";
 import { useQuery } from "react-query";
-import { CircleType, ProjectType } from "@/app/types";
-import { DoubleRightOutlined } from "@ant-design/icons";
-import { SlideButtonContainer } from "../Header";
-import Logo from "@/app/common/components/Logo";
-
-export const Container = styled(Box)`
-  ::-webkit-scrollbar {
-    display: none;
-  }
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-  height: calc(100vh - 5rem);
-  overflow-y: auto;
-`;
-
-const HeaderButton = styled(Box)`
-  cursor: pointer;
-  transition: all 0.2s ease-in-out;
-  &:hover {
-    background-color: rgb(255, 255, 255, 0.1);
-  }
-`;
+import { UserType } from "@/app/types";
+import ConnectModal from "../Header/ConnectModal";
 
 function ExtendedSidebar(): ReactElement {
-  const { setIsSidebarExpanded, isSidebarExpanded } = useGlobalContext();
   const router = useRouter();
-  const { circle: cId, project: pId } = router.query;
-  const { data: circle } = useQuery<CircleType>(["circle", cId], {
-    enabled: false,
-  });
-  const { data: project } = useQuery<ProjectType>(["project", pId], {
+  const { circle: cId } = router.query;
+  const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
 
@@ -60,46 +36,10 @@ function ExtendedSidebar(): ReactElement {
         paddingRight="3"
         height="full"
       >
-        <Box
-          paddingY="2"
-          display="flex"
-          flexDirection="row"
-          justifyContent="space-between"
-          alignItems="center"
-        >
-          <HeaderButton padding="1" borderRadius="large" width="full">
-            <Stack direction="horizontal" align="center">
-              <Logo
-                href="/"
-                src={
-                  circle?.avatar || (pId && project?.parents[0].avatar) || ""
-                }
-              />
-              <Text
-                size="extraLarge"
-                weight="semiBold"
-                color="textPrimary"
-                ellipsis
-              >
-                {cId && pId && (circle?.name || project?.parents[0].name)}
-              </Text>
-            </Stack>
-          </HeaderButton>
-          <SlideButtonContainer
-            transitionDuration="300"
-            style={{
-              transform: isSidebarExpanded ? "rotate(180deg)" : "rotate(0deg)",
-            }}
-            marginTop="2"
-            marginBottom="2.5"
-            cursor="pointer"
-            color="textSecondary"
-            onClick={() => setIsSidebarExpanded(!isSidebarExpanded)}
-          >
-            <DoubleRightOutlined style={{ fontSize: "1.1rem" }} />
-          </SlideButtonContainer>
-        </Box>
-        <Container>{cId && <CircleSidebar />}</Container>
+        {!cId && <ExploreSidebar />}
+        {cId && <CircleSidebar />}
+        {currentUser?.id && <ProfileModal />}
+        {!currentUser?.id && cId && <ConnectModal />}
       </Box>
     </motion.div>
   );

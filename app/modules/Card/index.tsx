@@ -5,7 +5,16 @@ import PrimaryButton from "@/app/common/components/PrimaryButton";
 import Tabs from "@/app/common/components/Tabs";
 import useCardDynamism from "@/app/services/Card/useCardDynamism";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
-import { Box, IconArrowDown, IconArrowUp, IconClose, Stack, Tag } from "degen";
+import {
+  Box,
+  IconArrowDown,
+  IconArrowUp,
+  IconChevronDown,
+  IconChevronUp,
+  IconClose,
+  Stack,
+  Tag,
+} from "degen";
 import { AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -22,6 +31,7 @@ import CardPriority from "../Project/CreateCardModal/modals/CardPriority";
 import CardReviewer from "../Project/CreateCardModal/modals/CardReviewer";
 import CardReward from "../Project/CreateCardModal/modals/CardReward";
 import CardType from "../Project/CreateCardModal/modals/CardType";
+import { IconButton } from "../Project/ProjectHeading";
 import ActionPopover from "./ActionPopover";
 import Activity from "./Activity";
 import Application from "./Application";
@@ -33,8 +43,9 @@ const Container = styled(Box)`
   ::-webkit-scrollbar {
     width: 0px;
   }
-  height: calc(100vh - 5.5rem);
+  height: calc(100vh - 4.5rem);
   overflow-y: auto;
+  overflow-x: hidden;
 `;
 
 const NameInput = styled.input`
@@ -83,7 +94,6 @@ export default function Card() {
         borderRadius="large"
         backgroundColor="background"
         style={{
-          // elevation effect using box-shadow
           boxShadow: "0px 0px 10px 0.1rem rgba(0, 0, 0, 0.1)",
         }}
       >
@@ -91,18 +101,33 @@ export default function Card() {
         <Box padding="1" borderBottomWidth="0.375">
           <Stack direction="horizontal">
             <Link href={`/${cId}/${pId}`}>
-              <PrimaryButton variant="transparent">
+              <IconButton color="textSecondary" paddingX="2">
                 <IconClose />
-              </PrimaryButton>
+              </IconButton>
             </Link>
 
-            <Box display="flex" borderWidth="0.375" borderRadius="large">
-              <PrimaryButton variant="transparent">
-                <IconArrowUp />
-              </PrimaryButton>
-              <PrimaryButton variant="transparent">
-                <IconArrowDown />
-              </PrimaryButton>
+            <Box
+              display="flex"
+              flexDirection="row"
+              borderWidth="0.375"
+              borderRadius="large"
+              backgroundColor="foregroundSecondary"
+            >
+              <IconButton
+                color="textSecondary"
+                borderRightWidth="0.375"
+                paddingX="2"
+                borderLeftRadius="large"
+              >
+                <IconChevronUp />
+              </IconButton>
+              <IconButton
+                color="textSecondary"
+                paddingX="2"
+                borderRightRadius="large"
+              >
+                <IconChevronDown />
+              </IconButton>
             </Box>
           </Stack>
         </Box>
@@ -110,7 +135,7 @@ export default function Card() {
         {!loading && (
           <Stack direction="horizontal">
             <Box width="3/4">
-              <Container padding="2" paddingX={{ xs: "4" }}>
+              <Container paddingY="4" paddingX="4">
                 <Box marginLeft="1">
                   {card?.parent && (
                     <Breadcrumbs
@@ -143,7 +168,7 @@ export default function Card() {
                     {canTakeAction("cardPopoverActions") && <ActionPopover />}
                   </Stack>
                   <Stack direction="horizontal" wrap>
-                    <CardLabels />
+                    {canTakeAction("cardLabels") && <CardLabels />}
                     {labels.map((label) => (
                       <Tag key={label}>{label}</Tag>
                     ))}
@@ -156,7 +181,7 @@ export default function Card() {
                       overflowY: "auto",
                     }}
                     marginRight="4"
-                    paddingLeft="4"
+                    color="accent"
                   >
                     {!loading && (
                       <Editor
@@ -196,7 +221,7 @@ export default function Card() {
               width="1/4"
               borderLeftWidth="0.375"
               paddingLeft="4"
-              paddingTop="3"
+              paddingTop="5"
             >
               {project?.id && (
                 <Stack>

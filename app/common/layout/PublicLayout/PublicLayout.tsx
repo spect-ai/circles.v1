@@ -18,7 +18,7 @@ type PublicLayoutProps = {
 
 const Container = styled(Box)<{ issidebarexpanded: boolean }>`
   max-width: ${(props) =>
-    props.issidebarexpanded ? "calc(100vw - 23rem)" : "calc(100vw - 2rem)"};
+    props.issidebarexpanded ? "calc(100vw - 22rem)" : "calc(100vw - 2rem)"};
   flex-grow: 1;
 `;
 

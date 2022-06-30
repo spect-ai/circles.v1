@@ -86,7 +86,7 @@ export const AssigneeModal = ({
             <Text
               size="small"
               color={assignees.includes(item.value) ? "accent" : "text"}
-              weight="bold"
+              weight="semiBold"
             >
               {item.name}
             </Text>

@@ -9,6 +9,7 @@ import React, { useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "react-query";
 import { Tooltip } from "react-tippy";
 import { toast } from "react-toastify";
+import { PopoverOption } from "../../Card/ActionPopover";
 
 export default function ProjectSettings() {
   const [isOpen, setIsOpen] = useState(false);
@@ -102,7 +103,7 @@ export default function ProjectSettings() {
           />
         )}
       </AnimatePresence>
-      <Button
+      {/* <Button
         data-tour="header-project-settings-button"
         size="small"
         variant="transparent"
@@ -114,7 +115,17 @@ export default function ProjectSettings() {
         <Tooltip html={<Text>Project Settings</Text>}>
           <IconCog />
         </Tooltip>
-      </Button>
+      </Button> */}
+      <PopoverOption
+        onClick={() => {
+          setIsOpen(true);
+        }}
+      >
+        <Stack direction="horizontal" space="2">
+          <IconCog />
+          Settings
+        </Stack>
+      </PopoverOption>
       <AnimatePresence>
         {isOpen && (
           <Modal title="Project Settings" handleClose={handleClose}>

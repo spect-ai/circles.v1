@@ -5,6 +5,7 @@ import {
   LocalProjectContext,
   useProviderLocalProject,
 } from "@/app/modules/Project/Context/LocalProjectContext";
+import ProjectHeading from "@/app/modules/Project/ProjectHeading";
 import { CircleType, MemberDetails, ProjectType } from "@/app/types";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
@@ -59,6 +60,7 @@ const ProjectPage: NextPage = () => {
       <MetaHead />
       <LocalProjectContext.Provider value={context}>
         <PublicLayout>
+          <ProjectHeading />
           <Project />
         </PublicLayout>
       </LocalProjectContext.Provider>

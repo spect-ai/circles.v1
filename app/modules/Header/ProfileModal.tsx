@@ -1,14 +1,24 @@
 import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { storeImage } from "@/app/common/utils/ipfs";
+import { smartTrim } from "@/app/common/utils/utils";
 import useProfileUpdate from "@/app/services/Profile/useProfileUpdate";
 import { UserType } from "@/app/types";
-import { Avatar, Box, Button, Input, MediaPicker, Stack, Text } from "degen";
+import { Avatar, Box, Input, MediaPicker, Stack, Text } from "degen";
 import { AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "react-query";
+import styled from "styled-components";
 import { useDisconnect } from "wagmi";
+
+const ProfileButton = styled(Box)`
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  &:hover {
+    background-color: rgb(255, 255, 255, 0.1);
+  }
+`;
 
 export default function ProfileModal() {
   const { disconnect } = useDisconnect();
@@ -45,26 +55,38 @@ export default function ProfileModal() {
   };
 
   useEffect(() => {
-    setAvatar(currentUser?.avatar || "");
-    setUsername(currentUser?.username || "");
+    if (isOpen) {
+      setAvatar(currentUser?.avatar || "");
+      setUsername(currentUser?.username || "");
+    }
   }, [isOpen]);
 
   return (
     <>
-      <Button
-        shape="circle"
-        size="small"
-        onClick={() => setIsOpen(true)}
-        variant="secondary"
-        data-tour="profile-header-button"
-      >
-        <Avatar
-          src={currentUser?.avatar}
-          placeholder={!currentUser?.avatar}
-          label={currentUser?.username || ""}
-          size="10"
-        />
-      </Button>
+      <Box borderTopWidth="0.375" paddingY="2" paddingX="2">
+        <ProfileButton
+          onClick={() => setIsOpen(true)}
+          data-tour="profile-header-button"
+          padding="1"
+          borderRadius="large"
+          width="full"
+        >
+          <Stack direction="horizontal">
+            <Avatar
+              src={currentUser?.avatar}
+              placeholder={!currentUser?.avatar}
+              label={currentUser?.username || ""}
+              size="10"
+            />
+            <Stack space="1">
+              <Text>{currentUser?.username}</Text>
+              <Text size="small" variant="label">
+                {smartTrim(currentUser?.ethAddress as string, 12)}
+              </Text>
+            </Stack>
+          </Stack>
+        </ProfileButton>
+      </Box>
       <AnimatePresence>
         {isOpen && (
           <Modal title="Profile" handleClose={handleClose}>

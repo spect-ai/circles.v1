@@ -44,7 +44,7 @@ export default function CardComponent({ card, index, column }: Props) {
           ref={provided.innerRef}
           // backgroundColor="foregroundTertiary"
           backgroundColor="background"
-          padding="2"
+          padding="4"
           marginBottom="2"
           borderRadius="large"
           isDragging={snapshot.isDragging}
@@ -58,7 +58,7 @@ export default function CardComponent({ card, index, column }: Props) {
               flexDirection="row"
               justifyContent="space-between"
             >
-              <Text>{card.title}</Text>
+              <Text weight="semiBold">{card.title}</Text>
               {card.assignee.length > 0 && card.assignee[0] && (
                 <Avatar
                   src={

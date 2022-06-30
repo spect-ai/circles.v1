@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 interface Props {
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
-  icon: ReactNode;
+  butttonComponent: ReactNode;
   children: ReactNode;
 }
 
@@ -53,19 +53,25 @@ function useOutsideAlerter(ref: any, setIsOpen: (isOpen: boolean) => void) {
   }, [ref, setIsOpen]);
 }
 
-const Popover: FC<Props> = ({ icon, children, isOpen, setIsOpen }) => {
+const Popover: FC<Props> = ({
+  butttonComponent,
+  children,
+  isOpen,
+  setIsOpen,
+}) => {
   const wrapperRef = useRef(null);
   useOutsideAlerter(wrapperRef, setIsOpen);
 
   return (
-    <Box ref={wrapperRef}>
-      <Box
+    <Box ref={wrapperRef} width="full">
+      {/* <Box
         cursor="pointer"
         onClick={() => setIsOpen(!isOpen)}
         color="foreground"
       >
         {icon}
-      </Box>
+      </Box> */}
+      {butttonComponent}
       <AnimatePresence>
         {isOpen && (
           <motion.div

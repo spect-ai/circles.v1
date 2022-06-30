@@ -31,7 +31,6 @@ export function useProviderLocalProject() {
 
   const [localProject, setLocalProject] = useState({} as ProjectType);
   const [error, setError] = useState(false);
-  const [loading, setLoading] = useState(true);
 
   const updateProject = (project: ProjectType) => {
     queryClient.setQueryData(["project", pId], project);
