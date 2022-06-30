@@ -26,7 +26,7 @@ export default function ProfileModal() {
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
-  const { setConnectedUser } = useGlobalContext();
+  const { disconnectUser } = useGlobalContext();
   const [isOpen, setIsOpen] = useState(false);
 
   const queryClient = useQueryClient();
@@ -164,7 +164,7 @@ export default function ProfileModal() {
                     queryClient.setQueryData("getMyUser", null);
                     void queryClient.invalidateQueries("getMyUser");
                     localStorage.removeItem("connectorIndex");
-                    setConnectedUser("");
+                    disconnectUser();
                     setIsOpen(false);
                   }}
                 >

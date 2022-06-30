@@ -25,7 +25,12 @@ const ScrollContainer = styled(Box)`
 
 export const Default = Template.bind({});
 Default.args = {
-  icon: <IconDotsHorizontal />,
+  butttonComponent: (
+    <Stack direction="horizontal" align="center" justify="center">
+      <IconDotsHorizontal />
+      <Text>More</Text>
+    </Stack>
+  ),
   isOpen: true,
   setIsOpen: () => {},
   children: (
