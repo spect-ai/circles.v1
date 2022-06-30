@@ -15,7 +15,7 @@ import {
 import { AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React, { useState } from "react";
+import React, { memo, useState } from "react";
 import { useQuery } from "react-query";
 import styled from "styled-components";
 import SettingsModal from "../Circle/CircleSettingsModal";
@@ -35,7 +35,7 @@ export const Container = styled(Box)`
   overflow-y: auto;
 `;
 
-export default function CircleSidebar() {
+function CircleSidebar() {
   const router = useRouter();
   const { circle: cId, project: pId } = router.query;
   const { data: circle, isLoading } = useQuery<CircleType>(["circle", cId], {
@@ -166,3 +166,5 @@ export default function CircleSidebar() {
     </Box>
   );
 }
+
+export default memo(CircleSidebar);

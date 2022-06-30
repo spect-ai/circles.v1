@@ -3,7 +3,7 @@ import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { CardType, ColumnType } from "@/app/types";
 import { Box, Button, IconCog, IconPlusSmall, Stack } from "degen";
 import { AnimatePresence } from "framer-motion";
-import React, { useState } from "react";
+import React, { memo, useState } from "react";
 import { Draggable, Droppable } from "react-beautiful-dnd";
 import { toast } from "react-toastify";
 import styled from "styled-components";
@@ -55,7 +55,7 @@ const NameInput = styled.input`
   margin-left: 0.1rem;
 `;
 
-export default function ColumnComponent({ cards, id, column, index }: Props) {
+function ColumnComponent({ cards, id, column, index }: Props) {
   const [columnTitle, setColumnTitle] = useState(column.name);
   const [isOpen, setIsOpen] = useState(false);
   const [isDirty, setIsDirty] = useState(false);
@@ -63,7 +63,6 @@ export default function ColumnComponent({ cards, id, column, index }: Props) {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const { localProject: project, setLocalProject } = useLocalProject();
   const { canDo } = useRoleGate();
-
   async function updateColumn() {
     const updatedProject = await updateColumnDetails(
       project.id,
@@ -77,6 +76,7 @@ export default function ColumnComponent({ cards, id, column, index }: Props) {
       setColumnTitle(project.columnDetails[column.columnId].name);
       return;
     }
+    console.log("GOTCHA");
     setLocalProject(updatedProject);
   }
 
@@ -193,3 +193,5 @@ export default function ColumnComponent({ cards, id, column, index }: Props) {
     </>
   );
 }
+
+export default memo(ColumnComponent);

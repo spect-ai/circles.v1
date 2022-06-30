@@ -1,8 +1,6 @@
 import Logo from "@/app/common/components/Logo";
-import { UserType } from "@/app/types";
+import { useGlobalContext } from "@/app/context/globalContext";
 import { Box, Stack, Text } from "degen";
-import React, { useEffect } from "react";
-import { useQuery } from "react-query";
 import styled from "styled-components";
 import ConnectModal from "../Header/ConnectModal";
 import { Container } from "./CircleSidebar";
@@ -15,26 +13,8 @@ export const HeaderButton = styled(Box)`
   }
 `;
 
-const getUser = async () => {
-  const res = await fetch(`${process.env.API_HOST}/user/me`, {
-    credentials: "include",
-  });
-  return await res.json();
-};
-
 export default function ExploreSidebar() {
-  const { data: currentUser, refetch } = useQuery<UserType>(
-    "getMyUser",
-    getUser,
-    {
-      enabled: false,
-    }
-  );
-
-  useEffect(() => {
-    void refetch();
-  }, []);
-
+  const { connectedUser } = useGlobalContext();
   return (
     <Box padding="2">
       <Stack>
@@ -54,7 +34,7 @@ export default function ExploreSidebar() {
             </Text>
           </Stack>
         </HeaderButton>
-        <Container>{!currentUser?.id && <ConnectModal />}</Container>
+        <Container>{!connectedUser && <ConnectModal />}</Container>
       </Stack>
     </Box>
   );

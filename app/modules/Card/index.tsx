@@ -5,6 +5,7 @@ import PrimaryButton from "@/app/common/components/PrimaryButton";
 import Tabs from "@/app/common/components/Tabs";
 import useCardDynamism from "@/app/services/Card/useCardDynamism";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
+import { ProjectType } from "@/app/types";
 import {
   Box,
   IconArrowDown,
@@ -18,7 +19,8 @@ import {
 import { AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React, { useState } from "react";
+import React, { memo, useState } from "react";
+import { useQuery } from "react-query";
 import { ToastContainer } from "react-toastify";
 import styled from "styled-components";
 import BatchPay from "../Project/BatchPay";
@@ -63,7 +65,7 @@ const NameInput = styled.input`
   font-weight: 600;
 `;
 
-export default function Card() {
+function Card() {
   const [selectedTab, setSelectedTab] = useState(0);
   const handleTabClick = (index: number) => setSelectedTab(index);
   const {
@@ -246,3 +248,5 @@ export default function Card() {
     </Box>
   );
 }
+
+export default memo(Card);

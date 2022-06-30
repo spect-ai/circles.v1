@@ -1,4 +1,5 @@
 import PrimaryButton from "@/app/common/components/PrimaryButton";
+import { useGlobalContext } from "@/app/context/globalContext";
 import useCardService from "@/app/services/Card/useCardService";
 import {
   Activity,
@@ -17,6 +18,7 @@ import { useRouter } from "next/router";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "react-query";
 import { toast } from "react-toastify";
+import { useLocalProject } from "../../Context/LocalProjectContext";
 
 type Props = {
   handleClose?: () => void;
@@ -63,8 +65,8 @@ type CreateCardContextType = {
   >;
   childrenTasks: CardType[];
   setChildrenTasks: React.Dispatch<React.SetStateAction<CardType[]>>;
-  parent: string;
-  setParent: React.Dispatch<React.SetStateAction<string>>;
+  parent: CardType;
+  setParent: React.Dispatch<React.SetStateAction<CardType>>;
   project: ProjectType;
   onCardUpdate: () => Promise<void>;
   activity: Activity[];
@@ -117,13 +119,13 @@ export function useProviderLocalCard({
     }
   );
 
+  const { updateProject } = useLocalProject();
+
   const { data: card } = useQuery<CardType>(["card", tId], {
     enabled: false,
   });
 
-  const { data: currentUser } = useQuery<UserType>("getMyUser", {
-    enabled: false,
-  });
+  const { connectedUser } = useGlobalContext();
   const queryClient = useQueryClient();
 
   const setCard = (card: CardType) => {
@@ -136,7 +138,7 @@ export function useProviderLocalCard({
   const [description, setDescription] = useState("");
   const [labels, setLabels] = useState([] as string[]);
   const [assignees, setAssignees] = useState([] as string[]);
-  const [reviewers, setReviewers] = useState([currentUser?.id] as string[]);
+  const [reviewers, setReviewers] = useState([connectedUser] as string[]);
   const [columnId, setColumnId] = useState("");
   const [cardType, setCardType] = useState("Task");
   const [chain, setChain] = useState(circle?.defaultPayment?.chain as Chain);
@@ -151,7 +153,7 @@ export function useProviderLocalCard({
     }[]
   >([] as any);
   const [childrenTasks, setChildrenTasks] = useState<CardType[]>([]);
-  const [parent, setParent] = useState("");
+  const [parent, setParent] = useState({} as CardType);
   const [activity, setActivity] = useState<Activity[]>({} as Activity[]);
   const [workThreads, setWorkThreads] = useState(
     {} as {
@@ -230,7 +232,8 @@ export function useProviderLocalCard({
       }
     );
     !createAnother && handleClose && handleClose();
-    queryClient.setQueryData(["project", pId], data.project);
+    updateProject(data.project);
+    // queryClient.setQueryData(["project", pId], data.project);
     resetData();
   };
 

@@ -3,7 +3,7 @@ import { monthMap } from "@/app/common/utils/constants";
 import { CardType, ColumnType, MemberDetails } from "@/app/types";
 import { Avatar, Box, IconEth, Stack, Tag, Text } from "degen";
 import { useRouter } from "next/router";
-import React from "react";
+import React, { memo } from "react";
 import { Draggable } from "react-beautiful-dnd";
 import { useQuery } from "react-query";
 import styled from "styled-components";
@@ -23,7 +23,7 @@ const Container = styled(Box)<{ isDragging: boolean }>`
   }
 `;
 
-export default function CardComponent({ card, index, column }: Props) {
+function CardComponent({ card, index, column }: Props) {
   const router = useRouter();
   const { circle: cId, project: pId } = router.query;
   const { data: memberDetails } = useQuery<MemberDetails>(
@@ -62,14 +62,14 @@ export default function CardComponent({ card, index, column }: Props) {
               {card.assignee.length > 0 && card.assignee[0] && (
                 <Avatar
                   src={
-                    memberDetails &&
+                    memberDetails?.memberDetails &&
                     memberDetails.memberDetails[card.assignee[0]]?.avatar
                   }
                   label=""
                   size="6"
                   placeholder={
                     !(
-                      memberDetails &&
+                      memberDetails?.memberDetails &&
                       memberDetails.memberDetails[card.assignee[0]]?.avatar
                     )
                   }
@@ -118,3 +118,5 @@ export default function CardComponent({ card, index, column }: Props) {
     </Draggable>
   );
 }
+
+export default memo(CardComponent);

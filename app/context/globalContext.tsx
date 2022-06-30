@@ -1,15 +1,32 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, {
+  createContext,
+  memo,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { Registry } from "../types";
 
 interface GlobalContextType {
   isSidebarExpanded: boolean;
   setIsSidebarExpanded: (isSidebarExpanded: boolean) => void;
   registry: Registry;
+  connectedUser: string;
+  connectUser: (userId: string) => void;
+  disconnectUser: () => void;
 }
 
 const useProviderGlobalContext = () => {
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
   const [registry, setRegistry] = useState<Registry>({} as Registry);
+  const [connectedUser, setConnectedUser] = useState("");
+
+  function connectUser(userId: string) {
+    setConnectedUser(userId);
+  }
+  const disconnectUser = () => {
+    setConnectedUser("");
+  };
 
   useEffect(() => {
     fetch(`${process.env.API_HOST}/registry/getGlobalRegistry`)
@@ -26,6 +43,9 @@ const useProviderGlobalContext = () => {
     isSidebarExpanded,
     setIsSidebarExpanded,
     registry,
+    connectedUser,
+    connectUser,
+    disconnectUser,
   };
 };
 
@@ -41,4 +61,4 @@ function GlobalContextProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
-export default GlobalContextProvider;
+export default memo(GlobalContextProvider);

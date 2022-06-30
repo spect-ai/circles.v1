@@ -1,3 +1,4 @@
+import { useGlobalContext } from "@/app/context/globalContext";
 import { UserType } from "@/app/types";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
@@ -8,12 +9,10 @@ import { joinCircleFromInvite } from ".";
 export default function useJoinCircle() {
   const router = useRouter();
   const { inviteCode, circleId } = router.query;
-  const { data: currentUser } = useQuery<UserType>("getMyUser", {
-    enabled: false,
-  });
+  const { connectedUser } = useGlobalContext();
 
   useEffect(() => {
-    if (inviteCode && currentUser?.id) {
+    if (inviteCode && connectedUser) {
       console.log({ inviteCode, circleId });
       const asyncJoin = async () => {
         const res = await joinCircleFromInvite(
@@ -29,10 +28,10 @@ export default function useJoinCircle() {
       };
       void asyncJoin();
     }
-    if (inviteCode && !currentUser?.id) {
+    if (inviteCode && !connectedUser) {
       toast.error("You must connect your wallet to join a circle", {
         theme: "dark",
       });
     }
-  }, [inviteCode, circleId, currentUser]);
+  }, [inviteCode, circleId, connectedUser, router]);
 }

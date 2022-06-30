@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { memo, useEffect } from "react";
 
 import { ReactNodeNoStrings } from "degen/dist/types/types";
 import { Box } from "degen";
@@ -48,6 +48,7 @@ function PublicLayout(props: PublicLayoutProps) {
         display: "flex",
         flexDirection: "row",
       }}
+      id="public-layout"
     >
       <Sidebar />
       <AnimatePresence initial={false}>
@@ -79,4 +80,4 @@ function PublicLayout(props: PublicLayoutProps) {
   );
 }
 
-export default PublicLayout;
+export default memo(PublicLayout);

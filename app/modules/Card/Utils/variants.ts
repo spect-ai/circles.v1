@@ -4,6 +4,9 @@ export const fadeVariant = {
     opacity: 1,
     x: 0,
     y: 0,
+    transition: {
+      duration: 0.2,
+    },
   },
   exit: {
     opacity: 0,

@@ -140,7 +140,7 @@ export default function CreateCardModal({
                 </Box>
                 <AnimatePresence>
                   {subTasks?.map((subTask, index) => (
-                    <EditableSubTask subTaskIndex={index} key={index} />
+                    <EditableSubTask key={index} />
                   ))}
                 </AnimatePresence>
                 <Box style={{ minHeight: "10rem" }} marginTop="2">

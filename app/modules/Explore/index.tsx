@@ -1,5 +1,6 @@
 import Card from "@/app/common/components/Card";
 import Loader from "@/app/common/components/Loader";
+import { useGlobalContext } from "@/app/context/globalContext";
 import useJoinCircle from "@/app/services/JoinCircle/useJoinCircle";
 import useExploreOnboarding from "@/app/services/Onboarding/useExploreOnboarding";
 import useConnectDiscord from "@/app/services/Profile/useConnectDiscord";
@@ -38,11 +39,8 @@ export default function Explore() {
       enabled: false,
     }
   );
-  const { data: currentUser } = useQuery<UserType>("getMyUser", {
-    enabled: false,
-  });
+  const { connectedUser } = useGlobalContext();
   const router = useRouter();
-
   useJoinCircle();
   useConnectDiscord();
   const { onboarded } = useExploreOnboarding();
@@ -53,7 +51,7 @@ export default function Explore() {
 
   return (
     <ScrollContainer padding="8">
-      {!onboarded && currentUser?.id && <Onboarding />}
+      {!onboarded && connectedUser && <Onboarding />}
       <ToastContainer />
       <GridContainer>
         <Row>

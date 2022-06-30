@@ -2,6 +2,7 @@ import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { storeImage } from "@/app/common/utils/ipfs";
 import { smartTrim } from "@/app/common/utils/utils";
+import { useGlobalContext } from "@/app/context/globalContext";
 import useProfileUpdate from "@/app/services/Profile/useProfileUpdate";
 import { UserType } from "@/app/types";
 import { Avatar, Box, Input, MediaPicker, Stack, Text } from "degen";
@@ -25,6 +26,7 @@ export default function ProfileModal() {
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
+  const { setConnectedUser } = useGlobalContext();
   const [isOpen, setIsOpen] = useState(false);
 
   const queryClient = useQueryClient();
@@ -161,8 +163,8 @@ export default function ProfileModal() {
                     disconnect();
                     queryClient.setQueryData("getMyUser", null);
                     void queryClient.invalidateQueries("getMyUser");
-                    console.log("disconnected");
                     localStorage.removeItem("connectorIndex");
+                    setConnectedUser("");
                     setIsOpen(false);
                   }}
                 >

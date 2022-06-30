@@ -5,24 +5,17 @@ import { useRouter } from "next/router";
 import CreateCircle from "./CreateCircleModal";
 import Logo from "@/app/common/components/Logo";
 import { HomeOutlined } from "@ant-design/icons";
-import { useGlobalContext } from "@/app/context/globalContext";
 import { useQuery } from "react-query";
-import { CircleType, ProjectType, UserType } from "@/app/types";
+import { CircleType, UserType } from "@/app/types";
+import { useGlobalContext } from "@/app/context/globalContext";
 
 function Sidebar(): ReactElement {
   const router = useRouter();
-  const { circle: cId, project: pId } = router.query;
-  const { data: circle, isLoading } = useQuery<CircleType>(["circle", cId], {
+  const { circle: cId } = router.query;
+  const { isLoading } = useQuery<CircleType>(["circle", cId], {
     enabled: false,
   });
-  const { data: project } = useQuery<ProjectType>(["project", pId], {
-    enabled: false,
-  });
-  const { data: currentUser } = useQuery<UserType>("getMyUser", {
-    enabled: false,
-  });
-
-  const { setIsSidebarExpanded } = useGlobalContext();
+  const { connectedUser } = useGlobalContext();
 
   const {
     data: myCircles,
@@ -41,7 +34,7 @@ function Sidebar(): ReactElement {
 
   useEffect(() => {
     void refetch();
-  }, [refetch, currentUser]);
+  }, [refetch, connectedUser]);
 
   return (
     <Box
@@ -79,7 +72,7 @@ function Sidebar(): ReactElement {
       ) : (
         <Box paddingY="3" borderBottomWidth="0.375">
           {!myCirclesLoading &&
-            currentUser?.id &&
+            connectedUser &&
             myCircles?.map &&
             myCircles?.map((aCircle) => (
               <Box paddingY="2" key={aCircle.id}>

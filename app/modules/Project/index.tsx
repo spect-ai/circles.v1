@@ -1,7 +1,7 @@
 import { addColumn } from "@/app/services/Column";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { Box, IconPlusSmall, Stack } from "degen";
-import React from "react";
+import React, { memo } from "react";
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
 import { toast, ToastContainer } from "react-toastify";
 import styled from "styled-components";
@@ -29,7 +29,7 @@ const Container = styled.div`
   overflow-y: hidden;
 `;
 
-export default function Project() {
+function Project() {
   const { handleDragEnd } = useDragEnd();
   const { loading, localProject: project, setLocalProject } = useLocalProject();
   const { canDo } = useRoleGate();
@@ -68,7 +68,7 @@ export default function Project() {
                   );
                 })}
                 {provided.placeholder}
-                {canDo(["steward"]) && (
+                {project.id && canDo(["steward"]) && (
                   <Box style={{ width: "20rem" }} marginTop="2">
                     <PrimaryButton
                       icon={<IconPlusSmall />}
@@ -94,3 +94,5 @@ export default function Project() {
     </Box>
   );
 }
+
+export default memo(Project);

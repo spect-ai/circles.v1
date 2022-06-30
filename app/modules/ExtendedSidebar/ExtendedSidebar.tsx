@@ -1,20 +1,42 @@
-import React, { ReactElement } from "react";
+import React, { ReactElement, useEffect } from "react";
 import { Box } from "degen";
 import { motion } from "framer-motion";
 import { useRouter } from "next/router";
 import ExploreSidebar from "./ExploreSidebar";
 import CircleSidebar from "./CircleSidebar";
 import ProfileModal from "../Header/ProfileModal";
+import ConnectModal from "../Header/ConnectModal";
+import { useGlobalContext } from "@/app/context/globalContext";
 import { useQuery } from "react-query";
 import { UserType } from "@/app/types";
-import ConnectModal from "../Header/ConnectModal";
+import { toast } from "react-toastify";
+
+const getUser = async () => {
+  const res = await fetch(`${process.env.API_HOST}/user/me`, {
+    credentials: "include",
+  });
+  return await res.json();
+};
 
 function ExtendedSidebar(): ReactElement {
   const router = useRouter();
   const { circle: cId } = router.query;
-  const { data: currentUser } = useQuery<UserType>("getMyUser", {
+  const { connectedUser, connectUser } = useGlobalContext();
+  const { refetch } = useQuery<UserType>("getMyUser", getUser, {
     enabled: false,
   });
+
+  useEffect(() => {
+    refetch()
+      .then((res) => {
+        const data = res.data;
+        if (data) connectUser(data.id);
+      })
+      .catch((err) => {
+        console.log(err);
+        toast.error("Could not fetch user data");
+      });
+  }, []);
 
   return (
     <motion.div
@@ -38,8 +60,8 @@ function ExtendedSidebar(): ReactElement {
       >
         {!cId && <ExploreSidebar />}
         {cId && <CircleSidebar />}
-        {currentUser?.id && <ProfileModal />}
-        {!currentUser?.id && cId && <ConnectModal />}
+        {connectedUser && <ProfileModal />}
+        {!connectedUser && cId && <ConnectModal />}
       </Box>
     </motion.div>
   );

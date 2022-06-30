@@ -106,7 +106,6 @@ export default function Comment({
             }}
             disabled={isDisabled}
             onClick={() => {
-              console.log("hi");
               if (actorId === currentUser?.id) {
                 setIsDisabled(false);
               }

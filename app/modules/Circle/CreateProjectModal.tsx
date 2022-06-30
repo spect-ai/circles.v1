@@ -51,7 +51,7 @@ function CreateProjectModal({ accordian }: Props) {
       onSuccess: (res: option[]) => {
         setTemplate(res[0]);
       },
-      enabled: !!circle?.id,
+      enabled: false,
     }
   );
   const { mutateAsync, isLoading } = useMutation(
