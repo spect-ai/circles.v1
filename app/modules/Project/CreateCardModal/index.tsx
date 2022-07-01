@@ -121,7 +121,7 @@ export default function CreateCardModal({
                     <Tag key={label}>{label}</Tag>
                   ))}
                 </Stack>
-                <SubTasks />
+                <SubTasks createCard />
                 <Box style={{ minHeight: "10rem" }} marginTop="2">
                   <Editor
                     placeholder="Add a description"

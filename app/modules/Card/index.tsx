@@ -170,7 +170,7 @@ function Card() {
                       <Tag key={label}>{label}</Tag>
                     ))}
                   </Stack>
-                  <SubTasks />
+                  <SubTasks createCard={false} />
                   <Box
                     style={{
                       minHeight: "10rem",

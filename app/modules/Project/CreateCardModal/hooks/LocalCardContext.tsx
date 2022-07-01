@@ -53,13 +53,13 @@ type CreateCardContextType = {
   onSubmit: (createAnother: boolean) => void;
   subTasks: {
     title: string;
-    assignee: string;
+    assignee: string[];
   }[];
   setSubTasks: React.Dispatch<
     React.SetStateAction<
       {
         title: string;
-        assignee: string;
+        assignee: string[];
       }[]
     >
   >;
@@ -149,7 +149,7 @@ export function useProviderLocalCard({
   const [subTasks, setSubTasks] = useState<
     {
       title: string;
-      assignee: string;
+      assignee: string[];
     }[]
   >([] as any);
   const [childrenTasks, setChildrenTasks] = useState<CardType[]>([]);
@@ -215,6 +215,7 @@ export function useProviderLocalCard({
         value: Number(value),
       },
       parent: card?.id,
+      childCards: subTasks,
     };
     console.log({ payload });
     const data = await callCreateCard(payload);

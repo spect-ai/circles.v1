@@ -5,9 +5,14 @@ import { useLocalCard } from "../../Project/CreateCardModal/hooks/LocalCardConte
 import NewSubTask from "./NewSubTask";
 import CreatedSubTask from "./CreatedSubTask";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
+import CacheSubTask from "./CacheSubTask";
 
-export default function SubTasks() {
-  const { childrenTasks } = useLocalCard();
+type Props = {
+  createCard: boolean;
+};
+
+export default function SubTasks({ createCard }: Props) {
+  const { childrenTasks, subTasks } = useLocalCard();
   const { canTakeAction } = useRoleGate();
   return (
     <Box>
@@ -17,10 +22,17 @@ export default function SubTasks() {
       >
         <Box overflow="hidden">
           <Stack space="2">
-            {canTakeAction("cardSubTask") && <NewSubTask />}
-            {childrenTasks?.map((child, index) => (
-              <CreatedSubTask child={child} key={index} />
-            ))}
+            {canTakeAction("cardSubTask") && (
+              <NewSubTask createCard={createCard} />
+            )}
+            {!createCard &&
+              childrenTasks?.map((child, index) => (
+                <CreatedSubTask child={child} key={index} />
+              ))}
+            {createCard &&
+              subTasks?.map((child, index) => (
+                <CacheSubTask child={child} key={index} />
+              ))}
           </Stack>
         </Box>
       </Accordian>

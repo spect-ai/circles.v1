@@ -8,6 +8,7 @@ import { useQuery } from "react-query";
 import useCardService from "@/app/services/Card/useCardService";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import SubTaskAssignee from "./SubTaskAssignee";
+import { type } from "os";
 
 const TitleInput = styled.input`
   width: 100%;
@@ -33,15 +34,19 @@ const Container = styled(Box)<{ editing: boolean }>`
     props.editing
       ? "2px solid rgb(191, 90, 242, 1)"
       : "2px solid rgb(255, 255, 255, 0.1)"};
-  background: rgb(20, 20, 20);
+  background: rgb(255, 255, 255, 0.05);
   border-radius: 1rem;
   width: 100%;
   overflow: hidden;
   transition: all 0.2s ease-in-out;
 `;
 
-export default function NewSubTask() {
-  const { card, setCard } = useLocalCard();
+type Props = {
+  createCard: boolean;
+};
+
+export default function NewSubTask({ createCard }: Props) {
+  const { card, setCard, subTasks, setSubTasks } = useLocalCard();
   const [title, setTitle] = useState("");
   const { callCreateCard, creating } = useCardService();
 
@@ -77,29 +82,49 @@ export default function NewSubTask() {
               assignees={assignees}
               setAssignees={setAssignees}
             />
-            <PrimaryButton
-              disabled={!title}
-              loading={creating}
-              onClick={async () => {
-                const data = await callCreateCard({
-                  title,
-                  parent: card?.id,
-                  columnId: card?.columnId,
-                  project: card?.project.id,
-                  circle: card?.circle,
-                  reward: {
-                    chain: circle?.defaultPayment.chain,
-                    token: circle?.defaultPayment.token,
-                    value: 0,
-                  },
-                  assignee: assignees,
-                });
-                console.log({ data });
-                setCard(data.parentCard);
-              }}
-            >
-              Save
-            </PrimaryButton>
+            {createCard ? (
+              <PrimaryButton
+                disabled={!title}
+                onClick={() => {
+                  // add to subtasks
+                  setSubTasks([
+                    ...subTasks,
+                    {
+                      title,
+                      assignee: assignees,
+                    },
+                  ]);
+                  setTitle("");
+                  setAssignees([]);
+                }}
+              >
+                Add
+              </PrimaryButton>
+            ) : (
+              <PrimaryButton
+                disabled={!title}
+                loading={creating}
+                onClick={async () => {
+                  const data = await callCreateCard({
+                    title,
+                    parent: card?.id,
+                    columnId: card?.columnId,
+                    project: card?.project.id,
+                    circle: card?.circle,
+                    reward: {
+                      chain: circle?.defaultPayment.chain,
+                      token: circle?.defaultPayment.token,
+                      value: 0,
+                    },
+                    assignee: assignees,
+                  });
+                  console.log({ data });
+                  setCard(data.parentCard);
+                }}
+              >
+                Save
+              </PrimaryButton>
+            )}
           </Stack>
         </Box>
       </Stack>
