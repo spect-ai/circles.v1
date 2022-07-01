@@ -6,25 +6,16 @@ type Props = {
   workUnit: WorkUnitType;
   workThreadId: string;
   status: "accepted" | "inRevision" | "inReview" | "draft";
-  workUnitOrder: string[];
 };
 
-export default function WorkUnit({
-  workUnit,
-  workThreadId,
-  status,
-  workUnitOrder,
-}: Props) {
+export default function WorkUnit({ workUnit, workThreadId, status }: Props) {
   return (
     <>
       {workUnit.type === "submission" && (
         <EditorSubmission
           workUnit={workUnit}
           workThreadId={workThreadId}
-          isDisabled={
-            status !== "draft" &&
-            workUnitOrder[workUnitOrder.length - 1] !== workUnit.workUnitId
-          }
+          isDisabled={status !== "draft"}
         />
       )}
       {workUnit.type === "revision" && (

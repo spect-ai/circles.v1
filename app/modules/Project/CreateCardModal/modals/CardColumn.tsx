@@ -44,7 +44,7 @@ export default function CardColumn() {
       }
       disabled={!canTakeAction("cardColumn")}
       handleClose={() => {
-        onCardUpdate();
+        void onCardUpdate();
         setModalOpen(false);
       }}
     >
@@ -85,7 +85,7 @@ export default function CardColumn() {
                 <Text
                   size="small"
                   color={columnId === item.value ? "accent" : "text"}
-                  weight="bold"
+                  weight="semiBold"
                 >
                   {item.name}
                 </Text>

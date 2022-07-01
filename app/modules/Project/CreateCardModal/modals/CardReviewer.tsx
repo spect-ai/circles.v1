@@ -56,7 +56,7 @@ export default function CardReviewer() {
       }
       disabled={!canTakeAction("cardReviewer")}
       handleClose={() => {
-        onCardUpdate();
+        void onCardUpdate();
         setModalOpen(false);
       }}
     >
@@ -123,7 +123,7 @@ export default function CardReviewer() {
                 <Text
                   size="small"
                   color={reviewers.includes(item.value) ? "accent" : "text"}
-                  weight="bold"
+                  weight="semiBold"
                 >
                   {item.name}
                 </Text>

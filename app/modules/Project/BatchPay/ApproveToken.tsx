@@ -49,12 +49,7 @@ export default function ApproveToken() {
       let index = 0;
 
       batchPayInfo?.approval.tokenAddresses.forEach(async (address: string) => {
-        console.log({ address });
-        console.log(project?.parents[0].defaultPayment.chain.chainId);
-        console.log(
-          registry[project?.parents[0].defaultPayment.chain.chainId]
-            ?.tokenDetails[address]
-        );
+        console.log({ batchPayInfo });
         const approvalStatus = await isApproved(
           address,
           registry[project.parents[0].defaultPayment.chain.chainId]
@@ -79,6 +74,7 @@ export default function ApproveToken() {
             setStep(3);
           }
         }
+        setLoading(false);
         index++;
       });
     } else {
@@ -86,6 +82,7 @@ export default function ApproveToken() {
         void switchNetworkAsync(
           parseInt(project?.parents[0].defaultPayment.chain.chainId as string)
         );
+      setLoading(false);
     }
     // set to final step if all tokens approved
   }, [batchPayInfo, activeChain]);

@@ -8,10 +8,10 @@ import { useQuery } from "react-query";
 import MetaHead from "../app/common/seo/MetaHead/MetaHead";
 
 const Home: NextPage = () => {
-  const { setIsSidebarExpanded } = useGlobalContext();
-  useEffect(() => {
-    setIsSidebarExpanded(false);
-  }, [setIsSidebarExpanded]);
+  // const { setIsSidebarExpanded } = useGlobalContext();
+  // useEffect(() => {
+  //   setIsSidebarExpanded(false);
+  // }, [setIsSidebarExpanded]);
 
   useQuery<CircleType>("exploreCircles", () =>
     fetch(`${process.env.API_HOST}/circle/allPublicParents`).then((res) =>

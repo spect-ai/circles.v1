@@ -31,7 +31,7 @@ export default function TokenPayment() {
 
   const formatRows = () => {
     const rows: any[] = [];
-    batchPayInfo?.tokens.userIds.forEach((userId, index) => {
+    batchPayInfo?.tokens?.userIds.forEach((userId, index) => {
       return rows.push([
         <Stack key={index} direction="horizontal" align="center">
           <Avatar

@@ -43,8 +43,8 @@ export default function CardLabels() {
         />
       }
       disabled={!canTakeAction("cardLabels")}
-      handleClose={() => {
-        onCardUpdate();
+      handleClose={async () => {
+        await onCardUpdate();
         setModalOpen(false);
       }}
     >

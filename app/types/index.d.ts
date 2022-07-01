@@ -114,6 +114,8 @@ export interface CardType {
     [applicationId: string]: ApplicationType;
   };
   applicationOrder: string[];
+  children: CardType[];
+  parent: CardType;
 }
 
 export interface ApplicationType {

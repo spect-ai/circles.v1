@@ -1,10 +1,11 @@
 import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { CardType } from "@/app/types";
-import { Button, IconEth, Text } from "degen";
+import { Button, IconEth, Stack, Text } from "degen";
 import { AnimatePresence } from "framer-motion";
 import { useEffect } from "react";
 import { Tooltip } from "react-tippy";
+import { PopoverOption } from "../../Card/ActionPopover";
 import ApproveToken from "./ApproveToken";
 import {
   BatchPayContext,
@@ -91,19 +92,29 @@ export default function BatchPay({ card }: Props) {
           Pay
         </PrimaryButton>
       ) : (
-        <Button
-          data-tour="header-batch-pay-button"
-          size="small"
-          variant="transparent"
-          shape="circle"
-          onClick={(e: any) => {
+        // <Button
+        //   data-tour="header-batch-pay-button"
+        //   size="small"
+        //   variant="transparent"
+        //   shape="circle"
+        //   onClick={(e: any) => {
+        //     setIsOpen(true);
+        //   }}
+        // >
+        //   <Tooltip html={<Text>Batch Pay</Text>}>
+        //     <IconEth />
+        //   </Tooltip>
+        // </Button>
+        <PopoverOption
+          onClick={() => {
             setIsOpen(true);
           }}
         >
-          <Tooltip html={<Text>Batch Pay</Text>}>
+          <Stack direction="horizontal" space="2">
             <IconEth />
-          </Tooltip>
-        </Button>
+            batch Pay
+          </Stack>
+        </PopoverOption>
       )}
       <AnimatePresence>
         {isOpen && (

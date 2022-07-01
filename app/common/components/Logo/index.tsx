@@ -9,8 +9,8 @@ type props = {
 export default function Logo({ href, src }: props) {
   return (
     <Link href={href || "/"} passHref>
-      <Button shape="circle" variant="secondary" size="small">
-        <Avatar label="logo" src={src} size="10" placeholder={!src} />
+      <Button shape="circle" variant="transparent" size="small">
+        <Avatar label="logo" src={src} size="9" placeholder={!src} />
       </Button>
     </Link>
   );

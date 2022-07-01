@@ -35,14 +35,15 @@ type PopoverOptionProps = {
   children: React.ReactNode;
 };
 
-const PopoverOption = ({ children, onClick }: PopoverOptionProps) => (
+export const PopoverOption = ({ children, onClick }: PopoverOptionProps) => (
   <PopoverOptionContainer
     padding="3"
     overflow="hidden"
     cursor="pointer"
     onClick={onClick}
+    borderRadius="2xLarge"
   >
-    <Text variant="small" weight="semiBold" ellipsis>
+    <Text variant="small" weight="semiBold" ellipsis color="textSecondary">
       {children}
     </Text>
   </PopoverOptionContainer>
@@ -67,47 +68,56 @@ export default function ActionPopover() {
           />
         )}
       </AnimatePresence>
-
-      <Popover
-        icon={<IconDotsHorizontal />}
-        isOpen={isOpen}
-        setIsOpen={setIsOpen}
-      >
-        <ScrollContainer
-          backgroundColor="backgroundSecondary"
-          borderWidth="0.5"
-          borderRadius="2xLarge"
-          width="36"
+      <Box width="fit">
+        <Popover
+          butttonComponent={
+            <Box
+              cursor="pointer"
+              onClick={() => setIsOpen(!isOpen)}
+              color="foreground"
+            >
+              <IconDotsHorizontal color="textSecondary" />
+            </Box>
+          }
+          isOpen={isOpen}
+          setIsOpen={setIsOpen}
         >
-          <PopoverOption
-            onClick={() => {
-              setIsOpen(false);
-              setShowConfirm(true);
-            }}
+          <ScrollContainer
+            backgroundColor="background"
+            borderWidth="0.5"
+            borderRadius="2xLarge"
+            width="36"
           >
-            <Stack direction="horizontal" space="2">
-              <IconTrash color="red" />
-              Archive
-            </Stack>
-          </PopoverOption>
-          <PopoverOption onClick={() => {}}>
-            <Stack direction="horizontal" space="2">
-              <IconDuplicate />
-              Duplicate
-            </Stack>
-          </PopoverOption>
-          <PopoverOption onClick={() => {}}>
-            <Stack direction="horizontal" space="2">
-              <ShareAltOutlined
-                style={{
-                  fontSize: "1.5rem",
-                }}
-              />
-              Share
-            </Stack>
-          </PopoverOption>
-        </ScrollContainer>
-      </Popover>
+            <PopoverOption onClick={() => {}}>
+              <Stack direction="horizontal" space="2">
+                <IconDuplicate />
+                Duplicate
+              </Stack>
+            </PopoverOption>
+            <PopoverOption onClick={() => {}}>
+              <Stack direction="horizontal" space="2">
+                <ShareAltOutlined
+                  style={{
+                    fontSize: "1.5rem",
+                  }}
+                />
+                Share
+              </Stack>
+            </PopoverOption>
+            <PopoverOption
+              onClick={() => {
+                setIsOpen(false);
+                setShowConfirm(true);
+              }}
+            >
+              <Stack direction="horizontal" space="2">
+                <IconTrash color="red" />
+                Archive
+              </Stack>
+            </PopoverOption>
+          </ScrollContainer>
+        </Popover>
+      </Box>
     </>
   );
 }

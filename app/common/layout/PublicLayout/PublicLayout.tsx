@@ -1,16 +1,15 @@
-import React, { useEffect } from "react";
+import React, { memo, useEffect } from "react";
 
 import { ReactNodeNoStrings } from "degen/dist/types/types";
 import { Box } from "degen";
 import { motion, AnimatePresence } from "framer-motion";
 import ExtendedSidebar from "../../../modules/ExtendedSidebar/ExtendedSidebar";
-import Header from "../../../modules/Header";
 import Sidebar from "@/app/modules/Sidebar";
 import { useRouter } from "next/router";
 import { useGlobalContext } from "@/app/context/globalContext";
 import styled from "styled-components";
-import { variants } from "@/app/modules/Card";
 import { useConnect } from "wagmi";
+import { fadeVariant } from "@/app/modules/Card/Utils/variants";
 
 type PublicLayoutProps = {
   children: ReactNodeNoStrings;
@@ -18,16 +17,22 @@ type PublicLayoutProps = {
 
 const Container = styled(Box)<{ issidebarexpanded: boolean }>`
   max-width: ${(props) =>
-    props.issidebarexpanded ? "calc(100vw - 23rem)" : "calc(100vw - 2rem)"};
+    props.issidebarexpanded ? "calc(100vw - 22rem)" : "calc(100vw - 2rem)"};
   flex-grow: 1;
 `;
+
+// const transition = { duration: 0.4, ease: "easeInOut" };
+
+const slideVariants = {
+  hidden: { opacity: 0, x: -100, y: 0 },
+  enter: { opacity: 1, x: 0, y: 0 },
+  exit: { opacity: 0, x: 0, y: 200 },
+};
 
 function PublicLayout(props: PublicLayoutProps) {
   const { children } = props;
   const { isSidebarExpanded } = useGlobalContext();
 
-  const router = useRouter();
-  const { circle: cId } = router.query;
   const { connect, connectors } = useConnect();
 
   useEffect(() => {
@@ -48,20 +53,22 @@ function PublicLayout(props: PublicLayoutProps) {
         display: "flex",
         flexDirection: "row",
       }}
+      id="public-layout"
     >
       <Sidebar />
       <AnimatePresence initial={false}>
-        {isSidebarExpanded && cId && <ExtendedSidebar />}
+        {isSidebarExpanded && <ExtendedSidebar />}
       </AnimatePresence>
       <Box
         display="flex"
         flexDirection="column"
         width="full"
         backgroundColor="foregroundTertiary"
+        overflow="hidden"
       >
-        <Header />
+        {/* <Header /> */}
         <motion.main
-          variants={variants}
+          variants={slideVariants}
           initial="hidden"
           animate="enter"
           exit="exit"
@@ -79,4 +86,4 @@ function PublicLayout(props: PublicLayoutProps) {
   );
 }
 
-export default PublicLayout;
+export default memo(PublicLayout);

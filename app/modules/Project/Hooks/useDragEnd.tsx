@@ -15,7 +15,6 @@ export default function useDragEnd() {
 
     return result;
   };
-
   const handleDragEnd = (result: DropResult) => {
     const { destination, source, draggableId, type } = result;
     if (!canMoveCard(localProject.cards[draggableId])) {
@@ -27,17 +26,6 @@ export default function useDragEnd() {
     if (!destination) {
       return;
     }
-    // console.log({ localProject });
-    // const task = localProject.cards[draggableId];
-    // if (
-    //   type !== "column" &&
-    //   !(
-    //     (task.access.assignee || task.access.creator || task.access.reviewer)
-    //     // [2, 3].includes(localProject.roles[user?.id as string])
-    //   )
-    // ) {
-    //   return;
-    // }
     if (
       destination.droppableId === source.droppableId &&
       destination.index === source.index
@@ -94,6 +82,7 @@ export default function useDragEnd() {
           },
         },
       });
+      console.log("GOTCHA");
     } else {
       const startTaskIds = Array.from(start.cards); // copy
       startTaskIds.splice(source.index, 1);

@@ -61,7 +61,7 @@ function CreateCircle() {
 
   return (
     <>
-      <Loader loading={isLoading} text="Creating your tribe" />
+      <Loader loading={isLoading} text="Creating your circle" />
       <Box paddingY="3">
         <Button
           shape="circle"

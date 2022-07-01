@@ -20,22 +20,25 @@ export default function WorkThread({ workThread }: Props) {
         name={workThread.name}
         defaultOpen
         buttonComponent={
-          <Box width="1/2">
-            <Text variant="small" size="extraSmall">
+          <Box marginTop="2">
+            <Text variant="small" size="extraSmall" color="textSecondary">
               {" Updated " + timeSince(new Date(workThread.updatedAt)) + " ago"}
             </Text>
           </Box>
         }
       >
-        {workThread.workUnitOrder.map((workUnitId) => (
-          <WorkUnit
-            key={workUnitId}
-            workUnit={workThread.workUnits[workUnitId]}
-            workThreadId={workThread.threadId}
-            status={workThread.status}
-            workUnitOrder={workThread.workUnitOrder}
-          />
-        ))}
+        {workThread.workUnitOrder.map((workUnitId) => {
+          if (workThread.status !== "draft") {
+            return (
+              <WorkUnit
+                key={workUnitId}
+                workUnit={workThread.workUnits[workUnitId]}
+                workThreadId={workThread.threadId}
+                status={workThread.status}
+              />
+            );
+          }
+        })}
         {canTakeAction("cardRevision") && (
           <Revision newRevision workThreadId={workThread.threadId} />
         )}

@@ -1,14 +1,14 @@
 import { Box, Text } from "degen";
 import { motion } from "framer-motion";
-import { variants } from "..";
 import { useLocalCard } from "../../Project/CreateCardModal/hooks/LocalCardContext";
+import { fadeVariant } from "../Utils/variants";
 import ApplicationItem from "./ApplicationItem";
 
 export default function Application() {
   const { application, applicationOrder } = useLocalCard();
   return (
     <motion.main
-      variants={variants}
+      variants={fadeVariant}
       initial="hidden"
       animate="enter"
       exit="exit"

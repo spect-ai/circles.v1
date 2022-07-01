@@ -1,10 +1,11 @@
 import { labelsMapping } from "@/app/common/utils/constants";
+import { useGlobalContext } from "@/app/context/globalContext";
 import {
   cardTypes,
   priority,
 } from "@/app/modules/Project/CreateCardModal/constants";
 import { useLocalCard } from "@/app/modules/Project/CreateCardModal/hooks/LocalCardContext";
-import { MemberDetails, UserType } from "@/app/types";
+import { MemberDetails } from "@/app/types";
 import { useRouter } from "next/router";
 import { useQuery } from "react-query";
 
@@ -18,9 +19,7 @@ export default function useModalOptions() {
       enabled: false,
     }
   );
-  const { data: currentUser } = useQuery<UserType>("getMyUser", {
-    enabled: false,
-  });
+  const { connectedUser } = useGlobalContext();
   const getOptions = (type: string) => {
     switch (type) {
       case "card":
@@ -47,19 +46,18 @@ export default function useModalOptions() {
           value: member,
         }));
         tempArr = tempArr?.filter(
-          (member: any) => member.value !== currentUser?.id
+          (member: any) => member.value !== connectedUser
         );
         tempArr?.unshift({
           name:
             (memberDetails &&
-              memberDetails.memberDetails[currentUser?.id as string]?.username +
-                " (me)") ||
+              memberDetails.memberDetails[connectedUser]?.username + " (me)") ||
             " (me)",
           avatar:
             (memberDetails &&
-              memberDetails.memberDetails[currentUser?.id as string]?.avatar) ||
+              memberDetails.memberDetails[connectedUser]?.avatar) ||
             "",
-          value: currentUser?.id || "",
+          value: connectedUser,
         });
         tempArr?.unshift({
           name: "Unassigned",

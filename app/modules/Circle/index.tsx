@@ -75,7 +75,7 @@ export default function Circle() {
             </Col>
           </Row>
         </Container>
-        <Heading>Workspaces</Heading>
+        <Heading>Workstreams</Heading>
         <Container style={{ width: "75%", padding: "0px", margin: "0px" }}>
           <Row>
             {circle?.children?.map((space) => (

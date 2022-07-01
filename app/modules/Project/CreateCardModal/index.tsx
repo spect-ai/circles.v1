@@ -5,7 +5,7 @@ import { Box, Button, Stack, Tag } from "degen";
 import { AnimatePresence } from "framer-motion";
 import React, { useEffect } from "react";
 import styled from "styled-components";
-import EditableSubTask from "./EditableSubTask";
+import EditableSubTask from "../../Card/SubTasks/NewSubTask";
 import CardAssignee from "./modals/CardAssignee";
 import CardColumn from "./modals/CardColumn";
 import CardDeadline from "./modals/CardDeadline";
@@ -21,6 +21,7 @@ import {
 import { ProjectType } from "@/app/types";
 import CardReviewer from "./modals/CardReviewer";
 import ConfirmModal from "@/app/common/components/Modal/ConfirmModal";
+import SubTasks from "../../Card/SubTasks";
 
 type Props = {
   column: string;
@@ -120,29 +121,7 @@ export default function CreateCardModal({
                     <Tag key={label}>{label}</Tag>
                   ))}
                 </Stack>
-                <Box width="fit">
-                  <ClickableTag
-                    name="Add Subtasks"
-                    icon={
-                      <SnippetsOutlined
-                        style={{
-                          fontSize: "1rem",
-                          marginLeft: "0.2rem",
-                          marginRight: "0.2rem",
-                          color: "rgb(191, 90, 242, 1)",
-                        }}
-                      />
-                    }
-                    onClick={() =>
-                      setSubTasks([...subTasks, { title: "", assignee: "" }])
-                    }
-                  />
-                </Box>
-                <AnimatePresence>
-                  {subTasks?.map((subTask, index) => (
-                    <EditableSubTask subTaskIndex={index} key={index} />
-                  ))}
-                </AnimatePresence>
+                <SubTasks createCard />
                 <Box style={{ minHeight: "10rem" }} marginTop="2">
                   <Editor
                     placeholder="Add a description"
@@ -181,6 +160,7 @@ export default function CreateCardModal({
                 setIsDirty(false);
               }}
               variant="secondary"
+              disabled={!title}
             >
               Create Card
             </Button>
@@ -192,6 +172,7 @@ export default function CreateCardModal({
                 setIsDirty(false);
               }}
               variant="secondary"
+              disabled={!title}
             >
               Save and Create Another
             </Button>

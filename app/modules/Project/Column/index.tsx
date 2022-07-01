@@ -1,10 +1,9 @@
-import ConfirmModal from "@/app/common/components/Modal/ConfirmModal";
 import { updateColumnDetails } from "@/app/services/Column";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { CardType, ColumnType } from "@/app/types";
 import { Box, Button, IconCog, IconPlusSmall, Stack } from "degen";
 import { AnimatePresence } from "framer-motion";
-import React, { useState } from "react";
+import React, { memo, useState } from "react";
 import { Draggable, Droppable } from "react-beautiful-dnd";
 import { toast } from "react-toastify";
 import styled from "styled-components";
@@ -26,18 +25,16 @@ const Container = styled(Box)`
   }
   -ms-overflow-style: none;
   scrollbar-width: none;
-  height: calc(100vh - 7.4rem);
+  height: calc(100vh - 5rem);
   overflow-y: none;
   width: 22rem;
 `;
 
 const ScrollContainer = styled(Box)`
   ::-webkit-scrollbar {
-    display: none;
+    width: 0px;
   }
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-  height: calc(100vh - 12rem);
+  height: calc(100vh - 6rem);
   border-radius: 0.5rem;
   overflow-y: auto;
 `;
@@ -53,12 +50,12 @@ const NameInput = styled.input`
   box-shadow: none;
   font-size: 1.1rem;
   caret-color: rgb(255, 255, 255, 0.85);
-  color: rgb(255, 255, 255, 0.85);
+  color: rgb(255, 255, 255, 0.6);
   font-weight: 400;
   margin-left: 0.1rem;
 `;
 
-export default function ColumnComponent({ cards, id, column, index }: Props) {
+function ColumnComponent({ cards, id, column, index }: Props) {
   const [columnTitle, setColumnTitle] = useState(column.name);
   const [isOpen, setIsOpen] = useState(false);
   const [isDirty, setIsDirty] = useState(false);
@@ -66,7 +63,6 @@ export default function ColumnComponent({ cards, id, column, index }: Props) {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const { localProject: project, setLocalProject } = useLocalProject();
   const { canDo } = useRoleGate();
-
   async function updateColumn() {
     const updatedProject = await updateColumnDetails(
       project.id,
@@ -80,6 +76,7 @@ export default function ColumnComponent({ cards, id, column, index }: Props) {
       setColumnTitle(project.columnDetails[column.columnId].name);
       return;
     }
+    console.log("GOTCHA");
     setLocalProject(updatedProject);
   }
 
@@ -120,10 +117,7 @@ export default function ColumnComponent({ cards, id, column, index }: Props) {
             {...provided.draggableProps}
             {...provided.dragHandleProps}
             ref={provided.innerRef}
-            borderWidth="0.375"
-            borderRadius="2xLarge"
             padding="2"
-            backgroundColor="background"
             display="flex"
             flexDirection="column"
             justifyContent="space-between"
@@ -177,14 +171,16 @@ export default function ColumnComponent({ cards, id, column, index }: Props) {
                 >
                   <Box>
                     {cards?.map((card, idx) => {
-                      return (
-                        <CardComponent
-                          card={card}
-                          index={idx}
-                          column={column}
-                          key={card.id}
-                        />
-                      );
+                      if (card) {
+                        return (
+                          <CardComponent
+                            card={card}
+                            index={idx}
+                            column={column}
+                            key={card.id}
+                          />
+                        );
+                      }
                     })}
                     {provided2.placeholder}
                   </Box>
@@ -197,3 +193,5 @@ export default function ColumnComponent({ cards, id, column, index }: Props) {
     </>
   );
 }
+
+export default memo(ColumnComponent);

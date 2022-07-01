@@ -1,16 +1,24 @@
-import Accordian from "@/app/common/components/Accordian";
+import Breadcrumbs from "@/app/common/components/Breadcrumbs";
 import Editor from "@/app/common/components/Editor";
 import Loader from "@/app/common/components/Loader";
 import Tabs from "@/app/common/components/Tabs";
 import useCardDynamism from "@/app/services/Card/useCardDynamism";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
-import { Box, Stack, Tag } from "degen";
+import {
+  Box,
+  IconChevronDown,
+  IconChevronUp,
+  IconClose,
+  Stack,
+  Tag,
+} from "degen";
 import { AnimatePresence } from "framer-motion";
-import React, { useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import React, { memo, useState } from "react";
 import { ToastContainer } from "react-toastify";
 import styled from "styled-components";
 import BatchPay from "../Project/BatchPay";
-import EditableSubTask from "../Project/CreateCardModal/EditableSubTask";
 import { useLocalCard } from "../Project/CreateCardModal/hooks/LocalCardContext";
 import CardAssignee from "../Project/CreateCardModal/modals/CardAssignee";
 import CardColumn from "../Project/CreateCardModal/modals/CardColumn";
@@ -20,6 +28,7 @@ import CardPriority from "../Project/CreateCardModal/modals/CardPriority";
 import CardReviewer from "../Project/CreateCardModal/modals/CardReviewer";
 import CardReward from "../Project/CreateCardModal/modals/CardReward";
 import CardType from "../Project/CreateCardModal/modals/CardType";
+import { IconButton } from "../Project/ProjectHeading";
 import ActionPopover from "./ActionPopover";
 import Activity from "./Activity";
 import Application from "./Application";
@@ -29,12 +38,11 @@ import SubTasks from "./SubTasks";
 
 const Container = styled(Box)`
   ::-webkit-scrollbar {
-    display: none;
+    width: 0px;
   }
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-  height: calc(100vh - 7rem);
+  height: calc(100vh - 4.5rem);
   overflow-y: auto;
+  overflow-x: hidden;
 `;
 
 const NameInput = styled.input`
@@ -52,24 +60,7 @@ const NameInput = styled.input`
   font-weight: 600;
 `;
 
-export const variants = {
-  hidden: { opacity: 0, x: 0, y: 0 },
-  enter: {
-    opacity: 1,
-    x: 0,
-    y: 0,
-  },
-  exit: {
-    opacity: 0,
-    x: 0,
-    y: 0,
-    transition: {
-      duration: 0.1,
-    },
-  },
-};
-
-export default function Card() {
+function Card() {
   const [selectedTab, setSelectedTab] = useState(0);
   const handleTabClick = (index: number) => setSelectedTab(index);
   const {
@@ -82,6 +73,7 @@ export default function Card() {
     project,
     onCardUpdate,
     card,
+    cardType,
   } = useLocalCard();
 
   const { canTakeAction } = useRoleGate();
@@ -89,109 +81,167 @@ export default function Card() {
   const { getTabs, activityTab, applicationTab, submissionTab } =
     useCardDynamism();
 
+  const router = useRouter();
+  const { circle: cId, project: pId } = router.query;
+
   return (
     <Box padding="4">
-      <ToastContainer />
-      {loading && <Loader loading={loading} text="" />}
-      {!loading && (
-        <Stack direction="horizontal">
-          <Box width="3/4" paddingX={{ xs: "4" }}>
-            <Container padding="2">
-              <Stack direction="vertical">
-                <Stack direction="horizontal">
-                  <NameInput
-                    placeholder="Card name"
-                    value={title}
-                    disabled={!canTakeAction("cardTitle")}
-                    onChange={(e) => {
-                      setTitle(e.target.value);
-                    }}
-                    onBlur={() => {
-                      onCardUpdate();
-                    }}
-                  />
-                  {canTakeAction("cardPopoverActions") && <ActionPopover />}
-                </Stack>
-                <Stack direction="horizontal" wrap>
-                  <CardLabels />
-                  {labels.map((label) => (
-                    <Tag key={label}>{label}</Tag>
-                  ))}
-                </Stack>
-                <SubTasks />
-                <Box
-                  style={{
-                    minHeight: "10rem",
-                    maxHeight: "25rem",
-                    overflowY: "auto",
-                  }}
-                  marginRight="4"
-                  paddingLeft="4"
-                >
-                  {!loading && (
-                    <Editor
-                      value={description}
-                      onChange={(txt) => {
-                        setDescription(txt);
-                      }}
-                      placeholder="Add a description"
-                      disabled={!canTakeAction("cardDescription")}
-                      onBlur={() => {
-                        onCardUpdate();
-                      }}
+      <Box
+        borderWidth="0.375"
+        borderRadius="large"
+        backgroundColor="background"
+        style={{
+          boxShadow: "0px 0px 10px 0.1rem rgba(0, 0, 0, 0.1)",
+        }}
+      >
+        <ToastContainer />
+        <Box padding="1" borderBottomWidth="0.375">
+          <Stack direction="horizontal">
+            <Link href={`/${cId}/${pId}`}>
+              <IconButton color="textSecondary" paddingX="2">
+                <IconClose />
+              </IconButton>
+            </Link>
+
+            <Box
+              display="flex"
+              flexDirection="row"
+              borderWidth="0.375"
+              borderRadius="large"
+              backgroundColor="foregroundSecondary"
+            >
+              <IconButton
+                color="textSecondary"
+                borderRightWidth="0.375"
+                paddingX="2"
+                borderLeftRadius="large"
+              >
+                <IconChevronUp />
+              </IconButton>
+              <IconButton
+                color="textSecondary"
+                paddingX="2"
+                borderRightRadius="large"
+              >
+                <IconChevronDown />
+              </IconButton>
+            </Box>
+          </Stack>
+        </Box>
+        {loading && <Loader loading={loading} text="" />}
+        {!loading && (
+          <Stack direction="horizontal">
+            <Box width="3/4">
+              <Container padding="8">
+                <Box marginLeft="1">
+                  {card?.parent && (
+                    <Breadcrumbs
+                      crumbs={[
+                        {
+                          name: card?.parent.title,
+                          href: `/${cId}/${pId}/${card?.parent.slug}`,
+                        },
+                        {
+                          name: `#${card?.slug}`,
+                          href: "",
+                        },
+                      ]}
                     />
                   )}
                 </Box>
-                <Tabs
-                  tabs={getTabs()}
-                  selectedTab={selectedTab}
-                  onTabClick={handleTabClick}
-                  orientation="horizontal"
-                  unselectedColor="transparent"
-                  shape="circle"
-                />
-                <AnimatePresence initial={false}>
-                  {selectedTab === activityTab && <Activity />}
-                  {selectedTab === applicationTab && !loading && (
-                    <Application />
-                  )}
-                  {selectedTab === submissionTab && !loading && <Submission />}
-                </AnimatePresence>
-              </Stack>
-            </Container>
-          </Box>
-          <Box
-            width="1/4"
-            borderLeftWidth="0.375"
-            paddingLeft="4"
-            paddingTop="4"
-          >
-            {project?.id && (
-              <Stack>
-                <CardType />
-                <CardColumn />
-                <CardAssignee />
-                <CardReviewer />
-                <CardDeadline />
-                <CardPriority />
-                <CardReward />
-                {/* {canTakeAction("cardArchive") && (
-                  <PrimaryButton
-                    icon={<IconTrash />}
-                    tone="red"
-                    onClick={() => setShowConfirm(true)}
+                <Stack direction="vertical">
+                  <Stack direction="horizontal">
+                    <NameInput
+                      placeholder="Card name"
+                      value={title}
+                      disabled={!canTakeAction("cardTitle")}
+                      onChange={(e) => {
+                        setTitle(e.target.value);
+                      }}
+                      onBlur={() => {
+                        void onCardUpdate();
+                      }}
+                    />
+                    {canTakeAction("cardPopoverActions") && <ActionPopover />}
+                  </Stack>
+                  <Stack direction="horizontal" wrap>
+                    {canTakeAction("cardLabels") && <CardLabels />}
+                    {labels.map((label) => (
+                      <Tag key={label}>{label}</Tag>
+                    ))}
+                  </Stack>
+                  <SubTasks createCard={false} />
+                  <Box
+                    style={{
+                      minHeight: "10rem",
+                      maxHeight: "25rem",
+                      overflowY: "auto",
+                    }}
+                    marginRight="4"
+                    color="accent"
                   >
-                    Archive
-                  </PrimaryButton>
-                )} */}
-                {/* <DiscordThread /> */}
-                {canTakeAction("cardPayment") && <BatchPay card={card} />}
-                {canTakeAction("cardApply") && <Apply />}
-              </Stack>
-            )}
-          </Box>
-        </Stack>
-      )}
+                    {!loading && (
+                      <Editor
+                        value={description}
+                        onChange={(txt) => {
+                          setDescription(txt);
+                        }}
+                        placeholder="Add a description"
+                        disabled={!canTakeAction("cardDescription")}
+                        onBlur={() => {
+                          void onCardUpdate();
+                        }}
+                      />
+                    )}
+                  </Box>
+                  <Tabs
+                    tabs={getTabs()}
+                    selectedTab={selectedTab}
+                    onTabClick={handleTabClick}
+                    orientation="horizontal"
+                    unselectedColor="transparent"
+                    shape="circle"
+                  />
+                  <AnimatePresence initial={false}>
+                    {selectedTab === activityTab && <Activity />}
+                    {selectedTab === applicationTab && !loading && (
+                      <Application />
+                    )}
+                    {selectedTab === submissionTab && !loading && (
+                      <Submission />
+                    )}
+                  </AnimatePresence>
+                </Stack>
+              </Container>
+            </Box>
+            <Box
+              width="1/4"
+              borderLeftWidth="0.375"
+              paddingX="4"
+              paddingTop="8"
+            >
+              {project?.id && (
+                <Stack>
+                  <CardType />
+                  <CardColumn />
+                  <CardAssignee />
+                  <CardReviewer />
+                  <CardDeadline />
+                  <CardPriority />
+                  <CardReward />
+                  {/* <DiscordThread /> */}
+                  {canTakeAction("cardPayment") && <BatchPay card={card} />}
+                  {cardType === "Bounty" && canTakeAction("cardApply") && (
+                    <Apply />
+                  )}
+                </Stack>
+              )}
+            </Box>
+          </Stack>
+        )}
+      </Box>
     </Box>
   );
 }
+
+export default memo(Card);

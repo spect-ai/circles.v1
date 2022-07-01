@@ -67,8 +67,8 @@ function Header(): ReactElement {
             transitionDuration="300"
             style={{
               transform: isSidebarExpanded ? "rotate(180deg)" : "rotate(0deg)",
+              marginLeft: "-1.5rem",
             }}
-            marginLeft="-3"
             marginRight="-2"
             cursor="pointer"
             color="textSecondary"

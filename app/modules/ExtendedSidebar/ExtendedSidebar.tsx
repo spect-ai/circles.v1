@@ -1,35 +1,42 @@
-import React, { ReactElement } from "react";
-import { Box, Text } from "degen";
-import { useRouter } from "next/router";
-import styled from "styled-components";
+import React, { ReactElement, useEffect } from "react";
+import { Box } from "degen";
 import { motion } from "framer-motion";
+import { useRouter } from "next/router";
+import ExploreSidebar from "./ExploreSidebar";
 import CircleSidebar from "./CircleSidebar";
+import ProfileModal from "../Header/ProfileModal";
+import ConnectModal from "../Header/ConnectModal";
 import { useGlobalContext } from "@/app/context/globalContext";
 import { useQuery } from "react-query";
-import { CircleType, ProjectType } from "@/app/types";
-import { DoubleRightOutlined } from "@ant-design/icons";
-import { SlideButtonContainer } from "../Header";
+import { UserType } from "@/app/types";
+import { toast } from "react-toastify";
 
-export const Container = styled(Box)`
-  ::-webkit-scrollbar {
-    display: none;
-  }
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-  height: calc(100vh - 5rem);
-  overflow-y: auto;
-`;
+const getUser = async () => {
+  const res = await fetch(`${process.env.API_HOST}/user/me`, {
+    credentials: "include",
+  });
+  return await res.json();
+};
 
 function ExtendedSidebar(): ReactElement {
-  const { setIsSidebarExpanded, isSidebarExpanded } = useGlobalContext();
   const router = useRouter();
-  const { circle: cId, project: pId } = router.query;
-  const { data: circle } = useQuery<CircleType>(["circle", cId], {
+  const { circle: cId } = router.query;
+  const { connectedUser, connectUser } = useGlobalContext();
+  const { refetch } = useQuery<UserType>("getMyUser", getUser, {
     enabled: false,
   });
-  const { data: project } = useQuery<ProjectType>(["project", pId], {
-    enabled: false,
-  });
+
+  useEffect(() => {
+    refetch()
+      .then((res) => {
+        const data = res.data;
+        if (data) connectUser(data.id);
+      })
+      .catch((err) => {
+        console.log(err);
+        toast.error("Could not fetch user data");
+      });
+  }, []);
 
   return (
     <motion.div
@@ -51,31 +58,10 @@ function ExtendedSidebar(): ReactElement {
         paddingRight="3"
         height="full"
       >
-        <Box
-          borderBottomWidth="0.375"
-          paddingY="3"
-          display="flex"
-          flexDirection="row"
-          justifyContent="space-between"
-        >
-          <Text size="headingTwo" weight="semiBold" color="accentText" ellipsis>
-            {cId && pId && (circle?.name || project?.parents[0].name)}
-          </Text>
-          <SlideButtonContainer
-            transitionDuration="300"
-            style={{
-              transform: isSidebarExpanded ? "rotate(180deg)" : "rotate(0deg)",
-            }}
-            marginTop="2"
-            marginBottom="2.5"
-            cursor="pointer"
-            color="textSecondary"
-            onClick={() => setIsSidebarExpanded(!isSidebarExpanded)}
-          >
-            <DoubleRightOutlined style={{ fontSize: "1.1rem" }} />
-          </SlideButtonContainer>
-        </Box>
-        <Container>{cId && <CircleSidebar />}</Container>
+        {!cId && <ExploreSidebar />}
+        {cId && <CircleSidebar />}
+        {connectedUser && <ProfileModal />}
+        {!connectedUser && cId && <ConnectModal />}
       </Box>
     </motion.div>
   );

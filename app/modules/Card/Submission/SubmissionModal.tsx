@@ -30,7 +30,7 @@ export default function SubmissionModal() {
   const { createWorkThread, loading } = useSubmission();
   return (
     <>
-      <Box width="1/3">
+      <Box width="1/3" marginBottom="2">
         <PrimaryButton icon={<IconDocuments />} onClick={() => setIsOpen(true)}>
           Create Submission
         </PrimaryButton>
@@ -64,20 +64,40 @@ export default function SubmissionModal() {
                     placeholder="Add submission here"
                   />
                 </Box>
-                <PrimaryButton
-                  loading={loading}
-                  icon={<SendOutlined style={{ fontSize: "1.2rem" }} />}
-                  onClick={async () => {
-                    const res = await createWorkThread({
-                      name: title,
-                      content: content,
-                      status: "draft",
-                    });
-                    res && setIsOpen(false);
-                  }}
-                >
-                  Send
-                </PrimaryButton>
+                <Stack direction="horizontal">
+                  <Box width="full">
+                    <PrimaryButton
+                      loading={loading}
+                      icon={<IconDocuments />}
+                      onClick={async () => {
+                        const res = await createWorkThread({
+                          name: title,
+                          content: content,
+                          status: "draft",
+                        });
+                        res && setIsOpen(false);
+                      }}
+                    >
+                      Save as Draft
+                    </PrimaryButton>
+                  </Box>
+                  <Box width="full">
+                    <PrimaryButton
+                      loading={loading}
+                      icon={<SendOutlined style={{ fontSize: "1.2rem" }} />}
+                      onClick={async () => {
+                        const res = await createWorkThread({
+                          name: title,
+                          content: content,
+                          status: "inReview",
+                        });
+                        res && setIsOpen(false);
+                      }}
+                    >
+                      Send
+                    </PrimaryButton>
+                  </Box>
+                </Stack>
               </Stack>
             </Box>
           </Modal>

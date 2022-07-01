@@ -28,7 +28,7 @@ export default function CardReward() {
       icon={<IconEth color="accent" size="5" />}
       disabled={!canTakeAction("cardReward")}
       handleClose={() => {
-        onCardUpdate();
+        void onCardUpdate();
         setModalOpen(false);
       }}
     >
