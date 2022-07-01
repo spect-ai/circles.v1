@@ -48,11 +48,10 @@ export default function CircleOptions() {
           >
             <Stack direction="horizontal" align="center" space="1">
               <Avatar
-                src={
-                  circle?.avatar || (pId && project?.parents[0].avatar) || ""
-                }
+                src={circle?.avatar || ""}
                 label=""
                 size="9"
+                placeholder={!circle?.avatar}
               />
               <Text size="extraLarge" weight="semiBold" ellipsis>
                 {circle?.name || project?.parents[0].name}

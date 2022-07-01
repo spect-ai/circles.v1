@@ -12,6 +12,8 @@ import { SkeletonLoader } from "./SkeletonLoader";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import Onboarding from "./ProjectOnboarding";
 import useProjectOnboarding from "@/app/services/Onboarding/useProjectOnboarding";
+import { motion } from "framer-motion";
+import { fadeVariant } from "../Card/Utils/variants";
 
 const Container = styled.div`
   display: flex;
@@ -40,58 +42,66 @@ function Project() {
   }
 
   return (
-    <Box paddingY="1">
-      <ToastContainer />
-      {!onboarded && <Onboarding />}
-      <DragDropContext onDragEnd={handleDragEnd}>
-        <Droppable
-          droppableId="all-columns"
-          direction="horizontal"
-          type="column"
-        >
-          {(provided) => (
-            <Container {...provided.droppableProps} ref={provided.innerRef}>
-              <Stack direction="horizontal">
-                {project?.columnOrder?.map((columnId, index): any => {
-                  const column = project.columnDetails[columnId];
-                  const cards = column.cards?.map(
-                    (cardId: any) => project.cards[cardId]
-                  );
-                  return (
-                    <ColumnComponent
-                      key={columnId}
-                      column={column}
-                      cards={cards}
-                      id={columnId}
-                      index={index}
-                    />
-                  );
-                })}
-                {provided.placeholder}
-                {project.id && canDo(["steward"]) && (
-                  <Box style={{ width: "20rem" }} marginTop="2">
-                    <PrimaryButton
-                      icon={<IconPlusSmall />}
-                      onClick={async () => {
-                        const updatedProject = await addColumn(project.id);
-                        if (!updatedProject) {
-                          toast.error("Error adding column", {
-                            theme: "dark",
-                          });
-                        }
-                        setLocalProject(updatedProject);
-                      }}
-                    >
-                      Add new column
-                    </PrimaryButton>
-                  </Box>
-                )}
-              </Stack>
-            </Container>
-          )}
-        </Droppable>
-      </DragDropContext>
-    </Box>
+    <motion.main
+      variants={fadeVariant}
+      initial="hidden"
+      animate="enter"
+      exit="exit"
+      transition={{ type: "linear" }}
+    >
+      <Box paddingY="1">
+        <ToastContainer />
+        {!onboarded && <Onboarding />}
+        <DragDropContext onDragEnd={handleDragEnd}>
+          <Droppable
+            droppableId="all-columns"
+            direction="horizontal"
+            type="column"
+          >
+            {(provided) => (
+              <Container {...provided.droppableProps} ref={provided.innerRef}>
+                <Stack direction="horizontal">
+                  {project?.columnOrder?.map((columnId, index): any => {
+                    const column = project.columnDetails[columnId];
+                    const cards = column.cards?.map(
+                      (cardId: any) => project.cards[cardId]
+                    );
+                    return (
+                      <ColumnComponent
+                        key={columnId}
+                        column={column}
+                        cards={cards}
+                        id={columnId}
+                        index={index}
+                      />
+                    );
+                  })}
+                  {provided.placeholder}
+                  {project.id && canDo(["steward"]) && (
+                    <Box style={{ width: "20rem" }} marginTop="2">
+                      <PrimaryButton
+                        icon={<IconPlusSmall />}
+                        onClick={async () => {
+                          const updatedProject = await addColumn(project.id);
+                          if (!updatedProject) {
+                            toast.error("Error adding column", {
+                              theme: "dark",
+                            });
+                          }
+                          setLocalProject(updatedProject);
+                        }}
+                      >
+                        Add new column
+                      </PrimaryButton>
+                    </Box>
+                  )}
+                </Stack>
+              </Container>
+            )}
+          </Droppable>
+        </DragDropContext>
+      </Box>
+    </motion.main>
   );
 }
 

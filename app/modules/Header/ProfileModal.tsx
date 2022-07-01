@@ -95,18 +95,20 @@ export default function ProfileModal() {
             <Box padding="8">
               <Stack>
                 <Text variant="label">Profile Picture</Text>
-                <MediaPicker
-                  compact
-                  defaultValue={{
-                    type: "image/png",
-                    url: avatar,
-                  }}
-                  label="Choose or drag and drop media"
-                  uploaded={!!avatar}
-                  onChange={uploadFile}
-                  uploading={uploading}
-                  maxSize={10}
-                />
+                {username && (
+                  <MediaPicker
+                    compact
+                    defaultValue={{
+                      type: "image/png",
+                      url: avatar,
+                    }}
+                    label="Choose or drag and drop media"
+                    uploaded={!!avatar}
+                    onChange={uploadFile}
+                    uploading={uploading}
+                    maxSize={10}
+                  />
+                )}
                 <Text variant="label">Username</Text>
                 <Input
                   label=""

@@ -6,7 +6,7 @@ import { useLocalProject } from "../Context/LocalProjectContext";
 
 export default function useDragEnd() {
   const { localProject, setLocalProject, updateProject } = useLocalProject();
-  // const { canMoveCard } = useRoleGate();
+  const { canMoveCard } = useRoleGate();
 
   const reorder = (list: string[], startIndex: number, endIndex: number) => {
     const result = Array.from(list);
@@ -17,26 +17,15 @@ export default function useDragEnd() {
   };
   const handleDragEnd = (result: DropResult) => {
     const { destination, source, draggableId, type } = result;
-    // if (!canMoveCard(localProject.cards[draggableId])) {
-    //   toast.error("You don't have permission to move this card", {
-    //     theme: "dark",
-    //   });
-    //   return;
-    // }
+    if (!canMoveCard(localProject.cards[draggableId])) {
+      toast.error("You don't have permission to move this card", {
+        theme: "dark",
+      });
+      return;
+    }
     if (!destination) {
       return;
     }
-    // console.log({ localProject });
-    // const task = localProject.cards[draggableId];
-    // if (
-    //   type !== "column" &&
-    //   !(
-    //     (task.access.assignee || task.access.creator || task.access.reviewer)
-    //     // [2, 3].includes(localProject.roles[user?.id as string])
-    //   )
-    // ) {
-    //   return;
-    // }
     if (
       destination.droppableId === source.droppableId &&
       destination.index === source.index
@@ -54,7 +43,6 @@ export default function useDragEnd() {
         ...localProject,
         columnOrder: newColumnOrder,
       });
-      console.log("GOTCHA");
       fetch(`${process.env.API_HOST}/project/${localProject.id}`, {
         method: "PATCH",
         headers: {
@@ -119,7 +107,6 @@ export default function useDragEnd() {
           [newFinish.columnId]: newFinish,
         },
       });
-      console.log("GOTCHA");
     }
     fetch(
       `${process.env.API_HOST}/project/${localProject.id}/reorderCard/${draggableId}`,

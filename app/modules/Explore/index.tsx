@@ -4,7 +4,7 @@ import { useGlobalContext } from "@/app/context/globalContext";
 import useJoinCircle from "@/app/services/JoinCircle/useJoinCircle";
 import useExploreOnboarding from "@/app/services/Onboarding/useExploreOnboarding";
 import useConnectDiscord from "@/app/services/Profile/useConnectDiscord";
-import { CircleType, UserType } from "@/app/types";
+import { CircleType } from "@/app/types";
 import { Avatar, Box, Button, Stack, Text } from "degen";
 import { useRouter } from "next/router";
 import { Container, Row, Col } from "react-grid-system";
@@ -19,7 +19,7 @@ const ScrollContainer = styled(Box)`
   }
   -ms-overflow-style: none;
   scrollbar-width: none;
-  height: calc(100vh - 6rem);
+  height: calc(100vh - 1rem);
   overflow-y: auto;
 `;
 

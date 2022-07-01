@@ -35,7 +35,6 @@ function CreateSpaceModal({ accordian }: Props) {
   const [visibilityTab, setVisibilityTab] = useState(0);
   const onVisibilityTabClick = (id: number) => setVisibilityTab(id);
   const close = () => setModalOpen(false);
-  const open = () => setModalOpen(true);
 
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -78,7 +77,7 @@ function CreateSpaceModal({ accordian }: Props) {
 
   return (
     <>
-      <Loader loading={isLoading} text="Creating your space" />
+      <Loader loading={isLoading} text="Creating your workstream" />
       {accordian ? (
         <Button
           data-tour="circle-sidebar-create-space-button"

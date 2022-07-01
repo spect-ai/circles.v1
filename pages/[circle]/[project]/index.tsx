@@ -7,6 +7,7 @@ import {
 } from "@/app/modules/Project/Context/LocalProjectContext";
 import ProjectHeading from "@/app/modules/Project/ProjectHeading";
 import { CircleType, MemberDetails } from "@/app/types";
+import { AnimatePresence } from "framer-motion";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
@@ -14,7 +15,7 @@ import { useQuery } from "react-query";
 
 const ProjectPage: NextPage = () => {
   const router = useRouter();
-  const { circle: cId } = router.query;
+  const { circle: cId, project: pId } = router.query;
   const { data: circle, refetch: fetchCircle } = useQuery<CircleType>(
     ["circle", cId],
     () =>
@@ -56,7 +57,13 @@ const ProjectPage: NextPage = () => {
       <LocalProjectContext.Provider value={context}>
         <PublicLayout>
           <ProjectHeading />
-          <Project />
+          <AnimatePresence
+            exitBeforeEnter
+            initial={false}
+            onExitComplete={() => window.scrollTo(0, 0)}
+          >
+            <Project key={pId as string} />
+          </AnimatePresence>
         </PublicLayout>
       </LocalProjectContext.Provider>
     </>

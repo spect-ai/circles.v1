@@ -4,7 +4,6 @@ import { ReactNodeNoStrings } from "degen/dist/types/types";
 import { Box } from "degen";
 import { motion, AnimatePresence } from "framer-motion";
 import ExtendedSidebar from "../../../modules/ExtendedSidebar/ExtendedSidebar";
-import Header from "../../../modules/Header";
 import Sidebar from "@/app/modules/Sidebar";
 import { useRouter } from "next/router";
 import { useGlobalContext } from "@/app/context/globalContext";
@@ -22,12 +21,18 @@ const Container = styled(Box)<{ issidebarexpanded: boolean }>`
   flex-grow: 1;
 `;
 
+// const transition = { duration: 0.4, ease: "easeInOut" };
+
+const slideVariants = {
+  hidden: { opacity: 0, x: -100, y: 0 },
+  enter: { opacity: 1, x: 0, y: 0 },
+  exit: { opacity: 0, x: 0, y: 200 },
+};
+
 function PublicLayout(props: PublicLayoutProps) {
   const { children } = props;
   const { isSidebarExpanded } = useGlobalContext();
 
-  const router = useRouter();
-  const { circle: cId, card: tId } = router.query;
   const { connect, connectors } = useConnect();
 
   useEffect(() => {
@@ -59,10 +64,11 @@ function PublicLayout(props: PublicLayoutProps) {
         flexDirection="column"
         width="full"
         backgroundColor="foregroundTertiary"
+        overflow="hidden"
       >
         {/* <Header /> */}
         <motion.main
-          variants={fadeVariant}
+          variants={slideVariants}
           initial="hidden"
           animate="enter"
           exit="exit"

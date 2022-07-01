@@ -1,15 +1,11 @@
 import Breadcrumbs from "@/app/common/components/Breadcrumbs";
 import Editor from "@/app/common/components/Editor";
 import Loader from "@/app/common/components/Loader";
-import PrimaryButton from "@/app/common/components/PrimaryButton";
 import Tabs from "@/app/common/components/Tabs";
 import useCardDynamism from "@/app/services/Card/useCardDynamism";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
-import { ProjectType } from "@/app/types";
 import {
   Box,
-  IconArrowDown,
-  IconArrowUp,
   IconChevronDown,
   IconChevronUp,
   IconClose,
@@ -20,7 +16,6 @@ import { AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { memo, useState } from "react";
-import { useQuery } from "react-query";
 import { ToastContainer } from "react-toastify";
 import styled from "styled-components";
 import BatchPay from "../Project/BatchPay";
@@ -222,7 +217,7 @@ function Card() {
             <Box
               width="1/4"
               borderLeftWidth="0.375"
-              paddingLeft="4"
+              paddingX="4"
               paddingTop="8"
             >
               {project?.id && (

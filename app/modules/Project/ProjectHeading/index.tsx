@@ -20,7 +20,7 @@ function ProjectHeading() {
   const { setIsSidebarExpanded, isSidebarExpanded } = useGlobalContext();
   const router = useRouter();
   const { circle: cId, project: pId, card: tId } = router.query;
-
+  console.log({ project });
   return (
     <Box
       width="full"
