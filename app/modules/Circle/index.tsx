@@ -31,7 +31,6 @@ export default function Circle() {
   const { data: circle, isLoading } = useQuery<CircleType>(["circle", cId], {
     enabled: false,
   });
-  console.log({ circle });
   const { canDo } = useRoleGate();
 
   const { onboarded } = useCircleOnboarding();

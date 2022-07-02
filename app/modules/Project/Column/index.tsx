@@ -121,7 +121,7 @@ function ColumnComponent({ cards, id, column, index }: Props) {
             flexDirection="column"
             justifyContent="space-between"
           >
-            <Box>
+            <Box marginBottom="2">
               <Stack
                 direction="horizontal"
                 space="0"
@@ -135,7 +135,9 @@ function ColumnComponent({ cards, id, column, index }: Props) {
                   onBlur={() => updateColumn()}
                   //   disabled={space.roles[user?.id as string] !== 3}
                 />
-                <Text variant="label">({column.cards.length})</Text>
+                <Box paddingRight="1">
+                  <Text variant="label">({column.cards.length})</Text>
+                </Box>
                 <Button
                   data-tour={`add-card-${column.columnId}-button`}
                   shape="circle"

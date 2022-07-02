@@ -82,7 +82,8 @@ function Card() {
     useCardDynamism();
 
   const router = useRouter();
-  const { circle: cId, project: pId } = router.query;
+  const { circle: cId, project: pId, card: tId } = router.query;
+  console.log({ loading });
 
   return (
     <Box padding="4">
@@ -185,7 +186,7 @@ function Card() {
                     marginRight="4"
                     color="accent"
                   >
-                    {!loading && (
+                    {!loading && tId && (
                       <Editor
                         value={description}
                         onChange={(txt) => {

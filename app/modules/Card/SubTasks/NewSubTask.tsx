@@ -119,6 +119,8 @@ export default function NewSubTask({ createCard }: Props) {
                     assignee: assignees,
                   });
                   console.log({ data });
+                  setTitle("");
+                  setAssignees([]);
                   setCard(data.parentCard);
                 }}
               >

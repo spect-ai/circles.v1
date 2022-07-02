@@ -82,7 +82,6 @@ export default function useDragEnd() {
           },
         },
       });
-      console.log("GOTCHA");
     } else {
       const startTaskIds = Array.from(start.cards); // copy
       startTaskIds.splice(source.index, 1);

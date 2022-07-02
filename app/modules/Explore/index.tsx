@@ -59,15 +59,15 @@ export default function Explore() {
           color: "rgb(255,255,255,0.7)",
         }}
       />
-      <Box width="1/2" paddingY="4" paddingX="8" marginLeft="1.5">
-        <Input
-          label=""
-          placeholder="Explore"
-          prefix={<IconSearch />}
-          suffix={<ExploreOptions />}
-        />
-      </Box>
       <GridContainer>
+        <Box width="1/2" paddingY="4" paddingRight="8">
+          <Input
+            label=""
+            placeholder="Explore"
+            prefix={<IconSearch />}
+            suffix={<ExploreOptions />}
+          />
+        </Box>
         <Row>
           {circles?.map &&
             circles?.map((circle: CircleType) => (

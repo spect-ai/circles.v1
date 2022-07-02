@@ -85,6 +85,7 @@ function Project() {
                   {project.id && canDo(["steward"]) && (
                     <Box style={{ width: "20rem" }} marginTop="2">
                       <PrimaryButton
+                        variant="tertiary"
                         icon={<IconPlusSmall />}
                         onClick={async () => {
                           const updatedProject = await addColumn(project.id);

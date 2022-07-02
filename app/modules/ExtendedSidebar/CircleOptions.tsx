@@ -17,6 +17,7 @@ export default function CircleOptions() {
   const { circle: cId, project: pId } = router.query;
   const { data: circle } = useQuery<CircleType>(["circle", cId], {
     enabled: false,
+    notifyOnChangeProps: ["data"],
   });
   const { data: project } = useQuery<ProjectType>(["project", pId], {
     enabled: false,

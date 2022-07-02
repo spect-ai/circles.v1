@@ -9,7 +9,6 @@ import {
   CircleType,
   ProjectType,
   Token,
-  UserType,
   WorkThreadType,
 } from "@/app/types";
 import { Stack } from "degen";
@@ -172,6 +171,7 @@ export function useProviderLocalCard({
 
   useEffect(() => {
     if (!createCard && card && card.id && !isLoading) {
+      console.log("setloading");
       setLoading(true);
       setTitle(card.title);
       setDescription(card.description);

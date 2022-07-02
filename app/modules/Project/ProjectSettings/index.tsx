@@ -1,30 +1,26 @@
 import Modal from "@/app/common/components/Modal";
 import ConfirmModal from "@/app/common/components/Modal/ConfirmModal";
-import { ProjectType } from "@/app/types";
 import { SaveOutlined } from "@ant-design/icons";
-import { Box, Button, IconCog, IconTrash, Input, Stack, Text } from "degen";
+import { Box, Button, IconCog, IconTrash, Input, Stack } from "degen";
 import { AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
-import { useQuery, useQueryClient } from "react-query";
-import { Tooltip } from "react-tippy";
 import { toast } from "react-toastify";
 import { PopoverOption } from "../../Card/ActionPopover";
+import { useLocalProject } from "../Context/LocalProjectContext";
 
 export default function ProjectSettings() {
   const [isOpen, setIsOpen] = useState(false);
   const handleClose = () => setIsOpen(false);
-  const router = useRouter();
-  const { circle: cId, project: pId } = router.query;
-  const { data: project } = useQuery<ProjectType>(["project", pId], {
-    enabled: false,
-  });
-  const queryClient = useQueryClient();
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
 
   const [isLoading, setIsLoading] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+
+  const { localProject: project, updateProject } = useLocalProject();
+  const router = useRouter();
+  const { circle: cId } = router.query;
 
   useEffect(() => {
     if (project?.id) {
@@ -49,10 +45,11 @@ export default function ProjectSettings() {
       .then(async (res) => {
         const data = await res.json();
         if (data.id) {
-          toast("Project updated successfully");
+          toast("Project updated successfully", {
+            theme: "dark",
+          });
         }
-        queryClient.setQueryData(["project", pId], data);
-        console.log({ data });
+        updateProject(data);
         setIsLoading(false);
         handleClose();
       })
@@ -74,9 +71,11 @@ export default function ProjectSettings() {
       .then(async (res) => {
         const data = await res.json();
         if (data.id) {
-          toast("Project deleted successfully");
+          toast("Project deleted successfully", {
+            theme: "dark",
+          });
         }
-        queryClient.setQueryData(["project", pId], null);
+        updateProject(null as any);
         console.log({ data });
         setIsLoading(false);
         handleClose();
@@ -103,19 +102,6 @@ export default function ProjectSettings() {
           />
         )}
       </AnimatePresence>
-      {/* <Button
-        data-tour="header-project-settings-button"
-        size="small"
-        variant="transparent"
-        shape="circle"
-        onClick={(e) => {
-          setIsOpen(true);
-        }}
-      >
-        <Tooltip html={<Text>Project Settings</Text>}>
-          <IconCog />
-        </Tooltip>
-      </Button> */}
       <PopoverOption
         onClick={() => {
           setIsOpen(true);
@@ -152,6 +138,7 @@ export default function ProjectSettings() {
                     loading={isLoading}
                     center
                     prefix={<SaveOutlined style={{ fontSize: "1.3rem" }} />}
+                    disabled={!name}
                   >
                     Save
                   </Button>
@@ -160,7 +147,6 @@ export default function ProjectSettings() {
                     size="small"
                     variant="secondary"
                     onClick={() => setShowConfirm(true)}
-                    loading={isLoading}
                     center
                     tone="red"
                     prefix={<IconTrash />}

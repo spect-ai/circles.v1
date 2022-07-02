@@ -32,7 +32,6 @@ export default function ColumnSettings({ column, handleClose }: Props) {
       toast.error("Error updating column");
       return;
     }
-    console.log("GOTCHA");
     setLocalProject(updatedProject);
   };
 
@@ -42,7 +41,6 @@ export default function ColumnSettings({ column, handleClose }: Props) {
       toast.error("Error updating column");
       return;
     }
-    console.log("GOTCHA");
     setLocalProject(updatedProject);
   };
   return (

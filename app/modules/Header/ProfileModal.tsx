@@ -4,10 +4,12 @@ import { storeImage } from "@/app/common/utils/ipfs";
 import { smartTrim } from "@/app/common/utils/utils";
 import { useGlobalContext } from "@/app/context/globalContext";
 import useProfileUpdate from "@/app/services/Profile/useProfileUpdate";
-import { UserType } from "@/app/types";
+import { MemberDetails, UserType } from "@/app/types";
+import { SaveFilled } from "@ant-design/icons";
 import { Avatar, Box, Input, MediaPicker, Stack, Text } from "degen";
 import { AnimatePresence } from "framer-motion";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "react-query";
 import styled from "styled-components";
@@ -29,23 +31,33 @@ export default function ProfileModal() {
   const { disconnectUser } = useGlobalContext();
   const [isOpen, setIsOpen] = useState(false);
 
+  const router = useRouter();
+  const { circle: cId } = router.query;
+  const { refetch: fetchMemberDetails } = useQuery<MemberDetails>(
+    ["memberDetails", cId],
+    {
+      enabled: false,
+    }
+  );
+
   const queryClient = useQueryClient();
 
   const [uploading, setUploading] = useState(false);
   const [avatar, setAvatar] = useState("");
   const [username, setUsername] = useState("");
 
+  const [isDirty, setIsDirty] = useState(false);
+
   const { updateProfile } = useProfileUpdate();
 
+  const [loading, setLoading] = useState(true);
+
   const handleClose = () => {
-    void updateProfile({
-      username,
-      avatar,
-    });
     setIsOpen(false);
   };
 
   const uploadFile = async (file: File) => {
+    setIsDirty(true);
     console.log({ file });
     if (file) {
       setUploading(true);
@@ -58,8 +70,10 @@ export default function ProfileModal() {
 
   useEffect(() => {
     if (isOpen) {
+      setLoading(true);
       setAvatar(currentUser?.avatar || "");
       setUsername(currentUser?.username || "");
+      setLoading(false);
     }
   }, [isOpen]);
 
@@ -95,7 +109,7 @@ export default function ProfileModal() {
             <Box padding="8">
               <Stack>
                 <Text variant="label">Profile Picture</Text>
-                {username && (
+                {!loading && (
                   <MediaPicker
                     compact
                     defaultValue={{
@@ -114,29 +128,33 @@ export default function ProfileModal() {
                   label=""
                   placeholder="Username"
                   value={username}
-                  onChange={(e) => setUsername(e.target.value)}
+                  onChange={(e) => {
+                    setUsername(e.target.value);
+                    setIsDirty(true);
+                  }}
                 />
-                {/* <Button
-            size="small"
-            variant="secondary"
-            width="full"
-            onClick={() => {
-              router.push(
-                `https://discord.com/api/oauth2/authorize?client_id=942494607239958609&redirect_uri=${
-                  process.env.DEV_ENV === "local"
-                    ? "http%3A%2F%2Flocalhost%3A3000%2F"
-                    : "https%3A%2F%2Ftribes.spect.network%2F"
-                }&response_type=code&scope=identify`
-              );
-            }}
-          >
-            <Text>
-              {user?.attributes.discordId
-                ? "Discord Connected"
-                : "Link Discord"}
-            </Text>
-          </Button> */}
                 <Box marginTop="2" />
+
+                <PrimaryButton
+                  disabled={!isDirty || uploading || !username}
+                  loading={loading}
+                  icon={<SaveFilled style={{ fontSize: "1.3rem" }} />}
+                  onClick={async () => {
+                    setLoading(true);
+                    await updateProfile({
+                      username,
+                      avatar,
+                    });
+                    if (cId) {
+                      await fetchMemberDetails();
+                    }
+                    setLoading(false);
+                    handleClose();
+                    setIsDirty(false);
+                  }}
+                >
+                  Save Profile
+                </PrimaryButton>
                 {!currentUser?.discordId && (
                   <Link
                     href={`https://discord.com/api/oauth2/authorize?client_id=942494607239958609&redirect_uri=${
