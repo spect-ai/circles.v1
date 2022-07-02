@@ -12,13 +12,13 @@ import { useQuery } from "react-query";
 export default function useModalOptions() {
   const router = useRouter();
   const { circle: cId } = router.query;
-  const { project } = useLocalCard();
   const { data: memberDetails } = useQuery<MemberDetails>(
     ["memberDetails", cId],
     {
       enabled: false,
     }
   );
+  const { project } = useLocalCard();
   const { connectedUser } = useGlobalContext();
   const getOptions = (type: string) => {
     switch (type) {

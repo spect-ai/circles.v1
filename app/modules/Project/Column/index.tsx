@@ -1,7 +1,7 @@
 import { updateColumnDetails } from "@/app/services/Column";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { CardType, ColumnType } from "@/app/types";
-import { Box, Button, IconCog, IconPlusSmall, Stack } from "degen";
+import { Box, Button, IconCog, IconPlusSmall, Stack, Text } from "degen";
 import { AnimatePresence } from "framer-motion";
 import React, { memo, useState } from "react";
 import { Draggable, Droppable } from "react-beautiful-dnd";
@@ -40,7 +40,7 @@ const ScrollContainer = styled(Box)`
 `;
 
 const NameInput = styled.input`
-  width: 100%;
+  width: auto;
   background: transparent;
   border: 0;
   border-style: none;
@@ -76,7 +76,6 @@ function ColumnComponent({ cards, id, column, index }: Props) {
       setColumnTitle(project.columnDetails[column.columnId].name);
       return;
     }
-    console.log("GOTCHA");
     setLocalProject(updatedProject);
   }
 
@@ -123,7 +122,12 @@ function ColumnComponent({ cards, id, column, index }: Props) {
             justifyContent="space-between"
           >
             <Box>
-              <Stack direction="horizontal" space="0">
+              <Stack
+                direction="horizontal"
+                space="0"
+                align="center"
+                justify="space-between"
+              >
                 <NameInput
                   placeholder="Add Title"
                   value={columnTitle}
@@ -131,6 +135,7 @@ function ColumnComponent({ cards, id, column, index }: Props) {
                   onBlur={() => updateColumn()}
                   //   disabled={space.roles[user?.id as string] !== 3}
                 />
+                <Text variant="label">({column.cards.length})</Text>
                 <Button
                   data-tour={`add-card-${column.columnId}-button`}
                   shape="circle"

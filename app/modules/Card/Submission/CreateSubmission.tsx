@@ -3,7 +3,7 @@ import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import useSubmission from "@/app/services/Submission/useSubmission";
 import { SendOutlined } from "@ant-design/icons";
-import { Box, Button, IconDocuments, Stack } from "degen";
+import { Box, IconDocuments, Stack } from "degen";
 import { AnimatePresence } from "framer-motion";
 import React, { useState } from "react";
 import styled from "styled-components";
@@ -23,7 +23,7 @@ const NameInput = styled.input`
   font-weight: 600;
 `;
 
-export default function SubmissionModal() {
+export default function CreateSubmission() {
   const [isOpen, setIsOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");

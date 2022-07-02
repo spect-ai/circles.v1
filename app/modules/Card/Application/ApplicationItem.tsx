@@ -16,9 +16,9 @@ export default function ApplicationItem({ application }: Props) {
   const { getMemberDetails } = useModalOptions();
   const [content, setContent] = useState(application.content);
   const { canTakeAction } = useRoleGate();
-  const { pickApplications, loading } = useApplication();
+  const { pickApplications } = useApplication();
   return (
-    <Accordian name="Application from fren18" defaultOpen={false}>
+    <Accordian name={application.title} defaultOpen={false}>
       <Box
         style={{
           minHeight: "5rem",
@@ -45,7 +45,9 @@ export default function ApplicationItem({ application }: Props) {
         {canTakeAction("cardAssignee") && (
           <PrimaryButton
             onClick={() => {
-              void pickApplications(application.applicationId);
+              void pickApplications({
+                applicationIds: [application.applicationId],
+              });
             }}
           >
             Accept

@@ -2,10 +2,10 @@ import React from "react";
 import { motion } from "framer-motion";
 import { useLocalCard } from "../../Project/CreateCardModal/hooks/LocalCardContext";
 import WorkThread from "./WorkThread";
-import SubmissionModal from "./SubmissionModal";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { Box, Text } from "degen";
 import { fadeVariant } from "../Utils/variants";
+import CreateSubmission from "./CreateSubmission";
 
 export default function Submission() {
   const { workThreadOrder, workThreads } = useLocalCard();
@@ -20,7 +20,7 @@ export default function Submission() {
       transition={{ type: "linear" }}
       className=""
     >
-      {canTakeAction("cardSubmission") && <SubmissionModal />}
+      {canTakeAction("cardSubmission") && <CreateSubmission />}
       {workThreadOrder.map((workThreadId) => (
         <WorkThread key={workThreadId} workThread={workThreads[workThreadId]} />
       ))}

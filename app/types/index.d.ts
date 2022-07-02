@@ -125,6 +125,7 @@ export interface ApplicationType {
   sstatus: "active" | "rejected" | "picked";
   updatedAt: string;
   user: string;
+  title: string;
 }
 
 export interface WorkThreadType {

@@ -19,7 +19,8 @@ export default function useRoleGate() {
     }
     const arr1 = circle?.memberRoles[connectedUser];
     const arr2 = roles;
-    const filteredArray = arr1?.filter((value) => arr2.includes(value));
+    const filteredArray =
+      arr1?.filter && arr1?.filter((value) => arr2.includes(value));
     return (filteredArray && filteredArray?.length > 0) || false;
     // return circle?.memberRoles[connectedUser]?.includes(roles) || false;
   };
@@ -98,7 +99,8 @@ export default function useRoleGate() {
         return (
           (card?.creator === connectedUser ||
             card?.reviewer.includes(connectedUser)) &&
-          card.reward.value > 0
+          card.reward.value > 0 &&
+          card.assignee.length > 0
         );
       case "cardPopoverActions":
         return (

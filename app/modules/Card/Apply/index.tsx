@@ -6,12 +6,29 @@ import { SendOutlined } from "@ant-design/icons";
 import { Box, IconUserSolid, Stack } from "degen";
 import { AnimatePresence } from "framer-motion";
 import { useState } from "react";
-import { applicationTemplate } from "./template";
+import styled from "styled-components";
+
+const NameInput = styled.input`
+  width: 100%;
+  background: transparent;
+  border: 0;
+  border-style: none;
+  border-color: transparent;
+  outline: none;
+  outline-offset: 0;
+  box-shadow: none;
+  font-size: 1.8rem;
+  caret-color: rgb(191, 90, 242);
+  color: rgb(191, 90, 242);
+  font-weight: 600;
+`;
 
 export default function Apply() {
   const [isOpen, setIsOpen] = useState(false);
-  const [content, setContent] = useState(applicationTemplate);
+  const [content, setContent] = useState("");
   const { createApplication, loading } = useApplication();
+
+  const [title, setTitle] = useState("");
   return (
     <>
       <PrimaryButton icon={<IconUserSolid />} onClick={() => setIsOpen(true)}>
@@ -19,17 +36,21 @@ export default function Apply() {
       </PrimaryButton>
       <AnimatePresence>
         {isOpen && (
-          <Modal
-            handleClose={() => setIsOpen(false)}
-            title="Create Application"
-            size="large"
-            height="40rem"
-          >
+          <Modal handleClose={() => setIsOpen(false)} title="Create Submission">
             <Box padding="8">
               <Stack>
+                <NameInput
+                  placeholder="Application Title"
+                  autoFocus
+                  value={title}
+                  onChange={(e) => {
+                    setTitle(e.target.value);
+                  }}
+                />
                 <Box
                   style={{
-                    height: "27rem",
+                    minHeight: "10rem",
+                    maxHeight: "20rem",
                     overflowY: "auto",
                   }}
                   marginTop="2"
@@ -39,21 +60,26 @@ export default function Apply() {
                     onChange={(txt) => {
                       setContent(txt);
                     }}
-                    placeholder="Write your application here"
+                    placeholder="Tell us about your application"
                   />
                 </Box>
-                <PrimaryButton
-                  loading={loading}
-                  icon={<SendOutlined style={{ fontSize: "1.2rem" }} />}
-                  onClick={async () => {
-                    const res = await createApplication({
-                      content,
-                    });
-                    res && setIsOpen(false);
-                  }}
-                >
-                  Send
-                </PrimaryButton>
+                <Stack direction="horizontal">
+                  <Box width="full">
+                    <PrimaryButton
+                      loading={loading}
+                      icon={<SendOutlined style={{ fontSize: "1.2rem" }} />}
+                      onClick={async () => {
+                        const res = await createApplication({
+                          title,
+                          content,
+                        });
+                        res && setIsOpen(false);
+                      }}
+                    >
+                      Send
+                    </PrimaryButton>
+                  </Box>
+                </Stack>
               </Stack>
             </Box>
           </Modal>
