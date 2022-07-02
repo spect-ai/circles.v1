@@ -6,7 +6,7 @@ import CreateCircle from "./CreateCircleModal";
 import Logo from "@/app/common/components/Logo";
 import { HomeOutlined } from "@ant-design/icons";
 import { useQuery } from "react-query";
-import { CircleType, UserType } from "@/app/types";
+import { CircleType } from "@/app/types";
 import { useGlobalContext } from "@/app/context/globalContext";
 
 function Sidebar(): ReactElement {
@@ -85,7 +85,7 @@ function Sidebar(): ReactElement {
             ))}
         </Box>
       )}
-      <CreateCircle />
+      {connectedUser && <CreateCircle />}
     </Box>
   );
 }

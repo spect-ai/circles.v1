@@ -50,7 +50,12 @@ function Project() {
       transition={{ type: "linear" }}
     >
       <Box paddingY="1">
-        <ToastContainer />
+        <ToastContainer
+          toastStyle={{
+            backgroundColor: "rgb(20,20,20)",
+            color: "rgb(255,255,255,0.7)",
+          }}
+        />
         {!onboarded && <Onboarding />}
         <DragDropContext onDragEnd={handleDragEnd}>
           <Droppable

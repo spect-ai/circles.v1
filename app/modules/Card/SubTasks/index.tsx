@@ -17,7 +17,9 @@ export default function SubTasks({ createCard }: Props) {
   return (
     <Box>
       <Accordian
-        name={`Sub Tasks (${childrenTasks?.length || 0})`}
+        name={`Sub Tasks (${
+          createCard ? subTasks.length : childrenTasks?.length || 0
+        })`}
         defaultOpen={childrenTasks.length === 0}
       >
         <Box overflow="hidden">

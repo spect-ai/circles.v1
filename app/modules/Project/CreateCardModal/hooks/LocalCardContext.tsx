@@ -279,7 +279,7 @@ export function useProviderLocalCard({
       void router.push(`/${cId}/${pId}`);
       return true;
     }
-    toast.error("Error archiving card", { theme: "dark" });
+    toast.error("Error archiving card");
     return false;
   };
 

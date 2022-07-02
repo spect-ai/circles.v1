@@ -19,22 +19,21 @@ export default function ExploreSidebar() {
     <Box padding="2">
       <Stack>
         <HeaderButton padding="1" borderRadius="large" width="full">
-          <Stack direction="horizontal" align="center" space="1">
+          <Stack direction="horizontal" align="center">
             <Logo
               href="/"
               src="https://ipfs.moralis.io:2053/ipfs/QmVYsa4KQyRwBSJxQCmD1rDjyqYd1HJKrDfqLk3KMKLEhn"
             />
-            <Text
-              size="extraLarge"
-              weight="semiBold"
-              color="textPrimary"
-              ellipsis
-            >
+            <Text weight="semiBold" size="headingTwo" ellipsis>
               Circles
             </Text>
           </Stack>
         </HeaderButton>
-        <Container>{!connectedUser && <ConnectModal />}</Container>
+        <Container>
+          <Box marginTop="2" marginX="1">
+            {!connectedUser && <ConnectModal />}
+          </Box>
+        </Container>
       </Stack>
     </Box>
   );

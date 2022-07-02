@@ -5,13 +5,14 @@ import useJoinCircle from "@/app/services/JoinCircle/useJoinCircle";
 import useExploreOnboarding from "@/app/services/Onboarding/useExploreOnboarding";
 import useConnectDiscord from "@/app/services/Profile/useConnectDiscord";
 import { CircleType } from "@/app/types";
-import { Avatar, Box, Button, Stack, Text } from "degen";
+import { Avatar, Box, Button, IconSearch, Input, Stack, Text } from "degen";
 import { useRouter } from "next/router";
 import { Container, Row, Col } from "react-grid-system";
 import { useQuery } from "react-query";
 import { ToastContainer } from "react-toastify";
 import styled from "styled-components";
 import Onboarding from "./ExploreOnboarding";
+import ExploreOptions from "./ExploreOptions";
 
 const ScrollContainer = styled(Box)`
   ::-webkit-scrollbar {
@@ -50,9 +51,22 @@ export default function Explore() {
   }
 
   return (
-    <ScrollContainer padding="8">
+    <ScrollContainer padding="2" theme="dark">
       {!onboarded && connectedUser && <Onboarding />}
-      <ToastContainer />
+      <ToastContainer
+        toastStyle={{
+          backgroundColor: "rgb(20,20,20)",
+          color: "rgb(255,255,255,0.7)",
+        }}
+      />
+      <Box width="1/2" paddingY="4" paddingX="8" marginLeft="1.5">
+        <Input
+          label=""
+          placeholder="Explore"
+          prefix={<IconSearch />}
+          suffix={<ExploreOptions />}
+        />
+      </Box>
       <GridContainer>
         <Row>
           {circles?.map &&

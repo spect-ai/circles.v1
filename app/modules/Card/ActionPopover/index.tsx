@@ -37,7 +37,7 @@ type PopoverOptionProps = {
 
 export const PopoverOption = ({ children, onClick }: PopoverOptionProps) => (
   <PopoverOptionContainer
-    padding="3"
+    padding="4"
     overflow="hidden"
     cursor="pointer"
     onClick={onClick}
@@ -86,7 +86,6 @@ export default function ActionPopover() {
             backgroundColor="background"
             borderWidth="0.5"
             borderRadius="2xLarge"
-            width="36"
           >
             <PopoverOption onClick={() => {}}>
               <Stack direction="horizontal" space="2">

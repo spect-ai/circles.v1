@@ -110,6 +110,13 @@ export default function DefaultPayment() {
             Save
           </PrimaryButton>
         </Box>
+        <Stack>
+          <Box>
+            <Heading>Token Approvals</Heading>
+            <Text>Set approvals for tokens you wish to use for payments</Text>
+          </Box>
+          <Text size="extraLarge">Approved Tokens</Text>
+        </Stack>
       </Stack>
     </Stack>
   );

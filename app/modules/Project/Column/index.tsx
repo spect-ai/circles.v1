@@ -72,7 +72,7 @@ function ColumnComponent({ cards, id, column, index }: Props) {
       }
     );
     if (!updatedProject) {
-      toast.error("Error updating column", { theme: "dark" });
+      toast.error("Error updating column");
       setColumnTitle(project.columnDetails[column.columnId].name);
       return;
     }

@@ -49,7 +49,7 @@ export default function ProjectSettings() {
       .then(async (res) => {
         const data = await res.json();
         if (data.id) {
-          toast("Project updated successfully", { theme: "dark" });
+          toast("Project updated successfully");
         }
         queryClient.setQueryData(["project", pId], data);
         console.log({ data });
@@ -74,7 +74,7 @@ export default function ProjectSettings() {
       .then(async (res) => {
         const data = await res.json();
         if (data.id) {
-          toast("Project deleted successfully", { theme: "dark" });
+          toast("Project deleted successfully");
         }
         queryClient.setQueryData(["project", pId], null);
         console.log({ data });

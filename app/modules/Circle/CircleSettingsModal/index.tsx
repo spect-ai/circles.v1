@@ -7,8 +7,7 @@ import { CircleType } from "@/app/types";
 import { Box, Input, MediaPicker, Stack, Textarea } from "degen";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
-import { useMutation, useQuery, useQueryClient } from "react-query";
-import { toast } from "react-toastify";
+import { useQuery, useQueryClient } from "react-query";
 import Contributors from "../ContributorsModal/Contributors";
 import DefaultPayment from "../DefaultPayment";
 

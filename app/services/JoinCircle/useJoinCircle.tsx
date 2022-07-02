@@ -2,7 +2,6 @@ import { useGlobalContext } from "@/app/context/globalContext";
 import { UserType } from "@/app/types";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
-import { useQuery } from "react-query";
 import { toast } from "react-toastify";
 import { joinCircleFromInvite } from ".";
 
@@ -21,17 +20,15 @@ export default function useJoinCircle() {
         );
         if (res.id) {
           void router.push(`/${res.slug}`);
-          toast("You have joined the circle!", { theme: "dark" });
+          toast("You have joined the circle!");
         } else {
-          toast.error("Something went wrong", { theme: "dark" });
+          toast.error("Something went wrong");
         }
       };
       void asyncJoin();
     }
-    if (inviteCode && !connectedUser) {
-      toast.error("You must connect your wallet to join a circle", {
-        theme: "dark",
-      });
+    if (inviteCode && connectedUser === undefined) {
+      toast.error("You must connect your wallet to join a circle");
     }
   }, [inviteCode, circleId, connectedUser, router]);
 }

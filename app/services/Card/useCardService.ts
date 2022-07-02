@@ -100,6 +100,6 @@ export default function useCardService() {
 //   // .catch((err) => {
 //   //   console.log({ err });
 //   //   setUpdating(false);
-//   //   toast.error("Error updating card", { theme: "dark" });
+//   //   toast.error("Error updating card");
 //   // });
 // }

@@ -94,7 +94,12 @@ function Card() {
           boxShadow: "0px 0px 10px 0.1rem rgba(0, 0, 0, 0.1)",
         }}
       >
-        <ToastContainer />
+        <ToastContainer
+          toastStyle={{
+            backgroundColor: "rgb(20,20,20)",
+            color: "rgb(255,255,255,0.7)",
+          }}
+        />
         <Box padding="1" borderBottomWidth="0.375">
           <Stack direction="horizontal">
             <Link href={`/${cId}/${pId}`}>

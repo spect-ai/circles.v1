@@ -41,7 +41,12 @@ export default function Circle() {
   return (
     <BoxContainer padding="8">
       {!onboarded && <Onboarding />}
-      <ToastContainer />
+      <ToastContainer
+        toastStyle={{
+          backgroundColor: "rgb(20,20,20)",
+          color: "rgb(255,255,255,0.7)",
+        }}
+      />
       <Stack>
         <Heading>Description</Heading>
         <Text>{circle?.description}</Text>

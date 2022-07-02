@@ -46,7 +46,7 @@ function EditTag({
             icon={icon}
             onClick={() => {
               if (disabled) {
-                toast.error("Cannot edit", { theme: "dark" });
+                toast.error("Cannot edit");
                 return;
               }
               setModalOpen(true);

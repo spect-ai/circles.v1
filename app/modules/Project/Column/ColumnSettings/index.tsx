@@ -29,7 +29,7 @@ export default function ColumnSettings({ column, handleClose }: Props) {
       }
     );
     if (!updatedProject) {
-      toast.error("Error updating column", { theme: "dark" });
+      toast.error("Error updating column");
       return;
     }
     console.log("GOTCHA");
@@ -39,7 +39,7 @@ export default function ColumnSettings({ column, handleClose }: Props) {
   const onDelete = async () => {
     const updatedProject = await deleteColumn(project.id, column.columnId);
     if (!updatedProject) {
-      toast.error("Error updating column", { theme: "dark" });
+      toast.error("Error updating column");
       return;
     }
     console.log("GOTCHA");

@@ -53,6 +53,7 @@ function InviteMemberModal() {
               display="flex"
               flexDirection="column"
               alignItems="center"
+              width="full"
             >
               <Stack>
                 <Text align="center">Role</Text>
@@ -83,57 +84,61 @@ function InviteMemberModal() {
                   ))}
                 </Stack>
                 <Accordian name="Advance options" defaultOpen={false}>
-                  <Text align="center">Uses</Text>
-                  <Stack direction="horizontal">
-                    {usesOptions.map((option) => (
-                      <motion.button
-                        key={option.name}
-                        onClick={() => setUses(option)}
-                        style={{
-                          background: "transparent",
-                          border: "none",
-                          cursor: "pointer",
-                          padding: "0rem",
-                        }}
-                      >
-                        <Tag
-                          tone={
-                            uses?.name === option.name ? "accent" : "secondary"
-                          }
+                  <Stack>
+                    <Text align="center">Uses</Text>
+                    <Stack direction="horizontal">
+                      {usesOptions.map((option) => (
+                        <motion.button
+                          key={option.name}
+                          onClick={() => setUses(option)}
+                          style={{
+                            background: "transparent",
+                            border: "none",
+                            cursor: "pointer",
+                            padding: "0rem",
+                          }}
                         >
-                          <Box paddingX="2">{option.name}</Box>
-                        </Tag>
-                      </motion.button>
-                    ))}
-                  </Stack>
-                  <Text align="center">Expiry</Text>
-                  <Stack direction="horizontal">
-                    {expiryOptions.map((option) => (
-                      <motion.button
-                        key={option.name}
-                        whileHover={{
-                          scale: 1.03,
-                        }}
-                        whileTap={{ scale: 0.97 }}
-                        onClick={() => setExpiry(option)}
-                        style={{
-                          background: "transparent",
-                          border: "none",
-                          cursor: "pointer",
-                          padding: "0rem",
-                        }}
-                      >
-                        <Tag
-                          tone={
-                            expiry?.name === option.name
-                              ? "accent"
-                              : "secondary"
-                          }
+                          <Tag
+                            tone={
+                              uses?.name === option.name
+                                ? "accent"
+                                : "secondary"
+                            }
+                          >
+                            <Box paddingX="2">{option.name}</Box>
+                          </Tag>
+                        </motion.button>
+                      ))}
+                    </Stack>
+                    <Text align="center">Expiry</Text>
+                    <Stack direction="horizontal">
+                      {expiryOptions.map((option) => (
+                        <motion.button
+                          key={option.name}
+                          whileHover={{
+                            scale: 1.03,
+                          }}
+                          whileTap={{ scale: 0.97 }}
+                          onClick={() => setExpiry(option)}
+                          style={{
+                            background: "transparent",
+                            border: "none",
+                            cursor: "pointer",
+                            padding: "0rem",
+                          }}
                         >
-                          <Box paddingX="2">{option.name}</Box>
-                        </Tag>
-                      </motion.button>
-                    ))}
+                          <Tag
+                            tone={
+                              expiry?.name === option.name
+                                ? "accent"
+                                : "secondary"
+                            }
+                          >
+                            <Box paddingX="2">{option.name}</Box>
+                          </Tag>
+                        </motion.button>
+                      ))}
+                    </Stack>
                   </Stack>
                 </Accordian>
                 <PrimaryButton

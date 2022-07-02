@@ -42,16 +42,18 @@ export default function ApplicationItem({ application }: Props) {
           disabled
           // disabled={!canTakeAction("cardSubmission") || isDisabled}
         />
-        {canTakeAction("cardAssignee") && (
-          <PrimaryButton
-            onClick={() => {
-              void pickApplications({
-                applicationIds: [application.applicationId],
-              });
-            }}
-          >
-            Accept
-          </PrimaryButton>
+        {canTakeAction("acceptApplication") && (
+          <Box width="1/4">
+            <PrimaryButton
+              onClick={() => {
+                void pickApplications({
+                  applicationIds: [application.applicationId],
+                });
+              }}
+            >
+              Accept
+            </PrimaryButton>
+          </Box>
         )}
       </Box>
     </Accordian>

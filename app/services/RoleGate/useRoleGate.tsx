@@ -52,6 +52,12 @@ export default function useRoleGate() {
           card?.creator === connectedUser ||
           card?.reviewer.includes(connectedUser)
         );
+      case "acceptApplication":
+        return (
+          (card?.creator === connectedUser ||
+            card?.reviewer.includes(connectedUser)) &&
+          card.assignee.length === 0
+        );
       case "cardReviewer":
         return card?.creator === connectedUser;
       case "cardReward":
@@ -100,7 +106,8 @@ export default function useRoleGate() {
           (card?.creator === connectedUser ||
             card?.reviewer.includes(connectedUser)) &&
           card.reward.value > 0 &&
-          card.assignee.length > 0
+          card.assignee.length > 0 &&
+          !card.status.paid
         );
       case "cardPopoverActions":
         return (

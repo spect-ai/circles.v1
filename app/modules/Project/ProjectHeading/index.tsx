@@ -16,16 +16,16 @@ export const IconButton = styled(Box)`
 `;
 
 function ProjectHeading() {
-  const { localProject: project, loading } = useLocalProject();
+  const { localProject: project } = useLocalProject();
   const { setIsSidebarExpanded, isSidebarExpanded } = useGlobalContext();
   const router = useRouter();
-  const { circle: cId, project: pId, card: tId } = router.query;
-  console.log({ project });
+  const { circle: cId } = router.query;
   return (
     <Box
       width="full"
       paddingY="4"
-      paddingX="8"
+      paddingRight="8"
+      paddingLeft="5"
       borderBottomWidth="0.375"
       backgroundColor="background"
       display="flex"

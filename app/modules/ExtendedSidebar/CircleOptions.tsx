@@ -1,4 +1,5 @@
 import Popover from "@/app/common/components/Popover";
+import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { CircleType, ProjectType } from "@/app/types";
 import { AppstoreOutlined } from "@ant-design/icons";
 import { Avatar, Box, IconCog, IconUsersSolid, Stack, Text } from "degen";
@@ -24,6 +25,8 @@ export default function CircleOptions() {
   const [settingsModalOpen, setSettingsModalOpen] = useState(false);
   const [contributorsModalOpen, setContributorsModalOpen] = useState(false);
 
+  const { canDo } = useRoleGate();
+
   return (
     <>
       <AnimatePresence>
@@ -43,14 +46,14 @@ export default function CircleOptions() {
             borderRadius="large"
             width="full"
             onClick={() => {
-              setIsOpen(!isOpen);
+              canDo(["steward"]) && setIsOpen(true);
             }}
           >
-            <Stack direction="horizontal" align="center" space="1">
+            <Stack direction="horizontal" align="center">
               <Avatar
                 src={circle?.avatar || ""}
                 label=""
-                size="9"
+                size="10"
                 placeholder={!circle?.avatar}
               />
               <Text size="extraLarge" weight="semiBold" ellipsis>
