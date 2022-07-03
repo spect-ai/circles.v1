@@ -27,7 +27,7 @@ export default function CardColumn() {
   return (
     <EditTag
       tourId="create-card-modal-column"
-      name={project?.columnDetails[columnId]?.name}
+      name={project?.columnDetails[columnId]?.name as string}
       modalTitle="Select Column"
       label="Column"
       modalOpen={modalOpen}

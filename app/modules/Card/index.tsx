@@ -152,12 +152,10 @@ function Card() {
                     const index = project?.columnDetails[
                       columnId
                     ].cards.findIndex((c) => c === card?.id);
-                    console.log({ index });
                     const nextCard =
                       project.cards[
                         project?.columnDetails[columnId].cards[index + 1]
                       ];
-                    console.log({ nextCard });
                     if (nextCard) {
                       void router.push(`/${cId}/${pId}/${nextCard.slug}`);
                     }
