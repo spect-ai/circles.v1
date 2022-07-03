@@ -111,7 +111,7 @@ export function useProviderLocalCard({
   const { data: circle } = useQuery<CircleType>(["circle", cId], {
     enabled: false,
   });
-  const { data: project, isLoading } = useQuery<ProjectType>(["project", pId], {
+  const { data: project } = useQuery<ProjectType>(["project", pId], {
     enabled: false,
   });
 
@@ -179,13 +179,15 @@ export function useProviderLocalCard({
     const fetchData = async () => {
       setLoading(true);
       await fetchCard();
-      setLoading(false);
     };
-    void fetchData();
-  }, [tId]);
+    if (project?.id) {
+      void fetchData();
+    }
+  }, [tId, project]);
 
   useEffect(() => {
-    if (!createCard && card && card.id && !isLoading) {
+    console.log({ card });
+    if (!createCard && card && card.id) {
       setTitle(card.title);
       setDescription(card.description);
       setLabels(card.labels);
@@ -205,8 +207,9 @@ export function useProviderLocalCard({
       setApplicationOrder(card.applicationOrder);
       setChildrenTasks(card.children);
       setParent(card.parent);
+      setLoading(false);
     }
-  }, [card, createCard, isLoading]);
+  }, [card, createCard]);
 
   const onSubmit = async (createAnother: boolean) => {
     const payload: { [key: string]: any } = {
@@ -252,7 +255,7 @@ export function useProviderLocalCard({
 
   const onCardUpdate = async () => {
     console.log("----update------");
-    if (!card) return;
+    if (!card?.id) return;
     const payload: { [key: string]: any } = {
       title,
       description,

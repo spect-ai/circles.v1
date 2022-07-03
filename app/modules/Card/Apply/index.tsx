@@ -2,10 +2,13 @@ import Editor from "@/app/common/components/Editor";
 import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import useApplication from "@/app/services/Apply/useApplication";
+import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
+import { MemberDetails } from "@/app/types";
 import { SendOutlined } from "@ant-design/icons";
 import { Box, IconUserSolid, Stack } from "degen";
 import { AnimatePresence } from "framer-motion";
 import { useState } from "react";
+import { useQuery } from "react-query";
 import styled from "styled-components";
 
 const NameInput = styled.input`
@@ -29,6 +32,8 @@ export default function Apply() {
   const { createApplication, loading } = useApplication();
 
   const [title, setTitle] = useState("");
+
+  const { fetchMemberDetails } = useModalOptions();
   return (
     <>
       <PrimaryButton icon={<IconUserSolid />} onClick={() => setIsOpen(true)}>
@@ -66,6 +71,7 @@ export default function Apply() {
                 <Stack direction="horizontal">
                   <Box width="full">
                     <PrimaryButton
+                      disabled={!title || !content}
                       loading={loading}
                       icon={<SendOutlined style={{ fontSize: "1.2rem" }} />}
                       onClick={async () => {
@@ -74,6 +80,7 @@ export default function Apply() {
                           content,
                         });
                         res && setIsOpen(false);
+                        fetchMemberDetails();
                       }}
                     >
                       Send

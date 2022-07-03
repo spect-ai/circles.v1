@@ -12,7 +12,7 @@ import { useQuery } from "react-query";
 export default function useModalOptions() {
   const router = useRouter();
   const { circle: cId } = router.query;
-  const { data: memberDetails } = useQuery<MemberDetails>(
+  const { data: memberDetails, refetch } = useQuery<MemberDetails>(
     ["memberDetails", cId],
     {
       enabled: false,
@@ -20,6 +20,11 @@ export default function useModalOptions() {
   );
   const { project } = useLocalCard();
   const { connectedUser } = useGlobalContext();
+
+  const fetchMemberDetails = () => {
+    void refetch;
+  };
+
   const getOptions = (type: string) => {
     switch (type) {
       case "card":
@@ -34,8 +39,8 @@ export default function useModalOptions() {
           };
         });
       case "column":
-        return project.columnOrder?.map((column: string) => ({
-          name: project.columnDetails[column].name,
+        return project?.columnOrder?.map((column: string) => ({
+          name: project?.columnDetails[column].name,
           value: column,
         }));
       case "assignee":
@@ -76,5 +81,6 @@ export default function useModalOptions() {
   return {
     getOptions,
     getMemberDetails,
+    fetchMemberDetails,
   };
 }

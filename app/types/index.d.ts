@@ -49,7 +49,7 @@ export interface CircleType {
   defaultPayment: Payment;
   description: string;
   id: string;
-  members: string[];
+  members: UserType[];
   name: string;
   parents: Circle[];
   private: boolean;
@@ -114,6 +114,7 @@ export interface CardType {
     [applicationId: string]: ApplicationType;
   };
   applicationOrder: string[];
+  myApplication?: ApplicationType;
   children: CardType[];
   parent: CardType;
 }

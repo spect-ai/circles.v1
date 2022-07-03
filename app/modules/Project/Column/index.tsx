@@ -3,7 +3,7 @@ import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { CardType, ColumnType } from "@/app/types";
 import { Box, Button, IconCog, IconPlusSmall, Stack, Text } from "degen";
 import { AnimatePresence } from "framer-motion";
-import React, { memo, useState } from "react";
+import React, { memo, useEffect, useState } from "react";
 import { Draggable, Droppable } from "react-beautiful-dnd";
 import { toast } from "react-toastify";
 import styled from "styled-components";
@@ -56,7 +56,7 @@ const NameInput = styled.input`
 `;
 
 function ColumnComponent({ cards, id, column, index }: Props) {
-  const [columnTitle, setColumnTitle] = useState(column.name);
+  const [columnTitle, setColumnTitle] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [isDirty, setIsDirty] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -78,6 +78,10 @@ function ColumnComponent({ cards, id, column, index }: Props) {
     }
     setLocalProject(updatedProject);
   }
+
+  useEffect(() => {
+    setColumnTitle(project.columnDetails[column.columnId].name);
+  }, [project.columnDetails, column.columnId]);
 
   return (
     <>

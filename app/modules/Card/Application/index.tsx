@@ -5,7 +5,7 @@ import { fadeVariant } from "../Utils/variants";
 import ApplicationItem from "./ApplicationItem";
 
 export default function Application() {
-  const { application, applicationOrder } = useLocalCard();
+  const { application, applicationOrder, card } = useLocalCard();
   return (
     <motion.main
       variants={fadeVariant}
@@ -17,12 +17,19 @@ export default function Application() {
       key="editor"
     >
       <Box>
-        {applicationOrder.map((applicationId) => (
+        {card?.myApplication && (
           <ApplicationItem
-            key={applicationId}
-            application={application[applicationId]}
+            key={card.myApplication.applicationId}
+            application={card.myApplication}
           />
-        ))}
+        )}
+        {!card?.myApplication &&
+          applicationOrder.map((applicationId) => (
+            <ApplicationItem
+              key={applicationId}
+              application={application[applicationId]}
+            />
+          ))}
         {applicationOrder.length === 0 && (
           <Text variant="large" weight="semiBold">
             No Applications received yet

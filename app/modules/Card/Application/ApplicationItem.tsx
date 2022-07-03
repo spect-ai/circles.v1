@@ -5,7 +5,7 @@ import useApplication from "@/app/services/Apply/useApplication";
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { ApplicationType } from "@/app/types";
-import { Avatar, Box, Stack } from "degen";
+import { Avatar, Box, IconCheck, Stack } from "degen";
 import React, { useState } from "react";
 
 type Props = {
@@ -46,8 +46,9 @@ export default function ApplicationItem({ application }: Props) {
         </Box>
       </Stack>
       {canTakeAction("acceptApplication") && (
-        <Box width="1/4">
+        <Box width="1/3">
           <PrimaryButton
+            icon={<IconCheck />}
             onClick={() => {
               void pickApplications({
                 applicationIds: [application.applicationId],

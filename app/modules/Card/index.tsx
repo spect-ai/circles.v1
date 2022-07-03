@@ -75,6 +75,7 @@ function Card() {
     onCardUpdate,
     card,
     cardType,
+    columnId,
   } = useLocalCard();
 
   const { canTakeAction } = useRoleGate();
@@ -123,6 +124,21 @@ function Card() {
                 borderRightWidth="0.375"
                 paddingX="2"
                 borderLeftRadius="large"
+                onClick={() => {
+                  // get current card index
+                  if (project) {
+                    const index = project?.columnDetails[
+                      columnId
+                    ].cards.findIndex((c) => c === card?.id);
+                    const prevCard =
+                      project.cards[
+                        project?.columnDetails[columnId].cards[index - 1]
+                      ];
+                    if (prevCard) {
+                      void router.push(`/${cId}/${pId}/${prevCard.slug}`);
+                    }
+                  }
+                }}
               >
                 <IconChevronUp />
               </IconButton>
@@ -130,6 +146,23 @@ function Card() {
                 color="textSecondary"
                 paddingX="2"
                 borderRightRadius="large"
+                onClick={() => {
+                  // get current card index
+                  if (project) {
+                    const index = project?.columnDetails[
+                      columnId
+                    ].cards.findIndex((c) => c === card?.id);
+                    console.log({ index });
+                    const nextCard =
+                      project.cards[
+                        project?.columnDetails[columnId].cards[index + 1]
+                      ];
+                    console.log({ nextCard });
+                    if (nextCard) {
+                      void router.push(`/${cId}/${pId}/${nextCard.slug}`);
+                    }
+                  }
+                }}
               >
                 <IconChevronDown />
               </IconButton>

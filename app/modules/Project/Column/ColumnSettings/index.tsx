@@ -16,7 +16,7 @@ interface Props {
 
 export default function ColumnSettings({ column, handleClose }: Props) {
   const [name, setName] = useState(column.name);
-  const { localProject: project, setLocalProject } = useLocalProject();
+  const { localProject: project, updateProject } = useLocalProject();
   const [showConfirm, setShowConfirm] = useState(false);
 
   const onSave = async () => {
@@ -28,11 +28,13 @@ export default function ColumnSettings({ column, handleClose }: Props) {
         name,
       }
     );
+    console.log({ updatedProject });
     if (!updatedProject) {
       toast.error("Error updating column");
       return;
     }
-    setLocalProject(updatedProject);
+    updateProject(updatedProject);
+    handleClose();
   };
 
   const onDelete = async () => {
@@ -41,7 +43,7 @@ export default function ColumnSettings({ column, handleClose }: Props) {
       toast.error("Error updating column");
       return;
     }
-    setLocalProject(updatedProject);
+    updateProject(updatedProject);
   };
   return (
     <Modal handleClose={handleClose} title="Column Settings">

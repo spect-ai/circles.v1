@@ -119,11 +119,13 @@ export default function useRoleGate() {
           !(
             card?.creator === connectedUser ||
             card?.reviewer.includes(connectedUser)
-          ) && card.assignee.length === 0
+          ) &&
+          card.assignee.length === 0 &&
+          !card.myApplication
         );
       case "assignToMe":
         return (
-          card.assignee.length === 0 && circle?.members.includes(connectedUser)
+          card.assignee.length === 0 && circleMembers?.includes(connectedUser)
         );
       default:
         return false;

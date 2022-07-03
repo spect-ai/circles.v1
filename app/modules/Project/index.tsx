@@ -82,7 +82,7 @@ function Project() {
                     );
                   })}
                   {provided.placeholder}
-                  {project.id && canDo(["steward"]) && (
+                  {project?.id && canDo(["steward"]) && (
                     <Box style={{ width: "20rem" }} marginTop="2">
                       <PrimaryButton
                         variant="tertiary"
