@@ -1,5 +1,5 @@
 import Link from "next/link";
-import React, { ReactElement, useEffect } from "react";
+import React, { ReactElement, useEffect, useState } from "react";
 import { Box, Button } from "degen";
 import { useRouter } from "next/router";
 import CreateCircle from "./CreateCircleModal";
@@ -8,6 +8,7 @@ import { HomeOutlined } from "@ant-design/icons";
 import { useQuery } from "react-query";
 import { CircleType } from "@/app/types";
 import { useGlobalContext } from "@/app/context/globalContext";
+import CollapseButton from "../ExtendedSidebar/CollapseButton";
 
 function Sidebar(): ReactElement {
   const router = useRouter();
@@ -15,7 +16,8 @@ function Sidebar(): ReactElement {
   const { isLoading } = useQuery<CircleType>(["circle", cId], {
     enabled: false,
   });
-  const { connectedUser } = useGlobalContext();
+  const { connectedUser, isSidebarExpanded } = useGlobalContext();
+  const [showCollapseButton, setShowCollapseButton] = useState(false);
 
   const {
     data: myCircles,
@@ -42,9 +44,12 @@ function Sidebar(): ReactElement {
       flexDirection="column"
       borderRightWidth="0.375"
       paddingX="2"
-      // onMouseEnter={() => {
-      //   setIsSidebarExpanded(true);
-      // }}
+      onMouseEnter={() => {
+        !isSidebarExpanded && setShowCollapseButton(true);
+      }}
+      onMouseLeave={() => {
+        setShowCollapseButton(false);
+      }}
       transitionDuration="500"
     >
       {/* <Box borderBottomWidth="0.375" paddingTop="3">
@@ -67,6 +72,12 @@ function Sidebar(): ReactElement {
           </Button>
         </Link>
       </Box>
+      <CollapseButton
+        show={showCollapseButton}
+        setShowCollapseButton={setShowCollapseButton}
+        top="2.5rem"
+        left="2.5rem"
+      />
       {isLoading ? (
         <div />
       ) : (

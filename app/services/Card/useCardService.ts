@@ -1,3 +1,4 @@
+import { CardType } from "@/app/types";
 import { useState } from "react";
 import { toast } from "react-toastify";
 
@@ -24,7 +25,10 @@ export default function useCardService() {
     return data;
   };
 
-  const updateCard = async (payload: any, cardId: string): Promise<any> => {
+  const updateCard = async (
+    payload: Partial<CardType>,
+    cardId: string
+  ): Promise<any> => {
     setUpdating(true);
     const res = await fetch(`${process.env.API_HOST}/card/${cardId}`, {
       method: "PATCH",

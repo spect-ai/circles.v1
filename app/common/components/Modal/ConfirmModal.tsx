@@ -25,10 +25,12 @@ export default function ConfirmModal({
           </Text>
           <Stack direction="horizontal">
             <Box width="full">
-              <PrimaryButton onClick={onCancel}>Cancel</PrimaryButton>
+              <PrimaryButton onClick={onCancel} variant="tertiary">
+                Cancel
+              </PrimaryButton>
             </Box>
             <Box width="full">
-              <PrimaryButton onClick={onConfirm}>Confirm</PrimaryButton>
+              <PrimaryButton onClick={onConfirm}>Yes</PrimaryButton>
             </Box>
           </Stack>
         </Stack>

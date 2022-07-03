@@ -44,8 +44,8 @@ export default function BatchPay({ card }: Props) {
 
   useEffect(() => {
     // set token card and stuff and skip the step dependig on the card reward token address
-    if (card) {
-      if (card.reward.token.address === "0x0") {
+    if (card && isOpen) {
+      if (card.reward?.token.address === "0x0") {
         setCurrencyCards([card.id]);
         setBatchPayInfo({
           approval: {
@@ -83,7 +83,7 @@ export default function BatchPay({ card }: Props) {
         setStep(2);
       }
     }
-  }, []);
+  }, [isOpen]);
 
   return (
     <BatchPayContext.Provider value={context}>

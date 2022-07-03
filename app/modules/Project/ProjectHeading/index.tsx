@@ -33,20 +33,6 @@ function ProjectHeading() {
       justifyContent="space-between"
     >
       <Stack direction="horizontal" align="center">
-        {!isSidebarExpanded && cId && (
-          <SlideButtonContainer
-            transitionDuration="300"
-            style={{
-              transform: isSidebarExpanded ? "rotate(180deg)" : "rotate(0deg)",
-              marginLeft: "-2rem",
-            }}
-            cursor="pointer"
-            color="textSecondary"
-            onClick={() => setIsSidebarExpanded(!isSidebarExpanded)}
-          >
-            <DoubleRightOutlined style={{ fontSize: "1.1rem" }} />
-          </SlideButtonContainer>
-        )}
         <Text size="extraLarge" weight="semiBold">
           {project?.name}
         </Text>

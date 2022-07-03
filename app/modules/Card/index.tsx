@@ -33,6 +33,7 @@ import ActionPopover from "./ActionPopover";
 import Activity from "./Activity";
 import Application from "./Application";
 import Apply from "./Apply";
+import AssignToMe from "./AssignToMe";
 import Submission from "./Submission";
 import SubTasks from "./SubTasks";
 
@@ -83,7 +84,8 @@ function Card() {
 
   const router = useRouter();
   const { circle: cId, project: pId, card: tId } = router.query;
-  console.log({ loading });
+
+  const [isDirty, setIsDirty] = useState(false);
 
   return (
     <Box padding="4">
@@ -163,9 +165,13 @@ function Card() {
                       disabled={!canTakeAction("cardTitle")}
                       onChange={(e) => {
                         setTitle(e.target.value);
+                        setIsDirty(true);
                       }}
                       onBlur={() => {
-                        void onCardUpdate();
+                        if (isDirty) {
+                          void onCardUpdate();
+                          setIsDirty(false);
+                        }
                       }}
                     />
                     {canTakeAction("cardPopoverActions") && <ActionPopover />}
@@ -190,12 +196,17 @@ function Card() {
                       <Editor
                         value={description}
                         onChange={(txt) => {
+                          setIsDirty(true);
                           setDescription(txt);
                         }}
                         placeholder="Add a description"
                         disabled={!canTakeAction("cardDescription")}
                         onBlur={() => {
-                          void onCardUpdate();
+                          if (isDirty) {
+                            console.log("blur");
+                            void onCardUpdate();
+                            setIsDirty(false);
+                          }
                         }}
                       />
                     )}
@@ -239,6 +250,9 @@ function Card() {
                   {canTakeAction("cardPayment") && <BatchPay card={card} />}
                   {cardType === "Bounty" && canTakeAction("cardApply") && (
                     <Apply />
+                  )}
+                  {cardType === "Task" && canTakeAction("assignToMe") && (
+                    <AssignToMe />
                   )}
                 </Stack>
               )}

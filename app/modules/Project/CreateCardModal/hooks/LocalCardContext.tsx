@@ -66,7 +66,7 @@ type CreateCardContextType = {
   setChildrenTasks: React.Dispatch<React.SetStateAction<CardType[]>>;
   parent: CardType;
   setParent: React.Dispatch<React.SetStateAction<CardType>>;
-  project: ProjectType;
+  project: ProjectType | undefined;
   onCardUpdate: () => Promise<void>;
   activity: Activity[];
   setActivity: React.Dispatch<React.SetStateAction<Activity[]>>;
@@ -111,18 +111,24 @@ export function useProviderLocalCard({
   const { data: circle } = useQuery<CircleType>(["circle", cId], {
     enabled: false,
   });
-  const { data: project, isLoading }: any = useQuery<ProjectType>(
-    ["project", pId],
+  const { data: project, isLoading } = useQuery<ProjectType>(["project", pId], {
+    enabled: false,
+  });
+
+  const { updateProject } = useLocalProject();
+
+  const { data: card, refetch: fetchCard } = useQuery<CardType>(
+    ["card", tId],
+    () =>
+      fetch(
+        `${process.env.API_HOST}/card/byProjectAndSlug/${project?.id}/${
+          tId as string
+        }`
+      ).then((res) => res.json()),
     {
       enabled: false,
     }
   );
-
-  const { updateProject } = useLocalProject();
-
-  const { data: card } = useQuery<CardType>(["card", tId], {
-    enabled: false,
-  });
 
   const { connectedUser } = useGlobalContext();
   const queryClient = useQueryClient();
@@ -170,9 +176,16 @@ export function useProviderLocalCard({
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!createCard && card && card.id && !isLoading) {
-      console.log("setloading");
+    const fetchData = async () => {
       setLoading(true);
+      await fetchCard();
+      setLoading(false);
+    };
+    void fetchData();
+  }, [tId]);
+
+  useEffect(() => {
+    if (!createCard && card && card.id && !isLoading) {
       setTitle(card.title);
       setDescription(card.description);
       setLabels(card.labels);
@@ -192,7 +205,6 @@ export function useProviderLocalCard({
       setApplicationOrder(card.applicationOrder);
       setChildrenTasks(card.children);
       setParent(card.parent);
-      setLoading(false);
     }
   }, [card, createCard, isLoading]);
 
@@ -239,6 +251,7 @@ export function useProviderLocalCard({
   };
 
   const onCardUpdate = async () => {
+    console.log("----update------");
     if (!card) return;
     const payload: { [key: string]: any } = {
       title,

@@ -49,7 +49,7 @@ export interface CircleType {
   defaultPayment: Payment;
   description: string;
   id: string;
-  members: UserType[];
+  members: string[];
   name: string;
   parents: Circle[];
   private: boolean;

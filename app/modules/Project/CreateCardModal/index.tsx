@@ -155,11 +155,11 @@ export default function CreateCardModal({
               data-tour="create-card-modal-button"
               size="small"
               width="1/3"
+              variant="tertiary"
               onClick={() => {
                 void onSubmit(false);
                 setIsDirty(false);
               }}
-              variant="secondary"
               disabled={!title}
             >
               Create Card

@@ -90,8 +90,6 @@ export default function useRoleGate() {
       case "cardComment":
         return circleMembers?.includes(connectedUser) || false;
       case "cardSubmission":
-        console.log(card.assignee);
-        console.log(connectedUser);
         return card?.assignee.includes(connectedUser);
       case "cardRevision":
         return (
@@ -122,6 +120,10 @@ export default function useRoleGate() {
             card?.creator === connectedUser ||
             card?.reviewer.includes(connectedUser)
           ) && card.assignee.length === 0
+        );
+      case "assignToMe":
+        return (
+          card.assignee.length === 0 && circle?.members.includes(connectedUser)
         );
       default:
         return false;

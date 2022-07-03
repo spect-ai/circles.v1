@@ -23,7 +23,11 @@ const NameInput = styled.input`
   font-weight: 600;
 `;
 
-export default function CreateSubmission() {
+interface Props {
+  workThreadOrder: string[];
+}
+
+export default function CreateSubmission({ workThreadOrder }: Props) {
   const [isOpen, setIsOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
@@ -31,8 +35,12 @@ export default function CreateSubmission() {
   return (
     <>
       <Box width="1/3" marginBottom="2">
-        <PrimaryButton icon={<IconDocuments />} onClick={() => setIsOpen(true)}>
-          Create Submission
+        <PrimaryButton
+          icon={<IconDocuments />}
+          onClick={() => setIsOpen(true)}
+          variant={workThreadOrder.length > 0 ? "transparent" : "secondary"}
+        >
+          {workThreadOrder.length > 0 ? "Add Submission" : "Create Submission"}
         </PrimaryButton>
       </Box>
       <AnimatePresence>

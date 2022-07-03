@@ -4,15 +4,14 @@ import { useGlobalContext } from "@/app/context/globalContext";
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import useSubmission from "@/app/services/Submission/useSubmission";
-import { UserType, WorkUnitType } from "@/app/types";
+import { WorkThreadType, WorkUnitType } from "@/app/types";
 import { SaveOutlined, SendOutlined } from "@ant-design/icons";
 import { Avatar, Box, Button, Stack } from "degen";
 import { motion, AnimatePresence } from "framer-motion";
 import React, { useState } from "react";
-import { useQuery } from "react-query";
 
 type Props = {
-  workThreadId?: string;
+  workThread?: WorkThreadType;
   workUnit?: WorkUnitType;
   isDisabled: boolean;
 };
@@ -20,7 +19,7 @@ type Props = {
 export default function EditorSubmission({
   workUnit,
   isDisabled,
-  workThreadId,
+  workThread,
 }: Props) {
   const { getMemberDetails } = useModalOptions();
   const { canTakeAction } = useRoleGate();
@@ -30,6 +29,7 @@ export default function EditorSubmission({
   const [canSave, setCanSave] = useState(false);
 
   const savebuttonRef = React.useRef<HTMLButtonElement>(null);
+
   return (
     <Box
       style={{
@@ -81,29 +81,55 @@ export default function EditorSubmission({
               collapsed: { height: 0, opacity: 0 },
             }}
             transition={{ duration: 0.3 }}
-            style={{ width: "25%", marginTop: "0.5rem" }}
+            style={{ width: "25%", marginTop: "0.5rem", paddingLeft: "0.3rem" }}
           >
-            {workUnit ? (
-              <Button
-                ref={savebuttonRef}
-                prefix={<SaveOutlined />}
-                size="small"
-                variant="secondary"
-                disabled={!content}
-                onClick={() => {
-                  void updateWorkUnit(
-                    {
-                      type: "submission",
-                      content,
-                    },
-                    workThreadId as string,
-                    workUnit?.workUnitId
-                  );
-                }}
-              >
-                Save
-              </Button>
-            ) : (
+            <Stack direction="horizontal">
+              {workUnit && (
+                <Button
+                  ref={savebuttonRef}
+                  prefix={<SaveOutlined />}
+                  size="small"
+                  variant="transparent"
+                  disabled={!content}
+                  onClick={() => {
+                    void updateWorkUnit(
+                      {
+                        type: "submission",
+                        content,
+                        status: workThread?.status,
+                      },
+                      workThread?.threadId as string,
+                      workUnit?.workUnitId
+                    );
+                  }}
+                >
+                  Save
+                </Button>
+              )}
+              {workUnit && workThread?.status === "draft" && (
+                <Button
+                  ref={savebuttonRef}
+                  prefix={<SendOutlined />}
+                  size="small"
+                  variant="secondary"
+                  disabled={!content}
+                  onClick={() => {
+                    void updateWorkUnit(
+                      {
+                        type: "submission",
+                        content,
+                        status: "inReview",
+                      },
+                      workThread?.threadId,
+                      workUnit?.workUnitId
+                    );
+                  }}
+                >
+                  Save and Send
+                </Button>
+              )}
+            </Stack>
+            {!workUnit && (
               <PrimaryButton
                 icon={<SendOutlined />}
                 disabled={!content}
@@ -114,7 +140,7 @@ export default function EditorSubmission({
                       type: "submission",
                       status: "inReview",
                     },
-                    workThreadId as string
+                    workThread?.threadId as string
                   );
                   setContent("");
                 }}

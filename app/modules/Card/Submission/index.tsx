@@ -20,7 +20,9 @@ export default function Submission() {
       transition={{ type: "linear" }}
       className=""
     >
-      {canTakeAction("cardSubmission") && <CreateSubmission />}
+      {canTakeAction("cardSubmission") && (
+        <CreateSubmission workThreadOrder={workThreadOrder} />
+      )}
       {workThreadOrder.map((workThreadId) => (
         <WorkThread key={workThreadId} workThread={workThreads[workThreadId]} />
       ))}

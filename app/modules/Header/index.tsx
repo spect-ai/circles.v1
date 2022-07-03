@@ -62,21 +62,6 @@ function Header(): ReactElement {
       backgroundColor="background"
     >
       <Stack direction="horizontal" align="center">
-        {!isSidebarExpanded && cId && (
-          <SlideButtonContainer
-            transitionDuration="300"
-            style={{
-              transform: isSidebarExpanded ? "rotate(180deg)" : "rotate(0deg)",
-              marginLeft: "-1.5rem",
-            }}
-            marginRight="-2"
-            cursor="pointer"
-            color="textSecondary"
-            onClick={() => setIsSidebarExpanded(!isSidebarExpanded)}
-          >
-            <DoubleRightOutlined style={{ fontSize: "1.1rem" }} />
-          </SlideButtonContainer>
-        )}
         {isSidebarExpanded && <Box marginLeft="1" />}
         {!cId && <Heading>Circles</Heading>}
         {cId && !pId && <Heading>{circle?.name}</Heading>}

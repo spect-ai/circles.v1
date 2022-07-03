@@ -24,6 +24,7 @@ import CreateProjectModal from "../Circle/CreateProjectModal";
 import CreateSpaceModal from "../Circle/CreateSpaceModal";
 import { SlideButtonContainer } from "../Header";
 import CircleOptions from "./CircleOptions";
+import CollapseButton from "./CollapseButton";
 
 export const Container = styled(Box)`
   ::-webkit-scrollbar {
@@ -46,8 +47,7 @@ function CircleSidebar() {
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [isContributorsModalOpen, setIsContributorsModalOpen] = useState(false);
 
-  const { setIsSidebarExpanded, isSidebarExpanded } = useGlobalContext();
-
+  const [showCollapseButton, setShowCollapseButton] = useState(false);
   if (isLoading) {
     return (
       <SkeletonGroup loading>
@@ -62,7 +62,11 @@ function CircleSidebar() {
   }
 
   return (
-    <Box padding="2">
+    <Box
+      padding="2"
+      onMouseEnter={() => setShowCollapseButton(true)}
+      onMouseLeave={() => setShowCollapseButton(false)}
+    >
       <AnimatePresence>
         {isSettingsModalOpen && (
           <SettingsModal handleClose={() => setIsSettingsModalOpen(false)} />
@@ -76,7 +80,7 @@ function CircleSidebar() {
       <Stack>
         <Stack direction="horizontal">
           <CircleOptions />
-          {pId && (
+          {/* {pId && (
             <SlideButtonContainer
               transitionDuration="300"
               style={{
@@ -92,7 +96,13 @@ function CircleSidebar() {
             >
               <DoubleRightOutlined style={{ fontSize: "1.1rem" }} />
             </SlideButtonContainer>
-          )}
+          )} */}
+          <CollapseButton
+            show={showCollapseButton}
+            setShowCollapseButton={setShowCollapseButton}
+            top="0.8rem"
+            left="a"
+          />
         </Stack>
         <Container>
           <Stack>

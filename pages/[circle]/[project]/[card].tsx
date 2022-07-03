@@ -5,7 +5,7 @@ import {
   LocalCardContext,
   useProviderLocalCard,
 } from "@/app/modules/Project/CreateCardModal/hooks/LocalCardContext";
-import { CircleType, MemberDetails, ProjectType, UserType } from "@/app/types";
+import { CircleType, MemberDetails, ProjectType } from "@/app/types";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
@@ -13,7 +13,7 @@ import { useQuery } from "react-query";
 
 const CardPage: NextPage = () => {
   const router = useRouter();
-  const { circle: cId, project: pId, card: tId } = router.query;
+  const { circle: cId, project: pId } = router.query;
   const { data: project, refetch: refetchProject } = useQuery<ProjectType>(
     ["project", pId],
     () =>
@@ -44,18 +44,6 @@ const CardPage: NextPage = () => {
       enabled: !!circle?.id,
     }
   );
-  useQuery<UserType>(
-    ["card", tId],
-    () =>
-      fetch(
-        `${process.env.API_HOST}/card/byProjectAndSlug/${project?.id}/${
-          tId as string
-        }`
-      ).then((res) => res.json()),
-    {
-      enabled: !!project?.id && !!tId,
-    }
-  );
 
   useEffect(() => {
     if (!circle && cId) {
@@ -70,6 +58,7 @@ const CardPage: NextPage = () => {
   }, [project, pId, refetchProject]);
 
   const context = useProviderLocalCard({ createCard: false });
+
   return (
     <>
       <MetaHead />
