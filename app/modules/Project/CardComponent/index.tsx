@@ -3,7 +3,7 @@ import { monthMap } from "@/app/common/utils/constants";
 import { CardType, ColumnType, MemberDetails } from "@/app/types";
 import { Avatar, Box, IconEth, Stack, Tag, Text } from "degen";
 import { useRouter } from "next/router";
-import React from "react";
+import React, { memo } from "react";
 import { Draggable } from "react-beautiful-dnd";
 import { useQuery } from "react-query";
 import styled from "styled-components";
@@ -15,7 +15,7 @@ type Props = {
 };
 
 const Container = styled(Box)<{ isDragging: boolean }>`
-  border-width: 4px;
+  border-width: 2px;
   border-color: ${(props) =>
     props.isDragging ? "rgb(191, 90, 242, 1)" : "rgb(255, 255, 255, 0)"};
   &:hover {
@@ -23,7 +23,7 @@ const Container = styled(Box)<{ isDragging: boolean }>`
   }
 `;
 
-export default function CardComponent({ card, index, column }: Props) {
+function CardComponent({ card, index, column }: Props) {
   const router = useRouter();
   const { circle: cId, project: pId } = router.query;
   const { data: memberDetails } = useQuery<MemberDetails>(
@@ -42,10 +42,11 @@ export default function CardComponent({ card, index, column }: Props) {
           {...provided.draggableProps}
           {...provided.dragHandleProps}
           ref={provided.innerRef}
-          backgroundColor="foregroundTertiary"
-          padding="2"
+          // backgroundColor="foregroundTertiary"
+          backgroundColor="background"
+          padding="4"
           marginBottom="2"
-          borderRadius="2xLarge"
+          borderRadius="large"
           isDragging={snapshot.isDragging}
           onClick={() => router.push(`/${cId}/${pId}/${card.slug}`)}
         >
@@ -57,18 +58,18 @@ export default function CardComponent({ card, index, column }: Props) {
               flexDirection="row"
               justifyContent="space-between"
             >
-              <Text>{card.title}</Text>
+              <Text weight="semiBold">{card.title}</Text>
               {card.assignee.length > 0 && card.assignee[0] && (
                 <Avatar
                   src={
-                    memberDetails &&
+                    memberDetails?.memberDetails &&
                     memberDetails.memberDetails[card.assignee[0]]?.avatar
                   }
                   label=""
                   size="6"
                   placeholder={
                     !(
-                      memberDetails &&
+                      memberDetails?.memberDetails &&
                       memberDetails.memberDetails[card.assignee[0]]?.avatar
                     )
                   }
@@ -117,3 +118,5 @@ export default function CardComponent({ card, index, column }: Props) {
     </Draggable>
   );
 }
+
+export default memo(CardComponent);

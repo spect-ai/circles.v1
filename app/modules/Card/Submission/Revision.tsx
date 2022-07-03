@@ -3,18 +3,18 @@ import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
 import useSubmission from "@/app/services/Submission/useSubmission";
 import { UserType } from "@/app/types";
 import { SendOutlined } from "@ant-design/icons";
-import { Avatar, Box, Button, Stack } from "degen";
-import { motion, AnimatePresence } from "framer-motion";
+import { Avatar, Box, Stack } from "degen";
+import { AnimatePresence } from "framer-motion";
 import React, { useEffect, useState } from "react";
 import ContentEditable from "react-contenteditable";
 import { useQuery } from "react-query";
 import styled from "styled-components";
 
 export const TextArea = styled(ContentEditable)`
-  color: rgb(255, 255, 255, 0.85);
+  color: rgb(255, 255, 255, 0.7);
   border: 2px solid rgb(255, 255, 255, 0.1);
   background: ${(props) =>
-    props.disabled ? "rgb(255, 255, 255, 0)" : "rgb(20,20,20)"};
+    props.disabled ? "rgb(20,20,20)" : "rgb(255, 255, 255, 0.05)"};
   border-radius: 1rem;
   width: 100%;
   overflow: hidden;
@@ -41,7 +41,6 @@ interface Props {
   newRevision: boolean;
   actorId?: string;
   revisionContent?: string;
-  workUnitId?: string;
   workThreadId?: string;
 }
 
@@ -49,7 +48,6 @@ export default function Revision({
   newRevision,
   actorId,
   revisionContent,
-  workUnitId,
   workThreadId,
 }: Props) {
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
@@ -74,18 +72,18 @@ export default function Revision({
       <Stack space="1">
         <Stack direction="horizontal" align="center">
           {/* <TextArea contentEditable role="textbox" /> */}
-          <Box marginLeft="8" />
+          <Box marginLeft="24" />
           <TextArea
             html={content}
             onChange={(evt) => {
               setContent(evt.target.value);
             }}
             disabled={isDisabled}
-            onClick={() => {
-              if (actorId === currentUser?.id) {
-                setIsDisabled(false);
-              }
-            }}
+            // onClick={() => {
+            //   if (actorId === currentUser?.id) {
+            //     setIsDisabled(false);
+            //   }
+            // }}
           />
           {newRevision ? (
             <Avatar
@@ -105,10 +103,11 @@ export default function Revision({
         </Stack>
         <AnimatePresence>
           {newRevision && content.length > 0 && (
-            <Box marginLeft="12" width="1/3" marginTop="2">
+            <Box marginLeft="28" width="1/4" marginTop="2">
               <PrimaryButton
                 icon={<SendOutlined />}
                 loading={loading}
+                animation="slide"
                 onClick={() => {
                   void createWorkUnit(
                     {

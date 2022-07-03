@@ -21,8 +21,8 @@ function Contributors({ members, memberDetails, roles }: Props) {
       <Stack>
         <Heading>Stewards</Heading>
         <Box display="flex" flexWrap="wrap">
-          {members?.map((mem) => {
-            if (roles[mem].includes("steward")) {
+          {members.map((mem) => {
+            if (roles[mem]?.includes("steward")) {
               return (
                 <MemberDisplay
                   key={mem}
@@ -35,8 +35,8 @@ function Contributors({ members, memberDetails, roles }: Props) {
         </Box>
         <Heading>Contributors</Heading>
         <Box display="flex" flexWrap="wrap">
-          {members?.map((mem) => {
-            if (roles[mem].includes("contributor")) {
+          {members.map((mem) => {
+            if (roles[mem]?.includes("contributor")) {
               return (
                 <MemberDisplay
                   key={mem}
@@ -49,8 +49,8 @@ function Contributors({ members, memberDetails, roles }: Props) {
         </Box>
         <Heading>Members</Heading>
         <Box display="flex" flexWrap="wrap">
-          {members?.map((mem) => {
-            if (roles[mem].includes("member")) {
+          {members.map((mem) => {
+            if (roles[mem]?.includes("member")) {
               return (
                 <MemberDisplay
                   key={mem}

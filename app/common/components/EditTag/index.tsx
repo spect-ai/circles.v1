@@ -16,6 +16,7 @@ type Props = {
   tone?: string;
   disabled?: boolean;
   tourId?: string;
+  handleClose: () => void;
 };
 
 function EditTag({
@@ -28,6 +29,7 @@ function EditTag({
   setModalOpen,
   disabled = false,
   tourId,
+  handleClose,
 }: Props) {
   return (
     <>
@@ -44,7 +46,7 @@ function EditTag({
             icon={icon}
             onClick={() => {
               if (disabled) {
-                toast.error("Cannot edit", { theme: "dark" });
+                toast.error("Cannot edit");
                 return;
               }
               setModalOpen(true);
@@ -58,7 +60,7 @@ function EditTag({
         onExitComplete={() => null}
       >
         {modalOpen && (
-          <Modal handleClose={() => setModalOpen(false)} title={modalTitle}>
+          <Modal handleClose={handleClose} title={modalTitle}>
             {children}
           </Modal>
         )}

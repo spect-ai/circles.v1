@@ -1,5 +1,5 @@
 import { Box, Button, IconPlusSmall, Input, Stack, Text } from "degen";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
 import Loader from "@/app/common/components/Loader";
@@ -9,6 +9,8 @@ import Select, { option } from "@/app/common/components/Select";
 import { useMutation, useQuery } from "react-query";
 import { CircleType, Template } from "@/app/types";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
+import { Tooltip } from "react-tippy";
+import { QuestionCircleFilled } from "@ant-design/icons";
 
 type CreateProjectDto = {
   name: string;
@@ -29,7 +31,7 @@ function CreateProjectModal({ accordian }: Props) {
   const { data: circle, refetch } = useQuery<CircleType>(["circle", cId], {
     enabled: false,
   });
-  const { data: templates } = useQuery<option[]>(
+  const { data: templates, refetch: fetchTemplate } = useQuery<option[]>(
     ["projectTemplates", cId],
     () =>
       fetch(
@@ -49,7 +51,7 @@ function CreateProjectModal({ accordian }: Props) {
       onSuccess: (res: option[]) => {
         setTemplate(res[0]);
       },
-      enabled: !!circle?.id,
+      enabled: false,
     }
   );
   const { mutateAsync, isLoading } = useMutation(
@@ -80,7 +82,7 @@ function CreateProjectModal({ accordian }: Props) {
       .then(async (res) => {
         const resJson = await res.json();
         console.log({ resJson });
-        void refetch();
+        // void refetch();
         void router.push(`/${cId}/${resJson.slug}`);
         void close();
       })
@@ -89,9 +91,13 @@ function CreateProjectModal({ accordian }: Props) {
       });
   };
 
+  useEffect(() => {
+    void fetchTemplate();
+  }, []);
+
   return (
     <>
-      <Loader loading={isLoading} text="Creating your space" />
+      <Loader loading={isLoading} text="Creating your project" />
       {accordian ? (
         <Button
           data-tour="circle-sidebar-create-project-button"
@@ -142,7 +148,23 @@ function CreateProjectModal({ accordian }: Props) {
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                 />
-                <Text variant="extraLarge">Template</Text>
+                <Stack direction="horizontal" space="1" align="center">
+                  <Text variant="extraLarge" weight="semiBold">
+                    Template
+                  </Text>
+
+                  <Button shape="circle" size="small" variant="transparent">
+                    <Tooltip
+                      html={
+                        <Text>
+                          Pre built board with columns and automations set
+                        </Text>
+                      }
+                    >
+                      <QuestionCircleFilled style={{ fontSize: "1rem" }} />
+                    </Tooltip>
+                  </Button>
+                </Stack>
                 {templates && (
                   <Select
                     options={templates}

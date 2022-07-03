@@ -1,7 +1,7 @@
 const colors = {
   almostBlack: "rgb(255,255,255,0)",
   lightBlack: "rgb(20,20,20)",
-  almostWhite: "rgb(255, 255, 255,0.7)",
+  almostWhite: "rgb(255, 255, 255,0.85)",
   white: "rgb(255, 255, 255,0.6)",
   white10: "rgba(255, 255, 255, 0.1)",
   black: "#000",

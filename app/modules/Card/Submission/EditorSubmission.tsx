@@ -1,17 +1,17 @@
 import Editor from "@/app/common/components/Editor";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
+import { useGlobalContext } from "@/app/context/globalContext";
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import useSubmission from "@/app/services/Submission/useSubmission";
-import { UserType, WorkUnitType } from "@/app/types";
+import { WorkThreadType, WorkUnitType } from "@/app/types";
 import { SaveOutlined, SendOutlined } from "@ant-design/icons";
-import { Avatar, Box, Button } from "degen";
+import { Avatar, Box, Button, Stack } from "degen";
 import { motion, AnimatePresence } from "framer-motion";
 import React, { useState } from "react";
-import { useQuery } from "react-query";
 
 type Props = {
-  workThreadId?: string;
+  workThread?: WorkThreadType;
   workUnit?: WorkUnitType;
   isDisabled: boolean;
 };
@@ -19,56 +19,56 @@ type Props = {
 export default function EditorSubmission({
   workUnit,
   isDisabled,
-  workThreadId,
+  workThread,
 }: Props) {
   const { getMemberDetails } = useModalOptions();
   const { canTakeAction } = useRoleGate();
   const { createWorkUnit, updateWorkUnit } = useSubmission();
   const [content, setContent] = useState(workUnit?.content || "");
-  const { data: currentUser } = useQuery<UserType>("getMyUser", {
-    enabled: false,
-  });
+  const { connectedUser } = useGlobalContext();
   const [canSave, setCanSave] = useState(false);
 
   const savebuttonRef = React.useRef<HTMLButtonElement>(null);
+
   return (
     <Box
       style={{
         minHeight: "5rem",
       }}
       marginRight="2"
-      paddingLeft="4"
       marginBottom="4"
     >
-      {workUnit ? (
-        <Avatar
-          src={getMemberDetails(workUnit.user)?.avatar}
-          label=""
-          size="8"
-          placeholder={!getMemberDetails(workUnit.user)?.avatar}
+      <Stack direction="horizontal" space="6">
+        {workUnit ? (
+          <Avatar
+            src={getMemberDetails(workUnit.user)?.avatar}
+            label=""
+            size="8"
+            placeholder={!getMemberDetails(workUnit.user)?.avatar}
+          />
+        ) : (
+          <Avatar
+            src={getMemberDetails(connectedUser)?.avatar}
+            label=""
+            size="8"
+            placeholder={!getMemberDetails(connectedUser)?.avatar}
+          />
+        )}
+        <Editor
+          value={content}
+          onChange={(txt) => {
+            setContent(txt);
+            setCanSave(true);
+            savebuttonRef.current?.scrollIntoView({
+              behavior: "smooth",
+              block: "end",
+              inline: "nearest",
+            });
+          }}
+          placeholder="Add a submission"
+          disabled={!canTakeAction("cardSubmission") || isDisabled}
         />
-      ) : (
-        <Avatar
-          src={getMemberDetails(currentUser?.id as string)?.avatar}
-          label=""
-          size="8"
-          placeholder={!getMemberDetails(currentUser?.id as string)?.avatar}
-        />
-      )}
-      <Editor
-        value={content}
-        onChange={(txt) => {
-          setContent(txt);
-          setCanSave(true);
-          savebuttonRef.current?.scrollIntoView({
-            behavior: "smooth",
-            block: "end",
-            inline: "nearest",
-          });
-        }}
-        placeholder="Add your submission"
-        disabled={!canTakeAction("cardSubmission") || isDisabled}
-      />
+      </Stack>
       <AnimatePresence>
         {canTakeAction("cardSubmission") && !isDisabled && canSave && (
           <motion.div
@@ -81,28 +81,55 @@ export default function EditorSubmission({
               collapsed: { height: 0, opacity: 0 },
             }}
             transition={{ duration: 0.3 }}
+            style={{ width: "25%", marginTop: "0.5rem", paddingLeft: "0.3rem" }}
           >
-            {workUnit ? (
-              <Button
-                ref={savebuttonRef}
-                prefix={<SaveOutlined />}
-                size="small"
-                variant="secondary"
-                disabled={!content}
-                onClick={() => {
-                  void updateWorkUnit(
-                    {
-                      type: "submission",
-                      content,
-                    },
-                    workThreadId as string,
-                    workUnit?.workUnitId
-                  );
-                }}
-              >
-                Save
-              </Button>
-            ) : (
+            <Stack direction="horizontal">
+              {workUnit && (
+                <Button
+                  ref={savebuttonRef}
+                  prefix={<SaveOutlined />}
+                  size="small"
+                  variant="transparent"
+                  disabled={!content}
+                  onClick={() => {
+                    void updateWorkUnit(
+                      {
+                        type: "submission",
+                        content,
+                        status: workThread?.status,
+                      },
+                      workThread?.threadId as string,
+                      workUnit?.workUnitId
+                    );
+                  }}
+                >
+                  Save
+                </Button>
+              )}
+              {workUnit && workThread?.status === "draft" && (
+                <Button
+                  ref={savebuttonRef}
+                  prefix={<SendOutlined />}
+                  size="small"
+                  variant="secondary"
+                  disabled={!content}
+                  onClick={() => {
+                    void updateWorkUnit(
+                      {
+                        type: "submission",
+                        content,
+                        status: "inReview",
+                      },
+                      workThread?.threadId,
+                      workUnit?.workUnitId
+                    );
+                  }}
+                >
+                  Save and Send
+                </Button>
+              )}
+            </Stack>
+            {!workUnit && (
               <PrimaryButton
                 icon={<SendOutlined />}
                 disabled={!content}
@@ -113,7 +140,7 @@ export default function EditorSubmission({
                       type: "submission",
                       status: "inReview",
                     },
-                    workThreadId as string
+                    workThread?.threadId as string
                   );
                   setContent("");
                 }}

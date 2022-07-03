@@ -1,26 +1,30 @@
 import { labelsMapping } from "@/app/common/utils/constants";
+import { useGlobalContext } from "@/app/context/globalContext";
 import {
   cardTypes,
   priority,
 } from "@/app/modules/Project/CreateCardModal/constants";
 import { useLocalCard } from "@/app/modules/Project/CreateCardModal/hooks/LocalCardContext";
-import { MemberDetails, UserType } from "@/app/types";
+import { MemberDetails } from "@/app/types";
 import { useRouter } from "next/router";
 import { useQuery } from "react-query";
 
 export default function useModalOptions() {
   const router = useRouter();
   const { circle: cId } = router.query;
-  const { project } = useLocalCard();
-  const { data: memberDetails } = useQuery<MemberDetails>(
+  const { data: memberDetails, refetch } = useQuery<MemberDetails>(
     ["memberDetails", cId],
     {
       enabled: false,
     }
   );
-  const { data: currentUser } = useQuery<UserType>("getMyUser", {
-    enabled: false,
-  });
+  const { project } = useLocalCard();
+  const { connectedUser } = useGlobalContext();
+
+  const fetchMemberDetails = () => {
+    void refetch;
+  };
+
   const getOptions = (type: string) => {
     switch (type) {
       case "card":
@@ -35,8 +39,8 @@ export default function useModalOptions() {
           };
         });
       case "column":
-        return project.columnOrder?.map((column: string) => ({
-          name: project.columnDetails[column].name,
+        return project?.columnOrder?.map((column: string) => ({
+          name: project?.columnDetails[column].name,
           value: column,
         }));
       case "assignee":
@@ -47,19 +51,18 @@ export default function useModalOptions() {
           value: member,
         }));
         tempArr = tempArr?.filter(
-          (member: any) => member.value !== currentUser?.id
+          (member: any) => member.value !== connectedUser
         );
         tempArr?.unshift({
           name:
             (memberDetails &&
-              memberDetails.memberDetails[currentUser?.id as string]?.username +
-                " (me)") ||
+              memberDetails.memberDetails[connectedUser]?.username + " (me)") ||
             " (me)",
           avatar:
             (memberDetails &&
-              memberDetails.memberDetails[currentUser?.id as string]?.avatar) ||
+              memberDetails.memberDetails[connectedUser]?.avatar) ||
             "",
-          value: currentUser?.id || "",
+          value: connectedUser,
         });
         tempArr?.unshift({
           name: "Unassigned",
@@ -78,5 +81,6 @@ export default function useModalOptions() {
   return {
     getOptions,
     getMemberDetails,
+    fetchMemberDetails,
   };
 }

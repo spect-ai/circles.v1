@@ -2,6 +2,7 @@ import { ProjectType } from "@/app/types";
 import { useRouter } from "next/router";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "react-query";
+import { toast } from "react-toastify";
 
 type LocalProjectContextType = {
   localProject: ProjectType;
@@ -19,38 +20,51 @@ export const LocalProjectContext = createContext<LocalProjectContextType>(
 export function useProviderLocalProject() {
   const router = useRouter();
   const { project: pId } = router.query;
-  const {
-    data: project,
-    isLoading,
-    isFetching,
-  } = useQuery<ProjectType>(["project", pId], {
-    enabled: false,
-  });
+  const { data: project, refetch: fetchProject } = useQuery<ProjectType>(
+    ["project", pId],
+    () =>
+      fetch(`${process.env.API_HOST}/project/slug/${pId as string}`).then(
+        (res) => res.json()
+      ),
+    {
+      enabled: false,
+      notifyOnChangeProps: "tracked",
+    }
+  );
+  const [loading, setLoading] = useState(false);
 
   const queryClient = useQueryClient();
 
   const [localProject, setLocalProject] = useState({} as ProjectType);
   const [error, setError] = useState(false);
-  const [loading, setLoading] = useState(true);
-
   const updateProject = (project: ProjectType) => {
     queryClient.setQueryData(["project", pId], project);
+    setLocalProject(project);
   };
 
   useEffect(() => {
-    if (!isLoading && !isFetching && project?.id) {
-      setLoading(true);
-      setLocalProject(project);
-      setLoading(false);
+    if (pId) {
+      fetchProject()
+        .then((res) => {
+          if (res.data) {
+            setLocalProject(res.data);
+          }
+        })
+        .catch((err) => {
+          console.error(err);
+          toast.error("Something went wrong", {
+            theme: "dark",
+          });
+        });
     }
-  }, [isLoading, project, isFetching]);
+  }, [pId]);
 
   return {
     localProject,
     setLocalProject,
     error,
     setError,
-    loading: loading || isLoading,
+    loading,
     updateProject,
   };
 }

@@ -1,48 +1,28 @@
 import Link from "next/link";
 import React, { ReactElement, useEffect, useState } from "react";
-import { Box, Button, IconPlus, IconUserSolid, Skeleton, Stack } from "degen";
+import { Box, Button } from "degen";
 import { useRouter } from "next/router";
-import { motion } from "framer-motion";
 import CreateCircle from "./CreateCircleModal";
 import Logo from "@/app/common/components/Logo";
 import { HomeOutlined } from "@ant-design/icons";
-import { useGlobalContext } from "@/app/context/globalContext";
 import { useQuery } from "react-query";
-import { CircleType, ProjectType, UserType } from "@/app/types";
-
-const containerAnimation = {
-  hidden: { rotate: 90 },
-  show: {
-    rotate: 0,
-    transition: {
-      staggerChildren: 0.1,
-      delayChildren: 0.3,
-    },
-  },
-};
-
-const itemAnimation = {
-  hidden: { opacity: 0 },
-  show: { opacity: 1 },
-};
+import { CircleType } from "@/app/types";
+import { useGlobalContext } from "@/app/context/globalContext";
+import CollapseButton from "../ExtendedSidebar/CollapseButton";
 
 function Sidebar(): ReactElement {
   const router = useRouter();
-  const { circle: cId, project: pId } = router.query;
-  const { data: circle, isLoading } = useQuery<CircleType>(["circle", cId], {
+  const { circle: cId } = router.query;
+  const { isLoading } = useQuery<CircleType>(["circle", cId], {
     enabled: false,
   });
-  const { data: project } = useQuery<ProjectType>(["project", pId], {
-    enabled: false,
-  });
-  const { data: currentUser } = useQuery<UserType>("getMyUser", {
-    enabled: false,
-  });
+  const { connectedUser, isSidebarExpanded } = useGlobalContext();
+  const [showCollapseButton, setShowCollapseButton] = useState(false);
 
   const {
     data: myCircles,
     isLoading: myCirclesLoading,
-    error,
+    refetch,
   } = useQuery<CircleType[]>(
     "myOrganizations",
     () =>
@@ -50,22 +30,29 @@ function Sidebar(): ReactElement {
         credentials: "include",
       }).then((res) => res.json()),
     {
-      enabled: !!currentUser?.id,
+      enabled: false,
     }
   );
-  const { setIsSidebarExpanded } = useGlobalContext();
+
+  useEffect(() => {
+    void refetch();
+  }, [refetch, connectedUser]);
+
   return (
     <Box
       display="flex"
       flexDirection="column"
       borderRightWidth="0.375"
-      paddingX="3"
-      // onMouseEnter={() => {
-      //   cId && setIsSidebarExpanded(true);
-      // }}
-      transitionDuration="700"
+      paddingX="2"
+      onMouseEnter={() => {
+        !isSidebarExpanded && setShowCollapseButton(true);
+      }}
+      onMouseLeave={() => {
+        setShowCollapseButton(false);
+      }}
+      transitionDuration="500"
     >
-      <Box borderBottomWidth="0.375" paddingY="3">
+      {/* <Box borderBottomWidth="0.375" paddingTop="3">
         {cId ? (
           <Logo
             href="/"
@@ -77,20 +64,27 @@ function Sidebar(): ReactElement {
             src="https://ipfs.moralis.io:2053/ipfs/QmVYsa4KQyRwBSJxQCmD1rDjyqYd1HJKrDfqLk3KMKLEhn"
           />
         )}
-      </Box>
-      <Box marginTop="2">
+      </Box> */}
+      <Box marginTop="3">
         <Link href="/" passHref>
           <Button shape="circle" variant="secondary" size="small">
             <HomeOutlined style={{ fontSize: "1.3rem" }} />
           </Button>
         </Link>
       </Box>
+      <CollapseButton
+        show={showCollapseButton}
+        setShowCollapseButton={setShowCollapseButton}
+        top="2.5rem"
+        left="2.5rem"
+      />
       {isLoading ? (
         <div />
       ) : (
         <Box paddingY="3" borderBottomWidth="0.375">
           {!myCirclesLoading &&
-            currentUser?.id &&
+            connectedUser &&
+            myCircles?.map &&
             myCircles?.map((aCircle) => (
               <Box paddingY="2" key={aCircle.id}>
                 <Logo
@@ -102,7 +96,7 @@ function Sidebar(): ReactElement {
             ))}
         </Box>
       )}
-      <CreateCircle />
+      {connectedUser && <CreateCircle />}
     </Box>
   );
 }

@@ -10,7 +10,7 @@ import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
 
 export default function CardColumn() {
-  const { columnId, setColumnId, project, setIsDirty } = useLocalCard();
+  const { columnId, setColumnId, project, onCardUpdate } = useLocalCard();
   const [modalOpen, setModalOpen] = useState(false);
 
   const [options, setOptions] = useState<Option[]>();
@@ -27,7 +27,7 @@ export default function CardColumn() {
   return (
     <EditTag
       tourId="create-card-modal-column"
-      name={project?.columnDetails[columnId]?.name}
+      name={project?.columnDetails[columnId]?.name as string}
       modalTitle="Select Column"
       label="Column"
       modalOpen={modalOpen}
@@ -43,6 +43,10 @@ export default function CardColumn() {
         />
       }
       disabled={!canTakeAction("cardColumn")}
+      handleClose={() => {
+        void onCardUpdate();
+        setModalOpen(false);
+      }}
     >
       <Box height="96">
         <Box borderBottomWidth="0.375" paddingX="8" paddingY="5">
@@ -68,8 +72,6 @@ export default function CardColumn() {
               item={item}
               onClick={() => {
                 setColumnId(item.value);
-                setIsDirty(true);
-                setModalOpen(false);
               }}
             >
               <Box
@@ -83,7 +85,7 @@ export default function CardColumn() {
                 <Text
                   size="small"
                   color={columnId === item.value ? "accent" : "text"}
-                  weight="bold"
+                  weight="semiBold"
                 >
                   {item.name}
                 </Text>

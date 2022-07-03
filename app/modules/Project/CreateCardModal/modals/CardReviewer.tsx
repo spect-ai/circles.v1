@@ -1,10 +1,7 @@
 import EditTag from "@/app/common/components/EditTag";
 import ModalOption from "@/app/common/components/ModalOption";
-import { MemberDetails, UserType } from "@/app/types";
 import { Avatar, Box, IconSearch, IconUserSolid, Input, Text } from "degen";
-import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
-import { useQuery } from "react-query";
 import { useLocalCard } from "../hooks/LocalCardContext";
 import { Option } from "../constants";
 import { matchSorter } from "match-sorter";
@@ -12,11 +9,8 @@ import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
 
 export default function CardReviewer() {
-  const { reviewer, setReviewer, setIsDirty } = useLocalCard();
+  const { reviewers, setReviewers, onCardUpdate } = useLocalCard();
   const [modalOpen, setModalOpen] = useState(false);
-  const { data: currentUser } = useQuery<UserType>("getMyUser", {
-    enabled: false,
-  });
 
   const [options, setOptions] = useState<Option[]>();
   const [filteredOptions, setFilteredOptions] = useState<Option[]>();
@@ -28,26 +22,43 @@ export default function CardReviewer() {
     const ops = getOptions("assignee") as Option[];
     setOptions(ops);
     setFilteredOptions(ops);
-    if (currentUser && !reviewer) {
-      setReviewer(currentUser.id);
-    }
   }, []);
+
+  const getTagLabel = () => {
+    if (!reviewers[0]) {
+      return null;
+    }
+    let name = "";
+    name += getMemberDetails(reviewers[0])?.username;
+    if (reviewers.length > 1) {
+      name += ` + ${reviewers.length - 1}`;
+    }
+    return name;
+  };
   return (
     <EditTag
       tourId="create-card-modal-reviewer"
-      name={getMemberDetails(reviewer)?.username || "Unassigned"}
+      name={getTagLabel() || "Unassigned"}
       modalTitle="Select Reviewer"
       label="Reviewer"
       modalOpen={modalOpen}
       setModalOpen={setModalOpen}
       icon={
-        reviewer ? (
-          <Avatar src={getMemberDetails(reviewer)?.avatar} label="" size="5" />
+        reviewers.length ? (
+          <Avatar
+            src={getMemberDetails(reviewers[0])?.avatar}
+            label=""
+            size="5"
+          />
         ) : (
           <IconUserSolid color="accent" size="5" />
         )
       }
       disabled={!canTakeAction("cardReviewer")}
+      handleClose={() => {
+        void onCardUpdate();
+        setModalOpen(false);
+      }}
     >
       <Box height="96">
         <Box borderBottomWidth="0.375" paddingX="8" paddingY="5">
@@ -69,12 +80,28 @@ export default function CardReviewer() {
           {filteredOptions?.map((item: any) => (
             <ModalOption
               key={item.value}
-              isSelected={reviewer === item.value}
+              isSelected={
+                item.value === ""
+                  ? !reviewers.length
+                  : reviewers.includes(item.value)
+              }
               item={item}
               onClick={() => {
-                setReviewer(item.value);
-                setIsDirty(true);
-                setModalOpen(false);
+                if (item.value === "") {
+                  setReviewers([]);
+                  return;
+                }
+                // set assignee if not selected already unselect if selected
+                if (reviewers.includes(item.value)) {
+                  setReviewers(reviewers.filter((i) => i !== item.value));
+                } else {
+                  if (reviewers.length) {
+                    setReviewers([...reviewers, item.value]);
+                  } else {
+                    setReviewers([item.value]);
+                  }
+                  console.log({ reviewers });
+                }
               }}
             >
               <Box
@@ -95,8 +122,8 @@ export default function CardReviewer() {
                 <Box marginRight="2" />
                 <Text
                   size="small"
-                  color={reviewer === item.value ? "accent" : "text"}
-                  weight="bold"
+                  color={reviewers.includes(item.value) ? "accent" : "text"}
+                  weight="semiBold"
                 >
                   {item.name}
                 </Text>

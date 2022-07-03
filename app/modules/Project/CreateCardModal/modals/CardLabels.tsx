@@ -1,5 +1,4 @@
 import EditTag from "@/app/common/components/EditTag";
-import { ProjectType } from "@/app/types";
 import { TagOutlined } from "@ant-design/icons";
 import { Box, IconCheck, IconSearch, Input, Stack, Tag, Text } from "degen";
 import { motion } from "framer-motion";
@@ -11,7 +10,7 @@ import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
 
 export default function CardLabels() {
-  const { labels, setLabels, setIsDirty } = useLocalCard();
+  const { labels, setLabels, onCardUpdate } = useLocalCard();
   const [modalOpen, setModalOpen] = useState(false);
 
   const [options, setOptions] = useState<Option[]>();
@@ -29,8 +28,8 @@ export default function CardLabels() {
   return (
     <EditTag
       tourId="create-card-modal-labels"
-      name="Add Tags"
-      modalTitle="Select Card Type"
+      name="Add Labels"
+      modalTitle="Add Labels"
       modalOpen={modalOpen}
       setModalOpen={setModalOpen}
       icon={
@@ -44,6 +43,10 @@ export default function CardLabels() {
         />
       }
       disabled={!canTakeAction("cardLabels")}
+      handleClose={async () => {
+        await onCardUpdate();
+        setModalOpen(false);
+      }}
     >
       <Box>
         <Box borderBottomWidth="0.375" paddingX="8" paddingY="5">
@@ -78,7 +81,6 @@ export default function CardLabels() {
                   } else {
                     setLabels([...labels, item.value]);
                   }
-                  setIsDirty(true);
                 }}
               >
                 <Tag

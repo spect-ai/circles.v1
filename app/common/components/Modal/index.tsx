@@ -14,14 +14,39 @@ const dropIn = {
     y: "0",
     opacity: 1,
     transition: {
-      duration: 0.4,
+      duration: 0.1,
+      type: "spring",
+      damping: 25,
+      stiffness: 500,
     },
   },
   exit: {
     y: "100vh",
     opacity: 0,
+  },
+};
+
+// grow animation from center of screen
+const grow = {
+  hidden: {
+    opacity: 0,
+    scale: 0,
+  },
+  visible: {
+    opacity: 1,
+    scale: 1,
     transition: {
-      duration: 0.2,
+      duration: 0.4,
+      type: "spring",
+      damping: 25,
+      stiffness: 400,
+    },
+  },
+  exit: {
+    opacity: 0,
+    scale: 0,
+    transition: {
+      duration: 0.1,
     },
   },
 };
@@ -46,6 +71,7 @@ type props = {
   handleClose: () => void;
   height?: string;
   size?: "small" | "medium" | "large";
+  zIndex?: number;
 };
 
 const getResponsiveWidth = (size: "small" | "medium" | "large") => {
@@ -67,12 +93,13 @@ function Modal({
   children,
   height,
   size = "medium",
+  zIndex,
 }: props) {
   return (
-    <Backdrop onClick={handleClose}>
+    <Backdrop onClick={handleClose} zIndex={zIndex}>
       <motion.div
         onClick={(e) => e.stopPropagation()}
-        variants={dropIn}
+        variants={grow}
         initial="hidden"
         animate="visible"
         exit="exit"

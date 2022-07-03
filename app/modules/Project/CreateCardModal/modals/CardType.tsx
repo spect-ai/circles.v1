@@ -10,7 +10,7 @@ import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
 
 export default function CardType() {
-  const { cardType, setCardType, setIsDirty } = useLocalCard();
+  const { cardType, setCardType, onCardUpdate } = useLocalCard();
   const [modalOpen, setModalOpen] = useState(false);
 
   const [options, setOptions] = useState<Option[]>();
@@ -43,6 +43,10 @@ export default function CardType() {
         />
       }
       disabled={!canTakeAction("cardType")}
+      handleClose={() => {
+        onCardUpdate();
+        setModalOpen(false);
+      }}
     >
       <Box height="96">
         <Box borderBottomWidth="0.375" paddingX="8" paddingY="5">
@@ -68,8 +72,6 @@ export default function CardType() {
               item={item}
               onClick={() => {
                 setCardType(item.value);
-                setIsDirty(true);
-                setModalOpen(false);
               }}
             >
               <Box style={{ width: "15%" }}>
@@ -88,7 +90,7 @@ export default function CardType() {
                 <Text
                   size="small"
                   color={cardType === item.value ? "accent" : "text"}
-                  weight="bold"
+                  weight="semiBold"
                 >
                   {item.name}
                 </Text>

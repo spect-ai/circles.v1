@@ -1,11 +1,14 @@
 import Editor from "@/app/common/components/Editor";
 import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import useSubmission from "@/app/services/Submission/useSubmission";
+import useApplication from "@/app/services/Apply/useApplication";
+import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
+import { MemberDetails } from "@/app/types";
 import { SendOutlined } from "@ant-design/icons";
-import { Box, Button, IconDocuments, Stack } from "degen";
+import { Box, IconUserSolid, Stack } from "degen";
 import { AnimatePresence } from "framer-motion";
-import React, { useState } from "react";
+import { useState } from "react";
+import { useQuery } from "react-query";
 import styled from "styled-components";
 
 const NameInput = styled.input`
@@ -23,15 +26,18 @@ const NameInput = styled.input`
   font-weight: 600;
 `;
 
-export default function SubmissionModal() {
+export default function Apply() {
   const [isOpen, setIsOpen] = useState(false);
-  const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const { createWorkThread, loading } = useSubmission();
+  const { createApplication, loading } = useApplication();
+
+  const [title, setTitle] = useState("");
+
+  const { fetchMemberDetails } = useModalOptions();
   return (
     <>
-      <PrimaryButton icon={<IconDocuments />} onClick={() => setIsOpen(true)}>
-        Create Submission
+      <PrimaryButton icon={<IconUserSolid />} onClick={() => setIsOpen(true)}>
+        Apply
       </PrimaryButton>
       <AnimatePresence>
         {isOpen && (
@@ -39,7 +45,7 @@ export default function SubmissionModal() {
             <Box padding="8">
               <Stack>
                 <NameInput
-                  placeholder="Submission Title"
+                  placeholder="Application Title"
                   autoFocus
                   value={title}
                   onChange={(e) => {
@@ -59,23 +65,28 @@ export default function SubmissionModal() {
                     onChange={(txt) => {
                       setContent(txt);
                     }}
-                    placeholder="Write your submission here"
+                    placeholder="Tell us about your application"
                   />
                 </Box>
-                <PrimaryButton
-                  loading={loading}
-                  icon={<SendOutlined style={{ fontSize: "1.2rem" }} />}
-                  onClick={async () => {
-                    const res = await createWorkThread({
-                      name: title,
-                      content: content,
-                      status: "draft",
-                    });
-                    res && setIsOpen(false);
-                  }}
-                >
-                  Send
-                </PrimaryButton>
+                <Stack direction="horizontal">
+                  <Box width="full">
+                    <PrimaryButton
+                      disabled={!title || !content}
+                      loading={loading}
+                      icon={<SendOutlined style={{ fontSize: "1.2rem" }} />}
+                      onClick={async () => {
+                        const res = await createApplication({
+                          title,
+                          content,
+                        });
+                        res && setIsOpen(false);
+                        fetchMemberDetails();
+                      }}
+                    >
+                      Send
+                    </PrimaryButton>
+                  </Box>
+                </Stack>
               </Stack>
             </Box>
           </Modal>

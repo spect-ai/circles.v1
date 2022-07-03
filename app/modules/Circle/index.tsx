@@ -1,5 +1,6 @@
 import Card from "@/app/common/components/Card";
 import Loader from "@/app/common/components/Loader";
+import useCircleOnboarding from "@/app/services/Onboarding/useCircleOnboarding";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { CircleType } from "@/app/types";
 import { Box, Heading, Stack, Text } from "degen";
@@ -30,15 +31,21 @@ export default function Circle() {
   const { data: circle, isLoading } = useQuery<CircleType>(["circle", cId], {
     enabled: false,
   });
-  console.log({ circle });
   const { canDo } = useRoleGate();
+
+  const { onboarded } = useCircleOnboarding();
   if (isLoading) {
     return <Loader text="...." loading />;
   }
   return (
     <BoxContainer padding="8">
-      {/* <Onboarding /> */}
-      <ToastContainer />
+      {!onboarded && <Onboarding />}
+      <ToastContainer
+        toastStyle={{
+          backgroundColor: "rgb(20,20,20)",
+          color: "rgb(255,255,255,0.7)",
+        }}
+      />
       <Stack>
         <Heading>Description</Heading>
         <Text>{circle?.description}</Text>
@@ -72,7 +79,7 @@ export default function Circle() {
             </Col>
           </Row>
         </Container>
-        <Heading>Workspaces</Heading>
+        <Heading>Workstreams</Heading>
         <Container style={{ width: "75%", padding: "0px", margin: "0px" }}>
           <Row>
             {circle?.children?.map((space) => (

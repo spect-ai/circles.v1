@@ -1,5 +1,6 @@
 import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
+import { useGlobalContext } from "@/app/context/globalContext";
 import { Box, Button, Stack } from "degen";
 import { AnimatePresence } from "framer-motion";
 import React, { useState } from "react";
@@ -10,6 +11,7 @@ import { useConnect, useDisconnect } from "wagmi";
 
 export default function ConnectModal() {
   const { connectors, pendingConnector, connectAsync } = useConnect();
+  const { connectUser } = useGlobalContext();
 
   const { disconnect } = useDisconnect();
   const [isOpen, setIsOpen] = useState(false);
@@ -51,6 +53,7 @@ export default function ConnectModal() {
 
     if (verifyResJson.id) {
       queryClient.setQueryData("getMyUser", verifyResJson);
+      connectUser(verifyResJson.id);
     } else {
       throw new Error("Error verifying message");
     }

@@ -7,12 +7,20 @@ import { storeImage } from "../../utils/ipfs";
 type Props = {
   value: string;
   onChange: (val: string) => void;
+  onBlur?: () => void;
   placeholder?: string;
   disabled?: boolean;
   tourId?: string;
 };
 
-function Editor({ value, onChange, placeholder, disabled, tourId }: Props) {
+function Editor({
+  value,
+  onChange,
+  placeholder,
+  disabled,
+  tourId,
+  onBlur,
+}: Props) {
   return (
     <RichMarkdownEditor
       data-tour={tourId}
@@ -33,6 +41,7 @@ function Editor({ value, onChange, placeholder, disabled, tourId }: Props) {
         return imageGatewayURL;
       }}
       readOnly={disabled || false}
+      onBlur={onBlur}
     />
   );
 }

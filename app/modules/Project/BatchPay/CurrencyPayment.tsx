@@ -5,9 +5,7 @@ import { updatePaymentInfo } from "@/app/services/Payment";
 import usePaymentGateway from "@/app/services/Payment/usePayment";
 import { QuestionCircleFilled } from "@ant-design/icons";
 import { Avatar, Box, Button, Stack, Text } from "degen";
-import { useRouter } from "next/router";
 import React, { useState } from "react";
-import { useQueryClient } from "react-query";
 import { Tooltip } from "react-tippy";
 import { useLocalProject } from "../Context/LocalProjectContext";
 import { useBatchPayContext } from "./context/batchPayContext";
@@ -17,12 +15,10 @@ export default function CurrencyPayment() {
   const { getMemberDetails } = useModalOptions();
   const { batchPay } = usePaymentGateway();
   const [loading, setLoading] = useState(false);
-  const { localProject: project } = useLocalProject();
   const { batchPayInfo, setStep, currencyCards, tokenCards, setIsOpen } =
     useBatchPayContext();
-  const queryClient = useQueryClient();
-  const router = useRouter();
-  const { project: pId } = router.query;
+
+  const { updateProject, localProject: project } = useLocalProject();
 
   const formatRows = () => {
     const rows: any[] = [];
@@ -101,7 +97,7 @@ export default function CurrencyPayment() {
                 setLoading(true);
                 try {
                   const txnHash = await batchPay(
-                    project.parents[0].defaultPayment.chain.chainId,
+                    project?.parents[0].defaultPayment.chain.chainId,
                     "currency",
                     getEthAddress() as string[],
                     batchPayInfo?.currency.values as number[],
@@ -115,7 +111,7 @@ export default function CurrencyPayment() {
                     );
                     console.log({ res });
                     if (res) {
-                      await queryClient.setQueryData(["project", pId], res);
+                      updateProject(res);
                       setLoading(false);
                       if (tokenCards && tokenCards?.length > 0) {
                         setStep(2);

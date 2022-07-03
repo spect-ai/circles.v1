@@ -48,7 +48,7 @@ export default function DefaultPayment() {
     <Stack>
       <Box>
         <Heading>Default Payment</Heading>
-        <Text>Set the default way of getting paid for cards</Text>
+        <Text>Set the default way that contributors get paid</Text>
       </Box>
       <Stack>
         <Text size="extraLarge">Chain</Text>
@@ -110,6 +110,13 @@ export default function DefaultPayment() {
             Save
           </PrimaryButton>
         </Box>
+        <Stack>
+          <Box>
+            <Heading>Token Approvals</Heading>
+            <Text>Set approvals for tokens you wish to use for payments</Text>
+          </Box>
+          <Text size="extraLarge">Approved Tokens</Text>
+        </Stack>
       </Stack>
     </Stack>
   );

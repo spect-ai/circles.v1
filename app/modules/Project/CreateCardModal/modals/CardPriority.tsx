@@ -10,7 +10,7 @@ import { Option, priorityMapping } from "../constants";
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
 
 export default function CardPriority() {
-  const { priority, setPriority, setIsDirty } = useLocalCard();
+  const { priority, setPriority, onCardUpdate } = useLocalCard();
   const [modalOpen, setModalOpen] = useState(false);
 
   const [options, setOptions] = useState<Option[]>();
@@ -44,6 +44,10 @@ export default function CardPriority() {
         />
       }
       disabled={!canTakeAction("cardPriority")}
+      handleClose={() => {
+        void onCardUpdate();
+        setModalOpen(false);
+      }}
     >
       <Box height="96">
         <Box borderBottomWidth="0.375" paddingX="8" paddingY="5">
@@ -69,8 +73,6 @@ export default function CardPriority() {
               item={item}
               onClick={() => {
                 setPriority(item.value);
-                setIsDirty(true);
-                setModalOpen(false);
               }}
             >
               <Box
@@ -84,7 +86,7 @@ export default function CardPriority() {
                 <Text
                   size="small"
                   color={priority === item.value ? "accent" : "text"}
-                  weight="bold"
+                  weight="semiBold"
                 >
                   {item.name}
                 </Text>

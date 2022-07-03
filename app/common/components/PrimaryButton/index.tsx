@@ -1,9 +1,8 @@
 import type { FC } from "react";
 
-import { Button, IconBellSolid } from "degen";
+import { Button } from "degen";
 import { ReactNodeNoStrings } from "degen/dist/types/types";
 import { motion } from "framer-motion";
-import { SendOutlined } from "@ant-design/icons";
 
 interface Props {
   onClick?: () => void;
@@ -15,6 +14,7 @@ interface Props {
   animation?: "fade" | "slide" | "none";
   shape?: "circle" | "square";
   tone?: "red" | "accent" | "green" | "blue";
+  tourId?: string;
 }
 
 export const slide = {
@@ -55,6 +55,7 @@ const PrimaryButton: FC<Props> = ({
   children,
   animation = "none",
   tone = "accent",
+  tourId,
 }) => {
   return (
     <motion.div
@@ -66,6 +67,7 @@ const PrimaryButton: FC<Props> = ({
       transition={{ duration: 0.3 }}
     >
       <Button
+        data-tour={tourId}
         disabled={disabled}
         loading={loading}
         width="full"

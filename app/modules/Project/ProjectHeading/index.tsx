@@ -1,0 +1,70 @@
+import { useGlobalContext } from "@/app/context/globalContext";
+import { DoubleRightOutlined } from "@ant-design/icons";
+import { Box, IconGrid, IconList, Stack, Text } from "degen";
+import { useRouter } from "next/router";
+import React, { memo } from "react";
+import styled from "styled-components";
+import { SlideButtonContainer } from "../../Header";
+import { useLocalProject } from "../Context/LocalProjectContext";
+import ProjectOptions from "./ProjectOptions";
+
+export const IconButton = styled(Box)`
+  cursor: pointer;
+  &:hover {
+    color: rgb(191, 90, 242, 1);
+  }
+`;
+
+function ProjectHeading() {
+  const { localProject: project } = useLocalProject();
+  const { setIsSidebarExpanded, isSidebarExpanded } = useGlobalContext();
+  const router = useRouter();
+  const { circle: cId } = router.query;
+  return (
+    <Box
+      width="full"
+      paddingY="4"
+      paddingRight="8"
+      paddingLeft="5"
+      borderBottomWidth="0.375"
+      backgroundColor="background"
+      display="flex"
+      flexDirection="row"
+      justifyContent="space-between"
+    >
+      <Stack direction="horizontal" align="center">
+        <Text size="extraLarge" weight="semiBold">
+          {project?.name}
+        </Text>
+        <ProjectOptions />
+      </Stack>
+      <Stack direction="horizontal">
+        <Box
+          display="flex"
+          flexDirection="row"
+          borderWidth="0.375"
+          borderRadius="large"
+          backgroundColor="foregroundSecondary"
+        >
+          <IconButton
+            color="textSecondary"
+            borderRightWidth="0.375"
+            paddingX="2"
+            borderLeftRadius="large"
+          >
+            <IconGrid size="6" />
+          </IconButton>
+          <IconButton
+            color="textSecondary"
+            paddingX="2"
+            borderRightRadius="large"
+          >
+            <IconList size="6" />
+          </IconButton>
+        </Box>
+      </Stack>
+    </Box>
+  );
+}
+
+export default memo(ProjectHeading);

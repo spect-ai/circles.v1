@@ -1,30 +1,21 @@
-import { WorkUnitType } from "@/app/types";
+import { WorkThreadType, WorkUnitType } from "@/app/types";
 import Revision from "./Revision";
 import EditorSubmission from "./EditorSubmission";
 
 type Props = {
   workUnit: WorkUnitType;
-  workThreadId: string;
+  workThread: WorkThreadType;
   status: "accepted" | "inRevision" | "inReview" | "draft";
-  workUnitOrder: string[];
 };
 
-export default function WorkUnit({
-  workUnit,
-  workThreadId,
-  status,
-  workUnitOrder,
-}: Props) {
+export default function WorkUnit({ workUnit, workThread, status }: Props) {
   return (
     <>
       {workUnit.type === "submission" && (
         <EditorSubmission
           workUnit={workUnit}
-          workThreadId={workThreadId}
-          isDisabled={
-            status !== "draft" &&
-            workUnitOrder[workUnitOrder.length - 1] !== workUnit.workUnitId
-          }
+          workThread={workThread}
+          isDisabled={status !== "draft"}
         />
       )}
       {workUnit.type === "revision" && (

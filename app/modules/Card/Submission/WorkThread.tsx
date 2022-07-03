@@ -1,5 +1,4 @@
 import Accordian from "@/app/common/components/Accordian";
-import Editor from "@/app/common/components/Editor";
 import { timeSince } from "@/app/common/utils/utils";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { WorkThreadType } from "@/app/types";
@@ -20,31 +19,29 @@ export default function WorkThread({ workThread }: Props) {
         name={workThread.name}
         defaultOpen
         buttonComponent={
-          <Box width="1/2">
-            <Text variant="small" size="extraSmall">
+          <Box marginTop="2">
+            <Text variant="small" size="extraSmall" color="textSecondary">
               {" Updated " + timeSince(new Date(workThread.updatedAt)) + " ago"}
             </Text>
           </Box>
         }
       >
-        {workThread.workUnitOrder.map((workUnitId) => (
-          <WorkUnit
-            key={workUnitId}
-            workUnit={workThread.workUnits[workUnitId]}
-            workThreadId={workThread.threadId}
-            status={workThread.status}
-            workUnitOrder={workThread.workUnitOrder}
-          />
-        ))}
+        {workThread.workUnitOrder.map((workUnitId) => {
+          return (
+            <WorkUnit
+              key={workUnitId}
+              workUnit={workThread.workUnits[workUnitId]}
+              workThread={workThread}
+              status={workThread.status}
+            />
+          );
+        })}
         {canTakeAction("cardRevision") && (
           <Revision newRevision workThreadId={workThread.threadId} />
         )}
         {canTakeAction("cardSubmission") &&
           workThread.status === "inRevision" && (
-            <EditorSubmission
-              isDisabled={false}
-              workThreadId={workThread.threadId}
-            />
+            <EditorSubmission isDisabled={false} workThread={workThread} />
           )}
       </Accordian>
     </Box>

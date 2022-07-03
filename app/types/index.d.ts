@@ -6,6 +6,7 @@ interface UserType {
   updatedAt: string;
   username: string;
   avatar: string;
+  discordId?: string;
   _id: string;
 }
 interface Payment {
@@ -86,7 +87,7 @@ export interface CardType {
   creator: string;
   reviewer: string[];
   assignee: string[];
-  project: string;
+  project: ProjectType;
   circle: string;
   reward: {
     chain: Chain;
@@ -109,6 +110,23 @@ export interface CardType {
   workThreads: {
     [key: string]: WorkThreadType;
   };
+  application: {
+    [applicationId: string]: ApplicationType;
+  };
+  applicationOrder: string[];
+  myApplication?: ApplicationType;
+  children: CardType[];
+  parent: CardType;
+}
+
+export interface ApplicationType {
+  applicationId: string;
+  content: string;
+  createdAt: string;
+  sstatus: "active" | "rejected" | "picked";
+  updatedAt: string;
+  user: string;
+  title: string;
 }
 
 export interface WorkThreadType {

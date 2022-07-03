@@ -12,7 +12,6 @@ type Props = {
 };
 
 const CollapseButton = styled.button`
-  width: 100%;
   display: flex;
   flex-direction: row;
   background: transparent;
@@ -36,7 +35,12 @@ function Accordian({
   const [isExpanded, setIsExpanded] = useState(defaultOpen);
   return (
     <Box>
-      <Box display="flex" flexDirection="row" paddingRight="2">
+      <Box
+        display="flex"
+        flexDirection="row"
+        paddingRight="2"
+        justifyContent="space-between"
+      >
         <CollapseButton onClick={() => setIsExpanded(!isExpanded)}>
           <Box
             marginRight="2"

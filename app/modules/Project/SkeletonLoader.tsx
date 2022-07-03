@@ -3,12 +3,12 @@ import React from "react";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { motion } from "framer-motion";
-import { variants } from "../Card";
+import { fadeVariant } from "../Card/Utils/variants";
 
 export const SkeletonLoader = () => {
   return (
     <motion.main
-      variants={variants} // Pass the variant object into Framer Motion
+      variants={fadeVariant} // Pass the variant object into Framer Motion
       initial="hidden" // Set the initial state to variants.hidden
       animate="enter" // Animated state to variants.enter
       exit="exit" // Exit state (used later) to variants.exit

@@ -1,4 +1,5 @@
 import Modal from "@/app/common/components/Modal";
+import ConfirmModal from "@/app/common/components/Modal/ConfirmModal";
 import { deleteColumn, updateColumnDetails } from "@/app/services/Column";
 import { ColumnType } from "@/app/types";
 import { SaveOutlined } from "@ant-design/icons";
@@ -15,7 +16,8 @@ interface Props {
 
 export default function ColumnSettings({ column, handleClose }: Props) {
   const [name, setName] = useState(column.name);
-  const { localProject: project, setLocalProject } = useLocalProject();
+  const { localProject: project, updateProject } = useLocalProject();
+  const [showConfirm, setShowConfirm] = useState(false);
 
   const onSave = async () => {
     console.log({ column });
@@ -26,23 +28,38 @@ export default function ColumnSettings({ column, handleClose }: Props) {
         name,
       }
     );
+    console.log({ updatedProject });
     if (!updatedProject) {
-      toast.error("Error updating column", { theme: "dark" });
+      toast.error("Error updating column");
       return;
     }
-    setLocalProject(updatedProject);
+    updateProject(updatedProject);
+    handleClose();
   };
 
   const onDelete = async () => {
     const updatedProject = await deleteColumn(project.id, column.columnId);
     if (!updatedProject) {
-      toast.error("Error updating column", { theme: "dark" });
+      toast.error("Error updating column");
       return;
     }
-    setLocalProject(updatedProject);
+    updateProject(updatedProject);
   };
   return (
     <Modal handleClose={handleClose} title="Column Settings">
+      <AnimatePresence>
+        {showConfirm && (
+          <ConfirmModal
+            title="Are you sure you want to delete this column? This action also deletes all tasks in this column."
+            handleClose={() => setShowConfirm(false)}
+            onConfirm={() => {
+              void onDelete();
+              setShowConfirm(false);
+            }}
+            onCancel={() => setShowConfirm(false)}
+          />
+        )}
+      </AnimatePresence>
       <Box padding="8">
         <Stack>
           <Input
@@ -65,7 +82,7 @@ export default function ColumnSettings({ column, handleClose }: Props) {
               width="1/2"
               size="small"
               variant="secondary"
-              onClick={onDelete}
+              onClick={() => setShowConfirm(true)}
               center
               tone="red"
               prefix={<IconTrash />}

@@ -1,6 +1,9 @@
 import PrimaryButton from "@/app/common/components/PrimaryButton";
+import { useGlobalContext } from "@/app/context/globalContext";
+import useCardService from "@/app/services/Card/useCardService";
 import {
   Activity,
+  ApplicationType,
   CardType,
   Chain,
   CircleType,
@@ -8,12 +11,13 @@ import {
   Token,
   WorkThreadType,
 } from "@/app/types";
-import { Box, Stack } from "degen";
+import { Stack } from "degen";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "react-query";
 import { toast } from "react-toastify";
+import { useLocalProject } from "../../Context/LocalProjectContext";
 
 type Props = {
   handleClose?: () => void;
@@ -27,10 +31,10 @@ type CreateCardContextType = {
   setDescription: React.Dispatch<React.SetStateAction<string>>;
   labels: string[];
   setLabels: React.Dispatch<React.SetStateAction<string[]>>;
-  assignee: string;
-  setAssignee: React.Dispatch<React.SetStateAction<string>>;
-  reviewer: string;
-  setReviewer: React.Dispatch<React.SetStateAction<string>>;
+  assignees: string[];
+  setAssignees: React.Dispatch<React.SetStateAction<string[]>>;
+  reviewers: string[];
+  setReviewers: React.Dispatch<React.SetStateAction<string[]>>;
   columnId: string;
   setColumnId: React.Dispatch<React.SetStateAction<string>>;
   cardType: string;
@@ -48,18 +52,22 @@ type CreateCardContextType = {
   onSubmit: (createAnother: boolean) => void;
   subTasks: {
     title: string;
-    assignee: string;
+    assignee: string[];
   }[];
   setSubTasks: React.Dispatch<
     React.SetStateAction<
       {
         title: string;
-        assignee: string;
+        assignee: string[];
       }[]
     >
   >;
-  project: ProjectType;
-  onCardUpdate: () => void;
+  childrenTasks: CardType[];
+  setChildrenTasks: React.Dispatch<React.SetStateAction<CardType[]>>;
+  parent: CardType;
+  setParent: React.Dispatch<React.SetStateAction<CardType>>;
+  project: ProjectType | undefined;
+  onCardUpdate: () => Promise<void>;
   activity: Activity[];
   setActivity: React.Dispatch<React.SetStateAction<Activity[]>>;
   workThreads: {
@@ -72,14 +80,21 @@ type CreateCardContextType = {
   >;
   workThreadOrder: string[];
   setWorkThreadOrder: React.Dispatch<React.SetStateAction<string[]>>;
+  application: {
+    [key: string]: ApplicationType;
+  };
+  setApplication: React.Dispatch<
+    React.SetStateAction<{
+      [key: string]: ApplicationType;
+    }>
+  >;
+  applicationOrder: string[];
+  setApplicationOrder: React.Dispatch<React.SetStateAction<string[]>>;
   card?: CardType;
   setCard: (card: CardType) => void;
   loading: boolean;
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
   updating: boolean;
-  setUpdating: React.Dispatch<React.SetStateAction<boolean>>;
-  isDirty: boolean;
-  setIsDirty: React.Dispatch<React.SetStateAction<boolean>>;
   onArchive: () => Promise<boolean>;
 };
 
@@ -96,28 +111,39 @@ export function useProviderLocalCard({
   const { data: circle } = useQuery<CircleType>(["circle", cId], {
     enabled: false,
   });
-  const { data: project, isLoading }: any = useQuery<ProjectType>(
-    ["project", pId],
+  const { data: project } = useQuery<ProjectType>(["project", pId], {
+    enabled: false,
+  });
+
+  const { updateProject } = useLocalProject();
+
+  const { data: card, refetch: fetchCard } = useQuery<CardType>(
+    ["card", tId],
+    () =>
+      fetch(
+        `${process.env.API_HOST}/card/byProjectAndSlug/${project?.id}/${
+          tId as string
+        }`
+      ).then((res) => res.json()),
     {
       enabled: false,
     }
   );
 
-  const { data: card } = useQuery<CardType>(["card", tId], {
-    enabled: false,
-  });
-
+  const { connectedUser } = useGlobalContext();
   const queryClient = useQueryClient();
 
   const setCard = (card: CardType) => {
     queryClient.setQueryData(["card", tId], card);
   };
 
+  const { callCreateCard, updateCard, updating } = useCardService();
+
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [labels, setLabels] = useState([] as string[]);
-  const [assignee, setAssignee] = useState("");
-  const [reviewer, setReviewer] = useState("");
+  const [assignees, setAssignees] = useState([] as string[]);
+  const [reviewers, setReviewers] = useState([connectedUser] as string[]);
   const [columnId, setColumnId] = useState("");
   const [cardType, setCardType] = useState("Task");
   const [chain, setChain] = useState(circle?.defaultPayment?.chain as Chain);
@@ -128,9 +154,11 @@ export function useProviderLocalCard({
   const [subTasks, setSubTasks] = useState<
     {
       title: string;
-      assignee: string;
+      assignee: string[];
     }[]
   >([] as any);
+  const [childrenTasks, setChildrenTasks] = useState<CardType[]>([]);
+  const [parent, setParent] = useState({} as CardType);
   const [activity, setActivity] = useState<Activity[]>({} as Activity[]);
   const [workThreads, setWorkThreads] = useState(
     {} as {
@@ -138,19 +166,33 @@ export function useProviderLocalCard({
     }
   );
   const [workThreadOrder, setWorkThreadOrder] = useState([] as string[]);
-  const [isDirty, setIsDirty] = useState(false);
+  const [application, setApplication] = useState(
+    {} as {
+      [key: string]: ApplicationType;
+    }
+  );
+  const [applicationOrder, setApplicationOrder] = useState([] as string[]);
 
   const [loading, setLoading] = useState(true);
-  const [updating, setUpdating] = useState(false);
 
   useEffect(() => {
-    if (!createCard && card && card.id && !isLoading) {
+    const fetchData = async () => {
       setLoading(true);
+      await fetchCard();
+    };
+    if (project?.id) {
+      void fetchData();
+    }
+  }, [tId, project]);
+
+  useEffect(() => {
+    console.log({ card });
+    if (!createCard && card && card.id) {
       setTitle(card.title);
       setDescription(card.description);
       setLabels(card.labels);
-      setAssignee(card.assignee[0]);
-      setReviewer(card.reviewer[0]);
+      setAssignees(card.assignee);
+      setReviewers(card.reviewer);
       setColumnId(card.columnId);
       setCardType(card.type);
       setChain(card.reward.chain);
@@ -161,17 +203,20 @@ export function useProviderLocalCard({
       setActivity(card.activity);
       setWorkThreads(card.workThreads);
       setWorkThreadOrder(card.workThreadOrder);
-      setIsDirty(false);
+      setApplication(card.application);
+      setApplicationOrder(card.applicationOrder);
+      setChildrenTasks(card.children);
+      setParent(card.parent);
       setLoading(false);
     }
-  }, [card, createCard, isLoading]);
+  }, [card, createCard]);
 
-  const onSubmit = (createAnother: boolean) => {
+  const onSubmit = async (createAnother: boolean) => {
     const payload: { [key: string]: any } = {
       title,
       description,
-      reviewer: [reviewer],
-      assignee: [assignee],
+      reviewer: reviewers,
+      assignee: assignees,
       project: project?.id,
       circle: project?.parents[0].id,
       type: cardType,
@@ -184,97 +229,38 @@ export function useProviderLocalCard({
         token,
         value: Number(value),
       },
+      parent: card?.id,
+      childCards: subTasks,
     };
     console.log({ payload });
-    fetch(`${process.env.API_HOST}/card`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
-      credentials: "include",
-    })
-      .then(async (res) => {
-        if (!res.ok) {
-          toast.error("Error creating card");
-          return;
-        }
-        const data = await res.json();
-        !createAnother && handleClose && handleClose();
-        toast(
-          <Stack>
-            Card created
-            <Stack direction="horizontal">
-              <PrimaryButton>
-                <Link href={`/${cId}/${pId}/${data.card?.slug}`}>
-                  View Card
-                </Link>
-              </PrimaryButton>
-            </Stack>
-          </Stack>,
-          {
-            theme: "dark",
-          }
-        );
-        queryClient.setQueryData(["project", pId], data.project);
-        resetData();
-      })
-      .catch((err) => {
-        console.log({ err });
-      });
+    const data = await callCreateCard(payload);
+    toast(
+      <Stack>
+        Card created
+        <Stack direction="horizontal">
+          <PrimaryButton>
+            <Link href={`/${cId}/${pId}/${data.card?.slug}`}>View Card</Link>
+          </PrimaryButton>
+        </Stack>
+      </Stack>,
+      {
+        theme: "dark",
+      }
+    );
+    !createAnother && handleClose && handleClose();
+    updateProject(data.project);
+    // queryClient.setQueryData(["project", pId], data.project);
+    resetData();
   };
 
-  const onCardUndo = () => {
-    setUpdating(true);
-    const payload: { [key: string]: any } = {
-      title: card?.title,
-      description: card?.description,
-      reviewer: card?.reviewer,
-      assignee: card?.assignee,
-      project: project?.id,
-      circle: project?.parents[0].id,
-      type: card?.type,
-      deadline: card?.deadline,
-      labels: card?.labels,
-      priority: card?.priority,
-      columnId: card?.columnId,
-      reward: card?.reward,
-    };
-    console.log({ payload });
-    fetch(`${process.env.API_HOST}/card/${card?.id}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
-      credentials: "include",
-    })
-      .then(async (res) => {
-        const data = await res.json();
-        if (data.id) {
-          queryClient.setQueryData(["card", tId], data);
-          toast("Undo Successful", {
-            theme: "dark",
-          });
-        } else {
-          toast.error("Error saving card", { theme: "dark" });
-        }
-        setUpdating(false);
-      })
-      .catch((err) => {
-        console.log({ err });
-        setUpdating(false);
-        toast.error("Error undoing card changes", { theme: "dark" });
-      });
-  };
-
-  const onCardUpdate = () => {
-    setUpdating(true);
+  const onCardUpdate = async () => {
+    console.log("----update------");
+    if (!card?.id) return;
     const payload: { [key: string]: any } = {
       title,
       description,
-      reviewer: [reviewer],
-      assignee: [assignee],
+      reviewer: reviewers,
+      assignee: assignees,
       project: project?.id,
       circle: project?.parents[0].id,
       type: cardType,
@@ -288,44 +274,10 @@ export function useProviderLocalCard({
         value: parseFloat(value),
       },
     };
-    console.log({ payload });
-    fetch(`${process.env.API_HOST}/card/${card?.id}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
-      credentials: "include",
-    })
-      .then(async (res) => {
-        const data = await res.json();
-
-        if (data.id) {
-          queryClient.setQueryData(["card", tId], data);
-          toast(
-            <Stack>
-              Card saved
-              <Stack direction="horizontal">
-                <Box width="fit">
-                  <PrimaryButton onClick={onCardUndo}>Undo</PrimaryButton>
-                </Box>
-              </Stack>
-            </Stack>,
-            {
-              theme: "dark",
-            }
-          );
-        } else {
-          toast.error("Error saving card", { theme: "dark" });
-        }
-
-        setUpdating(false);
-      })
-      .catch((err) => {
-        console.log({ err });
-        setUpdating(false);
-        toast.error("Error updating card", { theme: "dark" });
-      });
+    const res = await updateCard(payload, card.id);
+    if (res) {
+      setCard(res);
+    }
   };
 
   const onArchive = async () => {
@@ -343,7 +295,7 @@ export function useProviderLocalCard({
       void router.push(`/${cId}/${pId}`);
       return true;
     }
-    toast.error("Error archiving card", { theme: "dark" });
+    toast.error("Error archiving card");
     return false;
   };
 
@@ -351,7 +303,7 @@ export function useProviderLocalCard({
     setTitle("");
     setDescription("");
     setLabels([]);
-    setAssignee("");
+    setAssignees([]);
     // setReviewer("");
     // setColumnId("");
     setCardType("Task");
@@ -361,7 +313,6 @@ export function useProviderLocalCard({
     setDeadline(null);
     setPriority(0);
     setSubTasks([]);
-    setIsDirty(false);
   };
 
   return {
@@ -371,10 +322,10 @@ export function useProviderLocalCard({
     setDescription,
     labels,
     setLabels,
-    assignee,
-    setAssignee,
-    reviewer,
-    setReviewer,
+    assignees,
+    setAssignees,
+    reviewers,
+    setReviewers,
     columnId,
     setColumnId,
     cardType,
@@ -393,9 +344,12 @@ export function useProviderLocalCard({
     loading,
     setLoading,
     updating,
-    setUpdating,
     subTasks,
     setSubTasks,
+    childrenTasks,
+    setChildrenTasks,
+    parent,
+    setParent,
     project,
     onCardUpdate,
     activity,
@@ -404,10 +358,12 @@ export function useProviderLocalCard({
     setWorkThreads,
     workThreadOrder,
     setWorkThreadOrder,
+    application,
+    setApplication,
+    applicationOrder,
+    setApplicationOrder,
     card,
     setCard,
-    isDirty,
-    setIsDirty,
     onArchive,
   };
 }

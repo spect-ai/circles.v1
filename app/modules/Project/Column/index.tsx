@@ -1,10 +1,9 @@
-import ConfirmModal from "@/app/common/components/Modal/ConfirmModal";
 import { updateColumnDetails } from "@/app/services/Column";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { CardType, ColumnType } from "@/app/types";
-import { Box, Button, IconCog, IconPlusSmall, Stack } from "degen";
+import { Box, Button, IconCog, IconPlusSmall, Stack, Text } from "degen";
 import { AnimatePresence } from "framer-motion";
-import React, { useState } from "react";
+import React, { memo, useEffect, useState } from "react";
 import { Draggable, Droppable } from "react-beautiful-dnd";
 import { toast } from "react-toastify";
 import styled from "styled-components";
@@ -26,24 +25,22 @@ const Container = styled(Box)`
   }
   -ms-overflow-style: none;
   scrollbar-width: none;
-  height: calc(100vh - 7.4rem);
+  height: calc(100vh - 5rem);
   overflow-y: none;
   width: 22rem;
 `;
 
 const ScrollContainer = styled(Box)`
   ::-webkit-scrollbar {
-    display: none;
+    width: 0px;
   }
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-  height: calc(100vh - 12rem);
+  height: calc(100vh - 6rem);
   border-radius: 0.5rem;
   overflow-y: auto;
 `;
 
 const NameInput = styled.input`
-  width: 100%;
+  width: auto;
   background: transparent;
   border: 0;
   border-style: none;
@@ -53,20 +50,19 @@ const NameInput = styled.input`
   box-shadow: none;
   font-size: 1.1rem;
   caret-color: rgb(255, 255, 255, 0.85);
-  color: rgb(255, 255, 255, 0.85);
+  color: rgb(255, 255, 255, 0.6);
   font-weight: 400;
   margin-left: 0.1rem;
 `;
 
-export default function ColumnComponent({ cards, id, column, index }: Props) {
-  const [columnTitle, setColumnTitle] = useState(column.name);
+function ColumnComponent({ cards, id, column, index }: Props) {
+  const [columnTitle, setColumnTitle] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [isDirty, setIsDirty] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const { localProject: project, setLocalProject } = useLocalProject();
   const { canDo } = useRoleGate();
-
   async function updateColumn() {
     const updatedProject = await updateColumnDetails(
       project.id,
@@ -76,11 +72,16 @@ export default function ColumnComponent({ cards, id, column, index }: Props) {
       }
     );
     if (!updatedProject) {
-      toast.error("Error updating column", { theme: "dark" });
+      toast.error("Error updating column");
+      setColumnTitle(project.columnDetails[column.columnId].name);
       return;
     }
     setLocalProject(updatedProject);
   }
+
+  useEffect(() => {
+    setColumnTitle(project.columnDetails[column.columnId].name);
+  }, [project.columnDetails, column.columnId]);
 
   return (
     <>
@@ -119,16 +120,18 @@ export default function ColumnComponent({ cards, id, column, index }: Props) {
             {...provided.draggableProps}
             {...provided.dragHandleProps}
             ref={provided.innerRef}
-            borderWidth="0.375"
-            borderRadius="2xLarge"
             padding="2"
-            backgroundColor="background"
             display="flex"
             flexDirection="column"
             justifyContent="space-between"
           >
-            <Box>
-              <Stack direction="horizontal" space="0">
+            <Box marginBottom="2">
+              <Stack
+                direction="horizontal"
+                space="0"
+                align="center"
+                justify="space-between"
+              >
                 <NameInput
                   placeholder="Add Title"
                   value={columnTitle}
@@ -136,6 +139,9 @@ export default function ColumnComponent({ cards, id, column, index }: Props) {
                   onBlur={() => updateColumn()}
                   //   disabled={space.roles[user?.id as string] !== 3}
                 />
+                <Box paddingRight="1">
+                  <Text variant="label">({column.cards.length})</Text>
+                </Box>
                 <Button
                   data-tour={`add-card-${column.columnId}-button`}
                   shape="circle"
@@ -176,14 +182,16 @@ export default function ColumnComponent({ cards, id, column, index }: Props) {
                 >
                   <Box>
                     {cards?.map((card, idx) => {
-                      return (
-                        <CardComponent
-                          card={card}
-                          index={idx}
-                          column={column}
-                          key={card.id}
-                        />
-                      );
+                      if (card) {
+                        return (
+                          <CardComponent
+                            card={card}
+                            index={idx}
+                            column={column}
+                            key={card.id}
+                          />
+                        );
+                      }
                     })}
                     {provided2.placeholder}
                   </Box>
@@ -196,3 +204,5 @@ export default function ColumnComponent({ cards, id, column, index }: Props) {
     </>
   );
 }
+
+export default memo(ColumnComponent);
