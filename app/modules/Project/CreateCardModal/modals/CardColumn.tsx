@@ -2,14 +2,14 @@ import EditTag from "@/app/common/components/EditTag";
 import ModalOption from "@/app/common/components/ModalOption";
 import { MenuOutlined } from "@ant-design/icons";
 import { Box, IconSearch, Input, Text } from "degen";
-import React, { useEffect, useState } from "react";
+import React, { memo, useEffect, useState } from "react";
 import { useLocalCard } from "../hooks/LocalCardContext";
 import { Option } from "../constants";
 import { matchSorter } from "match-sorter";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
 
-export default function CardColumn() {
+function CardColumn() {
   const { columnId, setColumnId, project, onCardUpdate } = useLocalCard();
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -100,3 +100,5 @@ export default function CardColumn() {
     </EditTag>
   );
 }
+
+export default memo(CardColumn);

@@ -1,14 +1,14 @@
 import EditTag from "@/app/common/components/EditTag";
 import ModalOption from "@/app/common/components/ModalOption";
 import { Avatar, Box, IconSearch, IconUserSolid, Input, Text } from "degen";
-import React, { useEffect, useState } from "react";
+import React, { memo, useEffect, useState } from "react";
 import { useLocalCard } from "../hooks/LocalCardContext";
 import { Option } from "../constants";
 import { matchSorter } from "match-sorter";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
 
-export default function CardReviewer() {
+function CardReviewer() {
   const { reviewers, setReviewers, onCardUpdate } = useLocalCard();
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -138,3 +138,5 @@ export default function CardReviewer() {
     </EditTag>
   );
 }
+
+export default memo(CardReviewer);

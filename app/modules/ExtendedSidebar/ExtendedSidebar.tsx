@@ -1,4 +1,4 @@
-import React, { ReactElement, useEffect } from "react";
+import React, { memo, ReactElement, useEffect } from "react";
 import { Box } from "degen";
 import { motion } from "framer-motion";
 import { useRouter } from "next/router";
@@ -65,4 +65,4 @@ function ExtendedSidebar(): ReactElement {
   );
 }
 
-export default ExtendedSidebar;
+export default memo(ExtendedSidebar);

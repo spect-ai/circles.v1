@@ -2,25 +2,17 @@ import Popover from "@/app/common/components/Popover";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { CircleType, ProjectType } from "@/app/types";
 import { AppstoreOutlined } from "@ant-design/icons";
-import {
-  Avatar,
-  Box,
-  Heading,
-  IconCog,
-  IconUsersSolid,
-  Stack,
-  Text,
-} from "degen";
+import { Box, Heading, IconCog, IconUsersSolid, Stack } from "degen";
 import { AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
-import React, { useState } from "react";
+import React, { memo, useState } from "react";
 import { useQuery } from "react-query";
 import { PopoverOption } from "../Card/ActionPopover";
 import SettingsModal from "../Circle/CircleSettingsModal";
 import ContributorsModal from "../Circle/ContributorsModal";
 import { HeaderButton } from "./ExploreSidebar";
 
-export default function CircleOptions() {
+function CircleOptions() {
   const router = useRouter();
   const { circle: cId, project: pId } = router.query;
   const { data: circle } = useQuery<CircleType>(["circle", cId], {
@@ -35,7 +27,6 @@ export default function CircleOptions() {
   const [contributorsModalOpen, setContributorsModalOpen] = useState(false);
 
   const { canDo } = useRoleGate();
-
   return (
     <>
       <AnimatePresence>
@@ -120,3 +111,5 @@ export default function CircleOptions() {
     </>
   );
 }
+
+export default memo(CircleOptions);

@@ -11,6 +11,8 @@ type LocalProjectContextType = {
   setError: React.Dispatch<React.SetStateAction<boolean>>;
   loading: boolean;
   updateProject: (project: ProjectType) => void;
+  updating: boolean;
+  setUpdating: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export const LocalProjectContext = createContext<LocalProjectContextType>(
@@ -20,7 +22,7 @@ export const LocalProjectContext = createContext<LocalProjectContextType>(
 export function useProviderLocalProject() {
   const router = useRouter();
   const { project: pId } = router.query;
-  const { data: project, refetch: fetchProject } = useQuery<ProjectType>(
+  const { refetch: fetchProject } = useQuery<ProjectType>(
     ["project", pId],
     () =>
       fetch(`${process.env.API_HOST}/project/slug/${pId as string}`).then(
@@ -32,6 +34,7 @@ export function useProviderLocalProject() {
     }
   );
   const [loading, setLoading] = useState(false);
+  const [updating, setUpdating] = useState(false);
 
   const queryClient = useQueryClient();
 
@@ -44,17 +47,20 @@ export function useProviderLocalProject() {
 
   useEffect(() => {
     if (pId) {
+      setLoading(true);
       fetchProject()
         .then((res) => {
           if (res.data) {
             setLocalProject(res.data);
           }
+          setLoading(false);
         })
         .catch((err) => {
           console.error(err);
           toast.error("Something went wrong", {
             theme: "dark",
           });
+          setLoading(false);
         });
     }
   }, [pId]);
@@ -66,6 +72,8 @@ export function useProviderLocalProject() {
     setError,
     loading,
     updateProject,
+    updating,
+    setUpdating,
   };
 }
 

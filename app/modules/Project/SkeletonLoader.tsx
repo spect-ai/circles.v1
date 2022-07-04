@@ -2,60 +2,56 @@ import { Box, Stack } from "degen";
 import React from "react";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
-import { motion } from "framer-motion";
-import { fadeVariant } from "../Card/Utils/variants";
+
+const Skelitem = () => (
+  <Skeleton
+    enableAnimation
+    style={{
+      height: "5rem",
+      width: "20.5rem",
+      borderRadius: "0.5rem",
+    }}
+  />
+);
 
 export const SkeletonLoader = () => {
   return (
-    <motion.main
-      variants={fadeVariant} // Pass the variant object into Framer Motion
-      initial="hidden" // Set the initial state to variants.hidden
-      animate="enter" // Animated state to variants.enter
-      exit="exit" // Exit state (used later) to variants.exit
-      transition={{ type: "linear" }} // Set the transition to linear
-      className=""
+    <SkeletonTheme
+      baseColor="rgb(20,20,20,1)"
+      highlightColor="rgb(255,255,255,0.1)"
     >
-      <SkeletonTheme
-        baseColor="rgb(20,20,20,1)"
-        highlightColor="rgb(255,255,255,0.1)"
-      >
-        <Box padding="6" marginTop="-2.5">
-          <Stack direction="horizontal">
-            <Skeleton
-              enableAnimation
-              style={{
-                height: "calc(100vh - 10rem)",
-                width: "22rem",
-                borderRadius: "1rem",
-              }}
-            />
-            <Skeleton
-              enableAnimation
-              style={{
-                height: "calc(100vh - 10rem)",
-                width: "22rem",
-                borderRadius: "1rem",
-              }}
-            />
-            <Skeleton
-              enableAnimation
-              style={{
-                height: "calc(100vh - 10rem)",
-                width: "22rem",
-                borderRadius: "1rem",
-              }}
-            />
-            <Skeleton
-              enableAnimation
-              style={{
-                height: "calc(100vh - 10rem)",
-                width: "22rem",
-                borderRadius: "1rem",
-              }}
-            />
+      <Box padding="8" marginTop="6" marginLeft="-2">
+        <Stack direction="horizontal" space="8">
+          <Stack space="2">
+            {Array(4)
+              .fill(0)
+              .map((_, i) => (
+                <Skelitem key={i} />
+              ))}
           </Stack>
-        </Box>
-      </SkeletonTheme>
-    </motion.main>
+          <Stack space="2">
+            {Array(7)
+              .fill(0)
+              .map((_, i) => (
+                <Skelitem key={i} />
+              ))}
+          </Stack>
+          <Stack space="2">
+            {Array(5)
+              .fill(0)
+              .map((_, i) => (
+                <Skelitem key={i} />
+              ))}
+          </Stack>
+          <Stack space="2">
+            {Array(2)
+              .fill(0)
+              .map((_, i) => (
+                <Skelitem key={i} />
+              ))}
+          </Stack>
+        </Stack>
+      </Box>
+    </SkeletonTheme>
   );
 };

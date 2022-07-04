@@ -7,10 +7,10 @@ import { useGlobalContext } from "@/app/context/globalContext";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { Box, IconEth, Input, Stack, Tag, Text } from "degen";
 import { motion } from "framer-motion";
-import React, { useState } from "react";
+import React, { memo, useState } from "react";
 import { useLocalCard } from "../hooks/LocalCardContext";
 
-export default function CardReward() {
+function CardReward() {
   const [modalOpen, setModalOpen] = useState(false);
   const { registry } = useGlobalContext();
   const { chain, setChain, token, setToken, value, setValue, onCardUpdate } =
@@ -108,3 +108,5 @@ export default function CardReward() {
     </EditTag>
   );
 }
+
+export default memo(CardReward);

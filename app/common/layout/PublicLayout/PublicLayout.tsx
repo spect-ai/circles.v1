@@ -37,7 +37,6 @@ function PublicLayout(props: PublicLayoutProps) {
 
   useEffect(() => {
     if (localStorage.getItem("connectorIndex")) {
-      console.log("connecting");
       const index = parseInt(localStorage.getItem("connectorIndex") as string);
       connect(connectors[index]);
     }

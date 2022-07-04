@@ -1,3 +1,4 @@
+import "scripts/wdyr";
 import { ThemeProvider } from "degen";
 import "degen/styles";
 import type { AppProps } from "next/app";
