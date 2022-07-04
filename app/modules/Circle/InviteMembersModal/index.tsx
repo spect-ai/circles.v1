@@ -37,6 +37,7 @@ function InviteMemberModal() {
     <>
       <Box width="1/3" marginBottom="2">
         <PrimaryButton
+          tourId="invite-member-button"
           onClick={() => {
             setIsOpen(true);
           }}

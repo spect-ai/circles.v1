@@ -106,6 +106,7 @@ export default function BatchPay({ card }: Props) {
         //   </Tooltip>
         // </Button>
         <PopoverOption
+          tourId="batch-pay-button"
           onClick={() => {
             setIsOpen(true);
           }}

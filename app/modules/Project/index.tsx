@@ -56,7 +56,7 @@ function Project() {
             color: "rgb(255,255,255,0.7)",
           }}
         />
-        {!onboarded && <Onboarding />}
+        {!onboarded && canDo(["steward"]) && <Onboarding />}
         <DragDropContext onDragEnd={handleDragEnd}>
           <Droppable
             droppableId="all-columns"

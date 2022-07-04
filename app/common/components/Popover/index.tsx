@@ -8,6 +8,7 @@ interface Props {
   setIsOpen: (isOpen: boolean) => void;
   butttonComponent: ReactNode;
   children: ReactNode;
+  tourId?: string;
 }
 
 // grow animation for popover
@@ -58,12 +59,13 @@ const Popover: FC<Props> = ({
   children,
   isOpen,
   setIsOpen,
+  tourId,
 }) => {
   const wrapperRef = useRef(null);
   useOutsideAlerter(wrapperRef, setIsOpen);
 
   return (
-    <Box ref={wrapperRef} width="full">
+    <Box ref={wrapperRef} width="full" data-tour={tourId}>
       {/* <Box
         cursor="pointer"
         onClick={() => setIsOpen(!isOpen)}

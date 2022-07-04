@@ -33,15 +33,21 @@ const PopoverOptionContainer = styled(Box)`
 type PopoverOptionProps = {
   onClick: () => void;
   children: React.ReactNode;
+  tourId?: string;
 };
 
-export const PopoverOption = ({ children, onClick }: PopoverOptionProps) => (
+export const PopoverOption = ({
+  children,
+  onClick,
+  tourId,
+}: PopoverOptionProps) => (
   <PopoverOptionContainer
     padding="4"
     overflow="hidden"
     cursor="pointer"
     onClick={onClick}
     borderRadius="2xLarge"
+    data-tour={tourId}
   >
     <Text variant="small" weight="semiBold" ellipsis color="textSecondary">
       {children}

@@ -42,12 +42,14 @@ export default function Onboarding() {
                 <Text size="large" weight="semiBold">
                   Wanna go through circle onboarding?
                 </Text>
+                <Box marginTop="4" />
                 <Stack direction="horizontal">
                   <Box width="full">
                     <PrimaryButton
+                      variant="tertiary"
                       onClick={() => {
                         setIsOpen(false);
-                        setIsTourOpen(true);
+                        finishOnboarding();
                       }}
                       icon={
                         <CloseCircleOutlined
@@ -81,7 +83,7 @@ export default function Onboarding() {
         )}
       </AnimatePresence>
       <Tour
-        accentColor="rgb(191, 90, 242, 0.66)"
+        accentColor="rgb(191, 90, 242, 0.6)"
         steps={tourConfig as any}
         isOpen={isTourOpen}
         onRequestClose={() => {

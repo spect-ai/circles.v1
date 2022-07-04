@@ -103,6 +103,7 @@ export default function ProjectSettings() {
         )}
       </AnimatePresence>
       <PopoverOption
+        tourId="project-settings-button"
         onClick={() => {
           setIsOpen(true);
         }}

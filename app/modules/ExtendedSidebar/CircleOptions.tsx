@@ -49,8 +49,10 @@ export default function CircleOptions() {
         )}
       </AnimatePresence>
       <Popover
+        data-tour="circle-options-popover"
         butttonComponent={
           <HeaderButton
+            data-tour="circle-options-button"
             padding="1"
             marginTop="0.5"
             marginBottom="1"
@@ -91,6 +93,7 @@ export default function CircleOptions() {
             </Stack>
           </PopoverOption>
           <PopoverOption
+            tourId="circle-settings-button"
             onClick={() => {
               setIsOpen(false);
               setSettingsModalOpen(true);

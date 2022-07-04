@@ -43,9 +43,10 @@ export default function Onboarding() {
                 <Stack direction="horizontal">
                   <Box width="full">
                     <PrimaryButton
+                      variant="tertiary"
                       onClick={() => {
                         setIsOpen(false);
-                        setIsTourOpen(true);
+                        finishOnboarding();
                       }}
                       icon={
                         <CloseCircleOutlined

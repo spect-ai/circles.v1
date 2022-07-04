@@ -39,7 +39,7 @@ export default function Circle() {
   }
   return (
     <BoxContainer paddingX="8" paddingTop="4">
-      {!onboarded && <Onboarding />}
+      {!onboarded && canDo(["steward"]) && <Onboarding />}
       <ToastContainer
         toastStyle={{
           backgroundColor: "rgb(20,20,20)",

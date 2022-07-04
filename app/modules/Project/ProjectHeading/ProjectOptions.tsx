@@ -11,6 +11,7 @@ export default function ProjectOptions() {
       <Popover
         butttonComponent={
           <Box
+            data-tour="project-options-button"
             cursor="pointer"
             onClick={() => setIsOpen(!isOpen)}
             color="foreground"
