@@ -74,7 +74,7 @@ export default function CircleOptions() {
           backgroundColor="background"
           borderWidth="0.5"
           borderRadius="2xLarge"
-          width="36"
+          width="44"
         >
           <PopoverOption
             onClick={() => {

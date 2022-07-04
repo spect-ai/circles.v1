@@ -1,3 +1,6 @@
+import PrimaryButton from "@/app/common/components/PrimaryButton";
+import { Stack } from "degen";
+import Link from "next/link";
 import { toast } from "react-toastify";
 import { useAccount, useNetwork } from "wagmi";
 import useDistributor from "./useDistributor";
@@ -96,16 +99,29 @@ export default function usePaymentGateway(
         await handleStatusUpdate(epochId || cardIds, tx.transactionHash);
       }
       // notify('Payment done succesfully!', 'success');
-      toast("Payment done succesfully!", {
-        theme: "dark",
-      });
+      toast(
+        <Stack direction="horizontal">
+          Transaction Successfull
+          <PrimaryButton>
+            <Link
+              href={`https://mumbai.polygonscan.com/tx/${tx.transactionHash}`}
+            >
+              View Transaction
+            </Link>
+          </PrimaryButton>
+        </Stack>,
+        {
+          theme: "dark",
+        }
+      );
       return tx.transactionHash;
     } catch (err: any) {
       void handlePaymentError(err, chainId, tokenAddresses, tokenValues);
       console.log(err);
-      toast.error(err.message, {
-        theme: "dark",
-      });
+      // toast.error(err.message, {
+      //   theme: "dark",
+      // });
+      throw err.message;
       return false;
     }
   }

@@ -1,11 +1,11 @@
 import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { CardType } from "@/app/types";
-import { Button, IconEth, Stack, Text } from "degen";
+import { IconEth, Stack } from "degen";
 import { AnimatePresence } from "framer-motion";
 import { useEffect } from "react";
-import { Tooltip } from "react-tippy";
 import { PopoverOption } from "../../Card/ActionPopover";
+import { useLocalProject } from "../Context/LocalProjectContext";
 import ApproveToken from "./ApproveToken";
 import {
   BatchPayContext,
@@ -21,6 +21,7 @@ interface Props {
 
 export default function BatchPay({ card }: Props) {
   const context = useProviderBatchPayContext();
+  const { localProject } = useLocalProject();
 
   const {
     setIsOpen,
@@ -92,19 +93,6 @@ export default function BatchPay({ card }: Props) {
           Pay
         </PrimaryButton>
       ) : (
-        // <Button
-        //   data-tour="header-batch-pay-button"
-        //   size="small"
-        //   variant="transparent"
-        //   shape="circle"
-        //   onClick={(e: any) => {
-        //     setIsOpen(true);
-        //   }}
-        // >
-        //   <Tooltip html={<Text>Batch Pay</Text>}>
-        //     <IconEth />
-        //   </Tooltip>
-        // </Button>
         <PopoverOption
           tourId="batch-pay-button"
           onClick={() => {
@@ -125,7 +113,7 @@ export default function BatchPay({ card }: Props) {
             height="40rem"
             size="large"
           >
-            {step === 0 && <SelectCards />}
+            {step === 0 && localProject && <SelectCards />}
             {step === 1 && <CurrencyPayment />}
             {step === 2 && <ApproveToken />}
             {step === 3 && <TokenPayment />}

@@ -54,8 +54,6 @@ function ExtendedSidebar(): ReactElement {
         display="flex"
         flexDirection="column"
         borderRightWidth="0.375"
-        paddingLeft="3"
-        paddingRight="3"
         height="full"
       >
         {!cId && <ExploreSidebar />}

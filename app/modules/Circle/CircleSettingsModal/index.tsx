@@ -8,8 +8,8 @@ import { Box, Input, MediaPicker, Stack, Textarea } from "degen";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
 import { useQuery, useQueryClient } from "react-query";
+import DefaultPayment from "../CirclePayment";
 import Contributors from "../ContributorsModal/Contributors";
-import DefaultPayment from "../DefaultPayment";
 
 interface Props {
   handleClose: () => void;
@@ -71,14 +71,13 @@ export default function SettingsModal({ handleClose }: Props) {
       height="40rem"
       size="large"
     >
-      <Box display="flex" height="full">
-        <Box
-          width="1/4"
-          borderRightWidth="0.375"
-          paddingY="8"
-          height="full"
-          paddingRight="1"
-        >
+      <Box
+        display="flex"
+        style={{
+          height: "calc(100% - 5rem)",
+        }}
+      >
+        <Box width="1/4" borderRightWidth="0.375" paddingY="8" paddingRight="1">
           <Tabs
             selectedTab={tab}
             onTabClick={onTabClick}
@@ -93,7 +92,7 @@ export default function SettingsModal({ handleClose }: Props) {
             unselectedColor="transparent"
           />
         </Box>
-        <Box width="3/4" padding="8">
+        <Box width="3/4" paddingX="8" paddingY="4">
           {tab === 0 && (
             <Stack>
               <Input

@@ -1,12 +1,9 @@
 import Accordian from "@/app/common/components/Accordian";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { CircleType } from "@/app/types";
 import { ProjectOutlined } from "@ant-design/icons";
 import {
   Box,
-  Button,
-  IconCollection,
   IconUsersSolid,
   Skeleton,
   SkeletonGroup,
@@ -21,8 +18,6 @@ import { useQuery } from "react-query";
 import styled from "styled-components";
 import SettingsModal from "../Circle/CircleSettingsModal";
 import ContributorsModal from "../Circle/ContributorsModal";
-import CreateProjectModal from "../Circle/CreateProjectModal";
-import CreateSpaceModal from "../Circle/CreateSpaceModal";
 import CircleOptions from "./CircleOptions";
 import CollapseButton from "./CollapseButton";
 
@@ -42,7 +37,6 @@ function CircleSidebar() {
   const { data: circle, isLoading } = useQuery<CircleType>(["circle", cId], {
     enabled: false,
   });
-  const { canDo } = useRoleGate();
 
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [isContributorsModalOpen, setIsContributorsModalOpen] = useState(false);
@@ -63,7 +57,9 @@ function CircleSidebar() {
 
   return (
     <Box
-      padding="2"
+      paddingY="2"
+      paddingLeft="3"
+      paddingRight="3"
       onMouseEnter={() => setShowCollapseButton(true)}
       onMouseLeave={() => setShowCollapseButton(false)}
     >
@@ -83,8 +79,8 @@ function CircleSidebar() {
           <CollapseButton
             show={showCollapseButton}
             setShowCollapseButton={setShowCollapseButton}
-            top="2.8rem"
-            left="a"
+            top="2.7rem"
+            left="21rem"
           />
         </Stack>
         <Container>

@@ -186,7 +186,6 @@ export function useProviderLocalCard({
   }, [tId, project]);
 
   useEffect(() => {
-    console.log({ card });
     if (!createCard && card && card.id) {
       setTitle(card.title);
       setDescription(card.description);
@@ -232,7 +231,6 @@ export function useProviderLocalCard({
       parent: card?.id,
       childCards: subTasks,
     };
-    console.log({ payload });
     const data = await callCreateCard(payload);
     toast(
       <Stack>
@@ -254,7 +252,6 @@ export function useProviderLocalCard({
   };
 
   const onCardUpdate = async () => {
-    console.log("----update------");
     if (!card?.id) return;
     const payload: { [key: string]: any } = {
       title,

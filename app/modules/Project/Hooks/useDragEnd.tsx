@@ -107,25 +107,22 @@ export default function useDragEnd() {
         },
       });
     }
-    fetch(
-      `${process.env.API_HOST}/project/${localProject.id}/reorderCard/${draggableId}`,
-      {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          destinationColumnId: destination.droppableId,
-          destinationCardIndex: destination.index,
-        }),
-        credentials: "include",
-      }
-    )
+    fetch(`${process.env.API_HOST}/card/${draggableId}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        columnId: destination.droppableId,
+        cardIndex: destination.index,
+      }),
+      credentials: "include",
+    })
       .then(async (res) => {
         const data = await res.json();
-        if (data.id) {
-          updateProject(data);
-        }
+        // if (data.id) {
+        //   updateProject(data);
+        // }
       })
       .catch((err) => {
         console.log({ err });

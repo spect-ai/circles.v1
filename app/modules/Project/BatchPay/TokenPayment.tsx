@@ -4,9 +4,13 @@ import { useGlobalContext } from "@/app/context/globalContext";
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
 import { updatePaymentInfo } from "@/app/services/Payment";
 import usePaymentGateway from "@/app/services/Payment/usePayment";
-import { BatchPayInfo } from "@/app/types";
+import { BatchPayInfo, CircleType } from "@/app/types";
 import { Avatar, Box, Stack, Text } from "degen";
+import Link from "next/link";
+import { useRouter } from "next/router";
 import React, { useState } from "react";
+import { useQuery } from "react-query";
+import { toast } from "react-toastify";
 import { useLocalProject } from "../Context/LocalProjectContext";
 import { useBatchPayContext } from "./context/batchPayContext";
 import { ScrollContainer } from "./SelectCards";
@@ -19,7 +23,12 @@ export default function TokenPayment() {
   const { batchPayInfo, setStep, setIsOpen, tokenCards, setBatchPayInfo } =
     useBatchPayContext();
 
-  const { updateProject, localProject: project } = useLocalProject();
+  const { updateProject } = useLocalProject();
+  const router = useRouter();
+  const { circle: cId, project: pId, card: tId } = router.query;
+  const { data: circle } = useQuery<CircleType>(["circle", cId], {
+    enabled: false,
+  });
 
   const formatRows = () => {
     const rows: any[] = [];
@@ -39,7 +48,7 @@ export default function TokenPayment() {
         <Text variant="base" weight="semiBold" key={userId}>
           {batchPayInfo.tokens.values[index]}{" "}
           {
-            registry[project?.parents[0].defaultPayment.chain.chainId]
+            registry[circle?.defaultPayment.chain.chainId as string]
               .tokenDetails[batchPayInfo.tokens.tokenAddresses[index]].symbol
           }
         </Text>,
@@ -80,14 +89,25 @@ export default function TokenPayment() {
             <PrimaryButton
               loading={loading}
               onClick={async () => {
-                setLoading(true);
-                const txnHash = await batchPay(
-                  project?.parents[0].defaultPayment.chain.chainId,
-                  "tokens",
-                  getEthAddress() as string[],
-                  batchPayInfo?.tokens.values as number[],
-                  batchPayInfo?.tokens.tokenAddresses as string[]
+                const txnHash = await toast.promise(
+                  batchPay(
+                    circle?.defaultPayment.chain.chainId as string,
+                    "tokens",
+                    getEthAddress() as string[],
+                    batchPayInfo?.tokens.values as number[],
+                    batchPayInfo?.tokens.tokenAddresses as string[]
+                  ),
+                  {
+                    pending: "Transaction is pending",
+                    success: {
+                      render: "Success",
+                    },
+                    error: {
+                      render: ({ data }) => data,
+                    },
+                  }
                 );
+                console.log({ txnHash });
                 if (txnHash) {
                   const res = await updatePaymentInfo(
                     tokenCards as string[],
@@ -95,16 +115,12 @@ export default function TokenPayment() {
                   );
                   console.log({ res });
                   if (res) {
-                    updateProject(res);
-                    setLoading(false);
+                    // updateProject(res);
                     setIsOpen(false);
                     setStep(0);
                     setBatchPayInfo({} as BatchPayInfo);
-                  } else {
-                    setLoading(false);
                   }
                 }
-                setLoading(false);
               }}
             >
               Pay
