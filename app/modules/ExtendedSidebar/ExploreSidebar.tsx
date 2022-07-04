@@ -1,5 +1,5 @@
 import { useGlobalContext } from "@/app/context/globalContext";
-import { Box, Stack, Text } from "degen";
+import { Box, Heading, Stack, Text } from "degen";
 import { useState } from "react";
 import styled from "styled-components";
 import ConnectModal from "../Header/ConnectModal";
@@ -23,13 +23,12 @@ export default function ExploreSidebar() {
       padding="2"
       onMouseEnter={() => setShowCollapseButton(true)}
       onMouseLeave={() => setShowCollapseButton(false)}
+      marginBottom="0.5"
     >
       <Stack>
         <HeaderButton padding="1" borderRadius="large" width="full">
           <Stack direction="horizontal" align="center">
-            <Text weight="semiBold" size="headingTwo" ellipsis>
-              Circles
-            </Text>
+            <Heading>Circles</Heading>
           </Stack>
         </HeaderButton>
 

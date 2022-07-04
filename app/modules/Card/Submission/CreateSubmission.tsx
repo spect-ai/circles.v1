@@ -73,7 +73,7 @@ export default function CreateSubmission({ workThreadOrder }: Props) {
                   />
                 </Box>
                 <Stack direction="horizontal">
-                  <Box width="full">
+                  {/* <Box width="full">
                     <PrimaryButton
                       loading={loading}
                       icon={<IconDocuments />}
@@ -88,9 +88,10 @@ export default function CreateSubmission({ workThreadOrder }: Props) {
                     >
                       Save as Draft
                     </PrimaryButton>
-                  </Box>
+                  </Box> */}
                   <Box width="full">
                     <PrimaryButton
+                      disabled={!title || !content}
                       loading={loading}
                       icon={<SendOutlined style={{ fontSize: "1.2rem" }} />}
                       onClick={async () => {

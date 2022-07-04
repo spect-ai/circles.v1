@@ -7,6 +7,7 @@ import {
   Box,
   Button,
   IconCollection,
+  IconUsersSolid,
   Skeleton,
   SkeletonGroup,
   Stack,
@@ -120,7 +121,7 @@ function CircleSidebar() {
             <Accordian
               name="Workstreams"
               defaultOpen
-              icon={<IconCollection />}
+              icon={<IconUsersSolid />}
               // buttonComponent={<CreateSpaceModal accordian />}
             >
               {/* <Stack>

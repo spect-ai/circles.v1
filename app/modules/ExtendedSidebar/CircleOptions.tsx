@@ -2,7 +2,15 @@ import Popover from "@/app/common/components/Popover";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { CircleType, ProjectType } from "@/app/types";
 import { AppstoreOutlined } from "@ant-design/icons";
-import { Avatar, Box, IconCog, IconUsersSolid, Stack, Text } from "degen";
+import {
+  Avatar,
+  Box,
+  Heading,
+  IconCog,
+  IconUsersSolid,
+  Stack,
+  Text,
+} from "degen";
 import { AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
@@ -44,7 +52,8 @@ export default function CircleOptions() {
         butttonComponent={
           <HeaderButton
             padding="1"
-            marginTop="1"
+            marginTop="0.5"
+            marginBottom="1"
             borderRadius="large"
             width="full"
             onClick={() => {
@@ -52,14 +61,7 @@ export default function CircleOptions() {
             }}
           >
             <Stack direction="horizontal" align="center">
-              <Text
-                weight="normal"
-                size="headingTwo"
-                ellipsis
-                color="accentText"
-              >
-                {circle?.name || project?.parents[0].name}
-              </Text>
+              <Heading>{circle?.name || project?.parents[0].name}</Heading>
             </Stack>
           </HeaderButton>
         }

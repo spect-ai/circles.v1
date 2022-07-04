@@ -1,4 +1,4 @@
-import { Box, IconGrid, IconList, Stack, Text } from "degen";
+import { Box, Heading, IconGrid, IconList, Stack, Text } from "degen";
 import React, { memo } from "react";
 import styled from "styled-components";
 import { useLocalProject } from "../Context/LocalProjectContext";
@@ -26,13 +26,11 @@ function ProjectHeading() {
       alignItems="center"
       style={{
         paddingTop: "0.79rem",
-        paddingBottom: "0.78rem",
+        paddingBottom: "0.9rem",
       }}
     >
       <Stack direction="horizontal" align="center">
-        <Text weight="normal" size="headingTwo" ellipsis color="accentText">
-          {project?.name}
-        </Text>
+        <Heading>{project?.name}</Heading>
         <ProjectOptions />
       </Stack>
       <Stack direction="horizontal" align="center">
