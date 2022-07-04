@@ -79,7 +79,7 @@ export default function ProfileModal() {
 
   return (
     <>
-      <Box borderTopWidth="0.375" paddingY="2" paddingX="2">
+      <Box borderTopWidth="0.375" paddingTop="2" paddingX="2">
         <ProfileButton
           onClick={() => setIsOpen(true)}
           data-tour="profile-header-button"
@@ -88,12 +88,6 @@ export default function ProfileModal() {
           width="full"
         >
           <Stack direction="horizontal">
-            <Avatar
-              src={currentUser?.avatar}
-              placeholder={!currentUser?.avatar}
-              label={currentUser?.username || ""}
-              size="10"
-            />
             <Stack space="1">
               <Text>{currentUser?.username}</Text>
               <Text size="small" variant="label">

@@ -18,13 +18,13 @@ export default function WorkThread({ workThread }: Props) {
       <Accordian
         name={workThread.name}
         defaultOpen
-        buttonComponent={
-          <Box marginTop="2">
-            <Text variant="small" size="extraSmall" color="textSecondary">
-              {" Updated " + timeSince(new Date(workThread.updatedAt)) + " ago"}
-            </Text>
-          </Box>
-        }
+        // buttonComponent={
+        //   <Box marginTop="2">
+        //     <Text variant="small" size="extraSmall" color="textSecondary">
+        //       {" Updated " + timeSince(new Date(workThread.updatedAt)) + " ago"}
+        //     </Text>
+        //   </Box>
+        // }
       >
         {workThread.workUnitOrder.map((workUnitId) => {
           return (

@@ -1,69 +1,40 @@
-import { Box, IconChevronRight, Text } from "degen";
+import { Box, IconChevronRight, Stack, Text } from "degen";
 import React, { useState } from "react";
-import styled from "styled-components";
 import { motion, AnimatePresence } from "framer-motion";
 
 type Props = {
   name: string;
   children: React.ReactNode;
   defaultOpen: boolean;
-  buttonComponent?: React.ReactNode;
-  showButton?: boolean;
+  icon?: React.ReactNode;
 };
 
-const CollapseButton = styled.button`
-  display: flex;
-  flex-direction: row;
-  background: transparent;
-  border: none;
-  text-transform: uppercase;
-  cursor: pointer;
-  align-items: center;
-  letter-spacing: 0.5px;
-  //   color: rgba(255, 255, 255, 0.35);
-  //   font-weight: semi-bold;
-  padding: 0.5rem 0rem;
-`;
-
-function Accordian({
-  name,
-  children,
-  defaultOpen,
-  buttonComponent,
-  showButton = true,
-}: Props) {
+function Accordian({ name, children, defaultOpen, icon }: Props) {
   const [isExpanded, setIsExpanded] = useState(defaultOpen);
   return (
     <Box>
       <Box
-        display="flex"
-        flexDirection="row"
-        paddingRight="2"
-        justifyContent="space-between"
+        onClick={() => setIsExpanded(!isExpanded)}
+        cursor="pointer"
+        paddingY="4"
       >
-        <CollapseButton onClick={() => setIsExpanded(!isExpanded)}>
+        <Stack direction="horizontal" align="center" justify="space-between">
+          <Text weight="medium" variant="label">
+            <Stack direction="horizontal" align="center" space="2">
+              {icon}
+              {name}
+            </Stack>
+          </Text>
           <Box
             marginRight="2"
-            transitionDuration="700"
+            transitionDuration="500"
             style={{
               transform: isExpanded ? "rotate(90deg)" : "rotate(0deg)",
             }}
           >
             <IconChevronRight color="textTertiary" size="5" />
           </Box>
-          <Box
-            display="flex"
-            justifyContent="space-between"
-            width="full"
-            alignItems="center"
-            paddingRight="1"
-          >
-            <Text weight="medium" variant="label">
-              {name}
-            </Text>
-          </Box>
-        </CollapseButton>
-        {showButton && buttonComponent}
+        </Stack>
       </Box>
       <AnimatePresence initial={false}>
         {isExpanded && (

@@ -152,10 +152,22 @@ export default function CreateCardModal({
         <Box borderTopWidth="0.375" paddingX="8" paddingY="4">
           <Stack direction="horizontal">
             <Button
-              data-tour="create-card-modal-button"
               size="small"
               width="1/3"
               variant="tertiary"
+              onClick={() => {
+                void onSubmit(true);
+                setIsDirty(false);
+              }}
+              disabled={!title}
+            >
+              Save and Create Another
+            </Button>
+            <Button
+              data-tour="create-card-modal-button"
+              size="small"
+              width="1/3"
+              variant="secondary"
               onClick={() => {
                 void onSubmit(false);
                 setIsDirty(false);
@@ -163,18 +175,6 @@ export default function CreateCardModal({
               disabled={!title}
             >
               Create Card
-            </Button>
-            <Button
-              size="small"
-              width="1/3"
-              onClick={() => {
-                void onSubmit(true);
-                setIsDirty(false);
-              }}
-              variant="secondary"
-              disabled={!title}
-            >
-              Save and Create Another
             </Button>
           </Stack>
         </Box>

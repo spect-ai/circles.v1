@@ -44,6 +44,7 @@ export default function CircleOptions() {
         butttonComponent={
           <HeaderButton
             padding="1"
+            marginTop="1"
             borderRadius="large"
             width="full"
             onClick={() => {
@@ -51,13 +52,12 @@ export default function CircleOptions() {
             }}
           >
             <Stack direction="horizontal" align="center">
-              <Avatar
-                src={circle?.avatar || ""}
-                label=""
-                size="10"
-                placeholder={!circle?.avatar}
-              />
-              <Text size="extraLarge" weight="semiBold" ellipsis>
+              <Text
+                weight="normal"
+                size="headingTwo"
+                ellipsis
+                color="accentText"
+              >
                 {circle?.name || project?.parents[0].name}
               </Text>
             </Stack>

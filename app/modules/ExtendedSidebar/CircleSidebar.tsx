@@ -1,8 +1,8 @@
 import Accordian from "@/app/common/components/Accordian";
-import { useGlobalContext } from "@/app/context/globalContext";
+import PrimaryButton from "@/app/common/components/PrimaryButton";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { CircleType } from "@/app/types";
-import { DoubleRightOutlined, ProjectOutlined } from "@ant-design/icons";
+import { ProjectOutlined } from "@ant-design/icons";
 import {
   Box,
   Button,
@@ -22,7 +22,6 @@ import SettingsModal from "../Circle/CircleSettingsModal";
 import ContributorsModal from "../Circle/ContributorsModal";
 import CreateProjectModal from "../Circle/CreateProjectModal";
 import CreateSpaceModal from "../Circle/CreateSpaceModal";
-import { SlideButtonContainer } from "../Header";
 import CircleOptions from "./CircleOptions";
 import CollapseButton from "./CollapseButton";
 
@@ -32,7 +31,7 @@ export const Container = styled(Box)`
   }
   -ms-overflow-style: none;
   scrollbar-width: none;
-  height: calc(100vh - 10rem);
+  height: calc(100vh - 9.1rem);
   overflow-y: auto;
 `;
 
@@ -77,30 +76,13 @@ function CircleSidebar() {
           />
         )}
       </AnimatePresence>
-      <Stack>
+      <Stack space="3">
         <Stack direction="horizontal">
           <CircleOptions />
-          {/* {pId && (
-            <SlideButtonContainer
-              transitionDuration="300"
-              style={{
-                transform: isSidebarExpanded
-                  ? "rotate(180deg)"
-                  : "rotate(0deg)",
-              }}
-              marginTop="2"
-              marginBottom="2.5"
-              cursor="pointer"
-              color="textSecondary"
-              onClick={() => setIsSidebarExpanded(!isSidebarExpanded)}
-            >
-              <DoubleRightOutlined style={{ fontSize: "1.1rem" }} />
-            </SlideButtonContainer>
-          )} */}
           <CollapseButton
             show={showCollapseButton}
             setShowCollapseButton={setShowCollapseButton}
-            top="0.8rem"
+            top="2.8rem"
             left="a"
           />
         </Stack>
@@ -109,32 +91,24 @@ function CircleSidebar() {
             <Accordian
               name="Projects"
               defaultOpen
-              buttonComponent={<CreateProjectModal accordian />}
-              showButton={canDo(["steward"])}
+              icon={<ProjectOutlined style={{ fontSize: "1.3rem" }} />}
             >
-              <Stack>
+              <Stack space="0">
                 {circle?.projects.map((proj) => (
-                  <Link key={proj.id} href={`/${cId}/${proj.slug}`}>
-                    <Button
-                      prefix={
-                        <ProjectOutlined
-                          style={{
-                            fontSize: "1.3rem",
-                            marginLeft: "2px",
-                            color:
-                              pId === proj.slug ? "rgb(191, 90, 242, 1)" : "",
-                            marginTop: "5px",
-                          }}
-                        />
-                      }
-                      center
-                      width="full"
-                      variant={pId === proj.slug ? "tertiary" : "transparent"}
-                      size="small"
-                    >
-                      {proj.name}
-                    </Button>
-                  </Link>
+                  <Stack key={proj.id} direction="horizontal" space="0">
+                    <Box borderRightWidth="0.5" />
+                    <Box width="full" padding="1">
+                      <Link href={`/${cId}/${proj.slug}`}>
+                        <PrimaryButton
+                          variant={
+                            pId === proj.slug ? "tertiary" : "transparent"
+                          }
+                        >
+                          {proj.name}
+                        </PrimaryButton>
+                      </Link>
+                    </Box>
+                  </Stack>
                 ))}
                 {!circle?.projects.length && (
                   <Box paddingLeft="7" paddingY="2">
@@ -146,14 +120,14 @@ function CircleSidebar() {
             <Accordian
               name="Workstreams"
               defaultOpen
-              buttonComponent={<CreateSpaceModal accordian />}
-              showButton={canDo(["steward"])}
+              icon={<IconCollection />}
+              // buttonComponent={<CreateSpaceModal accordian />}
             >
-              <Stack>
+              {/* <Stack>
                 {circle?.children.map((space) => (
                   <Link href={`/${space.slug}`} key={space.id}>
                     <Button
-                      prefix={<IconCollection />}
+                      prefix={}
                       center
                       width="full"
                       variant="transparent"
@@ -166,6 +140,25 @@ function CircleSidebar() {
                 {!circle?.children.length && (
                   <Box paddingLeft="7" paddingY="2">
                     <Text variant="label">No workstreams created</Text>
+                  </Box>
+                )}
+              </Stack> */}
+              <Stack space="0">
+                {circle?.children.map((space) => (
+                  <Stack key={space.id} direction="horizontal" space="0">
+                    <Box borderRightWidth="0.5" />
+                    <Box width="full" padding="1">
+                      <Link href={`/${space.slug}`} key={space.id}>
+                        <PrimaryButton variant="transparent">
+                          {space.name}
+                        </PrimaryButton>
+                      </Link>
+                    </Box>
+                  </Stack>
+                ))}
+                {!circle?.projects.length && (
+                  <Box paddingLeft="7" paddingY="2">
+                    <Text variant="label">No projects created</Text>
                   </Box>
                 )}
               </Stack>

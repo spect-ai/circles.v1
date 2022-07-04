@@ -1,4 +1,3 @@
-import Logo from "@/app/common/components/Logo";
 import { useGlobalContext } from "@/app/context/globalContext";
 import { Box, Stack, Text } from "degen";
 import { useState } from "react";
@@ -28,10 +27,6 @@ export default function ExploreSidebar() {
       <Stack>
         <HeaderButton padding="1" borderRadius="large" width="full">
           <Stack direction="horizontal" align="center">
-            <Logo
-              href="/"
-              src="https://ipfs.moralis.io:2053/ipfs/QmVYsa4KQyRwBSJxQCmD1rDjyqYd1HJKrDfqLk3KMKLEhn"
-            />
             <Text weight="semiBold" size="headingTwo" ellipsis>
               Circles
             </Text>

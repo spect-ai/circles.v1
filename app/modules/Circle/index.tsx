@@ -21,7 +21,7 @@ const BoxContainer = styled(Box)`
   }
   -ms-overflow-style: none;
   scrollbar-width: none;
-  height: calc(100vh - 5rem);
+  height: calc(100vh - 1rem);
   overflow-y: auto;
 `;
 
@@ -38,7 +38,7 @@ export default function Circle() {
     return <Loader text="...." loading />;
   }
   return (
-    <BoxContainer padding="8">
+    <BoxContainer paddingX="8" paddingTop="4">
       {!onboarded && <Onboarding />}
       <ToastContainer
         toastStyle={{

@@ -1,10 +1,6 @@
-import { useGlobalContext } from "@/app/context/globalContext";
-import { DoubleRightOutlined } from "@ant-design/icons";
 import { Box, IconGrid, IconList, Stack, Text } from "degen";
-import { useRouter } from "next/router";
 import React, { memo } from "react";
 import styled from "styled-components";
-import { SlideButtonContainer } from "../../Header";
 import { useLocalProject } from "../Context/LocalProjectContext";
 import ProjectOptions from "./ProjectOptions";
 
@@ -17,13 +13,9 @@ export const IconButton = styled(Box)`
 
 function ProjectHeading() {
   const { localProject: project } = useLocalProject();
-  const { setIsSidebarExpanded, isSidebarExpanded } = useGlobalContext();
-  const router = useRouter();
-  const { circle: cId } = router.query;
   return (
     <Box
       width="full"
-      paddingY="4"
       paddingRight="8"
       paddingLeft="5"
       borderBottomWidth="0.375"
@@ -31,14 +23,19 @@ function ProjectHeading() {
       display="flex"
       flexDirection="row"
       justifyContent="space-between"
+      alignItems="center"
+      style={{
+        paddingTop: "0.79rem",
+        paddingBottom: "0.78rem",
+      }}
     >
       <Stack direction="horizontal" align="center">
-        <Text size="extraLarge" weight="semiBold">
+        <Text weight="normal" size="headingTwo" ellipsis color="accentText">
           {project?.name}
         </Text>
         <ProjectOptions />
       </Stack>
-      <Stack direction="horizontal">
+      <Stack direction="horizontal" align="center">
         <Box
           display="flex"
           flexDirection="row"

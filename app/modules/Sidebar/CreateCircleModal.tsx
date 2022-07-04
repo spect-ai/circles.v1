@@ -62,7 +62,7 @@ function CreateCircle() {
   return (
     <>
       <Loader loading={isLoading} text="Creating your circle" />
-      <Box paddingY="3">
+      <Box>
         <Button
           shape="circle"
           variant="secondary"
