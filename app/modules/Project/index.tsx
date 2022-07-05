@@ -18,6 +18,7 @@ import Onboarding from "./ProjectOnboarding";
 import useProjectOnboarding from "@/app/services/Onboarding/useProjectOnboarding";
 import { motion } from "framer-motion";
 import { fadeVariant } from "../Card/Utils/variants";
+import { useRouter } from "next/router";
 
 const Container = styled.div`
   display: flex;
@@ -37,26 +38,21 @@ const Container = styled.div`
 
 function Project() {
   const { handleDragEnd } = useDragEnd();
-  const {
-    loading,
-    updating,
-    localProject: project,
-    setLocalProject,
-  } = useLocalProject();
+  const { loading, localProject: project, setLocalProject } = useLocalProject();
   const { canDo } = useRoleGate();
   const { onboarded } = useProjectOnboarding();
 
+  const router = useRouter();
+  const { card: tId } = router.query;
+
   const DroppableContent = (provided: DroppableProvided) => (
     <Container {...provided.droppableProps} ref={provided.innerRef}>
-      {/* {alert("hi")} */}
-
       <Stack direction="horizontal">
         {project?.columnOrder?.map((columnId, index): any => {
           const column = project.columnDetails[columnId];
           const cards = column.cards?.map(
             (cardId: any) => project.cards[cardId]
           );
-          console.log({ column });
           return (
             <ColumnComponent
               key={columnId}
@@ -99,6 +95,10 @@ function Project() {
 
   if (loading) {
     return <SkeletonLoader />;
+  }
+
+  if (tId) {
+    return null;
   }
 
   return (

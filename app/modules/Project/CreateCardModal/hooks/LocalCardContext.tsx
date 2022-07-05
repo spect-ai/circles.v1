@@ -1,4 +1,5 @@
 import PrimaryButton from "@/app/common/components/PrimaryButton";
+import queryClient from "@/app/common/utils/queryClient";
 import { useGlobalContext } from "@/app/context/globalContext";
 import useCardService from "@/app/services/Card/useCardService";
 import {
@@ -15,7 +16,7 @@ import { Stack } from "degen";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { useQuery, useQueryClient } from "react-query";
+import { useQuery } from "react-query";
 import { toast } from "react-toastify";
 import { useLocalProject } from "../../Context/LocalProjectContext";
 
@@ -25,6 +26,8 @@ type Props = {
 };
 
 type CreateCardContextType = {
+  cardId: string;
+  setCardId: React.Dispatch<React.SetStateAction<string>>;
   title: string;
   setTitle: React.Dispatch<React.SetStateAction<string>>;
   description: string;
@@ -131,7 +134,6 @@ export function useProviderLocalCard({
   );
 
   const { connectedUser } = useGlobalContext();
-  const queryClient = useQueryClient();
 
   const setCard = (card: CardType) => {
     queryClient.setQueryData(["card", tId], card);
@@ -139,6 +141,7 @@ export function useProviderLocalCard({
 
   const { callCreateCard, updateCard, updating } = useCardService();
 
+  const [cardId, setCardId] = useState("");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [labels, setLabels] = useState([] as string[]);
@@ -178,7 +181,9 @@ export function useProviderLocalCard({
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
-      await fetchCard();
+      if (tId) {
+        await fetchCard();
+      }
     };
     if (project?.id) {
       void fetchData();
@@ -187,6 +192,7 @@ export function useProviderLocalCard({
 
   useEffect(() => {
     if (!createCard && card && card.id) {
+      setCardId(card.id);
       setTitle(card.title);
       setDescription(card.description);
       setLabels(card.labels);
@@ -313,6 +319,8 @@ export function useProviderLocalCard({
   };
 
   return {
+    cardId,
+    setCardId,
     title,
     setTitle,
     description,

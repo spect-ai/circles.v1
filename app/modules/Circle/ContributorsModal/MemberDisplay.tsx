@@ -1,10 +1,15 @@
 import React from "react";
 import { Avatar, Box, Text } from "degen";
 import styled from "styled-components";
+import { UserType } from "@/app/types";
 
 type Props = {
   member: string;
-  memberDetails: any;
+  memberDetails:
+    | {
+        [id: string]: UserType;
+      }
+    | undefined;
 };
 
 const Container = styled(Box)`
@@ -15,6 +20,9 @@ const Container = styled(Box)`
 `;
 
 export default function MemberDisplay({ member, memberDetails }: Props) {
+  if (!memberDetails) {
+    return null;
+  }
   return (
     <Container
       paddingY="1"

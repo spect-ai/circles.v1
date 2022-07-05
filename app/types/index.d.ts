@@ -40,6 +40,20 @@ export interface ColumnType {
   };
 }
 
+export interface Permissions {
+  createNewCircle: boolean;
+  createNewProject: boolean;
+  createNewRetro: boolean;
+  endRetroManually: boolean;
+  inviteMembers: boolean;
+  makePayment: boolean;
+  manageCircleSettings: boolean;
+  manageMembers: boolean;
+  managePaymentOptions: boolean;
+  manageProjectSettings: boolean;
+  manageRoles: boolean;
+}
+
 export interface CircleType {
   activity: string[];
   archived: boolean;
@@ -49,7 +63,7 @@ export interface CircleType {
   defaultPayment: Payment;
   description: string;
   id: string;
-  members: UserType[];
+  members: string[];
   name: string;
   parents: Circle[];
   private: boolean;
@@ -61,8 +75,13 @@ export interface CircleType {
   memberRoles: {
     [key: string]: string[];
   };
-  memberDetails: {
-    [key: string]: UserType;
+  roles: {
+    [name: string]: {
+      name: string;
+      description: string;
+      permissions: Permissions;
+      selfAssignable: boolean;
+    };
   };
 }
 

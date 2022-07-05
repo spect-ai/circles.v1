@@ -1,7 +1,8 @@
+import queryClient from "@/app/common/utils/queryClient";
 import { ProjectType } from "@/app/types";
 import { useRouter } from "next/router";
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { useQuery, useQueryClient } from "react-query";
+import { useQuery } from "react-query";
 import { toast } from "react-toastify";
 
 type LocalProjectContextType = {
@@ -35,8 +36,6 @@ export function useProviderLocalProject() {
   );
   const [loading, setLoading] = useState(false);
   const [updating, setUpdating] = useState(false);
-
-  const queryClient = useQueryClient();
 
   const [localProject, setLocalProject] = useState({} as ProjectType);
   const [error, setError] = useState(false);

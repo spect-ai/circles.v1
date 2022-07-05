@@ -2,12 +2,13 @@ import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import Tabs from "@/app/common/components/Tabs";
 import { storeImage } from "@/app/common/utils/ipfs";
+import queryClient from "@/app/common/utils/queryClient";
 import { updateCircle } from "@/app/services/UpdateCircle";
 import { CircleType } from "@/app/types";
 import { Box, Input, MediaPicker, Stack, Textarea } from "degen";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
-import { useQuery, useQueryClient } from "react-query";
+import { useQuery } from "react-query";
 import DefaultPayment from "../CirclePayment";
 import Contributors from "../ContributorsModal/Contributors";
 
@@ -16,8 +17,6 @@ interface Props {
 }
 
 export default function SettingsModal({ handleClose }: Props) {
-  const queryClient = useQueryClient();
-
   const router = useRouter();
   const { circle: cId } = router.query;
   const { data: circle } = useQuery<CircleType>(["circle", cId], {
@@ -145,11 +144,7 @@ export default function SettingsModal({ handleClose }: Props) {
                 {space.roles[user?.id as string] === 3 && <SpaceRoleMapping />}
                 {space.roles[user?.id as string] === 3 && <InviteMemberModal />}
               </Box> */}
-              <Contributors
-                members={circle?.members.map((member) => member.id) || []}
-                memberDetails={circle?.memberDetails || {}}
-                roles={circle?.memberRoles || {}}
-              />
+              <Contributors />
             </Stack>
           )}
         </Box>

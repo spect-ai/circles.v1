@@ -1,4 +1,5 @@
 import PrimaryButton from "@/app/common/components/PrimaryButton";
+import queryClient from "@/app/common/utils/queryClient";
 import {
   getFlattenedCurrencies,
   getFlattenedNetworks,
@@ -11,7 +12,7 @@ import { Box, Heading, Stack, Tag, Text } from "degen";
 import { motion } from "framer-motion";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
-import { useQuery, useQueryClient } from "react-query";
+import { useQuery } from "react-query";
 import styled from "styled-components";
 import ApproveToken from "./ApproveToken";
 
@@ -25,7 +26,6 @@ const Container = styled(Box)`
 `;
 
 export default function DefaultPayment() {
-  const queryClient = useQueryClient();
   const { registry } = useGlobalContext();
 
   const router = useRouter();
