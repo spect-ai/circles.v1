@@ -1,6 +1,6 @@
 import Card from "@/app/common/components/Card";
 import Loader from "@/app/common/components/Loader";
-import { useGlobalContext } from "@/app/context/globalContext";
+import { useGlobal } from "@/app/context/globalContext";
 import useJoinCircle from "@/app/services/JoinCircle/useJoinCircle";
 import useExploreOnboarding from "@/app/services/Onboarding/useExploreOnboarding";
 import useConnectDiscord from "@/app/services/Profile/useConnectDiscord";
@@ -40,7 +40,7 @@ export default function Explore() {
       enabled: false,
     }
   );
-  const { connectedUser } = useGlobalContext();
+  const { connectedUser } = useGlobal();
   const router = useRouter();
   useJoinCircle();
   useConnectDiscord();

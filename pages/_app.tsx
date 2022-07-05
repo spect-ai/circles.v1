@@ -32,8 +32,8 @@ import { MetaMaskConnector } from "wagmi/connectors/metaMask";
 import { WalletConnectConnector } from "wagmi/connectors/walletConnect";
 import { AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
-import GlobalContextProvider from "@/app/context/globalContext";
 import queryClient from "@/app/common/utils/queryClient";
+import { GlobalContextProvider } from "@/app/context/globalContext";
 
 const alchemyId = process.env.ALCHEMY_KEY;
 

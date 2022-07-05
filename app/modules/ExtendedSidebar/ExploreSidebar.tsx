@@ -1,5 +1,5 @@
-import { useGlobalContext } from "@/app/context/globalContext";
-import { Box, Heading, Stack, Text } from "degen";
+import { useGlobal } from "@/app/context/globalContext";
+import { Box, Heading, Stack } from "degen";
 import { useState } from "react";
 import styled from "styled-components";
 import ConnectModal from "../Header/ConnectModal";
@@ -15,7 +15,7 @@ export const HeaderButton = styled(Box)`
 `;
 
 export default function ExploreSidebar() {
-  const { connectedUser } = useGlobalContext();
+  const { connectedUser } = useGlobal();
   const [showCollapseButton, setShowCollapseButton] = useState(false);
 
   return (

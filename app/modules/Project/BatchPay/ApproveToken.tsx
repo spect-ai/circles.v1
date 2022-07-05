@@ -1,6 +1,6 @@
 import Loader from "@/app/common/components/Loader";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { useGlobalContext } from "@/app/context/globalContext";
+import { useGlobal } from "@/app/context/globalContext";
 import useERC20 from "@/app/services/Payment/useERC20";
 import { ProjectType } from "@/app/types";
 import { QuestionCircleFilled } from "@ant-design/icons";
@@ -16,7 +16,7 @@ import { ScrollContainer } from "./SelectCards";
 
 export default function ApproveToken() {
   const { approve, isApproved } = useERC20();
-  const { registry } = useGlobalContext();
+  const { registry } = useGlobal();
   const router = useRouter();
   const { project: pId } = router.query;
   const { data: project } = useQuery<ProjectType>(["project", pId], {

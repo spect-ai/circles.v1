@@ -5,9 +5,9 @@ import { Box } from "degen";
 import { AnimatePresence } from "framer-motion";
 import ExtendedSidebar from "../../../modules/ExtendedSidebar/ExtendedSidebar";
 import Sidebar from "@/app/modules/Sidebar";
-import { useGlobalContext } from "@/app/context/globalContext";
 import styled from "styled-components";
 import { useConnect } from "wagmi";
+import { useGlobal } from "@/app/context/globalContext";
 
 type PublicLayoutProps = {
   children: ReactNodeNoStrings;
@@ -21,7 +21,7 @@ const Container = styled(Box)<{ issidebarexpanded: boolean }>`
 
 function PublicLayout(props: PublicLayoutProps) {
   const { children } = props;
-  const { isSidebarExpanded } = useGlobalContext();
+  const { isSidebarExpanded } = useGlobal();
 
   const { connect, connectors, isConnected } = useConnect();
 

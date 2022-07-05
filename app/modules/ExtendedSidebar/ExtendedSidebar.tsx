@@ -6,10 +6,10 @@ import ExploreSidebar from "./ExploreSidebar";
 import CircleSidebar from "./CircleSidebar";
 import ProfileModal from "../Header/ProfileModal";
 import ConnectModal from "../Header/ConnectModal";
-import { useGlobalContext } from "@/app/context/globalContext";
 import { useQuery } from "react-query";
 import { UserType } from "@/app/types";
 import { toast } from "react-toastify";
+import { useGlobal } from "@/app/context/globalContext";
 
 const getUser = async () => {
   const res = await fetch(`${process.env.API_HOST}/user/me`, {
@@ -21,7 +21,7 @@ const getUser = async () => {
 function ExtendedSidebar(): ReactElement {
   const router = useRouter();
   const { circle: cId } = router.query;
-  const { connectedUser, connectUser } = useGlobalContext();
+  const { connectedUser, connectUser } = useGlobal();
   const { refetch } = useQuery<UserType>("getMyUser", getUser, {
     enabled: false,
   });

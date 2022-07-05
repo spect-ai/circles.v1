@@ -1,6 +1,6 @@
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import queryClient from "@/app/common/utils/queryClient";
-import { useGlobalContext } from "@/app/context/globalContext";
+import { useGlobal } from "@/app/context/globalContext";
 import useCardService from "@/app/services/Card/useCardService";
 import {
   Activity,
@@ -133,7 +133,7 @@ export function useProviderLocalCard({
     }
   );
 
-  const { connectedUser } = useGlobalContext();
+  const { connectedUser } = useGlobal();
 
   const setCard = (card: CardType) => {
     queryClient.setQueryData(["card", tId], card);

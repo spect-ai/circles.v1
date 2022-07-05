@@ -1,5 +1,5 @@
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { useGlobalContext } from "@/app/context/globalContext";
+import { useGlobal } from "@/app/context/globalContext";
 import useCardService from "@/app/services/Card/useCardService";
 import { UserAddOutlined } from "@ant-design/icons";
 import React, { useState } from "react";
@@ -7,7 +7,7 @@ import { useLocalCard } from "../../Project/CreateCardModal/hooks/LocalCardConte
 
 export default function AssignToMe() {
   const { updateCard } = useCardService();
-  const { connectedUser } = useGlobalContext();
+  const { connectedUser } = useGlobal();
   const { card, setCard } = useLocalCard();
   const [loading, setLoading] = useState(false);
   return (

@@ -3,7 +3,7 @@ import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { storeImage } from "@/app/common/utils/ipfs";
 import queryClient from "@/app/common/utils/queryClient";
 import { smartTrim } from "@/app/common/utils/utils";
-import { useGlobalContext } from "@/app/context/globalContext";
+import { useGlobal } from "@/app/context/globalContext";
 import useProfileUpdate from "@/app/services/Profile/useProfileUpdate";
 import { MemberDetails, UserType } from "@/app/types";
 import { SaveFilled } from "@ant-design/icons";
@@ -29,7 +29,7 @@ export default function ProfileModal() {
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
-  const { disconnectUser } = useGlobalContext();
+  const { disconnectUser } = useGlobal();
   const [isOpen, setIsOpen] = useState(false);
 
   const router = useRouter();

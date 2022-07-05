@@ -1,5 +1,5 @@
 import React, { ReactElement, useEffect } from "react";
-import { Box, Button, Heading, Stack } from "degen";
+import { Box, Heading, Stack } from "degen";
 import { useRouter } from "next/router";
 import { useQuery } from "react-query";
 import ConnectModal from "@/app/modules/Header/ConnectModal";
@@ -8,10 +8,9 @@ import { CircleType, ProjectType, UserType } from "@/app/types";
 import ProjectSettings from "../Project/ProjectSettings";
 import Link from "next/link";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
-import { DoubleRightOutlined } from "@ant-design/icons";
-import { useGlobalContext } from "@/app/context/globalContext";
 import BatchPay from "../Project/BatchPay";
 import styled from "styled-components";
+import { useGlobal } from "@/app/context/globalContext";
 
 const getUser = async () => {
   const res = await fetch(`${process.env.API_HOST}/user/me`, {
@@ -27,7 +26,7 @@ export const SlideButtonContainer = styled(Box)`
 `;
 
 function Header(): ReactElement {
-  const { setIsSidebarExpanded, isSidebarExpanded } = useGlobalContext();
+  const { isSidebarExpanded } = useGlobal();
   const router = useRouter();
   const { circle: cId, project: pId, card: tId } = router.query;
   const { data: currentUser, refetch } = useQuery<UserType>(
