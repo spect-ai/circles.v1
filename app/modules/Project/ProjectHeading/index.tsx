@@ -1,5 +1,6 @@
 import { Box, Heading, IconGrid, IconList, Stack, Text } from "degen";
 import React, { memo } from "react";
+import Skeleton from "react-loading-skeleton";
 import styled from "styled-components";
 import { useLocalProject } from "../Context/LocalProjectContext";
 import ProjectOptions from "./ProjectOptions";
@@ -12,7 +13,7 @@ export const IconButton = styled(Box)`
 `;
 
 function ProjectHeading() {
-  const { localProject: project } = useLocalProject();
+  const { localProject: project, loading } = useLocalProject();
   return (
     <Box
       width="full"
@@ -30,8 +31,20 @@ function ProjectHeading() {
       }}
     >
       <Stack direction="horizontal" align="center">
-        <Heading>{project?.name}</Heading>
-        <ProjectOptions />
+        {!loading && <Heading>{project?.name}</Heading>}
+        {loading && (
+          <Skeleton
+            enableAnimation
+            style={{
+              height: "2rem",
+              width: "15rem",
+              borderRadius: "0.5rem",
+            }}
+            baseColor="rgb(20,20,20,1)"
+            highlightColor="rgb(255,255,255,0.1)"
+          />
+        )}
+        {project?.name && <ProjectOptions />}
       </Stack>
       <Stack direction="horizontal" align="center">
         <Box

@@ -1,13 +1,13 @@
 import Link from "next/link";
 import React, { ReactElement, useEffect, useState } from "react";
-import { Avatar, Box, Button, Stack } from "degen";
+import { Box, Button, Stack } from "degen";
 import { useRouter } from "next/router";
 import CreateCircle from "./CreateCircleModal";
 import Logo from "@/app/common/components/Logo";
 import { HomeOutlined } from "@ant-design/icons";
 import { useQuery } from "react-query";
 import { CircleType, UserType } from "@/app/types";
-import { useGlobalContext } from "@/app/context/globalContext";
+import { useGlobal } from "@/app/context/globalContext";
 import CollapseButton from "../ExtendedSidebar/CollapseButton";
 import styled from "styled-components";
 
@@ -27,7 +27,7 @@ function Sidebar(): ReactElement {
   const { data: circle, isLoading } = useQuery<CircleType>(["circle", cId], {
     enabled: false,
   });
-  const { connectedUser, isSidebarExpanded } = useGlobalContext();
+  const { connectedUser, isSidebarExpanded } = useGlobal();
   const [showCollapseButton, setShowCollapseButton] = useState(false);
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,

@@ -1,5 +1,5 @@
 import { labelsMapping } from "@/app/common/utils/constants";
-import { useGlobalContext } from "@/app/context/globalContext";
+import { useGlobal } from "@/app/context/globalContext";
 import {
   cardTypes,
   priority,
@@ -19,7 +19,7 @@ export default function useModalOptions() {
     }
   );
   const { project } = useLocalCard();
-  const { connectedUser } = useGlobalContext();
+  const { connectedUser } = useGlobal();
 
   const fetchMemberDetails = () => {
     void refetch;

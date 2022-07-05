@@ -5,7 +5,8 @@ import { toast } from "react-toastify";
 import { useLocalProject } from "../Context/LocalProjectContext";
 
 export default function useDragEnd() {
-  const { localProject, setLocalProject, updateProject } = useLocalProject();
+  const { localProject, setLocalProject, updateProject, setUpdating } =
+    useLocalProject();
   const { canMoveCard } = useRoleGate();
 
   const reorder = (list: string[], startIndex: number, endIndex: number) => {
@@ -82,6 +83,7 @@ export default function useDragEnd() {
           },
         },
       });
+      setUpdating(true);
     } else {
       const startTaskIds = Array.from(start.cards); // copy
       startTaskIds.splice(source.index, 1);
@@ -106,6 +108,7 @@ export default function useDragEnd() {
           [newFinish.columnId]: newFinish,
         },
       });
+      setUpdating(true);
     }
     fetch(`${process.env.API_HOST}/card/${draggableId}`, {
       method: "PATCH",

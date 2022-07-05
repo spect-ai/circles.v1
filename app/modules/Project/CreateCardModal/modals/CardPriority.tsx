@@ -4,12 +4,12 @@ import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { DashboardOutlined } from "@ant-design/icons";
 import { Box, IconSearch, Input, Text } from "degen";
 import { matchSorter } from "match-sorter";
-import React, { useEffect, useState } from "react";
+import React, { memo, useEffect, useState } from "react";
 import { useLocalCard } from "../hooks/LocalCardContext";
 import { Option, priorityMapping } from "../constants";
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
 
-export default function CardPriority() {
+function CardPriority() {
   const { priority, setPriority, onCardUpdate } = useLocalCard();
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -101,3 +101,5 @@ export default function CardPriority() {
     </EditTag>
   );
 }
+
+export default memo(CardPriority);

@@ -1,6 +1,6 @@
 import Editor from "@/app/common/components/Editor";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { useGlobalContext } from "@/app/context/globalContext";
+import { useGlobal } from "@/app/context/globalContext";
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import useSubmission from "@/app/services/Submission/useSubmission";
@@ -25,7 +25,7 @@ export default function EditorSubmission({
   const { canTakeAction } = useRoleGate();
   const { createWorkUnit, updateWorkUnit } = useSubmission();
   const [content, setContent] = useState(workUnit?.content || "");
-  const { connectedUser } = useGlobalContext();
+  const { connectedUser } = useGlobal();
   const [canSave, setCanSave] = useState(false);
 
   const savebuttonRef = React.useRef<HTMLButtonElement>(null);

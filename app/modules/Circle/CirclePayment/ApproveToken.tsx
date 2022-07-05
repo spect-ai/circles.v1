@@ -1,13 +1,12 @@
-import ClickableTag from "@/app/common/components/EditTag/ClickableTag";
 import Modal from "@/app/common/components/Modal";
 import {
   getFlattenedCurrencies,
   getFlattenedNetworks,
 } from "@/app/common/utils/registry";
-import { useGlobalContext } from "@/app/context/globalContext";
+import { useGlobal } from "@/app/context/globalContext";
 import { CircleType } from "@/app/types";
-import { Box, IconPlus, IconPlusSmall, Input, Stack, Tag, Text } from "degen";
-import { AnimatePresence, motion } from "framer-motion";
+import { Box, IconPlusSmall, Stack, Tag, Text } from "degen";
+import { AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
 import { useQuery } from "react-query";
@@ -19,7 +18,7 @@ export default function ApproveToken() {
     enabled: false,
   });
   const [isOpen, setIsOpen] = useState(false);
-  const { registry } = useGlobalContext();
+  const { registry } = useGlobal();
   const [chain, setChain] = useState(circle?.defaultPayment.chain);
   const [token, setToken] = useState(circle?.defaultPayment.token);
 

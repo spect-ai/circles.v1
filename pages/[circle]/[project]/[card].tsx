@@ -34,14 +34,14 @@ const CardPage: NextPage = () => {
       enabled: false,
     }
   );
-  useQuery<MemberDetails>(
+  const { refetch: fetchMemberDetails } = useQuery<MemberDetails>(
     ["memberDetails", cId],
     () =>
       fetch(
         `${process.env.API_HOST}/circle/${circle?.id}/memberDetails?circleIds=${circle?.id}`
       ).then((res) => res.json()),
     {
-      enabled: !!circle?.id,
+      enabled: false,
     }
   );
 
@@ -52,13 +52,18 @@ const CardPage: NextPage = () => {
   }, [circle, cId, refetchCircle]);
 
   useEffect(() => {
+    if (circle?.id) {
+      void fetchMemberDetails();
+    }
+  }, [circle?.id, fetchMemberDetails]);
+
+  useEffect(() => {
     if (!project && pId) {
       void refetchProject();
     }
   }, [project, pId, refetchProject]);
 
   const context = useProviderLocalCard({ createCard: false });
-
   return (
     <>
       <MetaHead />

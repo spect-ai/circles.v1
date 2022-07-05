@@ -1,17 +1,18 @@
 import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { storeImage } from "@/app/common/utils/ipfs";
+import queryClient from "@/app/common/utils/queryClient";
 import { smartTrim } from "@/app/common/utils/utils";
-import { useGlobalContext } from "@/app/context/globalContext";
+import { useGlobal } from "@/app/context/globalContext";
 import useProfileUpdate from "@/app/services/Profile/useProfileUpdate";
 import { MemberDetails, UserType } from "@/app/types";
 import { SaveFilled } from "@ant-design/icons";
-import { Avatar, Box, Input, MediaPicker, Stack, Text } from "degen";
+import { Box, Input, MediaPicker, Stack, Text } from "degen";
 import { AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
-import { useQuery, useQueryClient } from "react-query";
+import { useQuery } from "react-query";
 import styled from "styled-components";
 import { useDisconnect } from "wagmi";
 
@@ -28,7 +29,7 @@ export default function ProfileModal() {
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
-  const { disconnectUser } = useGlobalContext();
+  const { disconnectUser } = useGlobal();
   const [isOpen, setIsOpen] = useState(false);
 
   const router = useRouter();
@@ -39,8 +40,6 @@ export default function ProfileModal() {
       enabled: false,
     }
   );
-
-  const queryClient = useQueryClient();
 
   const [uploading, setUploading] = useState(false);
   const [avatar, setAvatar] = useState("");

@@ -3,8 +3,13 @@ import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { CardType, ColumnType } from "@/app/types";
 import { Box, Button, IconCog, IconPlusSmall, Stack, Text } from "degen";
 import { AnimatePresence } from "framer-motion";
-import React, { memo, useEffect, useState } from "react";
-import { Draggable, Droppable } from "react-beautiful-dnd";
+import React, { memo, useCallback, useEffect, useState } from "react";
+import {
+  Draggable,
+  DraggableProvided,
+  Droppable,
+  DroppableProvided,
+} from "react-beautiful-dnd";
 import { toast } from "react-toastify";
 import styled from "styled-components";
 import CardComponent from "../CardComponent";
@@ -63,7 +68,7 @@ function ColumnComponent({ cards, id, column, index }: Props) {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const { localProject: project, setLocalProject } = useLocalProject();
   const { canDo } = useRoleGate();
-  async function updateColumn() {
+  const updateColumn = useCallback(async () => {
     const updatedProject = await updateColumnDetails(
       project.id,
       column.columnId,
@@ -77,12 +82,104 @@ function ColumnComponent({ cards, id, column, index }: Props) {
       return;
     }
     setLocalProject(updatedProject);
-  }
+  }, [columnTitle]);
+
+  const CardDraggable = (provided: DroppableProvided) => (
+    <ScrollContainer {...provided.droppableProps} ref={provided.innerRef}>
+      <Box>
+        {cards?.map((card, idx) => {
+          if (card) {
+            return (
+              <CardComponent
+                card={card}
+                index={idx}
+                column={column}
+                key={card.id}
+              />
+            );
+          }
+        })}
+        {provided.placeholder}
+      </Box>
+    </ScrollContainer>
+  );
+
+  const CardDraggableCallback = useCallback(CardDraggable, [cards]);
+
+  const DraggableContent = (provided: DraggableProvided) => (
+    <Container
+      {...provided.draggableProps}
+      {...provided.dragHandleProps}
+      ref={provided.innerRef}
+      padding="2"
+      display="flex"
+      flexDirection="column"
+      justifyContent="space-between"
+    >
+      <Box marginBottom="2">
+        <Stack
+          direction="horizontal"
+          space="0"
+          align="center"
+          justify="space-between"
+        >
+          <NameInput
+            placeholder="Add Title"
+            value={columnTitle}
+            onChange={(e) => setColumnTitle(e.target.value)}
+            onBlur={() => updateColumn()}
+            //   disabled={space.roles[user?.id as string] !== 3}
+          />
+          <Box paddingRight="1">
+            <Text variant="label">({column.cards.length})</Text>
+          </Box>
+          <Button
+            data-tour={`add-card-${column.columnId}-button`}
+            shape="circle"
+            size="small"
+            variant="transparent"
+            onClick={() => {
+              if (!canDo(["steward", "contributor"])) {
+                toast.error(
+                  "You don't have permission to add cards in this column",
+                  { theme: "dark" }
+                );
+                return;
+              }
+              setIsOpen(true);
+            }}
+          >
+            <IconPlusSmall />
+          </Button>
+          {canDo(["steward"]) && (
+            <Button
+              shape="circle"
+              size="small"
+              variant="transparent"
+              onClick={() => {
+                setIsSettingsOpen(true);
+              }}
+            >
+              <IconCog />
+            </Button>
+          )}
+        </Stack>
+      </Box>
+      <Droppable droppableId={id} type="task">
+        {CardDraggableCallback}
+      </Droppable>
+    </Container>
+  );
+
+  const DraggableContentCallback = useCallback(DraggableContent, [
+    CardDraggableCallback,
+    column.cards,
+    columnTitle,
+  ]);
 
   useEffect(() => {
-    setColumnTitle(project.columnDetails[column.columnId].name);
+    setColumnTitle(project.columnDetails[column.columnId]?.name);
   }, [project.columnDetails, column.columnId]);
-
   return (
     <>
       <AnimatePresence>
@@ -115,91 +212,7 @@ function ColumnComponent({ cards, id, column, index }: Props) {
         index={index}
         // isDragDisabled={space.roles[user?.id as string] !== 3}
       >
-        {(provided) => (
-          <Container
-            {...provided.draggableProps}
-            {...provided.dragHandleProps}
-            ref={provided.innerRef}
-            padding="2"
-            display="flex"
-            flexDirection="column"
-            justifyContent="space-between"
-          >
-            <Box marginBottom="2">
-              <Stack
-                direction="horizontal"
-                space="0"
-                align="center"
-                justify="space-between"
-              >
-                <NameInput
-                  placeholder="Add Title"
-                  value={columnTitle}
-                  onChange={(e) => setColumnTitle(e.target.value)}
-                  onBlur={() => updateColumn()}
-                  //   disabled={space.roles[user?.id as string] !== 3}
-                />
-                <Box paddingRight="1">
-                  <Text variant="label">({column.cards.length})</Text>
-                </Box>
-                <Button
-                  data-tour={`add-card-${column.columnId}-button`}
-                  shape="circle"
-                  size="small"
-                  variant="transparent"
-                  onClick={() => {
-                    if (!canDo(["steward", "contributor"])) {
-                      toast.error(
-                        "You don't have permission to add cards in this column",
-                        { theme: "dark" }
-                      );
-                      return;
-                    }
-                    setIsOpen(true);
-                  }}
-                >
-                  <IconPlusSmall />
-                </Button>
-                {canDo(["steward"]) && (
-                  <Button
-                    shape="circle"
-                    size="small"
-                    variant="transparent"
-                    onClick={() => {
-                      setIsSettingsOpen(true);
-                    }}
-                  >
-                    <IconCog />
-                  </Button>
-                )}
-              </Stack>
-            </Box>
-            <Droppable droppableId={id} type="task">
-              {(provided2) => (
-                <ScrollContainer
-                  {...provided2.droppableProps}
-                  ref={provided2.innerRef}
-                >
-                  <Box>
-                    {cards?.map((card, idx) => {
-                      if (card) {
-                        return (
-                          <CardComponent
-                            card={card}
-                            index={idx}
-                            column={column}
-                            key={card.id}
-                          />
-                        );
-                      }
-                    })}
-                    {provided2.placeholder}
-                  </Box>
-                </ScrollContainer>
-              )}
-            </Droppable>
-          </Container>
-        )}
+        {DraggableContentCallback}
       </Draggable>
     </>
   );

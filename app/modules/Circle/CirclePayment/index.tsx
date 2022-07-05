@@ -1,9 +1,10 @@
 import PrimaryButton from "@/app/common/components/PrimaryButton";
+import queryClient from "@/app/common/utils/queryClient";
 import {
   getFlattenedCurrencies,
   getFlattenedNetworks,
 } from "@/app/common/utils/registry";
-import { useGlobalContext } from "@/app/context/globalContext";
+import { useGlobal } from "@/app/context/globalContext";
 import { updateCircle } from "@/app/services/UpdateCircle";
 import { Chain, CircleType, Token } from "@/app/types";
 import { SaveOutlined } from "@ant-design/icons";
@@ -11,9 +12,8 @@ import { Box, Heading, Stack, Tag, Text } from "degen";
 import { motion } from "framer-motion";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
-import { useQuery, useQueryClient } from "react-query";
+import { useQuery } from "react-query";
 import styled from "styled-components";
-import ApproveToken from "./ApproveToken";
 
 const Container = styled(Box)`
   ::-webkit-scrollbar {
@@ -25,8 +25,7 @@ const Container = styled(Box)`
 `;
 
 export default function DefaultPayment() {
-  const queryClient = useQueryClient();
-  const { registry } = useGlobalContext();
+  const { registry } = useGlobal();
 
   const router = useRouter();
   const { circle: cId } = router.query;

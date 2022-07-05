@@ -1,7 +1,7 @@
 import EditTag from "@/app/common/components/EditTag";
 import ModalOption from "@/app/common/components/ModalOption";
 import { Avatar, Box, IconSearch, IconUserSolid, Input, Text } from "degen";
-import React, { useEffect, useState } from "react";
+import React, { memo, useEffect, useState } from "react";
 import { useLocalCard } from "../hooks/LocalCardContext";
 import { Option } from "../constants";
 import { matchSorter } from "match-sorter";
@@ -100,7 +100,7 @@ export const AssigneeModal = ({
   </Box>
 );
 
-export default function CardAssignee() {
+function CardAssignee() {
   const { assignees, setAssignees, onCardUpdate } = useLocalCard();
   const [modalOpen, setModalOpen] = useState(false);
   const [options, setOptions] = useState<Option[]>({} as Option[]);
@@ -161,3 +161,5 @@ export default function CardAssignee() {
     </EditTag>
   );
 }
+
+export default memo(CardAssignee);

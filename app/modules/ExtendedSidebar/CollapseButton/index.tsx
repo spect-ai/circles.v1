@@ -1,4 +1,4 @@
-import { useGlobalContext } from "@/app/context/globalContext";
+import { useGlobal } from "@/app/context/globalContext";
 import { DoubleRightOutlined } from "@ant-design/icons";
 import { Box, Button } from "degen";
 import { AnimatePresence, motion } from "framer-motion";
@@ -17,7 +17,7 @@ export default function CollapseButton({
   top,
   left,
 }: Props) {
-  const { isSidebarExpanded, setIsSidebarExpanded } = useGlobalContext();
+  const { isSidebarExpanded, setIsSidebarExpanded } = useGlobal();
   return (
     <AnimatePresence>
       {show && (

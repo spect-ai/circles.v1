@@ -2,14 +2,14 @@ import EditTag from "@/app/common/components/EditTag";
 import ModalOption from "@/app/common/components/ModalOption";
 import { AuditOutlined } from "@ant-design/icons";
 import { Box, IconSearch, Input, Text } from "degen";
-import React, { useEffect, useState } from "react";
+import React, { memo, useEffect, useState } from "react";
 import { matchSorter } from "match-sorter";
 import { useLocalCard } from "../hooks/LocalCardContext";
 import { Option } from "../constants";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
 
-export default function CardType() {
+function CardType() {
   const { cardType, setCardType, onCardUpdate } = useLocalCard();
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -44,7 +44,7 @@ export default function CardType() {
       }
       disabled={!canTakeAction("cardType")}
       handleClose={() => {
-        onCardUpdate();
+        void onCardUpdate();
         setModalOpen(false);
       }}
     >
@@ -110,3 +110,4 @@ export default function CardType() {
     </EditTag>
   );
 }
+export default memo(CardType);

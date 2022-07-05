@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import { useGlobalContext } from "@/app/context/globalContext";
+import { useGlobal } from "@/app/context/globalContext";
 import { ethers } from "ethers";
 import { toast } from "react-toastify";
 import { erc20ABI } from "wagmi";
 
 export default function useERC20() {
-  const { registry } = useGlobalContext();
+  const { registry } = useGlobal();
   function isCurrency(address: string) {
     return address === "0x0";
   }

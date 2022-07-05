@@ -1,6 +1,6 @@
 import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { useGlobalContext } from "@/app/context/globalContext";
+import { useGlobal } from "@/app/context/globalContext";
 import useCircleOnboarding from "@/app/services/Onboarding/useCircleOnboarding";
 import { CloseCircleOutlined } from "@ant-design/icons";
 import {
@@ -25,7 +25,7 @@ export default function Onboarding() {
   const [isOpen, setIsOpen] = useState(true);
   const [isTourOpen, setIsTourOpen] = useState(false);
 
-  const { setIsSidebarExpanded } = useGlobalContext();
+  const { setIsSidebarExpanded } = useGlobal();
   const { finishOnboarding } = useCircleOnboarding();
 
   return (

@@ -1,8 +1,12 @@
 import { addColumn } from "@/app/services/Column";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { Box, IconPlusSmall, Stack } from "degen";
-import React, { memo } from "react";
-import { DragDropContext, Droppable } from "react-beautiful-dnd";
+import React, { memo, useCallback } from "react";
+import {
+  DragDropContext,
+  Droppable,
+  DroppableProvided,
+} from "react-beautiful-dnd";
 import { toast, ToastContainer } from "react-toastify";
 import styled from "styled-components";
 import ColumnComponent from "./Column";
@@ -14,6 +18,7 @@ import Onboarding from "./ProjectOnboarding";
 import useProjectOnboarding from "@/app/services/Onboarding/useProjectOnboarding";
 import { motion } from "framer-motion";
 import { fadeVariant } from "../Card/Utils/variants";
+import { useRouter } from "next/router";
 
 const Container = styled.div`
   display: flex;
@@ -37,8 +42,63 @@ function Project() {
   const { canDo } = useRoleGate();
   const { onboarded } = useProjectOnboarding();
 
+  const router = useRouter();
+  const { card: tId } = router.query;
+
+  const DroppableContent = (provided: DroppableProvided) => (
+    <Container {...provided.droppableProps} ref={provided.innerRef}>
+      <Stack direction="horizontal">
+        {project?.columnOrder?.map((columnId, index): any => {
+          const column = project.columnDetails[columnId];
+          const cards = column.cards?.map(
+            (cardId: any) => project.cards[cardId]
+          );
+          return (
+            <ColumnComponent
+              key={columnId}
+              column={column}
+              cards={cards}
+              id={columnId}
+              index={index}
+            />
+          );
+        })}
+        {provided.placeholder}
+        {project?.id && canDo(["steward"]) && (
+          <Box style={{ width: "20rem" }} marginTop="2">
+            <PrimaryButton
+              variant="tertiary"
+              icon={<IconPlusSmall />}
+              onClick={async () => {
+                const updatedProject = await addColumn(project.id);
+                if (!updatedProject) {
+                  toast.error("Error adding column", {
+                    theme: "dark",
+                  });
+                }
+                setLocalProject(updatedProject);
+              }}
+            >
+              Add new column
+            </PrimaryButton>
+          </Box>
+        )}
+      </Stack>
+    </Container>
+  );
+
+  const DroppableContentCallback = useCallback(DroppableContent, [
+    project.columnDetails,
+    project?.columnOrder,
+    project,
+  ]);
+
   if (loading) {
     return <SkeletonLoader />;
+  }
+
+  if (tId) {
+    return null;
   }
 
   return (
@@ -63,47 +123,7 @@ function Project() {
             direction="horizontal"
             type="column"
           >
-            {(provided) => (
-              <Container {...provided.droppableProps} ref={provided.innerRef}>
-                <Stack direction="horizontal">
-                  {project?.columnOrder?.map((columnId, index): any => {
-                    const column = project.columnDetails[columnId];
-                    const cards = column.cards?.map(
-                      (cardId: any) => project.cards[cardId]
-                    );
-                    return (
-                      <ColumnComponent
-                        key={columnId}
-                        column={column}
-                        cards={cards}
-                        id={columnId}
-                        index={index}
-                      />
-                    );
-                  })}
-                  {provided.placeholder}
-                  {project?.id && canDo(["steward"]) && (
-                    <Box style={{ width: "20rem" }} marginTop="2">
-                      <PrimaryButton
-                        variant="tertiary"
-                        icon={<IconPlusSmall />}
-                        onClick={async () => {
-                          const updatedProject = await addColumn(project.id);
-                          if (!updatedProject) {
-                            toast.error("Error adding column", {
-                              theme: "dark",
-                            });
-                          }
-                          setLocalProject(updatedProject);
-                        }}
-                      >
-                        Add new column
-                      </PrimaryButton>
-                    </Box>
-                  )}
-                </Stack>
-              </Container>
-            )}
+            {DroppableContentCallback}
           </Droppable>
         </DragDropContext>
       </Box>

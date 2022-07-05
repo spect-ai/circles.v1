@@ -1,4 +1,4 @@
-import { useGlobalContext } from "@/app/context/globalContext";
+import { useGlobal } from "@/app/context/globalContext";
 import { useLocalCard } from "@/app/modules/Project/CreateCardModal/hooks/LocalCardContext";
 import { CardType, CircleType } from "@/app/types";
 import { useRouter } from "next/router";
@@ -10,7 +10,7 @@ export default function useRoleGate() {
   const { data: circle } = useQuery<CircleType>(["circle", cId], {
     enabled: false,
   });
-  const { connectedUser } = useGlobalContext();
+  const { connectedUser } = useGlobal();
 
   const { card } = useLocalCard();
   const canDo = (roles: string[]) => {

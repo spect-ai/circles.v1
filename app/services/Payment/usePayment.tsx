@@ -101,7 +101,7 @@ export default function usePaymentGateway(
       // notify('Payment done succesfully!', 'success');
       toast(
         <Stack direction="horizontal">
-          Transaction Successfull
+          Transaction Successful
           <PrimaryButton>
             <Link
               href={`https://mumbai.polygonscan.com/tx/${tx.transactionHash}`}

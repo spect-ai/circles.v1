@@ -1,31 +1,26 @@
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import Table from "@/app/common/components/Table";
-import { useGlobalContext } from "@/app/context/globalContext";
+import { useGlobal } from "@/app/context/globalContext";
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
 import { updatePaymentInfo } from "@/app/services/Payment";
 import usePaymentGateway from "@/app/services/Payment/usePayment";
 import { BatchPayInfo, CircleType } from "@/app/types";
 import { Avatar, Box, Stack, Text } from "degen";
-import Link from "next/link";
 import { useRouter } from "next/router";
-import React, { useState } from "react";
 import { useQuery } from "react-query";
 import { toast } from "react-toastify";
-import { useLocalProject } from "../Context/LocalProjectContext";
 import { useBatchPayContext } from "./context/batchPayContext";
 import { ScrollContainer } from "./SelectCards";
 
 export default function TokenPayment() {
   const { getMemberDetails } = useModalOptions();
   const { batchPay } = usePaymentGateway();
-  const [loading, setLoading] = useState(false);
-  const { registry } = useGlobalContext();
+  const { registry } = useGlobal();
   const { batchPayInfo, setStep, setIsOpen, tokenCards, setBatchPayInfo } =
     useBatchPayContext();
 
-  const { updateProject } = useLocalProject();
   const router = useRouter();
-  const { circle: cId, project: pId, card: tId } = router.query;
+  const { circle: cId } = router.query;
   const { data: circle } = useQuery<CircleType>(["circle", cId], {
     enabled: false,
   });
@@ -87,7 +82,6 @@ export default function TokenPayment() {
           </Box>
           <Box width="1/2">
             <PrimaryButton
-              loading={loading}
               onClick={async () => {
                 const txnHash = await toast.promise(
                   batchPay(

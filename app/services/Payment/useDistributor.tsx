@@ -1,12 +1,11 @@
-import { useGlobalContext } from "@/app/context/globalContext";
-import { ethers, Signer } from "ethers";
-import { useSigner } from "wagmi";
+import { ethers } from "ethers";
 import useERC20 from "./useERC20";
 import DistributorABI from "@/app/common/contracts/mumbai/distributor.json";
+import { useGlobal } from "@/app/context/globalContext";
 
 export default function useDistributor() {
-  const { registry } = useGlobalContext();
-  const { isCurrency, decimals, balanceOf } = useERC20();
+  const { registry } = useGlobal();
+  const { isCurrency, decimals } = useERC20();
 
   function getDistributorContract(chainId: string) {
     const provider = new ethers.providers.Web3Provider(window.ethereum as any);
