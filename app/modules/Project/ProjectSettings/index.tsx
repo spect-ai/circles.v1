@@ -6,7 +6,7 @@ import { AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { PopoverOption } from "../../Card/ActionPopover";
+import { PopoverOption } from "../../Card/OptionPopover";
 import { useLocalProject } from "../Context/LocalProjectContext";
 
 export default function ProjectSettings() {

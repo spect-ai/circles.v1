@@ -74,7 +74,7 @@ export default function TokenPayment() {
               tone="red"
               onClick={() => {
                 setIsOpen(false);
-                setStep(0);
+                setStep(-1);
               }}
             >
               Cancel

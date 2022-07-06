@@ -1,9 +1,11 @@
+import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { PriorityIcon } from "@/app/common/components/PriorityIcon";
 import { monthMap } from "@/app/common/utils/constants";
-import { CardType, ColumnType, MemberDetails } from "@/app/types";
+import { CardType, MemberDetails } from "@/app/types";
 import { Avatar, Box, IconEth, Stack, Tag, Text } from "degen";
+import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
-import React, { memo, useCallback, useMemo } from "react";
+import React, { memo, useCallback, useMemo, useState } from "react";
 import {
   Draggable,
   DraggableProvided,
@@ -11,11 +13,11 @@ import {
 } from "react-beautiful-dnd";
 import { useQuery } from "react-query";
 import styled from "styled-components";
-
+import BatchPay from "../BatchPay";
+import { useLocalProject } from "../Context/LocalProjectContext";
 type Props = {
   card: CardType;
   index: number;
-  column: ColumnType;
 };
 
 const Container = styled(Box)<{ isDragging: boolean }>`
@@ -27,7 +29,13 @@ const Container = styled(Box)<{ isDragging: boolean }>`
   }
 `;
 
-function CardComponent({ card, index, column }: Props) {
+const slide = {
+  hidden: { height: 0, opacity: 0 },
+  open: { height: "2.5rem", opacity: 1 },
+  collapsed: { height: 0, opacity: 0 },
+};
+
+function CardComponent({ card, index }: Props) {
   const router = useRouter();
   const { circle: cId, project: pId } = router.query;
   const { data: memberDetails } = useQuery<MemberDetails>(
@@ -37,6 +45,13 @@ function CardComponent({ card, index, column }: Props) {
     }
   );
 
+  const [hover, setHover] = useState(false);
+
+  const { projectCardActions, setBatchPayModalOpen, setSelectedCard } =
+    useLocalProject();
+
+  const [validActions, setValidActions] = useState<string[]>([]);
+
   const DraggableContent = (
     provided: DraggableProvided,
     snapshot: DraggableStateSnapshot
@@ -45,13 +60,28 @@ function CardComponent({ card, index, column }: Props) {
       {...provided.draggableProps}
       {...provided.dragHandleProps}
       ref={provided.innerRef}
-      // backgroundColor="foregroundTertiary"
       backgroundColor="background"
       padding="4"
       marginBottom="2"
       borderRadius="large"
       isDragging={snapshot.isDragging}
-      onClick={() => router.push(`/${cId}/${pId}/${card.slug}`)}
+      onClick={(e) => {
+        void router.push(`/${cId}/${pId}/${card.slug}`);
+      }}
+      onMouseEnter={() => {
+        if (projectCardActions && projectCardActions[card.id]) {
+          // get call valid actions for this card
+          const validActions = Object.keys(projectCardActions[card.id]).filter(
+            (action: string) =>
+              (projectCardActions[card.id] as any)[action].valid
+          );
+          setValidActions(validActions);
+          if (validActions.length > 0) {
+            setHover(true);
+          }
+        }
+      }}
+      onMouseLeave={() => setHover(false)}
     >
       <Box>
         <Box
@@ -115,6 +145,56 @@ function CardComponent({ card, index, column }: Props) {
             </Tag>
           ))}
         </Stack>
+        <AnimatePresence initial={false}>
+          {hover && (
+            <motion.div
+              variants={slide}
+              key={card.id}
+              initial="hidden"
+              animate="open"
+              exit="collapsed"
+              transition={{ duration: 0.3 }}
+            >
+              <Box marginTop="0">
+                <Stack direction="horizontal" space="0">
+                  {validActions.includes("close") && (
+                    <Box width="full">
+                      <PrimaryButton variant="transparent">Close</PrimaryButton>
+                    </Box>
+                  )}
+                  {validActions.includes("pay") && (
+                    <Box width="full">
+                      <PrimaryButton
+                        variant="transparent"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedCard(card);
+                          setBatchPayModalOpen(true);
+                        }}
+                      >
+                        Pay
+                      </PrimaryButton>
+                    </Box>
+                  )}
+                  {validActions.includes("archive") && (
+                    <Box width="full">
+                      <PrimaryButton variant="transparent">
+                        Archive
+                      </PrimaryButton>
+                    </Box>
+                  )}
+                  {validActions.includes("createDiscordThread") && (
+                    <Box width="full">
+                      <PrimaryButton variant="transparent">
+                        Discuss
+                      </PrimaryButton>
+                    </Box>
+                  )}
+                </Stack>
+              </Box>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </Box>
     </Container>
   );
@@ -133,6 +213,9 @@ function CardComponent({ card, index, column }: Props) {
     card.type,
     deadline,
     memberDetails?.memberDetails,
+    hover,
+    projectCardActions,
+    validActions,
   ]);
 
   return (

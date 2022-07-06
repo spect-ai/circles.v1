@@ -1,5 +1,6 @@
 import queryClient from "@/app/common/utils/queryClient";
-import { ProjectType } from "@/app/types";
+import { useGlobal } from "@/app/context/globalContext";
+import { CardType, ProjectCardActionsType, ProjectType } from "@/app/types";
 import { useRouter } from "next/router";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useQuery } from "react-query";
@@ -14,6 +15,13 @@ type LocalProjectContextType = {
   updateProject: (project: ProjectType) => void;
   updating: boolean;
   setUpdating: React.Dispatch<React.SetStateAction<boolean>>;
+  projectCardActions: ProjectCardActionsType | undefined;
+  view: number;
+  setView: React.Dispatch<React.SetStateAction<number>>;
+  batchPayModalOpen: boolean;
+  setBatchPayModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  selectedCard: CardType | null;
+  setSelectedCard: React.Dispatch<React.SetStateAction<CardType | null>>;
 };
 
 export const LocalProjectContext = createContext<LocalProjectContextType>(
@@ -31,18 +39,44 @@ export function useProviderLocalProject() {
       ),
     {
       enabled: false,
-      notifyOnChangeProps: "tracked",
     }
   );
+
+  const { connectedUser } = useGlobal();
+
+  const {
+    data: projectCardActions,
+    refetch: fetchQuickActions,
+    isError,
+  } = useQuery<ProjectCardActionsType>(
+    ["projectCardActions", pId],
+    () =>
+      fetch(`${process.env.API_HOST}/project/${pId}/validActions`, {
+        credentials: "include",
+      }).then((res) => res.json()),
+    {
+      enabled: false,
+    }
+  );
+
   const [loading, setLoading] = useState(false);
   const [updating, setUpdating] = useState(false);
+  const [view, setView] = useState(0);
 
   const [localProject, setLocalProject] = useState({} as ProjectType);
   const [error, setError] = useState(false);
+
+  const [batchPayModalOpen, setBatchPayModalOpen] = useState(false);
+  const [selectedCard, setSelectedCard] = useState({} as CardType | null);
+
   const updateProject = (project: ProjectType) => {
     queryClient.setQueryData(["project", pId], project);
     setLocalProject(project);
   };
+
+  useEffect(() => {
+    void fetchQuickActions();
+  }, [connectedUser, pId]);
 
   useEffect(() => {
     if (pId) {
@@ -73,6 +107,13 @@ export function useProviderLocalProject() {
     updateProject,
     updating,
     setUpdating,
+    projectCardActions: !connectedUser ? undefined : projectCardActions,
+    view,
+    setView,
+    batchPayModalOpen,
+    setBatchPayModalOpen,
+    selectedCard,
+    setSelectedCard,
   };
 }
 

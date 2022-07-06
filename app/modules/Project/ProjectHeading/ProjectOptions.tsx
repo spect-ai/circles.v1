@@ -1,13 +1,19 @@
 import Popover from "@/app/common/components/Popover";
-import { Box, IconDotsHorizontal } from "degen";
+import { Box, IconDotsHorizontal, IconEth, Stack } from "degen";
+import { AnimatePresence } from "framer-motion";
 import React, { useState } from "react";
+import { PopoverOption } from "../../Card/OptionPopover";
 import BatchPay from "../BatchPay";
 import ProjectSettings from "../ProjectSettings";
 
 export default function ProjectOptions() {
   const [isOpen, setIsOpen] = useState(false);
+  const [batchPayModalOpen, setBatchPayModalOpen] = useState(false);
   return (
     <Box width="fit">
+      <AnimatePresence>
+        {batchPayModalOpen && <BatchPay setIsOpen={setBatchPayModalOpen} />}
+      </AnimatePresence>
       <Popover
         butttonComponent={
           <Box
@@ -29,7 +35,17 @@ export default function ProjectOptions() {
           width="36"
         >
           <ProjectSettings />
-          <BatchPay />
+          <PopoverOption
+            tourId="batch-pay-button"
+            onClick={() => {
+              setBatchPayModalOpen(true);
+            }}
+          >
+            <Stack direction="horizontal" space="2">
+              <IconEth />
+              batch Pay
+            </Stack>
+          </PopoverOption>
           {/* <PopoverOption
             onClick={() => {
               setIsOpen(false);

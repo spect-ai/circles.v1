@@ -5,7 +5,7 @@ import { ReactNodeNoStrings } from "degen/dist/types/types";
 import { motion } from "framer-motion";
 
 interface Props {
-  onClick?: () => void;
+  onClick?: (event: React.MouseEvent<HTMLElement>) => void;
   icon?: ReactNodeNoStrings;
   variant?: "primary" | "secondary" | "tertiary" | "transparent";
   children?: React.ReactNode;
@@ -18,8 +18,8 @@ interface Props {
 }
 
 export const slide = {
-  hidden: { opacity: 0, x: 0, y: 0 },
-  open: { height: "2rem", opacity: 1 },
+  hidden: { height: 0, opacity: 0 },
+  open: { height: "2.5rem", opacity: 1 },
   collapsed: { height: 0, opacity: 0 },
 };
 

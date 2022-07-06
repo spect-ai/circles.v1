@@ -1,4 +1,4 @@
-import { Box, Heading, IconGrid, IconList, Stack, Text } from "degen";
+import { Box, Heading, IconGrid, IconList, Stack } from "degen";
 import React, { memo } from "react";
 import Skeleton from "react-loading-skeleton";
 import styled from "styled-components";
@@ -13,7 +13,7 @@ export const IconButton = styled(Box)`
 `;
 
 function ProjectHeading() {
-  const { localProject: project, loading } = useLocalProject();
+  const { localProject: project, loading, view, setView } = useLocalProject();
   return (
     <Box
       width="full"
@@ -59,6 +59,8 @@ function ProjectHeading() {
             borderRightWidth="0.375"
             paddingX="2"
             borderLeftRadius="large"
+            backgroundColor={view === 0 ? "foregroundSecondary" : "background"}
+            onClick={() => setView(0)}
           >
             <IconGrid size="6" />
           </IconButton>
@@ -66,6 +68,8 @@ function ProjectHeading() {
             color="textSecondary"
             paddingX="2"
             borderRightRadius="large"
+            backgroundColor={view === 1 ? "foregroundSecondary" : "background"}
+            onClick={() => setView(1)}
           >
             <IconList size="6" />
           </IconButton>

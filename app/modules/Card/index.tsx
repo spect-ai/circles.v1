@@ -1,6 +1,7 @@
 import Breadcrumbs from "@/app/common/components/Breadcrumbs";
 import Editor from "@/app/common/components/Editor";
 import Loader from "@/app/common/components/Loader";
+import PrimaryButton from "@/app/common/components/PrimaryButton";
 import Tabs from "@/app/common/components/Tabs";
 import useCardDynamism from "@/app/services/Card/useCardDynamism";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
@@ -9,6 +10,7 @@ import {
   IconChevronDown,
   IconChevronUp,
   IconClose,
+  IconEth,
   Stack,
   Tag,
 } from "degen";
@@ -29,7 +31,7 @@ import CardReviewer from "../Project/CreateCardModal/modals/CardReviewer";
 import CardReward from "../Project/CreateCardModal/modals/CardReward";
 import CardType from "../Project/CreateCardModal/modals/CardType";
 import { IconButton } from "../Project/ProjectHeading";
-import ActionPopover from "./ActionPopover";
+import ActionPopover from "./OptionPopover";
 import Activity from "./Activity";
 import Application from "./Application";
 import Apply from "./Apply";
@@ -88,6 +90,7 @@ function Card() {
   const { circle: cId, project: pId, card: tId } = router.query;
 
   const [isDirty, setIsDirty] = useState(false);
+  const [batchPayModalOpen, setBatchPayModalOpen] = useState(false);
 
   useEffect(() => {
     if (isDirty) {
@@ -105,6 +108,11 @@ function Card() {
 
   return (
     <Box padding="4">
+      <AnimatePresence>
+        {batchPayModalOpen && (
+          <BatchPay card={card} setIsOpen={setBatchPayModalOpen} />
+        )}
+      </AnimatePresence>
       <Box
         borderWidth="0.375"
         borderRadius="large"
@@ -281,7 +289,16 @@ function Card() {
                 <CardPriority />
                 <CardReward />
                 {/* <DiscordThread /> */}
-                {canTakeAction("cardPayment") && <BatchPay card={card} />}
+                {canTakeAction("cardPayment") && (
+                  <PrimaryButton
+                    onClick={(e) => {
+                      setBatchPayModalOpen(true);
+                    }}
+                    icon={<IconEth />}
+                  >
+                    Pay
+                  </PrimaryButton>
+                )}
                 {cardType === "Bounty" && canTakeAction("cardApply") && (
                   <Apply />
                 )}

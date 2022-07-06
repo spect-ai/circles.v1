@@ -190,6 +190,31 @@ export interface ProjectType {
   parents: CircleType[];
 }
 
+interface ActionValidation {
+  valid: boolean;
+  reason: string;
+}
+export interface CardActions {
+  addFeedback: ActionValidation;
+  addRevisionInstructions: ActionValidation;
+  applyToBounty: ActionValidation;
+  archive: ActionValidation;
+  canCreateCard: ActionValidation;
+  close: ActionValidation;
+  createDiscordThread: ActionValidation;
+  duplicate: ActionValidation;
+  pay: ActionValidation;
+  submit: ActionValidation;
+  updateAssignee: ActionValidation;
+  updateColumn: ActionValidation;
+  updateDeadline: ActionValidation;
+  updateGeneralCardInfo: ActionValidation;
+}
+
+export interface ProjectCardActionsType {
+  [cardId: string]: CardActions;
+}
+
 export interface Chain {
   chainId: string;
   name: string;

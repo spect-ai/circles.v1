@@ -7,7 +7,7 @@ import { AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
 import React, { memo, useState } from "react";
 import { useQuery } from "react-query";
-import { PopoverOption } from "../Card/ActionPopover";
+import { PopoverOption } from "../Card/OptionPopover";
 import SettingsModal from "../Circle/CircleSettingsModal";
 import ContributorsModal from "../Circle/ContributorsModal";
 import { HeaderButton } from "./ExploreSidebar";

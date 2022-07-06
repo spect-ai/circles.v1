@@ -1,101 +1,23 @@
-import { addColumn } from "@/app/services/Column";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
-import { Box, IconPlusSmall, Stack } from "degen";
-import React, { memo, useCallback } from "react";
-import {
-  DragDropContext,
-  Droppable,
-  DroppableProvided,
-} from "react-beautiful-dnd";
-import { toast, ToastContainer } from "react-toastify";
-import styled from "styled-components";
-import ColumnComponent from "./Column";
+import { Box } from "degen";
+import React, { memo } from "react";
 import { useLocalProject } from "./Context/LocalProjectContext";
-import useDragEnd from "./Hooks/useDragEnd";
-import { SkeletonLoader } from "./SkeletonLoader";
-import PrimaryButton from "@/app/common/components/PrimaryButton";
-import Onboarding from "./ProjectOnboarding";
 import useProjectOnboarding from "@/app/services/Onboarding/useProjectOnboarding";
 import { motion } from "framer-motion";
 import { fadeVariant } from "../Card/Utils/variants";
 import { useRouter } from "next/router";
-
-const Container = styled.div`
-  display: flex;
-  flex-direction: row;
-  height: calc(100vh - 4.5rem);
-  @media only screen and (min-width: 0px) {
-    max-width: calc(100vw - 5rem);
-    padding: 0 0.1rem;
-  }
-  @media only screen and (min-width: 768px) {
-    max-width: calc(100vw - 4rem);
-    padding: 0 0.5rem;
-  }
-  overflow-x: auto;
-  overflow-y: hidden;
-`;
+import BoardView from "./BoardView";
+import { ToastContainer } from "react-toastify";
+import Onboarding from "./ProjectOnboarding";
+import ListView from "./ListView";
 
 function Project() {
-  const { handleDragEnd } = useDragEnd();
-  const { loading, localProject: project, setLocalProject } = useLocalProject();
+  const { view } = useLocalProject();
   const { canDo } = useRoleGate();
   const { onboarded } = useProjectOnboarding();
 
   const router = useRouter();
   const { card: tId } = router.query;
-
-  const DroppableContent = (provided: DroppableProvided) => (
-    <Container {...provided.droppableProps} ref={provided.innerRef}>
-      <Stack direction="horizontal">
-        {project?.columnOrder?.map((columnId, index): any => {
-          const column = project.columnDetails[columnId];
-          const cards = column.cards?.map(
-            (cardId: any) => project.cards[cardId]
-          );
-          return (
-            <ColumnComponent
-              key={columnId}
-              column={column}
-              cards={cards}
-              id={columnId}
-              index={index}
-            />
-          );
-        })}
-        {provided.placeholder}
-        {project?.id && canDo(["steward"]) && (
-          <Box style={{ width: "20rem" }} marginTop="2">
-            <PrimaryButton
-              variant="tertiary"
-              icon={<IconPlusSmall />}
-              onClick={async () => {
-                const updatedProject = await addColumn(project.id);
-                if (!updatedProject) {
-                  toast.error("Error adding column", {
-                    theme: "dark",
-                  });
-                }
-                setLocalProject(updatedProject);
-              }}
-            >
-              Add new column
-            </PrimaryButton>
-          </Box>
-        )}
-      </Stack>
-    </Container>
-  );
-
-  const DroppableContentCallback = useCallback(DroppableContent, [
-    project.columnDetails,
-    project?.columnOrder,
-    project,
-  ]);
-
-  if (loading) {
-    return <SkeletonLoader />;
-  }
 
   if (tId) {
     return null;
@@ -109,7 +31,7 @@ function Project() {
       exit="exit"
       transition={{ type: "linear" }}
     >
-      <Box paddingY="1">
+      <Box width="full">
         <ToastContainer
           toastStyle={{
             backgroundColor: "rgb(20,20,20)",
@@ -117,15 +39,8 @@ function Project() {
           }}
         />
         {!onboarded && canDo(["steward"]) && <Onboarding />}
-        <DragDropContext onDragEnd={handleDragEnd}>
-          <Droppable
-            droppableId="all-columns"
-            direction="horizontal"
-            type="column"
-          >
-            {DroppableContentCallback}
-          </Droppable>
-        </DragDropContext>
+        {view === 0 && <BoardView />}
+        {view === 1 && <ListView />}
       </Box>
     </motion.main>
   );

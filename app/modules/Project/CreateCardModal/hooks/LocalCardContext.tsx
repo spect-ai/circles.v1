@@ -124,9 +124,7 @@ export function useProviderLocalCard({
     ["card", tId],
     () =>
       fetch(
-        `${process.env.API_HOST}/card/byProjectAndSlug/${project?.id}/${
-          tId as string
-        }`
+        `${process.env.API_HOST}/card/byProjectSlugAndCardSlug/${pId}/${tId}`
       ).then((res) => res.json()),
     {
       enabled: false,
@@ -185,10 +183,8 @@ export function useProviderLocalCard({
         await fetchCard();
       }
     };
-    if (project?.id) {
-      void fetchData();
-    }
-  }, [tId, project]);
+    void fetchData();
+  }, [tId]);
 
   useEffect(() => {
     if (!createCard && card && card.id) {

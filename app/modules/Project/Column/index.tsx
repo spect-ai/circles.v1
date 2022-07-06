@@ -89,14 +89,7 @@ function ColumnComponent({ cards, id, column, index }: Props) {
       <Box>
         {cards?.map((card, idx) => {
           if (card) {
-            return (
-              <CardComponent
-                card={card}
-                index={idx}
-                column={column}
-                key={card.id}
-              />
-            );
+            return <CardComponent card={card} index={idx} key={card.id} />;
           }
         })}
         {provided.placeholder}
@@ -187,7 +180,6 @@ function ColumnComponent({ cards, id, column, index }: Props) {
           <CreateCardModal
             column={id}
             handleClose={() => {
-              console.log(showConfirm);
               if (isDirty && !showConfirm) {
                 setShowConfirm(true);
               } else {

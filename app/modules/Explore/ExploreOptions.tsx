@@ -2,7 +2,7 @@ import Popover from "@/app/common/components/Popover";
 import { Box, IconDuplicate, Stack, Text } from "degen";
 import React, { useState } from "react";
 
-import { PopoverOption } from "@/app/modules/Card/ActionPopover";
+import { PopoverOption } from "@/app/modules/Card/OptionPopover";
 
 export default function ExploreOptions() {
   const [isOpen, setIsOpen] = useState(false);

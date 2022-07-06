@@ -3,7 +3,6 @@ import React, {
   memo,
   useContext,
   useEffect,
-  useMemo,
   useState,
 } from "react";
 import { Registry } from "../types";
@@ -12,28 +11,15 @@ interface GlobalContextType {
   isSidebarExpanded: boolean;
   setIsSidebarExpanded: (isSidebarExpanded: boolean) => void;
   registry: Registry;
-  setRegistry: (registry: Registry) => void;
   connectedUser: string;
-  setConnectedUser: (connectedUser: string) => void;
-  // connectUser: (userId: string) => void;
-  // disconnectUser: () => void;
+  connectUser: (userId: string) => void;
+  disconnectUser: () => void;
 }
 
-const GlobalContext = createContext<GlobalContextType>({} as GlobalContextType);
-
-const useGlobal = () => {
-  const context = useContext(GlobalContext);
-  if (!context) {
-    throw new Error("useGlobal must be used within a GlobalContext");
-  }
-  const {
-    setConnectedUser,
-    setRegistry,
-    isSidebarExpanded,
-    setIsSidebarExpanded,
-    registry,
-    connectedUser,
-  } = context;
+const useProviderGlobalContext = () => {
+  const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
+  const [registry, setRegistry] = useState<Registry>({} as Registry);
+  const [connectedUser, setConnectedUser] = useState("");
 
   function connectUser(userId: string) {
     setConnectedUser(userId);
@@ -63,23 +49,16 @@ const useGlobal = () => {
   };
 };
 
-function GlobalContextProvider(props: any) {
-  const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
-  const [registry, setRegistry] = useState<Registry>({} as Registry);
-  const [connectedUser, setConnectedUser] = useState("");
+const GlobalContext = createContext<GlobalContextType>({} as GlobalContextType);
 
-  const value = useMemo(() => {
-    return {
-      isSidebarExpanded,
-      setIsSidebarExpanded,
-      registry,
-      setRegistry,
-      connectedUser,
-      setConnectedUser,
-    };
-  }, [isSidebarExpanded, registry, connectedUser]);
+export const useGlobal = () => useContext(GlobalContext);
 
-  return <GlobalContext.Provider value={value} {...props} />;
+function GlobalContextProvider({ children }: { children: React.ReactNode }) {
+  const context = useProviderGlobalContext();
+
+  return (
+    <GlobalContext.Provider value={context}>{children}</GlobalContext.Provider>
+  );
 }
 
-export { GlobalContextProvider, useGlobal };
+export default memo(GlobalContextProvider);
