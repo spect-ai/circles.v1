@@ -39,6 +39,7 @@ const CardList = ({ card }: { card: CardType }) => {
         void router.push(`/${cId}/${pId}/${card.slug}`);
       }}
       transitionDuration="500"
+      backgroundColor="background"
     >
       <Box marginLeft="3">
         <Stack direction="horizontal" justify="space-between">
