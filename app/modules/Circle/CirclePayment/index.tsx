@@ -4,16 +4,15 @@ import {
   getFlattenedCurrencies,
   getFlattenedNetworks,
 } from "@/app/common/utils/registry";
-import { useGlobal } from "@/app/context/globalContext";
 import { updateCircle } from "@/app/services/UpdateCircle";
-import { Chain, CircleType, Token } from "@/app/types";
+import { Chain, CircleType, Registry, Token } from "@/app/types";
 import { SaveOutlined } from "@ant-design/icons";
 import { Box, Heading, Stack, Tag, Text } from "degen";
-import { motion } from "framer-motion";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
 import { useQuery } from "react-query";
 import styled from "styled-components";
+import AddToken from "./AddToken";
 
 const Container = styled(Box)`
   ::-webkit-scrollbar {
@@ -25,8 +24,6 @@ const Container = styled(Box)`
 `;
 
 export default function DefaultPayment() {
-  const { registry } = useGlobal();
-
   const router = useRouter();
   const { circle: cId } = router.query;
   const { data: circle } = useQuery<CircleType>(["circle", cId], {
@@ -75,54 +72,46 @@ export default function DefaultPayment() {
         <Stack>
           <Text size="extraLarge">Chain</Text>
           <Stack direction="horizontal">
-            {getFlattenedNetworks(registry).map((aChain) => (
-              <Box
-                cursor="pointer"
-                key={aChain.chainId}
-                onClick={() => {
-                  setIsDirty(true);
-                  setChain(aChain);
-                }}
-              >
-                <Tag
-                  hover
-                  tone={
-                    chain?.chainId === aChain.chainId ? "accent" : "secondary"
-                  }
-                >
-                  {aChain.name}
-                </Tag>
-              </Box>
-            ))}
-          </Stack>
-          <Text size="extraLarge">Token</Text>
-          <Stack direction="horizontal">
-            {getFlattenedCurrencies(registry, chain?.chainId as string)?.map(
-              (aToken) => (
-                <motion.button
-                  style={{
-                    background: "transparent",
-                    border: "none",
-                    cursor: "pointer",
-                    padding: "0rem",
-                  }}
+            {getFlattenedNetworks(circle?.localRegistry as Registry).map(
+              (aChain) => (
+                <Box
+                  cursor="pointer"
+                  key={aChain.chainId}
                   onClick={() => {
                     setIsDirty(true);
-                    setToken(aToken);
+                    setChain(aChain);
                   }}
-                  key={aToken.symbol}
                 >
                   <Tag
                     hover
                     tone={
-                      token?.address === aToken.address ? "accent" : "secondary"
+                      chain?.chainId === aChain.chainId ? "accent" : "secondary"
                     }
                   >
-                    {aToken.symbol}
+                    {aChain.name}
                   </Tag>
-                </motion.button>
+                </Box>
               )
             )}
+          </Stack>
+          <Text size="extraLarge">Whitelisted Tokens</Text>
+          <Stack direction="horizontal">
+            {getFlattenedCurrencies(
+              circle?.localRegistry as Registry,
+              chain?.chainId as string
+            )?.map((aToken) => (
+              <Box cursor="pointer" key={aToken.address}>
+                <Tag
+                  hover
+                  tone={
+                    token?.address === aToken.address ? "accent" : "secondary"
+                  }
+                >
+                  {aToken.symbol}
+                </Tag>
+              </Box>
+            ))}
+            <AddToken chain={chain} />
           </Stack>
           <Box width="1/3" marginTop="2" paddingLeft="1">
             {isDirty && (

@@ -1,16 +1,22 @@
 import { ethers } from "ethers";
 import useERC20 from "./useERC20";
 import DistributorABI from "@/app/common/contracts/mumbai/distributor.json";
-import { useGlobal } from "@/app/context/globalContext";
+import { useRouter } from "next/router";
+import { useQuery } from "react-query";
+import { CircleType } from "@/app/types";
 
 export default function useDistributor() {
-  const { registry } = useGlobal();
   const { isCurrency, decimals } = useERC20();
+  const router = useRouter();
+  const { circle: cId } = router.query;
+  const { data: circle } = useQuery<CircleType>(["circle", cId], {
+    enabled: false,
+  });
 
   function getDistributorContract(chainId: string) {
     const provider = new ethers.providers.Web3Provider(window.ethereum as any);
     return new ethers.Contract(
-      registry[chainId].distributorAddress as string,
+      circle?.localRegistry[chainId].distributorAddress as string,
       DistributorABI.abi,
       provider.getSigner()
     );

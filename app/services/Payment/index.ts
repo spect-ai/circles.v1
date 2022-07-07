@@ -1,6 +1,13 @@
 import { BatchPayInfo } from "@/app/types";
 import { toast } from "react-toastify";
 
+type AddTokenDTO = {
+  chainId: string;
+  address: string;
+  symbol: string;
+  name: string;
+};
+
 export const getAgregatedPaymentInfo = async (
   cards: string[],
   chainId: string
@@ -41,6 +48,30 @@ export const updatePaymentInfo = async (
     return data;
   }
   toast.error("Error updating payment info", {
+    theme: "dark",
+  });
+  return undefined;
+};
+
+export const addToken = async (circleId: string, body: AddTokenDTO) => {
+  // TODO
+  const res = await fetch(
+    `${process.env.API_HOST}/circle/${circleId}/addToken`,
+    {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+      credentials: "include",
+    }
+  );
+  if (res.ok) {
+    const data = await res.json();
+    console.log({ data });
+    return data;
+  }
+  toast.error("Error updating adding token", {
     theme: "dark",
   });
   return undefined;

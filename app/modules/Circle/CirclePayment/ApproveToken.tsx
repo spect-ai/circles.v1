@@ -18,7 +18,6 @@ export default function ApproveToken() {
     enabled: false,
   });
   const [isOpen, setIsOpen] = useState(false);
-  const { registry } = useGlobal();
   const [chain, setChain] = useState(circle?.defaultPayment.chain);
   const [token, setToken] = useState(circle?.defaultPayment.token);
 
@@ -40,7 +39,7 @@ export default function ApproveToken() {
         </Tag>
       </Box>
       <AnimatePresence>
-        {isOpen && (
+        {isOpen && circle && (
           <Modal
             handleClose={() => {
               setIsOpen(false);
@@ -51,7 +50,7 @@ export default function ApproveToken() {
               <Stack>
                 <Text size="extraLarge">Chain</Text>
                 <Stack direction="horizontal">
-                  {getFlattenedNetworks(registry).map((aChain) => (
+                  {getFlattenedNetworks(circle?.localRegistry).map((aChain) => (
                     <Box
                       cursor="pointer"
                       key={aChain.chainId}
@@ -81,7 +80,7 @@ export default function ApproveToken() {
                 <Text size="extraLarge">Token</Text>
                 <Stack direction="horizontal">
                   {getFlattenedCurrencies(
-                    registry,
+                    circle?.localRegistry,
                     chain?.chainId as string
                   )?.map((aToken) => (
                     <Box

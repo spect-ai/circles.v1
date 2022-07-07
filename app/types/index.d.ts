@@ -83,6 +83,7 @@ export interface CircleType {
       selfAssignable: boolean;
     };
   };
+  localRegistry: Registry;
 }
 
 // interface ProjectType {

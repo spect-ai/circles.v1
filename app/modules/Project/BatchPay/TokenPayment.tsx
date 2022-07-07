@@ -15,7 +15,6 @@ import { ScrollContainer } from "./SelectCards";
 export default function TokenPayment() {
   const { getMemberDetails } = useModalOptions();
   const { batchPay } = usePaymentGateway();
-  const { registry } = useGlobal();
   const { batchPayInfo, setStep, setIsOpen, tokenCards, setBatchPayInfo } =
     useBatchPayContext();
 
@@ -43,7 +42,7 @@ export default function TokenPayment() {
         <Text variant="base" weight="semiBold" key={userId}>
           {batchPayInfo.tokens.values[index]}{" "}
           {
-            registry[circle?.defaultPayment.chain.chainId as string]
+            circle?.localRegistry[circle?.defaultPayment.chain.chainId]
               .tokenDetails[batchPayInfo.tokens.tokenAddresses[index]].symbol
           }
         </Text>,

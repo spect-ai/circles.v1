@@ -2,7 +2,7 @@ import Loader from "@/app/common/components/Loader";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { useGlobal } from "@/app/context/globalContext";
 import useERC20 from "@/app/services/Payment/useERC20";
-import { ProjectType } from "@/app/types";
+import { CircleType, ProjectType } from "@/app/types";
 import { QuestionCircleFilled } from "@ant-design/icons";
 import { Box, Button, IconCheck, Stack, Text } from "degen";
 import { useRouter } from "next/router";
@@ -16,10 +16,12 @@ import { ScrollContainer } from "./SelectCards";
 
 export default function ApproveToken() {
   const { approve, isApproved } = useERC20();
-  const { registry } = useGlobal();
   const router = useRouter();
-  const { project: pId } = router.query;
+  const { project: pId, circle: cId } = router.query;
   const { data: project } = useQuery<ProjectType>(["project", pId], {
+    enabled: false,
+  });
+  const { data: circle } = useQuery<CircleType>(["circle", cId], {
     enabled: false,
   });
   const { data } = useAccount();
@@ -52,7 +54,7 @@ export default function ApproveToken() {
         console.log({ batchPayInfo });
         const approvalStatus = await isApproved(
           address,
-          registry[project.parents[0].defaultPayment.chain.chainId]
+          circle?.localRegistry[project.parents[0].defaultPayment.chain.chainId]
             .distributorAddress as string,
           batchPayInfo.approval.values[index],
           data?.address as string
@@ -119,7 +121,7 @@ export default function ApproveToken() {
                     <Stack>
                       <Text variant="base" weight="semiBold">
                         {
-                          registry[
+                          circle?.localRegistry[
                             project?.parents[0].defaultPayment.chain
                               .chainId as string
                           ]?.tokenDetails[tokenAddress]?.symbol

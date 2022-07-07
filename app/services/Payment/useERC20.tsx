@@ -1,11 +1,18 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { useGlobal } from "@/app/context/globalContext";
+import { CircleType } from "@/app/types";
 import { ethers } from "ethers";
+import { useRouter } from "next/router";
+import { useQuery } from "react-query";
 import { toast } from "react-toastify";
 import { erc20ABI } from "wagmi";
 
 export default function useERC20() {
-  const { registry } = useGlobal();
+  const router = useRouter();
+  const { circle: cId } = router.query;
+  const { data: circle } = useQuery<CircleType>(["circle", cId], {
+    enabled: false,
+  });
   function isCurrency(address: string) {
     return address === "0x0";
   }
@@ -27,7 +34,7 @@ export default function useERC20() {
     const contract = getERC20Contract(erc20Address);
     try {
       const tx = await contract.approve(
-        registry[chainId].distributorAddress,
+        circle?.localRegistry[chainId].distributorAddress,
         ethers.constants.MaxInt256
       );
       await tx.wait();
@@ -163,22 +170,40 @@ export default function useERC20() {
     return await contract.decimals();
   }
 
-  async function symbol(erc20Address: string, networkVersion: string) {
-    const contract = getERC20ContractWithCustomProvider(
-      erc20Address,
-      registry[networkVersion].provider
-    );
+  async function symbol(
+    erc20Address: string,
+    networkVersion: string | undefined
+  ) {
+    if (!networkVersion) return null;
+    try {
+      const contract = getERC20ContractWithCustomProvider(
+        erc20Address,
+        circle?.localRegistry[networkVersion].provider as string
+      );
+      return await contract.symbol();
+    } catch (err) {
+      console.error(err);
+      return null;
+    }
     // eslint-disable-next-line no-return-await
-    return await contract.symbol();
   }
 
-  async function name(erc20Address: string, networkVersion: string) {
-    const contract = getERC20ContractWithCustomProvider(
-      erc20Address,
-      registry[networkVersion].provider
-    );
-    // eslint-disable-next-line no-return-await
-    return await contract.name();
+  async function name(
+    erc20Address: string,
+    networkVersion: string | undefined
+  ) {
+    if (!networkVersion) return null;
+    try {
+      const contract = getERC20ContractWithCustomProvider(
+        erc20Address,
+        circle?.localRegistry[networkVersion].provider as string
+      );
+      // eslint-disable-next-line no-return-await
+      return await contract.name();
+    } catch (err) {
+      console.error(err);
+      return null;
+    }
   }
 
   async function balanceOf(erc20Address: string, ethAddress: string) {

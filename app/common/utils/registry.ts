@@ -2,7 +2,6 @@ import { Chain, Registry, Token } from "@/app/types";
 
 export function getFlattenedNetworks(registry: Registry) {
   const networks: Array<Chain> = [];
-
   for (const networkId of Object.keys(registry)) {
     networks.push({
       name: registry[networkId].name,
