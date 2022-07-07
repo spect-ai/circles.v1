@@ -53,6 +53,8 @@ function CardComponent({ card, index }: Props) {
     setBatchPayModalOpen,
     setSelectedCard,
     updateProject,
+    setIsApplyModalOpen,
+    setIsSubmitModalOpen,
   } = useLocalProject();
 
   const { archiveCard, updateCard } = useCardService();
@@ -218,10 +220,31 @@ function CardComponent({ card, index }: Props) {
                       </PrimaryButton>
                     </Box>
                   )}
-                  {validActions.includes("createDiscordThread") && (
+                  {validActions.includes("applyToBounty") && (
                     <Box width="full">
-                      <PrimaryButton variant="transparent">
-                        Discuss
+                      <PrimaryButton
+                        variant="transparent"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedCard(card);
+                          setIsApplyModalOpen(true);
+                        }}
+                      >
+                        Apply
+                      </PrimaryButton>
+                    </Box>
+                  )}
+                  {validActions.includes("submit") && (
+                    <Box width="full">
+                      <PrimaryButton
+                        variant="transparent"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedCard(card);
+                          setIsSubmitModalOpen(true);
+                        }}
+                      >
+                        Submit
                       </PrimaryButton>
                     </Box>
                   )}

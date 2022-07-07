@@ -11,6 +11,7 @@ import {
   IconChevronUp,
   IconClose,
   IconEth,
+  IconUserSolid,
   Stack,
   Tag,
 } from "degen";
@@ -95,6 +96,7 @@ function Card() {
 
   const [isDirty, setIsDirty] = useState(false);
   const [batchPayModalOpen, setBatchPayModalOpen] = useState(false);
+  const [isApplyModalOpen, setIsApplyModalOpen] = useState(false);
 
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
@@ -119,6 +121,9 @@ function Card() {
       <AnimatePresence>
         {batchPayModalOpen && (
           <BatchPay card={card} setIsOpen={setBatchPayModalOpen} />
+        )}
+        {isApplyModalOpen && (
+          <Apply setIsOpen={setIsApplyModalOpen} cardId={card?.id as string} />
         )}
       </AnimatePresence>
       <Box
@@ -308,7 +313,14 @@ function Card() {
                   </PrimaryButton>
                 )}
                 {cardType === "Bounty" && canTakeAction("cardApply") && (
-                  <Apply />
+                  <PrimaryButton
+                    icon={<IconUserSolid />}
+                    onClick={() => {
+                      setIsApplyModalOpen(true);
+                    }}
+                  >
+                    Apply
+                  </PrimaryButton>
                 )}
                 {cardType === "Task" && canTakeAction("assignToMe") && (
                   <AssignToMe />

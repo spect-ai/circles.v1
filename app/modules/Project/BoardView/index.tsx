@@ -14,8 +14,6 @@ import { useLocalProject } from "../Context/LocalProjectContext";
 import useDragEnd from "../Hooks/useDragEnd";
 import ColumnComponent from "../Column";
 import { SkeletonLoader } from "../SkeletonLoader";
-import BatchPay from "../BatchPay";
-import { AnimatePresence } from "framer-motion";
 
 const Container = styled.div`
   display: flex;
@@ -35,14 +33,7 @@ const Container = styled.div`
 
 function BoardView() {
   const { handleDragEnd } = useDragEnd();
-  const {
-    localProject: project,
-    setLocalProject,
-    loading,
-    batchPayModalOpen,
-    selectedCard,
-    setBatchPayModalOpen,
-  } = useLocalProject();
+  const { localProject: project, setLocalProject, loading } = useLocalProject();
   const { canDo } = useRoleGate();
 
   const DroppableContent = (provided: DroppableProvided) => (
@@ -98,22 +89,11 @@ function BoardView() {
   }
 
   return (
-    <>
-      <AnimatePresence>
-        {batchPayModalOpen && selectedCard && (
-          <BatchPay card={selectedCard} setIsOpen={setBatchPayModalOpen} />
-        )}
-      </AnimatePresence>
-      <DragDropContext onDragEnd={handleDragEnd}>
-        <Droppable
-          droppableId="all-columns"
-          direction="horizontal"
-          type="column"
-        >
-          {DroppableContentCallback}
-        </Droppable>
-      </DragDropContext>
-    </>
+    <DragDropContext onDragEnd={handleDragEnd}>
+      <Droppable droppableId="all-columns" direction="horizontal" type="column">
+        {DroppableContentCallback}
+      </Droppable>
+    </DragDropContext>
   );
 }
 

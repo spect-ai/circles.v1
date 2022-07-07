@@ -1,12 +1,13 @@
 import Editor from "@/app/common/components/Editor";
 import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
+import { createWorkThreadFetch } from "@/app/services/Submission";
 import useSubmission from "@/app/services/Submission/useSubmission";
 import { SendOutlined } from "@ant-design/icons";
-import { Box, IconDocuments, Stack } from "degen";
-import { AnimatePresence } from "framer-motion";
+import { Box, Stack } from "degen";
 import React, { useState } from "react";
 import styled from "styled-components";
+import { useLocalCard } from "../../Project/CreateCardModal/hooks/LocalCardContext";
 
 const NameInput = styled.input`
   width: 100%;
@@ -24,56 +25,45 @@ const NameInput = styled.input`
 `;
 
 interface Props {
-  workThreadOrder: string[];
+  cardId: string;
+  setIsOpen: (isOpen: boolean) => void;
 }
 
-export default function CreateSubmission({ workThreadOrder }: Props) {
-  const [isOpen, setIsOpen] = useState(false);
+export default function CreateSubmission({ cardId, setIsOpen }: Props) {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const { createWorkThread, loading } = useSubmission();
+  const { loading } = useSubmission();
+  const { setCard } = useLocalCard();
   return (
-    <>
-      <Box width="1/3" marginBottom="2">
-        <PrimaryButton
-          icon={<IconDocuments />}
-          onClick={() => setIsOpen(true)}
-          variant={workThreadOrder.length > 0 ? "transparent" : "secondary"}
-        >
-          {workThreadOrder.length > 0 ? "Add Submission" : "Create Submission"}
-        </PrimaryButton>
-      </Box>
-      <AnimatePresence>
-        {isOpen && (
-          <Modal handleClose={() => setIsOpen(false)} title="Create Submission">
-            <Box padding="8">
-              <Stack>
-                <NameInput
-                  placeholder="Submission Title"
-                  autoFocus
-                  value={title}
-                  onChange={(e) => {
-                    setTitle(e.target.value);
-                  }}
-                />
-                <Box
-                  style={{
-                    minHeight: "10rem",
-                    maxHeight: "20rem",
-                    overflowY: "auto",
-                  }}
-                  marginTop="2"
-                >
-                  <Editor
-                    value={content}
-                    onChange={(txt) => {
-                      setContent(txt);
-                    }}
-                    placeholder="Add submission here"
-                  />
-                </Box>
-                <Stack direction="horizontal">
-                  {/* <Box width="full">
+    <Modal handleClose={() => setIsOpen(false)} title="Create Submission">
+      <Box padding="8">
+        <Stack>
+          <NameInput
+            placeholder="Submission Title"
+            autoFocus
+            value={title}
+            onChange={(e) => {
+              setTitle(e.target.value);
+            }}
+          />
+          <Box
+            style={{
+              minHeight: "10rem",
+              maxHeight: "20rem",
+              overflowY: "auto",
+            }}
+            marginTop="2"
+          >
+            <Editor
+              value={content}
+              onChange={(txt) => {
+                setContent(txt);
+              }}
+              placeholder="Add submission here"
+            />
+          </Box>
+          <Stack direction="horizontal">
+            {/* <Box width="full">
                     <PrimaryButton
                       loading={loading}
                       icon={<IconDocuments />}
@@ -89,29 +79,30 @@ export default function CreateSubmission({ workThreadOrder }: Props) {
                       Save as Draft
                     </PrimaryButton>
                   </Box> */}
-                  <Box width="full">
-                    <PrimaryButton
-                      disabled={!title || !content}
-                      loading={loading}
-                      icon={<SendOutlined style={{ fontSize: "1.2rem" }} />}
-                      onClick={async () => {
-                        const res = await createWorkThread({
-                          name: title,
-                          content: content,
-                          status: "inReview",
-                        });
-                        res && setIsOpen(false);
-                      }}
-                    >
-                      Send
-                    </PrimaryButton>
-                  </Box>
-                </Stack>
-              </Stack>
+            <Box width="full">
+              <PrimaryButton
+                disabled={!title || !content}
+                loading={loading}
+                icon={<SendOutlined style={{ fontSize: "1.2rem" }} />}
+                onClick={async () => {
+                  const res = await createWorkThreadFetch(
+                    cardId,
+                    {
+                      name: title,
+                      content: content,
+                      status: "inReview",
+                    },
+                    setCard
+                  );
+                  res && setIsOpen(false);
+                }}
+              >
+                Send
+              </PrimaryButton>
             </Box>
-          </Modal>
-        )}
-      </AnimatePresence>
-    </>
+          </Stack>
+        </Stack>
+      </Box>
+    </Modal>
   );
 }

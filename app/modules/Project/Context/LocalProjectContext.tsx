@@ -27,6 +27,10 @@ type LocalProjectContextType = {
   setBatchPayModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
   selectedCard: CardType | null;
   setSelectedCard: React.Dispatch<React.SetStateAction<CardType | null>>;
+  isApplyModalOpen: boolean;
+  setIsApplyModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  isSubmitModalOpen: boolean;
+  setIsSubmitModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export const LocalProjectContext = createContext<LocalProjectContextType>(
@@ -72,6 +76,9 @@ export function useProviderLocalProject() {
   const [error, setError] = useState(false);
 
   const [batchPayModalOpen, setBatchPayModalOpen] = useState(false);
+  const [isApplyModalOpen, setIsApplyModalOpen] = useState(false);
+  const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false);
+
   const [selectedCard, setSelectedCard] = useState({} as CardType | null);
 
   const updateProject = (project: ProjectType) => {
@@ -119,6 +126,10 @@ export function useProviderLocalProject() {
     setBatchPayModalOpen,
     selectedCard,
     setSelectedCard,
+    isApplyModalOpen,
+    setIsApplyModalOpen,
+    isSubmitModalOpen,
+    setIsSubmitModalOpen,
   };
 }
 
