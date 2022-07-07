@@ -93,7 +93,7 @@ function Sidebar(): ReactElement {
         left="2.5rem"
       />
       {!isLoading && (
-        <ScrollContainer borderBottomWidth="0.375">
+        <ScrollContainer borderBottomWidth={connectedUser ? "0.375" : "0"}>
           {!myCirclesLoading &&
             connectedUser &&
             myCircles?.map &&
@@ -109,7 +109,7 @@ function Sidebar(): ReactElement {
         </ScrollContainer>
       )}
       <Box paddingY="3">
-        {currentUser && <Logo href="/" src={currentUser?.avatar} />}
+        {currentUser?.id && <Logo href="/" src={currentUser?.avatar} />}
       </Box>
     </Box>
   );

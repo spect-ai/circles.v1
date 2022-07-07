@@ -137,7 +137,8 @@ export function useProviderLocalCard({
     queryClient.setQueryData(["card", tId], card);
   };
 
-  const { callCreateCard, updateCard, updating } = useCardService();
+  const { callCreateCard, updateCard, updating, archiveCard } =
+    useCardService();
 
   const [cardId, setCardId] = useState("");
   const [title, setTitle] = useState("");
@@ -280,25 +281,6 @@ export function useProviderLocalCard({
     }
   };
 
-  const onArchive = async () => {
-    const res = await fetch(
-      `${process.env.API_HOST}/card/${card?.id}/archive`,
-      {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-      }
-    );
-    if (res.ok) {
-      void router.push(`/${cId}/${pId}`);
-      return true;
-    }
-    toast.error("Error archiving card");
-    return false;
-  };
-
   const resetData = () => {
     setTitle("");
     setDescription("");
@@ -366,7 +348,7 @@ export function useProviderLocalCard({
     setApplicationOrder,
     card,
     setCard,
-    onArchive,
+    onArchive: archiveCard,
   };
 }
 

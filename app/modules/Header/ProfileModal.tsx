@@ -78,7 +78,7 @@ export default function ProfileModal() {
 
   return (
     <>
-      <Box borderTopWidth="0.375" paddingTop="2" paddingX="2">
+      <Box borderTopWidth="0.375" paddingTop="2" marginX="4">
         <ProfileButton
           onClick={() => setIsOpen(true)}
           data-tour="profile-header-button"

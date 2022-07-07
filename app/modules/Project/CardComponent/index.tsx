@@ -1,6 +1,7 @@
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { PriorityIcon } from "@/app/common/components/PriorityIcon";
 import { monthMap } from "@/app/common/utils/constants";
+import useCardService from "@/app/services/Card/useCardService";
 import { CardType, MemberDetails } from "@/app/types";
 import { Avatar, Box, IconEth, Stack, Tag, Text } from "degen";
 import { motion, AnimatePresence } from "framer-motion";
@@ -47,8 +48,14 @@ function CardComponent({ card, index }: Props) {
 
   const [hover, setHover] = useState(false);
 
-  const { projectCardActions, setBatchPayModalOpen, setSelectedCard } =
-    useLocalProject();
+  const {
+    projectCardActions,
+    setBatchPayModalOpen,
+    setSelectedCard,
+    updateProject,
+  } = useLocalProject();
+
+  const { archiveCard, updateCard } = useCardService();
 
   const [validActions, setValidActions] = useState<string[]>([]);
 
@@ -159,7 +166,26 @@ function CardComponent({ card, index }: Props) {
                 <Stack direction="horizontal" space="0">
                   {validActions.includes("close") && (
                     <Box width="full">
-                      <PrimaryButton variant="transparent">Close</PrimaryButton>
+                      <PrimaryButton
+                        variant="transparent"
+                        onClick={async (e) => {
+                          e.stopPropagation();
+                          const data = await updateCard(
+                            {
+                              status: {
+                                ...card.status,
+                                active: false,
+                              },
+                            },
+                            card.id
+                          );
+                          if (data) {
+                            updateProject(data.project);
+                          }
+                        }}
+                      >
+                        Close
+                      </PrimaryButton>
                     </Box>
                   )}
                   {validActions.includes("pay") && (
@@ -178,7 +204,16 @@ function CardComponent({ card, index }: Props) {
                   )}
                   {validActions.includes("archive") && (
                     <Box width="full">
-                      <PrimaryButton variant="transparent">
+                      <PrimaryButton
+                        variant="transparent"
+                        onClick={async (e) => {
+                          e.stopPropagation();
+                          const data = await archiveCard(card.id);
+                          if (data) {
+                            updateProject(data);
+                          }
+                        }}
+                      >
                         Archive
                       </PrimaryButton>
                     </Box>

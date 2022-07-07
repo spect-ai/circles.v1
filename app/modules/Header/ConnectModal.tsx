@@ -61,7 +61,9 @@ export default function ConnectModal() {
 
   return (
     <>
-      <PrimaryButton onClick={() => setIsOpen(true)}>Connect</PrimaryButton>
+      <Box paddingX="2">
+        <PrimaryButton onClick={() => setIsOpen(true)}>Connect</PrimaryButton>
+      </Box>
       <AnimatePresence>
         {isOpen && (
           <Modal title="Choose Wallet" handleClose={handleClose} size="small">
