@@ -140,14 +140,14 @@ function InviteMemberModal() {
                     const expire = new Date().getTime() + expiry.expiry * 1000;
                     setIsLoading(true);
                     fetch(
-                      `${process.env.API_HOST}/circle/invite/${circle?.id}`,
+                      `${process.env.API_HOST}/circle/${circle?.id}/invite`,
                       {
                         method: "PATCH",
                         headers: {
                           "Content-Type": "application/json",
                         },
                         body: JSON.stringify({
-                          role: role.role,
+                          roles: [role.role],
                           uses: uses.uses,
                           expires: new Date(expire).toISOString(),
                         }),
