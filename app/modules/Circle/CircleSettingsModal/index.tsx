@@ -9,7 +9,8 @@ import { Box, Input, MediaPicker, Stack, Textarea } from "degen";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
 import { useQuery } from "react-query";
-import DefaultPayment from "../CirclePayment";
+import CircleIntegrations from "./CircleIntegrations";
+import DefaultPayment from "./CirclePayment";
 import Contributors from "../ContributorsModal/Contributors";
 
 interface Props {
@@ -136,7 +137,7 @@ export default function SettingsModal({ handleClose }: Props) {
               </Box>
             </Stack>
           )}
-          {/* {tab === 1 && <Integrations />} */}
+          {tab === 1 && <CircleIntegrations />}
           {tab === 2 && <DefaultPayment />}
           {tab === 3 && (
             <Stack>

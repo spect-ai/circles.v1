@@ -54,6 +54,13 @@ export interface Permissions {
   manageRoles: boolean;
 }
 
+export interface DiscordRoleMappingType {
+  [roleId: string]: {
+    circleRole: string;
+    name: string;
+  };
+}
+
 export interface CircleType {
   activity: string[];
   archived: boolean;
@@ -84,6 +91,9 @@ export interface CircleType {
     };
   };
   localRegistry: Registry;
+  discordGuildId: string;
+  discordToCircleRoles: DiscordRoleMapping;
+  githubRepos: string[];
 }
 
 // interface ProjectType {
@@ -189,6 +199,10 @@ export interface ProjectType {
   slug: string;
   private: boolean;
   parents: CircleType[];
+  discordDiscussionChannel: {
+    id: string;
+    name: string;
+  };
 }
 
 interface ActionValidation {

@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
-import useProfileUpdate from "./useProfileUpdate";
+import useProfileUpdate from "../Profile/useProfileUpdate";
 
 export default function useConnectDiscord() {
   const router = useRouter();

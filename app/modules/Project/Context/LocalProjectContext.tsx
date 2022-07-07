@@ -1,6 +1,11 @@
 import queryClient from "@/app/common/utils/queryClient";
 import { useGlobal } from "@/app/context/globalContext";
-import { CardType, ProjectCardActionsType, ProjectType } from "@/app/types";
+import {
+  CardType,
+  CircleType,
+  ProjectCardActionsType,
+  ProjectType,
+} from "@/app/types";
 import { useRouter } from "next/router";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useQuery } from "react-query";
@@ -30,7 +35,7 @@ export const LocalProjectContext = createContext<LocalProjectContextType>(
 
 export function useProviderLocalProject() {
   const router = useRouter();
-  const { project: pId } = router.query;
+  const { project: pId, cirle: cId } = router.query;
   const { refetch: fetchProject } = useQuery<ProjectType>(
     ["project", pId],
     () =>

@@ -37,7 +37,6 @@ export default function Circle() {
   if (isLoading) {
     return <Loader text="...." loading />;
   }
-  console.log({ circle });
   return (
     <BoxContainer paddingX="8" paddingTop="4">
       {!onboarded && canDo(["steward"]) && <Onboarding />}

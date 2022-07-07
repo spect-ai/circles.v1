@@ -1,6 +1,7 @@
 import { PublicLayout } from "@/app/common/layout";
 import MetaHead from "@/app/common/seo/MetaHead/MetaHead";
 import Circle from "@/app/modules/Circle";
+import useConnectDiscordServer from "@/app/services/Discord/useConnectDiscordServer";
 import { CircleType, MemberDetails } from "@/app/types";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
@@ -31,6 +32,8 @@ const CirclePage: NextPage = () => {
       enabled: false,
     }
   );
+
+  useConnectDiscordServer();
 
   useEffect(() => {
     if (circle?.id) {

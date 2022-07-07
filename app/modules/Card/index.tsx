@@ -20,6 +20,7 @@ import { useRouter } from "next/router";
 import React, { memo, useEffect, useState } from "react";
 import { ToastContainer } from "react-toastify";
 import styled from "styled-components";
+import DiscordIcon from "@/app/assets/icons/discordIcon.svg";
 import BatchPay from "../Project/BatchPay";
 import { useLocalCard } from "../Project/CreateCardModal/hooks/LocalCardContext";
 import CardAssignee from "../Project/CreateCardModal/modals/CardAssignee";
@@ -38,6 +39,9 @@ import Apply from "./Apply";
 import AssignToMe from "./AssignToMe";
 import Submission from "./Submission";
 import SubTasks from "./SubTasks";
+import { createThread } from "@/app/services/Discord";
+import { useQuery } from "react-query";
+import { UserType } from "@/app/types";
 
 const Container = styled(Box)`
   ::-webkit-scrollbar {
@@ -91,6 +95,10 @@ function Card() {
 
   const [isDirty, setIsDirty] = useState(false);
   const [batchPayModalOpen, setBatchPayModalOpen] = useState(false);
+
+  const { data: currentUser } = useQuery<UserType>("getMyUser", {
+    enabled: false,
+  });
 
   useEffect(() => {
     if (isDirty) {
@@ -305,6 +313,25 @@ function Card() {
                 {cardType === "Task" && canTakeAction("assignToMe") && (
                   <AssignToMe />
                 )}
+                <PrimaryButton
+                  variant="tertiary"
+                  icon={<DiscordIcon />}
+                  onClick={async () => {
+                    const data = await createThread(
+                      title,
+                      project.discordDiscussionChannel.id,
+                      currentUser?.discordId as string,
+                      project.parents[0].discordGuildId
+                    );
+                    console.log({ data });
+                    if (data) {
+                      const url = `https://discord.com/channels/${project.parents[0].discordGuildId}/${data.result}`;
+                      window.open(url, "_blank");
+                    }
+                  }}
+                >
+                  Discuss
+                </PrimaryButton>
               </Stack>
             )}
           </Box>

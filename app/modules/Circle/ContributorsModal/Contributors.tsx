@@ -4,7 +4,7 @@ import { Box, Heading, Stack } from "degen";
 import { useRouter } from "next/router";
 import React from "react";
 import { useQuery } from "react-query";
-import InviteMemberModal from "../InviteMembersModal";
+import InviteMemberModal from "./InviteMembersModal";
 import MemberDisplay from "./MemberDisplay";
 
 function Contributors() {

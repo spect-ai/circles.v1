@@ -1,9 +1,9 @@
 import Card from "@/app/common/components/Card";
 import Loader from "@/app/common/components/Loader";
 import { useGlobal } from "@/app/context/globalContext";
+import useConnectDiscord from "@/app/services/Discord/useConnectDiscord";
 import useJoinCircle from "@/app/services/JoinCircle/useJoinCircle";
 import useExploreOnboarding from "@/app/services/Onboarding/useExploreOnboarding";
-import useConnectDiscord from "@/app/services/Profile/useConnectDiscord";
 import { CircleType } from "@/app/types";
 import { Avatar, Box, Button, IconSearch, Input, Stack, Text } from "degen";
 import { useRouter } from "next/router";

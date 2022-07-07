@@ -7,6 +7,9 @@ type CircleUpdateDTO = {
   avatar: string;
   private: boolean;
   defaultPayment: Payment;
+  discordGuildId: string;
+  discordToCircleRoles: any;
+  githubRepos: string[];
 };
 
 export const updateCircle = async (
