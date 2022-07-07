@@ -273,6 +273,7 @@ export function useProviderLocalCard({
         value: parseFloat(value),
       },
     };
+    console.log(payload.deadline);
     const res = await updateCard(payload, card.id);
     if (res) {
       setCard(res);

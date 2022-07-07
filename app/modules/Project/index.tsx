@@ -12,14 +12,14 @@ import Onboarding from "./ProjectOnboarding";
 import ListView from "./ListView";
 
 function Project() {
-  const { view } = useLocalProject();
+  const { view, localProject: project } = useLocalProject();
   const { canDo } = useRoleGate();
   const { onboarded } = useProjectOnboarding();
 
   const router = useRouter();
   const { card: tId } = router.query;
 
-  if (tId) {
+  if (tId || !project) {
     return null;
   }
 

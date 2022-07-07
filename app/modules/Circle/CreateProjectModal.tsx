@@ -85,6 +85,7 @@ function CreateProjectModal({ accordian }: Props) {
         // void refetch();
         void router.push(`/${cId}/${resJson.slug}`);
         void close();
+        void refetch();
       })
       .catch((err) => {
         console.log({ err });
