@@ -58,7 +58,7 @@ export const PopoverOption = ({
 export default function ActionPopover() {
   const [showConfirm, setShowConfirm] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
-  const { onArchive } = useLocalCard();
+  const { onArchive, cardId } = useLocalCard();
   return (
     <>
       <AnimatePresence>
@@ -68,7 +68,7 @@ export default function ActionPopover() {
             handleClose={() => setShowConfirm(false)}
             onConfirm={() => {
               setShowConfirm(false);
-              void onArchive();
+              void onArchive(cardId);
             }}
             onCancel={() => setShowConfirm(false)}
           />

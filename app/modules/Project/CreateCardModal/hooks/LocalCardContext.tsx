@@ -98,7 +98,7 @@ type CreateCardContextType = {
   loading: boolean;
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
   updating: boolean;
-  onArchive: () => Promise<boolean>;
+  onArchive: (cardId: string) => Promise<any>;
 };
 
 export const LocalCardContext = createContext<CreateCardContextType>(
