@@ -5,7 +5,7 @@ import {
   LocalCardContext,
   useProviderLocalCard,
 } from "@/app/modules/Project/CreateCardModal/hooks/LocalCardContext";
-import { CircleType, MemberDetails, ProjectType } from "@/app/types";
+import { CircleType, MemberDetails, ProjectType, Registry } from "@/app/types";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
@@ -45,9 +45,21 @@ const CardPage: NextPage = () => {
     }
   );
 
+  const { refetch: fetchRegistry } = useQuery<Registry>(
+    ["registry", cId],
+    () =>
+      fetch(`${process.env.API_HOST}/circle/slug/${cId}/getRegistry`).then(
+        (res) => res.json()
+      ),
+    {
+      enabled: false,
+    }
+  );
+
   useEffect(() => {
     if (!circle && cId) {
       void refetchCircle();
+      void fetchRegistry();
     }
   }, [circle, cId, refetchCircle]);
 

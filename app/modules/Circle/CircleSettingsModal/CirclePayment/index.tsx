@@ -30,6 +30,10 @@ export default function DefaultPayment() {
     enabled: false,
   });
 
+  const { data: registry } = useQuery<Registry>(["registry", cId], {
+    enabled: false,
+  });
+
   const [chain, setChain] = useState(circle?.defaultPayment.chain);
   const [token, setToken] = useState(circle?.defaultPayment.token);
 
@@ -72,35 +76,40 @@ export default function DefaultPayment() {
         <Stack>
           <Text size="extraLarge">Chain</Text>
           <Stack direction="horizontal">
-            {getFlattenedNetworks(circle?.localRegistry as Registry)?.map(
-              (aChain) => (
-                <Box
-                  cursor="pointer"
-                  key={aChain.chainId}
-                  onClick={() => {
-                    setIsDirty(true);
-                    setChain(aChain);
-                  }}
+            {getFlattenedNetworks(registry as Registry)?.map((aChain) => (
+              <Box
+                cursor="pointer"
+                key={aChain.chainId}
+                onClick={() => {
+                  setIsDirty(true);
+                  setChain(aChain);
+                }}
+              >
+                <Tag
+                  hover
+                  tone={
+                    chain?.chainId === aChain.chainId ? "accent" : "secondary"
+                  }
                 >
-                  <Tag
-                    hover
-                    tone={
-                      chain?.chainId === aChain.chainId ? "accent" : "secondary"
-                    }
-                  >
-                    {aChain.name}
-                  </Tag>
-                </Box>
-              )
-            )}
+                  {aChain.name}
+                </Tag>
+              </Box>
+            ))}
           </Stack>
           <Text size="extraLarge">Whitelisted Tokens</Text>
           <Stack direction="horizontal">
             {getFlattenedCurrencies(
-              circle?.localRegistry as Registry,
+              registry as Registry,
               chain?.chainId as string
             )?.map((aToken) => (
-              <Box cursor="pointer" key={aToken.address}>
+              <Box
+                cursor="pointer"
+                key={aToken.address}
+                onClick={() => {
+                  setIsDirty(true);
+                  setToken(aToken);
+                }}
+              >
                 <Tag
                   hover
                   tone={

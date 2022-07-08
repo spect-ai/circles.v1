@@ -3,8 +3,7 @@ import {
   getFlattenedCurrencies,
   getFlattenedNetworks,
 } from "@/app/common/utils/registry";
-import { useGlobal } from "@/app/context/globalContext";
-import { CircleType } from "@/app/types";
+import { CircleType, Registry } from "@/app/types";
 import { Box, IconPlusSmall, Stack, Tag, Text } from "degen";
 import { AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
@@ -15,6 +14,9 @@ export default function ApproveToken() {
   const router = useRouter();
   const { circle: cId } = router.query;
   const { data: circle } = useQuery<CircleType>(["circle", cId], {
+    enabled: false,
+  });
+  const { data: registry } = useQuery<Registry>(["registry", cId], {
     enabled: false,
   });
   const [isOpen, setIsOpen] = useState(false);
@@ -50,7 +52,7 @@ export default function ApproveToken() {
               <Stack>
                 <Text size="extraLarge">Chain</Text>
                 <Stack direction="horizontal">
-                  {getFlattenedNetworks(circle?.localRegistry).map((aChain) => (
+                  {getFlattenedNetworks(registry as Registry)?.map((aChain) => (
                     <Box
                       cursor="pointer"
                       key={aChain.chainId}

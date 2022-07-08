@@ -2,7 +2,7 @@ import { PublicLayout } from "@/app/common/layout";
 import MetaHead from "@/app/common/seo/MetaHead/MetaHead";
 import Circle from "@/app/modules/Circle";
 import useConnectDiscordServer from "@/app/services/Discord/useConnectDiscordServer";
-import { CircleType, MemberDetails } from "@/app/types";
+import { CircleType, MemberDetails, Registry } from "@/app/types";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
@@ -33,11 +33,23 @@ const CirclePage: NextPage = () => {
     }
   );
 
+  const { refetch: fetchRegistry } = useQuery<Registry>(
+    ["registry", cId],
+    () =>
+      fetch(`${process.env.API_HOST}/circle/slug/${cId}/getRegistry`).then(
+        (res) => res.json()
+      ),
+    {
+      enabled: false,
+    }
+  );
+
   useConnectDiscordServer();
 
   useEffect(() => {
     if (cId) {
       void fetchCircle();
+      void fetchRegistry();
     }
   }, [cId]);
 

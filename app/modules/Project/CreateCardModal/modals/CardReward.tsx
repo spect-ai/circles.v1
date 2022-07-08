@@ -4,7 +4,7 @@ import {
   getFlattenedNetworks,
 } from "@/app/common/utils/registry";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
-import { CircleType, Registry } from "@/app/types";
+import { Registry } from "@/app/types";
 import { Box, IconEth, Input, Stack, Tag, Text } from "degen";
 import { motion } from "framer-motion";
 import { useRouter } from "next/router";
@@ -20,7 +20,7 @@ function CardReward() {
 
   const router = useRouter();
   const { circle: cId } = router.query;
-  const { data: circle } = useQuery<CircleType>(["circle", cId], {
+  const { data: registry } = useQuery<Registry>(["registry", cId], {
     enabled: false,
   });
 
@@ -44,42 +44,9 @@ function CardReward() {
           <Stack>
             <Text size="extraLarge">Chain</Text>
             <Stack direction="horizontal">
-              {getFlattenedNetworks(circle?.localRegistry as Registry)?.map(
-                (aChain) => (
-                  <motion.button
-                    key={aChain.name}
-                    style={{
-                      background: "transparent",
-                      border: "none",
-                      cursor: "pointer",
-                      padding: "0rem",
-                    }}
-                    onClick={() => {
-                      setChain(aChain);
-                    }}
-                  >
-                    <Tag
-                      hover
-                      tone={
-                        chain?.chainId === aChain.chainId
-                          ? "accent"
-                          : "secondary"
-                      }
-                    >
-                      {aChain.name}
-                    </Tag>
-                  </motion.button>
-                )
-              )}
-            </Stack>
-            <Text size="extraLarge">Token</Text>
-            <Stack direction="horizontal">
-              {getFlattenedCurrencies(
-                circle?.localRegistry as Registry,
-                chain.chainId
-              ).map((aToken) => (
+              {getFlattenedNetworks(registry as Registry)?.map((aChain) => (
                 <motion.button
-                  key={chain.chainId}
+                  key={aChain.name}
                   style={{
                     background: "transparent",
                     border: "none",
@@ -87,19 +54,49 @@ function CardReward() {
                     padding: "0rem",
                   }}
                   onClick={() => {
-                    setToken(aToken);
+                    setChain(aChain);
                   }}
                 >
                   <Tag
                     hover
                     tone={
-                      token.address === aToken.address ? "accent" : "secondary"
+                      chain?.chainId === aChain.chainId ? "accent" : "secondary"
                     }
                   >
-                    {aToken.symbol}
+                    {aChain.name}
                   </Tag>
                 </motion.button>
               ))}
+            </Stack>
+            <Text size="extraLarge">Token</Text>
+            <Stack direction="horizontal">
+              {getFlattenedCurrencies(registry as Registry, chain.chainId).map(
+                (aToken) => (
+                  <motion.button
+                    key={chain.chainId}
+                    style={{
+                      background: "transparent",
+                      border: "none",
+                      cursor: "pointer",
+                      padding: "0rem",
+                    }}
+                    onClick={() => {
+                      setToken(aToken);
+                    }}
+                  >
+                    <Tag
+                      hover
+                      tone={
+                        token.address === aToken.address
+                          ? "accent"
+                          : "secondary"
+                      }
+                    >
+                      {aToken.symbol}
+                    </Tag>
+                  </motion.button>
+                )
+              )}
             </Stack>
             <Text size="extraLarge">Value</Text>
             <Input

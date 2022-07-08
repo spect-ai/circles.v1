@@ -2,7 +2,7 @@ import Loader from "@/app/common/components/Loader";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { useGlobal } from "@/app/context/globalContext";
 import useERC20 from "@/app/services/Payment/useERC20";
-import { CircleType, ProjectType } from "@/app/types";
+import { CircleType, ProjectType, Registry } from "@/app/types";
 import { QuestionCircleFilled } from "@ant-design/icons";
 import { Box, Button, IconCheck, Stack, Text } from "degen";
 import { useRouter } from "next/router";
@@ -24,6 +24,7 @@ export default function ApproveToken() {
   const { data: circle } = useQuery<CircleType>(["circle", cId], {
     enabled: false,
   });
+
   const { data } = useAccount();
   const [loading, setLoading] = useState(true);
   const { batchPayInfo, setStep, setIsOpen } = useBatchPayContext();
