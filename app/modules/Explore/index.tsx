@@ -6,7 +6,9 @@ import useJoinCircle from "@/app/services/JoinCircle/useJoinCircle";
 import useExploreOnboarding from "@/app/services/Onboarding/useExploreOnboarding";
 import { CircleType } from "@/app/types";
 import { Avatar, Box, Button, IconSearch, Input, Stack, Text } from "degen";
+import { matchSorter } from "match-sorter";
 import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
 import { Container, Row, Col } from "react-grid-system";
 import { useQuery } from "react-query";
 import { ToastContainer } from "react-toastify";
@@ -46,6 +48,14 @@ export default function Explore() {
   useConnectDiscord();
   const { onboarded } = useExploreOnboarding();
 
+  const [filteredCircles, setFilteredCircles] = useState<CircleType[]>([]);
+
+  useEffect(() => {
+    if (circles) {
+      setFilteredCircles(circles);
+    }
+  }, [circles]);
+
   if (isLoading) {
     return <Loader text="" loading />;
   }
@@ -66,11 +76,18 @@ export default function Explore() {
             placeholder="Explore"
             prefix={<IconSearch />}
             suffix={<ExploreOptions />}
+            onChange={(e) => {
+              setFilteredCircles(
+                matchSorter(circles as CircleType[], e.target.value, {
+                  keys: ["name"],
+                })
+              );
+            }}
           />
         </Box>
         <Row>
-          {circles?.map &&
-            circles?.map((circle: CircleType) => (
+          {filteredCircles?.map &&
+            filteredCircles?.map((circle: CircleType) => (
               <Col key={circle.id} xs={10} sm={6} md={3}>
                 <Card
                   height={{ xs: "48", md: "60" }}
@@ -89,8 +106,8 @@ export default function Explore() {
                       <Text
                         color="textPrimary"
                         size={{ sm: "base", md: "base", lg: "large" }}
-                        letterSpacing="0.03"
-                        ellipsis
+                        wordBreak="break-word"
+                        align="center"
                       >
                         {circle.name}
                       </Text>

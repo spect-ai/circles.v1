@@ -16,7 +16,7 @@ import Dropdown from "@/app/common/components/Dropdown";
 import { useQuery } from "react-query";
 import { useRouter } from "next/router";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { updateRole } from "@/app/services/CircleRoles";
+import { removeMember, updateRole } from "@/app/services/CircleRoles";
 import queryClient from "@/app/common/utils/queryClient";
 
 type Props = {
@@ -190,7 +190,16 @@ export default function MemberDisplay({ member, memberDetails }: Props) {
               </Popover>
             </Box>
           </Stack>
-          <PrimaryButton tone="red" icon={<IconClose />}>
+          <PrimaryButton
+            tone="red"
+            icon={<IconClose />}
+            onClick={async () => {
+              const data = await removeMember(circle.id, member);
+              if (data) {
+                queryClient.setQueryData(["circle", cId], data);
+              }
+            }}
+          >
             Remove Member
           </PrimaryButton>
         </Stack>

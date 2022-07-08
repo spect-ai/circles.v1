@@ -153,9 +153,9 @@ function CircleSidebar() {
                     </Box>
                   </Stack>
                 ))}
-                {!circle?.projects.length && (
+                {!circle?.children.length && (
                   <Box paddingLeft="7" paddingY="2">
-                    <Text variant="label">No projects created</Text>
+                    <Text variant="label">No workstreams created</Text>
                   </Box>
                 )}
               </Stack>

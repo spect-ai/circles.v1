@@ -1,4 +1,4 @@
-import { Payment } from "@/app/types";
+import { DiscordRoleMappingType, Payment } from "@/app/types";
 import { toast } from "react-toastify";
 
 type CircleUpdateDTO = {
@@ -8,7 +8,7 @@ type CircleUpdateDTO = {
   private: boolean;
   defaultPayment: Payment;
   discordGuildId: string;
-  discordToCircleRoles: any;
+  discordToCircleRoles: DiscordRoleMappingType;
   githubRepos: string[];
 };
 

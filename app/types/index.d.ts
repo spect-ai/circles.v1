@@ -56,7 +56,7 @@ export interface Permissions {
 
 export interface DiscordRoleMappingType {
   [roleId: string]: {
-    circleRole: string;
+    circleRole: string[];
     name: string;
   };
 }
@@ -92,7 +92,7 @@ export interface CircleType {
   };
   localRegistry: Registry;
   discordGuildId: string;
-  discordToCircleRoles: DiscordRoleMapping;
+  discordToCircleRoles: DiscordRoleMappingType;
   githubRepos: string[];
 }
 

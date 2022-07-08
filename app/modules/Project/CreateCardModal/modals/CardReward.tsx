@@ -44,7 +44,7 @@ function CardReward() {
           <Stack>
             <Text size="extraLarge">Chain</Text>
             <Stack direction="horizontal">
-              {getFlattenedNetworks(circle?.localRegistry as Registry).map(
+              {getFlattenedNetworks(circle?.localRegistry as Registry)?.map(
                 (aChain) => (
                   <motion.button
                     key={aChain.name}

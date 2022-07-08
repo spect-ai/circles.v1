@@ -1,15 +1,14 @@
 import Popover from "@/app/common/components/Popover";
 import { PopoverOption } from "@/app/modules/Card/OptionPopover";
 import { DiscordRoleMappingType } from "@/app/types";
-import { Box, IconSearch, Input, Tag, Text } from "degen";
+import { Box, Tag, Text } from "degen";
 import React, { useState } from "react";
 
 type Props = {
-  discordRoles:
-    | {
-        id: string;
-        name: string;
-      }[];
+  discordRoles: {
+    id: string;
+    name: string;
+  }[];
   circleRole: string;
   roleMap: DiscordRoleMappingType;
   setRoleMap: (roleMap: DiscordRoleMappingType) => void;
@@ -46,12 +45,20 @@ export default function RolePopover({
         {discordRoles?.map((role) => (
           <PopoverOption
             onClick={() => {
-              // Set the role map
-              if (!roleMap[role.id]) {
+              if (roleMap[role.id]) {
                 setRoleMap({
                   ...roleMap,
                   [role.id]: {
-                    circleRole: circleRole,
+                    ...roleMap[role.id],
+                    circleRole: [...roleMap[role.id].circleRole, circleRole],
+                  },
+                });
+              } else {
+                console.log({ roleMap });
+                setRoleMap({
+                  ...roleMap,
+                  [role.id]: {
+                    circleRole: [circleRole],
                     name: role.name,
                   },
                 });

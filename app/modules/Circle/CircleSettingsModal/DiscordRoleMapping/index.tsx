@@ -20,7 +20,7 @@ export default function DiscordRoleMapping() {
     enabled: false,
   });
 
-  const [roleMap, setRoleMap] = useState(circle?.discordToCircleRoles);
+  const [roleMap, setRoleMap] = useState(circle?.discordToCircleRoles || {});
 
   const [discordRoles, setDiscordRoles] =
     useState<
@@ -45,12 +45,7 @@ export default function DiscordRoleMapping() {
   if (!discordRoles?.map && isOpen) {
     return <Loader loading text="Fetching Roles" />;
   }
-
-  if (!discordRoles) {
-    return null;
-  }
-
-  console.log({ circle });
+  console.log({ roleMap });
   const RoleSection = ({ roleName }: { roleName: string }) => (
     <Box>
       <Text size="headingTwo" weight="semiBold">
@@ -58,32 +53,51 @@ export default function DiscordRoleMapping() {
       </Text>
       <Stack direction="horizontal" wrap>
         <RolePopover
-          discordRoles={discordRoles}
+          discordRoles={discordRoles as any}
           setRoleMap={setRoleMap}
           roleMap={roleMap}
           circleRole={roleName}
         />
-        {Object.keys(roleMap).map((role) => {
-          if (roleMap[role].circleRole === roleName)
-            return (
-              <Box
-                key={role}
-                cursor="pointer"
-                onClick={() => {
-                  // remove the role from the map
-                  delete roleMap[role];
-                  setRoleMap({ ...roleMap });
-                }}
-              >
-                <Tag hover tone="accent">
-                  <Stack direction="horizontal" space="1" align="center">
-                    <IconClose size="5" />
-                    <Text>{roleMap[role].name}</Text>
-                  </Stack>
-                </Tag>
-              </Box>
-            );
-        })}
+        {roleMap &&
+          Object.keys(roleMap).map((role) => {
+            if (roleMap[role].circleRole.includes(roleName))
+              return (
+                <Box
+                  key={role}
+                  cursor="pointer"
+                  onClick={() => {
+                    if (roleMap[role].circleRole.length > 1) {
+                      setRoleMap({
+                        ...roleMap,
+                        [role]: {
+                          ...roleMap[role],
+                          circleRole: roleMap[role].circleRole.filter(
+                            (r) => r !== roleName
+                          ),
+                        },
+                      });
+                    } else {
+                      // setRoleMap({
+                      //   ...roleMap,
+                      //   [role]: {
+                      //     ...roleMap[role],
+                      //     circleRole: [],
+                      //   },
+                      // });
+                      delete roleMap[role];
+                      setRoleMap({ ...roleMap });
+                    }
+                  }}
+                >
+                  <Tag hover tone="accent">
+                    <Stack direction="horizontal" space="1" align="center">
+                      <IconClose size="5" />
+                      <Text>{roleMap[role].name}</Text>
+                    </Stack>
+                  </Tag>
+                </Box>
+              );
+          })}
       </Stack>
     </Box>
   );

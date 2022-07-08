@@ -162,12 +162,12 @@ export default function ProfileModal() {
                   </Link>
                 )}
                 {currentUser?.discordId && (
-                  <PrimaryButton tourId="connect-discord-button">
+                  <PrimaryButton tourId="connect-discord-button" disabled>
                     Discord Connected
                   </PrimaryButton>
                 )}
                 <PrimaryButton
-                  variant="tertiary"
+                  variant="transparent"
                   onClick={async () => {
                     await fetch(`${process.env.API_HOST}/auth/disconnect`, {
                       method: "POST",

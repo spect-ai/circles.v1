@@ -1,6 +1,6 @@
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { CircleType, MemberDetails } from "@/app/types";
-import { Box, Heading, Stack } from "degen";
+import { Box, Heading, Stack, Text } from "degen";
 import { useRouter } from "next/router";
 import React from "react";
 import { useQuery } from "react-query";
@@ -23,52 +23,46 @@ function Contributors() {
     }
   );
 
+  if (!circle) {
+    return <div>Loading...</div>;
+  }
+
+  const RoleSection = ({ roleName }: { roleName: string }) => {
+    let isMemberThere = false;
+    return (
+      <Box>
+        <Heading>{roleName}</Heading>
+        <Box display="flex" flexWrap="wrap">
+          {circle?.members.map((mem) => {
+            // if no member has role keep track of it
+            if (circle.memberRoles[mem]?.includes(roleName)) {
+              isMemberThere = true;
+              return (
+                <MemberDisplay
+                  key={mem}
+                  member={mem}
+                  memberDetails={memberDetails?.memberDetails}
+                />
+              );
+            }
+          })}
+          {!isMemberThere && (
+            <Box marginTop="4">
+              <Text variant="label">No members have this role</Text>
+            </Box>
+          )}
+        </Box>
+      </Box>
+    );
+  };
+
   return (
     <Box padding="2">
       {canDo(["steward"]) && <InviteMemberModal />}
       <Stack>
-        <Heading>Stewards</Heading>
-        <Box display="flex" flexWrap="wrap">
-          {circle?.members.map((mem) => {
-            if (circle.memberRoles[mem]?.includes("steward")) {
-              return (
-                <MemberDisplay
-                  key={mem}
-                  member={mem}
-                  memberDetails={memberDetails?.memberDetails}
-                />
-              );
-            }
-          })}
-        </Box>
-        <Heading>Contributors</Heading>
-        <Box display="flex" flexWrap="wrap">
-          {circle?.members.map((mem) => {
-            if (circle.memberRoles[mem]?.includes("contributor")) {
-              return (
-                <MemberDisplay
-                  key={mem}
-                  member={mem}
-                  memberDetails={memberDetails?.memberDetails}
-                />
-              );
-            }
-          })}
-        </Box>
-        <Heading>Members</Heading>
-        <Box display="flex" flexWrap="wrap">
-          {circle?.members.map((mem) => {
-            if (circle.memberRoles[mem]?.includes("member")) {
-              return (
-                <MemberDisplay
-                  key={mem}
-                  member={mem}
-                  memberDetails={memberDetails?.memberDetails}
-                />
-              );
-            }
-          })}
-        </Box>
+        {Object.keys(circle?.roles).map((role) => (
+          <RoleSection key={role} roleName={role} />
+        ))}
       </Stack>
     </Box>
   );

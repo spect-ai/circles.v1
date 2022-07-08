@@ -1,3 +1,5 @@
+import { toast } from "react-toastify";
+
 export const joinCircleFromInvite = async (
   circleId: string,
   inviteCode: string
@@ -20,5 +22,29 @@ export const joinCircleFromInvite = async (
     return data;
   } catch (err) {
     console.log(err);
+  }
+};
+
+export const joinCircleFromDiscord = async (circleId: string) => {
+  const res = await fetch(
+    `${process.env.API_HOST}/circle/${circleId}/joinUsingDiscord`,
+    {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+    }
+  );
+  if (res.ok) {
+    const data = await res.json();
+    toast("You have joined circle successfully", {
+      theme: "dark",
+    });
+    console.log({ data });
+    return data;
+  } else {
+    toast.error("Something went wrong updating the role");
+    return null;
   }
 };

@@ -2,7 +2,7 @@ import Popover from "@/app/common/components/Popover";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { CircleType, ProjectType } from "@/app/types";
 import { AppstoreOutlined } from "@ant-design/icons";
-import { Box, Heading, IconCog, IconUsersSolid, Stack } from "degen";
+import { Box, Heading, IconCog, IconUsersSolid, Stack, Text } from "degen";
 import { AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
 import React, { memo, useState } from "react";
@@ -54,7 +54,14 @@ function CircleOptions() {
             }}
           >
             <Stack direction="horizontal" align="center">
-              <Heading>{circle?.name || project?.parents[0].name}</Heading>
+              <Text
+                size="headingTwo"
+                weight="semiBold"
+                color="accentText"
+                ellipsis
+              >
+                {circle?.name || project?.parents[0].name}
+              </Text>
             </Stack>
           </HeaderButton>
         }

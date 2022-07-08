@@ -12,12 +12,13 @@ export default function useConnectDiscordServer() {
   });
 
   useEffect(() => {
-    if (guild_id) {
+    if (guild_id && circle?.id) {
+      console.log(circle.id);
       void updateCircle(
         {
           discordGuildId: guild_id as string,
         },
-        circle?.id as string
+        circle?.id
       );
       console.log({ guild_id });
       void router.push(`/${cId}`);

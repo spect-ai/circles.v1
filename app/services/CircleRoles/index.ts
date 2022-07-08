@@ -29,3 +29,24 @@ export async function updateRole(
     return null;
   }
 }
+
+export async function removeMember(circleId: string, member: string) {
+  const res = await fetch(
+    `${process.env.API_HOST}/circle/${circleId}/removeMember?member=${member}`,
+    {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+    }
+  );
+  if (res.ok) {
+    const data = await res.json();
+    console.log({ data });
+    return data;
+  } else {
+    toast.error("Something went wrong removing the member");
+    return null;
+  }
+}

@@ -1,5 +1,8 @@
 import Card from "@/app/common/components/Card";
 import Loader from "@/app/common/components/Loader";
+import PrimaryButton from "@/app/common/components/PrimaryButton";
+import queryClient from "@/app/common/utils/queryClient";
+import { joinCircleFromDiscord } from "@/app/services/JoinCircle";
 import useCircleOnboarding from "@/app/services/Onboarding/useCircleOnboarding";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { CircleType } from "@/app/types";
@@ -32,13 +35,25 @@ export default function Circle() {
     enabled: false,
   });
   const { canDo } = useRoleGate();
-
   const { onboarded } = useCircleOnboarding();
-  if (isLoading) {
+  if (isLoading || !circle) {
     return <Loader text="...." loading />;
   }
+  console.log({ circle });
   return (
     <BoxContainer paddingX="8" paddingTop="4">
+      <Box width="1/3">
+        <PrimaryButton
+          onClick={async () => {
+            const data = await joinCircleFromDiscord(circle.id);
+            if (data) {
+              queryClient.setQueryData(["circle", cId], data);
+            }
+          }}
+        >
+          Join Circle
+        </PrimaryButton>
+      </Box>
       {!onboarded && canDo(["steward"]) && <Onboarding />}
       <ToastContainer
         toastStyle={{

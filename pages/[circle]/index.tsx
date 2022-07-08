@@ -11,14 +11,14 @@ import { useQuery } from "react-query";
 const CirclePage: NextPage = () => {
   const router = useRouter();
   const { circle: cId } = router.query;
-  const { data: circle } = useQuery<CircleType>(
+  const { data: circle, refetch: fetchCircle } = useQuery<CircleType>(
     ["circle", cId],
     () =>
       fetch(`${process.env.API_HOST}/circle/slug/${cId as string}`).then(
         (res) => res.json()
       ),
     {
-      enabled: !!cId,
+      enabled: false,
     }
   );
 
@@ -34,6 +34,12 @@ const CirclePage: NextPage = () => {
   );
 
   useConnectDiscordServer();
+
+  useEffect(() => {
+    if (cId) {
+      void fetchCircle();
+    }
+  }, [cId]);
 
   useEffect(() => {
     if (circle?.id) {

@@ -12,9 +12,10 @@ import DiscordIcon from "@/app/assets/icons/discordIcon.svg";
 export default function CircleIntegrations() {
   const router = useRouter();
   const { circle: cId } = router.query;
-  const { data: circle, isLoading } = useQuery<CircleType>(["circle", cId], {
+  const { data: circle } = useQuery<CircleType>(["circle", cId], {
     enabled: false,
   });
+  console.log({ circle });
   return (
     <Box>
       <Stack space="8">
