@@ -31,7 +31,7 @@ const PopoverOptionContainer = styled(Box)`
 `;
 
 type PopoverOptionProps = {
-  onClick: () => void;
+  onClick: (e?: React.MouseEvent<HTMLElement>) => void;
   children: React.ReactNode;
   tourId?: string;
 };

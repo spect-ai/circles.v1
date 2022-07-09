@@ -27,7 +27,7 @@ export default function RolePopover({
       isOpen={isOpen}
       setIsOpen={setIsOpen}
       butttonComponent={
-        <Box cursor="pointer" onClick={() => setIsOpen(!isOpen)}>
+        <Box cursor="pointer" onClick={() => setIsOpen(!isOpen)} padding="1">
           <Tag label="Add" hover>
             <Text>Role</Text>
           </Tag>

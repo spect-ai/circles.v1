@@ -1,10 +1,8 @@
-import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { PriorityIcon } from "@/app/common/components/PriorityIcon";
 import { monthMap } from "@/app/common/utils/constants";
 import useCardService from "@/app/services/Card/useCardService";
 import { CardType, MemberDetails } from "@/app/types";
 import { Avatar, Box, IconEth, Stack, Tag, Text } from "degen";
-import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
 import React, { memo, useCallback, useMemo, useState } from "react";
 import {
@@ -15,6 +13,7 @@ import {
 import { useQuery } from "react-query";
 import styled from "styled-components";
 import { useLocalProject } from "../Context/LocalProjectContext";
+import QuickActions from "./QuickActions";
 type Props = {
   card: CardType;
   index: number;
@@ -29,12 +28,6 @@ const Container = styled(Box)<{ isDragging: boolean }>`
   }
 `;
 
-const slide = {
-  hidden: { height: 0, opacity: 0 },
-  open: { height: "2.5rem", opacity: 1 },
-  collapsed: { height: 0, opacity: 0 },
-};
-
 function CardComponent({ card, index }: Props) {
   const router = useRouter();
   const { circle: cId, project: pId } = router.query;
@@ -46,19 +39,6 @@ function CardComponent({ card, index }: Props) {
   );
 
   const [hover, setHover] = useState(false);
-
-  const {
-    projectCardActions,
-    setBatchPayModalOpen,
-    setSelectedCard,
-    updateProject,
-    setIsApplyModalOpen,
-    setIsSubmitModalOpen,
-  } = useLocalProject();
-
-  const { archiveCard, updateCard } = useCardService();
-
-  const [validActions, setValidActions] = useState<string[]>([]);
 
   const DraggableContent = (
     provided: DraggableProvided,
@@ -77,19 +57,11 @@ function CardComponent({ card, index }: Props) {
         void router.push(`/${cId}/${pId}/${card.slug}`);
       }}
       onMouseEnter={() => {
-        if (projectCardActions && projectCardActions[card.id]) {
-          // get call valid actions for this card
-          const validActions = Object.keys(projectCardActions[card.id]).filter(
-            (action: string) =>
-              (projectCardActions[card.id] as any)[action].valid
-          );
-          setValidActions(validActions);
-          if (validActions.length > 0) {
-            setHover(true);
-          }
-        }
+        setHover(true);
       }}
-      onMouseLeave={() => setHover(false)}
+      onMouseLeave={() => {
+        setHover(false);
+      }}
     >
       <Box>
         <Box
@@ -152,106 +124,8 @@ function CardComponent({ card, index }: Props) {
               {label}
             </Tag>
           ))}
+          <QuickActions card={card} hover={hover} />
         </Stack>
-        <AnimatePresence initial={false}>
-          {hover && (
-            <motion.div
-              variants={slide}
-              key={card.id}
-              initial="hidden"
-              animate="open"
-              exit="collapsed"
-              transition={{ duration: 0.3 }}
-            >
-              <Box marginTop="0">
-                <Stack direction="horizontal" space="0">
-                  {validActions.includes("close") && (
-                    <Box width="full">
-                      <PrimaryButton
-                        variant="transparent"
-                        onClick={async (e) => {
-                          e.stopPropagation();
-                          const data = await updateCard(
-                            {
-                              status: {
-                                ...card.status,
-                                active: false,
-                              },
-                            },
-                            card.id
-                          );
-                          if (data) {
-                            updateProject(data.project);
-                          }
-                        }}
-                      >
-                        Close
-                      </PrimaryButton>
-                    </Box>
-                  )}
-                  {validActions.includes("pay") && (
-                    <Box width="full">
-                      <PrimaryButton
-                        variant="transparent"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setSelectedCard(card);
-                          setBatchPayModalOpen(true);
-                        }}
-                      >
-                        Pay
-                      </PrimaryButton>
-                    </Box>
-                  )}
-                  {validActions.includes("archive") && (
-                    <Box width="full">
-                      <PrimaryButton
-                        variant="transparent"
-                        onClick={async (e) => {
-                          e.stopPropagation();
-                          const data = await archiveCard(card.id);
-                          if (data) {
-                            updateProject(data);
-                          }
-                        }}
-                      >
-                        Archive
-                      </PrimaryButton>
-                    </Box>
-                  )}
-                  {validActions.includes("applyToBounty") && (
-                    <Box width="full">
-                      <PrimaryButton
-                        variant="transparent"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setSelectedCard(card);
-                          setIsApplyModalOpen(true);
-                        }}
-                      >
-                        Apply
-                      </PrimaryButton>
-                    </Box>
-                  )}
-                  {validActions.includes("submit") && (
-                    <Box width="full">
-                      <PrimaryButton
-                        variant="transparent"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setSelectedCard(card);
-                          setIsSubmitModalOpen(true);
-                        }}
-                      >
-                        Submit
-                      </PrimaryButton>
-                    </Box>
-                  )}
-                </Stack>
-              </Box>
-            </motion.div>
-          )}
-        </AnimatePresence>
       </Box>
     </Container>
   );
@@ -271,8 +145,6 @@ function CardComponent({ card, index }: Props) {
     deadline,
     memberDetails?.memberDetails,
     hover,
-    projectCardActions,
-    validActions,
   ]);
 
   return (
