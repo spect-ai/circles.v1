@@ -1,3 +1,4 @@
+import queryClient from "@/app/common/utils/queryClient";
 import { CircleType } from "@/app/types";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
@@ -12,16 +13,16 @@ export default function useConnectDiscordServer() {
   });
 
   useEffect(() => {
-    if (guild_id && circle?.id) {
-      console.log(circle.id);
-      void updateCircle(
+    const connectServer = async () => {
+      const data = await updateCircle(
         {
           discordGuildId: guild_id as string,
         },
-        circle?.id
+        circle?.id as string
       );
-      console.log({ guild_id });
+      queryClient.setQueryData(["circle", cId], data);
       void router.push(`/${cId}`);
-    }
-  }, [circle?.id, guild_id]);
+    };
+    if (circle?.id && guild_id) void connectServer();
+  }, [cId, circle?.id, guild_id]);
 }

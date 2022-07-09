@@ -54,7 +54,6 @@ export default function RolePopover({
                   },
                 });
               } else {
-                console.log({ roleMap });
                 setRoleMap({
                   ...roleMap,
                   [role.id]: {

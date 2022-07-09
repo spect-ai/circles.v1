@@ -123,9 +123,10 @@ export default function useDragEnd() {
     })
       .then(async (res) => {
         const data: CardType = await res.json();
-        if (data.id) {
-          updateProject(data.project);
-        }
+        console.log({ data });
+        // if (data.id) {
+        //   updateProject(data.project);
+        // }
       })
       .catch((err) => {
         console.log({ err });

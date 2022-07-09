@@ -1,8 +1,5 @@
 import Modal from "@/app/common/components/Modal";
-import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { CardType } from "@/app/types";
-import { IconEth, Stack } from "degen";
-import { AnimatePresence } from "framer-motion";
 import { useEffect } from "react";
 import { useLocalProject } from "../Context/LocalProjectContext";
 import ApproveToken from "./ApproveToken";

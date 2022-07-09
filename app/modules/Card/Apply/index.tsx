@@ -82,8 +82,8 @@ export default function Apply({ cardId, setIsOpen }: Props) {
                     },
                     setCard
                   );
-                  res && setIsOpen(false);
                   fetchMemberDetails();
+                  res && setIsOpen(false);
                 }}
               >
                 Send

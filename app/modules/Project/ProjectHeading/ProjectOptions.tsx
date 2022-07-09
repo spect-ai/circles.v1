@@ -39,6 +39,7 @@ export default function ProjectOptions() {
             tourId="batch-pay-button"
             onClick={() => {
               setBatchPayModalOpen(true);
+              setIsOpen(false);
             }}
           >
             <Stack direction="horizontal" space="2">

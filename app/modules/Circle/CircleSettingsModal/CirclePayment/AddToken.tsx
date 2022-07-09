@@ -8,6 +8,7 @@ import { AnimatePresence } from "framer-motion";
 import { addToken } from "@/app/services/Payment";
 import { useRouter } from "next/router";
 import { useQuery } from "react-query";
+import Loader from "@/app/common/components/Loader";
 
 interface Props {
   chain: Chain | undefined;
@@ -18,6 +19,7 @@ export default function AddToken({ chain }: Props) {
   const [address, setAddress] = useState("");
   const [tokenSymbol, setTokenSymbol] = useState("");
   const [tokenName, setTokenName] = useState("");
+  const [loading, setLoading] = useState(false);
   const { symbol, name } = useERC20();
 
   const router = useRouter();
@@ -39,6 +41,7 @@ export default function AddToken({ chain }: Props) {
         {isOpen && (
           <Modal handleClose={() => setIsOpen(false)} title="Add Token">
             <Box padding="8">
+              {loading && <Loader loading text="Fetching" />}
               <Stack>
                 <Input
                   label=""
@@ -46,10 +49,18 @@ export default function AddToken({ chain }: Props) {
                   value={address}
                   onChange={async (e) => {
                     setAddress(e.target.value);
-                    setTokenSymbol(
-                      await symbol(e.target.value, chain?.chainId)
-                    );
-                    setTokenName(await name(e.target.value, chain?.chainId));
+                    setLoading(true);
+                    console.log({ chain });
+                    try {
+                      setTokenSymbol(
+                        await symbol(e.target.value, chain?.chainId)
+                      );
+                      setTokenName(await name(e.target.value, chain?.chainId));
+                    } catch (e) {
+                      console.log(e);
+                      setLoading(false);
+                    }
+                    setLoading(false);
                   }}
                 />
                 <Text weight="semiBold">{tokenSymbol}</Text>

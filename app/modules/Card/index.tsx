@@ -19,7 +19,7 @@ import { AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { memo, useEffect, useState } from "react";
-import { ToastContainer } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import styled from "styled-components";
 import DiscordIcon from "@/app/assets/icons/discordIcon.svg";
 import BatchPay from "../Project/BatchPay";
@@ -325,25 +325,38 @@ function Card() {
                 {cardType === "Task" && canTakeAction("assignToMe") && (
                   <AssignToMe />
                 )}
-                <PrimaryButton
-                  variant="tertiary"
-                  icon={<DiscordIcon />}
-                  onClick={async () => {
-                    const data = await createThread(
-                      title,
-                      project.discordDiscussionChannel.id,
-                      currentUser?.discordId as string,
-                      project.parents[0].discordGuildId
-                    );
-                    console.log({ data });
-                    if (data) {
-                      const url = `https://discord.com/channels/${project.parents[0].discordGuildId}/${data.result}`;
-                      window.open(url, "_blank");
-                    }
-                  }}
-                >
-                  Discuss
-                </PrimaryButton>
+                {project.parents[0].discordGuildId && (
+                  <PrimaryButton
+                    variant="tertiary"
+                    icon={<DiscordIcon />}
+                    onClick={async () => {
+                      if (!project.discordDiscussionChannel) {
+                        toast.error(
+                          "Add discord discussion channel to project"
+                        );
+                        return;
+                      }
+                      if (!currentUser?.discordId) {
+                        toast.error(
+                          "Connect your discord account first to use this feature"
+                        );
+                        return;
+                      }
+                      const data = await createThread(
+                        title,
+                        project.discordDiscussionChannel.id,
+                        currentUser?.discordId,
+                        project.parents[0].discordGuildId
+                      );
+                      if (data) {
+                        const url = `https://discord.com/channels/${project.parents[0].discordGuildId}/${data.result}`;
+                        window.open(url, "_blank");
+                      }
+                    }}
+                  >
+                    Discuss
+                  </PrimaryButton>
+                )}
               </Stack>
             )}
           </Box>

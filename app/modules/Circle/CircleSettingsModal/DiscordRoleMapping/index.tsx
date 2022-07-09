@@ -45,7 +45,6 @@ export default function DiscordRoleMapping() {
   if (!discordRoles?.map && isOpen) {
     return <Loader loading text="Fetching Roles" />;
   }
-  console.log({ roleMap });
   const RoleSection = ({ roleName }: { roleName: string }) => (
     <Box>
       <Text size="headingTwo" weight="semiBold">

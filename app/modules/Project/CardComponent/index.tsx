@@ -14,7 +14,6 @@ import {
 } from "react-beautiful-dnd";
 import { useQuery } from "react-query";
 import styled from "styled-components";
-import BatchPay from "../BatchPay";
 import { useLocalProject } from "../Context/LocalProjectContext";
 type Props = {
   card: CardType;

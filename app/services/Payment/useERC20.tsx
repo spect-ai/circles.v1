@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import { useGlobal } from "@/app/context/globalContext";
-import { CircleType } from "@/app/types";
+import { Registry } from "@/app/types";
 import { ethers } from "ethers";
 import { useRouter } from "next/router";
 import { useQuery } from "react-query";
@@ -10,9 +9,10 @@ import { erc20ABI } from "wagmi";
 export default function useERC20() {
   const router = useRouter();
   const { circle: cId } = router.query;
-  const { data: circle } = useQuery<CircleType>(["circle", cId], {
+  const { data: registry } = useQuery<Registry>(["registry", cId], {
     enabled: false,
   });
+
   function isCurrency(address: string) {
     return address === "0x0";
   }
@@ -32,9 +32,10 @@ export default function useERC20() {
 
   async function approve(chainId: string, erc20Address: string) {
     const contract = getERC20Contract(erc20Address);
+    if (!registry) return false;
     try {
       const tx = await contract.approve(
-        circle?.localRegistry[chainId].distributorAddress,
+        registry[chainId].distributorAddress,
         ethers.constants.MaxInt256
       );
       await tx.wait();
@@ -174,11 +175,11 @@ export default function useERC20() {
     erc20Address: string,
     networkVersion: string | undefined
   ) {
-    if (!networkVersion) return null;
+    if (!networkVersion || !registry) return null;
     try {
       const contract = getERC20ContractWithCustomProvider(
         erc20Address,
-        circle?.localRegistry[networkVersion].provider as string
+        registry[networkVersion].provider
       );
       return await contract.symbol();
     } catch (err) {
@@ -192,11 +193,11 @@ export default function useERC20() {
     erc20Address: string,
     networkVersion: string | undefined
   ) {
-    if (!networkVersion) return null;
+    if (!networkVersion || !registry) return null;
     try {
       const contract = getERC20ContractWithCustomProvider(
         erc20Address,
-        circle?.localRegistry[networkVersion].provider as string
+        registry[networkVersion].provider
       );
       // eslint-disable-next-line no-return-await
       return await contract.name();

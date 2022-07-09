@@ -47,7 +47,7 @@ export default function ProjectSettings() {
         }))
       );
     };
-    if (isOpen) {
+    if (isOpen && project.parents[0].discordGuildId) {
       void getGuildChannels();
     }
   }, [isOpen]);
@@ -125,22 +125,24 @@ export default function ProjectSettings() {
                     onChange={(e) => setDescription(e.target.value)}
                   />
                 </Box>
-                <Box>
-                  <Text variant="label">Discussion Channel</Text>
-                  <Dropdown
-                    options={channels as OptionType[]}
-                    selected={{
-                      label: discordDiscussionChannel?.name,
-                      value: discordDiscussionChannel?.id,
-                    }}
-                    onChange={(channel) =>
-                      setDiscordDiscussionChannel({
-                        id: channel.value,
-                        name: channel.label,
-                      })
-                    }
-                  />
-                </Box>
+                {project.parents[0].discordGuildId && (
+                  <Box>
+                    <Text variant="label">Discussion Channel</Text>
+                    <Dropdown
+                      options={channels as OptionType[]}
+                      selected={{
+                        label: discordDiscussionChannel?.name,
+                        value: discordDiscussionChannel?.id,
+                      }}
+                      onChange={(channel) =>
+                        setDiscordDiscussionChannel({
+                          id: channel.value,
+                          name: channel.label,
+                        })
+                      }
+                    />
+                  </Box>
+                )}
                 <Stack direction="horizontal">
                   <Button
                     width="1/2"
