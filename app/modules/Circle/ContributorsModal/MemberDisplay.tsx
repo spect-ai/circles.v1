@@ -18,6 +18,7 @@ import { useRouter } from "next/router";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { removeMember, updateRole } from "@/app/services/CircleRoles";
 import queryClient from "@/app/common/utils/queryClient";
+import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 
 type Props = {
   member: string;
@@ -51,6 +52,8 @@ export default function MemberDisplay({ member, memberDetails }: Props) {
     enabled: false,
   });
 
+  const { canDo } = useRoleGate();
+
   const [userRoles, setUserRoles] = useState(circle?.memberRoles[member]);
 
   if (!memberDetails || !circle) {
@@ -71,7 +74,7 @@ export default function MemberDisplay({ member, memberDetails }: Props) {
           marginRight="2"
           marginTop="2"
           transitionDuration="700"
-          onClick={() => setIsOpen(!isOpen)}
+          onClick={() => canDo(["steward"]) && setIsOpen(!isOpen)}
         >
           <Avatar
             src={memberDetails[member]?.avatar}

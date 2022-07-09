@@ -38,3 +38,26 @@ export const updateCircle = async (
     return false;
   }
 };
+
+export const deleteCircle = async (circleId: string) => {
+  const res = await fetch(`${process.env.API_HOST}/circle/${circleId}/delete`, {
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+    method: "POST",
+    credentials: "include",
+  });
+  if (res.ok) {
+    const data = await res.json();
+    toast("Circle deleted successfully", {
+      theme: "dark",
+    });
+    return data;
+  } else {
+    toast("Error deleting circle", {
+      theme: "dark",
+    });
+    return false;
+  }
+};

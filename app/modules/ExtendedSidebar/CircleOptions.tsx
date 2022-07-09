@@ -50,7 +50,7 @@ function CircleOptions() {
             borderRadius="large"
             width="full"
             onClick={() => {
-              canDo(["steward"]) && setIsOpen(true);
+              setIsOpen(true);
             }}
           >
             <Stack direction="horizontal" align="center">
@@ -90,18 +90,20 @@ function CircleOptions() {
               Overview
             </Stack>
           </PopoverOption>
-          <PopoverOption
-            tourId="circle-settings-button"
-            onClick={() => {
-              setIsOpen(false);
-              setSettingsModalOpen(true);
-            }}
-          >
-            <Stack direction="horizontal" space="2">
-              <IconCog />
-              Settings
-            </Stack>
-          </PopoverOption>
+          {canDo(["steward"]) && (
+            <PopoverOption
+              tourId="circle-settings-button"
+              onClick={() => {
+                setIsOpen(false);
+                setSettingsModalOpen(true);
+              }}
+            >
+              <Stack direction="horizontal" space="2">
+                <IconCog />
+                Settings
+              </Stack>
+            </PopoverOption>
+          )}
           <PopoverOption
             onClick={() => {
               setIsOpen(false);

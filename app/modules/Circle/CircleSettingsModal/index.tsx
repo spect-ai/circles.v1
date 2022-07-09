@@ -3,7 +3,7 @@ import PrimaryButton from "@/app/common/components/PrimaryButton";
 import Tabs from "@/app/common/components/Tabs";
 import { storeImage } from "@/app/common/utils/ipfs";
 import queryClient from "@/app/common/utils/queryClient";
-import { updateCircle } from "@/app/services/UpdateCircle";
+import { deleteCircle, updateCircle } from "@/app/services/UpdateCircle";
 import { CircleType } from "@/app/types";
 import { Box, Input, MediaPicker, Stack, Textarea } from "degen";
 import { useRouter } from "next/router";
@@ -51,6 +51,15 @@ export default function SettingsModal({ handleClose }: Props) {
     if (res) {
       handleClose();
       queryClient.setQueryData(["circle", cId], res);
+    }
+  };
+
+  const onDelete = async () => {
+    const res = await deleteCircle(circle?.id as string);
+    if (res) {
+      handleClose();
+      queryClient.removeQueries(["circle", cId]);
+      void router.push("/");
     }
   };
 
@@ -133,6 +142,15 @@ export default function SettingsModal({ handleClose }: Props) {
                   disabled={uploading}
                 >
                   Update Circle
+                </PrimaryButton>
+              </Box>
+              <Box width="full">
+                <PrimaryButton
+                  onClick={onDelete}
+                  disabled={uploading}
+                  tone="red"
+                >
+                  Delete Circle
                 </PrimaryButton>
               </Box>
             </Stack>

@@ -4,7 +4,7 @@ import { useGlobal } from "@/app/context/globalContext";
 import useERC20 from "@/app/services/Payment/useERC20";
 import { CircleType, ProjectType, Registry } from "@/app/types";
 import { QuestionCircleFilled } from "@ant-design/icons";
-import { Box, Button, IconCheck, Stack, Text } from "degen";
+import { Box, Button, Heading, IconCheck, Stack, Text } from "degen";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { useQuery } from "react-query";
@@ -21,7 +21,7 @@ export default function ApproveToken() {
   const { data: project } = useQuery<ProjectType>(["project", pId], {
     enabled: false,
   });
-  const { data: circle } = useQuery<CircleType>(["circle", cId], {
+  const { data: registry } = useQuery<Registry>(["registry", cId], {
     enabled: false,
   });
 
@@ -40,13 +40,13 @@ export default function ApproveToken() {
   }>({} as any);
 
   useEffect(() => {
-    console.log("useeffect");
     // initialize tokenStatus
     setLoading(true);
     if (
       project &&
       activeChain?.id.toString() ===
-        project.parents[0].defaultPayment.chain.chainId
+        project.parents[0].defaultPayment.chain.chainId &&
+      registry
     ) {
       const tokenStatus: any = {};
       let index = 0;
@@ -55,7 +55,7 @@ export default function ApproveToken() {
         console.log({ batchPayInfo });
         const approvalStatus = await isApproved(
           address,
-          circle?.localRegistry[project.parents[0].defaultPayment.chain.chainId]
+          registry[project.parents[0].defaultPayment.chain.chainId]
             .distributorAddress as string,
           batchPayInfo.approval.values[index],
           data?.address as string
@@ -90,6 +90,10 @@ export default function ApproveToken() {
     // set to final step if all tokens approved
   }, [batchPayInfo, activeChain]);
 
+  if (!registry) {
+    return <Heading>Registry not found</Heading>;
+  }
+
   return (
     <Box display="flex" flexDirection="column" justifyContent="space-between">
       <ScrollContainer padding="8">
@@ -122,7 +126,7 @@ export default function ApproveToken() {
                     <Stack>
                       <Text variant="base" weight="semiBold">
                         {
-                          circle?.localRegistry[
+                          registry[
                             project?.parents[0].defaultPayment.chain
                               .chainId as string
                           ]?.tokenDetails[tokenAddress]?.symbol
