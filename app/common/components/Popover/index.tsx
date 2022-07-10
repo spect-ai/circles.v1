@@ -1,7 +1,9 @@
-import { FC, ReactNode, useEffect, useRef } from "react";
+import { FC, ReactNode, useEffect, useRef, useState } from "react";
 
 import { Box } from "degen";
 import { motion, AnimatePresence } from "framer-motion";
+import { Portal } from "../Portal/portal";
+import { usePopper } from "react-popper";
 
 interface Props {
   isOpen: boolean;
@@ -66,8 +68,15 @@ const Popover: FC<Props> = ({
   const wrapperRef = useRef(null);
   useOutsideAlerter(wrapperRef, setIsOpen);
 
+  const [anchorElement, setAnchorElement] = useState<any>();
+  const [popperElement, setPopperElement] = useState<any>();
+
+  const { styles, attributes } = usePopper(anchorElement, popperElement, {
+    placement: "bottom-start",
+  });
+
   return (
-    <Box ref={wrapperRef} width={width as any} data-tour={tourId}>
+    <Box width={width as any} data-tour={tourId}>
       {/* <Box
         cursor="pointer"
         onClick={() => setIsOpen(!isOpen)}
@@ -75,19 +84,20 @@ const Popover: FC<Props> = ({
       >
         {icon}
       </Box> */}
-      {butttonComponent}
+      <div ref={setAnchorElement}>{butttonComponent}</div>
       <AnimatePresence>
         {isOpen && (
-          <motion.div
-            initial="hidden"
-            animate="open"
-            exit="collapsed"
-            variants={grow}
-          >
-            <Box position="absolute" zIndex="10">
-              {children}
+          <Portal>
+            <Box
+              position="absolute"
+              zIndex="10"
+              ref={setPopperElement}
+              style={styles.popper}
+              {...attributes.popper}
+            >
+              <div ref={wrapperRef}>{children}</div>
             </Box>
-          </motion.div>
+          </Portal>
         )}
       </AnimatePresence>
     </Box>

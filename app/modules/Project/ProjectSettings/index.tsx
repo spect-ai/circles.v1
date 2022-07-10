@@ -4,16 +4,17 @@ import ConfirmModal from "@/app/common/components/Modal/ConfirmModal";
 import { fetchGuildChannels } from "@/app/services/Discord";
 import { deleteProject, patchProject } from "@/app/services/Project";
 import { SaveOutlined } from "@ant-design/icons";
-import { Box, Button, IconCog, IconTrash, Input, Stack, Text } from "degen";
+import { Box, Button, IconTrash, Input, Stack, Text } from "degen";
 import { AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
-import { toast } from "react-toastify";
-import { PopoverOption } from "../../Card/OptionPopover";
 import { useLocalProject } from "../Context/LocalProjectContext";
 
-export default function ProjectSettings() {
-  const [isOpen, setIsOpen] = useState(false);
+type Props = {
+  setIsOpen: (isOpen: boolean) => void;
+};
+
+export default function ProjectSettings({ setIsOpen }: Props) {
   const handleClose = () => setIsOpen(false);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -31,11 +32,11 @@ export default function ProjectSettings() {
   );
 
   useEffect(() => {
-    if (project?.id && isOpen) {
+    if (project?.id) {
       setName(project.name);
       setDescription(project.description);
     }
-  }, [project, isOpen]);
+  }, [project]);
 
   useEffect(() => {
     const getGuildChannels = async () => {
@@ -47,10 +48,10 @@ export default function ProjectSettings() {
         }))
       );
     };
-    if (isOpen && project.parents[0].discordGuildId) {
+    if (project.parents[0].discordGuildId) {
       void getGuildChannels();
     }
-  }, [isOpen]);
+  }, []);
 
   const onSubmit = async () => {
     setIsLoading(true);
@@ -91,88 +92,74 @@ export default function ProjectSettings() {
           />
         )}
       </AnimatePresence>
-      <PopoverOption
-        tourId="project-settings-button"
-        onClick={() => {
-          setIsOpen(true);
-        }}
-      >
-        <Stack direction="horizontal" space="2">
-          <IconCog />
-          Settings
-        </Stack>
-      </PopoverOption>
-      <AnimatePresence>
-        {isOpen && (
-          <Modal title="Project Settings" handleClose={handleClose}>
-            <Box width="full" padding="8">
-              <Stack>
-                <Box>
-                  <Text variant="label">Name</Text>
-                  <Input
-                    label=""
-                    placeholder="Name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                  />
-                </Box>
-                <Box>
-                  <Text variant="label">Description</Text>
-                  <Input
-                    label=""
-                    placeholder="Description"
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                  />
-                </Box>
-                {project.parents[0].discordGuildId && (
-                  <Box>
-                    <Text variant="label">Discussion Channel</Text>
-                    <Dropdown
-                      options={channels as OptionType[]}
-                      selected={{
-                        label: discordDiscussionChannel?.name,
-                        value: discordDiscussionChannel?.id,
-                      }}
-                      onChange={(channel) =>
-                        setDiscordDiscussionChannel({
-                          id: channel.value,
-                          name: channel.label,
-                        })
-                      }
-                    />
-                  </Box>
-                )}
-                <Stack direction="horizontal">
-                  <Button
-                    width="1/2"
-                    size="small"
-                    variant="secondary"
-                    onClick={onSubmit}
-                    loading={isLoading}
-                    center
-                    prefix={<SaveOutlined style={{ fontSize: "1.3rem" }} />}
-                    disabled={!name}
-                  >
-                    Save
-                  </Button>
-                  <Button
-                    width="1/2"
-                    size="small"
-                    variant="secondary"
-                    onClick={() => setShowConfirm(true)}
-                    center
-                    tone="red"
-                    prefix={<IconTrash />}
-                  >
-                    Delete
-                  </Button>
-                </Stack>
-              </Stack>
+
+      <Modal title="Project Settings" handleClose={handleClose}>
+        <Box width="full" padding="8">
+          <Stack>
+            <Box>
+              <Text variant="label">Name</Text>
+              <Input
+                label=""
+                placeholder="Name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
             </Box>
-          </Modal>
-        )}
-      </AnimatePresence>
+            <Box>
+              <Text variant="label">Description</Text>
+              <Input
+                label=""
+                placeholder="Description"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+              />
+            </Box>
+            {project.parents[0].discordGuildId && (
+              <Box>
+                <Text variant="label">Discussion Channel</Text>
+                <Dropdown
+                  options={channels as OptionType[]}
+                  selected={{
+                    label: discordDiscussionChannel?.name,
+                    value: discordDiscussionChannel?.id,
+                  }}
+                  onChange={(channel) =>
+                    setDiscordDiscussionChannel({
+                      id: channel.value,
+                      name: channel.label,
+                    })
+                  }
+                />
+              </Box>
+            )}
+            <Stack direction="horizontal">
+              <Button
+                width="1/2"
+                size="small"
+                variant="secondary"
+                onClick={onSubmit}
+                loading={isLoading}
+                center
+                prefix={<SaveOutlined style={{ fontSize: "1.3rem" }} />}
+                disabled={!name}
+              >
+                Save
+              </Button>
+              <Button
+                width="1/2"
+                size="small"
+                variant="secondary"
+                onClick={() => setShowConfirm(true)}
+                center
+                tone="red"
+                prefix={<IconTrash />}
+              >
+                Delete
+              </Button>
+            </Stack>
+          </Stack>
+        </Box>
+      </Modal>
     </>
   );
 }

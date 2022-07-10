@@ -5,7 +5,6 @@ import {
   Input,
   MediaPicker,
   Stack,
-  Text,
   Textarea,
 } from "degen";
 import React, { useState } from "react";

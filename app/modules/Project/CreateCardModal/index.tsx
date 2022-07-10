@@ -1,18 +1,15 @@
 import Editor from "@/app/common/components/Editor";
 import Modal from "@/app/common/components/Modal";
-import { SnippetsOutlined } from "@ant-design/icons";
 import { Box, Button, Stack, Tag } from "degen";
 import { AnimatePresence } from "framer-motion";
 import React, { useEffect } from "react";
 import styled from "styled-components";
-import EditableSubTask from "../../Card/SubTasks/NewSubTask";
 import CardAssignee from "./modals/CardAssignee";
 import CardColumn from "./modals/CardColumn";
 import CardDeadline from "./modals/CardDeadline";
 import CardLabels from "./modals/CardLabels";
 import CardType from "./modals/CardType";
 import CardReward from "./modals/CardReward";
-import ClickableTag from "@/app/common/components/EditTag/ClickableTag";
 import CardPriority from "./modals/CardPriority";
 import {
   LocalCardContext,
@@ -22,6 +19,7 @@ import { ProjectType } from "@/app/types";
 import CardReviewer from "./modals/CardReviewer";
 import ConfirmModal from "@/app/common/components/Modal/ConfirmModal";
 import SubTasks from "../../Card/SubTasks";
+import { useHotkeys } from "react-hotkeys-hook";
 
 type Props = {
   column: string;
@@ -73,12 +71,32 @@ export default function CreateCardModal({
     title,
     setTitle,
     labels,
-    subTasks,
-    setSubTasks,
     description,
     setDescription,
     project,
   } = context;
+
+  useHotkeys(
+    "return",
+    () => {
+      void onSubmit(false);
+      setIsDirty(false);
+    },
+    {
+      enableOnTags: ["INPUT"] as any,
+    }
+  );
+
+  useHotkeys(
+    "shift+return",
+    () => {
+      void onSubmit(true);
+      setIsDirty(false);
+    },
+    {
+      enableOnTags: ["INPUT"] as any,
+    }
+  );
 
   useEffect(() => {
     setColumnId(column);

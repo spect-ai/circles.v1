@@ -78,9 +78,9 @@ export default function QuickActions({ card, hover }: Props) {
                 },
                 card.id
               );
-              //   if (data) {
-              //     updateProject(data.project);
-              //   }
+              // if (data) {
+              //   updateProject(data.project);
+              // }
             }}
           >
             Close

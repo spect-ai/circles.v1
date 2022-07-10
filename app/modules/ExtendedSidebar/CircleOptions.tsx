@@ -50,7 +50,7 @@ function CircleOptions() {
             borderRadius="large"
             width="full"
             onClick={() => {
-              setIsOpen(true);
+              setIsOpen(!isOpen);
             }}
           >
             <Stack direction="horizontal" align="center">

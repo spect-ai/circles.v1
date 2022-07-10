@@ -2265,7 +2265,7 @@
     schema-utils "^3.0.0"
     source-map "^0.7.3"
 
-"@popperjs/core@^2.9.2":
+"@popperjs/core@^2.11.5", "@popperjs/core@^2.9.2":
   version "2.11.5"
   resolved "https://registry.yarnpkg.com/@popperjs/core/-/core-2.11.5.tgz#db5a11bf66bdab39569719555b0f76e138d7bd64"
   integrity sha512-9X2obfABZuDVLCgPK9aX0a/x4jaOEweTTWE2+9sr0Qqqevj2Uv5XorvusThmc9XGYpS9yI+fhh8RTafBtGposw==
@@ -8448,6 +8448,11 @@ hosted-git-info@^4.0.1:
   dependencies:
     lru-cache "^6.0.0"
 
+hotkeys-js@3.9.3:
+  version "3.9.3"
+  resolved "https://registry.yarnpkg.com/hotkeys-js/-/hotkeys-js-3.9.3.tgz#4b755cc695b388d7f93a83aff4b0c2a45719996c"
+  integrity sha512-s+f0xyvDmf6+DyrFQ2SY+eA7lbvMbjqkqi0I0SpMgnN5tZx7DeH8nsWhkJR4KEq3pxDPHJppDUhdt1rZFW5LeQ==
+
 html-entities@^2.1.0:
   version "2.3.3"
   resolved "https://registry.npmjs.org/html-entities/-/html-entities-2.3.3.tgz"
@@ -12102,6 +12107,13 @@ react-grid-system@^8.1.5:
   dependencies:
     prop-types "^15.8.0"
 
+react-hotkeys-hook@^3.4.6:
+  version "3.4.6"
+  resolved "https://registry.yarnpkg.com/react-hotkeys-hook/-/react-hotkeys-hook-3.4.6.tgz#21eda8e97121583a14056479e3eea9e51d2e2a69"
+  integrity sha512-SiGKHnauaAQglRA7qeiW5LTa0KoT2ssv8YGYKZQoM3P9v5JFEHJdXOSFml1N6K86oKQ8dLCLlxqBqGlSJWGmxQ==
+  dependencies:
+    hotkeys-js "3.9.3"
+
 react-inspector@^5.1.0:
   version "5.1.1"
   resolved "https://registry.npmjs.org/react-inspector/-/react-inspector-5.1.1.tgz"
@@ -12148,7 +12160,7 @@ react-onclickoutside@^6.12.0:
   resolved "https://registry.yarnpkg.com/react-onclickoutside/-/react-onclickoutside-6.12.2.tgz#8e6cf80c7d17a79f2c908399918158a7b02dda01"
   integrity sha512-NMXGa223OnsrGVp5dJHkuKxQ4czdLmXSp5jSV9OqiCky9LOpPATn3vLldc+q5fK3gKbEHvr7J1u0yhBh/xYkpA==
 
-react-popper@^2.2.5:
+react-popper@^2.2.5, react-popper@^2.3.0:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/react-popper/-/react-popper-2.3.0.tgz#17891c620e1320dce318bad9fede46a5f71c70ba"
   integrity sha512-e1hj8lL3uM+sgSR4Lxzn5h1GxBlpa4CQz0XLF8kx4MDrDRWY0Ena4c97PUeSX9i5W3UAfDP0z0FXCTQkoXUl3Q==
