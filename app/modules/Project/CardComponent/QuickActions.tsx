@@ -32,7 +32,7 @@ export default function QuickActions({ card, hover }: Props) {
       );
       setValidActions(validActions);
     }
-  }, []);
+  }, [card.id, projectCardActions]);
 
   return (
     <Popover
@@ -41,7 +41,9 @@ export default function QuickActions({ card, hover }: Props) {
       butttonComponent={
         <Box
           cursor="pointer"
-          style={!hover ? { opacity: 0 } : { opacity: 1 }}
+          style={
+            hover && validActions.length > 0 ? { opacity: 1 } : { opacity: 0 }
+          }
           onClick={(e) => {
             e.stopPropagation();
             setIsOpen(!isOpen);

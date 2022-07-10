@@ -53,20 +53,17 @@ export function useProviderLocalProject() {
 
   const { connectedUser } = useGlobal();
 
-  const {
-    data: projectCardActions,
-    refetch: fetchQuickActions,
-    isError,
-  } = useQuery<ProjectCardActionsType>(
-    ["projectCardActions", pId],
-    () =>
-      fetch(`${process.env.API_HOST}/project/${pId}/validActions`, {
-        credentials: "include",
-      }).then((res) => res.json()),
-    {
-      enabled: false,
-    }
-  );
+  const { data: projectCardActions, refetch: fetchQuickActions } =
+    useQuery<ProjectCardActionsType>(
+      ["projectCardActions", pId],
+      () =>
+        fetch(`${process.env.API_HOST}/project/${pId}/validActions`, {
+          credentials: "include",
+        }).then((res) => res.json()),
+      {
+        enabled: false,
+      }
+    );
 
   const [loading, setLoading] = useState(false);
   const [updating, setUpdating] = useState(false);

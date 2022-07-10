@@ -1,18 +1,8 @@
 import React, { useState } from "react";
-import {
-  Avatar,
-  Box,
-  IconClose,
-  IconPlusSmall,
-  Input,
-  Stack,
-  Tag,
-  Text,
-} from "degen";
+import { Avatar, Box, IconClose, IconPlusSmall, Stack, Tag, Text } from "degen";
 import styled from "styled-components";
 import { CircleType, UserType } from "@/app/types";
 import Popover from "@/app/common/components/Popover";
-import Dropdown from "@/app/common/components/Dropdown";
 import { useQuery } from "react-query";
 import { useRouter } from "next/router";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
@@ -109,32 +99,33 @@ export default function MemberDisplay({ member, memberDetails }: Props) {
             </Text>
           </Stack>
           <Stack direction="horizontal" wrap space="2">
-            {userRoles?.map((role) => (
-              <Box
-                key={role}
-                cursor="pointer"
-                onClick={async () => {
-                  // remove user role if at least one role is left
-                  if (userRoles.length > 1) {
-                    const newRoles = userRoles.filter((r) => r !== role);
-                    setUserRoles(newRoles);
-                    const data = await updateRole(circle.id, member, {
-                      roles: newRoles,
-                    });
-                    if (data) {
-                      queryClient.setQueryData(["circle", cId], data);
+            {userRoles?.map &&
+              userRoles?.map((role) => (
+                <Box
+                  key={role}
+                  cursor="pointer"
+                  onClick={async () => {
+                    // remove user role if at least one role is left
+                    if (userRoles.length > 1) {
+                      const newRoles = userRoles.filter((r) => r !== role);
+                      setUserRoles(newRoles);
+                      const data = await updateRole(circle.id, member, {
+                        roles: newRoles,
+                      });
+                      if (data) {
+                        queryClient.setQueryData(["circle", cId], data);
+                      }
                     }
-                  }
-                }}
-              >
-                <Tag hover tone="accent">
-                  <Stack direction="horizontal" space="1" align="center">
-                    <IconClose size="5" />
-                    <Text>{role}</Text>
-                  </Stack>
-                </Tag>
-              </Box>
-            ))}
+                  }}
+                >
+                  <Tag hover tone="accent">
+                    <Stack direction="horizontal" space="1" align="center">
+                      <IconClose size="5" />
+                      <Text>{role}</Text>
+                    </Stack>
+                  </Tag>
+                </Box>
+              ))}
             <Box cursor="pointer">
               <Popover
                 width="fit"

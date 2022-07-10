@@ -1,6 +1,5 @@
 import { PriorityIcon } from "@/app/common/components/PriorityIcon";
 import { monthMap } from "@/app/common/utils/constants";
-import useCardService from "@/app/services/Card/useCardService";
 import { CardType, MemberDetails } from "@/app/types";
 import { Avatar, Box, IconEth, Stack, Tag, Text } from "degen";
 import { useRouter } from "next/router";
@@ -39,6 +38,8 @@ function CardComponent({ card, index }: Props) {
   );
 
   const [hover, setHover] = useState(false);
+
+  const { projectCardActions } = useLocalProject();
 
   const DraggableContent = (
     provided: DraggableProvided,
@@ -124,8 +125,8 @@ function CardComponent({ card, index }: Props) {
               {label}
             </Tag>
           ))}
-          <QuickActions card={card} hover={hover} />
         </Stack>
+        <QuickActions card={card} hover={hover} />
       </Box>
     </Container>
   );
@@ -145,6 +146,7 @@ function CardComponent({ card, index }: Props) {
     deadline,
     memberDetails?.memberDetails,
     hover,
+    projectCardActions,
   ]);
 
   return (
