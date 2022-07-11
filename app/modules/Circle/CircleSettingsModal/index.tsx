@@ -5,15 +5,13 @@ import { storeImage } from "@/app/common/utils/ipfs";
 import queryClient from "@/app/common/utils/queryClient";
 import { deleteCircle, updateCircle } from "@/app/services/UpdateCircle";
 import { CircleType } from "@/app/types";
-import { Box, Input, MediaPicker, Stack, Textarea } from "degen";
+import { Box, Input, MediaPicker, Stack, Text, Textarea } from "degen";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
 import { useQuery } from "react-query";
 import CircleIntegrations from "./CircleIntegrations";
 import DefaultPayment from "./CirclePayment";
 import Contributors from "../ContributorsModal/Contributors";
-import { generateColorHEX } from "@/app/common/utils/utils";
-
 interface Props {
   handleClose: () => void;
 }
@@ -92,12 +90,13 @@ export default function SettingsModal({ handleClose }: Props) {
           <Tabs
             selectedTab={tab}
             onTabClick={onTabClick}
-            tabs={["Info", "Integrations", "Payments", "Members"]}
+            tabs={["Info", "Integrations", "Payments", "Members", "Delete"]}
             tabTourIds={[
               "circle-settings-info",
               "circle-settings-integrations",
               "circle-settings-payments",
               "circle-settings-members",
+              "circle-settings-delete",
             ]}
             orientation="vertical"
             unselectedColor="transparent"
@@ -146,7 +145,20 @@ export default function SettingsModal({ handleClose }: Props) {
                   Update Circle
                 </PrimaryButton>
               </Box>
-              <Box width="full">
+            </Stack>
+          )}
+          {tab === 1 && <CircleIntegrations />}
+          {tab === 2 && <DefaultPayment />}
+          {tab === 3 && <Contributors />}
+          {tab === 4 && (
+            <Box width="full">
+              <Stack>
+                <Box>
+                  <Text align="center" weight="semiBold" size="extraLarge">
+                    Danger, this action cannot be undone, all your projects and
+                    workstreams will be deleted!
+                  </Text>
+                </Box>
                 <PrimaryButton
                   onClick={onDelete}
                   disabled={uploading}
@@ -154,19 +166,8 @@ export default function SettingsModal({ handleClose }: Props) {
                 >
                   Delete Circle
                 </PrimaryButton>
-              </Box>
-            </Stack>
-          )}
-          {tab === 1 && <CircleIntegrations />}
-          {tab === 2 && <DefaultPayment />}
-          {tab === 3 && (
-            <Stack>
-              {/* <Box display="flex" flexDirection="row" marginLeft="8">
-                {space.roles[user?.id as string] === 3 && <SpaceRoleMapping />}
-                {space.roles[user?.id as string] === 3 && <InviteMemberModal />}
-              </Box> */}
-              <Contributors />
-            </Stack>
+              </Stack>
+            </Box>
           )}
         </Box>
       </Box>

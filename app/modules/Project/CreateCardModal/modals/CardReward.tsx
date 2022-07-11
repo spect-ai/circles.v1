@@ -63,7 +63,13 @@ function CardReward() {
                       chain?.chainId === aChain.chainId ? "accent" : "secondary"
                     }
                   >
-                    {aChain.name}
+                    <Text
+                      color={
+                        chain?.chainId === aChain.chainId ? "accent" : "inherit"
+                      }
+                    >
+                      {aChain.name}
+                    </Text>
                   </Tag>
                 </motion.button>
               ))}
@@ -92,7 +98,15 @@ function CardReward() {
                           : "secondary"
                       }
                     >
-                      {aToken.symbol}
+                      <Text
+                        color={
+                          token?.address === aToken.address
+                            ? "accent"
+                            : "inherit"
+                        }
+                      >
+                        {aToken.symbol}
+                      </Text>
                     </Tag>
                   </motion.button>
                 )

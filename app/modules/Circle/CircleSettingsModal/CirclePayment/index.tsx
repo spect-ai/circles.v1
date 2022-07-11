@@ -91,7 +91,13 @@ export default function DefaultPayment() {
                     chain?.chainId === aChain.chainId ? "accent" : "secondary"
                   }
                 >
-                  {aChain.name}
+                  <Text
+                    color={
+                      chain?.chainId === aChain.chainId ? "accent" : "inherit"
+                    }
+                  >
+                    {aChain.name}
+                  </Text>
                 </Tag>
               </Box>
             ))}
@@ -116,7 +122,13 @@ export default function DefaultPayment() {
                     token?.address === aToken.address ? "accent" : "secondary"
                   }
                 >
-                  {aToken.symbol}
+                  <Text
+                    color={
+                      token?.address === aToken.address ? "accent" : "inherit"
+                    }
+                  >
+                    {aToken.symbol}
+                  </Text>
                 </Tag>
               </Box>
             ))}

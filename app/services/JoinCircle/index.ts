@@ -44,7 +44,9 @@ export const joinCircleFromDiscord = async (circleId: string) => {
     console.log({ data });
     return data;
   } else {
-    toast.error("Something went wrong updating the role");
+    toast.error(
+      "Something went wrong, please ensure you have the required role"
+    );
     return null;
   }
 };

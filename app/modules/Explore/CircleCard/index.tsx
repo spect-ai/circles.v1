@@ -40,7 +40,7 @@ const Cover = styled(Box)<{ gradient: string }>`
 
 const LogoContainer = styled(Box)`
   margin-top: -40px;
-  z-index: 10;
+  z-index: 0;
 `;
 
 const Placeholder = styled(Box)<{ gradient: string }>`
