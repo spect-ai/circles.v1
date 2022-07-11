@@ -36,7 +36,6 @@ function Project() {
   if (tId || !project) {
     return null;
   }
-  console.log({ project });
   return (
     <>
       <AnimatePresence>
