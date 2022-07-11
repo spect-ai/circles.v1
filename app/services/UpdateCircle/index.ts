@@ -10,6 +10,7 @@ type CircleUpdateDTO = {
   discordGuildId: string;
   discordToCircleRoles: DiscordRoleMappingType;
   githubRepos: string[];
+  gradient: string;
 };
 
 export const updateCircle = async (

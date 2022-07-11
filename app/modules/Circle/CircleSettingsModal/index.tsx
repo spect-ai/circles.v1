@@ -12,6 +12,7 @@ import { useQuery } from "react-query";
 import CircleIntegrations from "./CircleIntegrations";
 import DefaultPayment from "./CirclePayment";
 import Contributors from "../ContributorsModal/Contributors";
+import { generateColorHEX } from "@/app/common/utils/utils";
 
 interface Props {
   handleClose: () => void;
@@ -38,6 +39,7 @@ export default function SettingsModal({ handleClose }: Props) {
 
   const onSubmit = async () => {
     setIsLoading(true);
+
     const res = await updateCircle(
       {
         name,

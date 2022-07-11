@@ -94,6 +94,7 @@ export interface CircleType {
   discordGuildId: string;
   discordToCircleRoles: DiscordRoleMappingType;
   githubRepos: string[];
+  gradient: string;
 }
 
 // interface ProjectType {

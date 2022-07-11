@@ -67,12 +67,13 @@ function Sidebar(): ReactElement {
       transitionDuration="500"
     >
       <Box borderBottomWidth="0.375" paddingY="3">
-        {cId ? (
-          <Logo href="/" src={circle?.avatar as string} />
+        {cId && circle ? (
+          <Logo href="/" src={circle.avatar} gradient={circle.gradient} />
         ) : (
           <Logo
             href="/"
             src="https://ipfs.moralis.io:2053/ipfs/QmVYsa4KQyRwBSJxQCmD1rDjyqYd1HJKrDfqLk3KMKLEhn"
+            gradient=""
           />
         )}
       </Box>
@@ -105,13 +106,16 @@ function Sidebar(): ReactElement {
                   key={aCircle.id}
                   href={`/${aCircle.slug}`}
                   src={aCircle.avatar}
+                  gradient={aCircle.gradient}
                 />
               </Box>
             ))}
         </ScrollContainer>
       )}
       <Box paddingY="3">
-        {currentUser?.id && <Logo href="/" src={currentUser?.avatar} />}
+        {currentUser?.id && (
+          <Logo href="/" src={currentUser?.avatar} gradient="" />
+        )}
       </Box>
     </Box>
   );

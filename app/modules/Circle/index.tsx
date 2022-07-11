@@ -39,6 +39,8 @@ export default function Circle() {
   if (isLoading || !circle) {
     return <Loader text="...." loading />;
   }
+
+  console.log({ circle });
   return (
     <BoxContainer paddingX="8" paddingTop="4">
       <Box width="1/3">

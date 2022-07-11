@@ -1,4 +1,3 @@
-import Card from "@/app/common/components/Card";
 import Loader from "@/app/common/components/Loader";
 import { useGlobal } from "@/app/context/globalContext";
 import useConnectDiscord from "@/app/services/Discord/useConnectDiscord";
@@ -13,6 +12,7 @@ import { Container, Row, Col } from "react-grid-system";
 import { useQuery } from "react-query";
 import { ToastContainer } from "react-toastify";
 import styled from "styled-components";
+import CircleCard from "./CircleCard";
 import Onboarding from "./ExploreOnboarding";
 import ExploreOptions from "./ExploreOptions";
 
@@ -31,7 +31,7 @@ const GridContainer = styled(Container)`
     width: calc(100vw - 2rem);
   }
   @media only screen and (min-width: 768px) {
-    width: 60rem;
+    width: 80rem;
   }
 `;
 
@@ -89,13 +89,14 @@ export default function Explore() {
           {filteredCircles?.map &&
             filteredCircles?.map((circle: CircleType) => (
               <Col key={circle.id} xs={10} sm={6} md={3}>
-                <Card
-                  height={{ xs: "48", md: "60" }}
-                  onClick={() => {
-                    void router.push(`/${circle.slug}`);
-                  }}
-                >
-                  <Box marginBottom="4">
+                <CircleCard
+                  href={`/${circle.slug}`}
+                  name={circle.name}
+                  description={circle.description}
+                  gradient={circle.gradient}
+                  logo={circle.avatar}
+                />
+                {/* <Box marginBottom="4">
                     <Stack align="center">
                       <Avatar
                         label={circle.name}
@@ -115,8 +116,7 @@ export default function Explore() {
                         <Text>View</Text>
                       </Button>
                     </Stack>
-                  </Box>
-                </Card>
+                  </Box> */}
               </Col>
             ))}
         </Row>
