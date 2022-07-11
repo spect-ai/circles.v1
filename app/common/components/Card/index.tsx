@@ -43,6 +43,9 @@ const Card: FC<Props> = ({
       dashed={dashed}
       onClick={onClick}
       backgroundColor="background"
+      style={{
+        borderColor: "rgb(255,255,255,0.02)",
+      }}
     >
       {children}
     </Container>

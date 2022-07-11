@@ -111,8 +111,8 @@ export default function Explore() {
                       >
                         {circle.name}
                       </Text>
-                      <Button variant="tertiary" size="small">
-                        Follow
+                      <Button variant="transparent" size="small">
+                        <Text>View</Text>
                       </Button>
                     </Stack>
                   </Box>

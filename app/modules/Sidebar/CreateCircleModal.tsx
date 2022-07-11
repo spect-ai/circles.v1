@@ -5,6 +5,7 @@ import {
   Input,
   MediaPicker,
   Stack,
+  Text,
   Textarea,
 } from "degen";
 import React, { useState } from "react";
@@ -64,12 +65,14 @@ function CreateCircle() {
       <Box>
         <Button
           shape="circle"
-          variant="secondary"
+          variant="transparent"
           size="small"
           onClick={open}
           data-tour="create-circle-sidebar-button"
         >
-          <IconPlus />
+          <Text color="accent">
+            <IconPlus />
+          </Text>
         </Button>
       </Box>
       <AnimatePresence

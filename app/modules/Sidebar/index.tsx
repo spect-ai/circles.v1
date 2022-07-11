@@ -1,6 +1,6 @@
 import Link from "next/link";
 import React, { ReactElement, useEffect, useState } from "react";
-import { Box, Button, Stack } from "degen";
+import { Box, Button, Stack, Text } from "degen";
 import { useRouter } from "next/router";
 import CreateCircle from "./CreateCircleModal";
 import Logo from "@/app/common/components/Logo";
@@ -79,8 +79,10 @@ function Sidebar(): ReactElement {
       <Box borderBottomWidth="0.375" paddingY="3">
         <Stack space="2">
           <Link href="/" passHref>
-            <Button shape="circle" variant="secondary" size="small">
-              <HomeOutlined style={{ fontSize: "1.3rem" }} />
+            <Button shape="circle" variant="transparent" size="small">
+              <Text color="accent">
+                <HomeOutlined style={{ fontSize: "1.3rem" }} />
+              </Text>
             </Button>
           </Link>
           {connectedUser && <CreateCircle />}

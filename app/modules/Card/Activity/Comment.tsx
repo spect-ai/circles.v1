@@ -15,9 +15,9 @@ import { fadeVariant } from "../Utils/variants";
 
 export const TextArea = styled(ContentEditable)`
   color: rgb(255, 255, 255, 0.7);
-  border: 2px solid rgb(255, 255, 255, 0.1);
+  border: 2px solid rgb(255, 255, 255, 0.02);
   background: ${(props) =>
-    props.disabled ? "rgb(20,20,20)" : "rgb(255, 255, 255, 0.05)"};
+    props.disabled ? "rgb(20,20,20)" : "rgb(255, 255, 255, 0.01)"};
   border-radius: 1rem;
   width: 100%;
   overflow: hidden;

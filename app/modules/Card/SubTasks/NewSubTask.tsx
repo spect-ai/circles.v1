@@ -8,7 +8,6 @@ import { useQuery } from "react-query";
 import useCardService from "@/app/services/Card/useCardService";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import SubTaskAssignee from "./SubTaskAssignee";
-import { type } from "os";
 
 const TitleInput = styled.input`
   width: 100%;
@@ -33,8 +32,8 @@ const Container = styled(Box)<{ editing: boolean }>`
   border: ${(props) =>
     props.editing
       ? "2px solid rgb(191, 90, 242, 1)"
-      : "2px solid rgb(255, 255, 255, 0.1)"};
-  background: rgb(255, 255, 255, 0.05);
+      : "2px solid rgb(255, 255, 255, 0.02)"};
+  background: rgb(255, 255, 255, 0.01);
   border-radius: 1rem;
   width: 100%;
   overflow: hidden;

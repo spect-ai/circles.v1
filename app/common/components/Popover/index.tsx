@@ -85,21 +85,19 @@ const Popover: FC<Props> = ({
         {icon}
       </Box> */}
       <div ref={setAnchorElement}>{butttonComponent}</div>
-      <AnimatePresence>
-        {isOpen && (
-          <Portal>
-            <Box
-              position="absolute"
-              zIndex="10"
-              ref={setPopperElement}
-              style={styles.popper}
-              {...attributes.popper}
-            >
-              <div ref={wrapperRef}>{children}</div>
-            </Box>
-          </Portal>
-        )}
-      </AnimatePresence>
+      {isOpen && (
+        <Portal>
+          <Box
+            position="absolute"
+            zIndex="10"
+            ref={setPopperElement}
+            style={styles.popper}
+            {...attributes.popper}
+          >
+            <div ref={wrapperRef}>{children}</div>
+          </Box>
+        </Portal>
+      )}
     </Box>
   );
 };

@@ -19,9 +19,8 @@ import { AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { memo, useEffect, useState } from "react";
-import { toast, ToastContainer } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import styled from "styled-components";
-import DiscordIcon from "@/app/assets/icons/discordIcon.svg";
 import BatchPay from "../Project/BatchPay";
 import { useLocalCard } from "../Project/CreateCardModal/hooks/LocalCardContext";
 import CardAssignee from "../Project/CreateCardModal/modals/CardAssignee";
@@ -40,9 +39,7 @@ import Apply from "./Apply";
 import AssignToMe from "./AssignToMe";
 import Submission from "./Submission";
 import SubTasks from "./SubTasks";
-import { createThread } from "@/app/services/Discord";
-import { useQuery } from "react-query";
-import { UserType } from "@/app/types";
+import Discuss from "./Discuss";
 
 const Container = styled(Box)`
   ::-webkit-scrollbar {
@@ -98,10 +95,6 @@ function Card() {
   const [batchPayModalOpen, setBatchPayModalOpen] = useState(false);
   const [isApplyModalOpen, setIsApplyModalOpen] = useState(false);
 
-  const { data: currentUser } = useQuery<UserType>("getMyUser", {
-    enabled: false,
-  });
-
   useEffect(() => {
     if (isDirty) {
       void onCardUpdate();
@@ -127,7 +120,6 @@ function Card() {
         )}
       </AnimatePresence>
       <Box
-        borderWidth="0.375"
         borderRadius="large"
         backgroundColor="background"
         style={{
@@ -151,15 +143,12 @@ function Card() {
             <Box
               display="flex"
               flexDirection="row"
-              borderWidth="0.375"
               borderRadius="large"
               backgroundColor="foregroundSecondary"
             >
               <IconButton
                 color="textSecondary"
-                borderRightWidth="0.375"
                 paddingX="2"
-                borderLeftRadius="large"
                 onClick={() => {
                   // get current card index
                   if (project) {
@@ -181,7 +170,6 @@ function Card() {
               <IconButton
                 color="textSecondary"
                 paddingX="2"
-                borderRightRadius="large"
                 onClick={() => {
                   // get current card index
                   if (project) {
@@ -291,7 +279,7 @@ function Card() {
               </Stack>
             </Container>
           </Box>
-          <Box width="1/4" borderLeftWidth="0.375" paddingX="4" paddingTop="8">
+          <Box width="1/4" borderLeftWidth="0" paddingX="4" paddingTop="8">
             {project?.id && (
               <Stack>
                 <CardType />
@@ -304,7 +292,7 @@ function Card() {
                 {/* <DiscordThread /> */}
                 {canTakeAction("cardPayment") && (
                   <PrimaryButton
-                    onClick={(e) => {
+                    onClick={() => {
                       setBatchPayModalOpen(true);
                     }}
                     icon={<IconEth />}
@@ -325,38 +313,7 @@ function Card() {
                 {cardType === "Task" && canTakeAction("assignToMe") && (
                   <AssignToMe />
                 )}
-                {project.parents[0].discordGuildId && (
-                  <PrimaryButton
-                    variant="tertiary"
-                    icon={<DiscordIcon />}
-                    onClick={async () => {
-                      if (!project.discordDiscussionChannel) {
-                        toast.error(
-                          "Add discord discussion channel to project"
-                        );
-                        return;
-                      }
-                      if (!currentUser?.discordId) {
-                        toast.error(
-                          "Connect your discord account first to use this feature"
-                        );
-                        return;
-                      }
-                      const data = await createThread(
-                        title,
-                        project.discordDiscussionChannel.id,
-                        currentUser?.discordId,
-                        project.parents[0].discordGuildId
-                      );
-                      if (data) {
-                        const url = `https://discord.com/channels/${project.parents[0].discordGuildId}/${data.result}`;
-                        window.open(url, "_blank");
-                      }
-                    }}
-                  >
-                    Discuss
-                  </PrimaryButton>
-                )}
+                {project.parents[0].discordGuildId && <Discuss />}
               </Stack>
             )}
           </Box>

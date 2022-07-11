@@ -21,9 +21,9 @@ type Props = {
 const Container = styled(Box)<{ isDragging: boolean }>`
   border-width: 2px;
   border-color: ${(props) =>
-    props.isDragging ? "rgb(191, 90, 242, 1)" : "rgb(255, 255, 255, 0)"};
+    props.isDragging ? "rgb(191, 90, 242, 1)" : "rgb(255, 255, 255, 0.01)"};
   &:hover {
-    border-color: rgb(255, 255, 255, 0.1);
+    border-color: rgb(255, 255, 255, 0.02);
   }
 `;
 
@@ -49,7 +49,6 @@ function CardComponent({ card, index }: Props) {
       {...provided.draggableProps}
       {...provided.dragHandleProps}
       ref={provided.innerRef}
-      backgroundColor="background"
       padding="4"
       marginBottom="2"
       borderRadius="large"

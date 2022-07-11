@@ -10,7 +10,7 @@ export const HeaderButton = styled(Box)`
   cursor: pointer;
   transition: all 0.2s ease-in-out;
   &:hover {
-    background-color: rgb(255, 255, 255, 0.1);
+    background-color: rgb(255, 255, 255, 0.05);
   }
 `;
 

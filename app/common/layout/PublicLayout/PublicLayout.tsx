@@ -48,13 +48,7 @@ function PublicLayout(props: PublicLayoutProps) {
       <AnimatePresence initial={false}>
         {isSidebarExpanded && <ExtendedSidebar />}
       </AnimatePresence>
-      <Box
-        display="flex"
-        flexDirection="column"
-        width="full"
-        backgroundColor="foregroundTertiary"
-        overflow="hidden"
-      >
+      <Box display="flex" flexDirection="column" width="full" overflow="hidden">
         <Container issidebarexpanded={isSidebarExpanded}>{children}</Container>
       </Box>
     </Box>
