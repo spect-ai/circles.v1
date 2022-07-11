@@ -1,6 +1,7 @@
 import { useLocalCard } from "@/app/modules/Project/CreateCardModal/hooks/LocalCardContext";
 import { useState } from "react";
 import { toast } from "react-toastify";
+import { createWorkThreadFetch } from ".";
 
 interface CreateWorkThreadDTO {
   name: string;
@@ -15,47 +16,14 @@ interface WorkUnitDTO {
 }
 
 export default function useSubmission() {
-  const { card, setCard } = useLocalCard();
-  const [loading, setloading] = useState(false);
-
-  const createWorkThread = async (
-    body: CreateWorkThreadDTO
-  ): Promise<boolean> => {
-    setloading(true);
-    const res = await fetch(
-      `${process.env.API_HOST}/card/${card?.id}/createWorkThread`,
-      {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(body),
-        credentials: "include",
-      }
-    );
-    setloading(false);
-    if (res.ok) {
-      const data = await res.json();
-      console.log({ data });
-      setCard(data);
-      toast("Submission created successfully", {
-        theme: "dark",
-      });
-      return true;
-    } else {
-      toast.error("Error creating work thread", {
-        theme: "dark",
-      });
-      return false;
-    }
-  };
-
+  const { card, setCard, cardId } = useLocalCard();
+  const [loading, setLoading] = useState(false);
   const updateWorkUnit = async (
     body: WorkUnitDTO,
     workThreadId: string,
     workUnitId: string
   ): Promise<boolean> => {
-    setloading(true);
+    setLoading(true);
     const res = await fetch(
       `${process.env.API_HOST}/card/${card?.id}/updateWorkUnit?threadId=${workThreadId}&workUnitId=${workUnitId}`,
       {
@@ -67,7 +35,7 @@ export default function useSubmission() {
         credentials: "include",
       }
     );
-    setloading(false);
+    setLoading(false);
     if (res.ok) {
       const data = await res.json();
       console.log({ data });
@@ -88,7 +56,7 @@ export default function useSubmission() {
     body: WorkUnitDTO,
     workThreadId: string
   ): Promise<boolean> => {
-    setloading(true);
+    setLoading(true);
     const res = await fetch(
       `${process.env.API_HOST}/card/${card?.id}/createWorkUnit?threadId=${workThreadId}`,
       {
@@ -100,7 +68,7 @@ export default function useSubmission() {
         credentials: "include",
       }
     );
-    setloading(false);
+    setLoading(false);
     if (res.ok) {
       const data = await res.json();
       console.log({ data });
@@ -120,7 +88,6 @@ export default function useSubmission() {
   };
 
   return {
-    createWorkThread,
     updateWorkUnit,
     createWorkUnit,
     loading,

@@ -1,29 +1,29 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 export const tourConfig = [
   {
-    selector: '[data-tour="circle-sidebar-overview-button"]',
+    selector: '[data-tour="circle-options-button"]',
     content: "You can go back to circle overview from here",
     style: {
       backgroundColor: "rgb(20,20,20)",
       color: "rgb(255,255,255,0.8)",
     },
   },
-  {
-    selector: '[data-tour="circle-sidebar-settings-button"]',
-    content: "Change circle settings",
-    style: {
-      backgroundColor: "rgb(20,20,20)",
-      color: "rgb(255,255,255,0.8)",
-    },
-  },
-  {
-    selector: '[data-tour="circle-sidebar-contributors-button"]',
-    content: "View the contributors part of the circle and invite new members",
-    style: {
-      backgroundColor: "rgb(20,20,20)",
-      color: "rgb(255,255,255,0.8)",
-    },
-  },
+  // {
+  //   selector: '[data-tour="circle-sidebar-settings-button"]',
+  //   content: "Change circle settings",
+  //   style: {
+  //     backgroundColor: "rgb(20,20,20)",
+  //     color: "rgb(255,255,255,0.8)",
+  //   },
+  // },
+  // {
+  //   selector: '[data-tour="circle-sidebar-contributors-button"]',
+  //   content: "View the contributors part of the circle and invite new members",
+  //   style: {
+  //     backgroundColor: "rgb(20,20,20)",
+  //     color: "rgb(255,255,255,0.8)",
+  //   },
+  // },
   // {
   //   selector: '[data-tour="circle-sidebar-create-project-button"]',
   //   content: "Create a new project in the circle",
@@ -41,16 +41,10 @@ export const tourConfig = [
   //   },
   // },
   {
-    selector: '[data-tour="header-project-settings-button"]',
+    selector: '[data-tour="project-options-button"]',
     content: "Change project level settings from here",
-    style: {
-      backgroundColor: "rgb(20,20,20)",
-      color: "rgb(255,255,255,0.8)",
-    },
-  },
-  {
-    selector: '[data-tour="header-batch-pay-button"]',
-    content: "Execute a batch payment for multiple cards",
+    highlightedSelectors: ['[data-tour="project-settings-button"]'],
+    mutationObservables: ['[data-tour="project-settings-button"]'],
     style: {
       backgroundColor: "rgb(20,20,20)",
       color: "rgb(255,255,255,0.8)",

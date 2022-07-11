@@ -5,7 +5,7 @@ import {
   LocalCardContext,
   useProviderLocalCard,
 } from "@/app/modules/Project/CreateCardModal/hooks/LocalCardContext";
-import { CircleType, MemberDetails, ProjectType } from "@/app/types";
+import { CircleType, MemberDetails, ProjectType, Registry } from "@/app/types";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
@@ -34,22 +34,40 @@ const CardPage: NextPage = () => {
       enabled: false,
     }
   );
-  useQuery<MemberDetails>(
+  const { refetch: fetchMemberDetails } = useQuery<MemberDetails>(
     ["memberDetails", cId],
     () =>
       fetch(
         `${process.env.API_HOST}/circle/${circle?.id}/memberDetails?circleIds=${circle?.id}`
       ).then((res) => res.json()),
     {
-      enabled: !!circle?.id,
+      enabled: false,
+    }
+  );
+
+  const { refetch: fetchRegistry } = useQuery<Registry>(
+    ["registry", cId],
+    () =>
+      fetch(`${process.env.API_HOST}/circle/slug/${cId}/getRegistry`).then(
+        (res) => res.json()
+      ),
+    {
+      enabled: false,
     }
   );
 
   useEffect(() => {
     if (!circle && cId) {
       void refetchCircle();
+      void fetchRegistry();
     }
   }, [circle, cId, refetchCircle]);
+
+  useEffect(() => {
+    if (circle?.id) {
+      void fetchMemberDetails();
+    }
+  }, [circle?.id, fetchMemberDetails]);
 
   useEffect(() => {
     if (!project && pId) {
@@ -58,7 +76,6 @@ const CardPage: NextPage = () => {
   }, [project, pId, refetchProject]);
 
   const context = useProviderLocalCard({ createCard: false });
-
   return (
     <>
       <MetaHead />

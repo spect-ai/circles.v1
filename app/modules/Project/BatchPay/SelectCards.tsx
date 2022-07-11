@@ -38,17 +38,19 @@ export default function SelectCards() {
     cardIds: string[]
   ) => {
     // convert cards to string[][]
-    const rows = cardIds?.map((id) => {
-      const card = cards[id];
-      return [
-        <Text key={id} variant="base" weight="semiBold">
-          {card.title}
-        </Text>,
-        <Text key={id} variant="base" weight="semiBold">
-          {`${card.reward.value} ${card.reward.token.symbol}`}
-        </Text>,
-      ];
-    });
+    const rows = cardIds
+      ?.filter((id) => cards[id])
+      .map((id) => {
+        const card = cards[id];
+        return [
+          <Text key={id} variant="base" weight="semiBold">
+            {card.title}
+          </Text>,
+          <Text key={id} variant="base" weight="semiBold">
+            {`${card.reward.value} ${card.reward.token.symbol}`}
+          </Text>,
+        ];
+      });
     return rows;
   };
 
@@ -68,15 +70,25 @@ export default function SelectCards() {
   }));
 
   useEffect(() => {
+    setColumn({
+      value: project.columnOrder[project.columnOrder.length - 1],
+      label:
+        project.columnDetails[
+          project.columnOrder[project.columnOrder.length - 1]
+        ].name,
+    });
+  }, []);
+
+  useEffect(() => {
     if (project?.columnDetails) {
       // filter the project cards to show only the cards with assignee and reward
       const cards = project.columnDetails[column.value]?.cards.filter(
         (card) => {
           return (
-            project.cards[card].assignee.length > 0 &&
-            project.cards[card].assignee[0] !== "" &&
-            project.cards[card].reward.value > 0 &&
-            project.cards[card].status.paid === false
+            project.cards[card]?.assignee.length > 0 &&
+            project.cards[card]?.assignee[0] !== "" &&
+            project.cards[card]?.reward.value > 0 &&
+            project.cards[card]?.status.paid === false
           );
         }
       );

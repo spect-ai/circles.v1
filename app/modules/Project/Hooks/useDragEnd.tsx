@@ -1,11 +1,12 @@
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
-import { ColumnType } from "@/app/types";
+import { CardType, ColumnType } from "@/app/types";
 import { DropResult } from "react-beautiful-dnd";
 import { toast } from "react-toastify";
 import { useLocalProject } from "../Context/LocalProjectContext";
 
 export default function useDragEnd() {
-  const { localProject, setLocalProject, updateProject } = useLocalProject();
+  const { localProject, setLocalProject, updateProject, setUpdating } =
+    useLocalProject();
   const { canMoveCard } = useRoleGate();
 
   const reorder = (list: string[], startIndex: number, endIndex: number) => {
@@ -82,6 +83,7 @@ export default function useDragEnd() {
           },
         },
       });
+      setUpdating(true);
     } else {
       const startTaskIds = Array.from(start.cards); // copy
       startTaskIds.splice(source.index, 1);
@@ -106,26 +108,25 @@ export default function useDragEnd() {
           [newFinish.columnId]: newFinish,
         },
       });
+      setUpdating(true);
     }
-    fetch(
-      `${process.env.API_HOST}/project/${localProject.id}/reorderCard/${draggableId}`,
-      {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          destinationColumnId: destination.droppableId,
-          destinationCardIndex: destination.index,
-        }),
-        credentials: "include",
-      }
-    )
+    fetch(`${process.env.API_HOST}/card/${draggableId}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        columnId: destination.droppableId,
+        cardIndex: destination.index,
+      }),
+      credentials: "include",
+    })
       .then(async (res) => {
-        const data = await res.json();
-        if (data.id) {
-          updateProject(data);
-        }
+        const data: CardType = await res.json();
+        console.log({ data });
+        // if (data.id) {
+        //   updateProject(data.project);
+        // }
       })
       .catch((err) => {
         console.log({ err });

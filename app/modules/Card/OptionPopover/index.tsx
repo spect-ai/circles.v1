@@ -31,17 +31,23 @@ const PopoverOptionContainer = styled(Box)`
 `;
 
 type PopoverOptionProps = {
-  onClick: () => void;
+  onClick: (e?: React.MouseEvent<HTMLElement>) => void;
   children: React.ReactNode;
+  tourId?: string;
 };
 
-export const PopoverOption = ({ children, onClick }: PopoverOptionProps) => (
+export const PopoverOption = ({
+  children,
+  onClick,
+  tourId,
+}: PopoverOptionProps) => (
   <PopoverOptionContainer
     padding="4"
     overflow="hidden"
     cursor="pointer"
     onClick={onClick}
     borderRadius="2xLarge"
+    data-tour={tourId}
   >
     <Text variant="small" weight="semiBold" ellipsis color="textSecondary">
       {children}
@@ -52,7 +58,7 @@ export const PopoverOption = ({ children, onClick }: PopoverOptionProps) => (
 export default function ActionPopover() {
   const [showConfirm, setShowConfirm] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
-  const { onArchive } = useLocalCard();
+  const { onArchive, cardId } = useLocalCard();
   return (
     <>
       <AnimatePresence>
@@ -62,7 +68,7 @@ export default function ActionPopover() {
             handleClose={() => setShowConfirm(false)}
             onConfirm={() => {
               setShowConfirm(false);
-              void onArchive();
+              void onArchive(cardId);
             }}
             onCancel={() => setShowConfirm(false)}
           />

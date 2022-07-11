@@ -1,6 +1,6 @@
 import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { useGlobalContext } from "@/app/context/globalContext";
+import { useGlobal } from "@/app/context/globalContext";
 import useProjectOnboarding from "@/app/services/Onboarding/useProjectOnboarding";
 import { CloseCircleOutlined } from "@ant-design/icons";
 import {
@@ -24,7 +24,7 @@ const Tour = dynamic(() => import("reactour"), {
 export default function Onboarding() {
   const [isOpen, setIsOpen] = useState(true);
   const [isTourOpen, setIsTourOpen] = useState(false);
-  const { setIsSidebarExpanded } = useGlobalContext();
+  const { setIsSidebarExpanded } = useGlobal();
   const { finishOnboarding } = useProjectOnboarding();
   return (
     <>
@@ -43,9 +43,10 @@ export default function Onboarding() {
                 <Stack direction="horizontal">
                   <Box width="full">
                     <PrimaryButton
+                      variant="tertiary"
                       onClick={() => {
                         setIsOpen(false);
-                        setIsTourOpen(true);
+                        finishOnboarding();
                       }}
                       icon={
                         <CloseCircleOutlined

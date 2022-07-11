@@ -40,12 +40,14 @@ export default function Onboarding() {
                   Looks like you are new, would you like to take our onboarding
                   guide?
                 </Text>
+                <Box marginTop="4" />
                 <Stack direction="horizontal">
                   <Box width="full">
                     <PrimaryButton
+                      variant="tertiary"
                       onClick={() => {
                         setIsOpen(false);
-                        setIsTourOpen(true);
+                        finishOnboarding();
                       }}
                       icon={
                         <CloseCircleOutlined

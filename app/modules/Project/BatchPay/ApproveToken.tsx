@@ -1,10 +1,10 @@
 import Loader from "@/app/common/components/Loader";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { useGlobalContext } from "@/app/context/globalContext";
+import { useGlobal } from "@/app/context/globalContext";
 import useERC20 from "@/app/services/Payment/useERC20";
-import { ProjectType } from "@/app/types";
+import { CircleType, ProjectType, Registry } from "@/app/types";
 import { QuestionCircleFilled } from "@ant-design/icons";
-import { Box, Button, IconCheck, Stack, Text } from "degen";
+import { Box, Button, Heading, IconCheck, Stack, Text } from "degen";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { useQuery } from "react-query";
@@ -16,12 +16,15 @@ import { ScrollContainer } from "./SelectCards";
 
 export default function ApproveToken() {
   const { approve, isApproved } = useERC20();
-  const { registry } = useGlobalContext();
   const router = useRouter();
-  const { project: pId } = router.query;
+  const { project: pId, circle: cId } = router.query;
   const { data: project } = useQuery<ProjectType>(["project", pId], {
     enabled: false,
   });
+  const { data: registry } = useQuery<Registry>(["registry", cId], {
+    enabled: false,
+  });
+
   const { data } = useAccount();
   const [loading, setLoading] = useState(true);
   const { batchPayInfo, setStep, setIsOpen } = useBatchPayContext();
@@ -37,13 +40,13 @@ export default function ApproveToken() {
   }>({} as any);
 
   useEffect(() => {
-    console.log("useeffect");
     // initialize tokenStatus
     setLoading(true);
     if (
       project &&
       activeChain?.id.toString() ===
-        project.parents[0].defaultPayment.chain.chainId
+        project.parents[0].defaultPayment.chain.chainId &&
+      registry
     ) {
       const tokenStatus: any = {};
       let index = 0;
@@ -86,6 +89,10 @@ export default function ApproveToken() {
     }
     // set to final step if all tokens approved
   }, [batchPayInfo, activeChain]);
+
+  if (!registry) {
+    return <Heading>Registry not found</Heading>;
+  }
 
   return (
     <Box display="flex" flexDirection="column" justifyContent="space-between">

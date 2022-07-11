@@ -5,11 +5,6 @@ import { useState } from "react";
 import { useQuery } from "react-query";
 import { toast } from "react-toastify";
 
-type ApplyDTO = {
-  title: string;
-  content: string;
-};
-
 type PickApplicationDTO = {
   applicationIds: string[];
 };
@@ -59,38 +54,7 @@ export default function useApplication() {
     }
   };
 
-  const createApplication = async (body: ApplyDTO): Promise<boolean> => {
-    setLoading(true);
-    const res = await fetch(
-      `${process.env.API_HOST}/card/${card?.id}/createApplication`,
-      {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(body),
-        credentials: "include",
-      }
-    );
-    setLoading(false);
-    if (res.ok) {
-      const data = await res.json();
-      console.log({ data });
-      setCard(data);
-      toast("Application sent successfully", {
-        theme: "dark",
-      });
-      return true;
-    } else {
-      toast.error("Error sending application", {
-        theme: "dark",
-      });
-      return false;
-    }
-  };
-
   return {
-    createApplication,
     pickApplications,
     loading,
   };

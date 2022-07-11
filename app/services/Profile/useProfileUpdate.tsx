@@ -1,4 +1,4 @@
-import { useQueryClient } from "react-query";
+import queryClient from "@/app/common/utils/queryClient";
 import { toast } from "react-toastify";
 
 interface UpdateProfileDTO {
@@ -8,8 +8,6 @@ interface UpdateProfileDTO {
 }
 
 export default function useProfileUpdate() {
-  const queryClient = useQueryClient();
-
   const updateProfile = async (body: UpdateProfileDTO) => {
     const res = await fetch(`${process.env.API_HOST}/user/me`, {
       headers: {

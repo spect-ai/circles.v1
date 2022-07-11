@@ -1,7 +1,14 @@
-import { ProjectType } from "@/app/types";
+import queryClient from "@/app/common/utils/queryClient";
+import { useGlobal } from "@/app/context/globalContext";
+import {
+  CardType,
+  CircleType,
+  ProjectCardActionsType,
+  ProjectType,
+} from "@/app/types";
 import { useRouter } from "next/router";
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { useQuery, useQueryClient } from "react-query";
+import { useQuery } from "react-query";
 import { toast } from "react-toastify";
 
 type LocalProjectContextType = {
@@ -11,6 +18,19 @@ type LocalProjectContextType = {
   setError: React.Dispatch<React.SetStateAction<boolean>>;
   loading: boolean;
   updateProject: (project: ProjectType) => void;
+  updating: boolean;
+  setUpdating: React.Dispatch<React.SetStateAction<boolean>>;
+  projectCardActions: ProjectCardActionsType | undefined;
+  view: number;
+  setView: React.Dispatch<React.SetStateAction<number>>;
+  batchPayModalOpen: boolean;
+  setBatchPayModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  selectedCard: CardType | null;
+  setSelectedCard: React.Dispatch<React.SetStateAction<CardType | null>>;
+  isApplyModalOpen: boolean;
+  setIsApplyModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  isSubmitModalOpen: boolean;
+  setIsSubmitModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export const LocalProjectContext = createContext<LocalProjectContextType>(
@@ -19,8 +39,8 @@ export const LocalProjectContext = createContext<LocalProjectContextType>(
 
 export function useProviderLocalProject() {
   const router = useRouter();
-  const { project: pId } = router.query;
-  const { data: project, refetch: fetchProject } = useQuery<ProjectType>(
+  const { project: pId, cirle: cId } = router.query;
+  const { refetch: fetchProject } = useQuery<ProjectType>(
     ["project", pId],
     () =>
       fetch(`${process.env.API_HOST}/project/slug/${pId as string}`).then(
@@ -28,33 +48,61 @@ export function useProviderLocalProject() {
       ),
     {
       enabled: false,
-      notifyOnChangeProps: "tracked",
     }
   );
-  const [loading, setLoading] = useState(false);
 
-  const queryClient = useQueryClient();
+  const { connectedUser } = useGlobal();
+
+  const { data: projectCardActions, refetch: fetchQuickActions } =
+    useQuery<ProjectCardActionsType>(
+      ["projectCardActions", pId],
+      () =>
+        fetch(`${process.env.API_HOST}/project/${pId}/validActions`, {
+          credentials: "include",
+        }).then((res) => res.json()),
+      {
+        enabled: false,
+      }
+    );
+
+  const [loading, setLoading] = useState(false);
+  const [updating, setUpdating] = useState(false);
+  const [view, setView] = useState(0);
 
   const [localProject, setLocalProject] = useState({} as ProjectType);
   const [error, setError] = useState(false);
+
+  const [batchPayModalOpen, setBatchPayModalOpen] = useState(false);
+  const [isApplyModalOpen, setIsApplyModalOpen] = useState(false);
+  const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false);
+
+  const [selectedCard, setSelectedCard] = useState({} as CardType | null);
+
   const updateProject = (project: ProjectType) => {
     queryClient.setQueryData(["project", pId], project);
     setLocalProject(project);
   };
 
   useEffect(() => {
+    void fetchQuickActions();
+  }, [connectedUser, pId]);
+
+  useEffect(() => {
     if (pId) {
+      setLoading(true);
       fetchProject()
         .then((res) => {
           if (res.data) {
             setLocalProject(res.data);
           }
+          setLoading(false);
         })
         .catch((err) => {
           console.error(err);
           toast.error("Something went wrong", {
             theme: "dark",
           });
+          setLoading(false);
         });
     }
   }, [pId]);
@@ -66,6 +114,19 @@ export function useProviderLocalProject() {
     setError,
     loading,
     updateProject,
+    updating,
+    setUpdating,
+    projectCardActions: !connectedUser ? undefined : projectCardActions,
+    view,
+    setView,
+    batchPayModalOpen,
+    setBatchPayModalOpen,
+    selectedCard,
+    setSelectedCard,
+    isApplyModalOpen,
+    setIsApplyModalOpen,
+    isSubmitModalOpen,
+    setIsSubmitModalOpen,
   };
 }
 

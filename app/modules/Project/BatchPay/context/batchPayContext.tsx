@@ -2,7 +2,6 @@ import { BatchPayInfo } from "@/app/types";
 import { createContext, useContext, useState } from "react";
 
 interface BatchPayContextType {
-  isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
   batchPayInfo: BatchPayInfo | undefined;
   setBatchPayInfo: (batchPayInfo: BatchPayInfo) => void;
@@ -18,16 +17,17 @@ export const BatchPayContext = createContext<BatchPayContextType>(
   {} as BatchPayContextType
 );
 
-export function useProviderBatchPayContext() {
-  const [isOpen, setIsOpen] = useState(false);
+export function useProviderBatchPayContext({
+  setIsOpen,
+}: {
+  setIsOpen: (isOpen: boolean) => void;
+}) {
   const [batchPayInfo, setBatchPayInfo] = useState<BatchPayInfo>();
-  const [step, setStep] = useState(0);
+  const [step, setStep] = useState(-1);
   const [currencyCards, setCurrencyCards] = useState<string[]>();
   const [tokenCards, setTokenCards] = useState<string[]>();
 
   return {
-    isOpen,
-    setIsOpen,
     batchPayInfo,
     setBatchPayInfo,
     step,
@@ -36,6 +36,7 @@ export function useProviderBatchPayContext() {
     setCurrencyCards,
     tokenCards,
     setTokenCards,
+    setIsOpen,
   };
 }
 

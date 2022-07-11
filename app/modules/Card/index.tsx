@@ -1,6 +1,7 @@
 import Breadcrumbs from "@/app/common/components/Breadcrumbs";
 import Editor from "@/app/common/components/Editor";
 import Loader from "@/app/common/components/Loader";
+import PrimaryButton from "@/app/common/components/PrimaryButton";
 import Tabs from "@/app/common/components/Tabs";
 import useCardDynamism from "@/app/services/Card/useCardDynamism";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
@@ -9,13 +10,15 @@ import {
   IconChevronDown,
   IconChevronUp,
   IconClose,
+  IconEth,
+  IconUserSolid,
   Stack,
   Tag,
 } from "degen";
 import { AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React, { memo, useState } from "react";
+import React, { memo, useEffect, useState } from "react";
 import { ToastContainer } from "react-toastify";
 import styled from "styled-components";
 import BatchPay from "../Project/BatchPay";
@@ -29,13 +32,14 @@ import CardReviewer from "../Project/CreateCardModal/modals/CardReviewer";
 import CardReward from "../Project/CreateCardModal/modals/CardReward";
 import CardType from "../Project/CreateCardModal/modals/CardType";
 import { IconButton } from "../Project/ProjectHeading";
-import ActionPopover from "./ActionPopover";
+import ActionPopover from "./OptionPopover";
 import Activity from "./Activity";
 import Application from "./Application";
 import Apply from "./Apply";
 import AssignToMe from "./AssignToMe";
 import Submission from "./Submission";
 import SubTasks from "./SubTasks";
+import Discuss from "./Discuss";
 
 const Container = styled(Box)`
   ::-webkit-scrollbar {
@@ -65,11 +69,12 @@ function Card() {
   const [selectedTab, setSelectedTab] = useState(0);
   const handleTabClick = (index: number) => setSelectedTab(index);
   const {
+    cardId,
     loading,
+    description,
     title,
     setTitle,
     labels,
-    description,
     setDescription,
     project,
     onCardUpdate,
@@ -87,11 +92,34 @@ function Card() {
   const { circle: cId, project: pId, card: tId } = router.query;
 
   const [isDirty, setIsDirty] = useState(false);
+  const [batchPayModalOpen, setBatchPayModalOpen] = useState(false);
+  const [isApplyModalOpen, setIsApplyModalOpen] = useState(false);
+
+  useEffect(() => {
+    if (isDirty) {
+      void onCardUpdate();
+    }
+  }, [description]);
+
+  if (!tId) {
+    return null;
+  }
+
+  if (loading) {
+    return <Loader loading text="Fetching" />;
+  }
 
   return (
     <Box padding="4">
+      <AnimatePresence>
+        {batchPayModalOpen && (
+          <BatchPay card={card} setIsOpen={setBatchPayModalOpen} />
+        )}
+        {isApplyModalOpen && (
+          <Apply setIsOpen={setIsApplyModalOpen} cardId={card?.id as string} />
+        )}
+      </AnimatePresence>
       <Box
-        borderWidth="0.375"
         borderRadius="large"
         backgroundColor="background"
         style={{
@@ -115,15 +143,12 @@ function Card() {
             <Box
               display="flex"
               flexDirection="row"
-              borderWidth="0.375"
               borderRadius="large"
               backgroundColor="foregroundSecondary"
             >
               <IconButton
                 color="textSecondary"
-                borderRightWidth="0.375"
                 paddingX="2"
-                borderLeftRadius="large"
                 onClick={() => {
                   // get current card index
                   if (project) {
@@ -145,7 +170,6 @@ function Card() {
               <IconButton
                 color="textSecondary"
                 paddingX="2"
-                borderRightRadius="large"
                 onClick={() => {
                   // get current card index
                   if (project) {
@@ -167,129 +191,133 @@ function Card() {
             </Box>
           </Stack>
         </Box>
-        {loading && <Loader loading={loading} text="" />}
-        {!loading && (
-          <Stack direction="horizontal">
-            <Box width="3/4">
-              <Container padding="8">
-                <Box marginLeft="1">
-                  {card?.parent && (
-                    <Breadcrumbs
-                      crumbs={[
-                        {
-                          name: card?.parent.title,
-                          href: `/${cId}/${pId}/${card?.parent.slug}`,
-                        },
-                        {
-                          name: `#${card?.slug}`,
-                          href: "",
-                        },
-                      ]}
-                    />
-                  )}
-                </Box>
-                <Stack direction="vertical">
-                  <Stack direction="horizontal">
-                    <NameInput
-                      placeholder="Card name"
-                      value={title}
-                      disabled={!canTakeAction("cardTitle")}
-                      onChange={(e) => {
-                        setTitle(e.target.value);
-                        setIsDirty(true);
-                      }}
-                      onBlur={() => {
-                        if (isDirty) {
-                          void onCardUpdate();
-                          setIsDirty(false);
-                        }
-                      }}
-                    />
-                    {canTakeAction("cardPopoverActions") && <ActionPopover />}
-                  </Stack>
-                  <Stack direction="horizontal" wrap>
-                    {canTakeAction("cardLabels") && <CardLabels />}
-                    {labels.map((label) => (
-                      <Tag key={label}>{label}</Tag>
-                    ))}
-                  </Stack>
-                  <SubTasks createCard={false} />
-                  <Box
-                    style={{
-                      minHeight: "10rem",
-                      maxHeight: "25rem",
-                      overflowY: "auto",
+
+        <Stack direction="horizontal">
+          <Box width="3/4">
+            <Container padding="8">
+              <Box marginLeft="1">
+                {card?.parent && (
+                  <Breadcrumbs
+                    crumbs={[
+                      {
+                        name: card?.parent.title,
+                        href: `/${cId}/${pId}/${card?.parent.slug}`,
+                      },
+                      {
+                        name: `#${card?.slug}`,
+                        href: "",
+                      },
+                    ]}
+                  />
+                )}
+              </Box>
+              <Stack direction="vertical">
+                <Stack direction="horizontal">
+                  <NameInput
+                    placeholder="Card name"
+                    value={title}
+                    disabled={!canTakeAction("cardTitle")}
+                    onChange={(e) => {
+                      setTitle(e.target.value);
+                      setIsDirty(true);
                     }}
-                    marginRight="4"
-                    color="accent"
-                  >
-                    {!loading && tId && (
+                    onBlur={() => {
+                      if (isDirty) {
+                        void onCardUpdate();
+                        setIsDirty(false);
+                      }
+                    }}
+                  />
+                  {canTakeAction("cardPopoverActions") && <ActionPopover />}
+                </Stack>
+                <Stack direction="horizontal" wrap>
+                  {canTakeAction("cardLabels") && <CardLabels />}
+                  {labels.map((label) => (
+                    <Tag key={label}>{label}</Tag>
+                  ))}
+                </Stack>
+                <SubTasks createCard={false} />
+                <Box
+                  style={{
+                    minHeight: "10rem",
+                    maxHeight: "25rem",
+                    overflowY: "auto",
+                  }}
+                  marginRight="4"
+                  color="accent"
+                >
+                  {!loading && (
+                    <div key={`${cardId}-description`}>
                       <Editor
-                        value={description}
-                        onChange={(txt) => {
-                          setIsDirty(true);
-                          setDescription(txt);
-                        }}
+                        value={card?.description as string}
                         placeholder="Add a description"
                         disabled={!canTakeAction("cardDescription")}
-                        onBlur={() => {
-                          if (isDirty) {
-                            console.log("blur");
-                            void onCardUpdate();
-                            setIsDirty(false);
-                          }
+                        onSave={(txt) => {
+                          setDescription(txt);
                         }}
+                        isDirty={isDirty}
+                        setIsDirty={setIsDirty}
                       />
-                    )}
-                  </Box>
-                  <Tabs
-                    tabs={getTabs()}
-                    selectedTab={selectedTab}
-                    onTabClick={handleTabClick}
-                    orientation="horizontal"
-                    unselectedColor="transparent"
-                    shape="circle"
-                  />
-                  <AnimatePresence initial={false}>
-                    {selectedTab === activityTab && <Activity />}
-                    {selectedTab === applicationTab && !loading && (
-                      <Application />
-                    )}
-                    {selectedTab === submissionTab && !loading && (
-                      <Submission />
-                    )}
-                  </AnimatePresence>
-                </Stack>
-              </Container>
-            </Box>
-            <Box
-              width="1/4"
-              borderLeftWidth="0.375"
-              paddingX="4"
-              paddingTop="8"
-            >
-              {project?.id && (
-                <Stack>
-                  <CardType />
-                  <CardColumn />
-                  <CardAssignee />
-                  <CardReviewer />
-                  <CardDeadline />
-                  <CardPriority />
-                  <CardReward />
-                  {/* <DiscordThread /> */}
-                  {canTakeAction("cardPayment") && <BatchPay card={card} />}
-                  {cardType === "Bounty" && canTakeAction("cardApply") && (
-                    <Apply />
+                    </div>
                   )}
-                  {cardType === "Task" && canTakeAction("assignToMe") && (
-                    <AssignToMe />
+                </Box>
+                <Tabs
+                  tabs={getTabs()}
+                  selectedTab={selectedTab}
+                  onTabClick={handleTabClick}
+                  orientation="horizontal"
+                  unselectedColor="transparent"
+                  shape="circle"
+                />
+                <AnimatePresence initial={false}>
+                  {selectedTab === activityTab && <Activity />}
+                  {selectedTab === applicationTab && !loading && (
+                    <Application />
                   )}
-                </Stack>
-              )}
-            </Box>
-          </Stack>
-        )}
+                  {selectedTab === submissionTab && !loading && <Submission />}
+                </AnimatePresence>
+              </Stack>
+            </Container>
+          </Box>
+          <Box width="1/4" borderLeftWidth="0" paddingX="4" paddingTop="8">
+            {project?.id && (
+              <Stack>
+                <CardType />
+                <CardColumn />
+                <CardAssignee />
+                <CardReviewer />
+                <CardDeadline />
+                <CardPriority />
+                <CardReward />
+                {/* <DiscordThread /> */}
+                {canTakeAction("cardPayment") && (
+                  <PrimaryButton
+                    onClick={() => {
+                      setBatchPayModalOpen(true);
+                    }}
+                    icon={<IconEth />}
+                  >
+                    Pay
+                  </PrimaryButton>
+                )}
+                {cardType === "Bounty" && canTakeAction("cardApply") && (
+                  <PrimaryButton
+                    icon={<IconUserSolid />}
+                    onClick={() => {
+                      setIsApplyModalOpen(true);
+                    }}
+                  >
+                    Apply
+                  </PrimaryButton>
+                )}
+                {cardType === "Task" && canTakeAction("assignToMe") && (
+                  <AssignToMe />
+                )}
+                {project.parents[0].discordGuildId && <Discuss />}
+              </Stack>
+            )}
+          </Box>
+        </Stack>
       </Box>
     </Box>
   );

@@ -1,5 +1,5 @@
 import { labelsMapping } from "@/app/common/utils/constants";
-import { useGlobalContext } from "@/app/context/globalContext";
+import { useGlobal } from "@/app/context/globalContext";
 import {
   cardTypes,
   priority,
@@ -12,17 +12,18 @@ import { useQuery } from "react-query";
 export default function useModalOptions() {
   const router = useRouter();
   const { circle: cId } = router.query;
-  const { data: memberDetails, refetch } = useQuery<MemberDetails>(
-    ["memberDetails", cId],
-    {
-      enabled: false,
-    }
-  );
+  const {
+    data: memberDetails,
+    refetch,
+    error,
+  } = useQuery<MemberDetails>(["memberDetails", cId], {
+    enabled: false,
+  });
   const { project } = useLocalCard();
-  const { connectedUser } = useGlobalContext();
+  const { connectedUser } = useGlobal();
 
   const fetchMemberDetails = () => {
-    void refetch;
+    void refetch();
   };
 
   const getOptions = (type: string) => {

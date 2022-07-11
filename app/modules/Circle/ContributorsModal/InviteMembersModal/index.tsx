@@ -3,7 +3,7 @@ import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { CircleType } from "@/app/types";
 import { SendOutlined } from "@ant-design/icons";
-import { Box, Button, Stack, Tag, Text } from "degen";
+import { Box, Stack, Tag, Text } from "degen";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
@@ -37,6 +37,7 @@ function InviteMemberModal() {
     <>
       <Box width="1/3" marginBottom="2">
         <PrimaryButton
+          tourId="invite-member-button"
           onClick={() => {
             setIsOpen(true);
           }}
@@ -59,28 +60,20 @@ function InviteMemberModal() {
                 <Text align="center">Role</Text>
                 <Stack direction="horizontal">
                   {roleOptions.map((option) => (
-                    <motion.button
-                      key={option.name}
-                      whileHover={{
-                        scale: 1.03,
-                      }}
-                      whileTap={{ scale: 0.97 }}
+                    <Box
+                      key={option.role}
+                      cursor="pointer"
                       onClick={() => setRole(option)}
-                      style={{
-                        background: "transparent",
-                        border: "none",
-                        cursor: "pointer",
-                        padding: "0rem",
-                      }}
                     >
                       <Tag
                         tone={
                           role?.name === option.name ? "accent" : "secondary"
                         }
+                        hover
                       >
                         <Box paddingX="2">{option.name}</Box>
                       </Tag>
-                    </motion.button>
+                    </Box>
                   ))}
                 </Stack>
                 <Accordian name="Advance options" defaultOpen={false}>
@@ -147,14 +140,14 @@ function InviteMemberModal() {
                     const expire = new Date().getTime() + expiry.expiry * 1000;
                     setIsLoading(true);
                     fetch(
-                      `${process.env.API_HOST}/circle/invite/${circle?.id}`,
+                      `${process.env.API_HOST}/circle/${circle?.id}/invite`,
                       {
                         method: "PATCH",
                         headers: {
                           "Content-Type": "application/json",
                         },
                         body: JSON.stringify({
-                          role: role.role,
+                          roles: [role.role],
                           uses: uses.uses,
                           expires: new Date(expire).toISOString(),
                         }),

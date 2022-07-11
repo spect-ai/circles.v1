@@ -1,10 +1,10 @@
 import { Box, Button, IconChevronRight, Input, Stack, Text } from "degen";
 import { motion, AnimatePresence } from "framer-motion";
 import { matchSorter } from "match-sorter";
-import { FC, useRef, useState } from "react";
+import { FC, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 
-type OptionType = {
+export type OptionType = {
   label: string;
   value: string;
 };
@@ -52,6 +52,11 @@ const Dropdown: FC<Props> = ({ options, selected, onChange, title }) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [inputValue, setInputValue] = useState(selected?.label);
   const [filteredOptions, setFilteredOptions] = useState(options);
+
+  useEffect(() => {
+    setFilteredOptions(options);
+  }, [options]);
+
   return (
     <>
       <Box style={{ width: "20rem" }}>

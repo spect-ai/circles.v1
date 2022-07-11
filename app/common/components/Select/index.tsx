@@ -14,8 +14,10 @@ interface Props {
   onChange: (value: option) => void;
 }
 
-const OptionContainer = styled(Box)`
+const OptionContainer = styled(Box)<{ isSelected: boolean }>`
   cursor: pointer;
+  border-color: ${({ isSelected }) =>
+    isSelected ? "rgb(191, 90, 242, 1)" : "accent"};
   &:hover {
     border-color: rgb(191, 90, 242, 1);
   }
@@ -38,7 +40,8 @@ const Select: FC<Props> = ({ options, value, onChange }) => {
             transitionDuration="500"
             borderRadius="2xLarge"
             padding="4"
-            borderColor={value.value === val ? "accent" : "foregroundSecondary"}
+            isSelected={value.value === val}
+            // borderColor={value.value === val ? "accent" : "foregroundSecondary"}
             width="32"
           >
             <Text align="center">{label}</Text>

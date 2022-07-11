@@ -8,6 +8,7 @@ import { Avatar, Box, Button, Stack, Text } from "degen";
 import React, { useState } from "react";
 import { Tooltip } from "react-tippy";
 import { useLocalProject } from "../Context/LocalProjectContext";
+import { useLocalCard } from "../CreateCardModal/hooks/LocalCardContext";
 import { useBatchPayContext } from "./context/batchPayContext";
 import { ScrollContainer } from "./SelectCards";
 
@@ -19,6 +20,7 @@ export default function CurrencyPayment() {
     useBatchPayContext();
 
   const { updateProject, localProject: project } = useLocalProject();
+  const { setCard, cardId } = useLocalCard();
 
   const formatRows = () => {
     const rows: any[] = [];
@@ -111,7 +113,9 @@ export default function CurrencyPayment() {
                     );
                     console.log({ res });
                     if (res) {
-                      updateProject(res);
+                      updateProject && updateProject(res);
+                      setCard && setCard(res.cards[cardId]);
+
                       setLoading(false);
                       if (tokenCards && tokenCards?.length > 0) {
                         setStep(2);

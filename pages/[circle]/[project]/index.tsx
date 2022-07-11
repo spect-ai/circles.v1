@@ -6,7 +6,7 @@ import {
   useProviderLocalProject,
 } from "@/app/modules/Project/Context/LocalProjectContext";
 import ProjectHeading from "@/app/modules/Project/ProjectHeading";
-import { CircleType, MemberDetails } from "@/app/types";
+import { CircleType, MemberDetails, Registry } from "@/app/types";
 import { AnimatePresence } from "framer-motion";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
@@ -37,9 +37,22 @@ const ProjectPage: NextPage = () => {
       enabled: false,
     }
   );
+
+  const { refetch: fetchRegistry } = useQuery<Registry>(
+    ["registry", cId],
+    () =>
+      fetch(`${process.env.API_HOST}/circle/slug/${cId}/getRegistry`).then(
+        (res) => res.json()
+      ),
+    {
+      enabled: false,
+    }
+  );
+
   useEffect(() => {
     if (!circle && cId) {
       void fetchCircle();
+      void fetchRegistry();
     }
   }, [circle, cId]);
 

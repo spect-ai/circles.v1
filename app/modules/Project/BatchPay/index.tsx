@@ -1,11 +1,7 @@
 import Modal from "@/app/common/components/Modal";
-import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { CardType } from "@/app/types";
-import { Button, IconEth, Stack, Text } from "degen";
-import { AnimatePresence } from "framer-motion";
 import { useEffect } from "react";
-import { Tooltip } from "react-tippy";
-import { PopoverOption } from "../../Card/ActionPopover";
+import { useLocalProject } from "../Context/LocalProjectContext";
 import ApproveToken from "./ApproveToken";
 import {
   BatchPayContext,
@@ -17,20 +13,15 @@ import TokenPayment from "./TokenPayment";
 
 interface Props {
   card?: CardType;
+  setIsOpen: (isOpen: boolean) => void;
 }
 
-export default function BatchPay({ card }: Props) {
-  const context = useProviderBatchPayContext();
+export default function BatchPay({ card, setIsOpen }: Props) {
+  const context = useProviderBatchPayContext({ setIsOpen });
+  const { localProject } = useLocalProject();
 
-  const {
-    setIsOpen,
-    isOpen,
-    step,
-    setStep,
-    setTokenCards,
-    setCurrencyCards,
-    setBatchPayInfo,
-  } = context;
+  const { step, setStep, setTokenCards, setCurrencyCards, setBatchPayInfo } =
+    context;
 
   // function to distribute reward equally among the assignees and return the array of reward of values
   const distributeReward = (reward: number, assignees: string[]) => {
@@ -44,7 +35,7 @@ export default function BatchPay({ card }: Props) {
 
   useEffect(() => {
     // set token card and stuff and skip the step dependig on the card reward token address
-    if (card && isOpen) {
+    if (card) {
       if (card.reward?.token.address === "0x0") {
         setCurrencyCards([card.id]);
         setBatchPayInfo({
@@ -82,30 +73,26 @@ export default function BatchPay({ card }: Props) {
         });
         setStep(2);
       }
+    } else {
+      setStep(0);
     }
-  }, [isOpen]);
+  }, []);
 
   return (
     <BatchPayContext.Provider value={context}>
-      {card ? (
-        <PrimaryButton onClick={() => setIsOpen(true)} icon={<IconEth />}>
+      {/* {card ? (
+        <PrimaryButton
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsOpen(true);
+          }}
+          icon={<IconEth />}
+        >
           Pay
         </PrimaryButton>
       ) : (
-        // <Button
-        //   data-tour="header-batch-pay-button"
-        //   size="small"
-        //   variant="transparent"
-        //   shape="circle"
-        //   onClick={(e: any) => {
-        //     setIsOpen(true);
-        //   }}
-        // >
-        //   <Tooltip html={<Text>Batch Pay</Text>}>
-        //     <IconEth />
-        //   </Tooltip>
-        // </Button>
         <PopoverOption
+          tourId="batch-pay-button"
           onClick={() => {
             setIsOpen(true);
           }}
@@ -115,22 +102,18 @@ export default function BatchPay({ card }: Props) {
             batch Pay
           </Stack>
         </PopoverOption>
-      )}
-      <AnimatePresence>
-        {isOpen && (
-          <Modal
-            title="Batch Payment"
-            handleClose={() => setIsOpen(false)}
-            height="40rem"
-            size="large"
-          >
-            {step === 0 && <SelectCards />}
-            {step === 1 && <CurrencyPayment />}
-            {step === 2 && <ApproveToken />}
-            {step === 3 && <TokenPayment />}
-          </Modal>
-        )}
-      </AnimatePresence>
+      )} */}
+      <Modal
+        title="Batch Payment"
+        handleClose={() => setIsOpen(false)}
+        height="40rem"
+        size="large"
+      >
+        {step === 0 && localProject && <SelectCards />}
+        {step === 1 && <CurrencyPayment />}
+        {step === 2 && <ApproveToken />}
+        {step === 3 && <TokenPayment />}
+      </Modal>
     </BatchPayContext.Provider>
   );
 }

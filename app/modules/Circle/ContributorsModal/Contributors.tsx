@@ -1,66 +1,68 @@
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
-import { UserType } from "@/app/types";
-import { Box, Heading, Stack } from "degen";
+import { CircleType, MemberDetails } from "@/app/types";
+import { Box, Heading, Stack, Text } from "degen";
+import { useRouter } from "next/router";
 import React from "react";
-import InviteMemberModal from "../InviteMembersModal";
+import { useQuery } from "react-query";
+import InviteMemberModal from "./InviteMembersModal";
 import MemberDisplay from "./MemberDisplay";
 
-type Props = {
-  members: string[];
-  memberDetails: {
-    [key: string]: UserType;
-  };
-  roles: { [key: string]: string[] };
-};
-
-function Contributors({ members, memberDetails, roles }: Props) {
+function Contributors() {
   const { canDo } = useRoleGate();
+
+  const router = useRouter();
+  const { circle: cId } = router.query;
+  const { data: circle } = useQuery<CircleType>(["circle", cId], {
+    enabled: false,
+  });
+
+  const { data: memberDetails } = useQuery<MemberDetails>(
+    ["memberDetails", cId],
+    {
+      enabled: false,
+    }
+  );
+
+  if (!circle) {
+    return <div>Loading...</div>;
+  }
+
+  const RoleSection = ({ roleName }: { roleName: string }) => {
+    let isMemberThere = false;
+    return (
+      <Box>
+        <Heading>{roleName}</Heading>
+        <Box display="flex" flexWrap="wrap">
+          {circle?.members.map((mem) => {
+            // if no member has role keep track of it
+            if (circle.memberRoles[mem]?.includes(roleName)) {
+              isMemberThere = true;
+              return (
+                <MemberDisplay
+                  key={mem}
+                  member={mem}
+                  memberDetails={memberDetails?.memberDetails}
+                />
+              );
+            }
+          })}
+          {!isMemberThere && (
+            <Box marginTop="4">
+              <Text variant="label">No members have this role</Text>
+            </Box>
+          )}
+        </Box>
+      </Box>
+    );
+  };
+
   return (
     <Box padding="2">
       {canDo(["steward"]) && <InviteMemberModal />}
       <Stack>
-        <Heading>Stewards</Heading>
-        <Box display="flex" flexWrap="wrap">
-          {members.map((mem) => {
-            if (roles[mem]?.includes("steward")) {
-              return (
-                <MemberDisplay
-                  key={mem}
-                  member={mem}
-                  memberDetails={memberDetails}
-                />
-              );
-            }
-          })}
-        </Box>
-        <Heading>Contributors</Heading>
-        <Box display="flex" flexWrap="wrap">
-          {members.map((mem) => {
-            if (roles[mem]?.includes("contributor")) {
-              return (
-                <MemberDisplay
-                  key={mem}
-                  member={mem}
-                  memberDetails={memberDetails}
-                />
-              );
-            }
-          })}
-        </Box>
-        <Heading>Members</Heading>
-        <Box display="flex" flexWrap="wrap">
-          {members.map((mem) => {
-            if (roles[mem]?.includes("member")) {
-              return (
-                <MemberDisplay
-                  key={mem}
-                  member={mem}
-                  memberDetails={memberDetails}
-                />
-              );
-            }
-          })}
-        </Box>
+        {Object.keys(circle?.roles).map((role) => (
+          <RoleSection key={role} roleName={role} />
+        ))}
       </Stack>
     </Box>
   );

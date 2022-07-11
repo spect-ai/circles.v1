@@ -1,8 +1,9 @@
 import { Chain, Registry, Token } from "@/app/types";
+import { id } from "ethers/lib/utils";
 
 export function getFlattenedNetworks(registry: Registry) {
+  if (!registry) return null;
   const networks: Array<Chain> = [];
-
   for (const networkId of Object.keys(registry)) {
     networks.push({
       name: registry[networkId].name,
@@ -27,7 +28,7 @@ export function getFlattenedNetworks(registry: Registry) {
 // }
 
 export function getFlattenedCurrencies(registry: Registry, chainId: string) {
-  if (!chainId) {
+  if (!chainId || !registry) {
     return [];
   }
   //   const currencies = getFlattenedTokens(registry, chainId);

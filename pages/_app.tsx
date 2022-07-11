@@ -1,9 +1,9 @@
 import { ThemeProvider } from "degen";
 import "degen/styles";
 import type { AppProps } from "next/app";
-import { Hydrate, QueryClient, QueryClientProvider } from "react-query";
-import { useRef } from "react";
+import { Hydrate, QueryClientProvider } from "react-query";
 
+import "@fontsource/inter/300.css";
 import "@fontsource/inter/400.css";
 import "@fontsource/inter/500.css";
 import "@fontsource/inter/600.css";
@@ -32,6 +32,7 @@ import { MetaMaskConnector } from "wagmi/connectors/metaMask";
 import { WalletConnectConnector } from "wagmi/connectors/walletConnect";
 import { AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
+import queryClient from "@/app/common/utils/queryClient";
 import GlobalContextProvider from "@/app/context/globalContext";
 
 const alchemyId = process.env.ALCHEMY_KEY;
@@ -73,13 +74,12 @@ const wagmiClient = createClient({
 });
 
 function MyApp({ Component, pageProps }: AppProps) {
-  const queryClient = useRef(new QueryClient());
   const router = useRouter();
   const url = `https:/circles.spect.network/${router.route}`;
   return (
     <WagmiConfig client={wagmiClient}>
       <ThemeProvider defaultMode="dark" defaultAccent="purple">
-        <QueryClientProvider client={queryClient.current}>
+        <QueryClientProvider client={queryClient}>
           <GlobalContextProvider>
             <Hydrate state={pageProps.dehydratedState}>
               <AnimatePresence

@@ -1,34 +1,44 @@
-import React from "react";
 import RichMarkdownEditor from "rich-markdown-editor";
 import { toast } from "react-toastify";
 import dark from "./styles/theme";
 import { storeImage } from "../../utils/ipfs";
+import { memo, useState } from "react";
 
 type Props = {
   value: string;
-  onChange: (val: string) => void;
-  onBlur?: () => void;
+  onChange?: (val: string) => void;
+  onSave?: (val: string) => void;
   placeholder?: string;
   disabled?: boolean;
   tourId?: string;
+  setIsDirty?: (val: boolean) => void;
+  isDirty?: boolean;
 };
 
 function Editor({
   value,
-  onChange,
   placeholder,
   disabled,
   tourId,
-  onBlur,
+  onSave,
+  onChange,
+  isDirty,
+  setIsDirty,
 }: Props) {
+  const [content, setcontent] = useState(value);
+
   return (
     <RichMarkdownEditor
       data-tour={tourId}
       dark
       theme={dark}
-      disableExtensions={[]}
+      disableExtensions={["emoji", "table"]}
       defaultValue={value}
-      onChange={(val) => onChange(val())}
+      onChange={(val) => {
+        setIsDirty && setIsDirty(true);
+        setcontent(val());
+        onChange && onChange(val());
+      }}
       onImageUploadStop={() => {
         toast("Uploaded", {
           theme: "dark",
@@ -41,11 +51,15 @@ function Editor({
         return imageGatewayURL;
       }}
       readOnly={disabled || false}
-      onBlur={onBlur}
+      onBlur={() => {
+        if (isDirty) {
+          onSave && onSave(content);
+        }
+      }}
     />
   );
 }
 
-export default Editor;
+export default memo(Editor);
 
 export type { Props as EditorProps };

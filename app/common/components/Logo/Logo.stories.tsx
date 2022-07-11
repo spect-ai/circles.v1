@@ -13,6 +13,7 @@ const Template: Story = (args) => (
   <Logo
     href="/"
     src="https://ipfs.moralis.io:2053/ipfs/QmVYsa4KQyRwBSJxQCmD1rDjyqYd1HJKrDfqLk3KMKLEhn"
+    gradient=""
     {...args}
   />
 );

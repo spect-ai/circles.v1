@@ -1,14 +1,20 @@
-import { useGlobalContext } from "@/app/context/globalContext";
-import { ethers, Signer } from "ethers";
-import { useSigner } from "wagmi";
+import { ethers } from "ethers";
 import useERC20 from "./useERC20";
 import DistributorABI from "@/app/common/contracts/mumbai/distributor.json";
+import { useRouter } from "next/router";
+import { useQuery } from "react-query";
+import { Registry } from "@/app/types";
 
 export default function useDistributor() {
-  const { registry } = useGlobalContext();
-  const { isCurrency, decimals, balanceOf } = useERC20();
+  const { isCurrency, decimals } = useERC20();
+  const router = useRouter();
+  const { circle: cId } = router.query;
+  const { data: registry } = useQuery<Registry>(["registry", cId], {
+    enabled: false,
+  });
 
   function getDistributorContract(chainId: string) {
+    if (!registry) return null;
     const provider = new ethers.providers.Web3Provider(window.ethereum as any);
     return new ethers.Contract(
       registry[chainId].distributorAddress as string,
@@ -29,7 +35,7 @@ export default function useDistributor() {
     const valuesInWei = values.map((v) =>
       ethers.utils.parseEther(v.toString())
     );
-    return contract.pendingApprovals(addresses, valuesInWei);
+    return contract?.pendingApprovals(addresses, valuesInWei);
   }
 
   async function distributeEther(
@@ -55,7 +61,7 @@ export default function useDistributor() {
     const overrides = {
       value: ethers.utils.parseEther(totalValue.toString()),
     };
-    const tx = await contract.distributeEther(
+    const tx = await contract?.distributeEther(
       contributorsWithPositiveAllocation,
       valuesInWei,
       id,
@@ -113,7 +119,7 @@ export default function useDistributor() {
     );
     const contract = getDistributorContract(chainId);
     console.log({ contract });
-    const tx = await contract.distributeTokens(
+    const tx = await contract?.distributeTokens(
       filteredTokenAddresses,
       filteredRecipients,
       valuesInWei,

@@ -1,6 +1,5 @@
-import Logo from "@/app/common/components/Logo";
-import { useGlobalContext } from "@/app/context/globalContext";
-import { Box, Stack, Text } from "degen";
+import { useGlobal } from "@/app/context/globalContext";
+import { Box, Heading, Stack } from "degen";
 import { useState } from "react";
 import styled from "styled-components";
 import ConnectModal from "../Header/ConnectModal";
@@ -11,12 +10,12 @@ export const HeaderButton = styled(Box)`
   cursor: pointer;
   transition: all 0.2s ease-in-out;
   &:hover {
-    background-color: rgb(255, 255, 255, 0.1);
+    background-color: rgb(255, 255, 255, 0.05);
   }
 `;
 
 export default function ExploreSidebar() {
-  const { connectedUser } = useGlobalContext();
+  const { connectedUser } = useGlobal();
   const [showCollapseButton, setShowCollapseButton] = useState(false);
 
   return (
@@ -24,17 +23,12 @@ export default function ExploreSidebar() {
       padding="2"
       onMouseEnter={() => setShowCollapseButton(true)}
       onMouseLeave={() => setShowCollapseButton(false)}
+      marginBottom="0.5"
     >
       <Stack>
         <HeaderButton padding="1" borderRadius="large" width="full">
           <Stack direction="horizontal" align="center">
-            <Logo
-              href="/"
-              src="https://ipfs.moralis.io:2053/ipfs/QmVYsa4KQyRwBSJxQCmD1rDjyqYd1HJKrDfqLk3KMKLEhn"
-            />
-            <Text weight="semiBold" size="headingTwo" ellipsis>
-              Circles
-            </Text>
+            <Heading>Circles</Heading>
           </Stack>
         </HeaderButton>
 

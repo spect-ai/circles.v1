@@ -40,6 +40,27 @@ export interface ColumnType {
   };
 }
 
+export interface Permissions {
+  createNewCircle: boolean;
+  createNewProject: boolean;
+  createNewRetro: boolean;
+  endRetroManually: boolean;
+  inviteMembers: boolean;
+  makePayment: boolean;
+  manageCircleSettings: boolean;
+  manageMembers: boolean;
+  managePaymentOptions: boolean;
+  manageProjectSettings: boolean;
+  manageRoles: boolean;
+}
+
+export interface DiscordRoleMappingType {
+  [roleId: string]: {
+    circleRole: string[];
+    name: string;
+  };
+}
+
 export interface CircleType {
   activity: string[];
   archived: boolean;
@@ -49,7 +70,7 @@ export interface CircleType {
   defaultPayment: Payment;
   description: string;
   id: string;
-  members: UserType[];
+  members: string[];
   name: string;
   parents: Circle[];
   private: boolean;
@@ -61,9 +82,19 @@ export interface CircleType {
   memberRoles: {
     [key: string]: string[];
   };
-  memberDetails: {
-    [key: string]: UserType;
+  roles: {
+    [name: string]: {
+      name: string;
+      description: string;
+      permissions: Permissions;
+      selfAssignable: boolean;
+    };
   };
+  localRegistry: Registry;
+  discordGuildId: string;
+  discordToCircleRoles: DiscordRoleMappingType;
+  githubRepos: string[];
+  gradient: string;
 }
 
 // interface ProjectType {
@@ -169,6 +200,35 @@ export interface ProjectType {
   slug: string;
   private: boolean;
   parents: CircleType[];
+  discordDiscussionChannel: {
+    id: string;
+    name: string;
+  };
+}
+
+interface ActionValidation {
+  valid: boolean;
+  reason: string;
+}
+export interface CardActions {
+  addFeedback: ActionValidation;
+  addRevisionInstructions: ActionValidation;
+  applyToBounty: ActionValidation;
+  archive: ActionValidation;
+  canCreateCard: ActionValidation;
+  close: ActionValidation;
+  createDiscordThread: ActionValidation;
+  duplicate: ActionValidation;
+  pay: ActionValidation;
+  submit: ActionValidation;
+  updateAssignee: ActionValidation;
+  updateColumn: ActionValidation;
+  updateDeadline: ActionValidation;
+  updateGeneralCardInfo: ActionValidation;
+}
+
+export interface ProjectCardActionsType {
+  [cardId: string]: CardActions;
 }
 
 export interface Chain {

@@ -2,14 +2,14 @@ import EditTag from "@/app/common/components/EditTag";
 import { TagOutlined } from "@ant-design/icons";
 import { Box, IconCheck, IconSearch, Input, Stack, Tag, Text } from "degen";
 import { motion } from "framer-motion";
-import React, { useEffect, useState } from "react";
+import React, { memo, useEffect, useState } from "react";
 import { matchSorter } from "match-sorter";
 import { useLocalCard } from "../hooks/LocalCardContext";
 import { Option } from "../constants";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
 
-export default function CardLabels() {
+function CardLabels() {
   const { labels, setLabels, onCardUpdate } = useLocalCard();
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -103,3 +103,5 @@ export default function CardLabels() {
     </EditTag>
   );
 }
+
+export default memo(CardLabels);

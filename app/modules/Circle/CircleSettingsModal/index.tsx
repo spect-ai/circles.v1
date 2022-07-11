@@ -2,22 +2,21 @@ import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import Tabs from "@/app/common/components/Tabs";
 import { storeImage } from "@/app/common/utils/ipfs";
-import { updateCircle } from "@/app/services/UpdateCircle";
+import queryClient from "@/app/common/utils/queryClient";
+import { deleteCircle, updateCircle } from "@/app/services/UpdateCircle";
 import { CircleType } from "@/app/types";
-import { Box, Input, MediaPicker, Stack, Textarea } from "degen";
+import { Box, Input, MediaPicker, Stack, Text, Textarea } from "degen";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
-import { useQuery, useQueryClient } from "react-query";
+import { useQuery } from "react-query";
+import CircleIntegrations from "./CircleIntegrations";
+import DefaultPayment from "./CirclePayment";
 import Contributors from "../ContributorsModal/Contributors";
-import DefaultPayment from "../DefaultPayment";
-
 interface Props {
   handleClose: () => void;
 }
 
 export default function SettingsModal({ handleClose }: Props) {
-  const queryClient = useQueryClient();
-
   const router = useRouter();
   const { circle: cId } = router.query;
   const { data: circle } = useQuery<CircleType>(["circle", cId], {
@@ -38,6 +37,7 @@ export default function SettingsModal({ handleClose }: Props) {
 
   const onSubmit = async () => {
     setIsLoading(true);
+
     const res = await updateCircle(
       {
         name,
@@ -51,6 +51,15 @@ export default function SettingsModal({ handleClose }: Props) {
     if (res) {
       handleClose();
       queryClient.setQueryData(["circle", cId], res);
+    }
+  };
+
+  const onDelete = async () => {
+    const res = await deleteCircle(circle?.id as string);
+    if (res) {
+      handleClose();
+      queryClient.removeQueries(["circle", cId]);
+      void router.push("/");
     }
   };
 
@@ -71,29 +80,29 @@ export default function SettingsModal({ handleClose }: Props) {
       height="40rem"
       size="large"
     >
-      <Box display="flex" height="full">
-        <Box
-          width="1/4"
-          borderRightWidth="0.375"
-          paddingY="8"
-          height="full"
-          paddingRight="1"
-        >
+      <Box
+        display="flex"
+        style={{
+          height: "calc(100% - 5rem)",
+        }}
+      >
+        <Box width="1/4" borderRightWidth="0.375" paddingY="8" paddingRight="1">
           <Tabs
             selectedTab={tab}
             onTabClick={onTabClick}
-            tabs={["Info", "Integrations", "Payments", "Members"]}
+            tabs={["Info", "Integrations", "Payments", "Members", "Delete"]}
             tabTourIds={[
               "circle-settings-info",
               "circle-settings-integrations",
               "circle-settings-payments",
               "circle-settings-members",
+              "circle-settings-delete",
             ]}
             orientation="vertical"
             unselectedColor="transparent"
           />
         </Box>
-        <Box width="3/4" padding="8">
+        <Box width="3/4" paddingX="8" paddingY="4">
           {tab === 0 && (
             <Stack>
               <Input
@@ -138,20 +147,27 @@ export default function SettingsModal({ handleClose }: Props) {
               </Box>
             </Stack>
           )}
-          {/* {tab === 1 && <Integrations />} */}
+          {tab === 1 && <CircleIntegrations />}
           {tab === 2 && <DefaultPayment />}
-          {tab === 3 && (
-            <Stack>
-              {/* <Box display="flex" flexDirection="row" marginLeft="8">
-                {space.roles[user?.id as string] === 3 && <SpaceRoleMapping />}
-                {space.roles[user?.id as string] === 3 && <InviteMemberModal />}
-              </Box> */}
-              <Contributors
-                members={circle?.members.map((member) => member.id) || []}
-                memberDetails={circle?.memberDetails || {}}
-                roles={circle?.memberRoles || {}}
-              />
-            </Stack>
+          {tab === 3 && <Contributors />}
+          {tab === 4 && (
+            <Box width="full">
+              <Stack>
+                <Box>
+                  <Text align="center" weight="semiBold" size="extraLarge">
+                    Danger, this action cannot be undone, all your projects and
+                    workstreams will be deleted!
+                  </Text>
+                </Box>
+                <PrimaryButton
+                  onClick={onDelete}
+                  disabled={uploading}
+                  tone="red"
+                >
+                  Delete Circle
+                </PrimaryButton>
+              </Stack>
+            </Box>
           )}
         </Box>
       </Box>
