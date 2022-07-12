@@ -142,7 +142,7 @@ export default function CreateCardModal({
                 <SubTasks createCard />
                 <Box style={{ minHeight: "10rem" }} marginTop="2">
                   <Editor
-                    placeholder="Add a description"
+                    placeholder="Add a description, press '/' for commands"
                     tourId="create-card-modal-description"
                     value={description}
                     onChange={(txt) => {

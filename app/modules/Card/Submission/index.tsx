@@ -35,7 +35,7 @@ export default function Submission() {
             >
               {workThreadOrder.length > 0
                 ? "Add Submission"
-                : "Create Submission"}
+                : "Create Submission Thread"}
             </PrimaryButton>
           </Box>
         )}

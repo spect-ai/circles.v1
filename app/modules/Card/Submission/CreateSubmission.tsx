@@ -59,7 +59,7 @@ export default function CreateSubmission({ cardId, setIsOpen }: Props) {
               onChange={(txt) => {
                 setContent(txt);
               }}
-              placeholder="Add submission here"
+              placeholder="Add a submission, press '/' for commands"
             />
           </Box>
           <Stack direction="horizontal">

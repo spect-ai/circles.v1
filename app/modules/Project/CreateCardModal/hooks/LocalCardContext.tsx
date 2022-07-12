@@ -124,7 +124,8 @@ export function useProviderLocalCard({
     ["card", tId],
     () =>
       fetch(
-        `${process.env.API_HOST}/card/byProjectSlugAndCardSlug/${pId}/${tId}`
+        `${process.env.API_HOST}/card/byProjectSlugAndCardSlug/${pId}/${tId}`,
+        { credentials: "include" }
       ).then((res) => res.json()),
     {
       enabled: false,

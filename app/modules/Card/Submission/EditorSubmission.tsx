@@ -65,7 +65,7 @@ export default function EditorSubmission({
               inline: "nearest",
             });
           }}
-          placeholder="Add a submission"
+          placeholder="Add a submission, press '/' for commands"
           disabled={!canTakeAction("cardSubmission") || isDisabled}
         />
       </Stack>
