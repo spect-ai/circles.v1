@@ -38,7 +38,7 @@ const GigInfo = styled(Box)`
   gap: 1rem;
 `
 
-const Gig = () => {
+const Activity = () => {
   return (
     <Card>
       <Text variant="extraLarge">Card Name</Text>
@@ -73,17 +73,13 @@ const Retro = () => {
           size="8"
         />
       </GigInfo>
-
     </Card>
   )
 }
 
-
-
-
 const ProfileTabs = () => {
 
-  const [ tab, setProfileTab] = useState('Gigs');
+  const [ tab, setProfileTab] = useState('Activity');
 
   return(
     <Box>
@@ -94,10 +90,10 @@ const ProfileTabs = () => {
         paddingTop="10"
         justifyContent="space-between">
         <PrimaryButton 
-          variant={ tab === "Gigs" ? "tertiary" : "transparent"} 
-          onClick={()=> setProfileTab('Gigs')}
+          variant={ tab === "Activity" ? "tertiary" : "transparent"} 
+          onClick={()=> setProfileTab('Activity')}
         >
-        Gigs
+        Activity
         </PrimaryButton>
         <PrimaryButton 
           variant={ tab === "Retro" ? "tertiary" : "transparent"} 
@@ -107,7 +103,7 @@ const ProfileTabs = () => {
         </PrimaryButton>
       </Box>
       <Box>
-        { tab === "Gigs" && <Gig/>}
+        { tab === "Activity" && <Activity/>}
         { tab === "Retro" && <Retro/>}
       </Box>
     </Box>

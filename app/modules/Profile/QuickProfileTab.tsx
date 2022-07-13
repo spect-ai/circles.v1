@@ -1,5 +1,5 @@
 import { useState, FunctionComponent } from "react";
-import { Box, Avatar, Tag, Text, Button } from "degen";
+import { Box, Avatar, Text, Button } from "degen";
 import { ProjectOutlined, StarOutlined, FieldTimeOutlined, StarFilled } from "@ant-design/icons";
 import styled from "styled-components";
 
@@ -64,10 +64,16 @@ const Toggle: FunctionComponent<Props> = ({toggle, setToggle}) => {
           borderRadius: "2rem",
           margin: "0.7rem 200px"
           }}>
-        <ToggleButton onClick={()=> setToggle('Assignee')} bgcolor={toggle == 'Assignee'? true: false}>
+        <ToggleButton 
+          onClick={()=> setToggle('Assignee')} 
+          bgcolor={toggle == 'Assignee'? true: false}
+        >
           As Assignee
         </ToggleButton>
-        <ToggleButton onClick={()=> setToggle('Reviewer')} bgcolor={toggle == 'Reviewer'? true: false}>
+        <ToggleButton 
+          onClick={()=> setToggle('Reviewer')} 
+          bgcolor={toggle == 'Reviewer'? true: false}
+        >
           As Reviewer
         </ToggleButton>
       </Box>

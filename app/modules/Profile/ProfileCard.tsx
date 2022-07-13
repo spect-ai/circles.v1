@@ -95,7 +95,6 @@ const ProfileCard = () => {
         <Tag as="span" tone="purple" size="small"> Polygon </Tag>
         <Tag as="span" tone="orange" size="small"> Cosmos </Tag>
         <Tag as="span" tone="blue" size="small"> Enhancement </Tag>
-        <Tag as="span" tone="green" size="small"> Eth Classic </Tag>
       </InfoBox>
       <TextInfo>
         <Text variant="label"> Headline </Text>
