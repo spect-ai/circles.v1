@@ -42,7 +42,7 @@ function InviteMemberModal() {
     }));
   return (
     <>
-      <Box width="1/3" marginBottom="2">
+      <Box width="full" marginBottom="2">
         <PrimaryButton
           tourId="invite-member-button"
           onClick={() => {

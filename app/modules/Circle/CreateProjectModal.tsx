@@ -96,7 +96,7 @@ function CreateProjectModal() {
       <Loader loading={isLoading} text="Creating your project" />
 
       <Button
-        data-tour="circle-sidebar-create-project-button"
+        data-tour="circle-create-project-button"
         size="small"
         variant="transparent"
         shape="circle"

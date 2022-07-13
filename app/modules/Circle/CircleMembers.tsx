@@ -2,6 +2,7 @@ import PrimaryButton from "@/app/common/components/PrimaryButton";
 import queryClient from "@/app/common/utils/queryClient";
 import { useGlobal } from "@/app/context/globalContext";
 import { joinCircleFromDiscord } from "@/app/services/JoinCircle";
+import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { CircleType, MemberDetails, UserType } from "@/app/types";
 import { Box, Heading, IconSearch, Input, Stack, Text } from "degen";
 import { matchSorter } from "match-sorter";
@@ -9,6 +10,7 @@ import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { Tooltip } from "react-tippy";
+import InviteMemberModal from "./ContributorsModal/InviteMembersModal";
 import MemberDisplay from "./ContributorsModal/MemberDisplay";
 
 function CircleMembers() {
@@ -27,6 +29,8 @@ function CircleMembers() {
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
+
+  const { canDo } = useRoleGate();
 
   const [filteredMembers, setFilteredMembers] = useState<
     { name: string; id: string }[]
@@ -113,6 +117,7 @@ function CircleMembers() {
             );
           }}
         />
+        {canDo(["steward"]) && <InviteMemberModal />}
         {Object.keys(circle?.roles).map((role) => (
           <RoleSection key={role} roleName={role} />
         ))}

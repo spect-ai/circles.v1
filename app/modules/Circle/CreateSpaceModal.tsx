@@ -83,7 +83,7 @@ function CreateSpaceModal() {
       <Loader loading={isLoading} text="Creating your workstream" />
 
       <Button
-        data-tour="circle-sidebar-create-space-button"
+        data-tour="circle-create-workstream-button"
         size="small"
         variant="transparent"
         shape="circle"
