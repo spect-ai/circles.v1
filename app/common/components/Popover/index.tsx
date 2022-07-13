@@ -1,7 +1,5 @@
 import { FC, ReactNode, useEffect, useRef, useState } from "react";
-
 import { Box } from "degen";
-import { motion, AnimatePresence } from "framer-motion";
 import { Portal } from "../Portal/portal";
 import { usePopper } from "react-popper";
 
@@ -12,38 +10,23 @@ interface Props {
   children: ReactNode;
   tourId?: string;
   width?: string;
+  disableOutsideClick?: boolean;
 }
-
-// grow animation for popover
-const grow = {
-  hidden: {
-    opacity: 0,
-  },
-  open: {
-    opacity: 1,
-    transition: {
-      duration: 0.2,
-    },
-  },
-  collapsed: {
-    opacity: 0,
-    scale: 0,
-    transition: {
-      duration: 0.1,
-    },
-  },
-};
 
 /**
  * Hook that alerts clicks outside of the passed ref
  */
-function useOutsideAlerter(ref: any, setIsOpen: (isOpen: boolean) => void) {
+function useOutsideAlerter(
+  ref: any,
+  setIsOpen: (isOpen: boolean) => void,
+  disabled?: boolean
+) {
   useEffect(() => {
     /**
      * Alert if clicked on outside of element
      */
     function handleClickOutside(event: any) {
-      if (ref.current && !ref.current.contains(event.target)) {
+      if (!disabled && ref.current && !ref.current.contains(event.target)) {
         // alert("You clicked outside of me!");
         setIsOpen(false);
       }
@@ -64,9 +47,10 @@ const Popover: FC<Props> = ({
   setIsOpen,
   tourId,
   width = "full",
+  disableOutsideClick = false,
 }) => {
   const wrapperRef = useRef(null);
-  useOutsideAlerter(wrapperRef, setIsOpen);
+  useOutsideAlerter(wrapperRef, setIsOpen, disableOutsideClick);
 
   const [anchorElement, setAnchorElement] = useState<any>();
   const [popperElement, setPopperElement] = useState<any>();

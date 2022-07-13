@@ -118,7 +118,7 @@ export function useProviderLocalCard({
     enabled: false,
   });
 
-  const { updateProject } = useLocalProject();
+  const { updateProject, fetchQuickActions } = useLocalProject();
 
   const { data: card, refetch: fetchCard } = useQuery<CardType>(
     ["card", tId],
@@ -251,6 +251,7 @@ export function useProviderLocalCard({
     );
     !createAnother && handleClose && handleClose();
     updateProject(data.project);
+    void fetchQuickActions();
     // queryClient.setQueryData(["project", pId], data.project);
     resetData();
   };

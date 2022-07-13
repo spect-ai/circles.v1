@@ -43,7 +43,7 @@ function ListView() {
           <BatchPay card={selectedCard} setIsOpen={setBatchPayModalOpen} />
         )}
         <ScrollContainer>
-          <Stack space="0">
+          <Stack space="8">
             {project?.columnOrder?.map((columnId, index): any => {
               const column = project.columnDetails[columnId];
               const cards = column.cards?.map(
@@ -54,7 +54,7 @@ function ListView() {
               );
             })}
             {project?.id && canDo(["steward"]) && (
-              <Box style={{ width: "20rem" }} marginTop="2">
+              <Box style={{ width: "20rem" }} marginTop="2" marginLeft="2">
                 <PrimaryButton
                   variant="tertiary"
                   icon={<IconPlusSmall />}

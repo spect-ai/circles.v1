@@ -100,7 +100,7 @@ export default function CreateCardModal({
 
   useEffect(() => {
     setColumnId(column);
-  }, []);
+  }, [column, setColumnId]);
   return (
     <LocalCardContext.Provider value={context}>
       <Modal size="large" title="Create Card" handleClose={handleClose}>

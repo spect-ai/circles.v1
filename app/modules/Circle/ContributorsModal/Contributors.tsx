@@ -27,6 +27,8 @@ function Contributors() {
     return <div>Loading...</div>;
   }
 
+  console.log(circle.roles);
+
   const RoleSection = ({ roleName }: { roleName: string }) => {
     let isMemberThere = false;
     return (
