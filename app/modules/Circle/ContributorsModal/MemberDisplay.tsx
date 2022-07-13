@@ -53,6 +53,7 @@ export default function MemberDisplay({ member, memberDetails }: Props) {
   return (
     <Popover
       width="fit"
+      disableOutsideClick
       butttonComponent={
         <Container
           paddingY="1"
@@ -162,8 +163,10 @@ export default function MemberDisplay({ member, memberDetails }: Props) {
                           ? "2xLarge"
                           : "none"
                       }
-                      onClick={async () => {
+                      onClick={async (e) => {
+                        console.log("click");
                         if (userRoles && !userRoles.includes(role)) {
+                          console.log("add role");
                           // add user role if not already present
                           const newUserRoles = [...userRoles, role];
                           setUserRoles(newUserRoles);

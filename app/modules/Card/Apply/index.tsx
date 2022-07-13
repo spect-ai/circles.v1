@@ -64,7 +64,7 @@ export default function Apply({ cardId, setIsOpen }: Props) {
               onChange={(txt) => {
                 setContent(txt);
               }}
-              placeholder="Tell us about your application"
+              placeholder="Add an application, press '/' for commands"
             />
           </Box>
           <Stack direction="horizontal">

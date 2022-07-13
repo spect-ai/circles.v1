@@ -9,7 +9,7 @@ import { useRouter } from "next/router";
 import React, { useState } from "react";
 import { useQuery } from "react-query";
 import { toast } from "react-toastify";
-import { expiryOptions, roleOptions, usesOptions } from "./constants";
+import { expiryOptions, usesOptions } from "./constants";
 
 function InviteMemberModal() {
   const router = useRouter();
@@ -21,7 +21,7 @@ function InviteMemberModal() {
   const [isOpen, setIsOpen] = useState(false);
   const handleClose = () => setIsOpen(false);
   const [role, setRole] = useState<any>({
-    name: "Member",
+    name: "member",
     role: "member",
   });
   const [uses, setUses] = useState<any>({
@@ -33,6 +33,13 @@ function InviteMemberModal() {
     expiry: 604800,
   });
   const [isLoading, setIsLoading] = useState(false);
+
+  const roleOptions =
+    circle &&
+    Object.keys(circle.roles).map((role) => ({
+      name: role,
+      role: role,
+    }));
   return (
     <>
       <Box width="1/3" marginBottom="2">
@@ -59,7 +66,7 @@ function InviteMemberModal() {
               <Stack>
                 <Text align="center">Role</Text>
                 <Stack direction="horizontal">
-                  {roleOptions.map((option) => (
+                  {roleOptions?.map((option) => (
                     <Box
                       key={option.role}
                       cursor="pointer"

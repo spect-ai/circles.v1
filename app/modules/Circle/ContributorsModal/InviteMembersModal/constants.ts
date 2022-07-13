@@ -1,18 +1,3 @@
-export const roleOptions = [
-  {
-    name: "Steward",
-    role: "steward",
-  },
-  {
-    name: "Contributor",
-    role: "contributor",
-  },
-  {
-    name: "Member",
-    role: "member",
-  },
-];
-
 export const expiryOptions = [
   {
     name: "1 hr",

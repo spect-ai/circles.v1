@@ -1,11 +1,6 @@
 import queryClient from "@/app/common/utils/queryClient";
 import { useGlobal } from "@/app/context/globalContext";
-import {
-  CardType,
-  CircleType,
-  ProjectCardActionsType,
-  ProjectType,
-} from "@/app/types";
+import { CardType, ProjectCardActionsType, ProjectType } from "@/app/types";
 import { useRouter } from "next/router";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useQuery } from "react-query";
@@ -21,6 +16,7 @@ type LocalProjectContextType = {
   updating: boolean;
   setUpdating: React.Dispatch<React.SetStateAction<boolean>>;
   projectCardActions: ProjectCardActionsType | undefined;
+  fetchQuickActions: () => void;
   view: number;
   setView: React.Dispatch<React.SetStateAction<number>>;
   batchPayModalOpen: boolean;
@@ -117,6 +113,7 @@ export function useProviderLocalProject() {
     updating,
     setUpdating,
     projectCardActions: !connectedUser ? undefined : projectCardActions,
+    fetchQuickActions,
     view,
     setView,
     batchPayModalOpen,

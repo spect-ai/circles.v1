@@ -109,6 +109,8 @@ function Card() {
     return <Loader loading text="Fetching" />;
   }
 
+  console.log({ card });
+
   return (
     <Box padding="4">
       <AnimatePresence>
@@ -250,7 +252,7 @@ function Card() {
                     <div key={`${cardId}-description`}>
                       <Editor
                         value={card?.description as string}
-                        placeholder="Add a description"
+                        placeholder="Add a description, press '/' for commands"
                         disabled={!canTakeAction("cardDescription")}
                         onSave={(txt) => {
                           setDescription(txt);

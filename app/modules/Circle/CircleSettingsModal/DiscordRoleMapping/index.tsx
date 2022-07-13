@@ -50,7 +50,7 @@ export default function DiscordRoleMapping() {
       <Text size="headingTwo" weight="semiBold">
         {roleName}
       </Text>
-      <Stack direction="horizontal" wrap>
+      <Stack direction="horizontal" wrap align="center">
         <RolePopover
           discordRoles={discordRoles as any}
           setRoleMap={setRoleMap}

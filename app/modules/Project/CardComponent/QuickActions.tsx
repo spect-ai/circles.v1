@@ -23,6 +23,7 @@ export default function QuickActions({ card, hover }: Props) {
     updateProject,
     setIsApplyModalOpen,
     setIsSubmitModalOpen,
+    fetchQuickActions,
   } = useLocalProject();
 
   const { connectedUser } = useGlobal();
@@ -84,9 +85,10 @@ export default function QuickActions({ card, hover }: Props) {
                   card.id
                 );
                 console.log(data?.project);
-                // if (data) {
-                //   updateProject(data.project);
-                // }
+                if (data) {
+                  updateProject(data.project);
+                  void fetchQuickActions();
+                }
               }}
             >
               Close
@@ -96,7 +98,6 @@ export default function QuickActions({ card, hover }: Props) {
             <PopoverOption
               onClick={(e) => {
                 setIsOpen(false);
-
                 e?.stopPropagation();
                 setSelectedCard(card);
                 setBatchPayModalOpen(true);
@@ -143,6 +144,18 @@ export default function QuickActions({ card, hover }: Props) {
               Submit
             </PopoverOption>
           )}
+          {validActions.includes("createDiscordThread") && (
+            <PopoverOption
+              onClick={(e) => {
+                setIsOpen(false);
+                e?.stopPropagation();
+                setSelectedCard(card);
+                setIsSubmitModalOpen(true);
+              }}
+            >
+              Discuss
+            </PopoverOption>
+          )}
           {validActions.includes("claim") && (
             <PopoverOption
               onClick={async (e) => {
@@ -154,6 +167,10 @@ export default function QuickActions({ card, hover }: Props) {
                   },
                   card.id
                 );
+                if (data) {
+                  updateProject(data.project);
+                  void fetchQuickActions();
+                }
               }}
             >
               Claim
