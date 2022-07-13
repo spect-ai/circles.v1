@@ -1,36 +1,24 @@
-import {
-  Box,
-  Button,
-  IconPlus,
-  IconPlusSmall,
-  Input,
-  Stack,
-  Text,
-  Textarea,
-} from "degen";
+import { Box, Button, IconPlusSmall, Input, MediaPicker, Stack } from "degen";
 import React, { useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
 import Loader from "@/app/common/components/Loader";
 import Modal from "@/app/common/components/Modal";
 import Tabs from "@/app/common/components/Tabs";
-import Card from "@/app/common/components/Card";
 import { useMutation, useQuery } from "react-query";
 import { CircleType } from "@/app/types";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
+import { storeImage } from "@/app/common/utils/ipfs";
 
 type CreateWorkspaceDto = {
   name: string;
   description: string;
   private: boolean;
   parent: string;
+  avatar: string;
 };
 
-interface Props {
-  accordian: boolean;
-}
-
-function CreateSpaceModal({ accordian }: Props) {
+function CreateSpaceModal() {
   const [modalOpen, setModalOpen] = useState(false);
   const [visibilityTab, setVisibilityTab] = useState(0);
   const onVisibilityTabClick = (id: number) => setVisibilityTab(id);
@@ -38,11 +26,15 @@ function CreateSpaceModal({ accordian }: Props) {
 
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
+
   const router = useRouter();
   const { circle: cId } = router.query;
   const { data: circle, refetch } = useQuery<CircleType>(["circle", cId], {
     enabled: false,
   });
+
+  const [logo, setLogo] = useState(circle?.avatar || "");
+  const [uploading, setUploading] = useState(false);
 
   const { mutateAsync, isLoading } = useMutation(
     (circle: CreateWorkspaceDto) => {
@@ -64,6 +56,7 @@ function CreateSpaceModal({ accordian }: Props) {
       description,
       private: visibilityTab === 1,
       parent: circle?.id as string,
+      avatar: logo,
     })
       .then(async (res) => {
         const resJson = await res.json();
@@ -75,38 +68,32 @@ function CreateSpaceModal({ accordian }: Props) {
       .catch((err) => console.log({ err }));
   };
 
+  const uploadFile = async (file: File) => {
+    if (file) {
+      setUploading(true);
+      const { imageGatewayURL } = await storeImage(file, "circleLogo");
+      console.log({ imageGatewayURL });
+      setLogo(imageGatewayURL);
+      setUploading(false);
+    }
+  };
+
   return (
     <>
       <Loader loading={isLoading} text="Creating your workstream" />
-      {accordian ? (
-        <Button
-          data-tour="circle-sidebar-create-space-button"
-          size="small"
-          variant="transparent"
-          shape="circle"
-          onClick={(e) => {
-            e.stopPropagation();
-            setModalOpen(true);
-          }}
-        >
-          <IconPlusSmall />
-        </Button>
-      ) : (
-        <Card
-          tourId="circle-create-space-card"
-          height="32"
-          dashed
-          onClick={() => {
-            setModalOpen(true);
-          }}
-        >
-          <Box width="32">
-            <Stack align="center">
-              <Text align="center">Create Workstream</Text>
-            </Stack>
-          </Box>
-        </Card>
-      )}
+
+      <Button
+        data-tour="circle-create-workstream-button"
+        size="small"
+        variant="transparent"
+        shape="circle"
+        onClick={(e) => {
+          e.stopPropagation();
+          setModalOpen(true);
+        }}
+      >
+        <IconPlusSmall />
+      </Button>
       <AnimatePresence
         initial={false}
         exitBeforeEnter
@@ -122,11 +109,23 @@ function CreateSpaceModal({ accordian }: Props) {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                 />
-                <Textarea
+                <Input
                   label=""
                   placeholder="Description"
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
+                />
+                <MediaPicker
+                  compact
+                  defaultValue={{
+                    type: "image/png",
+                    url: logo,
+                  }}
+                  label="Choose or drag and drop media"
+                  uploaded={!!logo}
+                  onChange={uploadFile}
+                  uploading={uploading}
+                  maxSize={10}
                 />
                 <Tabs
                   selectedTab={visibilityTab}

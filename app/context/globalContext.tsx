@@ -1,18 +1,9 @@
-import React, {
-  createContext,
-  memo,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
-import { Registry } from "../types";
-
+import React, { createContext, memo, useContext, useState } from "react";
 interface GlobalContextType {
   isSidebarExpanded: boolean;
   setIsSidebarExpanded: (isSidebarExpanded: boolean) => void;
   isProfilePanelExpanded: boolean;
   setIsProfilePanelExpanded: (isProfilePanelExpanded: boolean) => void;
-  registry: Registry;
   connectedUser: string;
   connectUser: (userId: string) => void;
   disconnectUser: () => void;
@@ -20,7 +11,7 @@ interface GlobalContextType {
 
 const useProviderGlobalContext = () => {
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
-  const [registry, setRegistry] = useState<Registry>({} as Registry);
+  // const [registry, setRegistry] = useState<Registry>({} as Registry);
   const [connectedUser, setConnectedUser] = useState("");
   const [isProfilePanelExpanded, setIsProfilePanelExpanded] = useState(false);
 
@@ -31,21 +22,20 @@ const useProviderGlobalContext = () => {
     setConnectedUser("");
   };
 
-  useEffect(() => {
-    fetch(`${process.env.API_HOST}/registry/getGlobalRegistry`)
-      .then(async (res) => {
-        const data = await res.json();
-        setRegistry(data);
-      })
-      .catch((err) => {
-        console.log({ err });
-      });
-  }, []);
+  // useEffect(() => {
+  //   fetch(`${process.env.API_HOST}/registry/getGlobalRegistry`)
+  //     .then(async (res) => {
+  //       const data = await res.json();
+  //       setRegistry(data);
+  //     })
+  //     .catch((err) => {
+  //       console.log({ err });
+  //     });
+  // }, []);
 
   return {
     isSidebarExpanded,
     setIsSidebarExpanded,
-    registry,
     connectedUser,
     connectUser,
     disconnectUser,

@@ -1,7 +1,7 @@
-import { FC, ReactNode, useEffect, useRef } from "react";
-
+import { FC, ReactNode, useEffect, useRef, useState } from "react";
 import { Box } from "degen";
-import { motion, AnimatePresence } from "framer-motion";
+import { Portal } from "../Portal/portal";
+import { usePopper } from "react-popper";
 
 interface Props {
   isOpen: boolean;
@@ -9,38 +9,24 @@ interface Props {
   butttonComponent: ReactNode;
   children: ReactNode;
   tourId?: string;
+  width?: string;
+  disableOutsideClick?: boolean;
 }
-
-// grow animation for popover
-const grow = {
-  hidden: {
-    opacity: 0,
-  },
-  open: {
-    opacity: 1,
-    transition: {
-      duration: 0.2,
-    },
-  },
-  collapsed: {
-    opacity: 0,
-    scale: 0,
-    transition: {
-      duration: 0.1,
-    },
-  },
-};
 
 /**
  * Hook that alerts clicks outside of the passed ref
  */
-function useOutsideAlerter(ref: any, setIsOpen: (isOpen: boolean) => void) {
+function useOutsideAlerter(
+  ref: any,
+  setIsOpen: (isOpen: boolean) => void,
+  disabled?: boolean
+) {
   useEffect(() => {
     /**
      * Alert if clicked on outside of element
      */
     function handleClickOutside(event: any) {
-      if (ref.current && !ref.current.contains(event.target)) {
+      if (!disabled && ref.current && !ref.current.contains(event.target)) {
         // alert("You clicked outside of me!");
         setIsOpen(false);
       }
@@ -60,12 +46,21 @@ const Popover: FC<Props> = ({
   isOpen,
   setIsOpen,
   tourId,
+  width = "full",
+  disableOutsideClick = false,
 }) => {
   const wrapperRef = useRef(null);
-  useOutsideAlerter(wrapperRef, setIsOpen);
+  useOutsideAlerter(wrapperRef, setIsOpen, disableOutsideClick);
+
+  const [anchorElement, setAnchorElement] = useState<any>();
+  const [popperElement, setPopperElement] = useState<any>();
+
+  const { styles, attributes } = usePopper(anchorElement, popperElement, {
+    placement: "bottom-start",
+  });
 
   return (
-    <Box ref={wrapperRef} width="full" data-tour={tourId}>
+    <Box width={width as any} data-tour={tourId}>
       {/* <Box
         cursor="pointer"
         onClick={() => setIsOpen(!isOpen)}
@@ -73,21 +68,20 @@ const Popover: FC<Props> = ({
       >
         {icon}
       </Box> */}
-      {butttonComponent}
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial="hidden"
-            animate="open"
-            exit="collapsed"
-            variants={grow}
+      <div ref={setAnchorElement}>{butttonComponent}</div>
+      {isOpen && (
+        <Portal>
+          <Box
+            position="absolute"
+            zIndex="10"
+            ref={setPopperElement}
+            style={styles.popper}
+            {...attributes.popper}
           >
-            <Box position="absolute" zIndex="10">
-              {children}
-            </Box>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            <div ref={wrapperRef}>{children}</div>
+          </Box>
+        </Portal>
+      )}
     </Box>
   );
 };

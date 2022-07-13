@@ -4,7 +4,6 @@ import { AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
 import Loader from "@/app/common/components/Loader";
 import Modal from "@/app/common/components/Modal";
-import Card from "@/app/common/components/Card";
 import Select, { option } from "@/app/common/components/Select";
 import { useMutation, useQuery } from "react-query";
 import { CircleType, Template } from "@/app/types";
@@ -19,11 +18,7 @@ type CreateProjectDto = {
   description: string;
 };
 
-interface Props {
-  accordian: boolean;
-}
-
-function CreateProjectModal({ accordian }: Props) {
+function CreateProjectModal() {
   const [modalOpen, setModalOpen] = useState(false);
   const close = () => setModalOpen(false);
   const router = useRouter();
@@ -85,6 +80,7 @@ function CreateProjectModal({ accordian }: Props) {
         // void refetch();
         void router.push(`/${cId}/${resJson.slug}`);
         void close();
+        void refetch();
       })
       .catch((err) => {
         console.log({ err });
@@ -98,35 +94,19 @@ function CreateProjectModal({ accordian }: Props) {
   return (
     <>
       <Loader loading={isLoading} text="Creating your project" />
-      {accordian ? (
-        <Button
-          data-tour="circle-sidebar-create-project-button"
-          size="small"
-          variant="transparent"
-          shape="circle"
-          onClick={(e) => {
-            e.stopPropagation();
-            setModalOpen(true);
-          }}
-        >
-          <IconPlusSmall />
-        </Button>
-      ) : (
-        <Card
-          height="32"
-          dashed
-          tourId="circle-create-project-card"
-          onClick={() => {
-            setModalOpen(true);
-          }}
-        >
-          <Box width="32">
-            <Stack align="center">
-              <Text align="center">Create Project</Text>
-            </Stack>
-          </Box>
-        </Card>
-      )}
+
+      <Button
+        data-tour="circle-create-project-button"
+        size="small"
+        variant="transparent"
+        shape="circle"
+        onClick={(e) => {
+          e.stopPropagation();
+          setModalOpen(true);
+        }}
+      >
+        <IconPlusSmall />
+      </Button>
       <AnimatePresence
         initial={false}
         exitBeforeEnter

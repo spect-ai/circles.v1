@@ -1,8 +1,5 @@
 import Modal from "@/app/common/components/Modal";
-import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { CardType } from "@/app/types";
-import { IconEth, Stack } from "degen";
-import { AnimatePresence } from "framer-motion";
 import { useEffect } from "react";
 import { useLocalProject } from "../Context/LocalProjectContext";
 import ApproveToken from "./ApproveToken";
@@ -38,9 +35,7 @@ export default function BatchPay({ card, setIsOpen }: Props) {
 
   useEffect(() => {
     // set token card and stuff and skip the step dependig on the card reward token address
-    console.log({ card });
     if (card) {
-      console.log("hi");
       if (card.reward?.token.address === "0x0") {
         setCurrencyCards([card.id]);
         setBatchPayInfo({

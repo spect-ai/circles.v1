@@ -51,7 +51,7 @@ export const tourConfig = [
     },
   },
   {
-    selector: '[data-tour="add-card-column-0-button"]',
+    selector: '[data-tour="add-card-button"]',
     content: "Create a card in this column",
     style: {
       backgroundColor: "rgb(20,20,20)",
@@ -67,7 +67,7 @@ export const tourConfig = [
     action: () => {
       // by using this, focus trap is temporary disabled
       // @ts-ignore
-      document.querySelector(`[data-tour="add-card-column-0-button"]`)?.click();
+      document.querySelector(`[data-tour="add-card-button"]`)?.click();
       // node.click();
     },
   },

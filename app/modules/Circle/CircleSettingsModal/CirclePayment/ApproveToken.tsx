@@ -3,8 +3,7 @@ import {
   getFlattenedCurrencies,
   getFlattenedNetworks,
 } from "@/app/common/utils/registry";
-import { useGlobal } from "@/app/context/globalContext";
-import { CircleType } from "@/app/types";
+import { CircleType, Registry } from "@/app/types";
 import { Box, IconPlusSmall, Stack, Tag, Text } from "degen";
 import { AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
@@ -17,8 +16,10 @@ export default function ApproveToken() {
   const { data: circle } = useQuery<CircleType>(["circle", cId], {
     enabled: false,
   });
+  const { data: registry } = useQuery<Registry>(["registry", cId], {
+    enabled: false,
+  });
   const [isOpen, setIsOpen] = useState(false);
-  const { registry } = useGlobal();
   const [chain, setChain] = useState(circle?.defaultPayment.chain);
   const [token, setToken] = useState(circle?.defaultPayment.token);
 
@@ -40,7 +41,7 @@ export default function ApproveToken() {
         </Tag>
       </Box>
       <AnimatePresence>
-        {isOpen && (
+        {isOpen && circle && (
           <Modal
             handleClose={() => {
               setIsOpen(false);
@@ -51,7 +52,7 @@ export default function ApproveToken() {
               <Stack>
                 <Text size="extraLarge">Chain</Text>
                 <Stack direction="horizontal">
-                  {getFlattenedNetworks(registry).map((aChain) => (
+                  {getFlattenedNetworks(registry as Registry)?.map((aChain) => (
                     <Box
                       cursor="pointer"
                       key={aChain.chainId}
@@ -81,7 +82,7 @@ export default function ApproveToken() {
                 <Text size="extraLarge">Token</Text>
                 <Stack direction="horizontal">
                   {getFlattenedCurrencies(
-                    registry,
+                    circle?.localRegistry,
                     chain?.chainId as string
                   )?.map((aToken) => (
                     <Box

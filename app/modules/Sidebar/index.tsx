@@ -1,6 +1,6 @@
 import Link from "next/link";
 import React, { ReactElement, useEffect, useState } from "react";
-import { Box, Button, Stack } from "degen";
+import { Box, Button, Stack, Text } from "degen";
 import { useRouter } from "next/router";
 import CreateCircle from "./CreateCircleModal";
 import Logo from "@/app/common/components/Logo";
@@ -67,20 +67,23 @@ function Sidebar(): ReactElement {
       transitionDuration="500"
     >
       <Box borderBottomWidth="0.375" paddingY="3">
-        {cId ? (
-          <Logo href="/" src={circle?.avatar as string} />
+        {cId && circle ? (
+          <Logo href="/" src={circle.avatar} gradient={circle.gradient} />
         ) : (
           <Logo
             href="/"
             src="https://ipfs.moralis.io:2053/ipfs/QmVYsa4KQyRwBSJxQCmD1rDjyqYd1HJKrDfqLk3KMKLEhn"
+            gradient=""
           />
         )}
       </Box>
       <Box borderBottomWidth="0.375" paddingY="3">
         <Stack space="2">
           <Link href="/" passHref>
-            <Button shape="circle" variant="secondary" size="small">
-              <HomeOutlined style={{ fontSize: "1.3rem" }} />
+            <Button shape="circle" variant="transparent" size="small">
+              <Text color="accent">
+                <HomeOutlined style={{ fontSize: "1.3rem" }} />
+              </Text>
             </Button>
           </Link>
           {connectedUser && <CreateCircle />}
@@ -93,7 +96,7 @@ function Sidebar(): ReactElement {
         left="2.5rem"
       />
       {!isLoading && (
-        <ScrollContainer borderBottomWidth="0.375">
+        <ScrollContainer borderBottomWidth={connectedUser ? "0.375" : "0"}>
           {!myCirclesLoading &&
             connectedUser &&
             myCircles?.map &&
@@ -103,13 +106,16 @@ function Sidebar(): ReactElement {
                   key={aCircle.id}
                   href={`/${aCircle.slug}`}
                   src={aCircle.avatar}
+                  gradient={aCircle.gradient}
                 />
               </Box>
             ))}
         </ScrollContainer>
       )}
       <Box paddingY="3">
-        {currentUser && <Logo href="/" src={currentUser?.avatar} />}
+        {currentUser?.id && (
+          <Logo href="/" src={currentUser?.avatar} gradient="" />
+        )}
       </Box>
     </Box>
   );

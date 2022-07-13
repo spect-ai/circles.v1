@@ -1,5 +1,5 @@
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
-import { ColumnType } from "@/app/types";
+import { CardType, ColumnType } from "@/app/types";
 import { DropResult } from "react-beautiful-dnd";
 import { toast } from "react-toastify";
 import { useLocalProject } from "../Context/LocalProjectContext";
@@ -122,9 +122,10 @@ export default function useDragEnd() {
       credentials: "include",
     })
       .then(async (res) => {
-        const data = await res.json();
+        const data: CardType = await res.json();
+        console.log({ data });
         // if (data.id) {
-        //   updateProject(data);
+        //   updateProject(data.project);
         // }
       })
       .catch((err) => {

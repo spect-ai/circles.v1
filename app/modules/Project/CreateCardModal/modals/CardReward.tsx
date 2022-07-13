@@ -3,19 +3,26 @@ import {
   getFlattenedCurrencies,
   getFlattenedNetworks,
 } from "@/app/common/utils/registry";
-import { useGlobal } from "@/app/context/globalContext";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
+import { Registry } from "@/app/types";
 import { Box, IconEth, Input, Stack, Tag, Text } from "degen";
 import { motion } from "framer-motion";
+import { useRouter } from "next/router";
 import React, { memo, useState } from "react";
+import { useQuery } from "react-query";
 import { useLocalCard } from "../hooks/LocalCardContext";
 
 function CardReward() {
   const [modalOpen, setModalOpen] = useState(false);
-  const { registry } = useGlobal();
   const { chain, setChain, token, setToken, value, setValue, onCardUpdate } =
     useLocalCard();
   const { canTakeAction } = useRoleGate();
+
+  const router = useRouter();
+  const { circle: cId } = router.query;
+  const { data: registry } = useQuery<Registry>(["registry", cId], {
+    enabled: false,
+  });
 
   return (
     <EditTag
@@ -37,7 +44,7 @@ function CardReward() {
           <Stack>
             <Text size="extraLarge">Chain</Text>
             <Stack direction="horizontal">
-              {getFlattenedNetworks(registry).map((aChain) => (
+              {getFlattenedNetworks(registry as Registry)?.map((aChain) => (
                 <motion.button
                   key={aChain.name}
                   style={{
@@ -56,36 +63,54 @@ function CardReward() {
                       chain?.chainId === aChain.chainId ? "accent" : "secondary"
                     }
                   >
-                    {aChain.name}
+                    <Text
+                      color={
+                        chain?.chainId === aChain.chainId ? "accent" : "inherit"
+                      }
+                    >
+                      {aChain.name}
+                    </Text>
                   </Tag>
                 </motion.button>
               ))}
             </Stack>
             <Text size="extraLarge">Token</Text>
             <Stack direction="horizontal">
-              {getFlattenedCurrencies(registry, chain.chainId).map((aToken) => (
-                <motion.button
-                  key={chain.chainId}
-                  style={{
-                    background: "transparent",
-                    border: "none",
-                    cursor: "pointer",
-                    padding: "0rem",
-                  }}
-                  onClick={() => {
-                    setToken(aToken);
-                  }}
-                >
-                  <Tag
-                    hover
-                    tone={
-                      token.address === aToken.address ? "accent" : "secondary"
-                    }
+              {getFlattenedCurrencies(registry as Registry, chain.chainId).map(
+                (aToken) => (
+                  <motion.button
+                    key={chain.chainId}
+                    style={{
+                      background: "transparent",
+                      border: "none",
+                      cursor: "pointer",
+                      padding: "0rem",
+                    }}
+                    onClick={() => {
+                      setToken(aToken);
+                    }}
                   >
-                    {aToken.symbol}
-                  </Tag>
-                </motion.button>
-              ))}
+                    <Tag
+                      hover
+                      tone={
+                        token.address === aToken.address
+                          ? "accent"
+                          : "secondary"
+                      }
+                    >
+                      <Text
+                        color={
+                          token?.address === aToken.address
+                            ? "accent"
+                            : "inherit"
+                        }
+                      >
+                        {aToken.symbol}
+                      </Text>
+                    </Tag>
+                  </motion.button>
+                )
+              )}
             </Stack>
             <Text size="extraLarge">Value</Text>
             <Input

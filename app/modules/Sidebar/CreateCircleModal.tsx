@@ -16,12 +16,14 @@ import { storeImage } from "@/app/common/utils/ipfs";
 import Tabs from "@/app/common/components/Tabs";
 import Loader from "@/app/common/components/Loader";
 import { useMutation } from "react-query";
+import { generateColorHEX } from "@/app/common/utils/utils";
 
 type CreateCircleDto = {
   name: string;
   description: string;
   avatar: string;
   private: boolean;
+  gradient: string;
 };
 
 function CreateCircle() {
@@ -65,12 +67,14 @@ function CreateCircle() {
       <Box>
         <Button
           shape="circle"
-          variant="secondary"
+          variant="transparent"
           size="small"
           onClick={open}
           data-tour="create-circle-sidebar-button"
         >
-          <IconPlus />
+          <Text color="accent">
+            <IconPlus />
+          </Text>
         </Button>
       </Box>
       <AnimatePresence
@@ -88,7 +92,7 @@ function CreateCircle() {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                 />
-                <Textarea
+                <Input
                   label=""
                   placeholder="Circle Description"
                   value={description}
@@ -119,12 +123,17 @@ function CreateCircle() {
                     size="small"
                     variant="secondary"
                     disabled={uploading}
-                    onClick={async () =>
+                    onClick={() => {
+                      const color1 = generateColorHEX();
+                      const color2 = generateColorHEX();
+                      const color3 = generateColorHEX();
+                      const gradient = `linear-gradient(300deg, ${color1}, ${color2}, ${color3})`;
                       mutateAsync({
                         name,
                         description,
                         avatar: logo,
                         private: visibilityTab === 1,
+                        gradient,
                       })
                         .then(async (res) => {
                           const resJson = await res.json();
@@ -132,8 +141,8 @@ function CreateCircle() {
                           void router.push(`/${resJson.slug}`);
                           close();
                         })
-                        .catch((err) => console.log({ err }))
-                    }
+                        .catch((err) => console.log({ err }));
+                    }}
                   >
                     Create Circle
                   </Button>

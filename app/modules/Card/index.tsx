@@ -11,6 +11,7 @@ import {
   IconChevronUp,
   IconClose,
   IconEth,
+  IconUserSolid,
   Stack,
   Tag,
 } from "degen";
@@ -38,6 +39,7 @@ import Apply from "./Apply";
 import AssignToMe from "./AssignToMe";
 import Submission from "./Submission";
 import SubTasks from "./SubTasks";
+import Discuss from "./Discuss";
 
 const Container = styled(Box)`
   ::-webkit-scrollbar {
@@ -91,6 +93,7 @@ function Card() {
 
   const [isDirty, setIsDirty] = useState(false);
   const [batchPayModalOpen, setBatchPayModalOpen] = useState(false);
+  const [isApplyModalOpen, setIsApplyModalOpen] = useState(false);
 
   useEffect(() => {
     if (isDirty) {
@@ -106,15 +109,19 @@ function Card() {
     return <Loader loading text="Fetching" />;
   }
 
+  console.log({ card });
+
   return (
     <Box padding="4">
       <AnimatePresence>
         {batchPayModalOpen && (
           <BatchPay card={card} setIsOpen={setBatchPayModalOpen} />
         )}
+        {isApplyModalOpen && (
+          <Apply setIsOpen={setIsApplyModalOpen} cardId={card?.id as string} />
+        )}
       </AnimatePresence>
       <Box
-        borderWidth="0.375"
         borderRadius="large"
         backgroundColor="background"
         style={{
@@ -138,15 +145,12 @@ function Card() {
             <Box
               display="flex"
               flexDirection="row"
-              borderWidth="0.375"
               borderRadius="large"
               backgroundColor="foregroundSecondary"
             >
               <IconButton
                 color="textSecondary"
-                borderRightWidth="0.375"
                 paddingX="2"
-                borderLeftRadius="large"
                 onClick={() => {
                   // get current card index
                   if (project) {
@@ -168,7 +172,6 @@ function Card() {
               <IconButton
                 color="textSecondary"
                 paddingX="2"
-                borderRightRadius="large"
                 onClick={() => {
                   // get current card index
                   if (project) {
@@ -249,7 +252,7 @@ function Card() {
                     <div key={`${cardId}-description`}>
                       <Editor
                         value={card?.description as string}
-                        placeholder="Add a description"
+                        placeholder="Add a description, press '/' for commands"
                         disabled={!canTakeAction("cardDescription")}
                         onSave={(txt) => {
                           setDescription(txt);
@@ -278,7 +281,7 @@ function Card() {
               </Stack>
             </Container>
           </Box>
-          <Box width="1/4" borderLeftWidth="0.375" paddingX="4" paddingTop="8">
+          <Box width="1/4" borderLeftWidth="0" paddingX="4" paddingTop="8">
             {project?.id && (
               <Stack>
                 <CardType />
@@ -291,7 +294,7 @@ function Card() {
                 {/* <DiscordThread /> */}
                 {canTakeAction("cardPayment") && (
                   <PrimaryButton
-                    onClick={(e) => {
+                    onClick={() => {
                       setBatchPayModalOpen(true);
                     }}
                     icon={<IconEth />}
@@ -300,11 +303,19 @@ function Card() {
                   </PrimaryButton>
                 )}
                 {cardType === "Bounty" && canTakeAction("cardApply") && (
-                  <Apply />
+                  <PrimaryButton
+                    icon={<IconUserSolid />}
+                    onClick={() => {
+                      setIsApplyModalOpen(true);
+                    }}
+                  >
+                    Apply
+                  </PrimaryButton>
                 )}
                 {cardType === "Task" && canTakeAction("assignToMe") && (
                   <AssignToMe />
                 )}
+                {project.parents[0].discordGuildId && <Discuss />}
               </Stack>
             )}
           </Box>

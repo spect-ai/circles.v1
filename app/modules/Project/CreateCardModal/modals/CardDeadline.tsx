@@ -41,11 +41,8 @@ function CardDeadline() {
           ref={dateRef}
           selected={deadline?.getDay ? deadline : new Date()}
           onChange={(date: Date) => {
-            if (date === deadline) {
+            if (date.getTime() === (deadline?.getTime && deadline.getTime())) {
               setDeadline(null);
-              setTimeout(() => {
-                void onCardUpdate();
-              }, 500);
               return;
             }
             setDeadline(date);
@@ -53,7 +50,9 @@ function CardDeadline() {
           customInput={<ExampleCustomInput />}
           disabled={!canTakeAction("cardDeadline")}
           onCalendarClose={() => {
-            void onCardUpdate();
+            setTimeout(() => {
+              void onCardUpdate();
+            }, 100);
           }}
         />
       </Box>

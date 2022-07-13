@@ -93,7 +93,7 @@ function CircleSidebar() {
               <Stack space="0">
                 {circle?.projects.map((proj) => (
                   <Stack key={proj.id} direction="horizontal" space="0">
-                    <Box borderRightWidth="0.5" />
+                    {/* <Box borderRightWidth="0.5" /> */}
                     <Box width="full" padding="1">
                       <Link href={`/${cId}/${proj.slug}`}>
                         <PrimaryButton
@@ -114,36 +114,11 @@ function CircleSidebar() {
                 )}
               </Stack>
             </Accordian>
-            <Accordian
-              name="Workstreams"
-              defaultOpen
-              icon={<IconUsersSolid />}
-              // buttonComponent={<CreateSpaceModal accordian />}
-            >
-              {/* <Stack>
-                {circle?.children.map((space) => (
-                  <Link href={`/${space.slug}`} key={space.id}>
-                    <Button
-                      prefix={}
-                      center
-                      width="full"
-                      variant="transparent"
-                      size="small"
-                    >
-                      {space.name}
-                    </Button>
-                  </Link>
-                ))}
-                {!circle?.children.length && (
-                  <Box paddingLeft="7" paddingY="2">
-                    <Text variant="label">No workstreams created</Text>
-                  </Box>
-                )}
-              </Stack> */}
+            <Accordian name="Workstreams" defaultOpen icon={<IconUsersSolid />}>
               <Stack space="0">
                 {circle?.children.map((space) => (
                   <Stack key={space.id} direction="horizontal" space="0">
-                    <Box borderRightWidth="0.5" />
+                    {/* <Box borderRightWidth="0.5" /> */}
                     <Box width="full" padding="1">
                       <Link href={`/${space.slug}`} key={space.id}>
                         <PrimaryButton variant="transparent">
@@ -153,9 +128,9 @@ function CircleSidebar() {
                     </Box>
                   </Stack>
                 ))}
-                {!circle?.projects.length && (
+                {!circle?.children.length && (
                   <Box paddingLeft="7" paddingY="2">
-                    <Text variant="label">No projects created</Text>
+                    <Text variant="label">No workstreams created</Text>
                   </Box>
                 )}
               </Stack>

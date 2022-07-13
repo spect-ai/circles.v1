@@ -1,21 +1,23 @@
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import Table from "@/app/common/components/Table";
-import { useGlobal } from "@/app/context/globalContext";
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
 import { updatePaymentInfo } from "@/app/services/Payment";
 import usePaymentGateway from "@/app/services/Payment/usePayment";
-import { BatchPayInfo, CircleType } from "@/app/types";
+import { BatchPayInfo, CircleType, ProjectType, Registry } from "@/app/types";
 import { Avatar, Box, Stack, Text } from "degen";
 import { useRouter } from "next/router";
 import { useQuery } from "react-query";
 import { toast } from "react-toastify";
+import { useLocalProject } from "../Context/LocalProjectContext";
+import { useLocalCard } from "../CreateCardModal/hooks/LocalCardContext";
 import { useBatchPayContext } from "./context/batchPayContext";
 import { ScrollContainer } from "./SelectCards";
 
 export default function TokenPayment() {
   const { getMemberDetails } = useModalOptions();
   const { batchPay } = usePaymentGateway();
-  const { registry } = useGlobal();
+  const { updateProject } = useLocalProject();
+  const { setCard, cardId } = useLocalCard();
   const { batchPayInfo, setStep, setIsOpen, tokenCards, setBatchPayInfo } =
     useBatchPayContext();
 
@@ -24,8 +26,12 @@ export default function TokenPayment() {
   const { data: circle } = useQuery<CircleType>(["circle", cId], {
     enabled: false,
   });
+  const { data: registry } = useQuery<Registry>(["registry", cId], {
+    enabled: false,
+  });
 
   const formatRows = () => {
+    if (!registry) return [];
     const rows: any[] = [];
     batchPayInfo?.tokens?.userIds.forEach((userId, index) => {
       return rows.push([
@@ -103,13 +109,15 @@ export default function TokenPayment() {
                 );
                 console.log({ txnHash });
                 if (txnHash) {
-                  const res = await updatePaymentInfo(
+                  const res: ProjectType = await updatePaymentInfo(
                     tokenCards as string[],
                     txnHash
                   );
                   console.log({ res });
                   if (res) {
-                    // updateProject(res);
+                    updateProject && updateProject(res);
+                    setCard && setCard(res.cards[cardId]);
+                    console.log({ res });
                     setIsOpen(false);
                     setStep(0);
                     setBatchPayInfo({} as BatchPayInfo);

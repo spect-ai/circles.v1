@@ -20,7 +20,7 @@ const ProfileButton = styled(Box)`
   cursor: pointer;
   transition: all 0.2s ease-in-out;
   &:hover {
-    background-color: rgb(255, 255, 255, 0.1);
+    background-color: rgb(255, 255, 255, 0.05);
   }
 `;
 
@@ -78,7 +78,7 @@ export default function ProfileModal() {
 
   return (
     <>
-      <Box borderTopWidth="0.375" paddingTop="2" paddingX="2">
+      <Box borderTopWidth="0.375" paddingTop="2" marginX="4">
         <ProfileButton
           onClick={() => setIsOpen(true)}
           data-tour="profile-header-button"
@@ -162,12 +162,12 @@ export default function ProfileModal() {
                   </Link>
                 )}
                 {currentUser?.discordId && (
-                  <PrimaryButton tourId="connect-discord-button">
+                  <PrimaryButton tourId="connect-discord-button" disabled>
                     Discord Connected
                   </PrimaryButton>
                 )}
                 <PrimaryButton
-                  variant="tertiary"
+                  variant="transparent"
                   onClick={async () => {
                     await fetch(`${process.env.API_HOST}/auth/disconnect`, {
                       method: "POST",

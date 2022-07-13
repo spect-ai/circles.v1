@@ -2,7 +2,7 @@ import Popover from "@/app/common/components/Popover";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { CircleType, ProjectType } from "@/app/types";
 import { AppstoreOutlined } from "@ant-design/icons";
-import { Box, Heading, IconCog, IconUsersSolid, Stack } from "degen";
+import { Box, IconCog, IconUsersSolid, Stack, Text } from "degen";
 import { AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
 import React, { memo, useState } from "react";
@@ -50,11 +50,18 @@ function CircleOptions() {
             borderRadius="large"
             width="full"
             onClick={() => {
-              canDo(["steward"]) && setIsOpen(true);
+              setIsOpen(!isOpen);
             }}
           >
             <Stack direction="horizontal" align="center">
-              <Heading>{circle?.name || project?.parents[0].name}</Heading>
+              <Text
+                size="headingTwo"
+                weight="semiBold"
+                color="accentText"
+                ellipsis
+              >
+                {circle?.name || project?.parents[0].name}
+              </Text>
             </Stack>
           </HeaderButton>
         }
@@ -83,18 +90,20 @@ function CircleOptions() {
               Overview
             </Stack>
           </PopoverOption>
-          <PopoverOption
-            tourId="circle-settings-button"
-            onClick={() => {
-              setIsOpen(false);
-              setSettingsModalOpen(true);
-            }}
-          >
-            <Stack direction="horizontal" space="2">
-              <IconCog />
-              Settings
-            </Stack>
-          </PopoverOption>
+          {canDo(["steward"]) && (
+            <PopoverOption
+              tourId="circle-settings-button"
+              onClick={() => {
+                setIsOpen(false);
+                setSettingsModalOpen(true);
+              }}
+            >
+              <Stack direction="horizontal" space="2">
+                <IconCog />
+                Settings
+              </Stack>
+            </PopoverOption>
+          )}
           <PopoverOption
             onClick={() => {
               setIsOpen(false);

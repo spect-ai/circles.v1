@@ -1,15 +1,14 @@
 import Editor from "@/app/common/components/Editor";
 import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
+import { createApplicationFetch } from "@/app/services/Apply";
 import useApplication from "@/app/services/Apply/useApplication";
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
-import { MemberDetails } from "@/app/types";
 import { SendOutlined } from "@ant-design/icons";
-import { Box, IconUserSolid, Stack } from "degen";
-import { AnimatePresence } from "framer-motion";
+import { Box, Stack } from "degen";
 import { useState } from "react";
-import { useQuery } from "react-query";
 import styled from "styled-components";
+import { useLocalCard } from "../../Project/CreateCardModal/hooks/LocalCardContext";
 
 const NameInput = styled.input`
   width: 100%;
@@ -26,72 +25,73 @@ const NameInput = styled.input`
   font-weight: 600;
 `;
 
-export default function Apply() {
-  const [isOpen, setIsOpen] = useState(false);
+interface Props {
+  cardId: string;
+  setIsOpen: (isOpen: boolean) => void;
+}
+
+export default function Apply({ cardId, setIsOpen }: Props) {
   const [content, setContent] = useState("");
-  const { createApplication, loading } = useApplication();
+  const { loading } = useApplication();
 
   const [title, setTitle] = useState("");
 
   const { fetchMemberDetails } = useModalOptions();
+
+  const { setCard } = useLocalCard();
   return (
-    <>
-      <PrimaryButton icon={<IconUserSolid />} onClick={() => setIsOpen(true)}>
-        Apply
-      </PrimaryButton>
-      <AnimatePresence>
-        {isOpen && (
-          <Modal handleClose={() => setIsOpen(false)} title="Create Submission">
-            <Box padding="8">
-              <Stack>
-                <NameInput
-                  placeholder="Application Title"
-                  autoFocus
-                  value={title}
-                  onChange={(e) => {
-                    setTitle(e.target.value);
-                  }}
-                />
-                <Box
-                  style={{
-                    minHeight: "10rem",
-                    maxHeight: "20rem",
-                    overflowY: "auto",
-                  }}
-                  marginTop="2"
-                >
-                  <Editor
-                    value={content}
-                    onChange={(txt) => {
-                      setContent(txt);
-                    }}
-                    placeholder="Tell us about your application"
-                  />
-                </Box>
-                <Stack direction="horizontal">
-                  <Box width="full">
-                    <PrimaryButton
-                      disabled={!title || !content}
-                      loading={loading}
-                      icon={<SendOutlined style={{ fontSize: "1.2rem" }} />}
-                      onClick={async () => {
-                        const res = await createApplication({
-                          title,
-                          content,
-                        });
-                        res && setIsOpen(false);
-                        fetchMemberDetails();
-                      }}
-                    >
-                      Send
-                    </PrimaryButton>
-                  </Box>
-                </Stack>
-              </Stack>
+    <Modal handleClose={() => setIsOpen(false)} title="Create Application">
+      <Box padding="8">
+        <Stack>
+          <NameInput
+            placeholder="Application Title"
+            autoFocus
+            value={title}
+            onChange={(e) => {
+              setTitle(e.target.value);
+            }}
+          />
+          <Box
+            style={{
+              minHeight: "10rem",
+              maxHeight: "20rem",
+              overflowY: "auto",
+            }}
+            marginTop="2"
+          >
+            <Editor
+              value={content}
+              onChange={(txt) => {
+                setContent(txt);
+              }}
+              placeholder="Add an application, press '/' for commands"
+            />
+          </Box>
+          <Stack direction="horizontal">
+            <Box width="full">
+              <PrimaryButton
+                disabled={!title || !content}
+                loading={loading}
+                icon={<SendOutlined style={{ fontSize: "1.2rem" }} />}
+                onClick={async () => {
+                  const res = await createApplicationFetch(
+                    cardId,
+                    {
+                      title,
+                      content,
+                    },
+                    setCard
+                  );
+                  fetchMemberDetails();
+                  res && setIsOpen(false);
+                }}
+              >
+                Send
+              </PrimaryButton>
             </Box>
-          </Modal>
-        )}
-      </AnimatePresence>
-    </>
+          </Stack>
+        </Stack>
+      </Box>
+    </Modal>
   );
 }

@@ -1,16 +1,18 @@
-import Card from "@/app/common/components/Card";
 import Loader from "@/app/common/components/Loader";
 import { useGlobal } from "@/app/context/globalContext";
+import useConnectDiscord from "@/app/services/Discord/useConnectDiscord";
 import useJoinCircle from "@/app/services/JoinCircle/useJoinCircle";
 import useExploreOnboarding from "@/app/services/Onboarding/useExploreOnboarding";
-import useConnectDiscord from "@/app/services/Profile/useConnectDiscord";
 import { CircleType } from "@/app/types";
 import { Avatar, Box, Button, IconSearch, Input, Stack, Text } from "degen";
+import { matchSorter } from "match-sorter";
 import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
 import { Container, Row, Col } from "react-grid-system";
 import { useQuery } from "react-query";
 import { ToastContainer } from "react-toastify";
 import styled from "styled-components";
+import CircleCard from "./CircleCard";
 import Onboarding from "./ExploreOnboarding";
 import ExploreOptions from "./ExploreOptions";
 
@@ -29,7 +31,7 @@ const GridContainer = styled(Container)`
     width: calc(100vw - 2rem);
   }
   @media only screen and (min-width: 768px) {
-    width: 60rem;
+    width: 80rem;
   }
 `;
 
@@ -45,6 +47,14 @@ export default function Explore() {
   useJoinCircle();
   useConnectDiscord();
   const { onboarded } = useExploreOnboarding();
+
+  const [filteredCircles, setFilteredCircles] = useState<CircleType[]>([]);
+
+  useEffect(() => {
+    if (circles) {
+      setFilteredCircles(circles);
+    }
+  }, [circles]);
 
   if (isLoading) {
     return <Loader text="" loading />;
@@ -66,19 +76,27 @@ export default function Explore() {
             placeholder="Explore"
             prefix={<IconSearch />}
             suffix={<ExploreOptions />}
+            onChange={(e) => {
+              setFilteredCircles(
+                matchSorter(circles as CircleType[], e.target.value, {
+                  keys: ["name"],
+                })
+              );
+            }}
           />
         </Box>
         <Row>
-          {circles?.map &&
-            circles?.map((circle: CircleType) => (
+          {filteredCircles?.map &&
+            filteredCircles?.map((circle: CircleType) => (
               <Col key={circle.id} xs={10} sm={6} md={3}>
-                <Card
-                  height={{ xs: "48", md: "60" }}
-                  onClick={() => {
-                    void router.push(`/${circle.slug}`);
-                  }}
-                >
-                  <Box marginBottom="4">
+                <CircleCard
+                  href={`/${circle.slug}`}
+                  name={circle.name}
+                  description={circle.description}
+                  gradient={circle.gradient}
+                  logo={circle.avatar}
+                />
+                {/* <Box marginBottom="4">
                     <Stack align="center">
                       <Avatar
                         label={circle.name}
@@ -89,17 +107,16 @@ export default function Explore() {
                       <Text
                         color="textPrimary"
                         size={{ sm: "base", md: "base", lg: "large" }}
-                        letterSpacing="0.03"
-                        ellipsis
+                        wordBreak="break-word"
+                        align="center"
                       >
                         {circle.name}
                       </Text>
-                      <Button variant="tertiary" size="small">
-                        Follow
+                      <Button variant="transparent" size="small">
+                        <Text>View</Text>
                       </Button>
                     </Stack>
-                  </Box>
-                </Card>
+                  </Box> */}
               </Col>
             ))}
         </Row>

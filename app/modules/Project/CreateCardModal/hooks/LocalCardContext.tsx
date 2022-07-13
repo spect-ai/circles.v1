@@ -98,7 +98,7 @@ type CreateCardContextType = {
   loading: boolean;
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
   updating: boolean;
-  onArchive: () => Promise<boolean>;
+  onArchive: (cardId: string) => Promise<any>;
 };
 
 export const LocalCardContext = createContext<CreateCardContextType>(
@@ -118,13 +118,14 @@ export function useProviderLocalCard({
     enabled: false,
   });
 
-  const { updateProject } = useLocalProject();
+  const { updateProject, fetchQuickActions } = useLocalProject();
 
   const { data: card, refetch: fetchCard } = useQuery<CardType>(
     ["card", tId],
     () =>
       fetch(
-        `${process.env.API_HOST}/card/byProjectSlugAndCardSlug/${pId}/${tId}`
+        `${process.env.API_HOST}/card/byProjectSlugAndCardSlug/${pId}/${tId}`,
+        { credentials: "include" }
       ).then((res) => res.json()),
     {
       enabled: false,
@@ -137,7 +138,8 @@ export function useProviderLocalCard({
     queryClient.setQueryData(["card", tId], card);
   };
 
-  const { callCreateCard, updateCard, updating } = useCardService();
+  const { callCreateCard, updateCard, updating, archiveCard } =
+    useCardService();
 
   const [cardId, setCardId] = useState("");
   const [title, setTitle] = useState("");
@@ -249,6 +251,7 @@ export function useProviderLocalCard({
     );
     !createAnother && handleClose && handleClose();
     updateProject(data.project);
+    void fetchQuickActions();
     // queryClient.setQueryData(["project", pId], data.project);
     resetData();
   };
@@ -273,29 +276,11 @@ export function useProviderLocalCard({
         value: parseFloat(value),
       },
     };
+    console.log(payload.deadline);
     const res = await updateCard(payload, card.id);
     if (res) {
       setCard(res);
     }
-  };
-
-  const onArchive = async () => {
-    const res = await fetch(
-      `${process.env.API_HOST}/card/${card?.id}/archive`,
-      {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-      }
-    );
-    if (res.ok) {
-      void router.push(`/${cId}/${pId}`);
-      return true;
-    }
-    toast.error("Error archiving card");
-    return false;
   };
 
   const resetData = () => {
@@ -365,7 +350,7 @@ export function useProviderLocalCard({
     setApplicationOrder,
     card,
     setCard,
-    onArchive,
+    onArchive: archiveCard,
   };
 }
 

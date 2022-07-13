@@ -127,7 +127,7 @@ function ColumnComponent({ cards, id, column, index }: Props) {
             <Text variant="label">({column.cards.length})</Text>
           </Box>
           <Button
-            data-tour={`add-card-${column.columnId}-button`}
+            data-tour={`add-card-button`}
             shape="circle"
             size="small"
             variant="transparent"

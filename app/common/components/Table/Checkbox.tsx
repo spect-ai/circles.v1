@@ -30,6 +30,9 @@ export default function CheckBox({ isChecked, onClick }: Props) {
       width="fit"
       transitionDuration="300"
       onClick={onClick}
+      style={{
+        borderColor: "rgb(255, 255, 255, 0.01)",
+      }}
     >
       <IconCheck size="4" color={isChecked ? "accent" : "transparent"} />
     </Container>

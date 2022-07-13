@@ -109,3 +109,23 @@ export const smartTrim = (string: string, maxLength: number) => {
     midpoint + rstrip
   )}`;
 };
+
+const getRgb = () => Math.floor(Math.random() * 256);
+
+const rgbToHex = (r: number, g: number, b: number) =>
+  "#" +
+  [r, g, b]
+    .map((x) => {
+      const hex = x.toString(16);
+      return hex.length === 1 ? "0" + hex : hex;
+    })
+    .join("");
+
+export const generateColorHEX = () => {
+  const color = {
+    r: getRgb(),
+    g: getRgb(),
+    b: getRgb(),
+  };
+  return rgbToHex(color.r, color.g, color.b);
+};

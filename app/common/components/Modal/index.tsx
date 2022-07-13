@@ -46,7 +46,7 @@ const grow = {
     opacity: 0,
     scale: 0,
     transition: {
-      duration: 0.1,
+      duration: 0.2,
     },
   },
 };
@@ -106,14 +106,16 @@ function Modal({
       >
         <Container
           backgroundColor="background"
-          borderWidth="0.375"
+          // borderWidth="0.375"
           borderRadius="2xLarge"
           width={getResponsiveWidth(size) as any}
           minHeight="48"
           modalHeight={height}
+          // style={{
+          //   backgroundColor: "rgba(21,20,21,255)",
+          // }}
         >
           <Box
-            borderBottomWidth="0.375"
             paddingX={{
               xs: "4",
               md: "8",
