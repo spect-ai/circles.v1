@@ -78,6 +78,7 @@
     "yarn": "^1.22.19"
   },
   "resolutions": {
-    "prosemirror-model": "1.16.0"
+    "prosemirror-model": "1.16.0",
+    "@types/react": "17.0.30"
   }
 }
