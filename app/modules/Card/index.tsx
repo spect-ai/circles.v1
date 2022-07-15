@@ -112,8 +112,6 @@ function Card() {
     return <Loader loading text="Fetching" />;
   }
 
-  console.log({ card });
-
   return (
     <Box padding="4">
       <AnimatePresence>

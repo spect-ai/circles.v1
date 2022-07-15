@@ -7,6 +7,7 @@ import { Option } from "../constants";
 import { matchSorter } from "match-sorter";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
+import { id } from "ethers/lib/utils";
 
 type Props = {
   filteredOptions: Option[] | undefined;
@@ -101,7 +102,8 @@ export const AssigneeModal = ({
 );
 
 function CardAssignee() {
-  const { assignees, setAssignees, onCardUpdate } = useLocalCard();
+  const { assignees, setAssignees, onCardUpdate, fetchCardActions, card } =
+    useLocalCard();
   const [modalOpen, setModalOpen] = useState(false);
   const [options, setOptions] = useState<Option[]>({} as Option[]);
   const [filteredOptions, setFilteredOptions] = useState<Option[]>();
@@ -147,7 +149,10 @@ function CardAssignee() {
       }
       disabled={!canTakeAction("cardAssignee")}
       handleClose={async () => {
-        await onCardUpdate();
+        if (card?.assignee !== assignees) {
+          await onCardUpdate();
+          void fetchCardActions();
+        }
         setModalOpen(false);
       }}
     >

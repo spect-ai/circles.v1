@@ -4,7 +4,7 @@ import { useGlobal } from "@/app/context/globalContext";
 import useCircleOnboarding from "@/app/services/Onboarding/useCircleOnboarding";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { CircleType } from "@/app/types";
-import { Box, Heading, Stack, Text } from "degen";
+import { Box, Stack, Text } from "degen";
 import { useRouter } from "next/router";
 import React from "react";
 import { Col, Container, Row } from "react-grid-system";

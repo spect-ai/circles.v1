@@ -10,7 +10,7 @@ import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
 
 function CardType() {
-  const { cardType, setCardType, onCardUpdate } = useLocalCard();
+  const { cardType, setCardType, onCardUpdate, card } = useLocalCard();
   const [modalOpen, setModalOpen] = useState(false);
 
   const [options, setOptions] = useState<Option[]>();
@@ -43,8 +43,10 @@ function CardType() {
         />
       }
       disabled={!canTakeAction("cardType")}
-      handleClose={() => {
-        void onCardUpdate();
+      handleClose={async () => {
+        if (card?.type !== cardType) {
+          await onCardUpdate();
+        }
         setModalOpen(false);
       }}
     >

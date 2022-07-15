@@ -14,8 +14,16 @@ import { useLocalCard } from "../hooks/LocalCardContext";
 
 function CardReward() {
   const [modalOpen, setModalOpen] = useState(false);
-  const { chain, setChain, token, setToken, value, setValue, onCardUpdate } =
-    useLocalCard();
+  const {
+    chain,
+    setChain,
+    token,
+    setToken,
+    value,
+    setValue,
+    onCardUpdate,
+    fetchCardActions,
+  } = useLocalCard();
   const { canTakeAction } = useRoleGate();
 
   const router = useRouter();
@@ -37,6 +45,7 @@ function CardReward() {
       handleClose={() => {
         void onCardUpdate();
         setModalOpen(false);
+        void fetchCardActions();
       }}
     >
       <Box height="96">

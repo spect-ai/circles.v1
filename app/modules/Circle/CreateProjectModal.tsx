@@ -18,16 +18,11 @@ import { CircleType, Template } from "@/app/types";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { Tooltip } from "react-tippy";
 import { QuestionCircleFilled } from "@ant-design/icons";
-
-type CreateProjectDto = {
-  name: string;
-  circleId: string;
-  fromTemplateId: string;
-  description: string;
-};
+import { createProject } from "@/app/services/Project";
 
 function CreateProjectModal() {
   const [modalOpen, setModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const close = () => setModalOpen(false);
   const router = useRouter();
   const { circle: cId } = router.query;
@@ -57,43 +52,27 @@ function CreateProjectModal() {
       enabled: false,
     }
   );
-  const { mutateAsync, isLoading } = useMutation(
-    (project: CreateProjectDto) => {
-      return fetch(`${process.env.API_HOST}/project`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(project),
-        credentials: "include",
-      });
-    }
-  );
-
   const [template, setTemplate] = useState({} as option);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const { mode } = useTheme();
 
-  const onSubmit = () => {
+  const onSubmit = async () => {
     console.log({ circle });
-    mutateAsync({
+    setIsLoading(true);
+    const data = await createProject({
       name,
       circleId: circle?.id as string,
       description,
       fromTemplateId: template.value,
-    })
-      .then(async (res) => {
-        const resJson = await res.json();
-        console.log({ resJson });
-        // void refetch();
-        void router.push(`/${cId}/${resJson.slug}`);
-        void close();
-        void refetch();
-      })
-      .catch((err) => {
-        console.log({ err });
-      });
+    });
+    setIsLoading(false);
+    if (data) {
+      // void refetch();
+      void router.push(`/${cId}/${data.slug}`);
+      void close();
+      void refetch();
+    }
   };
 
   useEffect(() => {
