@@ -1,5 +1,6 @@
 import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
+import Tabs from "@/app/common/components/Tabs";
 import { storeImage } from "@/app/common/utils/ipfs";
 import queryClient from "@/app/common/utils/queryClient";
 import { smartTrim } from "@/app/common/utils/utils";
@@ -7,7 +8,17 @@ import { useGlobal } from "@/app/context/globalContext";
 import useProfileUpdate from "@/app/services/Profile/useProfileUpdate";
 import { MemberDetails, UserType } from "@/app/types";
 import { SaveFilled } from "@ant-design/icons";
-import { Box, Input, MediaPicker, Stack, Text } from "degen";
+import {
+  Box,
+  Button,
+  IconMoon,
+  IconSun,
+  Input,
+  MediaPicker,
+  Stack,
+  Text,
+  useTheme,
+} from "degen";
 import { AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -50,6 +61,8 @@ export default function ProfileModal() {
   const { updateProfile } = useProfileUpdate();
 
   const [loading, setLoading] = useState(true);
+  // eslint-disable-next-line @typescript-eslint/unbound-method
+  const { mode, setMode } = useTheme();
 
   const handleClose = () => {
     setIsOpen(false);
@@ -126,6 +139,29 @@ export default function ProfileModal() {
                     setIsDirty(true);
                   }}
                 />
+                <Stack direction="horizontal">
+                  <Button
+                    shape="circle"
+                    variant={mode === "dark" ? "secondary" : "transparent"}
+                    onClick={() => {
+                      localStorage.removeItem("lightMode");
+                      setMode("dark");
+                    }}
+                  >
+                    <IconMoon />
+                  </Button>
+                  <Button
+                    shape="circle"
+                    variant={mode === "light" ? "secondary" : "transparent"}
+                    onClick={() => {
+                      localStorage.setItem("lightMode", "true");
+                      setMode("light");
+                    }}
+                  >
+                    <IconSun />
+                  </Button>
+                </Stack>
+
                 <Box marginTop="2" />
 
                 <PrimaryButton

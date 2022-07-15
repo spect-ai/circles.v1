@@ -1,4 +1,4 @@
-import { Box, Heading } from "degen";
+import { Box, Button, Heading, IconClose, Stack } from "degen";
 import { motion } from "framer-motion";
 import React from "react";
 
@@ -120,12 +120,22 @@ function Modal({
               xs: "4",
               md: "8",
             }}
-            paddingY={{
+            paddingTop={{
               xs: "2",
               md: "5",
             }}
           >
-            <Heading>{title}</Heading>
+            <Stack direction="horizontal" justify="space-between">
+              <Heading>{title}</Heading>
+              <Button
+                shape="circle"
+                size="small"
+                variant="transparent"
+                onClick={() => handleClose()}
+              >
+                <IconClose />
+              </Button>
+            </Stack>
           </Box>
           {children}
         </Container>

@@ -14,6 +14,7 @@ import {
   IconUserSolid,
   Stack,
   Tag,
+  useTheme,
 } from "degen";
 import { AnimatePresence } from "framer-motion";
 import Link from "next/link";
@@ -50,7 +51,7 @@ const Container = styled(Box)`
   overflow-x: hidden;
 `;
 
-const NameInput = styled.input`
+const NameInput = styled.input<{ mode: string }>`
   width: 100%;
   background: transparent;
   border: 0;
@@ -61,7 +62,8 @@ const NameInput = styled.input`
   box-shadow: none;
   font-size: 1.8rem;
   caret-color: rgb(255, 255, 255, 0.85);
-  color: rgb(255, 255, 255, 0.85);
+  color: ${(props) =>
+    props.mode === "dark" ? "rgb(255, 255, 255, 0.8)" : "rgb(20, 20, 20, 0.8)"};
   font-weight: 600;
 `;
 
@@ -94,6 +96,7 @@ function Card() {
   const [isDirty, setIsDirty] = useState(false);
   const [batchPayModalOpen, setBatchPayModalOpen] = useState(false);
   const [isApplyModalOpen, setIsApplyModalOpen] = useState(false);
+  const { mode } = useTheme();
 
   useEffect(() => {
     if (isDirty) {
@@ -109,8 +112,6 @@ function Card() {
     return <Loader loading text="Fetching" />;
   }
 
-  console.log({ card });
-
   return (
     <Box padding="4">
       <AnimatePresence>
@@ -125,7 +126,7 @@ function Card() {
         borderRadius="large"
         backgroundColor="background"
         style={{
-          boxShadow: "0px 0px 10px 0.1rem rgba(0, 0, 0, 0.1)",
+          boxShadow: "0px 0px 10px 0.5rem rgba(0, 0, 0, 0.1)",
         }}
       >
         <ToastContainer
@@ -229,6 +230,7 @@ function Card() {
                         setIsDirty(false);
                       }
                     }}
+                    mode={mode}
                   />
                   {canTakeAction("cardPopoverActions") && <ActionPopover />}
                 </Stack>

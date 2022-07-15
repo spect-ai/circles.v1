@@ -12,7 +12,8 @@ export default function useRoleGate() {
   });
   const { connectedUser } = useGlobal();
 
-  const { card } = useLocalCard();
+  const { card, cardActions } = useLocalCard();
+
   const canDo = (roles: string[]) => {
     if (!connectedUser) {
       return false;
@@ -27,31 +28,19 @@ export default function useRoleGate() {
 
   const canTakeAction = (action: string) => {
     const circleMembers = circle && Object.keys(circle?.memberRoles);
-    if (!connectedUser) {
+    if (!connectedUser || !card?.id || !cardActions) {
       return false;
     }
-    if (!card?.id) {
-      return true;
-    }
+
     switch (action) {
       case "cardType":
-        return card?.creator === connectedUser;
+        return cardActions.updateGeneralCardInfo.valid;
       case "cardColumn":
-        return (
-          card?.reviewer.includes(connectedUser) ||
-          card?.assignee.includes(connectedUser) ||
-          card?.creator === connectedUser
-        );
+        return cardActions.updateColumn.valid;
       case "cardDeadline":
-        return (
-          card?.reviewer.includes(connectedUser) ||
-          card?.assignee.includes(connectedUser)
-        );
+        return cardActions.updateDeadline.valid;
       case "cardAssignee":
-        return (
-          card?.creator === connectedUser ||
-          card?.reviewer.includes(connectedUser)
-        );
+        return cardActions.updateAssignee.valid;
       case "acceptApplication":
         return (
           (card?.creator === connectedUser ||
@@ -59,74 +48,39 @@ export default function useRoleGate() {
           card.assignee.length === 0
         );
       case "cardReviewer":
-        return card?.creator === connectedUser;
+        return cardActions.updateGeneralCardInfo.valid;
       case "cardReward":
-        return (
-          card?.creator === connectedUser ||
-          card?.reviewer.includes(connectedUser)
-        );
+        return cardActions.updateGeneralCardInfo.valid;
       case "cardDelete":
-        return card?.creator === connectedUser;
+        return cardActions.updateGeneralCardInfo.valid;
       case "cardDescription":
-        return (
-          card?.creator === connectedUser ||
-          card?.reviewer.includes(connectedUser)
-        );
+        return cardActions.updateGeneralCardInfo.valid;
+
       case "cardTitle":
-        return (
-          card?.creator === connectedUser ||
-          card?.reviewer.includes(connectedUser)
-        );
+        return cardActions.updateGeneralCardInfo.valid;
+
       case "cardLabels":
-        return (
-          card?.creator === connectedUser ||
-          card?.reviewer.includes(connectedUser)
-        );
+        return cardActions.updateGeneralCardInfo.valid;
+
       case "cardPriority":
-        return (
-          card?.creator === connectedUser ||
-          card?.reviewer.includes(connectedUser)
-        );
+        return cardActions.updateGeneralCardInfo.valid;
+
       case "cardComment":
         return circleMembers?.includes(connectedUser) || false;
       case "cardSubmission":
-        return card?.assignee.includes(connectedUser);
+        return cardActions.submit.valid;
       case "cardRevision":
-        return (
-          card?.creator === connectedUser ||
-          card?.reviewer.includes(connectedUser)
-        );
+        return cardActions.addRevisionInstructions.valid;
       case "cardSubTask":
-        return (
-          card?.creator === connectedUser ||
-          card?.reviewer.includes(connectedUser)
-        );
+        return cardActions.updateGeneralCardInfo.valid;
       case "cardPayment":
-        return (
-          (card?.creator === connectedUser ||
-            card?.reviewer.includes(connectedUser)) &&
-          card.reward.value > 0 &&
-          card.assignee.length > 0 &&
-          !card.status.paid
-        );
+        return cardActions.pay.valid;
       case "cardPopoverActions":
-        return (
-          card?.creator === connectedUser ||
-          card?.reviewer.includes(connectedUser)
-        );
+        return cardActions.archive.valid;
       case "cardApply":
-        return (
-          !(
-            card?.creator === connectedUser ||
-            card?.reviewer.includes(connectedUser)
-          ) &&
-          card.assignee.length === 0 &&
-          !card.myApplication
-        );
+        return cardActions.applyToBounty.valid;
       case "assignToMe":
-        return (
-          card.assignee.length === 0 && circleMembers?.includes(connectedUser)
-        );
+        return cardActions.claim.valid;
       default:
         return false;
     }

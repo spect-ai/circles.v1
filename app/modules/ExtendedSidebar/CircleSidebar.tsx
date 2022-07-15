@@ -4,7 +4,7 @@ import { CircleType } from "@/app/types";
 import { ProjectOutlined } from "@ant-design/icons";
 import {
   Box,
-  IconUsersSolid,
+  IconUserGroup,
   Skeleton,
   SkeletonGroup,
   Stack,
@@ -114,7 +114,7 @@ function CircleSidebar() {
                 )}
               </Stack>
             </Accordian>
-            <Accordian name="Workstreams" defaultOpen icon={<IconUsersSolid />}>
+            <Accordian name="Workstreams" defaultOpen icon={<IconUserGroup />}>
               <Stack space="0">
                 {circle?.children.map((space) => (
                   <Stack key={space.id} direction="horizontal" space="0">

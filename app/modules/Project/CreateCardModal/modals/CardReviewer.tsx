@@ -9,7 +9,8 @@ import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
 
 function CardReviewer() {
-  const { reviewers, setReviewers, onCardUpdate } = useLocalCard();
+  const { reviewers, setReviewers, onCardUpdate, card, fetchCardActions } =
+    useLocalCard();
   const [modalOpen, setModalOpen] = useState(false);
 
   const [options, setOptions] = useState<Option[]>();
@@ -55,8 +56,11 @@ function CardReviewer() {
         )
       }
       disabled={!canTakeAction("cardReviewer")}
-      handleClose={() => {
-        void onCardUpdate();
+      handleClose={async () => {
+        if (card?.reviewer !== reviewers) {
+          void fetchCardActions();
+          await onCardUpdate();
+        }
         setModalOpen(false);
       }}
     >

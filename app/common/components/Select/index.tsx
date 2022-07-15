@@ -39,12 +39,14 @@ const Select: FC<Props> = ({ options, value, onChange }) => {
             borderWidth="0.5"
             transitionDuration="500"
             borderRadius="2xLarge"
-            padding="4"
+            padding="2"
             isSelected={value.value === val}
             // borderColor={value.value === val ? "accent" : "foregroundSecondary"}
             width="32"
           >
-            <Text align="center">{label}</Text>
+            <Text align="center" weight="semiBold">
+              {label}
+            </Text>
           </OptionContainer>
         ))}
       </Stack>
