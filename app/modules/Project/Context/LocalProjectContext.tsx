@@ -53,7 +53,7 @@ export function useProviderLocalProject() {
     useQuery<ProjectCardActionsType>(
       ["projectCardActions", pId],
       () =>
-        fetch(`${process.env.API_HOST}/project/${pId}/validActions`, {
+        fetch(`${process.env.API_HOST}/card/myValidActionsInProject/${pId}/`, {
           credentials: "include",
         }).then((res) => res.json()),
       {
@@ -80,7 +80,9 @@ export function useProviderLocalProject() {
   };
 
   useEffect(() => {
-    void fetchQuickActions();
+    if (pId) {
+      void fetchQuickActions();
+    }
   }, [connectedUser, pId]);
 
   useEffect(() => {

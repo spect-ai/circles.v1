@@ -10,7 +10,7 @@ import { Option, priorityMapping } from "../constants";
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
 
 function CardPriority() {
-  const { priority, setPriority, onCardUpdate } = useLocalCard();
+  const { priority, setPriority, onCardUpdate, card } = useLocalCard();
   const [modalOpen, setModalOpen] = useState(false);
 
   const [options, setOptions] = useState<Option[]>();
@@ -44,8 +44,10 @@ function CardPriority() {
         />
       }
       disabled={!canTakeAction("cardPriority")}
-      handleClose={() => {
-        void onCardUpdate();
+      handleClose={async () => {
+        if (card?.priority !== priority) {
+          await onCardUpdate();
+        }
         setModalOpen(false);
       }}
     >

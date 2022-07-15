@@ -10,7 +10,7 @@ import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
 
 function CardLabels() {
-  const { labels, setLabels, onCardUpdate } = useLocalCard();
+  const { labels, setLabels, onCardUpdate, card } = useLocalCard();
   const [modalOpen, setModalOpen] = useState(false);
 
   const [options, setOptions] = useState<Option[]>();
@@ -44,7 +44,9 @@ function CardLabels() {
       }
       disabled={!canTakeAction("cardLabels")}
       handleClose={async () => {
-        await onCardUpdate();
+        if (card?.labels !== labels) {
+          await onCardUpdate();
+        }
         setModalOpen(false);
       }}
     >

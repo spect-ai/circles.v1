@@ -11,12 +11,13 @@ import {
   ProjectType,
   Token,
   WorkThreadType,
+  CardActions,
 } from "@/app/types";
 import { Stack } from "degen";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { useQuery } from "react-query";
+import { QueryObserverResult, useQuery } from "react-query";
 import { toast } from "react-toastify";
 import { useLocalProject } from "../../Context/LocalProjectContext";
 
@@ -99,6 +100,8 @@ type CreateCardContextType = {
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
   updating: boolean;
   onArchive: (cardId: string) => Promise<any>;
+  cardActions: CardActions | undefined;
+  fetchCardActions: () => Promise<QueryObserverResult<CardActions, unknown>>;
 };
 
 export const LocalCardContext = createContext<CreateCardContextType>(
@@ -131,6 +134,21 @@ export function useProviderLocalCard({
       enabled: false,
     }
   );
+
+  const { data: cardActions, refetch: fetchCardActions } =
+    useQuery<CardActions>(
+      ["cardActions", tId],
+      () =>
+        fetch(
+          `${process.env.API_HOST}/card/myValidActionsInCard/${pId}/${tId}`,
+          {
+            credentials: "include",
+          }
+        ).then((res) => res.json()),
+      {
+        enabled: false,
+      }
+    );
 
   const { connectedUser } = useGlobal();
 
@@ -186,6 +204,13 @@ export function useProviderLocalCard({
       }
     };
     void fetchData();
+  }, [tId]);
+
+  useEffect(() => {
+    if (tId) {
+      console.log("fetching");
+      void fetchCardActions();
+    }
   }, [tId]);
 
   useEffect(() => {
@@ -351,6 +376,8 @@ export function useProviderLocalCard({
     card,
     setCard,
     onArchive: archiveCard,
+    cardActions,
+    fetchCardActions,
   };
 }
 

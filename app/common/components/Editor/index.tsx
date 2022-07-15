@@ -1,8 +1,9 @@
 import RichMarkdownEditor from "rich-markdown-editor";
 import { toast } from "react-toastify";
-import dark from "./styles/theme";
+import dark, { light } from "./styles/theme";
 import { storeImage } from "../../utils/ipfs";
 import { memo, useState } from "react";
+import { useTheme } from "degen";
 
 type Props = {
   value: string;
@@ -26,12 +27,13 @@ function Editor({
   setIsDirty,
 }: Props) {
   const [content, setcontent] = useState(value);
+  const { mode } = useTheme();
 
   return (
     <RichMarkdownEditor
       data-tour={tourId}
-      dark
-      theme={dark}
+      dark={mode === "dark"}
+      theme={mode === "dark" ? dark : light}
       disableExtensions={["emoji", "table"]}
       defaultValue={value}
       onChange={(val) => {

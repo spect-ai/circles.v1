@@ -1,4 +1,5 @@
-import { Box, Heading, IconGrid, IconList, Stack } from "degen";
+import useRoleGate from "@/app/services/RoleGate/useRoleGate";
+import { Box, Heading, IconGrid, IconList, Stack, useTheme } from "degen";
 import React, { memo } from "react";
 import Skeleton from "react-loading-skeleton";
 import styled from "styled-components";
@@ -14,13 +15,15 @@ export const IconButton = styled(Box)`
 
 function ProjectHeading() {
   const { localProject: project, loading, view, setView } = useLocalProject();
+  const { canDo } = useRoleGate();
+  const { mode } = useTheme();
+
   return (
     <Box
       width="full"
       paddingRight="8"
       paddingLeft="5"
       borderBottomWidth="0.375"
-      backgroundColor="background"
       display="flex"
       flexDirection="row"
       justifyContent="space-between"
@@ -40,11 +43,13 @@ function ProjectHeading() {
               width: "15rem",
               borderRadius: "0.5rem",
             }}
-            baseColor="rgb(20,20,20,1)"
-            highlightColor="rgb(255,255,255,0.1)"
+            baseColor={mode === "dark" ? "rgb(20,20,20)" : "rgb(255,255,255)"}
+            highlightColor={
+              mode === "dark" ? "rgb(255,255,255,0.1)" : "rgb(20,20,20,0.1)"
+            }
           />
         )}
-        {project?.name && <ProjectOptions />}
+        {project?.name && canDo(["steward"]) && <ProjectOptions />}
       </Stack>
       <Stack direction="horizontal" align="center">
         <Box

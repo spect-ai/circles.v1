@@ -72,7 +72,7 @@ export interface CircleType {
   id: string;
   members: string[];
   name: string;
-  parents: Circle[];
+  parents: CircleType[];
   private: boolean;
   projects: ProjectType[];
   slug: string;
@@ -225,6 +225,7 @@ export interface CardActions {
   updateColumn: ActionValidation;
   updateDeadline: ActionValidation;
   updateGeneralCardInfo: ActionValidation;
+  claim: ActionValidation;
 }
 
 export interface ProjectCardActionsType {

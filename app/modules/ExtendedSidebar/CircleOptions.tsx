@@ -54,12 +54,7 @@ function CircleOptions() {
             }}
           >
             <Stack direction="horizontal" align="center">
-              <Text
-                size="headingTwo"
-                weight="semiBold"
-                color="accentText"
-                ellipsis
-              >
+              <Text size="headingTwo" weight="semiBold" ellipsis>
                 {circle?.name || project?.parents[0].name}
               </Text>
             </Stack>

@@ -1,7 +1,15 @@
 import { updateColumnDetails } from "@/app/services/Column";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { CardType, ColumnType } from "@/app/types";
-import { Box, Button, IconCog, IconPlusSmall, Stack, Text } from "degen";
+import {
+  Box,
+  Button,
+  IconCog,
+  IconPlusSmall,
+  Stack,
+  Text,
+  useTheme,
+} from "degen";
 import { AnimatePresence } from "framer-motion";
 import React, { memo, useCallback, useEffect, useState } from "react";
 import {
@@ -44,7 +52,7 @@ const ScrollContainer = styled(Box)`
   overflow-y: auto;
 `;
 
-const NameInput = styled.input`
+const NameInput = styled.input<{ mode: string }>`
   width: auto;
   background: transparent;
   border: 0;
@@ -55,7 +63,8 @@ const NameInput = styled.input`
   box-shadow: none;
   font-size: 1.1rem;
   caret-color: rgb(255, 255, 255, 0.85);
-  color: rgb(255, 255, 255, 0.6);
+  color: ${(props) =>
+    props.mode === "dark" ? "rgb(255, 255, 255, 0.7)" : "rgb(20, 20, 20, 0.7)"};
   font-weight: 400;
   margin-left: 0.1rem;
 `;
@@ -68,6 +77,7 @@ function ColumnComponent({ cards, id, column, index }: Props) {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const { localProject: project, setLocalProject } = useLocalProject();
   const { canDo } = useRoleGate();
+  const { mode } = useTheme();
   const updateColumn = useCallback(async () => {
     const updatedProject = await updateColumnDetails(
       project.id,
@@ -121,6 +131,7 @@ function ColumnComponent({ cards, id, column, index }: Props) {
             value={columnTitle}
             onChange={(e) => setColumnTitle(e.target.value)}
             onBlur={() => updateColumn()}
+            mode={mode}
             //   disabled={space.roles[user?.id as string] !== 3}
           />
           <Box paddingRight="1">
@@ -168,6 +179,7 @@ function ColumnComponent({ cards, id, column, index }: Props) {
     CardDraggableCallback,
     column.cards,
     columnTitle,
+    mode,
   ]);
 
   useEffect(() => {
