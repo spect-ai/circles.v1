@@ -28,7 +28,7 @@ function CardReward() {
     <EditTag
       tourId="create-card-modal-reward"
       name={value !== "0" ? `${value} ${token.symbol}` : "No Reward"}
-      modalTitle="Select Deadline"
+      modalTitle="Set Reward"
       label="Reward"
       modalOpen={modalOpen}
       setModalOpen={setModalOpen}

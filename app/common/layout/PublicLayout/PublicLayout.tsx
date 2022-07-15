@@ -1,7 +1,7 @@
 import React, { memo, useEffect } from "react";
 
 import { ReactNodeNoStrings } from "degen/dist/types/types";
-import { Box } from "degen";
+import { Box, ThemeProvider, useTheme } from "degen";
 import { AnimatePresence } from "framer-motion";
 import ExtendedSidebar from "../../../modules/ExtendedSidebar/ExtendedSidebar";
 import Sidebar from "@/app/modules/Sidebar";
@@ -22,6 +22,8 @@ const Container = styled(Box)<{ issidebarexpanded: boolean }>`
 function PublicLayout(props: PublicLayoutProps) {
   const { children } = props;
   const { isSidebarExpanded } = useGlobal();
+  // eslint-disable-next-line @typescript-eslint/unbound-method
+  const { mode, setMode } = useTheme();
 
   const { connect, connectors, isConnected } = useConnect();
 
@@ -32,9 +34,15 @@ function PublicLayout(props: PublicLayoutProps) {
     }
   }, [connect, connectors, isConnected]);
 
+  useEffect(() => {
+    setTimeout(() => {
+      localStorage.getItem("lightMode") && setMode("light");
+    }, 100);
+  }, []);
+
   return (
     <Box
-      backgroundColor="background"
+      backgroundColor={mode === "dark" ? "background" : "backgroundSecondary"}
       style={{
         height: "100vh",
         overflowY: "auto",

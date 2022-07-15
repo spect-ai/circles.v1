@@ -100,7 +100,7 @@ function CreateSpaceModal() {
         onExitComplete={() => null}
       >
         {modalOpen && (
-          <Modal handleClose={close} title="Create Workspace">
+          <Modal handleClose={close} title="Create Workstream">
             <Box width="full" padding="8">
               <Stack>
                 <Input

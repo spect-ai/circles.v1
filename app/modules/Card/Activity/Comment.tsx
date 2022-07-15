@@ -4,7 +4,7 @@ import useComment from "@/app/services/Comment/useComment";
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
 import { UserType } from "@/app/types";
 import { SaveOutlined, SendOutlined } from "@ant-design/icons";
-import { Avatar, Box, IconTrash, Stack, Text } from "degen";
+import { Avatar, Box, IconTrash, Stack, Text, useTheme } from "degen";
 import { AnimatePresence, motion } from "framer-motion";
 
 import React, { useEffect, useState } from "react";
@@ -13,11 +13,18 @@ import { useQuery } from "react-query";
 import styled from "styled-components";
 import { fadeVariant } from "../Utils/variants";
 
-export const TextArea = styled(ContentEditable)`
-  color: rgb(255, 255, 255, 0.7);
-  border: 2px solid rgb(255, 255, 255, 0.02);
+export const TextArea = styled(ContentEditable)<{ mode: string }>`
+  color: ${(props) =>
+    props.mode === "dark" ? "rgb(255, 255, 255, 0.7)" : "rgb(20, 20, 20, 0.7)"};
+  border-width: 2px;
+  border-style: solid;
+  border-color: ${(props) =>
+    props.mode === "dark"
+      ? "rgb(255, 255, 255, 0.02)"
+      : "rgb(20, 20, 20, 0.2)"};
+
   background: ${(props) =>
-    props.disabled ? "rgb(20,20,20)" : "rgb(255, 255, 255, 0.01)"};
+    props.mode === "dark" ? "rgb(20,20,20)" : "rgb(247, 247, 247)"};
   border-radius: 1rem;
   width: 100%;
   overflow: hidden;
@@ -36,7 +43,10 @@ export const TextArea = styled(ContentEditable)`
 
   :empty::before {
     content: "Add a comment...";
-    color: rgb(255, 255, 255, 0.7);
+    color: ${(props) =>
+      props.mode === "dark"
+        ? "rgb(255, 255, 255, 0.7)"
+        : "rgb(20, 20, 20, 0.7)"};
   }
 `;
 
@@ -62,6 +72,7 @@ export default function Comment({
   const [content, setContent] = useState("");
   const { addComment, updateComment, deleteComment, loading } = useComment();
   const { getMemberDetails } = useModalOptions();
+  const { mode } = useTheme();
   useEffect(() => {
     if (commentContent) {
       setContent(commentContent);
@@ -110,6 +121,7 @@ export default function Comment({
                 setIsDisabled(false);
               }
             }}
+            mode={mode}
           />
         </Stack>
         <AnimatePresence>

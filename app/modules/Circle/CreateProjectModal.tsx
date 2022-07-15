@@ -1,4 +1,12 @@
-import { Box, Button, IconPlusSmall, Input, Stack, Text } from "degen";
+import {
+  Box,
+  Button,
+  IconPlusSmall,
+  Input,
+  Stack,
+  Text,
+  useTheme,
+} from "degen";
 import React, { useEffect, useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
@@ -65,6 +73,7 @@ function CreateProjectModal() {
   const [template, setTemplate] = useState({} as option);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
+  const { mode } = useTheme();
 
   const onSubmit = () => {
     console.log({ circle });
@@ -140,6 +149,7 @@ function CreateProjectModal() {
                           Pre built board with columns and automations set
                         </Text>
                       }
+                      theme={mode}
                     >
                       <QuestionCircleFilled style={{ fontSize: "1rem" }} />
                     </Tooltip>

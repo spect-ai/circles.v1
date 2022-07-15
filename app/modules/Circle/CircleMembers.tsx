@@ -84,7 +84,10 @@ function CircleMembers() {
   return (
     <Box marginRight="8">
       <Stack>
-        <Heading>Members</Heading>
+        <Text size="headingTwo" weight="semiBold" ellipsis>
+          Members
+        </Text>
+
         {!circle.members.includes(connectedUser) &&
           circle.discordGuildId &&
           currentUser?.discordId && (

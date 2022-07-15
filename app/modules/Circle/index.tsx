@@ -58,10 +58,15 @@ export default function Circle() {
           transitionDuration="500"
         >
           <Stack>
-            <Heading>Description</Heading>
+            <Text size="headingTwo" weight="semiBold" ellipsis>
+              Description
+            </Text>
+
             <Text>{circle?.description}</Text>
             <Stack direction="horizontal">
-              <Heading>Projects</Heading>
+              <Text size="headingTwo" weight="semiBold" ellipsis>
+                Projects
+              </Text>
               {canDo(["steward"]) && <CreateProjectModal />}
             </Stack>
             <Container
@@ -95,7 +100,9 @@ export default function Circle() {
               </Row>
             </Container>
             <Stack direction="horizontal">
-              <Heading>Workstreams</Heading>
+              <Text size="headingTwo" weight="semiBold" ellipsis>
+                Workstreams
+              </Text>
               {canDo(["steward"]) && <CreateSpaceModal />}
             </Stack>
             <Container style={{ padding: "0px", margin: "0px" }}>

@@ -78,9 +78,9 @@ function MyApp({ Component, pageProps }: AppProps) {
   const url = `https:/circles.spect.network/${router.route}`;
   return (
     <WagmiConfig client={wagmiClient}>
-      <ThemeProvider defaultMode="dark" defaultAccent="purple">
-        <QueryClientProvider client={queryClient}>
-          <GlobalContextProvider>
+      <GlobalContextProvider>
+        <ThemeProvider defaultAccent="purple" defaultMode="dark">
+          <QueryClientProvider client={queryClient}>
             <Hydrate state={pageProps.dehydratedState}>
               <AnimatePresence
                 exitBeforeEnter
@@ -90,9 +90,9 @@ function MyApp({ Component, pageProps }: AppProps) {
                 <Component {...pageProps} canonical={url} key={url} />
               </AnimatePresence>
             </Hydrate>
-          </GlobalContextProvider>
-        </QueryClientProvider>
-      </ThemeProvider>
+          </QueryClientProvider>
+        </ThemeProvider>
+      </GlobalContextProvider>
     </WagmiConfig>
   );
 }

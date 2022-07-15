@@ -1,4 +1,4 @@
-import { Avatar, Box, Stack } from "degen";
+import { Avatar, Box, Stack, useTheme } from "degen";
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { motion } from "framer-motion";
@@ -7,7 +7,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
 
-const TitleInput = styled.input`
+const TitleInput = styled.input<{ mode: string }>`
   width: 100%;
   background: transparent;
   border: 0;
@@ -18,7 +18,8 @@ const TitleInput = styled.input`
   box-shadow: none;
   font-size: 1rem;
   caret-color: rgb(255, 255, 255, 0.8);
-  color: rgb(255, 255, 255, 0.8);
+  color: ${(props) =>
+    props.mode === "dark" ? "rgb(255, 255, 255, 0.7)" : "rgb(20, 20, 20, 0.7)"};
 
   ::placeholder {
     color: rgb(255, 255, 255, 0.25);
@@ -28,9 +29,10 @@ const TitleInput = styled.input`
   padding-bottom: 1rem;
 `;
 
-const Container = styled(Box)`
+const Container = styled(Box)<{ mode: string }>`
   color: rgb(255, 255, 255, 0.85);
-  background: rgb(255, 255, 255, 0);
+  background: ${(props) =>
+    props.mode === "dark" ? "rgb(20,20,20)" : "rgb(247, 247, 247)"};
   border-radius: 1rem;
   width: 100%;
   overflow: hidden;
@@ -62,34 +64,37 @@ const variants = {
   },
 };
 
-export const SubTaskContainer = ({ title, avatar }: ContainerProps) => (
-  <motion.div
-    style={{
-      background: "transparent",
-      border: "none",
-      padding: "0rem",
-    }}
-    variants={variants}
-  >
-    <Container paddingX="4" borderWidth="0.5" cursor="pointer">
-      <Stack direction="horizontal">
-        <TitleInput value={title} disabled />
-        <Box paddingY="1">
-          {avatar && (
-            <Stack direction="horizontal" space="1">
-              <Avatar
-                size="9"
-                src={avatar}
-                label="avatar"
-                placeholder={!avatar}
-              />
-            </Stack>
-          )}
-        </Box>
-      </Stack>
-    </Container>
-  </motion.div>
-);
+export const SubTaskContainer = ({ title, avatar }: ContainerProps) => {
+  const { mode } = useTheme();
+  return (
+    <motion.div
+      style={{
+        background: "transparent",
+        border: "none",
+        padding: "0rem",
+      }}
+      variants={variants}
+    >
+      <Container paddingX="4" borderWidth="0.5" cursor="pointer" mode={mode}>
+        <Stack direction="horizontal">
+          <TitleInput value={title} disabled mode={mode} />
+          <Box paddingY="1">
+            {avatar && (
+              <Stack direction="horizontal" space="1">
+                <Avatar
+                  size="9"
+                  src={avatar}
+                  label="avatar"
+                  placeholder={!avatar}
+                />
+              </Stack>
+            )}
+          </Box>
+        </Stack>
+      </Container>
+    </motion.div>
+  );
+};
 
 export default function CreatedSubTask({ child }: Props) {
   const [assignees, setAssignees] = useState<string[]>([]);
