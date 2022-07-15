@@ -17,7 +17,7 @@ import { Stack } from "degen";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { useQuery } from "react-query";
+import { QueryObserverResult, useQuery } from "react-query";
 import { toast } from "react-toastify";
 import { useLocalProject } from "../../Context/LocalProjectContext";
 
@@ -100,8 +100,8 @@ type CreateCardContextType = {
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
   updating: boolean;
   onArchive: (cardId: string) => Promise<any>;
-  cardActions: CardActions;
-  fetchCardActions: () => Promise<void>;
+  cardActions: CardActions | undefined;
+  fetchCardActions: () => Promise<QueryObserverResult<CardActions, unknown>>;
 };
 
 export const LocalCardContext = createContext<CreateCardContextType>(
