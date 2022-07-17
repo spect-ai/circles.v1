@@ -71,7 +71,7 @@ export default function CircleIntegrations() {
                   />
                 }
               >
-                Connect Github
+                {circle?.githubRepos ? `Configure Github` : "Connect Github"}
               </PrimaryButton>
             </Link>
           </Box>
