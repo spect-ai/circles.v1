@@ -12,13 +12,12 @@ import { useQuery } from "react-query";
 export default function useModalOptions() {
   const router = useRouter();
   const { circle: cId } = router.query;
-  const {
-    data: memberDetails,
-    refetch,
-    error,
-  } = useQuery<MemberDetails>(["memberDetails", cId], {
-    enabled: false,
-  });
+  const { data: memberDetails, refetch } = useQuery<MemberDetails>(
+    ["memberDetails", cId],
+    {
+      enabled: false,
+    }
+  );
   const { project } = useLocalCard();
   const { connectedUser } = useGlobal();
 

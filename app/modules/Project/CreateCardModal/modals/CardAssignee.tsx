@@ -8,6 +8,9 @@ import { matchSorter } from "match-sorter";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
 import { id } from "ethers/lib/utils";
+import { useQuery } from "react-query";
+import { MemberDetails } from "@/app/types";
+import { useRouter } from "next/router";
 
 type Props = {
   filteredOptions: Option[] | undefined;
@@ -110,11 +113,22 @@ function CardAssignee() {
   const { canTakeAction } = useRoleGate();
   const { getOptions, getMemberDetails } = useModalOptions();
 
+  const router = useRouter();
+  const { circle: cId } = router.query;
+  const { data: memberDetails } = useQuery<MemberDetails>(
+    ["memberDetails", cId],
+    {
+      enabled: false,
+    }
+  );
+
   useEffect(() => {
-    const ops = getOptions("assignee") as Option[];
-    setOptions(ops);
-    setFilteredOptions(ops);
-  }, []);
+    if (memberDetails) {
+      const ops = getOptions("assignee") as Option[];
+      setOptions(ops);
+      setFilteredOptions(ops);
+    }
+  }, [memberDetails]);
 
   const getTagLabel = () => {
     if (!assignees[0]) {

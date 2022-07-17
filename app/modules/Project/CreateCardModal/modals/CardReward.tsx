@@ -88,7 +88,7 @@ function CardReward() {
               {getFlattenedCurrencies(registry as Registry, chain.chainId).map(
                 (aToken) => (
                   <motion.button
-                    key={chain.chainId}
+                    key={aToken.address}
                     style={{
                       background: "transparent",
                       border: "none",
