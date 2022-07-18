@@ -1,14 +1,14 @@
 module.exports = {
-  siteUrl: "https://yourdomain.com",
+  siteUrl: "https://circles.spect.network",
   generateRobotsTxt: true,
   exclude: ["/en*", "/de*", "/disallowed"],
   alternateRefs: [
     {
-      href: "https://yourdomain.com/en",
+      href: "https://circles.spect.network",
       hreflang: "en",
     },
     {
-      href: "https://yourdomain.com/de",
+      href: "https://circles.spect.network",
       hreflang: "de",
     },
   ],
