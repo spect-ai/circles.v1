@@ -7,7 +7,7 @@ import { smartTrim } from "@/app/common/utils/utils";
 import { useGlobal } from "@/app/context/globalContext";
 import useProfileUpdate from "@/app/services/Profile/useProfileUpdate";
 import { MemberDetails, UserType } from "@/app/types";
-import { SaveFilled } from "@ant-design/icons";
+import { GithubOutlined, SaveFilled } from "@ant-design/icons";
 import {
   Box,
   Button,
@@ -26,6 +26,7 @@ import React, { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import styled from "styled-components";
 import { useDisconnect } from "wagmi";
+import DiscordIcon from "@/app/assets/icons/discordIcon.svg";
 
 const ProfileButton = styled(Box)`
   cursor: pointer;
@@ -189,17 +190,63 @@ export default function ProfileModal() {
                     href={`https://discord.com/api/oauth2/authorize?client_id=942494607239958609&redirect_uri=${
                       process.env.NODE_ENV === "development"
                         ? "http%3A%2F%2Flocalhost%3A3000%2F"
-                        : "https%3A%2F%2Fdev.spect.network%2F"
+                        : "https%3A%2F%2Fcircles.spect.network%2F"
                     }&response_type=code&scope=identify`}
                   >
-                    <PrimaryButton tourId="connect-discord-button">
+                    <PrimaryButton
+                      tourId="connect-discord-button"
+                      icon={
+                        <Box marginTop="1">
+                          <DiscordIcon />
+                        </Box>
+                      }
+                    >
                       Connect Discord
                     </PrimaryButton>
                   </Link>
                 )}
                 {currentUser?.discordId && (
-                  <PrimaryButton tourId="connect-discord-button" disabled>
+                  <PrimaryButton
+                    disabled
+                    icon={
+                      <Box marginTop="1">
+                        <DiscordIcon />
+                      </Box>
+                    }
+                  >
                     Discord Connected
+                  </PrimaryButton>
+                )}
+                {!currentUser?.githubId && (
+                  <Link
+                    href={`https://github.com/login/oauth/authorize?client_id=4403e769e4d52b24eeab`}
+                  >
+                    <PrimaryButton
+                      tourId="connect-github-button"
+                      icon={
+                        <GithubOutlined
+                          style={{
+                            fontSize: "1.3rem",
+                          }}
+                        />
+                      }
+                    >
+                      Connect Github
+                    </PrimaryButton>
+                  </Link>
+                )}
+                {currentUser?.githubId && (
+                  <PrimaryButton
+                    disabled
+                    icon={
+                      <GithubOutlined
+                        style={{
+                          fontSize: "1.3rem",
+                        }}
+                      />
+                    }
+                  >
+                    Github Connected
                   </PrimaryButton>
                 )}
                 <PrimaryButton

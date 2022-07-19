@@ -43,9 +43,7 @@ export default function Explore() {
     }
   );
   const { connectedUser } = useGlobal();
-  const router = useRouter();
   useJoinCircle();
-  useConnectDiscord();
   const { onboarded } = useExploreOnboarding();
 
   const [filteredCircles, setFilteredCircles] = useState<CircleType[]>([]);

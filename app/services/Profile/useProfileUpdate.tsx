@@ -5,6 +5,7 @@ interface UpdateProfileDTO {
   username: string;
   avatar: string;
   discordId?: string;
+  githubId?: string;
 }
 
 export default function useProfileUpdate() {

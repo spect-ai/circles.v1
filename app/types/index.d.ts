@@ -7,6 +7,7 @@ interface UserType {
   username: string;
   avatar: string;
   discordId?: string;
+  githubId?: string;
   _id: string;
 }
 interface Payment {

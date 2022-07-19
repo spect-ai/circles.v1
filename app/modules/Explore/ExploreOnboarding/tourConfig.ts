@@ -38,6 +38,15 @@ export const tourConfig = [
       color: "rgb(255,255,255,0.8)",
     },
   },
+  {
+    selector: '[data-tour="connect-github-button"]',
+    content:
+      "You can connect your github account, this is used to link pull requests and issues to your cards",
+    style: {
+      backgroundColor: "rgb(20,20,20)",
+      color: "rgb(255,255,255,0.8)",
+    },
+  },
   // {
   //   selector: '[data-tour="create-card-modal-labels"]',
   //   content: "Add relevant tags to your card",

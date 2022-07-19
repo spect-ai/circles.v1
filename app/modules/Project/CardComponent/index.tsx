@@ -1,7 +1,7 @@
 import { PriorityIcon } from "@/app/common/components/PriorityIcon";
 import { monthMap } from "@/app/common/utils/constants";
 import { CardType, MemberDetails } from "@/app/types";
-import { Avatar, Box, IconEth, Stack, Tag, Text } from "degen";
+import { Avatar, Box, IconEth, Stack, Tag, Text, useTheme } from "degen";
 import { useRouter } from "next/router";
 import React, { memo, useCallback, useMemo, useState } from "react";
 import {
@@ -18,12 +18,18 @@ type Props = {
   index: number;
 };
 
-const Container = styled(Box)<{ isDragging: boolean }>`
+const Container = styled(Box)<{ isDragging: boolean; mode: string }>`
   border-width: 2px;
   border-color: ${(props) =>
-    props.isDragging ? "rgb(191, 90, 242, 1)" : "rgb(255, 255, 255, 0.01)"};
+    props.isDragging
+      ? "rgb(191, 90, 242, 1)"
+      : props.mode === "dark"
+      ? "rgb(255, 255, 255, 0.05)"
+      : "rgb(20,20,20,0.05)"};
+  };
   &:hover {
-    border-color: rgb(255, 255, 255, 0.02);
+    border-color: ${(props) =>
+      props.mode === "dark" ? "rgb(255, 255, 255, 0.1)" : "rgb(20,20,20,0.1)"};
   }
 `;
 
@@ -40,6 +46,7 @@ function CardComponent({ card, index }: Props) {
   const [hover, setHover] = useState(false);
 
   const { projectCardActions } = useLocalProject();
+  const { mode } = useTheme();
 
   const DraggableContent = (
     provided: DraggableProvided,
@@ -62,6 +69,7 @@ function CardComponent({ card, index }: Props) {
       onMouseLeave={() => {
         setHover(false);
       }}
+      mode={mode}
     >
       <Box>
         <Box
@@ -146,6 +154,7 @@ function CardComponent({ card, index }: Props) {
     memberDetails?.memberDetails,
     hover,
     projectCardActions,
+    mode,
   ]);
 
   return (
