@@ -6,7 +6,7 @@ import { memo, useState } from "react";
 import { useTheme } from "degen";
 
 type Props = {
-  value: string;
+  value?: string;
   onChange?: (val: string) => void;
   onSave?: (val: string) => void;
   placeholder?: string;
@@ -55,7 +55,7 @@ function Editor({
       readOnly={disabled || false}
       onBlur={() => {
         if (isDirty) {
-          onSave && onSave(content);
+          onSave && onSave(content as string);
         }
       }}
     />

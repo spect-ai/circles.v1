@@ -212,7 +212,7 @@ interface ActionValidation {
 }
 export interface CardActions {
   addFeedback: ActionValidation;
-  addRevisionInstructions: ActionValidation;
+  addRevisionInstruction: ActionValidation;
   applyToBounty: ActionValidation;
   archive: ActionValidation;
   canCreateCard: ActionValidation;

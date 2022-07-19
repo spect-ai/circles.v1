@@ -71,7 +71,6 @@ export default function CreateCardModal({
     title,
     setTitle,
     labels,
-    description,
     setDescription,
     project,
   } = context;
@@ -101,6 +100,7 @@ export default function CreateCardModal({
   useEffect(() => {
     setColumnId(column);
   }, [column, setColumnId]);
+
   return (
     <LocalCardContext.Provider value={context}>
       <Modal size="large" title="Create Card" handleClose={handleClose}>
@@ -141,14 +141,19 @@ export default function CreateCardModal({
                 </Stack>
                 <SubTasks createCard />
                 <Box style={{ minHeight: "10rem" }} marginTop="2">
-                  <Editor
-                    placeholder="Add a description, press '/' for commands"
-                    tourId="create-card-modal-description"
-                    value={description}
-                    onChange={(txt) => {
-                      setDescription(txt);
-                    }}
-                  />
+                  <div
+                    key={`${
+                      Object.keys(project?.cards as any).length
+                    }-description`}
+                  >
+                    <Editor
+                      placeholder="Add a description, press '/' for commands"
+                      tourId="create-card-modal-description"
+                      onChange={(txt) => {
+                        setDescription(txt);
+                      }}
+                    />
+                  </div>
                 </Box>
               </Stack>
             </Container>
