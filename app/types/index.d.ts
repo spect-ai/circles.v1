@@ -177,6 +177,7 @@ export interface WorkThreadType {
 export interface WorkUnitType {
   user: string;
   content: string;
+  pr: string;
   workUnitId: string;
   createdAt: string;
   updatedAt: string;
