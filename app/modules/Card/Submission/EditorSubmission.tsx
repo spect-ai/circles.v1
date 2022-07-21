@@ -39,9 +39,11 @@ export default function EditorSubmission({
       marginRight="2"
       marginBottom="4"
     >
-      <Box marginBottom="2">
-        <Link href={workUnit?.pr as string}>{workUnit?.pr}</Link>
-      </Box>
+      {workUnit?.pr && (
+        <Box marginBottom="2">
+          <Link href={workUnit.pr}>{workUnit?.pr}</Link>
+        </Box>
+      )}
       <Stack direction="horizontal" space="6">
         {workUnit ? (
           <Avatar

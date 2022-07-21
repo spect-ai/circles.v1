@@ -70,10 +70,10 @@ function CardReviewer() {
         )
       }
       disabled={!canTakeAction("cardReviewer")}
-      handleClose={async () => {
+      handleClose={() => {
         if (card?.reviewer !== reviewers) {
           void fetchCardActions();
-          await onCardUpdate();
+          void onCardUpdate();
         }
         setModalOpen(false);
       }}

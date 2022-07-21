@@ -71,7 +71,6 @@ export default function ProfileModal() {
 
   const uploadFile = async (file: File) => {
     setIsDirty(true);
-    console.log({ file });
     if (file) {
       setUploading(true);
       const { imageGatewayURL } = await storeImage(file, "avatar");
@@ -127,6 +126,10 @@ export default function ProfileModal() {
                     uploaded={!!avatar}
                     onChange={uploadFile}
                     uploading={uploading}
+                    onReset={() => {
+                      setAvatar("");
+                      setIsDirty(true);
+                    }}
                     maxSize={10}
                   />
                 )}

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import React, { ReactElement, useEffect, useState } from "react";
-import { Box, Button, Stack, Text } from "degen";
+import { Avatar, Box, Button, Stack, Text } from "degen";
 import { useRouter } from "next/router";
 import CreateCircle from "./CreateCircleModal";
 import Logo from "@/app/common/components/Logo";
@@ -122,7 +122,12 @@ function Sidebar(): ReactElement {
       )}
       <Box paddingY="3">
         {currentUser?.id && (
-          <Logo href="/" src={currentUser?.avatar} gradient="" />
+          <Avatar
+            src={currentUser?.avatar}
+            address={currentUser.ethAddress}
+            label=""
+            size="10"
+          />
         )}
       </Box>
     </Box>

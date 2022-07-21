@@ -85,6 +85,7 @@ export const AssigneeModal = ({
               src={item.avatar}
               label="avatar"
               placeholder={!item.avatar}
+              address={item.ethAddress}
             />
             <Box marginRight="2" />
             <Text
@@ -156,6 +157,7 @@ function CardAssignee() {
             src={getMemberDetails(assignees[0])?.avatar}
             label=""
             size="5"
+            address={getMemberDetails(assignees[0])?.ethAddress}
           />
         ) : (
           <IconUserSolid color="accent" size="5" />

@@ -13,6 +13,7 @@ interface Props {
 }
 
 const Container = styled(Box)`
+  border: 0.1rem solid transparent;
   cursor: pointer;
   &:hover {
     border-color: rgb(191, 90, 242, 1);
@@ -52,7 +53,6 @@ const CircleCard: FC<Props> = ({ href, gradient, logo, name, description }) => {
   return (
     <Link href={href}>
       <Container
-        borderWidth="0.5"
         borderRadius="2xLarge"
         display="flex"
         flexDirection="column"

@@ -52,6 +52,7 @@ export default function AddToken({ chain }: Props) {
                     setLoading(true);
                     console.log({ chain });
                     try {
+                      console.log(await symbol(e.target.value, chain?.chainId));
                       setTokenSymbol(
                         await symbol(e.target.value, chain?.chainId)
                       );

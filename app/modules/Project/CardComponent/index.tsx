@@ -88,6 +88,10 @@ function CardComponent({ card, index }: Props) {
               }
               label=""
               size="6"
+              address={
+                memberDetails?.memberDetails &&
+                memberDetails.memberDetails[card.assignee[0]]?.ethAddress
+              }
               placeholder={
                 !(
                   memberDetails?.memberDetails &&

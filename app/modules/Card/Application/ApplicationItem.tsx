@@ -25,6 +25,7 @@ export default function ApplicationItem({ application }: Props) {
           label=""
           size="8"
           placeholder={!getMemberDetails(application.user)?.avatar}
+          address={getMemberDetails(application.user)?.ethAddress}
         />
         <Box
           style={{

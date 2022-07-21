@@ -3,9 +3,12 @@ import Table from "@/app/common/components/Table";
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
 import { updatePaymentInfo } from "@/app/services/Payment";
 import usePaymentGateway from "@/app/services/Payment/usePayment";
+import { CircleType } from "@/app/types";
 import { QuestionCircleFilled } from "@ant-design/icons";
 import { Avatar, Box, Button, Stack, Text } from "degen";
+import { useRouter } from "next/router";
 import React, { useState } from "react";
+import { useQuery } from "react-query";
 import { Tooltip } from "react-tippy";
 import { useLocalProject } from "../Context/LocalProjectContext";
 import { useLocalCard } from "../CreateCardModal/hooks/LocalCardContext";
@@ -19,8 +22,14 @@ export default function CurrencyPayment() {
   const { batchPayInfo, setStep, currencyCards, tokenCards, setIsOpen } =
     useBatchPayContext();
 
-  const { updateProject, localProject: project } = useLocalProject();
+  const { updateProject } = useLocalProject();
   const { setCard, cardId } = useLocalCard();
+
+  const router = useRouter();
+  const { circle: cId } = router.query;
+  const { data: circle } = useQuery<CircleType>(["circle", cId], {
+    enabled: false,
+  });
 
   const formatRows = () => {
     const rows: any[] = [];
@@ -32,6 +41,7 @@ export default function CurrencyPayment() {
             placeholder={!getMemberDetails(userId)?.avatar}
             label=""
             size="8"
+            address={getMemberDetails(userId)?.ethAddress}
           />
           <Text variant="base" weight="semiBold">
             {getMemberDetails(userId)?.username}
@@ -99,7 +109,7 @@ export default function CurrencyPayment() {
                 setLoading(true);
                 try {
                   const txnHash = await batchPay(
-                    project?.parents[0].defaultPayment.chain.chainId,
+                    circle?.defaultPayment.chain.chainId || "",
                     "currency",
                     getEthAddress() as string[],
                     batchPayInfo?.currency.values as number[],

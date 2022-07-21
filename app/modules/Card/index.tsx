@@ -294,7 +294,7 @@ function Card() {
                 <CardPriority />
                 <CardReward />
                 {/* <DiscordThread /> */}
-                {canTakeAction("cardPayment") && (
+                {/* {canTakeAction("cardPayment") && (
                   <PrimaryButton
                     onClick={() => {
                       setBatchPayModalOpen(true);
@@ -303,7 +303,7 @@ function Card() {
                   >
                     Pay
                   </PrimaryButton>
-                )}
+                )} */}
                 {cardType === "Bounty" && canTakeAction("cardApply") && (
                   <PrimaryButton
                     icon={<IconUserSolid />}

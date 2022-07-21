@@ -23,6 +23,7 @@ function CardReward() {
     setValue,
     onCardUpdate,
     fetchCardActions,
+    card,
   } = useLocalCard();
   const { canTakeAction } = useRoleGate();
 
@@ -43,9 +44,15 @@ function CardReward() {
       icon={<IconEth color="accent" size="5" />}
       disabled={!canTakeAction("cardReward")}
       handleClose={() => {
-        void onCardUpdate();
+        if (
+          parseFloat(value) !== card?.reward.value ||
+          token.symbol !== card?.reward.token.symbol ||
+          chain.chainId !== card?.reward.chain.chainId
+        ) {
+          void onCardUpdate();
+          void fetchCardActions();
+        }
         setModalOpen(false);
-        void fetchCardActions();
       }}
     >
       <Box height="96">

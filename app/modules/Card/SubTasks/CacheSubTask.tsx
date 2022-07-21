@@ -9,11 +9,13 @@ type Props = {
 
 export default function CacheSubTask({ child }: Props) {
   const { getMemberDetails } = useModalOptions();
-
+  console.log({ child });
   return (
     <SubTaskContainer
       title={child.title as string}
-      avatar={child.assignee ? getMemberDetails(child.assignee[0])?.avatar : ""}
+      memberDetails={getMemberDetails(
+        (child.assignee && child.assignee[0]) || ""
+      )}
     />
   );
 }
