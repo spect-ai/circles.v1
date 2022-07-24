@@ -3,12 +3,13 @@ import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { Box, Input, Stack, Tag, Text } from "degen";
 import React, { useState } from "react";
 import useERC20 from "@/app/services/Payment/useERC20";
-import { Chain, CircleType } from "@/app/types";
+import { Chain, CircleType, Registry } from "@/app/types";
 import { AnimatePresence } from "framer-motion";
 import { addToken } from "@/app/services/Payment";
 import { useRouter } from "next/router";
 import { useQuery } from "react-query";
 import Loader from "@/app/common/components/Loader";
+import queryClient from "@/app/common/utils/queryClient";
 
 interface Props {
   chain: Chain | undefined;
@@ -75,6 +76,8 @@ export default function AddToken({ chain }: Props) {
                       symbol: tokenSymbol,
                       name: tokenName,
                     });
+                    console.log({ res });
+                    queryClient.setQueryData(["registry", cId], res);
                     res && setIsOpen(false);
                   }}
                 >
