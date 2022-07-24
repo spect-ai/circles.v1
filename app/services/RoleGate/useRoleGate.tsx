@@ -31,7 +31,7 @@ export default function useRoleGate() {
     if (!card?.id) {
       return true;
     }
-    if (!connectedUser || !cardActions) {
+    if (!connectedUser || !cardActions?.updateColumn) {
       return false;
     }
 
