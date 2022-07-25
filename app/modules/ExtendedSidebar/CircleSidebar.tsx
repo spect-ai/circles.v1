@@ -4,6 +4,9 @@ import { CircleType } from "@/app/types";
 import { ProjectOutlined } from "@ant-design/icons";
 import {
   Box,
+  IconPlus,
+  IconPlusSmall,
+  IconSplit,
   IconUserGroup,
   Skeleton,
   SkeletonGroup,
@@ -18,6 +21,7 @@ import { useQuery } from "react-query";
 import styled from "styled-components";
 import SettingsModal from "../Circle/CircleSettingsModal";
 import ContributorsModal from "../Circle/ContributorsModal";
+import CreateRetroModal from "../Retro/CreateRetroModal";
 import CircleOptions from "./CircleOptions";
 import CollapseButton from "./CollapseButton";
 
@@ -40,6 +44,7 @@ function CircleSidebar() {
 
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [isContributorsModalOpen, setIsContributorsModalOpen] = useState(false);
+  const [isRetroModalOpen, setIsRetroModalOpen] = useState(false);
 
   const [showCollapseButton, setShowCollapseButton] = useState(false);
   if (isLoading) {
@@ -71,6 +76,9 @@ function CircleSidebar() {
           <ContributorsModal
             handleClose={() => setIsContributorsModalOpen(false)}
           />
+        )}
+        {isRetroModalOpen && (
+          <CreateRetroModal handleClose={() => setIsRetroModalOpen(false)} />
         )}
       </AnimatePresence>
       <Stack space="3">
@@ -131,6 +139,21 @@ function CircleSidebar() {
                 {!circle?.children.length && (
                   <Box paddingLeft="7" paddingY="2">
                     <Text variant="label">No workstreams created</Text>
+                  </Box>
+                )}
+              </Stack>
+            </Accordian>
+            <Accordian name="Retro" defaultOpen icon={<IconSplit />}>
+              <Stack space="0">
+                {!circle?.children.length && (
+                  <Box padding="2">
+                    <PrimaryButton
+                      variant="transparent"
+                      icon={<IconPlusSmall />}
+                      onClick={() => setIsRetroModalOpen(true)}
+                    >
+                      Start a new Retro
+                    </PrimaryButton>
                   </Box>
                 )}
               </Stack>

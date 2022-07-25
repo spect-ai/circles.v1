@@ -14,6 +14,7 @@ interface Props {
   animation?: "fade" | "slide" | "none";
   shape?: "circle" | "square";
   tone?: "red" | "accent" | "green" | "blue";
+  type?: "button" | "submit" | "reset";
   tourId?: string;
 }
 
@@ -55,6 +56,7 @@ const PrimaryButton: FC<Props> = ({
   children,
   animation = "none",
   tone = "accent",
+  type = "button",
   tourId,
 }) => {
   return (
@@ -77,6 +79,7 @@ const PrimaryButton: FC<Props> = ({
         center
         onClick={onClick}
         tone={tone as any}
+        type={type}
       >
         {children}
       </Button>
