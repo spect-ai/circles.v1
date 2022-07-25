@@ -44,9 +44,9 @@ function CardPriority() {
         />
       }
       disabled={!canTakeAction("cardPriority")}
-      handleClose={async () => {
+      handleClose={() => {
         if (card?.priority !== priority) {
-          await onCardUpdate();
+          void onCardUpdate();
         }
         setModalOpen(false);
       }}

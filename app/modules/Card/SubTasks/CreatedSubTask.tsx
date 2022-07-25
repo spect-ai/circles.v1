@@ -2,7 +2,7 @@ import { Avatar, Box, Stack, useTheme } from "degen";
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { motion } from "framer-motion";
-import { CardType } from "@/app/types";
+import { CardType, UserType } from "@/app/types";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
@@ -48,7 +48,7 @@ type Props = {
 
 type ContainerProps = {
   title: string;
-  avatar?: string;
+  memberDetails: UserType | undefined;
 };
 
 const variants = {
@@ -64,8 +64,9 @@ const variants = {
   },
 };
 
-export const SubTaskContainer = ({ title, avatar }: ContainerProps) => {
+export const SubTaskContainer = ({ title, memberDetails }: ContainerProps) => {
   const { mode } = useTheme();
+  console.log({ memberDetails });
   return (
     <motion.div
       style={{
@@ -79,13 +80,14 @@ export const SubTaskContainer = ({ title, avatar }: ContainerProps) => {
         <Stack direction="horizontal">
           <TitleInput value={title} disabled mode={mode} />
           <Box paddingY="1">
-            {avatar && (
+            {memberDetails && (
               <Stack direction="horizontal" space="1">
                 <Avatar
                   size="9"
-                  src={avatar}
+                  src={memberDetails.avatar}
                   label="avatar"
-                  placeholder={!avatar}
+                  placeholder={!memberDetails.avatar}
+                  address={memberDetails.ethAddress}
                 />
               </Stack>
             )}
@@ -112,7 +114,7 @@ export default function CreatedSubTask({ child }: Props) {
       <div>
         <SubTaskContainer
           title={child.title}
-          avatar={getMemberDetails(child.assignee[0])?.avatar}
+          memberDetails={getMemberDetails(child.assignee[0])}
         />
       </div>
     </Link>

@@ -43,9 +43,7 @@ export default function Explore() {
     }
   );
   const { connectedUser } = useGlobal();
-  const router = useRouter();
   useJoinCircle();
-  useConnectDiscord();
   const { onboarded } = useExploreOnboarding();
 
   const [filteredCircles, setFilteredCircles] = useState<CircleType[]>([]);
@@ -70,7 +68,7 @@ export default function Explore() {
         }}
       />
       <GridContainer>
-        <Box width="1/2" paddingY="4" paddingRight="8">
+        <Box width="1/2" paddingTop="1" paddingRight="8" paddingBottom="4">
           <Input
             label=""
             placeholder="Explore"

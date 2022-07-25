@@ -46,7 +46,7 @@ export const deleteCircle = async (circleId: string) => {
       Accept: "application/json",
       "Content-Type": "application/json",
     },
-    method: "POST",
+    method: "DELETE",
     credentials: "include",
   });
   if (res.ok) {

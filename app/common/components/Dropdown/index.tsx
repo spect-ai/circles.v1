@@ -112,7 +112,7 @@ const Dropdown: FC<Props> = ({ options, selected, onChange, title }) => {
               transition={{ duration: 0.3 }}
             >
               <ScrollContainer>
-                {filteredOptions.map((option) => (
+                {filteredOptions?.map((option) => (
                   <Option
                     key={option.value}
                     padding="4"
@@ -128,7 +128,7 @@ const Dropdown: FC<Props> = ({ options, selected, onChange, title }) => {
                     </Stack>
                   </Option>
                 ))}
-                {!filteredOptions.length && (
+                {!filteredOptions?.length && (
                   <Option padding="4" borderRadius="3xLarge">
                     <Stack align="center">
                       <Text variant="label">Not Found</Text>
