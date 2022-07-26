@@ -16,6 +16,7 @@ interface Props {
   tone?: "red" | "accent" | "green" | "blue";
   type?: "button" | "submit" | "reset";
   tourId?: string;
+  suffix?: ReactNodeNoStrings;
 }
 
 export const slide = {
@@ -57,6 +58,7 @@ const PrimaryButton: FC<Props> = ({
   animation = "none",
   tone = "accent",
   type = "button",
+  suffix,
   tourId,
 }) => {
   return (
@@ -80,6 +82,7 @@ const PrimaryButton: FC<Props> = ({
         onClick={onClick}
         tone={tone as any}
         type={type}
+        suffix={suffix}
       >
         {children}
       </Button>

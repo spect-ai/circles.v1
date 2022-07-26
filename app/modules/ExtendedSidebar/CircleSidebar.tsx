@@ -145,17 +145,15 @@ function CircleSidebar() {
             </Accordian>
             <Accordian name="Retro" defaultOpen icon={<IconSplit />}>
               <Stack space="0">
-                {!circle?.children.length && (
-                  <Box padding="2">
-                    <PrimaryButton
-                      variant="transparent"
-                      icon={<IconPlusSmall />}
-                      onClick={() => setIsRetroModalOpen(true)}
-                    >
-                      Start a new Retro
-                    </PrimaryButton>
-                  </Box>
-                )}
+                <Box padding="2">
+                  <PrimaryButton
+                    variant="transparent"
+                    icon={<IconPlusSmall />}
+                    onClick={() => setIsRetroModalOpen(true)}
+                  >
+                    Start a new Retro
+                  </PrimaryButton>
+                </Box>
               </Stack>
             </Accordian>
           </Stack>

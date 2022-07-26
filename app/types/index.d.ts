@@ -10,7 +10,7 @@ interface UserType {
   githubId?: string;
   _id: string;
 }
-interface Payment {
+export interface Payment {
   chain: Chain;
   token: Token;
 }
