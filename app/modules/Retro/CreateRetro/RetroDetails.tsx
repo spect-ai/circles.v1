@@ -5,9 +5,9 @@ import { Box, IconArrowRight, Input, Stack, Text } from "degen";
 import { motion } from "framer-motion";
 import React from "react";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
+import { toast } from "react-toastify";
 
 type Props = {
-  handleClose: () => void;
   setStep: (step: number) => void;
   setDetails: (details: RetroForm) => void;
 };
@@ -26,16 +26,13 @@ export const slideIn = {
   exit: { x: 400, opacity: 0 },
 };
 
-export default function RetroDetails({
-  handleClose,
-  setStep,
-  setDetails,
-}: Props) {
+export default function RetroDetails({ setStep, setDetails }: Props) {
   const {
     register,
     handleSubmit,
-    formState: { errors },
     control,
+    formState: { errors },
+    trigger,
   } = useForm<RetroForm>({
     defaultValues: {
       strategy: {
@@ -45,9 +42,14 @@ export default function RetroDetails({
     },
   });
   const onSubmit: SubmitHandler<RetroForm> = (data) => {
+    console.log({ data });
+    if (!data.title || !data.description || !data.strategy || !data.duration) {
+      toast.error("Please fill out all fields");
+      return;
+    }
     setStep(1);
-    console.log(data);
     setDetails(data);
+    console.log({ errors });
   };
   return (
     <motion.div
@@ -71,6 +73,7 @@ export default function RetroDetails({
               label="Title"
               placeholder="Sprint Retro Period"
               {...register("title")}
+              // error={errors.title}
             />
             <Input
               label="Description"
@@ -105,6 +108,7 @@ export default function RetroDetails({
               {...register("duration")}
               type="number"
               units="days"
+              error={errors.duration}
             />
           </Stack>
           <Box flexGrow={1} />
@@ -113,11 +117,7 @@ export default function RetroDetails({
               <Box width="full" />
 
               <Box width="full">
-                <PrimaryButton
-                  onClick={() => setStep(1)}
-                  suffix={<IconArrowRight />}
-                  type="submit"
-                >
+                <PrimaryButton suffix={<IconArrowRight />} type="submit">
                   Continue
                 </PrimaryButton>
               </Box>

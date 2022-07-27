@@ -3,14 +3,19 @@ import Loader from "@/app/common/components/Loader";
 import { useGlobal } from "@/app/context/globalContext";
 import useCircleOnboarding from "@/app/services/Onboarding/useCircleOnboarding";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
-import { CircleType } from "@/app/types";
-import { Box, Stack, Text } from "degen";
+import { CircleType, RetroType } from "@/app/types";
+import { ExpandAltOutlined } from "@ant-design/icons";
+import { Box, Button, Stack, Text } from "degen";
+import { AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
-import React from "react";
+import React, { useState } from "react";
 import { Col, Container, Row } from "react-grid-system";
 import { useQuery } from "react-query";
+import { Tooltip } from "react-tippy";
 import { ToastContainer } from "react-toastify";
 import styled from "styled-components";
+import CreateRetro from "../Retro/CreateRetro";
+import RetroModal from "../Retro/RetroModal";
 import CircleMembers from "./CircleMembers";
 import Onboarding from "./CircleOnboarding";
 import CreateProjectModal from "./CreateProjectModal";
@@ -36,14 +41,27 @@ export default function Circle() {
   const { canDo } = useRoleGate();
   const { onboarded } = useCircleOnboarding();
   const { isSidebarExpanded } = useGlobal();
+  const [isRetroOpen, setIsRetroOpen] = useState(false);
+  const [retro, setRetro] = useState({} as RetroType);
 
   if (isLoading || !circle) {
     return <Loader text="...." loading />;
   }
 
+  console.log({ circle });
+
   return (
     <BoxContainer paddingX="8" paddingTop="4">
       {!onboarded && canDo(["steward"]) && <Onboarding />}
+      <AnimatePresence>
+        {isRetroOpen && (
+          <RetroModal
+            handleClose={() => setIsRetroOpen(false)}
+            retro={retro}
+            setRetro={setRetro}
+          />
+        )}
+      </AnimatePresence>
       <ToastContainer
         toastStyle={{
           backgroundColor: "rgb(20,20,20)",
@@ -128,8 +146,48 @@ export default function Circle() {
                     <Text variant="label">No Workstreams created yet</Text>
                   </Box>
                 )}
-                {/* <Col sm={6} md={4} lg={3}>
-            </Col> */}
+              </Row>
+            </Container>
+            <Stack direction="horizontal">
+              <Text size="headingTwo" weight="semiBold" ellipsis>
+                Retro
+              </Text>
+              {canDo(["steward"]) && <CreateRetro />}
+              <Tooltip html={<Text>View all Retros</Text>}>
+                <Button shape="circle" size="small" variant="transparent">
+                  <Text variant="label">
+                    <ExpandAltOutlined
+                      style={{
+                        fontSize: "1.2rem",
+                      }}
+                    />
+                  </Text>
+                </Button>
+              </Tooltip>
+            </Stack>
+            <Container style={{ padding: "0px", margin: "0px" }}>
+              <Row>
+                {circle?.retro?.map((retro) => (
+                  <Col sm={6} md={4} lg={3} key={retro.id}>
+                    <Card
+                      height="32"
+                      onClick={() => {
+                        setRetro(retro);
+                        setIsRetroOpen(true);
+                      }}
+                    >
+                      <Text align="center">{retro.title}</Text>
+                      <Text variant="label" align="center">
+                        {retro.description}
+                      </Text>
+                    </Card>
+                  </Col>
+                ))}
+                {!circle.retro?.length && (
+                  <Box marginLeft="4">
+                    <Text variant="label">No Workstreams created yet</Text>
+                  </Box>
+                )}
               </Row>
             </Container>
           </Stack>

@@ -94,11 +94,7 @@ function CreateSpaceModal() {
       >
         <IconPlusSmall />
       </Button>
-      <AnimatePresence
-        initial={false}
-        exitBeforeEnter
-        onExitComplete={() => null}
-      >
+      <AnimatePresence>
         {modalOpen && (
           <Modal handleClose={close} title="Create Workstream">
             <Box width="full" padding="8">

@@ -21,7 +21,7 @@ import { useQuery } from "react-query";
 import styled from "styled-components";
 import SettingsModal from "../Circle/CircleSettingsModal";
 import ContributorsModal from "../Circle/ContributorsModal";
-import CreateRetroModal from "../Retro/CreateRetroModal";
+import CreateRetroModal from "../Retro/CreateRetro/CreateRetroModal";
 import CircleOptions from "./CircleOptions";
 import CollapseButton from "./CollapseButton";
 
@@ -141,19 +141,6 @@ function CircleSidebar() {
                     <Text variant="label">No workstreams created</Text>
                   </Box>
                 )}
-              </Stack>
-            </Accordian>
-            <Accordian name="Retro" defaultOpen icon={<IconSplit />}>
-              <Stack space="0">
-                <Box padding="2">
-                  <PrimaryButton
-                    variant="transparent"
-                    icon={<IconPlusSmall />}
-                    onClick={() => setIsRetroModalOpen(true)}
-                  >
-                    Start a new Retro
-                  </PrimaryButton>
-                </Box>
               </Stack>
             </Accordian>
           </Stack>

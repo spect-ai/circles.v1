@@ -13,13 +13,11 @@ type Props = {
   handleClose: () => void;
   setStep: (step: number) => void;
   retroDetails: RetroForm | undefined;
-  retroBudget:
-    | {
-        chain: Chain;
-        token: Token;
-        value: string;
-      }
-    | undefined;
+  retroBudget: {
+    chain: Chain;
+    token: Token;
+    value: string;
+  };
 };
 
 export type MemberDetails = {
@@ -131,8 +129,11 @@ export default function RetroMembers({
                     description: retroDetails?.description,
                     title: retroDetails?.title,
                     duration: (retroDetails?.duration || 1) * 86400,
-                    ...retroBudget,
-                    ...memberStats,
+                    reward: {
+                      ...retroBudget,
+                      value: parseFloat(retroBudget?.value || "0"),
+                    },
+                    memberStats: memberStats?.filter((m) => m.isChecked),
                   });
                   console.log({ res });
                   if (res) {

@@ -14,15 +14,11 @@ type Props = {
 export default function CreateRetroModal({ handleClose }: Props) {
   const [step, setStep] = useState(0);
   const [details, setDetails] = useState<RetroForm | undefined>();
-  const [budget, setBudget] =
-    useState<
-      | {
-          chain: Chain;
-          token: Token;
-          value: string;
-        }
-      | undefined
-    >();
+  const [budget, setBudget] = useState<{
+    chain: Chain;
+    token: Token;
+    value: string;
+  }>({} as any);
 
   return (
     <Modal title="Start Retro" handleClose={handleClose} size="large">
@@ -35,7 +31,6 @@ export default function CreateRetroModal({ handleClose }: Props) {
         <AnimatePresence exitBeforeEnter>
           {step === 0 && (
             <RetroDetails
-              handleClose={handleClose}
               setStep={setStep}
               key="details"
               setDetails={setDetails}
