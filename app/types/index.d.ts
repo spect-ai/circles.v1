@@ -97,6 +97,11 @@ export interface RetroType {
     };
   };
   strategy: "Quadratic Voting" | "Normal Voting";
+  status: {
+    active: boolean;
+    paid: boolean;
+    archived: boolean;
+  };
   title: string;
   updatedtAt: string;
 }

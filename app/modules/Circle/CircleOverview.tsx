@@ -109,26 +109,28 @@ export default function CircleOverview() {
                 )}
               </Row>
             </Container>
-            <Stack direction="horizontal">
+            <Stack direction="horizontal" align="center">
               <Text size="headingTwo" weight="semiBold" ellipsis>
                 Retro
               </Text>
               {canDo(["steward"]) && <CreateRetro />}
               <Tooltip html={<Text>View all Retros</Text>}>
-                <Button
-                  shape="circle"
-                  size="small"
-                  variant="transparent"
-                  onClick={() => setPage("Retro")}
-                >
-                  <Text variant="label">
-                    <ExpandAltOutlined
-                      style={{
-                        fontSize: "1.2rem",
-                      }}
-                    />
-                  </Text>
-                </Button>
+                <Box marginTop="1">
+                  <Button
+                    shape="circle"
+                    size="small"
+                    variant="transparent"
+                    onClick={() => setPage("Retro")}
+                  >
+                    <Text variant="label">
+                      <ExpandAltOutlined
+                        style={{
+                          fontSize: "1.2rem",
+                        }}
+                      />
+                    </Text>
+                  </Button>
+                </Box>
               </Tooltip>
             </Stack>
             <Container style={{ padding: "0px", margin: "0px" }}>
@@ -151,7 +153,7 @@ export default function CircleOverview() {
                 ))}
                 {!circle?.retro?.length && (
                   <Box marginLeft="4">
-                    <Text variant="label">No Workstreams created yet</Text>
+                    <Text variant="label">No Retros created yet</Text>
                   </Box>
                 )}
               </Row>

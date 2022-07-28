@@ -24,6 +24,8 @@ export default function Feedback({
   const [feedbackContent, setFeedbackContent] = useState(
     feedbackGiven && feedbackGiven[memberDetails.owner]
   );
+  const [loading, setLoading] = useState(false);
+
   return (
     <>
       <Box
@@ -57,12 +59,15 @@ export default function Feedback({
                   onChange={(e) => setFeedbackContent(e.target.value)}
                 />
                 <PrimaryButton
+                  loading={loading}
                   onClick={async () => {
+                    setLoading(true);
                     const res = await giveFeedback(retroId, {
                       feedback: {
                         [memberDetails.owner]: feedbackContent,
                       },
                     });
+                    setLoading(false);
                     setRetro(res);
                     if (res) {
                       setIsOpen(false);

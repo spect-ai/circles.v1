@@ -32,6 +32,8 @@ export default function RetroModal({ handleClose }: Props) {
     retro.stats[connectedUser]?.votesRemaining
   );
 
+  const [loading, setLoading] = useState(false);
+
   const handleVotesRemaining = React.useCallback(
     (memberId: string, newVoteVal: number) => {
       if (newVoteVal) {
@@ -125,10 +127,13 @@ export default function RetroModal({ handleClose }: Props) {
           <Stack direction="horizontal">
             <Box width="full">
               <PrimaryButton
+                loading={loading}
                 onClick={async () => {
+                  setLoading(true);
                   const res = await addVotes(retro.id, {
                     votes: votesGiven,
                   });
+                  setLoading(false);
                   if (res) {
                     handleClose();
                   }

@@ -27,7 +27,6 @@ export default function MemberRow({
   setRetro,
 }: Props) {
   const { getMemberDetails } = useModalOptions();
-  console.log({ votesGiven });
   return (
     <Box>
       <Stack direction="horizontal" align="center" justify="space-between">
