@@ -2,16 +2,13 @@ import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { useGlobal } from "@/app/context/globalContext";
 import { addVotes, endRetro } from "@/app/services/Retro";
-import { CircleType, RetroType } from "@/app/types";
 import { Box, Stack, Text } from "degen";
 import React, { useState } from "react";
-import { useQuery } from "react-query";
+import { useCircle } from "../../Circle/CircleContext";
 import MemberRow from "./MemberRow";
 
 type Props = {
   handleClose: () => void;
-  retro: RetroType;
-  setRetro: (retro: RetroType) => void;
 };
 
 export type MemberDetails = {
@@ -25,8 +22,9 @@ export type MemberDetails = {
   votesRemaining: number;
 };
 
-export default function RetroModal({ retro, handleClose, setRetro }: Props) {
+export default function RetroModal({ handleClose }: Props) {
   const { connectedUser } = useGlobal();
+  const { retro, setRetro } = useCircle();
   const [votesGiven, setVotesGiven] = useState(
     retro.stats[connectedUser]?.votesGiven
   );

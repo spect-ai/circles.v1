@@ -5,10 +5,10 @@ import { useRouter } from "next/router";
 import Loader from "@/app/common/components/Loader";
 import Modal from "@/app/common/components/Modal";
 import Tabs from "@/app/common/components/Tabs";
-import { useMutation, useQuery } from "react-query";
-import { CircleType } from "@/app/types";
+import { useMutation } from "react-query";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { storeImage } from "@/app/common/utils/ipfs";
+import { useCircle } from "./CircleContext";
 
 type CreateWorkspaceDto = {
   name: string;
@@ -28,10 +28,7 @@ function CreateSpaceModal() {
   const [description, setDescription] = useState("");
 
   const router = useRouter();
-  const { circle: cId } = router.query;
-  const { data: circle, refetch } = useQuery<CircleType>(["circle", cId], {
-    enabled: false,
-  });
+  const { circle, fetchCircle } = useCircle();
 
   const [logo, setLogo] = useState(circle?.avatar || "");
   const [uploading, setUploading] = useState(false);
@@ -61,9 +58,9 @@ function CreateSpaceModal() {
       .then(async (res) => {
         const resJson = await res.json();
         console.log({ resJson });
-        void refetch();
         void router.push(`/${resJson.slug}`);
         void close();
+        fetchCircle();
       })
       .catch((err) => console.log({ err }));
   };

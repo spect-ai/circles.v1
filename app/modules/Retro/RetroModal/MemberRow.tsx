@@ -1,6 +1,6 @@
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
 import { RetroType } from "@/app/types";
-import { Avatar, Box, Input, Stack, Tag, Text } from "degen";
+import { Avatar, Box, Input, Stack, Text } from "degen";
 import React from "react";
 import { MemberDetails } from ".";
 import Feedback from "./Feedback";

@@ -1,30 +1,20 @@
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import queryClient from "@/app/common/utils/queryClient";
 import { useGlobal } from "@/app/context/globalContext";
 import { joinCircleFromDiscord } from "@/app/services/JoinCircle";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
-import { CircleType, MemberDetails, UserType } from "@/app/types";
-import { Box, Heading, IconSearch, Input, Stack, Text } from "degen";
+import { UserType } from "@/app/types";
+import { Box, IconSearch, Input, Stack, Text } from "degen";
 import { matchSorter } from "match-sorter";
-import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { Tooltip } from "react-tippy";
+import { useCircle } from "./CircleContext";
 import InviteMemberModal from "./ContributorsModal/InviteMembersModal";
 import MemberDisplay from "./ContributorsModal/MemberDisplay";
 
 function CircleMembers() {
-  const router = useRouter();
-  const { circle: cId } = router.query;
-  const { data: circle } = useQuery<CircleType>(["circle", cId], {
-    enabled: false,
-  });
-
-  const { data: memberDetails, refetch: fetchMemberDetails } =
-    useQuery<MemberDetails>(["memberDetails", cId], {
-      enabled: false,
-    });
-
+  const { circle, memberDetails, setCircleData, fetchMemberDetails } =
+    useCircle();
   const { connectedUser } = useGlobal();
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
@@ -98,8 +88,8 @@ function CircleMembers() {
                   setLoading(true);
                   const data = await joinCircleFromDiscord(circle.id);
                   if (data) {
-                    queryClient.setQueryData(["circle", cId], data);
-                    await fetchMemberDetails();
+                    setCircleData(data);
+                    fetchMemberDetails();
                   }
                   setLoading(false);
                 }}
