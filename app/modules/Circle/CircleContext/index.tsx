@@ -31,7 +31,7 @@ export function useProviderCircleContext() {
   const { circle: cId } = router.query;
 
   const [retro, setRetro] = useState<RetroType>({} as RetroType);
-  const [page, setPage] = useState("Overview");
+  const [page, setPage] = useState<"Overview" | "Retro">("Overview");
 
   const {
     data: circle,
