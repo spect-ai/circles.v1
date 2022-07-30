@@ -7,6 +7,8 @@ interface GlobalContextType {
   connectedUser: string;
   connectUser: (userId: string) => void;
   disconnectUser: () => void;
+  quickProfileUser: string;
+  openQuickProfile: (userId: string) => void;
 }
 
 const useProviderGlobalContext = () => {
@@ -14,6 +16,7 @@ const useProviderGlobalContext = () => {
   // const [registry, setRegistry] = useState<Registry>({} as Registry);
   const [connectedUser, setConnectedUser] = useState("");
   const [isProfilePanelExpanded, setIsProfilePanelExpanded] = useState(false);
+  const [quickProfileUser, setQuickProfileUser] = useState('');
 
   function connectUser(userId: string) {
     setConnectedUser(userId);
@@ -21,6 +24,11 @@ const useProviderGlobalContext = () => {
   const disconnectUser = () => {
     setConnectedUser("");
   };
+
+  const openQuickProfile = (userId: string) =>{
+    setIsProfilePanelExpanded(true);
+    setQuickProfileUser(userId);
+  }
 
   // useEffect(() => {
   //   fetch(`${process.env.API_HOST}/registry/getGlobalRegistry`)
@@ -40,7 +48,9 @@ const useProviderGlobalContext = () => {
     connectUser,
     disconnectUser,
     isProfilePanelExpanded,
-    setIsProfilePanelExpanded
+    setIsProfilePanelExpanded,
+    quickProfileUser,
+    openQuickProfile,
   };
 };
 

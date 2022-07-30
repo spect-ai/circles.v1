@@ -156,6 +156,9 @@ export default function ProfileModal({ setIsOpen }: Props) {
           >
             Save Profile
           </PrimaryButton>
+          <Link href={`/profile/${currentUser?.id}`}>
+            <PrimaryButton>View Full Profile</PrimaryButton>
+          </Link>
           {!currentUser?.discordId && (
             <Link
               href={`https://discord.com/api/oauth2/authorize?client_id=942494607239958609&redirect_uri=${

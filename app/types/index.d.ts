@@ -8,8 +8,34 @@ interface UserType {
   avatar: string;
   discordId?: string;
   githubId?: string;
+  twitterId?: string;
   _id: string;
+  circles: string[];
+  projects: string[];
+  assignedCards: string[];
+  reviewingCards: string[];
+  assignedClosedCards: string[];
+  reviewingClosedCards: string[];
+  activities: {
+    [key : string] : UserActivity ;
+  };
+  notifications: string[];
+  bookmarks: string[];
+  followedCircles: string[];
+  followedUsers: string[];
+  followedByUsers: string[];
 }
+
+export interface UserActivity{
+  id: string;
+  content: string;
+  linkPath: string[];
+  timestamp: string;
+  actionType: string;
+  stakeholders: string[];
+}
+
+
 interface Payment {
   chain: Chain;
   token: Token;

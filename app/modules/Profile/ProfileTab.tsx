@@ -1,8 +1,12 @@
 import { Box, Text, Tag, Avatar, useTheme } from "degen";
-import { useState } from "react";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import styled from "styled-components";
+import React, { useState } from "react";
+import { UserType } from "@/app/types";
 
+interface Props{
+  userData : UserType;
+}
 
 const Card = styled(Box)<{mode: string}>`
   display: flex;
@@ -16,6 +20,7 @@ const Card = styled(Box)<{mode: string}>`
   &:hover {
     border: solid 2px rgb(191,90,242);
     transition-duration: 0.7s;
+    cursor: pointer;
   }
   position: relative;
 `
@@ -37,30 +42,66 @@ const GigInfo = styled(Box)`
   gap: 1rem;
 `
 
-const Activity = () => {
+
+const Activity = React.memo(({userData} : Props) => {
 
   const {mode} = useTheme();
+  console.log(userData?.assignedCards);
+  
 
   return (
-    <Card mode={mode}>
-      <Text variant="extraLarge">Card Name</Text>
-      <Tags>
-        <Tag as="span" tone="purple" size="small">polygon</Tag>
-        <Tag as="span" tone="purple" size="small">GitHub</Tag>
-        <Tag as="span" tone="purple" size="small">Coding</Tag>
-        <Tag as="span" tone="purple" size="small">Enhancement</Tag>
-      </Tags>
-      <GigInfo>
-        <Text variant="label">Worked On</Text>
-        <Avatar 
-          label="profile-pic"
-          src="/og.jpg"
-          size="8"
-        />
-      </GigInfo>
-    </Card>
+    <>
+      {userData?.assignedCards?.forEach(card => {
+        return(
+          <Card mode={mode}>
+            <Text variant="extraLarge">{card} </Text>
+            <Tags><Tag as="span" tone="purple" size="small">polygon</Tag></Tags>
+            <GigInfo>
+              <Text variant="label">Working On</Text>
+              <Avatar label="profile-pic" src="/og.jpg" size="8" />
+            </GigInfo>
+          </Card>
+        )
+      })}
+      {userData?.reviewingCards?.map(card => {
+        return(
+          <Card mode={mode}>
+            <Text variant="extraLarge">{card} </Text>
+            <Tags><Tag as="span" tone="purple" size="small">polygon</Tag></Tags>
+            <GigInfo>
+              <Text variant="label">Reviewing</Text>
+              <Avatar label="profile-pic" src="/og.jpg" size="8" />
+            </GigInfo>
+          </Card>
+        )
+      })}
+      {userData?.reviewingClosedCards?.map(card => {
+        return(
+          <Card mode={mode}>
+            <Text variant="extraLarge">{card} </Text>
+            <Tags><Tag as="span" tone="purple" size="small">polygon</Tag></Tags>
+            <GigInfo>
+              <Text variant="label">Reviewed</Text>
+              <Avatar label="profile-pic" src="/og.jpg" size="8" />
+            </GigInfo>
+          </Card>
+        )
+      })}
+      {userData?.assignedClosedCards?.map(card => {
+        return(
+          <Card mode={mode}>
+            <Text variant="extraLarge">{card} </Text>
+            <Tags><Tag as="span" tone="purple" size="small">polygon</Tag></Tags>
+            <GigInfo>
+              <Text variant="label">Worked On</Text>
+              <Avatar label="profile-pic" src="/og.jpg" size="8" />
+            </GigInfo>
+          </Card>
+        )
+      })}
+    </>
   )
-}
+});
 
 const Retro = () => {
 
@@ -68,10 +109,10 @@ const Retro = () => {
 
   return (
     <Card mode={mode}>
-      <Text variant="extraLarge">Retro Name</Text>
-      <Text variant="small">84% votes</Text>
+      <Text variant="extraLarge"> </Text>
+      <Text variant="small"> </Text>
       <GigInfo>
-        <Text variant="label">updated 28 days ago</Text>
+        <Text variant="label"> </Text>
         <Avatar 
           label="profile-pic"
           src="/og.jpg"
@@ -82,7 +123,7 @@ const Retro = () => {
   )
 }
 
-const ProfileTabs = () => {
+const ProfileTabs = ({userData} : Props) => {
 
   const [ tab, setProfileTab] = useState('Activity');
 
@@ -108,7 +149,7 @@ const ProfileTabs = () => {
         </PrimaryButton>
       </Box>
       <Box>
-        { tab === "Activity" && <Activity/>}
+        { tab === "Activity" && <Activity userData={userData} />}
         { tab === "Retro" && <Retro/>}
       </Box>
     </Box>

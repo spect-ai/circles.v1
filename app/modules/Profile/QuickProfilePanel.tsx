@@ -3,13 +3,31 @@ import { useGlobal } from "@/app/context/globalContext";
 import { Box, Avatar, Tag, Text, Button } from "degen";
 import QuickProfileTabs from "./QuickProfileTab";
 import { useTheme } from "degen";
+import { useRouter } from "next/router";
+import { getUser } from "@/app/services/User";
+import { useEffect, useState } from "react";
+import { UserType } from "@/app/types";
 
 
 
-const QuickProfilePanel = () => {
+const QuickProfilePanel = ( ) => {
 
-  const { isProfilePanelExpanded, setIsProfilePanelExpanded} = useGlobal();
+  const { isProfilePanelExpanded, setIsProfilePanelExpanded, quickProfileUser} = useGlobal();
   const { mode } = useTheme();
+
+  const [userData, SetUserData] = useState<UserType>();
+
+  const getuser = async(userId: string) => {
+    const res = await getUser(userId);
+    SetUserData(res);
+    return res;
+  }
+
+  useEffect(() => {
+    if( quickProfileUser !== undefined){
+      getuser(String(quickProfileUser));
+    }
+  }, [quickProfileUser]);
 
   return(
     <>
@@ -67,14 +85,14 @@ const QuickProfilePanel = () => {
                 size="16"
               />
               <Box style={{ gap: "1.5rem"}}>
-                <Text variant="extraLarge" weight="semiBold">Dude</Text>
-                <Tag tone="purple" size="small">dude.eth</Tag>
+                <Text variant="extraLarge" weight="semiBold">{userData?.username}</Text>
+                <Tag tone="purple" size="small">{userData?.ethAddress.substring(0,20) + "..."}</Tag>
               </Box>
               <Box style={{ position: "absolute", right: "1rem"}}>
-                <Button size="small" variant="secondary">View Full Profile</Button>
+                <Button size="small" variant="secondary" href={`/profile/${userData?.id}`} >View Full Profile</Button>
               </Box>
             </Box>
-            <QuickProfileTabs />
+            <QuickProfileTabs userData={userData} />
           </Box>
         </motion.div>
       </motion.div>

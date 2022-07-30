@@ -2,10 +2,12 @@ import { useState, FunctionComponent } from "react";
 import { Box, Avatar, Text, Button, useTheme } from "degen";
 import { ProjectOutlined, StarOutlined, FieldTimeOutlined, StarFilled } from "@ant-design/icons";
 import styled from "styled-components";
+import { UserType } from "@/app/types";
 
 interface Props {
   toggle: String;
   setToggle: Function;
+  userData?: UserType;
 }
 
 const ScrollContainer = styled(Box)`
@@ -86,50 +88,34 @@ const Toggle: FunctionComponent<Props> = ({toggle, setToggle}) => {
   )
 }
 
-const WorkCards: FunctionComponent<Props> = ({toggle}) => {
+const WorkCards: FunctionComponent<Props> = ({toggle, userData}) => {
 
   const {mode} = useTheme()
 
   return(
     <>
       {toggle == 'Assignee' ? (
-      <Card mode={mode}>
-        <Text weight="semiBold" variant="large">
-          Assignee Card
-        </Text>
-        <GigInfo>
-        <Avatar 
-          label="profile-pic"
-          placeholder
-          size="8"
-        />
-        <Avatar 
-          label="profile-pic"
-          src="/og.jpg"
-          size="8"
-        />
-        <Text variant="label">02:45pm</Text>
-        </GigInfo>
-      </Card> 
+        userData?.assignedCards?.forEach(card => {
+          return(
+            <Card mode={mode}>
+              <Text weight="semiBold" variant="large">Assignee Card</Text>
+              <GigInfo>
+              <Avatar label="profile-pic" src="/og.jpg" size="8" />
+              <Text variant="label">02:45pm</Text>
+              </GigInfo>
+            </Card> 
+        )})
       ):(
-      <Card mode={mode}>
-        <Text weight="semiBold" variant="large">
-          Reviewer Card
-        </Text>
-        <GigInfo>
-        <Avatar 
-          label="profile-pic"
-          placeholder
-          size="8"
-        />
-        <Avatar 
-          label="profile-pic"
-          src="/og.jpg"
-          size="8"
-        />
-        <Text variant="label">02:45pm</Text>
-        </GigInfo>
-      </Card>
+        userData?.reviewingCards?.forEach(card => {
+          return(
+            <Card mode={mode}>
+              <Text weight="semiBold" variant="large">Assignee Card</Text>
+              <GigInfo>
+              <Avatar label="profile-pic" src="/og.jpg" size="8" />
+              <Text variant="label">02:45pm</Text>
+              </GigInfo>
+            </Card> 
+        )})
       )}
     </>
   )
@@ -184,7 +170,7 @@ const BookMarks = () => {
   )
 }
 
-const QuickProfileTabs = () => {
+const QuickProfileTabs = ({userData} : Props) => {
 
   const [ panelTab, setPanelTab] = useState('Work');
   const [toggle, setToggle] = useState('Assignee');
@@ -226,7 +212,7 @@ const QuickProfileTabs = () => {
         <>
           <Toggle toggle={toggle} setToggle={setToggle}/>
           <ScrollContainer overflow={"auto"}>
-            <WorkCards toggle={toggle} setToggle={setToggle}/>
+            <WorkCards toggle={toggle} setToggle={setToggle} userData={userData} />
           </ScrollContainer>
         </>}
       { panelTab == "Activity" && 

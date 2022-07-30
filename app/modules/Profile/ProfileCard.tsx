@@ -1,18 +1,22 @@
-import { Box, Avatar, Tag, Text, AvatarGroup, Button, Heading } from "degen";
+import { Box, Avatar, Tag, Text, AvatarGroup, Button, Heading, useTheme } from "degen";
 import styled from "styled-components";
 import { GithubOutlined, TwitterOutlined } from "@ant-design/icons";
-import { useGlobal } from "@/app/context/globalContext";
-import { useTheme } from "degen";
+import { UserType } from "@/app/types";
+import Link from "next/link";
 
-const Profile = styled(Box)`
+interface Props{
+  userData: UserType;
+}
+
+const Profile = styled(Box)<{mode: string}>`
   width: 20vw;
   height: 90vh;
   margin: 2rem;
   padding: 2rem;
   border-radius: 1rem;
-  box-shadow: 0px 1px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0px 1px 6px ${(props) => props.mode === "dark" ? "rgba(0, 0, 0, 0.4)" : "rgba(0, 0, 0, 0.1)"};
   &:hover {
-    box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.25);
+    box-shadow: 0px 3px 10px ${(props) => props.mode === "dark" ? "rgba(0, 0, 0, 0.6)" : "rgba(0, 0, 0, 0.25)"};
     transition-duration: 0.7s;
   }
   display: flex;
@@ -53,13 +57,14 @@ const FollowCount = styled(Box)`
   padding: 1rem;
 `
 
-const ProfileCard = () => {
-  const { isProfilePanelExpanded, setIsProfilePanelExpanded} = useGlobal();
+const ProfileCard = ({userData} : Props) => {
 
+  const {mode} = useTheme();
+  
   return (
     <>
-      <Profile>
-        <Box onClick={()=> {setIsProfilePanelExpanded(!isProfilePanelExpanded)}} cursor="pointer">
+      <Profile mode={mode}>
+        <Box cursor="pointer">
           <Avatar
             label="profile-pic"
             src="/og.jpg"
@@ -68,30 +73,36 @@ const ProfileCard = () => {
         </Box>
         <Box padding="0.5">
           <Heading>
-            Dude
+            {userData?.username}
           </Heading>
         </Box>
         <Tag as="span" tone="purple" size="small">
-          dude.eth
+          {userData?.ethAddress.substring(0,20) + "..."}
         </Tag>
-        <FollowCount>
+        <FollowCount >
           <Box alignItems="center" display="flex" flexDirection="column">
-            <Text variant="large" weight="bold" > 200 </Text>
+            <Text variant="large" weight="bold" >{userData?.followedByUsers?.length}</Text>
             <Text variant="label">Followers</Text>
           </Box>
           <Box alignItems="center" display="flex" flexDirection="column">
-            <Text variant="large" weight="bold"> 200 </Text>
+            <Text variant="large" weight="bold">{userData?.followedUsers?.length}</Text>
             <Text variant="label">Following</Text>
           </Box>
         </FollowCount>
         <InfoBox gap="1">
-          <GithubOutlined style={{ color: "grey", fontSize: "1.2rem"}}/>
-          <TwitterOutlined style={{ color: "grey", fontSize: "1.2rem"}}/>
+          {userData?.githubId && 
+          <Link href={`https://github.com/${userData?.githubId}`}>
+            <GithubOutlined style={{ color: "grey", fontSize: "1.2rem"}}/>
+          </Link>
+          }
+          {userData?.twitterId && 
+          <Link href={`https://twitter.com/${userData?.twitterId}`}>
+            <TwitterOutlined style={{ color: "grey", fontSize: "1.2rem"}}/>
+          </Link>
+          }
         </InfoBox>
         <InfoBox gap="0.5">
           <Tag as="span" tone="purple" size="small"> Polygon </Tag>
-          <Tag as="span" tone="orange" size="small"> Cosmos </Tag>
-          <Tag as="span" tone="blue" size="small"> Enhancement </Tag>
         </InfoBox>
         <TextInfo>
           <Text variant="label"> Headline </Text>
@@ -103,7 +114,6 @@ const ProfileCard = () => {
             limit={9}
             members={[
               { label: 'Noun 97', src: "/og.jpg" },
-              { label: 'Noun 11', src: "/og.jpg" },
             ]}
           />
         </TextInfo>
