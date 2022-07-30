@@ -99,7 +99,6 @@ export default function Comment({
               label=""
               placeholder={!currentUser?.avatar}
               src={currentUser?.avatar}
-              address={currentUser?.ethAddress}
               size="8"
             />
           ) : (
