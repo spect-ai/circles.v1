@@ -5,7 +5,7 @@ import { updatePaymentInfo } from "@/app/services/Payment";
 import usePaymentGateway from "@/app/services/Payment/usePayment";
 import { CircleType } from "@/app/types";
 import { QuestionCircleFilled } from "@ant-design/icons";
-import { Avatar, Box, Button, Stack, Text } from "degen";
+import { Avatar, Box, Button, Stack, Text, useTheme } from "degen";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
 import { useQuery } from "react-query";
@@ -30,6 +30,8 @@ export default function CurrencyPayment() {
   const { data: circle } = useQuery<CircleType>(["circle", cId], {
     enabled: false,
   });
+
+  const { mode } = useTheme();
 
   const formatRows = () => {
     const rows: any[] = [];
@@ -82,6 +84,7 @@ export default function CurrencyPayment() {
                   </Text>
                 </Stack>
               }
+              theme={mode}
             >
               <QuestionCircleFilled style={{ fontSize: "1rem" }} />
             </Tooltip>

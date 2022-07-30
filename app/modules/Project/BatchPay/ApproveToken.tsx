@@ -4,7 +4,7 @@ import { useGlobal } from "@/app/context/globalContext";
 import useERC20 from "@/app/services/Payment/useERC20";
 import { CircleType, ProjectType, Registry } from "@/app/types";
 import { QuestionCircleFilled } from "@ant-design/icons";
-import { Box, Button, Heading, IconCheck, Stack, Text } from "degen";
+import { Box, Button, Heading, IconCheck, Stack, Text, useTheme } from "degen";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { useQuery } from "react-query";
@@ -30,6 +30,8 @@ export default function ApproveToken() {
   const { batchPayInfo, setStep, setIsOpen } = useBatchPayContext();
 
   const { activeChain, switchNetworkAsync } = useNetwork();
+
+  const { mode } = useTheme();
 
   const [tokenStatus, setTokenStatus] = useState<{
     [tokenAddress: string]: {
@@ -113,6 +115,7 @@ export default function ApproveToken() {
                       transfer them to relevant addresses
                     </Text>
                   }
+                  theme={mode}
                 >
                   <QuestionCircleFilled style={{ fontSize: "1rem" }} />
                 </Tooltip>

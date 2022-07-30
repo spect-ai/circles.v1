@@ -2,7 +2,7 @@ import Card from "@/app/common/components/Card";
 import { useGlobal } from "@/app/context/globalContext";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { ExpandAltOutlined } from "@ant-design/icons";
-import { Box, Button, Stack, Text } from "degen";
+import { Box, Button, Stack, Text, useTheme } from "degen";
 import { AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
@@ -21,6 +21,8 @@ export default function CircleOverview() {
   const { circle, setRetro, setPage } = useCircle();
   const { canDo } = useRoleGate();
   const [isRetroOpen, setIsRetroOpen] = useState(false);
+
+  const { mode } = useTheme();
 
   return (
     <>
@@ -114,7 +116,7 @@ export default function CircleOverview() {
                 Retro
               </Text>
               {canDo(["steward"]) && <CreateRetro />}
-              <Tooltip html={<Text>View all Retros</Text>}>
+              <Tooltip html={<Text>View all Retros</Text>} theme={mode}>
                 <Box marginTop="1">
                   <Button
                     shape="circle"

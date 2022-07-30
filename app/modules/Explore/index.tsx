@@ -4,7 +4,16 @@ import useConnectDiscord from "@/app/services/Discord/useConnectDiscord";
 import useJoinCircle from "@/app/services/JoinCircle/useJoinCircle";
 import useExploreOnboarding from "@/app/services/Onboarding/useExploreOnboarding";
 import { CircleType } from "@/app/types";
-import { Avatar, Box, Button, IconSearch, Input, Stack, Text } from "degen";
+import {
+  Avatar,
+  Box,
+  Button,
+  IconSearch,
+  Input,
+  Stack,
+  Text,
+  useTheme,
+} from "degen";
 import { matchSorter } from "match-sorter";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
@@ -48,6 +57,8 @@ export default function Explore() {
 
   const [filteredCircles, setFilteredCircles] = useState<CircleType[]>([]);
 
+  const { mode } = useTheme();
+
   useEffect(() => {
     if (circles) {
       setFilteredCircles(circles);
@@ -63,8 +74,12 @@ export default function Explore() {
       {!onboarded && connectedUser && <Onboarding />}
       <ToastContainer
         toastStyle={{
-          backgroundColor: "rgb(20,20,20)",
-          color: "rgb(255,255,255,0.7)",
+          backgroundColor: `${
+            mode === "dark" ? "rgb(20,20,20)" : "rgb(240,240,240)"
+          }`,
+          color: `${
+            mode === "dark" ? "rgb(255,255,255,0.7)" : "rgb(20,20,20,0.7)"
+          }`,
         }}
       />
       <GridContainer>

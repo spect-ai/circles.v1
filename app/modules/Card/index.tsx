@@ -131,8 +131,12 @@ function Card() {
       >
         <ToastContainer
           toastStyle={{
-            backgroundColor: "rgb(20,20,20)",
-            color: "rgb(255,255,255,0.7)",
+            backgroundColor: `${
+              mode === "dark" ? "rgb(20,20,20)" : "rgb(240,240,240)"
+            }`,
+            color: `${
+              mode === "dark" ? "rgb(255,255,255,0.7)" : "rgb(20,20,20,0.7)"
+            }`,
           }}
         />
         <Box padding="1" borderBottomWidth="0.375">

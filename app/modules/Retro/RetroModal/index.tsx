@@ -24,7 +24,7 @@ export type MemberDetails = {
 
 export default function RetroModal({ handleClose }: Props) {
   const { connectedUser } = useGlobal();
-  const { retro, setRetro } = useCircle();
+  const { retro, setRetro, setCircleData } = useCircle();
   const [votesGiven, setVotesGiven] = useState(
     retro.stats[connectedUser]?.votesGiven
   );
@@ -33,6 +33,8 @@ export default function RetroModal({ handleClose }: Props) {
   );
 
   const [loading, setLoading] = useState(false);
+
+  console.log({ retro });
 
   const handleVotesRemaining = React.useCallback(
     (memberId: string, newVoteVal: number) => {
