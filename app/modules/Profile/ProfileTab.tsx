@@ -46,12 +46,10 @@ const GigInfo = styled(Box)`
 const Activity = React.memo(({userData} : Props) => {
 
   const {mode} = useTheme();
-  console.log(userData?.assignedCards);
-  
 
   return (
     <>
-      {userData?.assignedCards?.forEach(card => {
+      {userData?.assignedCards?.map(card => {
         return(
           <Card mode={mode}>
             <Text variant="extraLarge">{card} </Text>

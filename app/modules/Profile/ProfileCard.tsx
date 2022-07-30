@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { GithubOutlined, TwitterOutlined } from "@ant-design/icons";
 import { UserType } from "@/app/types";
 import Link from "next/link";
+import { useGlobal } from "@/app/context/globalContext";
 
 interface Props{
   userData: UserType;
@@ -60,11 +61,12 @@ const FollowCount = styled(Box)`
 const ProfileCard = ({userData} : Props) => {
 
   const {mode} = useTheme();
+  const {openQuickProfile} = useGlobal()
   
   return (
     <>
       <Profile mode={mode}>
-        <Box cursor="pointer">
+        <Box cursor="pointer"  onClick={()=> openQuickProfile(userData.id)}>
           <Avatar
             label="profile-pic"
             src="/og.jpg"
@@ -107,7 +109,6 @@ const ProfileCard = ({userData} : Props) => {
         <TextInfo>
           <Text variant="label"> Headline </Text>
           <Text variant="small" align="center" > 
-            About me? Whatever Create a portfolio to track purchases with real-time pricing and analytics.
           </Text>
           <Text variant="label"> Circles </Text>
           <AvatarGroup

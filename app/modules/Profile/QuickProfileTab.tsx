@@ -99,10 +99,10 @@ const WorkCards: FunctionComponent<Props> = ({toggle, userData}) => {
   return(
     <>
       {toggle == 'Assignee' ? (
-        userData?.assignedCards?.forEach(card => {
+        userData?.assignedCards?.map(card => {
           return(
             <Card mode={mode}>
-              <Text weight="semiBold" variant="large">Assignee Card</Text>
+              <Text weight="semiBold" variant="large">{card}</Text>
               <GigInfo>
               <Avatar label="profile-pic" src="/og.jpg" size="8" />
               <Text variant="label">02:45pm</Text>
@@ -110,10 +110,10 @@ const WorkCards: FunctionComponent<Props> = ({toggle, userData}) => {
             </Card> 
         )})
       ):(
-        userData?.reviewingCards?.forEach(card => {
+        userData?.reviewingCards?.map(card => {
           return(
             <Card mode={mode}>
-              <Text weight="semiBold" variant="large">Assignee Card</Text>
+              <Text weight="semiBold" variant="large">{card}</Text>
               <GigInfo>
               <Avatar label="profile-pic" src="/og.jpg" size="8" />
               <Text variant="label">02:45pm</Text>
