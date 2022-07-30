@@ -10,6 +10,10 @@ interface Props {
   userData?: UserType;
 }
 
+interface UserProps{
+  userData: UserType;
+}
+
 const ScrollContainer = styled(Box)`
   overflow: auto;
   ::-webkit-scrollbar {
@@ -170,7 +174,7 @@ const BookMarks = () => {
   )
 }
 
-const QuickProfileTabs = ({userData} : Props) => {
+const QuickProfileTabs = ({userData} : UserProps) => {
 
   const [ panelTab, setPanelTab] = useState('Work');
   const [toggle, setToggle] = useState('Assignee');
