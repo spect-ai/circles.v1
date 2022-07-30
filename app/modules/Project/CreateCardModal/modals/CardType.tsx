@@ -43,9 +43,9 @@ function CardType() {
         />
       }
       disabled={!canTakeAction("cardType")}
-      handleClose={async () => {
+      handleClose={() => {
         if (card?.type !== cardType) {
-          await onCardUpdate();
+          void onCardUpdate();
         }
         setModalOpen(false);
       }}

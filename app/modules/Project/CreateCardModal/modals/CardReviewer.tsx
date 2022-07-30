@@ -7,6 +7,9 @@ import { Option } from "../constants";
 import { matchSorter } from "match-sorter";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
+import { useRouter } from "next/router";
+import { useQuery } from "react-query";
+import { MemberDetails } from "@/app/types";
 
 function CardReviewer() {
   const { reviewers, setReviewers, onCardUpdate, card, fetchCardActions } =
@@ -19,11 +22,22 @@ function CardReviewer() {
   const { canTakeAction } = useRoleGate();
   const { getOptions, getMemberDetails } = useModalOptions();
 
+  const router = useRouter();
+  const { circle: cId } = router.query;
+  const { data: memberDetails } = useQuery<MemberDetails>(
+    ["memberDetails", cId],
+    {
+      enabled: false,
+    }
+  );
+
   useEffect(() => {
-    const ops = getOptions("assignee") as Option[];
-    setOptions(ops);
-    setFilteredOptions(ops);
-  }, []);
+    if (memberDetails) {
+      const ops = getOptions("assignee") as Option[];
+      setOptions(ops);
+      setFilteredOptions(ops);
+    }
+  }, [memberDetails]);
 
   const getTagLabel = () => {
     if (!reviewers[0]) {
@@ -50,16 +64,17 @@ function CardReviewer() {
             src={getMemberDetails(reviewers[0])?.avatar}
             label=""
             size="5"
+            address={getMemberDetails(reviewers[0])?.ethAddress}
           />
         ) : (
           <IconUserSolid color="accent" size="5" />
         )
       }
       disabled={!canTakeAction("cardReviewer")}
-      handleClose={async () => {
+      handleClose={() => {
         if (card?.reviewer !== reviewers) {
           void fetchCardActions();
-          await onCardUpdate();
+          void onCardUpdate();
         }
         setModalOpen(false);
       }}
@@ -122,6 +137,7 @@ function CardReviewer() {
                   src={item.avatar}
                   label="avatar"
                   placeholder={!item.avatar}
+                  address={item.ethAddress}
                 />
                 <Box marginRight="2" />
                 <Text

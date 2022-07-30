@@ -41,6 +41,7 @@ export default function TokenPayment() {
             placeholder={!getMemberDetails(userId)?.avatar}
             label=""
             size="8"
+            address={getMemberDetails(userId)?.ethAddress}
           />
           <Text variant="base" weight="semiBold">
             {getMemberDetails(userId)?.username}

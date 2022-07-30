@@ -20,7 +20,7 @@ export default function SubTasks({ createCard }: Props) {
         name={`Sub Tasks (${
           createCard ? subTasks.length : childrenTasks?.length || 0
         })`}
-        defaultOpen={childrenTasks.length === 0}
+        defaultOpen={childrenTasks?.length === 0}
       >
         <Box overflow="hidden">
           <Stack space="2">

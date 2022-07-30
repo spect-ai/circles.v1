@@ -49,7 +49,7 @@ export const deleteProject = async (projectId: string) => {
   const res = await fetch(
     `${process.env.API_HOST}/project/${projectId}/delete`,
     {
-      method: "POST",
+      method: "DELETE",
       headers: {
         "Content-Type": "application/json",
       },

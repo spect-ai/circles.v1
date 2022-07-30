@@ -3,27 +3,28 @@ import { useEffect } from "react";
 import { toast } from "react-toastify";
 import useProfileUpdate from "../Profile/useProfileUpdate";
 
-export default function useConnectDiscord() {
+export default function useConnectGithub() {
   const router = useRouter();
   const { code } = router.query;
 
   const { updateProfile } = useProfileUpdate();
 
-  const fetchDiscordUser = async () => {
+  const fetchGithubUser = async () => {
     const res = await fetch(
-      `${process.env.BOT_HOST}/api/connectDiscord?code=${code}`
+      `${process.env.BOT_HOST}/connectGithub?code=${code}`
     );
     if (res.ok) {
       const data = await res.json();
+      console.log({ data });
       const profileRes = await updateProfile({
-        discordId: data.userData.id,
-        username: data.userData.username,
-        avatar: `https://cdn.discordapp.com/avatars/${data.userData.id}/${data.userData.avatar}.png`,
+        githubId: data.userData.id.toString(),
+        username: data.userData.login,
+        avatar: data.userData.avatar_url,
       });
       console.log({ profileRes });
       if (profileRes) {
         void router.push("/");
-        toast("Successfully linked your Discord account", {
+        toast("Successfully linked your Github account", {
           theme: "dark",
         });
       }
@@ -36,7 +37,7 @@ export default function useConnectDiscord() {
   };
   useEffect(() => {
     if (code) {
-      void fetchDiscordUser();
+      void fetchGithubUser();
     }
   }, [code]);
 }

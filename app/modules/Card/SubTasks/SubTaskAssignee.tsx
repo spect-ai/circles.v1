@@ -59,6 +59,7 @@ export default function SubTaskAssignee({ assignees, setAssignees }: Props) {
             src={getMemberDetails(assignees[0])?.avatar}
             label="avatar"
             placeholder={!getMemberDetails(assignees[0])?.avatar}
+            address={getMemberDetails(assignees[0])?.ethAddress}
           />
         ) : (
           <IconUserSolid />

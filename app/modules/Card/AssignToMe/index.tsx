@@ -9,7 +9,7 @@ import { useLocalCard } from "../../Project/CreateCardModal/hooks/LocalCardConte
 export default function AssignToMe() {
   const { updateCard } = useCardService();
   const { connectedUser } = useGlobal();
-  const { card, setCard } = useLocalCard();
+  const { card, setCard, fetchCardActions } = useLocalCard();
   const [loading, setLoading] = useState(false);
   return (
     <PrimaryButton
@@ -25,6 +25,7 @@ export default function AssignToMe() {
             card.id
           );
           setCard(data as CardType);
+          void fetchCardActions();
         }
         setLoading(false);
       }}

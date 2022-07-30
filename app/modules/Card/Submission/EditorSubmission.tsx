@@ -8,6 +8,7 @@ import { WorkThreadType, WorkUnitType } from "@/app/types";
 import { SaveOutlined, SendOutlined } from "@ant-design/icons";
 import { Avatar, Box, Button, Stack } from "degen";
 import { motion, AnimatePresence } from "framer-motion";
+import Link from "next/link";
 import React, { useState } from "react";
 
 type Props = {
@@ -38,6 +39,11 @@ export default function EditorSubmission({
       marginRight="2"
       marginBottom="4"
     >
+      {workUnit?.pr && (
+        <Box marginBottom="2">
+          <Link href={workUnit.pr}>{workUnit?.pr}</Link>
+        </Box>
+      )}
       <Stack direction="horizontal" space="6">
         {workUnit ? (
           <Avatar

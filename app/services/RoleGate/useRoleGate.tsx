@@ -28,7 +28,10 @@ export default function useRoleGate() {
 
   const canTakeAction = (action: string) => {
     const circleMembers = circle && Object.keys(circle?.memberRoles);
-    if (!connectedUser || !card?.id || !cardActions) {
+    if (!card?.id) {
+      return true;
+    }
+    if (!connectedUser || !cardActions?.updateColumn) {
       return false;
     }
 
@@ -70,7 +73,7 @@ export default function useRoleGate() {
       case "cardSubmission":
         return cardActions.submit.valid;
       case "cardRevision":
-        return cardActions.addRevisionInstructions.valid;
+        return cardActions.addRevisionInstruction.valid;
       case "cardSubTask":
         return cardActions.updateGeneralCardInfo.valid;
       case "cardPayment":

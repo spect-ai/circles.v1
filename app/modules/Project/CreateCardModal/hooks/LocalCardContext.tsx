@@ -274,11 +274,12 @@ export function useProviderLocalCard({
         theme: "dark",
       }
     );
-    !createAnother && handleClose && handleClose();
+    console.log(data.project);
     updateProject(data.project);
     void fetchQuickActions();
     // queryClient.setQueryData(["project", pId], data.project);
     resetData();
+    !createAnother && handleClose && handleClose();
   };
 
   const onCardUpdate = async () => {
