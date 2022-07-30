@@ -92,7 +92,7 @@ const QuickProfilePanel = ( ) => {
                 <Button size="small" variant="secondary" href={`/profile/${userData?.id}`} >View Full Profile</Button>
               </Box>
             </Box>
-            <QuickProfileTabs userData={userData} />
+            <QuickProfileTabs userData={userData as UserType} />
           </Box>
         </motion.div>
       </motion.div>

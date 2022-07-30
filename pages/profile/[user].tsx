@@ -65,8 +65,8 @@ const ProfilePage: NextPage = () => {
         width="full"
         overflow="hidden"
       >
-        <ProfileCard userData={userData} />
-        <ProfileTabs userData={userData} />
+        <ProfileCard userData={userData as UserType} />
+        <ProfileTabs userData={userData as UserType} />
       </Box>
       </Box>
       {isProfilePanelExpanded && <QuickProfilePanel/>} 
