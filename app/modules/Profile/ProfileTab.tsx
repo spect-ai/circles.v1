@@ -1,10 +1,10 @@
-import { Box, Text, Tag, Avatar } from "degen";
+import { Box, Text, Tag, Avatar, useTheme } from "degen";
 import { useState } from "react";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import styled from "styled-components";
 
 
-const Card = styled(Box)`
+const Card = styled(Box)<{mode: string}>`
   display: flex;
   flex-direction: column;
   width: 60vw;
@@ -12,8 +12,7 @@ const Card = styled(Box)`
   margin-top: 1rem;
   padding: 0.4rem 1rem 0;
   border-radius: 0.5rem;
-  background-color: rgb(20,20,20);
-  border: solid 2px rgba(255, 255, 255, .1);
+  border: solid 2px ${(props) => props.mode === "dark" ? "rgb(255, 255, 255, 0.05)" : "rgb(20, 20, 20, 0.1)"};
   &:hover {
     border: solid 2px rgb(191,90,242);
     transition-duration: 0.7s;
@@ -39,8 +38,11 @@ const GigInfo = styled(Box)`
 `
 
 const Activity = () => {
+
+  const {mode} = useTheme();
+
   return (
-    <Card>
+    <Card mode={mode}>
       <Text variant="extraLarge">Card Name</Text>
       <Tags>
         <Tag as="span" tone="purple" size="small">polygon</Tag>
@@ -61,8 +63,11 @@ const Activity = () => {
 }
 
 const Retro = () => {
-  return(
-    <Card>
+
+  const {mode} = useTheme();
+
+  return (
+    <Card mode={mode}>
       <Text variant="extraLarge">Retro Name</Text>
       <Text variant="small">84% votes</Text>
       <GigInfo>

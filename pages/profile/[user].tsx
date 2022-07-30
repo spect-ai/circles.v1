@@ -1,22 +1,33 @@
-import Sidebar from "@/app/modules/Sidebar";
+import React, { useEffect } from "react";
 import { Box } from "degen";
 import MetaHead from "@/app/common/seo/MetaHead/MetaHead";
 import type { NextPage } from "next";
+import Sidebar from "@/app/modules/Sidebar";
 import ProfileCard from "@/app/modules/Profile/ProfileCard";
 import ProfileTabs from "@/app/modules/Profile/ProfileTab";
 import QuickProfilePanel from "@/app/modules/Profile/QuickProfilePanel";
 import { useGlobal } from "@/app/context/globalContext";
+import { useTheme } from "degen";
+
 
 
 const ProfilePage: NextPage = () => {
 
   const { isProfilePanelExpanded } = useGlobal();
+  // eslint-disable-next-line @typescript-eslint/unbound-method
+  const { mode, setMode } = useTheme();
+
+  useEffect(() => {
+    setTimeout(() => {
+      localStorage.getItem("lightMode") && setMode("light");
+    }, 100);
+  }, []);
 
   return (
     <>
       <MetaHead />
       <Box
-        backgroundColor="background"
+        backgroundColor={mode === "dark" ? "background" : "backgroundSecondary"}
         style={{
           height: "100vh",
           overflowY: "auto",
@@ -31,7 +42,6 @@ const ProfilePage: NextPage = () => {
         display="flex"
         flexDirection="row"
         width="full"
-        backgroundColor="foregroundTertiary"
         overflow="hidden"
       >
         <ProfileCard/>

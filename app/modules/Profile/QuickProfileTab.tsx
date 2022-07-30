@@ -1,5 +1,5 @@
 import { useState, FunctionComponent } from "react";
-import { Box, Avatar, Text, Button } from "degen";
+import { Box, Avatar, Text, Button, useTheme } from "degen";
 import { ProjectOutlined, StarOutlined, FieldTimeOutlined, StarFilled } from "@ant-design/icons";
 import styled from "styled-components";
 
@@ -15,7 +15,7 @@ const ScrollContainer = styled(Box)`
   }
 `;
 
-const Card = styled(Box)`
+const Card = styled(Box)<{mode: string}>`
   display: flex;
   flex-direction: column;
   width: 650px;
@@ -23,8 +23,8 @@ const Card = styled(Box)`
   margin-top: 1rem;
   padding: 0.8rem 1rem 0;
   border-radius: 0.5rem;
-  background-color: rgb(20,20,20);
-  border: solid 2px rgba(255, 255, 255, .1);
+  background-color: transparent;
+  border: solid 2px ${(props) => props.mode === "dark" ? "rgb(255, 255, 255, 0.05)" : "rgb(20, 20, 20, 0.1)"};
   &:hover {
     border: solid 2px rgb(191,90,242);
     transition-duration: 0.7s;
@@ -40,8 +40,9 @@ const ToggleButton = styled.button<{bgcolor: boolean}>`
   cursor: pointer;
   font-weight: 600;
   font-family: Inter;
+  transition-duration: 0.4s;
   color: ${(props) => (props.bgcolor? "white" :"rgb(191,90,242)")};
-  background-color: ${(props) => (props.bgcolor? "rgb(191,90,242)" :"rgba(54, 34, 64, 1)")};
+  background-color: ${(props) => (props.bgcolor ? "rgb(191,90,242)" : "transparent" )};
 `
 
 const GigInfo = styled(Box)`
@@ -54,15 +55,19 @@ const GigInfo = styled(Box)`
 `
 
 const Toggle: FunctionComponent<Props> = ({toggle, setToggle}) => {
+
+  const {mode} = useTheme()
+
   return (
     <>
       <Box
+        backgroundColor={ mode === "dark" ? "background": "white"}
         style={{
           display: "block",
           padding: "0.2rem", 
-          backgroundColor: "rgba(54, 34, 64, 1)", 
           borderRadius: "2rem",
-          margin: "0.7rem 200px"
+          margin: "0.7rem 200px",
+          boxShadow: "0px 1px 3px rgba(0, 0, 0, 0.2)"
           }}>
         <ToggleButton 
           onClick={()=> setToggle('Assignee')} 
@@ -82,10 +87,13 @@ const Toggle: FunctionComponent<Props> = ({toggle, setToggle}) => {
 }
 
 const WorkCards: FunctionComponent<Props> = ({toggle}) => {
+
+  const {mode} = useTheme()
+
   return(
     <>
       {toggle == 'Assignee' ? (
-      <Card>
+      <Card mode={mode}>
         <Text weight="semiBold" variant="large">
           Assignee Card
         </Text>
@@ -104,7 +112,7 @@ const WorkCards: FunctionComponent<Props> = ({toggle}) => {
         </GigInfo>
       </Card> 
       ):(
-      <Card>
+      <Card mode={mode}>
         <Text weight="semiBold" variant="large">
           Reviewer Card
         </Text>
@@ -153,9 +161,12 @@ const Activity = () => {
 }
 
 const BookMarks = () => {
+
+  const {mode} = useTheme();
+
   return(
     <>
-      <Card>
+      <Card mode={mode}>
         <Text weight="semiBold" variant="large">
           Bookmarks Card
         </Text>
