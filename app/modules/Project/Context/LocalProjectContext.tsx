@@ -1,6 +1,6 @@
 import queryClient from "@/app/common/utils/queryClient";
 import { useGlobal } from "@/app/context/globalContext";
-import { CardType, ProjectCardActionsType, ProjectType } from "@/app/types";
+import { CardType, CardsType, ProjectCardActionsType, ProjectType, Filter } from "@/app/types";
 import { useRouter } from "next/router";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useQuery } from "react-query";
@@ -27,6 +27,10 @@ type LocalProjectContextType = {
   setIsApplyModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
   isSubmitModalOpen: boolean;
   setIsSubmitModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  filteredCards: CardsType | null;
+  setFilteredCards: React.Dispatch<React.SetStateAction<CardsType | null>>;
+  currentFilter: Filter;
+  setCurrentFilter: React.Dispatch<React.SetStateAction<Filter>>;
 };
 
 export const LocalProjectContext = createContext<LocalProjectContextType>(
@@ -71,6 +75,11 @@ export function useProviderLocalProject() {
   const [batchPayModalOpen, setBatchPayModalOpen] = useState(false);
   const [isApplyModalOpen, setIsApplyModalOpen] = useState(false);
   const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false);
+
+  const [filteredCards, setFilteredCards] = useState<{ [key: string]: CardType }>(
+    {} as { [key: string]: CardType }
+  );
+  const [currentFilter, setCurrentFilter] = useState({} as Filter);
 
   const [selectedCard, setSelectedCard] = useState({} as CardType | null);
 
@@ -126,6 +135,10 @@ export function useProviderLocalProject() {
     setIsApplyModalOpen,
     isSubmitModalOpen,
     setIsSubmitModalOpen,
+    filteredCards,
+    setFilteredCards,
+    currentFilter,
+    setCurrentFilter,
   };
 }
 

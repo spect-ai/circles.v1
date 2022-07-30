@@ -5,6 +5,8 @@ import Skeleton from "react-loading-skeleton";
 import styled from "styled-components";
 import { useLocalProject } from "../Context/LocalProjectContext";
 import ProjectOptions from "./ProjectOptions";
+import CardFilter from "../ProjectViews";
+import { ViewBar } from "../ProjectViews/ViewBar";
 
 export const IconButton = styled(Box)`
   cursor: pointer;
@@ -50,6 +52,8 @@ function ProjectHeading() {
           />
         )}
         {project?.name && canDo(["steward"]) && <ProjectOptions />}
+        <ViewBar />
+        <CardFilter/>
       </Stack>
       <Stack direction="horizontal" align="center">
         <Box
