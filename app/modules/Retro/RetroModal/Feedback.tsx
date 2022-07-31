@@ -1,3 +1,4 @@
+import Loader from "@/app/common/components/Loader";
 import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { giveFeedback } from "@/app/services/Retro";
@@ -21,6 +22,10 @@ export default function Feedback({ retroId, member, feedback }: Props) {
   useEffect(() => {
     setFeedbackContent(feedback);
   }, [feedback]);
+
+  if (!retro) {
+    return <Loader loading text="" />;
+  }
 
   return (
     <>

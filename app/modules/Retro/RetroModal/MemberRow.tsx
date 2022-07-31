@@ -1,3 +1,4 @@
+import Loader from "@/app/common/components/Loader";
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
 import { Avatar, Box, Input, Stack, Text } from "degen";
 import React from "react";
@@ -27,6 +28,10 @@ export default function MemberRow({
 }: Props) {
   const { getMemberDetails } = useModalOptions();
   const { retro } = useCircle();
+
+  if (!retro) {
+    return <Loader loading text="" />;
+  }
 
   return (
     <Box>

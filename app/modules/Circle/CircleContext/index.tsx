@@ -14,7 +14,7 @@ interface CircleContextType {
   circle: CircleType | undefined;
   memberDetails: MemberDetails | undefined;
   registry: Registry | undefined;
-  retro: RetroType;
+  retro: RetroType | undefined;
   fetchCircle: () => void;
   fetchMemberDetails: () => void;
   fetchRegistry: () => void;
@@ -93,7 +93,7 @@ export function useProviderCircleContext() {
     queryClient.setQueryData(["registry", cId], data);
   };
 
-  const setRetroData = (data: Registry) => {
+  const setRetroData = (data: RetroType) => {
     queryClient.setQueryData(["retro", retroSlug], data);
   };
 
