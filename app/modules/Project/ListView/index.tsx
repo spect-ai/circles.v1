@@ -68,7 +68,7 @@ function ListView() {
                     setLocalProject(updatedProject);
                   }}
                 >
-                  Add new column
+                  Add new section
                 </PrimaryButton>
               </Box>
             )}

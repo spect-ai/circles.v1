@@ -11,7 +11,7 @@ export default function useCardService() {
 
   const callCreateCard = async (payload: any): Promise<any> => {
     setCreating(true);
-    const res = await fetch(`${process.env.API_HOST}/card`, {
+    const res = await fetch(`${process.env.API_HOST}/card/v1`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

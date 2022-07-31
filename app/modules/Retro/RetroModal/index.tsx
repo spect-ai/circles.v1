@@ -102,7 +102,7 @@ export default function RetroModal({ handleClose }: Props) {
             </Stack>
           </Box>
           {retro.members?.map((member) => {
-            if (retro.stats[member].canReceive && connectedUser !== member) {
+            if (retro.stats[member]?.canReceive && connectedUser !== member) {
               return (
                 <MemberRow
                   key={retro.stats[member].owner}

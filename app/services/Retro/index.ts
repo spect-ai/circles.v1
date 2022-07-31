@@ -119,6 +119,8 @@ export const endRetro = async (retroId: string) => {
   });
   if (res.ok) {
     const data = await res.json();
+    console.log(data);
+
     toast("Retro ended successfully", {
       theme: "dark",
     });

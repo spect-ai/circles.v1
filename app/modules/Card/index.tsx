@@ -287,7 +287,7 @@ function Card() {
             {project?.id && (
               <Stack>
                 <CardType />
-                <CardColumn />
+                {!card?.parent && <CardColumn />}
                 <CardAssignee />
                 <CardReviewer />
                 <CardDeadline />
