@@ -68,7 +68,7 @@ export default function Explore() {
         }}
       />
       <GridContainer>
-        <Box width="1/2" paddingY="4" paddingRight="8">
+        <Box width="1/2" paddingTop="1" paddingRight="8" paddingBottom="4">
           <Input
             label=""
             placeholder="Explore"

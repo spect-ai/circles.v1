@@ -48,6 +48,8 @@ export default function useModalOptions() {
         let tempArr = memberDetails?.members?.map((member: string) => ({
           name: memberDetails && memberDetails.memberDetails[member]?.username,
           avatar: memberDetails && memberDetails.memberDetails[member]?.avatar,
+          ethAddress:
+            memberDetails && memberDetails.memberDetails[member]?.ethAddress,
           value: member,
         }));
         tempArr = tempArr?.filter(
@@ -63,11 +65,16 @@ export default function useModalOptions() {
               memberDetails.memberDetails[connectedUser]?.avatar) ||
             "",
           value: connectedUser,
+          ethAddress:
+            (memberDetails &&
+              memberDetails.memberDetails[connectedUser]?.ethAddress) ||
+            "",
         });
         tempArr?.unshift({
           name: "Unassigned",
           avatar: "",
           value: "",
+          ethAddress: "",
         });
 
         return tempArr;

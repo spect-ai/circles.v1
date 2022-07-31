@@ -71,6 +71,7 @@ export default function MemberDisplay({ member, memberDetails }: Props) {
             src={memberDetails[member]?.avatar}
             placeholder={!memberDetails[member]?.avatar}
             label="Avatar"
+            address={memberDetails[member]?.ethAddress}
             size="7"
           />
           <Box marginLeft="2">
@@ -94,6 +95,7 @@ export default function MemberDisplay({ member, memberDetails }: Props) {
               src={memberDetails[member]?.avatar}
               label=""
               placeholder={!memberDetails[member]?.avatar}
+              address={memberDetails[member]?.ethAddress}
             />
             <Text size="extraLarge" weight="semiBold">
               {memberDetails[member]?.username}

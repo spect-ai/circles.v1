@@ -112,7 +112,9 @@ export default function CreateCardModal({
               onConfirm={() => {
                 setIsDirty(false);
                 setShowConfirm(false);
-                handleClose();
+                setTimeout(() => {
+                  handleClose();
+                }, 100);
               }}
               onCancel={() => setShowConfirm(false)}
             />

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import React, { ReactElement, useEffect, useState } from "react";
-import { Box, Button, Stack, Text } from "degen";
+import { Avatar, Box, Button, Stack, Text } from "degen";
 import { useRouter } from "next/router";
 import CreateCircle from "./CreateCircleModal";
 import Logo from "@/app/common/components/Logo";
@@ -10,6 +10,8 @@ import { CircleType, UserType } from "@/app/types";
 import { useGlobal } from "@/app/context/globalContext";
 import CollapseButton from "../ExtendedSidebar/CollapseButton";
 import styled from "styled-components";
+import ProfileModal from "./ProfileModal/ProfileModal";
+import { AnimatePresence } from "framer-motion";
 
 export const ScrollContainer = styled(Box)`
   ::-webkit-scrollbar {
@@ -32,6 +34,8 @@ function Sidebar(): ReactElement {
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
+
+  const [isOpen, setIsOpen] = useState(false);
 
   const {
     data: myCircles,
@@ -122,9 +126,24 @@ function Sidebar(): ReactElement {
       )}
       <Box paddingY="3">
         {currentUser?.id && (
-          <Logo href="/" src={currentUser?.avatar} gradient="" />
+          <Button
+            size="small"
+            shape="circle"
+            variant="transparent"
+            onClick={() => setIsOpen(true)}
+          >
+            <Avatar
+              src={currentUser?.avatar}
+              address={currentUser.ethAddress}
+              label=""
+              size="10"
+            />
+          </Button>
         )}
       </Box>
+      <AnimatePresence>
+        {isOpen && <ProfileModal setIsOpen={setIsOpen} />}
+      </AnimatePresence>
     </Box>
   );
 }

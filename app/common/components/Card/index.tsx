@@ -36,7 +36,6 @@ const Card: FC<Props> = ({
       flexDirection="column"
       alignItems="center"
       justifyContent="center"
-      marginRight={{ xs: "2", md: "4" }}
       marginBottom={{ xs: "4", md: "8" }}
       height={height}
       transitionDuration="700"

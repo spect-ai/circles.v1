@@ -43,9 +43,9 @@ function CardColumn() {
         />
       }
       disabled={!canTakeAction("cardColumn")}
-      handleClose={async () => {
+      handleClose={() => {
         if (card?.columnId !== columnId) {
-          await onCardUpdate();
+          void onCardUpdate();
         }
         setModalOpen(false);
       }}

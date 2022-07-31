@@ -10,7 +10,9 @@ export default function useConnectGithub() {
   const { updateProfile } = useProfileUpdate();
 
   const fetchGithubUser = async () => {
-    const res = await fetch(`http://localhost:3001/connectGithub?code=${code}`);
+    const res = await fetch(
+      `${process.env.BOT_HOST}/connectGithub?code=${code}`
+    );
     if (res.ok) {
       const data = await res.json();
       console.log({ data });

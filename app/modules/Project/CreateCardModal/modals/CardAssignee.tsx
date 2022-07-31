@@ -7,7 +7,6 @@ import { Option } from "../constants";
 import { matchSorter } from "match-sorter";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
-import { id } from "ethers/lib/utils";
 import { useQuery } from "react-query";
 import { MemberDetails } from "@/app/types";
 import { useRouter } from "next/router";
@@ -85,6 +84,7 @@ export const AssigneeModal = ({
               src={item.avatar}
               label="avatar"
               placeholder={!item.avatar}
+              address={item.ethAddress}
             />
             <Box marginRight="2" />
             <Text
@@ -156,6 +156,7 @@ function CardAssignee() {
             src={getMemberDetails(assignees[0])?.avatar}
             label=""
             size="5"
+            address={getMemberDetails(assignees[0])?.ethAddress}
           />
         ) : (
           <IconUserSolid color="accent" size="5" />

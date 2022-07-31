@@ -2,7 +2,7 @@ import { useGlobal } from "@/app/context/globalContext";
 import { Box, Heading, Stack } from "degen";
 import { useState } from "react";
 import styled from "styled-components";
-import ConnectModal from "../Header/ConnectModal";
+import ConnectModal from "../Sidebar/ProfileModal/ConnectModal";
 import { Container } from "./CircleSidebar";
 import CollapseButton from "./CollapseButton";
 
