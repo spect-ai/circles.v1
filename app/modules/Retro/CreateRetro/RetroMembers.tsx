@@ -4,10 +4,10 @@ import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { RetroForm, slideIn } from "./RetroDetails";
 import { useRouter } from "next/router";
-import { useQuery } from "react-query";
-import { Chain, CircleType, Token } from "@/app/types";
+import { Chain, Token } from "@/app/types";
 import MemberRow from "./MemberRow";
 import { createRetro } from "@/app/services/Retro";
+import { useCircle } from "../../Circle/CircleContext";
 
 type Props = {
   handleClose: () => void;
@@ -36,10 +36,7 @@ export default function RetroMembers({
 }: Props) {
   const [memberStats, setmemberStats] = useState<MemberDetails[] | undefined>();
   const router = useRouter();
-  const { circle: cId } = router.query;
-  const { data: circle } = useQuery<CircleType>(["circle", cId], {
-    enabled: false,
-  });
+  const { circle } = useCircle();
 
   useEffect(() => {
     if (circle) {
@@ -136,6 +133,7 @@ export default function RetroMembers({
                     memberStats: memberStats?.filter((m) => m.isChecked),
                   });
                   console.log({ res });
+                  void router.push(`/${circle?.slug}?retroSlug=${res?.slug}`);
                   if (res) {
                     handleClose();
                   }

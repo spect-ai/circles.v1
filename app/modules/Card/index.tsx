@@ -126,7 +126,9 @@ function Card() {
         borderRadius="large"
         backgroundColor="background"
         style={{
-          boxShadow: "0px 0px 10px 0.5rem rgba(0, 0, 0, 0.1)",
+          boxShadow: `0px 0px 10px 0.5rem ${
+            mode === "dark" ? "rgba(0, 0, 0, 0.3)" : "rgba(0, 0, 0, 0.1)"
+          }`,
         }}
       >
         <ToastContainer
@@ -297,7 +299,6 @@ function Card() {
                 <CardDeadline />
                 <CardPriority />
                 <CardReward />
-                {/* <DiscordThread /> */}
                 {/* {canTakeAction("cardPayment") && (
                   <PrimaryButton
                     onClick={() => {

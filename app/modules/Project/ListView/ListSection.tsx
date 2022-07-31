@@ -66,7 +66,7 @@ const CardList = ({ card }: { card: CardType }) => {
             <Text weight="semiBold">{card.title}</Text>
           </Stack>
           <Box display="flex">
-            <Stack direction="horizontal" space="8" align="center" wrap>
+            <Stack direction="horizontal" space="2" align="center" wrap>
               {card.status.paid && (
                 <Tag size="small">
                   <Text color="green">Paid</Text>

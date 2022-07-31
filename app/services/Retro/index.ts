@@ -48,9 +48,11 @@ export const createRetro = async (retro: Partial<CreateRetroDTO>) => {
 export const addVotes = async (
   retroId: string,
   votes: {
-    votes: {
-      [userId: string]: number;
-    };
+    votes:
+      | {
+          [userId: string]: number;
+        }
+      | undefined;
   }
 ) => {
   const res = await fetch(`${process.env.API_HOST}/retro/${retroId}/vote`, {

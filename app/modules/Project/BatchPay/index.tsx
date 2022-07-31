@@ -1,5 +1,5 @@
 import Modal from "@/app/common/components/Modal";
-import { CardType } from "@/app/types";
+import { CardType, RetroType } from "@/app/types";
 import { useEffect } from "react";
 import { useLocalProject } from "../Context/LocalProjectContext";
 import ApproveToken from "./ApproveToken";
@@ -12,11 +12,12 @@ import SelectCards from "./SelectCards";
 import TokenPayment from "./TokenPayment";
 
 interface Props {
+  retro?: RetroType;
   card?: CardType;
   setIsOpen: (isOpen: boolean) => void;
 }
 
-export default function BatchPay({ card, setIsOpen }: Props) {
+export default function BatchPay({ card, retro, setIsOpen }: Props) {
   const context = useProviderBatchPayContext({ setIsOpen });
   const { localProject } = useLocalProject();
 
@@ -35,17 +36,16 @@ export default function BatchPay({ card, setIsOpen }: Props) {
 
   useEffect(() => {
     // set token card and stuff and skip the step dependig on the card reward token address
-    if (card) {
-      if (card.reward?.token.address === "0x0") {
-        setCurrencyCards([card.id]);
+    if (retro) {
+      if (retro.reward.token.address === "0x0") {
         setBatchPayInfo({
           approval: {
             tokenAddresses: [],
             values: [],
           },
           currency: {
-            userIds: card.assignee,
-            values: distributeReward(card.reward.value, card.assignee),
+            userIds: retro.members,
+            values: retro.members.map((member) => retro.distribution[member]),
           },
           tokens: {
             tokenAddresses: [],
@@ -55,20 +55,19 @@ export default function BatchPay({ card, setIsOpen }: Props) {
         });
         setStep(1);
       } else {
-        setTokenCards([card.id]);
         setBatchPayInfo({
           approval: {
-            tokenAddresses: [card.reward.token.address],
-            values: distributeReward(card.reward.value, card.assignee),
+            tokenAddresses: [retro.reward.token.address],
+            values: [retro.reward.value],
           },
           currency: {
             userIds: [],
             values: [],
           },
           tokens: {
-            tokenAddresses: [card.reward.token.address],
-            values: distributeReward(card.reward.value, card.assignee),
-            userIds: card.assignee,
+            tokenAddresses: [retro.reward.token.address],
+            userIds: retro.members,
+            values: retro.members.map((member) => retro.distribution[member]),
           },
         });
         setStep(2);

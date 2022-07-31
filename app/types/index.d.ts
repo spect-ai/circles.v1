@@ -92,11 +92,15 @@ export interface RetroType {
     };
   };
   feedbackGiven: {
-    [key: string]: {
-      [key: string]: string;
-    };
+    [key: string]: string;
+  };
+  feedbackReceived: {
+    [key: string]: string;
   };
   strategy: "Quadratic Voting" | "Normal Voting";
+  distribution: {
+    [userId: string]: number;
+  };
   status: {
     active: boolean;
     paid: boolean;

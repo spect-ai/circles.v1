@@ -2,6 +2,7 @@ import { useGlobal } from "@/app/context/globalContext";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { Box, Stack, Text } from "degen";
 import { AnimatePresence } from "framer-motion";
+import { useRouter } from "next/router";
 import React, { useState } from "react";
 import { useCircle } from "../Circle/CircleContext";
 import CreateRetro from "./CreateRetro";
@@ -9,10 +10,12 @@ import RetroModal from "./RetroModal";
 import RetroRow from "./RetroRow";
 
 export default function RetroPage() {
-  const { circle, setPage, setRetro } = useCircle();
+  const { circle, setPage } = useCircle();
   const { isSidebarExpanded } = useGlobal();
   const [isRetroOpen, setIsRetroOpen] = useState(false);
   const { canDo } = useRoleGate();
+
+  const router = useRouter();
 
   return (
     <Box
@@ -23,7 +26,12 @@ export default function RetroPage() {
     >
       <AnimatePresence>
         {isRetroOpen && (
-          <RetroModal handleClose={() => setIsRetroOpen(false)} />
+          <RetroModal
+            handleClose={() => {
+              setIsRetroOpen(false);
+              void router.push(`/${circle?.slug}`);
+            }}
+          />
         )}
       </AnimatePresence>
       <Box cursor="pointer" onClick={() => setPage("Overview")}>
@@ -41,7 +49,7 @@ export default function RetroPage() {
             key={retro.id}
             cursor="pointer"
             onClick={() => {
-              setRetro(retro);
+              void router.push(`${circle.slug}?retroSlug=${retro.slug}`);
               setIsRetroOpen(true);
             }}
           >
