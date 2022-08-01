@@ -3,7 +3,7 @@ import { useGlobal } from "@/app/context/globalContext";
 import { joinCircleFromDiscord } from "@/app/services/JoinCircle";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { UserType } from "@/app/types";
-import { Box, IconSearch, Input, Stack, Text } from "degen";
+import { Box, IconSearch, Input, Stack, Text, useTheme } from "degen";
 import { matchSorter } from "match-sorter";
 import React, { useEffect, useState } from "react";
 import { useQuery } from "react-query";
@@ -33,6 +33,7 @@ function CircleMembers() {
   >([] as any);
 
   const [loading, setLoading] = useState(false);
+  const { mode } = useTheme();
 
   useEffect(() => {
     if (circle) {
@@ -81,7 +82,10 @@ function CircleMembers() {
         {!circle.members.includes(connectedUser) &&
           circle.discordGuildId &&
           currentUser?.discordId && (
-            <Tooltip title="You can join circle if you have an eligible discord role">
+            <Tooltip
+              title="You can join circle if you have an eligible discord role"
+              theme={mode}
+            >
               <PrimaryButton
                 loading={loading}
                 onClick={async () => {

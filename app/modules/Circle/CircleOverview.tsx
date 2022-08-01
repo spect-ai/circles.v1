@@ -2,12 +2,13 @@ import Card from "@/app/common/components/Card";
 import { useGlobal } from "@/app/context/globalContext";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { ExpandAltOutlined } from "@ant-design/icons";
-import { Box, Button, Stack, Text } from "degen";
+import { Box, Button, Stack, Text, useTheme } from "degen";
 import { AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Col, Container, Row } from "react-grid-system";
 import { Tooltip } from "react-tippy";
+import BatchPay from "../Project/BatchPay";
 import CreateRetro from "../Retro/CreateRetro";
 import RetroModal from "../Retro/RetroModal";
 import { useCircle } from "./CircleContext";
@@ -18,15 +19,33 @@ import CreateSpaceModal from "./CreateSpaceModal";
 export default function CircleOverview() {
   const { isSidebarExpanded } = useGlobal();
   const router = useRouter();
-  const { circle, setRetro, setPage } = useCircle();
+  const { circle: cId, retroSlug } = router.query;
+  const { circle, setPage, setIsBatchPayOpen, isBatchPayOpen, retro } =
+    useCircle();
   const { canDo } = useRoleGate();
   const [isRetroOpen, setIsRetroOpen] = useState(false);
+
+  const { mode } = useTheme();
+
+  useEffect(() => {
+    if (retroSlug) {
+      setIsRetroOpen(true);
+    }
+  }, [retroSlug]);
 
   return (
     <>
       <AnimatePresence>
         {isRetroOpen && (
-          <RetroModal handleClose={() => setIsRetroOpen(false)} />
+          <RetroModal
+            handleClose={() => {
+              setIsRetroOpen(false);
+              void router.push(`/${cId}`);
+            }}
+          />
+        )}
+        {isBatchPayOpen && (
+          <BatchPay setIsOpen={setIsBatchPayOpen} retro={retro} />
         )}
       </AnimatePresence>
       <Stack direction="horizontal">
@@ -114,7 +133,7 @@ export default function CircleOverview() {
                 Retro
               </Text>
               {canDo(["steward"]) && <CreateRetro />}
-              <Tooltip html={<Text>View all Retros</Text>}>
+              <Tooltip html={<Text>View all Retros</Text>} theme={mode}>
                 <Box marginTop="1">
                   <Button
                     shape="circle"
@@ -140,7 +159,7 @@ export default function CircleOverview() {
                     <Card
                       height="32"
                       onClick={() => {
-                        setRetro(retro);
+                        void router.push(`${cId}?retroSlug=${retro.slug}`);
                         setIsRetroOpen(true);
                       }}
                     >

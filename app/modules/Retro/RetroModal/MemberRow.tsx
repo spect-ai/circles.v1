@@ -1,73 +1,86 @@
+import Loader from "@/app/common/components/Loader";
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
-import { RetroType } from "@/app/types";
 import { Avatar, Box, Input, Stack, Text } from "degen";
 import React from "react";
-import { MemberDetails } from ".";
+import { useCircle } from "../../Circle/CircleContext";
 import Feedback from "./Feedback";
 
 type Props = {
   retroId: string;
-  details: MemberDetails;
-  votesGiven: { [key: string]: number };
+  member: string;
+  votesGiven: { [key: string]: number } | undefined;
   setVotesGiven: (votesGiven: { [key: string]: number }) => void;
-  votesRemaining: number;
+  votesRemaining: number | undefined;
   handleVotesRemaining: (memberId: string, newVoteVal: number) => void;
-  feedbackGiven: { [key: string]: string };
-  setRetro: (retro: RetroType) => void;
+  feedbackGiven: string;
+  feedbackReceived: string;
 };
 
 export default function MemberRow({
   retroId,
-  details,
+  member,
   votesGiven,
   setVotesGiven,
   votesRemaining,
   handleVotesRemaining,
   feedbackGiven,
-  setRetro,
+  feedbackReceived,
 }: Props) {
   const { getMemberDetails } = useModalOptions();
+  const { retro } = useCircle();
+
+  if (!retro) {
+    return <Loader loading text="" />;
+  }
+
   return (
     <Box>
       <Stack direction="horizontal" align="center" justify="space-between">
         <Box width="1/4">
           <Stack direction="horizontal" align="center" space="2">
             <Avatar
-              src={getMemberDetails(details.owner)?.avatar}
-              address={getMemberDetails(details.owner)?.ethAddress}
+              src={getMemberDetails(member)?.avatar}
+              address={getMemberDetails(member)?.ethAddress}
               label=""
               size="9"
             />
             <Text weight="semiBold" ellipsis>
-              {getMemberDetails(details.owner)?.username}
+              {getMemberDetails(member)?.username}
             </Text>
           </Stack>
         </Box>
         <Box width="1/3">
           <Feedback
-            memberDetails={details}
+            member={member}
             retroId={retroId}
-            feedbackGiven={feedbackGiven}
-            setRetro={setRetro}
+            feedback={retro.status.active ? feedbackGiven : feedbackReceived}
           />
         </Box>
-        <Input
-          label=""
-          type="number"
-          units="votes"
-          placeholder="5"
-          width="1/4"
-          value={votesGiven[details.owner]}
-          error={votesRemaining < 0}
-          onChange={(e) => {
-            if (e.target.value) {
-              const newVotesGiven = { ...votesGiven };
-              newVotesGiven[details.owner] = parseInt(e.target.value);
-              setVotesGiven(newVotesGiven);
-              handleVotesRemaining(details.owner, parseInt(e.target.value));
-            }
-          }}
-        />
+        {retro.status.active ? (
+          <Input
+            label=""
+            type="number"
+            units="votes"
+            placeholder="5"
+            width="1/4"
+            value={votesGiven && votesGiven[member]}
+            error={(votesRemaining || 0) < 0}
+            onChange={(e) => {
+              if (e.target.value) {
+                const newVotesGiven = { ...votesGiven };
+                newVotesGiven[member] = parseInt(e.target.value);
+                setVotesGiven(newVotesGiven);
+                handleVotesRemaining(member, parseInt(e.target.value));
+              }
+            }}
+          />
+        ) : (
+          <Box width="1/4">
+            <Text weight="semiBold" size="large" align="left">
+              {votesGiven && votesGiven[member]}
+            </Text>
+          </Box>
+        )}
       </Stack>
     </Box>
   );

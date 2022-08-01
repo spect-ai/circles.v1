@@ -1,51 +1,51 @@
+import Loader from "@/app/common/components/Loader";
 import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { giveFeedback } from "@/app/services/Retro";
-import { RetroType } from "@/app/types";
 import { Box, Stack, Tag, Textarea } from "degen";
 import { AnimatePresence } from "framer-motion";
-import React, { useState } from "react";
-import { MemberDetails } from ".";
+import React, { useEffect, useState } from "react";
+import { useCircle } from "../../Circle/CircleContext";
 
 type Props = {
   retroId: string;
-  memberDetails: MemberDetails;
-  feedbackGiven: { [key: string]: string };
-  setRetro: (retro: RetroType) => void;
+  member: string;
+  feedback: string;
 };
 
-export default function Feedback({
-  retroId,
-  memberDetails,
-  feedbackGiven,
-  setRetro,
-}: Props) {
+export default function Feedback({ retroId, member, feedback }: Props) {
   const [isOpen, setIsOpen] = useState(false);
-  const [feedbackContent, setFeedbackContent] = useState(
-    feedbackGiven && feedbackGiven[memberDetails.owner]
-  );
+  const [feedbackContent, setFeedbackContent] = useState(feedback);
   const [loading, setLoading] = useState(false);
+  const { retro } = useCircle();
+
+  useEffect(() => {
+    setFeedbackContent(feedback);
+  }, [feedback]);
+
+  if (!retro) {
+    return <Loader loading text="" />;
+  }
 
   return (
     <>
       <Box
-        cursor="pointer"
+        cursor={
+          retro.status.active ? "pointer" : feedback ? "pointer" : "not-allowed"
+        }
         onClick={() => {
           setIsOpen(true);
         }}
       >
-        <Tag
-          hover
-          tone={
-            feedbackGiven && feedbackGiven[memberDetails.owner]
-              ? "secondary"
-              : "accent"
-          }
-        >
-          {feedbackGiven && feedbackGiven[memberDetails.owner]
-            ? "Feedback Given"
-            : "Give Feedback"}
-        </Tag>
+        {retro.status.active ? (
+          <Tag hover tone={feedback ? "secondary" : "accent"}>
+            {feedback ? "Feedback Given" : "Give Feedback"}
+          </Tag>
+        ) : (
+          <Tag hover tone={feedback ? "accent" : "secondary"}>
+            {feedback ? "Feedback Received" : "No Feedback"}
+          </Tag>
+        )}
       </Box>
       <AnimatePresence>
         {isOpen && (
@@ -57,25 +57,27 @@ export default function Feedback({
                   placeholder="A pretty decent work done, however following areas can be improved...."
                   value={feedbackContent}
                   onChange={(e) => setFeedbackContent(e.target.value)}
+                  disabled={!retro.status.active}
                 />
-                <PrimaryButton
-                  loading={loading}
-                  onClick={async () => {
-                    setLoading(true);
-                    const res = await giveFeedback(retroId, {
-                      feedback: {
-                        [memberDetails.owner]: feedbackContent,
-                      },
-                    });
-                    setLoading(false);
-                    setRetro(res);
-                    if (res) {
-                      setIsOpen(false);
-                    }
-                  }}
-                >
-                  Submit
-                </PrimaryButton>
+                {retro.status.active && (
+                  <PrimaryButton
+                    loading={loading}
+                    onClick={async () => {
+                      setLoading(true);
+                      const res = await giveFeedback(retroId, {
+                        feedback: {
+                          [member]: feedbackContent,
+                        },
+                      });
+                      setLoading(false);
+                      if (res) {
+                        setIsOpen(false);
+                      }
+                    }}
+                  >
+                    Submit
+                  </PrimaryButton>
+                )}
               </Stack>
             </Box>
           </Modal>

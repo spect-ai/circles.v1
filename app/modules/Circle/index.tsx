@@ -1,27 +1,13 @@
-import Card from "@/app/common/components/Card";
 import Loader from "@/app/common/components/Loader";
-import { useGlobal } from "@/app/context/globalContext";
 import useCircleOnboarding from "@/app/services/Onboarding/useCircleOnboarding";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
-import { RetroType } from "@/app/types";
-import { ExpandAltOutlined } from "@ant-design/icons";
-import { Box, Button, Stack, Text } from "degen";
-import { AnimatePresence } from "framer-motion";
-import { useRouter } from "next/router";
-import React, { useState } from "react";
-import { Col, Container, Row } from "react-grid-system";
-import { Tooltip } from "react-tippy";
+import { Box, useTheme } from "degen";
 import { ToastContainer } from "react-toastify";
 import styled from "styled-components";
 import RetroPage from "../Retro";
-import CreateRetro from "../Retro/CreateRetro";
-import RetroModal from "../Retro/RetroModal";
 import { useCircle } from "./CircleContext";
-import CircleMembers from "./CircleMembers";
 import Onboarding from "./CircleOnboarding";
 import CircleOverview from "./CircleOverview";
-import CreateProjectModal from "./CreateProjectModal";
-import CreateSpaceModal from "./CreateSpaceModal";
 
 const BoxContainer = styled(Box)`
   width: calc(100vw - 4rem);
@@ -39,6 +25,8 @@ export default function Circle() {
   const { canDo } = useRoleGate();
   const { onboarded } = useCircleOnboarding();
 
+  const { mode } = useTheme();
+
   if (isLoading || !circle || !memberDetails) {
     return <Loader text="...." loading />;
   }
@@ -48,8 +36,12 @@ export default function Circle() {
       {!onboarded && canDo(["steward"]) && <Onboarding />}
       <ToastContainer
         toastStyle={{
-          backgroundColor: "rgb(20,20,20)",
-          color: "rgb(255,255,255,0.7)",
+          backgroundColor: `${
+            mode === "dark" ? "rgb(20,20,20)" : "rgb(240,240,240)"
+          }`,
+          color: `${
+            mode === "dark" ? "rgb(255,255,255,0.7)" : "rgb(20,20,20,0.7)"
+          }`,
         }}
       />
       {page === "Overview" && <CircleOverview />}

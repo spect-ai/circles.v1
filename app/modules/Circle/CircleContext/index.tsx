@@ -8,18 +8,21 @@ import { useQuery } from "react-query";
 interface CircleContextType {
   page: "Overview" | "Retro";
   setPage: (page: "Overview" | "Retro") => void;
-  retro: RetroType;
-  setRetro: (retro: RetroType) => void;
   isLoading: boolean;
+  isBatchPayOpen: boolean;
+  setIsBatchPayOpen: (isBatchPayOpen: boolean) => void;
   circle: CircleType | undefined;
   memberDetails: MemberDetails | undefined;
   registry: Registry | undefined;
+  retro: RetroType | undefined;
   fetchCircle: () => void;
   fetchMemberDetails: () => void;
   fetchRegistry: () => void;
+  fetchRetro: () => void;
   setCircleData: (data: CircleType) => void;
   setMemberDetailsData: (data: MemberDetails) => void;
   setRegistryData: (data: Registry) => void;
+  setRetroData: (data: RetroType) => void;
 }
 
 export const CircleContext = React.createContext<CircleContextType>(
@@ -28,10 +31,10 @@ export const CircleContext = React.createContext<CircleContextType>(
 
 export function useProviderCircleContext() {
   const router = useRouter();
-  const { circle: cId } = router.query;
+  const { circle: cId, retroSlug } = router.query;
 
-  const [retro, setRetro] = useState<RetroType>({} as RetroType);
   const [page, setPage] = useState<"Overview" | "Retro">("Overview");
+  const [isBatchPayOpen, setIsBatchPayOpen] = useState(false);
 
   const {
     data: circle,
@@ -71,6 +74,13 @@ export function useProviderCircleContext() {
     }
   );
 
+  const { data: retro, refetch: fetchRetro } = useQuery<RetroType>(
+    ["retro", retroSlug],
+    {
+      enabled: false,
+    }
+  );
+
   const setCircleData = (data: CircleType) => {
     queryClient.setQueryData(["circle", cId], data);
   };
@@ -81,6 +91,10 @@ export function useProviderCircleContext() {
 
   const setRegistryData = (data: Registry) => {
     queryClient.setQueryData(["registry", cId], data);
+  };
+
+  const setRetroData = (data: RetroType) => {
+    queryClient.setQueryData(["retro", retroSlug], data);
   };
 
   useEffect(() => {
@@ -94,18 +108,21 @@ export function useProviderCircleContext() {
   return {
     page,
     setPage,
-    retro,
-    setRetro,
     isLoading,
+    isBatchPayOpen,
+    setIsBatchPayOpen,
     circle,
     memberDetails,
     registry,
+    retro,
     fetchCircle,
     fetchMemberDetails,
     fetchRegistry,
+    fetchRetro,
     setCircleData,
     setMemberDetailsData,
     setRegistryData,
+    setRetroData,
   };
 }
 

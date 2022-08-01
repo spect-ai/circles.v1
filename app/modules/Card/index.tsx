@@ -126,13 +126,19 @@ function Card() {
         borderRadius="large"
         backgroundColor="background"
         style={{
-          boxShadow: "0px 0px 10px 0.5rem rgba(0, 0, 0, 0.1)",
+          boxShadow: `0px 0px 10px 0.5rem ${
+            mode === "dark" ? "rgba(0, 0, 0, 0.3)" : "rgba(0, 0, 0, 0.1)"
+          }`,
         }}
       >
         <ToastContainer
           toastStyle={{
-            backgroundColor: "rgb(20,20,20)",
-            color: "rgb(255,255,255,0.7)",
+            backgroundColor: `${
+              mode === "dark" ? "rgb(20,20,20)" : "rgb(240,240,240)"
+            }`,
+            color: `${
+              mode === "dark" ? "rgb(255,255,255,0.7)" : "rgb(20,20,20,0.7)"
+            }`,
           }}
         />
         <Box padding="1" borderBottomWidth="0.375">
@@ -293,7 +299,6 @@ function Card() {
                 <CardDeadline />
                 <CardPriority />
                 <CardReward />
-                {/* <DiscordThread /> */}
                 {/* {canTakeAction("cardPayment") && (
                   <PrimaryButton
                     onClick={() => {
