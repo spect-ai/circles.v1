@@ -1,54 +1,40 @@
 import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
-import { useQuery } from "react-query";
+import React from "react";
 import { useLocalProject } from "../Context/LocalProjectContext";
-import { CircleType, MemberDetails } from '@/app/types';
-import MultipleDropdown, { OptionType } from "./MultipleDropDown";
-import Popover from '@/app/common/components/Popover';
-import { Box, Button, Text, Input, IconGrid, IconList, IconDotsVertical} from "degen";
-import styled from "styled-components";
-import PrimaryButton from '@/app/common/components/PrimaryButton';
-import { createViews } from "@/app/services/ProjectViews";
-import { cardType, priorityType, labels } from "./constants";
+import useRoleGate from "@/app/services/RoleGate/useRoleGate";
+import { Box, Button, IconGrid, IconList, IconDotsVertical} from "degen";
 import Link from "next/link";
-import { filterCards } from "./filterCards";
 
 export const ViewBar = () => {
 
   const router = useRouter();
-  const { circle: cId, project: pId } = router.query;
-  const { localProject: project , setView } = useLocalProject();
-  const [viewName, setViewName] = useState<string>('');
-  // {project?.viewOrder?.map((viewId, idx)=> {
-  //   const view = project.viewDetails?.[viewId];
-  //   console.log(view?.filters);
-  // })}
+  const { circle: cId, project: pId, view: vId } = router.query;
+  const { localProject: project } = useLocalProject();
+  const { canDo } = useRoleGate();
 
   return(
     <>
       <Box display="flex" flexDirection="row" gap="4">
         {project?.viewOrder && project?.viewOrder?.length > 0 &&
           <Link href={`/${cId}/${pId}`}>
-            <Button variant="transparent" size="small" onClick={()=> setViewName('')}>
+            <Button variant="transparent" size="small">
               Default View
             </Button>
           </Link>
         }
-        {project?.viewOrder?.map((viewId )=> {
+        {project?.viewOrder?.map((viewId, idx)=> {
           const view = project.viewDetails?.[viewId];
+          
           return(
             <>
-              <Link href={`/${cId}/${pId}#view-${viewId}`}>
+              <Link href={`/${cId}/${pId}/view/${view?.slug}`}>
                 <Button 
                   prefix={view?.type == 'Board' ? <IconGrid size="4"/> : <IconList size="4"/>} 
-                  variant={ viewName == viewId ? "secondary" : "transparent" }
+                  variant={ view?.slug == vId ? "tertiary" : "transparent" }
                   size="small"
                   key={viewId}
-                  onClick={()=> 
-                    setViewName(viewId)
-                  }
                   suffix={
-                    viewName == viewId ? 
+                    view?.slug == vId  && canDo(["steward"]) ? 
                     <>
                       <Box>
                         <IconDotsVertical size="4" />
@@ -56,11 +42,10 @@ export const ViewBar = () => {
                     </> : <></>
                   }
                 >
-                  View
+                  {view?.name}
                 </Button>
               </Link>
             </>
-            
           )
         })}
       </Box>

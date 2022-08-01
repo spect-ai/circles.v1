@@ -308,6 +308,8 @@ export type Views = {
   type: 'List' | 'Board';
   hidden: boolean;
   filters: Filter;
+  slug?: string;
+  name: string;
 }
 
 export type Status = {

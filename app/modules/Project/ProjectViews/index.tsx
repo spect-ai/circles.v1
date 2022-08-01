@@ -1,211 +1,56 @@
-import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
-import { useQuery } from "react-query";
+import useRoleGate from "@/app/services/RoleGate/useRoleGate";
+import { Box } from "degen";
+import React, { memo } from "react";
 import { useLocalProject } from "../Context/LocalProjectContext";
-import { CircleType, MemberDetails } from '@/app/types';
-import MultipleDropdown, { OptionType } from "./MultipleDropDown";
-import Popover from '@/app/common/components/Popover';
-import { Box, IconPlusSmall, Text, Input } from "degen";
-import styled from "styled-components";
-import PrimaryButton from '@/app/common/components/PrimaryButton';
-import { createViews } from "@/app/services/ProjectViews";
-import { cardType, priorityType, labels } from "./constants"
-import { toast } from "react-toastify";
-import { WechatFilled } from "@ant-design/icons";
+import useProjectOnboarding from "@/app/services/Onboarding/useProjectOnboarding";
 
-const Container = styled(Box)`
-  ::-webkit-scrollbar {
-    display: none;
-  }
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-  max-height: 40rem;
-  overflow-y: auto;
-  padding: 1rem;
-  display: flex;
-  flex-direction: row;
-`;
+import { motion } from "framer-motion";
+import { fadeVariant } from "../../Card/Utils/variants";
+import { useRouter } from "next/router";
+import { ToastContainer } from "react-toastify";
+import Onboarding from "../ProjectOnboarding";
+import { filterCards } from "./filterCards";
+import { Filter } from "@/app/types";
+import Board from "./Board";
 
-function CardFilter (){
+function View() {
+  const { localProject: project } = useLocalProject();
+  const { canDo } = useRoleGate();
+  const { onboarded } = useProjectOnboarding();
 
   const router = useRouter();
-  const { circle: cId } = router.query;
-  const { data: circle } = useQuery<CircleType>(["circle", cId], {
-    enabled: false,
-  });
+  const { view: vId } = router.query;
 
-  const { data: memberDetails, refetch: fetchMemberDetails } =
-    useQuery<MemberDetails>(["memberDetails", cId], {
-      enabled: false,
-    });
-
-    const [filteredMembers, setFilteredMembers] = useState<
-    { name: string; id: string }[]
-  >([] as any);
-  const [circleMembers, setCircleMembers] = useState<
-    {
-      name: string;
-      id: string;
-    }[]
-  >([] as any);
-
-  useEffect(() => {
-    if (circle) {
-      const circleMembersArray = circle?.members.map((mem) => ({
-        name: memberDetails?.memberDetails[mem]?.username as string,
-        id: mem,
-      }));
-      setFilteredMembers(circleMembersArray);
-      setCircleMembers(circleMembersArray);
-    }
-  }, [circle, memberDetails?.memberDetails]);
-
-  const { localProject: project, setLocalProject } = useLocalProject();
-  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
-  const [viewOpen, setViewOpen] = useState(false);
-  const [reviewer, setReviewer] = useState<string[]>([]);
-  const [assignee, setAssignee] = useState<string[]>([]);
-  const [label, setLabels] = useState<string[]>([]);
-  const [title, setTitle] = useState<string>('');
-  const [column, setColumn] = useState<string[]>([]);
-  const [priority, setPriority] = useState<string[]>([]);
-  const [type, setType] = useState<string[]>([]);
-
-  const columns = project?.columnOrder?.map((column: string) => ({
-    name: project?.columnDetails[column].name,
-    id: column,
-  }));
-  
-  
-  const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setTitle(event.target.value);
-  };
-
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    if(project.viewOrder && project.viewOrder?.length < 4 ){
-      setAnchorEl(event.currentTarget);
-      // setOpen(true);
-      setViewOpen(true);
-    }else{
-      toast.warning("You cannot create more than 4 views");
-    }
-    
-  };
-  const handleViewClose = () => setViewOpen(false);
-
-   const main = async() => {
-    const newView = await createViews({
-      type: 'Board',
-      hidden: true,
-      filters: {
-        assignee: assignee,
-        reviewer: reviewer,
-        column: column,
-        label: label,
-        status: {
-          active: true,
-          paid: true,
-          archived: true,
-        },
-        title: title,
-        type: type,
-        priority: priority,
-        deadline: 'meme',
-    },
-    }, project.id)
-    console.log(newView);
-    if (newView !== null) setLocalProject(newView);
-    console.log(project.viewOrder);  
+  if (!vId || !project) {
+    return null;
   }
 
-  const onViewSubmit = () => {
-    handleViewClose();
-    main();
-  };
+  const viewId : string = project.viewOrder?.[Number(vId[vId.length - 1])]!;
+  const view = project.viewDetails?.[viewId as string];  
+  
 
-  return(
+  return (
     <>
-      <Box style={{"borderRadius": "2px"}}>
-        <Popover
-          butttonComponent={
-            <Box
-              cursor="pointer"
-              onClick={handleClick}
-              color="foreground"
-              display="flex"
-              flexDirection="row"
-              gap="1"
-              alignItems="center"
-            >
-              <IconPlusSmall color="textSecondary" size="4"/>
-              <Text color="textSecondary">View</Text>
-            </Box>
-          }
-          isOpen={viewOpen}
-          setIsOpen={setViewOpen}
-        >
-          <Container
-            backgroundColor="background"
-            borderWidth="0.5"
-            borderRadius="large"
-          >
-            <Box >
-              <MultipleDropdown
-                options={filteredMembers as OptionType[]}
-                onChange={(mem)=> {
-                  setAssignee([mem.id])
-                }}
-                title={'Assignee'}
-              />
-              <MultipleDropdown
-                options={filteredMembers as OptionType[]}
-                onChange={(mem)=> {
-                  setReviewer([mem.id])
-                }}
-                title={'Reviewer'}
-              />
-              <MultipleDropdown
-                options={labels as OptionType[]}
-                onChange={(mem)=> {
-                  setLabels([mem.id])
-                }}
-                title={'Labels'}
-              />
-              <MultipleDropdown
-                options={columns as OptionType[]}
-                onChange={(mem)=> {
-                  setColumn([mem.id])
-                }}
-                title={'Column'}
-              />
-              <MultipleDropdown
-                options={cardType as OptionType[]}
-                onChange={(mem)=> {
-                  setType([mem.id])
-                }}
-                title={'Type'}
-              />
-              <MultipleDropdown
-                options={priorityType as OptionType[]}
-                onChange={(mem)=> {
-                  setPriority([mem.id])
-                }}
-                title={'Priority'}
-              />
-              <Input label="title" hideLabel placeholder="Title" onChange={handleTitleChange}/>
-              <PrimaryButton onClick={onViewSubmit}>
-                Create View
-              </PrimaryButton>
-            </Box>
-          </Container>
-        </Popover>
-      </Box>
+      <motion.main
+        variants={fadeVariant}
+        initial="hidden"
+        animate="enter"
+        exit="exit"
+        transition={{ type: "linear" }}
+      >
+        <Box width="full">
+          <ToastContainer
+            toastStyle={{
+              backgroundColor: "rgb(20,20,20)",
+              color: "rgb(255,255,255,0.7)",
+            }}
+          />
+          {!onboarded && canDo(["steward"]) && <Onboarding />}
+          {view?.type == 'Board' && <Board viewId={viewId} key={viewId}/>}
+        </Box>
+      </motion.main>
     </>
-  )
+  );
 }
 
-export default CardFilter;
-
-
-
-
+export default memo(View);
