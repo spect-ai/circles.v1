@@ -12,8 +12,8 @@ export type OptionType = {
 interface Props {
   title?: string;
   options: OptionType[];
-  isOpen: boolean;
-  onChange: (option: OptionType) => void;
+  value: string[];
+  setValue: (value: string[])=> void;
 }
 
 const OptionsContainer = styled(Box)<{ isExpanded: boolean }>`
@@ -86,8 +86,8 @@ const slide = {
   collapsed: { height: 0, opacity: 0 },
 };
 
-const MultipleDropdown: FC<Props> = ({ options, isOpen, onChange, title }) => {
-  const [isExpanded, setIsExpanded] = useState(isOpen);
+const MultipleDropdown: FC<Props> = ({ options, value, setValue, title }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
   // use input ref
   const inputRef = useRef<HTMLInputElement>(null);
   const [inputValue, setInputValue] = useState([] as string[]);
@@ -177,8 +177,21 @@ const MultipleDropdown: FC<Props> = ({ options, isOpen, onChange, title }) => {
                   <Option
                     key={option.id}
                     onClick={() => {
-                      onChange(option);
-                      setInputValue([...inputValue, option.name]);
+
+                      if (option.id === "") {
+                        setValue([]);
+                        return;
+                      }
+                      if (value.includes(option.id)) {
+                        setValue(value.filter((i) => i !== option.id));
+                      } else {
+                        if (value.length) {
+                          setValue([...value, option.id]);
+                        } else {
+                          setValue([option.id]);
+                        }
+                      }
+
                       if (option.name === "") {
                         setInputValue([]);
                         return;

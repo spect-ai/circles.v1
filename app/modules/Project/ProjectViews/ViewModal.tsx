@@ -63,6 +63,7 @@ function CreateViewModal (){
   const { localProject: project, setLocalProject } = useLocalProject();
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
   const [viewOpen, setViewOpen] = useState(false);
+  const [field, setfield] = useState<string>('');
   const [reviewer, setReviewer] = useState<string[]>([]);
   const [assignee, setAssignee] = useState<string[]>([]);
   const [label, setLabels] = useState<string[]>([]);
@@ -76,13 +77,12 @@ function CreateViewModal (){
     id: column,
   }));
   
-  
   const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(event.target.value);
   };
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    if(project.viewOrder && project.viewOrder?.length < 3 ){
+    if(project.viewOrder && project.viewOrder?.length < 9 ){
       setAnchorEl(event.currentTarget);
       // setOpen(true);
       setViewOpen(true);
@@ -152,47 +152,41 @@ function CreateViewModal (){
             <Box >
               <MultipleDropdown
                 options={filteredMembers as OptionType[]}
-                onChange={(mem)=> {
-                  setAssignee([mem.id])
-                }}
+                value={assignee}
+                setValue={setAssignee}
                 title={'Assignee'}
               />
               <MultipleDropdown
                 options={filteredMembers as OptionType[]}
-                onChange={(mem)=> {
-                  setReviewer([mem.id])
-                }}
+                value={reviewer}
+                setValue={setReviewer}
                 title={'Reviewer'}
               />
               <MultipleDropdown
                 options={labels as OptionType[]}
-                onChange={(mem)=> {
-                  setLabels([mem.id])
-                }}
+                value={label}
+                setValue={setLabels}
                 title={'Labels'}
               />
               <MultipleDropdown
                 options={columns as OptionType[]}
-                onChange={(mem)=> {
-                  setColumn([mem.id])
-                }}
+                value={column}
+                setValue={setColumn}
                 title={'Column'}
               />
               <MultipleDropdown
                 options={cardType as OptionType[]}
-                onChange={(mem)=> {
-                  setType([mem.id])
-                }}
+                value={type}
+                setValue={setType}
                 title={'Type'}
               />
               <MultipleDropdown
                 options={priorityType as OptionType[]}
-                onChange={(mem)=> {
-                  setPriority([mem.id])
-                }}
+                value={priority}
+                setValue={setPriority}
                 title={'Priority'}
               />
-              <Input label="title" hideLabel placeholder="Title" onChange={handleTitleChange}/>
+              {/* <Input label="title" hideLabel placeholder="Title" onChange={handleTitleChange}/> */}
               <PrimaryButton onClick={onViewSubmit}>
                 Create View
               </PrimaryButton>
