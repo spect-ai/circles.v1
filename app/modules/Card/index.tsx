@@ -115,9 +115,9 @@ function Card() {
   return (
     <Box padding="4">
       <AnimatePresence>
-        {batchPayModalOpen && (
+        {/* {batchPayModalOpen && (
           <BatchPay card={card} setIsOpen={setBatchPayModalOpen} />
-        )}
+        )} */}
         {isApplyModalOpen && (
           <Apply setIsOpen={setIsApplyModalOpen} cardId={card?.id as string} />
         )}

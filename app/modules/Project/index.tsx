@@ -41,9 +41,9 @@ function Project() {
   return (
     <>
       <AnimatePresence>
-        {batchPayModalOpen && selectedCard && (
+        {/* {batchPayModalOpen && selectedCard && (
           <BatchPay card={selectedCard} setIsOpen={setBatchPayModalOpen} />
-        )}
+        )} */}
         {isApplyModalOpen && selectedCard && (
           <Apply setIsOpen={setIsApplyModalOpen} cardId={selectedCard.id} />
         )}
