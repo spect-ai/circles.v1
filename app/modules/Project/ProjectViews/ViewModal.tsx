@@ -144,6 +144,7 @@ function CreateViewModal (){
                   setViewName(e.target.value)}
                 />
               </InputBox>
+              {viewName.length == 0 && <Text variant="small" color="purple">Please name it</Text>}
               <Box 
                 display="flex" 
                 flexDirection="row" 
@@ -218,7 +219,7 @@ function CreateViewModal (){
                     setTitle(e.target.value)}
                 />
               </InputBox> 
-              <PrimaryButton onClick={onViewSubmit}>
+              <PrimaryButton onClick={onViewSubmit} disabled={viewName.length == 0} >
                 Create View
               </PrimaryButton>
             </Box>

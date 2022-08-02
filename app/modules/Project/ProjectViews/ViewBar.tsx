@@ -27,7 +27,7 @@ export const ViewBar = () => {
           
           return(
             <>
-              <Link href={`/${cId}/${pId}/view/${view?.slug}`}>
+              <Link href={`/${cId}/${pId}?view=${view?.slug}`}>
                 <Button 
                   prefix={view?.type == 'Board' ? <IconGrid size="4"/> : <IconList size="4"/>} 
                   variant={ view?.slug == vId ? "tertiary" : "transparent" }

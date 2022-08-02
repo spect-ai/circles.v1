@@ -12,7 +12,6 @@ export const filterCards = ( project: ProjectType, currentFilter : Filter): Card
     let titleFiltSat = false;
     let typeFiltSat = false;
     let priorityFiltSat = false;
-    let statusFiltSat = false;
 
     const { assignee, reviewer, status, columnId, labels, title, type, priority, deadline } = card;
 
@@ -80,8 +79,8 @@ export const filterCards = ( project: ProjectType, currentFilter : Filter): Card
     } else {
       titleFiltSat = true;
     }
-
-    if (reviewerFiltSat && assigneeFiltSat && labelsFiltSat && typeFiltSat && priorityFiltSat && statusFiltSat && titleFiltSat) {
+    
+    if (reviewerFiltSat && assigneeFiltSat && labelsFiltSat && typeFiltSat && priorityFiltSat && titleFiltSat) {
       return card;      
     }    
     return false;

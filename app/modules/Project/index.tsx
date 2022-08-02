@@ -31,11 +31,18 @@ function Project() {
   const { onboarded } = useProjectOnboarding();
 
   const router = useRouter();
-  const { card: tId } = router.query;
+  const { card: tId, view: vId} = router.query;
 
   if (tId || !project) {
     return null;
   }
+
+  let viewId : string = '';
+
+  if (vId) {
+    viewId = project.viewOrder?.[Number(vId[vId.length - 1])]!;
+  }
+
   return (
     <>
       <AnimatePresence>
@@ -67,8 +74,9 @@ function Project() {
             }}
           />
           {!onboarded && canDo(["steward"]) && <Onboarding />}
-          {view === 0 && <BoardView />}
-          {view === 1 && <ListView />}
+          {!vId && view === 0 && <BoardView viewId={''} />}
+          {!vId && view === 1 && <ListView />}
+          {vId && <BoardView viewId={viewId as string} key={viewId} />}
         </Box>
       </motion.main>
     </>
