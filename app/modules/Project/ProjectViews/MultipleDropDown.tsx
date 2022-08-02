@@ -48,7 +48,7 @@ const ScrollContainer = styled(Box)<{mode: string}>`
   border-radius: 0.5rem;
 `;
 
-const Input = styled.input`
+export const Input = styled.input`
   background-color: transparent;
   border: none;
   padding: 0.8rem;
@@ -62,11 +62,11 @@ const Input = styled.input`
   caret-color: rgb(191, 90, 242);
   color: rgb(191, 90, 242);
   font-weight: 400;
-  width: 8rem;
+  width: 18rem;
   opacity: "40%";
 `
 
-const InputBox = styled(Box)<{mode: string}>`
+export const InputBox = styled(Box)<{mode: string}>`
   width: 20rem;
   margin-bottom: 0.5rem;
   display: flex;
@@ -88,11 +88,9 @@ const slide = {
 
 const MultipleDropdown: FC<Props> = ({ options, value, setValue, title }) => {
   const [isExpanded, setIsExpanded] = useState(false);
-  // use input ref
   const inputRef = useRef<HTMLInputElement>(null);
-  const [inputValue, setInputValue] = useState([] as string[]);
+  const [inputValue, setInputValue] = useState(value as string[]);
   const [filteredOptions, setFilteredOptions] = useState(options);
-  console.log(inputValue);
   
 
   const {mode} = useTheme();
@@ -105,11 +103,18 @@ const MultipleDropdown: FC<Props> = ({ options, value, setValue, title }) => {
     <>
       <InputBox mode={mode}>
         <Box display="flex" flexDirection="row" flexWrap="wrap" width="64" alignItems="center">
-          {inputValue?.map(value => (
-            <Box onClick={()=> setInputValue(inputValue.filter((i) => i !== value))} padding="0.5">
+        
+          {inputValue?.map( item => (
+            <Box 
+              onClick={()=> {
+              setInputValue(inputValue.filter((i) => i !== item))
+              setValue(value.filter((i) => i !== item))
+              }} 
+              padding="0.5"
+            >
               <Tag hover tone="accent" >
               <Box display="flex" alignItems="center" gap="1">
-                {value}
+                {item}
                 <IconClose size="4" />
               </Box>
             </Tag>
@@ -138,7 +143,11 @@ const MultipleDropdown: FC<Props> = ({ options, value, setValue, title }) => {
           }}
         >
           {inputValue.length > 0 && 
-          <Button shape="circle" size="small" variant="transparent" onClick={()=> setInputValue([])}>
+          <Button shape="circle" size="small" variant="transparent" 
+            onClick={()=> {
+              setInputValue([]);
+              setValue([]);
+            }}>
             <IconClose size="4" color="textTertiary"/>
           </Button>
           }

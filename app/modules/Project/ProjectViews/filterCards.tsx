@@ -10,6 +10,9 @@ export const filterCards = ( project: ProjectType, currentFilter : Filter): Card
     let assigneeFiltSat = false;
     let labelsFiltSat = false;
     let titleFiltSat = false;
+    let typeFiltSat = false;
+    let priorityFiltSat = false;
+    let statusFiltSat = false;
 
     const { assignee, reviewer, status, columnId, labels, title, type, priority, deadline } = card;
 
@@ -33,7 +36,6 @@ export const filterCards = ( project: ProjectType, currentFilter : Filter): Card
           break;
         }
       }
-      // console.log("\n");
     } else {
       assigneeFiltSat = true;
     }
@@ -50,6 +52,24 @@ export const filterCards = ( project: ProjectType, currentFilter : Filter): Card
       labelsFiltSat = true;
     }
 
+    if (currentFilter.type.length > 0 ) {
+        const filterLTruth = currentFilter.type.includes(type);
+        if (filterLTruth) {
+          typeFiltSat = true;
+        }
+    } else {
+      typeFiltSat = true;
+    }
+
+    if (currentFilter.priority.length > 0) {
+        const filterLTruth = currentFilter.priority.includes(priority.toString());
+        if (filterLTruth) {
+          priorityFiltSat = true;
+        }
+    } else {
+      priorityFiltSat = true;
+    }
+
     if (currentFilter.title.length > 0) {
       const searchString = currentFilter.title.toLowerCase();
       const titleToSearch = title.toLowerCase();
@@ -61,9 +81,9 @@ export const filterCards = ( project: ProjectType, currentFilter : Filter): Card
       titleFiltSat = true;
     }
 
-    if (reviewerFiltSat && assigneeFiltSat && labelsFiltSat && titleFiltSat) {
-      return card;
-    }
+    if (reviewerFiltSat && assigneeFiltSat && labelsFiltSat && typeFiltSat && priorityFiltSat && statusFiltSat && titleFiltSat) {
+      return card;      
+    }    
     return false;
   })
 

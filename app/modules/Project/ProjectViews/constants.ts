@@ -70,18 +70,33 @@ export const cardType = [
 export const priorityType = [
   {
     name: "Low",
-    id: 'Low',
+    id: '1',
   },
   {
     name: "Medium",
-    id: 'Medium',
+    id: '2',
   },
   {
     name: "High",
-    id: 'High',
+    id: '3',
   },
   {
     name: "Urgent",
-    id: 'Urgent',
+    id: '4',
+  },
+]
+
+export const Status = [
+  {
+    name: "Paid",
+    id: 'Paid',
+  },
+  {
+    name: "Active",
+    id: 'Active',
+  },
+  {
+    name: "Archived",
+    id: 'Archived',
   },
 ]

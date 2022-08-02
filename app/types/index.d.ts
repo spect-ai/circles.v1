@@ -293,7 +293,7 @@ export type Filter = {
   reviewer: string[];
   column: string[];
   label: string[];
-  status: Status;
+  status: string[];
   title: string;
   type: string[];
   priority: string[];

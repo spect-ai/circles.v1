@@ -5,12 +5,13 @@ import { useLocalProject } from "../Context/LocalProjectContext";
 import { CircleType, MemberDetails } from '@/app/types';
 import MultipleDropdown, { OptionType } from "./MultipleDropDown";
 import Popover from '@/app/common/components/Popover';
-import { Box, IconPlusSmall, Text, Input } from "degen";
+import { Box, IconPlusSmall, Text, useTheme, IconGrid, IconList  } from "degen";
 import styled from "styled-components";
 import PrimaryButton from '@/app/common/components/PrimaryButton';
 import { createViews } from "@/app/services/ProjectViews";
-import { cardType, priorityType, labels } from "./constants"
+import { cardType, priorityType, labels, Status } from "./constants"
 import { toast } from "react-toastify";
+import { Input, InputBox } from "./MultipleDropDown";
 import { WechatFilled } from "@ant-design/icons";
 
 const Container = styled(Box)`
@@ -29,6 +30,8 @@ const Container = styled(Box)`
 function CreateViewModal (){
 
   const router = useRouter();
+  const {mode} = useTheme();
+
   const { circle: cId } = router.query;
   const { data: circle } = useQuery<CircleType>(["circle", cId], {
     enabled: false,
@@ -42,12 +45,7 @@ function CreateViewModal (){
     const [filteredMembers, setFilteredMembers] = useState<
     { name: string; id: string }[]
   >([] as any);
-  const [circleMembers, setCircleMembers] = useState<
-    {
-      name: string;
-      id: string;
-    }[]
-  >([] as any);
+
 
   useEffect(() => {
     if (circle) {
@@ -56,20 +54,21 @@ function CreateViewModal (){
         id: mem,
       }));
       setFilteredMembers(circleMembersArray);
-      setCircleMembers(circleMembersArray);
     }
   }, [circle, memberDetails?.memberDetails]);
 
   const { localProject: project, setLocalProject } = useLocalProject();
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
   const [viewOpen, setViewOpen] = useState(false);
-  const [field, setfield] = useState<string>('');
+  const [viewName, setViewName] = useState<string>('');
+  const [layout, setLayout] = useState<"Board" | "List">('Board');
   const [reviewer, setReviewer] = useState<string[]>([]);
   const [assignee, setAssignee] = useState<string[]>([]);
   const [label, setLabels] = useState<string[]>([]);
   const [title, setTitle] = useState<string>('');
   const [column, setColumn] = useState<string[]>([]);
   const [priority, setPriority] = useState<string[]>([]);
+  const [status, setStatus] = useState<string[]>([]);
   const [type, setType] = useState<string[]>([]);
 
   const columns = project?.columnOrder?.map((column: string) => ({
@@ -82,9 +81,8 @@ function CreateViewModal (){
   };
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    if(project.viewOrder && project.viewOrder?.length < 9 ){
+    if(project.viewOrder && project.viewOrder?.length < 3 ){
       setAnchorEl(event.currentTarget);
-      // setOpen(true);
       setViewOpen(true);
     }else{
       toast.warning("You cannot create more than 3 views");
@@ -95,24 +93,20 @@ function CreateViewModal (){
 
    const main = async() => {
     const newView = await createViews({
-      type: 'Board',
-      hidden: true,
+      type: layout,
+      hidden: false,
       filters: {
         assignee: assignee,
         reviewer: reviewer,
         column: column,
         label: label,
-        status: {
-          active: true,
-          paid: true,
-          archived: true,
-        },
+        status: status,
         title: title,
         type: type,
         priority: priority,
-        deadline: 'meme',
+        deadline: '',
       },
-      name: 'hello',
+      name: viewName,
     }, project.id)
     console.log(newView);
     if (newView !== null) setLocalProject(newView);
@@ -150,6 +144,44 @@ function CreateViewModal (){
             borderRadius="large"
           >
             <Box >
+              <InputBox mode={mode}>
+                <Input
+                  placeholder={'View Name'}
+                  value={viewName}
+                  onChange={(e) => 
+                  setViewName(e.target.value)}
+                />
+              </InputBox>
+              <Box 
+                display="flex" 
+                flexDirection="row" 
+                padding="1" 
+                paddingBottom="2" 
+                paddingLeft="4" 
+                justifyContent="space-between"
+              >
+                <Text color="textSecondary" weight="medium" variant="base">Layout</Text>
+                <Box display="flex" flexDirection="row" >
+                  <Box
+                    color="textSecondary"
+                    padding="2"
+                    borderRadius="large"
+                    backgroundColor={layout == 'Board' ? "accentSecondary" : "background"}
+                    onClick={() => setLayout('Board')}
+                  >
+                    <IconGrid size="4" />
+                  </Box>
+                  <Box
+                    color="textSecondary"
+                    padding="2"
+                    borderRadius="large"
+                    backgroundColor={layout == 'List' ? "accentSecondary" : "background"}
+                    onClick={() => setLayout('List')}
+                  >
+                    <IconList size="4" />
+                  </Box>
+                </Box>
+              </Box>
               <MultipleDropdown
                 options={filteredMembers as OptionType[]}
                 value={assignee}
@@ -186,7 +218,13 @@ function CreateViewModal (){
                 setValue={setPriority}
                 title={'Priority'}
               />
-              {/* <Input label="title" hideLabel placeholder="Title" onChange={handleTitleChange}/> */}
+              <InputBox mode={mode}>
+                <Input
+                  placeholder={'Title'}
+                  value={title}
+                  onChange={handleTitleChange}
+                />
+              </InputBox> 
               <PrimaryButton onClick={onViewSubmit}>
                 Create View
               </PrimaryButton>

@@ -44,9 +44,6 @@ function Board({viewId}: Props) {
 
   const view: Views = project.viewDetails?.[viewId as string]!;  
   const viewCards = filterCards(project, view?.filters as Filter);
-  console.log(view.filters?.column.length);
-  
-  
 
   const DroppableContent = (provided: DroppableProvided) => (
     <Container {...provided.droppableProps} ref={provided.innerRef}>
