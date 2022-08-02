@@ -54,6 +54,7 @@ export default function RetroRow({ retro }: Props) {
           <Text weight="semiBold">{retro.title}</Text>
           <Stack direction="horizontal">
             {retro.status.active && <Tag tone="accent">Active</Tag>}
+            {retro.status.paid && <Tag tone="green">Paid</Tag>}
             <Tag>
               <Text color="green">
                 {retro.reward.value} {retro.reward.token.symbol}

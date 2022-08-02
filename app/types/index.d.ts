@@ -16,6 +16,7 @@ export interface Payment {
 }
 
 type BatchPayInfo = {
+  retroId?: string;
   approval: {
     tokenAddresses: string[];
     values: number[];

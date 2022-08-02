@@ -21,6 +21,15 @@ type CreateRetroDTO = {
   };
 };
 
+type RetroUpdateDTO = {
+  reward: {
+    transactionHash: string;
+  };
+  status: {
+    paid: boolean;
+  };
+};
+
 export const createRetro = async (retro: Partial<CreateRetroDTO>) => {
   const res = await fetch(`${process.env.API_HOST}/retro`, {
     headers: {
@@ -129,6 +138,28 @@ export const endRetro = async (retroId: string) => {
     return data;
   } else {
     toast("Error ending retro", {
+      theme: "dark",
+    });
+    return false;
+  }
+};
+
+export const updateRetro = async (retroId: string, update: RetroUpdateDTO) => {
+  const res = await fetch(`${process.env.API_HOST}/retro/${retroId}`, {
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+    method: "PATCH",
+    body: JSON.stringify(update),
+    credentials: "include",
+  });
+  if (res.ok) {
+    const data = await res.json();
+    console.log({ data });
+    return data;
+  } else {
+    toast("Error updating retro", {
       theme: "dark",
     });
     return false;

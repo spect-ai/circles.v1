@@ -3,6 +3,7 @@ import Table from "@/app/common/components/Table";
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
 import { updatePaymentInfo } from "@/app/services/Payment";
 import usePaymentGateway from "@/app/services/Payment/usePayment";
+import { updateRetro } from "@/app/services/Retro";
 import { BatchPayInfo, CircleType, ProjectType, Registry } from "@/app/types";
 import { Avatar, Box, Stack, Text } from "degen";
 import { useRouter } from "next/router";
@@ -110,18 +111,36 @@ export default function TokenPayment() {
                 );
                 console.log({ txnHash });
                 if (txnHash) {
-                  const res: ProjectType = await updatePaymentInfo(
-                    tokenCards as string[],
-                    txnHash
-                  );
-                  console.log({ res });
-                  if (res) {
-                    updateProject && updateProject(res);
-                    setCard && setCard(res.cards[cardId]);
+                  if (!batchPayInfo?.retroId) {
+                    const res: ProjectType = await updatePaymentInfo(
+                      tokenCards as string[],
+                      txnHash
+                    );
                     console.log({ res });
-                    setIsOpen(false);
-                    setStep(0);
-                    setBatchPayInfo({} as BatchPayInfo);
+                    if (res) {
+                      updateProject && updateProject(res);
+                      setCard && setCard(res.cards[cardId]);
+
+                      console.log({ res });
+                      setIsOpen(false);
+                      setStep(0);
+                      setBatchPayInfo({} as BatchPayInfo);
+                    }
+                  } else {
+                    const retroUpdateRes = await updateRetro(
+                      batchPayInfo?.retroId || "",
+                      {
+                        reward: {
+                          transactionHash: txnHash,
+                        },
+                        status: {
+                          paid: true,
+                        },
+                      }
+                    );
+                    if (retroUpdateRes) {
+                      toast.success("Retro payout successful!");
+                    }
                   }
                 }
               }}

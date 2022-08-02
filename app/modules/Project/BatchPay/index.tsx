@@ -1,5 +1,5 @@
 import Modal from "@/app/common/components/Modal";
-import { CardType, RetroType } from "@/app/types";
+import { RetroType } from "@/app/types";
 import { useEffect } from "react";
 import { useLocalProject } from "../Context/LocalProjectContext";
 import ApproveToken from "./ApproveToken";
@@ -13,32 +13,31 @@ import TokenPayment from "./TokenPayment";
 
 interface Props {
   retro?: RetroType;
-  card?: CardType;
   setIsOpen: (isOpen: boolean) => void;
 }
 
-export default function BatchPay({ card, retro, setIsOpen }: Props) {
+export default function BatchPay({ retro, setIsOpen }: Props) {
   const context = useProviderBatchPayContext({ setIsOpen });
   const { localProject } = useLocalProject();
 
-  const { step, setStep, setTokenCards, setCurrencyCards, setBatchPayInfo } =
-    context;
+  const { step, setStep, setBatchPayInfo } = context;
 
   // function to distribute reward equally among the assignees and return the array of reward of values
-  const distributeReward = (reward: number, assignees: string[]) => {
-    const rewardArray: number[] = [];
-    const rewardPerAssignee = reward / assignees.length;
-    assignees.forEach((_) => {
-      rewardArray.push(rewardPerAssignee);
-    });
-    return rewardArray;
-  };
+  // const distributeReward = (reward: number, assignees: string[]) => {
+  //   const rewardArray: number[] = [];
+  //   const rewardPerAssignee = reward / assignees.length;
+  //   assignees.forEach((_) => {
+  //     rewardArray.push(rewardPerAssignee);
+  //   });
+  //   return rewardArray;
+  // };
 
   useEffect(() => {
     // set token card and stuff and skip the step dependig on the card reward token address
     if (retro) {
       if (retro.reward.token.address === "0x0") {
         setBatchPayInfo({
+          retroId: retro.id,
           approval: {
             tokenAddresses: [],
             values: [],
@@ -55,7 +54,9 @@ export default function BatchPay({ card, retro, setIsOpen }: Props) {
         });
         setStep(1);
       } else {
+        console.log(retro.reward);
         setBatchPayInfo({
+          retroId: retro.id,
           approval: {
             tokenAddresses: [retro.reward.token.address],
             values: [retro.reward.value],
@@ -65,7 +66,7 @@ export default function BatchPay({ card, retro, setIsOpen }: Props) {
             values: [],
           },
           tokens: {
-            tokenAddresses: [retro.reward.token.address],
+            tokenAddresses: retro.members.map(() => retro.reward.token.address),
             userIds: retro.members,
             values: retro.members.map((member) => retro.distribution[member]),
           },

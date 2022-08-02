@@ -17,7 +17,7 @@ export default function Feedback({ retroId, member, feedback }: Props) {
   const [isOpen, setIsOpen] = useState(false);
   const [feedbackContent, setFeedbackContent] = useState(feedback);
   const [loading, setLoading] = useState(false);
-  const { retro } = useCircle();
+  const { retro, setRetroData } = useCircle();
 
   useEffect(() => {
     setFeedbackContent(feedback);
@@ -69,6 +69,8 @@ export default function Feedback({ retroId, member, feedback }: Props) {
                           [member]: feedbackContent,
                         },
                       });
+                      console.log({ res });
+                      setRetroData(res);
                       setLoading(false);
                       if (res) {
                         setIsOpen(false);

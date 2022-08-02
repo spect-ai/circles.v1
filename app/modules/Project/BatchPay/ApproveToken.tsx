@@ -1,8 +1,7 @@
 import Loader from "@/app/common/components/Loader";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { useGlobal } from "@/app/context/globalContext";
 import useERC20 from "@/app/services/Payment/useERC20";
-import { CircleType, ProjectType, Registry } from "@/app/types";
+import { CircleType, Registry } from "@/app/types";
 import { QuestionCircleFilled } from "@ant-design/icons";
 import { Box, Button, Heading, IconCheck, Stack, Text, useTheme } from "degen";
 import { useRouter } from "next/router";
@@ -17,8 +16,8 @@ import { ScrollContainer } from "./SelectCards";
 export default function ApproveToken() {
   const { approve, isApproved } = useERC20();
   const router = useRouter();
-  const { project: pId, circle: cId } = router.query;
-  const { data: project } = useQuery<ProjectType>(["project", pId], {
+  const { circle: cId } = router.query;
+  const { data: circle } = useQuery<CircleType>(["circle", cId], {
     enabled: false,
   });
   const { data: registry } = useQuery<Registry>(["registry", cId], {
@@ -45,19 +44,19 @@ export default function ApproveToken() {
     // initialize tokenStatus
     setLoading(true);
     if (
-      project &&
-      activeChain?.id.toString() ===
-        project.parents[0].defaultPayment.chain.chainId &&
+      circle &&
+      activeChain?.id.toString() === circle.defaultPayment.chain.chainId &&
       registry
     ) {
       const tokenStatus: any = {};
       let index = 0;
+      console.log(circle.defaultPayment.chain.chainId);
 
       batchPayInfo?.approval.tokenAddresses.forEach(async (address: string) => {
         console.log({ batchPayInfo });
         const approvalStatus = await isApproved(
           address,
-          registry[project.parents[0].defaultPayment.chain.chainId]
+          registry[circle.defaultPayment.chain.chainId]
             .distributorAddress as string,
           batchPayInfo.approval.values[index],
           data?.address as string
@@ -83,9 +82,10 @@ export default function ApproveToken() {
         index++;
       });
     } else {
+      console.log(circle);
       switchNetworkAsync &&
         void switchNetworkAsync(
-          parseInt(project?.parents[0].defaultPayment.chain.chainId as string)
+          parseInt(circle?.defaultPayment.chain.chainId as string)
         );
       setLoading(false);
     }
@@ -130,8 +130,7 @@ export default function ApproveToken() {
                       <Text variant="base" weight="semiBold">
                         {
                           registry[
-                            project?.parents[0].defaultPayment.chain
-                              .chainId as string
+                            circle?.defaultPayment.chain.chainId as string
                           ]?.tokenDetails[tokenAddress]?.symbol
                         }
                       </Text>
@@ -161,8 +160,7 @@ export default function ApproveToken() {
                               },
                             });
                             const res = await approve(
-                              project?.parents[0].defaultPayment.chain
-                                .chainId as string,
+                              circle?.defaultPayment.chain.chainId as string,
                               tokenAddress
                             );
                             // set approved for this token status
