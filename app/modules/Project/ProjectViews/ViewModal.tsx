@@ -33,6 +33,7 @@ function CreateViewModal (){
   const {mode} = useTheme();
 
   const { circle: cId } = router.query;
+  const { localProject: project, setLocalProject } = useLocalProject();
   const { data: circle } = useQuery<CircleType>(["circle", cId], {
     enabled: false,
   });
@@ -57,8 +58,11 @@ function CreateViewModal (){
     }
   }, [circle, memberDetails?.memberDetails]);
 
-  const { localProject: project, setLocalProject } = useLocalProject();
-  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+  const columns = project?.columnOrder?.map((column: string) => ({
+    name: project?.columnDetails[column].name,
+    id: column,
+  }));
+  
   const [viewOpen, setViewOpen] = useState(false);
   const [viewName, setViewName] = useState<string>('');
   const [layout, setLayout] = useState<"Board" | "List">('Board');
@@ -71,25 +75,13 @@ function CreateViewModal (){
   const [status, setStatus] = useState<string[]>([]);
   const [type, setType] = useState<string[]>([]);
 
-  const columns = project?.columnOrder?.map((column: string) => ({
-    name: project?.columnDetails[column].name,
-    id: column,
-  }));
-  
-  const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setTitle(event.target.value);
-  };
-
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const handleClick = () => {
     if(project.viewOrder && project.viewOrder?.length < 3 ){
-      setAnchorEl(event.currentTarget);
       setViewOpen(true);
     }else{
       toast.warning("You cannot create more than 3 views");
     }
-    
   };
-  const handleViewClose = () => setViewOpen(false);
 
    const main = async() => {
     const newView = await createViews({
@@ -113,7 +105,7 @@ function CreateViewModal (){
   }
 
   const onViewSubmit = () => {
-    handleViewClose();
+    setViewOpen(false)
     main();
   };
 
@@ -222,7 +214,8 @@ function CreateViewModal (){
                 <Input
                   placeholder={'Title'}
                   value={title}
-                  onChange={handleTitleChange}
+                  onChange={(e) => 
+                    setTitle(e.target.value)}
                 />
               </InputBox> 
               <PrimaryButton onClick={onViewSubmit}>

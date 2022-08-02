@@ -87,39 +87,60 @@ const slide = {
 };
 
 const MultipleDropdown: FC<Props> = ({ options, value, setValue, title }) => {
-  const [isExpanded, setIsExpanded] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
-  const [inputValue, setInputValue] = useState(value as string[]);
-  const [filteredOptions, setFilteredOptions] = useState(options);
-  
 
   const {mode} = useTheme();
 
+  const [isExpanded, setIsExpanded] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [saved, setSaved] = useState([] as string[]);
+  const [filteredOptions, setFilteredOptions] = useState(options);
+  const [inputValue, setInputValue] = useState(saved as string[]);
+
   useEffect(() => {
     setFilteredOptions(options);
+    if(value.length > 0){
+      options.map((option, idx) => {
+        if(option.id == value[idx]) setSaved([...saved, option.name]);
+      })
+    }
   }, [options]);
+
+  useEffect(() => {
+    function handleClickOutside(event: any) {
+      if (true && inputRef.current && !inputRef.current.contains(event.target)) {
+        setIsExpanded(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [inputRef, setIsExpanded]);
 
   return (
     <>
       <InputBox mode={mode}>
         <Box display="flex" flexDirection="row" flexWrap="wrap" width="64" alignItems="center">
         
-          {inputValue?.map( item => (
-            <Box 
-              onClick={()=> {
-              setInputValue(inputValue.filter((i) => i !== item))
-              setValue(value.filter((i) => i !== item))
-              }} 
-              padding="0.5"
-            >
-              <Tag hover tone="accent" >
-              <Box display="flex" alignItems="center" gap="1">
-                {item}
-                <IconClose size="4" />
+          {value?.map( item => {
+            const selectedOption = options.filter((i)=> i.id == item);            
+            return (
+              <Box 
+                onClick={()=> {
+                setInputValue(inputValue.filter((i) => i !== item))
+                setValue(value.filter((i) => i !== selectedOption[0].id))
+                }} 
+                padding="0.5"
+              >
+                <Tag hover tone="accent" >
+                <Box display="flex" alignItems="center" gap="1">
+                  {selectedOption[0].name}
+                  <IconClose size="4" />
+                </Box>
+              </Tag>
               </Box>
-            </Tag>
-            </Box>
-          ))}
+            )
+          })}
           <Input
             ref={inputRef}
             placeholder={title}
@@ -142,7 +163,7 @@ const MultipleDropdown: FC<Props> = ({ options, value, setValue, title }) => {
             right: "0.5rem",
           }}
         >
-          {inputValue.length > 0 && 
+          {value.length > 0 && 
           <Button shape="circle" size="small" variant="transparent" 
             onClick={()=> {
               setInputValue([]);
@@ -167,7 +188,7 @@ const MultipleDropdown: FC<Props> = ({ options, value, setValue, title }) => {
           </Box>
         </Box>  
       </InputBox>
-      <OptionsContainer isExpanded={isExpanded} >
+      <OptionsContainer isExpanded={isExpanded} ref={inputRef}>
         <AnimatePresence>
           {isExpanded && (
             <motion.div
@@ -219,7 +240,7 @@ const MultipleDropdown: FC<Props> = ({ options, value, setValue, title }) => {
                     isSelected={inputValue.includes(option.name) ? true : false}
                   >
                     <Stack align="center">
-                      <Text color={inputValue.includes(option.name) ? "purple" : "text" }>{option.name}</Text>
+                      <Text color={value.includes(option.id) ? "purple" : "text" }>{option.name}</Text>
                     </Stack>
                   </Option>
                 ))}
