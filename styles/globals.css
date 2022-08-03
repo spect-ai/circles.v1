@@ -64,6 +64,47 @@ a {
   background: #555;
 }
 
+.icon path {
+  fill: rgb(240, 240, 240);
+  stroke-width: 0.5px;
+  stroke: #fff;
+  stroke-dasharray: 1560;
+  stroke-dashoffset: 0;
+  animation: animate-heart 10s infinite;
+}
+
+@keyframes animate-heart {
+  0% {
+    stroke-dashoffset: 0;
+  }
+  40% {
+    stroke-dashoffset: 1560;
+  }
+  80% {
+    stroke-dashoffset: 3120;
+    fill: transparent;
+  }
+  100% {
+    stroke-dashoffset: 3120;
+  }
+}
+
+@-webkit-keyframes animate-heart {
+  0% {
+    stroke-dashoffset: 0;
+  }
+  40% {
+    stroke-dashoffset: 1560;
+  }
+  80% {
+    stroke-dashoffset: 3120;
+    fill: transparent;
+  }
+  100% {
+    stroke-dashoffset: 3120;
+  }
+}
+
 /* .bc5nci23 {
   border-color: rgb(255, 255, 255, 0.04);
 }

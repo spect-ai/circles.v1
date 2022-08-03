@@ -1,5 +1,5 @@
-import { Box, Stack, Text } from "degen";
-import React, { forwardRef, memo, useRef } from "react";
+import { Box, Stack, Text, useTheme } from "degen";
+import React, { forwardRef, memo, useEffect, useRef } from "react";
 import { useLocalCard } from "../hooks/LocalCardContext";
 import { CalendarOutlined } from "@ant-design/icons";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
@@ -10,6 +10,19 @@ function CardDeadline() {
   const { deadline, setDeadline, onCardUpdate } = useLocalCard();
   const { canTakeAction } = useRoleGate();
   const dateRef = useRef<any>(null);
+
+  const { mode } = useTheme();
+
+  useEffect(() => {
+    document.documentElement.style.setProperty(
+      "--background-color",
+      `${mode === "dark" ? "rgb(20,20,20)" : "rgb(240,240,240)"}`
+    );
+    document.documentElement.style.setProperty(
+      "--text-color",
+      `${mode === "dark" ? "rgb(240,240,240)" : "rgb(20,20,20)"}`
+    );
+  }, [mode]);
 
   // eslint-disable-next-line react/display-name
   const ExampleCustomInput = forwardRef(({ value, onClick }: any, ref) => (

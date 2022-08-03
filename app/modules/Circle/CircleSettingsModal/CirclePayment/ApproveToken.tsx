@@ -3,35 +3,21 @@ import {
   getFlattenedCurrencies,
   getFlattenedNetworks,
 } from "@/app/common/utils/registry";
-import { CircleType, Registry } from "@/app/types";
+import { Registry } from "@/app/types";
 import { Box, IconPlusSmall, Stack, Tag, Text } from "degen";
 import { AnimatePresence } from "framer-motion";
-import { useRouter } from "next/router";
 import React, { useState } from "react";
-import { useQuery } from "react-query";
+import { useCircle } from "../../CircleContext";
 
 export default function ApproveToken() {
-  const router = useRouter();
-  const { circle: cId } = router.query;
-  const { data: circle } = useQuery<CircleType>(["circle", cId], {
-    enabled: false,
-  });
-  const { data: registry } = useQuery<Registry>(["registry", cId], {
-    enabled: false,
-  });
   const [isOpen, setIsOpen] = useState(false);
+  const { circle, registry } = useCircle();
+
   const [chain, setChain] = useState(circle?.defaultPayment.chain);
   const [token, setToken] = useState(circle?.defaultPayment.token);
 
   return (
     <>
-      {/* <ClickableTag
-        name="Add Token"
-        icon={<IconPlusSmall color="accent" />}
-        onClick={() => {
-          setIsOpen(true);
-        }}
-      /> */}
       <Box cursor="pointer" onClick={() => setIsOpen(true)}>
         <Tag tone="accent" hover>
           <Stack direction="horizontal" align="center" space="0.5">

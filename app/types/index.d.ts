@@ -10,12 +10,13 @@ interface UserType {
   githubId?: string;
   _id: string;
 }
-interface Payment {
+export interface Payment {
   chain: Chain;
   token: Token;
 }
 
 type BatchPayInfo = {
+  retroId?: string;
   approval: {
     tokenAddresses: string[];
     values: number[];
@@ -62,6 +63,54 @@ export interface DiscordRoleMappingType {
   };
 }
 
+export interface RetroType {
+  circle: string;
+  createdAt: string;
+  creator: string;
+  description: string;
+  duration: number;
+  id: string;
+  members: string[];
+  reward: {
+    chain: Chain;
+    token: Token;
+    value: number;
+  };
+  slug: string;
+  stats: {
+    [userId: string]: {
+      canGive: boolean;
+      canReceive: boolean;
+      owner: string;
+      votesAllocated: number;
+      votesGiven: {
+        [userId: string]: number;
+      };
+      votesRemaining: number;
+      feedbackGiven: {
+        [userId: string]: string;
+      };
+    };
+  };
+  feedbackGiven: {
+    [key: string]: string;
+  };
+  feedbackReceived: {
+    [key: string]: string;
+  };
+  strategy: "Quadratic Voting" | "Normal Voting";
+  distribution: {
+    [userId: string]: number;
+  };
+  status: {
+    active: boolean;
+    paid: boolean;
+    archived: boolean;
+  };
+  title: string;
+  updatedtAt: string;
+}
+
 export interface CircleType {
   activity: string[];
   archived: boolean;
@@ -96,6 +145,7 @@ export interface CircleType {
   discordToCircleRoles: DiscordRoleMappingType;
   githubRepos: string[];
   gradient: string;
+  retro: RetroType[];
 }
 
 // interface ProjectType {

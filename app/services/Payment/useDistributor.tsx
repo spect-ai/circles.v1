@@ -119,6 +119,7 @@ export default function useDistributor() {
     );
     const contract = getDistributorContract(chainId);
     console.log({ contract });
+    console.log({ valuesInWei });
     const tx = await contract?.distributeTokens(
       filteredTokenAddresses,
       filteredRecipients,

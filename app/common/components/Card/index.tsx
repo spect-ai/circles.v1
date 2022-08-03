@@ -2,6 +2,7 @@ import type { FC } from "react";
 
 import { Box } from "degen";
 import styled from "styled-components";
+import { motion } from "framer-motion";
 
 interface Props {
   onClick: () => void;
@@ -27,24 +28,34 @@ const Card: FC<Props> = ({
   tourId,
 }) => {
   return (
-    <Container
-      data-tour={tourId}
-      borderWidth="0.5"
-      padding={{ xs: "2", md: "4" }}
-      borderRadius="2xLarge"
-      display="flex"
-      flexDirection="column"
-      alignItems="center"
-      justifyContent="center"
-      marginBottom={{ xs: "4", md: "8" }}
-      height={height}
-      transitionDuration="700"
-      dashed={dashed}
-      onClick={onClick}
-      backgroundColor="background"
+    <motion.div
+      whileHover={{
+        translateY: -4,
+      }}
+      whileTap={{
+        scale: 0.98,
+        translateY: -4,
+      }}
     >
-      {children}
-    </Container>
+      <Container
+        data-tour={tourId}
+        borderWidth="0.5"
+        padding={{ xs: "2", md: "4" }}
+        borderRadius="2xLarge"
+        display="flex"
+        flexDirection="column"
+        alignItems="center"
+        justifyContent="center"
+        marginBottom={{ xs: "4", md: "8" }}
+        height={height}
+        transitionDuration="700"
+        dashed={dashed}
+        onClick={onClick}
+        backgroundColor="background"
+      >
+        {children}
+      </Container>
+    </motion.div>
   );
 };
 

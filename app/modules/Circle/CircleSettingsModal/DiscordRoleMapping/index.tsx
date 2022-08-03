@@ -3,23 +3,15 @@ import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { getGuildRoles } from "@/app/services/Discord";
 import { updateCircle } from "@/app/services/UpdateCircle";
-import { CircleType } from "@/app/types";
 import { Box, IconClose, Stack, Tag, Text } from "degen";
 import { AnimatePresence } from "framer-motion";
-import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
-import { useQuery } from "react-query";
+import { useCircle } from "../../CircleContext";
 import RolePopover from "./RolePopover";
 
 export default function DiscordRoleMapping() {
   const [isOpen, setIsOpen] = useState(false);
-
-  const router = useRouter();
-  const { circle: cId } = router.query;
-  const { data: circle } = useQuery<CircleType>(["circle", cId], {
-    enabled: false,
-  });
-
+  const { circle } = useCircle();
   const [roleMap, setRoleMap] = useState(circle?.discordToCircleRoles || {});
 
   const [discordRoles, setDiscordRoles] =
@@ -40,7 +32,7 @@ export default function DiscordRoleMapping() {
       };
       void fetchGuildRoles();
     }
-  }, [isOpen]);
+  }, [circle?.discordGuildId, isOpen]);
 
   if (!discordRoles?.map && isOpen) {
     return <Loader loading text="Fetching Roles" />;
