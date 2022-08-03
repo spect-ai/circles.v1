@@ -36,7 +36,7 @@ export default function RetroMembers({
 }: Props) {
   const [memberStats, setmemberStats] = useState<MemberDetails[] | undefined>();
   const router = useRouter();
-  const { circle } = useCircle();
+  const { circle, fetchCircle } = useCircle();
 
   useEffect(() => {
     if (circle) {
@@ -133,6 +133,7 @@ export default function RetroMembers({
                     memberStats: memberStats?.filter((m) => m.isChecked),
                   });
                   console.log({ res });
+                  void fetchCircle();
                   void router.push(`/${circle?.slug}?retroSlug=${res?.slug}`);
                   if (res) {
                     handleClose();

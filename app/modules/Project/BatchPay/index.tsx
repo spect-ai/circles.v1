@@ -44,7 +44,9 @@ export default function BatchPay({ retro, setIsOpen }: Props) {
           },
           currency: {
             userIds: retro.members,
-            values: retro.members.map((member) => retro.distribution[member]),
+            values: retro.members.map(
+              (member) => retro.distribution[member] * retro.reward.value
+            ),
           },
           tokens: {
             tokenAddresses: [],

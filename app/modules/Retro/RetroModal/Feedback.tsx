@@ -36,6 +36,7 @@ export default function Feedback({ retroId, member, feedback }: Props) {
         onClick={() => {
           setIsOpen(true);
         }}
+        width="fit"
       >
         {retro.status.active ? (
           <Tag hover tone={feedback ? "secondary" : "accent"}>
