@@ -8,14 +8,10 @@ import { MemberDetails, UserType } from "@/app/types";
 import { GithubOutlined, SaveFilled } from "@ant-design/icons";
 import {
   Box,
-  Button,
-  IconMoon,
-  IconSun,
   Input,
   MediaPicker,
   Stack,
   Text,
-  useTheme,
 } from "degen";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -53,8 +49,6 @@ export default function ProfileModal({ setIsOpen }: Props) {
   const { updateProfile } = useProfileUpdate();
 
   const [loading, setLoading] = useState(true);
-  // eslint-disable-next-line @typescript-eslint/unbound-method
-  const { mode, setMode } = useTheme();
 
   const handleClose = () => {
     setIsOpen(false);
@@ -80,7 +74,7 @@ export default function ProfileModal({ setIsOpen }: Props) {
 
   return (
     <Modal title="Profile" handleClose={handleClose}>
-      <Box padding="8">
+      <Box padding="6">
         <Stack>
           <Text variant="label">Profile Picture</Text>
           {!loading && (
@@ -111,31 +105,7 @@ export default function ProfileModal({ setIsOpen }: Props) {
               setIsDirty(true);
             }}
           />
-          <Stack direction="horizontal">
-            <Button
-              shape="circle"
-              variant={mode === "dark" ? "secondary" : "transparent"}
-              onClick={() => {
-                localStorage.removeItem("lightMode");
-                setMode("dark");
-              }}
-            >
-              <IconMoon />
-            </Button>
-            <Button
-              shape="circle"
-              variant={mode === "light" ? "secondary" : "transparent"}
-              onClick={() => {
-                localStorage.setItem("lightMode", "true");
-                setMode("light");
-              }}
-            >
-              <IconSun />
-            </Button>
-          </Stack>
-
-          <Box marginTop="2" />
-
+          
           <PrimaryButton
             disabled={!isDirty || uploading || !username}
             loading={loading}

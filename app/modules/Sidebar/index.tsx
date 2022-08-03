@@ -1,6 +1,6 @@
 import Link from "next/link";
 import React, { ReactElement, useEffect, useState } from "react";
-import { Avatar, Box, Button, Stack, Text } from "degen";
+import { Avatar, Box, Button, Stack, Text, useTheme, IconMoon, IconSun, } from "degen";
 import { useRouter } from "next/router";
 import CreateCircle from "./CreateCircleModal";
 import Logo from "@/app/common/components/Logo";
@@ -36,6 +36,8 @@ function Sidebar(): ReactElement {
   });
 
   const [isOpen, setIsOpen] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/unbound-method
+  const { mode, setMode } = useTheme();
 
   const {
     data: myCircles,
@@ -91,6 +93,31 @@ function Sidebar(): ReactElement {
       </Box>
       <Box borderBottomWidth="0.375" paddingY="3">
         <Stack space="2">
+          { mode === "dark" ? (
+            <Button
+            shape="circle"
+            variant="secondary"
+            size="small"
+            onClick={() => {
+              localStorage.setItem("lightMode", "true");
+              setMode("light");
+            }}
+            >
+              <IconSun size="5"/>
+            </Button>
+            ) : (
+            <Button
+              shape="circle"
+              variant="secondary"
+              size="small"
+              onClick={() => {
+                localStorage.removeItem("lightMode");
+                setMode("dark");
+              }}
+            >
+              <IconMoon size="5"/>
+            </Button>
+          )}
           <Link href="/" passHref>
             <Button shape="circle" variant="transparent" size="small">
               <Text color="accent">
