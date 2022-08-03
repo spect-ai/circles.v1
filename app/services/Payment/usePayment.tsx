@@ -61,6 +61,7 @@ export default function usePaymentGateway(
   ) {
     let tx;
     if (type === "tokens") {
+      console.log({ amounts });
       tx = await distributeTokens(
         tokenAddresses,
         userAddresses,
@@ -84,6 +85,13 @@ export default function usePaymentGateway(
     epochId?: string
   ) {
     try {
+      console.log({
+        ethAddresses,
+        tokenValues,
+        tokenAddresses,
+        cardIds,
+        epochId,
+      });
       if (activeChain?.id.toString() !== chainId) {
         switchNetworkAsync && (await switchNetworkAsync(parseInt(chainId)));
       }

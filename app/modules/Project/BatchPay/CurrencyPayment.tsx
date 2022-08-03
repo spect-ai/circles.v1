@@ -3,13 +3,15 @@ import Table from "@/app/common/components/Table";
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
 import { updatePaymentInfo } from "@/app/services/Payment";
 import usePaymentGateway from "@/app/services/Payment/usePayment";
+import { updateRetro } from "@/app/services/Retro";
 import { CircleType } from "@/app/types";
 import { QuestionCircleFilled } from "@ant-design/icons";
-import { Avatar, Box, Button, Stack, Text } from "degen";
+import { Avatar, Box, Button, Stack, Text, useTheme } from "degen";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
 import { useQuery } from "react-query";
 import { Tooltip } from "react-tippy";
+import { toast } from "react-toastify";
 import { useLocalProject } from "../Context/LocalProjectContext";
 import { useLocalCard } from "../CreateCardModal/hooks/LocalCardContext";
 import { useBatchPayContext } from "./context/batchPayContext";
@@ -30,6 +32,8 @@ export default function CurrencyPayment() {
   const { data: circle } = useQuery<CircleType>(["circle", cId], {
     enabled: false,
   });
+
+  const { mode } = useTheme();
 
   const formatRows = () => {
     const rows: any[] = [];
@@ -82,6 +86,7 @@ export default function CurrencyPayment() {
                   </Text>
                 </Stack>
               }
+              theme={mode}
             >
               <QuestionCircleFilled style={{ fontSize: "1rem" }} />
             </Tooltip>
@@ -117,23 +122,42 @@ export default function CurrencyPayment() {
                   );
                   console.log({ txnHash });
                   if (txnHash) {
-                    const res = await updatePaymentInfo(
-                      currencyCards as string[],
-                      txnHash
-                    );
-                    console.log({ res });
-                    if (res) {
-                      updateProject && updateProject(res);
-                      setCard && setCard(res.cards[cardId]);
+                    if (!batchPayInfo?.retroId) {
+                      const res = await updatePaymentInfo(
+                        currencyCards as string[],
+                        txnHash
+                      );
+                      console.log({ res });
+                      if (res) {
+                        updateProject && updateProject(res);
+                        setCard && setCard(res.cards[cardId]);
 
-                      setLoading(false);
-                      if (tokenCards && tokenCards?.length > 0) {
-                        setStep(2);
+                        setLoading(false);
+                        if (tokenCards && tokenCards?.length > 0) {
+                          setStep(2);
+                        } else {
+                          setStep(0);
+                          setIsOpen(false);
+                        }
                       } else {
-                        setStep(0);
-                        setIsOpen(false);
+                        setLoading(false);
                       }
                     } else {
+                      const retroUpdateRes = await updateRetro(
+                        batchPayInfo?.retroId || "",
+                        {
+                          reward: {
+                            transactionHash: txnHash,
+                          },
+                          status: {
+                            paid: true,
+                          },
+                        }
+                      );
+                      if (retroUpdateRes) {
+                        toast.success("Retro payout successful!");
+                      }
+                      setIsOpen(false);
                       setLoading(false);
                     }
                   }

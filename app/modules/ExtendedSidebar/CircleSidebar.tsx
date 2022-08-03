@@ -4,6 +4,9 @@ import { CircleType } from "@/app/types";
 import { ProjectOutlined } from "@ant-design/icons";
 import {
   Box,
+  IconPlus,
+  IconPlusSmall,
+  IconSplit,
   IconUserGroup,
   Skeleton,
   SkeletonGroup,
@@ -18,6 +21,7 @@ import { useQuery } from "react-query";
 import styled from "styled-components";
 import SettingsModal from "../Circle/CircleSettingsModal";
 import ContributorsModal from "../Circle/ContributorsModal";
+import CreateRetroModal from "../Retro/CreateRetro/CreateRetroModal";
 import CircleOptions from "./CircleOptions";
 import CollapseButton from "./CollapseButton";
 
@@ -40,6 +44,7 @@ function CircleSidebar() {
 
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [isContributorsModalOpen, setIsContributorsModalOpen] = useState(false);
+  const [isRetroModalOpen, setIsRetroModalOpen] = useState(false);
 
   const [showCollapseButton, setShowCollapseButton] = useState(false);
   if (isLoading) {
@@ -71,6 +76,9 @@ function CircleSidebar() {
           <ContributorsModal
             handleClose={() => setIsContributorsModalOpen(false)}
           />
+        )}
+        {isRetroModalOpen && (
+          <CreateRetroModal handleClose={() => setIsRetroModalOpen(false)} />
         )}
       </AnimatePresence>
       <Stack space="3">

@@ -1,4 +1,12 @@
-import { Box, Button, IconChevronRight, Input, Stack, Text } from "degen";
+import {
+  Box,
+  Button,
+  IconChevronRight,
+  Input,
+  Stack,
+  Text,
+  useTheme,
+} from "degen";
 import { motion, AnimatePresence } from "framer-motion";
 import { matchSorter } from "match-sorter";
 import { FC, useEffect, useRef, useState } from "react";
@@ -23,10 +31,11 @@ const OptionsContainer = styled(Box)<{ isExpanded: boolean }>`
   width: 20rem;
 `;
 
-const Option = styled(Box)`
+const Option = styled(Box)<{ mode: string }>`
   cursor: pointer;
   &:hover {
-    background-color: rgb(255, 255, 255, 0.1);
+    background-color: ${({ mode }) =>
+      mode === "dark" ? "rgba(255, 255, 255, 0.1)" : "rgba(20, 20, 20, 0.1)"};
   }
 `;
 
@@ -52,6 +61,7 @@ const Dropdown: FC<Props> = ({ options, selected, onChange, title }) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [inputValue, setInputValue] = useState(selected?.label);
   const [filteredOptions, setFilteredOptions] = useState(options);
+  const { mode } = useTheme();
 
   useEffect(() => {
     setFilteredOptions(options);
@@ -117,6 +127,7 @@ const Dropdown: FC<Props> = ({ options, selected, onChange, title }) => {
                     key={option.value}
                     padding="4"
                     borderRadius="3xLarge"
+                    mode={mode}
                     onClick={() => {
                       onChange(option);
                       setInputValue(option.label);
@@ -129,7 +140,7 @@ const Dropdown: FC<Props> = ({ options, selected, onChange, title }) => {
                   </Option>
                 ))}
                 {!filteredOptions?.length && (
-                  <Option padding="4" borderRadius="3xLarge">
+                  <Option padding="4" borderRadius="3xLarge" mode={mode}>
                     <Stack align="center">
                       <Text variant="label">Not Found</Text>
                     </Stack>
