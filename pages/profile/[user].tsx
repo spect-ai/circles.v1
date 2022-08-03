@@ -37,6 +37,8 @@ const ProfilePage: NextPage = () => {
     return res;
   }
 
+  console.log({userData});
+
   useEffect(() => {
     if( userId !== undefined){
       // eslint-disable-next-line @typescript-eslint/no-floating-promises

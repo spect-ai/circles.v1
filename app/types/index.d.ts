@@ -6,6 +6,8 @@ interface UserType {
   updatedAt: string;
   username: string;
   avatar: string;
+  bio: string;
+  skills: string[];
   discordId?: string;
   githubId?: string;
   twitterId?: string;

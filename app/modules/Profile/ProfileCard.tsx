@@ -10,7 +10,7 @@ interface Props{
 }
 
 const Profile = styled(Box)<{mode: string}>`
-  width: 20vw;
+  width: 23vw;
   height: 90vh;
   margin: 2rem;
   padding: 2rem;
@@ -33,15 +33,14 @@ const InfoBox = styled(Box)<{gap: string}>`
   flex-wrap: wrap;
   gap: ${(props) => props.gap}rem;
   padding-bottom: 1rem;
-  align-items: center;
-  justify-content: space-between;
+  justify-content: center;
 `
 
 const TextInfo = styled(Box)`
   display: flex;
   flex-direction: column;
+  flex-wrap: wrap;
   gap: 0.5rem;
-  padding: 0.5rem;
   align-items: center;
 `
 
@@ -69,7 +68,7 @@ const ProfileCard = ({userData} : Props) => {
         <Box cursor="pointer"  onClick={()=> openQuickProfile(userData.id)}>
           <Avatar
             label="profile-pic"
-            src="/og.jpg"
+            src={userData?.avatar}
             size="28"
           />
         </Box>
@@ -79,7 +78,7 @@ const ProfileCard = ({userData} : Props) => {
           </Heading>
         </Box>
         <Tag as="span" tone="purple" size="small">
-          {userData?.ethAddress.substring(0,20) + "..."}
+          {userData?.ethAddress.substring(0,25) + "..."}
         </Tag>
         <FollowCount >
           <Box alignItems="center" display="flex" flexDirection="column">
@@ -93,22 +92,25 @@ const ProfileCard = ({userData} : Props) => {
         </FollowCount>
         <InfoBox gap="1">
           {userData?.githubId && 
-          <Link href={`https://github.com/${userData?.githubId}`}>
+          <a href={`https://github.com/${userData?.githubId}`} target="_blank" rel="noreferrer noopener">
             <GithubOutlined style={{ color: "grey", fontSize: "1.2rem"}}/>
-          </Link>
+          </a>
           }
           {userData?.twitterId && 
-          <Link href={`https://twitter.com/${userData?.twitterId}`}>
+          <a href={`https://twitter.com/${userData?.twitterId}`} target="_blank" rel="noreferrer noopener">
             <TwitterOutlined style={{ color: "grey", fontSize: "1.2rem"}}/>
-          </Link>
+          </a>
           }
         </InfoBox>
         <InfoBox gap="0.5">
-          <Tag as="span" tone="purple" size="small"> Polygon </Tag>
+          {userData?.skills?.map( tag => (
+            <Tag as="span" tone="accent" hover size="small">{tag}</Tag>
+          ))}
         </InfoBox>
         <TextInfo>
-          <Text variant="label"> Headline </Text>
-          <Text variant="small" align="center" > 
+          <Text variant="label"> Bio </Text>
+          <Text variant="small" align="center" as="div">
+            {userData?.bio}
           </Text>
           <Text variant="label"> Circles </Text>
           <AvatarGroup

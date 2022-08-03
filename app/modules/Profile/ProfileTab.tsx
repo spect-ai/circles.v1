@@ -53,10 +53,10 @@ const Activity = React.memo(({userData} : Props) => {
         return(
           <Card mode={mode}>
             <Text variant="extraLarge">{card} </Text>
-            <Tags><Tag as="span" tone="purple" size="small">polygon</Tag></Tags>
+            <Tags><Tag as="span" size="small">polygon</Tag></Tags>
             <GigInfo>
-              <Text variant="label">Working On</Text>
-              <Avatar label="profile-pic" src="/og.jpg" size="8" />
+              <Tag hover>Working On</Tag>
+              <Avatar label="profile-pic" src="/og.jpg" size="6" />
             </GigInfo>
           </Card>
         )
@@ -65,10 +65,10 @@ const Activity = React.memo(({userData} : Props) => {
         return(
           <Card mode={mode}>
             <Text variant="extraLarge">{card} </Text>
-            <Tags><Tag as="span" tone="purple" size="small">polygon</Tag></Tags>
+            <Tags><Tag as="span" size="small">polygon</Tag></Tags>
             <GigInfo>
-              <Text variant="label">Reviewing</Text>
-              <Avatar label="profile-pic" src="/og.jpg" size="8" />
+              <Tag hover>Reviewing</Tag>
+              <Avatar label="profile-pic" src="/og.jpg" size="6" />
             </GigInfo>
           </Card>
         )
@@ -77,10 +77,10 @@ const Activity = React.memo(({userData} : Props) => {
         return(
           <Card mode={mode}>
             <Text variant="extraLarge">{card} </Text>
-            <Tags><Tag as="span" tone="purple" size="small">polygon</Tag></Tags>
+            <Tags><Tag as="span" size="small">polygon</Tag></Tags>
             <GigInfo>
-              <Text variant="label">Reviewed</Text>
-              <Avatar label="profile-pic" src="/og.jpg" size="8" />
+              <Tag hover>Reviewed</Tag>
+              <Avatar label="profile-pic" src="/og.jpg" size="6" />
             </GigInfo>
           </Card>
         )
@@ -89,10 +89,10 @@ const Activity = React.memo(({userData} : Props) => {
         return(
           <Card mode={mode}>
             <Text variant="extraLarge">{card} </Text>
-            <Tags><Tag as="span" tone="purple" size="small">polygon</Tag></Tags>
+            <Tags><Tag as="span" size="small">polygon</Tag></Tags>
             <GigInfo>
-              <Text variant="label">Worked On</Text>
-              <Avatar label="profile-pic" src="/og.jpg" size="8" />
+              <Tag hover>Worked On</Tag>
+              <Avatar label="profile-pic" src="/og.jpg" size="6" />
             </GigInfo>
           </Card>
         )
