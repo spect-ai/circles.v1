@@ -8,16 +8,25 @@ import ProfileTabs from "@/app/modules/Profile/ProfileTab";
 import QuickProfilePanel from "@/app/modules/Profile/QuickProfilePanel";
 import { useGlobal } from "@/app/context/globalContext";
 import { useRouter } from "next/router";
-import { getUser } from "@/app/services/User";
 import { UserType } from "@/app/types";
+import { useQuery } from "react-query";
+import { toast } from "react-toastify";
+
+
+const getUser = async () => {
+  const res = await fetch(`${process.env.API_HOST}/user/me`, {
+    credentials: "include",
+  });
+  return await res.json();
+};
 
 const ProfilePage: NextPage = () => {
 
-  
-
-  const { isProfilePanelExpanded } = useGlobal();
+  const router = useRouter(); 
+  const userId = router.query.user;
   // eslint-disable-next-line @typescript-eslint/unbound-method
   const { mode, setMode } = useTheme();
+  const { isProfilePanelExpanded, connectUser } = useGlobal();
 
   useEffect(() => {
     setTimeout(() => {
@@ -25,26 +34,39 @@ const ProfilePage: NextPage = () => {
     }, 100);
   }, []);
 
-  const [userData, SetUserData] = useState<UserType>();
+  const { data: user, refetch: fetchUser } = useQuery<UserType>(
+    ["user", userId],
+    async() =>
+      await fetch(`${process.env.API_HOST}/user/${userId}`).then(
+        (res) => res.json()
+      ),
+    {
+      enabled: false,
+    }
+  );
 
-
-  const router = useRouter(); 
-  const userId = router.query.user;
-
-  const getuser = async(userId: string) => {
-    const res = await getUser(userId);
-    SetUserData(res);
-    return res;
-  }
-
-  console.log({userData});
+  const { refetch } = useQuery<UserType>("getMyUser", getUser, {
+    enabled: false,
+  });
 
   useEffect(() => {
-    if( userId !== undefined){
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      getuser(String(userId));
+    if (!user && userId) {
+      void fetchUser();
     }
-  }, [userId]);
+  }, [user, userId]);
+
+  useEffect(() => {
+    refetch()
+      .then((res) => {
+        const data = res.data;
+        if (data) connectUser(data.id);
+      })
+      .catch((err) => {
+        console.log(err);
+        toast.error("Could not fetch user data");
+      });
+  }, []);
+  
 
   return (
     <>
@@ -67,8 +89,8 @@ const ProfilePage: NextPage = () => {
         width="full"
         overflow="hidden"
       >
-        <ProfileCard userData={userData as UserType} />
-        <ProfileTabs userData={userData as UserType} />
+        <ProfileCard userId={userId as string} />
+        {/* <ProfileTabs userId={userId as string} /> */}
       </Box>
       </Box>
       {isProfilePanelExpanded && <QuickProfilePanel/>} 

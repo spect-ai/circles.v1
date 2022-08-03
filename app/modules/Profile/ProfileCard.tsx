@@ -1,12 +1,16 @@
 import { Box, Avatar, Tag, Text, AvatarGroup, Button, Heading, useTheme } from "degen";
 import styled from "styled-components";
 import { GithubOutlined, TwitterOutlined } from "@ant-design/icons";
-import { UserType } from "@/app/types";
-import Link from "next/link";
+import { UserType, CircleType } from "@/app/types";
 import { useGlobal } from "@/app/context/globalContext";
+import { useQuery } from "react-query";
+import React, { useEffect, useState } from "react";
+import ProfileModal from "./ProfilePage/ProfileModal";
+import { AnimatePresence } from "framer-motion";
+
 
 interface Props{
-  userData: UserType;
+  userId: string;
 }
 
 const Profile = styled(Box)<{mode: string}>`
@@ -57,75 +61,119 @@ const FollowCount = styled(Box)`
   padding: 1rem;
 `
 
-const ProfileCard = ({userData} : Props) => {
+const ProfileCard = ({userId} : Props) => {
 
   const {mode} = useTheme();
   const {openQuickProfile} = useGlobal()
+  const [isOpen, setIsOpen] = useState(false);
   
+  const { data: currentUser} = useQuery<UserType>("getMyUser",{
+    enabled: false,
+  });
+
+  const { data: user , refetch: fetchUser } = useQuery<UserType>(
+    ["user", userId],
+    async() =>
+      await fetch(`${process.env.API_HOST}/user/${userId}`).then(
+        (res) => res.json()
+      ),
+    {
+      enabled: false,
+    }
+  );
+
+  useEffect(() => {
+    void fetchUser();
+  }, [user, userId, isOpen]);
+
+  const {
+    data: myCircles,
+    refetch,
+  } = useQuery<CircleType[]>(
+    "myOrganizations",
+    () =>
+      fetch(`${process.env.API_HOST}/circle/myOrganizations`, {
+        credentials: "include",
+      }).then((res) => res.json()),
+    {
+      enabled: false,
+    }
+  );
+
+  useEffect(() => {
+    void refetch();
+  }, [refetch, currentUser]);
+
+  const circlesArray =  myCircles?.map((aCircle) => (
+      { label: aCircle.name, src: aCircle.avatar, address: aCircle.id, placeholder: true}
+    )) 
+
   return (
     <>
       <Profile mode={mode}>
-        <Box cursor="pointer"  onClick={()=> openQuickProfile(userData.id)}>
+        <Box cursor="pointer"  onClick={()=> openQuickProfile((user as UserType).id)}>
           <Avatar
             label="profile-pic"
-            src={userData?.avatar}
+            src={user?.avatar}
             size="28"
           />
         </Box>
         <Box padding="0.5">
           <Heading>
-            {userData?.username}
+            {user?.username}
           </Heading>
         </Box>
         <Tag as="span" tone="purple" size="small">
-          {userData?.ethAddress.substring(0,25) + "..."}
+          {user?.ethAddress?.substring(0,25) + "..."}
         </Tag>
         <FollowCount >
           <Box alignItems="center" display="flex" flexDirection="column">
-            <Text variant="large" weight="bold" >{userData?.followedByUsers?.length}</Text>
+            <Text variant="large" weight="bold" >{user?.followedByUsers?.length}</Text>
             <Text variant="label">Followers</Text>
           </Box>
           <Box alignItems="center" display="flex" flexDirection="column">
-            <Text variant="large" weight="bold">{userData?.followedUsers?.length}</Text>
+            <Text variant="large" weight="bold">{user?.followedUsers?.length}</Text>
             <Text variant="label">Following</Text>
           </Box>
         </FollowCount>
         <InfoBox gap="1">
-          {userData?.githubId && 
-          <a href={`https://github.com/${userData?.githubId}`} target="_blank" rel="noreferrer noopener">
+          {user?.githubId && 
+          <a href={`https://github.com/${user?.githubId}`} target="_blank" rel="noreferrer noopener">
             <GithubOutlined style={{ color: "grey", fontSize: "1.2rem"}}/>
           </a>
           }
-          {userData?.twitterId && 
-          <a href={`https://twitter.com/${userData?.twitterId}`} target="_blank" rel="noreferrer noopener">
+          {user?.twitterId && 
+          <a href={`https://twitter.com/${user?.twitterId}`} target="_blank" rel="noreferrer noopener">
             <TwitterOutlined style={{ color: "grey", fontSize: "1.2rem"}}/>
           </a>
           }
         </InfoBox>
         <InfoBox gap="0.5">
-          {userData?.skills?.map( tag => (
+          {user?.skills?.map( tag => (
             <Tag as="span" tone="accent" hover size="small">{tag}</Tag>
           ))}
         </InfoBox>
         <TextInfo>
           <Text variant="label"> Bio </Text>
-          <Text variant="small" align="center" as="div">
-            {userData?.bio}
+          <Text variant="small" align="center" as="div" >
+            {user?.bio}
           </Text>
           <Text variant="label"> Circles </Text>
           <AvatarGroup
             limit={9}
-            members={[
-              { label: 'Noun 97', src: "/og.jpg" },
-            ]}
+            members={ circlesArray?.length ? circlesArray : [{ label: 'Noun 97', src: '/og.jpg'}]}
           />
         </TextInfo>
         <Footer>
-          <Button variant="secondary" size="small" width="full">
-            Follow
-          </Button>
+        {currentUser?.id == user?.id ? 
+        <Button variant="secondary" size="small" width="full" onClick={()=> setIsOpen(true)}>Edit</Button>
+         : 
+        <Button variant="secondary" size="small" width="full">Follow</Button>}
         </Footer>
       </Profile>
+      <AnimatePresence>
+        {isOpen && <ProfileModal setIsOpen={setIsOpen} />}
+      </AnimatePresence>
     </>
   );
 };

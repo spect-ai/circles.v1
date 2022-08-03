@@ -14,7 +14,8 @@ import {
   Text,
   Button,
   Tag,
-  IconCheck
+  IconCheck,
+  Textarea
 } from "degen";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -107,18 +108,25 @@ export default function ProfileModal({ setIsOpen }: Props) {
           )}
           <Text variant="label">Username</Text>
           <Input
-            label=""
+            label
+            hideLabel
             placeholder="Username"
             value={username}
+            maxLength={15} 
             onChange={(e) => {
               setUsername(e.target.value);
               setIsDirty(true);
             }}
           />
-          <Text variant="label">Bio</Text>
-          <Input 
-            label 
+          <Stack direction="horizontal" justify="space-between">
+            <Text variant="label">Bio</Text>
+            <Tag>{100 - bio.length}</Tag>
+          </Stack>
+          <Textarea
+            label
+            hideLabel
             maxLength={100} 
+            rows={2}
             placeholder="About you under 100 characters"
             value={bio}
             onChange={(e) => {
@@ -126,16 +134,19 @@ export default function ProfileModal({ setIsOpen }: Props) {
               setIsDirty(true);
             }}
           />
-          <Text variant="label">Skills</Text>
-          <Box display="flex" flexDirection="row" gap="1" flexWrap="wrap">
+          <Stack direction="horizontal" justify="space-between">
+            <Text variant="label">Skills</Text>
+            <Tag>Upto {10 - skills.length}</Tag>
+          </Stack>
+          <Box display="flex" flexDirection="row" gap="1" flexWrap="wrap" marginBottom="4">
           {skillsArray.map(skill => (
             <Box
               onClick={() => {
-                if (skills.includes(skill)) {
-                  setSkills(skills.filter((item) => item !== skill));
-                } else {
-                  setSkills([...skills, skill]);
-                }
+                  if (skills.includes(skill)) {
+                    setSkills(skills.filter((item) => item !== skill));
+                  } else if(skills.length < 10) {
+                    setSkills([...skills, skill]);
+                  }
                 setIsDirty(true);
               }}
               style={{
@@ -250,11 +261,7 @@ export default function ProfileModal({ setIsOpen }: Props) {
             </Button>
           )}
           </Stack>
-          <Link href={`/profile/${currentUser?.id}`}>
-          <PrimaryButton>Profile</PrimaryButton>
-          </Link>
-          
-          <PrimaryButton
+          {/* <PrimaryButton
             variant="transparent"
             onClick={async () => {
               await fetch(`${process.env.API_HOST}/auth/disconnect`, {
@@ -270,7 +277,7 @@ export default function ProfileModal({ setIsOpen }: Props) {
             }}
           >
             Logout
-          </PrimaryButton>
+          </PrimaryButton> */}
         </Stack>
       </Box>
     </Modal>
