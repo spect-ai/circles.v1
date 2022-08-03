@@ -90,7 +90,7 @@ const ProfilePage: NextPage = () => {
         overflow="hidden"
       >
         <ProfileCard userId={userId as string} />
-        {/* <ProfileTabs userId={userId as string} /> */}
+        <ProfileTabs userId={userId as string} />
       </Box>
       </Box>
       {isProfilePanelExpanded && <QuickProfilePanel/>} 

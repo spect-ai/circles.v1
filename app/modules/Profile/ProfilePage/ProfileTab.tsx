@@ -1,11 +1,12 @@
 import { Box, Text, Tag, Avatar, useTheme } from "degen";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import styled from "styled-components";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { UserType } from "@/app/types";
+import { useQuery } from "react-query";
 
 interface Props{
-  userData : UserType;
+  userId : string;
 }
 
 const Card = styled(Box)<{mode: string}>`
@@ -43,7 +44,7 @@ const GigInfo = styled(Box)`
 `
 
 
-const Activity = React.memo(({userData} : Props) => {
+const Activity = React.memo(({userData} : { userData : UserType ;}) => {
 
   const {mode} = useTheme();
 
@@ -121,9 +122,23 @@ const Retro = () => {
   )
 }
 
-const ProfileTabs = ({userData} : Props) => {
+const ProfileTabs = ({userId} : Props) => {
 
   const [ tab, setProfileTab] = useState('Activity');
+  const { data: userData , refetch: fetchUser } = useQuery<UserType>(
+    ["user", userId],
+    async() =>
+      await fetch(`${process.env.API_HOST}/user/${userId}`).then(
+        (res) => res.json()
+      ),
+    {
+      enabled: false,
+    }
+  );
+
+  useEffect(() => {
+    void fetchUser();   
+  }, [userData, userId, tab]);
 
   return(
     <Box>
@@ -147,7 +162,7 @@ const ProfileTabs = ({userData} : Props) => {
         </PrimaryButton>
       </Box>
       <Box>
-        { tab === "Activity" && <Activity userData={userData} />}
+        { tab === "Activity" && <Activity userData={userData as UserType} />}
         { tab === "Retro" && <Retro/>}
       </Box>
     </Box>

@@ -89,7 +89,7 @@ const QuickProfilePanel = ( ) => {
               }}>
               <Avatar
                 label="profile-pic"
-                src="/og.jpg"
+                src={userData?.avatar}
                 size="16"
               />
               <Box style={{ gap: "1.5rem"}}>
