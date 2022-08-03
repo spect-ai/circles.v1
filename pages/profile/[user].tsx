@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { Box, useTheme } from "degen";
 import MetaHead from "@/app/common/seo/MetaHead/MetaHead";
 import type { NextPage } from "next";
 import Sidebar from "@/app/modules/Sidebar";
 import ProfileCard from "@/app/modules/Profile/ProfilePage/ProfileCard";
 import ProfileTabs from "@/app/modules/Profile/ProfilePage/ProfileTab";
-import QuickProfilePanel from "@/app/modules/Profile/QuickProfilePanel";
+import QuickProfilePanel from "@/app/modules/Profile/QuickProfile/QuickProfilePanel";
 import { useGlobal } from "@/app/context/globalContext";
 import { useRouter } from "next/router";
 import { UserType } from "@/app/types";

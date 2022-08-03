@@ -5,7 +5,7 @@ import { AnimatePresence } from "framer-motion";
 import React, { useState } from "react";
 import { useQuery } from "react-query";
 import styled from "styled-components";
-import QuickProfilePanel from "../../Profile/QuickProfilePanel";
+import QuickProfilePanel from "../../Profile/QuickProfile/QuickProfilePanel";
 import { useGlobal } from "@/app/context/globalContext";
 
 const Container = styled(Box)<{ mode: string }>`

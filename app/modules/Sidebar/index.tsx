@@ -10,7 +10,7 @@ import { CircleType, UserType } from "@/app/types";
 import { useGlobal } from "@/app/context/globalContext";
 import CollapseButton from "../ExtendedSidebar/CollapseButton";
 import styled from "styled-components";
-import QuickProfilePanel from "../Profile/QuickProfilePanel";
+import QuickProfilePanel from "../Profile/QuickProfile/QuickProfilePanel";
 import { AnimatePresence } from "framer-motion";
 
 export const ScrollContainer = styled(Box)`
