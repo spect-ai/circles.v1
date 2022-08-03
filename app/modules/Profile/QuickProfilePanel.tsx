@@ -4,7 +4,6 @@ import { Box, Avatar, Tag, Text, Button } from "degen";
 import QuickProfileTabs from "./QuickProfileTab";
 import { useTheme } from "degen";
 import queryClient from "@/app/common/utils/queryClient";
-import { getUser } from "@/app/services/User";
 import { useEffect, useState } from "react";
 import { UserType } from "@/app/types";
 import Link from "next/link";
@@ -19,23 +18,24 @@ const QuickProfilePanel = ( ) => {
   const { mode } = useTheme();
   const { disconnect } = useDisconnect();
 
-  const [userData, SetUserData] = useState<UserType>();
-
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
 
-  const getuser = async(userId: string) => {
-    const res = await getUser(userId);
-    SetUserData(res);
-    return res;
-  }
+  const { data: userData , refetch: fetchUser } = useQuery<UserType>(
+    ["user", quickProfileUser],
+    async() =>
+      await fetch(`${process.env.API_HOST}/user/${quickProfileUser}`).then(
+        (res) => res.json()
+      ),
+    {
+      enabled: false,
+    }
+  );
 
   useEffect(() => {
-    if( quickProfileUser !== undefined){
-      getuser(String(quickProfileUser));
-    }
-  }, [quickProfileUser]);
+    void fetchUser();   
+  }, [userData, quickProfileUser]);
 
   return(
     <>
