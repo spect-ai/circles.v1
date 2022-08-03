@@ -1,8 +1,6 @@
 import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { storeImage } from "@/app/common/utils/ipfs";
-import queryClient from "@/app/common/utils/queryClient";
-import { useGlobal } from "@/app/context/globalContext";
 import useProfileUpdate from "@/app/services/Profile/useProfileUpdate";
 import { MemberDetails, UserType } from "@/app/types";
 import { GithubOutlined, SaveFilled } from "@ant-design/icons";
@@ -21,8 +19,8 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { useQuery } from "react-query";
-import { useDisconnect } from "wagmi";
 import DiscordIcon from "@/app/assets/icons/discordIcon.svg";
+import { skillsArray } from "./constants";
 
 interface Props {
   setIsOpen: (isOpen: boolean) => void;
@@ -38,11 +36,6 @@ export default function ProfileModal({ setIsOpen }: Props) {
     }
   );
 
-  const skillsArray = ['EVM', 'Solidity', 'Rust', 'DeFi', 'Gaming', 'Frontend', 'Backend', 'Open Source',
-    'Blockchain', 'Smart Contracts', 'DAO', 'AMM']
-
-  const { disconnectUser } = useGlobal();
-  const { disconnect } = useDisconnect();
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
@@ -261,23 +254,6 @@ export default function ProfileModal({ setIsOpen }: Props) {
             </Button>
           )}
           </Stack>
-          {/* <PrimaryButton
-            variant="transparent"
-            onClick={async () => {
-              await fetch(`${process.env.API_HOST}/auth/disconnect`, {
-                method: "POST",
-                credentials: "include",
-              });
-              disconnect();
-              queryClient.setQueryData("getMyUser", null);
-              void queryClient.invalidateQueries("getMyUser");
-              localStorage.removeItem("connectorIndex");
-              disconnectUser();
-              setIsOpen(false);
-            }}
-          >
-            Logout
-          </PrimaryButton> */}
         </Stack>
       </Box>
     </Modal>
