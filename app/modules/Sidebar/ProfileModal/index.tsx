@@ -5,7 +5,8 @@ import { AnimatePresence } from "framer-motion";
 import React, { useState } from "react";
 import { useQuery } from "react-query";
 import styled from "styled-components";
-import ProfileModal from "./ProfileModal";
+import QuickProfilePanel from "../../Profile/QuickProfilePanel";
+import { useGlobal } from "@/app/context/globalContext";
 
 const Container = styled(Box)<{ mode: string }>`
   cursor: pointer;
@@ -21,12 +22,13 @@ export default function ProfileButton() {
     enabled: false,
   });
   const [isOpen, setIsOpen] = useState(false);
+  const { openQuickProfile, isProfilePanelExpanded } = useGlobal()
   const { mode } = useTheme();
   return (
     <>
       <Box borderTopWidth="0.375" paddingTop="2" marginX="4">
         <Container
-          onClick={() => setIsOpen(true)}
+          onClick={()=> openQuickProfile((currentUser as UserType).id)}
           data-tour="profile-header-button"
           padding="1"
           borderRadius="large"
@@ -44,7 +46,7 @@ export default function ProfileButton() {
         </Container>
       </Box>
       <AnimatePresence>
-        {isOpen && <ProfileModal setIsOpen={setIsOpen} />}
+        {isProfilePanelExpanded && <QuickProfilePanel/>} 
       </AnimatePresence>
     </>
   );

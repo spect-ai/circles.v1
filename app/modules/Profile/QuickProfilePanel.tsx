@@ -3,19 +3,27 @@ import { useGlobal } from "@/app/context/globalContext";
 import { Box, Avatar, Tag, Text, Button } from "degen";
 import QuickProfileTabs from "./QuickProfileTab";
 import { useTheme } from "degen";
-import { useRouter } from "next/router";
+import queryClient from "@/app/common/utils/queryClient";
 import { getUser } from "@/app/services/User";
 import { useEffect, useState } from "react";
 import { UserType } from "@/app/types";
+import Link from "next/link";
+import { useDisconnect } from "wagmi";
+import { useQuery } from "react-query";
 
 
 
 const QuickProfilePanel = ( ) => {
 
-  const { isProfilePanelExpanded, setIsProfilePanelExpanded, quickProfileUser} = useGlobal();
+  const { isProfilePanelExpanded, setIsProfilePanelExpanded, quickProfileUser, disconnectUser} = useGlobal();
   const { mode } = useTheme();
+  const { disconnect } = useDisconnect();
 
   const [userData, SetUserData] = useState<UserType>();
+
+  const { data: currentUser } = useQuery<UserType>("getMyUser", {
+    enabled: false,
+  });
 
   const getuser = async(userId: string) => {
     const res = await getUser(userId);
@@ -88,8 +96,36 @@ const QuickProfilePanel = ( ) => {
                 <Text variant="extraLarge" weight="semiBold">{userData?.username}</Text>
                 <Tag tone="purple" size="small">{userData?.ethAddress.substring(0,20) + "..."}</Tag>
               </Box>
-              <Box style={{ position: "absolute", right: "1rem"}}>
-                <Button size="small" variant="secondary" href={`/profile/${userData?.id}`} >View Full Profile</Button>
+              <Box style={{ position: "absolute", right: "1rem"}} display="flex" flexDirection="row" gap="1.5">
+                <Link href={`/profile/${userData?.id}`}>
+                  <Button 
+                    size="small" 
+                    variant="secondary"
+                    onClick={()=> {setIsProfilePanelExpanded(false)}}
+                  >
+                    View Profile
+                  </Button>
+                </Link>
+                { currentUser?.id == userData?.id && 
+                  <Button 
+                    size="small" 
+                    variant="tertiary"
+                    onClick={async () => {
+                        setIsProfilePanelExpanded(false);
+                        await fetch(`${process.env.API_HOST}/auth/disconnect`, {
+                          method: "POST",
+                          credentials: "include",
+                        });
+                        disconnect();
+                        queryClient.setQueryData("getMyUser", null);
+                        void queryClient.invalidateQueries("getMyUser");
+                        localStorage.removeItem("connectorIndex");
+                        disconnectUser();
+                      }}
+                    >
+                      Logout
+                  </Button>
+                }
               </Box>
             </Box>
             <QuickProfileTabs userData={userData as UserType} />

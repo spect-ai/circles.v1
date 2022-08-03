@@ -5,7 +5,7 @@ import { UserType, CircleType } from "@/app/types";
 import { useGlobal } from "@/app/context/globalContext";
 import { useQuery } from "react-query";
 import React, { useEffect, useState } from "react";
-import ProfileModal from "./ProfilePage/ProfileModal";
+import ProfileModal from "./ProfileModal";
 import { AnimatePresence } from "framer-motion";
 
 
@@ -104,14 +104,14 @@ const ProfileCard = ({userId} : Props) => {
     void refetch();
   }, [refetch, currentUser]);
 
-  const circlesArray =  myCircles?.map((aCircle) => (
+  const circlesArray =  myCircles?.map && myCircles?.map((aCircle) => (
       { label: aCircle.name, src: aCircle.avatar, address: aCircle.id, placeholder: true}
     )) 
 
   return (
     <>
       <Profile mode={mode}>
-        <Box cursor="pointer"  onClick={()=> openQuickProfile((user as UserType).id)}>
+        <Box cursor="pointer" onClick={()=> openQuickProfile((user as UserType).id)}>
           <Avatar
             label="profile-pic"
             src={user?.avatar}

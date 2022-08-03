@@ -10,7 +10,7 @@ import { CircleType, UserType } from "@/app/types";
 import { useGlobal } from "@/app/context/globalContext";
 import CollapseButton from "../ExtendedSidebar/CollapseButton";
 import styled from "styled-components";
-import ProfileModal from "./ProfileModal/ProfileModal";
+import QuickProfilePanel from "../Profile/QuickProfilePanel";
 import { AnimatePresence } from "framer-motion";
 
 export const ScrollContainer = styled(Box)`
@@ -29,7 +29,7 @@ function Sidebar(): ReactElement {
   const { data: circle, isLoading } = useQuery<CircleType>(["circle", cId], {
     enabled: false,
   });
-  const { connectedUser, isSidebarExpanded } = useGlobal();
+  const { connectedUser, isSidebarExpanded, openQuickProfile, isProfilePanelExpanded } = useGlobal();
   const [showCollapseButton, setShowCollapseButton] = useState(false);
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
@@ -157,7 +157,7 @@ function Sidebar(): ReactElement {
             size="small"
             shape="circle"
             variant="transparent"
-            onClick={() => setIsOpen(true)}
+            onClick={()=> openQuickProfile((currentUser as UserType).id)}
           >
             <Avatar
               src={currentUser?.avatar}
@@ -169,7 +169,7 @@ function Sidebar(): ReactElement {
         )}
       </Box>
       <AnimatePresence>
-        {isOpen && <ProfileModal setIsOpen={setIsOpen} />}
+        {isProfilePanelExpanded && <QuickProfilePanel/>} 
       </AnimatePresence>
     </Box>
   );
