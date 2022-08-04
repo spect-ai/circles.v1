@@ -147,7 +147,7 @@ function InviteMemberModal() {
                     const expire = new Date().getTime() + expiry.expiry * 1000;
                     setIsLoading(true);
                     fetch(
-                      `${process.env.API_HOST}/circle/${circle?.id}/invite`,
+                      `${process.env.API_HOST}/circle/v1/${circle?.id}/invite`,
                       {
                         method: "PATCH",
                         headers: {
