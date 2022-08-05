@@ -89,7 +89,13 @@ export default function SettingsModal({ handleClose }: Props) {
           <Tabs
             selectedTab={tab}
             onTabClick={onTabClick}
-            tabs={["Info", "Integrations", "Payments", "Members", "Delete"]}
+            tabs={[
+              "Info",
+              "Integrations",
+              "Payments",
+              "Contributors",
+              "Delete",
+            ]}
             tabTourIds={[
               "circle-settings-info",
               "circle-settings-integrations",
