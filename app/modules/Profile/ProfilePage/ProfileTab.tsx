@@ -59,7 +59,7 @@ const Activity = React.memo(({userData} : { userData : UserType ;}) => {
 
   return (
     <ScrollContainer>
-      {userData?.assignedCards?.map(cardId => {
+      {userData?.assignedCards?.slice(0).reverse().map(cardId => {
         const card = userData?.cardDetails[cardId]
         return(
           <Card mode={mode} key={cardId}>
@@ -72,7 +72,7 @@ const Activity = React.memo(({userData} : { userData : UserType ;}) => {
           </Card>
         )
       })}
-      {userData?.reviewingCards?.map(cardId => {
+      {userData?.reviewingCards?.slice(0).reverse().map(cardId => {
         const card = userData?.cardDetails[cardId]
         return(
           <Card mode={mode} key={cardId}>
@@ -85,20 +85,7 @@ const Activity = React.memo(({userData} : { userData : UserType ;}) => {
           </Card>
         )
       })}
-      {userData?.reviewingClosedCards?.map(cardId => {
-        const card = userData?.cardDetails[cardId]
-        return(
-          <Card mode={mode} key={cardId}>
-            <Text variant="extraLarge">{card.title} </Text>
-            <Tags><Tag as="span" size="small">polygon</Tag></Tags>
-            <GigInfo>
-              <Tag hover>Reviewed</Tag>
-              <Avatar label="profile-pic" src="/og.jpg" size="6" />
-            </GigInfo>
-          </Card>
-        )
-      })}
-      {userData?.assignedClosedCards?.map(cardId => {
+      {userData?.assignedClosedCards?.slice(0).reverse().map(cardId => {
         const card = userData?.cardDetails[cardId]
         return(
           <Card mode={mode} key={cardId}>
@@ -111,6 +98,20 @@ const Activity = React.memo(({userData} : { userData : UserType ;}) => {
           </Card>
         )
       })}
+      {userData?.reviewingClosedCards?.slice(0).reverse().map(cardId => {
+        const card = userData?.cardDetails[cardId]
+        return(
+          <Card mode={mode} key={cardId}>
+            <Text variant="extraLarge">{card.title} </Text>
+            <Tags><Tag as="span" size="small">polygon</Tag></Tags>
+            <GigInfo>
+              <Tag hover>Reviewed</Tag>
+              <Avatar label="profile-pic" src="/og.jpg" size="6" />
+            </GigInfo>
+          </Card>
+        )
+      })}
+      
     </ScrollContainer>
   )
 });

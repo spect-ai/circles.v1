@@ -100,7 +100,7 @@ const WorkCards: FunctionComponent<Props> = ({toggle, userData}) => {
   return(
     <>
       {toggle == 'Assignee' ? (
-        userData?.assignedCards?.map(cardId => {
+        userData?.assignedCards?.slice(0).reverse().map(cardId => {
           const card = userData?.cardDetails[cardId]
           return(
             <Card mode={mode} key={cardId}>
@@ -112,7 +112,7 @@ const WorkCards: FunctionComponent<Props> = ({toggle, userData}) => {
             </Card> 
         )})
       ):(
-        userData?.reviewingCards?.map(cardId => {
+        userData?.reviewingCards?.slice(0).reverse().map(cardId => {
           const card = userData?.cardDetails[cardId]
           return(
             <Card mode={mode} key={cardId}>
@@ -123,7 +123,7 @@ const WorkCards: FunctionComponent<Props> = ({toggle, userData}) => {
               </GigInfo>
             </Card> 
         )})
-      )}
+        )}
     </>
   )
 }
