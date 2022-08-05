@@ -16,6 +16,7 @@ interface UserProps{
 
 const ScrollContainer = styled(Box)`
   overflow: auto;
+  padding-right: 1rem;
   ::-webkit-scrollbar {
     width: 5px;
   }
@@ -24,7 +25,7 @@ const ScrollContainer = styled(Box)`
 const Card = styled(Box)<{mode: string}>`
   display: flex;
   flex-direction: column;
-  width: 650px;
+  width: 630px;
   height: 65px;
   margin-top: 1rem;
   padding: 0.8rem 1rem 0;
@@ -99,10 +100,11 @@ const WorkCards: FunctionComponent<Props> = ({toggle, userData}) => {
   return(
     <>
       {toggle == 'Assignee' ? (
-        userData?.assignedCards?.map(card => {
+        userData?.assignedCards?.map(cardId => {
+          const card = userData?.cardDetails[cardId]
           return(
-            <Card mode={mode}>
-              <Text weight="semiBold" variant="large">{card}</Text>
+            <Card mode={mode} key={cardId}>
+              <Text weight="semiBold" variant="large">{card?.title}</Text>
               <GigInfo>
               <Avatar label="profile-pic" src="/og.jpg" size="8" />
               <Text variant="label">02:45pm</Text>
@@ -110,10 +112,11 @@ const WorkCards: FunctionComponent<Props> = ({toggle, userData}) => {
             </Card> 
         )})
       ):(
-        userData?.reviewingCards?.map(card => {
+        userData?.reviewingCards?.map(cardId => {
+          const card = userData?.cardDetails[cardId]
           return(
-            <Card mode={mode}>
-              <Text weight="semiBold" variant="large">{card}</Text>
+            <Card mode={mode} key={cardId}>
+              <Text weight="semiBold" variant="large">{card?.title}</Text>
               <GigInfo>
               <Avatar label="profile-pic" src="/og.jpg" size="8" />
               <Text variant="label">02:45pm</Text>
@@ -215,7 +218,7 @@ const QuickProfileTabs = ({userData} : UserProps) => {
       { panelTab === "Work" && 
         <>
           <Toggle toggle={toggle} setToggle={setToggle}/>
-          <ScrollContainer overflow={"auto"}>
+          <ScrollContainer >
             <WorkCards toggle={toggle} setToggle={setToggle} userData={userData} />
           </ScrollContainer>
         </>}

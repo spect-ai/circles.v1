@@ -18,6 +18,7 @@ interface UserType {
   reviewingCards: string[];
   assignedClosedCards: string[];
   reviewingClosedCards: string[];
+  cardDetails: any;
   activities: string[];
   notifications: string[];
   bookmarks: string[];

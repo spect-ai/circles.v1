@@ -43,17 +43,27 @@ const GigInfo = styled(Box)`
   gap: 1rem;
 `
 
+const ScrollContainer = styled(Box)`
+  overflow: auto;
+  max-height: 85vh;
+  padding-right: 2rem;
+  ::-webkit-scrollbar {
+    display: none;
+  }
+`;
+
 
 const Activity = React.memo(({userData} : { userData : UserType ;}) => {
 
   const {mode} = useTheme();
 
   return (
-    <>
-      {userData?.assignedCards?.map(card => {
+    <ScrollContainer>
+      {userData?.assignedCards?.map(cardId => {
+        const card = userData?.cardDetails[cardId]
         return(
-          <Card mode={mode}>
-            <Text variant="extraLarge">{card} </Text>
+          <Card mode={mode} key={cardId}>
+            <Text variant="extraLarge">{card.title}</Text>
             <Tags><Tag as="span" size="small">polygon</Tag></Tags>
             <GigInfo>
               <Tag hover>Working On</Tag>
@@ -62,10 +72,11 @@ const Activity = React.memo(({userData} : { userData : UserType ;}) => {
           </Card>
         )
       })}
-      {userData?.reviewingCards?.map(card => {
+      {userData?.reviewingCards?.map(cardId => {
+        const card = userData?.cardDetails[cardId]
         return(
-          <Card mode={mode}>
-            <Text variant="extraLarge">{card} </Text>
+          <Card mode={mode} key={cardId}>
+            <Text variant="extraLarge">{card.title} </Text>
             <Tags><Tag as="span" size="small">polygon</Tag></Tags>
             <GigInfo>
               <Tag hover>Reviewing</Tag>
@@ -74,10 +85,11 @@ const Activity = React.memo(({userData} : { userData : UserType ;}) => {
           </Card>
         )
       })}
-      {userData?.reviewingClosedCards?.map(card => {
+      {userData?.reviewingClosedCards?.map(cardId => {
+        const card = userData?.cardDetails[cardId]
         return(
-          <Card mode={mode}>
-            <Text variant="extraLarge">{card} </Text>
+          <Card mode={mode} key={cardId}>
+            <Text variant="extraLarge">{card.title} </Text>
             <Tags><Tag as="span" size="small">polygon</Tag></Tags>
             <GigInfo>
               <Tag hover>Reviewed</Tag>
@@ -86,10 +98,11 @@ const Activity = React.memo(({userData} : { userData : UserType ;}) => {
           </Card>
         )
       })}
-      {userData?.assignedClosedCards?.map(card => {
+      {userData?.assignedClosedCards?.map(cardId => {
+        const card = userData?.cardDetails[cardId]
         return(
-          <Card mode={mode}>
-            <Text variant="extraLarge">{card} </Text>
+          <Card mode={mode} key={cardId}>
+            <Text variant="extraLarge">{card.title} </Text>
             <Tags><Tag as="span" size="small">polygon</Tag></Tags>
             <GigInfo>
               <Tag hover>Worked On</Tag>
@@ -98,7 +111,7 @@ const Activity = React.memo(({userData} : { userData : UserType ;}) => {
           </Card>
         )
       })}
-    </>
+    </ScrollContainer>
   )
 });
 
@@ -125,20 +138,24 @@ const Retro = () => {
 const ProfileTabs = ({userId} : Props) => {
 
   const [ tab, setProfileTab] = useState('Activity');
-  const { data: userData , refetch: fetchUser } = useQuery<UserType>(
-    ["user", userId],
-    async() =>
-      await fetch(`${process.env.API_HOST}/user/${userId}`).then(
-        (res) => res.json()
-      ),
-    {
-      enabled: false,
+  const [ userData, setUserData] = useState({} as UserType);
+
+  const fetchUser = async() => {
+    const res = await fetch(`${process.env.API_HOST}/user/${userId}`, {
+      credentials: "include",
+    });
+    if (res.ok) {
+      const data = await res.json();
+      setUserData(data);
+      return data;
+    } else {
+      return false;
     }
-  );
+  }
 
   useEffect(() => {
     void fetchUser();   
-  }, [userData, userId, tab]);
+  }, [userId, tab]);
 
   return(
     <Box>

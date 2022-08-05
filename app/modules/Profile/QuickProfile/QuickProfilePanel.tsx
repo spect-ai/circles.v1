@@ -25,7 +25,9 @@ const QuickProfilePanel = ( ) => {
   const { data: userData , refetch: fetchUser } = useQuery<UserType>(
     ["user", quickProfileUser],
     async() =>
-      await fetch(`${process.env.API_HOST}/user/${quickProfileUser}`).then(
+      await fetch(`${process.env.API_HOST}/user/${quickProfileUser}`, {
+        credentials: "include",
+      }).then(
         (res) => res.json()
       ),
     {

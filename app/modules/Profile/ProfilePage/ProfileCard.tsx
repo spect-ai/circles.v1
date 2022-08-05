@@ -150,7 +150,7 @@ const ProfileCard = ({userId} : Props) => {
         </InfoBox>
         <InfoBox gap="0.5">
           {user?.skills?.map( tag => (
-            <Tag as="span" tone="accent" hover size="small">{tag}</Tag>
+            <Tag as="span" tone="accent" hover size="small" key={tag}>{tag}</Tag>
           ))}
         </InfoBox>
         <TextInfo>
