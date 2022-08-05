@@ -2,7 +2,8 @@ import { Box, Text, Tag, Avatar, useTheme } from "degen";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import styled from "styled-components";
 import React, { useState, useEffect } from "react";
-import { UserType } from "@/app/types";
+import { UserType, CardDetails } from "@/app/types";
+import { PriorityIcon } from "@/app/common/components/PriorityIcon";
 import { useQuery } from "react-query";
 
 interface Props{
@@ -17,7 +18,7 @@ const Card = styled(Box)<{mode: string}>`
   margin-top: 1rem;
   padding: 0.4rem 1rem 0;
   border-radius: 0.5rem;
-  border: solid 2px ${(props) => props.mode === "dark" ? "rgb(255, 255, 255, 0.05)" : "rgb(20, 20, 20, 0.1)"};
+  border: solid 2px ${(props) => props.mode === "dark" ? "rgb(255, 255, 255, 0.05)" : "rgb(20, 20, 20, 0.05)"};
   &:hover {
     border: solid 2px rgb(191,90,242);
     transition-duration: 0.7s;
@@ -60,53 +61,77 @@ const Activity = React.memo(({userData} : { userData : UserType ;}) => {
   return (
     <ScrollContainer>
       {userData?.assignedCards?.slice(0).reverse().map(cardId => {
-        const card = userData?.cardDetails[cardId]
+        const card:CardDetails = userData?.cardDetails[cardId]!;
+        const cardLink = `${card?.circle?.slug}/${card.project?.slug}/${card?.slug}`;
         return(
-          <Card mode={mode} key={cardId}>
-            <Text variant="extraLarge">{card.title}</Text>
-            <Tags><Tag as="span" size="small">polygon</Tag></Tags>
+          <Card mode={mode} key={cardId} onClick={()=> window.open(`/${cardLink}`)}>
+            <Text variant="extraLarge">{card?.title}</Text>
+            <Tags>
+            {card?.labels?.map( tag => 
+              <Tag as="span" size="small" key={tag}>{tag}</Tag>
+            )}
+            {card?.priority > 0 && <PriorityIcon priority={card?.priority} />}
+            </Tags>
             <GigInfo>
               <Tag hover>Working On</Tag>
-              <Avatar label="profile-pic" src="/og.jpg" size="6" />
+              <Avatar label="profile-pic" src={card?.circle?.avatar} size="6" />
             </GigInfo>
           </Card>
         )
       })}
       {userData?.reviewingCards?.slice(0).reverse().map(cardId => {
-        const card = userData?.cardDetails[cardId]
+        const card:CardDetails = userData?.cardDetails[cardId]!;
+        const cardLink = `${card?.circle?.slug}/${card.project?.slug}/${card?.slug}`;
         return(
-          <Card mode={mode} key={cardId}>
-            <Text variant="extraLarge">{card.title} </Text>
-            <Tags><Tag as="span" size="small">polygon</Tag></Tags>
+          <Card mode={mode} key={cardId} onClick={()=> window.open(`/${cardLink}`)}>
+            <Text variant="extraLarge">{card?.title} </Text>
+            <Tags>
+            {card?.labels?.map( tag => 
+              <Tag as="span" size="small" key={tag}>{tag}</Tag>
+            )}
+            {card?.priority > 0 && <PriorityIcon priority={card?.priority} />}
+            </Tags>
             <GigInfo>
               <Tag hover>Reviewing</Tag>
-              <Avatar label="profile-pic" src="/og.jpg" size="6" />
+              <Avatar label="profile-pic" src={card.circle?.avatar} size="6" />
             </GigInfo>
           </Card>
         )
       })}
       {userData?.assignedClosedCards?.slice(0).reverse().map(cardId => {
-        const card = userData?.cardDetails[cardId]
+        const card:CardDetails = userData?.cardDetails[cardId]!;
+        const cardLink = `${card?.circle?.slug}/${card?.project?.slug}/${card?.slug}`;
         return(
-          <Card mode={mode} key={cardId}>
+          <Card mode={mode} key={cardId} onClick={()=> window.open(`/${cardLink}`)}>
             <Text variant="extraLarge">{card.title} </Text>
-            <Tags><Tag as="span" size="small">polygon</Tag></Tags>
+            <Tags>
+            {card?.labels?.map( tag => 
+              <Tag as="span" size="small" key={tag}>{tag}</Tag>
+            )}
+            {card?.priority > 0 && <PriorityIcon priority={card?.priority} />}
+            </Tags>
             <GigInfo>
               <Tag hover>Worked On</Tag>
-              <Avatar label="profile-pic" src="/og.jpg" size="6" />
+              <Avatar label="profile-pic" src={card.circle?.avatar} size="6" />
             </GigInfo>
           </Card>
         )
       })}
       {userData?.reviewingClosedCards?.slice(0).reverse().map(cardId => {
-        const card = userData?.cardDetails[cardId]
+        const card:CardDetails = userData?.cardDetails[cardId]!;
+        const cardLink = `${card?.circle?.slug}/${card?.project?.slug}/${card?.slug}`;
         return(
-          <Card mode={mode} key={cardId}>
+          <Card mode={mode} key={cardId} onClick={()=> window.open(`/${cardLink}`)}>
             <Text variant="extraLarge">{card.title} </Text>
-            <Tags><Tag as="span" size="small">polygon</Tag></Tags>
+            <Tags>
+            {card?.labels?.map( tag => 
+              <Tag as="span" size="small" key={tag}>{tag}</Tag>
+            )}
+            {card?.priority > 0 && <PriorityIcon priority={card?.priority} />}
+            </Tags>
             <GigInfo>
               <Tag hover>Reviewed</Tag>
-              <Avatar label="profile-pic" src="/og.jpg" size="6" />
+              <Avatar label="profile-pic" src={card.circle?.avatar} size="6" />
             </GigInfo>
           </Card>
         )

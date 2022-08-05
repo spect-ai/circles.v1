@@ -105,8 +105,11 @@ const ProfileCard = ({userId} : Props) => {
   }, [refetch, currentUser]);
 
   const circlesArray =  myCircles?.map && myCircles?.map((aCircle) => (
-      { label: aCircle.name, src: aCircle.avatar, address: aCircle.id, placeholder: true}
+      { label: aCircle.name, src: aCircle.avatar}
     )) 
+
+  console.log(circlesArray);
+  
 
   return (
     <>

@@ -2,7 +2,8 @@ import { useState, FunctionComponent } from "react";
 import { Box, Avatar, Text, Button, useTheme } from "degen";
 import { ProjectOutlined, StarOutlined, FieldTimeOutlined, StarFilled } from "@ant-design/icons";
 import styled from "styled-components";
-import { UserType } from "@/app/types";
+import { UserType, CardDetails } from "@/app/types";
+import { PriorityIcon } from "@/app/common/components/PriorityIcon";
 
 interface Props {
   toggle: String;
@@ -26,12 +27,10 @@ const Card = styled(Box)<{mode: string}>`
   display: flex;
   flex-direction: column;
   width: 630px;
-  height: 65px;
-  margin-top: 1rem;
-  padding: 0.8rem 1rem 0;
+  padding: 0.6rem;
   border-radius: 0.5rem;
   background-color: transparent;
-  border: solid 2px ${(props) => props.mode === "dark" ? "rgb(255, 255, 255, 0.05)" : "rgb(20, 20, 20, 0.1)"};
+  border: solid 2px ${(props) => props.mode === "dark" ? "rgb(255, 255, 255, 0.05)" : "rgb(20, 20, 20, 0.05)"};
   &:hover {
     border: solid 2px rgb(191,90,242);
     transition-duration: 0.7s;
@@ -57,7 +56,7 @@ const GigInfo = styled(Box)`
   flex-direction: row;
   align-items: center;
   position: absolute;
-  right: 2rem;
+  right: 1rem;
   gap: 0.6rem;
 `
 
@@ -98,33 +97,41 @@ const WorkCards: FunctionComponent<Props> = ({toggle, userData}) => {
   const {mode} = useTheme()
 
   return(
-    <>
+    <Box gap="2" display="flex" flexDirection="column">
       {toggle == 'Assignee' ? (
         userData?.assignedCards?.slice(0).reverse().map(cardId => {
-          const card = userData?.cardDetails[cardId]
+          const card:CardDetails = userData?.cardDetails[cardId]!;
+          const cardLink = `${card?.circle?.slug}/${card?.project?.slug}/${card?.slug}`;
           return(
-            <Card mode={mode} key={cardId}>
-              <Text weight="semiBold" variant="large">{card?.title}</Text>
+            <Card mode={mode} key={cardId} onClick={()=> window.open(`/${cardLink}`)}>
+              <Text weight="medium" variant="base">{card?.title}</Text>
               <GigInfo>
-              <Avatar label="profile-pic" src="/og.jpg" size="8" />
-              <Text variant="label">02:45pm</Text>
+                {card?.priority > 0 && <PriorityIcon priority={card?.priority} />}
+                {card?.reviewer?.map( person => 
+                  <Avatar label="profile-pic" src={person?.avatar} size="6" />
+                )}
+              <Avatar label="profile-pic" src={card?.circle?.avatar} size="6" />
               </GigInfo>
             </Card> 
-        )})
+          )})
       ):(
         userData?.reviewingCards?.slice(0).reverse().map(cardId => {
-          const card = userData?.cardDetails[cardId]
+          const card:CardDetails = userData?.cardDetails[cardId]!;
+          const cardLink = `${card?.circle?.slug}/${card?.project?.slug}/${card?.slug}`;
           return(
-            <Card mode={mode} key={cardId}>
-              <Text weight="semiBold" variant="large">{card?.title}</Text>
+            <Card mode={mode} key={cardId} onClick={()=> window.open(`/${cardLink}`)}>
+              <Text weight="medium" variant="base">{card?.title}</Text>
               <GigInfo>
-              <Avatar label="profile-pic" src="/og.jpg" size="8" />
-              <Text variant="label">02:45pm</Text>
+                {card?.priority > 0 && <PriorityIcon priority={card?.priority} />}
+                {card?.assignee?.map( person => 
+                  <Avatar label="profile-pic" src={person?.avatar} size="6" />
+                )}
+              <Avatar label="profile-pic" src={card?.circle?.avatar} size="6" />
               </GigInfo>
             </Card> 
-        )})
+          )})
         )}
-    </>
+    </Box>
   )
 }
 
@@ -218,8 +225,8 @@ const QuickProfileTabs = ({userData} : UserProps) => {
       { panelTab === "Work" && 
         <>
           <Toggle toggle={toggle} setToggle={setToggle}/>
-          <ScrollContainer >
-            <WorkCards toggle={toggle} setToggle={setToggle} userData={userData} />
+          <ScrollContainer>
+            <WorkCards toggle={toggle} setToggle={setToggle} userData={userData}/>
           </ScrollContainer>
         </>}
       { panelTab == "Activity" && 
