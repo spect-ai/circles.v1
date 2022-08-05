@@ -25,35 +25,12 @@ const ProfilePage: NextPage = () => {
   const router = useRouter(); 
   const userId = router.query.user;
   // eslint-disable-next-line @typescript-eslint/unbound-method
-  const { mode, setMode } = useTheme();
+  const { mode } = useTheme();
   const { isProfilePanelExpanded, connectUser } = useGlobal();
-
-  useEffect(() => {
-    setTimeout(() => {
-      localStorage.getItem("lightMode") && setMode("light");
-    }, 100);
-  }, []);
-
-  const { data: user, refetch: fetchUser } = useQuery<UserType>(
-    ["user", userId],
-    async() =>
-      await fetch(`${process.env.API_HOST}/user/${userId}`).then(
-        (res) => res.json()
-      ),
-    {
-      enabled: false,
-    }
-  );
 
   const { refetch } = useQuery<UserType>("getMyUser", getUser, {
     enabled: false,
   });
-
-  useEffect(() => {
-    if (!user && userId) {
-      void fetchUser();
-    }
-  }, [user, userId]);
 
   useEffect(() => {
     refetch()
