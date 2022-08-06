@@ -9,6 +9,7 @@ import {SaveOutlined} from "@ant-design/icons";
 import { editViews, deleteViews } from "@/app/services/ProjectViews";
 import { cardType, priorityType, labels, Status } from "../constants"
 import Modal from "@/app/common/components/Modal";
+import { useGlobal } from "@/app/context/globalContext";
 
 interface Props{
   setViewOpen: (viewOpen: boolean) => void;
@@ -22,6 +23,7 @@ function EditViewModal ({setViewOpen, viewId}: Props){
 
   const { circle: cId, project: pId } = router.query;
   const { localProject: project, setLocalProject } = useLocalProject();
+  const { setViewName } = useGlobal();
   const { data: circle } = useQuery<CircleType>(["circle", cId], {enabled: false});
   const { data: memberDetails } = useQuery<MemberDetails>(["memberDetails", cId], { enabled: false });
 
@@ -45,7 +47,7 @@ function EditViewModal ({setViewOpen, viewId}: Props){
   const view:Views = project.viewDetails?.[viewId as string]!;
   const viewFilters:Filter = view?.filters!;
   
-  const [viewName, setViewName] = useState<string>(view?.name || ' ');
+  const [name, setName] = useState<string>(view?.name || ' ');
   const [layout, setLayout] = useState<"Board" | "List">(view?.type || "Board");
   const [reviewer, setReviewer] = useState<string[]>(viewFilters?.reviewer || []);
   const [assignee, setAssignee] = useState<string[]>(viewFilters?.assignee || []);
@@ -55,7 +57,7 @@ function EditViewModal ({setViewOpen, viewId}: Props){
   const [priority, setPriority] = useState<string[]>(viewFilters?.priority || []);
   const [type, setType] = useState<string[]>(viewFilters?.type || []);
 
-  const edit = async() => {
+  const onEdit = async() => {
     const updatedProject = await editViews({
       type: layout,
       hidden: false,
@@ -70,18 +72,15 @@ function EditViewModal ({setViewOpen, viewId}: Props){
         priority: priority,
         deadline: '',
       },
-      name: viewName,
+      name: name,
     }, project.id, viewId)
+    setViewOpen(false)
     console.log(updatedProject);
     if (updatedProject !== null) setLocalProject(updatedProject);
   }
 
-  const onViewSubmit = () => {
-    setViewOpen(false)
-    edit();
-  };
-
   const onDelete = async() => {
+    setViewName('');
     router.push(`/${cId}/${pId}/`);
     setViewOpen(false);
     const updatedProject = await deleteViews(project.id, viewId)
@@ -96,12 +95,12 @@ function EditViewModal ({setViewOpen, viewId}: Props){
               <InputBox mode={mode}>
                 <Input
                   placeholder={'View Name'}
-                  value={viewName}
+                  value={name}
                   onChange={(e) => 
                   setViewName(e.target.value)}
                 />
               </InputBox>
-              {viewName.length == 0 && <Text variant="small" color="purple">Please name it</Text>}
+              {name.length == 0 && <Text variant="small" color="purple">Please name it</Text>}
               <Box 
                 display="flex" 
                 flexDirection="row" 
@@ -198,8 +197,8 @@ function EditViewModal ({setViewOpen, viewId}: Props){
                 width="full"
                 size="small"
                 variant="secondary"
-                onClick={onViewSubmit}
-                disabled={viewName.length == 0}
+                onClick={onEdit}
+                disabled={name.length == 0}
                 prefix={<SaveOutlined/>}
               >
                 Save Changes

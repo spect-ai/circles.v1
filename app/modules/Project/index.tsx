@@ -40,7 +40,8 @@ function Project() {
   let viewId : string = '';
 
   if (vId) {
-    viewId = project.viewOrder?.[Number(vId[vId.length - 1])]!;
+    const array: string[] = project.viewOrder?.filter((i)=> project.viewDetails?.[i].slug == vId)!;
+    viewId = array[0];
   }
 
   return (

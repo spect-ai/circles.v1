@@ -22,8 +22,6 @@ export const ViewBar = () => {
   const [viewMode, setViewMode] = useState('');
   const [viewId, setViewId] = useState('');
 
-  console.log(viewName);
-
   useEffect(()=> {
     if(!vId){
       setViewName('');

@@ -10,6 +10,7 @@ import { createViews } from "@/app/services/ProjectViews";
 import { cardType, priorityType, labels, Status } from "../constants"
 import { Input, InputBox } from "../MultipleDropDown";
 import Modal from "@/app/common/components/Modal";
+import { useGlobal } from "@/app/context/globalContext";
 
 interface Props{
   setViewOpen: (viewOpen: boolean) => void;
@@ -20,8 +21,9 @@ function CreateViewModal ({setViewOpen}: Props){
   const router = useRouter();
   const {mode} = useTheme();
 
-  const { circle: cId } = router.query;
+  const { circle: cId, project: pId  } = router.query;
   const { localProject: project, setLocalProject } = useLocalProject();
+  const { setViewName } = useGlobal();
   const { data: circle } = useQuery<CircleType>(["circle", cId], {enabled: false});
   const { data: memberDetails } = useQuery<MemberDetails>(["memberDetails", cId], { enabled: false });
 
@@ -42,7 +44,7 @@ function CreateViewModal ({setViewOpen}: Props){
     id: column,
   }));
   
-  const [viewName, setViewName] = useState<string>('');
+  const [name, setName] = useState<string>('');
   const [layout, setLayout] = useState<"Board" | "List">('Board');
   const [reviewer, setReviewer] = useState<string[]>([]);
   const [assignee, setAssignee] = useState<string[]>([]);
@@ -52,7 +54,7 @@ function CreateViewModal ({setViewOpen}: Props){
   const [priority, setPriority] = useState<string[]>([]);
   const [type, setType] = useState<string[]>([]);
 
-  const create = async() => {
+  const onCreate = async() => {
     const updatedProject = await createViews({
       type: layout,
       hidden: false,
@@ -67,16 +69,12 @@ function CreateViewModal ({setViewOpen}: Props){
         priority: priority,
         deadline: '',
       },
-      name: viewName,
+      name: name,
     }, project.id)
     console.log(updatedProject);
-    if (updatedProject !== null) setLocalProject(updatedProject);
-  }
-
-  const onViewSubmit = () => {
     setViewOpen(false)
-    create();
-  };
+    if (updatedProject !== null) setLocalProject(updatedProject)
+  }
 
   return(
     <>
@@ -85,12 +83,12 @@ function CreateViewModal ({setViewOpen}: Props){
               <InputBox mode={mode}>
                 <Input
                   placeholder={'View Name'}
-                  value={viewName}
+                  value={name}
                   onChange={(e) => 
-                  setViewName(e.target.value)}
+                  setName(e.target.value)}
                 />
               </InputBox>
-              {viewName.length == 0 && <Text variant="small" color="purple">Please name it</Text>}
+              {name.length == 0 && <Text variant="small" color="purple">Please name it</Text>}
               <Box 
                 display="flex" 
                 flexDirection="row" 
@@ -171,7 +169,7 @@ function CreateViewModal ({setViewOpen}: Props){
                     setTitle(e.target.value)}
                 />
               </InputBox> 
-              <PrimaryButton onClick={onViewSubmit} disabled={viewName.length == 0} >
+              <PrimaryButton onClick={onCreate} disabled={name.length == 0} >
                 Create View
               </PrimaryButton>
             </Box>
