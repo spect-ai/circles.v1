@@ -14,13 +14,14 @@ interface Props {
   options: OptionType[];
   value: string[];
   setValue: (value: string[])=> void;
+  width: string;
 }
 
-const OptionsContainer = styled(Box)<{ isExpanded: boolean }>`
+const OptionsContainer = styled(Box)<{ isExpanded: boolean, widthValue: string }>`
   display: ${(props) => (props.isExpanded ? "block" : "none")};
   position: absolute;
   z-index: 1;
-  width: 20rem;
+  width: ${(props)=> props.widthValue}rem;
 `;
 
 const Option = styled(Box)<{isSelected?: boolean}>`
@@ -62,12 +63,10 @@ export const Input = styled.input`
   caret-color: rgb(191, 90, 242);
   color: rgb(191, 90, 242);
   font-weight: 400;
-  width: 18rem;
   opacity: "40%";
 `
 
 export const InputBox = styled(Box)<{mode: string}>`
-  width: 20rem;
   margin-bottom: 0.5rem;
   display: flex;
   flex-direction: row;
@@ -86,7 +85,7 @@ const slide = {
   collapsed: { height: 0, opacity: 0 },
 };
 
-const MultipleDropdown: FC<Props> = ({ options, value, setValue, title }) => {
+const MultipleDropdown: FC<Props> = ({ options, value, setValue, title, width }) => {
 
   const {mode} = useTheme();
 
@@ -120,8 +119,7 @@ const MultipleDropdown: FC<Props> = ({ options, value, setValue, title }) => {
   return (
     <>
       <InputBox mode={mode}>
-        <Box display="flex" flexDirection="row" flexWrap="wrap" width="64" alignItems="center">
-        
+        <Box display="flex" flexDirection="row" flexWrap="wrap" alignItems="center" style={{ width: "92%"}}>
           {value?.map( item => {
             const selectedOption = options.filter((i)=> i.id == item);            
             return (
@@ -134,7 +132,7 @@ const MultipleDropdown: FC<Props> = ({ options, value, setValue, title }) => {
               >
                 <Tag hover tone="accent" >
                 <Box display="flex" alignItems="center" gap="1">
-                  {selectedOption[0].name}
+                  {selectedOption[0]?.name}
                   <IconClose size="4" />
                 </Box>
               </Tag>
@@ -188,7 +186,7 @@ const MultipleDropdown: FC<Props> = ({ options, value, setValue, title }) => {
           </Box>
         </Box>  
       </InputBox>
-      <OptionsContainer isExpanded={isExpanded} ref={inputRef}>
+      <OptionsContainer isExpanded={isExpanded} ref={inputRef} widthValue={width}>
         <AnimatePresence>
           {isExpanded && (
             <motion.div

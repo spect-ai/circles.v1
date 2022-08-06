@@ -1,52 +1,31 @@
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { useQuery } from "react-query";
-import { useLocalProject } from "../Context/LocalProjectContext";
+import { useLocalProject } from "../../Context/LocalProjectContext";
 import { CircleType, MemberDetails } from '@/app/types';
-import MultipleDropdown, { OptionType } from "./MultipleDropDown";
-import Popover from '@/app/common/components/Popover';
-import { Box, IconPlusSmall, Text, useTheme, IconGrid, IconList  } from "degen";
-import styled from "styled-components";
+import MultipleDropdown, { OptionType } from "../MultipleDropDown";
+import { Box, Text, useTheme, IconGrid, IconList  } from "degen";
 import PrimaryButton from '@/app/common/components/PrimaryButton';
 import { createViews } from "@/app/services/ProjectViews";
-import { cardType, priorityType, labels, Status } from "./constants"
-import { toast } from "react-toastify";
-import { Input, InputBox } from "./MultipleDropDown";
-import { WechatFilled } from "@ant-design/icons";
+import { cardType, priorityType, labels, Status } from "../constants"
+import { Input, InputBox } from "../MultipleDropDown";
+import Modal from "@/app/common/components/Modal";
 
-const Container = styled(Box)`
-  ::-webkit-scrollbar {
-    display: none;
-  }
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-  max-height: 40rem;
-  overflow-y: auto;
-  padding: 1rem;
-  display: flex;
-  flex-direction: row;
-`;
+interface Props{
+  setViewOpen: (viewOpen: boolean) => void;
+}
 
-function CreateViewModal (){
+function CreateViewModal ({setViewOpen}: Props){
 
   const router = useRouter();
   const {mode} = useTheme();
 
   const { circle: cId } = router.query;
   const { localProject: project, setLocalProject } = useLocalProject();
-  const { data: circle } = useQuery<CircleType>(["circle", cId], {
-    enabled: false,
-  });
+  const { data: circle } = useQuery<CircleType>(["circle", cId], {enabled: false});
+  const { data: memberDetails } = useQuery<MemberDetails>(["memberDetails", cId], { enabled: false });
 
-  const { data: memberDetails, refetch: fetchMemberDetails } =
-    useQuery<MemberDetails>(["memberDetails", cId], {
-      enabled: false,
-    });
-
-    const [filteredMembers, setFilteredMembers] = useState<
-    { name: string; id: string }[]
-  >([] as any);
-
+  const [filteredMembers, setFilteredMembers] = useState<{ name: string; id: string }[]>([] as any);
 
   useEffect(() => {
     if (circle) {
@@ -63,7 +42,6 @@ function CreateViewModal (){
     id: column,
   }));
   
-  const [viewOpen, setViewOpen] = useState(false);
   const [viewName, setViewName] = useState<string>('');
   const [layout, setLayout] = useState<"Board" | "List">('Board');
   const [reviewer, setReviewer] = useState<string[]>([]);
@@ -72,19 +50,10 @@ function CreateViewModal (){
   const [title, setTitle] = useState<string>('');
   const [column, setColumn] = useState<string[]>([]);
   const [priority, setPriority] = useState<string[]>([]);
-  const [status, setStatus] = useState<string[]>([]);
   const [type, setType] = useState<string[]>([]);
 
-  const handleClick = () => {
-    if(project.viewOrder && project.viewOrder?.length < 3 ){
-      setViewOpen(true);
-    }else{
-      toast.warning("You cannot create more than 3 views");
-    }
-  };
-
-   const main = async() => {
-    const newView = await createViews({
+  const create = async() => {
+    const updatedProject = await createViews({
       type: layout,
       hidden: false,
       filters: {
@@ -92,7 +61,7 @@ function CreateViewModal (){
         reviewer: reviewer,
         column: column,
         label: label,
-        status: status,
+        status: [],
         title: title,
         type: type,
         priority: priority,
@@ -100,42 +69,19 @@ function CreateViewModal (){
       },
       name: viewName,
     }, project.id)
-    console.log(newView);
-    if (newView !== null) setLocalProject(newView);
+    console.log(updatedProject);
+    if (updatedProject !== null) setLocalProject(updatedProject);
   }
 
   const onViewSubmit = () => {
     setViewOpen(false)
-    main();
+    create();
   };
 
   return(
     <>
-      <Box style={{"borderRadius": "2px"}}>
-        <Popover
-          butttonComponent={
-            <Box
-              cursor="pointer"
-              onClick={handleClick}
-              color="foreground"
-              display="flex"
-              flexDirection="row"
-              gap="1"
-              alignItems="center"
-            >
-              <IconPlusSmall color="textSecondary" size="4"/>
-              <Text color="textSecondary">View</Text>
-            </Box>
-          }
-          isOpen={viewOpen}
-          setIsOpen={setViewOpen}
-        >
-          <Container
-            backgroundColor="background"
-            borderWidth="0.5"
-            borderRadius="large"
-          >
-            <Box >
+        <Modal handleClose={()=>setViewOpen(false)} title={'Create View'} size="small">
+          <Box padding={"4"}>
               <InputBox mode={mode}>
                 <Input
                   placeholder={'View Name'}
@@ -176,40 +122,46 @@ function CreateViewModal (){
                 </Box>
               </Box>
               <MultipleDropdown
+                width="30"
                 options={filteredMembers as OptionType[]}
                 value={assignee}
                 setValue={setAssignee}
                 title={'Assignee'}
               />
               <MultipleDropdown
+                width="30"
                 options={filteredMembers as OptionType[]}
                 value={reviewer}
                 setValue={setReviewer}
                 title={'Reviewer'}
               />
               <MultipleDropdown
+                width="30"
                 options={labels as OptionType[]}
                 value={label}
                 setValue={setLabels}
                 title={'Labels'}
               />
               <MultipleDropdown
+                width="30"
                 options={columns as OptionType[]}
                 value={column}
                 setValue={setColumn}
                 title={'Column'}
               />
               <MultipleDropdown
-                options={cardType as OptionType[]}
-                value={type}
-                setValue={setType}
-                title={'Type'}
-              />
-              <MultipleDropdown
+                width="30"
                 options={priorityType as OptionType[]}
                 value={priority}
                 setValue={setPriority}
                 title={'Priority'}
+              />
+              <MultipleDropdown
+                width="30"
+                options={cardType as OptionType[]}
+                value={type}
+                setValue={setType}
+                title={'Type'}
               />
               <InputBox mode={mode}>
                 <Input
@@ -223,13 +175,10 @@ function CreateViewModal (){
                 Create View
               </PrimaryButton>
             </Box>
-          </Container>
-        </Popover>
-      </Box>
+        </Modal>
     </>
   )
 }
-
 export default CreateViewModal;
 
 

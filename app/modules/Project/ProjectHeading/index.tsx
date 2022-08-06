@@ -5,7 +5,7 @@ import Skeleton from "react-loading-skeleton";
 import styled from "styled-components";
 import { useLocalProject } from "../Context/LocalProjectContext";
 import ProjectOptions from "./ProjectOptions";
-import CreateViewModal from "../ProjectViews/ViewModal";
+import CreateViewModal from "../ProjectViews/ViewModal/CreateViewModal";
 import { ViewBar } from "../ProjectViews/ViewBar";
 
 export const IconButton = styled(Box)`
@@ -53,7 +53,6 @@ function ProjectHeading() {
         )}
         {project?.name && canDo(["steward"]) && <ProjectOptions />}
         <ViewBar />
-        {project?.name && canDo(["steward"]) && <CreateViewModal/>}
       </Stack>
       <Stack direction="horizontal" align="center">
         <Box
