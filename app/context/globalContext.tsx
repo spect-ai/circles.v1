@@ -5,12 +5,15 @@ interface GlobalContextType {
   connectedUser: string;
   connectUser: (userId: string) => void;
   disconnectUser: () => void;
+  viewName: string;
+  setViewName: React.Dispatch<React.SetStateAction<string>>;
 }
 
 const useProviderGlobalContext = () => {
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
   // const [registry, setRegistry] = useState<Registry>({} as Registry);
   const [connectedUser, setConnectedUser] = useState("");
+  const [viewName, setViewName] = useState('' as string);
 
   function connectUser(userId: string) {
     setConnectedUser(userId);
@@ -36,6 +39,8 @@ const useProviderGlobalContext = () => {
     connectedUser,
     connectUser,
     disconnectUser,
+    viewName,
+    setViewName
   };
 };
 

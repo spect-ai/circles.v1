@@ -5,6 +5,7 @@ import PrimaryButton from "@/app/common/components/PrimaryButton";
 import Tabs from "@/app/common/components/Tabs";
 import useCardDynamism from "@/app/services/Card/useCardDynamism";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
+import { useGlobal } from "@/app/context/globalContext";
 import {
   Box,
   IconChevronDown,
@@ -86,6 +87,7 @@ function Card() {
   } = useLocalCard();
 
   const { canTakeAction } = useRoleGate();
+  const { viewName } = useGlobal();
 
   const { getTabs, activityTab, applicationTab, submissionTab } =
     useCardDynamism();
@@ -137,7 +139,7 @@ function Card() {
         />
         <Box padding="1" borderBottomWidth="0.375">
           <Stack direction="horizontal">
-            <Link href={`/${cId}/${pId}`}>
+            <Link href={ viewName?.length > 0 ? `/${cId}/${pId}/?view=${viewName}` :  `/${cId}/${pId}` }>
               <IconButton color="textSecondary" paddingX="2">
                 <IconClose />
               </IconButton>

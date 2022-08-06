@@ -1,6 +1,7 @@
 import { useRouter } from "next/router";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useLocalProject } from "../Context/LocalProjectContext";
+import { useGlobal } from "@/app/context/globalContext";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { Box, Button, IconGrid, IconList, IconDotsVertical, Text, IconPlusSmall} from "degen";
 import Link from "next/link";
@@ -14,25 +15,33 @@ export const ViewBar = () => {
   const router = useRouter();
   const { circle: cId, project: pId, view: vId } = router.query;
   const { localProject: project } = useLocalProject();
+  const { viewName, setViewName} = useGlobal()
   const { canDo } = useRoleGate();
 
   const [openModal, setOpenModal] = useState(false);
   const [viewMode, setViewMode] = useState('');
   const [viewId, setViewId] = useState('');
-  
+
+  console.log(viewName);
+
+  useEffect(()=> {
+    if(!vId){
+      setViewName('');
+    }
+  },[pId])
 
   return(
     <>
       <Box display="flex" flexDirection="row" gap="4">
         {project?.viewOrder && project?.viewOrder?.length > 0 &&
           <Link href={`/${cId}/${pId}`}>
-            <Button variant="transparent" size="small" onClick={()=> setViewId('')}>
+            <Button variant="transparent" size="small" onClick={()=> setViewName('')}>
               Default View
             </Button>
           </Link>
         }
-        {project?.viewOrder?.map((viewId, idx)=> {
-          const view = project.viewDetails?.[viewId];
+        {project?.viewOrder?.map(view_Id => {
+          const view = project.viewDetails?.[view_Id];
           
           return(
             <>
@@ -41,8 +50,11 @@ export const ViewBar = () => {
                   prefix={view?.type == 'Board' ? <IconGrid size="4"/> : <IconList size="4"/>} 
                   variant={ view?.slug == vId ? "tertiary" : "transparent" }
                   size="small"
-                  key={viewId}
-                  onClick={()=> setViewId(viewId)}
+                  key={view_Id}
+                  onClick={()=> {
+                    setViewName(view?.slug as string)
+                    setViewId(view_Id)
+                  }}
                   suffix={
                     view?.slug == vId  && canDo(["steward"]) ? 
                     <>
