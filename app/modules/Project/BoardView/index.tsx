@@ -70,10 +70,12 @@ function BoardView({viewId}: Props) {
           if (viewFilter.column?.length > 0 && !viewFilter.column?.includes(columnId)) return null;
 
           const column = project.columnDetails[columnId];
-          const cards = column.cards?.map(
+          let cards = column.cards?.map(
             (cardId: any) => 
              viewId ? viewCards[cardId] : project.cards[cardId]
           );
+          cards = cards.filter((i)=> i !== undefined);
+          
           return (
             <ColumnComponent
               key={columnId}

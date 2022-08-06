@@ -135,7 +135,7 @@ function ColumnComponent({ cards, id, column, index }: Props) {
             //   disabled={space.roles[user?.id as string] !== 3}
           />
           <Box paddingRight="1">
-            <Text variant="label">({column.cards.length})</Text>
+            <Text variant="label">({cards.length})</Text>
           </Box>
           <Button
             data-tour={`add-card-button`}
