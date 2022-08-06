@@ -1,7 +1,8 @@
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { Box } from "degen";
-import React, { memo } from "react";
+import React, { memo, useEffect } from "react";
 import { useLocalProject } from "./Context/LocalProjectContext";
+import { useGlobal } from "@/app/context/globalContext";
 import useProjectOnboarding from "@/app/services/Onboarding/useProjectOnboarding";
 import CreateSubmission from "@/app/modules/Card/Submission/CreateSubmission";
 
@@ -29,6 +30,7 @@ function Project() {
   } = useLocalProject();
   const { canDo } = useRoleGate();
   const { onboarded } = useProjectOnboarding();
+  const { setViewName } = useGlobal();
 
   const router = useRouter();
   const { card: tId, view: vId} = router.query;
@@ -39,9 +41,9 @@ function Project() {
 
   let viewId : string = '';
 
-  if (vId) {
-    const array: string[] = project.viewOrder?.filter((i)=> project.viewDetails?.[i].slug == vId)!;
-    viewId = array[0];
+  if(vId){
+    viewId = vId as string;
+    setViewName(viewId);
   }
 
   return (
@@ -77,7 +79,7 @@ function Project() {
           {!onboarded && canDo(["steward"]) && <Onboarding />}
           {!vId && view === 0 && <BoardView viewId={''} />}
           {!vId && view === 1 && <ListView />}
-          {vId && <BoardView viewId={viewId as string} key={viewId} />}
+          {vId && <BoardView viewId={viewId as string} key={viewId} /> }
         </Box>
       </motion.main>
     </>

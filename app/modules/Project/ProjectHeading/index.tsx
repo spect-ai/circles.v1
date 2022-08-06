@@ -5,8 +5,8 @@ import Skeleton from "react-loading-skeleton";
 import styled from "styled-components";
 import { useLocalProject } from "../Context/LocalProjectContext";
 import ProjectOptions from "./ProjectOptions";
-import CreateViewModal from "../ProjectViews/ViewModal/CreateViewModal";
 import { ViewBar } from "../ProjectViews/ViewBar";
+import { useRouter } from "next/router";
 
 export const IconButton = styled(Box)`
   cursor: pointer;
@@ -19,6 +19,12 @@ function ProjectHeading() {
   const { localProject: project, loading, view, setView } = useLocalProject();
   const { canDo } = useRoleGate();
   const { mode } = useTheme();
+  const router = useRouter();
+  const { circle: cId, project: pId, view: vId } = router.query;
+
+  const defaultView = () => {
+    if (vId) router.push(`/${cId}/${pId}/`)
+  }
 
   return (
     <Box
@@ -68,7 +74,10 @@ function ProjectHeading() {
             paddingX="2"
             borderLeftRadius="large"
             backgroundColor={view === 0 ? "foregroundSecondary" : "background"}
-            onClick={() => setView(0)}
+            onClick={() => {
+              setView(0)
+              defaultView()
+            }}
           >
             <IconGrid size="6" />
           </IconButton>
@@ -77,7 +86,10 @@ function ProjectHeading() {
             paddingX="2"
             borderRightRadius="large"
             backgroundColor={view === 1 ? "foregroundSecondary" : "background"}
-            onClick={() => setView(1)}
+            onClick={() => {
+              setView(1)
+              defaultView()
+            }}
           >
             <IconList size="6" />
           </IconButton>

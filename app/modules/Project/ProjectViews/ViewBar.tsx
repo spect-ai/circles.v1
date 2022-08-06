@@ -20,7 +20,6 @@ export const ViewBar = () => {
 
   const [openModal, setOpenModal] = useState(false);
   const [viewMode, setViewMode] = useState('');
-  const [viewId, setViewId] = useState('');
 
   useEffect(()=> {
     if(!vId){
@@ -31,30 +30,22 @@ export const ViewBar = () => {
   return(
     <>
       <Box display="flex" flexDirection="row" gap="4">
-        {project?.viewOrder && project?.viewOrder?.length > 0 &&
-          <Link href={`/${cId}/${pId}`}>
-            <Button variant="transparent" size="small" onClick={()=> setViewName('')}>
-              Default View
-            </Button>
-          </Link>
-        }
         {project?.viewOrder?.map(view_Id => {
           const view = project.viewDetails?.[view_Id];
           
           return(
             <>
-              <Link href={`/${cId}/${pId}?view=${view?.slug}`}>
+              <Link href={`/${cId}/${pId}?view=${view_Id}`}>
                 <Button 
                   prefix={view?.type == 'Board' ? <IconGrid size="4"/> : <IconList size="4"/>} 
-                  variant={ view?.slug == vId ? "tertiary" : "transparent" }
+                  variant={ view_Id == viewName ? "tertiary" : "transparent" }
                   size="small"
                   key={view_Id}
                   onClick={()=> {
-                    setViewName(view?.slug as string)
-                    setViewId(view_Id)
+                    setViewName(view_Id as string)
                   }}
                   suffix={
-                    view?.slug == vId  && canDo(["steward"]) ? 
+                    view_Id == viewName  && canDo(["steward"]) ? 
                     <>
                       <Box onClick={()=> {
                         setViewMode('edit');
@@ -95,7 +86,7 @@ export const ViewBar = () => {
       {openModal && 
         <AnimatePresence>
           {viewMode == 'create' && <CreateViewModal setViewOpen={setOpenModal}/>}
-          {viewMode == 'edit' && <EditViewModal setViewOpen={setOpenModal} viewId={viewId}/>}
+          {viewMode == 'edit' && <EditViewModal setViewOpen={setOpenModal} viewId={viewName}/>}
         </AnimatePresence>
       }
     </>

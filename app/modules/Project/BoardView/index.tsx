@@ -67,7 +67,7 @@ function BoardView({viewId}: Props) {
         })}
         {viewId && project?.columnOrder?.map((columnId, index): any => {
           
-          if (viewFilter.column?.length > 0 && !viewFilter.column?.includes(columnId)) return null;
+          if (viewFilter?.column?.length > 0 && !viewFilter.column?.includes(columnId)) return null;
 
           const column = project.columnDetails[columnId];
           let cards = column.cards?.map(
