@@ -4,6 +4,8 @@ import { toast } from "react-toastify";
 interface UpdateProfileDTO {
   username: string;
   avatar: string;
+  bio?: string;
+  skills?: string[];
   discordId?: string;
   githubId?: string;
 }

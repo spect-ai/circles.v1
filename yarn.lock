@@ -3504,6 +3504,11 @@
   dependencies:
     "@types/node" "*"
 
+"@types/gtag.js@^0.0.10":
+  version "0.0.10"
+  resolved "https://registry.yarnpkg.com/@types/gtag.js/-/gtag.js-0.0.10.tgz#ac90d9b79c00daac447725a4b78ec1c398796760"
+  integrity sha512-98Hy7woUb3jMAMXkZQwfIOYNyfxmI0+U4m0PpCGdnd/FHk0tDpQFCqgXdNkdEoXsKkcGya/2Gew1cAJjKJspVw==
+
 "@types/hast@^2.0.0":
   version "2.3.4"
   resolved "https://registry.npmjs.org/@types/hast/-/hast-2.3.4.tgz"
@@ -3691,10 +3696,10 @@
   dependencies:
     "@types/react" "*"
 
-"@types/react@*", "@types/react@^17":
-  version "17.0.46"
-  resolved "https://registry.npmjs.org/@types/react/-/react-17.0.46.tgz"
-  integrity sha512-zNAJVEO9dBEQLPa/OuedGfx92/UlD+1rNxSv2qVWUQZ+orEtLUWFgZ08xfyI9TAZLnmWzZDtssAsgtbXT7Ew0g==
+"@types/react@*", "@types/react@17.0.30", "@types/react@^17":
+  version "17.0.30"
+  resolved "https://registry.yarnpkg.com/@types/react/-/react-17.0.30.tgz#2f8e6f5ab6415c091cc5e571942ee9064b17609e"
+  integrity sha512-3Dt/A8gd3TCXi2aRe84y7cK1K8G+N9CZRDG8kDGguOKa0kf/ZkSwTmVIDPsm/KbQOVMaDJXwhBtuOXxqwdpWVg==
   dependencies:
     "@types/prop-types" "*"
     "@types/scheduler" "*"
@@ -6497,10 +6502,10 @@ define-property@^2.0.2:
     is-descriptor "^1.0.2"
     isobject "^3.0.1"
 
-degen@^0.0.94:
-  version "0.0.94"
-  resolved "https://registry.yarnpkg.com/degen/-/degen-0.0.94.tgz#6a66fb6f724bbc5ce91026645df3231e2d5680a8"
-  integrity sha512-MHIgYF2aoPcKusFfrndWNP9v2YTzkW4Dh3eGS4aG4dug9O8bmxRgz51WpTDxDxGebwFO8Xa6muB0dzcab0DJ/g==
+degen@^0.0.97:
+  version "0.0.97"
+  resolved "https://registry.yarnpkg.com/degen/-/degen-0.0.97.tgz#2abc19e9258e43191a43ba23f0c8baaadca7845a"
+  integrity sha512-8ztI68wPi6JR32zub/Uk2O4wPbNaHeziGsALfJKrwj/i0y6o4sCTnxBMC3INX9iCGu+60OQoyHhkNkYJb4ehHA==
   dependencies:
     "@vanilla-extract/css" "^1.6.3"
     "@vanilla-extract/css-utils" "^0.1.1"
@@ -12118,6 +12123,11 @@ react-grid-system@^8.1.5:
   integrity sha512-Y6eUYpDPpBV/WrN1DYNjlHYO+Lmxxwzwj17j2wTzPKnoFjXYQc515GjcX8sLE9SEsWJ7rQc2AU1q358wukj8Sw==
   dependencies:
     prop-types "^15.8.0"
+
+react-hook-form@^7.33.1:
+  version "7.33.1"
+  resolved "https://registry.yarnpkg.com/react-hook-form/-/react-hook-form-7.33.1.tgz#8c4410e3420788d3b804d62cc4c142915c2e46d0"
+  integrity sha512-ydTfTxEJdvgjCZBj5DDXRc58oTEfnFupEwwTAQ9FSKzykEJkX+3CiAkGtAMiZG7IPWHuzgT6AOBfogiKhUvKgg==
 
 react-hotkeys-hook@^3.4.6:
   version "3.4.6"

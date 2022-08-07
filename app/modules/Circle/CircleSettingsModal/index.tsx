@@ -12,16 +12,13 @@ import { useQuery } from "react-query";
 import CircleIntegrations from "./CircleIntegrations";
 import DefaultPayment from "./CirclePayment";
 import Contributors from "../ContributorsModal/Contributors";
+import { useCircle } from "../CircleContext";
 interface Props {
   handleClose: () => void;
 }
 
 export default function SettingsModal({ handleClose }: Props) {
-  const router = useRouter();
-  const { circle: cId } = router.query;
-  const { data: circle } = useQuery<CircleType>(["circle", cId], {
-    enabled: false,
-  });
+  const { circle, setCircleData } = useCircle();
 
   const [tab, setTab] = useState(0);
   const [visibilityTab, setVisibilityTab] = useState(0);
@@ -34,6 +31,9 @@ export default function SettingsModal({ handleClose }: Props) {
   const [logo, setLogo] = useState(circle?.avatar || "");
 
   const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
+
+  console.log({ circle });
 
   const onSubmit = async () => {
     setIsLoading(true);
@@ -50,7 +50,7 @@ export default function SettingsModal({ handleClose }: Props) {
     setIsLoading(false);
     if (res) {
       handleClose();
-      queryClient.setQueryData(["circle", cId], res);
+      setCircleData(res);
     }
   };
 
@@ -58,7 +58,6 @@ export default function SettingsModal({ handleClose }: Props) {
     const res = await deleteCircle(circle?.id as string);
     if (res) {
       handleClose();
-      queryClient.removeQueries(["circle", cId]);
       void router.push("/");
     }
   };

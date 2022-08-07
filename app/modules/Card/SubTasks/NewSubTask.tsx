@@ -121,7 +121,7 @@ export default function NewSubTask({ createCard }: Props) {
                   });
                   setTitle("");
                   setAssignees([]);
-                  setCard(data.parentCard);
+                  setCard(data.card);
                 }}
               >
                 Save

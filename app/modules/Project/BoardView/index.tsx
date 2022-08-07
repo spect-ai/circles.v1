@@ -114,9 +114,12 @@ function BoardView({ viewId }: Props) {
   );
 
   const DroppableContentCallback = useCallback(DroppableContent, [
-    project.columnDetails,
     project?.columnOrder,
-    project,
+    project.id,
+    project.columnDetails,
+    project.cards,
+    canDo,
+    setLocalProject,
   ]);
 
   if (loading) {

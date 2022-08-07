@@ -1,5 +1,5 @@
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
-import { Box } from "degen";
+import { Box, useTheme } from "degen";
 import React, { memo, useEffect } from "react";
 import { useLocalProject } from "./Context/LocalProjectContext";
 import { useGlobal } from "@/app/context/globalContext";
@@ -36,6 +36,8 @@ function Project() {
   const router = useRouter();
   const { card: tId, view: vId} = router.query;
 
+  const { mode } = useTheme();
+
   if (tId || !project) {
     return null;
   }
@@ -55,9 +57,9 @@ function Project() {
   return (
     <>
       <AnimatePresence>
-        {batchPayModalOpen && selectedCard && (
+        {/* {batchPayModalOpen && selectedCard && (
           <BatchPay card={selectedCard} setIsOpen={setBatchPayModalOpen} />
-        )}
+        )} */}
         {isApplyModalOpen && selectedCard && (
           <Apply setIsOpen={setIsApplyModalOpen} cardId={selectedCard.id} />
         )}
@@ -78,8 +80,12 @@ function Project() {
         <Box width="full">
           <ToastContainer
             toastStyle={{
-              backgroundColor: "rgb(20,20,20)",
-              color: "rgb(255,255,255,0.7)",
+              backgroundColor: `${
+                mode === "dark" ? "rgb(20,20,20)" : "rgb(240,240,240)"
+              }`,
+              color: `${
+                mode === "dark" ? "rgb(255,255,255,0.7)" : "rgb(20,20,20,0.7)"
+              }`,
             }}
           />
           {!onboarded && canDo(["steward"]) && <Onboarding />}

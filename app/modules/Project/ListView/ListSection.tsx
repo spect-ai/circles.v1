@@ -1,7 +1,7 @@
 import { PriorityIcon } from "@/app/common/components/PriorityIcon";
 import { monthMap } from "@/app/common/utils/constants";
 import { CardType, ColumnType, MemberDetails } from "@/app/types";
-import { Avatar, Box, IconEth, Stack, Tag, Text } from "degen";
+import { Avatar, Box, IconEth, Stack, Tag, Text, useTheme } from "degen";
 import { useRouter } from "next/router";
 import React, { useMemo } from "react";
 import { useQuery } from "react-query";
@@ -12,9 +12,10 @@ type Props = {
   column: ColumnType;
 };
 
-const TaskContainer = styled(Box)`
+const TaskContainer = styled(Box)<{ mode: string }>`
   &:hover {
-    background-color: rgba(255, 255, 255, 0.05);
+    background-color: ${({ mode }) =>
+      mode === "dark" ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.1)"};
   }
 `;
 
@@ -27,6 +28,7 @@ const CardList = ({ card }: { card: CardType }) => {
       enabled: false,
     }
   );
+  const { mode } = useTheme();
 
   const deadline = useMemo(() => new Date(card.deadline), [card.deadline]);
 
@@ -40,6 +42,7 @@ const CardList = ({ card }: { card: CardType }) => {
       }}
       transitionDuration="500"
       backgroundColor="background"
+      mode={mode}
     >
       <Box marginLeft="3">
         <Stack direction="horizontal" justify="space-between">
@@ -52,11 +55,9 @@ const CardList = ({ card }: { card: CardType }) => {
                 }
                 label=""
                 size="6"
-                placeholder={
-                  !(
-                    memberDetails?.memberDetails &&
-                    memberDetails.memberDetails[card.assignee[0]]?.avatar
-                  )
+                address={
+                  memberDetails?.memberDetails &&
+                  memberDetails.memberDetails[card.assignee[0]]?.ethAddress
                 }
               />
             ) : (
@@ -65,7 +66,7 @@ const CardList = ({ card }: { card: CardType }) => {
             <Text weight="semiBold">{card.title}</Text>
           </Stack>
           <Box display="flex">
-            <Stack direction="horizontal" space="8" align="center" wrap>
+            <Stack direction="horizontal" space="2" align="center" wrap>
               {card.status.paid && (
                 <Tag size="small">
                   <Text color="green">Paid</Text>

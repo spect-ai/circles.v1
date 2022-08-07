@@ -3,13 +3,11 @@ import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { Box, Input, Stack, Tag, Text } from "degen";
 import React, { useState } from "react";
 import useERC20 from "@/app/services/Payment/useERC20";
-import { Chain, CircleType, Registry } from "@/app/types";
+import { Chain, Registry } from "@/app/types";
 import { AnimatePresence } from "framer-motion";
 import { addToken } from "@/app/services/Payment";
-import { useRouter } from "next/router";
-import { useQuery } from "react-query";
 import Loader from "@/app/common/components/Loader";
-import queryClient from "@/app/common/utils/queryClient";
+import { useCircle } from "../../CircleContext";
 
 interface Props {
   chain: Chain | undefined;
@@ -22,12 +20,7 @@ export default function AddToken({ chain }: Props) {
   const [tokenName, setTokenName] = useState("");
   const [loading, setLoading] = useState(false);
   const { symbol, name } = useERC20();
-
-  const router = useRouter();
-  const { circle: cId } = router.query;
-  const { data: circle } = useQuery<CircleType>(["circle", cId], {
-    enabled: false,
-  });
+  const { circle, setRegistryData } = useCircle();
 
   return (
     <>
@@ -77,7 +70,7 @@ export default function AddToken({ chain }: Props) {
                       name: tokenName,
                     });
                     console.log({ res });
-                    queryClient.setQueryData(["registry", cId], res);
+                    setRegistryData(res as Registry);
                     res && setIsOpen(false);
                   }}
                 >

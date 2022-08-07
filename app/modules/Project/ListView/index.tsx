@@ -49,9 +49,9 @@ function ListView({ viewId }: Props) {
   return (
     <>
       <AnimatePresence>
-        {batchPayModalOpen && selectedCard && (
+        {/* {batchPayModalOpen && selectedCard && (
           <BatchPay card={selectedCard} setIsOpen={setBatchPayModalOpen} />
-        )}
+        )} */}
         <ScrollContainer>
           <Stack space="8">
             {!viewId &&
@@ -97,7 +97,7 @@ function ListView({ viewId }: Props) {
                     setLocalProject(updatedProject);
                   }}
                 >
-                  Add new column
+                  Add new section
                 </PrimaryButton>
               </Box>
             )}

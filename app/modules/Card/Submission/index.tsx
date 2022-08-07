@@ -29,7 +29,6 @@ export default function Submission() {
         {canTakeAction("cardSubmission") && (
           <Box width="1/3" marginBottom="2">
             <PrimaryButton
-              icon={<IconDocuments />}
               onClick={() => setIsOpen(true)}
               variant={workThreadOrder.length > 0 ? "transparent" : "secondary"}
             >
