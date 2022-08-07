@@ -10,7 +10,6 @@ import { createViews } from "@/app/services/ProjectViews";
 import { cardType, priorityType, labels, Status } from "../constants";
 import { Input, InputBox } from "../MultipleDropDown";
 import Modal from "@/app/common/components/Modal";
-import { useGlobal } from "@/app/context/globalContext";
 
 interface Props {
   setViewOpen: (viewOpen: boolean) => void;
@@ -20,9 +19,8 @@ function CreateViewModal({ setViewOpen }: Props) {
   const router = useRouter();
   const { mode } = useTheme();
 
-  const { circle: cId, project: pId } = router.query;
+  const { circle: cId } = router.query;
   const { localProject: project, setLocalProject } = useLocalProject();
-  const { setViewName } = useGlobal();
   const { data: circle } = useQuery<CircleType>(["circle", cId], {
     enabled: false,
   });
