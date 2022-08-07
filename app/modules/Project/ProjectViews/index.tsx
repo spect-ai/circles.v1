@@ -36,12 +36,11 @@ export const ViewBar = () => {
 
   return (
     <>
-      <Box display="flex" flexDirection="row" gap="4">
+      <Box display="flex" flexDirection="row" gap="4" >
         {project?.viewOrder?.map((view_Id) => {
           const view = project.viewDetails?.[view_Id];
 
           return (
-            <>
               <Link href={`/${cId}/${pId}?view=${view_Id}`} key={view_Id}>
                 <Button
                   prefix={
@@ -53,7 +52,6 @@ export const ViewBar = () => {
                   }
                   variant={view_Id == viewName ? "tertiary" : "transparent"}
                   size="small"
-                  key={view_Id}
                   suffix={
                     view_Id == viewName && canDo(["steward"]) ? (
                       <>
@@ -74,7 +72,6 @@ export const ViewBar = () => {
                   {view?.name}
                 </Button>
               </Link>
-            </>
           );
         })}
       </Box>

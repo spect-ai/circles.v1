@@ -10,7 +10,7 @@ export const filterCards = (
   project: ProjectType,
   currentFilter: Filter
 ): CardsType => {
-  if (!currentFilter) return project.cards;
+  if (!currentFilter || !project.cards) return project.cards;
   const filteredCards = Object.values(project.cards)?.filter((card) => {
     if (card === undefined) return false;
     let reviewerFiltSat = false;
