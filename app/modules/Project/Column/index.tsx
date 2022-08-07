@@ -54,7 +54,8 @@ const NameInput = styled.input<{ mode: string }>`
   outline-offset: 0;
   box-shadow: none;
   font-size: 1.1rem;
-  caret-color: rgb(255, 255, 255, 0.85);
+  caret-color: ${(props) =>
+    props.mode === "dark" ? "rgb(255, 255, 255, 0.7)" : "rgb(20, 20, 20, 0.7)"};
   color: ${(props) =>
     props.mode === "dark" ? "rgb(255, 255, 255, 0.7)" : "rgb(20, 20, 20, 0.7)"};
   font-weight: 400;
