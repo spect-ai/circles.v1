@@ -7,6 +7,7 @@ import { useLocalProject } from "../Context/LocalProjectContext";
 import ProjectOptions from "./ProjectOptions";
 import { ViewBar } from "../ProjectViews/ViewBar";
 import { useRouter } from "next/router";
+import { useGlobal } from "@/app/context/globalContext";
 
 export const IconButton = styled(Box)`
   cursor: pointer;
@@ -21,8 +22,10 @@ function ProjectHeading() {
   const { mode } = useTheme();
   const router = useRouter();
   const { circle: cId, project: pId, view: vId } = router.query;
+  const { setViewName, viewName } = useGlobal();
 
   const defaultView = () => {
+    if (viewName.length > 0) setViewName('')
     if (vId) router.push(`/${cId}/${pId}/`)
   }
 

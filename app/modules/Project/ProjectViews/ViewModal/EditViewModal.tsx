@@ -80,8 +80,8 @@ function EditViewModal ({setViewOpen, viewId}: Props){
   }
 
   const onDelete = async() => {
-    setViewName('');
     router.push(`/${cId}/${pId}/`);
+    setViewName('');
     setViewOpen(false);
     const updatedProject = await deleteViews(project.id, viewId)
     console.log(updatedProject);
@@ -97,7 +97,7 @@ function EditViewModal ({setViewOpen, viewId}: Props){
                   placeholder={'View Name'}
                   value={name}
                   onChange={(e) => 
-                  setViewName(e.target.value)}
+                    setName(e.target.value)}
                 />
               </InputBox>
               {name.length == 0 && <Text variant="small" color="purple">Please name it</Text>}

@@ -35,15 +35,12 @@ export const ViewBar = () => {
           
           return(
             <>
-              <Link href={`/${cId}/${pId}?view=${view_Id}`}>
+              <Link href={`/${cId}/${pId}?view=${view_Id}`} key={view_Id}>
                 <Button 
                   prefix={view?.type == 'Board' ? <IconGrid size="4"/> : <IconList size="4"/>} 
                   variant={ view_Id == viewName ? "tertiary" : "transparent" }
                   size="small"
                   key={view_Id}
-                  onClick={()=> {
-                    setViewName(view_Id as string)
-                  }}
                   suffix={
                     view_Id == viewName  && canDo(["steward"]) ? 
                     <>

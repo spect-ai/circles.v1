@@ -30,7 +30,7 @@ function Project() {
   } = useLocalProject();
   const { canDo } = useRoleGate();
   const { onboarded } = useProjectOnboarding();
-  const { setViewName } = useGlobal();
+  const { setViewName, viewName } = useGlobal();
 
   const router = useRouter();
   const { card: tId, view: vId} = router.query;
@@ -41,8 +41,11 @@ function Project() {
 
   let viewId : string = '';
 
-  if(vId){
+  if(vId !== undefined){
     viewId = vId as string;
+    setViewName(viewId);
+  } else {
+    viewId = '';
     setViewName(viewId);
   }
 

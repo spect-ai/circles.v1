@@ -129,6 +129,7 @@ const MultipleDropdown: FC<Props> = ({ options, value, setValue, title, width })
                 setValue(value.filter((i) => i !== selectedOption[0].id))
                 }} 
                 padding="0.5"
+                key={selectedOption[0]?.id}
               >
                 <Tag hover tone="accent" >
                 <Box display="flex" alignItems="center" gap="1">
