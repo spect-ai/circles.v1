@@ -6,10 +6,27 @@ interface UserType {
   updatedAt: string;
   username: string;
   avatar: string;
+  bio: string;
+  skills: string[];
   discordId?: string;
   githubId?: string;
+  twitterId?: string;
   _id: string;
+  circles: string[];
+  projects: string[];
+  assignedCards: string[];
+  reviewingCards: string[];
+  assignedClosedCards: string[];
+  reviewingClosedCards: string[];
+  cardDetails: any;
+  activities: string[];
+  notifications: string[];
+  bookmarks: string[];
+  followedCircles: string[];
+  followedUsers: string[];
+  followedByUsers: string[];
 }
+
 export interface Payment {
   chain: Chain;
   token: Token;
@@ -336,4 +353,39 @@ export interface Activity {
   actorId: string;
   commitId: string;
   comment: boolean;
+}
+
+export interface CardDetails {
+  id: string;
+  title: string;
+  slug: string;
+  deadline: string;
+  priority: number;
+  labels: string[];
+  reviewer: {
+    username: string;
+    avatar: string;
+    id: string;
+  }[];
+  assignee: {
+    username: string;
+    avatar: string;
+    id: string;
+  }[];
+  project: {
+    name: string;
+    slug: string;
+    id: string
+  };
+  circle: {
+    avatar: string;
+    name: string;
+    slug: string;
+    id: string
+  };
+  status: {
+    active: boolean;
+    archived: boolean;
+    paid: boolean;
+  };
 }
