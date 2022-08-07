@@ -15,6 +15,7 @@ import Onboarding from "./ProjectOnboarding";
 import ListView from "./ListView";
 import BatchPay from "./BatchPay";
 import Apply from "../Card/Apply";
+import { Views } from "@/app/types";
 
 function Project() {
   const {
@@ -49,6 +50,8 @@ function Project() {
     setViewName(viewId);
   }
 
+  const selectedView: Views = project.viewDetails?.[viewId as string]!;  
+
   return (
     <>
       <AnimatePresence>
@@ -81,8 +84,9 @@ function Project() {
           />
           {!onboarded && canDo(["steward"]) && <Onboarding />}
           {!vId && view === 0 && <BoardView viewId={''} />}
-          {!vId && view === 1 && <ListView />}
-          {vId && <BoardView viewId={viewId as string} key={viewId} /> }
+          {!vId && view === 1 && <ListView viewId={''}/>}
+          {vId && selectedView.type == 'Board' && <BoardView viewId={viewId as string} key={viewId} /> }
+          {vId && selectedView.type == 'List' && <ListView viewId={viewId as string} key={viewId} /> }
         </Box>
       </motion.main>
     </>

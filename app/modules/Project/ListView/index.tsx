@@ -10,6 +10,12 @@ import { SkeletonLoader } from "../SkeletonLoader";
 import BatchPay from "../BatchPay";
 import { AnimatePresence } from "framer-motion";
 import ListSection from "./ListSection";
+import { filterCards } from "../ProjectViews/filterCards";
+import { Filter, Views } from "@/app/types";
+
+interface Props{
+  viewId: string;
+}
 
 const ScrollContainer = styled.div`
   height: calc(100vh - 4.5rem);
@@ -21,7 +27,7 @@ const ScrollContainer = styled.div`
   overflow-y: auto;
 `;
 
-function ListView() {
+function ListView({viewId}: Props) {
   const {
     localProject: project,
     setLocalProject,
@@ -31,6 +37,10 @@ function ListView() {
     setBatchPayModalOpen,
   } = useLocalProject();
   const { canDo } = useRoleGate();
+
+  const view: Views = project.viewDetails?.[viewId as string]!;  
+  const viewCards = filterCards(project, view?.filters as Filter);
+  const viewFilter = view?.filters;
 
   if (loading) {
     return <SkeletonLoader />;
@@ -44,7 +54,7 @@ function ListView() {
         )}
         <ScrollContainer>
           <Stack space="8">
-            {project?.columnOrder?.map((columnId, index): any => {
+            {!viewId && project?.columnOrder?.map((columnId, index): any => {
               const column = project.columnDetails[columnId];
               const cards = column.cards?.map(
                 (cardId: any) => project.cards[cardId]
@@ -53,7 +63,22 @@ function ListView() {
                 <ListSection key={columnId} column={column} cards={cards} />
               );
             })}
-            {project?.id && canDo(["steward"]) && (
+            {viewId && project?.columnOrder?.map((columnId, index): any => {
+
+              if (viewFilter?.column?.length > 0 && !viewFilter.column?.includes(columnId)) return null;
+
+              const column = project.columnDetails[columnId];
+              let cards = column.cards?.map(
+                (cardId: any) => 
+                viewId ? viewCards[cardId] : project.cards[cardId]
+              );
+              cards = cards.filter((i)=> i !== undefined);
+
+              return (
+                <ListSection key={columnId} column={column} cards={cards} />
+              );
+            })}
+            {!viewId && project?.id && canDo(["steward"]) && (
               <Box style={{ width: "20rem" }} marginTop="2" marginLeft="2">
                 <PrimaryButton
                   variant="tertiary"
