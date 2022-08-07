@@ -1,61 +1,11 @@
-export const labels = [
-  {
-    name: "Design",
-    id: "Design",
-  },
-  {
-    name: "Coding",
-    id: "Coding",
-  },
-  {
-    name: "Quality",
-    id: "Quality",
-  },
-  {
-    name: "Github",
-    id: "Github",
-  },
-  {
-    name: "POC",
-    id: "POC",
-  },
-  {
-    name: "Bug",
-    id: "Bug",
-  },
-  {
-    name: "Idea",
-    id: "Idea",
-  },
-  {
-    name: "Feature",
-    id: "Feature",
-  },
-  {
-    name: "Enhancement",
-    id: "Enhancement",
-  },
-  {
-    name: "Integration",
-    id: "Integration",
-  },
-  {
-    name: "Marketing",
-    id: "Marketing",
-  },
-  {
-    name: "Documentation",
-    id: "Documentation",
-  },
-  {
-    name: "Deployment",
-    id: "Deployment",
-  },
-  {
-    name: "Testing",
-    id: "Testing",
-  },
-];
+import { labels as labelArray } from "@/app/common/utils/constants";
+import { OptionType } from "./MultipleDropDown";
+
+const labels = [] as any;
+
+labelArray.map((la) => labels.push({ name: la, id: la }));
+
+export { labels };
 
 export const cardType = [
   {
