@@ -92,8 +92,10 @@ export const ViewBar = () => {
           gap="1"
           alignItems="center"
         >
-          <IconPlusSmall color="textSecondary" size="4" />
-          <Text color="textSecondary">View</Text>
+          <IconPlusSmall color="textSecondary" size="5" />
+          <Text color="textSecondary" variant="base" weight="medium">
+            Create View
+          </Text>
         </Box>
       )}
       {openModal && (

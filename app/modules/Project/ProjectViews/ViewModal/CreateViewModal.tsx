@@ -100,6 +100,7 @@ function CreateViewModal({ setViewOpen }: Props) {
               placeholder={"View Name"}
               value={name}
               onChange={(e) => setName(e.target.value)}
+              maxLength={15}
             />
           </InputBox>
           {name.length == 0 && (
