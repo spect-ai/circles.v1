@@ -14,7 +14,7 @@ import { useLocalProject } from "../Context/LocalProjectContext";
 import useDragEnd from "../Hooks/useDragEnd";
 import ColumnComponent from "../Column";
 import { SkeletonLoader } from "../SkeletonLoader";
-import { filterCards } from "../ProjectViews/filterCards";
+import { filterCards } from "../Filter/filterCards";
 import { Filter, Views } from "@/app/types";
 
 interface Props {

@@ -10,7 +10,7 @@ import { SkeletonLoader } from "../SkeletonLoader";
 import BatchPay from "../BatchPay";
 import { AnimatePresence } from "framer-motion";
 import ListSection from "./ListSection";
-import { filterCards } from "../ProjectViews/filterCards";
+import { filterCards } from "../Filter/filterCards";
 import { Filter, Views } from "@/app/types";
 
 interface Props {

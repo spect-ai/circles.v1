@@ -5,15 +5,14 @@ import { useLocalProject } from "../../Context/LocalProjectContext";
 import { CircleType, MemberDetails } from "@/app/types";
 import MultiSelectDropdown, {
   OptionType,
-} from "../../../../common/components/MultiSelectDropDown/MultiSelectDropDown";
+  Input,
+  InputBox,
+} from "@/app/common/components/MultiSelectDropDown/MultiSelectDropDown";
+
 import { Box, Text, useTheme, IconGrid, IconList } from "degen";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { createViews } from "@/app/services/ProjectViews";
-import { cardType, priorityType, labels, Status } from "../constants";
-import {
-  Input,
-  InputBox,
-} from "../../../../common/components/MultiSelectDropDown/MultiSelectDropDown";
+import { cardType, priorityType, labels } from "../constants";
 import Modal from "@/app/common/components/Modal";
 
 interface Props {
