@@ -1,5 +1,5 @@
 import { labels as labelArray } from "@/app/common/utils/constants";
-import { OptionType } from "./MultipleDropDown";
+import { OptionType } from "../../../common/components/MultiSelectDropDown/MultiSelectDropDown";
 
 const labels = [] as any;
 

@@ -105,7 +105,7 @@ const slide = {
   collapsed: { height: 0, opacity: 0 },
 };
 
-const MultipleDropdown: FC<Props> = ({
+const MultiSelectDropdown: FC<Props> = ({
   options,
   value,
   setValue,
@@ -307,6 +307,6 @@ const MultipleDropdown: FC<Props> = ({
   );
 };
 
-export default MultipleDropdown;
+export default MultiSelectDropdown;
 
 export type { Props as DropdownProps };

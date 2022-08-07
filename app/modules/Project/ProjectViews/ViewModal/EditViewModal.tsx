@@ -3,11 +3,11 @@ import React, { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { useLocalProject } from "../../Context/LocalProjectContext";
 import { CircleType, MemberDetails, Views, Filter } from "@/app/types";
-import MultipleDropdown, {
+import MultiSelectDropdown, {
   OptionType,
   Input,
   InputBox,
-} from "../MultipleDropDown";
+} from "../../../../common/components/MultiSelectDropDown/MultiSelectDropDown";
 import {
   Box,
   Text,
@@ -165,42 +165,42 @@ function EditViewModal({ setViewOpen, viewId }: Props) {
               </Box>
             </Box>
           </Box>
-          <MultipleDropdown
+          <MultiSelectDropdown
             width="30"
             options={filteredMembers as OptionType[]}
             value={assignee}
             setValue={setAssignee}
             title={"Assignee"}
           />
-          <MultipleDropdown
+          <MultiSelectDropdown
             width="30"
             options={filteredMembers as OptionType[]}
             value={reviewer}
             setValue={setReviewer}
             title={"Reviewer"}
           />
-          <MultipleDropdown
+          <MultiSelectDropdown
             width="30"
             options={labels as OptionType[]}
             value={label}
             setValue={setLabels}
             title={"Labels"}
           />
-          <MultipleDropdown
+          <MultiSelectDropdown
             width="30"
             options={columns as OptionType[]}
             value={column}
             setValue={setColumn}
             title={"Column"}
           />
-          <MultipleDropdown
+          <MultiSelectDropdown
             width="30"
             options={priorityType as OptionType[]}
             value={priority}
             setValue={setPriority}
             title={"Priority"}
           />
-          <MultipleDropdown
+          <MultiSelectDropdown
             width="30"
             options={cardType as OptionType[]}
             value={type}

@@ -3,12 +3,17 @@ import React, { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { useLocalProject } from "../../Context/LocalProjectContext";
 import { CircleType, MemberDetails } from "@/app/types";
-import MultipleDropdown, { OptionType } from "../MultipleDropDown";
+import MultiSelectDropdown, {
+  OptionType,
+} from "../../../../common/components/MultiSelectDropDown/MultiSelectDropDown";
 import { Box, Text, useTheme, IconGrid, IconList } from "degen";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { createViews } from "@/app/services/ProjectViews";
 import { cardType, priorityType, labels, Status } from "../constants";
-import { Input, InputBox } from "../MultipleDropDown";
+import {
+  Input,
+  InputBox,
+} from "../../../../common/components/MultiSelectDropDown/MultiSelectDropDown";
 import Modal from "@/app/common/components/Modal";
 
 interface Props {
@@ -139,42 +144,42 @@ function CreateViewModal({ setViewOpen }: Props) {
               </Box>
             </Box>
           </Box>
-          <MultipleDropdown
+          <MultiSelectDropdown
             width="30"
             options={filteredMembers as OptionType[]}
             value={assignee}
             setValue={setAssignee}
             title={"Assignee"}
           />
-          <MultipleDropdown
+          <MultiSelectDropdown
             width="30"
             options={filteredMembers as OptionType[]}
             value={reviewer}
             setValue={setReviewer}
             title={"Reviewer"}
           />
-          <MultipleDropdown
+          <MultiSelectDropdown
             width="30"
             options={labels as OptionType[]}
             value={label}
             setValue={setLabels}
             title={"Labels"}
           />
-          <MultipleDropdown
+          <MultiSelectDropdown
             width="30"
             options={columns as OptionType[]}
             value={column}
             setValue={setColumn}
             title={"Column"}
           />
-          <MultipleDropdown
+          <MultiSelectDropdown
             width="30"
             options={priorityType as OptionType[]}
             value={priority}
             setValue={setPriority}
             title={"Priority"}
           />
-          <MultipleDropdown
+          <MultiSelectDropdown
             width="30"
             options={cardType as OptionType[]}
             value={type}
