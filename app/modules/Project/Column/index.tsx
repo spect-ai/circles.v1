@@ -1,15 +1,7 @@
 import { updateColumnDetails } from "@/app/services/Column";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { CardType, ColumnType } from "@/app/types";
-import {
-  Box,
-  Button,
-  IconCog,
-  IconPlusSmall,
-  Stack,
-  Text,
-  useTheme,
-} from "degen";
+import { Box, Button, IconCog, IconPlusSmall, Stack, useTheme } from "degen";
 import { AnimatePresence } from "framer-motion";
 import React, { memo, useCallback, useEffect, useState } from "react";
 import {
@@ -135,7 +127,7 @@ function ColumnComponent({ cards, id, column, index }: Props) {
             //   disabled={space.roles[user?.id as string] !== 3}
           />
           <Box paddingRight="1">
-            <Text variant="label">({column.cards.length})</Text>
+            {/* <Text variant="label">({column.cards.length})</Text> */}
           </Box>
           <Button
             data-tour={`add-card-button`}
@@ -177,9 +169,12 @@ function ColumnComponent({ cards, id, column, index }: Props) {
 
   const DraggableContentCallback = useCallback(DraggableContent, [
     CardDraggableCallback,
-    column.cards,
+    canDo,
+    column.cards.length,
     columnTitle,
+    id,
     mode,
+    updateColumn,
   ]);
 
   useEffect(() => {

@@ -107,6 +107,7 @@ export default function Comment({
               label=""
               placeholder={!getMemberDetails(actorId as string)?.avatar}
               src={getMemberDetails(actorId as string)?.avatar}
+              address={getMemberDetails(actorId as string)?.ethAddress}
               size="8"
             />
           )}

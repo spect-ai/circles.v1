@@ -7,6 +7,7 @@ import {
 import { useLocalCard } from "@/app/modules/Project/CreateCardModal/hooks/LocalCardContext";
 import { MemberDetails } from "@/app/types";
 import { useRouter } from "next/router";
+import React from "react";
 import { useQuery } from "react-query";
 
 export default function useModalOptions() {
@@ -82,12 +83,31 @@ export default function useModalOptions() {
         return [];
     }
   };
-  const getMemberDetails = (id: string) => {
-    return memberDetails?.memberDetails[id];
-  };
+
+  const getMemberDetails = React.useCallback(
+    (id: string) => {
+      return memberDetails?.memberDetails[id];
+    },
+    [memberDetails?.memberDetails]
+  );
+
+  const getMemberAvatars = React.useCallback(
+    (members: string[]) => {
+      return members.map((member) => {
+        const memberDetails = getMemberDetails(member);
+        return {
+          src: memberDetails?.avatar,
+          label: memberDetails?.username || "",
+          address: memberDetails?.ethAddress,
+        };
+      });
+    },
+    [getMemberDetails]
+  );
   return {
     getOptions,
     getMemberDetails,
     fetchMemberDetails,
+    getMemberAvatars,
   };
 }

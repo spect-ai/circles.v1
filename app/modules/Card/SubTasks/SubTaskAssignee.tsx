@@ -1,6 +1,6 @@
 import Modal from "@/app/common/components/Modal";
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
-import { Avatar, Box, IconUserSolid } from "degen";
+import { AvatarGroup, Box, IconUserSolid } from "degen";
 import { AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
@@ -36,7 +36,7 @@ export default function SubTaskAssignee({ assignees, setAssignees }: Props) {
   const [isOpen, setIsOpen] = useState(false);
   const [options, setOptions] = useState<Option[]>({} as Option[]);
   const [filteredOptions, setFilteredOptions] = useState<Option[]>();
-  const { getOptions, getMemberDetails } = useModalOptions();
+  const { getOptions, getMemberAvatars } = useModalOptions();
 
   useEffect(() => {
     const ops = getOptions("assignee") as Option[];
@@ -54,13 +54,7 @@ export default function SubTaskAssignee({ assignees, setAssignees }: Props) {
         empty={assignees.length === 0}
       >
         {assignees.length > 0 ? (
-          <Avatar
-            size="9"
-            src={getMemberDetails(assignees[0])?.avatar}
-            label="avatar"
-            placeholder={!getMemberDetails(assignees[0])?.avatar}
-            address={getMemberDetails(assignees[0])?.ethAddress}
-          />
+          <AvatarGroup members={getMemberAvatars(assignees)} hover />
         ) : (
           <IconUserSolid />
         )}

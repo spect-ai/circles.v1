@@ -17,20 +17,7 @@ const RowContainer = styled(Box)`
 `;
 
 export default function RetroRow({ retro }: Props) {
-  const { getMemberDetails } = useModalOptions();
-  const getMemberAvatars = React.useCallback(
-    (members: string[]) => {
-      return members.map((member) => {
-        const memberDetails = getMemberDetails(member);
-        return {
-          src: memberDetails?.avatar,
-          label: memberDetails?.username || "",
-          address: memberDetails?.ethAddress,
-        };
-      });
-    },
-    [getMemberDetails]
-  );
+  const { getMemberAvatars } = useModalOptions();
 
   return (
     <motion.div

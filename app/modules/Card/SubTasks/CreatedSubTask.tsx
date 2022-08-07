@@ -1,8 +1,8 @@
-import { Avatar, Box, Stack, useTheme } from "degen";
+import { AvatarGroup, Box, Stack, useTheme } from "degen";
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { motion } from "framer-motion";
-import { CardType, UserType } from "@/app/types";
+import { CardType } from "@/app/types";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
@@ -48,7 +48,7 @@ type Props = {
 
 type ContainerProps = {
   title: string;
-  memberDetails: UserType | undefined;
+  assignees: string[];
 };
 
 const variants = {
@@ -64,9 +64,9 @@ const variants = {
   },
 };
 
-export const SubTaskContainer = ({ title, memberDetails }: ContainerProps) => {
+export const SubTaskContainer = ({ title, assignees }: ContainerProps) => {
   const { mode } = useTheme();
-  console.log({ memberDetails });
+  const { getMemberAvatars } = useModalOptions();
   return (
     <motion.div
       style={{
@@ -77,20 +77,10 @@ export const SubTaskContainer = ({ title, memberDetails }: ContainerProps) => {
       variants={variants}
     >
       <Container paddingX="4" borderWidth="0.5" cursor="pointer" mode={mode}>
-        <Stack direction="horizontal">
+        <Stack direction="horizontal" align="center">
           <TitleInput value={title} disabled mode={mode} />
           <Box paddingY="1">
-            {memberDetails && (
-              <Stack direction="horizontal" space="1">
-                <Avatar
-                  size="9"
-                  src={memberDetails.avatar}
-                  label="avatar"
-                  placeholder={!memberDetails.avatar}
-                  address={memberDetails.ethAddress}
-                />
-              </Stack>
-            )}
+            <AvatarGroup members={getMemberAvatars(assignees)} hover size="8" />
           </Box>
         </Stack>
       </Container>
@@ -102,7 +92,6 @@ export default function CreatedSubTask({ child }: Props) {
   const [assignees, setAssignees] = useState<string[]>([]);
   const router = useRouter();
   const { circle: cId, project: pId } = router.query;
-  const { getMemberDetails } = useModalOptions();
 
   useEffect(() => {
     if (child) {
@@ -112,10 +101,7 @@ export default function CreatedSubTask({ child }: Props) {
   return (
     <Link href={`/${cId}/${pId}/${child.slug}`}>
       <div>
-        <SubTaskContainer
-          title={child.title}
-          memberDetails={getMemberDetails(child.assignee[0])}
-        />
+        <SubTaskContainer title={child.title} assignees={child.assignee} />
       </div>
     </Link>
   );

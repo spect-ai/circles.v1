@@ -2,7 +2,7 @@ import Editor from "@/app/common/components/Editor";
 import Modal from "@/app/common/components/Modal";
 import { Box, Button, Stack, Tag } from "degen";
 import { AnimatePresence } from "framer-motion";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import CardAssignee from "./modals/CardAssignee";
 import CardColumn from "./modals/CardColumn";
@@ -74,6 +74,8 @@ export default function CreateCardModal({
     setDescription,
     project,
   } = context;
+
+  const [loading, setLoading] = useState(false);
 
   useHotkeys(
     "return",
@@ -181,8 +183,11 @@ export default function CreateCardModal({
               size="small"
               width="1/3"
               variant="secondary"
-              onClick={() => {
-                void onSubmit(false);
+              loading={loading}
+              onClick={async () => {
+                setLoading(true);
+                await onSubmit(false);
+                setLoading(false);
                 setIsDirty(false);
               }}
               disabled={!title}

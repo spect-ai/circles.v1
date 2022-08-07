@@ -41,10 +41,8 @@ const Option = styled(Box)<{ mode: string }>`
 
 const ScrollContainer = styled(Box)`
   ::-webkit-scrollbar {
-    display: none;
+    width: 10px;
   }
-  -ms-overflow-style: none;
-  scrollbar-width: none;
   height: 9.5rem;
   overflow-y: auto;
 `;
@@ -109,7 +107,7 @@ const Dropdown: FC<Props> = ({ options, selected, onChange, title }) => {
         isExpanded={isExpanded}
         borderWidth="0.5"
         backgroundColor="backgroundSecondary"
-        borderRadius="3xLarge"
+        borderRadius="large"
       >
         <AnimatePresence>
           {isExpanded && (
