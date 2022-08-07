@@ -2,9 +2,9 @@ import Popover from "@/app/common/components/Popover";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { useQuery } from "react-query";
-import { Box, Text, useTheme, IconGrid, IconList } from "degen";
+import { Box, useTheme } from "degen";
 import { FilterOutlined } from "@ant-design/icons";
-import { CircleType, Filter as FilterType, MemberDetails } from "@/app/types";
+import { CircleType, MemberDetails } from "@/app/types";
 import MultiSelectDropdown, {
   OptionType,
   Input,
@@ -119,7 +119,7 @@ export default function Filter() {
             <FilterOutlined
               style={{
                 color: `${filterIsOn ? "rgb(191, 90, 242, 0.7)" : "gray"}`,
-                fontSize: "1.5rem",
+                fontSize: "1.3rem",
               }}
             />
           </Box>

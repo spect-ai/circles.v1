@@ -34,7 +34,7 @@ function Project() {
   const { setViewName, viewName } = useGlobal();
 
   const router = useRouter();
-  const { card: tId, view: vId} = router.query;
+  const { card: tId, view: vId } = router.query;
 
   const { mode } = useTheme();
 
@@ -42,17 +42,17 @@ function Project() {
     return null;
   }
 
-  let viewId : string = '';
+  let viewId: string = "";
 
-  if(vId !== undefined){
+  if (vId !== undefined) {
     viewId = vId as string;
     setViewName(viewId);
   } else {
-    viewId = '';
+    viewId = "";
     setViewName(viewId);
   }
 
-  const selectedView: Views = project.viewDetails?.[viewId as string]!;  
+  const selectedView: Views = project.viewDetails?.[viewId as string]!;
 
   return (
     <>
@@ -89,10 +89,14 @@ function Project() {
             }}
           />
           {!onboarded && canDo(["steward"]) && <Onboarding />}
-          {!vId && view === 0 && <BoardView viewId={''} />}
-          {!vId && view === 1 && <ListView viewId={''}/>}
-          {vId && selectedView?.type == 'Board' && <BoardView viewId={viewId as string} key={viewId} /> }
-          {vId && selectedView?.type == 'List' && <ListView viewId={viewId as string} key={viewId} /> }
+          {!vId && view === 0 && <BoardView viewId={""} />}
+          {!vId && view === 1 && <ListView viewId={""} />}
+          {vId && selectedView?.type == "Board" && (
+            <BoardView viewId={viewId as string} key={viewId} />
+          )}
+          {vId && selectedView?.type == "List" && (
+            <ListView viewId={viewId as string} key={viewId} />
+          )}
         </Box>
       </motion.main>
     </>

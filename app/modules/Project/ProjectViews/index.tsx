@@ -36,42 +36,42 @@ export const ViewBar = () => {
 
   return (
     <>
-      <Box display="flex" flexDirection="row" gap="4" >
+      <Box display="flex" flexDirection="row" gap="4">
         {project?.viewOrder?.map((view_Id) => {
           const view = project.viewDetails?.[view_Id];
 
           return (
-              <Link href={`/${cId}/${pId}?view=${view_Id}`} key={view_Id}>
-                <Button
-                  prefix={
-                    view?.type == "Board" ? (
-                      <IconGrid size="4" />
-                    ) : (
-                      <IconList size="4" />
-                    )
-                  }
-                  variant={view_Id == viewName ? "tertiary" : "transparent"}
-                  size="small"
-                  suffix={
-                    view_Id == viewName && canDo(["steward"]) ? (
-                      <>
-                        <Box
-                          onClick={() => {
-                            setViewMode("edit");
-                            setOpenModal(true);
-                          }}
-                        >
-                          <IconDotsVertical size="4" />
-                        </Box>
-                      </>
-                    ) : (
-                      <></>
-                    )
-                  }
-                >
-                  {view?.name}
-                </Button>
-              </Link>
+            <Link href={`/${cId}/${pId}?view=${view_Id}`} key={view_Id}>
+              <Button
+                prefix={
+                  view?.type == "Board" ? (
+                    <IconGrid size="4" />
+                  ) : (
+                    <IconList size="4" />
+                  )
+                }
+                variant={view_Id == viewName ? "tertiary" : "transparent"}
+                size="small"
+                suffix={
+                  view_Id == viewName && canDo(["steward"]) ? (
+                    <>
+                      <Box
+                        onClick={() => {
+                          setViewMode("edit");
+                          setOpenModal(true);
+                        }}
+                      >
+                        <IconDotsVertical size="4" />
+                      </Box>
+                    </>
+                  ) : (
+                    <></>
+                  )
+                }
+              >
+                {view?.name}
+              </Button>
+            </Link>
           );
         })}
       </Box>
