@@ -35,12 +35,15 @@ function ListView({ viewId }: Props) {
     batchPayModalOpen,
     selectedCard,
     setBatchPayModalOpen,
+    currentFilter,
   } = useLocalProject();
   const { canDo } = useRoleGate();
 
   const view: Views = project.viewDetails?.[viewId as string]!;
   const viewCards = filterCards(project, view?.filters as Filter);
   const viewFilter = view?.filters;
+
+  const filteredCards = filterCards(project, currentFilter as Filter);
 
   if (loading) {
     return <SkeletonLoader />;
@@ -58,7 +61,7 @@ function ListView({ viewId }: Props) {
               project?.columnOrder?.map((columnId, index): any => {
                 const column = project.columnDetails[columnId];
                 const cards = column.cards?.map(
-                  (cardId: any) => project.cards[cardId]
+                  (cardId: any) => filteredCards[cardId]
                 );
                 return (
                   <ListSection key={columnId} column={column} cards={cards} />

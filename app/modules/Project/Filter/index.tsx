@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { Box, Text, useTheme, IconGrid, IconList } from "degen";
 import { FilterOutlined } from "@ant-design/icons";
-import { CircleType, MemberDetails } from "@/app/types";
+import { CircleType, Filter as FilterType, MemberDetails } from "@/app/types";
 import MultiSelectDropdown, {
   OptionType,
   Input,
@@ -15,7 +15,6 @@ import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { cardType, priorityType, labels } from "../ProjectViews/constants";
 import { motion, AnimatePresence } from "framer-motion";
 import { grow } from "@/app/common/components/Modal";
-import { filterCards } from "./filterCards";
 
 export default function Filter() {
   const [filterOpen, setFilterOpen] = useState(false);
@@ -23,7 +22,11 @@ export default function Filter() {
   const { mode } = useTheme();
 
   const { circle: cId } = router.query;
-  const { localProject: project, setLocalProject } = useLocalProject();
+  const {
+    localProject: project,
+    currentFilter,
+    setCurrentFilter,
+  } = useLocalProject();
   const { data: circle } = useQuery<CircleType>(["circle", cId], {
     enabled: false,
   });
@@ -50,13 +53,44 @@ export default function Filter() {
     name: project?.columnDetails[column].name,
     id: column,
   }));
-  const [reviewer, setReviewer] = useState<string[]>([]);
-  const [assignee, setAssignee] = useState<string[]>([]);
-  const [label, setLabels] = useState<string[]>([]);
-  const [title, setTitle] = useState<string>("");
-  const [column, setColumn] = useState<string[]>([]);
-  const [priority, setPriority] = useState<string[]>([]);
-  const [type, setType] = useState<string[]>([]);
+
+  const [reviewer, setReviewer] = useState<string[]>(
+    currentFilter?.assignee || []
+  );
+  const [assignee, setAssignee] = useState<string[]>(
+    currentFilter?.reviewer || []
+  );
+  const [label, setLabels] = useState<string[]>(currentFilter?.label || []);
+  const [title, setTitle] = useState<string>(currentFilter?.title || "");
+  const [column, setColumn] = useState<string[]>(currentFilter?.column || []);
+  const [priority, setPriority] = useState<string[]>(
+    currentFilter.priority || []
+  );
+  const [type, setType] = useState<string[]>(currentFilter?.type || []);
+
+  const filterIsOn: boolean =
+    currentFilter?.assignee?.length > 0 ||
+    currentFilter?.reviewer?.length > 0 ||
+    currentFilter?.label?.length > 0 ||
+    currentFilter?.title?.length > 0 ||
+    currentFilter?.column?.length > 0 ||
+    currentFilter?.priority?.length > 0 ||
+    currentFilter?.type?.length > 0;
+
+  const handleClick = () => {
+    setCurrentFilter({
+      assignee: assignee,
+      reviewer: reviewer,
+      column: column,
+      label: label,
+      status: [""],
+      title: title,
+      type: type,
+      priority: priority,
+      deadline: "",
+    });
+    setFilterOpen(!filterOpen);
+  };
 
   return (
     <>
@@ -64,8 +98,30 @@ export default function Filter() {
         isOpen={filterOpen}
         setIsOpen={setFilterOpen}
         butttonComponent={
-          <Box cursor="pointer" onClick={() => setFilterOpen(!filterOpen)}>
-            <FilterOutlined style={{ color: "gray" }} />
+          <Box
+            cursor="pointer"
+            onClick={() => setFilterOpen(!filterOpen)}
+            position="relative"
+          >
+            {filterIsOn && (
+              <div
+                style={{
+                  backgroundColor: "rgb(191, 90, 242, 1)",
+                  height: "0.5rem",
+                  width: "0.5rem",
+                  zIndex: 10,
+                  borderRadius: "3rem",
+                  position: "absolute",
+                  right: "0px",
+                }}
+              ></div>
+            )}
+            <FilterOutlined
+              style={{
+                color: `${filterIsOn ? "rgb(191, 90, 242, 0.7)" : "gray"}`,
+                fontSize: "1.5rem",
+              }}
+            />
           </Box>
         }
       >
@@ -77,16 +133,16 @@ export default function Filter() {
             variants={grow}
           >
             <Box
-              padding={"4"}
+              padding={"3"}
               backgroundColor="background"
               width="96"
               style={{
-                border: `1px solid ${
+                border: `2px solid ${
                   mode == "dark"
                     ? "rgb(255, 255, 255, 0.05)"
                     : "rgb(20, 20, 20, 0.05)"
                 }`,
-                borderRadius: "1rem",
+                borderRadius: "0.7rem",
               }}
             >
               <MultiSelectDropdown
@@ -138,7 +194,7 @@ export default function Filter() {
                   onChange={(e) => setTitle(e.target.value)}
                 />
               </InputBox>
-              <PrimaryButton>Filter</PrimaryButton>
+              <PrimaryButton onClick={handleClick}>Filter</PrimaryButton>
             </Box>
           </motion.div>
         </AnimatePresence>

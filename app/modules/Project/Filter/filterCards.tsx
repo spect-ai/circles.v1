@@ -34,7 +34,7 @@ export const filterCards = (
       id,
     } = card;
 
-    if (currentFilter.reviewer.length > 0) {
+    if (currentFilter?.reviewer?.length > 0) {
       for (let i = 0; i < reviewer.length; i += 1) {
         const filterRTruth = currentFilter.reviewer.includes(reviewer[i]);
         if (filterRTruth) {
@@ -46,7 +46,7 @@ export const filterCards = (
       reviewerFiltSat = true;
     }
 
-    if (currentFilter.assignee.length > 0) {
+    if (currentFilter?.assignee?.length > 0) {
       for (let i = 0; i < assignee.length; i += 1) {
         const filterATruth = currentFilter.assignee.includes(assignee[i]);
         if (filterATruth) {
@@ -58,7 +58,7 @@ export const filterCards = (
       assigneeFiltSat = true;
     }
 
-    if (currentFilter.label.length > 0) {
+    if (currentFilter?.label?.length > 0) {
       for (let i = 0; i < labels.length; i += 1) {
         const filterLTruth = currentFilter.label.includes(labels[i]);
         if (filterLTruth) {
@@ -70,7 +70,7 @@ export const filterCards = (
       labelsFiltSat = true;
     }
 
-    if (currentFilter.type.length > 0) {
+    if (currentFilter?.type?.length > 0) {
       const filterLTruth = currentFilter.type.includes(type);
       if (filterLTruth) {
         typeFiltSat = true;
@@ -79,7 +79,7 @@ export const filterCards = (
       typeFiltSat = true;
     }
 
-    if (currentFilter.column.length > 0) {
+    if (currentFilter?.column?.length > 0) {
       for (let i = 0; i < currentFilter.column.length; i += 1) {
         const columnid = currentFilter.column[i];
         const filterLTruth =
@@ -93,7 +93,7 @@ export const filterCards = (
       columnFiltSat = true;
     }
 
-    if (currentFilter.priority.length > 0) {
+    if (currentFilter?.priority?.length > 0) {
       const filterLTruth = currentFilter.priority.includes(priority.toString());
       if (filterLTruth) {
         priorityFiltSat = true;
@@ -102,7 +102,7 @@ export const filterCards = (
       priorityFiltSat = true;
     }
 
-    if (currentFilter.title.length > 0) {
+    if (currentFilter?.title?.length > 0) {
       const searchString = currentFilter.title.toLowerCase();
       const titleToSearch = title.toLowerCase();
       const titleSearch = titleToSearch.includes(searchString);

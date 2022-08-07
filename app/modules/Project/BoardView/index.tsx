@@ -39,12 +39,19 @@ const Container = styled.div`
 
 function BoardView({ viewId }: Props) {
   const { handleDragEnd } = useDragEnd();
-  const { localProject: project, setLocalProject, loading } = useLocalProject();
+  const {
+    localProject: project,
+    setLocalProject,
+    loading,
+    currentFilter,
+  } = useLocalProject();
   const { canDo } = useRoleGate();
 
   const view: Views = project.viewDetails?.[viewId as string]!;
   const viewCards = filterCards(project, view?.filters as Filter);
   const viewFilter = view?.filters;
+
+  const filteredCards = filterCards(project, currentFilter as Filter);
 
   const DroppableContent = (provided: DroppableProvided) => (
     <Container {...provided.droppableProps} ref={provided.innerRef}>
@@ -53,7 +60,7 @@ function BoardView({ viewId }: Props) {
           project?.columnOrder?.map((columnId, index): any => {
             const column = project.columnDetails[columnId];
             const cards = column.cards?.map(
-              (cardId: any) => project.cards[cardId]
+              (cardId: any) => filteredCards[cardId]
             );
             return (
               <ColumnComponent

@@ -36,13 +36,13 @@ const OptionsContainer = styled(Box)<{
   width: ${(props) => props.widthValue}rem;
 `;
 
-const Option = styled(Box)<{ isSelected?: boolean }>`
+const Option = styled(Box)<{ isselected?: boolean }>`
   cursor: pointer;
   padding: 0.7rem;
   margin: 0.1rem;
   border-radius: 0.5rem;
   background-color: ${(props) =>
-    props.isSelected ? "rgb(191, 90, 242, 0.2)" : "transparent"};
+    props.isselected ? "rgb(191, 90, 242, 0.2)" : "transparent"};
   &:hover {
     background-color: rgb(191, 90, 242, 0.2);
   }
@@ -280,7 +280,7 @@ const MultiSelectDropdown: FC<Props> = ({
                       }
                       setIsExpanded(false);
                     }}
-                    isSelected={inputValue.includes(option.name) ? true : false}
+                    isselected={inputValue.includes(option.name) ? true : false}
                   >
                     <Stack align="center">
                       <Text

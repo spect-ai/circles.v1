@@ -1,6 +1,6 @@
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { Box, Heading, IconGrid, IconList, Stack, Text, useTheme } from "degen";
-import React, { memo } from "react";
+import React, { memo, useEffect, useState } from "react";
 import Skeleton from "react-loading-skeleton";
 import styled from "styled-components";
 import { useLocalProject } from "../Context/LocalProjectContext";
@@ -26,9 +26,9 @@ function ProjectHeading() {
   const { setViewName, viewName } = useGlobal();
 
   const defaultView = () => {
-    if (viewName.length > 0) setViewName('')
-    if (vId) router.push(`/${cId}/${pId}/`)
-  }
+    if (viewName.length > 0) setViewName("");
+    if (vId) router.push(`/${cId}/${pId}/`);
+  };
 
   return (
     <Box
@@ -69,7 +69,7 @@ function ProjectHeading() {
         <ViewBar />
       </Stack>
       <Stack direction="horizontal" align="center">
-        <Filter/>
+        {!vId && <Filter />}
         <Box
           display="flex"
           flexDirection="row"
@@ -84,8 +84,8 @@ function ProjectHeading() {
             borderLeftRadius="large"
             backgroundColor={view === 0 ? "foregroundSecondary" : "background"}
             onClick={() => {
-              setView(0)
-              defaultView()
+              setView(0);
+              defaultView();
             }}
           >
             <IconGrid size="6" />
@@ -96,8 +96,8 @@ function ProjectHeading() {
             borderRightRadius="large"
             backgroundColor={view === 1 ? "foregroundSecondary" : "background"}
             onClick={() => {
-              setView(1)
-              defaultView()
+              setView(1);
+              defaultView();
             }}
           >
             <IconList size="6" />
