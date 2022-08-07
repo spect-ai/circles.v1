@@ -5,7 +5,7 @@ import Skeleton from "react-loading-skeleton";
 import styled from "styled-components";
 import { useLocalProject } from "../Context/LocalProjectContext";
 import ProjectOptions from "./ProjectOptions";
-import { ViewBar } from "../ProjectViews/ViewBar";
+import { ViewBar } from "../ProjectViews";
 import { useRouter } from "next/router";
 import { useGlobal } from "@/app/context/globalContext";
 
