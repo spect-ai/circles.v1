@@ -1,4 +1,4 @@
-import { labelsMapping } from "@/app/common/utils/constants";
+import { labels } from "@/app/common/utils/constants";
 import { useGlobal } from "@/app/context/globalContext";
 import {
   cardTypes,
@@ -33,7 +33,7 @@ export default function useModalOptions() {
       case "priority":
         return priority;
       case "labels":
-        return Object.keys(labelsMapping).map((label) => {
+        return labels.map((label) => {
           return {
             name: label,
             value: label,

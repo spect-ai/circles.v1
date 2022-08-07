@@ -1,17 +1,22 @@
 import { useState, FunctionComponent } from "react";
 import { Box, Avatar, Text, Button, useTheme } from "degen";
-import { ProjectOutlined, StarOutlined, FieldTimeOutlined, StarFilled } from "@ant-design/icons";
+import {
+  ProjectOutlined,
+  StarOutlined,
+  FieldTimeOutlined,
+  StarFilled,
+} from "@ant-design/icons";
 import styled from "styled-components";
 import { UserType, CardDetails } from "@/app/types";
 import { PriorityIcon } from "@/app/common/components/PriorityIcon";
 
 interface Props {
-  toggle: String;
-  setToggle: Function;
+  toggle: string;
+  setToggle: (toggle: string) => void;
   userData?: UserType;
 }
 
-interface UserProps{
+interface UserProps {
   userData: UserType;
 }
 
@@ -23,22 +28,28 @@ const ScrollContainer = styled(Box)`
   }
 `;
 
-const Card = styled(Box)<{mode: string}>`
+const Card = styled(Box)<{ mode: string }>`
   display: flex;
   flex-direction: column;
   width: 630px;
   padding: 0.6rem;
   border-radius: 0.5rem;
   background-color: transparent;
-  border: solid 2px ${(props) => props.mode === "dark" ? "rgb(255, 255, 255, 0.05)" : "rgb(20, 20, 20, 0.05)"};
+  border: solid 2px
+    ${(props) =>
+      props.mode === "dark"
+        ? "rgb(255, 255, 255, 0.05)"
+        : "rgb(20, 20, 20, 0.05)"};
   &:hover {
-    border: solid 2px rgb(191,90,242);
+    border: solid 2px rgb(191, 90, 242);
     transition-duration: 0.7s;
   }
   position: relative;
-`
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+`;
 
-const ToggleButton = styled.button<{bgcolor: boolean}>`
+const ToggleButton = styled.button<{ bgcolor: boolean }>`
   border-radius: 2rem;
   border: none;
   padding: 0.4rem 1rem;
@@ -47,9 +58,10 @@ const ToggleButton = styled.button<{bgcolor: boolean}>`
   font-weight: 600;
   font-family: Inter;
   transition-duration: 0.4s;
-  color: ${(props) => (props.bgcolor? "white" :"rgb(191,90,242)")};
-  background-color: ${(props) => (props.bgcolor ? "rgb(191,90,242)" : "transparent" )};
-`
+  color: ${(props) => (props.bgcolor ? "white" : "rgb(191,90,242)")};
+  background-color: ${(props) =>
+    props.bgcolor ? "rgb(191,90,242)" : "transparent"};
+`;
 
 const GigInfo = styled(Box)`
   display: flex;
@@ -58,188 +70,226 @@ const GigInfo = styled(Box)`
   position: absolute;
   right: 1rem;
   gap: 0.6rem;
-`
+`;
 
-const Toggle: FunctionComponent<Props> = ({toggle, setToggle}) => {
-
-  const {mode} = useTheme()
+const Toggle: FunctionComponent<Props> = ({ toggle, setToggle }) => {
+  const { mode } = useTheme();
 
   return (
     <>
       <Box
-        backgroundColor={ mode === "dark" ? "background": "white"}
+        backgroundColor={mode === "dark" ? "background" : "white"}
         style={{
           display: "block",
-          padding: "0.2rem", 
+          padding: "0.2rem",
           borderRadius: "2rem",
           margin: "0.7rem 200px",
-          boxShadow: "0px 1px 3px rgba(0, 0, 0, 0.2)"
-          }}>
-        <ToggleButton 
-          onClick={()=> setToggle('Assignee')} 
-          bgcolor={toggle == 'Assignee'? true: false}
+          boxShadow: "0px 1px 3px rgba(0, 0, 0, 0.2)",
+        }}
+      >
+        <ToggleButton
+          onClick={() => setToggle("Assignee")}
+          bgcolor={toggle == "Assignee" ? true : false}
         >
           As Assignee
         </ToggleButton>
-        <ToggleButton 
-          onClick={()=> setToggle('Reviewer')} 
-          bgcolor={toggle == 'Reviewer'? true: false}
+        <ToggleButton
+          onClick={() => setToggle("Reviewer")}
+          bgcolor={toggle == "Reviewer" ? true : false}
         >
           As Reviewer
         </ToggleButton>
       </Box>
     </>
-  )
-}
+  );
+};
 
-const WorkCards: FunctionComponent<Props> = ({toggle, userData}) => {
-
-  const {mode} = useTheme()
-
-  return(
+const WorkCards: FunctionComponent<Props> = ({ toggle, userData }) => {
+  const { mode } = useTheme();
+  console.log({ userData });
+  return (
     <Box gap="2" display="flex" flexDirection="column">
-      {toggle == 'Assignee' ? (
-        userData?.assignedCards?.slice(0).reverse().map(cardId => {
-          const card:CardDetails = userData?.cardDetails[cardId]!;
-          const cardLink = `${card?.circle?.slug}/${card?.project?.slug}/${card?.slug}`;
-          return(
-            <Card mode={mode} key={cardId} onClick={()=> window.open(`/${cardLink}`)}>
-              <Text weight="medium" variant="base">{card?.title}</Text>
-              <GigInfo>
-                {card?.priority > 0 && <PriorityIcon priority={card?.priority} />}
-                {card?.reviewer?.map( person => 
-                  <Avatar label="profile-pic" src={person?.avatar} size="6" />
-                )}
-              <Avatar label="profile-pic" src={card?.circle?.avatar} size="6" />
-              </GigInfo>
-            </Card> 
-          )})
-      ):(
-        userData?.reviewingCards?.slice(0).reverse().map(cardId => {
-          const card:CardDetails = userData?.cardDetails[cardId]!;
-          const cardLink = `${card?.circle?.slug}/${card?.project?.slug}/${card?.slug}`;
-          return(
-            <Card mode={mode} key={cardId} onClick={()=> window.open(`/${cardLink}`)}>
-              <Text weight="medium" variant="base">{card?.title}</Text>
-              <GigInfo>
-                {card?.priority > 0 && <PriorityIcon priority={card?.priority} />}
-                {card?.assignee?.map( person => 
-                  <Avatar label="profile-pic" src={person?.avatar} size="6" />
-                )}
-              <Avatar label="profile-pic" src={card?.circle?.avatar} size="6" />
-              </GigInfo>
-            </Card> 
-          )})
-        )}
+      {toggle == "Assignee"
+        ? userData?.assignedCards
+            ?.slice(0)
+            .reverse()
+            .map((cardId) => {
+              const card: CardDetails = userData?.cardDetails[cardId];
+              const cardLink = `${card?.circle?.slug}/${card?.project?.slug}/${card?.slug}`;
+              return (
+                <Card
+                  mode={mode}
+                  key={cardId}
+                  onClick={() => window.open(`/${cardLink}`)}
+                >
+                  <Text weight="medium" variant="base">
+                    {card?.title}
+                  </Text>
+                  <GigInfo>
+                    {card?.priority > 0 && (
+                      <PriorityIcon priority={card?.priority} />
+                    )}
+                    {card?.reviewer?.map((person) => (
+                      <Avatar
+                        label="profile-pic"
+                        src={person?.avatar}
+                        size="6"
+                        key={person.id}
+                      />
+                    ))}
+                    <Avatar
+                      label="profile-pic"
+                      src={card?.circle?.avatar}
+                      size="6"
+                    />
+                  </GigInfo>
+                </Card>
+              );
+            })
+        : userData?.reviewingCards
+            ?.slice(0)
+            .reverse()
+            .map((cardId) => {
+              const card: CardDetails = userData?.cardDetails[cardId];
+              const cardLink = `${card?.circle?.slug}/${card?.project?.slug}/${card?.slug}`;
+              return (
+                <Card
+                  mode={mode}
+                  key={cardId}
+                  onClick={() => window.open(`/${cardLink}`)}
+                >
+                  <Text weight="medium" variant="base">
+                    {card?.title}
+                  </Text>
+                  <GigInfo>
+                    {card?.priority > 0 && (
+                      <PriorityIcon priority={card?.priority} />
+                    )}
+                    {card?.assignee?.map((person) => (
+                      <Avatar
+                        label="profile-pic"
+                        src={person?.avatar}
+                        size="6"
+                        key={person.id}
+                      />
+                    ))}
+                    <Avatar
+                      label="profile-pic"
+                      src={card?.circle?.avatar}
+                      size="6"
+                    />
+                  </GigInfo>
+                </Card>
+              );
+            })}
     </Box>
-  )
-}
+  );
+};
 
 const Activity = () => {
-  return(
+  return (
     <>
-      <Box 
-        style={{ 
-        display: "flex", 
-        flexDirection: "row", 
-        gap: "0.4rem", 
-        alignItems: "center", 
-        paddingTop: 
-        "1rem"}}
+      <Box
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          gap: "0.4rem",
+          alignItems: "center",
+          paddingTop: "1rem",
+        }}
       >
-        <Avatar 
-          label="profile-pic"
-          src="/og.jpg"
-          size="5"
-        />
-        <Text variant="base" weight="semiBold">Spect.network</Text>
-        <Text variant="small" >commented on your submission</Text>
+        <Avatar label="profile-pic" src="/og.jpg" size="5" />
+        <Text variant="base" weight="semiBold">
+          Spect.network
+        </Text>
+        <Text variant="small">commented on your submission</Text>
         <Text variant="label">12:34PM</Text>
       </Box>
     </>
-  )
-}
+  );
+};
 
 const BookMarks = () => {
+  const { mode } = useTheme();
 
-  const {mode} = useTheme();
-
-  return(
-    <>
+  return (
+    <Box marginTop="2" cursor="pointer">
       <Card mode={mode}>
         <Text weight="semiBold" variant="large">
           Bookmarks Card
         </Text>
         <GigInfo>
-        <Text variant="label">02:45pm</Text>
-        <Avatar 
-          label="profile-pic"
-          src="/og.jpg"
-          size="8"
-        />
-        <StarFilled style={{ fontSize: '24px', color: 'rgb(191,90,242)' }}/>
+          <Text variant="label">02:45pm</Text>
+          <Avatar label="profile-pic" src="/og.jpg" size="8" />
+          <StarFilled style={{ fontSize: "24px", color: "rgb(191,90,242)" }} />
         </GigInfo>
       </Card>
-    </>
-  )
-}
+    </Box>
+  );
+};
 
-const QuickProfileTabs = ({userData} : UserProps) => {
+const QuickProfileTabs = ({ userData }: UserProps) => {
+  const [panelTab, setPanelTab] = useState("Work");
+  const [toggle, setToggle] = useState("Assignee");
 
-  const [ panelTab, setPanelTab] = useState('Work');
-  const [toggle, setToggle] = useState('Assignee');
-
-  return(
+  return (
     <>
       <Box
         display="flex"
         flexDirection="row"
         width="96"
         paddingTop="2"
-        justifyContent="space-between">
+        justifyContent="space-between"
+      >
         <Button
           size="small"
           prefix={<ProjectOutlined />}
-          variant={ panelTab === "Work" ? "tertiary" : "transparent"}
-          onClick={()=> setPanelTab('Work')}
+          variant={panelTab === "Work" ? "tertiary" : "transparent"}
+          onClick={() => setPanelTab("Work")}
         >
-        Work
+          Work
         </Button>
         <Button
           size="small"
           prefix={<FieldTimeOutlined />}
-          variant={ panelTab === "Activity" ? "tertiary" : "transparent"}  
-          onClick={()=> setPanelTab('Activity')}
+          variant={panelTab === "Activity" ? "tertiary" : "transparent"}
+          onClick={() => setPanelTab("Activity")}
         >
-        Activity
+          Activity
         </Button>
         <Button
           size="small"
           prefix={<StarOutlined />}
-          variant={ panelTab === "Bookmarks" ? "tertiary" : "transparent"}  
-          onClick={()=> setPanelTab('Bookmarks')}
+          variant={panelTab === "Bookmarks" ? "tertiary" : "transparent"}
+          onClick={() => setPanelTab("Bookmarks")}
         >
           Bookmarks
         </Button>
       </Box>
-      { panelTab === "Work" && 
+      {panelTab === "Work" && (
         <>
-          <Toggle toggle={toggle} setToggle={setToggle}/>
+          <Toggle toggle={toggle} setToggle={setToggle} />
           <ScrollContainer>
-            <WorkCards toggle={toggle} setToggle={setToggle} userData={userData}/>
+            <WorkCards
+              toggle={toggle}
+              setToggle={setToggle}
+              userData={userData}
+            />
           </ScrollContainer>
-        </>}
-      { panelTab == "Activity" && 
+        </>
+      )}
+      {panelTab == "Activity" && (
         <ScrollContainer overflow={"auto"}>
-          <Activity/>
-        </ScrollContainer>}
-      { panelTab == "Bookmarks" && 
-      <ScrollContainer overflow={"auto"}>
-        <BookMarks/>
-      </ScrollContainer>
-      }
+          <Activity />
+        </ScrollContainer>
+      )}
+      {panelTab == "Bookmarks" && (
+        <ScrollContainer overflow={"auto"}>
+          <BookMarks />
+        </ScrollContainer>
+      )}
     </>
-  )
-}
+  );
+};
 
 export default QuickProfileTabs;

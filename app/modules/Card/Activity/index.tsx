@@ -64,6 +64,7 @@ export default function Activity() {
                         label=""
                         placeholder={!getMemberDetails(item.actorId)?.avatar}
                         src={getMemberDetails(item.actorId)?.avatar}
+                        address={getMemberDetails(item.actorId)?.ethAddress}
                         size="8"
                       />
                       <Stack space="1">

@@ -1,6 +1,15 @@
 import Link from "next/link";
 import React, { ReactElement, useEffect, useState } from "react";
-import { Avatar, Box, Button, Stack, Text, useTheme, IconMoon, IconSun, } from "degen";
+import {
+  Avatar,
+  Box,
+  Button,
+  Stack,
+  Text,
+  useTheme,
+  IconMoon,
+  IconSun,
+} from "degen";
 import { useRouter } from "next/router";
 import CreateCircle from "./CreateCircleModal";
 import Logo from "@/app/common/components/Logo";
@@ -29,7 +38,12 @@ function Sidebar(): ReactElement {
   const { data: circle, isLoading } = useQuery<CircleType>(["circle", cId], {
     enabled: false,
   });
-  const { connectedUser, isSidebarExpanded, openQuickProfile, isProfilePanelExpanded } = useGlobal();
+  const {
+    connectedUser,
+    isSidebarExpanded,
+    openQuickProfile,
+    isProfilePanelExpanded,
+  } = useGlobal();
   const [showCollapseButton, setShowCollapseButton] = useState(false);
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
@@ -93,19 +107,19 @@ function Sidebar(): ReactElement {
       </Box>
       <Box borderBottomWidth="0.375" paddingY="3">
         <Stack space="2">
-          { mode === "dark" ? (
+          {mode === "dark" ? (
             <Button
-            shape="circle"
-            variant="secondary"
-            size="small"
-            onClick={() => {
-              localStorage.setItem("lightMode", "true");
-              setMode("light");
-            }}
+              shape="circle"
+              variant="secondary"
+              size="small"
+              onClick={() => {
+                localStorage.setItem("lightMode", "true");
+                setMode("light");
+              }}
             >
-              <IconSun size="5"/>
+              <IconSun size="5" />
             </Button>
-            ) : (
+          ) : (
             <Button
               shape="circle"
               variant="secondary"
@@ -115,7 +129,7 @@ function Sidebar(): ReactElement {
                 setMode("dark");
               }}
             >
-              <IconMoon size="5"/>
+              <IconMoon size="5" />
             </Button>
           )}
           <Link href="/" passHref>
@@ -157,7 +171,7 @@ function Sidebar(): ReactElement {
             size="small"
             shape="circle"
             variant="transparent"
-            onClick={()=> openQuickProfile((currentUser as UserType).id)}
+            onClick={() => openQuickProfile(currentUser.id)}
           >
             <Avatar
               src={currentUser?.avatar}
@@ -169,7 +183,7 @@ function Sidebar(): ReactElement {
         )}
       </Box>
       <AnimatePresence>
-        {isProfilePanelExpanded && <QuickProfilePanel/>} 
+        {isProfilePanelExpanded && <QuickProfilePanel />}
       </AnimatePresence>
     </Box>
   );
