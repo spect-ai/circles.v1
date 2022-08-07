@@ -6,10 +6,11 @@ import { CircleType, MemberDetails, Views, Filter } from '@/app/types';
 import MultipleDropdown, { OptionType, Input, InputBox } from "../MultipleDropDown";
 import { Box, Text, useTheme, IconGrid, IconList, Stack, Button, IconTrash } from "degen";
 import {SaveOutlined} from "@ant-design/icons";
-import { editViews, deleteViews } from "@/app/services/ProjectViews";
+import { editViews } from "@/app/services/ProjectViews";
 import { cardType, priorityType, labels, Status } from "../constants"
 import Modal from "@/app/common/components/Modal";
-import { useGlobal } from "@/app/context/globalContext";
+import ConfirmDelete from "./ConfirmDeleteModal";
+import { AnimatePresence } from "framer-motion";
 
 interface Props{
   setViewOpen: (viewOpen: boolean) => void;
@@ -23,11 +24,11 @@ function EditViewModal ({setViewOpen, viewId}: Props){
 
   const { circle: cId, project: pId } = router.query;
   const { localProject: project, setLocalProject } = useLocalProject();
-  const { setViewName } = useGlobal();
   const { data: circle } = useQuery<CircleType>(["circle", cId], {enabled: false});
   const { data: memberDetails } = useQuery<MemberDetails>(["memberDetails", cId], { enabled: false });
 
   const [filteredMembers, setFilteredMembers] = useState<{ name: string; id: string }[]>([] as any);
+  const [deleteModal, setDeleteModal] = useState(false)
 
   useEffect(() => {
     if (circle) {
@@ -75,15 +76,6 @@ function EditViewModal ({setViewOpen, viewId}: Props){
       name: name,
     }, project.id, viewId)
     setViewOpen(false)
-    console.log(updatedProject);
-    if (updatedProject !== null) setLocalProject(updatedProject);
-  }
-
-  const onDelete = async() => {
-    router.push(`/${cId}/${pId}/`);
-    setViewName('');
-    setViewOpen(false);
-    const updatedProject = await deleteViews(project.id, viewId)
     console.log(updatedProject);
     if (updatedProject !== null) setLocalProject(updatedProject);
   }
@@ -188,7 +180,7 @@ function EditViewModal ({setViewOpen, viewId}: Props){
                 size="small"
                 variant="secondary"
                 prefix={<IconTrash size="4" />}
-                onClick={onDelete}
+                onClick={()=> setDeleteModal(true)}
               >
                 Delete View
               </Button>
@@ -206,6 +198,11 @@ function EditViewModal ({setViewOpen, viewId}: Props){
               </Stack>
             </Box>
         </Modal>
+        {deleteModal &&
+          <AnimatePresence>
+            <ConfirmDelete setDeleteModal={setDeleteModal} viewId={viewId} setViewOpen={setViewOpen} />
+          </AnimatePresence>
+        }
     </>
   )
 }
