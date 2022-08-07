@@ -126,7 +126,12 @@ const ProfileCard = ({ userId }: Props) => {
           cursor="pointer"
           onClick={() => openQuickProfile((user as UserType).id)}
         >
-          <Avatar label="profile-pic" src={user?.avatar} size="28" />
+          <Avatar
+            label="profile-pic"
+            src={user?.avatar}
+            size="28"
+            address={user?.ethAddress}
+          />
         </Box>
         <Box padding="0.5">
           <Heading>{user?.username}</Heading>

@@ -135,6 +135,7 @@ const WorkCards: FunctionComponent<Props> = ({ toggle, userData }) => {
                         src={person?.avatar}
                         size="6"
                         key={person.id}
+                        address={person.ethAddress}
                       />
                     ))}
                     <Avatar

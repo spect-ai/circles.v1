@@ -363,6 +363,7 @@ export interface CardDetails {
   priority: number;
   labels: string[];
   reviewer: {
+    ethAddress: string | undefined;
     username: string;
     avatar: string;
     id: string;
@@ -375,13 +376,13 @@ export interface CardDetails {
   project: {
     name: string;
     slug: string;
-    id: string
+    id: string;
   };
   circle: {
     avatar: string;
     name: string;
     slug: string;
-    id: string
+    id: string;
   };
   status: {
     active: boolean;
