@@ -139,7 +139,13 @@ function Card() {
         />
         <Box padding="1" borderBottomWidth="0.375">
           <Stack direction="horizontal">
-            <Link href={ viewName?.length > 0 ? `/${cId}/${pId}/?view=${viewName}` :  `/${cId}/${pId}` }>
+            <Link
+              href={
+                viewName?.length > 0
+                  ? `/${cId}/${pId}/?view=${viewName}`
+                  : `/${cId}/${pId}`
+              }
+            >
               <IconButton color="textSecondary" paddingX="2">
                 <IconClose />
               </IconButton>

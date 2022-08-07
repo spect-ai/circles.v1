@@ -2,32 +2,38 @@ import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { useLocalProject } from "../../Context/LocalProjectContext";
-import { CircleType, MemberDetails } from '@/app/types';
+import { CircleType, MemberDetails } from "@/app/types";
 import MultipleDropdown, { OptionType } from "../MultipleDropDown";
-import { Box, Text, useTheme, IconGrid, IconList  } from "degen";
-import PrimaryButton from '@/app/common/components/PrimaryButton';
+import { Box, Text, useTheme, IconGrid, IconList } from "degen";
+import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { createViews } from "@/app/services/ProjectViews";
-import { cardType, priorityType, labels, Status } from "../constants"
+import { cardType, priorityType, labels, Status } from "../constants";
 import { Input, InputBox } from "../MultipleDropDown";
 import Modal from "@/app/common/components/Modal";
 import { useGlobal } from "@/app/context/globalContext";
 
-interface Props{
+interface Props {
   setViewOpen: (viewOpen: boolean) => void;
 }
 
-function CreateViewModal ({setViewOpen}: Props){
-
+function CreateViewModal({ setViewOpen }: Props) {
   const router = useRouter();
-  const {mode} = useTheme();
+  const { mode } = useTheme();
 
-  const { circle: cId, project: pId  } = router.query;
+  const { circle: cId, project: pId } = router.query;
   const { localProject: project, setLocalProject } = useLocalProject();
   const { setViewName } = useGlobal();
-  const { data: circle } = useQuery<CircleType>(["circle", cId], {enabled: false});
-  const { data: memberDetails } = useQuery<MemberDetails>(["memberDetails", cId], { enabled: false });
+  const { data: circle } = useQuery<CircleType>(["circle", cId], {
+    enabled: false,
+  });
+  const { data: memberDetails } = useQuery<MemberDetails>(
+    ["memberDetails", cId],
+    { enabled: false }
+  );
 
-  const [filteredMembers, setFilteredMembers] = useState<{ name: string; id: string }[]>([] as any);
+  const [filteredMembers, setFilteredMembers] = useState<
+    { name: string; id: string }[]
+  >([] as any);
 
   useEffect(() => {
     if (circle) {
@@ -43,142 +49,153 @@ function CreateViewModal ({setViewOpen}: Props){
     name: project?.columnDetails[column].name,
     id: column,
   }));
-  
-  const [name, setName] = useState<string>('');
-  const [layout, setLayout] = useState<"Board" | "List">('Board');
+
+  const [name, setName] = useState<string>("");
+  const [layout, setLayout] = useState<"Board" | "List">("Board");
   const [reviewer, setReviewer] = useState<string[]>([]);
   const [assignee, setAssignee] = useState<string[]>([]);
   const [label, setLabels] = useState<string[]>([]);
-  const [title, setTitle] = useState<string>('');
+  const [title, setTitle] = useState<string>("");
   const [column, setColumn] = useState<string[]>([]);
   const [priority, setPriority] = useState<string[]>([]);
   const [type, setType] = useState<string[]>([]);
 
-  const onCreate = async() => {
-    const updatedProject = await createViews({
-      type: layout,
-      hidden: false,
-      filters: {
-        assignee: assignee,
-        reviewer: reviewer,
-        column: column,
-        label: label,
-        status: [],
-        title: title,
-        type: type,
-        priority: priority,
-        deadline: '',
+  const onCreate = async () => {
+    const updatedProject = await createViews(
+      {
+        type: layout,
+        hidden: false,
+        filters: {
+          assignee: assignee,
+          reviewer: reviewer,
+          column: column,
+          label: label,
+          status: [],
+          title: title,
+          type: type,
+          priority: priority,
+          deadline: "",
+        },
+        name: name,
       },
-      name: name,
-    }, project.id)
+      project.id
+    );
     console.log(updatedProject);
-    setViewOpen(false)
-    if (updatedProject !== null) setLocalProject(updatedProject)
-  }
+    setViewOpen(false);
+    if (updatedProject !== null) setLocalProject(updatedProject);
+  };
 
-  return(
+  return (
     <>
-        <Modal handleClose={()=>setViewOpen(false)} title={'Create View'} size="small">
-          <Box padding={"4"}>
-              <InputBox mode={mode}>
-                <Input
-                  placeholder={'View Name'}
-                  value={name}
-                  onChange={(e) => 
-                  setName(e.target.value)}
-                />
-              </InputBox>
-              {name.length == 0 && <Text variant="small" color="purple">Please name it</Text>}
-              <Box 
-                display="flex" 
-                flexDirection="row" 
-                padding="1" 
-                paddingBottom="2" 
-                paddingLeft="4" 
-                justifyContent="space-between"
+      <Modal
+        handleClose={() => setViewOpen(false)}
+        title={"Create View"}
+        size="small"
+      >
+        <Box padding={"4"}>
+          <InputBox mode={mode}>
+            <Input
+              placeholder={"View Name"}
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+          </InputBox>
+          {name.length == 0 && (
+            <Text variant="small" color="purple">
+              Please name it
+            </Text>
+          )}
+          <Box
+            display="flex"
+            flexDirection="row"
+            padding="1"
+            paddingBottom="2"
+            paddingLeft="4"
+            justifyContent="space-between"
+          >
+            <Text color="textSecondary" weight="medium" variant="base">
+              Layout
+            </Text>
+            <Box display="flex" flexDirection="row">
+              <Box
+                color="textSecondary"
+                padding="2"
+                borderRadius="large"
+                backgroundColor={
+                  layout == "Board" ? "accentSecondary" : "background"
+                }
+                onClick={() => setLayout("Board")}
               >
-                <Text color="textSecondary" weight="medium" variant="base">Layout</Text>
-                <Box display="flex" flexDirection="row" >
-                  <Box
-                    color="textSecondary"
-                    padding="2"
-                    borderRadius="large"
-                    backgroundColor={layout == 'Board' ? "accentSecondary" : "background"}
-                    onClick={() => setLayout('Board')}
-                  >
-                    <IconGrid size="4" />
-                  </Box>
-                  <Box
-                    color="textSecondary"
-                    padding="2"
-                    borderRadius="large"
-                    backgroundColor={layout == 'List' ? "accentSecondary" : "background"}
-                    onClick={() => setLayout('List')}
-                  >
-                    <IconList size="4" />
-                  </Box>
-                </Box>
+                <IconGrid size="4" />
               </Box>
-              <MultipleDropdown
-                width="30"
-                options={filteredMembers as OptionType[]}
-                value={assignee}
-                setValue={setAssignee}
-                title={'Assignee'}
-              />
-              <MultipleDropdown
-                width="30"
-                options={filteredMembers as OptionType[]}
-                value={reviewer}
-                setValue={setReviewer}
-                title={'Reviewer'}
-              />
-              <MultipleDropdown
-                width="30"
-                options={labels as OptionType[]}
-                value={label}
-                setValue={setLabels}
-                title={'Labels'}
-              />
-              <MultipleDropdown
-                width="30"
-                options={columns as OptionType[]}
-                value={column}
-                setValue={setColumn}
-                title={'Column'}
-              />
-              <MultipleDropdown
-                width="30"
-                options={priorityType as OptionType[]}
-                value={priority}
-                setValue={setPriority}
-                title={'Priority'}
-              />
-              <MultipleDropdown
-                width="30"
-                options={cardType as OptionType[]}
-                value={type}
-                setValue={setType}
-                title={'Type'}
-              />
-              <InputBox mode={mode}>
-                <Input
-                  placeholder={'Title'}
-                  value={title}
-                  onChange={(e) => 
-                    setTitle(e.target.value)}
-                />
-              </InputBox> 
-              <PrimaryButton onClick={onCreate} disabled={name.length == 0} >
-                Create View
-              </PrimaryButton>
+              <Box
+                color="textSecondary"
+                padding="2"
+                borderRadius="large"
+                backgroundColor={
+                  layout == "List" ? "accentSecondary" : "background"
+                }
+                onClick={() => setLayout("List")}
+              >
+                <IconList size="4" />
+              </Box>
             </Box>
-        </Modal>
+          </Box>
+          <MultipleDropdown
+            width="30"
+            options={filteredMembers as OptionType[]}
+            value={assignee}
+            setValue={setAssignee}
+            title={"Assignee"}
+          />
+          <MultipleDropdown
+            width="30"
+            options={filteredMembers as OptionType[]}
+            value={reviewer}
+            setValue={setReviewer}
+            title={"Reviewer"}
+          />
+          <MultipleDropdown
+            width="30"
+            options={labels as OptionType[]}
+            value={label}
+            setValue={setLabels}
+            title={"Labels"}
+          />
+          <MultipleDropdown
+            width="30"
+            options={columns as OptionType[]}
+            value={column}
+            setValue={setColumn}
+            title={"Column"}
+          />
+          <MultipleDropdown
+            width="30"
+            options={priorityType as OptionType[]}
+            value={priority}
+            setValue={setPriority}
+            title={"Priority"}
+          />
+          <MultipleDropdown
+            width="30"
+            options={cardType as OptionType[]}
+            value={type}
+            setValue={setType}
+            title={"Type"}
+          />
+          <InputBox mode={mode}>
+            <Input
+              placeholder={"Title"}
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+            />
+          </InputBox>
+          <PrimaryButton onClick={onCreate} disabled={name.length == 0}>
+            Create View
+          </PrimaryButton>
+        </Box>
+      </Modal>
     </>
-  )
+  );
 }
 export default CreateViewModal;
-
-
-
-

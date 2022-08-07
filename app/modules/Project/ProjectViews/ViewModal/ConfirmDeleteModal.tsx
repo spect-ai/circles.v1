@@ -4,36 +4,39 @@ import { useLocalProject } from "../../Context/LocalProjectContext";
 import { useRouter } from "next/router";
 import { useGlobal } from "@/app/context/globalContext";
 
-interface Props{
+interface Props {
   setDeleteModal: (deleteModal: boolean) => void;
   viewId: string;
   setViewOpen: (viewOpen: boolean) => void;
 }
 
-export default function ConfirmDelete ({setDeleteModal, viewId, setViewOpen}: Props){
-
+export default function ConfirmDelete({
+  setDeleteModal,
+  viewId,
+  setViewOpen,
+}: Props) {
   const router = useRouter();
   const { circle: cId, project: pId } = router.query;
   const { localProject: project, setLocalProject } = useLocalProject();
   const { setViewName } = useGlobal();
 
-  const onDelete = async() => {
+  const onDelete = async () => {
     router.push(`/${cId}/${pId}/`);
-    setViewName('');
+    setViewName("");
     setViewOpen(false);
-    const updatedProject = await deleteViews(project.id, viewId)
+    const updatedProject = await deleteViews(project.id, viewId);
     console.log(updatedProject);
     if (updatedProject !== null) setLocalProject(updatedProject);
-  }
+  };
 
-  return(
+  return (
     <>
-      <ConfirmModal 
+      <ConfirmModal
         title="Are you sure about deleting this view ? This action is permanent and cannot be undone."
-        handleClose={()=> setDeleteModal(false)} 
-        onCancel={()=> setDeleteModal(false)}
+        handleClose={() => setDeleteModal(false)}
+        onCancel={() => setDeleteModal(false)}
         onConfirm={onDelete}
       />
     </>
-  )
+  );
 }

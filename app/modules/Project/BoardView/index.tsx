@@ -17,7 +17,7 @@ import { SkeletonLoader } from "../SkeletonLoader";
 import { filterCards } from "../ProjectViews/filterCards";
 import { Filter, Views } from "@/app/types";
 
-interface Props{
+interface Props {
   viewId: string;
 }
 
@@ -37,55 +37,58 @@ const Container = styled.div`
   overflow-y: hidden;
 `;
 
-function BoardView({viewId}: Props) {
+function BoardView({ viewId }: Props) {
   const { handleDragEnd } = useDragEnd();
   const { localProject: project, setLocalProject, loading } = useLocalProject();
   const { canDo } = useRoleGate();
 
-  const view: Views = project.viewDetails?.[viewId as string]!;  
+  const view: Views = project.viewDetails?.[viewId as string]!;
   const viewCards = filterCards(project, view?.filters as Filter);
   const viewFilter = view?.filters;
 
   const DroppableContent = (provided: DroppableProvided) => (
     <Container {...provided.droppableProps} ref={provided.innerRef}>
       <Stack direction="horizontal">
-        {!viewId && project?.columnOrder?.map((columnId, index): any => {
-          const column = project.columnDetails[columnId];
-          const cards = column.cards?.map(
-            (cardId: any) => 
-            project.cards[cardId]
-          );
-          return (
-            <ColumnComponent
-              key={columnId}
-              column={column}
-              cards={cards}
-              id={columnId}
-              index={index}
-            />
-          );
-        })}
-        {viewId && project?.columnOrder?.map((columnId, index): any => {
-          
-          if (viewFilter?.column?.length > 0 && !viewFilter.column?.includes(columnId)) return null;
+        {!viewId &&
+          project?.columnOrder?.map((columnId, index): any => {
+            const column = project.columnDetails[columnId];
+            const cards = column.cards?.map(
+              (cardId: any) => project.cards[cardId]
+            );
+            return (
+              <ColumnComponent
+                key={columnId}
+                column={column}
+                cards={cards}
+                id={columnId}
+                index={index}
+              />
+            );
+          })}
+        {viewId &&
+          project?.columnOrder?.map((columnId, index): any => {
+            if (
+              viewFilter?.column?.length > 0 &&
+              !viewFilter.column?.includes(columnId)
+            )
+              return null;
 
-          const column = project.columnDetails[columnId];
-          let cards = column.cards?.map(
-            (cardId: any) => 
-             viewId ? viewCards[cardId] : project.cards[cardId]
-          );
-          cards = cards.filter((i)=> i !== undefined);
-          
-          return (
-            <ColumnComponent
-              key={columnId}
-              column={column}
-              cards={cards}
-              id={columnId}
-              index={index}
-            />
-          );
-        })}
+            const column = project.columnDetails[columnId];
+            let cards = column.cards?.map((cardId: any) =>
+              viewId ? viewCards[cardId] : project.cards[cardId]
+            );
+            cards = cards.filter((i) => i !== undefined);
+
+            return (
+              <ColumnComponent
+                key={columnId}
+                column={column}
+                cards={cards}
+                id={columnId}
+                index={index}
+              />
+            );
+          })}
         {provided.placeholder}
         {!viewId && project?.id && canDo(["steward"]) && (
           <Box style={{ width: "20rem" }} marginTop="2">

@@ -13,7 +13,7 @@ import ListSection from "./ListSection";
 import { filterCards } from "../ProjectViews/filterCards";
 import { Filter, Views } from "@/app/types";
 
-interface Props{
+interface Props {
   viewId: string;
 }
 
@@ -27,7 +27,7 @@ const ScrollContainer = styled.div`
   overflow-y: auto;
 `;
 
-function ListView({viewId}: Props) {
+function ListView({ viewId }: Props) {
   const {
     localProject: project,
     setLocalProject,
@@ -38,7 +38,7 @@ function ListView({viewId}: Props) {
   } = useLocalProject();
   const { canDo } = useRoleGate();
 
-  const view: Views = project.viewDetails?.[viewId as string]!;  
+  const view: Views = project.viewDetails?.[viewId as string]!;
   const viewCards = filterCards(project, view?.filters as Filter);
   const viewFilter = view?.filters;
 
@@ -54,30 +54,34 @@ function ListView({viewId}: Props) {
         )}
         <ScrollContainer>
           <Stack space="8">
-            {!viewId && project?.columnOrder?.map((columnId, index): any => {
-              const column = project.columnDetails[columnId];
-              const cards = column.cards?.map(
-                (cardId: any) => project.cards[cardId]
-              );
-              return (
-                <ListSection key={columnId} column={column} cards={cards} />
-              );
-            })}
-            {viewId && project?.columnOrder?.map((columnId, index): any => {
+            {!viewId &&
+              project?.columnOrder?.map((columnId, index): any => {
+                const column = project.columnDetails[columnId];
+                const cards = column.cards?.map(
+                  (cardId: any) => project.cards[cardId]
+                );
+                return (
+                  <ListSection key={columnId} column={column} cards={cards} />
+                );
+              })}
+            {viewId &&
+              project?.columnOrder?.map((columnId, index): any => {
+                if (
+                  viewFilter?.column?.length > 0 &&
+                  !viewFilter.column?.includes(columnId)
+                )
+                  return null;
 
-              if (viewFilter?.column?.length > 0 && !viewFilter.column?.includes(columnId)) return null;
+                const column = project.columnDetails[columnId];
+                let cards = column.cards?.map((cardId: any) =>
+                  viewId ? viewCards[cardId] : project.cards[cardId]
+                );
+                cards = cards.filter((i) => i !== undefined);
 
-              const column = project.columnDetails[columnId];
-              let cards = column.cards?.map(
-                (cardId: any) => 
-                viewId ? viewCards[cardId] : project.cards[cardId]
-              );
-              cards = cards.filter((i)=> i !== undefined);
-
-              return (
-                <ListSection key={columnId} column={column} cards={cards} />
-              );
-            })}
+                return (
+                  <ListSection key={columnId} column={column} cards={cards} />
+                );
+              })}
             {!viewId && project?.id && canDo(["steward"]) && (
               <Box style={{ width: "20rem" }} marginTop="2" marginLeft="2">
                 <PrimaryButton

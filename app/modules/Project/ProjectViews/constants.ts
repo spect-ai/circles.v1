@@ -55,7 +55,7 @@ export const labels = [
     name: "Testing",
     id: "Testing",
   },
-]
+];
 
 export const cardType = [
   {
@@ -65,38 +65,39 @@ export const cardType = [
   {
     name: "Bounty",
     id: "Bounty",
-  },]
+  },
+];
 
 export const priorityType = [
   {
     name: "Low",
-    id: '1',
+    id: "1",
   },
   {
     name: "Medium",
-    id: '2',
+    id: "2",
   },
   {
     name: "High",
-    id: '3',
+    id: "3",
   },
   {
     name: "Urgent",
-    id: '4',
+    id: "4",
   },
-]
+];
 
 export const Status = [
   {
     name: "Paid",
-    id: 'Paid',
+    id: "Paid",
   },
   {
     name: "Active",
-    id: 'Active',
+    id: "Active",
   },
   {
     name: "Archived",
-    id: 'Archived',
+    id: "Archived",
   },
-]
+];

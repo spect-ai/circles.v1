@@ -3,7 +3,15 @@ import React, { useState, useEffect } from "react";
 import { useLocalProject } from "../Context/LocalProjectContext";
 import { useGlobal } from "@/app/context/globalContext";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
-import { Box, Button, IconGrid, IconList, IconDotsVertical, Text, IconPlusSmall} from "degen";
+import {
+  Box,
+  Button,
+  IconGrid,
+  IconList,
+  IconDotsVertical,
+  Text,
+  IconPlusSmall,
+} from "degen";
 import Link from "next/link";
 import { toast } from "react-toastify";
 import CreateViewModal from "./ViewModal/CreateViewModal";
@@ -11,81 +19,96 @@ import EditViewModal from "./ViewModal/EditViewModal";
 import { AnimatePresence } from "framer-motion";
 
 export const ViewBar = () => {
-
   const router = useRouter();
   const { circle: cId, project: pId, view: vId } = router.query;
   const { localProject: project } = useLocalProject();
-  const { viewName, setViewName} = useGlobal()
+  const { viewName, setViewName } = useGlobal();
   const { canDo } = useRoleGate();
 
   const [openModal, setOpenModal] = useState(false);
-  const [viewMode, setViewMode] = useState('');
+  const [viewMode, setViewMode] = useState("");
 
-  useEffect(()=> {
-    if(!vId){
-      setViewName('');
+  useEffect(() => {
+    if (!vId) {
+      setViewName("");
     }
-  },[pId])
+  }, [pId]);
 
-  return(
+  return (
     <>
       <Box display="flex" flexDirection="row" gap="4">
-        {project?.viewOrder?.map(view_Id => {
+        {project?.viewOrder?.map((view_Id) => {
           const view = project.viewDetails?.[view_Id];
-          
-          return(
+
+          return (
             <>
               <Link href={`/${cId}/${pId}?view=${view_Id}`} key={view_Id}>
-                <Button 
-                  prefix={view?.type == 'Board' ? <IconGrid size="4"/> : <IconList size="4"/>} 
-                  variant={ view_Id == viewName ? "tertiary" : "transparent" }
+                <Button
+                  prefix={
+                    view?.type == "Board" ? (
+                      <IconGrid size="4" />
+                    ) : (
+                      <IconList size="4" />
+                    )
+                  }
+                  variant={view_Id == viewName ? "tertiary" : "transparent"}
                   size="small"
                   key={view_Id}
                   suffix={
-                    view_Id == viewName  && canDo(["steward"]) ? 
-                    <>
-                      <Box onClick={()=> {
-                        setViewMode('edit');
-                        setOpenModal(true);
-                      }}>
-                        <IconDotsVertical size="4" />
-                      </Box>
-                    </> : <></>
+                    view_Id == viewName && canDo(["steward"]) ? (
+                      <>
+                        <Box
+                          onClick={() => {
+                            setViewMode("edit");
+                            setOpenModal(true);
+                          }}
+                        >
+                          <IconDotsVertical size="4" />
+                        </Box>
+                      </>
+                    ) : (
+                      <></>
+                    )
                   }
                 >
                   {view?.name}
                 </Button>
               </Link>
             </>
-          )
+          );
         })}
       </Box>
-      {project?.name && canDo(["steward"]) && 
+      {project?.name && canDo(["steward"]) && (
         <Box
           cursor="pointer"
-          onClick={()=> {
-            if(project.viewOrder && project.viewOrder?.length < 3 ){
-              setViewMode('create');
+          onClick={() => {
+            if (project.viewOrder && project.viewOrder?.length < 3) {
+              setViewMode("create");
               setOpenModal(true);
-            }else{
+            } else {
               toast.warning("You cannot create more than 3 views");
-            }}}
+            }
+          }}
           color="foreground"
           display="flex"
           flexDirection="row"
           gap="1"
           alignItems="center"
         >
-          <IconPlusSmall color="textSecondary" size="4"/>
+          <IconPlusSmall color="textSecondary" size="4" />
           <Text color="textSecondary">View</Text>
         </Box>
-      }
-      {openModal && 
+      )}
+      {openModal && (
         <AnimatePresence>
-          {viewMode == 'create' && <CreateViewModal setViewOpen={setOpenModal}/>}
-          {viewMode == 'edit' && <EditViewModal setViewOpen={setOpenModal} viewId={viewName}/>}
+          {viewMode == "create" && (
+            <CreateViewModal setViewOpen={setOpenModal} />
+          )}
+          {viewMode == "edit" && (
+            <EditViewModal setViewOpen={setOpenModal} viewId={viewName} />
+          )}
         </AnimatePresence>
-      }
+      )}
     </>
-  )
-}
+  );
+};
