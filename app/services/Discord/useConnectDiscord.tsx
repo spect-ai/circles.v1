@@ -11,7 +11,7 @@ export default function useConnectDiscord() {
 
   const fetchDiscordUser = async () => {
     const res = await fetch(
-      `http://localhost:3001/api/connectDiscord?code=${code}`
+      `${process.env.BOT_HOST}/api/connectDiscord?code=${code}`
     );
     if (res.ok) {
       const data = await res.json();

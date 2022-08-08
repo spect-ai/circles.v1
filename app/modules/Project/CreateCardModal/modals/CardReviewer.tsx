@@ -64,6 +64,7 @@ function CardReviewer() {
             src={getMemberDetails(reviewers[0])?.avatar}
             label=""
             size="5"
+            address={getMemberDetails(reviewers[0])?.ethAddress}
           />
         ) : (
           <IconUserSolid color="accent" size="5" />
@@ -136,6 +137,7 @@ function CardReviewer() {
                   src={item.avatar}
                   label="avatar"
                   placeholder={!item.avatar}
+                  address={item.ethAddress}
                 />
                 <Box marginRight="2" />
                 <Text

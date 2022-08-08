@@ -7,7 +7,6 @@ import { Option } from "../constants";
 import { matchSorter } from "match-sorter";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
-import { id } from "ethers/lib/utils";
 import { useQuery } from "react-query";
 import { MemberDetails } from "@/app/types";
 import { useRouter } from "next/router";
