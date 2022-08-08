@@ -27,7 +27,7 @@ function ProjectHeading() {
 
   const defaultView = () => {
     if (viewName.length > 0) setViewName("");
-    if (vId) router.push(`/${cId}/${pId}/`);
+    if (vId) void router.push(`/${cId}/${pId}/`);
   };
 
   return (

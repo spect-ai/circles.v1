@@ -2,7 +2,7 @@ import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { useLocalProject } from "../../Context/LocalProjectContext";
-import { CircleType, MemberDetails, Views, Filter } from "@/app/types";
+import { CircleType, MemberDetails } from "@/app/types";
 import MultiSelectDropdown, {
   OptionType,
   Input,
@@ -20,7 +20,7 @@ import {
 } from "degen";
 import { SaveOutlined } from "@ant-design/icons";
 import { editViews } from "@/app/services/ProjectViews";
-import { cardType, priorityType, labels, Status } from "../constants";
+import { cardType, priorityType, labels } from "../constants";
 import Modal from "@/app/common/components/Modal";
 import ConfirmDelete from "./ConfirmDeleteModal";
 import { AnimatePresence } from "framer-motion";
@@ -34,7 +34,7 @@ function EditViewModal({ setViewOpen, viewId }: Props) {
   const router = useRouter();
   const { mode } = useTheme();
 
-  const { circle: cId, project: pId } = router.query;
+  const { circle: cId } = router.query;
   const { localProject: project, setLocalProject } = useLocalProject();
   const { data: circle } = useQuery<CircleType>(["circle", cId], {
     enabled: false,
@@ -44,9 +44,9 @@ function EditViewModal({ setViewOpen, viewId }: Props) {
     { enabled: false }
   );
 
-  const [filteredMembers, setFilteredMembers] = useState<
-    { name: string; id: string }[]
-  >([] as any);
+  const [filteredMembers, setFilteredMembers] = useState<OptionType[]>(
+    [] as OptionType[]
+  );
   const [deleteModal, setDeleteModal] = useState(false);
 
   useEffect(() => {
@@ -64,8 +64,8 @@ function EditViewModal({ setViewOpen, viewId }: Props) {
     id: column,
   }));
 
-  const view: Views = project.viewDetails?.[viewId as string]!;
-  const viewFilters: Filter = view?.filters!;
+  const view = project.viewDetails?.[viewId];
+  const viewFilters = view?.filters;
 
   const [name, setName] = useState<string>(view?.name || " ");
   const [layout, setLayout] = useState<"Board" | "List">(view?.type || "Board");
@@ -168,21 +168,21 @@ function EditViewModal({ setViewOpen, viewId }: Props) {
           </Box>
           <MultiSelectDropdown
             width="30"
-            options={filteredMembers as OptionType[]}
+            options={filteredMembers}
             value={assignee}
             setValue={setAssignee}
             title={"Assignee"}
           />
           <MultiSelectDropdown
             width="30"
-            options={filteredMembers as OptionType[]}
+            options={filteredMembers}
             value={reviewer}
             setValue={setReviewer}
             title={"Reviewer"}
           />
           <MultiSelectDropdown
             width="30"
-            options={labels as OptionType[]}
+            options={labels}
             value={label}
             setValue={setLabels}
             title={"Labels"}

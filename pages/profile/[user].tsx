@@ -42,6 +42,7 @@ const ProfilePage: NextPage = () => {
         console.log(err);
         toast.error("Could not fetch user data");
       });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   
 

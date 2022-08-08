@@ -122,7 +122,7 @@ const WorkCards: FunctionComponent<Props> = ({ toggle, userData }) => {
             ?.slice(0)
             .reverse()
             .map((cardId) => {
-              const card: CardDetails = userData?.cardDetails[cardId]!;
+              const card: CardDetails = userData?.cardDetails[cardId];
               const cardLink = `${card?.circle?.slug}/${card?.project?.slug}/${card?.slug}`;
               return (
                 <Card
@@ -161,7 +161,7 @@ const WorkCards: FunctionComponent<Props> = ({ toggle, userData }) => {
             ?.slice(0)
             .reverse()
             .map((cardId) => {
-              const card: CardDetails = userData?.cardDetails[cardId]!;
+              const card: CardDetails = userData?.cardDetails[cardId];
               const cardLink = `${card?.circle?.slug}/${card?.project?.slug}/${card?.slug}`;
               return (
                 <Card

@@ -4,7 +4,6 @@ import styled from "styled-components";
 import React, { useState, useEffect } from "react";
 import { UserType, CardDetails } from "@/app/types";
 import { PriorityIcon } from "@/app/common/components/PriorityIcon";
-import { useQuery } from "react-query";
 
 interface Props {
   userId: string;
@@ -188,7 +187,7 @@ const Activity = React.memo(({ userData }: { userData: UserType }) => {
         ?.slice(0)
         .reverse()
         .map((cardId) => {
-          const card: CardDetails = userData?.cardDetails?.[cardId]!;
+          const card: CardDetails = userData?.cardDetails?.[cardId];
           const cardLink = `${card?.circle?.slug}/${card?.project?.slug}/${card?.slug}`;
           return (
             <Card
@@ -262,6 +261,7 @@ const ProfileTabs = ({ userId }: Props) => {
 
   useEffect(() => {
     void fetchUser();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId, tab]);
 
   return (
