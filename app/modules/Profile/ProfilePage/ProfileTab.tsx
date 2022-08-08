@@ -4,6 +4,7 @@ import styled from "styled-components";
 import React, { useState, useEffect } from "react";
 import { UserType, CardDetails } from "@/app/types";
 import { PriorityIcon } from "@/app/common/components/PriorityIcon";
+import { useQuery } from "react-query";
 
 interface Props {
   userId: string;
@@ -244,25 +245,21 @@ const Retro = () => {
 
 const ProfileTabs = ({ userId }: Props) => {
   const [tab, setProfileTab] = useState("Activity");
-  const [userData, setUserData] = useState({} as UserType);
 
-  const fetchUser = async () => {
-    const res = await fetch(`${process.env.API_HOST}/user/${userId}`, {
-      credentials: "include",
-    });
-    if (res.ok) {
-      const data = await res.json();
-      setUserData(data);
-      return data;
-    } else {
-      return false;
+  const { data: userData, refetch: fetchUser } = useQuery<UserType>(
+    "user",
+    () =>
+      fetch(`${process.env.API_HOST}/user/${userId}`, {
+        credentials: "include",
+      }).then((res) => res.json()),
+    {
+      enabled: false,
     }
-  };
+  );
 
   useEffect(() => {
     void fetchUser();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userId, tab]);
+  }, [userId, tab, fetchUser]);
 
   return (
     <Box>
@@ -287,7 +284,7 @@ const ProfileTabs = ({ userId }: Props) => {
         </PrimaryButton>
       </Box>
       <Box>
-        {tab === "Activity" && <Activity userData={userData} />}
+        {tab === "Activity" && <Activity userData={userData as UserType} />}
         {tab === "Retro" && <Retro />}
       </Box>
     </Box>

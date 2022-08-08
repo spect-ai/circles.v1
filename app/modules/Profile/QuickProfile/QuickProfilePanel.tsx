@@ -37,8 +37,7 @@ const QuickProfilePanel = () => {
 
   useEffect(() => {
     void fetchUser();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userData, quickProfileUser]);
+  }, [userData, quickProfileUser, fetchUser]);
 
   return (
     <motion.div
