@@ -143,6 +143,7 @@ function EditViewModal({ setViewOpen, viewId }: Props) {
             </Text>
             <Box display="flex" flexDirection="row">
               <Box
+                cursor="pointer"
                 color="textSecondary"
                 padding="2"
                 borderRadius="large"
@@ -154,6 +155,7 @@ function EditViewModal({ setViewOpen, viewId }: Props) {
                 <IconGrid size="4" />
               </Box>
               <Box
+                cursor="pointer"
                 color="textSecondary"
                 padding="2"
                 borderRadius="large"

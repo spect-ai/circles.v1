@@ -17,6 +17,7 @@ import { toast } from "react-toastify";
 import CreateViewModal from "./ViewModal/CreateViewModal";
 import EditViewModal from "./ViewModal/EditViewModal";
 import { AnimatePresence } from "framer-motion";
+import PrimaryButton from "@/app/common/components/PrimaryButton";
 
 export const ViewBar = () => {
   const router = useRouter();
@@ -76,39 +77,32 @@ export const ViewBar = () => {
           );
         })}
       </Box>
-      {project?.name && canDo(["steward"]) && (
-        <Box
-          cursor="pointer"
-          onClick={() => {
-            if (project.viewOrder && project.viewOrder?.length < 3) {
-              setViewMode("create");
-              setOpenModal(true);
-            } else {
-              toast.warning("You cannot create more than 3 views");
-            }
-          }}
-          color="foreground"
-          display="flex"
-          flexDirection="row"
-          gap="1"
-          alignItems="center"
-        >
-          <IconPlusSmall color="textSecondary" size="5" />
-          <Text color="textSecondary" variant="base" weight="medium">
+      <Box width="44">
+        {project?.name && canDo(["steward"]) && (
+          <PrimaryButton
+            variant="transparent"
+            onClick={() => {
+              if (project.viewOrder && project.viewOrder?.length < 3) {
+                setViewMode("create");
+                setOpenModal(true);
+              } else {
+                toast.warning("You cannot create more than 3 views");
+              }
+            }}
+            icon={<IconPlusSmall size="4" />}
+          >
             Create View
-          </Text>
-        </Box>
-      )}
-      {openModal && (
-        <AnimatePresence>
-          {viewMode == "create" && (
-            <CreateViewModal setViewOpen={setOpenModal} />
-          )}
-          {viewMode == "edit" && (
-            <EditViewModal setViewOpen={setOpenModal} viewId={viewName} />
-          )}
-        </AnimatePresence>
-      )}
+          </PrimaryButton>
+        )}
+      </Box>
+      <AnimatePresence>
+        {openModal && viewMode == "create" && (
+          <CreateViewModal setViewOpen={setOpenModal} />
+        )}
+        {openModal && viewMode == "edit" && (
+          <EditViewModal setViewOpen={setOpenModal} viewId={viewName} />
+        )}
+      </AnimatePresence>
     </>
   );
 };

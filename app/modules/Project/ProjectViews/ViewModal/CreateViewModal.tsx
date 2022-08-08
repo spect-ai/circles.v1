@@ -121,6 +121,7 @@ function CreateViewModal({ setViewOpen }: Props) {
             </Text>
             <Box display="flex" flexDirection="row">
               <Box
+                cursor="pointer"
                 color="textSecondary"
                 padding="2"
                 borderRadius="large"
@@ -132,6 +133,7 @@ function CreateViewModal({ setViewOpen }: Props) {
                 <IconGrid size="4" />
               </Box>
               <Box
+                cursor="pointer"
                 color="textSecondary"
                 padding="2"
                 borderRadius="large"
