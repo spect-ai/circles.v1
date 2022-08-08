@@ -200,11 +200,7 @@ export interface CardType {
   priority: number;
   columnId: string;
   activity: Activity[];
-  status: {
-    active: boolean;
-    archived: boolean;
-    paid: boolean;
-  };
+  status: Status;
   workThreadOrder: string[];
   workThreads: {
     [key: string]: WorkThreadType;
@@ -272,6 +268,10 @@ export interface ProjectType {
   discordDiscussionChannel: {
     id: string;
     name: string;
+  };
+  viewOrder?: string[];
+  viewDetails?: {
+    [key: string]: Views;
   };
 }
 
@@ -389,4 +389,34 @@ export interface CardDetails {
     archived: boolean;
     paid: boolean;
   };
+}
+
+export type Filter = {
+  assignee: string[];
+  reviewer: string[];
+  column: string[];
+  label: string[];
+  status: string[];
+  title: string;
+  type: string[];
+  priority: string[];
+  deadline: string;
+};
+
+export type CardsType = {
+  [key: string]: CardType;
+}
+
+export type Views = {
+  type: 'List' | 'Board';
+  hidden: boolean;
+  filters: Filter;
+  slug?: string;
+  name: string;
+}
+
+export type Status = {
+  active: boolean;
+  paid: boolean;
+  archived: boolean;
 }

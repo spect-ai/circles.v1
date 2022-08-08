@@ -115,7 +115,7 @@ const ProfileCard = ({ userId }: Props) => {
 
   const circlesArray =
     myCircles?.map &&
-    myCircles?.map((aCircle) => ({ label: aCircle.name, src: aCircle.avatar }));
+    myCircles?.map((aCircle) => ({ label: aCircle.slug, src: aCircle.avatar }));
 
   console.log(circlesArray);
 

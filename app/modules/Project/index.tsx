@@ -1,7 +1,8 @@
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { Box, useTheme } from "degen";
-import React, { memo } from "react";
+import React, { memo, useEffect } from "react";
 import { useLocalProject } from "./Context/LocalProjectContext";
+import { useGlobal } from "@/app/context/globalContext";
 import useProjectOnboarding from "@/app/services/Onboarding/useProjectOnboarding";
 import CreateSubmission from "@/app/modules/Card/Submission/CreateSubmission";
 
@@ -14,6 +15,7 @@ import Onboarding from "./ProjectOnboarding";
 import ListView from "./ListView";
 import BatchPay from "./BatchPay";
 import Apply from "../Card/Apply";
+import { Views } from "@/app/types";
 
 function Project() {
   const {
@@ -29,15 +31,29 @@ function Project() {
   } = useLocalProject();
   const { canDo } = useRoleGate();
   const { onboarded } = useProjectOnboarding();
+  const { setViewName, viewName } = useGlobal();
 
   const router = useRouter();
-  const { card: tId } = router.query;
+  const { card: tId, view: vId } = router.query;
 
   const { mode } = useTheme();
 
   if (tId || !project) {
     return null;
   }
+
+  let viewId: string = "";
+
+  if (vId !== undefined) {
+    viewId = vId as string;
+    setViewName(viewId);
+  } else {
+    viewId = "";
+    setViewName(viewId);
+  }
+
+  const selectedView: Views = project.viewDetails?.[viewId as string]!;
+
   return (
     <>
       <AnimatePresence>
@@ -73,8 +89,14 @@ function Project() {
             }}
           />
           {!onboarded && canDo(["steward"]) && <Onboarding />}
-          {view === 0 && <BoardView />}
-          {view === 1 && <ListView />}
+          {!vId && view === 0 && <BoardView viewId={""} />}
+          {!vId && view === 1 && <ListView viewId={""} />}
+          {vId && selectedView?.type == "Board" && (
+            <BoardView viewId={viewId as string} key={viewId} />
+          )}
+          {vId && selectedView?.type == "List" && (
+            <ListView viewId={viewId as string} key={viewId} />
+          )}
         </Box>
       </motion.main>
     </>
