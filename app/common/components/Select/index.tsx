@@ -21,6 +21,9 @@ const OptionContainer = styled(Box)<{ isSelected: boolean }>`
   &:hover {
     border-color: rgb(191, 90, 242, 1);
   }
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 `;
 
 const Select: FC<Props> = ({ options, value, onChange }) => {

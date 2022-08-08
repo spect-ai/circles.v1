@@ -11,7 +11,7 @@ export default function useCardService() {
 
   const callCreateCard = async (payload: any): Promise<any> => {
     setCreating(true);
-    const res = await fetch(`${process.env.API_HOST}/card`, {
+    const res = await fetch(`${process.env.API_HOST}/card/v1`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -54,13 +54,16 @@ export default function useCardService() {
 
   const archiveCard = async (cardId: string): Promise<any> => {
     setUpdating(true);
-    const res = await fetch(`${process.env.API_HOST}/card/${cardId}/archive`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-    });
+    const res = await fetch(
+      `${process.env.API_HOST}/card/v1/${cardId}/archive`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      }
+    );
     setUpdating(false);
     if (res.ok) {
       void router.push(`/${cId}/${pId}`);

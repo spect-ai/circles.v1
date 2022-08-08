@@ -34,8 +34,11 @@ import { AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
 import queryClient from "@/app/common/utils/queryClient";
 import GlobalContextProvider from "@/app/context/globalContext";
+import { useEffect } from "react";
+import * as gtag from "../lib/gtag";
 
 const alchemyId = process.env.ALCHEMY_KEY;
+const isProd = process.env.NODE_ENV === "production";
 
 // Configure chains & providers with the Alchemy provider.
 // Two popular providers are Alchemy (alchemy.com) and Infura (infura.io)
@@ -76,6 +79,17 @@ const wagmiClient = createClient({
 function MyApp({ Component, pageProps }: AppProps) {
   const router = useRouter();
   const url = `https:/circles.spect.network/${router.route}`;
+
+  useEffect(() => {
+    const handleRouteChange = (url: URL) => {
+      /* invoke analytics function only for production */
+      if (isProd) gtag.pageview(url);
+    };
+    router.events.on("routeChangeComplete", handleRouteChange);
+    return () => {
+      router.events.off("routeChangeComplete", handleRouteChange);
+    };
+  }, [router.events]);
   return (
     <WagmiConfig client={wagmiClient}>
       <GlobalContextProvider>

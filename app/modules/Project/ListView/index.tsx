@@ -39,9 +39,9 @@ function ListView() {
   return (
     <>
       <AnimatePresence>
-        {batchPayModalOpen && selectedCard && (
+        {/* {batchPayModalOpen && selectedCard && (
           <BatchPay card={selectedCard} setIsOpen={setBatchPayModalOpen} />
-        )}
+        )} */}
         <ScrollContainer>
           <Stack space="8">
             {project?.columnOrder?.map((columnId, index): any => {
@@ -68,7 +68,7 @@ function ListView() {
                     setLocalProject(updatedProject);
                   }}
                 >
-                  Add new column
+                  Add new section
                 </PrimaryButton>
               </Box>
             )}

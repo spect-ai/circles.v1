@@ -1,7 +1,8 @@
 import { PriorityIcon } from "@/app/common/components/PriorityIcon";
 import { monthMap } from "@/app/common/utils/constants";
+import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
 import { CardType, MemberDetails } from "@/app/types";
-import { Avatar, Box, IconEth, Stack, Tag, Text, useTheme } from "degen";
+import { AvatarGroup, Box, IconEth, Stack, Tag, Text, useTheme } from "degen";
 import { useRouter } from "next/router";
 import React, { memo, useCallback, useMemo, useState } from "react";
 import {
@@ -48,6 +49,8 @@ function CardComponent({ card, index }: Props) {
   const { projectCardActions } = useLocalProject();
   const { mode } = useTheme();
 
+  const { getMemberAvatars, getMemberDetails } = useModalOptions();
+
   const DraggableContent = (
     provided: DraggableProvided,
     snapshot: DraggableStateSnapshot
@@ -72,62 +75,43 @@ function CardComponent({ card, index }: Props) {
       mode={mode}
     >
       <Box>
-        <Box
-          marginTop="1"
-          marginBottom="4"
-          display="flex"
-          flexDirection="row"
-          justifyContent="space-between"
-        >
-          <Text weight="semiBold">{card.title}</Text>
-          {card.assignee.length > 0 && card.assignee[0] && (
-            <Avatar
-              src={
-                memberDetails?.memberDetails &&
-                memberDetails.memberDetails[card.assignee[0]]?.avatar
-              }
-              label=""
-              size="6"
-              address={
-                memberDetails?.memberDetails &&
-                memberDetails.memberDetails[card.assignee[0]]?.ethAddress
-              }
-              placeholder={
-                !(
-                  memberDetails?.memberDetails &&
-                  memberDetails.memberDetails[card.assignee[0]]?.avatar
-                )
-              }
-            />
-          )}
+        <Box marginTop="1" marginBottom="4">
+          <Stack direction="horizontal" space="2" justify="space-between">
+            <Text weight="semiBold">{card.title}</Text>
+            {card.assignee.length > 0 &&
+              card.assignee[0] &&
+              getMemberDetails(card.assignee[0]) && (
+                <AvatarGroup members={getMemberAvatars(card.assignee)} hover />
+              )}
+          </Stack>
         </Box>
-        {/* <MemberAvatarGroup
-              memberIds={card.assignee}
-              memberDetails={space.memberDetails}
-            /> */}
         <Stack direction="horizontal" wrap space="2">
           {card.status.paid && (
-            <Tag size="small">
+            <Tag size="small" tone="green">
               <Text color="green">Paid</Text>
             </Tag>
           )}
           {card.type === "Bounty" && (
-            <Tag size="small" tone="accent">
-              {card.type}
+            <Tag size="small">
+              <Text color="accent">{card.type}</Text>
             </Tag>
           )}
           {card.reward.value ? (
-            <Tag size="small" tone="accent">
-              <Stack direction="horizontal" space="0" align="center">
-                <IconEth size="3.5" />
-                {card.reward.value} {card.reward.token.symbol}
-              </Stack>
+            <Tag size="small">
+              <Text color="accent">
+                <Stack direction="horizontal" space="0" align="center">
+                  <IconEth size="3.5" />
+                  {card.reward.value} {card.reward.token.symbol}
+                </Stack>
+              </Text>
             </Tag>
           ) : null}
           {card.deadline && (
-            <Tag size="small" tone="accent">
-              {deadline.getDate()}{" "}
-              {monthMap[deadline.getMonth() as keyof typeof monthMap]}
+            <Tag size="small">
+              <Text color="accent">
+                {deadline.getDate()}{" "}
+                {monthMap[deadline.getMonth() as keyof typeof monthMap]}
+              </Text>
             </Tag>
           )}
           {card.priority ? <PriorityIcon priority={card.priority} /> : null}

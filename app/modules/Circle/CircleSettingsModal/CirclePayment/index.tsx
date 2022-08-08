@@ -1,17 +1,15 @@
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import queryClient from "@/app/common/utils/queryClient";
 import {
   getFlattenedCurrencies,
   getFlattenedNetworks,
 } from "@/app/common/utils/registry";
 import { updateCircle } from "@/app/services/UpdateCircle";
-import { Chain, CircleType, Registry, Token } from "@/app/types";
+import { Chain, Registry, Token } from "@/app/types";
 import { SaveOutlined } from "@ant-design/icons";
 import { Box, Heading, Stack, Tag, Text } from "degen";
-import { useRouter } from "next/router";
 import React, { useState } from "react";
-import { useQuery } from "react-query";
 import styled from "styled-components";
+import { useCircle } from "../../CircleContext";
 import AddToken from "./AddToken";
 
 const Container = styled(Box)`
@@ -24,15 +22,7 @@ const Container = styled(Box)`
 `;
 
 export default function DefaultPayment() {
-  const router = useRouter();
-  const { circle: cId } = router.query;
-  const { data: circle } = useQuery<CircleType>(["circle", cId], {
-    enabled: false,
-  });
-
-  const { data: registry } = useQuery<Registry>(["registry", cId], {
-    enabled: false,
-  });
+  const { circle, registry, setCircleData } = useCircle();
 
   const [chain, setChain] = useState(circle?.defaultPayment.chain);
   const [token, setToken] = useState(circle?.defaultPayment.token);
@@ -54,7 +44,7 @@ export default function DefaultPayment() {
     setIsDirty(false);
     setIsLoading(false);
     if (res) {
-      queryClient.setQueryData(["circle", cId], res);
+      setCircleData(res);
     }
   };
 

@@ -50,14 +50,14 @@ export default function EditorSubmission({
             src={getMemberDetails(workUnit.user)?.avatar}
             label=""
             size="8"
-            placeholder={!getMemberDetails(workUnit.user)?.avatar}
+            address={getMemberDetails(workUnit.user)?.ethAddress}
           />
         ) : (
           <Avatar
             src={getMemberDetails(connectedUser)?.avatar}
             label=""
             size="8"
-            placeholder={!getMemberDetails(connectedUser)?.avatar}
+            address={getMemberDetails(connectedUser)?.ethAddress}
           />
         )}
         <Editor

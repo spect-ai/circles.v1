@@ -1,28 +1,26 @@
 import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { storeImage } from "@/app/common/utils/ipfs";
-import queryClient from "@/app/common/utils/queryClient";
-import { useGlobal } from "@/app/context/globalContext";
 import useProfileUpdate from "@/app/services/Profile/useProfileUpdate";
 import { MemberDetails, UserType } from "@/app/types";
 import { GithubOutlined, SaveFilled } from "@ant-design/icons";
 import {
   Box,
-  Button,
-  IconMoon,
-  IconSun,
   Input,
   MediaPicker,
   Stack,
   Text,
-  useTheme,
+  Button,
+  Tag,
+  IconCheck,
+  Textarea
 } from "degen";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { useQuery } from "react-query";
-import { useDisconnect } from "wagmi";
 import DiscordIcon from "@/app/assets/icons/discordIcon.svg";
+import { skillsArray } from "./constants";
 
 interface Props {
   setIsOpen: (isOpen: boolean) => void;
@@ -38,8 +36,6 @@ export default function ProfileModal({ setIsOpen }: Props) {
     }
   );
 
-  const { disconnectUser } = useGlobal();
-  const { disconnect } = useDisconnect();
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
@@ -47,14 +43,14 @@ export default function ProfileModal({ setIsOpen }: Props) {
   const [uploading, setUploading] = useState(false);
   const [avatar, setAvatar] = useState("");
   const [username, setUsername] = useState("");
+  const [bio, setBio] = useState("");
+  const [skills, setSkills] = useState([] as string[]);
 
   const [isDirty, setIsDirty] = useState(false);
 
   const { updateProfile } = useProfileUpdate();
 
   const [loading, setLoading] = useState(true);
-  // eslint-disable-next-line @typescript-eslint/unbound-method
-  const { mode, setMode } = useTheme();
 
   const handleClose = () => {
     setIsOpen(false);
@@ -75,12 +71,14 @@ export default function ProfileModal({ setIsOpen }: Props) {
     setLoading(true);
     setAvatar(currentUser?.avatar || "");
     setUsername(currentUser?.username || "");
+    setBio(currentUser?.bio || "");
+    setSkills(currentUser?.skills || []);
     setLoading(false);
   }, []);
 
   return (
     <Modal title="Profile" handleClose={handleClose}>
-      <Box padding="8">
+      <Box padding="6">
         <Stack>
           <Text variant="label">Profile Picture</Text>
           {!loading && (
@@ -103,39 +101,64 @@ export default function ProfileModal({ setIsOpen }: Props) {
           )}
           <Text variant="label">Username</Text>
           <Input
-            label=""
+            label
+            hideLabel
             placeholder="Username"
             value={username}
+            maxLength={15} 
             onChange={(e) => {
               setUsername(e.target.value);
               setIsDirty(true);
             }}
           />
-          <Stack direction="horizontal">
-            <Button
-              shape="circle"
-              variant={mode === "dark" ? "secondary" : "transparent"}
-              onClick={() => {
-                localStorage.removeItem("lightMode");
-                setMode("dark");
-              }}
-            >
-              <IconMoon />
-            </Button>
-            <Button
-              shape="circle"
-              variant={mode === "light" ? "secondary" : "transparent"}
-              onClick={() => {
-                localStorage.setItem("lightMode", "true");
-                setMode("light");
-              }}
-            >
-              <IconSun />
-            </Button>
+          <Stack direction="horizontal" justify="space-between">
+            <Text variant="label">Bio</Text>
+            <Tag>{100 - bio.length}</Tag>
           </Stack>
-
-          <Box marginTop="2" />
-
+          <Textarea
+            label
+            hideLabel
+            maxLength={100} 
+            rows={2}
+            placeholder="About you under 100 characters"
+            value={bio}
+            onChange={(e) => {
+              setBio(e.target.value);
+              setIsDirty(true);
+            }}
+          />
+          <Stack direction="horizontal" justify="space-between">
+            <Text variant="label">Skills</Text>
+            <Tag>Upto {10 - skills.length}</Tag>
+          </Stack>
+          <Box display="flex" flexDirection="row" gap="1" flexWrap="wrap" marginBottom="4">
+          {skillsArray.map(skill => (
+            <Box
+              onClick={() => {
+                  if (skills.includes(skill)) {
+                    setSkills(skills.filter((item) => item !== skill));
+                  } else if(skills.length < 10) {
+                    setSkills([...skills, skill]);
+                  }
+                setIsDirty(true);
+              }}
+              style={{
+                cursor: "pointer"
+              }}
+            >
+              <Tag
+                size="medium"
+                hover
+                tone={skills.includes(skill) ? "accent" : "secondary"}
+              >
+                <Box display="flex" alignItems="center">
+                  {skills.includes(skill) && <IconCheck size="4" />}
+                  {skill}
+                </Box>
+              </Tag>
+            </Box>
+          ))}
+          </Box>
           <PrimaryButton
             disabled={!isDirty || uploading || !username}
             loading={loading}
@@ -145,6 +168,8 @@ export default function ProfileModal({ setIsOpen }: Props) {
               await updateProfile({
                 username,
                 avatar,
+                bio,
+                skills,
               });
               if (cId) {
                 await fetchMemberDetails();
@@ -156,6 +181,7 @@ export default function ProfileModal({ setIsOpen }: Props) {
           >
             Save Profile
           </PrimaryButton>
+          <Stack direction="horizontal" >
           {!currentUser?.discordId && (
             <Link
               href={`https://discord.com/api/oauth2/authorize?client_id=942494607239958609&redirect_uri=${
@@ -164,37 +190,42 @@ export default function ProfileModal({ setIsOpen }: Props) {
                   : "https%3A%2F%2Fcircles.spect.network%2FlinkDiscord"
               }&response_type=code&scope=identify`}
             >
-              <PrimaryButton
-                tourId="connect-discord-button"
-                icon={
+              <Button
+                width="full"
+                size="small"
+                variant="secondary" 
+                prefix={
                   <Box marginTop="1">
                     <DiscordIcon />
-                  </Box>
-                }
+                  </Box>}
               >
                 Connect Discord
-              </PrimaryButton>
+              </Button>
             </Link>
           )}
           {currentUser?.discordId && (
-            <PrimaryButton
+            <Button
               disabled
-              icon={
+              width="full"
+              size="small"
+              prefix={
                 <Box marginTop="1">
                   <DiscordIcon />
                 </Box>
               }
             >
               Discord Connected
-            </PrimaryButton>
+            </Button>
           )}
           {!currentUser?.githubId && (
             <Link
               href={`https://github.com/login/oauth/authorize?client_id=4403e769e4d52b24eeab`}
             >
-              <PrimaryButton
-                tourId="connect-github-button"
-                icon={
+              <Button
+                width="full"
+                size="small"
+                variant="secondary" 
+                prefix={
                   <GithubOutlined
                     style={{
                       fontSize: "1.3rem",
@@ -203,13 +234,15 @@ export default function ProfileModal({ setIsOpen }: Props) {
                 }
               >
                 Connect Github
-              </PrimaryButton>
+              </Button>
             </Link>
           )}
           {currentUser?.githubId && (
-            <PrimaryButton
+            <Button
               disabled
-              icon={
+              width="full"
+              size="small"
+              prefix={
                 <GithubOutlined
                   style={{
                     fontSize: "1.3rem",
@@ -218,25 +251,9 @@ export default function ProfileModal({ setIsOpen }: Props) {
               }
             >
               Github Connected
-            </PrimaryButton>
+            </Button>
           )}
-          <PrimaryButton
-            variant="transparent"
-            onClick={async () => {
-              await fetch(`${process.env.API_HOST}/auth/disconnect`, {
-                method: "POST",
-                credentials: "include",
-              });
-              disconnect();
-              queryClient.setQueryData("getMyUser", null);
-              void queryClient.invalidateQueries("getMyUser");
-              localStorage.removeItem("connectorIndex");
-              disconnectUser();
-              setIsOpen(false);
-            }}
-          >
-            Logout
-          </PrimaryButton>
+          </Stack>
         </Stack>
       </Box>
     </Modal>

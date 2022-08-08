@@ -8,6 +8,7 @@ import {
   IconTrash,
   Stack,
   Text,
+  useTheme,
 } from "degen";
 import { AnimatePresence } from "framer-motion";
 import React, { useState } from "react";
@@ -24,9 +25,11 @@ const ScrollContainer = styled(Box)`
   overflow-y: auto;
 `;
 
-const PopoverOptionContainer = styled(Box)`
+const PopoverOptionContainer = styled(Box)<{ mode: string }>`
   &:hover {
-    background-color: rgba(255, 255, 255, 0.1);
+    // background-color: rgba(255, 255, 255, 0.1);
+    background-color: ${({ mode }) =>
+      mode === "dark" ? "rgba(255, 255, 255, 0.1)" : "rgba(20, 20, 20, 0.1)"};
   }
 `;
 
@@ -40,20 +43,25 @@ export const PopoverOption = ({
   children,
   onClick,
   tourId,
-}: PopoverOptionProps) => (
-  <PopoverOptionContainer
-    padding="4"
-    overflow="hidden"
-    cursor="pointer"
-    onClick={onClick}
-    borderRadius="2xLarge"
-    data-tour={tourId}
-  >
-    <Text variant="small" weight="semiBold" ellipsis color="textSecondary">
-      {children}
-    </Text>
-  </PopoverOptionContainer>
-);
+}: PopoverOptionProps) => {
+  const { mode } = useTheme();
+
+  return (
+    <PopoverOptionContainer
+      padding="4"
+      overflow="hidden"
+      cursor="pointer"
+      onClick={onClick}
+      borderRadius="2xLarge"
+      data-tour={tourId}
+      mode={mode}
+    >
+      <Text variant="small" weight="semiBold" ellipsis color="textSecondary">
+        {children}
+      </Text>
+    </PopoverOptionContainer>
+  );
+};
 
 export default function ActionPopover() {
   const [showConfirm, setShowConfirm] = useState(false);
