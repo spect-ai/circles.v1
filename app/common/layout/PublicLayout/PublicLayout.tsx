@@ -34,11 +34,7 @@ function PublicLayout(props: PublicLayoutProps) {
     }
   }, [connect, connectors, isConnected]);
 
-  useEffect(() => {
-    setTimeout(() => {
-      localStorage.getItem("lightMode") && setMode("light");
-    }, 100);
-  }, []);
+  
 
   return (
     <Box

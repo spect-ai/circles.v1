@@ -1,10 +1,4 @@
-import {
-  CardsType,
-  Filter,
-  ProjectType,
-  CircleType,
-  MemberDetails,
-} from "@/app/types";
+import { CardsType, Filter, ProjectType } from "@/app/types";
 
 export const filterCards = (
   project: ProjectType,
@@ -21,18 +15,7 @@ export const filterCards = (
     let priorityFiltSat = false;
     let columnFiltSat = false;
 
-    const {
-      assignee,
-      reviewer,
-      status,
-      columnId,
-      labels,
-      title,
-      type,
-      priority,
-      deadline,
-      id,
-    } = card;
+    const { assignee, reviewer, labels, title, type, priority, id } = card;
 
     if (currentFilter?.reviewer?.length > 0) {
       for (let i = 0; i < reviewer.length; i += 1) {

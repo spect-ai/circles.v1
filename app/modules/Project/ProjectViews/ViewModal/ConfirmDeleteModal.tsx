@@ -21,11 +21,10 @@ export default function ConfirmDelete({
   const { setViewName } = useGlobal();
 
   const onDelete = async () => {
-    router.push(`/${cId}/${pId}/`);
+    void router.push(`/${cId}/${pId}/`);
     setViewName("");
     setViewOpen(false);
     const updatedProject = await deleteViews(project.id, viewId);
-    console.log(updatedProject);
     if (updatedProject !== null) setLocalProject(updatedProject);
   };
 

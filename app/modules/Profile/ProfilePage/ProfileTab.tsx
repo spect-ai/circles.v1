@@ -4,7 +4,6 @@ import styled from "styled-components";
 import React, { useState, useEffect } from "react";
 import { UserType, CardDetails } from "@/app/types";
 import { PriorityIcon } from "@/app/common/components/PriorityIcon";
-import { useQuery } from "react-query";
 
 interface Props {
   userId: string;
@@ -14,7 +13,7 @@ const Card = styled(Box)<{ mode: string }>`
   display: flex;
   flex-direction: column;
   width: 60vw;
-  height: 12vh;
+  min-height: 12vh;
   margin-top: 1rem;
   padding: 0.4rem 1rem 0;
   border-radius: 0.5rem;
@@ -35,9 +34,10 @@ const Card = styled(Box)<{ mode: string }>`
 const Tags = styled(Box)`
   display: flex;
   flex-direction: row;
-  position: absolute;
-  bottom: 0.7rem;
-  gap: 1rem;
+  flex-wrap: wrap;
+  width: 50vw;
+  padding: 1rem 0rem;
+  gap: 0.7rem;
 `;
 
 const GigInfo = styled(Box)`
@@ -47,6 +47,12 @@ const GigInfo = styled(Box)`
   position: absolute;
   right: 0.7rem;
   gap: 1rem;
+`;
+
+const TextBox = styled(Box)`
+  display: flex;
+  flex-wrap: wrap;
+  width: 50vw;
 `;
 
 const ScrollContainer = styled(Box)`
@@ -67,15 +73,19 @@ const Activity = React.memo(({ userData }: { userData: UserType }) => {
         ?.slice(0)
         .reverse()
         .map((cardId) => {
-          const card: CardDetails = userData?.cardDetails[cardId];
-          const cardLink = `${card?.circle?.slug}/${card.project?.slug}/${card?.slug}`;
+          const card: CardDetails = userData?.cardDetails?.[cardId];
+          const cardLink = `${card?.circle?.slug}/${card?.project?.slug}/${card?.slug}`;
           return (
             <Card
               mode={mode}
               key={cardId}
               onClick={() => window.open(`/${cardLink}`)}
             >
-              <Text variant="extraLarge">{card?.title}</Text>
+              <TextBox>
+                <Text variant="extraLarge" wordBreak="break-word">
+                  {card?.title}
+                </Text>
+              </TextBox>
               <Tags>
                 {card?.labels?.map((tag) => (
                   <Tag as="span" size="small" key={tag}>
@@ -101,15 +111,19 @@ const Activity = React.memo(({ userData }: { userData: UserType }) => {
         ?.slice(0)
         .reverse()
         .map((cardId) => {
-          const card: CardDetails = userData?.cardDetails[cardId];
-          const cardLink = `${card?.circle?.slug}/${card.project?.slug}/${card?.slug}`;
+          const card: CardDetails = userData?.cardDetails?.[cardId];
+          const cardLink = `${card?.circle?.slug}/${card?.project?.slug}/${card?.slug}`;
           return (
             <Card
               mode={mode}
               key={cardId}
               onClick={() => window.open(`/${cardLink}`)}
             >
-              <Text variant="extraLarge">{card?.title} </Text>
+              <TextBox>
+                <Text variant="extraLarge" wordBreak="break-word">
+                  {card?.title}
+                </Text>
+              </TextBox>
               <Tags>
                 {card?.labels?.map((tag) => (
                   <Tag as="span" size="small" key={tag}>
@@ -124,7 +138,7 @@ const Activity = React.memo(({ userData }: { userData: UserType }) => {
                 <Tag hover>Reviewing</Tag>
                 <Avatar
                   label="profile-pic"
-                  src={card.circle?.avatar}
+                  src={card?.circle?.avatar}
                   size="6"
                 />
               </GigInfo>
@@ -135,7 +149,7 @@ const Activity = React.memo(({ userData }: { userData: UserType }) => {
         ?.slice(0)
         .reverse()
         .map((cardId) => {
-          const card: CardDetails = userData?.cardDetails[cardId];
+          const card: CardDetails = userData?.cardDetails?.[cardId];
           const cardLink = `${card?.circle?.slug}/${card?.project?.slug}/${card?.slug}`;
           return (
             <Card
@@ -143,7 +157,11 @@ const Activity = React.memo(({ userData }: { userData: UserType }) => {
               key={cardId}
               onClick={() => window.open(`/${cardLink}`)}
             >
-              <Text variant="extraLarge">{card.title} </Text>
+              <TextBox>
+                <Text variant="extraLarge" wordBreak="break-word">
+                  {card?.title}
+                </Text>
+              </TextBox>
               <Tags>
                 {card?.labels?.map((tag) => (
                   <Tag as="span" size="small" key={tag}>
@@ -158,7 +176,7 @@ const Activity = React.memo(({ userData }: { userData: UserType }) => {
                 <Tag hover>Worked On</Tag>
                 <Avatar
                   label="profile-pic"
-                  src={card.circle?.avatar}
+                  src={card?.circle?.avatar}
                   size="6"
                 />
               </GigInfo>
@@ -169,7 +187,7 @@ const Activity = React.memo(({ userData }: { userData: UserType }) => {
         ?.slice(0)
         .reverse()
         .map((cardId) => {
-          const card: CardDetails = userData?.cardDetails[cardId];
+          const card: CardDetails = userData?.cardDetails?.[cardId];
           const cardLink = `${card?.circle?.slug}/${card?.project?.slug}/${card?.slug}`;
           return (
             <Card
@@ -177,7 +195,11 @@ const Activity = React.memo(({ userData }: { userData: UserType }) => {
               key={cardId}
               onClick={() => window.open(`/${cardLink}`)}
             >
-              <Text variant="extraLarge">{card.title} </Text>
+              <TextBox>
+                <Text variant="extraLarge" wordBreak="break-word">
+                  {card?.title}
+                </Text>
+              </TextBox>
               <Tags>
                 {card?.labels?.map((tag) => (
                   <Tag as="span" size="small" key={tag}>
@@ -192,7 +214,7 @@ const Activity = React.memo(({ userData }: { userData: UserType }) => {
                 <Tag hover>Reviewed</Tag>
                 <Avatar
                   label="profile-pic"
-                  src={card.circle?.avatar}
+                  src={card?.circle?.avatar}
                   size="6"
                 />
               </GigInfo>
@@ -239,6 +261,7 @@ const ProfileTabs = ({ userId }: Props) => {
 
   useEffect(() => {
     void fetchUser();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId, tab]);
 
   return (

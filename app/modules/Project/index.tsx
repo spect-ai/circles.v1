@@ -15,7 +15,6 @@ import Onboarding from "./ProjectOnboarding";
 import ListView from "./ListView";
 import BatchPay from "./BatchPay";
 import Apply from "../Card/Apply";
-import { Views } from "@/app/types";
 
 function Project() {
   const {
@@ -31,7 +30,7 @@ function Project() {
   } = useLocalProject();
   const { canDo } = useRoleGate();
   const { onboarded } = useProjectOnboarding();
-  const { setViewName, viewName } = useGlobal();
+  const { setViewName } = useGlobal();
 
   const router = useRouter();
   const { card: tId, view: vId } = router.query;
@@ -42,7 +41,7 @@ function Project() {
     return null;
   }
 
-  let viewId: string = "";
+  let viewId = "";
 
   if (vId !== undefined) {
     viewId = vId as string;
@@ -52,7 +51,7 @@ function Project() {
     setViewName(viewId);
   }
 
-  const selectedView: Views = project.viewDetails?.[viewId as string]!;
+  const selectedView = project.viewDetails?.[viewId];
 
   return (
     <>
@@ -92,11 +91,9 @@ function Project() {
           {!vId && view === 0 && <BoardView viewId={""} />}
           {!vId && view === 1 && <ListView viewId={""} />}
           {vId && selectedView?.type == "Board" && (
-            <BoardView viewId={viewId as string} key={viewId} />
+            <BoardView viewId={viewId} />
           )}
-          {vId && selectedView?.type == "List" && (
-            <ListView viewId={viewId as string} key={viewId} />
-          )}
+          {vId && selectedView?.type == "List" && <ListView viewId={viewId} />}
         </Box>
       </motion.main>
     </>

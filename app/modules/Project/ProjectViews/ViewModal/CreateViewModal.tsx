@@ -33,9 +33,9 @@ function CreateViewModal({ setViewOpen }: Props) {
     { enabled: false }
   );
 
-  const [filteredMembers, setFilteredMembers] = useState<
-    { name: string; id: string }[]
-  >([] as any);
+  const [filteredMembers, setFilteredMembers] = useState<OptionType[]>(
+    [] as OptionType[]
+  );
 
   useEffect(() => {
     if (circle) {
@@ -82,7 +82,6 @@ function CreateViewModal({ setViewOpen }: Props) {
       },
       project.id
     );
-    console.log(updatedProject);
     setViewOpen(false);
     if (updatedProject !== null) setLocalProject(updatedProject);
   };
@@ -148,21 +147,21 @@ function CreateViewModal({ setViewOpen }: Props) {
           </Box>
           <MultiSelectDropdown
             width="30"
-            options={filteredMembers as OptionType[]}
+            options={filteredMembers}
             value={assignee}
             setValue={setAssignee}
             title={"Assignee"}
           />
           <MultiSelectDropdown
             width="30"
-            options={filteredMembers as OptionType[]}
+            options={filteredMembers}
             value={reviewer}
             setValue={setReviewer}
             title={"Reviewer"}
           />
           <MultiSelectDropdown
             width="30"
-            options={labels as OptionType[]}
+            options={labels}
             value={label}
             setValue={setLabels}
             title={"Labels"}

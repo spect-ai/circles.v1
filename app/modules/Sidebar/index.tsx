@@ -49,9 +49,14 @@ function Sidebar(): ReactElement {
     enabled: false,
   });
 
-  const [isOpen, setIsOpen] = useState(false);
   // eslint-disable-next-line @typescript-eslint/unbound-method
   const { mode, setMode } = useTheme();
+
+  useEffect(() => {
+    setTimeout(() => {
+      localStorage.getItem("lightMode") && setMode("light");
+    }, 100);
+  }, []);
 
   const {
     data: myCircles,
