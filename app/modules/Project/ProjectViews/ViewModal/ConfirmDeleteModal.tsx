@@ -25,7 +25,6 @@ export default function ConfirmDelete({
     setViewName("");
     setViewOpen(false);
     const updatedProject = await deleteViews(project.id, viewId);
-    console.log(updatedProject);
     if (updatedProject !== null) setLocalProject(updatedProject);
   };
 

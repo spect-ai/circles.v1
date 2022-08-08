@@ -59,7 +59,7 @@ const ProfilePage: NextPage = () => {
     void fetchUser();
   }, [user, userId, fetchUser]);
 
-  if (isLoading || !user?.id) {
+  if (isLoading || !user?.id || !userId) {
     return <Loader loading text="fetching" />;
   }
 

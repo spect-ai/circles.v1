@@ -82,7 +82,6 @@ function CreateViewModal({ setViewOpen }: Props) {
       },
       project.id
     );
-    console.log(updatedProject);
     setViewOpen(false);
     if (updatedProject !== null) setLocalProject(updatedProject);
   };

@@ -105,7 +105,6 @@ function EditViewModal({ setViewOpen, viewId }: Props) {
       viewId
     );
     setViewOpen(false);
-    console.log(updatedProject);
     if (updatedProject !== null) setLocalProject(updatedProject);
   };
 
