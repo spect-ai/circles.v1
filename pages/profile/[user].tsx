@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Box, useTheme, Heading } from "degen";
+import { Box, useTheme } from "degen";
 import MetaHead from "@/app/common/seo/MetaHead/MetaHead";
 import type { NextPage } from "next";
 import Sidebar from "@/app/modules/Sidebar";
