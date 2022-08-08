@@ -2,7 +2,7 @@ import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { useLocalProject } from "../../Context/LocalProjectContext";
-import { CircleType, MemberDetails } from "@/app/types";
+import { CircleType, MemberDetails, Views, Filter } from "@/app/types";
 import MultiSelectDropdown, {
   OptionType,
   Input,
@@ -34,7 +34,7 @@ function EditViewModal({ setViewOpen, viewId }: Props) {
   const router = useRouter();
   const { mode } = useTheme();
 
-  const { circle: cId } = router.query;
+  const { circle: cId, project: pId } = router.query;
   const { localProject: project, setLocalProject } = useLocalProject();
   const { data: circle } = useQuery<CircleType>(["circle", cId], {
     enabled: false,
@@ -44,9 +44,9 @@ function EditViewModal({ setViewOpen, viewId }: Props) {
     { enabled: false }
   );
 
-  const [filteredMembers, setFilteredMembers] = useState<OptionType[]>(
-    [] as OptionType[]
-  );
+  const [filteredMembers, setFilteredMembers] = useState<
+    { name: string; id: string }[]
+  >([] as any);
   const [deleteModal, setDeleteModal] = useState(false);
 
   useEffect(() => {
@@ -64,8 +64,8 @@ function EditViewModal({ setViewOpen, viewId }: Props) {
     id: column,
   }));
 
-  const view = project.viewDetails?.[viewId];
-  const viewFilters = view?.filters;
+  const view: Views | undefined = project.viewDetails?.[viewId];
+  const viewFilters: Filter | undefined = view?.filters;
 
   const [name, setName] = useState<string>(view?.name || " ");
   const [layout, setLayout] = useState<"Board" | "List">(view?.type || "Board");
@@ -105,6 +105,7 @@ function EditViewModal({ setViewOpen, viewId }: Props) {
       viewId
     );
     setViewOpen(false);
+    console.log(updatedProject);
     if (updatedProject !== null) setLocalProject(updatedProject);
   };
 
@@ -169,21 +170,21 @@ function EditViewModal({ setViewOpen, viewId }: Props) {
           </Box>
           <MultiSelectDropdown
             width="30"
-            options={filteredMembers}
+            options={filteredMembers as OptionType[]}
             value={assignee}
             setValue={setAssignee}
             title={"Assignee"}
           />
           <MultiSelectDropdown
             width="30"
-            options={filteredMembers}
+            options={filteredMembers as OptionType[]}
             value={reviewer}
             setValue={setReviewer}
             title={"Reviewer"}
           />
           <MultiSelectDropdown
             width="30"
-            options={labels}
+            options={labels as OptionType[]}
             value={label}
             setValue={setLabels}
             title={"Labels"}

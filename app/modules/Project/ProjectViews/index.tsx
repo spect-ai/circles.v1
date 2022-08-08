@@ -33,7 +33,6 @@ export const ViewBar = () => {
     if (!vId) {
       setViewName("");
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pId]);
 
   return (

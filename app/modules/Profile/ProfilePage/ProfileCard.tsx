@@ -96,7 +96,7 @@ const ProfileCard = ({ userId }: Props) => {
 
   useEffect(() => {
     void fetchUser();
-  }, [user, userId, isOpen, fetchUser]);
+  }, [user, userId, isOpen]);
 
   const { data: myCircles, refetch } = useQuery<CircleType[]>(
     "myOrganizations",
@@ -116,6 +116,8 @@ const ProfileCard = ({ userId }: Props) => {
   const circlesArray =
     myCircles?.map &&
     myCircles?.map((aCircle) => ({ label: aCircle.slug, src: aCircle.avatar }));
+
+  console.log(circlesArray);
 
   return (
     <>

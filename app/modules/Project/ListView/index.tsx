@@ -39,11 +39,11 @@ function ListView({ viewId }: Props) {
   } = useLocalProject();
   const { canDo } = useRoleGate();
 
-  const view = project.viewDetails?.[viewId];
+  const view: Views = project.viewDetails?.[viewId as string]!;
   const viewCards = filterCards(project, view?.filters as Filter);
   const viewFilter = view?.filters;
 
-  const filteredCards = filterCards(project, currentFilter);
+  const filteredCards = filterCards(project, currentFilter as Filter);
 
   if (loading) {
     return <SkeletonLoader />;
@@ -58,20 +58,20 @@ function ListView({ viewId }: Props) {
         <ScrollContainer>
           <Stack space="8">
             {!viewId &&
-              project?.columnOrder?.map((columnId: string) => {
+              project?.columnOrder?.map((columnId, index): any => {
                 const column = project.columnDetails[columnId];
                 const cards = column.cards?.map(
-                  (cardId: string) => filteredCards[cardId]
+                  (cardId: any) => filteredCards[cardId]
                 );
                 return (
                   <ListSection key={columnId} column={column} cards={cards} />
                 );
               })}
             {viewId &&
-              project?.columnOrder?.map((columnId: string) => {
+              project?.columnOrder?.map((columnId, index): any => {
                 if (
-                  (viewFilter as Filter)?.column?.length > 0 &&
-                  !(viewFilter as Filter).column?.includes(columnId)
+                  viewFilter?.column?.length > 0 &&
+                  !viewFilter.column?.includes(columnId)
                 )
                   return null;
 

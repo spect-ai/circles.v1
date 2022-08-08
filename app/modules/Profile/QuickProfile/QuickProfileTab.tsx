@@ -31,9 +31,7 @@ const ScrollContainer = styled(Box)`
 const Card = styled(Box)<{ mode: string }>`
   display: flex;
   flex-direction: column;
-  flex-wrap: wrap;
   width: 630px;
-  // max-height: 300px;
   padding: 0.6rem;
   border-radius: 0.5rem;
   background-color: transparent;
@@ -71,13 +69,7 @@ const GigInfo = styled(Box)`
   align-items: center;
   position: absolute;
   right: 1rem;
-  gap: 0.4rem;
-`;
-
-const TextBox = styled(Box)`
-  display: flex;
-  flex-wrap: wrap;
-  width: 510px;
+  gap: 0.6rem;
 `;
 
 const Toggle: FunctionComponent<Props> = ({ toggle, setToggle }) => {
@@ -114,7 +106,7 @@ const Toggle: FunctionComponent<Props> = ({ toggle, setToggle }) => {
 
 const WorkCards: FunctionComponent<Props> = ({ toggle, userData }) => {
   const { mode } = useTheme();
-
+  console.log({ userData });
   return (
     <Box gap="2" display="flex" flexDirection="column">
       {toggle == "Assignee"
@@ -130,11 +122,9 @@ const WorkCards: FunctionComponent<Props> = ({ toggle, userData }) => {
                   key={cardId}
                   onClick={() => window.open(`/${cardLink}`)}
                 >
-                  <TextBox>
-                    <Text weight="medium" variant="base" wordBreak="break-word">
-                      {card?.title}
-                    </Text>
-                  </TextBox>
+                  <Text weight="medium" variant="base">
+                    {card?.title}
+                  </Text>
                   <GigInfo>
                     {card?.priority > 0 && (
                       <PriorityIcon priority={card?.priority} />
@@ -169,11 +159,9 @@ const WorkCards: FunctionComponent<Props> = ({ toggle, userData }) => {
                   key={cardId}
                   onClick={() => window.open(`/${cardLink}`)}
                 >
-                  <TextBox>
-                    <Text weight="medium" variant="base" wordBreak="break-word">
-                      {card?.title}
-                    </Text>
-                  </TextBox>
+                  <Text weight="medium" variant="base">
+                    {card?.title}
+                  </Text>
                   <GigInfo>
                     {card?.priority > 0 && (
                       <PriorityIcon priority={card?.priority} />

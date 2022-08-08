@@ -1,7 +1,7 @@
 import { labels as labelArray } from "@/app/common/utils/constants";
 import { OptionType } from "../../../common/components/MultiSelectDropDown/MultiSelectDropDown";
 
-const labels = [] as OptionType[];
+const labels = [] as any;
 
 labelArray.map((la) => labels.push({ name: la, id: la }));
 

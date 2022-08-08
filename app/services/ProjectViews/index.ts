@@ -1,6 +1,8 @@
 import { Views } from "@/app/types";
 import { toast } from "react-toastify";
 
+// http://localhost:8080/project/62d35ad1f0e56c8baf31a1c9/view/0fb5f53a-675c-4b72-9e88-38d5f5561d9c/update
+
 export const createViews = async (body: Views, projectId: string) => {
   const res = await fetch(`${process.env.API_HOST}/project/${projectId}/view/add`, {
     method: "PATCH",

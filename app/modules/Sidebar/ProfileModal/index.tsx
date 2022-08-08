@@ -21,7 +21,7 @@ export default function ProfileButton() {
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
-
+  const [isOpen, setIsOpen] = useState(false);
   const { openQuickProfile, isProfilePanelExpanded } = useGlobal()
   const { mode } = useTheme();
   return (
