@@ -1,6 +1,6 @@
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
-import { Box, Heading, IconGrid, IconList, Stack, Text, useTheme } from "degen";
-import React, { memo, useEffect, useState } from "react";
+import { Box, IconGrid, IconList, Stack, Text, useTheme } from "degen";
+import React, { memo } from "react";
 import Skeleton from "react-loading-skeleton";
 import styled from "styled-components";
 import { useLocalProject } from "../Context/LocalProjectContext";
@@ -27,7 +27,7 @@ function ProjectHeading() {
 
   const defaultView = () => {
     if (viewName.length > 0) setViewName("");
-    if (vId) router.push(`/${cId}/${pId}/`);
+    if (vId) void router.push(`/${cId}/${pId}/`);
   };
 
   return (

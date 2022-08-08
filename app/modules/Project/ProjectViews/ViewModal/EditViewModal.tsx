@@ -20,7 +20,7 @@ import {
 } from "degen";
 import { SaveOutlined } from "@ant-design/icons";
 import { editViews } from "@/app/services/ProjectViews";
-import { cardType, priorityType, labels, Status } from "../constants";
+import { cardType, priorityType, labels } from "../constants";
 import Modal from "@/app/common/components/Modal";
 import ConfirmDelete from "./ConfirmDeleteModal";
 import { AnimatePresence } from "framer-motion";
@@ -64,8 +64,8 @@ function EditViewModal({ setViewOpen, viewId }: Props) {
     id: column,
   }));
 
-  const view: Views = project.viewDetails?.[viewId as string]!;
-  const viewFilters: Filter = view?.filters!;
+  const view: Views | undefined = project.viewDetails?.[viewId];
+  const viewFilters: Filter | undefined = view?.filters;
 
   const [name, setName] = useState<string>(view?.name || " ");
   const [layout, setLayout] = useState<"Board" | "List">(view?.type || "Board");
@@ -143,6 +143,7 @@ function EditViewModal({ setViewOpen, viewId }: Props) {
             </Text>
             <Box display="flex" flexDirection="row">
               <Box
+                cursor="pointer"
                 color="textSecondary"
                 padding="2"
                 borderRadius="large"
@@ -154,6 +155,7 @@ function EditViewModal({ setViewOpen, viewId }: Props) {
                 <IconGrid size="4" />
               </Box>
               <Box
+                cursor="pointer"
                 color="textSecondary"
                 padding="2"
                 borderRadius="large"

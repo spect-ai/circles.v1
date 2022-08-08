@@ -118,7 +118,7 @@ const MultiSelectDropdown: FC<Props> = ({
   const inputRef = useRef<HTMLInputElement>(null);
   const [saved, setSaved] = useState([] as string[]);
   const [filteredOptions, setFilteredOptions] = useState(options);
-  const [inputValue, setInputValue] = useState(saved as string[]);
+  const [inputValue, setInputValue] = useState(saved);
 
   useEffect(() => {
     setFilteredOptions(options);
@@ -159,6 +159,7 @@ const MultiSelectDropdown: FC<Props> = ({
             const selectedOption = options.filter((i) => i.id == item);
             return (
               <Box
+                cursor="pointer"
                 onClick={() => {
                   setInputValue(inputValue.filter((i) => i !== item));
                   setValue(value.filter((i) => i !== selectedOption[0].id));

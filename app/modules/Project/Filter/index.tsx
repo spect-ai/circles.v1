@@ -2,7 +2,7 @@ import Popover from "@/app/common/components/Popover";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { useQuery } from "react-query";
-import { Box, useTheme } from "degen";
+import { Box, Button, useTheme } from "degen";
 import { FilterOutlined } from "@ant-design/icons";
 import { CircleType, MemberDetails } from "@/app/types";
 import MultiSelectDropdown, {
@@ -98,10 +98,11 @@ export default function Filter() {
         isOpen={filterOpen}
         setIsOpen={setFilterOpen}
         butttonComponent={
-          <Box
-            cursor="pointer"
+          <Button
+            shape="circle"
+            size="small"
+            variant="transparent"
             onClick={() => setFilterOpen(!filterOpen)}
-            position="relative"
           >
             {filterIsOn && (
               <div
@@ -122,7 +123,7 @@ export default function Filter() {
                 fontSize: "1.3rem",
               }}
             />
-          </Box>
+          </Button>
         }
       >
         <AnimatePresence>
