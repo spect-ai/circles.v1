@@ -114,7 +114,7 @@ const Toggle: FunctionComponent<Props> = ({ toggle, setToggle }) => {
 
 const WorkCards: FunctionComponent<Props> = ({ toggle, userData }) => {
   const { mode } = useTheme();
-  console.log({ userData });
+
   return (
     <Box gap="2" display="flex" flexDirection="column">
       {toggle == "Assignee"

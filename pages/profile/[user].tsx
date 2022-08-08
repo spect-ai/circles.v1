@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Box, useTheme } from "degen";
+import { Box, useTheme, Heading } from "degen";
 import MetaHead from "@/app/common/seo/MetaHead/MetaHead";
 import type { NextPage } from "next";
 import Sidebar from "@/app/modules/Sidebar";
@@ -11,7 +11,7 @@ import { useRouter } from "next/router";
 import { UserType } from "@/app/types";
 import { useQuery } from "react-query";
 import { toast } from "react-toastify";
-
+import Loader from "@/app/common/components/Loader";
 
 const getUser = async () => {
   const res = await fetch(`${process.env.API_HOST}/user/me`, {
@@ -21,14 +21,13 @@ const getUser = async () => {
 };
 
 const ProfilePage: NextPage = () => {
-
-  const router = useRouter(); 
+  const router = useRouter();
   const userId = router.query.user;
   // eslint-disable-next-line @typescript-eslint/unbound-method
   const { mode } = useTheme();
   const { isProfilePanelExpanded, connectUser } = useGlobal();
 
-  const { refetch } = useQuery<UserType>("getMyUser", getUser, {
+  const { refetch, isLoading } = useQuery<UserType>("getMyUser", getUser, {
     enabled: false,
   });
 
@@ -42,9 +41,27 @@ const ProfilePage: NextPage = () => {
         console.log(err);
         toast.error("Could not fetch user data");
       });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  
+
+  const { data: user, refetch: fetchUser } = useQuery<UserType>(
+    ["user", userId],
+    async () =>
+      await fetch(`${process.env.API_HOST}/user/${userId}`).then((res) =>
+        res.json()
+      ),
+    {
+      enabled: false,
+    }
+  );
+
+  useEffect(() => {
+    void fetchUser();
+  }, [user, userId, fetchUser]);
+
+  if (isLoading || !user?.id) {
+    return <Loader loading text="fetching" />;
+  }
 
   return (
     <>
@@ -60,18 +77,13 @@ const ProfilePage: NextPage = () => {
         }}
         id="profile-layout"
       >
-      <Sidebar />
-      <Box
-        display="flex"
-        flexDirection="row"
-        width="full"
-        overflow="hidden"
-      >
-        <ProfileCard userId={userId as string} />
-        <ProfileTabs userId={userId as string} />
+        <Sidebar />
+        <Box display="flex" flexDirection="row" width="full" overflow="hidden">
+          <ProfileCard userId={userId as string} />
+          <ProfileTabs userId={userId as string} />
+        </Box>
       </Box>
-      </Box>
-      {isProfilePanelExpanded && <QuickProfilePanel/>} 
+      {isProfilePanelExpanded && <QuickProfilePanel />}
     </>
   );
 };

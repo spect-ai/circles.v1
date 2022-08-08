@@ -37,7 +37,7 @@ const QuickProfilePanel = () => {
 
   useEffect(() => {
     void fetchUser();
-  }, [userData, quickProfileUser, fetchUser]);
+  }, [userData, quickProfileUser, isProfilePanelExpanded, fetchUser]);
 
   return (
     <motion.div
