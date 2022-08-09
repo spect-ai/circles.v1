@@ -20,7 +20,8 @@ interface UserType {
   reviewingClosedCards: string[];
   cardDetails: any;
   activities: string[];
-  notifications: string[];
+  notifications: Notification[];
+  retro: any;
   bookmarks: string[];
   followedCircles: string[];
   followedUsers: string[];
@@ -405,18 +406,35 @@ export type Filter = {
 
 export type CardsType = {
   [key: string]: CardType;
-}
+};
 
 export type Views = {
-  type: 'List' | 'Board';
+  type: "List" | "Board";
   hidden: boolean;
   filters: Filter;
   slug?: string;
   name: string;
-}
+};
 
 export type Status = {
   active: boolean;
   paid: boolean;
   archived: boolean;
+};
+
+export interface Notification {
+  actor: string;
+  content: string;
+  linkPath: string[];
+  ref: {
+    cards?: ContentPlaceholder;
+    users?: ContentPlaceholder;
+    circles?: ContentPlaceholder;
+    projects?: ContentPlaceholder;
+  };
+  timestamp: string;
 }
+
+export type ContentPlaceholder = {
+  [key: string]: string;
+};

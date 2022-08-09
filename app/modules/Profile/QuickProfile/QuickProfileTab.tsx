@@ -199,26 +199,28 @@ const WorkCards: FunctionComponent<Props> = ({ toggle, userData }) => {
   );
 };
 
-const Activity = () => {
+const Notifications = ({ userData }: { userData: UserType }) => {
   return (
-    <>
-      <Box
-        style={{
-          display: "flex",
-          flexDirection: "row",
-          gap: "0.4rem",
-          alignItems: "center",
-          paddingTop: "1rem",
-        }}
-      >
-        <Avatar label="profile-pic" src="/og.jpg" size="5" />
-        <Text variant="base" weight="semiBold">
-          Spect.network
-        </Text>
-        <Text variant="small">commented on your submission</Text>
-        <Text variant="label">12:34PM</Text>
-      </Box>
-    </>
+    <Box gap="2" display="flex" flexDirection="column" paddingTop={"5"}>
+      {userData?.notifications?.map((notif) => {
+        return (
+          <Box
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              gap: "0.4rem",
+              alignItems: "center",
+              cursor: "pointer",
+            }}
+            key={notif.timestamp}
+            onClick={() => window.open(`/${notif?.linkPath?.[0]}/`)}
+          >
+            <Avatar label="profile-pic" size="4" />
+            <Text>{notif.content}</Text>
+          </Box>
+        );
+      })}
+    </Box>
   );
 };
 
@@ -250,7 +252,7 @@ const QuickProfileTabs = ({ userData }: UserProps) => {
       <Box
         display="flex"
         flexDirection="row"
-        width="96"
+        width="112"
         paddingTop="2"
         justifyContent="space-between"
       >
@@ -265,10 +267,10 @@ const QuickProfileTabs = ({ userData }: UserProps) => {
         <Button
           size="small"
           prefix={<FieldTimeOutlined />}
-          variant={panelTab === "Activity" ? "tertiary" : "transparent"}
-          onClick={() => setPanelTab("Activity")}
+          variant={panelTab === "Notification" ? "tertiary" : "transparent"}
+          onClick={() => setPanelTab("Notification")}
         >
-          Activity
+          Notification
         </Button>
         <Button
           size="small"
@@ -291,9 +293,9 @@ const QuickProfileTabs = ({ userData }: UserProps) => {
           </ScrollContainer>
         </>
       )}
-      {panelTab == "Activity" && (
+      {panelTab == "Notification" && (
         <ScrollContainer overflow={"auto"}>
-          <Activity />
+          <Notifications userData={userData} />
         </ScrollContainer>
       )}
       {panelTab == "Bookmarks" && (

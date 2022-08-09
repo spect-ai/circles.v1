@@ -227,7 +227,7 @@ const Activity = React.memo(({ userData }: { userData: UserType }) => {
 
 Activity.displayName = "Activity";
 
-const Retro = () => {
+const Retro = ({ userData }: { userData: UserType }) => {
   const { mode } = useTheme();
 
   return (
@@ -288,7 +288,7 @@ const ProfileTabs = ({ userId }: Props) => {
       </Box>
       <Box>
         {tab === "Activity" && <Activity userData={userData} />}
-        {tab === "Retro" && <Retro />}
+        {tab === "Retro" && <Retro userData={userData} />}
       </Box>
     </Box>
   );
