@@ -1,7 +1,8 @@
 import { PriorityIcon } from "@/app/common/components/PriorityIcon";
 import { monthMap } from "@/app/common/utils/constants";
+import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
 import { CardType, MemberDetails } from "@/app/types";
-import { Avatar, Box, IconEth, Stack, Tag, Text, useTheme } from "degen";
+import { AvatarGroup, Box, IconEth, Stack, Tag, Text, useTheme } from "degen";
 import { useRouter } from "next/router";
 import React, { memo, useCallback, useMemo, useState } from "react";
 import {
@@ -48,6 +49,8 @@ function CardComponent({ card, index }: Props) {
   const { projectCardActions } = useLocalProject();
   const { mode } = useTheme();
 
+  const { getMemberAvatars, getMemberDetails } = useModalOptions();
+
   const DraggableContent = (
     provided: DraggableProvided,
     snapshot: DraggableStateSnapshot
@@ -75,32 +78,13 @@ function CardComponent({ card, index }: Props) {
         <Box marginTop="1" marginBottom="4">
           <Stack direction="horizontal" space="2" justify="space-between">
             <Text weight="semiBold">{card.title}</Text>
-            {card.assignee.length > 0 && card.assignee[0] && (
-              <Avatar
-                src={
-                  memberDetails?.memberDetails &&
-                  memberDetails.memberDetails[card.assignee[0]]?.avatar
-                }
-                label=""
-                size="6"
-                address={
-                  memberDetails?.memberDetails &&
-                  memberDetails.memberDetails[card.assignee[0]]?.ethAddress
-                }
-                placeholder={
-                  !(
-                    memberDetails?.memberDetails &&
-                    memberDetails.memberDetails[card.assignee[0]]?.avatar
-                  )
-                }
-              />
-            )}
+            {card.assignee.length > 0 &&
+              card.assignee[0] &&
+              getMemberDetails(card.assignee[0]) && (
+                <AvatarGroup members={getMemberAvatars(card.assignee)} hover />
+              )}
           </Stack>
         </Box>
-        {/* <MemberAvatarGroup
-              memberIds={card.assignee}
-              memberDetails={space.memberDetails}
-            /> */}
         <Stack direction="horizontal" wrap space="2">
           {card.status.paid && (
             <Tag size="small" tone="green">

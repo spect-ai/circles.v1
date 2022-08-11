@@ -1,0 +1,18 @@
+export const skillsArray = [
+  'EVM', 
+  'Solidity', 
+  'Rust', 
+  'DeFi', 
+  'Gaming', 
+  'Frontend', 
+  'Backend', 
+  'Open Source',
+  'Blockchain', 
+  'Smart Contracts', 
+  'DAO', 
+  'AMM',
+  'ZKP',
+  'Polygon',
+  'Sales',
+  'Design',
+]

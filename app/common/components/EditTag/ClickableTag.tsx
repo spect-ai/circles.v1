@@ -42,8 +42,8 @@ export default function ClickableTag({ name, icon, onClick, tourId }: Props) {
       onMouseLeave={() => setHover(false)}
       mode={mode}
     >
-      {icon}
-      <Text>{name}</Text>
+      <Box marginRight="1">{icon}</Box>
+      <Text ellipsis>{name}</Text>
     </TagContainer>
   );
 }

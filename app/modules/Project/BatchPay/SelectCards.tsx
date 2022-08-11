@@ -55,7 +55,12 @@ export default function SelectCards() {
   };
 
   const [checked, setChecked] = useState<boolean[]>([]);
-  const [column, setColumn] = useState({ label: "Done", value: "column-3" });
+  const [column, setColumn] = useState({
+    value: project.columnOrder[project.columnOrder.length - 1],
+    label:
+      project.columnDetails[project.columnOrder[project.columnOrder.length - 1]]
+        .name,
+  });
   const [rows, setRows] = useState<React.ReactNode[][]>(
     formatRows(project.cards, project.columnDetails[column.value]?.cards)
   );
@@ -71,15 +76,15 @@ export default function SelectCards() {
 
   const { mode } = useTheme();
 
-  useEffect(() => {
-    setColumn({
-      value: project.columnOrder[project.columnOrder.length - 1],
-      label:
-        project.columnDetails[
-          project.columnOrder[project.columnOrder.length - 1]
-        ].name,
-    });
-  }, []);
+  // useEffect(() => {
+  //   setColumn({
+  //     value: project.columnOrder[project.columnOrder.length - 1],
+  //     label:
+  //       project.columnDetails[
+  //         project.columnOrder[project.columnOrder.length - 1]
+  //       ].name,
+  //   });
+  // }, []);
 
   useEffect(() => {
     if (project?.columnDetails) {

@@ -89,10 +89,10 @@ function CardLabels() {
                   hover
                   tone={labels.includes(item.value) ? "accent" : "secondary"}
                 >
-                  <Box display="flex">
-                    {labels.includes(item.value) && <IconCheck />}
+                  <Stack direction="horizontal" space="1" align="center">
+                    {/* {labels.includes(item.value) && <IconCheck size="4" />} */}
                     {item.name}
-                  </Box>
+                  </Stack>
                 </Tag>
               </motion.button>
             ))}
