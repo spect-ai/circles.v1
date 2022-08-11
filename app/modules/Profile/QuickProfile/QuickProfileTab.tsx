@@ -1,5 +1,5 @@
 import { useState, FunctionComponent } from "react";
-import { Box, Avatar, Text, Button, useTheme } from "degen";
+import { Box, Avatar, Text, Button, useTheme, Tag } from "degen";
 import {
   ProjectOutlined,
   StarOutlined,
@@ -200,26 +200,43 @@ const WorkCards: FunctionComponent<Props> = ({ toggle, userData }) => {
 };
 
 const Notifications = ({ userData }: { userData: UserType }) => {
+  console.log({ userData });
   return (
-    <Box gap="2" display="flex" flexDirection="column" paddingTop={"5"}>
-      {userData?.notifications?.map((notif) => {
-        return (
-          <Box
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              gap: "0.4rem",
-              alignItems: "center",
-              cursor: "pointer",
-            }}
-            key={notif.timestamp}
-            onClick={() => window.open(`/${notif?.linkPath?.[0]}/`)}
-          >
-            <Avatar label="profile-pic" size="4" />
-            <Text>{notif.content}</Text>
-          </Box>
-        );
-      })}
+    <Box gap="3" display="flex" flexDirection="column" paddingTop={"5"}>
+      {userData?.notifications
+        ?.slice(0)
+        .reverse()
+        .map((notif) => {
+          return (
+            <Box
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                gap: "0.4rem",
+                alignItems: "center",
+                cursor: "pointer",
+              }}
+              key={notif?.content}
+              onClick={() => window.open(`/${notif?.linkPath?.[0]}/`)}
+            >
+              {notif?.actor && userData?.userDetails?.[notif?.actor] && (
+                <Avatar
+                  label="profile-pic"
+                  src={userData?.userDetails[notif?.actor]?.avatar}
+                  address={userData?.userDetails[notif?.actor]?.ethAddress}
+                  size="5"
+                />
+              )}
+              <Text>{notif?.content}</Text>
+              <Text variant="label">
+                {new Date(notif?.timestamp).toLocaleDateString() ==
+                new Date().toLocaleDateString()
+                  ? new Date(notif?.timestamp).toLocaleTimeString()
+                  : new Date(notif?.timestamp).toLocaleDateString()}
+              </Text>
+            </Box>
+          );
+        })}
     </Box>
   );
 };
@@ -267,10 +284,10 @@ const QuickProfileTabs = ({ userData }: UserProps) => {
         <Button
           size="small"
           prefix={<FieldTimeOutlined />}
-          variant={panelTab === "Notification" ? "tertiary" : "transparent"}
-          onClick={() => setPanelTab("Notification")}
+          variant={panelTab === "Notifications" ? "tertiary" : "transparent"}
+          onClick={() => setPanelTab("Notifications")}
         >
-          Notification
+          Notifications
         </Button>
         <Button
           size="small"
@@ -293,7 +310,7 @@ const QuickProfileTabs = ({ userData }: UserProps) => {
           </ScrollContainer>
         </>
       )}
-      {panelTab == "Notification" && (
+      {panelTab == "Notifications" && (
         <ScrollContainer overflow={"auto"}>
           <Notifications userData={userData} />
         </ScrollContainer>

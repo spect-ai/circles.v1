@@ -21,11 +21,12 @@ interface UserType {
   cardDetails: any;
   activities: string[];
   notifications: Notification[];
-  retro: any;
+  retroDetails: any;
   bookmarks: string[];
   followedCircles: string[];
   followedUsers: string[];
   followedByUsers: string[];
+  userDetails: any;
 }
 
 export interface Payment {
@@ -432,7 +433,7 @@ export interface Notification {
     circles?: ContentPlaceholder;
     projects?: ContentPlaceholder;
   };
-  timestamp: string;
+  timestamp: Date;
 }
 
 export type ContentPlaceholder = {
