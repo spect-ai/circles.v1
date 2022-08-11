@@ -21,6 +21,7 @@ interface UserType {
   cardDetails: any;
   activities: string[];
   notifications: Notification[];
+  retro: string[];
   retroDetails: any;
   bookmarks: string[];
   followedCircles: string[];

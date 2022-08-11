@@ -231,14 +231,43 @@ const Retro = ({ userData }: { userData: UserType }) => {
   const { mode } = useTheme();
 
   return (
-    <Card mode={mode}>
-      <Text variant="extraLarge"> </Text>
-      <Text variant="small"> </Text>
-      <GigInfo>
-        <Text variant="label"> </Text>
-        <Avatar label="profile-pic" src="/og.jpg" size="8" />
-      </GigInfo>
-    </Card>
+    <Box>
+      {userData?.retro?.map((ret) => {
+        const retroInfo = userData?.retroDetails?.[ret];
+        return (
+          <Card
+            mode={mode}
+            key={ret}
+            onClick={() =>
+              window.open(
+                `/${retroInfo?.circle?.name}?retroSlug=${retroInfo?.slug}`
+              )
+            }
+          >
+            <TextBox>
+              <Text variant="extraLarge">{retroInfo?.title}</Text>
+            </TextBox>
+            <Tags>
+              <Tag>
+                {Object.keys(retroInfo?.circle?.memberRoles).length}{" "}
+                participants
+              </Tag>
+            </Tags>
+            <GigInfo>
+              <Tag size="medium" hover>
+                {retroInfo?.status?.active == true ? "Active" : "Ended"}{" "}
+              </Tag>
+              <Avatar
+                label="profile-pic"
+                src={retroInfo?.circle?.avatar}
+                address={retroInfo?.circle?.id}
+                size="8"
+              />
+            </GigInfo>
+          </Card>
+        );
+      })}
+    </Box>
   );
 };
 
@@ -261,7 +290,7 @@ const ProfileTabs = ({ userId }: Props) => {
 
   useEffect(() => {
     void fetchUser();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId, tab]);
 
   return (

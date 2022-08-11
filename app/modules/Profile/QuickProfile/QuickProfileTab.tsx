@@ -1,5 +1,5 @@
 import { useState, FunctionComponent } from "react";
-import { Box, Avatar, Text, Button, useTheme, Tag } from "degen";
+import { Box, Avatar, Text, Button, useTheme } from "degen";
 import {
   ProjectOutlined,
   StarOutlined,
@@ -200,7 +200,7 @@ const WorkCards: FunctionComponent<Props> = ({ toggle, userData }) => {
 };
 
 const Notifications = ({ userData }: { userData: UserType }) => {
-  console.log({ userData });
+
   return (
     <Box gap="3" display="flex" flexDirection="column" paddingTop={"5"}>
       {userData?.notifications
