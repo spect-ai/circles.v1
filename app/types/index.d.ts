@@ -163,6 +163,7 @@ export interface CircleType {
   githubRepos: string[];
   gradient: string;
   retro: RetroType[];
+  safeAddresses: SafeAddresses;
 }
 
 // interface ProjectType {
@@ -405,18 +406,22 @@ export type Filter = {
 
 export type CardsType = {
   [key: string]: CardType;
-}
+};
 
 export type Views = {
-  type: 'List' | 'Board';
+  type: "List" | "Board";
   hidden: boolean;
   filters: Filter;
   slug?: string;
   name: string;
-}
+};
 
 export type Status = {
   active: boolean;
   paid: boolean;
   archived: boolean;
-}
+};
+
+export type SafeAddresses = {
+  [chaninId: string]: string[];
+};

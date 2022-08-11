@@ -16,7 +16,7 @@ interface Props {
 /**
  * Hook that alerts clicks outside of the passed ref
  */
-function useOutsideAlerter(
+export function useOutsideAlerter(
   ref: any,
   setIsOpen: (isOpen: boolean) => void,
   disabled?: boolean

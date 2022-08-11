@@ -2,7 +2,8 @@ import Dropdown, { OptionType } from "@/app/common/components/Dropdown";
 import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { getFlattenedNetworks } from "@/app/common/utils/registry";
-import { getUserSafes, massPayment } from "@/app/services/Gnosis";
+import { getUserSafes } from "@/app/services/Gnosis";
+import { updateCircle } from "@/app/services/UpdateCircle";
 import { Registry } from "@/app/types";
 import { Box, Stack, Tag, Text } from "degen";
 import { AnimatePresence } from "framer-motion";
@@ -10,18 +11,43 @@ import React, { useEffect, useState } from "react";
 import { useCircle } from "../../CircleContext";
 
 export default function ConnectGnosis() {
-  const [isOpen, setisOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   const { circle, registry, setCircleData } = useCircle();
-  const [chain, setChain] = useState(circle?.defaultPayment.chain);
+  const [chain, setChain] = useState(
+    Object.keys(circle?.safeAddresses || {})[0]
+  );
   const [safes, setSafes] = useState<OptionType[]>([]);
   const [selectedSafe, setselectedSafe] = useState({
-    label: "",
-    value: "",
+    label:
+      circle?.safeAddresses[Object.keys(circle?.safeAddresses || {})[0]][0] ||
+      "",
+    value:
+      circle?.safeAddresses[Object.keys(circle?.safeAddresses || {})[0]][0] ||
+      "",
   });
+  const [isLoading, setIsLoading] = useState(false);
+
+  const onSubmit = async () => {
+    setIsLoading(true);
+    const res = await updateCircle(
+      {
+        safeAddresses: {
+          [chain]: [selectedSafe.value],
+        },
+      },
+      circle?.id as string
+    );
+    console.log({ res });
+    setIsLoading(false);
+    if (res) {
+      setCircleData(res);
+    }
+    setIsOpen(false);
+  };
 
   useEffect(() => {
     const getSafes = async () => {
-      const safes = await getUserSafes(chain?.chainId || "137");
+      const safes = await getUserSafes(chain || "137");
       console.log({ safes });
       setSafes(
         safes.safes.map((safe) => ({
@@ -33,16 +59,18 @@ export default function ConnectGnosis() {
     if (isOpen) {
       void getSafes();
     }
-  }, [chain?.chainId, isOpen]);
+  }, [chain, isOpen]);
 
   return (
     <>
-      <PrimaryButton onClick={() => setisOpen(true)}>
-        Connect Gnosis
+      <PrimaryButton onClick={() => setIsOpen(true)}>
+        {circle?.safeAddresses[Object.keys(circle?.safeAddresses || {})[0]]
+          ? "Safe Connected"
+          : "Connect Gnosis"}
       </PrimaryButton>
       <AnimatePresence>
         {isOpen && (
-          <Modal handleClose={() => setisOpen(false)} title="Connect Gnosis">
+          <Modal handleClose={() => setIsOpen(false)} title="Connect Gnosis">
             <Box padding="8">
               <Stack>
                 <Text size="extraLarge">Chain</Text>
@@ -52,22 +80,16 @@ export default function ConnectGnosis() {
                       cursor="pointer"
                       key={aChain.chainId}
                       onClick={() => {
-                        setChain(aChain);
+                        setChain(aChain.chainId);
                       }}
                     >
                       <Tag
                         hover
-                        tone={
-                          chain?.chainId === aChain.chainId
-                            ? "accent"
-                            : "secondary"
-                        }
+                        tone={chain === aChain.chainId ? "accent" : "secondary"}
                       >
                         <Text
                           color={
-                            chain?.chainId === aChain.chainId
-                              ? "accent"
-                              : "inherit"
+                            chain === aChain.chainId ? "accent" : "inherit"
                           }
                         >
                           {aChain.name}
@@ -86,12 +108,8 @@ export default function ConnectGnosis() {
                 />
                 <PrimaryButton
                   shape="circle"
-                  onClick={async () => {
-                    const res = await massPayment(
-                      selectedSafe.value,
-                      chain?.chainId || "137"
-                    );
-                  }}
+                  onClick={onSubmit}
+                  loading={isLoading}
                 >
                   Save
                 </PrimaryButton>

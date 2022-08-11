@@ -1,4 +1,4 @@
-import { DiscordRoleMappingType, Payment } from "@/app/types";
+import { DiscordRoleMappingType, Payment, SafeAddresses } from "@/app/types";
 import { toast } from "react-toastify";
 
 type CircleUpdateDTO = {
@@ -11,6 +11,7 @@ type CircleUpdateDTO = {
   discordToCircleRoles: DiscordRoleMappingType;
   githubRepos: string[];
   gradient: string;
+  safeAddresses: SafeAddresses;
 };
 
 export const updateCircle = async (

@@ -3,10 +3,39 @@ import { Stack } from "degen";
 import Link from "next/link";
 import { toast } from "react-toastify";
 import { useAccount, useNetwork } from "wagmi";
+import { massPayment } from "../Gnosis";
 import useDistributor from "./useDistributor";
 import useERC20 from "./useERC20";
 
 declare let window: any;
+
+type BatchPayParams = {
+  chainId: string;
+  type: "tokens" | "currency";
+  ethAddresses: string[];
+  tokenValues: number[];
+  tokenAddresses: string[];
+  cardIds?: string[];
+  epochId?: string;
+};
+
+type ExecuteBatchPayParams = {
+  type: string;
+  chainId: string;
+  userAddresses: string[];
+  amounts: number[];
+  tokenAddresses: string[];
+};
+
+type PayUsingGnosisParams = {
+  type: string;
+  chainId: string;
+  userAddresses: string[];
+  amounts: number[];
+  tokenAddresses: string[];
+  safeAddress: string;
+  cardIds: string[];
+};
 
 export default function usePaymentGateway(
   handleStatusUpdate?: (status: any, txHash: string) => Promise<void>
@@ -52,13 +81,13 @@ export default function usePaymentGateway(
     }
   }
 
-  async function executeBatchPay(
-    type: string,
-    chainId: string,
-    userAddresses: string[],
-    amounts: number[],
-    tokenAddresses: string[]
-  ) {
+  async function executeBatchPay({
+    type,
+    chainId,
+    tokenAddresses,
+    userAddresses,
+    amounts,
+  }: ExecuteBatchPayParams) {
     let tx;
     if (type === "tokens") {
       console.log({ amounts });
@@ -75,15 +104,15 @@ export default function usePaymentGateway(
     return tx;
   }
 
-  async function batchPay(
-    chainId: string,
-    type: "tokens" | "currency",
-    ethAddresses: Array<string>,
-    tokenValues: Array<number>,
-    tokenAddresses: Array<string>,
-    cardIds?: string[],
-    epochId?: string
-  ) {
+  async function batchPay({
+    type,
+    chainId,
+    ethAddresses,
+    tokenValues,
+    tokenAddresses,
+    cardIds,
+    epochId,
+  }: BatchPayParams) {
     try {
       console.log({
         ethAddresses,
@@ -96,13 +125,13 @@ export default function usePaymentGateway(
         switchNetworkAsync && (await switchNetworkAsync(parseInt(chainId)));
       }
       console.log({ ethAddresses, tokenValues, type, chainId });
-      const tx = await executeBatchPay(
+      const tx = await executeBatchPay({
         type,
         chainId,
-        ethAddresses,
-        tokenValues,
-        tokenAddresses
-      );
+        tokenAddresses,
+        userAddresses: ethAddresses,
+        amounts: tokenValues,
+      });
       if (handleStatusUpdate) {
         await handleStatusUpdate(epochId || cardIds, tx.transactionHash);
       }
@@ -134,7 +163,48 @@ export default function usePaymentGateway(
     }
   }
 
+  async function payUsingGnosis({
+    type,
+    chainId,
+    amounts,
+    userAddresses,
+    tokenAddresses,
+    safeAddress,
+    cardIds,
+  }: PayUsingGnosisParams) {
+    console.log({ cardIds, safeAddress });
+    if (type === "tokens") {
+      console.log({ amounts });
+      const data = await distributeTokens(
+        tokenAddresses,
+        userAddresses,
+        amounts,
+        cardIds.toString(),
+        chainId,
+        true
+      );
+      const res = await massPayment(safeAddress, data, chainId);
+      if (res)
+        toast.success("Transaction sent to your safe", { theme: "dark" });
+      else toast.error("Error Occurred while sending your transation to safe");
+    } else if (type === "currency") {
+      const data = await distributeEther(
+        userAddresses,
+        amounts,
+        cardIds.toString(),
+        chainId,
+        true
+      );
+      console.log({ data });
+      const res = await massPayment(safeAddress, data, chainId);
+      if (res)
+        toast.success("Transaction sent to your safe", { theme: "dark" });
+      else toast.error("Error Occurred while sending your transation to safe");
+    }
+  }
+
   return {
     batchPay,
+    payUsingGnosis,
   };
 }

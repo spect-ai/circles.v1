@@ -1,8 +1,8 @@
 import SafeServiceClient from "@gnosis.pm/safe-service-client";
-import Safe, { SafeFactory } from "@gnosis.pm/safe-core-sdk";
+import Safe from "@gnosis.pm/safe-core-sdk";
 import EthersAdapter from "@gnosis.pm/safe-ethers-lib";
 import { SafeTransactionDataPartial } from "@gnosis.pm/safe-core-sdk-types";
-import { BigNumberish, ethers } from "ethers";
+import { ethers } from "ethers";
 
 import distributorABI from "@/app/common/contracts/polygon/distributor.json";
 import distributorAddress from "@/app/common/contracts/polygon/distributor-address.json";
@@ -27,65 +27,90 @@ export async function getUserSafes(chainId: string) {
   return safes;
 }
 
-export async function massPayment(safeAddress: string, chainId: string) {
-  console.log(safeAddress);
-  const provider = new ethers.providers.Web3Provider((window as any).ethereum);
-  const safeOwner = provider.getSigner(0);
-  const senderAddress = await safeOwner.getAddress();
-  console.log(safeOwner);
-  const ethAdapter = new EthersAdapter({
-    ethers,
-    signer: safeOwner,
-  });
+export async function massPayment(
+  safeAddress: string,
+  data: any,
+  chainId: string
+) {
+  try {
+    console.log(safeAddress);
+    const provider = new ethers.providers.Web3Provider(
+      (window as any).ethereum
+    );
+    const safeOwner = provider.getSigner(0);
+    const senderAddress = await safeOwner.getAddress();
+    console.log(safeOwner);
+    const ethAdapter = new EthersAdapter({
+      ethers,
+      signer: safeOwner,
+    });
 
-  const safeService = new SafeServiceClient({
-    txServiceUrl: getSafeServiceUrl(chainId),
-    ethAdapter,
-  });
+    const safeService = new SafeServiceClient({
+      txServiceUrl: getSafeServiceUrl(chainId),
+      ethAdapter,
+    });
 
-  const contract = new ethers.Contract(
-    distributorAddress.Distributor,
-    distributorABI.abi,
-    provider.getSigner()
-  );
-  const data = await contract.populateTransaction.distributeEther(
-    ["0x6304CE63F2EBf8C0Cc76b60d34Cc52a84aBB6057"],
-    [ethers.utils.parseEther("0.0000001")],
-    2,
-    { value: ethers.utils.parseEther("0.1") }
-  );
-  console.log({ data });
+    console.log({ data });
 
-  const safeSdk = await Safe.create({
-    ethAdapter,
-    safeAddress: safeAddress,
-  });
-  console.log(parseInt(data.value?.toBigInt().toString() as string));
-  //   data.value = parseFloat(
-  //     ethers.utils.formatEther(data.value as BigNumberish)
-  //   ) as any;
-  const transaction: SafeTransactionDataPartial = data as any;
+    const safeSdk = await Safe.create({
+      ethAdapter,
+      safeAddress: safeAddress,
+    });
+    console.log(parseInt(data.value?.toBigInt().toString() as string));
+    //   data.value = parseFloat(
+    //     ethers.utils.formatEther(data.value as BigNumberish)
+    //   ) as any;
+    const transaction: SafeTransactionDataPartial = data;
 
-  console.log(transaction);
+    console.log(transaction);
+    if (!data.value) (transaction as any).value = 0;
 
-  const safeTransaction = await safeSdk.createTransaction(transaction);
-  console.log(safeTransaction);
-  //   await safeSdk.signTransaction(safeTransaction);
-  const safeTxHash = await safeSdk.getTransactionHash(safeTransaction);
-  const senderSignature = await safeSdk.signTransactionHash(safeTxHash);
-  console.log(safeTxHash);
-  (safeTransaction.data as any).value = parseInt(
-    data.value?.toBigInt().toString() as string
-  );
+    const safeTransaction = await safeSdk.createTransaction(transaction);
 
-  await safeService.proposeTransaction({
-    safeAddress: safeAddress,
-    safeTransactionData: safeTransaction.data,
-    safeTxHash,
-    senderAddress: ethers.utils.getAddress(senderAddress),
-    senderSignature: senderSignature.data,
-    origin: "Spect Circles",
-  });
+    //   await safeSdk.signTransaction(safeTransaction);
+    const safeTxHash = await safeSdk.getTransactionHash(safeTransaction);
+    const senderSignature = await safeSdk.signTransactionHash(safeTxHash);
+    console.log(data.value);
+
+    if (data.value) {
+      (safeTransaction.data as any).value = parseInt(
+        data.value?.toBigInt().toString() as string
+      );
+    }
+
+    const baseTxn = {
+      ...data,
+      value: data.value
+        ? parseInt(data.value?.toBigInt().toString() as string)
+        : 0,
+      operation: 0,
+    };
+
+    console.log({ baseTxn });
+
+    const { safeTxGas } = await safeService.estimateSafeTransaction(
+      safeAddress,
+      baseTxn
+    );
+
+    console.log({ safeTxGas });
+    console.log({ safeTransaction });
+
+    // (safeTransaction.data as any).safeTxGas = safeTxGas;
+
+    await safeService.proposeTransaction({
+      safeAddress,
+      safeTransactionData: safeTransaction.data,
+      safeTxHash,
+      senderAddress: ethers.utils.getAddress(senderAddress),
+      senderSignature: senderSignature.data,
+      origin: "Spect Circles",
+    });
+    return true;
+  } catch (err) {
+    console.error(err);
+    return false;
+  }
 }
 
 export function getSafeServiceUrl(chainId: string) {

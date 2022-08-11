@@ -9,6 +9,7 @@ import {
 import styled from "styled-components";
 import { UserType, CardDetails } from "@/app/types";
 import { PriorityIcon } from "@/app/common/components/PriorityIcon";
+import Link from "next/link";
 
 interface Props {
   toggle: string;
@@ -123,38 +124,40 @@ const WorkCards: FunctionComponent<Props> = ({ toggle, userData }) => {
             .reverse()
             .map((cardId) => {
               const card: CardDetails = userData?.cardDetails[cardId];
-              const cardLink = `${card?.circle?.slug}/${card?.project?.slug}/${card?.slug}`;
+              const cardLink = `/${card?.circle?.slug}/${card?.project?.slug}/${card?.slug}`;
               return (
-                <Card
-                  mode={mode}
-                  key={cardId}
-                  onClick={() => window.open(`/${cardLink}`)}
-                >
-                  <TextBox>
-                    <Text weight="medium" variant="base" wordBreak="break-word">
-                      {card?.title}
-                    </Text>
-                  </TextBox>
-                  <GigInfo>
-                    {card?.priority > 0 && (
-                      <PriorityIcon priority={card?.priority} />
-                    )}
-                    {card?.reviewer?.map((person) => (
+                <Link href={cardLink} key={cardId}>
+                  <Card mode={mode}>
+                    <TextBox>
+                      <Text
+                        weight="medium"
+                        variant="base"
+                        wordBreak="break-word"
+                      >
+                        {card?.title}
+                      </Text>
+                    </TextBox>
+                    <GigInfo>
+                      {card?.priority > 0 && (
+                        <PriorityIcon priority={card?.priority} />
+                      )}
+                      {card?.reviewer?.map((person) => (
+                        <Avatar
+                          label="profile-pic"
+                          src={person?.avatar}
+                          size="6"
+                          key={person.id}
+                          address={person.ethAddress}
+                        />
+                      ))}
                       <Avatar
                         label="profile-pic"
-                        src={person?.avatar}
+                        src={card?.circle?.avatar}
                         size="6"
-                        key={person.id}
-                        address={person.ethAddress}
                       />
-                    ))}
-                    <Avatar
-                      label="profile-pic"
-                      src={card?.circle?.avatar}
-                      size="6"
-                    />
-                  </GigInfo>
-                </Card>
+                    </GigInfo>
+                  </Card>
+                </Link>
               );
             })
         : userData?.reviewingCards
@@ -162,37 +165,39 @@ const WorkCards: FunctionComponent<Props> = ({ toggle, userData }) => {
             .reverse()
             .map((cardId) => {
               const card: CardDetails = userData?.cardDetails[cardId];
-              const cardLink = `${card?.circle?.slug}/${card?.project?.slug}/${card?.slug}`;
+              const cardLink = `/${card?.circle?.slug}/${card?.project?.slug}/${card?.slug}`;
               return (
-                <Card
-                  mode={mode}
-                  key={cardId}
-                  onClick={() => window.open(`/${cardLink}`)}
-                >
-                  <TextBox>
-                    <Text weight="medium" variant="base" wordBreak="break-word">
-                      {card?.title}
-                    </Text>
-                  </TextBox>
-                  <GigInfo>
-                    {card?.priority > 0 && (
-                      <PriorityIcon priority={card?.priority} />
-                    )}
-                    {card?.assignee?.map((person) => (
+                <Link href={cardLink} key={cardId}>
+                  <Card mode={mode} onClick={() => console.log({ cardLink })}>
+                    <TextBox>
+                      <Text
+                        weight="medium"
+                        variant="base"
+                        wordBreak="break-word"
+                      >
+                        {card?.title}
+                      </Text>
+                    </TextBox>
+                    <GigInfo>
+                      {card?.priority > 0 && (
+                        <PriorityIcon priority={card?.priority} />
+                      )}
+                      {card?.assignee?.map((person) => (
+                        <Avatar
+                          label="profile-pic"
+                          src={person?.avatar}
+                          size="6"
+                          key={person.id}
+                        />
+                      ))}
                       <Avatar
                         label="profile-pic"
-                        src={person?.avatar}
+                        src={card?.circle?.avatar}
                         size="6"
-                        key={person.id}
                       />
-                    ))}
-                    <Avatar
-                      label="profile-pic"
-                      src={card?.circle?.avatar}
-                      size="6"
-                    />
-                  </GigInfo>
-                </Card>
+                    </GigInfo>
+                  </Card>
+                </Link>
               );
             })}
     </Box>
