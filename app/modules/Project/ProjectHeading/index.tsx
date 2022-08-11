@@ -82,7 +82,11 @@ function ProjectHeading() {
             borderRightWidth="0.375"
             paddingX="2"
             borderLeftRadius="large"
-            backgroundColor={view === 0 ? "foregroundSecondary" : "background"}
+            backgroundColor={
+              view === 0 && viewName === ""
+                ? "foregroundSecondary"
+                : "background"
+            }
             onClick={() => {
               setView(0);
               defaultView();
@@ -94,7 +98,11 @@ function ProjectHeading() {
             color="textSecondary"
             paddingX="2"
             borderRightRadius="large"
-            backgroundColor={view === 1 ? "foregroundSecondary" : "background"}
+            backgroundColor={
+              view === 1 && viewName === ""
+                ? "foregroundSecondary"
+                : "background"
+            }
             onClick={() => {
               setView(1);
               defaultView();

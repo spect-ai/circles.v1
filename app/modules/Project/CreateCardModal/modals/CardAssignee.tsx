@@ -113,8 +113,14 @@ export const AssigneeModal = ({
 );
 
 function CardAssignee() {
-  const { assignees, setAssignees, onCardUpdate, fetchCardActions, card } =
-    useLocalCard();
+  const {
+    assignees,
+    setAssignees,
+    onCardUpdate,
+    fetchCardActions,
+    card,
+    cardId,
+  } = useLocalCard();
   const [modalOpen, setModalOpen] = useState(false);
   const [options, setOptions] = useState<Option[]>({} as Option[]);
   const [filteredOptions, setFilteredOptions] = useState<Option[]>();
@@ -170,7 +176,7 @@ function CardAssignee() {
       handleClose={async () => {
         if (card?.assignee !== assignees) {
           await onCardUpdate();
-          void fetchCardActions();
+          cardId && void fetchCardActions();
         }
         setModalOpen(false);
       }}
