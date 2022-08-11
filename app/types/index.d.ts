@@ -18,6 +18,10 @@ interface UserType {
   reviewingCards: string[];
   assignedClosedCards: string[];
   reviewingClosedCards: string[];
+  activeApplications: {
+    cardId: string;
+    applicationTitle: string;
+  }[];
   cardDetails: any;
   activities: string[];
   notifications: Notification[];
@@ -409,7 +413,7 @@ export type Filter = {
 
 export type CardsType = {
   [key: string]: CardType;
-};;
+};
 
 export type Views = {
   type: "List" | "Board";
@@ -417,7 +421,7 @@ export type Views = {
   filters: Filter;
   slug?: string;
   name: string;
-};;
+};
 
 export type Status = {
   active: boolean;
@@ -436,12 +440,11 @@ export interface Notification {
     projects?: ContentPlaceholder;
   };
   timestamp: Date;
-};
+}
 
 export type SafeAddresses = {
   [chaninId: string]: string[];
 };
-
 
 export type ContentPlaceholder = {
   [key: string]: string;

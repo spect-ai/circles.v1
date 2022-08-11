@@ -92,7 +92,7 @@ const Toggle: FunctionComponent<Props> = ({ toggle, setToggle }) => {
           display: "block",
           padding: "0.2rem",
           borderRadius: "2rem",
-          margin: "0.7rem 200px",
+          margin: "0.7rem 140px",
           boxShadow: "0px 1px 3px rgba(0, 0, 0, 0.2)",
         }}
       >
@@ -108,6 +108,12 @@ const Toggle: FunctionComponent<Props> = ({ toggle, setToggle }) => {
         >
           As Reviewer
         </ToggleButton>
+        <ToggleButton
+          onClick={() => setToggle("Applicant")}
+          bgcolor={toggle == "Applicant" ? true : false}
+        >
+          As Applicant
+        </ToggleButton>
       </Box>
     </>
   );
@@ -118,94 +124,123 @@ const WorkCards: FunctionComponent<Props> = ({ toggle, userData }) => {
 
   return (
     <Box gap="2" display="flex" flexDirection="column">
-      {toggle == "Assignee"
-        ? userData?.assignedCards
-            ?.slice(0)
-            .reverse()
-            .map((cardId) => {
-              const card: CardDetails = userData?.cardDetails[cardId];
-              const cardLink = `/${card?.circle?.slug}/${card?.project?.slug}/${card?.slug}`;
-              return (
-                <Link href={cardLink} key={cardId}>
-                  <Card mode={mode}>
-                    <TextBox>
-                      <Text
-                        weight="medium"
-                        variant="base"
-                        wordBreak="break-word"
-                      >
-                        {card?.title}
-                      </Text>
-                    </TextBox>
-                    <GigInfo>
-                      {card?.priority > 0 && (
-                        <PriorityIcon priority={card?.priority} />
-                      )}
-                      {card?.reviewer?.map((person) => (
-                        <Avatar
-                          label="profile-pic"
-                          src={person?.avatar}
-                          size="6"
-                          key={person.id}
-                          address={person.ethAddress}
-                        />
-                      ))}
+      {toggle == "Assignee" &&
+        userData?.assignedCards
+          ?.slice(0)
+          .reverse()
+          .map((cardId) => {
+            const card: CardDetails = userData?.cardDetails[cardId];
+            const cardLink = `/${card?.circle?.slug}/${card?.project?.slug}/${card?.slug}`;
+            return (
+              <Link href={cardLink} key={cardId}>
+                <Card mode={mode}>
+                  <TextBox>
+                    <Text weight="medium" variant="base" wordBreak="break-word">
+                      {card?.title}
+                    </Text>
+                  </TextBox>
+                  <GigInfo>
+                    {card?.priority > 0 && (
+                      <PriorityIcon priority={card?.priority} />
+                    )}
+                    {card?.reviewer?.map((person) => (
                       <Avatar
                         label="profile-pic"
-                        src={card?.circle?.avatar}
+                        src={person?.avatar}
                         size="6"
+                        key={person.id}
+                        address={person.ethAddress}
                       />
-                    </GigInfo>
-                  </Card>
-                </Link>
-              );
-            })
-        : userData?.reviewingCards
-            ?.slice(0)
-            .reverse()
-            .map((cardId) => {
-              const card: CardDetails = userData?.cardDetails[cardId];
-              const cardLink = `/${card?.circle?.slug}/${card?.project?.slug}/${card?.slug}`;
-              return (
-                <Link href={cardLink} key={cardId}>
-                  <Card mode={mode} onClick={() => console.log({ cardLink })}>
-                    <TextBox>
-                      <Text
-                        weight="medium"
-                        variant="base"
-                        wordBreak="break-word"
-                      >
-                        {card?.title}
-                      </Text>
-                    </TextBox>
-                    <GigInfo>
-                      {card?.priority > 0 && (
-                        <PriorityIcon priority={card?.priority} />
-                      )}
-                      {card?.assignee?.map((person) => (
-                        <Avatar
-                          label="profile-pic"
-                          src={person?.avatar}
-                          size="6"
-                          key={person.id}
-                        />
-                      ))}
+                    ))}
+                    <Avatar
+                      label="profile-pic"
+                      src={card?.circle?.avatar}
+                      size="6"
+                    />
+                  </GigInfo>
+                </Card>
+              </Link>
+            );
+          })}
+      {toggle == "Reviewer" &&
+        userData?.reviewingCards
+          ?.slice(0)
+          .reverse()
+          .map((cardId) => {
+            const card: CardDetails = userData?.cardDetails[cardId];
+            const cardLink = `/${card?.circle?.slug}/${card?.project?.slug}/${card?.slug}`;
+            return (
+              <Link href={cardLink} key={cardId}>
+                <Card mode={mode} onClick={() => console.log({ cardLink })}>
+                  <TextBox>
+                    <Text weight="medium" variant="base" wordBreak="break-word">
+                      {card?.title}
+                    </Text>
+                  </TextBox>
+                  <GigInfo>
+                    {card?.priority > 0 && (
+                      <PriorityIcon priority={card?.priority} />
+                    )}
+                    {card?.assignee?.map((person) => (
                       <Avatar
                         label="profile-pic"
-                        src={card?.circle?.avatar}
+                        src={person?.avatar}
                         size="6"
+                        key={person.id}
                       />
-                    </GigInfo>
-                  </Card>
-                </Link>
-              );
-            })}
+                    ))}
+                    <Avatar
+                      label="profile-pic"
+                      src={card?.circle?.avatar}
+                      size="6"
+                    />
+                  </GigInfo>
+                </Card>
+              </Link>
+            );
+          })}
+      {toggle == "Applicant" &&
+        userData?.activeApplications
+          ?.slice(0)
+          .reverse()
+          .map((cardid) => {
+            const card: CardDetails = userData?.cardDetails[cardid.cardId];
+            const cardLink = `/${card?.circle?.slug}/${card?.project?.slug}/${card?.slug}`;
+            return (
+              <Link href={cardLink} key={cardid.cardId}>
+                <Card mode={mode} onClick={() => console.log({ cardLink })}>
+                  <TextBox>
+                    <Text weight="medium" variant="base" wordBreak="break-word">
+                      {card?.title}
+                    </Text>
+                  </TextBox>
+                  <GigInfo>
+                    {card?.priority > 0 && (
+                      <PriorityIcon priority={card?.priority} />
+                    )}
+                    {card?.assignee?.map((person) => (
+                      <Avatar
+                        label="profile-pic"
+                        src={person?.avatar}
+                        size="6"
+                        key={person.id}
+                      />
+                    ))}
+                    <Avatar
+                      label="profile-pic"
+                      src={card?.circle?.avatar}
+                      size="6"
+                    />
+                  </GigInfo>
+                </Card>
+              </Link>
+            );
+          })}
     </Box>
   );
 };
 
 const Notifications = ({ userData }: { userData: UserType }) => {
-
   return (
     <Box gap="3" display="flex" flexDirection="column" paddingTop={"5"}>
       {userData?.notifications
@@ -268,6 +303,8 @@ const BookMarks = () => {
 const QuickProfileTabs = ({ userData }: UserProps) => {
   const [panelTab, setPanelTab] = useState("Work");
   const [toggle, setToggle] = useState("Assignee");
+
+  console.log({ userData });
 
   return (
     <>

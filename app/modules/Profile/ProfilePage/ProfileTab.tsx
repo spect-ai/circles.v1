@@ -231,7 +231,7 @@ const Retro = ({ userData }: { userData: UserType }) => {
   const { mode } = useTheme();
 
   return (
-    <Box>
+    <ScrollContainer>
       {userData?.retro?.map((ret) => {
         const retroInfo = userData?.retroDetails?.[ret];
         return (
@@ -267,7 +267,7 @@ const Retro = ({ userData }: { userData: UserType }) => {
           </Card>
         );
       })}
-    </Box>
+    </ScrollContainer>
   );
 };
 
