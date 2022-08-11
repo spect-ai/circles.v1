@@ -134,9 +134,10 @@ export default function ProfileModal({ setIsOpen }: Props) {
           <Box
             display="flex"
             flexDirection="row"
-            gap="1"
+            gap="1.5"
             flexWrap="wrap"
-            marginBottom="4"
+            marginBottom="2"
+            justifyContent="center"
           >
             {skillsArray.map((skill) => (
               <Box
@@ -159,7 +160,6 @@ export default function ProfileModal({ setIsOpen }: Props) {
                   tone={skills.includes(skill) ? "accent" : "secondary"}
                 >
                   <Box display="flex" alignItems="center">
-                    {skills.includes(skill) && <IconCheck size="4" />}
                     {skill}
                   </Box>
                 </Tag>
