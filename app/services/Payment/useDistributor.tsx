@@ -18,7 +18,7 @@ export default function useDistributor() {
     const provider = new ethers.providers.Web3Provider(window.ethereum as any);
     return new ethers.Contract(
       registry[chainId].distributorAddress as string,
-      DistributorABI.abi,
+      DistributorABI,
       provider.getSigner()
     );
   }
