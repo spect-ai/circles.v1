@@ -1,5 +1,9 @@
 import { PublicLayout } from "@/app/common/layout";
 import MetaHead from "@/app/common/seo/MetaHead/MetaHead";
+import {
+  CircleContext,
+  useProviderCircleContext,
+} from "@/app/modules/Circle/CircleContext";
 import Project from "@/app/modules/Project";
 import {
   LocalProjectContext,
@@ -63,22 +67,25 @@ const ProjectPage: NextPage = () => {
   }, [circle]);
 
   const context = useProviderLocalProject();
+  const circlecontext = useProviderCircleContext();
 
   return (
     <>
       <MetaHead />
-      <LocalProjectContext.Provider value={context}>
-        <PublicLayout>
-          <ProjectHeading />
-          <AnimatePresence
-            exitBeforeEnter
-            initial={false}
-            onExitComplete={() => window.scrollTo(0, 0)}
-          >
-            <Project key={pId as string} />
-          </AnimatePresence>
-        </PublicLayout>
-      </LocalProjectContext.Provider>
+      <CircleContext.Provider value={circlecontext}>
+        <LocalProjectContext.Provider value={context}>
+          <PublicLayout>
+            <ProjectHeading />
+            <AnimatePresence
+              exitBeforeEnter
+              initial={false}
+              onExitComplete={() => window.scrollTo(0, 0)}
+            >
+              <Project key={pId as string} />
+            </AnimatePresence>
+          </PublicLayout>
+        </LocalProjectContext.Provider>
+      </CircleContext.Provider>
     </>
   );
 };

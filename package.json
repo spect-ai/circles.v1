@@ -15,6 +15,10 @@
   "dependencies": {
     "@ant-design/icons": "^4.7.0",
     "@fontsource/inter": "^4.5.11",
+    "@gnosis.pm/safe-core-sdk": "^2.3.2",
+    "@gnosis.pm/safe-core-sdk-types": "^1.4.0",
+    "@gnosis.pm/safe-ethers-lib": "^1.4.0",
+    "@gnosis.pm/safe-service-client": "^1.2.0",
     "@popperjs/core": "^2.11.5",
     "@svgr/webpack": "^6.2.1",
     "degen": "^0.0.97",

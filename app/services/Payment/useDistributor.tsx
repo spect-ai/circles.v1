@@ -1,6 +1,7 @@
 import { ethers } from "ethers";
 import useERC20 from "./useERC20";
 import DistributorABI from "@/app/common/contracts/mumbai/distributor.json";
+import distributorAddress from "@/app/common/contracts/polygon/distributor-address.json";
 import { useRouter } from "next/router";
 import { useQuery } from "react-query";
 import { Registry } from "@/app/types";
@@ -17,8 +18,9 @@ export default function useDistributor() {
     if (!registry) return null;
     const provider = new ethers.providers.Web3Provider(window.ethereum as any);
     return new ethers.Contract(
-      registry[chainId].distributorAddress as string,
-      DistributorABI.abi,
+      // registry[chainId].distributorAddress as string,
+      distributorAddress.Distributor,
+      DistributorABI,
       provider.getSigner()
     );
   }
@@ -42,7 +44,8 @@ export default function useDistributor() {
     contributors: any,
     values: any[],
     id: string,
-    chainId: string
+    chainId: string,
+    gnosis?: boolean
   ) {
     const contract = getDistributorContract(chainId);
     const valuesInWei = [];
@@ -61,6 +64,22 @@ export default function useDistributor() {
     const overrides = {
       value: ethers.utils.parseEther(totalValue.toString()),
     };
+    console.log({
+      contributorsWithPositiveAllocation,
+      valuesInWei,
+      id,
+      overrides,
+    });
+    if (gnosis) {
+      const data = await contract?.populateTransaction.distributeEther(
+        contributorsWithPositiveAllocation,
+        valuesInWei,
+        id,
+        overrides
+      );
+      return data;
+    }
+
     const tx = await contract?.distributeEther(
       contributorsWithPositiveAllocation,
       valuesInWei,
@@ -106,7 +125,8 @@ export default function useDistributor() {
     recipients: string[],
     values: number[],
     id: string,
-    chainId: string
+    chainId: string,
+    gnosis?: boolean
   ) {
     const { filteredTokenAddresses, filteredRecipients, filteredValues } =
       filterInvalidValues(tokenAddresses, recipients, values);
@@ -120,6 +140,22 @@ export default function useDistributor() {
     const contract = getDistributorContract(chainId);
     console.log({ contract });
     console.log({ valuesInWei });
+    if (gnosis) {
+      const data = await contract?.populateTransaction.distributeTokens(
+        filteredTokenAddresses,
+        filteredRecipients,
+        valuesInWei,
+        id
+      );
+      return data;
+    }
+    console.log("hi");
+    console.log({
+      filteredTokenAddresses,
+      filteredRecipients,
+      valuesInWei,
+      id,
+    });
     const tx = await contract?.distributeTokens(
       filteredTokenAddresses,
       filteredRecipients,

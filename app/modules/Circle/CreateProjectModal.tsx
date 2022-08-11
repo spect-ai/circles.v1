@@ -140,7 +140,11 @@ function CreateProjectModal() {
                   />
                 )}
                 <Box width="full" marginTop="4">
-                  <PrimaryButton onClick={onSubmit} loading={isLoading}>
+                  <PrimaryButton
+                    onClick={onSubmit}
+                    loading={isLoading}
+                    disabled={!name}
+                  >
                     Create Project
                   </PrimaryButton>
                 </Box>

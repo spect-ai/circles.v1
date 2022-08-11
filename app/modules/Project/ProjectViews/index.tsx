@@ -11,6 +11,7 @@ import {
   IconDotsVertical,
   Text,
   IconPlusSmall,
+  Stack,
 } from "degen";
 import Link from "next/link";
 import { toast } from "react-toastify";
@@ -33,12 +34,12 @@ export const ViewBar = () => {
     if (!vId) {
       setViewName("");
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pId]);
 
   return (
     <>
-      <Box display="flex" flexDirection="row" gap="4">
+      <Stack direction="horizontal" align="center">
         {project?.viewOrder?.map((view_Id) => {
           const view = project.viewDetails?.[view_Id];
 
@@ -76,25 +77,26 @@ export const ViewBar = () => {
             </Link>
           );
         })}
-      </Box>
-      <Box width="44">
-        {project?.name && canDo(["steward"]) && (
-          <PrimaryButton
-            variant="transparent"
-            onClick={() => {
-              if (project.viewOrder && project.viewOrder?.length < 3) {
-                setViewMode("create");
-                setOpenModal(true);
-              } else {
-                toast.warning("You cannot create more than 3 views");
-              }
-            }}
-            icon={<IconPlusSmall size="4" />}
-          >
-            Create View
-          </PrimaryButton>
-        )}
-      </Box>
+        <Box width="32">
+          {project?.name && canDo(["steward"]) && (
+            <PrimaryButton
+              variant="transparent"
+              shape="circle"
+              onClick={() => {
+                if (project.viewOrder && project.viewOrder?.length < 3) {
+                  setViewMode("create");
+                  setOpenModal(true);
+                } else {
+                  toast.warning("You cannot create more than 3 views");
+                }
+              }}
+            >
+              <Text>Create View</Text>
+            </PrimaryButton>
+          )}
+        </Box>
+      </Stack>
+
       <AnimatePresence>
         {openModal && viewMode == "create" && (
           <CreateViewModal setViewOpen={setOpenModal} />

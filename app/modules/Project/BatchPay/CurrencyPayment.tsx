@@ -19,7 +19,7 @@ import { ScrollContainer } from "./SelectCards";
 
 export default function CurrencyPayment() {
   const { getMemberDetails } = useModalOptions();
-  const { batchPay } = usePaymentGateway();
+  const { batchPay, payUsingGnosis } = usePaymentGateway();
   const [loading, setLoading] = useState(false);
   const { batchPayInfo, setStep, currencyCards, tokenCards, setIsOpen } =
     useBatchPayContext();
@@ -113,13 +113,13 @@ export default function CurrencyPayment() {
               onClick={async () => {
                 setLoading(true);
                 try {
-                  const txnHash = await batchPay(
-                    circle?.defaultPayment.chain.chainId || "",
-                    "currency",
-                    getEthAddress() as string[],
-                    batchPayInfo?.currency.values as number[],
-                    []
-                  );
+                  const txnHash = await batchPay({
+                    chainId: circle?.defaultPayment.chain.chainId || "",
+                    type: "currency",
+                    ethAddresses: getEthAddress() as string[],
+                    tokenValues: batchPayInfo?.currency.values as number[],
+                    tokenAddresses: [""],
+                  });
                   console.log({ txnHash });
                   if (txnHash) {
                     if (!batchPayInfo?.retroId) {
@@ -171,6 +171,30 @@ export default function CurrencyPayment() {
               Pay
             </PrimaryButton>
           </Box>
+          {Object.keys(circle?.safeAddresses || {}).length > 0 && (
+            <Box width="1/2">
+              <PrimaryButton
+                // loading={loading}
+                onClick={async () => {
+                  await payUsingGnosis({
+                    chainId: circle?.defaultPayment.chain.chainId || "",
+                    type: "currency",
+                    userAddresses: getEthAddress() as string[],
+                    amounts: batchPayInfo?.currency.values as number[],
+                    tokenAddresses: [""],
+                    safeAddress:
+                      circle?.safeAddresses[
+                        Object.keys(circle?.safeAddresses || {})[0]
+                      ][0] || "",
+                    cardIds: currencyCards as string[],
+                  });
+                  setIsOpen(false);
+                }}
+              >
+                Pay Using Gnosis
+              </PrimaryButton>
+            </Box>
+          )}
         </Stack>
       </Box>
     </Box>
