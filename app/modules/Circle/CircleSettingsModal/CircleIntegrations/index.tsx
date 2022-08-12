@@ -32,7 +32,7 @@ export default function CircleIntegrations() {
             href={`https://discord.com/oauth2/authorize?client_id=942494607239958609&permissions=17448306704&redirect_uri=${
               process.env.NODE_ENV !== "production"
                 ? "http://localhost:3000/"
-                : "https://spect-discord-bot.herokuapp.com/"
+                : "https://circles.spect.network/"
             }api/connectDiscord&response_type=code&scope=bot&state=${cId}`}
           >
             <Box width="1/3">
