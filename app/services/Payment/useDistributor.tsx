@@ -1,7 +1,6 @@
 import { ethers } from "ethers";
 import useERC20 from "./useERC20";
 import DistributorABI from "@/app/common/contracts/mumbai/distributor.json";
-import distributorAddress from "@/app/common/contracts/polygon/distributor-address.json";
 import { useRouter } from "next/router";
 import { useQuery } from "react-query";
 import { Registry } from "@/app/types";
@@ -18,8 +17,7 @@ export default function useDistributor() {
     if (!registry) return null;
     const provider = new ethers.providers.Web3Provider(window.ethereum as any);
     return new ethers.Contract(
-      // registry[chainId].distributorAddress as string,
-      distributorAddress.Distributor,
+      registry[chainId].distributorAddress as string,
       DistributorABI,
       provider.getSigner()
     );
@@ -69,6 +67,8 @@ export default function useDistributor() {
       valuesInWei,
       id,
       overrides,
+      gnosis,
+      chainId,
     });
     if (gnosis) {
       const data = await contract?.populateTransaction.distributeEther(
@@ -138,8 +138,18 @@ export default function useDistributor() {
       )
     );
     const contract = getDistributorContract(chainId);
-    console.log({ contract });
-    console.log({ valuesInWei });
+
+    console.log("hi");
+    console.log({
+      filteredTokenAddresses,
+      filteredRecipients,
+      valuesInWei,
+      id,
+      gnosis,
+    });
+    const overrides: any = {
+      gasLimit: 1000000,
+    };
     if (gnosis) {
       const data = await contract?.populateTransaction.distributeTokens(
         filteredTokenAddresses,
@@ -149,18 +159,12 @@ export default function useDistributor() {
       );
       return data;
     }
-    console.log("hi");
-    console.log({
-      filteredTokenAddresses,
-      filteredRecipients,
-      valuesInWei,
-      id,
-    });
     const tx = await contract?.distributeTokens(
       filteredTokenAddresses,
       filteredRecipients,
       valuesInWei,
-      id
+      id,
+      overrides
     );
     return tx.wait();
   }
