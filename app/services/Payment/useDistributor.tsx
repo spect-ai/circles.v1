@@ -10,11 +10,11 @@ interface DistributeEtherParams {
   contributors: any;
   values: any[];
   chainId: string;
-  cardIds?: string[];
-  circleId?: string;
-  gnosis?: boolean;
-  type?: "card" | "retro";
-  callerId?: string;
+  cardIds: string[];
+  circleId: string;
+  gnosis: boolean;
+  type: "card" | "retro";
+  callerId: string;
 }
 
 interface DistributeTokenParams extends DistributeEtherParams {

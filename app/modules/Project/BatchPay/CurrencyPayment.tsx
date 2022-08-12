@@ -21,6 +21,7 @@ export default function CurrencyPayment() {
   const { getMemberDetails } = useModalOptions();
   const { batchPay, payUsingGnosis } = usePaymentGateway();
   const [loading, setLoading] = useState(false);
+  const [gnosisLoading, setGnosisLoading] = useState(false);
   const { batchPayInfo, setStep, currencyCards, tokenCards, setIsOpen } =
     useBatchPayContext();
 
@@ -115,10 +116,13 @@ export default function CurrencyPayment() {
                 try {
                   const txnHash = await batchPay({
                     chainId: circle?.defaultPayment.chain.chainId || "",
-                    type: "currency",
-                    ethAddresses: getEthAddress() as string[],
-                    tokenValues: batchPayInfo?.currency.values as number[],
+                    paymentType: "currency",
+                    batchPayType: batchPayInfo?.retroId ? "retro" : "card",
+                    userAddresses: getEthAddress() as string[],
+                    amounts: batchPayInfo?.currency.values as number[],
                     tokenAddresses: [""],
+                    cardIds: currencyCards as string[],
+                    circleId: circle?.id || "",
                   });
                   console.log({ txnHash });
                   if (txnHash) {
@@ -174,8 +178,9 @@ export default function CurrencyPayment() {
           {Object.keys(circle?.safeAddresses || {}).length > 0 && (
             <Box width="1/2">
               <PrimaryButton
-                // loading={loading}
+                loading={gnosisLoading}
                 onClick={async () => {
+                  setGnosisLoading(true);
                   await payUsingGnosis({
                     chainId: circle?.defaultPayment.chain.chainId || "",
                     paymentType: "currency",
@@ -190,6 +195,7 @@ export default function CurrencyPayment() {
                     cardIds: currencyCards as string[],
                     circleId: circle?.id || "",
                   });
+                  setGnosisLoading(false);
                   setIsOpen(false);
                 }}
               >

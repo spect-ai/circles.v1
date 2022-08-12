@@ -10,35 +10,20 @@ import useERC20 from "./useERC20";
 
 declare let window: any;
 
-type BatchPayParams = {
-  chainId: string;
-  type: "tokens" | "currency";
-  ethAddresses: string[];
-  tokenValues: number[];
-  tokenAddresses: string[];
-  cardIds?: string[];
-  epochId?: string;
-};
-
-type ExecuteBatchPayParams = {
-  type: string;
-  chainId: string;
-  userAddresses: string[];
-  amounts: number[];
-  tokenAddresses: string[];
-};
-
-type PayUsingGnosisParams = {
+interface BatchPayParams {
   paymentType: string;
   batchPayType: "card" | "retro";
   chainId: string;
   userAddresses: string[];
   amounts: number[];
   tokenAddresses: string[];
-  safeAddress: string;
   cardIds: string[];
   circleId: string;
-};
+}
+
+interface PayUsingGnosisParams extends BatchPayParams {
+  safeAddress: string;
+}
 
 export default function usePaymentGateway(
   handleStatusUpdate?: (status: any, txHash: string) => Promise<void>
@@ -90,61 +75,70 @@ export default function usePaymentGateway(
   }
 
   async function executeBatchPay({
-    type,
+    paymentType,
     chainId,
     tokenAddresses,
     userAddresses,
     amounts,
-  }: ExecuteBatchPayParams) {
+    cardIds,
+    circleId,
+    batchPayType,
+  }: BatchPayParams) {
     let tx;
-    if (type === "tokens") {
+    if (paymentType === "tokens") {
       console.log({ amounts });
       tx = await distributeTokens({
         contributors: userAddresses,
         values: amounts,
         chainId,
         tokenAddresses,
+        gnosis: false,
+        callerId: connectedUser,
+        type: batchPayType,
+        cardIds,
+        circleId,
       });
-    } else if (type === "currency") {
+    } else if (paymentType === "currency") {
       tx = await distributeEther({
         contributors: userAddresses,
         values: amounts,
         chainId,
+        gnosis: false,
+        callerId: connectedUser,
+        type: batchPayType,
+        cardIds,
+        circleId,
       });
     }
     return tx;
   }
 
   async function batchPay({
-    type,
+    paymentType,
     chainId,
-    ethAddresses,
-    tokenValues,
     tokenAddresses,
+    userAddresses,
+    amounts,
     cardIds,
-    epochId,
+    circleId,
+    batchPayType,
   }: BatchPayParams) {
     try {
-      console.log({
-        ethAddresses,
-        tokenValues,
-        tokenAddresses,
-        cardIds,
-        epochId,
-      });
       if (activeChain?.id.toString() !== chainId) {
         switchNetworkAsync && (await switchNetworkAsync(parseInt(chainId)));
       }
-      console.log({ ethAddresses, tokenValues, type, chainId });
       const tx = await executeBatchPay({
-        type,
+        paymentType,
         chainId,
         tokenAddresses,
-        userAddresses: ethAddresses,
-        amounts: tokenValues,
+        userAddresses,
+        amounts,
+        cardIds,
+        circleId,
+        batchPayType,
       });
       if (handleStatusUpdate) {
-        await handleStatusUpdate(epochId || cardIds, tx.transactionHash);
+        await handleStatusUpdate(cardIds, tx.transactionHash);
       }
       // notify('Payment done succesfully!', 'success');
       toast(
@@ -164,7 +158,7 @@ export default function usePaymentGateway(
       );
       return tx.transactionHash;
     } catch (err: any) {
-      void handlePaymentError(err, chainId, tokenAddresses, tokenValues);
+      void handlePaymentError(err, chainId, tokenAddresses, amounts);
       console.log(err);
       // toast.error(err.message, {
       //   theme: "dark",
