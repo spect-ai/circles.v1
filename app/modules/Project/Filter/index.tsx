@@ -35,9 +35,9 @@ export default function Filter() {
     { enabled: false }
   );
 
-  const [filteredMembers, setFilteredMembers] = useState<
-    { name: string; id: string }[]
-  >([] as any);
+  const [filteredMembers, setFilteredMembers] = useState<OptionType[]>(
+    [] as OptionType[]
+  );
 
   useEffect(() => {
     if (circle) {
@@ -108,12 +108,12 @@ export default function Filter() {
               <div
                 style={{
                   backgroundColor: "rgb(191, 90, 242, 1)",
-                  height: "0.5rem",
-                  width: "0.5rem",
+                  height: "0.4rem",
+                  width: "0.4rem",
                   zIndex: 10,
                   borderRadius: "3rem",
                   position: "absolute",
-                  right: "0px",
+                  margin: "0px 8px 0px 15px",
                 }}
               ></div>
             )}
@@ -148,21 +148,21 @@ export default function Filter() {
             >
               <MultiSelectDropdown
                 width="22"
-                options={filteredMembers as OptionType[]}
+                options={filteredMembers}
                 value={assignee}
                 setValue={setAssignee}
                 title={"Assignee"}
               />
               <MultiSelectDropdown
                 width="22"
-                options={filteredMembers as OptionType[]}
+                options={filteredMembers}
                 value={reviewer}
                 setValue={setReviewer}
                 title={"Reviewer"}
               />
               <MultiSelectDropdown
                 width="22"
-                options={labels as OptionType[]}
+                options={labels}
                 value={label}
                 setValue={setLabels}
                 title={"Labels"}
