@@ -4,6 +4,7 @@ import DistributorABI from "@/app/common/contracts/mumbai/distributor.json";
 import { useRouter } from "next/router";
 import { useQuery } from "react-query";
 import { Registry } from "@/app/types";
+import { AbiCoder } from "ethers/lib/utils";
 
 export default function useDistributor() {
   const { isCurrency, decimals } = useERC20();
@@ -70,6 +71,16 @@ export default function useDistributor() {
       gnosis,
       chainId,
     });
+    const encoder = new AbiCoder();
+    id = encoder.encode(
+      ["string", "string", "string", "string[]"],
+      [
+        "62b93e7517844f3d91e197f2",
+        "62ec590aa50db27aac7ef0eb",
+        "card",
+        ["62f5e8142e4326e6b10749dd"],
+      ]
+    );
     if (gnosis) {
       const data = await contract?.populateTransaction.distributeEther(
         contributorsWithPositiveAllocation,
