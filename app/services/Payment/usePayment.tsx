@@ -1,9 +1,10 @@
 import PrimaryButton from "@/app/common/components/PrimaryButton";
+import { useGlobal } from "@/app/context/globalContext";
 import { Stack } from "degen";
 import Link from "next/link";
 import { toast } from "react-toastify";
 import { useAccount, useNetwork } from "wagmi";
-import { massPayment } from "../Gnosis";
+import { gnosisPayment } from "../Gnosis";
 import useDistributor from "./useDistributor";
 import useERC20 from "./useERC20";
 
@@ -28,13 +29,15 @@ type ExecuteBatchPayParams = {
 };
 
 type PayUsingGnosisParams = {
-  type: string;
+  paymentType: string;
+  batchPayType: "card" | "retro";
   chainId: string;
   userAddresses: string[];
   amounts: number[];
   tokenAddresses: string[];
   safeAddress: string;
   cardIds: string[];
+  circleId: string;
 };
 
 export default function usePaymentGateway(
@@ -42,8 +45,9 @@ export default function usePaymentGateway(
 ) {
   const { distributeEther, distributeTokens } = useDistributor();
   const { hasBalances } = useERC20();
-  const { data } = useAccount();
+  const { data: account } = useAccount();
   const { activeChain, switchNetworkAsync } = useNetwork();
+  const { connectedUser } = useGlobal();
   async function handlePaymentError(
     err: any,
     expectedNetwork: string,
@@ -64,7 +68,11 @@ export default function usePaymentGateway(
     // );
     else {
       const [sufficientBalance, insufficientBalanceTokenAddress] =
-        await hasBalances(tokenAddresses, tokenValues, data?.address as string);
+        await hasBalances(
+          tokenAddresses,
+          tokenValues,
+          account?.address as string
+        );
       console.log(sufficientBalance, insufficientBalanceTokenAddress);
       if (!sufficientBalance) {
         // notify(
@@ -91,15 +99,18 @@ export default function usePaymentGateway(
     let tx;
     if (type === "tokens") {
       console.log({ amounts });
-      tx = await distributeTokens(
+      tx = await distributeTokens({
+        contributors: userAddresses,
+        values: amounts,
+        chainId,
         tokenAddresses,
-        userAddresses,
-        amounts,
-        "",
-        chainId
-      );
+      });
     } else if (type === "currency") {
-      tx = await distributeEther(userAddresses, amounts, "", chainId);
+      tx = await distributeEther({
+        contributors: userAddresses,
+        values: amounts,
+        chainId,
+      });
     }
     return tx;
   }
@@ -164,39 +175,46 @@ export default function usePaymentGateway(
   }
 
   async function payUsingGnosis({
-    type,
+    paymentType,
+    batchPayType,
     chainId,
     amounts,
     userAddresses,
     tokenAddresses,
     safeAddress,
     cardIds,
+    circleId,
   }: PayUsingGnosisParams) {
     console.log({ cardIds, safeAddress });
-    if (type === "tokens") {
+    if (paymentType === "tokens") {
       console.log({ amounts });
-      const data = await distributeTokens(
-        tokenAddresses,
-        userAddresses,
-        amounts,
-        cardIds.toString(),
+      const data = await distributeTokens({
+        contributors: userAddresses,
+        values: amounts,
         chainId,
-        true
-      );
-      const res = await massPayment(safeAddress, data, chainId);
+        type: batchPayType,
+        cardIds,
+        circleId,
+        gnosis: true,
+        callerId: connectedUser,
+        tokenAddresses,
+      });
+      const res = await gnosisPayment(safeAddress, data, chainId);
       if (res)
         toast.success("Transaction sent to your safe", { theme: "dark" });
       else toast.error("Error Occurred while sending your transation to safe");
-    } else if (type === "currency") {
-      const data = await distributeEther(
-        userAddresses,
-        amounts,
-        cardIds.toString(),
+    } else if (paymentType === "currency") {
+      const contractdata = await distributeEther({
+        contributors: userAddresses,
+        values: amounts,
         chainId,
-        true
-      );
-      console.log({ data });
-      const res = await massPayment(safeAddress, data, chainId);
+        type: batchPayType,
+        cardIds,
+        circleId,
+        gnosis: true,
+        callerId: connectedUser,
+      });
+      const res = await gnosisPayment(safeAddress, contractdata, chainId);
       if (res)
         toast.success("Transaction sent to your safe", { theme: "dark" });
       else toast.error("Error Occurred while sending your transation to safe");

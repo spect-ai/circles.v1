@@ -178,7 +178,8 @@ export default function CurrencyPayment() {
                 onClick={async () => {
                   await payUsingGnosis({
                     chainId: circle?.defaultPayment.chain.chainId || "",
-                    type: "currency",
+                    paymentType: "currency",
+                    batchPayType: batchPayInfo?.retroId ? "retro" : "card",
                     userAddresses: getEthAddress() as string[],
                     amounts: batchPayInfo?.currency.values as number[],
                     tokenAddresses: [""],
@@ -187,6 +188,7 @@ export default function CurrencyPayment() {
                         Object.keys(circle?.safeAddresses || {})[0]
                       ][0] || "",
                     cardIds: currencyCards as string[],
+                    circleId: circle?.id || "",
                   });
                   setIsOpen(false);
                 }}
