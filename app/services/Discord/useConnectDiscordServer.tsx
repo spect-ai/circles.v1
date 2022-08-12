@@ -24,5 +24,6 @@ export default function useConnectDiscordServer() {
       void router.push(`/${cId}`);
     };
     if (circle?.id && guild_id) void connectServer();
+    //;
   }, [cId, circle?.id, guild_id]);
 }
