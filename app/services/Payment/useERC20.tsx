@@ -5,7 +5,7 @@ import { useRouter } from "next/router";
 import { useQuery } from "react-query";
 import { toast } from "react-toastify";
 import { erc20ABI } from "wagmi";
-import { massPayment } from "../Gnosis";
+import { gnosisPayment } from "../Gnosis";
 
 export default function useERC20() {
   const router = useRouter();
@@ -44,7 +44,7 @@ export default function useERC20() {
           registry[chainId].distributorAddress,
           ethers.constants.MaxInt256
         );
-        const res = await massPayment(safeAddress, data, chainId);
+        const res = await gnosisPayment(safeAddress, data, chainId);
         if (res)
           toast.success("Transaction sent to your safe", { theme: "dark" });
         else
