@@ -121,7 +121,9 @@ export default function CurrencyPayment() {
                     userAddresses: getEthAddress() as string[],
                     amounts: batchPayInfo?.currency.values as number[],
                     tokenAddresses: [""],
-                    cardIds: currencyCards as string[],
+                    cardIds: batchPayInfo?.retroId
+                      ? [batchPayInfo.retroId]
+                      : (currencyCards as string[]),
                     circleId: circle?.id || "",
                   });
                   console.log({ txnHash });
@@ -192,7 +194,9 @@ export default function CurrencyPayment() {
                       circle?.safeAddresses[
                         Object.keys(circle?.safeAddresses || {})[0]
                       ][0] || "",
-                    cardIds: currencyCards as string[],
+                    cardIds: batchPayInfo?.retroId
+                      ? [batchPayInfo.retroId]
+                      : (currencyCards as string[]),
                     circleId: circle?.id || "",
                   });
                   setGnosisLoading(false);
