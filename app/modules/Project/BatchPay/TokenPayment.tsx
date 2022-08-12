@@ -171,7 +171,9 @@ export default function TokenPayment() {
                       circle?.safeAddresses[
                         Object.keys(circle?.safeAddresses || {})[0]
                       ][0] || "",
-                    cardIds: tokenCards as string[],
+                    cardIds: batchPayInfo?.retroId
+                      ? [batchPayInfo.retroId]
+                      : (tokenCards as string[]),
                     circleId: circle?.id || "",
                   });
                   setIsOpen(false);

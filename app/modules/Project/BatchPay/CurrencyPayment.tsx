@@ -194,7 +194,9 @@ export default function CurrencyPayment() {
                       circle?.safeAddresses[
                         Object.keys(circle?.safeAddresses || {})[0]
                       ][0] || "",
-                    cardIds: currencyCards as string[],
+                    cardIds: batchPayInfo?.retroId
+                      ? [batchPayInfo.retroId]
+                      : (currencyCards as string[]),
                     circleId: circle?.id || "",
                   });
                   setGnosisLoading(false);
