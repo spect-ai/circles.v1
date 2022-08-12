@@ -43,9 +43,9 @@ function CardLabels() {
         />
       }
       disabled={!canTakeAction("cardLabels")}
-      handleClose={async () => {
+      handleClose={() => {
         if (card?.labels !== labels) {
-          await onCardUpdate();
+          void onCardUpdate();
         }
         setModalOpen(false);
       }}
