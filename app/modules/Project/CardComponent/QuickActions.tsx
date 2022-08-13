@@ -94,7 +94,7 @@ export default function QuickActions({ card, hover }: Props) {
               Close
             </PopoverOption>
           )}
-          {validActions.includes("pay") && (
+          {/* {validActions.includes("pay") && (
             <PopoverOption
               onClick={(e) => {
                 setIsOpen(false);
@@ -105,7 +105,7 @@ export default function QuickActions({ card, hover }: Props) {
             >
               Pay
             </PopoverOption>
-          )}
+          )} */}
           {validActions.includes("archive") && (
             <PopoverOption
               onClick={async (e) => {
@@ -142,18 +142,6 @@ export default function QuickActions({ card, hover }: Props) {
               }}
             >
               Submit
-            </PopoverOption>
-          )}
-          {validActions.includes("createDiscordThread") && (
-            <PopoverOption
-              onClick={(e) => {
-                setIsOpen(false);
-                e?.stopPropagation();
-                setSelectedCard(card);
-                setIsSubmitModalOpen(true);
-              }}
-            >
-              Discuss
             </PopoverOption>
           )}
           {validActions.includes("claim") && (

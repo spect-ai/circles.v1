@@ -12,6 +12,7 @@ import { UserType } from "@/app/types";
 import { useQuery } from "react-query";
 import { toast } from "react-toastify";
 import Loader from "@/app/common/components/Loader";
+import { PublicLayout } from "@/app/common/layout";
 
 const getUser = async () => {
   const res = await fetch(`${process.env.API_HOST}/user/me`, {
@@ -56,34 +57,28 @@ const ProfilePage: NextPage = () => {
   );
 
   useEffect(() => {
-    void fetchUser();
+    if (userId) {
+      void fetchUser();
+    }
   }, [user, userId, fetchUser]);
 
-  if (isLoading || !user?.id || !userId) {
-    return <Loader loading text="fetching" />;
-  }
+  // if (isLoading || !user?.id || !userId) {
+  //   return <Loader loading text="fetching" />;
+  // }
 
   return (
     <>
       <MetaHead />
-      <Box
-        backgroundColor={mode === "dark" ? "background" : "backgroundSecondary"}
-        style={{
-          height: "100vh",
-          overflowY: "auto",
-          overflowX: "hidden",
-          display: "flex",
-          flexDirection: "row",
-        }}
-        id="profile-layout"
-      >
-        <Sidebar />
+      <PublicLayout>
+        {isLoading ||
+          !user?.id ||
+          (!userId && <Loader loading text="fetching" />)}
         <Box display="flex" flexDirection="row" width="full" overflow="hidden">
           <ProfileCard userId={userId as string} />
           <ProfileTabs userId={userId as string} />
         </Box>
-      </Box>
-      {isProfilePanelExpanded && <QuickProfilePanel />}
+        {isProfilePanelExpanded && <QuickProfilePanel />}
+      </PublicLayout>
     </>
   );
 };

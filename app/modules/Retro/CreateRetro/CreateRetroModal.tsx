@@ -34,6 +34,7 @@ export default function CreateRetroModal({ handleClose }: Props) {
               setStep={setStep}
               key="details"
               setDetails={setDetails}
+              details={details}
             />
           )}
           {step === 1 && (

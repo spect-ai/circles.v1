@@ -13,6 +13,7 @@ export default function DiscordRoleMapping() {
   const [isOpen, setIsOpen] = useState(false);
   const { circle } = useCircle();
   const [roleMap, setRoleMap] = useState(circle?.discordToCircleRoles || {});
+  const [loading, setLoading] = useState(false);
 
   const [discordRoles, setDiscordRoles] =
     useState<
@@ -104,13 +105,16 @@ export default function DiscordRoleMapping() {
                   <RoleSection key={role} roleName={role} />
                 ))}
                 <PrimaryButton
+                  loading={loading}
                   onClick={async () => {
+                    setLoading(true);
                     await updateCircle(
                       {
                         discordToCircleRoles: roleMap,
                       },
                       circle.id
                     );
+                    setLoading(false);
                     setIsOpen(false);
                   }}
                 >
