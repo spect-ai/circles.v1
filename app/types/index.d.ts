@@ -162,6 +162,7 @@ export interface CircleType {
       description: string;
       permissions: Permissions;
       selfAssignable: boolean;
+      mutable: boolean;
     };
   };
   localRegistry: Registry;

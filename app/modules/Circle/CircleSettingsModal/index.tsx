@@ -2,13 +2,10 @@ import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import Tabs from "@/app/common/components/Tabs";
 import { storeImage } from "@/app/common/utils/ipfs";
-import queryClient from "@/app/common/utils/queryClient";
 import { deleteCircle, updateCircle } from "@/app/services/UpdateCircle";
-import { CircleType } from "@/app/types";
 import { Box, Input, MediaPicker, Stack, Text, Textarea } from "degen";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
-import { useQuery } from "react-query";
 import CircleIntegrations from "./CircleIntegrations";
 import DefaultPayment from "./CirclePayment";
 import Contributors from "../ContributorsModal/Contributors";
@@ -21,7 +18,7 @@ export default function SettingsModal({ handleClose }: Props) {
   const { circle, setCircleData } = useCircle();
 
   const [tab, setTab] = useState(0);
-  const [visibilityTab, setVisibilityTab] = useState(0);
+  const [visibilityTab, setVisibilityTab] = useState(circle?.private ? 1 : 0);
   const onTabClick = (id: number) => setTab(id);
   const onVisibilityTabClick = (id: number) => setVisibilityTab(id);
 
@@ -89,7 +86,13 @@ export default function SettingsModal({ handleClose }: Props) {
           <Tabs
             selectedTab={tab}
             onTabClick={onTabClick}
-            tabs={["Info", "Integrations", "Payments", "Members", "Delete"]}
+            tabs={[
+              "Info",
+              "Integrations",
+              "Payments",
+              "Contributors",
+              "Delete",
+            ]}
             tabTourIds={[
               "circle-settings-info",
               "circle-settings-integrations",

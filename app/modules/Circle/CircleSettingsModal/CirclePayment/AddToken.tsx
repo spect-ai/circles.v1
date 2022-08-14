@@ -19,6 +19,7 @@ export default function AddToken({ chain }: Props) {
   const [tokenSymbol, setTokenSymbol] = useState("");
   const [tokenName, setTokenName] = useState("");
   const [loading, setLoading] = useState(false);
+  const [tokenLoading, setTokenLoading] = useState(false);
   const { symbol, name } = useERC20();
   const { circle, setRegistryData } = useCircle();
 
@@ -35,7 +36,7 @@ export default function AddToken({ chain }: Props) {
         {isOpen && (
           <Modal handleClose={() => setIsOpen(false)} title="Add Token">
             <Box padding="8">
-              {loading && <Loader loading text="Fetching" />}
+              {tokenLoading && <Loader loading text="Fetching" />}
               <Stack>
                 <Input
                   label=""
@@ -43,7 +44,7 @@ export default function AddToken({ chain }: Props) {
                   value={address}
                   onChange={async (e) => {
                     setAddress(e.target.value);
-                    setLoading(true);
+                    setTokenLoading(true);
                     console.log({ chain });
                     try {
                       console.log(await symbol(e.target.value, chain?.chainId));
@@ -53,16 +54,18 @@ export default function AddToken({ chain }: Props) {
                       setTokenName(await name(e.target.value, chain?.chainId));
                     } catch (e) {
                       console.log(e);
-                      setLoading(false);
+                      setTokenLoading(false);
                     }
-                    setLoading(false);
+                    setTokenLoading(false);
                   }}
                 />
                 <Text weight="semiBold">{tokenSymbol}</Text>
                 <Text weight="semiBold">{tokenName}</Text>
                 <PrimaryButton
+                  loading={loading}
                   disabled={!tokenSymbol}
                   onClick={async () => {
+                    setLoading(true);
                     const res = await addToken(circle?.id as string, {
                       chainId: chain?.chainId as string,
                       address,
@@ -70,6 +73,7 @@ export default function AddToken({ chain }: Props) {
                       name: tokenName,
                     });
                     console.log({ res });
+                    setLoading(false);
                     setRegistryData(res as Registry);
                     res && setIsOpen(false);
                   }}

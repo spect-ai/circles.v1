@@ -5,7 +5,7 @@ import { useGlobal } from "@/app/context/globalContext";
 import { addVotes, endRetro } from "@/app/services/Retro";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { RetroType } from "@/app/types";
-import { Box, Stack, Text } from "degen";
+import { Box, Heading, Stack, Text } from "degen";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { useQuery } from "react-query";
@@ -55,8 +55,10 @@ export default function RetroModal({ handleClose }: Props) {
 
   useEffect(() => {
     if (retroSlug) {
-      void fetchRetro();
-      // eslint-disable-next-line react-hooks/exhaustive-deps
+      if (connectedUser) {
+        void fetchRetro();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+      }
     }
   }, [retroSlug]);
 
@@ -113,118 +115,125 @@ export default function RetroModal({ handleClose }: Props) {
 
   return (
     <Modal handleClose={handleClose} title={retro.title} size="large">
-      <Box
-        padding="8"
-        style={{
-          maxHeight: "calc(100vh - 8rem)",
-        }}
-      >
-        <Stack>
-          <Text weight="semiBold" size="large">
-            {retro.description}
-          </Text>
-          <Box>
-            <Stack
-              direction="horizontal"
-              align="center"
-              justify="space-between"
-            >
-              <Box width="1/4">
-                <Text variant="label">Member</Text>
-              </Box>
-              <Box width="1/3">
-                <Text variant="label">Feedback</Text>
-              </Box>
-              <Box width="1/4">
-                <Stack direction="horizontal">
-                  <Text variant="label">Votes Given</Text>
-                </Stack>
-              </Box>
-            </Stack>
-          </Box>
-          {retro.members?.map((member) => {
-            if (
-              (retro.status.active &&
-                retro.stats[member]?.canReceive &&
-                connectedUser !== member) ||
-              (!retro.status.active && connectedUser !== member)
-            ) {
-              return (
-                <MemberRow
-                  key={member}
-                  member={member}
-                  votesGiven={votesGiven}
-                  setVotesGiven={setVotesGiven}
-                  votesRemaining={votesRemaining}
-                  handleVotesRemaining={handleVotesRemaining}
-                  feedbackGiven={
-                    retro.feedbackGiven && retro.feedbackGiven[member]
-                  }
-                  feedbackReceived={
-                    retro.feedbackReceived && retro.feedbackReceived[member]
-                  }
-                  retroId={retro.id}
-                />
-              );
-            }
-          })}
-          <Stack direction="horizontal" justify="space-between">
-            <Box />
-            {retro.status.active && (
-              <Text variant="label">Remaining Votes: {votesRemaining}</Text>
-            )}
-          </Stack>
-          <Stack direction="horizontal">
-            <Box width="full">
-              {retro.status.active && (
-                <PrimaryButton
-                  loading={loading}
-                  onClick={async () => {
-                    setLoading(true);
-                    const res = await addVotes(retro.id, {
-                      votes: votesGiven,
-                    });
-                    console.log({ res });
-                    setLoading(false);
-                    if (res) {
-                      handleClose();
-                    }
-                  }}
-                >
-                  Save Votes
-                </PrimaryButton>
-              )}
+      {retro.members.includes(connectedUser) ? (
+        <Box
+          padding="8"
+          style={{
+            maxHeight: "calc(100vh - 8rem)",
+          }}
+        >
+          <Stack>
+            <Text weight="semiBold" size="large">
+              {retro.description}
+            </Text>
+            <Box>
+              <Stack
+                direction="horizontal"
+                align="center"
+                justify="space-between"
+              >
+                <Box width="1/4">
+                  <Text variant="label">Member</Text>
+                </Box>
+                <Box width="1/3">
+                  <Text variant="label">Feedback</Text>
+                </Box>
+                <Box width="1/4">
+                  <Stack direction="horizontal">
+                    <Text variant="label">Votes Given</Text>
+                  </Stack>
+                </Box>
+              </Stack>
             </Box>
-            <Box width="full">
-              {retro.status.active && canDo(["steward"]) && (
-                <PrimaryButton
-                  variant="tertiary"
-                  onClick={async () => {
-                    const res = await endRetro(retro.id);
-                    if (res) {
-                      handleClose();
+            {retro.members?.map((member) => {
+              if (
+                (retro.status.active &&
+                  retro.stats[member]?.canReceive &&
+                  connectedUser !== member) ||
+                (!retro.status.active && connectedUser !== member)
+              ) {
+                return (
+                  <MemberRow
+                    key={member}
+                    member={member}
+                    votesGiven={votesGiven}
+                    setVotesGiven={setVotesGiven}
+                    votesRemaining={votesRemaining}
+                    handleVotesRemaining={handleVotesRemaining}
+                    feedbackGiven={
+                      retro.feedbackGiven && retro.feedbackGiven[member]
                     }
-                  }}
-                >
-                  End Retro
-                </PrimaryButton>
+                    feedbackReceived={
+                      retro.feedbackReceived && retro.feedbackReceived[member]
+                    }
+                    retroId={retro.id}
+                  />
+                );
+              }
+            })}
+            <Stack direction="horizontal" justify="space-between">
+              <Box />
+              {retro.status.active && (
+                <Text variant="label">Remaining Votes: {votesRemaining}</Text>
               )}
-              {!retro.status.active &&
-                !retro.status.paid &&
-                canDo(["steward"]) && (
+            </Stack>
+            <Stack direction="horizontal">
+              <Box width="full">
+                {retro.status.active && (
                   <PrimaryButton
-                    onClick={() => {
-                      handleClose();
-                      setIsBatchPayOpen(true);
+                    loading={loading}
+                    onClick={async () => {
+                      setLoading(true);
+                      const res = await addVotes(retro.id, {
+                        votes: votesGiven,
+                      });
+                      console.log({ res });
+                      setLoading(false);
+                      if (res) {
+                        handleClose();
+                      }
                     }}
                   >
-                    Payout
+                    Save Votes
                   </PrimaryButton>
                 )}
-            </Box>
+              </Box>
+              <Box width="full">
+                {retro.status.active && canDo(["steward"]) && (
+                  <PrimaryButton
+                    variant="tertiary"
+                    onClick={async () => {
+                      const res = await endRetro(retro.id);
+                      if (res) {
+                        handleClose();
+                      }
+                    }}
+                  >
+                    End Retro
+                  </PrimaryButton>
+                )}
+                {!retro.status.active &&
+                  !retro.status.paid &&
+                  canDo(["steward"]) && (
+                    <PrimaryButton
+                      onClick={() => {
+                        handleClose();
+                        setIsBatchPayOpen(true);
+                      }}
+                    >
+                      Payout
+                    </PrimaryButton>
+                  )}
+              </Box>
+            </Stack>
           </Stack>
+        </Box>
+      ) : (
+        <Stack align="center" justify="center">
+          <Box marginTop="4" />
+          <Text variant="label">You are not a member of this retro</Text>
         </Stack>
-      </Box>
+      )}
     </Modal>
   );
 }

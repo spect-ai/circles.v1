@@ -27,7 +27,7 @@ export async function getUserSafes(chainId: string) {
   return safes;
 }
 
-export async function massPayment(
+export async function gnosisPayment(
   safeAddress: string,
   data: any,
   chainId: string
@@ -92,7 +92,6 @@ export async function massPayment(
       safeAddress,
       baseTxn
     );
-
     console.log({ safeTxGas });
     console.log({ safeTransaction });
 

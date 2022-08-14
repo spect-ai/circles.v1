@@ -3,7 +3,7 @@ import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { getFlattenedNetworks } from "@/app/common/utils/registry";
 import { getUserSafes } from "@/app/services/Gnosis";
-import { updateCircle } from "@/app/services/UpdateCircle";
+import { addSafe, updateCircle } from "@/app/services/UpdateCircle";
 import { Registry } from "@/app/types";
 import { Box, Stack, Tag, Text } from "degen";
 import { AnimatePresence } from "framer-motion";
@@ -18,22 +18,23 @@ export default function ConnectGnosis() {
   );
   const [safes, setSafes] = useState<OptionType[]>([]);
   const [selectedSafe, setselectedSafe] = useState({
-    label:
-      circle?.safeAddresses[Object.keys(circle?.safeAddresses || {})[0]][0] ||
-      "",
-    value:
-      circle?.safeAddresses[Object.keys(circle?.safeAddresses || {})[0]][0] ||
-      "",
+    label: circle?.safeAddresses
+      ? circle?.safeAddresses[Object.keys(circle?.safeAddresses || {})[0]][0] ||
+        ""
+      : "",
+    value: circle?.safeAddresses
+      ? circle?.safeAddresses[Object.keys(circle?.safeAddresses || {})[0]][0] ||
+        ""
+      : "",
   });
   const [isLoading, setIsLoading] = useState(false);
 
   const onSubmit = async () => {
     setIsLoading(true);
-    const res = await updateCircle(
+    const res = await addSafe(
       {
-        safeAddresses: {
-          [chain]: [selectedSafe.value],
-        },
+        chainId: chain,
+        address: selectedSafe.value,
       },
       circle?.id as string
     );
@@ -64,8 +65,10 @@ export default function ConnectGnosis() {
   return (
     <>
       <PrimaryButton onClick={() => setIsOpen(true)}>
-        {circle?.safeAddresses[Object.keys(circle?.safeAddresses || {})[0]]
-          ? "Safe Connected"
+        {circle?.safeAddresses
+          ? circle?.safeAddresses[Object.keys(circle?.safeAddresses || {})[0]]
+            ? "Safe Connected"
+            : "Connect Gnosis"
           : "Connect Gnosis"}
       </PrimaryButton>
       <AnimatePresence>

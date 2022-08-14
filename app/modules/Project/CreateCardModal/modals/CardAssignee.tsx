@@ -173,9 +173,9 @@ function CardAssignee() {
         )
       }
       disabled={!canTakeAction("cardAssignee")}
-      handleClose={async () => {
+      handleClose={() => {
         if (card?.assignee !== assignees) {
-          await onCardUpdate();
+          void onCardUpdate();
           cardId && void fetchCardActions();
         }
         setModalOpen(false);

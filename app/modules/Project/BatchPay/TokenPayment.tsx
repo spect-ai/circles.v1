@@ -93,12 +93,17 @@ export default function TokenPayment() {
               onClick={async () => {
                 const txnHash = await toast.promise(
                   batchPay({
-                    chainId: circle?.defaultPayment.chain.chainId as string,
-                    type: "tokens",
-                    ethAddresses: getEthAddress() as string[],
-                    tokenValues: batchPayInfo?.tokens.values as number[],
+                    chainId: circle?.defaultPayment.chain.chainId || "",
+                    paymentType: "tokens",
+                    batchPayType: batchPayInfo?.retroId ? "retro" : "card",
+                    userAddresses: getEthAddress() as string[],
+                    amounts: batchPayInfo?.currency.values as number[],
                     tokenAddresses: batchPayInfo?.tokens
                       .tokenAddresses as string[],
+                    cardIds: batchPayInfo?.retroId
+                      ? [batchPayInfo.retroId]
+                      : (tokenCards as string[]),
+                    circleId: circle?.id || "",
                   }),
                   {
                     pending: "Transaction is pending",
@@ -156,7 +161,8 @@ export default function TokenPayment() {
                 onClick={async () => {
                   await payUsingGnosis({
                     chainId: circle?.defaultPayment.chain.chainId || "",
-                    type: "tokens",
+                    paymentType: "tokens",
+                    batchPayType: batchPayInfo?.retroId ? "retro" : "card",
                     userAddresses: getEthAddress() as string[],
                     amounts: batchPayInfo?.currency.values as number[],
                     tokenAddresses: batchPayInfo?.tokens
@@ -165,7 +171,10 @@ export default function TokenPayment() {
                       circle?.safeAddresses[
                         Object.keys(circle?.safeAddresses || {})[0]
                       ][0] || "",
-                    cardIds: tokenCards as string[],
+                    cardIds: batchPayInfo?.retroId
+                      ? [batchPayInfo.retroId]
+                      : (tokenCards as string[]),
+                    circleId: circle?.id || "",
                   });
                   setIsOpen(false);
                 }}
