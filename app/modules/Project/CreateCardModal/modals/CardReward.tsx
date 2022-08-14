@@ -23,6 +23,7 @@ function CardReward() {
     onCardUpdate,
     fetchCardActions,
     card,
+    cardId,
   } = useLocalCard();
   const { canTakeAction } = useRoleGate();
 
@@ -49,7 +50,7 @@ function CardReward() {
           chain.chainId !== card?.reward.chain.chainId
         ) {
           void onCardUpdate();
-          void fetchCardActions();
+          cardId && void fetchCardActions();
         }
         setModalOpen(false);
       }}

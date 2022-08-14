@@ -24,6 +24,7 @@ const OptionContainer = styled(Box)<{ isSelected: boolean }>`
   display: flex;
   flex-direction: row;
   align-items: center;
+  justify-content: center;
 `;
 
 const Select: FC<Props> = ({ options, value, onChange }) => {
@@ -47,9 +48,7 @@ const Select: FC<Props> = ({ options, value, onChange }) => {
             // borderColor={value.value === val ? "accent" : "foregroundSecondary"}
             width="32"
           >
-            <Text align="center" weight="semiBold">
-              {label}
-            </Text>
+            <Text weight="semiBold">{label}</Text>
           </OptionContainer>
         ))}
       </Stack>

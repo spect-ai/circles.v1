@@ -27,7 +27,7 @@ const dropIn = {
 };
 
 // grow animation from center of screen
-const grow = {
+export const grow = {
   hidden: {
     opacity: 0,
     scale: 0,

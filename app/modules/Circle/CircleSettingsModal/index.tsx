@@ -140,6 +140,7 @@ export default function SettingsModal({ handleClose }: Props) {
                   onClick={onSubmit}
                   loading={isLoading}
                   disabled={uploading}
+                  shape="circle"
                 >
                   Update Circle
                 </PrimaryButton>

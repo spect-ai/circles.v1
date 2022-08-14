@@ -9,6 +9,7 @@ import {
 import styled from "styled-components";
 import { UserType, CardDetails } from "@/app/types";
 import { PriorityIcon } from "@/app/common/components/PriorityIcon";
+import Link from "next/link";
 
 interface Props {
   toggle: string;
@@ -31,7 +32,9 @@ const ScrollContainer = styled(Box)`
 const Card = styled(Box)<{ mode: string }>`
   display: flex;
   flex-direction: column;
+  flex-wrap: wrap;
   width: 630px;
+  // max-height: 300px;
   padding: 0.6rem;
   border-radius: 0.5rem;
   background-color: transparent;
@@ -69,7 +72,13 @@ const GigInfo = styled(Box)`
   align-items: center;
   position: absolute;
   right: 1rem;
-  gap: 0.6rem;
+  gap: 0.4rem;
+`;
+
+const TextBox = styled(Box)`
+  display: flex;
+  flex-wrap: wrap;
+  width: 510px;
 `;
 
 const Toggle: FunctionComponent<Props> = ({ toggle, setToggle }) => {
@@ -106,7 +115,7 @@ const Toggle: FunctionComponent<Props> = ({ toggle, setToggle }) => {
 
 const WorkCards: FunctionComponent<Props> = ({ toggle, userData }) => {
   const { mode } = useTheme();
-  console.log({ userData });
+
   return (
     <Box gap="2" display="flex" flexDirection="column">
       {toggle == "Assignee"
@@ -115,36 +124,40 @@ const WorkCards: FunctionComponent<Props> = ({ toggle, userData }) => {
             .reverse()
             .map((cardId) => {
               const card: CardDetails = userData?.cardDetails[cardId];
-              const cardLink = `${card?.circle?.slug}/${card?.project?.slug}/${card?.slug}`;
+              const cardLink = `/${card?.circle?.slug}/${card?.project?.slug}/${card?.slug}`;
               return (
-                <Card
-                  mode={mode}
-                  key={cardId}
-                  onClick={() => window.open(`/${cardLink}`)}
-                >
-                  <Text weight="medium" variant="base">
-                    {card?.title}
-                  </Text>
-                  <GigInfo>
-                    {card?.priority > 0 && (
-                      <PriorityIcon priority={card?.priority} />
-                    )}
-                    {card?.reviewer?.map((person) => (
+                <Link href={cardLink} key={cardId}>
+                  <Card mode={mode}>
+                    <TextBox>
+                      <Text
+                        weight="medium"
+                        variant="base"
+                        wordBreak="break-word"
+                      >
+                        {card?.title}
+                      </Text>
+                    </TextBox>
+                    <GigInfo>
+                      {card?.priority > 0 && (
+                        <PriorityIcon priority={card?.priority} />
+                      )}
+                      {card?.reviewer?.map((person) => (
+                        <Avatar
+                          label="profile-pic"
+                          src={person?.avatar}
+                          size="6"
+                          key={person.id}
+                          address={person.ethAddress}
+                        />
+                      ))}
                       <Avatar
                         label="profile-pic"
-                        src={person?.avatar}
+                        src={card?.circle?.avatar}
                         size="6"
-                        key={person.id}
-                        address={person.ethAddress}
                       />
-                    ))}
-                    <Avatar
-                      label="profile-pic"
-                      src={card?.circle?.avatar}
-                      size="6"
-                    />
-                  </GigInfo>
-                </Card>
+                    </GigInfo>
+                  </Card>
+                </Link>
               );
             })
         : userData?.reviewingCards
@@ -152,35 +165,39 @@ const WorkCards: FunctionComponent<Props> = ({ toggle, userData }) => {
             .reverse()
             .map((cardId) => {
               const card: CardDetails = userData?.cardDetails[cardId];
-              const cardLink = `${card?.circle?.slug}/${card?.project?.slug}/${card?.slug}`;
+              const cardLink = `/${card?.circle?.slug}/${card?.project?.slug}/${card?.slug}`;
               return (
-                <Card
-                  mode={mode}
-                  key={cardId}
-                  onClick={() => window.open(`/${cardLink}`)}
-                >
-                  <Text weight="medium" variant="base">
-                    {card?.title}
-                  </Text>
-                  <GigInfo>
-                    {card?.priority > 0 && (
-                      <PriorityIcon priority={card?.priority} />
-                    )}
-                    {card?.assignee?.map((person) => (
+                <Link href={cardLink} key={cardId}>
+                  <Card mode={mode} onClick={() => console.log({ cardLink })}>
+                    <TextBox>
+                      <Text
+                        weight="medium"
+                        variant="base"
+                        wordBreak="break-word"
+                      >
+                        {card?.title}
+                      </Text>
+                    </TextBox>
+                    <GigInfo>
+                      {card?.priority > 0 && (
+                        <PriorityIcon priority={card?.priority} />
+                      )}
+                      {card?.assignee?.map((person) => (
+                        <Avatar
+                          label="profile-pic"
+                          src={person?.avatar}
+                          size="6"
+                          key={person.id}
+                        />
+                      ))}
                       <Avatar
                         label="profile-pic"
-                        src={person?.avatar}
+                        src={card?.circle?.avatar}
                         size="6"
-                        key={person.id}
                       />
-                    ))}
-                    <Avatar
-                      label="profile-pic"
-                      src={card?.circle?.avatar}
-                      size="6"
-                    />
-                  </GigInfo>
-                </Card>
+                    </GigInfo>
+                  </Card>
+                </Link>
               );
             })}
     </Box>

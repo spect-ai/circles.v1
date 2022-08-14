@@ -113,8 +113,14 @@ export const AssigneeModal = ({
 );
 
 function CardAssignee() {
-  const { assignees, setAssignees, onCardUpdate, fetchCardActions, card } =
-    useLocalCard();
+  const {
+    assignees,
+    setAssignees,
+    onCardUpdate,
+    fetchCardActions,
+    card,
+    cardId,
+  } = useLocalCard();
   const [modalOpen, setModalOpen] = useState(false);
   const [options, setOptions] = useState<Option[]>({} as Option[]);
   const [filteredOptions, setFilteredOptions] = useState<Option[]>();
@@ -167,10 +173,10 @@ function CardAssignee() {
         )
       }
       disabled={!canTakeAction("cardAssignee")}
-      handleClose={async () => {
+      handleClose={() => {
         if (card?.assignee !== assignees) {
-          await onCardUpdate();
-          void fetchCardActions();
+          void onCardUpdate();
+          cardId && void fetchCardActions();
         }
         setModalOpen(false);
       }}

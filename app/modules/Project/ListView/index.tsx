@@ -10,6 +10,12 @@ import { SkeletonLoader } from "../SkeletonLoader";
 import BatchPay from "../BatchPay";
 import { AnimatePresence } from "framer-motion";
 import ListSection from "./ListSection";
+import { filterCards } from "../Filter/filterCards";
+import { Filter, Views } from "@/app/types";
+
+interface Props {
+  viewId: string;
+}
 
 const ScrollContainer = styled.div`
   height: calc(100vh - 4.5rem);
@@ -21,7 +27,7 @@ const ScrollContainer = styled.div`
   overflow-y: auto;
 `;
 
-function ListView() {
+function ListView({ viewId }: Props) {
   const {
     localProject: project,
     setLocalProject,
@@ -29,8 +35,15 @@ function ListView() {
     batchPayModalOpen,
     selectedCard,
     setBatchPayModalOpen,
+    currentFilter,
   } = useLocalProject();
   const { canDo } = useRoleGate();
+
+  const view = project.viewDetails?.[viewId];
+  const viewCards = filterCards(project, view?.filters as Filter);
+  const viewFilter = view?.filters;
+
+  const filteredCards = filterCards(project, currentFilter);
 
   if (loading) {
     return <SkeletonLoader />;
@@ -44,16 +57,35 @@ function ListView() {
         )} */}
         <ScrollContainer>
           <Stack space="8">
-            {project?.columnOrder?.map((columnId, index): any => {
-              const column = project.columnDetails[columnId];
-              const cards = column.cards?.map(
-                (cardId: any) => project.cards[cardId]
-              );
-              return (
-                <ListSection key={columnId} column={column} cards={cards} />
-              );
-            })}
-            {project?.id && canDo(["steward"]) && (
+            {!viewId &&
+              project?.columnOrder?.map((columnId: string) => {
+                const column = project.columnDetails[columnId];
+                const cards = column.cards?.map(
+                  (cardId: string) => filteredCards[cardId]
+                );
+                return (
+                  <ListSection key={columnId} column={column} cards={cards} />
+                );
+              })}
+            {viewId &&
+              project?.columnOrder?.map((columnId: string) => {
+                if (
+                  (viewFilter as Filter)?.column?.length > 0 &&
+                  !(viewFilter as Filter).column?.includes(columnId)
+                )
+                  return null;
+
+                const column = project.columnDetails[columnId];
+                let cards = column.cards?.map((cardId: any) =>
+                  viewId ? viewCards[cardId] : project.cards[cardId]
+                );
+                cards = cards.filter((i) => i !== undefined);
+
+                return (
+                  <ListSection key={columnId} column={column} cards={cards} />
+                );
+              })}
+            {!viewId && project?.id && canDo(["steward"]) && (
               <Box style={{ width: "20rem" }} marginTop="2" marginLeft="2">
                 <PrimaryButton
                   variant="tertiary"

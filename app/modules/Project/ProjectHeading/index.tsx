@@ -1,10 +1,14 @@
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
-import { Box, Heading, IconGrid, IconList, Stack, Text, useTheme } from "degen";
+import { Box, IconGrid, IconList, Stack, Text, useTheme } from "degen";
 import React, { memo } from "react";
 import Skeleton from "react-loading-skeleton";
 import styled from "styled-components";
 import { useLocalProject } from "../Context/LocalProjectContext";
 import ProjectOptions from "./ProjectOptions";
+import { ViewBar } from "../ProjectViews";
+import { useRouter } from "next/router";
+import { useGlobal } from "@/app/context/globalContext";
+import Filter from "../Filter";
 
 export const IconButton = styled(Box)`
   cursor: pointer;
@@ -17,6 +21,14 @@ function ProjectHeading() {
   const { localProject: project, loading, view, setView } = useLocalProject();
   const { canDo } = useRoleGate();
   const { mode } = useTheme();
+  const router = useRouter();
+  const { circle: cId, project: pId, view: vId } = router.query;
+  const { setViewName, viewName } = useGlobal();
+
+  const defaultView = () => {
+    if (viewName.length > 0) setViewName("");
+    if (vId) void router.push(`/${cId}/${pId}/`);
+  };
 
   return (
     <Box
@@ -54,8 +66,10 @@ function ProjectHeading() {
           />
         )}
         {project?.name && canDo(["steward"]) && <ProjectOptions />}
+        <ViewBar />
       </Stack>
       <Stack direction="horizontal" align="center">
+        {!vId && <Filter />}
         <Box
           display="flex"
           flexDirection="row"
@@ -68,8 +82,15 @@ function ProjectHeading() {
             borderRightWidth="0.375"
             paddingX="2"
             borderLeftRadius="large"
-            backgroundColor={view === 0 ? "foregroundSecondary" : "background"}
-            onClick={() => setView(0)}
+            backgroundColor={
+              view === 0 && viewName === ""
+                ? "foregroundSecondary"
+                : "background"
+            }
+            onClick={() => {
+              setView(0);
+              defaultView();
+            }}
           >
             <IconGrid size="6" />
           </IconButton>
@@ -77,8 +98,15 @@ function ProjectHeading() {
             color="textSecondary"
             paddingX="2"
             borderRightRadius="large"
-            backgroundColor={view === 1 ? "foregroundSecondary" : "background"}
-            onClick={() => setView(1)}
+            backgroundColor={
+              view === 1 && viewName === ""
+                ? "foregroundSecondary"
+                : "background"
+            }
+            onClick={() => {
+              setView(1);
+              defaultView();
+            }}
           >
             <IconList size="6" />
           </IconButton>

@@ -9,6 +9,8 @@ interface GlobalContextType {
   disconnectUser: () => void;
   quickProfileUser: string;
   openQuickProfile: (userId: string) => void;
+  viewName: string;
+  setViewName: React.Dispatch<React.SetStateAction<string>>;
 }
 
 const useProviderGlobalContext = () => {
@@ -17,6 +19,7 @@ const useProviderGlobalContext = () => {
   const [connectedUser, setConnectedUser] = useState("");
   const [isProfilePanelExpanded, setIsProfilePanelExpanded] = useState(false);
   const [quickProfileUser, setQuickProfileUser] = useState('');
+  const [viewName, setViewName] = useState('' as string);
 
   function connectUser(userId: string) {
     setConnectedUser(userId);
@@ -51,6 +54,8 @@ const useProviderGlobalContext = () => {
     setIsProfilePanelExpanded,
     quickProfileUser,
     openQuickProfile,
+    viewName,
+    setViewName
   };
 };
 

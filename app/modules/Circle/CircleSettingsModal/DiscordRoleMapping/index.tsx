@@ -68,13 +68,6 @@ export default function DiscordRoleMapping() {
                         },
                       });
                     } else {
-                      // setRoleMap({
-                      //   ...roleMap,
-                      //   [role]: {
-                      //     ...roleMap[role],
-                      //     circleRole: [],
-                      //   },
-                      // });
                       delete roleMap[role];
                       setRoleMap({ ...roleMap });
                     }
@@ -94,7 +87,7 @@ export default function DiscordRoleMapping() {
   );
 
   if (!circle) {
-    return <Loader loading text="Loading Circle" />;
+    return <Loader loading text="Loading Roles" />;
   }
 
   return (

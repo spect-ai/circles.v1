@@ -2,6 +2,10 @@ import { PublicLayout } from "@/app/common/layout";
 import MetaHead from "@/app/common/seo/MetaHead/MetaHead";
 import Card from "@/app/modules/Card";
 import {
+  CircleContext,
+  useProviderCircleContext,
+} from "@/app/modules/Circle/CircleContext";
+import {
   LocalCardContext,
   useProviderLocalCard,
 } from "@/app/modules/Project/CreateCardModal/hooks/LocalCardContext";
@@ -76,14 +80,18 @@ const CardPage: NextPage = () => {
   }, [project, pId, refetchProject]);
 
   const context = useProviderLocalCard({ createCard: false });
+  const circlecontext = useProviderCircleContext();
+
   return (
     <>
       <MetaHead />
-      <PublicLayout>
+      <CircleContext.Provider value={circlecontext}>
         <LocalCardContext.Provider value={context}>
-          <Card />
+          <PublicLayout>
+            <Card />
+          </PublicLayout>
         </LocalCardContext.Provider>
-      </PublicLayout>
+      </CircleContext.Provider>
     </>
   );
 };

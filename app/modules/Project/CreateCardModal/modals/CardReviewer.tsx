@@ -20,8 +20,14 @@ import { useQuery } from "react-query";
 import { MemberDetails } from "@/app/types";
 
 function CardReviewer() {
-  const { reviewers, setReviewers, onCardUpdate, card, fetchCardActions } =
-    useLocalCard();
+  const {
+    reviewers,
+    setReviewers,
+    onCardUpdate,
+    card,
+    fetchCardActions,
+    cardId,
+  } = useLocalCard();
   const [modalOpen, setModalOpen] = useState(false);
 
   const [options, setOptions] = useState<Option[]>();
@@ -77,7 +83,7 @@ function CardReviewer() {
       disabled={!canTakeAction("cardReviewer")}
       handleClose={() => {
         if (card?.reviewer !== reviewers) {
-          void fetchCardActions();
+          cardId && void fetchCardActions();
           void onCardUpdate();
         }
         setModalOpen(false);

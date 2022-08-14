@@ -1,4 +1,4 @@
-import { DiscordRoleMappingType, Payment } from "@/app/types";
+import { DiscordRoleMappingType, Payment, SafeAddresses } from "@/app/types";
 import { toast } from "react-toastify";
 
 type CircleUpdateDTO = {
@@ -11,6 +11,7 @@ type CircleUpdateDTO = {
   discordToCircleRoles: DiscordRoleMappingType;
   githubRepos: string[];
   gradient: string;
+  safeAddresses: SafeAddresses;
 };
 
 export const updateCircle = async (
@@ -57,6 +58,65 @@ export const deleteCircle = async (circleId: string) => {
     return data;
   } else {
     toast("Error deleting circle", {
+      theme: "dark",
+    });
+    return false;
+  }
+};
+
+type SafeDto = {
+  chainId: string;
+  address: string;
+};
+
+export const addSafe = async (safeDto: SafeDto, circleId: string) => {
+  const res = await fetch(
+    `${process.env.API_HOST}/circle/v1/${circleId}/addSafe`,
+    {
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      method: "PATCH",
+      body: JSON.stringify(safeDto),
+      credentials: "include",
+    }
+  );
+  if (res.ok) {
+    const data = await res.json();
+    toast("Circle updated successfully", {
+      theme: "dark",
+    });
+    return data;
+  } else {
+    toast("Error updating circle", {
+      theme: "dark",
+    });
+    return false;
+  }
+};
+
+export const removeSafe = async (safeDto: SafeDto, circleId: string) => {
+  const res = await fetch(
+    `${process.env.API_HOST}/circle/v1/${circleId}/removeSafe`,
+    {
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      method: "PATCH",
+      body: JSON.stringify(safeDto),
+      credentials: "include",
+    }
+  );
+  if (res.ok) {
+    const data = await res.json();
+    toast("Circle updated successfully", {
+      theme: "dark",
+    });
+    return data;
+  } else {
+    toast("Error updating circle", {
       theme: "dark",
     });
     return false;

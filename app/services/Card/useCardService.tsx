@@ -47,7 +47,6 @@ export default function useCardService() {
       return null;
     }
     const data = await res.json();
-    console.log({ data });
 
     return data;
   };

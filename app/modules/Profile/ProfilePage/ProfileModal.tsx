@@ -145,6 +145,7 @@ export default function ProfileModal({ setIsOpen }: Props) {
               style={{
                 cursor: "pointer"
               }}
+              key={skill}
             >
               <Tag
                 size="medium"

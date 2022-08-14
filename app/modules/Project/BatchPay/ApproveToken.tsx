@@ -40,6 +40,11 @@ export default function ApproveToken() {
     };
   }>({} as any);
 
+  const circleSafe =
+    (circle?.safeAddresses &&
+      circle?.safeAddresses[Object.keys(circle?.safeAddresses || {})[0]][0]) ||
+    "";
+
   useEffect(() => {
     // initialize tokenStatus
     setLoading(true);
@@ -59,7 +64,7 @@ export default function ApproveToken() {
           registry[circle.defaultPayment.chain.chainId]
             .distributorAddress as string,
           batchPayInfo.approval.values[index],
-          data?.address as string
+          circleSafe || data?.address || ""
         );
         tokenStatus[address] = {
           loading: false,
@@ -161,7 +166,8 @@ export default function ApproveToken() {
                             });
                             const res = await approve(
                               circle?.defaultPayment.chain.chainId as string,
-                              tokenAddress
+                              tokenAddress,
+                              circleSafe || ""
                             );
                             // set approved for this token status
                             if (res) {

@@ -16,7 +16,7 @@ import { ScrollContainer } from "./SelectCards";
 
 export default function TokenPayment() {
   const { getMemberDetails } = useModalOptions();
-  const { batchPay } = usePaymentGateway();
+  const { batchPay, payUsingGnosis } = usePaymentGateway();
   const { updateProject } = useLocalProject();
   const { setCard, cardId } = useLocalCard();
   const { batchPayInfo, setStep, setIsOpen, tokenCards, setBatchPayInfo } =
@@ -92,13 +92,19 @@ export default function TokenPayment() {
             <PrimaryButton
               onClick={async () => {
                 const txnHash = await toast.promise(
-                  batchPay(
-                    circle?.defaultPayment.chain.chainId as string,
-                    "tokens",
-                    getEthAddress() as string[],
-                    batchPayInfo?.tokens.values as number[],
-                    batchPayInfo?.tokens.tokenAddresses as string[]
-                  ),
+                  batchPay({
+                    chainId: circle?.defaultPayment.chain.chainId || "",
+                    paymentType: "tokens",
+                    batchPayType: batchPayInfo?.retroId ? "retro" : "card",
+                    userAddresses: getEthAddress() as string[],
+                    amounts: batchPayInfo?.currency.values as number[],
+                    tokenAddresses: batchPayInfo?.tokens
+                      .tokenAddresses as string[],
+                    cardIds: batchPayInfo?.retroId
+                      ? [batchPayInfo.retroId]
+                      : (tokenCards as string[]),
+                    circleId: circle?.id || "",
+                  }),
                   {
                     pending: "Transaction is pending",
                     success: {
@@ -148,6 +154,35 @@ export default function TokenPayment() {
               Pay
             </PrimaryButton>
           </Box>
+          {Object.keys(circle?.safeAddresses || {}).length > 0 && (
+            <Box width="1/2">
+              <PrimaryButton
+                // loading={loading}
+                onClick={async () => {
+                  await payUsingGnosis({
+                    chainId: circle?.defaultPayment.chain.chainId || "",
+                    paymentType: "tokens",
+                    batchPayType: batchPayInfo?.retroId ? "retro" : "card",
+                    userAddresses: getEthAddress() as string[],
+                    amounts: batchPayInfo?.currency.values as number[],
+                    tokenAddresses: batchPayInfo?.tokens
+                      .tokenAddresses as string[],
+                    safeAddress:
+                      circle?.safeAddresses[
+                        Object.keys(circle?.safeAddresses || {})[0]
+                      ][0] || "",
+                    cardIds: batchPayInfo?.retroId
+                      ? [batchPayInfo.retroId]
+                      : (tokenCards as string[]),
+                    circleId: circle?.id || "",
+                  });
+                  setIsOpen(false);
+                }}
+              >
+                Pay Using Gnosis
+              </PrimaryButton>
+            </Box>
+          )}
         </Stack>
       </Box>
     </Box>
