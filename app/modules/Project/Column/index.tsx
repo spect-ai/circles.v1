@@ -18,6 +18,7 @@ import {
   Droppable,
   DroppableProvided,
 } from "react-beautiful-dnd";
+import { useHotkeys } from "react-hotkeys-hook";
 import { toast } from "react-toastify";
 import styled from "styled-components";
 import CardComponent from "../CardComponent";
@@ -78,6 +79,22 @@ function ColumnComponent({ cards, id, column, index }: Props) {
   const { localProject: project, setLocalProject } = useLocalProject();
   const { canDo } = useRoleGate();
   const { mode } = useTheme();
+
+  useHotkeys(
+    'c',
+    (e) => {
+      e.preventDefault()
+      if (!canDo(["steward", "contributor"])) {
+        toast.error(
+          "You don't have permission to add cards in this column",
+          { theme: "dark" }
+        );
+        return;
+      }
+      setIsOpen(true);
+    },
+  );
+  
   const updateColumn = useCallback(async () => {
     const updatedProject = await updateColumnDetails(
       project.id,
