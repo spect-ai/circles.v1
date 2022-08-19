@@ -50,7 +50,7 @@ function CircleMembers() {
     const [memberPresent, setMemberPresent] = useState(false);
     return (
       <Box>
-        {memberPresent && <Text variant="label">{`${roleName}s`}</Text>}
+        {memberPresent && <Text variant="label">{`${roleName}`}</Text>}
         <Stack direction="horizontal" wrap>
           {filteredMembers.map((mem) => {
             if (circle?.memberRoles[mem.id]?.includes(roleName)) {
