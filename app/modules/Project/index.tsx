@@ -1,6 +1,6 @@
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
-import { Box, useTheme } from "degen";
-import React, { memo, useEffect } from "react";
+import { Box, useTheme, Button } from "degen";
+import React, { memo, useState } from "react";
 import { useLocalProject } from "./Context/LocalProjectContext";
 import { useGlobal } from "@/app/context/globalContext";
 import useProjectOnboarding from "@/app/services/Onboarding/useProjectOnboarding";
@@ -15,6 +15,7 @@ import Onboarding from "./ProjectOnboarding";
 import ListView from "./ListView";
 import BatchPay from "./BatchPay";
 import Apply from "../Card/Apply";
+import { Nav } from "./Navigation";
 
 function Project() {
   const {
@@ -36,6 +37,7 @@ function Project() {
   const { card: tId, view: vId } = router.query;
 
   const { mode } = useTheme();
+  const [graphOpen, setGraphOpen] = useState(false);
 
   if (tId || !project) {
     return null;
@@ -76,7 +78,7 @@ function Project() {
         exit="exit"
         transition={{ type: "linear" }}
       >
-        <Box width="full">
+        <Box width="full" position={"relative"}>
           <ToastContainer
             toastStyle={{
               backgroundColor: `${
@@ -94,8 +96,22 @@ function Project() {
             <BoardView viewId={viewId} />
           )}
           {vId && selectedView?.type == "List" && <ListView viewId={viewId} />}
+          <Box
+            style={{
+              position: "absolute",
+              right: "2rem",
+              bottom: "0.5rem",
+              color: "white",
+              zIndex: "2",
+            }}
+          >
+            <Button variant="secondary" onClick={() => setGraphOpen(true)}>Nav</Button>
+          </Box>
         </Box>
       </motion.main>
+      <AnimatePresence>
+        {graphOpen && <Nav setGraphOpen={setGraphOpen} />}
+      </AnimatePresence>
     </>
   );
 }
