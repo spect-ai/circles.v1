@@ -12,7 +12,7 @@ interface Props {
 const Card = styled(Box)<{ mode: string }>`
   display: flex;
   flex-direction: column;
-  width: 60vw;
+  max-width: 60vw;
   min-height: 12vh;
   margin-top: 1rem;
   padding: 0.4rem 1rem 0;
@@ -52,7 +52,7 @@ const GigInfo = styled(Box)`
 const TextBox = styled(Box)`
   display: flex;
   flex-wrap: wrap;
-  width: 50vw;
+  margin-right: 7rem;
 `;
 
 const ScrollContainer = styled(Box)`

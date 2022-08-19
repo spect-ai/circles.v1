@@ -12,7 +12,6 @@ import {
   Text,
   Button,
   Tag,
-  IconCheck,
   Textarea,
 } from "degen";
 import Link from "next/link";
