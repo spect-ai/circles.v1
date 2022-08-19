@@ -34,6 +34,8 @@ export default function RetroMembers({
   retroBudget,
   retroDetails,
 }: Props) {
+  const [loading, setLoading] = useState(false);
+
   const [memberStats, setmemberStats] = useState<MemberDetails[] | undefined>();
   const router = useRouter();
   const { circle, fetchCircle } = useCircle();
@@ -118,8 +120,10 @@ export default function RetroMembers({
             </Box>
             <Box width="full">
               <PrimaryButton
+                loading={loading}
                 onClick={async () => {
                   console.log({ memberStats, retroBudget, retroDetails });
+                  setLoading(true);
                   const res = await createRetro({
                     circle: circle?.id,
                     strategy: retroDetails?.strategy.value,
@@ -133,6 +137,7 @@ export default function RetroMembers({
                     memberStats: memberStats?.filter((m) => m.isChecked),
                   });
                   console.log({ res });
+                  setLoading(false);
                   void fetchCircle();
                   void router.push(`/${circle?.slug}?retroSlug=${res?.slug}`);
                   if (res) {

@@ -6,7 +6,7 @@ export const joinCircleFromInvite = async (
 ) => {
   try {
     const response = await fetch(
-      `${process.env.API_HOST}/circle/${circleId}/joinUsingInvitation`,
+      `${process.env.API_HOST}/circle/v1/${circleId}/joinUsingInvitation`,
       {
         method: "PATCH",
         headers: {
@@ -27,7 +27,7 @@ export const joinCircleFromInvite = async (
 
 export const joinCircleFromDiscord = async (circleId: string) => {
   const res = await fetch(
-    `${process.env.API_HOST}/circle/${circleId}/joinUsingDiscord`,
+    `${process.env.API_HOST}/circle/v1/${circleId}/joinUsingDiscord`,
     {
       method: "PATCH",
       headers: {

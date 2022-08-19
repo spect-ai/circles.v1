@@ -3,13 +3,14 @@ import PrimaryButton from "@/app/common/components/PrimaryButton";
 import Select from "@/app/common/components/Select";
 import { Box, IconArrowRight, Input, Stack, Text } from "degen";
 import { motion } from "framer-motion";
-import React from "react";
+import React, { useState } from "react";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 
 type Props = {
   setStep: (step: number) => void;
   setDetails: (details: RetroForm) => void;
+  details?: RetroForm;
 };
 
 export type RetroForm = {
@@ -26,20 +27,14 @@ export const slideIn = {
   exit: { x: 400, opacity: 0 },
 };
 
-export default function RetroDetails({ setStep, setDetails }: Props) {
+export default function RetroDetails({ setStep, setDetails, details }: Props) {
   const {
     register,
     handleSubmit,
     control,
     formState: { errors },
-    trigger,
   } = useForm<RetroForm>({
-    defaultValues: {
-      strategy: {
-        label: "Normal Voting",
-        value: "Normal Voting",
-      },
-    },
+    defaultValues: details,
   });
   const onSubmit: SubmitHandler<RetroForm> = (data) => {
     console.log({ data });

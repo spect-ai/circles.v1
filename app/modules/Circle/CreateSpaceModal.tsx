@@ -35,7 +35,7 @@ function CreateSpaceModal() {
 
   const { mutateAsync, isLoading } = useMutation(
     (circle: CreateWorkspaceDto) => {
-      return fetch(`${process.env.API_HOST}/circle`, {
+      return fetch(`${process.env.API_HOST}/circle/v1`, {
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
