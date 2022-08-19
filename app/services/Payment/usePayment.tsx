@@ -1,20 +1,38 @@
 import PrimaryButton from "@/app/common/components/PrimaryButton";
+import { useGlobal } from "@/app/context/globalContext";
 import { Stack } from "degen";
 import Link from "next/link";
 import { toast } from "react-toastify";
 import { useAccount, useNetwork } from "wagmi";
+import { gnosisPayment } from "../Gnosis";
 import useDistributor from "./useDistributor";
 import useERC20 from "./useERC20";
 
 declare let window: any;
+
+interface BatchPayParams {
+  paymentType: string;
+  batchPayType: "card" | "retro";
+  chainId: string;
+  userAddresses: string[];
+  amounts: number[];
+  tokenAddresses: string[];
+  cardIds: string[];
+  circleId: string;
+}
+
+interface PayUsingGnosisParams extends BatchPayParams {
+  safeAddress: string;
+}
 
 export default function usePaymentGateway(
   handleStatusUpdate?: (status: any, txHash: string) => Promise<void>
 ) {
   const { distributeEther, distributeTokens } = useDistributor();
   const { hasBalances } = useERC20();
-  const { data } = useAccount();
+  const { data: account } = useAccount();
   const { activeChain, switchNetworkAsync } = useNetwork();
+  const { connectedUser } = useGlobal();
   async function handlePaymentError(
     err: any,
     expectedNetwork: string,
@@ -35,7 +53,11 @@ export default function usePaymentGateway(
     // );
     else {
       const [sufficientBalance, insufficientBalanceTokenAddress] =
-        await hasBalances(tokenAddresses, tokenValues, data?.address as string);
+        await hasBalances(
+          tokenAddresses,
+          tokenValues,
+          account?.address as string
+        );
       console.log(sufficientBalance, insufficientBalanceTokenAddress);
       if (!sufficientBalance) {
         // notify(
@@ -52,51 +74,71 @@ export default function usePaymentGateway(
     }
   }
 
-  async function executeBatchPay(
-    type: string,
-    chainId: string,
-    userAddresses: string[],
-    amounts: number[],
-    tokenAddresses: string[]
-  ) {
+  async function executeBatchPay({
+    paymentType,
+    chainId,
+    tokenAddresses,
+    userAddresses,
+    amounts,
+    cardIds,
+    circleId,
+    batchPayType,
+  }: BatchPayParams) {
     let tx;
-    if (type === "tokens") {
-      tx = await distributeTokens(
+    if (paymentType === "tokens") {
+      console.log({ amounts });
+      tx = await distributeTokens({
+        contributors: userAddresses,
+        values: amounts,
+        chainId,
         tokenAddresses,
-        userAddresses,
-        amounts,
-        "",
-        chainId
-      );
-    } else if (type === "currency") {
-      tx = await distributeEther(userAddresses, amounts, "", chainId);
+        gnosis: false,
+        callerId: connectedUser,
+        type: batchPayType,
+        cardIds,
+        circleId,
+      });
+    } else if (paymentType === "currency") {
+      tx = await distributeEther({
+        contributors: userAddresses,
+        values: amounts,
+        chainId,
+        gnosis: false,
+        callerId: connectedUser,
+        type: batchPayType,
+        cardIds,
+        circleId,
+      });
     }
     return tx;
   }
 
-  async function batchPay(
-    chainId: string,
-    type: "tokens" | "currency",
-    ethAddresses: Array<string>,
-    tokenValues: Array<number>,
-    tokenAddresses: Array<string>,
-    cardIds?: string[],
-    epochId?: string
-  ) {
+  async function batchPay({
+    paymentType,
+    chainId,
+    tokenAddresses,
+    userAddresses,
+    amounts,
+    cardIds,
+    circleId,
+    batchPayType,
+  }: BatchPayParams) {
     try {
       if (activeChain?.id.toString() !== chainId) {
         switchNetworkAsync && (await switchNetworkAsync(parseInt(chainId)));
       }
-      console.log({ ethAddresses, tokenValues, type, chainId });
-      const tx = await executeBatchPay(
-        type,
+      const tx = await executeBatchPay({
+        paymentType,
         chainId,
-        ethAddresses,
-        tokenValues,
-        tokenAddresses
-      );
+        tokenAddresses,
+        userAddresses,
+        amounts,
+        cardIds,
+        circleId,
+        batchPayType,
+      });
       if (handleStatusUpdate) {
-        await handleStatusUpdate(epochId || cardIds, tx.transactionHash);
+        await handleStatusUpdate(cardIds, tx.transactionHash);
       }
       // notify('Payment done succesfully!', 'success');
       toast(
@@ -116,7 +158,7 @@ export default function usePaymentGateway(
       );
       return tx.transactionHash;
     } catch (err: any) {
-      void handlePaymentError(err, chainId, tokenAddresses, tokenValues);
+      void handlePaymentError(err, chainId, tokenAddresses, amounts);
       console.log(err);
       // toast.error(err.message, {
       //   theme: "dark",
@@ -126,7 +168,55 @@ export default function usePaymentGateway(
     }
   }
 
+  async function payUsingGnosis({
+    paymentType,
+    batchPayType,
+    chainId,
+    amounts,
+    userAddresses,
+    tokenAddresses,
+    safeAddress,
+    cardIds,
+    circleId,
+  }: PayUsingGnosisParams) {
+    console.log({ cardIds, safeAddress });
+    if (paymentType === "tokens") {
+      console.log({ amounts });
+      const data = await distributeTokens({
+        contributors: userAddresses,
+        values: amounts,
+        chainId,
+        type: batchPayType,
+        cardIds,
+        circleId,
+        gnosis: true,
+        callerId: connectedUser,
+        tokenAddresses,
+      });
+      const res = await gnosisPayment(safeAddress, data, chainId);
+      if (res)
+        toast.success("Transaction sent to your safe", { theme: "dark" });
+      else toast.error("Error Occurred while sending your transation to safe");
+    } else if (paymentType === "currency") {
+      const contractdata = await distributeEther({
+        contributors: userAddresses,
+        values: amounts,
+        chainId,
+        type: batchPayType,
+        cardIds,
+        circleId,
+        gnosis: true,
+        callerId: connectedUser,
+      });
+      const res = await gnosisPayment(safeAddress, contractdata, chainId);
+      if (res)
+        toast.success("Transaction sent to your safe", { theme: "dark" });
+      else toast.error("Error Occurred while sending your transation to safe");
+    }
+  }
+
   return {
     batchPay,
+    payUsingGnosis,
   };
 }

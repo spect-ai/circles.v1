@@ -14,7 +14,9 @@ interface Props {
   animation?: "fade" | "slide" | "none";
   shape?: "circle" | "square";
   tone?: "red" | "accent" | "green" | "blue";
+  type?: "button" | "submit" | "reset";
   tourId?: string;
+  suffix?: ReactNodeNoStrings;
 }
 
 export const slide = {
@@ -55,7 +57,10 @@ const PrimaryButton: FC<Props> = ({
   children,
   animation = "none",
   tone = "accent",
+  type = "button",
+  suffix,
   tourId,
+  shape = "square",
 }) => {
   return (
     <motion.div
@@ -77,6 +82,9 @@ const PrimaryButton: FC<Props> = ({
         center
         onClick={onClick}
         tone={tone as any}
+        type={type}
+        suffix={suffix}
+        // shape={shape}
       >
         {children}
       </Button>

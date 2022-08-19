@@ -3,13 +3,15 @@ import Table from "@/app/common/components/Table";
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
 import { updatePaymentInfo } from "@/app/services/Payment";
 import usePaymentGateway from "@/app/services/Payment/usePayment";
+import { updateRetro } from "@/app/services/Retro";
 import { CircleType } from "@/app/types";
 import { QuestionCircleFilled } from "@ant-design/icons";
-import { Avatar, Box, Button, Stack, Text } from "degen";
+import { Avatar, Box, Button, Stack, Text, useTheme } from "degen";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
 import { useQuery } from "react-query";
 import { Tooltip } from "react-tippy";
+import { toast } from "react-toastify";
 import { useLocalProject } from "../Context/LocalProjectContext";
 import { useLocalCard } from "../CreateCardModal/hooks/LocalCardContext";
 import { useBatchPayContext } from "./context/batchPayContext";
@@ -17,8 +19,9 @@ import { ScrollContainer } from "./SelectCards";
 
 export default function CurrencyPayment() {
   const { getMemberDetails } = useModalOptions();
-  const { batchPay } = usePaymentGateway();
+  const { batchPay, payUsingGnosis } = usePaymentGateway();
   const [loading, setLoading] = useState(false);
+  const [gnosisLoading, setGnosisLoading] = useState(false);
   const { batchPayInfo, setStep, currencyCards, tokenCards, setIsOpen } =
     useBatchPayContext();
 
@@ -30,6 +33,8 @@ export default function CurrencyPayment() {
   const { data: circle } = useQuery<CircleType>(["circle", cId], {
     enabled: false,
   });
+
+  const { mode } = useTheme();
 
   const formatRows = () => {
     const rows: any[] = [];
@@ -82,6 +87,7 @@ export default function CurrencyPayment() {
                   </Text>
                 </Stack>
               }
+              theme={mode}
             >
               <QuestionCircleFilled style={{ fontSize: "1rem" }} />
             </Tooltip>
@@ -108,32 +114,56 @@ export default function CurrencyPayment() {
               onClick={async () => {
                 setLoading(true);
                 try {
-                  const txnHash = await batchPay(
-                    circle?.defaultPayment.chain.chainId || "",
-                    "currency",
-                    getEthAddress() as string[],
-                    batchPayInfo?.currency.values as number[],
-                    []
-                  );
+                  const txnHash = await batchPay({
+                    chainId: circle?.defaultPayment.chain.chainId || "",
+                    paymentType: "currency",
+                    batchPayType: batchPayInfo?.retroId ? "retro" : "card",
+                    userAddresses: getEthAddress() as string[],
+                    amounts: batchPayInfo?.currency.values as number[],
+                    tokenAddresses: [""],
+                    cardIds: batchPayInfo?.retroId
+                      ? [batchPayInfo.retroId]
+                      : (currencyCards as string[]),
+                    circleId: circle?.id || "",
+                  });
                   console.log({ txnHash });
                   if (txnHash) {
-                    const res = await updatePaymentInfo(
-                      currencyCards as string[],
-                      txnHash
-                    );
-                    console.log({ res });
-                    if (res) {
-                      updateProject && updateProject(res);
-                      setCard && setCard(res.cards[cardId]);
+                    if (!batchPayInfo?.retroId) {
+                      const res = await updatePaymentInfo(
+                        currencyCards as string[],
+                        txnHash
+                      );
+                      console.log({ res });
+                      if (res) {
+                        updateProject && updateProject(res);
+                        setCard && setCard(res.cards[cardId]);
 
-                      setLoading(false);
-                      if (tokenCards && tokenCards?.length > 0) {
-                        setStep(2);
+                        setLoading(false);
+                        if (tokenCards && tokenCards?.length > 0) {
+                          setStep(2);
+                        } else {
+                          setStep(0);
+                          setIsOpen(false);
+                        }
                       } else {
-                        setStep(0);
-                        setIsOpen(false);
+                        setLoading(false);
                       }
                     } else {
+                      const retroUpdateRes = await updateRetro(
+                        batchPayInfo?.retroId || "",
+                        {
+                          reward: {
+                            transactionHash: txnHash,
+                          },
+                          status: {
+                            paid: true,
+                          },
+                        }
+                      );
+                      if (retroUpdateRes) {
+                        toast.success("Retro payout successful!");
+                      }
+                      setIsOpen(false);
                       setLoading(false);
                     }
                   }
@@ -147,6 +177,36 @@ export default function CurrencyPayment() {
               Pay
             </PrimaryButton>
           </Box>
+          {Object.keys(circle?.safeAddresses || {}).length > 0 && (
+            <Box width="1/2">
+              <PrimaryButton
+                loading={gnosisLoading}
+                onClick={async () => {
+                  setGnosisLoading(true);
+                  await payUsingGnosis({
+                    chainId: circle?.defaultPayment.chain.chainId || "",
+                    paymentType: "currency",
+                    batchPayType: batchPayInfo?.retroId ? "retro" : "card",
+                    userAddresses: getEthAddress() as string[],
+                    amounts: batchPayInfo?.currency.values as number[],
+                    tokenAddresses: [""],
+                    safeAddress:
+                      circle?.safeAddresses[
+                        Object.keys(circle?.safeAddresses || {})[0]
+                      ][0] || "",
+                    cardIds: batchPayInfo?.retroId
+                      ? [batchPayInfo.retroId]
+                      : (currencyCards as string[]),
+                    circleId: circle?.id || "",
+                  });
+                  setGnosisLoading(false);
+                  setIsOpen(false);
+                }}
+              >
+                Pay Using Gnosis
+              </PrimaryButton>
+            </Box>
+          )}
         </Stack>
       </Box>
     </Box>

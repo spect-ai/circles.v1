@@ -6,7 +6,6 @@ import {
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { Registry } from "@/app/types";
 import { Box, IconEth, Input, Stack, Tag, Text } from "degen";
-import { motion } from "framer-motion";
 import { useRouter } from "next/router";
 import React, { memo, useState } from "react";
 import { useQuery } from "react-query";
@@ -24,6 +23,7 @@ function CardReward() {
     onCardUpdate,
     fetchCardActions,
     card,
+    cardId,
   } = useLocalCard();
   const { canTakeAction } = useRoleGate();
 
@@ -50,7 +50,7 @@ function CardReward() {
           chain.chainId !== card?.reward.chain.chainId
         ) {
           void onCardUpdate();
-          void fetchCardActions();
+          cardId && void fetchCardActions();
         }
         setModalOpen(false);
       }}
@@ -58,20 +58,17 @@ function CardReward() {
       <Box height="96">
         <Box padding="8">
           <Stack>
-            <Text size="extraLarge">Chain</Text>
+            <Text size="extraLarge" weight="semiBold">
+              Chain
+            </Text>
             <Stack direction="horizontal">
               {getFlattenedNetworks(registry as Registry)?.map((aChain) => (
-                <motion.button
+                <Box
                   key={aChain.name}
-                  style={{
-                    background: "transparent",
-                    border: "none",
-                    cursor: "pointer",
-                    padding: "0rem",
-                  }}
                   onClick={() => {
                     setChain(aChain);
                   }}
+                  cursor="pointer"
                 >
                   <Tag
                     hover
@@ -87,24 +84,21 @@ function CardReward() {
                       {aChain.name}
                     </Text>
                   </Tag>
-                </motion.button>
+                </Box>
               ))}
             </Stack>
-            <Text size="extraLarge">Token</Text>
+            <Text size="extraLarge" weight="semiBold">
+              Token
+            </Text>
             <Stack direction="horizontal">
               {getFlattenedCurrencies(registry as Registry, chain.chainId).map(
                 (aToken) => (
-                  <motion.button
+                  <Box
                     key={aToken.address}
-                    style={{
-                      background: "transparent",
-                      border: "none",
-                      cursor: "pointer",
-                      padding: "0rem",
-                    }}
                     onClick={() => {
                       setToken(aToken);
                     }}
+                    cursor="pointer"
                   >
                     <Tag
                       hover
@@ -124,11 +118,13 @@ function CardReward() {
                         {aToken.symbol}
                       </Text>
                     </Tag>
-                  </motion.button>
+                  </Box>
                 )
               )}
             </Stack>
-            <Text size="extraLarge">Value</Text>
+            <Text size="extraLarge" weight="semiBold">
+              Value
+            </Text>
             <Input
               label=""
               units={token.symbol}

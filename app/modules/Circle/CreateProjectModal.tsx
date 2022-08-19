@@ -13,12 +13,13 @@ import { useRouter } from "next/router";
 import Loader from "@/app/common/components/Loader";
 import Modal from "@/app/common/components/Modal";
 import Select, { option } from "@/app/common/components/Select";
-import { useMutation, useQuery } from "react-query";
-import { CircleType, Template } from "@/app/types";
+import { useQuery } from "react-query";
+import { Template } from "@/app/types";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { Tooltip } from "react-tippy";
 import { QuestionCircleFilled } from "@ant-design/icons";
 import { createProject } from "@/app/services/Project";
+import { useCircle } from "./CircleContext";
 
 function CreateProjectModal() {
   const [modalOpen, setModalOpen] = useState(false);
@@ -26,9 +27,7 @@ function CreateProjectModal() {
   const close = () => setModalOpen(false);
   const router = useRouter();
   const { circle: cId } = router.query;
-  const { data: circle, refetch } = useQuery<CircleType>(["circle", cId], {
-    enabled: false,
-  });
+  const { circle, fetchCircle } = useCircle();
   const { data: templates, refetch: fetchTemplate } = useQuery<option[]>(
     ["projectTemplates", cId],
     () =>
@@ -68,10 +67,9 @@ function CreateProjectModal() {
     });
     setIsLoading(false);
     if (data) {
-      // void refetch();
       void router.push(`/${cId}/${data.slug}`);
       void close();
-      void refetch();
+      fetchCircle();
     }
   };
 
@@ -142,7 +140,11 @@ function CreateProjectModal() {
                   />
                 )}
                 <Box width="full" marginTop="4">
-                  <PrimaryButton onClick={onSubmit} loading={isLoading}>
+                  <PrimaryButton
+                    onClick={onSubmit}
+                    loading={isLoading}
+                    disabled={!name}
+                  >
                     Create Project
                   </PrimaryButton>
                 </Box>

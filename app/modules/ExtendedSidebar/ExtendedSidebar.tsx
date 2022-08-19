@@ -4,12 +4,12 @@ import { motion } from "framer-motion";
 import { useRouter } from "next/router";
 import ExploreSidebar from "./ExploreSidebar";
 import CircleSidebar from "./CircleSidebar";
-import ProfileModal from "../Header/ProfileModal";
-import ConnectModal from "../Header/ConnectModal";
+import ConnectModal from "../Sidebar/ProfileModal/ConnectModal";
 import { useQuery } from "react-query";
 import { UserType } from "@/app/types";
 import { toast } from "react-toastify";
 import { useGlobal } from "@/app/context/globalContext";
+import ProfileButton from "../Sidebar/ProfileModal";
 
 const getUser = async () => {
   const res = await fetch(`${process.env.API_HOST}/user/me`, {
@@ -58,7 +58,7 @@ function ExtendedSidebar(): ReactElement {
       >
         {!cId && <ExploreSidebar />}
         {cId && <CircleSidebar />}
-        {connectedUser && <ProfileModal />}
+        {connectedUser && <ProfileButton />}
         {!connectedUser && cId && <ConnectModal />}
       </Box>
     </motion.div>

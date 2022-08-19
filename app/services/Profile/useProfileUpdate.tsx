@@ -4,6 +4,8 @@ import { toast } from "react-toastify";
 interface UpdateProfileDTO {
   username: string;
   avatar: string;
+  bio?: string;
+  skills?: string[];
   discordId?: string;
   githubId?: string;
 }
@@ -21,7 +23,6 @@ export default function useProfileUpdate() {
     });
     if (res.ok) {
       const data = await res.json();
-      console.log({ data });
       queryClient.setQueryData("getMyUser", data);
       return true;
     } else {

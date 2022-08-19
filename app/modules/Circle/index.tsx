@@ -1,20 +1,13 @@
-import Card from "@/app/common/components/Card";
 import Loader from "@/app/common/components/Loader";
-import { useGlobal } from "@/app/context/globalContext";
 import useCircleOnboarding from "@/app/services/Onboarding/useCircleOnboarding";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
-import { CircleType } from "@/app/types";
-import { Box, Stack, Text } from "degen";
-import { useRouter } from "next/router";
-import React from "react";
-import { Col, Container, Row } from "react-grid-system";
-import { useQuery } from "react-query";
+import { Box, useTheme } from "degen";
 import { ToastContainer } from "react-toastify";
 import styled from "styled-components";
-import CircleMembers from "./CircleMembers";
+import RetroPage from "../Retro";
+import { useCircle } from "./CircleContext";
 import Onboarding from "./CircleOnboarding";
-import CreateProjectModal from "./CreateProjectModal";
-import CreateSpaceModal from "./CreateSpaceModal";
+import CircleOverview from "./CircleOverview";
 
 const BoxContainer = styled(Box)`
   width: calc(100vw - 4rem);
@@ -28,16 +21,13 @@ const BoxContainer = styled(Box)`
 `;
 
 export default function Circle() {
-  const router = useRouter();
-  const { circle: cId } = router.query;
-  const { data: circle, isLoading } = useQuery<CircleType>(["circle", cId], {
-    enabled: false,
-  });
+  const { circle, isLoading, memberDetails, page } = useCircle();
   const { canDo } = useRoleGate();
   const { onboarded } = useCircleOnboarding();
-  const { isSidebarExpanded } = useGlobal();
 
-  if (isLoading || !circle) {
+  const { mode } = useTheme();
+
+  if (isLoading || !circle || !memberDetails) {
     return <Loader text="...." loading />;
   }
 
@@ -46,103 +36,16 @@ export default function Circle() {
       {!onboarded && canDo(["steward"]) && <Onboarding />}
       <ToastContainer
         toastStyle={{
-          backgroundColor: "rgb(20,20,20)",
-          color: "rgb(255,255,255,0.7)",
+          backgroundColor: `${
+            mode === "dark" ? "rgb(20,20,20)" : "rgb(240,240,240)"
+          }`,
+          color: `${
+            mode === "dark" ? "rgb(255,255,255,0.7)" : "rgb(20,20,20,0.7)"
+          }`,
         }}
       />
-      <Stack direction="horizontal">
-        <Box
-          style={{
-            width: isSidebarExpanded ? "55%" : "75%",
-          }}
-          transitionDuration="500"
-        >
-          <Stack>
-            <Text size="headingTwo" weight="semiBold" ellipsis>
-              Description
-            </Text>
-
-            <Text>{circle?.description}</Text>
-            <Stack direction="horizontal">
-              <Text size="headingTwo" weight="semiBold" ellipsis>
-                Projects
-              </Text>
-              {canDo(["steward"]) && <CreateProjectModal />}
-            </Stack>
-            <Container
-              style={{
-                padding: "0px",
-                margin: "0px",
-              }}
-            >
-              <Row>
-                {circle?.projects?.map((project) => (
-                  <Col sm={6} md={4} lg={3} key={project.id}>
-                    <Card
-                      onClick={() =>
-                        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-                        router.push(`${window.location.href}/${project.slug}`)
-                      }
-                      height="32"
-                    >
-                      <Text align="center">{project.name}</Text>
-                      <Text variant="label" align="center">
-                        {project.description}
-                      </Text>
-                    </Card>
-                  </Col>
-                ))}
-                {!circle.projects.length && (
-                  <Box marginLeft="4">
-                    <Text variant="label">No Projects created yet</Text>
-                  </Box>
-                )}
-              </Row>
-            </Container>
-            <Stack direction="horizontal">
-              <Text size="headingTwo" weight="semiBold" ellipsis>
-                Workstreams
-              </Text>
-              {canDo(["steward"]) && <CreateSpaceModal />}
-            </Stack>
-            <Container style={{ padding: "0px", margin: "0px" }}>
-              <Row>
-                {circle?.children?.map((space) => (
-                  <Col sm={6} md={4} lg={3} key={space.id}>
-                    <Card
-                      onClick={() =>
-                        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-                        router.push(`/${space.slug}`)
-                      }
-                      height="32"
-                    >
-                      <Text align="center">{space.name}</Text>
-                      <Text variant="label" align="center">
-                        {space.description}
-                      </Text>
-                    </Card>
-                  </Col>
-                ))}
-                {!circle.children.length && (
-                  <Box marginLeft="4">
-                    <Text variant="label">No Workstreams created yet</Text>
-                  </Box>
-                )}
-                {/* <Col sm={6} md={4} lg={3}>
-            </Col> */}
-              </Row>
-            </Container>
-          </Stack>
-        </Box>
-        <Box
-          style={{
-            width: isSidebarExpanded ? "25%" : "25%",
-          }}
-          transitionDuration="500"
-        >
-          <CircleMembers />
-        </Box>
-      </Stack>
+      {page === "Overview" && <CircleOverview />}
+      {page === "Retro" && <RetroPage />}
     </BoxContainer>
   );
 }

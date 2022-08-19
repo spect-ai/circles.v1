@@ -1,6 +1,11 @@
 import queryClient from "@/app/common/utils/queryClient";
 import { useGlobal } from "@/app/context/globalContext";
-import { CardType, ProjectCardActionsType, ProjectType } from "@/app/types";
+import {
+  CardType,
+  ProjectCardActionsType,
+  ProjectType,
+  Filter,
+} from "@/app/types";
 import { useRouter } from "next/router";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useQuery } from "react-query";
@@ -27,6 +32,8 @@ type LocalProjectContextType = {
   setIsApplyModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
   isSubmitModalOpen: boolean;
   setIsSubmitModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  currentFilter: Filter;
+  setCurrentFilter: React.Dispatch<React.SetStateAction<Filter>>;
 };
 
 export const LocalProjectContext = createContext<LocalProjectContextType>(
@@ -73,6 +80,7 @@ export function useProviderLocalProject() {
   const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false);
 
   const [selectedCard, setSelectedCard] = useState({} as CardType | null);
+  const [currentFilter, setCurrentFilter] = useState({} as Filter);
 
   const updateProject = (project: ProjectType) => {
     queryClient.setQueryData(["project", pId], project);
@@ -84,6 +92,10 @@ export function useProviderLocalProject() {
       void fetchQuickActions();
     }
   }, [connectedUser, pId]);
+
+  useEffect(() => {
+    setCurrentFilter({} as Filter);
+  }, [pId]);
 
   useEffect(() => {
     if (pId) {
@@ -126,6 +138,8 @@ export function useProviderLocalProject() {
     setIsApplyModalOpen,
     isSubmitModalOpen,
     setIsSubmitModalOpen,
+    currentFilter,
+    setCurrentFilter,
   };
 }
 

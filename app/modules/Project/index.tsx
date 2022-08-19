@@ -1,7 +1,8 @@
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
-import { Box } from "degen";
-import React, { memo } from "react";
+import { Box, useTheme } from "degen";
+import React, { memo, useEffect } from "react";
 import { useLocalProject } from "./Context/LocalProjectContext";
+import { useGlobal } from "@/app/context/globalContext";
 import useProjectOnboarding from "@/app/services/Onboarding/useProjectOnboarding";
 import CreateSubmission from "@/app/modules/Card/Submission/CreateSubmission";
 
@@ -29,19 +30,35 @@ function Project() {
   } = useLocalProject();
   const { canDo } = useRoleGate();
   const { onboarded } = useProjectOnboarding();
+  const { setViewName } = useGlobal();
 
   const router = useRouter();
-  const { card: tId } = router.query;
+  const { card: tId, view: vId } = router.query;
+
+  const { mode } = useTheme();
 
   if (tId || !project) {
     return null;
   }
+
+  let viewId = "";
+
+  if (vId !== undefined) {
+    viewId = vId as string;
+    setViewName(viewId);
+  } else {
+    viewId = "";
+    setViewName(viewId);
+  }
+
+  const selectedView = project.viewDetails?.[viewId];
+
   return (
     <>
       <AnimatePresence>
-        {batchPayModalOpen && selectedCard && (
+        {/* {batchPayModalOpen && selectedCard && (
           <BatchPay card={selectedCard} setIsOpen={setBatchPayModalOpen} />
-        )}
+        )} */}
         {isApplyModalOpen && selectedCard && (
           <Apply setIsOpen={setIsApplyModalOpen} cardId={selectedCard.id} />
         )}
@@ -62,13 +79,21 @@ function Project() {
         <Box width="full">
           <ToastContainer
             toastStyle={{
-              backgroundColor: "rgb(20,20,20)",
-              color: "rgb(255,255,255,0.7)",
+              backgroundColor: `${
+                mode === "dark" ? "rgb(20,20,20)" : "rgb(240,240,240)"
+              }`,
+              color: `${
+                mode === "dark" ? "rgb(255,255,255,0.7)" : "rgb(20,20,20,0.7)"
+              }`,
             }}
           />
           {!onboarded && canDo(["steward"]) && <Onboarding />}
-          {view === 0 && <BoardView />}
-          {view === 1 && <ListView />}
+          {!vId && view === 0 && <BoardView viewId={""} />}
+          {!vId && view === 1 && <ListView viewId={""} />}
+          {vId && selectedView?.type == "Board" && (
+            <BoardView viewId={viewId} />
+          )}
+          {vId && selectedView?.type == "List" && <ListView viewId={viewId} />}
         </Box>
       </motion.main>
     </>

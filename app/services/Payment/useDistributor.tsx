@@ -4,6 +4,22 @@ import DistributorABI from "@/app/common/contracts/mumbai/distributor.json";
 import { useRouter } from "next/router";
 import { useQuery } from "react-query";
 import { Registry } from "@/app/types";
+import { AbiCoder } from "ethers/lib/utils";
+
+interface DistributeEtherParams {
+  contributors: any;
+  values: any[];
+  chainId: string;
+  cardIds: string[];
+  circleId: string;
+  gnosis: boolean;
+  type: "card" | "retro";
+  callerId: string;
+}
+
+interface DistributeTokenParams extends DistributeEtherParams {
+  tokenAddresses: string[];
+}
 
 export default function useDistributor() {
   const { isCurrency, decimals } = useERC20();
@@ -16,9 +32,10 @@ export default function useDistributor() {
   function getDistributorContract(chainId: string) {
     if (!registry) return null;
     const provider = new ethers.providers.Web3Provider(window.ethereum as any);
+    console.log(registry[chainId].distributorAddress as string);
     return new ethers.Contract(
       registry[chainId].distributorAddress as string,
-      DistributorABI.abi,
+      DistributorABI,
       provider.getSigner()
     );
   }
@@ -38,12 +55,16 @@ export default function useDistributor() {
     return contract?.pendingApprovals(addresses, valuesInWei);
   }
 
-  async function distributeEther(
-    contributors: any,
-    values: any[],
-    id: string,
-    chainId: string
-  ) {
+  async function distributeEther({
+    chainId,
+    contributors,
+    values,
+    cardIds,
+    circleId,
+    type,
+    gnosis,
+    callerId,
+  }: DistributeEtherParams) {
     const contract = getDistributorContract(chainId);
     const valuesInWei = [];
     const contributorsWithPositiveAllocation: any[] = [];
@@ -61,6 +82,30 @@ export default function useDistributor() {
     const overrides = {
       value: ethers.utils.parseEther(totalValue.toString()),
     };
+    console.log({
+      contributorsWithPositiveAllocation,
+      valuesInWei,
+      overrides,
+      gnosis,
+      chainId,
+      callerId,
+      circleId,
+    });
+    const encoder = new AbiCoder();
+    const id = encoder.encode(
+      ["string", "string", "string", "string[]"],
+      [callerId, circleId, type, cardIds]
+    );
+    if (gnosis) {
+      const data = await contract?.populateTransaction.distributeEther(
+        contributorsWithPositiveAllocation,
+        valuesInWei,
+        id,
+        overrides
+      );
+      return data;
+    }
+
     const tx = await contract?.distributeEther(
       contributorsWithPositiveAllocation,
       valuesInWei,
@@ -101,15 +146,19 @@ export default function useDistributor() {
     return numDecimals;
   }
 
-  async function distributeTokens(
-    tokenAddresses: string[],
-    recipients: string[],
-    values: number[],
-    id: string,
-    chainId: string
-  ) {
+  async function distributeTokens({
+    chainId,
+    values,
+    tokenAddresses,
+    contributors,
+    gnosis,
+    callerId,
+    cardIds,
+    circleId,
+    type,
+  }: DistributeTokenParams) {
     const { filteredTokenAddresses, filteredRecipients, filteredValues } =
-      filterInvalidValues(tokenAddresses, recipients, values);
+      filterInvalidValues(tokenAddresses, contributors, values);
     const numDecimals = await getDecimals(filteredTokenAddresses);
     console.log({ numDecimals });
     const valuesInWei = filteredValues.map((v, index) =>
@@ -118,12 +167,36 @@ export default function useDistributor() {
       )
     );
     const contract = getDistributorContract(chainId);
-    console.log({ contract });
+
+    console.log({
+      filteredTokenAddresses,
+      filteredRecipients,
+      valuesInWei,
+      gnosis,
+    });
+    const overrides: any = {
+      gasLimit: 1000000,
+    };
+    const encoder = new AbiCoder();
+    const id = encoder.encode(
+      ["string", "string", "string", "string[]"],
+      [callerId, circleId, type, cardIds]
+    );
+    if (gnosis) {
+      const data = await contract?.populateTransaction.distributeTokens(
+        filteredTokenAddresses,
+        filteredRecipients,
+        valuesInWei,
+        id
+      );
+      return data;
+    }
     const tx = await contract?.distributeTokens(
       filteredTokenAddresses,
       filteredRecipients,
       valuesInWei,
-      id
+      id,
+      overrides
     );
     return tx.wait();
   }

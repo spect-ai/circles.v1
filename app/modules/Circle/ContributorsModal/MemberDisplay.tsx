@@ -1,5 +1,14 @@
 import React, { useState } from "react";
-import { Avatar, Box, IconClose, IconPlusSmall, Stack, Tag, Text } from "degen";
+import {
+  Avatar,
+  Box,
+  IconClose,
+  IconPlusSmall,
+  Stack,
+  Tag,
+  Text,
+  useTheme,
+} from "degen";
 import styled from "styled-components";
 import { CircleType, UserType } from "@/app/types";
 import Popover from "@/app/common/components/Popover";
@@ -26,10 +35,11 @@ const Container = styled(Box)`
   }
 `;
 
-const RoleOption = styled(Box)`
+const RoleOption = styled(Box)<{ mode: string }>`
   cursor: pointer;
   &:hover {
-    background-color: rgb(255, 255, 255, 0.1);
+    background-color: ${({ mode }) =>
+      mode === "dark" ? "rgba(255, 255, 255, 0.1)" : "rgba(20, 20, 20, 0.1)"};
   }
 `;
 
@@ -45,6 +55,7 @@ export default function MemberDisplay({ member, memberDetails }: Props) {
   const { canDo } = useRoleGate();
 
   const [userRoles, setUserRoles] = useState(circle?.memberRoles[member]);
+  const { mode } = useTheme();
 
   if (!memberDetails || !circle) {
     return null;
@@ -95,6 +106,7 @@ export default function MemberDisplay({ member, memberDetails }: Props) {
               src={memberDetails[member]?.avatar}
               label=""
               placeholder={!memberDetails[member]?.avatar}
+              address={memberDetails[member]?.ethAddress}
             />
             <Text size="extraLarge" weight="semiBold">
               {memberDetails[member]?.username}
@@ -164,6 +176,7 @@ export default function MemberDisplay({ member, memberDetails }: Props) {
                           ? "2xLarge"
                           : "none"
                       }
+                      mode={mode}
                       onClick={async (e) => {
                         console.log("click");
                         if (userRoles && !userRoles.includes(role)) {

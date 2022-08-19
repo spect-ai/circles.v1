@@ -1,6 +1,15 @@
 import Link from "next/link";
 import React, { ReactElement, useEffect, useState } from "react";
-import { Avatar, Box, Button, Stack, Text } from "degen";
+import {
+  Avatar,
+  Box,
+  Button,
+  Stack,
+  Text,
+  useTheme,
+  IconMoon,
+  IconSun,
+} from "degen";
 import { useRouter } from "next/router";
 import CreateCircle from "./CreateCircleModal";
 import Logo from "@/app/common/components/Logo";
@@ -10,6 +19,8 @@ import { CircleType, UserType } from "@/app/types";
 import { useGlobal } from "@/app/context/globalContext";
 import CollapseButton from "../ExtendedSidebar/CollapseButton";
 import styled from "styled-components";
+import QuickProfilePanel from "../Profile/QuickProfile/QuickProfilePanel";
+import { AnimatePresence } from "framer-motion";
 
 export const ScrollContainer = styled(Box)`
   ::-webkit-scrollbar {
@@ -27,11 +38,25 @@ function Sidebar(): ReactElement {
   const { data: circle, isLoading } = useQuery<CircleType>(["circle", cId], {
     enabled: false,
   });
-  const { connectedUser, isSidebarExpanded } = useGlobal();
+  const {
+    connectedUser,
+    isSidebarExpanded,
+    openQuickProfile,
+    isProfilePanelExpanded,
+  } = useGlobal();
   const [showCollapseButton, setShowCollapseButton] = useState(false);
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
+
+  // eslint-disable-next-line @typescript-eslint/unbound-method
+  const { mode, setMode } = useTheme();
+
+  useEffect(() => {
+    setTimeout(() => {
+      localStorage.getItem("lightMode") && setMode("light");
+    }, 100);
+  }, []);
 
   const {
     data: myCircles,
@@ -87,6 +112,31 @@ function Sidebar(): ReactElement {
       </Box>
       <Box borderBottomWidth="0.375" paddingY="3">
         <Stack space="2">
+          {mode === "dark" ? (
+            <Button
+              shape="circle"
+              variant="secondary"
+              size="small"
+              onClick={() => {
+                localStorage.setItem("lightMode", "true");
+                setMode("light");
+              }}
+            >
+              <IconSun size="5" />
+            </Button>
+          ) : (
+            <Button
+              shape="circle"
+              variant="secondary"
+              size="small"
+              onClick={() => {
+                localStorage.removeItem("lightMode");
+                setMode("dark");
+              }}
+            >
+              <IconMoon size="5" />
+            </Button>
+          )}
           <Link href="/" passHref>
             <Button shape="circle" variant="transparent" size="small">
               <Text color="accent">
@@ -122,14 +172,24 @@ function Sidebar(): ReactElement {
       )}
       <Box paddingY="3">
         {currentUser?.id && (
-          <Avatar
-            src={currentUser?.avatar}
-            address={currentUser.ethAddress}
-            label=""
-            size="10"
-          />
+          <Button
+            size="small"
+            shape="circle"
+            variant="transparent"
+            onClick={() => openQuickProfile(currentUser.id)}
+          >
+            <Avatar
+              src={currentUser?.avatar}
+              address={currentUser.ethAddress}
+              label=""
+              size="10"
+            />
+          </Button>
         )}
       </Box>
+      <AnimatePresence>
+        {isProfilePanelExpanded && <QuickProfilePanel />}
+      </AnimatePresence>
     </Box>
   );
 }

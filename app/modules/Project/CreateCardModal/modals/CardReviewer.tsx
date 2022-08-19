@@ -1,6 +1,14 @@
 import EditTag from "@/app/common/components/EditTag";
 import ModalOption from "@/app/common/components/ModalOption";
-import { Avatar, Box, IconSearch, IconUserSolid, Input, Text } from "degen";
+import {
+  Avatar,
+  AvatarGroup,
+  Box,
+  IconSearch,
+  IconUserSolid,
+  Input,
+  Text,
+} from "degen";
 import React, { memo, useEffect, useState } from "react";
 import { useLocalCard } from "../hooks/LocalCardContext";
 import { Option } from "../constants";
@@ -12,15 +20,21 @@ import { useQuery } from "react-query";
 import { MemberDetails } from "@/app/types";
 
 function CardReviewer() {
-  const { reviewers, setReviewers, onCardUpdate, card, fetchCardActions } =
-    useLocalCard();
+  const {
+    reviewers,
+    setReviewers,
+    onCardUpdate,
+    card,
+    fetchCardActions,
+    cardId,
+  } = useLocalCard();
   const [modalOpen, setModalOpen] = useState(false);
 
   const [options, setOptions] = useState<Option[]>();
   const [filteredOptions, setFilteredOptions] = useState<Option[]>();
 
   const { canTakeAction } = useRoleGate();
-  const { getOptions, getMemberDetails } = useModalOptions();
+  const { getOptions, getMemberDetails, getMemberAvatars } = useModalOptions();
 
   const router = useRouter();
   const { circle: cId } = router.query;
@@ -41,30 +55,27 @@ function CardReviewer() {
 
   const getTagLabel = () => {
     if (!reviewers[0]) {
-      return null;
+      return "Unassigned";
     }
     let name = "";
     name += getMemberDetails(reviewers[0])?.username;
     if (reviewers.length > 1) {
-      name += ` + ${reviewers.length - 1}`;
+      // name += ` + ${reviewers.length - 1}`;
+      return "";
     }
     return name;
   };
   return (
     <EditTag
       tourId="create-card-modal-reviewer"
-      name={getTagLabel() || "Unassigned"}
+      name={getTagLabel()}
       modalTitle="Select Reviewer"
       label="Reviewer"
       modalOpen={modalOpen}
       setModalOpen={setModalOpen}
       icon={
         reviewers.length ? (
-          <Avatar
-            src={getMemberDetails(reviewers[0])?.avatar}
-            label=""
-            size="5"
-          />
+          <AvatarGroup members={getMemberAvatars(reviewers)} hover />
         ) : (
           <IconUserSolid color="accent" size="5" />
         )
@@ -72,7 +83,7 @@ function CardReviewer() {
       disabled={!canTakeAction("cardReviewer")}
       handleClose={() => {
         if (card?.reviewer !== reviewers) {
-          void fetchCardActions();
+          cardId && void fetchCardActions();
           void onCardUpdate();
         }
         setModalOpen(false);
@@ -136,6 +147,7 @@ function CardReviewer() {
                   src={item.avatar}
                   label="avatar"
                   placeholder={!item.avatar}
+                  address={item.ethAddress}
                 />
                 <Box marginRight="2" />
                 <Text

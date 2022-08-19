@@ -59,7 +59,7 @@ export default function ProjectOptions() {
           >
             <Stack direction="horizontal" space="2">
               <IconEth />
-              Batch Pay
+              Pay
             </Stack>
           </PopoverOption>
           {/* <PopoverOption

@@ -32,7 +32,7 @@ export async function updateRole(
 
 export async function removeMember(circleId: string, member: string) {
   const res = await fetch(
-    `${process.env.API_HOST}/circle/${circleId}/removeMember?member=${member}`,
+    `${process.env.API_HOST}/circle/v1/${circleId}/removeMember?member=${member}`,
     {
       method: "PATCH",
       headers: {

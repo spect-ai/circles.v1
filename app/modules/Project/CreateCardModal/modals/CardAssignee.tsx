@@ -1,13 +1,20 @@
 import EditTag from "@/app/common/components/EditTag";
 import ModalOption from "@/app/common/components/ModalOption";
-import { Avatar, Box, IconSearch, IconUserSolid, Input, Text } from "degen";
+import {
+  Avatar,
+  AvatarGroup,
+  Box,
+  IconSearch,
+  IconUserSolid,
+  Input,
+  Text,
+} from "degen";
 import React, { memo, useEffect, useState } from "react";
 import { useLocalCard } from "../hooks/LocalCardContext";
 import { Option } from "../constants";
 import { matchSorter } from "match-sorter";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
-import { id } from "ethers/lib/utils";
 import { useQuery } from "react-query";
 import { MemberDetails } from "@/app/types";
 import { useRouter } from "next/router";
@@ -106,13 +113,19 @@ export const AssigneeModal = ({
 );
 
 function CardAssignee() {
-  const { assignees, setAssignees, onCardUpdate, fetchCardActions, card } =
-    useLocalCard();
+  const {
+    assignees,
+    setAssignees,
+    onCardUpdate,
+    fetchCardActions,
+    card,
+    cardId,
+  } = useLocalCard();
   const [modalOpen, setModalOpen] = useState(false);
   const [options, setOptions] = useState<Option[]>({} as Option[]);
   const [filteredOptions, setFilteredOptions] = useState<Option[]>();
   const { canTakeAction } = useRoleGate();
-  const { getOptions, getMemberDetails } = useModalOptions();
+  const { getOptions, getMemberDetails, getMemberAvatars } = useModalOptions();
 
   const router = useRouter();
   const { circle: cId } = router.query;
@@ -133,12 +146,13 @@ function CardAssignee() {
 
   const getTagLabel = () => {
     if (!assignees[0]) {
-      return null;
+      return "Unassigned";
     }
     let name = "";
     name += getMemberDetails(assignees[0])?.username;
     if (assignees.length > 1) {
-      name += ` + ${assignees.length - 1}`;
+      // name += ` + ${assignees.length - 1}`;
+      return "";
     }
     return name;
   };
@@ -146,28 +160,23 @@ function CardAssignee() {
   return (
     <EditTag
       tourId="create-card-modal-assignee"
-      name={getTagLabel() || "Unassigned"}
+      name={getTagLabel()}
       modalTitle="Choose Assignee"
       label="Assignee"
       modalOpen={modalOpen}
       setModalOpen={setModalOpen}
       icon={
         assignees[0] ? (
-          <Avatar
-            src={getMemberDetails(assignees[0])?.avatar}
-            label=""
-            size="5"
-            address={getMemberDetails(assignees[0])?.ethAddress}
-          />
+          <AvatarGroup members={getMemberAvatars(assignees)} hover />
         ) : (
           <IconUserSolid color="accent" size="5" />
         )
       }
       disabled={!canTakeAction("cardAssignee")}
-      handleClose={async () => {
+      handleClose={() => {
         if (card?.assignee !== assignees) {
-          await onCardUpdate();
-          void fetchCardActions();
+          void onCardUpdate();
+          cardId && void fetchCardActions();
         }
         setModalOpen(false);
       }}

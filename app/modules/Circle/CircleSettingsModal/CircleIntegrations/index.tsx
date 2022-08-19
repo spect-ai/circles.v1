@@ -8,6 +8,7 @@ import React from "react";
 import { useQuery } from "react-query";
 import DiscordRoleMapping from "../DiscordRoleMapping";
 import DiscordIcon from "@/app/assets/icons/discordIcon.svg";
+import ConnectGnosis from "../ConnectGnosis";
 
 export default function CircleIntegrations() {
   const router = useRouter();
@@ -74,6 +75,13 @@ export default function CircleIntegrations() {
                 {circle?.githubRepos ? `Configure Github` : "Connect Github"}
               </PrimaryButton>
             </Link>
+          </Box>
+        </Stack>
+        <Stack space="1">
+          <Heading>Gnosis</Heading>
+          <Text>Connect your gnosis safe to pay out from your safe.</Text>
+          <Box width="1/3" marginTop="6">
+            <ConnectGnosis />
           </Box>
         </Stack>
       </Stack>

@@ -3,13 +3,11 @@ import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { Box, Input, Stack, Tag, Text } from "degen";
 import React, { useState } from "react";
 import useERC20 from "@/app/services/Payment/useERC20";
-import { Chain, CircleType, Registry } from "@/app/types";
+import { Chain, Registry } from "@/app/types";
 import { AnimatePresence } from "framer-motion";
 import { addToken } from "@/app/services/Payment";
-import { useRouter } from "next/router";
-import { useQuery } from "react-query";
 import Loader from "@/app/common/components/Loader";
-import queryClient from "@/app/common/utils/queryClient";
+import { useCircle } from "../../CircleContext";
 
 interface Props {
   chain: Chain | undefined;
@@ -21,13 +19,9 @@ export default function AddToken({ chain }: Props) {
   const [tokenSymbol, setTokenSymbol] = useState("");
   const [tokenName, setTokenName] = useState("");
   const [loading, setLoading] = useState(false);
+  const [tokenLoading, setTokenLoading] = useState(false);
   const { symbol, name } = useERC20();
-
-  const router = useRouter();
-  const { circle: cId } = router.query;
-  const { data: circle } = useQuery<CircleType>(["circle", cId], {
-    enabled: false,
-  });
+  const { circle, setRegistryData } = useCircle();
 
   return (
     <>
@@ -42,7 +36,7 @@ export default function AddToken({ chain }: Props) {
         {isOpen && (
           <Modal handleClose={() => setIsOpen(false)} title="Add Token">
             <Box padding="8">
-              {loading && <Loader loading text="Fetching" />}
+              {tokenLoading && <Loader loading text="Fetching" />}
               <Stack>
                 <Input
                   label=""
@@ -50,7 +44,7 @@ export default function AddToken({ chain }: Props) {
                   value={address}
                   onChange={async (e) => {
                     setAddress(e.target.value);
-                    setLoading(true);
+                    setTokenLoading(true);
                     console.log({ chain });
                     try {
                       console.log(await symbol(e.target.value, chain?.chainId));
@@ -60,16 +54,18 @@ export default function AddToken({ chain }: Props) {
                       setTokenName(await name(e.target.value, chain?.chainId));
                     } catch (e) {
                       console.log(e);
-                      setLoading(false);
+                      setTokenLoading(false);
                     }
-                    setLoading(false);
+                    setTokenLoading(false);
                   }}
                 />
                 <Text weight="semiBold">{tokenSymbol}</Text>
                 <Text weight="semiBold">{tokenName}</Text>
                 <PrimaryButton
+                  loading={loading}
                   disabled={!tokenSymbol}
                   onClick={async () => {
+                    setLoading(true);
                     const res = await addToken(circle?.id as string, {
                       chainId: chain?.chainId as string,
                       address,
@@ -77,7 +73,8 @@ export default function AddToken({ chain }: Props) {
                       name: tokenName,
                     });
                     console.log({ res });
-                    queryClient.setQueryData(["registry", cId], res);
+                    setLoading(false);
+                    setRegistryData(res as Registry);
                     res && setIsOpen(false);
                   }}
                 >

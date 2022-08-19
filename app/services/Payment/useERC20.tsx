@@ -5,6 +5,7 @@ import { useRouter } from "next/router";
 import { useQuery } from "react-query";
 import { toast } from "react-toastify";
 import { erc20ABI } from "wagmi";
+import { gnosisPayment } from "../Gnosis";
 
 export default function useERC20() {
   const router = useRouter();
@@ -30,10 +31,27 @@ export default function useERC20() {
     return new ethers.Contract(address, erc20ABI, provider);
   }
 
-  async function approve(chainId: string, erc20Address: string) {
+  async function approve(
+    chainId: string,
+    erc20Address: string,
+    safeAddress?: string
+  ) {
     const contract = getERC20Contract(erc20Address);
     if (!registry) return false;
     try {
+      if (safeAddress) {
+        const data = await contract.populateTransaction.approve(
+          registry[chainId].distributorAddress,
+          ethers.constants.MaxInt256
+        );
+        const res = await gnosisPayment(safeAddress, data, chainId);
+        if (res)
+          toast.success("Transaction sent to your safe", { theme: "dark" });
+        else
+          toast.error("Error Occurred while sending your transation to safe");
+
+        return;
+      }
       const tx = await contract.approve(
         registry[chainId].distributorAddress,
         ethers.constants.MaxInt256

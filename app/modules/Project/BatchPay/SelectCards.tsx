@@ -4,7 +4,7 @@ import Table from "@/app/common/components/Table";
 import { useLocalProject } from "@/app/modules/Project/Context/LocalProjectContext";
 import { BatchPayInfo, CardType } from "@/app/types";
 import { QuestionCircleFilled } from "@ant-design/icons";
-import { Box, Button, Stack, Text } from "degen";
+import { Box, Button, Stack, Text, useTheme } from "degen";
 import React, { useEffect, useState } from "react";
 import { Tooltip } from "react-tippy";
 import styled from "styled-components";
@@ -55,7 +55,12 @@ export default function SelectCards() {
   };
 
   const [checked, setChecked] = useState<boolean[]>([]);
-  const [column, setColumn] = useState({ label: "Done", value: "column-3" });
+  const [column, setColumn] = useState({
+    value: project.columnOrder[project.columnOrder.length - 1],
+    label:
+      project.columnDetails[project.columnOrder[project.columnOrder.length - 1]]
+        .name,
+  });
   const [rows, setRows] = useState<React.ReactNode[][]>(
     formatRows(project.cards, project.columnDetails[column.value]?.cards)
   );
@@ -69,15 +74,17 @@ export default function SelectCards() {
     value: column,
   }));
 
-  useEffect(() => {
-    setColumn({
-      value: project.columnOrder[project.columnOrder.length - 1],
-      label:
-        project.columnDetails[
-          project.columnOrder[project.columnOrder.length - 1]
-        ].name,
-    });
-  }, []);
+  const { mode } = useTheme();
+
+  // useEffect(() => {
+  //   setColumn({
+  //     value: project.columnOrder[project.columnOrder.length - 1],
+  //     label:
+  //       project.columnDetails[
+  //         project.columnOrder[project.columnOrder.length - 1]
+  //       ].name,
+  //   });
+  // }, []);
 
   useEffect(() => {
     if (project?.columnDetails) {
@@ -104,14 +111,14 @@ export default function SelectCards() {
           <Text variant="extraLarge" weight="semiBold">
             Select Cards
           </Text>
-
-          <Button shape="circle" size="small" variant="transparent">
-            <Tooltip
-              html={<Text>Select the cards you want to batch pay for</Text>}
-            >
+          <Tooltip
+            html={<Text>Select the cards you want to batch pay for</Text>}
+            theme={mode}
+          >
+            <Button shape="circle" size="small" variant="transparent">
               <QuestionCircleFilled style={{ fontSize: "1rem" }} />
-            </Tooltip>
-          </Button>
+            </Button>
+          </Tooltip>
         </Stack>
         <Dropdown
           options={columns}

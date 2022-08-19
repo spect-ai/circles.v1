@@ -100,16 +100,16 @@ export default function Revision({
           {newRevision ? (
             <Avatar
               label=""
-              placeholder={!currentUser?.avatar}
               src={currentUser?.avatar}
               size="8"
+              address={currentUser?.ethAddress}
             />
           ) : (
             <Avatar
               label=""
-              placeholder={!getMemberDetails(actorId as string)?.avatar}
               src={getMemberDetails(actorId as string)?.avatar}
               size="8"
+              address={getMemberDetails(actorId as string)?.ethAddress}
             />
           )}
         </Stack>
