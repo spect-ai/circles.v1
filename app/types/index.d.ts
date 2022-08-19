@@ -172,6 +172,8 @@ export interface CircleType {
   gradient: string;
   retro: RetroType[];
   safeAddresses: SafeAddresses;
+  toBeClaimed: boolean;
+  qualifiedClaimee: string[];
 }
 
 // interface ProjectType {
