@@ -6,7 +6,7 @@ import { useTheme } from "degen";
 import { useEffect } from "react";
 import { UserType } from "@/app/types";
 import { useQuery } from "react-query";
-import QuickProfileHeader from "./QuickProfileHeader";
+import { QuickProfileHeader } from "./QuickProfileHeader";
 
 const QuickProfilePanel = () => {
   const {
@@ -81,7 +81,9 @@ const QuickProfilePanel = () => {
           }}
         >
           {(isLoading || !userData?.id) && (
-            <Spinner color={"accent"} size="large" />
+            <Box margin="auto">
+              <Spinner color="accent" size="large" />
+            </Box>
           )}
           {!isLoading && (
             <>
