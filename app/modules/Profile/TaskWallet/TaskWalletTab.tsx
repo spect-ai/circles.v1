@@ -242,8 +242,6 @@ const WorkCards: FunctionComponent<Props> = ({ toggle, userData }) => {
 };
 
 const Notifications = ({ userData }: { userData: UserType }) => {
-  console.log({ userData });
-
   return (
     <Box gap="3" display="flex" flexDirection="column" paddingTop={"5"}>
       {userData?.notifications
@@ -260,11 +258,7 @@ const Notifications = ({ userData }: { userData: UserType }) => {
                 cursor: "pointer",
               }}
               key={notif?.content}
-              onClick={() =>
-                window.open(
-                  `/${notif?.linkPath?.[0]}/${notif?.linkPath?.[1]}/${notif?.linkPath?.[2]}`
-                )
-              }
+              onClick={() => window.open(`/${notif?.linkPath?.[0]}`)}
             >
               {notif?.actor && userData?.userDetails?.[notif?.actor] && (
                 <Avatar

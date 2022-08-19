@@ -2,7 +2,7 @@ import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { addColumn } from "@/app/services/Column";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { Box, IconPlusSmall, Stack } from "degen";
-import React, { memo, useCallback } from "react";
+import React, { memo, useCallback, useEffect, useState } from "react";
 import {
   DragDropContext,
   Droppable,
@@ -15,7 +15,7 @@ import useDragEnd from "../Hooks/useDragEnd";
 import ColumnComponent from "../Column";
 import { SkeletonLoader } from "../SkeletonLoader";
 import { filterCards } from "../Filter/filterCards";
-import { Filter } from "@/app/types";
+import { CardsType, Filter } from "@/app/types";
 
 interface Props {
   viewId: string;
@@ -47,11 +47,17 @@ function BoardView({ viewId }: Props) {
   } = useLocalProject();
   const { canDo } = useRoleGate();
 
+  const [viewCards, setViewCards] = useState({} as CardsType);
+
   const view = project.viewDetails?.[viewId];
-  const viewCards = filterCards(project, view?.filters as Filter);
   const viewFilter = view?.filters;
 
   const filteredCards = filterCards(project, currentFilter);
+
+  useEffect(() => {
+    const vCards = filterCards(project, viewFilter as Filter);
+    setViewCards(vCards);
+  }, [project.cards, project, viewFilter]);
 
   const DroppableContent = (provided: DroppableProvided) => (
     <Container {...provided.droppableProps} ref={provided.innerRef}>
