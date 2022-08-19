@@ -57,7 +57,7 @@ function BoardView({ viewId }: Props) {
   useEffect(() => {
     const vCards = filterCards(project, viewFilter as Filter);
     setViewCards(vCards);
-  }, [project.cards, project, viewFilter]);
+  }, [project?.cards, project, viewFilter, project?.columnOrder]);
 
   const DroppableContent = (provided: DroppableProvided) => (
     <Container {...provided.droppableProps} ref={provided.innerRef}>

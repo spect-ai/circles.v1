@@ -162,10 +162,10 @@ export default function Filter() {
               />
               <MultiSelectDropdown
                 width="22"
-                options={labels}
-                value={label}
-                setValue={setLabels}
-                title={"Labels"}
+                options={cardType as OptionType[]}
+                value={type}
+                setValue={setType}
+                title={"Type"}
               />
               <MultiSelectDropdown
                 width="22"
@@ -183,10 +183,10 @@ export default function Filter() {
               />
               <MultiSelectDropdown
                 width="22"
-                options={cardType as OptionType[]}
-                value={type}
-                setValue={setType}
-                title={"Type"}
+                options={labels}
+                value={label}
+                setValue={setLabels}
+                title={"Labels"}
               />
               <InputBox mode={mode}>
                 <Input

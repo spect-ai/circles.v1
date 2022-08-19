@@ -1,6 +1,6 @@
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { Box, useTheme } from "degen";
-import React, { memo, useEffect } from "react";
+import React, { memo } from "react";
 import { useLocalProject } from "./Context/LocalProjectContext";
 import { useGlobal } from "@/app/context/globalContext";
 import useProjectOnboarding from "@/app/services/Onboarding/useProjectOnboarding";
