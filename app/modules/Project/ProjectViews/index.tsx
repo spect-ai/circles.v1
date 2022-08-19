@@ -83,12 +83,8 @@ export const ViewBar = () => {
               variant="transparent"
               shape="circle"
               onClick={() => {
-                if (project.viewOrder && project.viewOrder?.length < 3) {
-                  setViewMode("create");
-                  setOpenModal(true);
-                } else {
-                  toast.warning("You cannot create more than 3 views");
-                }
+                setViewMode("create");
+                setOpenModal(true);
               }}
             >
               <Text>Create View</Text>
