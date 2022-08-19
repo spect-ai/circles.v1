@@ -1,6 +1,7 @@
 import Modal from "@/app/common/components/Modal";
 import { Box, IconSearch, IconUserSolid, Input, Stack, Text } from "degen";
-import React from "react";
+import { matchSorter } from "match-sorter";
+import React, { useState } from "react";
 import { useCircle } from "../CircleContext";
 import AddRole from "../ContributorsModal/AddRoleModal";
 
@@ -10,17 +11,27 @@ type Props = {
 
 export default function RolesModal({ handleClose }: Props) {
   const { circle } = useCircle();
+  const [roles, setRoles] = useState(Object.keys(circle?.roles || {}) || []);
   console.log({ circle });
   return (
     <Modal title="Roles" handleClose={handleClose}>
       <Box padding="8">
         <Stack>
-          <Input label="" prefix={<IconSearch />} placeholder="Search" />
+          <Input
+            label=""
+            prefix={<IconSearch />}
+            placeholder="Search"
+            onChange={(e) => {
+              setRoles(
+                matchSorter(Object.keys(circle?.roles || {}), e.target.value)
+              );
+            }}
+          />
           <Box width="1/3">
             <AddRole />
           </Box>
           {circle &&
-            Object.keys(circle?.roles).map((role) => (
+            roles.map((role) => (
               <Box key={role}>
                 <Stack direction="horizontal" align="center">
                   <Box width="1/3">

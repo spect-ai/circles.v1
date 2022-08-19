@@ -1,6 +1,6 @@
 import Modal from "@/app/common/components/Modal";
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
-import { AvatarGroup, Box, IconUserSolid } from "degen";
+import { AvatarGroup, Box, IconUserSolid, Text } from "degen";
 import { AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
@@ -56,7 +56,9 @@ export default function SubTaskAssignee({ assignees, setAssignees }: Props) {
         {assignees.length > 0 ? (
           <AvatarGroup members={getMemberAvatars(assignees)} hover />
         ) : (
-          <IconUserSolid />
+          <Text>
+            <IconUserSolid />
+          </Text>
         )}
       </CircleButton>
       <AnimatePresence>

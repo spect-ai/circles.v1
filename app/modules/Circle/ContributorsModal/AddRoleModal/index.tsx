@@ -59,9 +59,12 @@ export default function AddRole({ role }: props) {
         {isOpen && (
           <Modal title="Add Role" handleClose={() => setIsOpen(false)}>
             <Box padding="8" overflow="auto" style={{ height: "40rem" }}>
-              <Stack>
+              <Stack space="2">
+                <Box marginLeft="4">
+                  <Text weight="semiBold">Role Name</Text>
+                </Box>
                 <Input
-                  label="Role Name"
+                  label=""
                   placeholder="guild_lead"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
