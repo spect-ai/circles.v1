@@ -1,4 +1,4 @@
-import { Box, Heading, Spinner } from "degen";
+import { Box } from "degen";
 import React from "react";
 import Backdrop from "../Modal/backdrop";
 

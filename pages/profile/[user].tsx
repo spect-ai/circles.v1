@@ -23,7 +23,7 @@ const getUser = async () => {
 const ProfilePage: NextPage = () => {
   const router = useRouter();
   const userId = router.query.user;
-  const { isProfilePanelExpanded, connectUser, setIsSidebarExpanded } =
+  const { isProfilePanelExpanded, connectUser, setIsSidebarExpanded, connectedUser } =
     useGlobal();
 
   const { refetch, isLoading } = useQuery<UserType>("getMyUser", getUser, {
@@ -53,6 +53,8 @@ const ProfilePage: NextPage = () => {
       enabled: false,
     }
   );
+
+  if (!connectedUser) setIsSidebarExpanded(true);
 
   useEffect(() => {
     if (userId) {
