@@ -3,7 +3,6 @@ export const skillsArray = [
   "Sales",
   "Marketing",
   "CEO",
-  "Manager",
   "Analyst",
   "UI/UX",
   "Frontend",
@@ -16,6 +15,7 @@ export const skillsArray = [
   "ZKP",
   "DAO",
   "NFTs",
+  "Gaming",
   "Solidity",
   "Rust",
 ];
