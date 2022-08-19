@@ -35,10 +35,6 @@ const QuickProfilePanel = ({ tab }: { tab: string }) => {
     void fetchUser();
   }, [userData, quickProfileUser, isProfilePanelExpanded, fetchUser]);
 
-  useEffect(() => {
-    console.log(isLoading);
-  }, [isLoading]);
-
   return (
     <motion.div
       onClick={() => {

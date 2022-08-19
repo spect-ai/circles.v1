@@ -432,18 +432,21 @@ export type Status = {
   archived: boolean;
 };
 
-export interface Notification {
-  actor: string;
+export type Notification = {
+  id: string;
   content: string;
+  type: 'card' | 'project' | 'circle' | 'retro';
   linkPath: string[];
+  actor: string;
+  timestamp: Date;
   ref: {
     cards?: ContentPlaceholder;
     users?: ContentPlaceholder;
     circles?: ContentPlaceholder;
     projects?: ContentPlaceholder;
   };
-  timestamp: Date;
-}
+  read: boolean;
+};
 
 export type SafeAddresses = {
   [chaninId: string]: string[];

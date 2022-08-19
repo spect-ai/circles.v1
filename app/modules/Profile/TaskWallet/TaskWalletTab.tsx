@@ -1,4 +1,4 @@
-import { useState, FunctionComponent } from "react";
+import { useState, FunctionComponent, useEffect } from "react";
 import { Box, Avatar, Text, Button, useTheme } from "degen";
 import {
   ProjectOutlined,
@@ -10,6 +10,8 @@ import styled from "styled-components";
 import { UserType, CardDetails } from "@/app/types";
 import { PriorityIcon } from "@/app/common/components/PriorityIcon";
 import Link from "next/link";
+import { useQuery } from "react-query";
+import { updateNotificationStatus } from "@/app/services/ProfileNotifications";
 
 interface Props {
   toggle: string;
@@ -242,23 +244,59 @@ const WorkCards: FunctionComponent<Props> = ({ toggle, userData }) => {
 };
 
 const Notifications = ({ userData }: { userData: UserType }) => {
+  const [notifIds, setNotifIds] = useState([] as string[]);
+
+  useEffect(() => {
+    if (userData?.notifications?.length > 0) {
+      userData?.notifications?.map((notif) => {
+        if (notif.read == false) setNotifIds([...notifIds, notif.id]);
+      });
+    }
+  }, [userData, userData?.notifications]);
+
+  if (notifIds.length > 0) {
+    const update = async () => {
+      const res = await updateNotificationStatus({ notificationIds: notifIds });
+      console.log(res);
+    };
+    void update();
+    setNotifIds([]);
+  }
+
   return (
-    <Box gap="3" display="flex" flexDirection="column" paddingTop={"5"}>
+    <Box gap="0.5" display="flex" flexDirection="column" paddingTop={"5"}>
       {userData?.notifications
         ?.slice(0)
         .reverse()
         .map((notif) => {
+          let link = "";
+          if (notif.type == "circle") {
+            link = `/${notif?.linkPath?.[0]}`;
+          } else if (notif.type == "project") {
+            link = `/${notif?.linkPath?.[0]}/${notif?.linkPath?.[1]}`;
+          } else if (notif.type == "card") {
+            link = `/${notif?.linkPath?.[0]}/${notif?.linkPath?.[1]}/${notif?.linkPath?.[2]}`;
+          } else if (notif.type == "retro") {
+            link = `/${notif?.linkPath?.[0]}?retroSlug=${notif?.linkPath?.[1]}`;
+          }
           return (
             <Box
               style={{
                 display: "flex",
                 flexDirection: "row",
+                flexWrap: "wrap",
                 gap: "0.4rem",
                 alignItems: "center",
                 cursor: "pointer",
+                padding: "1rem",
+                width: "39rem",
+                borderRadius: "0.5rem",
               }}
+              backgroundColor={
+                notif?.read == false ? "accentTertiary" : "transparent"
+              }
               key={notif?.content}
-              onClick={() => window.open(`/${notif?.linkPath?.[0]}`)}
+              onClick={() => window.open(link)}
             >
               {notif?.actor && userData?.userDetails?.[notif?.actor] && (
                 <Avatar
@@ -305,7 +343,9 @@ const QuickProfileTabs = ({ userData, tab }: UserProps) => {
   const [panelTab, setPanelTab] = useState(tab);
   const [toggle, setToggle] = useState("Assignee");
 
-  console.log({ userData });
+  const { data: currentUser } = useQuery<UserType>("getMyUser", {
+    enabled: false,
+  });
 
   return (
     <>
@@ -324,23 +364,30 @@ const QuickProfileTabs = ({ userData, tab }: UserProps) => {
         >
           Work
         </Button>
-        <Button
-          size="small"
-          prefix={<FieldTimeOutlined />}
-          variant={panelTab === "Notifications" ? "tertiary" : "transparent"}
-          onClick={() => setPanelTab("Notifications")}
-        >
-          Notifications
-        </Button>
-        <Button
-          size="small"
-          prefix={<StarOutlined />}
-          variant={panelTab === "Bookmarks" ? "tertiary" : "transparent"}
-          onClick={() => setPanelTab("Bookmarks")}
-        >
-          Bookmarks
-        </Button>
+        {currentUser?.id == userData?.id && (
+          <>
+            <Button
+              size="small"
+              prefix={<FieldTimeOutlined />}
+              variant={
+                panelTab === "Notifications" ? "tertiary" : "transparent"
+              }
+              onClick={() => setPanelTab("Notifications")}
+            >
+              Notifications
+            </Button>
+            <Button
+              size="small"
+              prefix={<StarOutlined />}
+              variant={panelTab === "Bookmarks" ? "tertiary" : "transparent"}
+              onClick={() => setPanelTab("Bookmarks")}
+            >
+              Bookmarks
+            </Button>
+          </>
+        )}
       </Box>
+
       {panelTab === "Work" && (
         <>
           <Toggle toggle={toggle} setToggle={setToggle} />

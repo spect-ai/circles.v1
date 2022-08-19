@@ -115,7 +115,7 @@ export default function Filter() {
                   position: "absolute",
                   margin: "0px 8px 0px 15px",
                 }}
-              ></div>
+              />
             )}
             <FilterOutlined
               style={{

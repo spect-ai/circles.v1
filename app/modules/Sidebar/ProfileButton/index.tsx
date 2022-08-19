@@ -2,10 +2,9 @@ import { smartTrim } from "@/app/common/utils/utils";
 import { UserType } from "@/app/types";
 import { Box, Button, Stack, Text, useTheme } from "degen";
 import { AnimatePresence } from "framer-motion";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useQuery } from "react-query";
 import styled from "styled-components";
-import QuickProfilePanel from "../../Profile/TaskWallet/TaskWalletPanel";
 import { useGlobal } from "@/app/context/globalContext";
 import { SettingOutlined, BellOutlined } from "@ant-design/icons";
 import ProfileModal from "../../Profile/ProfilePage/ProfileModal";
@@ -24,9 +23,21 @@ export default function ProfileButton() {
     enabled: false,
   });
 
-  const { openQuickProfile, isProfilePanelExpanded, tab, setTab } = useGlobal();
+  const { openQuickProfile, setTab } = useGlobal();
   const [isOpen, setIsOpen] = useState(false);
   const { mode } = useTheme();
+
+  const [notifIds, setNotifIds] = useState([] as string[]);
+
+  useEffect(() => {
+    if ((currentUser as UserType)?.notifications?.length > 0) {
+      currentUser?.notifications?.map((notif) => {
+        if (notif.read == false) setNotifIds([...notifIds, notif.id]);
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentUser?.notifications]);
+
   return (
     <>
       <Box
@@ -65,7 +76,7 @@ export default function ProfileButton() {
           onClick={() => setIsOpen(true)}
         >
           <SettingOutlined
-            style={{ color: "rgb(191, 90, 242, 1)", fontSize: "1.2rem" }}
+            style={{ color: "rgb(191, 90, 242, 0.8)", fontSize: "1.2rem" }}
           />
         </Button>
         <Button
@@ -75,18 +86,31 @@ export default function ProfileButton() {
           onClick={() => {
             setTab("Notifications");
             openQuickProfile((currentUser as UserType).id);
+            setNotifIds([]);
           }}
         >
-          <BellOutlined
-            style={{ color: "rgb(191, 90, 242, 1)", fontSize: "1.2rem" }}
-          />
+          {notifIds.length > 0 && (
+            <div
+              style={{
+                backgroundColor: "rgb(191, 90, 242, 1)",
+                height: "0.5rem",
+                width: "0.5rem",
+                zIndex: 10,
+                borderRadius: "3rem",
+                position: "absolute",
+                margin: "0px 8px 0px 15px",
+              }}
+            />
+          )}
+          <Box position="relative">
+            <BellOutlined
+              style={{ color: "rgb(191, 90, 242, 0.8)", fontSize: "1.2rem" }}
+            />
+          </Box>
         </Button>
       </Box>
       <AnimatePresence>
         {isOpen && <ProfileModal setIsOpen={setIsOpen} />}
-      </AnimatePresence>
-      <AnimatePresence>
-        {isProfilePanelExpanded && <QuickProfilePanel tab={tab} />}
       </AnimatePresence>
     </>
   );
