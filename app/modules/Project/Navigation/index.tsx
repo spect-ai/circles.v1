@@ -108,12 +108,12 @@ export function Nav({ setGraphOpen }: Props) {
               nodeKey={NODE_KEY}
               nodes={nodes}
               edges={edges}
-              selected={selected}
+              // selected={selected} // required
               nodeTypes={nodeConfig.NodeTypes}
               nodeSubtypes={nodeConfig.NodeSubtypes}
               edgeTypes={nodeConfig.NodeTypes}
-              onSelectNode={this.onSelectNode}
-              onUpdateNode={this.onUpdateNode}
+              // onSelectNode={this.onSelectNode} // required
+              // onUpdateNode={this.onUpdateNode} // required
               readOnly={false}
             />
           </div>
