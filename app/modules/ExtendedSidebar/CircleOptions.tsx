@@ -2,7 +2,15 @@ import Popover from "@/app/common/components/Popover";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { CircleType, ProjectType } from "@/app/types";
 import { AppstoreOutlined } from "@ant-design/icons";
-import { Box, IconCog, IconUsersSolid, Stack, Text, useTheme } from "degen";
+import {
+  Box,
+  IconCog,
+  IconUserGroup,
+  IconUsersSolid,
+  Stack,
+  Text,
+  useTheme,
+} from "degen";
 import { AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
 import React, { memo, useState } from "react";
@@ -10,6 +18,7 @@ import { useQuery } from "react-query";
 import { PopoverOption } from "../Card/OptionPopover";
 import SettingsModal from "../Circle/CircleSettingsModal";
 import ContributorsModal from "../Circle/ContributorsModal";
+import RolesModal from "../Circle/RolesModal";
 import { HeaderButton } from "./ExploreSidebar";
 
 function CircleOptions() {
@@ -25,6 +34,7 @@ function CircleOptions() {
   const [isOpen, setIsOpen] = useState(false);
   const [settingsModalOpen, setSettingsModalOpen] = useState(false);
   const [contributorsModalOpen, setContributorsModalOpen] = useState(false);
+  const [rolesModalOpen, setRolesModalOpen] = useState(false);
   const { mode } = useTheme();
 
   const { canDo } = useRoleGate();
@@ -38,6 +48,9 @@ function CircleOptions() {
           <ContributorsModal
             handleClose={() => setContributorsModalOpen(false)}
           />
+        )}
+        {rolesModalOpen && (
+          <RolesModal handleClose={() => setRolesModalOpen(false)} />
         )}
       </AnimatePresence>
       <Popover
@@ -110,6 +123,17 @@ function CircleOptions() {
             <Stack direction="horizontal" space="2">
               <IconUsersSolid />
               Contributors
+            </Stack>
+          </PopoverOption>
+          <PopoverOption
+            onClick={() => {
+              setIsOpen(false);
+              setRolesModalOpen(true);
+            }}
+          >
+            <Stack direction="horizontal" space="2">
+              <IconUserGroup />
+              Roles
             </Stack>
           </PopoverOption>
         </Box>

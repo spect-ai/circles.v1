@@ -71,6 +71,26 @@ export interface Permissions {
   managePaymentOptions: boolean;
   manageProjectSettings: boolean;
   manageRoles: boolean;
+  manageCardProperties: {
+    Task: true;
+    Bounty: false;
+  };
+  createNewCard: {
+    Task: true;
+    Bounty: false;
+  };
+  manageRewards: {
+    Task: true;
+    Bounty: false;
+  };
+  reviewWork: {
+    Task: true;
+    Bounty: false;
+  };
+  canClaim: {
+    Task: true;
+    Bounty: false;
+  };
 }
 
 export interface DiscordRoleMappingType {

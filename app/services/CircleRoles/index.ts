@@ -4,7 +4,59 @@ type UpdateRoleDTO = {
   roles: string[];
 };
 
-export async function updateRole(
+export async function addRole(circleId: string, body: any) {
+  try {
+    const res = await fetch(
+      `${process.env.API_HOST}/circle/v1/${circleId}/addRole`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
+        credentials: "include",
+      }
+    );
+    if (res.ok) {
+      const response = await res.json();
+      toast("Role added successfully", { theme: "dark" });
+      return response;
+    } else {
+      toast.error("Error adding role");
+    }
+  } catch (error) {
+    toast.error("Error adding role");
+    return error;
+  }
+}
+
+export async function updateRole(circleId: string, role: string, body: any) {
+  try {
+    const res = await fetch(
+      `${process.env.API_HOST}/circle/v1/${circleId}/updateRole?role=${role}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
+        credentials: "include",
+      }
+    );
+    if (res.ok) {
+      const response = await res.json();
+      toast("Role added successfully", { theme: "dark" });
+      return response;
+    } else {
+      toast.error("Error adding role");
+    }
+  } catch (error) {
+    toast.error("Error adding role");
+    return error;
+  }
+}
+
+export async function updateMemberRole(
   circleId: string,
   member: string,
   body: UpdateRoleDTO
