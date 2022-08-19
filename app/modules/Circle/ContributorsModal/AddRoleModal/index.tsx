@@ -76,7 +76,9 @@ export default function AddRole({ role }: props) {
                 {Object.keys(permissions).map((key) => (
                   <Box key={key} paddingY="2">
                     <Stack direction="horizontal">
-                      <Text variant="label">{key}</Text>
+                      <Box width="1/2">
+                        <Text variant="label">{key}</Text>
+                      </Box>
                       {typeof (permissions as any)[key] === "boolean" ? (
                         <CheckBox
                           isChecked={(permissions as any)[key] as boolean}
