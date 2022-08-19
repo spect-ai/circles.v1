@@ -5,9 +5,9 @@ import { AnimatePresence } from "framer-motion";
 import React, { useState } from "react";
 import { useQuery } from "react-query";
 import styled from "styled-components";
-import QuickProfilePanel from "../../Profile/QuickProfile/QuickProfilePanel";
+import QuickProfilePanel from "../../Profile/TaskWallet/TaskWalletPanel";
 import { useGlobal } from "@/app/context/globalContext";
-import { SettingOutlined } from "@ant-design/icons";
+import { SettingOutlined, BellOutlined } from "@ant-design/icons";
 import ProfileModal from "../../Profile/ProfilePage/ProfileModal";
 
 const Container = styled(Box)<{ mode: string }>`
@@ -24,7 +24,7 @@ export default function ProfileButton() {
     enabled: false,
   });
 
-  const { openQuickProfile, isProfilePanelExpanded } = useGlobal();
+  const { openQuickProfile, isProfilePanelExpanded, tab, setTab } = useGlobal();
   const [isOpen, setIsOpen] = useState(false);
   const { mode } = useTheme();
   return (
@@ -35,11 +35,14 @@ export default function ProfileButton() {
         marginX="4"
         display={"flex"}
         flexDirection="row"
-        gap="2"
+        gap="1"
         alignItems="center"
       >
         <Container
-          onClick={() => openQuickProfile((currentUser as UserType).id)}
+          onClick={() => {
+            setTab("Work");
+            openQuickProfile((currentUser as UserType).id);
+          }}
           data-tour="profile-header-button"
           padding="1"
           borderRadius="large"
@@ -62,7 +65,20 @@ export default function ProfileButton() {
           onClick={() => setIsOpen(true)}
         >
           <SettingOutlined
-            style={{ color: "rgb(191, 90, 242, 0.7)", fontSize: "1.1rem" }}
+            style={{ color: "rgb(191, 90, 242, 1)", fontSize: "1.2rem" }}
+          />
+        </Button>
+        <Button
+          shape="circle"
+          size="small"
+          variant="transparent"
+          onClick={() => {
+            setTab("Notifications");
+            openQuickProfile((currentUser as UserType).id);
+          }}
+        >
+          <BellOutlined
+            style={{ color: "rgb(191, 90, 242, 1)", fontSize: "1.2rem" }}
           />
         </Button>
       </Box>
@@ -70,7 +86,7 @@ export default function ProfileButton() {
         {isOpen && <ProfileModal setIsOpen={setIsOpen} />}
       </AnimatePresence>
       <AnimatePresence>
-        {isProfilePanelExpanded && <QuickProfilePanel />}
+        {isProfilePanelExpanded && <QuickProfilePanel tab={tab} />}
       </AnimatePresence>
     </>
   );

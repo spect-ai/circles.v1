@@ -4,7 +4,7 @@ import MetaHead from "@/app/common/seo/MetaHead/MetaHead";
 import type { NextPage } from "next";
 import ProfileCard from "@/app/modules/Profile/ProfilePage/ProfileCard";
 import ProfileTabs from "@/app/modules/Profile/ProfilePage/ProfileTab";
-import QuickProfilePanel from "@/app/modules/Profile/QuickProfile/QuickProfilePanel";
+import QuickProfilePanel from "@/app/modules/Profile/TaskWallet/TaskWalletPanel";
 import { useGlobal } from "@/app/context/globalContext";
 import { useRouter } from "next/router";
 import { UserType } from "@/app/types";
@@ -76,7 +76,7 @@ const ProfilePage: NextPage = () => {
           <ProfileTabs userId={userId as string} />
         </Box>
       </PublicLayout>
-      {isProfilePanelExpanded && <QuickProfilePanel />}
+      {isProfilePanelExpanded && <QuickProfilePanel tab="Work" />}
     </>
   );
 };

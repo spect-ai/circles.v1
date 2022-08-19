@@ -1,14 +1,14 @@
 import { motion } from "framer-motion";
 import { useGlobal } from "@/app/context/globalContext";
 import { Box, Spinner } from "degen";
-import QuickProfileTabs from "./QuickProfileTab";
+import QuickProfileTabs from "./TaskWalletTab";
 import { useTheme } from "degen";
 import { useEffect } from "react";
 import { UserType } from "@/app/types";
 import { useQuery } from "react-query";
-import { QuickProfileHeader } from "./QuickProfileHeader";
+import { QuickProfileHeader } from "./TaskWalletHeader";
 
-const QuickProfilePanel = () => {
+const QuickProfilePanel = ({ tab }: { tab: string }) => {
   const {
     isProfilePanelExpanded,
     setIsProfilePanelExpanded,
@@ -88,7 +88,7 @@ const QuickProfilePanel = () => {
           {!isLoading && (
             <>
               <QuickProfileHeader userData={userData as UserType} />
-              <QuickProfileTabs userData={userData as UserType} />
+              <QuickProfileTabs userData={userData as UserType} tab={tab} />
             </>
           )}
         </Box>

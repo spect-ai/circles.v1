@@ -11,6 +11,8 @@ interface GlobalContextType {
   openQuickProfile: (userId: string) => void;
   viewName: string;
   setViewName: React.Dispatch<React.SetStateAction<string>>;
+  tab: string;
+  setTab: React.Dispatch<React.SetStateAction<string>>;
 }
 
 const useProviderGlobalContext = () => {
@@ -18,8 +20,9 @@ const useProviderGlobalContext = () => {
   // const [registry, setRegistry] = useState<Registry>({} as Registry);
   const [connectedUser, setConnectedUser] = useState("");
   const [isProfilePanelExpanded, setIsProfilePanelExpanded] = useState(false);
-  const [quickProfileUser, setQuickProfileUser] = useState('');
-  const [viewName, setViewName] = useState('' as string);
+  const [quickProfileUser, setQuickProfileUser] = useState("");
+  const [viewName, setViewName] = useState("" as string);
+  const [tab, setTab] = useState("Work");
 
   function connectUser(userId: string) {
     setConnectedUser(userId);
@@ -28,10 +31,10 @@ const useProviderGlobalContext = () => {
     setConnectedUser("");
   };
 
-  const openQuickProfile = (userId: string) =>{
+  const openQuickProfile = (userId: string) => {
     setIsProfilePanelExpanded(true);
     setQuickProfileUser(userId);
-  }
+  };
 
   // useEffect(() => {
   //   fetch(`${process.env.API_HOST}/registry/getGlobalRegistry`)
@@ -55,7 +58,9 @@ const useProviderGlobalContext = () => {
     quickProfileUser,
     openQuickProfile,
     viewName,
-    setViewName
+    setViewName,
+    tab,
+    setTab,
   };
 };
 

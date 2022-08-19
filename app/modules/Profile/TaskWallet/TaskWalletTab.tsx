@@ -19,6 +19,7 @@ interface Props {
 
 interface UserProps {
   userData: UserType;
+  tab: string;
 }
 
 const ScrollContainer = styled(Box)`
@@ -241,6 +242,8 @@ const WorkCards: FunctionComponent<Props> = ({ toggle, userData }) => {
 };
 
 const Notifications = ({ userData }: { userData: UserType }) => {
+  console.log({ userData });
+
   return (
     <Box gap="3" display="flex" flexDirection="column" paddingTop={"5"}>
       {userData?.notifications
@@ -257,7 +260,11 @@ const Notifications = ({ userData }: { userData: UserType }) => {
                 cursor: "pointer",
               }}
               key={notif?.content}
-              onClick={() => window.open(`/${notif?.linkPath?.[0]}/`)}
+              onClick={() =>
+                window.open(
+                  `/${notif?.linkPath?.[0]}/${notif?.linkPath?.[1]}/${notif?.linkPath?.[2]}`
+                )
+              }
             >
               {notif?.actor && userData?.userDetails?.[notif?.actor] && (
                 <Avatar
@@ -300,8 +307,8 @@ const BookMarks = () => {
   );
 };
 
-const QuickProfileTabs = ({ userData }: UserProps) => {
-  const [panelTab, setPanelTab] = useState("Work");
+const QuickProfileTabs = ({ userData, tab }: UserProps) => {
+  const [panelTab, setPanelTab] = useState(tab);
   const [toggle, setToggle] = useState("Assignee");
 
   console.log({ userData });
