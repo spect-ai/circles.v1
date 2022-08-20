@@ -1,126 +1,128 @@
-import React, { Component, useEffect, useState } from "react";
-import { GraphView } from "react-digraph";
-import Modal from "@/app/common/components/Modal";
-import { default as nodeConfig, NODE_KEY } from "./config";
-import { useRouter } from "next/router";
-import { useCircle } from "@/app/modules/Circle/CircleContext";
+// import React, { Component, useEffect, useState } from "react";
+// import dynamic from "next/dynamic";
+// import Modal from "@/app/common/components/Modal";
+// import { default as nodeConfig, NODE_KEY } from "./config";
+// import { useRouter } from "next/router";
+// import { useCircle } from "@/app/modules/Circle/CircleContext";
 
-interface Props {
-  setGraphOpen: (graphOpen: boolean) => void;
-}
+// const GraphView = dynamic(() => import("react-digraph"), {
+//   ssr: false,
+// });
 
-interface NodeType {
-  id: string;
-  title: string;
-  slug: string;
-}
+// interface Props {
+//   setGraphOpen: (graphOpen: boolean) => void;
+// }
 
-interface EdgeType {
-  source: string;
-  target: string;
-}
+// interface NodeType {
+//   id: string;
+//   title: string;
+//   slug: string;
+// }
 
-interface Selected {
-  edges: EdgeType;
-  nodes: NodeType;
-}
+// interface EdgeType {
+//   source: string;
+//   target: string;
+// }
 
-export function Nav({ setGraphOpen }: Props) {
+// interface Selected {
+//   edges: EdgeType;
+//   nodes: NodeType;
+// }
 
-  const router = useRouter();
-  const { circle } =
-    useCircle();
+// export function Nav({ setGraphOpen }: Props) {
+//   const router = useRouter();
+//   const { circle } = useCircle();
 
-  const [edges, setEdges] = useState([] as EdgeType[]);
-  const [nodes, setNodes] = useState([] as NodeType[]);
-  
-  const fetchNavigation = async () => {
-    const res = await fetch(
-      `${process.env.API_HOST}/circle/v1/${circle?.id}/circleNav`,
-      {
-        credentials: "include",
-      }
-    );
-    if (res.ok) {
-      const data = await res.json();
-      setEdges(data.edges);
-      setNodes(data.nodes);
-      return data;
-    } else {
-      return false;
-    }
-  };
+//   const [edges, setEdges] = useState([] as EdgeType[]);
+//   const [nodes, setNodes] = useState([] as NodeType[]);
 
-  useEffect(() => {
-    void fetchNavigation();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [circle]);
+//   const fetchNavigation = async () => {
+//     const res = await fetch(
+//       `${process.env.API_HOST}/circle/v1/${circle?.id}/circleNav`,
+//       {
+//         credentials: "include",
+//       }
+//     );
+//     if (res.ok) {
+//       const data = await res.json();
+//       setEdges(data.edges);
+//       setNodes(data.nodes);
+//       return data;
+//     } else {
+//       return false;
+//     }
+//   };
 
-  const sample = {
-    edges: edges,
-    nodes: nodes,
-  };
+//   useEffect(() => {
+//     void fetchNavigation();
+//     // eslint-disable-next-line react-hooks/exhaustive-deps
+//   }, [circle]);
 
-  class Graph extends Component {
-    state = {
-      graph: sample,
-      selected: {} as Selected,
-    };
+//   const sample = {
+//     edges: edges,
+//     nodes: nodes,
+//   };
 
-    getNodeIndex(searchNode: NodeType) {
-      return this.state.graph.nodes.findIndex((node) => {
-        return node[NODE_KEY] === searchNode[NODE_KEY];
-      });
-    }
+//   class Graph extends Component {
+//     state = {
+//       graph: sample,
+//       selected: {} as Selected,
+//     };
 
-    onUpdateNode = (viewNode: NodeType) => {
-      const graph = this.state.graph;
-      const i = this.getNodeIndex(viewNode);
+//     getNodeIndex(searchNode: NodeType) {
+//       return this.state.graph.nodes.findIndex((node) => {
+//         return node[NODE_KEY] === searchNode[NODE_KEY];
+//       });
+//     }
 
-      graph.nodes[i] = viewNode;
-      this.setState({ graph });
-    };
+//     onUpdateNode = (viewNode: NodeType) => {
+//       const graph = this.state.graph;
+//       const i = this.getNodeIndex(viewNode);
 
-    onSelectNode = (viewNode: NodeType, event: any) => {
-      if (event?.target !== undefined) {
-        console.log(viewNode);
-        void router.push(`/${viewNode?.slug}`)
-        this.setState({ selected: viewNode });
-      }
-    };
+//       graph.nodes[i] = viewNode;
+//       this.setState({ graph });
+//     };
 
-    render() {
-      const nodes = this.state.graph.nodes;
-      const edges = this.state.graph.edges;
-      const selected = this.state.selected;
+//     onSelectNode = (viewNode: NodeType, event: any) => {
+//       if (event?.target !== undefined) {
+//         console.log(viewNode);
+//         void router.push(`/${viewNode?.slug}`);
+//         this.setState({ selected: viewNode });
+//       }
+//     };
 
-      return (
-        <Modal
-          title="Navigation"
-          height="large"
-          handleClose={() => setGraphOpen(false)}
-        >
-          <div id="graph" style={{ height: "50rem" }}>
-            <GraphView
-              showGraphControls={true}
-              gridSize={100}
-              gridDotSize={1}
-              nodeKey={NODE_KEY}
-              nodes={nodes}
-              edges={edges}
-              // selected={selected} // required
-              nodeTypes={nodeConfig.NodeTypes}
-              nodeSubtypes={nodeConfig.NodeSubtypes}
-              edgeTypes={nodeConfig.NodeTypes}
-              // onSelectNode={this.onSelectNode} // required
-              // onUpdateNode={this.onUpdateNode} // required
-              readOnly={false}
-            />
-          </div>
-        </Modal>
-      );
-    }
-  }
+//     render() {
+//       const nodes = this.state.graph.nodes;
+//       const edges = this.state.graph.edges;
+//       const selected = this.state.selected;
 
-  return (<Graph />);
-}
+//       return (
+//         <Modal
+//           title="Navigation"
+//           height="large"
+//           handleClose={() => setGraphOpen(false)}
+//         >
+//           <div id="graph" style={{ height: "50rem" }}>
+//             <GraphView
+//               showGraphControls={true}
+//               gridSize={100}
+//               gridDotSize={1}
+//               nodeKey={NODE_KEY}
+//               nodes={nodes}
+//               edges={edges}
+//               // selected={selected} // required
+//               nodeTypes={nodeConfig.NodeTypes}
+//               nodeSubtypes={nodeConfig.NodeSubtypes}
+//               edgeTypes={nodeConfig.NodeTypes}
+//               // onSelectNode={this.onSelectNode} // required
+//               // onUpdateNode={this.onUpdateNode} // required
+//               readOnly={false}
+//             />
+//           </div>
+//         </Modal>
+//       );
+//     }
+//   }
+
+//   return <Graph />;
+// }

@@ -15,7 +15,7 @@ import Onboarding from "./ProjectOnboarding";
 import ListView from "./ListView";
 import BatchPay from "./BatchPay";
 import Apply from "../Card/Apply";
-import { Nav } from "./Navigation";
+// import { Nav } from "./Navigation";
 
 function Project() {
   const {
@@ -109,9 +109,9 @@ function Project() {
           </Box>
         </Box>
       </motion.main>
-      <AnimatePresence>
+      {/* <AnimatePresence>
         {graphOpen && <Nav setGraphOpen={setGraphOpen} />}
-      </AnimatePresence>
+      </AnimatePresence> */}
     </>
   );
 }
