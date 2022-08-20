@@ -17,9 +17,7 @@ export default function useConnectGithub() {
       const data = await res.json();
       console.log({ data });
       const profileRes = await updateProfile({
-        githubId: data.userData.id.toString(),
-        username: data.userData.login,
-        avatar: data.userData.avatar_url,
+        githubId: data.userData.login,
       });
       console.log({ profileRes });
       if (profileRes) {
@@ -30,7 +28,7 @@ export default function useConnectGithub() {
       }
     } else {
       toast.error(
-        "Something went wrong while getting data from the discord bot",
+        "Something went wrong while getting data from the GitHub bot",
         { theme: "dark" }
       );
     }

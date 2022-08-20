@@ -18,13 +18,20 @@ interface UserType {
   reviewingCards: string[];
   assignedClosedCards: string[];
   reviewingClosedCards: string[];
+  activeApplications: {
+    cardId: string;
+    applicationTitle: string;
+  }[];
   cardDetails: any;
   activities: string[];
-  notifications: string[];
+  notifications: Notification[];
+  retro: string[];
+  retroDetails: any;
   bookmarks: string[];
   followedCircles: string[];
   followedUsers: string[];
   followedByUsers: string[];
+  userDetails: any;
 }
 
 export interface Payment {
@@ -445,6 +452,26 @@ export type Status = {
   archived: boolean;
 };
 
+export type Notification = {
+  id: string;
+  content: string;
+  type: 'card' | 'project' | 'circle' | 'retro';
+  linkPath: string[];
+  actor: string;
+  timestamp: Date;
+  ref: {
+    cards?: ContentPlaceholder;
+    users?: ContentPlaceholder;
+    circles?: ContentPlaceholder;
+    projects?: ContentPlaceholder;
+  };
+  read: boolean;
+};
+
 export type SafeAddresses = {
   [chaninId: string]: string[];
+};
+
+export type ContentPlaceholder = {
+  [key: string]: string;
 };
