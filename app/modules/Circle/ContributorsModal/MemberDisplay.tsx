@@ -56,6 +56,7 @@ export default function MemberDisplay({ member, memberDetails }: Props) {
 
   const [userRoles, setUserRoles] = useState(circle?.memberRoles[member]);
   const { mode } = useTheme();
+  const childRef = React.useRef(null);
 
   if (!memberDetails || !circle) {
     return null;
@@ -64,7 +65,7 @@ export default function MemberDisplay({ member, memberDetails }: Props) {
   return (
     <Popover
       width="fit"
-      disableOutsideClick
+      dependentRef={childRef}
       butttonComponent={
         <Container
           paddingY="1"
@@ -160,6 +161,7 @@ export default function MemberDisplay({ member, memberDetails }: Props) {
                   backgroundColor="background"
                   borderRadius="2xLarge"
                   borderWidth="0.5"
+                  ref={childRef}
                 >
                   {Object.keys(circle.roles).map((role, index) => (
                     <RoleOption
