@@ -68,7 +68,11 @@ const ProfilePage: NextPage = () => {
 
   return (
     <>
-      <MetaHead />
+      <MetaHead
+        title="Spect Circles"
+        description="Playground of coordination tools for DAO contributors to manage projects and fund each other"
+        image="/og.jpg"
+      />
       <PublicLayout>
         {isLoading ||
           !user?.id ||
