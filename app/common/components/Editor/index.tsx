@@ -2,7 +2,7 @@ import RichMarkdownEditor from "rich-markdown-editor";
 import { toast } from "react-toastify";
 import dark, { light } from "./styles/theme";
 import { storeImage } from "../../utils/ipfs";
-import { memo, useState } from "react";
+import React, { memo, useState } from "react";
 import { useTheme } from "degen";
 
 type Props = {
@@ -41,14 +41,18 @@ function Editor({
         setcontent(val());
         onChange && onChange(val());
       }}
-      onImageUploadStop={() => {
-        toast("Uploaded", {
-          theme: "dark",
-        });
-      }}
       placeholder={placeholder}
       uploadImage={async (file) => {
-        const { imageGatewayURL } = await storeImage(file, "circleLogo");
+        const { imageGatewayURL } = await toast.promise(
+          storeImage(file, "circleLogo"),
+          {
+            pending: "Upload is pending",
+            success: {
+              render: "Image Uploaded",
+            },
+            error: "Some error occured🤯",
+          }
+        );
         console.log({ imageGatewayURL });
         return imageGatewayURL;
       }}

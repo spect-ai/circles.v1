@@ -99,14 +99,16 @@ export default function CurrencyPayment() {
       <Box borderTopWidth="0.375" paddingX="8" paddingY="4">
         <Stack direction="horizontal">
           <Box width="1/2">
-            <PrimaryButton
-              tone="red"
-              onClick={() => {
-                setStep(0);
-              }}
-            >
-              Back
-            </PrimaryButton>
+            {!batchPayInfo?.retroId && (
+              <PrimaryButton
+                tone="red"
+                onClick={() => {
+                  setStep(0);
+                }}
+              >
+                Back
+              </PrimaryButton>
+            )}
           </Box>
           <Box width="1/2">
             <PrimaryButton
