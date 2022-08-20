@@ -20,7 +20,7 @@ import { CircleType, UserType } from "@/app/types";
 import { useGlobal } from "@/app/context/globalContext";
 import CollapseButton from "../ExtendedSidebar/CollapseButton";
 import styled from "styled-components";
-import QuickProfilePanel from "@/app/modules/Profile/TaskWallet/TaskWalletPanel";
+import TaskWalletPanel from "@/app/modules/Profile/TaskWallet/TaskWalletPanel";
 
 export const ScrollContainer = styled(Box)`
   ::-webkit-scrollbar {
@@ -195,7 +195,7 @@ function Sidebar(): ReactElement {
         </Box>
       </Box>
       <AnimatePresence>
-        {isProfilePanelExpanded && <QuickProfilePanel tab={tab} />}
+        {isProfilePanelExpanded && <TaskWalletPanel tab={tab} />}
       </AnimatePresence>
     </>
   );

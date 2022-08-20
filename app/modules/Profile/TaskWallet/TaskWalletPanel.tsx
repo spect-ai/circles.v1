@@ -8,7 +8,7 @@ import { UserType } from "@/app/types";
 import { useQuery } from "react-query";
 import { QuickProfileHeader } from "./TaskWalletHeader";
 
-const QuickProfilePanel = ({ tab }: { tab: string }) => {
+const TaskWalletPanel = ({ tab }: { tab: string }) => {
   const {
     isProfilePanelExpanded,
     setIsProfilePanelExpanded,
@@ -93,4 +93,4 @@ const QuickProfilePanel = ({ tab }: { tab: string }) => {
   );
 };
 
-export default QuickProfilePanel;
+export default TaskWalletPanel;

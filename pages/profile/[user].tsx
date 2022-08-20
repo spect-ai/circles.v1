@@ -4,7 +4,7 @@ import MetaHead from "@/app/common/seo/MetaHead/MetaHead";
 import type { NextPage } from "next";
 import ProfileCard from "@/app/modules/Profile/ProfilePage/ProfileCard";
 import ProfileTabs from "@/app/modules/Profile/ProfilePage/ProfileTab";
-import QuickProfilePanel from "@/app/modules/Profile/TaskWallet/TaskWalletPanel";
+import TaskWalletPanel from "@/app/modules/Profile/TaskWallet/TaskWalletPanel";
 import { useGlobal } from "@/app/context/globalContext";
 import { useRouter } from "next/router";
 import { UserType } from "@/app/types";
@@ -23,8 +23,13 @@ const getUser = async () => {
 const ProfilePage: NextPage = () => {
   const router = useRouter();
   const userId = router.query.user;
-  const { isProfilePanelExpanded, connectUser, setIsSidebarExpanded, connectedUser } =
-    useGlobal();
+  const {
+    isProfilePanelExpanded,
+    connectUser,
+    setIsSidebarExpanded,
+    connectedUser,
+    tab,
+  } = useGlobal();
 
   const { refetch, isLoading } = useQuery<UserType>("getMyUser", getUser, {
     enabled: false,
@@ -80,7 +85,7 @@ const ProfilePage: NextPage = () => {
           <ProfileTabs userId={userId as string} />
         </Box>
       </PublicLayout>
-      {isProfilePanelExpanded && <QuickProfilePanel tab="Work" />}
+      {isProfilePanelExpanded && <TaskWalletPanel tab={tab} />}
     </>
   );
 };
