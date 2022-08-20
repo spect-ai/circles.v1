@@ -75,8 +75,8 @@ const QuickProfilePanel = () => {
             flexDirection: "column",
             alignItems: "flex-start",
             zIndex: 2,
-            boxShadow: `-1rem 2rem 1rem ${
-              mode === "dark" ? "rgba(0, 0, 0, 0.15)" : "rgba(0, 0, 0, 0.05)"
+            boxShadow: `-1rem 1rem 1rem ${
+              mode === "dark" ? "rgba(0, 0, 0, 0.1)" : "rgba(0, 0, 0, 0.05)"
             }`,
           }}
         >

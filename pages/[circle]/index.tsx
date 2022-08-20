@@ -6,15 +6,25 @@ import {
   useProviderCircleContext,
 } from "@/app/modules/Circle/CircleContext";
 import useConnectDiscordServer from "@/app/services/Discord/useConnectDiscordServer";
-import type { NextPage } from "next";
+import type {
+  GetServerSideProps,
+  InferGetServerSidePropsType,
+  NextPage,
+} from "next";
 
-const CirclePage: NextPage = () => {
+const CirclePage: NextPage = ({
+  circle,
+}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   useConnectDiscordServer();
   const context = useProviderCircleContext();
 
   return (
     <>
-      <MetaHead />
+      <MetaHead
+        title={circle.title}
+        description={circle.description}
+        image={circle.avatar}
+      />
       <CircleContext.Provider value={context}>
         <PublicLayout>
           <Circle />
@@ -22,6 +32,19 @@ const CirclePage: NextPage = () => {
       </CircleContext.Provider>
     </>
   );
+};
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const { circle: cId } = context.query;
+  const res = await fetch(
+    `${process.env.API_HOST}/circle/slug/${cId as string}`
+  );
+  const data = await res.json();
+  return {
+    props: {
+      circle: data,
+    },
+  };
 };
 
 export default CirclePage;
