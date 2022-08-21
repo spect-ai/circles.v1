@@ -45,6 +45,7 @@ export function Nav({ setGraphOpen }: Props) {
     );
     if (res.ok) {
       const data = await res.json();
+      console.log({ data });
       setEdges(data.edges);
       setNodes(data.nodes);
       return data;

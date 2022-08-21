@@ -13,9 +13,9 @@ import BoardView from "./BoardView";
 import { ToastContainer } from "react-toastify";
 import Onboarding from "./ProjectOnboarding";
 import ListView from "./ListView";
-import BatchPay from "./BatchPay";
 import Apply from "../Card/Apply";
-// import { Nav } from "./Navigation";
+import { Nav } from "./Navigation";
+import { ApartmentOutlined } from "@ant-design/icons";
 
 function Project() {
   const {
@@ -105,13 +105,23 @@ function Project() {
               zIndex: "2",
             }}
           >
-            <Button variant="secondary" onClick={() => setGraphOpen(true)}>Nav</Button>
+            <Button
+              variant="secondary"
+              onClick={() => setGraphOpen(true)}
+              shape="circle"
+            >
+              <ApartmentOutlined
+                style={{
+                  fontSize: "1.5rem",
+                }}
+              />
+            </Button>
           </Box>
         </Box>
       </motion.main>
-      {/* <AnimatePresence>
+      <AnimatePresence>
         {graphOpen && <Nav setGraphOpen={setGraphOpen} />}
-      </AnimatePresence> */}
+      </AnimatePresence>
     </>
   );
 }
