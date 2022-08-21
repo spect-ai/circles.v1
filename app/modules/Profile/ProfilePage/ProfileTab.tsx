@@ -12,7 +12,7 @@ interface Props {
 const Card = styled(Box)<{ mode: string }>`
   display: flex;
   flex-direction: column;
-  width: 60vw;
+  max-width: 60vw;
   min-height: 12vh;
   margin-top: 1rem;
   padding: 0.4rem 1rem 0;
@@ -52,7 +52,7 @@ const GigInfo = styled(Box)`
 const TextBox = styled(Box)`
   display: flex;
   flex-wrap: wrap;
-  width: 50vw;
+  margin-right: 7rem;
 `;
 
 const ScrollContainer = styled(Box)`
@@ -227,18 +227,47 @@ const Activity = React.memo(({ userData }: { userData: UserType }) => {
 
 Activity.displayName = "Activity";
 
-const Retro = () => {
+const Retro = ({ userData }: { userData: UserType }) => {
   const { mode } = useTheme();
 
   return (
-    <Card mode={mode}>
-      <Text variant="extraLarge"> </Text>
-      <Text variant="small"> </Text>
-      <GigInfo>
-        <Text variant="label"> </Text>
-        <Avatar label="profile-pic" src="/og.jpg" size="8" />
-      </GigInfo>
-    </Card>
+    <ScrollContainer>
+      {userData?.retro?.map((ret) => {
+        const retroInfo = userData?.retroDetails?.[ret];
+        return (
+          <Card
+            mode={mode}
+            key={ret}
+            onClick={() =>
+              window.open(
+                `/${retroInfo?.circle?.name}?retroSlug=${retroInfo?.slug}`
+              )
+            }
+          >
+            <TextBox>
+              <Text variant="extraLarge">{retroInfo?.title}</Text>
+            </TextBox>
+            <Tags>
+              <Tag>
+                {Object.keys(retroInfo?.circle?.memberRoles).length}{" "}
+                participants
+              </Tag>
+            </Tags>
+            <GigInfo>
+              <Tag size="medium" hover>
+                {retroInfo?.status?.active == true ? "Active" : "Ended"}{" "}
+              </Tag>
+              <Avatar
+                label="profile-pic"
+                src={retroInfo?.circle?.avatar}
+                address={retroInfo?.circle?.id}
+                size="8"
+              />
+            </GigInfo>
+          </Card>
+        );
+      })}
+    </ScrollContainer>
   );
 };
 
@@ -261,7 +290,7 @@ const ProfileTabs = ({ userId }: Props) => {
 
   useEffect(() => {
     void fetchUser();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId, tab]);
 
   return (
@@ -288,7 +317,7 @@ const ProfileTabs = ({ userId }: Props) => {
       </Box>
       <Box>
         {tab === "Activity" && <Activity userData={userData} />}
-        {tab === "Retro" && <Retro />}
+        {tab === "Retro" && <Retro userData={userData} />}
       </Box>
     </Box>
   );

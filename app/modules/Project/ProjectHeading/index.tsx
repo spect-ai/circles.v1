@@ -1,5 +1,5 @@
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
-import { Box, IconGrid, IconList, Stack, Text, useTheme } from "degen";
+import { Box, Button, IconGrid, IconList, Stack, Text, useTheme } from "degen";
 import React, { memo } from "react";
 import Skeleton from "react-loading-skeleton";
 import styled from "styled-components";
@@ -47,9 +47,11 @@ function ProjectHeading() {
     >
       <Stack direction="horizontal" align="center">
         {!loading && (
-          <Text size="headingTwo" weight="semiBold" ellipsis>
-            {project?.name}
-          </Text>
+          <Button variant="transparent" size="small" onClick={() => defaultView()}>
+            <Text size="headingTwo" weight="semiBold" ellipsis>
+              {project?.name}
+            </Text>
+          </Button>
         )}
         {loading && (
           <Skeleton

@@ -94,10 +94,6 @@ export function useProviderLocalProject() {
   }, [connectedUser, pId]);
 
   useEffect(() => {
-    setCurrentFilter({} as Filter);
-  }, [pId]);
-
-  useEffect(() => {
     if (pId) {
       setLoading(true);
       fetchProject()

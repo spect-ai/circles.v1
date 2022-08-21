@@ -76,7 +76,7 @@ const FollowCount = styled(Box)`
 
 const ProfileCard = ({ userId }: Props) => {
   const { mode } = useTheme();
-  const { openQuickProfile } = useGlobal();
+  const { isSidebarExpanded } = useGlobal();
   const [isOpen, setIsOpen] = useState(false);
 
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
@@ -96,7 +96,7 @@ const ProfileCard = ({ userId }: Props) => {
 
   useEffect(() => {
     void fetchUser();
-  }, [user, userId, isOpen, fetchUser]);
+  }, [user, userId, isOpen, fetchUser, isSidebarExpanded]);
 
   const { data: myCircles, refetch } = useQuery<CircleType[]>(
     "myOrganizations",
@@ -122,7 +122,6 @@ const ProfileCard = ({ userId }: Props) => {
       <Profile mode={mode}>
         <Box
           cursor="pointer"
-          onClick={() => openQuickProfile((user as UserType).id)}
         >
           <Avatar
             label="profile-pic"

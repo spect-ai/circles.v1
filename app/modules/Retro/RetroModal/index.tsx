@@ -5,7 +5,8 @@ import { useGlobal } from "@/app/context/globalContext";
 import { addVotes, endRetro } from "@/app/services/Retro";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { RetroType } from "@/app/types";
-import { Box, Heading, Stack, Text } from "degen";
+import { SaveOutlined } from "@ant-design/icons";
+import { Box, Heading, IconClose, Stack, Text } from "degen";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { useQuery } from "react-query";
@@ -181,6 +182,7 @@ export default function RetroModal({ handleClose }: Props) {
               <Box width="full">
                 {retro.status.active && (
                   <PrimaryButton
+                    icon={<SaveOutlined style={{ fontSize: "1.3rem" }} />}
                     loading={loading}
                     onClick={async () => {
                       setLoading(true);
@@ -194,13 +196,14 @@ export default function RetroModal({ handleClose }: Props) {
                       }
                     }}
                   >
-                    Save Votes
+                    Save
                   </PrimaryButton>
                 )}
               </Box>
               <Box width="full">
                 {retro.status.active && canDo(["steward"]) && (
                   <PrimaryButton
+                    icon={<IconClose />}
                     variant="tertiary"
                     onClick={async () => {
                       const res = await endRetro(retro.id);

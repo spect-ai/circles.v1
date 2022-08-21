@@ -15,7 +15,7 @@ import Popover from "@/app/common/components/Popover";
 import { useQuery } from "react-query";
 import { useRouter } from "next/router";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { removeMember, updateRole } from "@/app/services/CircleRoles";
+import { removeMember, updateMemberRole } from "@/app/services/CircleRoles";
 import queryClient from "@/app/common/utils/queryClient";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 
@@ -56,6 +56,7 @@ export default function MemberDisplay({ member, memberDetails }: Props) {
 
   const [userRoles, setUserRoles] = useState(circle?.memberRoles[member]);
   const { mode } = useTheme();
+  const childRef = React.useRef(null);
 
   if (!memberDetails || !circle) {
     return null;
@@ -64,7 +65,7 @@ export default function MemberDisplay({ member, memberDetails }: Props) {
   return (
     <Popover
       width="fit"
-      disableOutsideClick
+      dependentRef={childRef}
       butttonComponent={
         <Container
           paddingY="1"
@@ -123,7 +124,7 @@ export default function MemberDisplay({ member, memberDetails }: Props) {
                     if (userRoles.length > 1) {
                       const newRoles = userRoles.filter((r) => r !== role);
                       setUserRoles(newRoles);
-                      const data = await updateRole(circle.id, member, {
+                      const data = await updateMemberRole(circle.id, member, {
                         roles: newRoles,
                       });
                       if (data) {
@@ -160,6 +161,7 @@ export default function MemberDisplay({ member, memberDetails }: Props) {
                   backgroundColor="background"
                   borderRadius="2xLarge"
                   borderWidth="0.5"
+                  ref={childRef}
                 >
                   {Object.keys(circle.roles).map((role, index) => (
                     <RoleOption
@@ -184,9 +186,13 @@ export default function MemberDisplay({ member, memberDetails }: Props) {
                           // add user role if not already present
                           const newUserRoles = [...userRoles, role];
                           setUserRoles(newUserRoles);
-                          const data = await updateRole(circle.id, member, {
-                            roles: newUserRoles,
-                          });
+                          const data = await updateMemberRole(
+                            circle.id,
+                            member,
+                            {
+                              roles: newUserRoles,
+                            }
+                          );
                           if (data) {
                             queryClient.setQueryData(["circle", cId], data);
                           }

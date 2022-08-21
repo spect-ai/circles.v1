@@ -4,6 +4,7 @@ import { Box, Heading, Stack, Text } from "degen";
 import { useRouter } from "next/router";
 import React from "react";
 import { useQuery } from "react-query";
+import AddRole from "./AddRoleModal";
 import InviteMemberModal from "./InviteMembersModal";
 import MemberDisplay from "./MemberDisplay";
 
@@ -58,7 +59,10 @@ function Contributors() {
 
   return (
     <Box padding="2">
-      <Box width="1/3">{canDo(["steward"]) && <InviteMemberModal />}</Box>
+      <Stack direction="horizontal">
+        <Box width="1/3">{canDo(["steward"]) && <InviteMemberModal />}</Box>
+        <Box width="1/3">{canDo(["steward"]) && <AddRole />}</Box>
+      </Stack>
       <Stack>
         {Object.keys(circle?.roles).map((role) => (
           <RoleSection key={role} roleName={role} />

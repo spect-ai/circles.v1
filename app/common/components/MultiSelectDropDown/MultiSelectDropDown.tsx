@@ -57,7 +57,7 @@ const ScrollContainer = styled(Box)<{ mode: string }>`
     background: ${(props) =>
       props.mode === "dark" ? "rgb(255, 255, 255, 0.3)" : "rgb(0, 0, 0, 0.2)"};
   }
-  max-height: 25rem;
+  max-height: 15rem;
   overflow-y: auto;
   border: 2px solid
     ${(props) =>

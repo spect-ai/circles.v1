@@ -1,6 +1,6 @@
 import type { FC } from "react";
 
-import { Avatar, Box, Stack, Text } from "degen";
+import { Avatar, Box, Button, Stack, Text } from "degen";
 import styled, { keyframes } from "styled-components";
 import Link from "next/link";
 

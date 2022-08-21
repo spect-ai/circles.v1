@@ -1,11 +1,10 @@
 import React, { useEffect } from "react";
-import { Box, useTheme } from "degen";
+import { Box } from "degen";
 import MetaHead from "@/app/common/seo/MetaHead/MetaHead";
 import type { NextPage } from "next";
-import Sidebar from "@/app/modules/Sidebar";
 import ProfileCard from "@/app/modules/Profile/ProfilePage/ProfileCard";
 import ProfileTabs from "@/app/modules/Profile/ProfilePage/ProfileTab";
-import QuickProfilePanel from "@/app/modules/Profile/QuickProfile/QuickProfilePanel";
+import TaskWalletPanel from "@/app/modules/Profile/TaskWallet/TaskWalletPanel";
 import { useGlobal } from "@/app/context/globalContext";
 import { useRouter } from "next/router";
 import { UserType } from "@/app/types";
@@ -24,9 +23,13 @@ const getUser = async () => {
 const ProfilePage: NextPage = () => {
   const router = useRouter();
   const userId = router.query.user;
-  // eslint-disable-next-line @typescript-eslint/unbound-method
-  const { mode } = useTheme();
-  const { isProfilePanelExpanded, connectUser } = useGlobal();
+  const {
+    isProfilePanelExpanded,
+    connectUser,
+    setIsSidebarExpanded,
+    connectedUser,
+    tab,
+  } = useGlobal();
 
   const { refetch, isLoading } = useQuery<UserType>("getMyUser", getUser, {
     enabled: false,
@@ -56,29 +59,33 @@ const ProfilePage: NextPage = () => {
     }
   );
 
+  if (!connectedUser) setIsSidebarExpanded(true);
+
   useEffect(() => {
     if (userId) {
       void fetchUser();
     }
+    setIsSidebarExpanded(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, userId, fetchUser]);
-
-  // if (isLoading || !user?.id || !userId) {
-  //   return <Loader loading text="fetching" />;
-  // }
 
   return (
     <>
-      <MetaHead />
+      <MetaHead
+        title="Spect Circles"
+        description="Playground of coordination tools for DAO contributors to manage projects and fund each other"
+        image="/og.jpg"
+      />
       <PublicLayout>
         {isLoading ||
           !user?.id ||
           (!userId && <Loader loading text="fetching" />)}
-        <Box display="flex" flexDirection="row" width="full" overflow="hidden">
+        <Box display="flex" flexDirection="row">
           <ProfileCard userId={userId as string} />
           <ProfileTabs userId={userId as string} />
         </Box>
-        {isProfilePanelExpanded && <QuickProfilePanel />}
       </PublicLayout>
+      {isProfilePanelExpanded && <TaskWalletPanel tab={tab} />}
     </>
   );
 };
