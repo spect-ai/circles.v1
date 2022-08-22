@@ -4,9 +4,6 @@ import { CircleType } from "@/app/types";
 import { ProjectOutlined } from "@ant-design/icons";
 import {
   Box,
-  IconPlus,
-  IconPlusSmall,
-  IconSplit,
   IconUserGroup,
   Skeleton,
   SkeletonGroup,
@@ -16,9 +13,11 @@ import {
 import { AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React, { memo, useState } from "react";
+import { memo, useState } from "react";
 import { useQuery } from "react-query";
+import { toast } from "react-toastify";
 import styled from "styled-components";
+import { useCircle } from "../Circle/CircleContext";
 import SettingsModal from "../Circle/CircleSettingsModal";
 import ContributorsModal from "../Circle/ContributorsModal";
 import CreateRetroModal from "../Retro/CreateRetro/CreateRetroModal";
@@ -41,6 +40,7 @@ function CircleSidebar() {
   const { data: circle, isLoading } = useQuery<CircleType>(["circle", cId], {
     enabled: false,
   });
+  const { setCircleData, setMemberDetailsData } = useCircle();
 
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [isContributorsModalOpen, setIsContributorsModalOpen] = useState(false);
@@ -92,6 +92,48 @@ function CircleSidebar() {
           />
         </Stack>
         <Container>
+          <Stack>
+            {circle?.toBeClaimed && (
+              <PrimaryButton
+                onClick={async () => {
+                  const circleRes = await fetch(
+                    `${process.env.API_HOST}/circle/v1/${circle?.id}/claimCircle`,
+                    {
+                      method: "PATCH",
+                      headers: {
+                        "Content-Type": "application/json",
+                      },
+                      body: JSON.stringify({}),
+                      credentials: "include",
+                    }
+                  );
+                  if (!circleRes) {
+                    toast.error("Cannot claim circle");
+                    return;
+                  }
+                  const memberDetailsRes = await fetch(
+                    `${process.env.API_HOST}/circle/${circle?.id}/memberDetails?circleIds=${circle?.id}`,
+                    {
+                      method: "GET",
+                      headers: {
+                        "Content-Type": "application/json",
+                      },
+                      credentials: "include",
+                    }
+                  );
+                  const circleData = await circleRes.json();
+                  const memberDetailsData = await memberDetailsRes.json();
+                  console.log(memberDetailsData);
+                  console.log(circleData);
+                  setCircleData(circleData);
+                  setMemberDetailsData(memberDetailsData);
+                }}
+                variant="tertiary"
+              >
+                Claim
+              </PrimaryButton>
+            )}
+          </Stack>
           <Stack>
             <Accordian
               name="Projects"
