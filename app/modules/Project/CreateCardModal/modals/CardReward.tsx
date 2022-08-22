@@ -61,7 +61,7 @@ function CardReward() {
             <Text size="extraLarge" weight="semiBold">
               Chain
             </Text>
-            <Stack direction="horizontal">
+            <Stack direction="horizontal" wrap>
               {getFlattenedNetworks(registry as Registry)?.map((aChain) => (
                 <Box
                   key={aChain.name}
@@ -90,7 +90,7 @@ function CardReward() {
             <Text size="extraLarge" weight="semiBold">
               Token
             </Text>
-            <Stack direction="horizontal">
+            <Stack direction="horizontal" wrap>
               {getFlattenedCurrencies(registry as Registry, chain.chainId).map(
                 (aToken) => (
                   <Box

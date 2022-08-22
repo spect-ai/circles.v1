@@ -65,7 +65,7 @@ export default function DefaultPayment() {
         </Box>
         <Stack>
           <Text size="extraLarge">Chain</Text>
-          <Stack direction="horizontal">
+          <Stack direction="horizontal" wrap>
             {getFlattenedNetworks(registry as Registry)?.map((aChain) => (
               <Box
                 cursor="pointer"
@@ -93,7 +93,7 @@ export default function DefaultPayment() {
             ))}
           </Stack>
           <Text size="extraLarge">Whitelisted Tokens</Text>
-          <Stack direction="horizontal">
+          <Stack direction="horizontal" wrap>
             {getFlattenedCurrencies(
               registry as Registry,
               chain?.chainId as string
