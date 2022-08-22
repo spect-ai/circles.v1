@@ -129,7 +129,7 @@ function CreateSpaceModal() {
                 />
                 <Box width="full" marginTop="4">
                   <PrimaryButton onClick={onSubmit}>
-                    Create Workspace
+                    Create Workstream
                   </PrimaryButton>
                 </Box>
               </Stack>
