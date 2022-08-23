@@ -127,9 +127,13 @@ export function useProviderLocalCard({
     ["card", tId],
     () =>
       fetch(
-        `${process.env.API_HOST}/card/byProjectSlugAndCardSlug/${pId}/${tId}`,
+        `${process.env.API_HOST}/card/v1/byProjectSlugAndCardSlug/${pId}/${tId}`,
         { credentials: "include" }
-      ).then((res) => res.json()),
+      ).then((res) => {
+        console.log({ res });
+        if (res.status === 403) return { unauthorized: true };
+        return res.json();
+      }),
     {
       enabled: false,
     }
@@ -214,6 +218,7 @@ export function useProviderLocalCard({
   }, [tId]);
 
   useEffect(() => {
+    console.log(card);
     if (!createCard && card && card.id) {
       setCardId(card.id);
       setTitle(card.title);
@@ -236,7 +241,7 @@ export function useProviderLocalCard({
       setChildrenTasks(card.children);
       setParent(card.parent);
       setLoading(false);
-    }
+    } else if (card?.unauthorized) setLoading(false);
   }, [card, createCard]);
 
   const onSubmit = async (createAnother: boolean) => {

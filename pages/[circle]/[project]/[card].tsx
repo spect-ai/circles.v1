@@ -21,9 +21,12 @@ const CardPage: NextPage = () => {
   const { data: project, refetch: refetchProject } = useQuery<ProjectType>(
     ["project", pId],
     () =>
-      fetch(`${process.env.API_HOST}/project/slug/${pId as string}`).then(
-        (res) => res.json()
-      ),
+      fetch(`${process.env.API_HOST}/project/v1/slug/${pId as string}`, {
+        credentials: "include",
+      }).then((res) => {
+        if (res.status === 403) return { unauthorized: true };
+        return res.json();
+      }),
     {
       enabled: false,
     }

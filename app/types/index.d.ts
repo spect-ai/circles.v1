@@ -194,6 +194,7 @@ export interface CircleType {
   safeAddresses: SafeAddresses;
   toBeClaimed: boolean;
   qualifiedClaimee: string[];
+  unauthorized?: boolean;
 }
 
 // interface ProjectType {
@@ -243,6 +244,7 @@ export interface CardType {
   myApplication?: ApplicationType;
   children: CardType[];
   parent: CardType;
+  unauthorized?: boolean;
 }
 
 export interface ApplicationType {
@@ -304,6 +306,7 @@ export interface ProjectType {
   viewDetails?: {
     [key: string]: Views;
   };
+  unauthorized?: boolean;
 }
 
 interface ActionValidation {
@@ -455,7 +458,7 @@ export type Status = {
 export type Notification = {
   id: string;
   content: string;
-  type: 'card' | 'project' | 'circle' | 'retro';
+  type: "card" | "project" | "circle" | "retro";
   linkPath: string[];
   actor: string;
   timestamp: Date;

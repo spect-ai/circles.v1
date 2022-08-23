@@ -43,9 +43,12 @@ export function useProviderCircleContext() {
   } = useQuery<CircleType>(
     ["circle", cId],
     () =>
-      fetch(`${process.env.API_HOST}/circle/slug/${cId as string}`).then(
-        (res) => res.json()
-      ),
+      fetch(`${process.env.API_HOST}/circle/v1/slug/${cId as string}`, {
+        credentials: "include",
+      }).then((res) => {
+        if (res.status === 403) return { unauthorized: true };
+        return res.json();
+      }),
     {
       enabled: false,
     }

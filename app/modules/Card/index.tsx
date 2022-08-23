@@ -8,6 +8,7 @@ import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { useGlobal } from "@/app/context/globalContext";
 import {
   Box,
+  Button,
   IconChevronDown,
   IconChevronUp,
   IconClose,
@@ -15,6 +16,7 @@ import {
   IconUserSolid,
   Stack,
   Tag,
+  Text,
   useTheme,
 } from "degen";
 import { AnimatePresence } from "framer-motion";
@@ -111,6 +113,22 @@ function Card() {
   if (loading) {
     return <Loader loading text="Fetching" />;
   }
+
+  if (card?.unauthorized)
+    return (
+      <>
+        <Text size="headingTwo" weight="semiBold" ellipsis>
+          This project is private
+        </Text>
+        <Button
+          size="large"
+          variant="transparent"
+          onClick={() => router.back()}
+        >
+          <Text size="extraLarge">Go Back</Text>
+        </Button>
+      </>
+    );
 
   return (
     <Box padding="4">

@@ -1,5 +1,5 @@
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
-import { Box, useTheme } from "degen";
+import { Box, Button, Text, useTheme } from "degen";
 import React, { memo } from "react";
 import { useLocalProject } from "./Context/LocalProjectContext";
 import { useGlobal } from "@/app/context/globalContext";
@@ -52,6 +52,22 @@ function Project() {
   }
 
   const selectedView = project.viewDetails?.[viewId];
+
+  if (project?.unauthorized)
+    return (
+      <>
+        <Text size="headingTwo" weight="semiBold" ellipsis>
+          This project is private
+        </Text>
+        <Button
+          size="large"
+          variant="transparent"
+          onClick={() => router.back()}
+        >
+          <Text size="extraLarge">Go Back</Text>
+        </Button>
+      </>
+    );
 
   return (
     <>

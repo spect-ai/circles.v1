@@ -15,7 +15,7 @@ export default function useRoleGate() {
   const { card, cardActions } = useLocalCard();
 
   const canDo = (roles: string[]) => {
-    if (!connectedUser) {
+    if (!connectedUser || !circle?.memberRoles) {
       return false;
     }
     const arr1 = circle?.memberRoles[connectedUser];
