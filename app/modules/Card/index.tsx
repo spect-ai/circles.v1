@@ -235,7 +235,7 @@ function Card() {
                     crumbs={[
                       {
                         name: card?.parent.title,
-                        href: `/${cId}/${pId}/${card?.parent.slug}`,
+                        href: `/${cId}/${card.parent.project.slug}/${card?.parent.slug}`,
                       },
                       {
                         name: `#${card?.slug}`,
