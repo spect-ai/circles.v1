@@ -74,8 +74,35 @@ export default function useCardService() {
     return null;
   };
 
+  const updateCardProject = async (cardId: string, projectId: string) => {
+    setUpdating(true);
+    const res = await fetch(
+      `${process.env.API_HOST}/card/v1/${cardId}/updateProject`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          projectId,
+        }),
+        credentials: "include",
+      }
+    );
+    setUpdating(false);
+    if (res.ok) {
+      const data: CardType = await res.json();
+      void router.push(`/${cId}/${data.project.slug}/${data.slug}`);
+      console.log({ data });
+      return data;
+    }
+    toast.error("Error updating card project");
+    return null;
+  };
+
   return {
     callCreateCard,
+    updateCardProject,
     updateCard,
     archiveCard,
     updating,

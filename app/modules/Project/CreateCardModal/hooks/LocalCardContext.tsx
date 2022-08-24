@@ -41,6 +41,8 @@ type CreateCardContextType = {
   setReviewers: React.Dispatch<React.SetStateAction<string[]>>;
   columnId: string;
   setColumnId: React.Dispatch<React.SetStateAction<string>>;
+  projectId: string;
+  setProjectId: React.Dispatch<React.SetStateAction<string>>;
   cardType: string;
   setCardType: React.Dispatch<React.SetStateAction<string>>;
   chain: Chain;
@@ -170,6 +172,7 @@ export function useProviderLocalCard({
   const [assignees, setAssignees] = useState([] as string[]);
   const [reviewers, setReviewers] = useState([connectedUser] as string[]);
   const [columnId, setColumnId] = useState("");
+  const [projectId, setProjectId] = useState("");
   const [cardType, setCardType] = useState("Task");
   const [chain, setChain] = useState(circle?.defaultPayment?.chain as Chain);
   const [token, setToken] = useState(circle?.defaultPayment?.token as Token);
@@ -227,6 +230,7 @@ export function useProviderLocalCard({
       setAssignees(card.assignee);
       setReviewers(card.reviewer);
       setColumnId(card.columnId);
+      setProjectId(card.project.id);
       setCardType(card.type);
       setChain(card.reward.chain);
       setToken(card.reward.token);
@@ -347,6 +351,8 @@ export function useProviderLocalCard({
     setReviewers,
     columnId,
     setColumnId,
+    projectId,
+    setProjectId,
     cardType,
     setCardType,
     chain,

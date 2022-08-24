@@ -4,8 +4,8 @@ import { Box, IconCheck, IconSearch, Input, Stack, Tag, Text } from "degen";
 import { motion } from "framer-motion";
 import React, { memo, useEffect, useState } from "react";
 import { matchSorter } from "match-sorter";
-import { useLocalCard } from "../hooks/LocalCardContext";
-import { Option } from "../constants";
+import { useLocalCard } from "../../Project/CreateCardModal/hooks/LocalCardContext";
+import { Option } from "../../Project/CreateCardModal/constants";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
 

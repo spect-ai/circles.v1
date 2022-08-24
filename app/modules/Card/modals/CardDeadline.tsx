@@ -1,6 +1,6 @@
 import { Box, Stack, Text, useTheme } from "degen";
 import React, { forwardRef, memo, useEffect, useRef } from "react";
-import { useLocalCard } from "../hooks/LocalCardContext";
+import { useLocalCard } from "../../Project/CreateCardModal/hooks/LocalCardContext";
 import { CalendarOutlined } from "@ant-design/icons";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import ReactDatePicker from "react-datepicker";
