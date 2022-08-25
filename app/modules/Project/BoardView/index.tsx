@@ -48,10 +48,6 @@ function BoardView({ viewId }: Props) {
 
   const view = project.viewDetails?.[viewId];
   const viewFilter = view?.filters;
-
-  console.log(currentFilter);
-  
-
   const filteredCards = filterCards(project, currentFilter);
 
   useEffect(() => {
