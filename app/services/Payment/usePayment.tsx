@@ -1,7 +1,10 @@
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { useGlobal } from "@/app/context/globalContext";
+import { Registry } from "@/app/types";
 import { Stack } from "degen";
 import Link from "next/link";
+import { useRouter } from "next/router";
+import { useQuery } from "react-query";
 import { toast } from "react-toastify";
 import { useAccount, useNetwork } from "wagmi";
 import { gnosisPayment } from "../Gnosis";
@@ -33,6 +36,11 @@ export default function usePaymentGateway(
   const { data: account } = useAccount();
   const { activeChain, switchNetworkAsync } = useNetwork();
   const { connectedUser } = useGlobal();
+  const router = useRouter();
+  const { circle: cId } = router.query;
+  const { data: registry } = useQuery<Registry>(["registry", cId], {
+    enabled: false,
+  });
   async function handlePaymentError(
     err: any,
     expectedNetwork: string,
@@ -146,7 +154,9 @@ export default function usePaymentGateway(
           Transaction Successful
           <PrimaryButton>
             <Link
-              href={`https://mumbai.polygonscan.com/tx/${tx.transactionHash}`}
+              href={`${registry && registry[chainId].blockExplorer}/tx/${
+                tx.transactionHash
+              }`}
             >
               View Transaction
             </Link>

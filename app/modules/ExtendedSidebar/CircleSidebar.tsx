@@ -23,6 +23,7 @@ import ContributorsModal from "../Circle/ContributorsModal";
 import CreateRetroModal from "../Retro/CreateRetro/CreateRetroModal";
 import CircleOptions from "./CircleOptions";
 import CollapseButton from "./CollapseButton";
+import ExploreSidebar from "./ExploreSidebar";
 
 export const Container = styled(Box)`
   ::-webkit-scrollbar {
@@ -60,6 +61,7 @@ function CircleSidebar() {
     );
   }
 
+  if (circle?.unauthorized) return <ExploreSidebar />;
   return (
     <Box
       paddingY="2"

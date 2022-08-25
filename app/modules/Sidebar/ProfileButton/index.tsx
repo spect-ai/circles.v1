@@ -70,6 +70,7 @@ export default function ProfileButton() {
           </Stack>
         </Container>
         <Button
+          data-tour="profile-settings-button"
           shape="circle"
           size="small"
           variant="transparent"

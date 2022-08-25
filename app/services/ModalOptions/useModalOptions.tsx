@@ -1,5 +1,6 @@
 import { labels } from "@/app/common/utils/constants";
 import { useGlobal } from "@/app/context/globalContext";
+import { useCircle } from "@/app/modules/Circle/CircleContext";
 import {
   cardTypes,
   priority,
@@ -20,6 +21,7 @@ export default function useModalOptions() {
     }
   );
   const { project } = useLocalCard();
+  const { circle } = useCircle();
   const { connectedUser } = useGlobal();
 
   const fetchMemberDetails = () => {
@@ -43,6 +45,11 @@ export default function useModalOptions() {
         return project?.columnOrder?.map((column: string) => ({
           name: project?.columnDetails[column].name,
           value: column,
+        }));
+      case "project":
+        return circle?.projects.map((p) => ({
+          name: p.name,
+          value: p.id,
         }));
       case "assignee":
         // eslint-disable-next-line no-case-declarations

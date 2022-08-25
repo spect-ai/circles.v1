@@ -2,7 +2,7 @@ import Dropdown, { OptionType } from "@/app/common/components/Dropdown";
 import Modal from "@/app/common/components/Modal";
 import ConfirmModal from "@/app/common/components/Modal/ConfirmModal";
 import { fetchGuildChannels } from "@/app/services/Discord";
-import { deleteProject, patchProject } from "@/app/services/Project";
+import { archiveProject, patchProject } from "@/app/services/Project";
 import { SaveOutlined } from "@ant-design/icons";
 import { Box, Button, IconTrash, Input, Stack, Text } from "degen";
 import { AnimatePresence } from "framer-motion";
@@ -67,9 +67,9 @@ export default function ProjectSettings({ setIsOpen }: Props) {
     }
   };
 
-  const onDelete = async () => {
+  const onArchive = async () => {
     setIsLoading(true);
-    const data = await deleteProject(project.id);
+    const data = await archiveProject(project.id);
     updateProject(null as any);
     console.log({ data });
     setIsLoading(false);
@@ -82,11 +82,11 @@ export default function ProjectSettings({ setIsOpen }: Props) {
       <AnimatePresence>
         {showConfirm && (
           <ConfirmModal
-            title="Are you sure you want to delete the project, this cannot be undone?"
+            title="Are you sure you want to archive the project?"
             handleClose={() => setShowConfirm(false)}
             onConfirm={() => {
               setShowConfirm(false);
-              void onDelete();
+              void onArchive();
             }}
             onCancel={() => setShowConfirm(false)}
           />
@@ -154,7 +154,7 @@ export default function ProjectSettings({ setIsOpen }: Props) {
                 tone="red"
                 prefix={<IconTrash />}
               >
-                Delete
+                Archive
               </Button>
             </Stack>
           </Stack>

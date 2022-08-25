@@ -4,12 +4,12 @@ import {
   getFlattenedNetworks,
 } from "@/app/common/utils/registry";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
-import { Registry } from "@/app/types";
+import { Registry, Token } from "@/app/types";
 import { Box, IconEth, Input, Stack, Tag, Text } from "degen";
 import { useRouter } from "next/router";
 import React, { memo, useState } from "react";
 import { useQuery } from "react-query";
-import { useLocalCard } from "../hooks/LocalCardContext";
+import { useLocalCard } from "../../Project/CreateCardModal/hooks/LocalCardContext";
 
 function CardReward() {
   const [modalOpen, setModalOpen] = useState(false);
@@ -61,12 +61,13 @@ function CardReward() {
             <Text size="extraLarge" weight="semiBold">
               Chain
             </Text>
-            <Stack direction="horizontal">
+            <Stack direction="horizontal" wrap>
               {getFlattenedNetworks(registry as Registry)?.map((aChain) => (
                 <Box
                   key={aChain.name}
                   onClick={() => {
                     setChain(aChain);
+                    setToken({} as Token);
                   }}
                   cursor="pointer"
                 >
@@ -90,7 +91,7 @@ function CardReward() {
             <Text size="extraLarge" weight="semiBold">
               Token
             </Text>
-            <Stack direction="horizontal">
+            <Stack direction="horizontal" wrap>
               {getFlattenedCurrencies(registry as Registry, chain.chainId).map(
                 (aToken) => (
                   <Box

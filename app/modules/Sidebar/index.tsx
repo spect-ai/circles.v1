@@ -97,11 +97,7 @@ function Sidebar(): ReactElement {
         <Box borderBottomWidth="0.375" paddingY="3">
           {cId && circle ? (
             <Logo
-              href={
-                circle?.parents[0]
-                  ? `/${circle?.parents[0].slug}`
-                  : `/${circle?.slug}`
-              }
+              href={`/${circle?.slug}`}
               src={circle.avatar}
               gradient={circle.gradient}
             />

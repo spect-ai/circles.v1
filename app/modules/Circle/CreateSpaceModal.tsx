@@ -128,8 +128,11 @@ function CreateSpaceModal() {
                   unselectedColor="transparent"
                 />
                 <Box width="full" marginTop="4">
-                  <PrimaryButton onClick={onSubmit}>
-                    Create Workspace
+                  <PrimaryButton
+                    onClick={onSubmit}
+                    disabled={name.length === 0}
+                  >
+                    Create Workstream
                   </PrimaryButton>
                 </Box>
               </Stack>

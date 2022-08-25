@@ -1,16 +1,17 @@
 import EditTag from "@/app/common/components/EditTag";
 import ModalOption from "@/app/common/components/ModalOption";
-import { AuditOutlined } from "@ant-design/icons";
+import { ProjectOutlined } from "@ant-design/icons";
 import { Box, IconSearch, Input, Text } from "degen";
 import React, { memo, useEffect, useState } from "react";
+import { useLocalCard } from "../../Project/CreateCardModal/hooks/LocalCardContext";
+import { Option } from "../../Project/CreateCardModal/constants";
 import { matchSorter } from "match-sorter";
-import { useLocalCard } from "../hooks/LocalCardContext";
-import { Option } from "../constants";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
+import useCardService from "@/app/services/Card/useCardService";
 
-function CardType() {
-  const { cardType, setCardType, onCardUpdate, card } = useLocalCard();
+function CardProject() {
+  const { projectId, setProjectId, cardId, card } = useLocalCard();
   const [modalOpen, setModalOpen] = useState(false);
 
   const [options, setOptions] = useState<Option[]>();
@@ -19,21 +20,23 @@ function CardType() {
   const { canTakeAction } = useRoleGate();
   const { getOptions } = useModalOptions();
 
+  const { updateCardProject } = useCardService();
+
   useEffect(() => {
-    const ops = getOptions("card") as Option[];
+    const ops = getOptions("project") as Option[];
     setOptions(ops);
     setFilteredOptions(ops);
   }, []);
   return (
     <EditTag
-      tourId="create-card-modal-type"
-      name={cardType}
-      modalTitle="Select Card Type"
-      label="Card Type"
+      tourId="create-card-modal-project"
+      name={card?.project.slug || ""}
+      modalTitle="Select Project"
+      label="Project"
       modalOpen={modalOpen}
       setModalOpen={setModalOpen}
       icon={
-        <AuditOutlined
+        <ProjectOutlined
           style={{
             fontSize: "1rem",
             marginLeft: "0.2rem",
@@ -42,10 +45,10 @@ function CardType() {
           }}
         />
       }
-      disabled={!canTakeAction("cardType")}
+      disabled={!canTakeAction("cardColumn")}
       handleClose={() => {
-        if (card?.type !== cardType) {
-          void onCardUpdate();
+        if (card?.project.id !== projectId) {
+          void updateCardProject(cardId, projectId);
         }
         setModalOpen(false);
       }}
@@ -70,46 +73,37 @@ function CardType() {
           {filteredOptions?.map((item: any) => (
             <ModalOption
               key={item.value}
-              isSelected={cardType === item.value}
+              isSelected={projectId === item.value}
               item={item}
               onClick={() => {
-                setCardType(item.value);
+                setProjectId(item.value);
               }}
             >
-              <Box style={{ width: "15%" }}>
-                <item.icon
-                  color={cardType === item.value ? "accent" : "textSecondary"}
-                />
-              </Box>
               <Box
                 style={{
                   display: "flex",
                   flexDirection: "column",
                   alignItems: "center",
-                  width: "25%",
+                  width: "100%",
                 }}
               >
                 <Text
                   size="small"
-                  color={cardType === item.value ? "accent" : "text"}
+                  color={projectId === item.value ? "accent" : "text"}
                   weight="semiBold"
                 >
                   {item.name}
                 </Text>
               </Box>
-              <Box style={{ width: "65%" }}>
-                <Text size="label" color="textSecondary">
-                  {item.secondary}
-                </Text>
-              </Box>
             </ModalOption>
           ))}
           {!filteredOptions?.length && (
-            <Text variant="label">No Card type found</Text>
+            <Text variant="label">No project found</Text>
           )}
         </Box>
       </Box>
     </EditTag>
   );
 }
-export default memo(CardType);
+
+export default memo(CardProject);
