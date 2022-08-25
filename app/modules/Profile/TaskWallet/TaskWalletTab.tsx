@@ -295,7 +295,7 @@ const Notifications = ({ userData }: { userData: UserType }) => {
               backgroundColor={
                 notif?.read == false ? "accentTertiary" : "transparent"
               }
-              key={notif?.content}
+              key={notif?.id}
               onClick={() => window.open(link)}
             >
               {notif?.actor && userData?.userDetails?.[notif?.actor] && (
