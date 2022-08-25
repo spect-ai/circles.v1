@@ -32,8 +32,6 @@ type LocalProjectContextType = {
   setIsApplyModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
   isSubmitModalOpen: boolean;
   setIsSubmitModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  currentFilter: Filter;
-  setCurrentFilter: React.Dispatch<React.SetStateAction<Filter>>;
 };
 
 export const LocalProjectContext = createContext<LocalProjectContextType>(
@@ -83,7 +81,6 @@ export function useProviderLocalProject() {
   const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false);
 
   const [selectedCard, setSelectedCard] = useState({} as CardType | null);
-  const [currentFilter, setCurrentFilter] = useState({} as Filter);
 
   const updateProject = (project: ProjectType) => {
     queryClient.setQueryData(["project", pId], project);
@@ -137,8 +134,6 @@ export function useProviderLocalProject() {
     setIsApplyModalOpen,
     isSubmitModalOpen,
     setIsSubmitModalOpen,
-    currentFilter,
-    setCurrentFilter,
   };
 }
 

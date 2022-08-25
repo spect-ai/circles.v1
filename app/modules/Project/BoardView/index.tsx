@@ -16,6 +16,7 @@ import ColumnComponent from "../Column";
 import { SkeletonLoader } from "../SkeletonLoader";
 import { filterCards } from "../Filter/filterCards";
 import { CardsType, Filter } from "@/app/types";
+import { useGlobal } from "@/app/context/globalContext";
 
 interface Props {
   viewId: string;
@@ -39,18 +40,17 @@ const Container = styled.div`
 
 function BoardView({ viewId }: Props) {
   const { handleDragEnd } = useDragEnd();
-  const {
-    localProject: project,
-    setLocalProject,
-    loading,
-    currentFilter,
-  } = useLocalProject();
+  const { localProject: project, setLocalProject, loading } = useLocalProject();
+  const { currentFilter } = useGlobal();
   const { canDo } = useRoleGate();
 
   const [viewCards, setViewCards] = useState({} as CardsType);
 
   const view = project.viewDetails?.[viewId];
   const viewFilter = view?.filters;
+
+  console.log(currentFilter);
+  
 
   const filteredCards = filterCards(project, currentFilter);
 
