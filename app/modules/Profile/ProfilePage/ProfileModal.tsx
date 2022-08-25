@@ -12,8 +12,7 @@ import {
   Text,
   Button,
   Tag,
-  IconCheck,
-  Textarea
+  Textarea,
 } from "degen";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -105,7 +104,7 @@ export default function ProfileModal({ setIsOpen }: Props) {
             hideLabel
             placeholder="Username"
             value={username}
-            maxLength={15} 
+            maxLength={15}
             onChange={(e) => {
               setUsername(e.target.value);
               setIsDirty(true);
@@ -118,7 +117,7 @@ export default function ProfileModal({ setIsOpen }: Props) {
           <Textarea
             label
             hideLabel
-            maxLength={100} 
+            maxLength={100}
             rows={2}
             placeholder="About you under 100 characters"
             value={bio}
@@ -131,34 +130,40 @@ export default function ProfileModal({ setIsOpen }: Props) {
             <Text variant="label">Skills</Text>
             <Tag>Upto {10 - skills.length}</Tag>
           </Stack>
-          <Box display="flex" flexDirection="row" gap="1" flexWrap="wrap" marginBottom="4">
-          {skillsArray.map(skill => (
-            <Box
-              onClick={() => {
+          <Box
+            display="flex"
+            flexDirection="row"
+            gap="1.5"
+            flexWrap="wrap"
+            marginBottom="2"
+            justifyContent="center"
+          >
+            {skillsArray.map((skill) => (
+              <Box
+                onClick={() => {
                   if (skills.includes(skill)) {
                     setSkills(skills.filter((item) => item !== skill));
-                  } else if(skills.length < 10) {
+                  } else if (skills.length < 10) {
                     setSkills([...skills, skill]);
                   }
-                setIsDirty(true);
-              }}
-              style={{
-                cursor: "pointer"
-              }}
-              key={skill}
-            >
-              <Tag
-                size="medium"
-                hover
-                tone={skills.includes(skill) ? "accent" : "secondary"}
+                  setIsDirty(true);
+                }}
+                style={{
+                  cursor: "pointer",
+                }}
+                key={skill}
               >
-                <Box display="flex" alignItems="center">
-                  {skills.includes(skill) && <IconCheck size="4" />}
-                  {skill}
-                </Box>
-              </Tag>
-            </Box>
-          ))}
+                <Tag
+                  size="medium"
+                  hover
+                  tone={skills.includes(skill) ? "accent" : "secondary"}
+                >
+                  <Box display="flex" alignItems="center">
+                    {skill}
+                  </Box>
+                </Tag>
+              </Box>
+            ))}
           </Box>
           <PrimaryButton
             disabled={!isDirty || uploading || !username}
@@ -182,50 +187,70 @@ export default function ProfileModal({ setIsOpen }: Props) {
           >
             Save Profile
           </PrimaryButton>
-          <Stack direction="horizontal" >
-          {!currentUser?.discordId && (
-            <Link
-              href={`https://discord.com/api/oauth2/authorize?client_id=942494607239958609&redirect_uri=${
-                process.env.NODE_ENV === "development"
-                  ? "http%3A%2F%2Flocalhost%3A3000%2FlinkDiscord"
-                  : "https%3A%2F%2Fcircles.spect.network%2FlinkDiscord"
-              }&response_type=code&scope=identify`}
-            >
+          <Stack direction="horizontal">
+            {!currentUser?.discordId && (
+              <Link
+                href={`https://discord.com/api/oauth2/authorize?client_id=942494607239958609&redirect_uri=${
+                  process.env.NODE_ENV === "development"
+                    ? "http%3A%2F%2Flocalhost%3A3000%2FlinkDiscord"
+                    : "https%3A%2F%2Fcircles.spect.network%2FlinkDiscord"
+                }&response_type=code&scope=identify`}
+              >
+                <Button
+                  data-tour="connect-discord-button"
+                  width="full"
+                  size="small"
+                  variant="secondary"
+                  prefix={
+                    <Box marginTop="1">
+                      <DiscordIcon />
+                    </Box>
+                  }
+                >
+                  Connect Discord
+                </Button>
+              </Link>
+            )}
+            {currentUser?.discordId && (
               <Button
+                disabled
                 width="full"
                 size="small"
-                variant="secondary" 
                 prefix={
                   <Box marginTop="1">
                     <DiscordIcon />
-                  </Box>}
+                  </Box>
+                }
               >
-                Connect Discord
+                Discord Connected
               </Button>
-            </Link>
-          )}
-          {currentUser?.discordId && (
-            <Button
-              disabled
-              width="full"
-              size="small"
-              prefix={
-                <Box marginTop="1">
-                  <DiscordIcon />
-                </Box>
-              }
-            >
-              Discord Connected
-            </Button>
-          )}
-          {!currentUser?.githubId && (
-            <Link
-              href={`https://github.com/login/oauth/authorize?client_id=4403e769e4d52b24eeab`}
-            >
+            )}
+            {!currentUser?.githubId && (
+              <Link
+                href={`https://github.com/login/oauth/authorize?client_id=4403e769e4d52b24eeab`}
+              >
+                <Button
+                  data-tour="connect-github-button"
+                  width="full"
+                  size="small"
+                  variant="secondary"
+                  prefix={
+                    <GithubOutlined
+                      style={{
+                        fontSize: "1.3rem",
+                      }}
+                    />
+                  }
+                >
+                  Connect Github
+                </Button>
+              </Link>
+            )}
+            {currentUser?.githubId && (
               <Button
+                disabled
                 width="full"
                 size="small"
-                variant="secondary" 
                 prefix={
                   <GithubOutlined
                     style={{
@@ -234,26 +259,9 @@ export default function ProfileModal({ setIsOpen }: Props) {
                   />
                 }
               >
-                Connect Github
+                Github Connected
               </Button>
-            </Link>
-          )}
-          {currentUser?.githubId && (
-            <Button
-              disabled
-              width="full"
-              size="small"
-              prefix={
-                <GithubOutlined
-                  style={{
-                    fontSize: "1.3rem",
-                  }}
-                />
-              }
-            >
-              Github Connected
-            </Button>
-          )}
+            )}
           </Stack>
         </Stack>
       </Box>

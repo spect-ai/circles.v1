@@ -35,9 +35,9 @@ export default function Filter() {
     { enabled: false }
   );
 
-  const [filteredMembers, setFilteredMembers] = useState<
-    { name: string; id: string }[]
-  >([] as any);
+  const [filteredMembers, setFilteredMembers] = useState<OptionType[]>(
+    [] as OptionType[]
+  );
 
   useEffect(() => {
     if (circle) {
@@ -108,14 +108,14 @@ export default function Filter() {
               <div
                 style={{
                   backgroundColor: "rgb(191, 90, 242, 1)",
-                  height: "0.5rem",
-                  width: "0.5rem",
+                  height: "0.4rem",
+                  width: "0.4rem",
                   zIndex: 10,
                   borderRadius: "3rem",
                   position: "absolute",
-                  right: "0px",
+                  margin: "0px 8px 0px 15px",
                 }}
-              ></div>
+              />
             )}
             <FilterOutlined
               style={{
@@ -148,24 +148,24 @@ export default function Filter() {
             >
               <MultiSelectDropdown
                 width="22"
-                options={filteredMembers as OptionType[]}
+                options={filteredMembers}
                 value={assignee}
                 setValue={setAssignee}
                 title={"Assignee"}
               />
               <MultiSelectDropdown
                 width="22"
-                options={filteredMembers as OptionType[]}
+                options={filteredMembers}
                 value={reviewer}
                 setValue={setReviewer}
                 title={"Reviewer"}
               />
               <MultiSelectDropdown
                 width="22"
-                options={labels as OptionType[]}
-                value={label}
-                setValue={setLabels}
-                title={"Labels"}
+                options={cardType as OptionType[]}
+                value={type}
+                setValue={setType}
+                title={"Type"}
               />
               <MultiSelectDropdown
                 width="22"
@@ -183,10 +183,10 @@ export default function Filter() {
               />
               <MultiSelectDropdown
                 width="22"
-                options={cardType as OptionType[]}
-                value={type}
-                setValue={setType}
-                title={"Type"}
+                options={labels}
+                value={label}
+                setValue={setLabels}
+                title={"Labels"}
               />
               <InputBox mode={mode}>
                 <Input

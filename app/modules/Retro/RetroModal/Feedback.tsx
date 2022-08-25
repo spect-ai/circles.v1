@@ -71,7 +71,7 @@ export default function Feedback({ retroId, member, feedback }: Props) {
                         },
                       });
                       console.log({ res });
-                      setRetroData(res);
+                      // setRetroData(res);
                       setLoading(false);
                       if (res) {
                         setIsOpen(false);

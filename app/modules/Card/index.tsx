@@ -23,7 +23,6 @@ import { useRouter } from "next/router";
 import React, { memo, useEffect, useState } from "react";
 import { ToastContainer } from "react-toastify";
 import styled from "styled-components";
-import BatchPay from "../Project/BatchPay";
 import { useLocalCard } from "../Project/CreateCardModal/hooks/LocalCardContext";
 import CardAssignee from "../Project/CreateCardModal/modals/CardAssignee";
 import CardColumn from "../Project/CreateCardModal/modals/CardColumn";
@@ -96,7 +95,6 @@ function Card() {
   const { circle: cId, project: pId, card: tId } = router.query;
 
   const [isDirty, setIsDirty] = useState(false);
-  const [batchPayModalOpen, setBatchPayModalOpen] = useState(false);
   const [isApplyModalOpen, setIsApplyModalOpen] = useState(false);
   const { mode } = useTheme();
 
@@ -240,8 +238,12 @@ function Card() {
                     }}
                     onBlur={() => {
                       if (isDirty) {
-                        void onCardUpdate();
-                        setIsDirty(false);
+                        if (title.length > 0) {
+                          void onCardUpdate();
+                          setIsDirty(false);
+                        } else {
+                          setTitle(card?.title as string);
+                        }
                       }
                     }}
                     mode={mode}

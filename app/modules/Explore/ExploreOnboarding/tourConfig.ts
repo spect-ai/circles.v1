@@ -10,13 +10,14 @@ export const tourConfig = [
   },
   {
     selector: '[data-tour="profile-header-button"]',
-    content: "Change your profile",
+    content: "View your tasks and notifications from here",
     style: {
       backgroundColor: "rgb(20,20,20)",
       color: "rgb(255,255,255,0.8)",
     },
   },
   {
+    selector: '[data-tour="profile-settings-button"]',
     content: "Update your profile info from here",
     style: {
       backgroundColor: "rgb(20,20,20)",
@@ -25,7 +26,7 @@ export const tourConfig = [
     action: () => {
       // by using this, focus trap is temporary disabled
       // @ts-ignore
-      document.querySelector(`[data-tour="profile-header-button"]`)?.click();
+      document.querySelector(`[data-tour="profile-settings-button"]`)?.click();
       // node.click();
     },
   },

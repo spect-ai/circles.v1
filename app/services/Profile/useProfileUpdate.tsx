@@ -2,8 +2,8 @@ import queryClient from "@/app/common/utils/queryClient";
 import { toast } from "react-toastify";
 
 interface UpdateProfileDTO {
-  username: string;
-  avatar: string;
+  username?: string;
+  avatar?: string;
   bio?: string;
   skills?: string[];
   discordId?: string;

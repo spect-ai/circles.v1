@@ -11,6 +11,7 @@ interface Props {
   tourId?: string;
   width?: string;
   disableOutsideClick?: boolean;
+  dependentRef?: any;
 }
 
 /**
@@ -19,14 +20,22 @@ interface Props {
 export function useOutsideAlerter(
   ref: any,
   setIsOpen: (isOpen: boolean) => void,
-  disabled?: boolean
+  disabled?: boolean,
+  dependentRef?: any
 ) {
   useEffect(() => {
     /**
      * Alert if clicked on outside of element
      */
     function handleClickOutside(event: any) {
-      if (!disabled && ref.current && !ref.current.contains(event.target)) {
+      if (
+        !disabled &&
+        ref.current &&
+        !(
+          ref.current.contains(event.target) ||
+          dependentRef?.current?.contains(event.target)
+        )
+      ) {
         // alert("You clicked outside of me!");
         setIsOpen(false);
       }
@@ -48,9 +57,10 @@ const Popover: FC<Props> = ({
   tourId,
   width = "full",
   disableOutsideClick = false,
+  dependentRef,
 }) => {
   const wrapperRef = useRef(null);
-  useOutsideAlerter(wrapperRef, setIsOpen, disableOutsideClick);
+  useOutsideAlerter(wrapperRef, setIsOpen, disableOutsideClick, dependentRef);
 
   const [anchorElement, setAnchorElement] = useState<any>();
   const [popperElement, setPopperElement] = useState<any>();

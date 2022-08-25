@@ -17,8 +17,6 @@ export default function useConnectDiscord() {
       const data = await res.json();
       const profileRes = await updateProfile({
         discordId: data.userData.id,
-        username: data.userData.username,
-        avatar: `https://cdn.discordapp.com/avatars/${data.userData.id}/${data.userData.avatar}.png`,
       });
       console.log({ profileRes });
       if (profileRes) {

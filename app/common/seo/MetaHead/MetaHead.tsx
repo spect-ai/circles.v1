@@ -1,10 +1,16 @@
 import { NextSeo } from "next-seo";
 import { useRouter } from "next/router";
 
-export default function MetaHead(): JSX.Element {
-  const title = "Spect Circles";
-  const desc =
-    "Playground of coordination tools for DAO contributors to manage projects and fund each other";
+type props = {
+  title: string;
+  description: string;
+  image: string;
+};
+export default function MetaHead({
+  title,
+  description,
+  image,
+}: props): JSX.Element {
   const ogImgRelativePath = "/og.jpg";
 
   const siteURL = "https://circles.spect.network";
@@ -17,17 +23,17 @@ export default function MetaHead(): JSX.Element {
   return (
     <NextSeo
       title={title}
-      description={desc}
+      description={description}
       canonical={pageURL}
       openGraph={{
         type: "website",
         locale: "en_US", //  Default is en_US
         url: pageURL,
         title,
-        description: desc,
+        description: description,
         images: [
           {
-            url: ogImageURL,
+            url: image,
             width: 1200,
             height: 630,
             alt: "Spect Circles",
