@@ -63,7 +63,7 @@ function CardComponent({ card, index }: Props) {
       marginBottom="2"
       borderRadius="large"
       isDragging={snapshot.isDragging}
-      onClick={(e) => {
+      onClick={() => {
         void router.push(`/${cId}/${pId}/${card.slug}`);
       }}
       onMouseEnter={() => {

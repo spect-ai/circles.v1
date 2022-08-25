@@ -12,6 +12,7 @@ import { PriorityIcon } from "@/app/common/components/PriorityIcon";
 import Link from "next/link";
 import { useQuery } from "react-query";
 import { updateNotificationStatus } from "@/app/services/ProfileNotifications";
+import { useGlobal } from "@/app/context/globalContext";
 
 interface Props {
   toggle: string;
@@ -22,6 +23,12 @@ interface Props {
 interface UserProps {
   userData: UserType;
   tab: string;
+}
+
+interface NotifProps {
+  userData: UserType;
+  notifIds: string[];
+  setNotifIds: (notifIds: string[]) => void;
 }
 
 const ScrollContainer = styled(Box)`
@@ -243,28 +250,20 @@ const WorkCards: FunctionComponent<Props> = ({ toggle, userData }) => {
   );
 };
 
-const Notifications = ({ userData }: { userData: UserType }) => {
-  const [notifIds, setNotifIds] = useState([] as string[]);
+const Notifications = ({ userData, notifIds, setNotifIds}: NotifProps) => {
+  const { setNotifSeen } = useGlobal();
 
-  useEffect(() => {
-    if (userData?.notifications?.length > 0) {
-      userData?.notifications?.map((notif) => {
-        if (notif.read == false) setNotifIds([...notifIds, notif.id]);
-      });
-    }
-  }, [userData, userData?.notifications]);
+  setNotifSeen(true);
 
   if (notifIds.length > 0) {
     const update = async () => {
-      const res = await updateNotificationStatus({ notificationIds: notifIds });
-      console.log(res);
+      await updateNotificationStatus({ notificationIds: notifIds });
     };
     void update();
-    setNotifIds([]);
   }
 
   return (
-    <Box gap="0.5" display="flex" flexDirection="column" paddingTop={"5"}>
+    <Box gap="0.5" display="flex" flexDirection="column" marginTop="5">
       {userData?.notifications
         ?.slice(0)
         .reverse()
@@ -280,40 +279,40 @@ const Notifications = ({ userData }: { userData: UserType }) => {
             link = `/${notif?.linkPath?.[0]}?retroSlug=${notif?.linkPath?.[1]}`;
           }
           return (
-            <Box
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                flexWrap: "wrap",
-                gap: "0.4rem",
-                alignItems: "center",
-                cursor: "pointer",
-                padding: "1rem",
-                width: "39rem",
-                borderRadius: "0.5rem",
-              }}
-              backgroundColor={
-                notif?.read == false ? "accentTertiary" : "transparent"
-              }
-              key={notif?.content}
-              onClick={() => window.open(link)}
-            >
-              {notif?.actor && userData?.userDetails?.[notif?.actor] && (
-                <Avatar
-                  label="profile-pic"
-                  src={userData?.userDetails[notif?.actor]?.avatar}
-                  address={userData?.userDetails[notif?.actor]?.ethAddress}
-                  size="5"
-                />
-              )}
-              <Text>{notif?.content}</Text>
-              <Text variant="label">
-                {new Date(notif?.timestamp).toLocaleDateString() ==
-                new Date().toLocaleDateString()
-                  ? new Date(notif?.timestamp).toLocaleTimeString()
-                  : new Date(notif?.timestamp).toLocaleDateString()}
-              </Text>
-            </Box>
+            <Link href={link} key={notif?.id}>
+              <Box
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  flexWrap: "wrap",
+                  gap: "0.4rem",
+                  alignItems: "center",
+                  cursor: "pointer",
+                  padding: "1rem",
+                  width: "39rem",
+                  borderRadius: "0.5rem",
+                }}
+                backgroundColor={
+                  notif?.read == false ? "accentTertiary" : "transparent"
+                }
+              >
+                {notif?.actor && userData?.userDetails?.[notif?.actor] && (
+                  <Avatar
+                    label="profile-pic"
+                    src={userData?.userDetails[notif?.actor]?.avatar}
+                    address={userData?.userDetails[notif?.actor]?.ethAddress}
+                    size="5"
+                  />
+                )}
+                <Text>{notif?.content}</Text>
+                <Text variant="label">
+                  {new Date(notif?.timestamp).toLocaleDateString() ==
+                  new Date().toLocaleDateString()
+                    ? new Date(notif?.timestamp).toLocaleTimeString()
+                    : new Date(notif?.timestamp).toLocaleDateString()}
+                </Text>
+              </Box>
+            </Link>
           );
         })}
     </Box>
@@ -340,12 +339,24 @@ const BookMarks = () => {
 };
 
 const QuickProfileTabs = ({ userData, tab }: UserProps) => {
+  const [notifIds, setNotifIds] = useState([] as string[]);
   const [panelTab, setPanelTab] = useState(tab);
   const [toggle, setToggle] = useState("Assignee");
+
+  useEffect(() => {
+    
+    if (userData?.notifications?.length > 0) {
+      userData?.notifications?.map((notif) => {
+        if (notif.read == false) setNotifIds([...notifIds, notif.id]);
+      });
+    }
+  }, [userData, userData?.notifications]);
 
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
+
+  console.log(notifIds);
 
   return (
     <>
@@ -374,7 +385,7 @@ const QuickProfileTabs = ({ userData, tab }: UserProps) => {
               }
               onClick={() => setPanelTab("Notifications")}
             >
-              Notifications
+              Notifications {notifIds.length > 0 ? "("+(notifIds.length).toString()+")" : ""}
             </Button>
             <Button
               size="small"
@@ -402,7 +413,7 @@ const QuickProfileTabs = ({ userData, tab }: UserProps) => {
       )}
       {panelTab == "Notifications" && (
         <ScrollContainer overflow={"auto"}>
-          <Notifications userData={userData} />
+          <Notifications userData={userData} notifIds={notifIds} setNotifIds={setNotifIds} />
         </ScrollContainer>
       )}
       {panelTab == "Bookmarks" && (
