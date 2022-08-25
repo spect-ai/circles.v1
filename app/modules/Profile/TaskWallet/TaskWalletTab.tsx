@@ -264,7 +264,7 @@ const Notifications = ({ userData }: { userData: UserType }) => {
   }
 
   return (
-    <Box gap="0.5" display="flex" flexDirection="column" paddingTop={"5"}>
+    <Box gap="0.5" display="flex" flexDirection="column">
       {userData?.notifications
         ?.slice(0)
         .reverse()

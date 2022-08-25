@@ -41,8 +41,8 @@ function ProjectHeading() {
       justifyContent="space-between"
       alignItems="center"
       style={{
-        paddingTop: "0.79rem",
-        paddingBottom: "0.9rem",
+        paddingTop: "0.5rem",
+        paddingBottom: "0.3rem",
       }}
     >
       <Stack direction="horizontal" align="center">

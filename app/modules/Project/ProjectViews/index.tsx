@@ -24,18 +24,15 @@ const Container = styled(Box)<{ mode: string }>`
   flex-direction: row;
   align-items: center;
   gap: 0.2rem;
-  padding: 0.2rem;
+  padding: 0.1rem 0.2rem 0.5rem 0.5rem;
   max-width: 40vw;
   overflow: auto;
   ::-webkit-scrollbar {
-    width: 6px;
-    height: 3px;
+    height: 4px;
   }
   ::-webkit-scrollbar-thumb {
     background: ${(props) =>
-      props.mode === "dark"
-        ? "rgb(255, 255, 255, 0.2)"
-        : "rgb(0, 0, 0, 0.2)"};
+      props.mode === "dark" ? "rgb(255, 255, 255, 0.2)" : "rgb(0, 0, 0, 0.2)"};
     border-radius: 1rem;
   }
 `;
