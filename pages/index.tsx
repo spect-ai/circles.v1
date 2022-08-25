@@ -7,9 +7,9 @@ import MetaHead from "../app/common/seo/MetaHead/MetaHead";
 
 const Home: NextPage = () => {
   useQuery<CircleType>("exploreCircles", () =>
-    fetch(`${process.env.API_HOST}/circle/v1/allPublicParents`).then((res) =>
-      res.json()
-    )
+    fetch(`${process.env.API_HOST}/circle/v1/allPublicParents`, {
+      credentials: "include",
+    }).then((res) => res.json())
   );
 
   return (

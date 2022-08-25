@@ -54,6 +54,7 @@ type BatchPayInfo = {
     userIds: string[];
     values: number[];
   };
+  chainId: string;
 };
 
 export interface ColumnType {
@@ -153,6 +154,12 @@ export interface RetroType {
   };
   title: string;
   updatedtAt: string;
+}
+
+export interface BucketizedCircleType {
+  memberOf: CircleType[];
+  claimable: CircleType[];
+  joinable: CircleType[];
 }
 
 export interface CircleType {
