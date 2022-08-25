@@ -13,6 +13,8 @@ interface GlobalContextType {
   setViewName: React.Dispatch<React.SetStateAction<string>>;
   tab: string;
   setTab: React.Dispatch<React.SetStateAction<string>>;
+  notifseen: boolean;
+  setNotifSeen: (notifseen: boolean) => void;
 }
 
 const useProviderGlobalContext = () => {
@@ -23,6 +25,7 @@ const useProviderGlobalContext = () => {
   const [quickProfileUser, setQuickProfileUser] = useState("");
   const [viewName, setViewName] = useState("" as string);
   const [tab, setTab] = useState("Work");
+  const [notifseen, setNotifSeen] = useState(false);
 
   function connectUser(userId: string) {
     setConnectedUser(userId);
@@ -61,6 +64,8 @@ const useProviderGlobalContext = () => {
     setViewName,
     tab,
     setTab,
+    notifseen,
+    setNotifSeen,
   };
 };
 
