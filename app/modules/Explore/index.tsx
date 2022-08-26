@@ -46,12 +46,13 @@ const GridContainer = styled(Container)`
 `;
 
 export default function Explore() {
-  const { data: circles, isLoading } = useQuery<BucketizedCircleType>(
-    "exploreCircles",
-    {
-      enabled: false,
-    }
-  );
+  const {
+    data: circles,
+    isLoading,
+    refetch,
+  } = useQuery<BucketizedCircleType>("exploreCircles", {
+    enabled: false,
+  });
   const { connectedUser } = useGlobal();
   useJoinCircle();
   const { onboarded } = useExploreOnboarding();
@@ -59,17 +60,31 @@ export default function Explore() {
   const [filteredCircles, setFilteredCircles] = useState<CircleType[]>([]);
   const [joinableCircles, setJoinableCircles] = useState<CircleType[]>([]);
   const [claimableCircles, setClaimableCircles] = useState<CircleType[]>([]);
-
+  const { setIsSidebarExpanded } = useGlobal();
   const { mode } = useTheme();
 
   useEffect(() => {
-    console.log(circles);
     if (circles) {
       setFilteredCircles(circles.memberOf);
       setJoinableCircles(circles.joinable);
       setClaimableCircles(circles.claimable);
+      setIsSidebarExpanded(true);
     }
   }, [circles]);
+
+  useEffect(() => {
+    if (circles && !connectedUser) {
+      setFilteredCircles([]);
+      setJoinableCircles(circles.memberOf.concat(circles.joinable));
+      setClaimableCircles(circles.claimable);
+      setIsSidebarExpanded(true);
+    } else if (circles) {
+      setFilteredCircles(circles.memberOf);
+      setJoinableCircles(circles.joinable);
+      setClaimableCircles(circles.claimable);
+      setIsSidebarExpanded(true);
+    }
+  }, [connectedUser]);
 
   if (isLoading) {
     return <Loader text="" loading />;
@@ -118,66 +133,101 @@ export default function Explore() {
             }}
           />
         </Box>
-        <Text size="headingTwo" weight="semiBold" ellipsis>
-          Your Circles
-        </Text>{" "}
-        <Row>
-          {filteredCircles?.map &&
-            filteredCircles?.map((circle: CircleType) => (
-              <Col key={circle.id} xs={10} sm={6} md={3}>
-                <CircleCard
-                  href={`/${circle.slug}`}
-                  name={circle.name}
-                  description={circle.description}
-                  gradient={circle.gradient}
-                  logo={circle.avatar}
-                />
-              </Col>
-            ))}
-          <Col key={`circle.id`} xs={10} sm={6} md={3}>
-            <CreateCircleCard />
-          </Col>
-        </Row>
-        <Text size="headingTwo" weight="semiBold" ellipsis>
-          Explore Circles
-        </Text>{" "}
-        <Row>
-          {joinableCircles?.map &&
-            joinableCircles?.map((circle: CircleType) => (
-              <Col key={circle.id} xs={10} sm={6} md={3}>
-                <CircleCard
-                  href={`/${circle.slug}`}
-                  name={circle.name}
-                  description={circle.description}
-                  gradient={circle.gradient}
-                  logo={circle.avatar}
-                />
-              </Col>
-            ))}
-          <Col key={`circle.id`} xs={10} sm={6} md={3}>
-            <CreateCircleCard />
-          </Col>
-        </Row>
-        <Text size="headingTwo" weight="semiBold" ellipsis>
-          Claim Circles
-        </Text>{" "}
-        <Row>
-          {claimableCircles?.map &&
-            claimableCircles?.map((circle: CircleType) => (
-              <Col key={circle.id} xs={10} sm={6} md={3}>
-                <CircleCard
-                  href={`/${circle.slug}`}
-                  name={circle.name}
-                  description={circle.description}
-                  gradient={circle.gradient}
-                  logo={circle.avatar}
-                />
-              </Col>
-            ))}
-          <Col key={`circle.id`} xs={10} sm={6} md={3}>
-            <CreateCircleCard />
-          </Col>
-        </Row>
+        {connectedUser && (
+          <>
+            {" "}
+            <Box
+              marginBottom={{ xs: "2", md: "4" }}
+              marginTop={{ xs: "2", md: "4" }}
+            >
+              <Box
+                marginBottom={{ xs: "1", md: "2" }}
+                marginLeft={{ xs: "1", md: "2" }}
+              >
+                <Text size="headingTwo" weight="semiBold" ellipsis>
+                  Your Circles
+                </Text>
+              </Box>
+              <Row>
+                {filteredCircles?.map &&
+                  filteredCircles?.map((circle: CircleType) => (
+                    <Col key={circle.id} xs={10} sm={6} md={3}>
+                      <CircleCard
+                        href={`/${circle.slug}`}
+                        name={circle.name}
+                        description={circle.description}
+                        gradient={circle.gradient}
+                        logo={circle.avatar}
+                      />
+                    </Col>
+                  ))}
+                <Col key={`circle.id`} xs={10} sm={6} md={3}>
+                  <CreateCircleCard />
+                </Col>
+              </Row>{" "}
+            </Box>
+          </>
+        )}
+        <Box
+          marginBottom={{ xs: "2", md: "4" }}
+          marginTop={{ xs: "2", md: "4" }}
+        >
+          <Box
+            marginBottom={{ xs: "1", md: "2" }}
+            marginLeft={{ xs: "1", md: "2" }}
+          >
+            <Text size="headingTwo" weight="semiBold" ellipsis>
+              Explore Circles
+            </Text>{" "}
+          </Box>
+          <Row>
+            {joinableCircles?.map &&
+              joinableCircles?.map((circle: CircleType) => (
+                <Col key={circle.id} xs={10} sm={6} md={3}>
+                  <CircleCard
+                    href={`/${circle.slug}`}
+                    name={circle.name}
+                    description={circle.description}
+                    gradient={circle.gradient}
+                    logo={circle.avatar}
+                  />
+                </Col>
+              ))}
+            <Col key={`circle.id`} xs={10} sm={6} md={3}>
+              <CreateCircleCard />
+            </Col>
+          </Row>
+        </Box>
+        <Box
+          marginBottom={{ xs: "2", md: "4" }}
+          marginTop={{ xs: "2", md: "4" }}
+        >
+          <Box
+            marginBottom={{ xs: "1", md: "2" }}
+            marginLeft={{ xs: "1", md: "2" }}
+          >
+            <Text size="headingTwo" weight="semiBold" ellipsis>
+              Claim Circles
+            </Text>{" "}
+          </Box>
+          <Row>
+            {claimableCircles?.map &&
+              claimableCircles?.map((circle: CircleType) => (
+                <Col key={circle.id} xs={10} sm={6} md={3}>
+                  <CircleCard
+                    href={`/${circle.slug}`}
+                    name={circle.name}
+                    description={circle.description}
+                    gradient={circle.gradient}
+                    logo={circle.avatar}
+                  />
+                </Col>
+              ))}
+            <Col key={`circle.id`} xs={10} sm={6} md={3}>
+              <CreateCircleCard />
+            </Col>
+          </Row>
+        </Box>
       </GridContainer>
     </ScrollContainer>
   );

@@ -1,5 +1,8 @@
+import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { useGlobal } from "@/app/context/globalContext";
 import { Box, Heading, Stack, useTheme } from "degen";
+import Link from "next/link";
+import { useRouter } from "next/router";
 import { useState } from "react";
 import styled from "styled-components";
 import ConnectModal from "../Sidebar/ProfileButton/ConnectModal";
@@ -19,7 +22,7 @@ export default function ExploreSidebar() {
   const { connectedUser } = useGlobal();
   const [showCollapseButton, setShowCollapseButton] = useState(false);
   const { mode } = useTheme();
-
+  const router = useRouter();
   return (
     <Box
       padding="2"
@@ -42,6 +45,42 @@ export default function ExploreSidebar() {
             left="21rem"
           />
           <Box marginTop="2" marginX="1">
+            {connectedUser && (
+              <Stack key="Dashboard" direction="horizontal" space="0">
+                {/* <Box borderRightWidth="0.5" /> */}
+                <Box width="full" padding="1">
+                  <Link href={`/`} key="Dashboard">
+                    <PrimaryButton
+                      variant={
+                        Object.keys(router.query)?.length === 0
+                          ? "tertiary"
+                          : "transparent"
+                      }
+                    >
+                      Dashboard
+                    </PrimaryButton>
+                  </Link>
+                </Box>
+              </Stack>
+            )}
+            {connectedUser && (
+              <Stack key="Profile" direction="horizontal" space="0">
+                {/* <Box borderRightWidth="0.5" /> */}
+                <Box width="full" padding="1">
+                  <Link href={`/profile/${connectedUser}`} key="Profile">
+                    <PrimaryButton
+                      variant={
+                        router.query?.user === connectedUser
+                          ? "tertiary"
+                          : "transparent"
+                      }
+                    >
+                      Profile
+                    </PrimaryButton>
+                  </Link>
+                </Box>
+              </Stack>
+            )}
             {!connectedUser && <ConnectModal />}
           </Box>
         </Container>
