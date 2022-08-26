@@ -37,7 +37,7 @@ export default function ProfileButton() {
 
   useEffect(() => {
     void fetchUser();
-  }, [currentUser, fetchUser]);
+  }, [currentUser, fetchUser, isOpen]);
 
   useEffect(() => {
     if ((currentUser as UserType)?.notifications?.length > 0) {

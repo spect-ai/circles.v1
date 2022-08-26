@@ -250,7 +250,7 @@ const WorkCards: FunctionComponent<Props> = ({ toggle, userData }) => {
   );
 };
 
-const Notifications = ({ userData, notifIds, setNotifIds}: NotifProps) => {
+const Notifications = ({ userData, notifIds, setNotifIds }: NotifProps) => {
   const { setNotifSeen } = useGlobal();
 
   setNotifSeen(true);
@@ -274,7 +274,8 @@ const Notifications = ({ userData, notifIds, setNotifIds}: NotifProps) => {
           } else if (notif.type == "project") {
             link = `/${notif?.linkPath?.[0]}/${notif?.linkPath?.[1]}`;
           } else if (notif.type == "card") {
-            link = `/${notif?.linkPath?.[0]}/${notif?.linkPath?.[1]}/${notif?.linkPath?.[2]}`;
+            const card = userData?.cardDetails?.[notif?.entityId as string];
+            link = `/${card?.circle?.slug}/${card?.project?.slug}/${card?.slug}`;
           } else if (notif.type == "retro") {
             link = `/${notif?.linkPath?.[0]}?retroSlug=${notif?.linkPath?.[1]}`;
           }
@@ -344,7 +345,6 @@ const QuickProfileTabs = ({ userData, tab }: UserProps) => {
   const [toggle, setToggle] = useState("Assignee");
 
   useEffect(() => {
-    
     if (userData?.notifications?.length > 0) {
       userData?.notifications?.map((notif) => {
         if (notif.read == false) setNotifIds([...notifIds, notif.id]);
@@ -355,8 +355,6 @@ const QuickProfileTabs = ({ userData, tab }: UserProps) => {
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
-
-  console.log(notifIds);
 
   return (
     <>
@@ -385,7 +383,10 @@ const QuickProfileTabs = ({ userData, tab }: UserProps) => {
               }
               onClick={() => setPanelTab("Notifications")}
             >
-              Notifications {notifIds.length > 0 ? "("+(notifIds.length).toString()+")" : ""}
+              Notifications{" "}
+              {notifIds.length > 0
+                ? "(" + notifIds.length.toString() + ")"
+                : ""}
             </Button>
             <Button
               size="small"
@@ -413,7 +414,11 @@ const QuickProfileTabs = ({ userData, tab }: UserProps) => {
       )}
       {panelTab == "Notifications" && (
         <ScrollContainer overflow={"auto"}>
-          <Notifications userData={userData} notifIds={notifIds} setNotifIds={setNotifIds} />
+          <Notifications
+            userData={userData}
+            notifIds={notifIds}
+            setNotifIds={setNotifIds}
+          />
         </ScrollContainer>
       )}
       {panelTab == "Bookmarks" && (
