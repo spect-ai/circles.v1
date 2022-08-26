@@ -22,7 +22,7 @@ const getUser = async () => {
 
 const ProfilePage: NextPage = () => {
   const router = useRouter();
-  const userId = router.query.user;
+  const username = router.query.user;
   const {
     isProfilePanelExpanded,
     connectUser,
@@ -49,9 +49,9 @@ const ProfilePage: NextPage = () => {
   }, []);
 
   const { data: user, refetch: fetchUser } = useQuery<UserType>(
-    ["user", userId],
+    ["user", username],
     async () =>
-      await fetch(`${process.env.API_HOST}/user/${userId}`).then((res) =>
+      await fetch(`${process.env.API_HOST}/user/username/${username}`).then((res) =>
         res.json()
       ),
     {
@@ -62,12 +62,12 @@ const ProfilePage: NextPage = () => {
   if (!connectedUser) setIsSidebarExpanded(true);
 
   useEffect(() => {
-    if (userId) {
+    if (username) {
       void fetchUser();
     }
     setIsSidebarExpanded(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user, userId, fetchUser]);
+  }, [user, username, fetchUser]);
 
   return (
     <>
@@ -79,10 +79,10 @@ const ProfilePage: NextPage = () => {
       <PublicLayout>
         {isLoading ||
           !user?.id ||
-          (!userId && <Loader loading text="fetching" />)}
+          (!username && <Loader loading text="fetching" />)}
         <Box display="flex" flexDirection="row">
-          <ProfileCard userId={userId as string} />
-          <ProfileTabs userId={userId as string} />
+          <ProfileCard username={username as string} />
+          <ProfileTabs username={username as string} />
         </Box>
       </PublicLayout>
       {isProfilePanelExpanded && <TaskWalletPanel tab={tab} />}

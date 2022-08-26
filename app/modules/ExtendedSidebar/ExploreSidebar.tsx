@@ -8,6 +8,8 @@ import styled from "styled-components";
 import ConnectModal from "../Sidebar/ProfileButton/ConnectModal";
 import { Container } from "./CircleSidebar";
 import CollapseButton from "./CollapseButton";
+import { useQuery } from "react-query";
+import { UserType } from "@/app/types";
 
 export const HeaderButton = styled(Box)<{ mode: string }>`
   cursor: pointer;
@@ -19,6 +21,9 @@ export const HeaderButton = styled(Box)<{ mode: string }>`
 `;
 
 export default function ExploreSidebar() {
+  const { data: currentUser } = useQuery<UserType>("getMyUser", {
+    enabled: false,
+  });
   const { connectedUser } = useGlobal();
   const [showCollapseButton, setShowCollapseButton] = useState(false);
   const { mode } = useTheme();
@@ -67,7 +72,10 @@ export default function ExploreSidebar() {
               <Stack key="Profile" direction="horizontal" space="0">
                 {/* <Box borderRightWidth="0.5" /> */}
                 <Box width="full" padding="1">
-                  <Link href={`/profile/${connectedUser}`} key="Profile">
+                  <Link
+                    href={`/profile/${currentUser?.username}`}
+                    key="Profile"
+                  >
                     <PrimaryButton
                       variant={
                         router.query?.user === connectedUser
