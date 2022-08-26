@@ -46,7 +46,7 @@ export const QuickProfileHeader = React.memo(({ userData }: { userData: UserType
         flexDirection="row"
         gap="1.5"
       >
-        <Link href={`/profile/${userData?.id}`}>
+        <Link href={`/profile/${userData?.username}`}>
           <Button
             size="small"
             variant="secondary"
