@@ -172,7 +172,7 @@ export default function SelectCards() {
                 );
                 const res = await getAgregatedPaymentInfo(
                   selectedCards,
-                  project.parents[0].defaultPayment.chain.chainId
+                  project.cards[filteredCards[0]].reward.chain.chainId
                 );
                 console.log({ res });
                 // cards with token address 0x0

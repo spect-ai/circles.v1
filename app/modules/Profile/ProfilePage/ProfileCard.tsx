@@ -18,7 +18,7 @@ import ProfileModal from "./ProfileModal";
 import { AnimatePresence } from "framer-motion";
 
 interface Props {
-  userId: string;
+  username: string;
 }
 
 const Profile = styled(Box)<{ mode: string }>`
@@ -74,7 +74,7 @@ const FollowCount = styled(Box)`
   padding: 1rem;
 `;
 
-const ProfileCard = ({ userId }: Props) => {
+const ProfileCard = ({ username }: Props) => {
   const { mode } = useTheme();
   const { isSidebarExpanded } = useGlobal();
   const [isOpen, setIsOpen] = useState(false);
@@ -84,9 +84,9 @@ const ProfileCard = ({ userId }: Props) => {
   });
 
   const { data: user, refetch: fetchUser } = useQuery<UserType>(
-    ["user", userId],
+    ["user", username],
     async () =>
-      await fetch(`${process.env.API_HOST}/user/${userId}`).then((res) =>
+      await fetch(`${process.env.API_HOST}/user/username/${username}`).then((res) =>
         res.json()
       ),
     {
@@ -96,7 +96,7 @@ const ProfileCard = ({ userId }: Props) => {
 
   useEffect(() => {
     void fetchUser();
-  }, [user, userId, isOpen, fetchUser, isSidebarExpanded]);
+  }, [user, username, isOpen, fetchUser, isSidebarExpanded]);
 
   const { data: myCircles, refetch } = useQuery<CircleType[]>(
     "myOrganizations",

@@ -42,7 +42,8 @@ export default function ApproveToken() {
 
   const circleSafe =
     (circle?.safeAddresses &&
-      circle?.safeAddresses[Object.keys(circle?.safeAddresses || {})[0]][0]) ||
+      batchPayInfo &&
+      circle?.safeAddresses[batchPayInfo?.chainId][0]) ||
     "";
 
   useEffect(() => {
@@ -89,9 +90,7 @@ export default function ApproveToken() {
     } else {
       console.log(circle);
       switchNetworkAsync &&
-        void switchNetworkAsync(
-          parseInt(circle?.defaultPayment.chain.chainId as string)
-        );
+        void switchNetworkAsync(parseInt(batchPayInfo?.chainId as string));
       setLoading(false);
     }
     // set to final step if all tokens approved
@@ -133,11 +132,10 @@ export default function ApproveToken() {
                   <Box key={index}>
                     <Stack>
                       <Text variant="base" weight="semiBold">
-                        {
-                          registry[
-                            circle?.defaultPayment.chain.chainId as string
-                          ]?.tokenDetails[tokenAddress]?.symbol
-                        }
+                        {batchPayInfo &&
+                          registry[batchPayInfo.chainId]?.tokenDetails[
+                            tokenAddress
+                          ]?.symbol}
                       </Text>
                       <Box width="1/3">
                         <PrimaryButton
@@ -165,7 +163,7 @@ export default function ApproveToken() {
                               },
                             });
                             const res = await approve(
-                              circle?.defaultPayment.chain.chainId as string,
+                              batchPayInfo?.chainId,
                               tokenAddress,
                               circleSafe || ""
                             );
