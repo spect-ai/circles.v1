@@ -33,6 +33,7 @@ function ProjectHeading() {
   return (
     <Box
       width="full"
+      height="16"
       paddingRight="8"
       paddingLeft="5"
       borderBottomWidth="0.375"
@@ -41,8 +42,8 @@ function ProjectHeading() {
       justifyContent="space-between"
       alignItems="center"
       style={{
-        paddingTop: "0.79rem",
-        paddingBottom: "0.9rem",
+        paddingTop: "0.5rem",
+        paddingBottom: "0.4rem",
       }}
     >
       <Stack direction="horizontal" align="center">

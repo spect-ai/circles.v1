@@ -19,23 +19,35 @@ const Container = styled(Box)<{ mode: string }>`
 `;
 
 export default function ProfileButton() {
-  const { data: currentUser } = useQuery<UserType>("getMyUser", {
-    enabled: false,
-  });
-
-  const { openQuickProfile, setTab } = useGlobal();
+  const { openQuickProfile, setTab, notifseen, setNotifSeen } = useGlobal();
   const [isOpen, setIsOpen] = useState(false);
   const { mode } = useTheme();
 
   const [notifIds, setNotifIds] = useState([] as string[]);
+  const { data: currentUser, refetch: fetchUser } = useQuery<UserType>(
+    "user",
+    async () =>
+      await fetch(`${process.env.API_HOST}/user/me`, {
+        credentials: "include",
+      }).then((res) => res.json()),
+    {
+      enabled: false,
+    }
+  );
+
+  useEffect(() => {
+    void fetchUser();
+  }, [currentUser, fetchUser]);
 
   useEffect(() => {
     if ((currentUser as UserType)?.notifications?.length > 0) {
       currentUser?.notifications?.map((notif) => {
         if (notif.read == false) setNotifIds([...notifIds, notif.id]);
       });
+      setTimeout(() => {
+        if (notifIds.length > 0) setNotifSeen(false);
+      }, 8000);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentUser?.notifications]);
 
   return (
@@ -44,7 +56,7 @@ export default function ProfileButton() {
         borderTopWidth="0.375"
         paddingTop="2"
         marginX="4"
-        display={"flex"}
+        display="flex"
         flexDirection="row"
         gap="1"
         alignItems="center"
@@ -88,15 +100,15 @@ export default function ProfileButton() {
             setTab("Notifications");
             openQuickProfile((currentUser as UserType).id);
             setNotifIds([]);
+            setNotifSeen(true);
           }}
         >
-          {notifIds.length > 0 && (
+          {!notifseen && notifIds.length > 0 && (
             <div
               style={{
                 backgroundColor: "rgb(191, 90, 242, 1)",
                 height: "0.5rem",
                 width: "0.5rem",
-                zIndex: 10,
                 borderRadius: "3rem",
                 position: "absolute",
                 margin: "0px 8px 0px 15px",

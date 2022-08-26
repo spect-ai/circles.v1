@@ -240,7 +240,7 @@ const Retro = ({ userData }: { userData: UserType }) => {
             key={ret}
             onClick={() =>
               window.open(
-                `/${retroInfo?.circle?.name}?retroSlug=${retroInfo?.slug}`
+                `/${retroInfo?.circle?.slug}?retroSlug=${retroInfo?.slug}`
               )
             }
           >
