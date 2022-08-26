@@ -81,7 +81,7 @@ function BoardView({ viewId }: Props) {
     <Container {...provided.droppableProps} ref={provided.innerRef}>
       <Stack direction="horizontal">
         {!viewId &&
-          advFilters.groupBy == "Status" &&
+          advFilters?.groupBy == "Status" &&
           project?.columnOrder?.map((columnId, index): any => {
             const column = project.columnDetails[columnId];
             let cards = column.cards?.map(
@@ -102,7 +102,7 @@ function BoardView({ viewId }: Props) {
             );
           })}
         {!viewId &&
-          advFilters.groupBy == "Assignee" &&
+          advFilters?.groupBy == "Assignee" &&
           assigneeIds?.map((assigneeId, index): any => {
             const column = assigneecolumn?.[index];
             const cards = groupByAssignee(assigneeId as string, filteredCards);

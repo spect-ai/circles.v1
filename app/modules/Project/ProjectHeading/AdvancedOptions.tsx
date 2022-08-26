@@ -12,13 +12,23 @@ type ColumnProps = {
   column: any;
 };
 
+const BoundingBox = styled(Box)<{ mode: string }>`
+  padding: 0.2rem;
+  margin: 0.3rem;
+  border-radius: 0.5rem;
+  background-color: ${({ mode }) =>
+    mode === "dark" ? "rgba(255, 255, 255, 0.01)" : "rgba(0, 0, 0, 0.02)"};
+`;
+
 const Input = styled.input`
   background-color: transparent;
   border: none;
-  padding: 0.8rem;
+  margin: 0.4rem;
+  padding: 0.4rem;
   display: flex;
   border-style: none;
   border-color: transparent;
+  border-radius: 0.4rem;
   outline: none;
   outline-offset: 0;
   box-shadow: none;
@@ -132,23 +142,20 @@ function AdvancedOptions() {
   const { mode } = useTheme();
 
   return (
-    <Box
+    <BoundingBox
       width="full"
       height="10"
       display="flex"
       flexDirection="row"
       justifyContent="space-between"
       alignItems="center"
-      style={{
-        padding: "0.5rem",
-        borderRadius: "0.5rem",
-      }}
+      mode={mode}
     >
       <Box
         display="flex"
         flexDirection="row"
         alignItems="center"
-        paddingLeft="4"
+        paddingLeft="3"
       >
         <IconSearch size="4" color="foreground" />
         <Input
@@ -173,7 +180,9 @@ function AdvancedOptions() {
               cursor: "pointer",
             }}
           >
-            <Tag size="medium">Clear</Tag>
+            <Tag size="medium" hover>
+              Clear
+            </Tag>
           </Box>
         )}
       </Box>
@@ -230,7 +239,7 @@ function AdvancedOptions() {
           </Box>
         </Popover>
       </Box>
-    </Box>
+    </BoundingBox>
   );
 }
 

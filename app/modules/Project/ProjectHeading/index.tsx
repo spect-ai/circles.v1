@@ -38,6 +38,8 @@ function ProjectHeading() {
       flexDirection="column"
       alignItems="center"
       borderBottomWidth="0.375"
+      paddingLeft="3"
+      paddingRight="5"
     >
       <Box
         width="full"
@@ -49,7 +51,7 @@ function ProjectHeading() {
         // borderBottomWidth="0.375"
         style={{
           paddingTop: "0.5rem",
-          paddingBottom: "0.4rem",
+          paddingBottom: "0.0rem",
         }}
       >
         <Stack direction="horizontal" align="center" >
