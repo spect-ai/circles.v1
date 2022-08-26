@@ -4,7 +4,7 @@ import {
   CardType,
   ProjectCardActionsType,
   ProjectType,
-  Filter,
+  AdvancedFilters,
 } from "@/app/types";
 import { useRouter } from "next/router";
 import React, { createContext, useContext, useEffect, useState } from "react";
@@ -32,6 +32,8 @@ type LocalProjectContextType = {
   setIsApplyModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
   isSubmitModalOpen: boolean;
   setIsSubmitModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  advFilters: AdvancedFilters;
+  setAdvFilters: React.Dispatch<React.SetStateAction<AdvancedFilters>>;
 };
 
 export const LocalProjectContext = createContext<LocalProjectContextType>(
@@ -81,6 +83,8 @@ export function useProviderLocalProject() {
   const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false);
 
   const [selectedCard, setSelectedCard] = useState({} as CardType | null);
+
+  const [advFilters, setAdvFilters] = useState<AdvancedFilters>({inputTitle: "", groupBy: "Status"});
 
   const updateProject = (project: ProjectType) => {
     queryClient.setQueryData(["project", pId], project);
@@ -134,6 +138,8 @@ export function useProviderLocalProject() {
     setIsApplyModalOpen,
     isSubmitModalOpen,
     setIsSubmitModalOpen,
+    advFilters,
+    setAdvFilters,
   };
 }
 

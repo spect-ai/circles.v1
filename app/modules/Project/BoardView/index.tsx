@@ -17,6 +17,12 @@ import { SkeletonLoader } from "../SkeletonLoader";
 import { filterCards } from "../Filter/filterCards";
 import { CardsType, Filter } from "@/app/types";
 import { useGlobal } from "@/app/context/globalContext";
+import {
+  titleFilter,
+  groupByAssignee,
+  AssigneeColumn,
+} from "@/app/modules/Project/ProjectHeading/AdvancedOptions";
+import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
 
 interface Props {
   viewId: string;
@@ -40,7 +46,12 @@ const Container = styled.div`
 
 function BoardView({ viewId }: Props) {
   const { handleDragEnd } = useDragEnd();
-  const { localProject: project, setLocalProject, loading } = useLocalProject();
+  const {
+    localProject: project,
+    setLocalProject,
+    loading,
+    advFilters,
+  } = useLocalProject();
   const { currentFilter } = useGlobal();
   const { canDo } = useRoleGate();
 
@@ -49,6 +60,17 @@ function BoardView({ viewId }: Props) {
   const view = project.viewDetails?.[viewId];
   const viewFilter = view?.filters;
   const filteredCards = filterCards(project, currentFilter);
+
+  const { getOptions } = useModalOptions();
+
+  const options = getOptions("assignee");
+  const assigneeIds = options?.map((person) => person.value);
+  const assigneecolumn = options?.map((person) => ({
+    columnId: person.value,
+    name: person.name,
+    cards: [],
+    defaultCardType: "Task",
+  }));
 
   useEffect(() => {
     const vCards = filterCards(project, viewFilter as Filter);
@@ -59,18 +81,41 @@ function BoardView({ viewId }: Props) {
     <Container {...provided.droppableProps} ref={provided.innerRef}>
       <Stack direction="horizontal">
         {!viewId &&
+          advFilters.groupBy == "Status" &&
           project?.columnOrder?.map((columnId, index): any => {
             const column = project.columnDetails[columnId];
-            const cards = column.cards?.map(
+            let cards = column.cards?.map(
               (cardId: string) => filteredCards[cardId]
             );
+            cards = cards.filter((i) => i !== undefined);
+            let fcards = titleFilter(cards, advFilters.inputTitle);
+            fcards = fcards.filter((i) => i?.id !== undefined);
+
             return (
               <ColumnComponent
                 key={columnId}
                 column={column}
-                cards={cards}
+                cards={fcards}
                 id={columnId}
                 index={index}
+              />
+            );
+          })}
+        {!viewId &&
+          advFilters.groupBy == "Assignee" &&
+          assigneeIds?.map((assigneeId, index): any => {
+            const column = assigneecolumn?.[index];
+            const cards = groupByAssignee(assigneeId as string, filteredCards);
+            console.log(cards);
+            
+            let fcards = titleFilter(cards, advFilters.inputTitle);
+            fcards = fcards.filter((i) => i?.id !== undefined);
+
+            return (
+              <AssigneeColumn
+                key={assigneeId}
+                column={column as any}
+                cards={fcards}
               />
             );
           })}
@@ -99,29 +144,33 @@ function BoardView({ viewId }: Props) {
             );
           })}
         {provided.placeholder}
-        {!viewId && project?.id && canDo(["steward"]) && (
-          <Box style={{ width: "20rem" }} marginTop="2">
-            <PrimaryButton
-              variant="tertiary"
-              icon={<IconPlusSmall />}
-              onClick={async () => {
-                const updatedProject = await addColumn(project.id);
-                if (!updatedProject) {
-                  toast.error("Error adding column", {
-                    theme: "dark",
-                  });
-                }
-                setLocalProject(updatedProject);
-              }}
-            >
-              Add new column
-            </PrimaryButton>
-          </Box>
-        )}
+        {!viewId &&
+          advFilters.groupBy == "Status" &&
+          project?.id &&
+          canDo(["steward"]) && (
+            <Box style={{ width: "20rem" }} marginTop="2">
+              <PrimaryButton
+                variant="tertiary"
+                icon={<IconPlusSmall />}
+                onClick={async () => {
+                  const updatedProject = await addColumn(project.id);
+                  if (!updatedProject) {
+                    toast.error("Error adding column", {
+                      theme: "dark",
+                    });
+                  }
+                  setLocalProject(updatedProject);
+                }}
+              >
+                Add new column
+              </PrimaryButton>
+            </Box>
+          )}
       </Stack>
     </Container>
   );
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const DroppableContentCallback = useCallback(DroppableContent, [
     project?.columnOrder,
     project.id,

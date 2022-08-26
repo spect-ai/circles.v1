@@ -478,3 +478,8 @@ export type SafeAddresses = {
 export type ContentPlaceholder = {
   [key: string]: string;
 };
+
+export type AdvancedFilters = {
+  inputTitle: string;
+  groupBy: "Status" | "Assignee";
+}
