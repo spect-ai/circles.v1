@@ -4,9 +4,6 @@ import EthersAdapter from "@gnosis.pm/safe-ethers-lib";
 import { SafeTransactionDataPartial } from "@gnosis.pm/safe-core-sdk-types";
 import { ethers } from "ethers";
 
-import distributorABI from "@/app/common/contracts/polygon/distributor.json";
-import distributorAddress from "@/app/common/contracts/polygon/distributor-address.json";
-
 export async function getUserSafes(chainId: string) {
   const provider = new ethers.providers.Web3Provider((window as any).ethereum);
   const safeOwner = provider.getSigner(0);
@@ -110,6 +107,21 @@ export async function gnosisPayment(
     console.error(err);
     return false;
   }
+}
+
+export async function getNonce(safeAddress: string) {
+  const provider = new ethers.providers.Web3Provider((window as any).ethereum);
+  const safeOwner = provider.getSigner(0);
+  const ethAdapter = new EthersAdapter({
+    ethers,
+    signer: safeOwner,
+  });
+
+  const safeSdk = await Safe.create({
+    ethAdapter,
+    safeAddress: safeAddress,
+  });
+  return await safeSdk.getNonce();
 }
 
 export function getSafeServiceUrl(chainId: string) {

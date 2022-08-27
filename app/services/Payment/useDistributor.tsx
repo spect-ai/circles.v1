@@ -15,6 +15,7 @@ interface DistributeEtherParams {
   gnosis: boolean;
   type: "card" | "retro";
   callerId: string;
+  nonce?: number;
 }
 
 interface DistributeTokenParams extends DistributeEtherParams {
@@ -64,6 +65,7 @@ export default function useDistributor() {
     type,
     gnosis,
     callerId,
+    nonce,
   }: DistributeEtherParams) {
     const contract = getDistributorContract(chainId);
     const valuesInWei = [];
@@ -81,6 +83,7 @@ export default function useDistributor() {
 
     const overrides = {
       value: ethers.utils.parseEther(totalValue.toString()),
+      nonce,
     };
     console.log({
       contributorsWithPositiveAllocation,
@@ -156,6 +159,7 @@ export default function useDistributor() {
     cardIds,
     circleId,
     type,
+    nonce,
   }: DistributeTokenParams) {
     const { filteredTokenAddresses, filteredRecipients, filteredValues } =
       filterInvalidValues(tokenAddresses, contributors, values);
@@ -174,8 +178,9 @@ export default function useDistributor() {
       valuesInWei,
       gnosis,
     });
-    const overrides: any = {
+    let overrides: any = {
       gasLimit: 1000000,
+      nonce,
     };
     const encoder = new AbiCoder();
     const id = encoder.encode(
@@ -183,14 +188,20 @@ export default function useDistributor() {
       [callerId, circleId, type, cardIds]
     );
     if (gnosis) {
+      overrides = {
+        gasLimit: 10000000,
+        nonce,
+      };
       const data = await contract?.populateTransaction.distributeTokens(
         filteredTokenAddresses,
         filteredRecipients,
         valuesInWei,
-        id
+        id,
+        overrides
       );
       return data;
     }
+
     const tx = await contract?.distributeTokens(
       filteredTokenAddresses,
       filteredRecipients,

@@ -186,11 +186,12 @@ export default function SelectCards() {
                 setCurrencyCards(currencyCards);
                 setTokenCards(tokenCards);
                 setBatchPayInfo(res as BatchPayInfo);
-                if (res?.currency && res.currency.userIds.length > 0) {
-                  setStep(1);
-                } else {
-                  setStep(2);
-                }
+                // if (res?.currency && res.currency.userIds.length > 0) {
+                //   setStep(1);
+                // } else {
+                //   setStep(2);
+                // }
+                setStep(1);
               }}
             >
               Continue

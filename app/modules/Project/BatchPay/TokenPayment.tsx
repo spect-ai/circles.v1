@@ -155,35 +155,35 @@ export default function TokenPayment() {
               Pay
             </PrimaryButton>
           </Box>
-          {Object.keys(circle?.safeAddresses || {}).length > 0 && (
-            <Box width="1/2">
-              <PrimaryButton
-                // loading={loading}
-                onClick={async () => {
-                  await payUsingGnosis({
-                    chainId: batchPayInfo?.chainId || "",
-                    paymentType: "tokens",
-                    batchPayType: batchPayInfo?.retroId ? "retro" : "card",
-                    userAddresses: getEthAddress() as string[],
-                    amounts: batchPayInfo?.currency.values as number[],
-                    tokenAddresses: batchPayInfo?.tokens
-                      .tokenAddresses as string[],
-                    safeAddress:
-                      (batchPayInfo &&
-                        circle?.safeAddresses[batchPayInfo.chainId][0]) ||
-                      "",
-                    cardIds: batchPayInfo?.retroId
-                      ? [batchPayInfo.retroId]
-                      : (tokenCards as string[]),
-                    circleId: circle?.id || "",
-                  });
-                  setIsOpen(false);
-                }}
-              >
-                Pay Using Gnosis
-              </PrimaryButton>
-            </Box>
-          )}
+          {batchPayInfo?.chainId &&
+            circle?.safeAddresses[batchPayInfo?.chainId] && (
+              <Box width="1/2">
+                <PrimaryButton
+                  // loading={loading}
+                  onClick={async () => {
+                    await payUsingGnosis({
+                      chainId: batchPayInfo?.chainId || "",
+                      paymentType: "tokens",
+                      batchPayType: batchPayInfo?.retroId ? "retro" : "card",
+                      userAddresses: getEthAddress() as string[],
+                      amounts: batchPayInfo?.currency.values,
+                      tokenAddresses: batchPayInfo?.tokens.tokenAddresses,
+                      safeAddress:
+                        (batchPayInfo &&
+                          circle?.safeAddresses[batchPayInfo.chainId][0]) ||
+                        "",
+                      cardIds: batchPayInfo?.retroId
+                        ? [batchPayInfo.retroId]
+                        : (tokenCards as string[]),
+                      circleId: circle?.id || "",
+                    });
+                    setIsOpen(false);
+                  }}
+                >
+                  Pay Using Gnosis
+                </PrimaryButton>
+              </Box>
+            )}
         </Stack>
       </Box>
     </Box>

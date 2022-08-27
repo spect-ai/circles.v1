@@ -8,13 +8,14 @@ import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { Tooltip } from "react-tippy";
+import { toast } from "react-toastify";
 import { useAccount, useNetwork } from "wagmi";
 
 import { useBatchPayContext } from "./context/batchPayContext";
 import { ScrollContainer } from "./SelectCards";
 
 export default function ApproveToken() {
-  const { approve, isApproved } = useERC20();
+  const { approveAll, isApproved } = useERC20();
   const router = useRouter();
   const { circle: cId } = router.query;
   const { data: circle } = useQuery<CircleType>(["circle", cId], {
@@ -27,7 +28,6 @@ export default function ApproveToken() {
   const { data } = useAccount();
   const [loading, setLoading] = useState(true);
   const { batchPayInfo, setStep, setIsOpen } = useBatchPayContext();
-
   const { activeChain, switchNetworkAsync } = useNetwork();
 
   const { mode } = useTheme();
@@ -39,10 +39,10 @@ export default function ApproveToken() {
       error: string;
     };
   }>({} as any);
-
   const circleSafe =
     (circle?.safeAddresses &&
       batchPayInfo &&
+      circle?.safeAddresses[batchPayInfo?.chainId] &&
       circle?.safeAddresses[batchPayInfo?.chainId][0]) ||
     "";
 
@@ -88,7 +88,6 @@ export default function ApproveToken() {
         index++;
       });
     } else {
-      console.log(circle);
       switchNetworkAsync &&
         void switchNetworkAsync(parseInt(batchPayInfo?.chainId as string));
       setLoading(false);
@@ -137,63 +136,6 @@ export default function ApproveToken() {
                             tokenAddress
                           ]?.symbol}
                       </Text>
-                      <Box width="1/3">
-                        <PrimaryButton
-                          tone={
-                            tokenStatus[tokenAddress]?.approved
-                              ? "green"
-                              : "accent"
-                          }
-                          icon={
-                            tokenStatus &&
-                            tokenStatus[tokenAddress]?.approved ? (
-                              <IconCheck />
-                            ) : null
-                          }
-                          loading={
-                            tokenStatus && tokenStatus[tokenAddress]?.loading
-                          }
-                          onClick={async () => {
-                            // set loading for this token status
-                            setTokenStatus({
-                              ...tokenStatus,
-                              [tokenAddress]: {
-                                ...tokenStatus[tokenAddress],
-                                loading: true,
-                              },
-                            });
-                            const res = await approve(
-                              batchPayInfo?.chainId,
-                              tokenAddress,
-                              circleSafe || ""
-                            );
-                            // set approved for this token status
-                            if (res) {
-                              // set loading for this token status
-                              setTokenStatus({
-                                ...tokenStatus,
-                                [tokenAddress]: {
-                                  ...tokenStatus[tokenAddress],
-                                  approved: true,
-                                  loading: false,
-                                },
-                              });
-                            } else {
-                              setTokenStatus({
-                                ...tokenStatus,
-                                [tokenAddress]: {
-                                  ...tokenStatus[tokenAddress],
-                                  loading: false,
-                                },
-                              });
-                            }
-                          }}
-                        >
-                          {tokenStatus && tokenStatus[tokenAddress]?.approved
-                            ? "Approved"
-                            : "Approve"}
-                        </PrimaryButton>
-                      </Box>
                     </Stack>
                   </Box>
                 )
@@ -219,16 +161,42 @@ export default function ApproveToken() {
           <Box width="1/2">
             <PrimaryButton
               onClick={() => {
-                setStep(3);
-              }}
-              disabled={
-                // check if all tokens are approved
-                !batchPayInfo?.approval.tokenAddresses.every(
-                  (tokenAddress) => tokenStatus[tokenAddress]?.approved === true
+                approveAll(
+                  batchPayInfo?.chainId as string,
+                  batchPayInfo?.approval.tokenAddresses as string[],
+                  false
                 )
-              }
+                  .then((res: any) => {
+                    setStep(3);
+                  })
+                  .catch((err: any) => {
+                    console.log(err);
+                    toast.error(err.message);
+                  });
+              }}
             >
-              Continue
+              Approve All
+            </PrimaryButton>
+          </Box>
+          <Box width="1/2">
+            <PrimaryButton
+              onClick={() => {
+                approveAll(
+                  batchPayInfo?.chainId as string,
+                  batchPayInfo?.approval.tokenAddresses as string[],
+                  true,
+                  circleSafe
+                )
+                  .then((res: any) => {
+                    setStep(3);
+                  })
+                  .catch((err: any) => {
+                    console.log(err);
+                    toast.error(err.message);
+                  });
+              }}
+            >
+              Approve All On Gnosis
             </PrimaryButton>
           </Box>
         </Stack>

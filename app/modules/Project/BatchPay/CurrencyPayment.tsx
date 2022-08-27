@@ -175,52 +175,54 @@ export default function CurrencyPayment() {
                     }
                   }
                   setLoading(false);
-                } catch (error) {
+                } catch (error: any) {
                   setLoading(false);
                   console.log(error);
+                  toast.error(error?.data?.message || "Something went wrong");
                 }
               }}
             >
               Pay
             </PrimaryButton>
           </Box>
-          {Object.keys(circle?.safeAddresses || {}).length > 0 && (
-            <Box width="1/2">
-              <PrimaryButton
-                loading={gnosisLoading}
-                onClick={async () => {
-                  setGnosisLoading(true);
-                  if (activeChain?.id.toString() !== batchPayInfo?.chainId) {
-                    switchNetworkAsync &&
-                      batchPayInfo &&
-                      (await switchNetworkAsync(
-                        parseInt(batchPayInfo.chainId)
-                      ));
-                  }
-                  await payUsingGnosis({
-                    chainId: batchPayInfo?.chainId || "",
-                    paymentType: "currency",
-                    batchPayType: batchPayInfo?.retroId ? "retro" : "card",
-                    userAddresses: getEthAddress() as string[],
-                    amounts: batchPayInfo?.currency.values as number[],
-                    tokenAddresses: [""],
-                    safeAddress:
-                      (batchPayInfo &&
-                        circle?.safeAddresses[batchPayInfo.chainId][0]) ||
-                      "",
-                    cardIds: batchPayInfo?.retroId
-                      ? [batchPayInfo.retroId]
-                      : (currencyCards as string[]),
-                    circleId: circle?.id || "",
-                  });
-                  setGnosisLoading(false);
-                  setIsOpen(false);
-                }}
-              >
-                Pay Using Gnosis
-              </PrimaryButton>
-            </Box>
-          )}
+          {batchPayInfo?.chainId &&
+            circle?.safeAddresses[batchPayInfo?.chainId] && (
+              <Box width="1/2">
+                <PrimaryButton
+                  loading={gnosisLoading}
+                  onClick={async () => {
+                    setGnosisLoading(true);
+                    if (activeChain?.id.toString() !== batchPayInfo?.chainId) {
+                      switchNetworkAsync &&
+                        batchPayInfo &&
+                        (await switchNetworkAsync(
+                          parseInt(batchPayInfo.chainId)
+                        ));
+                    }
+                    await payUsingGnosis({
+                      chainId: batchPayInfo?.chainId || "",
+                      paymentType: "currency",
+                      batchPayType: batchPayInfo?.retroId ? "retro" : "card",
+                      userAddresses: getEthAddress() as string[],
+                      amounts: batchPayInfo?.currency.values,
+                      tokenAddresses: [""],
+                      safeAddress:
+                        (batchPayInfo &&
+                          circle?.safeAddresses[batchPayInfo.chainId][0]) ||
+                        "",
+                      cardIds: batchPayInfo?.retroId
+                        ? [batchPayInfo.retroId]
+                        : (currencyCards as string[]),
+                      circleId: circle?.id || "",
+                    });
+                    setGnosisLoading(false);
+                    setIsOpen(false);
+                  }}
+                >
+                  Pay Using Gnosis
+                </PrimaryButton>
+              </Box>
+            )}
         </Stack>
       </Box>
     </Box>

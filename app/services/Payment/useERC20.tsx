@@ -4,8 +4,8 @@ import { ethers } from "ethers";
 import { useRouter } from "next/router";
 import { useQuery } from "react-query";
 import { toast } from "react-toastify";
-import { erc20ABI } from "wagmi";
-import { gnosisPayment } from "../Gnosis";
+import { erc20ABI, useToken } from "wagmi";
+import { getNonce, gnosisPayment } from "../Gnosis";
 
 export default function useERC20() {
   const router = useRouter();
@@ -34,15 +34,21 @@ export default function useERC20() {
   async function approve(
     chainId: string,
     erc20Address: string,
-    safeAddress?: string
+    safeAddress?: string,
+    nonce?: number
   ) {
     const contract = getERC20Contract(erc20Address);
     if (!registry) return false;
     try {
       if (safeAddress) {
+        console.log(nonce);
+        const overrides = {
+          nonce,
+        };
         const data = await contract.populateTransaction.approve(
           registry[chainId].distributorAddress,
-          ethers.constants.MaxInt256
+          ethers.constants.MaxInt256,
+          overrides
         );
         const res = await gnosisPayment(safeAddress, data, chainId);
         if (res)
@@ -65,6 +71,39 @@ export default function useERC20() {
       });
       return false;
     }
+  }
+
+  // eslint-disable-next-line @typescript-eslint/require-await
+  async function approveAll(
+    chainId: string,
+    erc20Addresses: string[],
+    approveOnSafe?: boolean,
+    safeAddress?: string
+  ) {
+    if (approveOnSafe && !safeAddress) {
+      toast.error("Please connect your safe in circle settings");
+    }
+    if (approveOnSafe) {
+      for (const erc20Address of erc20Addresses) {
+        approve(chainId, erc20Address, safeAddress)
+          .then((res: any) => {
+            console.log(res);
+          })
+          .catch((err: any) => {
+            console.log(err);
+          });
+      }
+    } else
+      for (const erc20Address of erc20Addresses) {
+        approve(chainId, erc20Address)
+          .then((res: any) => {
+            console.log(res);
+          })
+          .catch((err: any) => {
+            console.log(err);
+          });
+      }
+    return true;
   }
 
   function aggregateBalances(
@@ -94,11 +133,15 @@ export default function useERC20() {
       return true;
     }
     const contract = getERC20Contract(erc20Address);
+
     const numDecimals = await contract.decimals();
     const allowance = await contract.allowance(ethAddress, spenderAddress);
+
     return (
       allowance >=
-      ethers.BigNumber.from((value * 10 ** numDecimals).toFixed(0).toString())
+      ethers.BigNumber.from(value).mul(
+        ethers.BigNumber.from(10).pow(numDecimals)
+      )
     );
   }
 
@@ -115,15 +158,18 @@ export default function useERC20() {
     // eslint-disable-next-line no-restricted-syntax
     for (const [erc20Address, value] of Object.entries(aggregateValues)) {
       // eslint-disable-next-line no-await-in-loop
-      const tokenIsApproved = await isApproved(
-        erc20Address,
-        spenderAddress,
-        value as number,
-        ethAddress
-      );
-      if (!tokenIsApproved) {
-        uniqueTokenAddresses.push(erc20Address);
-        aggregatedTokenValues.push(value);
+      if ((value as number) > 0) {
+        const tokenIsApproved = await isApproved(
+          erc20Address,
+          spenderAddress,
+          value as number,
+          ethAddress
+        );
+
+        if (!tokenIsApproved) {
+          uniqueTokenAddresses.push(erc20Address);
+          aggregatedTokenValues.push(value);
+        }
       }
     }
     return [uniqueTokenAddresses, aggregatedTokenValues];
@@ -146,14 +192,15 @@ export default function useERC20() {
       // eslint-disable-next-line no-else-return
     } else {
       const contract = getERC20Contract(erc20Address);
-
+      console.log(contract);
       const numDecimals = await contract.decimals();
 
       const balance = await contract.balanceOf(ethAddress);
-
       return (
         balance >=
-        ethers.BigNumber.from((value * 10 ** numDecimals).toFixed(0).toString())
+        ethers.BigNumber.from(value || 0).mul(
+          ethers.BigNumber.from(10).pow(numDecimals)
+        )
       );
     }
   }
@@ -233,6 +280,7 @@ export default function useERC20() {
 
   return {
     approve,
+    approveAll,
     isApproved,
     areApproved,
     isCurrency,
