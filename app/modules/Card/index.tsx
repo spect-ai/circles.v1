@@ -8,6 +8,7 @@ import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { useGlobal } from "@/app/context/globalContext";
 import {
   Box,
+  Button,
   IconChevronDown,
   IconChevronUp,
   IconClose,
@@ -15,6 +16,7 @@ import {
   IconUserSolid,
   Stack,
   Tag,
+  Text,
   useTheme,
 } from "degen";
 import { AnimatePresence } from "framer-motion";
@@ -24,14 +26,14 @@ import React, { memo, useEffect, useState } from "react";
 import { ToastContainer } from "react-toastify";
 import styled from "styled-components";
 import { useLocalCard } from "../Project/CreateCardModal/hooks/LocalCardContext";
-import CardAssignee from "../Project/CreateCardModal/modals/CardAssignee";
-import CardColumn from "../Project/CreateCardModal/modals/CardColumn";
-import CardDeadline from "../Project/CreateCardModal/modals/CardDeadline";
-import CardLabels from "../Project/CreateCardModal/modals/CardLabels";
-import CardPriority from "../Project/CreateCardModal/modals/CardPriority";
-import CardReviewer from "../Project/CreateCardModal/modals/CardReviewer";
-import CardReward from "../Project/CreateCardModal/modals/CardReward";
-import CardType from "../Project/CreateCardModal/modals/CardType";
+import CardAssignee from "./modals/CardAssignee";
+import CardColumn from "./modals/CardColumn";
+import CardDeadline from "./modals/CardDeadline";
+import CardLabels from "./modals/CardLabels";
+import CardPriority from "./modals/CardPriority";
+import CardReviewer from "./modals/CardReviewer";
+import CardReward from "./modals/CardReward";
+import CardType from "./modals/CardType";
 import { IconButton } from "../Project/ProjectHeading";
 import ActionPopover from "./OptionPopover";
 import Activity from "./Activity";
@@ -41,6 +43,7 @@ import AssignToMe from "./AssignToMe";
 import Submission from "./Submission";
 import SubTasks from "./SubTasks";
 import Discuss from "./Discuss";
+import CardProject from "./modals/CardProject";
 
 const Container = styled(Box)`
   ::-webkit-scrollbar {
@@ -111,6 +114,22 @@ function Card() {
   if (loading) {
     return <Loader loading text="Fetching" />;
   }
+
+  if (card?.unauthorized)
+    return (
+      <>
+        <Text size="headingTwo" weight="semiBold" ellipsis>
+          This project is private
+        </Text>
+        <Button
+          size="large"
+          variant="transparent"
+          onClick={() => router.back()}
+        >
+          <Text size="extraLarge">Go Back</Text>
+        </Button>
+      </>
+    );
 
   return (
     <Box padding="4">
@@ -216,7 +235,7 @@ function Card() {
                     crumbs={[
                       {
                         name: card?.parent.title,
-                        href: `/${cId}/${pId}/${card?.parent.slug}`,
+                        href: `/${cId}/${card.parent.project.slug}/${card?.parent.slug}`,
                       },
                       {
                         name: `#${card?.slug}`,
@@ -304,6 +323,7 @@ function Card() {
               <Stack>
                 <CardType />
                 {!card?.parent && <CardColumn />}
+                <CardProject />
                 <CardAssignee />
                 <CardReviewer />
                 <CardDeadline />

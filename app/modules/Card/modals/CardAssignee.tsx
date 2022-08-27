@@ -10,8 +10,8 @@ import {
   Text,
 } from "degen";
 import React, { memo, useEffect, useState } from "react";
-import { useLocalCard } from "../hooks/LocalCardContext";
-import { Option } from "../constants";
+import { useLocalCard } from "../../Project/CreateCardModal/hooks/LocalCardContext";
+import { Option } from "../../Project/CreateCardModal/constants";
 import { matchSorter } from "match-sorter";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";

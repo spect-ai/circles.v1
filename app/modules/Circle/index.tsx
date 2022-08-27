@@ -1,7 +1,9 @@
 import Loader from "@/app/common/components/Loader";
 import useCircleOnboarding from "@/app/services/Onboarding/useCircleOnboarding";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
+import { Registry } from "@/app/types";
 import { Box, useTheme } from "degen";
+import { useQuery } from "react-query";
 import { ToastContainer } from "react-toastify";
 import styled from "styled-components";
 import RetroPage from "../Retro";
@@ -26,6 +28,10 @@ export default function Circle() {
   const { onboarded } = useCircleOnboarding();
 
   const { mode } = useTheme();
+
+  const { data: registry } = useQuery<Registry>(["registry", circle?.slug], {
+    enabled: false,
+  });
 
   if (isLoading || !circle || !memberDetails) {
     return <Loader text="...." loading />;

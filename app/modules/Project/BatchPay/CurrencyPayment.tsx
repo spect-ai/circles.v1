@@ -4,7 +4,7 @@ import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
 import { updatePaymentInfo } from "@/app/services/Payment";
 import usePaymentGateway from "@/app/services/Payment/usePayment";
 import { updateRetro } from "@/app/services/Retro";
-import { CircleType } from "@/app/types";
+import { CircleType, Registry } from "@/app/types";
 import { QuestionCircleFilled } from "@ant-design/icons";
 import { Avatar, Box, Button, Stack, Text, useTheme } from "degen";
 import { useRouter } from "next/router";
@@ -12,6 +12,7 @@ import React, { useState } from "react";
 import { useQuery } from "react-query";
 import { Tooltip } from "react-tippy";
 import { toast } from "react-toastify";
+import { useNetwork } from "wagmi";
 import { useLocalProject } from "../Context/LocalProjectContext";
 import { useLocalCard } from "../CreateCardModal/hooks/LocalCardContext";
 import { useBatchPayContext } from "./context/batchPayContext";
@@ -24,6 +25,7 @@ export default function CurrencyPayment() {
   const [gnosisLoading, setGnosisLoading] = useState(false);
   const { batchPayInfo, setStep, currencyCards, tokenCards, setIsOpen } =
     useBatchPayContext();
+  const { activeChain, switchNetworkAsync } = useNetwork();
 
   const { updateProject } = useLocalProject();
   const { setCard, cardId } = useLocalCard();
@@ -34,6 +36,9 @@ export default function CurrencyPayment() {
     enabled: false,
   });
 
+  const { data: registry } = useQuery<Registry>(["registry", cId], {
+    enabled: false,
+  });
   const { mode } = useTheme();
 
   const formatRows = () => {
@@ -53,7 +58,8 @@ export default function CurrencyPayment() {
           </Text>
         </Stack>,
         <Text variant="base" weight="semiBold" key={userId}>
-          {batchPayInfo.currency.values[index]} MATIC
+          {batchPayInfo.currency.values[index]}{" "}
+          {registry && registry[batchPayInfo.chainId]?.nativeCurrency}
         </Text>,
       ]);
     });
@@ -65,7 +71,6 @@ export default function CurrencyPayment() {
       return getMemberDetails(userId)?.ethAddress;
     });
   };
-
   return (
     <Box>
       <ScrollContainer paddingX="8" paddingY="4">
@@ -117,7 +122,7 @@ export default function CurrencyPayment() {
                 setLoading(true);
                 try {
                   const txnHash = await batchPay({
-                    chainId: circle?.defaultPayment.chain.chainId || "",
+                    chainId: batchPayInfo?.chainId || "",
                     paymentType: "currency",
                     batchPayType: batchPayInfo?.retroId ? "retro" : "card",
                     userAddresses: getEthAddress() as string[],
@@ -170,45 +175,54 @@ export default function CurrencyPayment() {
                     }
                   }
                   setLoading(false);
-                } catch (error) {
+                } catch (error: any) {
                   setLoading(false);
                   console.log(error);
+                  toast.error(error?.data?.message || "Something went wrong");
                 }
               }}
             >
               Pay
             </PrimaryButton>
           </Box>
-          {Object.keys(circle?.safeAddresses || {}).length > 0 && (
-            <Box width="1/2">
-              <PrimaryButton
-                loading={gnosisLoading}
-                onClick={async () => {
-                  setGnosisLoading(true);
-                  await payUsingGnosis({
-                    chainId: circle?.defaultPayment.chain.chainId || "",
-                    paymentType: "currency",
-                    batchPayType: batchPayInfo?.retroId ? "retro" : "card",
-                    userAddresses: getEthAddress() as string[],
-                    amounts: batchPayInfo?.currency.values as number[],
-                    tokenAddresses: [""],
-                    safeAddress:
-                      circle?.safeAddresses[
-                        Object.keys(circle?.safeAddresses || {})[0]
-                      ][0] || "",
-                    cardIds: batchPayInfo?.retroId
-                      ? [batchPayInfo.retroId]
-                      : (currencyCards as string[]),
-                    circleId: circle?.id || "",
-                  });
-                  setGnosisLoading(false);
-                  setIsOpen(false);
-                }}
-              >
-                Pay Using Gnosis
-              </PrimaryButton>
-            </Box>
-          )}
+          {batchPayInfo?.chainId &&
+            circle?.safeAddresses[batchPayInfo?.chainId] && (
+              <Box width="1/2">
+                <PrimaryButton
+                  loading={gnosisLoading}
+                  onClick={async () => {
+                    setGnosisLoading(true);
+                    if (activeChain?.id.toString() !== batchPayInfo?.chainId) {
+                      switchNetworkAsync &&
+                        batchPayInfo &&
+                        (await switchNetworkAsync(
+                          parseInt(batchPayInfo.chainId)
+                        ));
+                    }
+                    await payUsingGnosis({
+                      chainId: batchPayInfo?.chainId || "",
+                      paymentType: "currency",
+                      batchPayType: batchPayInfo?.retroId ? "retro" : "card",
+                      userAddresses: getEthAddress() as string[],
+                      amounts: batchPayInfo?.currency.values,
+                      tokenAddresses: [""],
+                      safeAddress:
+                        (batchPayInfo &&
+                          circle?.safeAddresses[batchPayInfo.chainId][0]) ||
+                        "",
+                      cardIds: batchPayInfo?.retroId
+                        ? [batchPayInfo.retroId]
+                        : (currencyCards as string[]),
+                      circleId: circle?.id || "",
+                    });
+                    setGnosisLoading(false);
+                    setIsOpen(false);
+                  }}
+                >
+                  Pay Using Gnosis
+                </PrimaryButton>
+              </Box>
+            )}
         </Stack>
       </Box>
     </Box>

@@ -33,6 +33,22 @@ export default function CircleOverview() {
     }
   }, [retroSlug]);
 
+  if (circle?.unauthorized)
+    return (
+      <>
+        <Text size="headingTwo" weight="semiBold" ellipsis>
+          This circle is private
+        </Text>
+        <Button
+          size="large"
+          variant="transparent"
+          onClick={() => router.back()}
+        >
+          <Text size="extraLarge">Go Back</Text>
+        </Button>
+      </>
+    );
+
   return (
     <>
       <AnimatePresence>

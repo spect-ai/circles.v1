@@ -45,11 +45,11 @@ export const patchProject = async (
   return null;
 };
 
-export const deleteProject = async (projectId: string) => {
+export const archiveProject = async (projectId: string) => {
   const res = await fetch(
-    `${process.env.API_HOST}/project/${projectId}/delete`,
+    `${process.env.API_HOST}/project/v1/${projectId}/archive`,
     {
-      method: "DELETE",
+      method: "PATCH",
       headers: {
         "Content-Type": "application/json",
       },

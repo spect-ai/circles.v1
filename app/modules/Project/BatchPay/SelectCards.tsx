@@ -172,7 +172,7 @@ export default function SelectCards() {
                 );
                 const res = await getAgregatedPaymentInfo(
                   selectedCards,
-                  project.parents[0].defaultPayment.chain.chainId
+                  project.cards[filteredCards[0]].reward.chain.chainId
                 );
                 console.log({ res });
                 // cards with token address 0x0
@@ -186,11 +186,12 @@ export default function SelectCards() {
                 setCurrencyCards(currencyCards);
                 setTokenCards(tokenCards);
                 setBatchPayInfo(res as BatchPayInfo);
-                if (res?.currency && res.currency.userIds.length > 0) {
-                  setStep(1);
-                } else {
-                  setStep(2);
-                }
+                // if (res?.currency && res.currency.userIds.length > 0) {
+                //   setStep(1);
+                // } else {
+                //   setStep(2);
+                // }
+                setStep(1);
               }}
             >
               Continue

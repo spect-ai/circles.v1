@@ -197,6 +197,7 @@ export default function ProfileModal({ setIsOpen }: Props) {
                 }&response_type=code&scope=identify`}
               >
                 <Button
+                  data-tour="connect-discord-button"
                   width="full"
                   size="small"
                   variant="secondary"
@@ -229,6 +230,7 @@ export default function ProfileModal({ setIsOpen }: Props) {
                 href={`https://github.com/login/oauth/authorize?client_id=4403e769e4d52b24eeab`}
               >
                 <Button
+                  data-tour="connect-github-button"
                   width="full"
                   size="small"
                   variant="secondary"

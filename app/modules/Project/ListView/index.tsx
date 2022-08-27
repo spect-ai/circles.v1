@@ -12,6 +12,7 @@ import { AnimatePresence } from "framer-motion";
 import ListSection from "./ListSection";
 import { filterCards } from "../Filter/filterCards";
 import { Filter, Views } from "@/app/types";
+import { useGlobal } from "@/app/context/globalContext";
 
 interface Props {
   viewId: string;
@@ -35,8 +36,8 @@ function ListView({ viewId }: Props) {
     batchPayModalOpen,
     selectedCard,
     setBatchPayModalOpen,
-    currentFilter,
   } = useLocalProject();
+  const { currentFilter } = useGlobal();
   const { canDo } = useRoleGate();
 
   const view = project.viewDetails?.[viewId];

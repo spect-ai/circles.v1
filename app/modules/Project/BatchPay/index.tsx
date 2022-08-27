@@ -8,6 +8,7 @@ import {
   useProviderBatchPayContext,
 } from "./context/batchPayContext";
 import CurrencyPayment from "./CurrencyPayment";
+import OneClickPayment from "./OneClickPay";
 import SelectCards from "./SelectCards";
 import TokenPayment from "./TokenPayment";
 
@@ -53,6 +54,7 @@ export default function BatchPay({ retro, setIsOpen }: Props) {
             values: [],
             userIds: [],
           },
+          chainId: retro.reward.chain.chainId,
         });
         setStep(1);
       } else {
@@ -72,8 +74,9 @@ export default function BatchPay({ retro, setIsOpen }: Props) {
             userIds: retro.members,
             values: retro.members.map((member) => retro.distribution[member]),
           },
+          chainId: retro.reward.chain.chainId,
         });
-        setStep(2);
+        setStep(1);
       }
     } else {
       setStep(0);
@@ -112,9 +115,10 @@ export default function BatchPay({ retro, setIsOpen }: Props) {
         size="large"
       >
         {step === 0 && localProject && <SelectCards />}
-        {step === 1 && <CurrencyPayment />}
+        {/* {step === 1 && <CurrencyPayment />}
         {step === 2 && <ApproveToken />}
-        {step === 3 && <TokenPayment />}
+        {step === 3 && <TokenPayment />} */}
+        {step === 1 && <OneClickPayment />}
       </Modal>
     </BatchPayContext.Provider>
   );
