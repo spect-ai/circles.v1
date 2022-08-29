@@ -140,6 +140,7 @@ export default function usePaymentGateway(
               href={`${registry && registry[chainId].blockExplorer}/tx/${
                 tx.transactionHash
               }`}
+              target="_blank"
             >
               View Transaction
             </Link>

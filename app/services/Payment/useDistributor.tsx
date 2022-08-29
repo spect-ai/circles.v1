@@ -179,7 +179,7 @@ export default function useDistributor() {
       gnosis,
     });
     let overrides: any = {
-      gasLimit: 1000000,
+      gasLimit: 10000000,
       nonce,
     };
     const encoder = new AbiCoder();

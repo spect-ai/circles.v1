@@ -2,9 +2,11 @@ import PrimaryButton from "@/app/common/components/PrimaryButton";
 import Table from "@/app/common/components/Table";
 import { getNonce } from "@/app/services/Gnosis";
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
+import { updatePaymentInfo } from "@/app/services/Payment";
 import useERC20 from "@/app/services/Payment/useERC20";
 import usePaymentGateway from "@/app/services/Payment/usePayment";
-import { CircleType, Registry } from "@/app/types";
+import { updateRetro } from "@/app/services/Retro";
+import { BatchPayInfo, CircleType, ProjectType, Registry } from "@/app/types";
 import { Avatar, Box, Stack, Text, useTheme } from "degen";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
@@ -20,7 +22,8 @@ export default function OneClickPayment() {
   const { getMemberDetails } = useModalOptions();
   const { payUsingGnosis, batchPay } = usePaymentGateway();
   const { approve, isApproved } = useERC20();
-
+  const { updateProject, localProject: project } = useLocalProject();
+  const { setCard, cardId } = useLocalCard();
   const [loading, setLoading] = useState(false);
   const [gnosisLoading, setGnosisLoading] = useState(false);
   const [personalWalletLoading, setPersonalWalletLoading] = useState(false);
@@ -56,7 +59,7 @@ export default function OneClickPayment() {
 
   const formatRows = () => {
     const rows: any[] = [];
-    batchPayInfo?.currency.userIds.forEach((userId, index) => {
+    batchPayInfo?.currency?.userIds.forEach((userId, index) => {
       return rows.push([
         <Stack key={index} direction="horizontal" align="center">
           <Avatar
@@ -71,7 +74,7 @@ export default function OneClickPayment() {
           </Text>
         </Stack>,
         <Text variant="base" weight="semiBold" key={userId}>
-          {batchPayInfo.currency.values[index]}{" "}
+          {batchPayInfo.currency.values[index]?.toFixed(2)}{" "}
           {registry && registry[batchPayInfo.chainId]?.nativeCurrency}
         </Text>,
       ]);
@@ -91,7 +94,7 @@ export default function OneClickPayment() {
           </Text>
         </Stack>,
         <Text variant="base" weight="semiBold" key={userId}>
-          {batchPayInfo.tokens.values[index]}{" "}
+          {batchPayInfo.tokens.values[index]?.toFixed(2)}{" "}
           {registry &&
             registry[batchPayInfo?.chainId].tokenDetails[
               batchPayInfo.tokens.tokenAddresses[index]
@@ -100,6 +103,53 @@ export default function OneClickPayment() {
       ]);
     });
     return rows;
+  };
+
+  const recordPayment = async (txnHash: string, cardIds: string[]) => {
+    if (txnHash) {
+      if (!batchPayInfo?.retroId && cardIds && cardIds.length > 0) {
+        const res: ProjectType = await updatePaymentInfo(cardIds, txnHash);
+        if (res) {
+          updateProject && updateProject(res);
+          setCard && setCard(res.cards[cardId]);
+        }
+      } else {
+        const retroUpdateRes = await updateRetro(batchPayInfo?.retroId || "", {
+          reward: {
+            transactionHash: txnHash,
+          },
+          status: {
+            paid: true,
+          },
+        });
+        if (retroUpdateRes) {
+          toast.success("Retro payout successful!");
+        }
+      }
+    }
+  };
+
+  const filterUnapprovedTokens = (type: string) => {
+    const filteredBatchPayInfo = {
+      values: [] as number[],
+      tokenAddresses: [] as string[],
+      userIds: [] as string[],
+      cardIds: [] as string[],
+    };
+    batchPayInfo?.tokens.tokenAddresses?.forEach((tokenAddress, index) => {
+      if (tokenStatus[tokenAddress]?.approved) {
+        filteredBatchPayInfo.tokenAddresses.push(tokenAddress);
+        filteredBatchPayInfo.values.push(batchPayInfo.tokens.values[index]);
+        filteredBatchPayInfo.userIds.push(batchPayInfo.tokens.userIds[index]);
+      }
+    });
+    if (type === "card")
+      tokenCards?.forEach((cardId) => {
+        if (tokenStatus[project.cards[cardId].reward.token.address].approved) {
+          filteredBatchPayInfo.cardIds.push(cardId);
+        }
+      });
+    return filteredBatchPayInfo;
   };
 
   useEffect(() => {
@@ -164,7 +214,11 @@ export default function OneClickPayment() {
     // set to final step if all tokens approved
   }, [batchPayInfo, activeChain]);
 
-  const getEthAddress = () => {
+  const getEthAddress = (specificUserIds?: string[]) => {
+    if (specificUserIds)
+      return specificUserIds.map((userId) => {
+        return getMemberDetails(userId)?.ethAddress;
+      });
     return batchPayInfo?.currency.userIds.map((userId) => {
       return getMemberDetails(userId)?.ethAddress;
     });
@@ -196,7 +250,7 @@ export default function OneClickPayment() {
                 onClick={async () => {
                   setPersonalWalletLoading(true);
                   if (batchPayInfo?.currency.values?.length > 0) {
-                    await toast
+                    const currencyTxnHash = await toast
                       .promise(
                         batchPay({
                           chainId: batchPayInfo?.chainId || "",
@@ -227,6 +281,11 @@ export default function OneClickPayment() {
                         }
                       )
                       .catch((err) => console.log(err));
+                    if (currencyTxnHash)
+                      await recordPayment(
+                        currencyTxnHash,
+                        currencyCards as string[]
+                      );
                   }
                   if (batchPayInfo?.tokens.values?.length > 0) {
                     for (const [erc20Address, status] of Object.entries(
@@ -235,7 +294,21 @@ export default function OneClickPayment() {
                       if (!status.approved) {
                         await toast.promise(
                           approve(batchPayInfo?.chainId, erc20Address).then(
-                            (res: any) => {}
+                            (res: any) => {
+                              if (res) {
+                                const approvedTokens = Object.assign(
+                                  tokenStatus,
+                                  {
+                                    [erc20Address]: {
+                                      ...tokenStatus[erc20Address],
+                                      approved: true,
+                                    },
+                                  }
+                                );
+                                setTokenStatus(approvedTokens);
+                                console.log(tokenStatus);
+                              }
+                            }
                           ),
                           {
                             pending: `Approving ${
@@ -255,20 +328,31 @@ export default function OneClickPayment() {
                         );
                       }
                     }
-                    await toast
+
+                    const batchPayType = batchPayInfo?.retroId
+                      ? "retro"
+                      : "card";
+                    const filteredBatchPayInfo =
+                      filterUnapprovedTokens(batchPayType);
+                    if (filteredBatchPayInfo.tokenAddresses?.length === 0) {
+                      toast.error("No approved tokens to distribute");
+                      setPersonalWalletLoading(false);
+                      return;
+                    }
+                    const tokenTxnHash = await toast
                       .promise(
                         batchPay({
                           chainId: batchPayInfo?.chainId || "",
                           paymentType: "tokens",
-                          batchPayType: batchPayInfo?.retroId
-                            ? "retro"
-                            : "card",
-                          userAddresses: getEthAddress() as string[],
-                          amounts: batchPayInfo?.currency.values,
-                          tokenAddresses: batchPayInfo?.tokens.tokenAddresses,
+                          batchPayType: batchPayType,
+                          userAddresses: getEthAddress(
+                            filteredBatchPayInfo.userIds
+                          ) as string[],
+                          amounts: filteredBatchPayInfo.values,
+                          tokenAddresses: filteredBatchPayInfo.tokenAddresses,
                           cardIds: batchPayInfo?.retroId
                             ? [batchPayInfo.retroId]
-                            : (tokenCards as string[]),
+                            : filteredBatchPayInfo.cardIds,
                           circleId: circle?.id || "",
                         }),
                         {
@@ -282,6 +366,11 @@ export default function OneClickPayment() {
                         }
                       )
                       .catch((err) => console.log(err));
+                    if (tokenTxnHash)
+                      await recordPayment(
+                        tokenTxnHash,
+                        filteredBatchPayInfo.cardIds
+                      );
                   }
                   setPersonalWalletLoading(false);
                   setIsOpen(false);
