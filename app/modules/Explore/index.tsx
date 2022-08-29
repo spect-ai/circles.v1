@@ -143,10 +143,16 @@ export default function Explore() {
               <Box
                 marginBottom={{ xs: "1", md: "2" }}
                 marginLeft={{ xs: "1", md: "2" }}
+                display="flex"
+                flexDirection="row"
+                alignItems="center"
               >
-                <Text size="headingTwo" weight="semiBold" ellipsis>
-                  Your Circles
-                </Text>
+                <Box marginRight={{ xs: "2", md: "4" }}>
+                  <Text size="headingTwo" weight="semiBold" ellipsis>
+                    Your Circles
+                  </Text>
+                </Box>
+                <CreateCircleCard />
               </Box>
               <Row>
                 {filteredCircles?.map &&
@@ -161,9 +167,6 @@ export default function Explore() {
                       />
                     </Col>
                   ))}
-                <Col key={`circle.id`} xs={10} sm={6} md={3}>
-                  <CreateCircleCard />
-                </Col>
               </Row>{" "}
             </Box>
           </>
@@ -175,10 +178,16 @@ export default function Explore() {
           <Box
             marginBottom={{ xs: "1", md: "2" }}
             marginLeft={{ xs: "1", md: "2" }}
+            display="flex"
+            flexDirection="row"
+            alignItems="center"
           >
-            <Text size="headingTwo" weight="semiBold" ellipsis>
-              Explore Circles
-            </Text>{" "}
+            <Box marginRight={{ xs: "2", md: "4" }}>
+              <Text size="headingTwo" weight="semiBold" ellipsis>
+                Explore Circles
+              </Text>
+            </Box>
+            <CreateCircleCard />
           </Box>
           <Row>
             {joinableCircles?.map &&
@@ -193,9 +202,6 @@ export default function Explore() {
                   />
                 </Col>
               ))}
-            <Col key={`circle.id`} xs={10} sm={6} md={3}>
-              <CreateCircleCard />
-            </Col>
           </Row>
         </Box>
         <Box
@@ -205,10 +211,16 @@ export default function Explore() {
           <Box
             marginBottom={{ xs: "1", md: "2" }}
             marginLeft={{ xs: "1", md: "2" }}
+            display="flex"
+            flexDirection="row"
+            alignItems="center"
           >
-            <Text size="headingTwo" weight="semiBold" ellipsis>
-              Claim Circles
-            </Text>{" "}
+            <Box marginRight={{ xs: "2", md: "4" }}>
+              <Text size="headingTwo" weight="semiBold" ellipsis>
+                Claim Circles
+              </Text>
+            </Box>
+            <CreateCircleCard />
           </Box>
           <Row>
             {claimableCircles?.map &&
@@ -223,9 +235,6 @@ export default function Explore() {
                   />
                 </Col>
               ))}
-            <Col key={`circle.id`} xs={10} sm={6} md={3}>
-              <CreateCircleCard />
-            </Col>
           </Row>
         </Box>
       </GridContainer>

@@ -28,6 +28,12 @@ const ButtonContainer = styled(Box)`
     border-color: rgb(191, 90, 242, 1);
   }
 `;
+const CreateCircleButton = styled.button`
+  width: full;
+  height: full;
+  variant: secondary;
+`;
+
 type CreateCircleDto = {
   name: string;
   description: string;
@@ -74,28 +80,9 @@ const CreateCircleCard = () => {
 
   return (
     <>
-      <ButtonContainer
-        borderRadius="2xLarge"
-        display="flex"
-        flexDirection="column"
-        alignItems="center"
-        marginRight={{ xs: "2", md: "4" }}
-        marginBottom={{ xs: "4", md: "8" }}
-        transitionDuration="700"
-        backgroundColor="background"
-        height="72"
-      >
-        <Button
-          width="full"
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          height="full"
-          variant="secondary"
-          onClick={open}
-        >
-          Create a Circle
-        </Button>
-      </ButtonContainer>
+      <Button width="auto" variant="secondary" onClick={open}>
+        Create a Circle
+      </Button>
       <AnimatePresence
         initial={false}
         exitBeforeEnter
