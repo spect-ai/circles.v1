@@ -136,12 +136,10 @@ export default function useERC20() {
 
     const numDecimals = await contract.decimals();
     const allowance = await contract.allowance(ethAddress, spenderAddress);
-
+    console.log(value);
     return (
       allowance >=
-      ethers.BigNumber.from(value).mul(
-        ethers.BigNumber.from(10).pow(numDecimals)
-      )
+      ethers.BigNumber.from((value * 10 ** numDecimals).toFixed(0).toString())
     );
   }
 
@@ -198,9 +196,7 @@ export default function useERC20() {
       const balance = await contract.balanceOf(ethAddress);
       return (
         balance >=
-        ethers.BigNumber.from(value || 0).mul(
-          ethers.BigNumber.from(10).pow(numDecimals)
-        )
+        ethers.BigNumber.from((value * 10 ** numDecimals).toFixed(0).toString())
       );
     }
   }
