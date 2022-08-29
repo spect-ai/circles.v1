@@ -2,7 +2,7 @@ import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { storeImage } from "@/app/common/utils/ipfs";
 import useProfileUpdate from "@/app/services/Profile/useProfileUpdate";
-import { MemberDetails, UserType } from "@/app/types";
+import { UserType } from "@/app/types";
 import { GithubOutlined, SaveFilled } from "@ant-design/icons";
 import {
   Box,
@@ -27,13 +27,7 @@ interface Props {
 
 export default function ProfileModal({ setIsOpen }: Props) {
   const router = useRouter();
-  const { circle: cId } = router.query;
-  const { refetch: fetchMemberDetails } = useQuery<MemberDetails>(
-    ["memberDetails", cId],
-    {
-      enabled: false,
-    }
-  );
+  const user = router.query.user;
 
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
@@ -177,12 +171,12 @@ export default function ProfileModal({ setIsOpen }: Props) {
                 bio,
                 skills,
               });
-              if (cId) {
-                await fetchMemberDetails();
-              }
               setLoading(false);
               handleClose();
               setIsDirty(false);
+              if (user !== username && user !== undefined) {
+                void router.push(`/profile/${username}`);
+              }
             }}
           >
             Save Profile

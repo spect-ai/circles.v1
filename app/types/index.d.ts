@@ -469,6 +469,7 @@ export type Notification = {
   linkPath: string[];
   actor: string;
   timestamp: Date;
+  entityId?: string;
   ref: {
     cards?: ContentPlaceholder;
     users?: ContentPlaceholder;
