@@ -5,8 +5,11 @@ import { DashboardOutlined } from "@ant-design/icons";
 import { Box, IconSearch, Input, Text } from "degen";
 import { matchSorter } from "match-sorter";
 import React, { memo, useEffect, useState } from "react";
-import { useLocalCard } from "../hooks/LocalCardContext";
-import { Option, priorityMapping } from "../constants";
+import { useLocalCard } from "../../Project/CreateCardModal/hooks/LocalCardContext";
+import {
+  Option,
+  priorityMapping,
+} from "../../Project/CreateCardModal/constants";
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
 
 function CardPriority() {

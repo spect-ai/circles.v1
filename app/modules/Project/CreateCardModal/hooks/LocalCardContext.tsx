@@ -41,6 +41,8 @@ type CreateCardContextType = {
   setReviewers: React.Dispatch<React.SetStateAction<string[]>>;
   columnId: string;
   setColumnId: React.Dispatch<React.SetStateAction<string>>;
+  projectId: string;
+  setProjectId: React.Dispatch<React.SetStateAction<string>>;
   cardType: string;
   setCardType: React.Dispatch<React.SetStateAction<string>>;
   chain: Chain;
@@ -127,9 +129,13 @@ export function useProviderLocalCard({
     ["card", tId],
     () =>
       fetch(
-        `${process.env.API_HOST}/card/byProjectSlugAndCardSlug/${pId}/${tId}`,
+        `${process.env.API_HOST}/card/v1/byProjectSlugAndCardSlug/${pId}/${tId}`,
         { credentials: "include" }
-      ).then((res) => res.json()),
+      ).then((res) => {
+        console.log({ res });
+        if (res.status === 403) return { unauthorized: true };
+        return res.json();
+      }),
     {
       enabled: false,
     }
@@ -166,6 +172,7 @@ export function useProviderLocalCard({
   const [assignees, setAssignees] = useState([] as string[]);
   const [reviewers, setReviewers] = useState([connectedUser] as string[]);
   const [columnId, setColumnId] = useState("");
+  const [projectId, setProjectId] = useState("");
   const [cardType, setCardType] = useState("Task");
   const [chain, setChain] = useState(circle?.defaultPayment?.chain as Chain);
   const [token, setToken] = useState(circle?.defaultPayment?.token as Token);
@@ -214,6 +221,7 @@ export function useProviderLocalCard({
   }, [tId]);
 
   useEffect(() => {
+    console.log(card);
     if (!createCard && card && card.id) {
       setCardId(card.id);
       setTitle(card.title);
@@ -222,6 +230,7 @@ export function useProviderLocalCard({
       setAssignees(card.assignee);
       setReviewers(card.reviewer);
       setColumnId(card.columnId);
+      setProjectId(card.project.id);
       setCardType(card.type);
       setChain(card.reward.chain);
       setToken(card.reward.token);
@@ -236,7 +245,7 @@ export function useProviderLocalCard({
       setChildrenTasks(card.children);
       setParent(card.parent);
       setLoading(false);
-    }
+    } else if (card?.unauthorized) setLoading(false);
   }, [card, createCard]);
 
   const onSubmit = async (createAnother: boolean) => {
@@ -342,6 +351,8 @@ export function useProviderLocalCard({
     setReviewers,
     columnId,
     setColumnId,
+    projectId,
+    setProjectId,
     cardType,
     setCardType,
     chain,

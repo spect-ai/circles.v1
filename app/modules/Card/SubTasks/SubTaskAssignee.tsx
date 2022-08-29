@@ -5,7 +5,7 @@ import { AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { Option } from "../../Project/CreateCardModal/constants";
-import { AssigneeModal } from "../../Project/CreateCardModal/modals/CardAssignee";
+import { AssigneeModal } from "../modals/CardAssignee";
 
 const CircleButton = styled(Box)<{ empty: boolean }>`
   border: ${(props) =>

@@ -91,7 +91,7 @@ export default function SettingsModal({ handleClose }: Props) {
               "Integrations",
               "Payments",
               "Contributors",
-              "Delete",
+              "Archive",
             ]}
             tabTourIds={[
               "circle-settings-info",
@@ -158,8 +158,7 @@ export default function SettingsModal({ handleClose }: Props) {
               <Stack>
                 <Box>
                   <Text align="center" weight="semiBold" size="extraLarge">
-                    Danger, this action cannot be undone, all your projects and
-                    workstreams will be deleted!
+                    Danger, this will also archive everything within the circle!
                   </Text>
                 </Box>
                 <PrimaryButton
@@ -167,7 +166,7 @@ export default function SettingsModal({ handleClose }: Props) {
                   disabled={uploading}
                   tone="red"
                 >
-                  Delete Circle
+                  Archive Circle
                 </PrimaryButton>
               </Stack>
             </Box>

@@ -4,19 +4,19 @@ import { Box, Button, Stack, Tag } from "degen";
 import { AnimatePresence } from "framer-motion";
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import CardAssignee from "./modals/CardAssignee";
-import CardColumn from "./modals/CardColumn";
-import CardDeadline from "./modals/CardDeadline";
-import CardLabels from "./modals/CardLabels";
-import CardType from "./modals/CardType";
-import CardReward from "./modals/CardReward";
-import CardPriority from "./modals/CardPriority";
+import CardAssignee from "../../Card/modals/CardAssignee";
+import CardColumn from "../../Card/modals/CardColumn";
+import CardDeadline from "../../Card/modals/CardDeadline";
+import CardLabels from "../../Card/modals/CardLabels";
+import CardType from "../../Card/modals/CardType";
+import CardReward from "../../Card/modals/CardReward";
+import CardPriority from "../../Card/modals/CardPriority";
 import {
   LocalCardContext,
   useProviderLocalCard,
 } from "./hooks/LocalCardContext";
 import { ProjectType } from "@/app/types";
-import CardReviewer from "./modals/CardReviewer";
+import CardReviewer from "../../Card/modals/CardReviewer";
 import ConfirmModal from "@/app/common/components/Modal/ConfirmModal";
 import SubTasks from "../../Card/SubTasks";
 import { useHotkeys } from "react-hotkeys-hook";
