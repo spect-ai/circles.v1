@@ -41,7 +41,6 @@ export default function useERC20() {
     if (!registry) return false;
     try {
       if (safeAddress) {
-        console.log(nonce);
         const overrides = {
           nonce,
         };
@@ -136,12 +135,10 @@ export default function useERC20() {
 
     const numDecimals = await contract.decimals();
     const allowance = await contract.allowance(ethAddress, spenderAddress);
-
+    if (!value) return true;
     return (
       allowance >=
-      ethers.BigNumber.from(value).mul(
-        ethers.BigNumber.from(10).pow(numDecimals)
-      )
+      ethers.BigNumber.from((value * 10 ** numDecimals).toFixed(0).toString())
     );
   }
 
@@ -192,15 +189,13 @@ export default function useERC20() {
       // eslint-disable-next-line no-else-return
     } else {
       const contract = getERC20Contract(erc20Address);
-      console.log(contract);
       const numDecimals = await contract.decimals();
 
       const balance = await contract.balanceOf(ethAddress);
+      if (!value) return true;
       return (
         balance >=
-        ethers.BigNumber.from(value || 0).mul(
-          ethers.BigNumber.from(10).pow(numDecimals)
-        )
+        ethers.BigNumber.from((value * 10 ** numDecimals).toFixed(0).toString())
       );
     }
   }
@@ -229,9 +224,7 @@ export default function useERC20() {
     if (isCurrency(erc20Address)) {
       return 18;
     }
-    console.log({ erc20Address });
     const contract = getERC20Contract(erc20Address);
-    console.log({ contract });
     // eslint-disable-next-line no-return-await
     return await contract.decimals();
   }
