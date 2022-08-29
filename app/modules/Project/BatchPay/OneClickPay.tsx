@@ -98,7 +98,7 @@ export default function OneClickPayment() {
           {registry &&
             registry[batchPayInfo?.chainId].tokenDetails[
               batchPayInfo.tokens.tokenAddresses[index]
-            ].symbol}
+            ]?.symbol}
         </Text>,
       ]);
     });
@@ -162,7 +162,6 @@ export default function OneClickPayment() {
     ) {
       const tokenStatus: any = {};
       let index = 0;
-      console.log(batchPayInfo?.approval);
       batchPayInfo?.approval.tokenAddresses.forEach(async (address: string) => {
         let safeApprovalStatus, approvalStatus;
         if (circleSafe)
@@ -172,7 +171,6 @@ export default function OneClickPayment() {
             batchPayInfo.approval.values[index],
             circleSafe
           );
-        //console.log(data.address);
 
         if (data?.address)
           approvalStatus = await isApproved(
@@ -188,7 +186,6 @@ export default function OneClickPayment() {
           error: "",
         };
         if (index === batchPayInfo.approval.tokenAddresses.length - 1) {
-          console.log(tokenStatus);
           setTokenStatus(tokenStatus);
         }
         setLoading(false);
@@ -219,9 +216,6 @@ export default function OneClickPayment() {
       return specificUserIds.map((userId) => {
         return getMemberDetails(userId)?.ethAddress;
       });
-    return batchPayInfo?.currency.userIds.map((userId) => {
-      return getMemberDetails(userId)?.ethAddress;
-    });
   };
   return (
     <Box>
@@ -258,7 +252,9 @@ export default function OneClickPayment() {
                           batchPayType: batchPayInfo?.retroId
                             ? "retro"
                             : "card",
-                          userAddresses: getEthAddress() as string[],
+                          userAddresses: getEthAddress(
+                            batchPayInfo?.currency.userIds
+                          ) as string[],
                           amounts: batchPayInfo?.currency.values,
                           tokenAddresses: [""],
                           cardIds: batchPayInfo?.retroId
@@ -306,7 +302,6 @@ export default function OneClickPayment() {
                                   }
                                 );
                                 setTokenStatus(approvedTokens);
-                                console.log(tokenStatus);
                               }
                             }
                           ),
@@ -328,7 +323,6 @@ export default function OneClickPayment() {
                         );
                       }
                     }
-
                     const batchPayType = batchPayInfo?.retroId
                       ? "retro"
                       : "card";
@@ -397,7 +391,9 @@ export default function OneClickPayment() {
                           batchPayType: batchPayInfo?.retroId
                             ? "retro"
                             : "card",
-                          userAddresses: getEthAddress() as string[],
+                          userAddresses: getEthAddress(
+                            batchPayInfo?.currency.userIds
+                          ) as string[],
                           amounts: batchPayInfo?.currency.values,
                           tokenAddresses: [""],
                           safeAddress:
@@ -435,9 +431,11 @@ export default function OneClickPayment() {
                               erc20Address,
                               circleSafe,
                               nonce
-                            ).then((res: any) => {
-                              nonce += 1;
-                            }),
+                            )
+                              .then((res: any) => {
+                                nonce += 1;
+                              })
+                              .catch((err: any) => console.log(err)),
                             {
                               pending: `Approving ${
                                 (registry &&
@@ -453,6 +451,20 @@ export default function OneClickPayment() {
                           );
                         }
                       }
+                      for (const [erc20Address, status] of Object.entries(
+                        tokenStatus
+                      )) {
+                        if (!status.safeApproved) {
+                          toast.info(
+                            "Please confirm all the approvals sent to the multi-sig. Then, click Pay again."
+                          );
+
+                          setGnosisLoading(false);
+                          setIsOpen(false);
+                          return;
+                        }
+                      }
+
                       await toast.promise(
                         payUsingGnosis({
                           chainId: batchPayInfo?.chainId || "",
@@ -460,8 +472,10 @@ export default function OneClickPayment() {
                           batchPayType: batchPayInfo?.retroId
                             ? "retro"
                             : "card",
-                          userAddresses: getEthAddress() as string[],
-                          amounts: batchPayInfo?.currency.values,
+                          userAddresses: getEthAddress(
+                            batchPayInfo?.tokens.userIds
+                          ) as string[],
+                          amounts: batchPayInfo?.tokens.values,
                           tokenAddresses: batchPayInfo?.tokens.tokenAddresses,
                           safeAddress:
                             (batchPayInfo &&
