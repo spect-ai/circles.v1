@@ -84,7 +84,11 @@ export function useProviderLocalProject() {
 
   const [selectedCard, setSelectedCard] = useState({} as CardType | null);
 
-  const [advFilters, setAdvFilters] = useState<AdvancedFilters>({inputTitle: "", groupBy: "Status"});
+  const [advFilters, setAdvFilters] = useState<AdvancedFilters>({
+    inputTitle: "",
+    groupBy: "Status",
+    sortBy: "none",
+  });
 
   const updateProject = (project: ProjectType) => {
     queryClient.setQueryData(["project", pId], project);

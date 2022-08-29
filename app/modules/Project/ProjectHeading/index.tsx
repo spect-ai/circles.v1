@@ -8,7 +8,6 @@ import ProjectOptions from "./ProjectOptions";
 import { ViewBar } from "../ProjectViews";
 import { useRouter } from "next/router";
 import { useGlobal } from "@/app/context/globalContext";
-import Filter from "../Filter";
 import AdvancedOptions from "./AdvancedOptions";
 
 export const IconButton = styled(Box)`
@@ -84,7 +83,6 @@ function ProjectHeading() {
           <ViewBar />
         </Stack>
         <Stack direction="horizontal" align="center">
-          {!vId && <Filter />}
           <Box
             display="flex"
             flexDirection="row"

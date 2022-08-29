@@ -6,6 +6,7 @@ import { CardType, CardsType } from "@/app/types";
 import { PopoverOption } from "../../Card/OptionPopover";
 import Popover from "@/app/common/components/Popover";
 import CardComponent from "@/app/modules/Project/CardComponent";
+import Filter from "../Filter";
 
 type ColumnProps = {
   cards: CardType[];
@@ -139,6 +140,7 @@ export function groupByAssignee(assigneeId: string, cards: CardsType) {
 function AdvancedOptions() {
   const { advFilters, setAdvFilters } = useLocalProject();
   const [isOpen, setIsOpen] = useState(false);
+  const [groupByIsOpen, setGroupByIsOpen] = useState(false);
   const { mode } = useTheme();
 
   return (
@@ -165,6 +167,7 @@ function AdvancedOptions() {
             setAdvFilters({
               inputTitle: e.target.value,
               groupBy: advFilters.groupBy,
+              sortBy: advFilters.sortBy,
             });
           }}
         />
@@ -174,6 +177,7 @@ function AdvancedOptions() {
               setAdvFilters({
                 inputTitle: "",
                 groupBy: advFilters.groupBy,
+                sortBy: advFilters.sortBy,
               })
             }
             style={{
@@ -186,7 +190,16 @@ function AdvancedOptions() {
           </Box>
         )}
       </Box>
-      <Box>
+
+      <Box
+        display="flex"
+        flexDirection="row"
+        width="96"
+        gap="2"
+        alignItems="center"
+        justifyContent="flex-start"
+      >
+        <Filter />
         <Popover
           butttonComponent={
             <Box
@@ -194,13 +207,15 @@ function AdvancedOptions() {
               cursor="pointer"
               onClick={() => setIsOpen(!isOpen)}
               color="foreground"
+              display="flex"
+              flexDirection="row"
+              gap="3"
+              width="36"
             >
-              <Stack direction="horizontal" space="2">
-                Group By :{" "}
-                <Tag size="medium" tone="accent">
-                  {advFilters.groupBy}
-                </Tag>
-              </Stack>
+              <Text whiteSpace="nowrap">Sort By</Text>
+              <Tag size="medium" tone="accent">
+                {advFilters.sortBy}
+              </Tag>
             </Box>
           }
           isOpen={isOpen}
@@ -218,7 +233,76 @@ function AdvancedOptions() {
                 setIsOpen(false);
                 setAdvFilters({
                   inputTitle: advFilters.inputTitle,
+                  groupBy: advFilters.groupBy,
+                  sortBy: "none",
+                });
+              }}
+            >
+              None (default)
+            </PopoverOption>
+            <PopoverOption
+              tourId="batch-pay-button"
+              onClick={() => {
+                setIsOpen(false);
+                setAdvFilters({
+                  inputTitle: advFilters.inputTitle,
+                  groupBy: advFilters.groupBy,
+                  sortBy: "Priority",
+                });
+              }}
+            >
+              Priority
+            </PopoverOption>
+            <PopoverOption
+              tourId="batch-pay-button"
+              onClick={() => {
+                setIsOpen(false);
+                setAdvFilters({
+                  inputTitle: advFilters.inputTitle,
+                  groupBy: advFilters.groupBy,
+                  sortBy: "Deadline",
+                });
+              }}
+            >
+              Deadline
+            </PopoverOption>
+          </Box>
+        </Popover>
+        <Popover
+          butttonComponent={
+            <Box
+              data-tour="group-options-button"
+              cursor="pointer"
+              onClick={() => setGroupByIsOpen(!isOpen)}
+              color="foreground"
+              display="flex"
+              flexDirection="row"
+              gap="3"
+              marginRight="3"
+            >
+              <Text whiteSpace="nowrap">Group By</Text>
+              <Tag size="medium" tone="accent">
+                {advFilters.groupBy}
+              </Tag>
+            </Box>
+          }
+          isOpen={groupByIsOpen}
+          setIsOpen={setGroupByIsOpen}
+        >
+          <Box
+            backgroundColor="background"
+            borderWidth="0.5"
+            borderRadius="2xLarge"
+            width="36"
+          >
+            <PopoverOption
+              tourId="project-settings-button"
+              onClick={() => {
+                setGroupByIsOpen(false);
+                setAdvFilters({
+                  inputTitle: advFilters.inputTitle,
                   groupBy: "Status",
+                  sortBy: advFilters.sortBy,
                 });
               }}
             >
@@ -227,10 +311,11 @@ function AdvancedOptions() {
             <PopoverOption
               tourId="batch-pay-button"
               onClick={() => {
-                setIsOpen(false);
+                setGroupByIsOpen(false);
                 setAdvFilters({
                   inputTitle: advFilters.inputTitle,
                   groupBy: "Assignee",
+                  sortBy: advFilters.sortBy,
                 });
               }}
             >

@@ -490,4 +490,5 @@ export type ContentPlaceholder = {
 export type AdvancedFilters = {
   inputTitle: string;
   groupBy: "Status" | "Assignee";
-}
+  sortBy: "none" | "Priority" | "Deadline";
+};

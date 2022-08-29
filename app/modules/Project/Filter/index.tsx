@@ -91,7 +91,6 @@ export default function Filter() {
   };
 
   return (
-    <>
       <Popover
         isOpen={filterOpen}
         setIsOpen={setFilterOpen}
@@ -197,6 +196,5 @@ export default function Filter() {
           </motion.div>
         </AnimatePresence>
       </Popover>
-    </>
   );
 }
