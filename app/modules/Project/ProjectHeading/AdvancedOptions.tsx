@@ -10,7 +10,12 @@ import Filter from "../Filter";
 
 type ColumnProps = {
   cards: CardType[];
-  column: any;
+  column: {
+    columnId: string;
+    name: string;
+    cards: [];
+    defaultCardType: "Task";
+  };
 };
 
 const BoundingBox = styled(Box)<{ mode: string }>`
@@ -46,7 +51,7 @@ const Container = styled(Box)`
   }
   -ms-overflow-style: none;
   scrollbar-width: none;
-  height: calc(100vh - 5rem);
+  height: calc(100vh - 7.5rem);
   overflow-y: none;
   width: 22rem;
 `;
@@ -110,10 +115,12 @@ export function titleFilter(cards: CardType[], inputTitle: string): CardType[] {
     }
   });
 
-  const ProjectCards = filteredCards.reduce(
+  let ProjectCards = filteredCards.reduce(
     (rest, card) => [...rest, card],
     [{} as CardType]
   );
+
+  ProjectCards = ProjectCards.filter((i) => i?.id !== undefined);
 
   return ProjectCards;
 }
@@ -137,9 +144,42 @@ export function groupByAssignee(assigneeId: string, cards: CardsType) {
   return res;
 }
 
+export function sortBy(
+  field: string,
+  cards: CardType[],
+  order?: string
+): CardType[] {
+  if (field == "none" || !field) return cards;
+  const vcards = cards.slice(0);
+  if (field == "Deadline") {
+    if (order == "asc") {
+      vcards.sort(function (a, b) {
+        return new Date(a.deadline).getTime() - new Date(b.deadline).getTime();
+      });
+    } else {
+      vcards.sort(function (a, b) {
+        return new Date(b.deadline).getTime() - new Date(a.deadline).getTime();
+      });
+    }
+  }
+  if (field == "Priority") {
+    if (order == "asc") {
+      vcards.sort(function (a, b) {
+        return a.priority - b.priority;
+      });
+    } else {
+      vcards.sort(function (a, b) {
+        return b.priority - a.priority;
+      });
+    }
+  }
+  return vcards;
+}
+
 function AdvancedOptions() {
   const { advFilters, setAdvFilters } = useLocalProject();
-  const [isOpen, setIsOpen] = useState(false);
+  const [sortIsOpen, setSortIsOpen] = useState(false);
+  const [orderIsOpen, setOrderIsOpen] = useState(false);
   const [groupByIsOpen, setGroupByIsOpen] = useState(false);
   const { mode } = useTheme();
 
@@ -168,6 +208,7 @@ function AdvancedOptions() {
               inputTitle: e.target.value,
               groupBy: advFilters.groupBy,
               sortBy: advFilters.sortBy,
+              order: advFilters.order,
             });
           }}
         />
@@ -178,6 +219,7 @@ function AdvancedOptions() {
                 inputTitle: "",
                 groupBy: advFilters.groupBy,
                 sortBy: advFilters.sortBy,
+                order: advFilters.order,
               })
             }
             style={{
@@ -194,8 +236,8 @@ function AdvancedOptions() {
       <Box
         display="flex"
         flexDirection="row"
-        width="96"
-        gap="2"
+        width={advFilters.sortBy == "none" ? "96" : "128"}
+        gap="10"
         alignItems="center"
         justifyContent="flex-start"
       >
@@ -203,23 +245,22 @@ function AdvancedOptions() {
         <Popover
           butttonComponent={
             <Box
-              data-tour="group-options-button"
+              data-tour="sortby-options-button"
               cursor="pointer"
-              onClick={() => setIsOpen(!isOpen)}
+              onClick={() => setSortIsOpen(!sortIsOpen)}
               color="foreground"
               display="flex"
               flexDirection="row"
               gap="3"
-              width="36"
             >
               <Text whiteSpace="nowrap">Sort By</Text>
-              <Tag size="medium" tone="accent">
+              <Tag size="medium" hover>
                 {advFilters.sortBy}
               </Tag>
             </Box>
           }
-          isOpen={isOpen}
-          setIsOpen={setIsOpen}
+          isOpen={sortIsOpen}
+          setIsOpen={setSortIsOpen}
         >
           <Box
             backgroundColor="background"
@@ -228,39 +269,42 @@ function AdvancedOptions() {
             width="36"
           >
             <PopoverOption
-              tourId="project-settings-button"
+              tourId="sortby-none-button"
               onClick={() => {
-                setIsOpen(false);
+                setSortIsOpen(false);
                 setAdvFilters({
                   inputTitle: advFilters.inputTitle,
                   groupBy: advFilters.groupBy,
                   sortBy: "none",
+                  order: advFilters.order,
                 });
               }}
             >
               None (default)
             </PopoverOption>
             <PopoverOption
-              tourId="batch-pay-button"
+              tourId="sortby-priority-button"
               onClick={() => {
-                setIsOpen(false);
+                setSortIsOpen(false);
                 setAdvFilters({
                   inputTitle: advFilters.inputTitle,
                   groupBy: advFilters.groupBy,
                   sortBy: "Priority",
+                  order: advFilters.order,
                 });
               }}
             >
               Priority
             </PopoverOption>
             <PopoverOption
-              tourId="batch-pay-button"
+              tourId="sortby-deadline-button"
               onClick={() => {
-                setIsOpen(false);
+                setSortIsOpen(false);
                 setAdvFilters({
                   inputTitle: advFilters.inputTitle,
                   groupBy: advFilters.groupBy,
                   sortBy: "Deadline",
+                  order: advFilters.order,
                 });
               }}
             >
@@ -268,12 +312,70 @@ function AdvancedOptions() {
             </PopoverOption>
           </Box>
         </Popover>
+        {advFilters.sortBy !== "none" && (
+          <Popover
+            butttonComponent={
+              <Box
+                data-tour="order-options-button"
+                cursor="pointer"
+                onClick={() => setOrderIsOpen(!sortIsOpen)}
+                color="foreground"
+                display="flex"
+                flexDirection="row"
+                gap="3"
+              >
+                <Text whiteSpace="nowrap">Order</Text>
+                <Tag size="medium" hover>
+                  {advFilters.order}
+                </Tag>
+              </Box>
+            }
+            isOpen={orderIsOpen}
+            setIsOpen={setOrderIsOpen}
+          >
+            <Box
+              backgroundColor="background"
+              borderWidth="0.5"
+              borderRadius="2xLarge"
+              width="36"
+            >
+              <PopoverOption
+                tourId="asc-button"
+                onClick={() => {
+                  setOrderIsOpen(false);
+                  setAdvFilters({
+                    inputTitle: advFilters.inputTitle,
+                    groupBy: advFilters.groupBy,
+                    sortBy: advFilters.sortBy,
+                    order: "asc",
+                  });
+                }}
+              >
+                Ascending
+              </PopoverOption>
+              <PopoverOption
+                tourId="des-button"
+                onClick={() => {
+                  setOrderIsOpen(false);
+                  setAdvFilters({
+                    inputTitle: advFilters.inputTitle,
+                    groupBy: advFilters.groupBy,
+                    sortBy: advFilters.sortBy,
+                    order: "des",
+                  });
+                }}
+              >
+                Descending
+              </PopoverOption>
+            </Box>
+          </Popover>
+        )}
         <Popover
           butttonComponent={
             <Box
               data-tour="group-options-button"
               cursor="pointer"
-              onClick={() => setGroupByIsOpen(!isOpen)}
+              onClick={() => setGroupByIsOpen(!sortIsOpen)}
               color="foreground"
               display="flex"
               flexDirection="row"
@@ -281,7 +383,7 @@ function AdvancedOptions() {
               marginRight="3"
             >
               <Text whiteSpace="nowrap">Group By</Text>
-              <Tag size="medium" tone="accent">
+              <Tag size="medium" hover>
                 {advFilters.groupBy}
               </Tag>
             </Box>
@@ -296,26 +398,28 @@ function AdvancedOptions() {
             width="36"
           >
             <PopoverOption
-              tourId="project-settings-button"
+              tourId="default-button"
               onClick={() => {
                 setGroupByIsOpen(false);
                 setAdvFilters({
                   inputTitle: advFilters.inputTitle,
                   groupBy: "Status",
                   sortBy: advFilters.sortBy,
+                  order: advFilters.order,
                 });
               }}
             >
               Status (default)
             </PopoverOption>
             <PopoverOption
-              tourId="batch-pay-button"
+              tourId="groupby-assignee-button"
               onClick={() => {
                 setGroupByIsOpen(false);
                 setAdvFilters({
                   inputTitle: advFilters.inputTitle,
                   groupBy: "Assignee",
                   sortBy: advFilters.sortBy,
+                  order: advFilters.order,
                 });
               }}
             >

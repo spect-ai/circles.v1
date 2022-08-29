@@ -491,4 +491,5 @@ export type AdvancedFilters = {
   inputTitle: string;
   groupBy: "Status" | "Assignee";
   sortBy: "none" | "Priority" | "Deadline";
+  order: "asc" | "des";
 };

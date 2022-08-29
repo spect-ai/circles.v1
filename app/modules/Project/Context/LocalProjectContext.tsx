@@ -42,7 +42,7 @@ export const LocalProjectContext = createContext<LocalProjectContextType>(
 
 export function useProviderLocalProject() {
   const router = useRouter();
-  const { project: pId, cirle: cId } = router.query;
+  const { project: pId } = router.query;
   const { refetch: fetchProject } = useQuery<ProjectType>(
     ["project", pId],
     () =>
@@ -88,6 +88,7 @@ export function useProviderLocalProject() {
     inputTitle: "",
     groupBy: "Status",
     sortBy: "none",
+    order: "des",
   });
 
   const updateProject = (project: ProjectType) => {

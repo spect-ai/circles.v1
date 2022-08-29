@@ -109,14 +109,14 @@ export default function Filter() {
                   width: "0.4rem",
                   borderRadius: "3rem",
                   position: "absolute",
-                  margin: "0px 8px 0px 15px",
+                  margin: "0px 4px 0px 12px",
                 }}
               />
             )}
             <FilterOutlined
               style={{
                 color: `${filterIsOn ? "rgb(191, 90, 242, 0.7)" : "gray"}`,
-                fontSize: "1.3rem",
+                fontSize: "1.1rem",
               }}
             />
           </Button>

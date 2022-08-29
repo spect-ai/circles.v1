@@ -1,6 +1,6 @@
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { Box, Button, IconGrid, IconList, Stack, Text, useTheme } from "degen";
-import React, { memo, useState } from "react";
+import React, { memo } from "react";
 import Skeleton from "react-loading-skeleton";
 import styled from "styled-components";
 import { useLocalProject } from "../Context/LocalProjectContext";
