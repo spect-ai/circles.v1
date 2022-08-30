@@ -64,27 +64,19 @@ export default function Explore() {
   const { mode } = useTheme();
 
   useEffect(() => {
-    if (circles) {
-      setFilteredCircles(circles.memberOf);
+    if (circles && connectedUser) {
+      console.log(connectedUser);
       setJoinableCircles(circles.joinable);
       setClaimableCircles(circles.claimable);
       setIsSidebarExpanded(true);
     }
-  }, [circles]);
-
-  useEffect(() => {
-    if (circles && !connectedUser) {
-      setFilteredCircles([]);
-      setJoinableCircles(circles.memberOf.concat(circles.joinable));
-      setClaimableCircles(circles.claimable);
-      setIsSidebarExpanded(true);
-    } else if (circles) {
+    // TODODODO: Fix this bandage solution. Currently, the connected user state is updated multiple times
+    //            causing 'Your Circles' to re-render multiple times when user connects wallet with the last render having an empty array
+    // @avp pls halppppp
+    if (circles && connectedUser && circles.memberOf?.length !== 0) {
       setFilteredCircles(circles.memberOf);
-      setJoinableCircles(circles.joinable);
-      setClaimableCircles(circles.claimable);
-      setIsSidebarExpanded(true);
     }
-  }, [connectedUser]);
+  }, [circles, connectedUser]);
 
   if (isLoading) {
     return <Loader text="" loading />;
@@ -133,7 +125,7 @@ export default function Explore() {
             }}
           />
         </Box>
-        {connectedUser && (
+        {connectedUser && filteredCircles && filteredCircles.length > 0 && (
           <>
             {" "}
             <Box
