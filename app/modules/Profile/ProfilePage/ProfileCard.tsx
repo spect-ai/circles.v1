@@ -86,8 +86,8 @@ const ProfileCard = ({ username }: Props) => {
   const { data: user, refetch: fetchUser } = useQuery<UserType>(
     ["user", username],
     async () =>
-      await fetch(`${process.env.API_HOST}/user/username/${username}`).then((res) =>
-        res.json()
+      await fetch(`${process.env.API_HOST}/user/username/${username}`).then(
+        (res) => res.json()
       ),
     {
       enabled: false,
@@ -110,6 +110,7 @@ const ProfileCard = ({ username }: Props) => {
   );
 
   useEffect(() => {
+    console.log("here");
     void refetch();
   }, [refetch, currentUser]);
 
@@ -120,9 +121,7 @@ const ProfileCard = ({ username }: Props) => {
   return (
     <>
       <Profile mode={mode}>
-        <Box
-          cursor="pointer"
-        >
+        <Box cursor="pointer">
           <Avatar
             label="profile-pic"
             src={user?.avatar}

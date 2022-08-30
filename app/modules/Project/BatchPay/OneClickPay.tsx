@@ -375,6 +375,7 @@ export default function OneClickPayment() {
             </Box>
           )}
           {batchPayInfo?.chainId &&
+            circle?.safeAddresses &&
             circle?.safeAddresses[batchPayInfo?.chainId] && (
               <Box width="1/2">
                 <PrimaryButton
