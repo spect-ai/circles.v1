@@ -69,6 +69,10 @@ export default function Explore() {
       setJoinableCircles(circles.joinable);
       setClaimableCircles(circles.claimable);
       setIsSidebarExpanded(true);
+    } else if (circles) {
+      setJoinableCircles(circles.joinable);
+      setClaimableCircles(circles.claimable);
+      setIsSidebarExpanded(true);
     }
     // TODODODO: Fix this bandage solution. Currently, the connected user state is updated multiple times
     //            causing 'Your Circles' to re-render multiple times when user connects wallet with the last render having an empty array
@@ -179,7 +183,7 @@ export default function Explore() {
                 Explore Circles
               </Text>
             </Box>
-            <CreateCircleCard />
+            {connectedUser && <CreateCircleCard />}
           </Box>
           <Row>
             {joinableCircles?.map &&
@@ -212,7 +216,7 @@ export default function Explore() {
                 Claim Circles
               </Text>
             </Box>
-            <CreateCircleCard />
+            {connectedUser && <CreateCircleCard />}
           </Box>
           <Row>
             {claimableCircles?.map &&
