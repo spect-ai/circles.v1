@@ -183,7 +183,7 @@ export default function Explore() {
                 Explore Circles
               </Text>
             </Box>
-            <CreateCircleCard />
+            {connectedUser && <CreateCircleCard />}
           </Box>
           <Row>
             {joinableCircles?.map &&
@@ -216,7 +216,7 @@ export default function Explore() {
                 Claim Circles
               </Text>
             </Box>
-            <CreateCircleCard />
+            {connectedUser && <CreateCircleCard />}
           </Box>
           <Row>
             {claimableCircles?.map &&
