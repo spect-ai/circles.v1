@@ -24,6 +24,7 @@
     "degen": "^0.0.109",
     "ethers": "^5.6.8",
     "framer-motion": "^6.3.11",
+    "ipfs-http-client": "^57.0.3",
     "match-sorter": "^6.3.1",
     "next": "^12.1.6",
     "next-seo": "^5.4.0",

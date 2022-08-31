@@ -43,6 +43,7 @@ function Editor({
       }}
       placeholder={placeholder}
       uploadImage={async (file) => {
+        console.log({ file });
         const { imageGatewayURL } = await toast.promise(
           storeImage(file, "circleLogo"),
           {
