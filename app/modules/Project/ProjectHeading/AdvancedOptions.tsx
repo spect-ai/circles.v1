@@ -2,7 +2,7 @@ import { Box, Stack, Tag, Text, useTheme, IconSearch, IconEth, AvatarGroup} from
 import { useState, memo, useMemo,  } from "react";
 import styled from "styled-components";
 import { useLocalProject } from "../Context/LocalProjectContext";
-import { CardType, CardsType, MemberDetails } from "@/app/types";
+import { CardType, CardsType } from "@/app/types";
 import { PopoverOption } from "../../Card/OptionPopover";
 import Popover from "@/app/common/components/Popover";
 import Filter from "../Filter";
@@ -11,7 +11,6 @@ import { useRouter } from "next/router";
 import { PriorityIcon } from "@/app/common/components/PriorityIcon";
 import { monthMap } from "@/app/common/utils/constants";
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
-import { useQuery } from "react-query";
 
 type ColumnProps = {
   cards: CardType[];
@@ -33,7 +32,7 @@ const BoundingBox = styled(Box)<{ mode: string }>`
   margin: 0.3rem;
   border-radius: 0.5rem;
   background-color: ${({ mode }) =>
-    mode === "dark" ? "rgba(255, 255, 255, 0.01)" : "rgba(0, 0, 0, 0.02)"};
+    mode === "dark" ? "rgba(255, 255, 255, 0.03)" : "rgba(0, 0, 0, 0.02)"};
 `;
 
 const Input = styled.input`

@@ -36,7 +36,7 @@ function ProjectHeading() {
       display="flex"
       flexDirection="column"
       alignItems="center"
-      borderBottomWidth="0.375"
+      // borderBottomWidth="0.375"
       paddingLeft="3"
       paddingRight="5"
     >
@@ -47,7 +47,6 @@ function ProjectHeading() {
         flexDirection="row"
         justifyContent="space-between"
         alignItems="center"
-        // borderBottomWidth="0.375"
         style={{
           paddingTop: "0.5rem",
           paddingBottom: "0.0rem",
