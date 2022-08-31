@@ -1,5 +1,14 @@
-import { Box, Stack, Tag, Text, useTheme, IconSearch, IconEth, AvatarGroup} from "degen";
-import { useState, memo, useMemo,  } from "react";
+import {
+  Box,
+  Stack,
+  Tag,
+  Text,
+  useTheme,
+  IconSearch,
+  IconEth,
+  AvatarGroup,
+} from "degen";
+import { useState, memo, useMemo } from "react";
 import styled from "styled-components";
 import { useLocalProject } from "../Context/LocalProjectContext";
 import { CardType, CardsType } from "@/app/types";
@@ -17,8 +26,11 @@ type ColumnProps = {
   column: {
     columnId: string;
     name: string;
-    cards: [];
-    defaultCardType: "Task";
+    cards: string[];
+    defaultCardType: "Task" | "Bounty";
+    access?: {
+      canCreateCard: string;
+    };
   };
 };
 
@@ -84,7 +96,6 @@ const ScrollContainer = styled(Box)`
 `;
 
 function CardComponent({ card, index }: Props) {
-
   const router = useRouter();
   const { circle: cId, project: pId } = router.query;
   const [hover, setHover] = useState(false);
@@ -93,7 +104,6 @@ function CardComponent({ card, index }: Props) {
   const { getMemberAvatars, getMemberDetails } = useModalOptions();
 
   const deadline = useMemo(() => new Date(card.deadline), [card.deadline]);
-
 
   return (
     <CardContainer
@@ -161,7 +171,7 @@ function CardComponent({ card, index }: Props) {
         <QuickActions card={card} hover={hover} />
       </Box>
     </CardContainer>
-  )
+  );
 }
 
 export function AssigneeColumn({ cards, column }: ColumnProps) {

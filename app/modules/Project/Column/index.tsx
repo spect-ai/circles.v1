@@ -23,16 +23,15 @@ type Props = {
   id: string;
   column: ColumnType;
   index: number;
-  viewId: string;
 };
 
-const Container = styled(Box)<{viewId: string}>`
+const Container = styled(Box)`
   ::-webkit-scrollbar {
     display: none;
   }
   -ms-overflow-style: none;
   scrollbar-width: none;
-  height: calc(100vh - ${(props) => props.viewId == "" ? "7.5" : "5"}rem);
+  height: calc(100vh - 5rem);
   overflow-y: none;
   width: 22rem;
 `;
@@ -64,7 +63,7 @@ const NameInput = styled.input<{ mode: string }>`
   margin-left: 0.1rem;
 `;
 
-function ColumnComponent({ cards, id, column, index, viewId }: Props) {
+function ColumnComponent({ cards, id, column, index }: Props) {
   const [columnTitle, setColumnTitle] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [isDirty, setIsDirty] = useState(false);
@@ -129,7 +128,6 @@ function ColumnComponent({ cards, id, column, index, viewId }: Props) {
       display="flex"
       flexDirection="column"
       justifyContent="space-between"
-      viewId={viewId}
     >
       <Box marginBottom="2">
         <Stack

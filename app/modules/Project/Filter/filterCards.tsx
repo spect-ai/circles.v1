@@ -1,11 +1,12 @@
-import { CardsType, Filter, ProjectType } from "@/app/types";
+import { CardsType, CardType, Filter, ProjectType } from "@/app/types";
 
 export const filterCards = (
   project: ProjectType,
+  cards : CardsType | CardType[],
   currentFilter: Filter
 ): CardsType => {
-  if (!currentFilter || !project.cards) return project.cards;
-  const filteredCards = Object.values(project.cards)?.filter((card) => {
+  if (!currentFilter || !project.cards) return cards as CardsType;
+  const filteredCards = Object.values(cards)?.filter((card) => {
     if (card === undefined) return false;
     let reviewerFiltSat = false;
     let assigneeFiltSat = false;

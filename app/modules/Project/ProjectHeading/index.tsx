@@ -125,7 +125,7 @@ function ProjectHeading() {
           </Box>
         </Stack>
       </Box>
-      {!vId && <AdvancedOptions />}
+      <AdvancedOptions />
     </Box>
   );
 }
