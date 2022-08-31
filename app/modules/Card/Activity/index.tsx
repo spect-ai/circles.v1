@@ -9,6 +9,7 @@ import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
 import ClickableTag from "@/app/common/components/EditTag/ClickableTag";
 import { EyeInvisibleOutlined, EyeOutlined } from "@ant-design/icons";
 import { fadeVariant } from "../Utils/variants";
+import ClickableAvatar from "@/app/common/components/Avatar";
 
 export default function Activity() {
   const { activity } = useLocalCard();
@@ -60,11 +61,15 @@ export default function Activity() {
                       key={item.commitId}
                       align="center"
                     >
-                      <Avatar
+                      <ClickableAvatar
                         label=""
                         placeholder={!getMemberDetails(item.actorId)?.avatar}
-                        src={getMemberDetails(item.actorId)?.avatar}
+                        src={getMemberDetails(item.actorId)?.avatar as string}
                         address={getMemberDetails(item.actorId)?.ethAddress}
+                        username={
+                          getMemberDetails(item.actorId)?.username as string
+                        }
+                        userId={getMemberDetails(item.actorId)?.id as string}
                         size="8"
                       />
                       <Stack space="1">

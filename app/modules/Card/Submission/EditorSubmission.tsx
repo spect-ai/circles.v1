@@ -10,6 +10,7 @@ import { Avatar, Box, Button, Stack } from "degen";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import React, { useState } from "react";
+import ClickableAvatar from "@/app/common/components/Avatar";
 
 type Props = {
   workThread?: WorkThreadType;
@@ -46,11 +47,14 @@ export default function EditorSubmission({
       )}
       <Stack direction="horizontal" space="6">
         {workUnit ? (
-          <Avatar
-            src={getMemberDetails(workUnit.user)?.avatar}
+          <ClickableAvatar
             label=""
-            size="8"
+            placeholder={!getMemberDetails(workUnit.user)?.avatar}
+            src={getMemberDetails(workUnit.user)?.avatar as string}
             address={getMemberDetails(workUnit.user)?.ethAddress}
+            username={getMemberDetails(workUnit.user)?.username as string}
+            userId={getMemberDetails(workUnit.user)?.id as string}
+            size="8"
           />
         ) : (
           <Avatar
