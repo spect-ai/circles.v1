@@ -1,12 +1,17 @@
-import { Box, Stack, Tag, Text, useTheme, IconSearch } from "degen";
-import { useState, memo } from "react";
+import { Box, Stack, Tag, Text, useTheme, IconSearch, IconEth, AvatarGroup} from "degen";
+import { useState, memo, useMemo,  } from "react";
 import styled from "styled-components";
 import { useLocalProject } from "../Context/LocalProjectContext";
-import { CardType, CardsType } from "@/app/types";
+import { CardType, CardsType, MemberDetails } from "@/app/types";
 import { PopoverOption } from "../../Card/OptionPopover";
 import Popover from "@/app/common/components/Popover";
-import CardComponent from "@/app/modules/Project/CardComponent";
 import Filter from "../Filter";
+import QuickActions from "@/app/modules/Project/CardComponent/QuickActions";
+import { useRouter } from "next/router";
+import { PriorityIcon } from "@/app/common/components/PriorityIcon";
+import { monthMap } from "@/app/common/utils/constants";
+import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
+import { useQuery } from "react-query";
 
 type ColumnProps = {
   cards: CardType[];
@@ -16,6 +21,11 @@ type ColumnProps = {
     cards: [];
     defaultCardType: "Task";
   };
+};
+
+type Props = {
+  card: CardType;
+  index: number;
 };
 
 const BoundingBox = styled(Box)<{ mode: string }>`
@@ -56,6 +66,15 @@ const Container = styled(Box)`
   width: 22rem;
 `;
 
+const CardContainer = styled(Box)<{ mode: string }>`
+  border-width: 2px;
+  &:hover {
+    border-color: ${(props) =>
+      props.mode === "dark" ? "rgb(255, 255, 255, 0.1)" : "rgb(20,20,20,0.1)"};
+  }
+  cursor: pointer;
+`;
+
 const ScrollContainer = styled(Box)`
   ::-webkit-scrollbar {
     width: 0px;
@@ -64,6 +83,87 @@ const ScrollContainer = styled(Box)`
   border-radius: 0.5rem;
   overflow-y: auto;
 `;
+
+function CardComponent({ card, index }: Props) {
+
+  const router = useRouter();
+  const { circle: cId, project: pId } = router.query;
+  const [hover, setHover] = useState(false);
+  const { mode } = useTheme();
+
+  const { getMemberAvatars, getMemberDetails } = useModalOptions();
+
+  const deadline = useMemo(() => new Date(card.deadline), [card.deadline]);
+
+
+  return (
+    <CardContainer
+      padding="4"
+      marginBottom="2"
+      borderRadius="large"
+      onClick={() => {
+        void router.push(`/${cId}/${pId}/${card.slug}`);
+      }}
+      onMouseEnter={() => {
+        setHover(true);
+      }}
+      onMouseLeave={() => {
+        setHover(false);
+      }}
+      mode={mode}
+    >
+      <Box>
+        <Box marginTop="1" marginBottom="4">
+          <Stack direction="horizontal" space="2" justify="space-between">
+            <Text weight="semiBold">{card.title}</Text>
+            {card.assignee.length > 0 &&
+              card.assignee[0] &&
+              getMemberDetails(card.assignee[0]) && (
+                <AvatarGroup members={getMemberAvatars(card.assignee)} hover />
+              )}
+          </Stack>
+        </Box>
+        <Stack direction="horizontal" wrap space="2">
+          {card.status.paid && (
+            <Tag size="small" tone="green">
+              <Text color="green">Paid</Text>
+            </Tag>
+          )}
+          {card.type === "Bounty" && (
+            <Tag size="small">
+              <Text color="accent">{card.type}</Text>
+            </Tag>
+          )}
+          {card.reward.value ? (
+            <Tag size="small">
+              <Text color="accent">
+                <Stack direction="horizontal" space="0" align="center">
+                  <IconEth size="3.5" />
+                  {card.reward.value} {card.reward.token?.symbol}
+                </Stack>
+              </Text>
+            </Tag>
+          ) : null}
+          {card.deadline && (
+            <Tag size="small">
+              <Text color="accent">
+                {deadline.getDate()}{" "}
+                {monthMap[deadline.getMonth() as keyof typeof monthMap]}
+              </Text>
+            </Tag>
+          )}
+          {card.priority ? <PriorityIcon priority={card.priority} /> : null}
+          {card?.labels?.map((label) => (
+            <Tag size="small" key={label}>
+              {label}
+            </Tag>
+          ))}
+        </Stack>
+        <QuickActions card={card} hover={hover} />
+      </Box>
+    </CardContainer>
+  )
+}
 
 export function AssigneeColumn({ cards, column }: ColumnProps) {
   return (
@@ -128,16 +228,22 @@ export function titleFilter(cards: CardType[], inputTitle: string): CardType[] {
 export function groupByAssignee(assigneeId: string, cards: CardsType) {
   const res = Object.values(cards)?.filter((card) => {
     if (card === undefined) return false;
+    let assigneeFilt = false;
     const { assignee } = card;
 
     if (assignee.length == 0 && assigneeId.length == 0) return card;
 
     for (let i = 0; i < assignee.length; i += 1) {
       if (assigneeId == assignee[i]) {
-        return card;
-      } else {
-        return false;
+        assigneeFilt = true;
+        break;
       }
+    }
+
+    if (assigneeFilt == true) {
+      return card;
+    } else {
+      return null;
     }
   });
 
