@@ -1,7 +1,7 @@
 import React, { memo, useEffect } from "react";
 
 import { ReactNodeNoStrings } from "degen/dist/types/types";
-import { Box, Heading, Text, useTheme } from "degen";
+import { Box, Text, useTheme } from "degen";
 import { AnimatePresence } from "framer-motion";
 import ExtendedSidebar from "../../../modules/ExtendedSidebar/ExtendedSidebar";
 import Sidebar from "@/app/modules/Sidebar";
@@ -24,14 +24,20 @@ const DesktopContainer = styled(Box)`
   display: none;
   @media (min-width: 768px) {
     display: flex;
+    flexdirection: row;
+    height: 100vh;
   }
+  overflowy: auto;
+  overflowx: hidden;
 `;
 
 // show this only mobile screens
 const MobileContainer = styled(Box)`
   display: flex;
   flex-direction: column;
-  margin: auto;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
   @media (min-width: 768px) {
     display: none;
   }
@@ -54,39 +60,32 @@ function PublicLayout(props: PublicLayoutProps) {
 
   return (
     <>
-      <Box
+      <DesktopContainer
         backgroundColor={mode === "dark" ? "background" : "backgroundSecondary"}
-        style={{
-          height: "100vh",
-          overflowY: "auto",
-          overflowX: "hidden",
-          display: "flex",
-          flexDirection: "row",
-        }}
         id="public-layout"
       >
-        <DesktopContainer>
-          <Sidebar />
-          <AnimatePresence initial={false}>
-            {isSidebarExpanded && <ExtendedSidebar />}
-          </AnimatePresence>
-          <Box
-            display="flex"
-            flexDirection="column"
-            width="full"
-            overflow="hidden"
-          >
-            <Container issidebarexpanded={isSidebarExpanded}>
-              {children}
-            </Container>
-          </Box>
-        </DesktopContainer>
-        <MobileContainer>
-          <Text variant="label">
-            Mobile not supported yet, please use desktop
-          </Text>
-        </MobileContainer>
-      </Box>
+        <Sidebar />
+        <AnimatePresence initial={false}>
+          {isSidebarExpanded && <ExtendedSidebar />}
+        </AnimatePresence>
+        <Box
+          display="flex"
+          flexDirection="column"
+          width="full"
+          overflow="hidden"
+        >
+          <Container issidebarexpanded={isSidebarExpanded}>
+            {children}
+          </Container>
+        </Box>
+      </DesktopContainer>
+      <MobileContainer
+        backgroundColor={mode === "dark" ? "background" : "backgroundSecondary"}
+      >
+        <Text variant="label">
+          Mobile not supported yet, please use desktop
+        </Text>
+      </MobileContainer>
     </>
   );
 }
