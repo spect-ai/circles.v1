@@ -63,15 +63,15 @@ export const filterCards = (
     }
 
     if (currentFilter?.column?.length > 0) {
-      for (let i = 0; i < currentFilter.column.length; i += 1) {
-        const columnid = currentFilter.column[i];
+      Object.keys(project.columnDetails).forEach((key) => {
+        const columnName = project.columnDetails?.[key]?.name;
         const filterLTruth =
-          project.columnDetails?.[columnid].cards.includes(id);
+          project.columnDetails?.[key]?.cards?.includes(id) &&
+          currentFilter?.column?.includes(columnName);
         if (filterLTruth) {
           columnFiltSat = true;
-          break;
         }
-      }
+      });
     } else {
       columnFiltSat = true;
     }
