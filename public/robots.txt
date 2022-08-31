@@ -7,7 +7,7 @@ User-agent: *
 Allow: /
 
 # Host
-Host: https:/circles.spect.network
+Host: https://circles.spect.network
 
 # Sitemaps
 Sitemap: https://circles.spect.network/sitemap.xml
