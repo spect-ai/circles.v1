@@ -41,7 +41,8 @@ export default function useERC20() {
     if (!registry) return false;
     try {
       if (safeAddress) {
-        const overrides = {
+        const overrides: any = {
+          gasLimit: 10000000,
           nonce,
         };
         const data = await contract.populateTransaction.approve(
@@ -57,6 +58,7 @@ export default function useERC20() {
 
         return;
       }
+
       const tx = await contract.approve(
         registry[chainId].distributorAddress,
         ethers.constants.MaxInt256
@@ -135,10 +137,14 @@ export default function useERC20() {
 
     const numDecimals = await contract.decimals();
     const allowance = await contract.allowance(ethAddress, spenderAddress);
-    if (!value) return true;
+    if (!value) return false;
+    const ceilVal = Math.ceil(value).toFixed();
     return (
       allowance >=
-      ethers.BigNumber.from((value * 10 ** numDecimals).toFixed(0).toString())
+      //ethers.BigNumber.from((value * 10 ** numDecimals).toFixed(0).toString())
+      ethers.BigNumber.from(ceilVal).mul(
+        ethers.BigNumber.from(10).pow(numDecimals)
+      )
     );
   }
 
@@ -192,10 +198,14 @@ export default function useERC20() {
       const numDecimals = await contract.decimals();
 
       const balance = await contract.balanceOf(ethAddress);
-      if (!value) return true;
+      if (!value) return false;
+      const ceilVal = Math.ceil(value).toFixed();
       return (
         balance >=
-        ethers.BigNumber.from((value * 10 ** numDecimals).toFixed(0).toString())
+        //ethers.BigNumber.from((value * 10 ** numDecimals).toFixed(0).toString())
+        ethers.BigNumber.from(ceilVal).mul(
+          ethers.BigNumber.from(10).pow(numDecimals)
+        )
       );
     }
   }
