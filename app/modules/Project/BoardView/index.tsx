@@ -29,10 +29,10 @@ interface Props {
   viewId: string;
 }
 
-const Container = styled.div<{viewId: string}>`
+const Container = styled.div<{ viewId: string }>`
   display: flex;
   flex-direction: row;
-  height: calc(100vh - ${(props) => props.viewId == "" ? "7" : "3.9"}rem);
+  height: calc(100vh - 3.9rem);
   @media only screen and (min-width: 0px) {
     max-width: calc(100vw - 5rem);
     padding: 0 0.1rem;
@@ -53,33 +53,44 @@ function BoardView({ viewId }: Props) {
     loading,
     advFilters,
   } = useLocalProject();
+
   const { currentFilter } = useGlobal();
   const { canDo } = useRoleGate();
 
   const [viewCards, setViewCards] = useState({} as CardsType);
-
+  const [filteredCards, setFilteredCards] = useState({} as CardsType);
   const view = project.viewDetails?.[viewId];
-  const viewFilter = view?.filters;
-  const filteredCards = filterCards(project, currentFilter);
+
+  useEffect(() => {
+    const fCards = filterCards(project, project.cards, currentFilter);
+    setFilteredCards(fCards);
+    const vCards = filterCards(project, project.cards, view?.filters as Filter);
+    const fVCards = filterCards(project, vCards, currentFilter);
+    setViewCards(fVCards);
+  }, [
+    project?.cards,
+    project,
+    view?.filters,
+    project?.columnOrder,
+    currentFilter,
+  ]);
 
   const { getOptions } = useModalOptions();
-
   const options = getOptions("assignee");
   const assigneeIds = options?.map((person) => person.value);
   const assigneecolumn = options?.map((person) => ({
     columnId: person.value,
     name: person.name,
-    cards: [],
+    cards: [''],
     defaultCardType: "Task",
   }));
 
-  useEffect(() => {
-    const vCards = filterCards(project, viewFilter as Filter);
-    setViewCards(vCards);
-  }, [project?.cards, project, viewFilter, project?.columnOrder]);
-
   const DroppableContent = (provided: DroppableProvided) => (
-    <Container {...provided.droppableProps} ref={provided.innerRef} viewId={viewId}>
+    <Container
+      {...provided.droppableProps}
+      ref={provided.innerRef}
+      viewId={viewId}
+    >
       <Stack direction="horizontal">
         {!viewId &&
           advFilters?.groupBy == "Status" &&
@@ -98,7 +109,6 @@ function BoardView({ viewId }: Props) {
                 cards={cards}
                 id={columnId}
                 index={index}
-                viewId={viewId}
               />
             );
           })}
@@ -119,18 +129,20 @@ function BoardView({ viewId }: Props) {
             );
           })}
         {viewId &&
+          advFilters?.groupBy == "Status" &&
           project?.columnOrder?.map((columnId, index): any => {
+            const column = project.columnDetails[columnId];
             if (
-              (viewFilter as Filter)?.column?.length > 0 &&
-              !(viewFilter as Filter).column?.includes(columnId)
+              (view?.filters as Filter)?.column?.length > 0 &&
+              !(view?.filters as Filter).column?.includes(column?.name)
             )
               return null;
-
-            const column = project.columnDetails[columnId];
             let cards = column.cards?.map((cardId: string) =>
               viewId ? viewCards[cardId] : project.cards[cardId]
             );
             cards = cards.filter((i) => i !== undefined);
+            const fcards = titleFilter(cards, advFilters.inputTitle);
+            cards = sortBy(advFilters.sortBy, fcards, advFilters.order);
 
             return (
               <ColumnComponent
@@ -139,7 +151,22 @@ function BoardView({ viewId }: Props) {
                 cards={cards}
                 id={columnId}
                 index={index}
-                viewId={viewId}
+              />
+            );
+          })}
+        {viewId &&
+          advFilters?.groupBy == "Assignee" &&
+          assigneeIds?.map((assigneeId, index): any => {
+            const column = assigneecolumn?.[index];
+            let cards = groupByAssignee(assigneeId as string, viewCards);
+            const fcards = titleFilter(cards, advFilters.inputTitle);
+            cards = sortBy(advFilters.sortBy, fcards, advFilters.order);
+
+            return (
+              <AssigneeColumn
+                key={assigneeId}
+                column={column as any}
+                cards={cards}
               />
             );
           })}

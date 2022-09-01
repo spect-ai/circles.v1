@@ -49,7 +49,7 @@ function CreateViewModal({ setViewOpen }: Props) {
 
   const columns = project?.columnOrder?.map((column: string) => ({
     name: project?.columnDetails[column].name,
-    id: column,
+    id: project?.columnDetails[column].name,
   }));
 
   const [name, setName] = useState<string>("");

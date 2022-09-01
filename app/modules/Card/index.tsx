@@ -12,7 +12,6 @@ import {
   IconChevronDown,
   IconChevronUp,
   IconClose,
-  IconEth,
   IconUserSolid,
   Stack,
   Tag,

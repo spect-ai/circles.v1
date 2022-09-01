@@ -1,6 +1,6 @@
 import { writeFileSync } from "fs";
 import { globby } from "globby";
-const homeURL = "https://yoursite.com";
+const homeURL = "https://circles.spect.network";
 
 (async () => {
   try {

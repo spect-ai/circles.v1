@@ -1,11 +1,12 @@
-import { CardsType, Filter, ProjectType } from "@/app/types";
+import { CardsType, CardType, Filter, ProjectType } from "@/app/types";
 
 export const filterCards = (
   project: ProjectType,
+  cards : CardsType | CardType[],
   currentFilter: Filter
 ): CardsType => {
-  if (!currentFilter || !project.cards) return project.cards;
-  const filteredCards = Object.values(project.cards)?.filter((card) => {
+  if (!currentFilter || !project.cards) return cards as CardsType;
+  const filteredCards = Object.values(cards)?.filter((card) => {
     if (card === undefined) return false;
     let reviewerFiltSat = false;
     let assigneeFiltSat = false;
@@ -63,15 +64,15 @@ export const filterCards = (
     }
 
     if (currentFilter?.column?.length > 0) {
-      for (let i = 0; i < currentFilter.column.length; i += 1) {
-        const columnid = currentFilter.column[i];
+      Object.keys(project.columnDetails).forEach((key) => {
+        const columnName = project.columnDetails?.[key]?.name;
         const filterLTruth =
-          project.columnDetails?.[columnid].cards.includes(id);
+          project.columnDetails?.[key]?.cards?.includes(id) &&
+          currentFilter?.column?.includes(columnName);
         if (filterLTruth) {
           columnFiltSat = true;
-          break;
         }
-      }
+      });
     } else {
       columnFiltSat = true;
     }
