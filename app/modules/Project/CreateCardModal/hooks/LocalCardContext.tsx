@@ -12,6 +12,9 @@ import {
   Token,
   WorkThreadType,
   CardActions,
+  KudosForType,
+  KudosType,
+  KudosClaimedAsType,
 } from "@/app/types";
 import { Stack } from "degen";
 import Link from "next/link";
@@ -104,6 +107,10 @@ type CreateCardContextType = {
   onArchive: (cardId: string) => Promise<any>;
   cardActions: CardActions | undefined;
   fetchCardActions: () => Promise<QueryObserverResult<CardActions, unknown>>;
+  kudosMinted: KudosForType;
+  setKudosMinted: React.Dispatch<React.SetStateAction<KudosForType>>;
+  kudosClaimed: KudosClaimedAsType | boolean;
+  setKudosClaimed: React.Dispatch<React.SetStateAction<KudosClaimedAsType>>;
 };
 
 export const LocalCardContext = createContext<CreateCardContextType>(
@@ -200,6 +207,8 @@ export function useProviderLocalCard({
     }
   );
   const [applicationOrder, setApplicationOrder] = useState([] as string[]);
+  const [kudosMinted, setKudosMinted] = useState({} as KudosForType);
+  const [kudosClaimed, setKudosClaimed] = useState({} as KudosClaimedAsType);
 
   const [loading, setLoading] = useState(true);
 
@@ -244,6 +253,8 @@ export function useProviderLocalCard({
       setApplicationOrder(card.applicationOrder);
       setChildrenTasks(card.children);
       setParent(card.parent);
+      setKudosMinted(card.kudosMinted);
+      setKudosClaimed(card.kudosClaimed);
       setLoading(false);
     } else if (card?.unauthorized) setLoading(false);
   }, [card, createCard]);
@@ -392,6 +403,8 @@ export function useProviderLocalCard({
     onArchive: archiveCard,
     cardActions,
     fetchCardActions,
+    kudosMinted,
+    setKudosMinted,
   };
 }
 

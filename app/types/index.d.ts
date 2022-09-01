@@ -251,6 +251,8 @@ export interface CardType {
   myApplication?: ApplicationType;
   children: CardType[];
   parent: CardType;
+  kudosMinted: KudosForType;
+  kudosClaimed: KudosClaimedAsType;
   unauthorized?: boolean;
 }
 
@@ -492,4 +494,49 @@ export type AdvancedFilters = {
   groupBy: "Status" | "Assignee";
   sortBy: "none" | "Priority" | "Deadline";
   order: "asc" | "des";
+};
+
+export type KudosRequestType = {
+  creator: string;
+  headline: string;
+  description: string;
+  startDateTimestamp?: number;
+  endDateTimestamp?: number;
+  links: string[];
+  communityUniqId?: string;
+  isSignatureRequired?: boolean;
+  isAllowlistRequired?: boolean;
+  totalClaimCount: number;
+  expirationTimestamp: number;
+  contributors: string[];
+};
+
+export type KudosType = {
+  tokenId: number;
+  headline: string;
+  description: string;
+  startDateTimestamp?: number;
+  endDateTimestamp?: number;
+  links: string[];
+  communityId?: string;
+  createdByAddress?: boolean;
+  createdAtTimestamp?: boolean;
+  imageUrl: number;
+  claimabilityAttributes: ClaimabilityAttributes;
+};
+
+export type KudosForType = {
+  [kudosFor: "assignee" | "reviewer"]: string;
+};
+
+export type KudosClaimedAsType = {
+  [claimedAs: "assignee" | "reviewer"]: KudosType;
+};
+
+type ClaimabilityAttributes = {
+  isSignatureRequired: boolean;
+  isAllowlistRequired: boolean;
+  totalClaimCount: number;
+  remainingClaimCount?: number;
+  expirationTimestamp?: number;
 };

@@ -44,6 +44,7 @@ import Submission from "./Submission";
 import SubTasks from "./SubTasks";
 import Discuss from "./Discuss";
 import CardProject from "./modals/CardProject";
+import MintKudos from "./MintKudos";
 
 const Container = styled(Box)`
   ::-webkit-scrollbar {
@@ -353,6 +354,7 @@ function Card() {
                   <AssignToMe />
                 )}
                 {project.parents[0].discordGuildId && <Discuss />}
+                <MintKudos />
               </Stack>
             )}
           </Box>
