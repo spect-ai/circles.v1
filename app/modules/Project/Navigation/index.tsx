@@ -45,8 +45,9 @@ export default function Navigation({ handleClose }: Props) {
     freezeAllDragEvents: true,
   };
 
-  const onClickNode = function (nodeId: string) {
-    void router.push(`/${nodeId}`);
+  const onClickNode = async (nodeId: string) => {
+    await router.push(`/${nodeId}`);
+    handleClose();
     console.log({ nodeId });
     // window.alert(`Clicked node ${nodeId}`);
   };
