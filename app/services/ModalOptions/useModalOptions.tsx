@@ -63,21 +63,29 @@ export default function useModalOptions() {
         tempArr = tempArr?.filter(
           (member: any) => member.value !== connectedUser
         );
-        tempArr?.unshift({
-          name:
-            (memberDetails &&
-              memberDetails.memberDetails[connectedUser]?.username + " (me)") ||
-            " (me)",
-          avatar:
-            (memberDetails &&
-              memberDetails.memberDetails[connectedUser]?.avatar) ||
-            "",
-          value: connectedUser,
-          ethAddress:
-            (memberDetails &&
-              memberDetails.memberDetails[connectedUser]?.ethAddress) ||
-            "",
-        });
+
+        if (
+          memberDetails &&
+          memberDetails.memberDetails[connectedUser]?.username
+        ) {
+          tempArr?.unshift({
+            name:
+              (memberDetails &&
+                memberDetails.memberDetails[connectedUser]?.username +
+                  " (me)") ||
+              " (me)",
+            avatar:
+              (memberDetails &&
+                memberDetails.memberDetails[connectedUser]?.avatar) ||
+              "",
+            value: connectedUser,
+            ethAddress:
+              (memberDetails &&
+                memberDetails.memberDetails[connectedUser]?.ethAddress) ||
+              "",
+          });
+        }
+
         tempArr?.unshift({
           name: "Unassigned",
           avatar: "",

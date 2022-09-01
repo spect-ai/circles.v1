@@ -61,7 +61,7 @@ function EditViewModal({ setViewOpen, viewId }: Props) {
 
   const columns = project?.columnOrder?.map((column: string) => ({
     name: project?.columnDetails[column].name,
-    id: column,
+    id: project?.columnDetails[column].name,
   }));
 
   const view = project.viewDetails?.[viewId];

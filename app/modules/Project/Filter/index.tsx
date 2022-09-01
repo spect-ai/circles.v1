@@ -49,7 +49,7 @@ export default function Filter() {
 
   const columns = project?.columnOrder?.map((column: string) => ({
     name: project?.columnDetails[column].name,
-    id: column,
+    id: project?.columnDetails[column].name,
   }));
 
   const [reviewer, setReviewer] = useState<string[]>(

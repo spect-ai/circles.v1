@@ -69,6 +69,17 @@ const Activity = React.memo(({ userData }: { userData: UserType }) => {
 
   return (
     <ScrollContainer>
+      {userData?.assignedCards?.length +
+        userData?.reviewingCards?.length +
+        userData?.assignedClosedCards?.length +
+        userData?.reviewingClosedCards?.length ==
+        0 && (
+        <Box style={{ margin: "30vh 25vw" }}>
+          <Text color="accent" align="center">
+            Woah, such empty.
+          </Text>
+        </Box>
+      )}
       {userData?.assignedCards
         ?.slice(0)
         .reverse()
@@ -232,6 +243,14 @@ const Retro = ({ userData }: { userData: UserType }) => {
 
   return (
     <ScrollContainer>
+      {userData?.retro?.length ==
+        0 && (
+        <Box style={{ margin: "30vh 25vw" }}>
+          <Text color="accent" align="center">
+            No Retros to show.
+          </Text>
+        </Box>
+      )}
       {userData?.retro?.map((ret) => {
         const retroInfo = userData?.retroDetails?.[ret];
         return (
@@ -276,9 +295,12 @@ const ProfileTabs = ({ username }: Props) => {
   const [userData, setUserData] = useState({} as UserType);
 
   const fetchUser = async () => {
-    const res = await fetch(`${process.env.API_HOST}/user/username/${username}`, {
-      credentials: "include",
-    });
+    const res = await fetch(
+      `${process.env.API_HOST}/user/username/${username}`,
+      {
+        credentials: "include",
+      }
+    );
     if (res.ok) {
       const data = await res.json();
       setUserData(data);
