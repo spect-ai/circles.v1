@@ -1,6 +1,6 @@
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { Box, Button, Text, useTheme } from "degen";
-import React, { memo } from "react";
+import React, { memo, useState } from "react";
 import { useLocalProject } from "./Context/LocalProjectContext";
 import { useGlobal } from "@/app/context/globalContext";
 import useProjectOnboarding from "@/app/services/Onboarding/useProjectOnboarding";
@@ -13,16 +13,16 @@ import BoardView from "./BoardView";
 import { ToastContainer } from "react-toastify";
 import Onboarding from "./ProjectOnboarding";
 import ListView from "./ListView";
-import BatchPay from "./BatchPay";
 import Apply from "../Card/Apply";
+import { ApartmentOutlined } from "@ant-design/icons";
+import Navigation from "./Navigation";
 
 function Project() {
+  const [graphOpen, setGraphOpen] = useState(false);
   const {
     view,
     localProject: project,
-    batchPayModalOpen,
     selectedCard,
-    setBatchPayModalOpen,
     isApplyModalOpen,
     setIsApplyModalOpen,
     isSubmitModalOpen,
@@ -92,7 +92,7 @@ function Project() {
         exit="exit"
         transition={{ type: "linear" }}
       >
-        <Box width="full">
+        <Box width="full" position={"relative"}>
           <ToastContainer
             toastStyle={{
               backgroundColor: `${
@@ -106,12 +106,35 @@ function Project() {
           {!onboarded && canDo(["steward"]) && <Onboarding />}
           {!vId && view === 0 && <BoardView viewId={""} />}
           {!vId && view === 1 && <ListView viewId={""} />}
+          <Box
+            style={{
+              position: "absolute",
+              right: "2rem",
+              bottom: "1rem",
+              zIndex: "2",
+            }}
+          >
+            <Button
+              variant="secondary"
+              onClick={() => setGraphOpen(true)}
+              shape="circle"
+            >
+              <ApartmentOutlined
+                style={{
+                  fontSize: "1.5rem",
+                }}
+              />
+            </Button>
+          </Box>
           {vId && selectedView?.type == "Board" && (
             <BoardView viewId={viewId} />
           )}
           {vId && selectedView?.type == "List" && <ListView viewId={viewId} />}
         </Box>
       </motion.main>
+      <AnimatePresence>
+        {graphOpen && <Navigation handleClose={() => setGraphOpen(false)} />}
+      </AnimatePresence>
     </>
   );
 }
