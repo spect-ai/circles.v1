@@ -38,9 +38,6 @@ function ListView({ viewId }: Props) {
     localProject: project,
     setLocalProject,
     loading,
-    batchPayModalOpen,
-    selectedCard,
-    setBatchPayModalOpen,
     advFilters,
   } = useLocalProject();
   const { currentFilter } = useGlobal();
