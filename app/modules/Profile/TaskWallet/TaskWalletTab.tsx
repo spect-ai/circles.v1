@@ -129,23 +129,29 @@ const Toggle: FunctionComponent<Props> = ({ toggle, setToggle }) => {
   );
 };
 
+const EmptyText = ({ emptyText }: { emptyText: string }) => {
+  return (
+    <Box style={{ margin: "10rem 13rem" }}>
+      <Text color="accent" align="center">
+        Looks like you have no active {emptyText}.
+      </Text>
+    </Box>
+  );
+};
+
 const WorkCards: FunctionComponent<Props> = ({ toggle, userData }) => {
   const { mode } = useTheme();
 
   return (
     <Box gap="2" display="flex" flexDirection="column">
-      {(userData?.assignedCards?.length == 0 ||
-        userData?.reviewingCards?.length == 0 ||
-        userData?.activeApplications?.length == 0) && (
-        <Box style={{ margin: "10rem 13rem" }}>
-          <Text color="accent" align="center">
-            Looks like you have no active{" "}
-            {toggle == "Assignee" && "assigned cards"}
-            {toggle == "Reviewer" && "reviewing cards"}
-            {toggle == "Applicant" && "applications"}
-            {"."}
-          </Text>
-        </Box>
+      {toggle == "Assignee" && userData?.assignedCards?.length == 0 && (
+        <EmptyText emptyText="assigned cards" />
+      )}
+      {toggle == "Reviewer" && userData?.reviewingCards?.length == 0 && (
+        <EmptyText emptyText="reviewing cards" />
+      )}
+      {toggle == "Applicant" && userData?.activeApplications?.length == 0 && (
+        <EmptyText emptyText="applications" />
       )}
       {toggle == "Assignee" &&
         userData?.assignedCards
