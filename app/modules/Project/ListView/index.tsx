@@ -7,8 +7,6 @@ import { toast } from "react-toastify";
 import styled from "styled-components";
 import { useLocalProject } from "../Context/LocalProjectContext";
 import { SkeletonLoader } from "../SkeletonLoader";
-import BatchPay from "../BatchPay";
-import { AnimatePresence } from "framer-motion";
 import ListSection from "./ListSection";
 import { filterCards } from "../Filter/filterCards";
 import { Filter, CardsType, ColumnType } from "@/app/types";
@@ -32,6 +30,7 @@ const ScrollContainer = styled.div`
   -ms-overflow-style: none;
   scrollbar-width: none;
   overflow-y: auto;
+  width: 100%;
 `;
 
 function ListView({ viewId }: Props) {
@@ -82,106 +81,92 @@ function ListView({ viewId }: Props) {
   }
 
   return (
-    <>
-      <AnimatePresence>
-        {/* {batchPayModalOpen && selectedCard && (
-          <BatchPay card={selectedCard} setIsOpen={setBatchPayModalOpen} />
-        )} */}
-        <ScrollContainer>
-          <Stack space="8">
-            {!viewId &&
-              advFilters?.groupBy == "Status" &&
-              project?.columnOrder?.map((columnId: string) => {
-                const column = project.columnDetails[columnId];
-                let cards = column.cards?.map(
-                  (cardId: string) => filteredCards[cardId]
-                );
-                cards = cards.filter((i) => i !== undefined);
-                const fcards = titleFilter(cards, advFilters.inputTitle);
-                cards = sortBy(advFilters.sortBy, fcards, advFilters.order);
-                return (
-                  <ListSection key={columnId} column={column} cards={cards} />
-                );
-              })}
-            {!viewId &&
-              advFilters?.groupBy == "Assignee" &&
-              assigneeIds?.map((assigneeId, index): any => {
-                const column = assigneecolumn?.[index];
-                let cards = groupByAssignee(
-                  assigneeId as string,
-                  filteredCards
-                );
-                const fcards = titleFilter(cards, advFilters.inputTitle);
-                cards = sortBy(advFilters.sortBy, fcards, advFilters.order);
-                return (
-                  <ListSection
-                    key={column?.columnId}
-                    column={column as ColumnType}
-                    cards={cards}
-                  />
-                );
-              })}
-            {viewId &&
-              advFilters?.groupBy == "Assignee" &&
-              assigneeIds?.map((assigneeId, index): any => {
-                const column = assigneecolumn?.[index];
-                let cards = groupByAssignee(assigneeId as string, viewCards);
-                const fcards = titleFilter(cards, advFilters.inputTitle);
-                cards = sortBy(advFilters.sortBy, fcards, advFilters.order);
-                return (
-                  <ListSection
-                    key={column?.columnId}
-                    column={column as ColumnType}
-                    cards={cards}
-                  />
-                );
-              })}
-            {viewId &&
-              advFilters?.groupBy == "Status" &&
-              project?.columnOrder?.map((columnId: string) => {
-                const column = project.columnDetails[columnId];
-                if (
-                  (view?.filters as Filter)?.column?.length > 0 &&
-                  !(view?.filters as Filter).column?.includes(column?.name)
-                )
-                  return null;
-                let cards = column.cards?.map((cardId: string) =>
-                  viewId ? viewCards[cardId] : project.cards[cardId]
-                );
-                cards = cards.filter((i) => i !== undefined);
-                const fcards = titleFilter(cards, advFilters.inputTitle);
-                cards = sortBy(advFilters.sortBy, fcards, advFilters.order);
+    <ScrollContainer>
+      <Stack space="8">
+        {!viewId &&
+          advFilters?.groupBy == "Status" &&
+          project?.columnOrder?.map((columnId: string) => {
+            const column = project.columnDetails[columnId];
+            let cards = column.cards?.map(
+              (cardId: string) => filteredCards[cardId]
+            );
+            cards = cards.filter((i) => i !== undefined);
+            const fcards = titleFilter(cards, advFilters.inputTitle);
+            cards = sortBy(advFilters.sortBy, fcards, advFilters.order);
+            return <ListSection key={columnId} column={column} cards={cards} />;
+          })}
+        {!viewId &&
+          advFilters?.groupBy == "Assignee" &&
+          assigneeIds?.map((assigneeId, index): any => {
+            const column = assigneecolumn?.[index];
+            let cards = groupByAssignee(assigneeId as string, filteredCards);
+            const fcards = titleFilter(cards, advFilters.inputTitle);
+            cards = sortBy(advFilters.sortBy, fcards, advFilters.order);
+            return (
+              <ListSection
+                key={column?.columnId}
+                column={column as ColumnType}
+                cards={cards}
+              />
+            );
+          })}
+        {viewId &&
+          advFilters?.groupBy == "Assignee" &&
+          assigneeIds?.map((assigneeId, index): any => {
+            const column = assigneecolumn?.[index];
+            let cards = groupByAssignee(assigneeId as string, viewCards);
+            const fcards = titleFilter(cards, advFilters.inputTitle);
+            cards = sortBy(advFilters.sortBy, fcards, advFilters.order);
+            return (
+              <ListSection
+                key={column?.columnId}
+                column={column as ColumnType}
+                cards={cards}
+              />
+            );
+          })}
+        {viewId &&
+          advFilters?.groupBy == "Status" &&
+          project?.columnOrder?.map((columnId: string) => {
+            const column = project.columnDetails[columnId];
+            if (
+              (view?.filters as Filter)?.column?.length > 0 &&
+              !(view?.filters as Filter).column?.includes(column?.name)
+            )
+              return null;
+            let cards = column.cards?.map((cardId: string) =>
+              viewId ? viewCards[cardId] : project.cards[cardId]
+            );
+            cards = cards.filter((i) => i !== undefined);
+            const fcards = titleFilter(cards, advFilters.inputTitle);
+            cards = sortBy(advFilters.sortBy, fcards, advFilters.order);
 
-                return (
-                  <ListSection key={columnId} column={column} cards={cards} />
-                );
-              })}
-            {!viewId &&
-              advFilters?.groupBy == "Status" &&
-              project?.id &&
-              canDo(["steward"]) && (
-                <Box style={{ width: "20rem" }} marginTop="2" marginLeft="2">
-                  <PrimaryButton
-                    variant="tertiary"
-                    icon={<IconPlusSmall />}
-                    onClick={async () => {
-                      const updatedProject = await addColumn(project.id);
-                      if (!updatedProject) {
-                        toast.error("Error adding column", {
-                          theme: "dark",
-                        });
-                      }
-                      setLocalProject(updatedProject);
-                    }}
-                  >
-                    Add new section
-                  </PrimaryButton>
-                </Box>
-              )}
-          </Stack>
-        </ScrollContainer>
-      </AnimatePresence>
-    </>
+            return <ListSection key={columnId} column={column} cards={cards} />;
+          })}
+        {!viewId &&
+          advFilters?.groupBy == "Status" &&
+          project?.id &&
+          canDo(["steward"]) && (
+            <Box style={{ width: "20rem" }} marginTop="2" marginLeft="2">
+              <PrimaryButton
+                variant="tertiary"
+                icon={<IconPlusSmall />}
+                onClick={async () => {
+                  const updatedProject = await addColumn(project.id);
+                  if (!updatedProject) {
+                    toast.error("Error adding column", {
+                      theme: "dark",
+                    });
+                  }
+                  setLocalProject(updatedProject);
+                }}
+              >
+                Add new section
+              </PrimaryButton>
+            </Box>
+          )}
+      </Stack>
+    </ScrollContainer>
   );
 }
 
