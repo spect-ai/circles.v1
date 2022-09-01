@@ -156,25 +156,28 @@ function ListView({ viewId }: Props) {
                   <ListSection key={columnId} column={column} cards={cards} />
                 );
               })}
-            {!viewId && project?.id && canDo(["steward"]) && (
-              <Box style={{ width: "20rem" }} marginTop="2" marginLeft="2">
-                <PrimaryButton
-                  variant="tertiary"
-                  icon={<IconPlusSmall />}
-                  onClick={async () => {
-                    const updatedProject = await addColumn(project.id);
-                    if (!updatedProject) {
-                      toast.error("Error adding column", {
-                        theme: "dark",
-                      });
-                    }
-                    setLocalProject(updatedProject);
-                  }}
-                >
-                  Add new section
-                </PrimaryButton>
-              </Box>
-            )}
+            {!viewId &&
+              advFilters?.groupBy == "Status" &&
+              project?.id &&
+              canDo(["steward"]) && (
+                <Box style={{ width: "20rem" }} marginTop="2" marginLeft="2">
+                  <PrimaryButton
+                    variant="tertiary"
+                    icon={<IconPlusSmall />}
+                    onClick={async () => {
+                      const updatedProject = await addColumn(project.id);
+                      if (!updatedProject) {
+                        toast.error("Error adding column", {
+                          theme: "dark",
+                        });
+                      }
+                      setLocalProject(updatedProject);
+                    }}
+                  >
+                    Add new section
+                  </PrimaryButton>
+                </Box>
+              )}
           </Stack>
         </ScrollContainer>
       </AnimatePresence>

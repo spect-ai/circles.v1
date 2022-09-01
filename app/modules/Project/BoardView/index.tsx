@@ -58,9 +58,12 @@ function BoardView({ viewId }: Props) {
   const { canDo } = useRoleGate();
 
   const [viewCards, setViewCards] = useState({} as CardsType);
+  const [filteredCards, setFilteredCards] = useState({} as CardsType);
   const view = project.viewDetails?.[viewId];
 
   useEffect(() => {
+    const fCards = filterCards(project, project.cards, currentFilter);
+    setFilteredCards(fCards);
     const vCards = filterCards(project, project.cards, view?.filters as Filter);
     const fVCards = filterCards(project, vCards, currentFilter);
     setViewCards(fVCards);
@@ -72,15 +75,13 @@ function BoardView({ viewId }: Props) {
     currentFilter,
   ]);
 
-  const filteredCards = filterCards(project, project.cards, currentFilter);
-
   const { getOptions } = useModalOptions();
   const options = getOptions("assignee");
   const assigneeIds = options?.map((person) => person.value);
   const assigneecolumn = options?.map((person) => ({
     columnId: person.value,
     name: person.name,
-    cards: [],
+    cards: [''],
     defaultCardType: "Task",
   }));
 

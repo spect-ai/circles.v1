@@ -134,6 +134,19 @@ const WorkCards: FunctionComponent<Props> = ({ toggle, userData }) => {
 
   return (
     <Box gap="2" display="flex" flexDirection="column">
+      {(userData?.assignedCards?.length == 0 ||
+        userData?.reviewingCards?.length == 0 ||
+        userData?.activeApplications?.length == 0) && (
+        <Box style={{ margin: "10rem 13rem" }}>
+          <Text color="accent" align="center">
+            Looks like you have no active{" "}
+            {toggle == "Assignee" && "assigned cards"}
+            {toggle == "Reviewer" && "reviewing cards"}
+            {toggle == "Applicant" && "applications"}
+            {"."}
+          </Text>
+        </Box>
+      )}
       {toggle == "Assignee" &&
         userData?.assignedCards
           ?.slice(0)
@@ -264,6 +277,13 @@ const Notifications = ({ userData, notifIds, setNotifIds }: NotifProps) => {
 
   return (
     <Box gap="0.5" display="flex" flexDirection="column" marginTop="5">
+      {userData?.notifications?.length == 0 && (
+        <Box style={{ margin: "14rem 14rem" }}>
+          <Text color="accent" align="center">
+            No Notifications as of now.
+          </Text>
+        </Box>
+      )}
       {userData?.notifications
         ?.slice(0)
         .reverse()
@@ -320,21 +340,33 @@ const Notifications = ({ userData, notifIds, setNotifIds }: NotifProps) => {
   );
 };
 
-const BookMarks = () => {
+const BookMarks = ({ userData }: { userData: UserType }) => {
   const { mode } = useTheme();
-
   return (
     <Box marginTop="2" cursor="pointer">
-      <Card mode={mode}>
-        <Text weight="semiBold" variant="large">
-          Bookmarks Card
-        </Text>
-        <GigInfo>
-          <Text variant="label">02:45pm</Text>
-          <Avatar label="profile-pic" src="/og.jpg" size="8" />
-          <StarFilled style={{ fontSize: "24px", color: "rgb(191,90,242)" }} />
-        </GigInfo>
-      </Card>
+      {userData?.bookmarks?.length == 0 && (
+        <Box style={{ margin: "15rem 16rem" }}>
+          <Text color="accent" align="center">
+            No Bookmarks.
+          </Text>
+        </Box>
+      )}
+      {userData?.bookmarks?.map((book) => {
+        const card = userData?.cardDetails?.[book];
+        return (
+          <Card mode={mode} key={book}>
+            <Text weight="semiBold" variant="large">
+              {card?.title}
+            </Text>
+            <GigInfo>
+              <Avatar label="circle-pic" src={card?.circle?.avatar} size="6" />
+              <StarFilled
+                style={{ fontSize: "18px", color: "rgb(191,90,242)" }}
+              />
+            </GigInfo>
+          </Card>
+        );
+      })}
     </Box>
   );
 };
@@ -423,7 +455,7 @@ const QuickProfileTabs = ({ userData, tab }: UserProps) => {
       )}
       {panelTab == "Bookmarks" && (
         <ScrollContainer overflow={"auto"}>
-          <BookMarks />
+          <BookMarks userData={userData} />
         </ScrollContainer>
       )}
     </>
