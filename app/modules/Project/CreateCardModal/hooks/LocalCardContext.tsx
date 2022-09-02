@@ -14,7 +14,7 @@ import {
   CardActions,
   KudosForType,
   KudosType,
-  KudosClaimedAsType,
+  KudosClaimedType,
 } from "@/app/types";
 import { Stack } from "degen";
 import Link from "next/link";
@@ -109,8 +109,12 @@ type CreateCardContextType = {
   fetchCardActions: () => Promise<QueryObserverResult<CardActions, unknown>>;
   kudosMinted: KudosForType;
   setKudosMinted: React.Dispatch<React.SetStateAction<KudosForType>>;
-  kudosClaimed: KudosClaimedAsType | boolean;
-  setKudosClaimed: React.Dispatch<React.SetStateAction<KudosClaimedAsType>>;
+  eligibleToClaimKudos: KudosClaimedType;
+  setEligibleToClaimKudos: React.Dispatch<
+    React.SetStateAction<KudosClaimedType>
+  >;
+  kudosClaimedBy: KudosClaimedType;
+  setKudosClaimedBy: React.Dispatch<React.SetStateAction<KudosClaimedType>>;
 };
 
 export const LocalCardContext = createContext<CreateCardContextType>(
@@ -208,7 +212,10 @@ export function useProviderLocalCard({
   );
   const [applicationOrder, setApplicationOrder] = useState([] as string[]);
   const [kudosMinted, setKudosMinted] = useState({} as KudosForType);
-  const [kudosClaimed, setKudosClaimed] = useState({} as KudosClaimedAsType);
+  const [kudosClaimedBy, setKudosClaimedBy] = useState({} as KudosClaimedType);
+  const [eligibleToClaimKudos, setEligibleToClaimKudos] = useState(
+    {} as KudosClaimedType
+  );
 
   const [loading, setLoading] = useState(true);
 
@@ -254,7 +261,8 @@ export function useProviderLocalCard({
       setChildrenTasks(card.children);
       setParent(card.parent);
       setKudosMinted(card.kudosMinted);
-      setKudosClaimed(card.kudosClaimed);
+      setKudosClaimedBy(card.kudosClaimedBy);
+      setEligibleToClaimKudos(card.eligibleToClaimKudos);
       setLoading(false);
     } else if (card?.unauthorized) setLoading(false);
   }, [card, createCard]);
@@ -405,6 +413,10 @@ export function useProviderLocalCard({
     fetchCardActions,
     kudosMinted,
     setKudosMinted,
+    kudosClaimedBy,
+    setKudosClaimedBy,
+    eligibleToClaimKudos,
+    setEligibleToClaimKudos,
   };
 }
 

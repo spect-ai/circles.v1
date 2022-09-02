@@ -2,8 +2,10 @@ import { Box, Text, Tag, Avatar, useTheme } from "degen";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import styled from "styled-components";
 import React, { useState, useEffect } from "react";
-import { UserType, CardDetails } from "@/app/types";
+import { UserType, CardDetails, KudosType, KudoOfUserType } from "@/app/types";
 import { PriorityIcon } from "@/app/common/components/PriorityIcon";
+import useCredentials from "@/app/services/Credentials";
+import Image from "next/image";
 
 interface Props {
   username: string;
@@ -243,8 +245,7 @@ const Retro = ({ userData }: { userData: UserType }) => {
 
   return (
     <ScrollContainer>
-      {userData?.retro?.length ==
-        0 && (
+      {userData?.retro?.length == 0 && (
         <Box style={{ margin: "30vh 25vw" }}>
           <Text color="accent" align="center">
             No Retros to show.
@@ -290,6 +291,70 @@ const Retro = ({ userData }: { userData: UserType }) => {
   );
 };
 
+const Kudos = ({ userData }: { userData: UserType }) => {
+  const { mode } = useTheme();
+  const { getKudosOfUser } = useCredentials();
+  const [kudos, setKudos] = useState([] as KudoOfUserType[]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (userData?.ethAddress) {
+      setLoading(true);
+      getKudosOfUser(userData.ethAddress)
+        .then((res) => {
+          console.log(res);
+          setKudos(res.data);
+          setLoading(false);
+          console.log(kudos);
+        })
+        .catch((err) => {
+          console.log(err);
+          setLoading(false);
+        });
+    }
+  }, []);
+
+  return (
+    <ScrollContainer>
+      {kudos?.length == 0 && !loading && (
+        <Box style={{ margin: "30vh 25vw" }}>
+          <Text color="accent" align="center">
+            No Kudos to show.
+          </Text>
+        </Box>
+      )}
+      <Box paddingTop="4">
+        {!loading &&
+          kudos.length > 0 &&
+          kudos?.map((kudo, index) => {
+            console.log(kudo);
+            if (kudo.claimStatus === "claimed")
+              return (
+                <Box
+                  key={index}
+                  display="flex"
+                  flexDirection="row"
+                  width="full"
+                  height="full"
+                >
+                  <Box width="1/2" padding="4">
+                    <Image
+                      src={kudo.assetUrl}
+                      width="100%"
+                      height="100%"
+                      layout="responsive"
+                      objectFit="contain"
+                      alt="Kudos img"
+                    />
+                  </Box>
+                </Box>
+              );
+          })}
+      </Box>
+    </ScrollContainer>
+  );
+};
+
 const ProfileTabs = ({ username }: Props) => {
   const [tab, setProfileTab] = useState("Activity");
   const [userData, setUserData] = useState({} as UserType);
@@ -316,7 +381,7 @@ const ProfileTabs = ({ username }: Props) => {
   }, [username, tab]);
 
   return (
-    <Box>
+    <Box width="max">
       <Box
         display="flex"
         flexDirection="row"
@@ -336,10 +401,17 @@ const ProfileTabs = ({ username }: Props) => {
         >
           Retro
         </PrimaryButton>
+        <PrimaryButton
+          variant={tab === "Kudos" ? "tertiary" : "transparent"}
+          onClick={() => setProfileTab("Kudos")}
+        >
+          Kudos
+        </PrimaryButton>
       </Box>
-      <Box>
+      <Box width="144">
         {tab === "Activity" && <Activity userData={userData} />}
         {tab === "Retro" && <Retro userData={userData} />}
+        {tab === "Kudos" && <Kudos userData={userData} />}
       </Box>
     </Box>
   );

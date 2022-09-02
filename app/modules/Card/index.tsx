@@ -44,6 +44,7 @@ import SubTasks from "./SubTasks";
 import Discuss from "./Discuss";
 import CardProject from "./modals/CardProject";
 import MintKudos from "./MintKudos";
+import ViewKudos from "./MintKudos/view";
 
 const Container = styled(Box)`
   ::-webkit-scrollbar {
@@ -86,8 +87,9 @@ function Card() {
     card,
     cardType,
     columnId,
+    kudosMinted,
   } = useLocalCard();
-
+  console.log(kudosMinted);
   const { canTakeAction } = useRoleGate();
   const { viewName } = useGlobal();
 
@@ -353,7 +355,8 @@ function Card() {
                   <AssignToMe />
                 )}
                 {project.parents[0].discordGuildId && <Discuss />}
-                <MintKudos />
+                {!card?.kudosMinted && <MintKudos />}
+                <ViewKudos />
               </Stack>
             )}
           </Box>

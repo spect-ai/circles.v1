@@ -1,6 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  images: {
+    domains: ["s3.amazonaws.com"],
+  },
   env: {
     ALCHEMY_KEY: process.env.ALCHEMY_KEY,
     DEV_ENV: process.env.DEV_ENV,

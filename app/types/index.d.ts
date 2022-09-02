@@ -252,7 +252,8 @@ export interface CardType {
   children: CardType[];
   parent: CardType;
   kudosMinted: KudosForType;
-  kudosClaimed: KudosClaimedAsType;
+  kudosClaimedBy: KudosClaimedType;
+  eligibleToClaimKudos: KudosClaimedType;
   unauthorized?: boolean;
 }
 
@@ -521,7 +522,7 @@ export type KudosType = {
   communityId?: string;
   createdByAddress?: boolean;
   createdAtTimestamp?: boolean;
-  imageUrl: number;
+  imageUrl: string;
   claimabilityAttributes: ClaimabilityAttributes;
 };
 
@@ -529,8 +530,8 @@ export type KudosForType = {
   [kudosFor: "assignee" | "reviewer"]: string;
 };
 
-export type KudosClaimedAsType = {
-  [claimedAs: "assignee" | "reviewer"]: KudosType;
+export type KudosClaimedType = {
+  [tokenId: string]: string[];
 };
 
 type ClaimabilityAttributes = {
@@ -539,4 +540,13 @@ type ClaimabilityAttributes = {
   totalClaimCount: number;
   remainingClaimCount?: number;
   expirationTimestamp?: number;
+};
+
+export type KudoOfUserType = {
+  kudosTokenId: number;
+  headline: string;
+  createdAt: string;
+  assetUrl: string;
+  claimStatus: string;
+  communityId: string;
 };

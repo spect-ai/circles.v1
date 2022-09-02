@@ -8,13 +8,15 @@ import { AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import { useQuery } from "react-query";
 import { useCircle } from "../../Circle/CircleContext";
+import { useLocalProject } from "../../Project/Context/LocalProjectContext";
 import { useLocalCard } from "../../Project/CreateCardModal/hooks/LocalCardContext";
 import SoulboundToken from "./SoulboundToken";
 
 export default function MintKudos() {
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const { title, project, assignees } = useLocalCard();
+  const { title, project, assignees, slug } = useLocalCard();
+
   const { circle } = useCircle();
   const { mintKudos, recordTokenId } = useCredentials();
   const { getMemberDetails } = useModalOptions();
@@ -32,14 +34,16 @@ export default function MintKudos() {
   };
   return (
     <>
-      <PrimaryButton
-        variant="tertiary"
-        onClick={() => {
-          setIsOpen(true);
-        }}
-      >
-        Mint Kudos 🎉
-      </PrimaryButton>
+      {
+        <PrimaryButton
+          variant="tertiary"
+          onClick={() => {
+            setIsOpen(true);
+          }}
+        >
+          Mint Kudos 🎉
+        </PrimaryButton>
+      }
       <AnimatePresence>
         {isOpen && (
           <Modal
@@ -72,7 +76,7 @@ export default function MintKudos() {
                         headline: headlineContent,
                         description: title,
                         creator: currentUser?.ethAddress as string,
-                        links: ["https://github.com/"],
+                        links: [`https://circles.spect.network/`],
                         contributors: getEthAddress(),
                       } as KudosRequestType);
                       if (res) {
