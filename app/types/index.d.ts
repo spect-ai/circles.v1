@@ -79,6 +79,7 @@ export interface Permissions {
   managePaymentOptions: boolean;
   manageProjectSettings: boolean;
   manageRoles: boolean;
+  distributeCredentials: boolean;
   manageCardProperties: {
     Task: true;
     Bounty: false;
