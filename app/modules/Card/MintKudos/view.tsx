@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { useCircle } from "../../Circle/CircleContext";
 import { useLocalCard } from "../../Project/CreateCardModal/hooks/LocalCardContext";
+import { TwitterShareButton } from "react-share";
 
 type CanClaimType = {
   [tokenId: string]: boolean;
@@ -37,7 +38,6 @@ export default function ViewKudos() {
   });
   const [canClaim, setCanClaim] = useState({} as CanClaimType);
   const [alreadyClaimed, setAlreadyClaimed] = useState({} as CanClaimType);
-
   // This makes too many requests (may lead us to getting rate limited)
   //   const { data: kudos } = useQuery<KudosType[]>("viewKudos", viewKudos, {
   //     enabled: false,
@@ -156,6 +156,16 @@ export default function ViewKudos() {
                     >
                       {alreadyClaimed[kudo.tokenId] ? "Claimed" : "Claim"}
                     </PrimaryButton>
+                    {alreadyClaimed[kudo.tokenId] && (
+                      <TwitterShareButton
+                        url={"https://circles.spect.network/"}
+                        title={
+                          "Look mom! I just claimed my Kudos on @JoinSpect via mintkudosXYZ 🎉"
+                        }
+                      >
+                        <PrimaryButton> Share</PrimaryButton>
+                      </TwitterShareButton>
+                    )}
                   </Stack>
                 )}
               </Box>

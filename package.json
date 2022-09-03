@@ -41,6 +41,7 @@
     "react-loading-skeleton": "^3.1.0",
     "react-popper": "^2.3.0",
     "react-query": "^3.39.1",
+    "react-share": "^4.4.0",
     "react-tippy": "^1.4.0",
     "react-toastify": "^9.0.4",
     "reactour": "^1.18.7",

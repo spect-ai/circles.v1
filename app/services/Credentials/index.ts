@@ -9,7 +9,7 @@ import { useLocalCard } from "@/app/modules/Project/CreateCardModal/hooks/LocalC
 import { useQuery } from "react-query";
 
 export default function useCredentials() {
-  const { registry } = useCircle();
+  const { registry, circle } = useCircle();
   const { activeChain, switchNetworkAsync } = useNetwork();
   const { kudosMinted, setKudosMinted, cardId, assignees, reviewers, setCard } =
     useLocalCard();
@@ -73,14 +73,17 @@ export default function useCredentials() {
         toast("Minting Kudos...", {
           theme: "dark",
         });
-        const res = await fetch(`http://localhost:8080/card/v1/mintKudos`, {
-          credentials: "include",
-          method: "PATCH",
-          body,
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
+        const res = await fetch(
+          `http://localhost:8080/card/v1/${circle?.id}/mintKudos`,
+          {
+            credentials: "include",
+            method: "PATCH",
+            body,
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
         if (res.ok) {
           const data = await res.json();
           console.log(data);
@@ -197,18 +200,21 @@ export default function useCredentials() {
         toast("Claiming Kudos...", {
           theme: "dark",
         });
-        const res = await fetch(`http://localhost:8080/card/v1/claimKudos`, {
-          credentials: "include",
-          method: "PATCH",
-          body: JSON.stringify({
-            claimingAddress: claimingAddress,
-            signature: signature,
-            tokenId: tokenId,
-          }),
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
+        const res = await fetch(
+          `http://localhost:8080/card/v1/${circle?.id}/claimKudos`,
+          {
+            credentials: "include",
+            method: "PATCH",
+            body: JSON.stringify({
+              claimingAddress: claimingAddress,
+              signature: signature,
+              tokenId: tokenId,
+            }),
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
         if (res.ok) {
           const data = await res.json();
           console.log(data);
