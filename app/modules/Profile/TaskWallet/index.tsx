@@ -1,14 +1,14 @@
 import { motion } from "framer-motion";
 import { useGlobal } from "@/app/context/globalContext";
 import { Box, Spinner } from "degen";
-import QuickProfileTabs from "./TaskWalletTab";
+import TaskWalletTabs from "./TaskWalletTab/index";
 import { useTheme } from "degen";
 import { useEffect } from "react";
 import { UserType } from "@/app/types";
 import { useQuery } from "react-query";
-import { QuickProfileHeader } from "./TaskWalletHeader";
+import TaskWalletHeader from "./TaskWalletHeader/index";
 
-const TaskWalletPanel = ({ tab }: { tab: string }) => {
+const TaskWallet = ({ tab }: { tab: string }) => {
   const {
     isProfilePanelExpanded,
     setIsProfilePanelExpanded,
@@ -83,8 +83,8 @@ const TaskWalletPanel = ({ tab }: { tab: string }) => {
           )}
           {!isLoading && (
             <>
-              <QuickProfileHeader userData={userData as UserType} />
-              <QuickProfileTabs userData={userData as UserType} tab={tab} />
+              <TaskWalletHeader userData={userData as UserType} />
+              <TaskWalletTabs userData={userData as UserType} tab={tab} />
             </>
           )}
         </Box>
@@ -93,4 +93,4 @@ const TaskWalletPanel = ({ tab }: { tab: string }) => {
   );
 };
 
-export default TaskWalletPanel;
+export default TaskWallet;

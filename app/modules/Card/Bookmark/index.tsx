@@ -54,11 +54,7 @@ export default function Bookmark() {
         if (isBookmarked) void removeBookmark();
       }}
     >
-      {isBookmarked ? (
-        <StarFilled />
-      ) : (
-        <StarOutlined />
-      )}
+      {isBookmarked ? <StarFilled /> : <StarOutlined />}
     </IconButton>
   );
 }
