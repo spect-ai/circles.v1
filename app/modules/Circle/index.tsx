@@ -1,12 +1,10 @@
 import Loader from "@/app/common/components/Loader";
 import useCircleOnboarding from "@/app/services/Onboarding/useCircleOnboarding";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
-import { Registry } from "@/app/types";
 import { ApartmentOutlined } from "@ant-design/icons";
 import { Box, Button, useTheme } from "degen";
 import { AnimatePresence } from "framer-motion";
 import { useState } from "react";
-import { useQuery } from "react-query";
 import { ToastContainer } from "react-toastify";
 import styled from "styled-components";
 import Navigation from "../Project/Navigation";
@@ -30,13 +28,7 @@ export default function Circle() {
   const { circle, isLoading, memberDetails, page } = useCircle();
   const { canDo } = useRoleGate();
   const { onboarded } = useCircleOnboarding();
-
   const { mode } = useTheme();
-
-  const { data: registry } = useQuery<Registry>(["registry", circle?.slug], {
-    enabled: false,
-  });
-
   const [graphOpen, setGraphOpen] = useState(false);
 
   if (isLoading || !circle || !memberDetails) {

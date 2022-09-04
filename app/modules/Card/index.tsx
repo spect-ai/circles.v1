@@ -44,6 +44,8 @@ import SubTasks from "./SubTasks";
 import Discuss from "./Discuss";
 import Bookmark from "./Bookmark";
 import CardProject from "./modals/CardProject";
+import MintKudos from "./MintKudos";
+import ViewKudos from "./MintKudos/view";
 
 const Container = styled(Box)`
   ::-webkit-scrollbar {
@@ -86,8 +88,9 @@ function Card() {
     card,
     cardType,
     columnId,
+    kudosMinted,
   } = useLocalCard();
-
+  console.log(kudosMinted);
   const { canTakeAction } = useRoleGate();
   const { viewName } = useGlobal();
 
@@ -105,7 +108,8 @@ function Card() {
     if (isDirty) {
       void onCardUpdate();
     }
-  }, [description]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [description, isDirty]);
 
   if (!tId) {
     return null;
@@ -354,6 +358,8 @@ function Card() {
                   <AssignToMe />
                 )}
                 {project.parents[0].discordGuildId && <Discuss />}
+                {!card?.kudosMinted && <MintKudos />}
+                <ViewKudos />
               </Stack>
             )}
           </Box>
