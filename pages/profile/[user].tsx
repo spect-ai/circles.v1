@@ -97,7 +97,7 @@ const ProfilePage: NextPage = () => {
           </Box>
         )}
         {user?.id && !isLoading && (
-          <Box display="flex" flexDirection="row">
+          <Box display="flex" flexDirection="row" width="full">
             <ProfileCard username={username as string} />
             <ProfileTabs username={username as string} />
           </Box>

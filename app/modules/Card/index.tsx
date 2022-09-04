@@ -227,7 +227,7 @@ function Card() {
                 <IconChevronDown />
               </IconButton>
             </Box>
-            <Bookmark />
+            {/* <Bookmark /> */}
           </Stack>
         </Box>
 

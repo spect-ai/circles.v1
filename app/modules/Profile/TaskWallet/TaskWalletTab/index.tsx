@@ -86,7 +86,7 @@ const TaskWalletTabs = ({ userData, tab }: UserProps) => {
       <Box
         display="flex"
         flexDirection="row"
-        width="112"
+        width="72"
         paddingTop="2"
         justifyContent="space-between"
       >
@@ -113,14 +113,14 @@ const TaskWalletTabs = ({ userData, tab }: UserProps) => {
                 ? "(" + notifIds.length.toString() + ")"
                 : ""}
             </Button>
-            <Button
+            {/* <Button
               size="small"
               prefix={<StarOutlined />}
               variant={panelTab === "Bookmarks" ? "tertiary" : "transparent"}
               onClick={() => setPanelTab("Bookmarks")}
             >
               Bookmarks
-            </Button>
+            </Button> */}
           </>
         )}
       </Box>
@@ -142,11 +142,11 @@ const TaskWalletTabs = ({ userData, tab }: UserProps) => {
           <Notifications notifIds={notifIds} />
         </ScrollContainer>
       )}
-      {panelTab == "Bookmarks" && (
+      {/* {panelTab == "Bookmarks" && (
         <ScrollContainer overflow={"auto"}>
           <BookMarks />
         </ScrollContainer>
-      )}
+      )} */}
     </>
   );
 };

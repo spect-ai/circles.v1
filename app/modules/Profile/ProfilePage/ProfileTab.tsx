@@ -18,7 +18,6 @@ interface Props {
 const Card = styled(Box)<{ mode: string }>`
   display: flex;
   flex-direction: column;
-  max-width: 60vw;
   min-height: 12vh;
   margin-top: 1rem;
   padding: 0.4rem 1rem 0;
@@ -59,7 +58,7 @@ const Tags = styled(Box)`
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  width: 50vw;
+  width: 40vw;
   padding: 1rem 0rem;
   gap: 0.7rem;
 `;
@@ -81,6 +80,7 @@ const TextBox = styled(Box)`
 
 const ScrollContainer = styled(Box)`
   overflow: auto;
+  width: 50vw;
   max-height: 85vh;
   padding-right: 2rem;
   ::-webkit-scrollbar {
@@ -98,7 +98,7 @@ const Activity = React.memo(({ userData }: { userData: UserType }) => {
         userData?.assignedClosedCards?.length +
         userData?.reviewingClosedCards?.length ==
         0 && (
-        <Box style={{ margin: "30vh 25vw" }}>
+        <Box style={{ margin: "35vh 15vw" }}>
           <Text color="accent" align="center">
             Woah, such empty.
           </Text>
@@ -268,7 +268,7 @@ const Retro = ({ userData }: { userData: UserType }) => {
   return (
     <ScrollContainer>
       {userData?.retro?.length == 0 && (
-        <Box style={{ margin: "30vh 25vw" }}>
+        <Box style={{ margin: "35vh 15vw" }}>
           <Text color="accent" align="center">
             No Retros to show.
           </Text>
@@ -338,7 +338,7 @@ const Kudos = ({ userData }: { userData: UserType }) => {
   return (
     <ScrollContainer>
       {kudos?.length == 0 && !loading && (
-        <Box style={{ margin: "30vh 25vw" }}>
+        <Box style={{ margin: "35vh 15vw" }}>
           <Text color="accent" align="center">
             No Kudos to show.
           </Text>
@@ -351,7 +351,7 @@ const Kudos = ({ userData }: { userData: UserType }) => {
             kudos?.map((kudo, index) => {
               if (kudo.claimStatus === "claimed")
                 return (
-                  <Col key={index} xs={12} sm={6} md={6}>
+                  <Col key={index} xs={12} sm={6} md={6} lg={4}>
                     <KudoContainer mode={mode}>
                       <Box
                         display="flex"
@@ -449,7 +449,7 @@ const ProfileTabs = ({ username }: Props) => {
       <Box
         display="flex"
         flexDirection="row"
-        width="44"
+        width="68"
         paddingTop="10"
         justifyContent="space-between"
       >

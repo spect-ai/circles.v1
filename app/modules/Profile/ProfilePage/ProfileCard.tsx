@@ -110,7 +110,6 @@ const ProfileCard = ({ username }: Props) => {
   );
 
   useEffect(() => {
-    console.log("here");
     void refetch();
   }, [refetch, currentUser]);
 
@@ -197,7 +196,7 @@ const ProfileCard = ({ username }: Props) => {
           />
         </TextInfo>
         <Footer>
-          {currentUser?.id == user?.id ? (
+          {currentUser?.id == user?.id && (
             <Button
               variant="secondary"
               size="small"
@@ -206,11 +205,12 @@ const ProfileCard = ({ username }: Props) => {
             >
               Edit
             </Button>
-          ) : (
+          )}
+          {/* : (
             <Button variant="secondary" size="small" width="full">
               Follow
             </Button>
-          )}
+          )} */}
         </Footer>
       </Profile>
       <AnimatePresence>

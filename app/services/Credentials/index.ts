@@ -6,8 +6,6 @@ import { ethers } from "ethers";
 import { toast } from "react-toastify";
 import { useNetwork } from "wagmi";
 
-console.log(process.env);
-
 const chainId = "137";
 const domainInfo = {
   name: "Kudos",
