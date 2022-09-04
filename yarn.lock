@@ -8522,6 +8522,11 @@ fuzzy-search@^3.2.1:
   resolved "https://registry.npmjs.org/fuzzy-search/-/fuzzy-search-3.2.1.tgz"
   integrity sha512-vAcPiyomt1ioKAsAL2uxSABHJ4Ju/e4UeDM+g1OlR0vV4YhLGMNsdLNvZTpEDY4JCSt0E4hASCNM5t2ETtsbyg==
 
+gantt-task-react@^0.3.9:
+  version "0.3.9"
+  resolved "https://registry.yarnpkg.com/gantt-task-react/-/gantt-task-react-0.3.9.tgz#f538c1a92f617af929b93cb5cd28237bf5f60ce1"
+  integrity sha512-ged2OGrAJJ+ATrfVVkd4/8cUu4jOu1mXi0NaBeKx4uoGP6YhyryL+Snr2OY48AXdFelUAg7BbqylSej9X6PCCQ==
+
 gauge@^3.0.0:
   version "3.0.2"
   resolved "https://registry.npmjs.org/gauge/-/gauge-3.0.2.tgz"
