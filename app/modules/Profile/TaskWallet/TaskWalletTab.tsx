@@ -399,7 +399,7 @@ const QuickProfileTabs = ({ userData, tab }: UserProps) => {
       <Box
         display="flex"
         flexDirection="row"
-        width="112"
+        width="72"
         paddingTop="2"
         justifyContent="space-between"
       >
@@ -426,14 +426,14 @@ const QuickProfileTabs = ({ userData, tab }: UserProps) => {
                 ? "(" + notifIds.length.toString() + ")"
                 : ""}
             </Button>
-            <Button
+            {/* <Button
               size="small"
               prefix={<StarOutlined />}
               variant={panelTab === "Bookmarks" ? "tertiary" : "transparent"}
               onClick={() => setPanelTab("Bookmarks")}
             >
               Bookmarks
-            </Button>
+            </Button> */}
           </>
         )}
       </Box>
