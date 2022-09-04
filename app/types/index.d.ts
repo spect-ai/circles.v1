@@ -202,6 +202,7 @@ export interface CircleType {
   toBeClaimed: boolean;
   qualifiedClaimee: string[];
   unauthorized?: boolean;
+  labels: string[];
 }
 
 // interface ProjectType {

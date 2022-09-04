@@ -35,7 +35,7 @@ export default function useModalOptions() {
       case "priority":
         return priority;
       case "labels":
-        return labels.map((label) => {
+        return labels.concat(circle?.labels || []).map((label) => {
           return {
             name: label,
             value: label,

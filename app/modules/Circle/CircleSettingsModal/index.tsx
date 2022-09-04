@@ -30,8 +30,6 @@ export default function SettingsModal({ handleClose }: Props) {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
-  console.log({ circle });
-
   const onSubmit = async () => {
     setIsLoading(true);
 

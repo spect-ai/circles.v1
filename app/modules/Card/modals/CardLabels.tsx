@@ -1,13 +1,14 @@
 import EditTag from "@/app/common/components/EditTag";
 import { TagOutlined } from "@ant-design/icons";
-import { Box, IconCheck, IconSearch, Input, Stack, Tag, Text } from "degen";
-import { motion } from "framer-motion";
+import { Box, IconSearch, Input, Stack, Tag, Text } from "degen";
 import React, { memo, useEffect, useState } from "react";
 import { matchSorter } from "match-sorter";
 import { useLocalCard } from "../../Project/CreateCardModal/hooks/LocalCardContext";
 import { Option } from "../../Project/CreateCardModal/constants";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
+import AddLabel from "./AddLabel";
+import { useCircle } from "../../Circle/CircleContext";
 
 function CardLabels() {
   const { labels, setLabels, onCardUpdate, card } = useLocalCard();
@@ -19,11 +20,14 @@ function CardLabels() {
   const { canTakeAction } = useRoleGate();
   const { getOptions } = useModalOptions();
 
+  const { circle } = useCircle();
+
   useEffect(() => {
     const ops = getOptions("labels") as Option[];
     setOptions(ops);
     setFilteredOptions(ops);
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [circle?.labels]);
 
   return (
     <EditTag
@@ -67,16 +71,12 @@ function CardLabels() {
           />
         </Box>
         <Box padding="8">
-          <Stack direction="horizontal" wrap>
+          <Stack direction="horizontal" wrap align="center">
+            <AddLabel />
             {filteredOptions?.map((item: any) => (
-              <motion.button
-                style={{
-                  background: "transparent",
-                  border: "none",
-                  cursor: "pointer",
-                  padding: "0rem",
-                }}
+              <Box
                 key={item.value}
+                cursor="pointer"
                 onClick={() => {
                   if (labels.includes(item.value)) {
                     setLabels(labels.filter((label) => label !== item.value));
@@ -94,7 +94,7 @@ function CardLabels() {
                     {item.name}
                   </Stack>
                 </Tag>
-              </motion.button>
+              </Box>
             ))}
             {!filteredOptions?.length && (
               <Text variant="label">No Labels found</Text>

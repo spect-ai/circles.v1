@@ -104,7 +104,8 @@ function Card() {
     if (isDirty) {
       void onCardUpdate();
     }
-  }, [description]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [description, isDirty]);
 
   if (!tId) {
     return null;

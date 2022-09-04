@@ -12,6 +12,7 @@ type CircleUpdateDTO = {
   githubRepos: string[];
   gradient: string;
   safeAddresses: SafeAddresses;
+  labels: string[];
 };
 
 export const updateCircle = async (
@@ -29,12 +30,12 @@ export const updateCircle = async (
   });
   if (res.ok) {
     const data = await res.json();
-    toast("Circle updated successfully", {
+    toast("Updated successfully", {
       theme: "dark",
     });
     return data;
   } else {
-    toast("Error updating circle", {
+    toast("Error updating", {
       theme: "dark",
     });
     return false;
