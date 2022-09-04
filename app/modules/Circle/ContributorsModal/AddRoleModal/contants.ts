@@ -12,6 +12,7 @@ export const defaultPermissions: Permissions = {
   inviteMembers: true,
   manageRoles: false,
   manageMembers: false,
+  distributeCredentials: false,
   manageCardProperties: {
     Task: true,
     Bounty: false,

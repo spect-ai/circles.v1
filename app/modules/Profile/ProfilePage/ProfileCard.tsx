@@ -132,10 +132,14 @@ const ProfileCard = ({ username }: Props) => {
         <Box padding="0.5">
           <Heading>{user?.username}</Heading>
         </Box>
-        <Tag as="span" tone="purple" size="small">
-          {user?.ethAddress?.substring(0, 25) + "..."}
-        </Tag>
-        <FollowCount>
+        {user?.ethAddress && (
+          <Tag as="span" tone="purple" size="small">
+            {user?.ethAddress?.substring(0, 6) +
+              "..." +
+              user?.ethAddress?.substring(user?.ethAddress?.length - 6)}
+          </Tag>
+        )}
+        {/* <FollowCount>
           <Box alignItems="center" display="flex" flexDirection="column">
             <Text variant="large" weight="bold">
               {user?.followedByUsers?.length}
@@ -148,7 +152,7 @@ const ProfileCard = ({ username }: Props) => {
             </Text>
             <Text variant="label">Following</Text>
           </Box>
-        </FollowCount>
+        </FollowCount> */}
         <InfoBox gap="1">
           {user?.githubId && (
             <a
@@ -169,7 +173,8 @@ const ProfileCard = ({ username }: Props) => {
             </a>
           )}
         </InfoBox>
-        <InfoBox gap="0.5">
+        <Text variant="label"> Skills </Text>
+        <InfoBox gap="0.5" paddingTop="1">
           {user?.skills?.map((tag) => (
             <Tag as="span" tone="accent" hover size="small" key={tag}>
               {tag}

@@ -1,12 +1,22 @@
 import { kudosTokenTypes, kudosTypes } from "@/app/common/utils/constants";
 import { useCircle } from "@/app/modules/Circle/CircleContext";
-import { KudosRequestType, KudosType, UserType } from "@/app/types";
+import { useLocalCard } from "@/app/modules/Project/CreateCardModal/hooks/LocalCardContext";
+import { KudosRequestType, KudosType } from "@/app/types";
 import { ethers } from "ethers";
 import { toast } from "react-toastify";
 import { useNetwork } from "wagmi";
-import React, { useEffect, useState } from "react";
-import { useLocalCard } from "@/app/modules/Project/CreateCardModal/hooks/LocalCardContext";
-import { useQuery } from "react-query";
+
+console.log(process.env);
+
+const chainId = "137";
+const domainInfo = {
+  name: "Kudos",
+  version: "7",
+
+  // Mumbai
+  chainId,
+  verifyingContract: "0x60576A64851C5B42e8c57E3E4A5cF3CF4eEb2ED6",
+};
 
 export default function useCredentials() {
   const { registry, circle } = useCircle();
@@ -14,12 +24,12 @@ export default function useCredentials() {
   const { kudosMinted, setKudosMinted, cardId, assignees, reviewers, setCard } =
     useLocalCard();
 
-  const mintKudos = async (kudos: KudosRequestType) => {
+  const mintKudos = async (kudos: KudosRequestType, communityId: string) => {
     const value = {
       ...kudos,
       headline: kudos.headline,
       description: kudos.description?.substring(1, 1000) || "",
-      communityUniqId: "c6c9a5ff-9d3c-4858-ade1-354e1ecd0cb0",
+      communityUniqId: communityId,
       startDateTimestamp: kudos.startDateTimestamp || 0,
       endDateTimestamp: kudos.endDateTimestamp || 0,
       expirationTimestamp: kudos.expirationTimestamp || 0,
@@ -27,15 +37,6 @@ export default function useCredentials() {
       isAllowlistRequired: true,
       links: kudos.links || [],
       totalClaimCount: 0,
-    };
-    const chainId = "80001";
-    const domainInfo = {
-      name: "Kudos",
-      version: "7",
-
-      // Mumbai
-      chainId,
-      verifyingContract: "0xB876baF8F69cD35fb96A17a599b070FBdD18A6a1",
     };
 
     if (registry) {
@@ -65,7 +66,7 @@ export default function useCredentials() {
           links: value.links,
           isSignatureRequired: value.isSignatureRequired,
           isAllowlistRequired: value.isAllowlistRequired,
-          communityId: "c6c9a5ff-9d3c-4858-ade1-354e1ecd0cb0",
+          communityId: communityId,
           nftTypeId: "defaultOrangeRed",
           contributors: kudos.contributors,
           signature: signature,
@@ -74,7 +75,7 @@ export default function useCredentials() {
           theme: "dark",
         });
         const res = await fetch(
-          `http://localhost:8080/card/v1/${circle?.id}/mintKudos`,
+          `http://localhost:8080/circle/v1/${circle?.id}/mintKudos`,
           {
             credentials: "include",
             method: "PATCH",
@@ -90,7 +91,7 @@ export default function useCredentials() {
 
           return data;
         } else {
-          toast("Error creating retro", {
+          toast.error("Error minting retro", {
             theme: "dark",
           });
           return false;
@@ -110,7 +111,7 @@ export default function useCredentials() {
     const intervalPromise = setInterval(() => {
       time += 1000;
       console.log(time);
-      fetch(`https://sandbox-api.mintkudos.xyz${operationId}`)
+      fetch(`https://api.mintkudos.xyz${operationId}`)
         .then(async (res) => {
           if (res.ok) {
             const data = await res.json();
@@ -156,9 +157,7 @@ export default function useCredentials() {
     console.log("view");
     for (const [role, tokenId] of Object.entries(kudosMinted)) {
       console.log(kudosMinted);
-      const res = await fetch(
-        `https://sandbox-api.mintkudos.xyz/v1/tokens/${tokenId}`
-      );
+      const res = await fetch(`https://api.mintkudos.xyz/v1/tokens/${tokenId}`);
       if (res.ok) {
         kudos.push(await res.json());
       }
@@ -169,15 +168,6 @@ export default function useCredentials() {
   const claimKudos = async (tokenId: number, claimingAddress: string) => {
     const value = {
       tokenId: tokenId, // mandatory
-    };
-    const chainId = "80001";
-    const domainInfo = {
-      name: "Kudos",
-      version: "7",
-
-      // Mumbai
-      chainId,
-      verifyingContract: "0xB876baF8F69cD35fb96A17a599b070FBdD18A6a1",
     };
     if (registry) {
       try {
@@ -201,7 +191,7 @@ export default function useCredentials() {
           theme: "dark",
         });
         const res = await fetch(
-          `http://localhost:8080/card/v1/${circle?.id}/claimKudos`,
+          `http://localhost:8080/circle/v1/${circle?.id}/claimKudos`,
           {
             credentials: "include",
             method: "PATCH",
@@ -234,7 +224,7 @@ export default function useCredentials() {
     const intervalPromise = setInterval(() => {
       time += 1000;
       console.log(time);
-      fetch(`https://sandbox-api.mintkudos.xyz${operationId}`)
+      fetch(`https://api.mintkudos.xyz${operationId}`)
         .then(async (res) => {
           if (res.ok) {
             const data = await res.json();
@@ -242,9 +232,6 @@ export default function useCredentials() {
 
             if (data.status === "success") {
               clearInterval(intervalPromise);
-              console.log(cardId);
-              console.log(data.resourceId);
-
               fetch(`http://localhost:8080/card/v1/${cardId}/recordClaimInfo`, {
                 method: "PATCH",
                 body: JSON.stringify({
@@ -271,12 +258,12 @@ export default function useCredentials() {
     }, 1000);
     setTimeout(() => {
       clearInterval(intervalPromise);
-    }, 20000);
+    }, 120000);
   };
 
   const getKudosOfUser = async (ethAddress: string) => {
     const res = await fetch(
-      `https://sandbox-api.mintkudos.xyz/v1/wallets/${ethAddress}/tokens`
+      `https://api.mintkudos.xyz/v1/wallets/${ethAddress}/tokens`
     );
     if (res.ok) {
       return await res.json();

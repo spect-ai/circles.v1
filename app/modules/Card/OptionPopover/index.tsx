@@ -1,6 +1,6 @@
 import ConfirmModal from "@/app/common/components/Modal/ConfirmModal";
 import Popover from "@/app/common/components/Popover";
-import { ShareAltOutlined } from "@ant-design/icons";
+import { ShareAltOutlined, TwitterOutlined } from "@ant-design/icons";
 import {
   Box,
   IconDotsHorizontal,
@@ -12,7 +12,9 @@ import {
 } from "degen";
 import { AnimatePresence } from "framer-motion";
 import React, { useState } from "react";
+import { TwitterShareButton } from "react-share";
 import styled from "styled-components";
+import { useCircle } from "../../Circle/CircleContext";
 import { useLocalCard } from "../../Project/CreateCardModal/hooks/LocalCardContext";
 
 const ScrollContainer = styled(Box)`
@@ -67,6 +69,8 @@ export default function ActionPopover() {
   const [showConfirm, setShowConfirm] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const { onArchive, cardId } = useLocalCard();
+  const { circle } = useCircle();
+
   return (
     <>
       <AnimatePresence>
@@ -101,21 +105,26 @@ export default function ActionPopover() {
             borderWidth="0.5"
             borderRadius="2xLarge"
           >
-            <PopoverOption onClick={() => {}}>
+            {/* <PopoverOption onClick={() => {}}>
               <Stack direction="horizontal" space="2">
                 <IconDuplicate />
                 Duplicate
               </Stack>
-            </PopoverOption>
+            </PopoverOption> */}
             <PopoverOption onClick={() => {}}>
-              <Stack direction="horizontal" space="2">
-                <ShareAltOutlined
-                  style={{
-                    fontSize: "1.5rem",
-                  }}
-                />
-                Share
-              </Stack>
+              <TwitterShareButton
+                url={"https://circles.spect.network/"}
+                title={`Currently, contributing to ${circle?.name} on Spect!`}
+              >
+                <Stack direction="horizontal" space="2">
+                  <TwitterOutlined
+                    style={{
+                      fontSize: "1.5rem",
+                    }}
+                  />
+                  Share
+                </Stack>
+              </TwitterShareButton>
             </PopoverOption>
             <PopoverOption
               onClick={() => {

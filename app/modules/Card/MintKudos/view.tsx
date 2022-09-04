@@ -160,7 +160,7 @@ export default function ViewKudos() {
                       <TwitterShareButton
                         url={"https://circles.spect.network/"}
                         title={
-                          "Look mom! I just claimed my Kudos on @JoinSpect via mintkudosXYZ 🎉"
+                          "Look mom! I just claimed my Kudos on @JoinSpect via @mintkudosXYZ 🎉"
                         }
                       >
                         <PrimaryButton> Share</PrimaryButton>
