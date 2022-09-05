@@ -32,7 +32,7 @@ interface Props {
 const Container = styled.div<{ viewId: string }>`
   display: flex;
   flex-direction: row;
-  height: calc(100vh - 3.9rem);
+  height: calc(100vh - 7.5rem);
   @media only screen and (min-width: 0px) {
     max-width: calc(100vw - 5rem);
     padding: 0 0.1rem;
@@ -81,7 +81,7 @@ function BoardView({ viewId }: Props) {
   const assigneecolumn = options?.map((person) => ({
     columnId: person.value,
     name: person.name,
-    cards: [''],
+    cards: [""],
     defaultCardType: "Task",
   }));
 

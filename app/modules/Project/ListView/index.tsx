@@ -23,7 +23,7 @@ interface Props {
 }
 
 const ScrollContainer = styled.div`
-  height: calc(100vh - 4.5rem);
+  height: calc(100vh - 7rem);
   ::-webkit-scrollbar {
     display: none;
   }
