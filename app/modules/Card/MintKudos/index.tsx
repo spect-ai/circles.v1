@@ -97,10 +97,16 @@ export default function MintKudos() {
           onClick={() => {
             if (hasMintkudosCredentialsSetup) setIsOpen(true);
             else {
-              setIsSettingsModalOpen(true);
-              toast.info(
-                "Please add Mintkudos credentials to be able to mint kudos!"
-              );
+              if (perm?.manageCircleSettings) {
+                setIsSettingsModalOpen(true);
+                toast.info(
+                  "Please add Mintkudos credentials to be able to mint kudos!"
+                );
+              } else {
+                toast.info(
+                  `Mintkudos credentials haven't been added. Please check with a member who has permissions to manage circle settings.`
+                );
+              }
             }
           }}
         >
