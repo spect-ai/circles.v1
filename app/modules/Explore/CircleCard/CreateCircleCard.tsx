@@ -1,6 +1,15 @@
 import { FC, useState } from "react";
 
-import { Avatar, Box, Button, Input, MediaPicker, Stack, Text } from "degen";
+import {
+  Avatar,
+  Box,
+  Button,
+  Input,
+  MediaPicker,
+  Stack,
+  Text,
+  useTheme,
+} from "degen";
 import styled, { keyframes } from "styled-components";
 import Link from "next/link";
 import { useGlobal } from "@/app/context/globalContext";
@@ -13,25 +22,15 @@ import Tabs from "@/app/common/components/Tabs";
 import { generateColorHEX } from "@/app/common/utils/utils";
 import { AnimatePresence } from "framer-motion";
 
-interface Props {
-  href: string;
-  gradient: string;
-  logo: string;
-  name: string;
-  description: string;
-}
-
-const ButtonContainer = styled(Box)`
+const Container = styled(Box)<{ mode: string }>`
   border: 0.1rem solid transparent;
   cursor: pointer;
+  background-color: ${({ mode }) =>
+    mode === "dark" ? "rgba(54, 34, 65, 1)" : "rgba(236,222,243, 1)"};
+  color: rgb(191, 90, 242, 1);
   &:hover {
     border-color: rgb(191, 90, 242, 1);
   }
-`;
-const CreateCircleButton = styled.button`
-  width: full;
-  height: full;
-  variant: secondary;
 `;
 
 type CreateCircleDto = {
@@ -55,6 +54,7 @@ const CreateCircleCard = () => {
   const [logo, setLogo] = useState("");
   const [uploading, setUploading] = useState(false);
   const router = useRouter();
+  const { mode } = useTheme();
 
   const { mutateAsync, isLoading } = useMutation((circle: CreateCircleDto) => {
     return fetch(`${process.env.API_HOST}/circle/v1`, {
@@ -80,9 +80,22 @@ const CreateCircleCard = () => {
 
   return (
     <>
-      <Button width="auto" variant="secondary" onClick={open}>
+      <Container
+        mode={mode}
+        borderRadius="2xLarge"
+        display="flex"
+        flexDirection="column"
+        alignItems="center"
+        justifyContent="center"
+        marginRight={{ xs: "2", md: "4" }}
+        marginBottom={{ xs: "4", md: "8" }}
+        transitionDuration="700"
+        height="72"
+        width="72"
+        onClick={open}
+      >
         Create a Circle
-      </Button>
+      </Container>
       <AnimatePresence
         initial={false}
         exitBeforeEnter

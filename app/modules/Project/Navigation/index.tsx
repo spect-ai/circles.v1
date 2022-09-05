@@ -80,7 +80,7 @@ export default function Navigation({ handleClose }: Props) {
   }, []);
 
   return (
-    <Modal handleClose={handleClose} title="Navigate">
+    <Modal handleClose={handleClose} title="Circle Map">
       <Box padding="8">
         {!loading && graphData && (
           <Graph
