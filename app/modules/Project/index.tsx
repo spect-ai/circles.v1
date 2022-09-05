@@ -16,6 +16,7 @@ import ListView from "./ListView";
 import Apply from "../Card/Apply";
 import { ApartmentOutlined } from "@ant-design/icons";
 import Navigation from "./Navigation";
+import GanttChart from "./GanttChart";
 
 function Project() {
   const [graphOpen, setGraphOpen] = useState(false);
@@ -106,6 +107,7 @@ function Project() {
           {!onboarded && canDo(["steward"]) && <Onboarding />}
           {!vId && view === 0 && <BoardView viewId={""} />}
           {!vId && view === 1 && <ListView viewId={""} />}
+          {!vId && view === 2 && <GanttChart />}
           <Box
             style={{
               position: "absolute",
