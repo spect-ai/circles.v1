@@ -85,6 +85,7 @@ function CircleMembers() {
             <Tooltip
               title="You can join circle if you have an eligible discord role"
               theme={mode}
+              position="left"
             >
               <PrimaryButton
                 loading={loading}

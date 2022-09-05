@@ -1,4 +1,9 @@
-import { DiscordRoleMappingType, Payment, SafeAddresses } from "@/app/types";
+import {
+  DiscordRoleMappingType,
+  GuildxyzToCircleRoles,
+  Payment,
+  SafeAddresses,
+} from "@/app/types";
 import { toast } from "react-toastify";
 
 type CircleUpdateDTO = {
@@ -13,13 +18,15 @@ type CircleUpdateDTO = {
   gradient: string;
   safeAddresses: SafeAddresses;
   labels: string[];
+  guildxyzId: number;
+  guildxyzToCircleRoles: GuildxyzToCircleRoles;
 };
 
 export const updateCircle = async (
   circleUpdate: Partial<CircleUpdateDTO>,
   circleId: string
 ) => {
-  const res = await fetch(`${process.env.API_HOST}/circle/${circleId}`, {
+  const res = await fetch(`${process.env.API_HOST}/circle/v1/${circleId}`, {
     headers: {
       Accept: "application/json",
       "Content-Type": "application/json",
