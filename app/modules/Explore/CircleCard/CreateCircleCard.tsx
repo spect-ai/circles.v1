@@ -91,7 +91,6 @@ const CreateCircleCard = () => {
         marginBottom={{ xs: "4", md: "8" }}
         transitionDuration="700"
         height="72"
-        width="72"
         onClick={open}
       >
         Create a Circle
