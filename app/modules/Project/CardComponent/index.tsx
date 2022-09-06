@@ -63,7 +63,7 @@ function CardComponent({ card, index }: Props) {
       marginBottom="2"
       borderRadius="large"
       isDragging={snapshot.isDragging}
-      onClick={(e) => {
+      onClick={() => {
         void router.push(`/${cId}/${pId}/${card.slug}`);
       }}
       onMouseEnter={() => {
@@ -101,7 +101,7 @@ function CardComponent({ card, index }: Props) {
               <Text color="accent">
                 <Stack direction="horizontal" space="0" align="center">
                   <IconEth size="3.5" />
-                  {card.reward.value} {card.reward.token.symbol}
+                  {card.reward.value} {card.reward.token?.symbol}
                 </Stack>
               </Text>
             </Tag>
@@ -133,7 +133,7 @@ function CardComponent({ card, index }: Props) {
     card.deadline,
     card?.labels,
     card.priority,
-    card.reward.token.symbol,
+    card.reward.token?.symbol,
     card.reward.value,
     card.status.paid,
     card.title,

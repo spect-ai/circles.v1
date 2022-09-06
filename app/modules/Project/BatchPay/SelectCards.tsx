@@ -76,29 +76,24 @@ export default function SelectCards() {
 
   const { mode } = useTheme();
 
-  // useEffect(() => {
-  //   setColumn({
-  //     value: project.columnOrder[project.columnOrder.length - 1],
-  //     label:
-  //       project.columnDetails[
-  //         project.columnOrder[project.columnOrder.length - 1]
-  //       ].name,
-  //   });
-  // }, []);
-
   useEffect(() => {
     if (project?.columnDetails) {
       // filter the project cards to show only the cards with assignee and reward
-      const cards = project.columnDetails[column.value]?.cards.filter(
-        (card) => {
-          return (
-            project.cards[card]?.assignee.length > 0 &&
-            project.cards[card]?.assignee[0] !== "" &&
-            project.cards[card]?.reward.value > 0 &&
-            project.cards[card]?.status.paid === false
-          );
-        }
-      );
+      let cards = project.columnDetails[column.value]?.cards.filter((card) => {
+        return (
+          project.cards[card]?.assignee.length > 0 &&
+          project.cards[card]?.assignee[0] !== "" &&
+          project.cards[card]?.reward.value > 0 &&
+          project.cards[card]?.status.paid === false
+        );
+      });
+      if (cards.length > 0) {
+        // Take the first network and ignore rest (edge case when more than one network is selected)
+        const chainId = project.cards[cards[0]].reward.chain.chainId;
+        cards = cards.filter((card) => {
+          return project.cards[card]?.reward.chain.chainId === chainId;
+        });
+      }
       setFilteredCards(cards);
       setRows(formatRows(project.cards, cards));
       setChecked(formatRows(project.cards, cards)?.map(() => true));
@@ -172,7 +167,7 @@ export default function SelectCards() {
                 );
                 const res = await getAgregatedPaymentInfo(
                   selectedCards,
-                  project.parents[0].defaultPayment.chain.chainId
+                  project.cards[filteredCards[0]].reward.chain.chainId
                 );
                 console.log({ res });
                 // cards with token address 0x0
@@ -186,11 +181,12 @@ export default function SelectCards() {
                 setCurrencyCards(currencyCards);
                 setTokenCards(tokenCards);
                 setBatchPayInfo(res as BatchPayInfo);
-                if (res?.currency && res.currency.userIds.length > 0) {
-                  setStep(1);
-                } else {
-                  setStep(2);
-                }
+                // if (res?.currency && res.currency.userIds.length > 0) {
+                //   setStep(1);
+                // } else {
+                //   setStep(2);
+                // }
+                setStep(1);
               }}
             >
               Continue

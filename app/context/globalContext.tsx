@@ -1,4 +1,6 @@
 import React, { createContext, memo, useContext, useState } from "react";
+import { Filter } from "@/app/types";
+
 interface GlobalContextType {
   isSidebarExpanded: boolean;
   setIsSidebarExpanded: (isSidebarExpanded: boolean) => void;
@@ -13,6 +15,10 @@ interface GlobalContextType {
   setViewName: React.Dispatch<React.SetStateAction<string>>;
   tab: string;
   setTab: React.Dispatch<React.SetStateAction<string>>;
+  notifseen: boolean;
+  setNotifSeen: (notifseen: boolean) => void;
+  currentFilter: Filter;
+  setCurrentFilter: React.Dispatch<React.SetStateAction<Filter>>;
 }
 
 const useProviderGlobalContext = () => {
@@ -23,6 +29,8 @@ const useProviderGlobalContext = () => {
   const [quickProfileUser, setQuickProfileUser] = useState("");
   const [viewName, setViewName] = useState("" as string);
   const [tab, setTab] = useState("Work");
+  const [notifseen, setNotifSeen] = useState(false);
+  const [currentFilter, setCurrentFilter] = useState({} as Filter);
 
   function connectUser(userId: string) {
     setConnectedUser(userId);
@@ -61,6 +69,10 @@ const useProviderGlobalContext = () => {
     setViewName,
     tab,
     setTab,
+    notifseen,
+    setNotifSeen,
+    currentFilter,
+    setCurrentFilter,
   };
 };
 

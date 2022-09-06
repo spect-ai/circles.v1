@@ -106,6 +106,7 @@ export default function useModalOptions() {
           src: memberDetails?.avatar,
           label: memberDetails?.username || "",
           address: memberDetails?.ethAddress,
+          id: member,
         };
       });
     },

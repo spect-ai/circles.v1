@@ -53,3 +53,9 @@ export const Priority = {
   3: "high",
   4: "urgent",
 };
+
+export const gasLimits = {
+  "1": 30000000,
+  "137": 30000000,
+  "4": 30000000,
+} as { [chainId: string]: number };

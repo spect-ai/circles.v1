@@ -6,7 +6,7 @@ import { UserType, CardDetails } from "@/app/types";
 import { PriorityIcon } from "@/app/common/components/PriorityIcon";
 
 interface Props {
-  userId: string;
+  username: string;
 }
 
 const Card = styled(Box)<{ mode: string }>`
@@ -240,7 +240,7 @@ const Retro = ({ userData }: { userData: UserType }) => {
             key={ret}
             onClick={() =>
               window.open(
-                `/${retroInfo?.circle?.name}?retroSlug=${retroInfo?.slug}`
+                `/${retroInfo?.circle?.slug}?retroSlug=${retroInfo?.slug}`
               )
             }
           >
@@ -271,12 +271,12 @@ const Retro = ({ userData }: { userData: UserType }) => {
   );
 };
 
-const ProfileTabs = ({ userId }: Props) => {
+const ProfileTabs = ({ username }: Props) => {
   const [tab, setProfileTab] = useState("Activity");
   const [userData, setUserData] = useState({} as UserType);
 
   const fetchUser = async () => {
-    const res = await fetch(`${process.env.API_HOST}/user/${userId}`, {
+    const res = await fetch(`${process.env.API_HOST}/user/username/${username}`, {
       credentials: "include",
     });
     if (res.ok) {
@@ -291,7 +291,7 @@ const ProfileTabs = ({ userId }: Props) => {
   useEffect(() => {
     void fetchUser();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userId, tab]);
+  }, [username, tab]);
 
   return (
     <Box>

@@ -15,18 +15,16 @@ import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { cardType, priorityType, labels } from "../ProjectViews/constants";
 import { motion, AnimatePresence } from "framer-motion";
 import { grow } from "@/app/common/components/Modal";
+import { useGlobal } from "@/app/context/globalContext";
 
 export default function Filter() {
   const [filterOpen, setFilterOpen] = useState(false);
   const router = useRouter();
   const { mode } = useTheme();
+  const { currentFilter, setCurrentFilter } = useGlobal();
 
   const { circle: cId } = router.query;
-  const {
-    localProject: project,
-    currentFilter,
-    setCurrentFilter,
-  } = useLocalProject();
+  const { localProject: project } = useLocalProject();
   const { data: circle } = useQuery<CircleType>(["circle", cId], {
     enabled: false,
   });
@@ -55,10 +53,10 @@ export default function Filter() {
   }));
 
   const [reviewer, setReviewer] = useState<string[]>(
-    currentFilter?.assignee || []
+    currentFilter?.reviewer || []
   );
   const [assignee, setAssignee] = useState<string[]>(
-    currentFilter?.reviewer || []
+    currentFilter?.assignee || []
   );
   const [label, setLabels] = useState<string[]>(currentFilter?.label || []);
   const [title, setTitle] = useState<string>(currentFilter?.title || "");
@@ -93,7 +91,6 @@ export default function Filter() {
   };
 
   return (
-    <>
       <Popover
         isOpen={filterOpen}
         setIsOpen={setFilterOpen}
@@ -110,17 +107,16 @@ export default function Filter() {
                   backgroundColor: "rgb(191, 90, 242, 1)",
                   height: "0.4rem",
                   width: "0.4rem",
-                  zIndex: 10,
                   borderRadius: "3rem",
                   position: "absolute",
-                  margin: "0px 8px 0px 15px",
+                  margin: "0px 4px 0px 12px",
                 }}
               />
             )}
             <FilterOutlined
               style={{
                 color: `${filterIsOn ? "rgb(191, 90, 242, 0.7)" : "gray"}`,
-                fontSize: "1.3rem",
+                fontSize: "1.1rem",
               }}
             />
           </Button>
@@ -200,6 +196,5 @@ export default function Filter() {
           </motion.div>
         </AnimatePresence>
       </Popover>
-    </>
   );
 }

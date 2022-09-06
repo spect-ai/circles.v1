@@ -26,6 +26,7 @@ interface BatchPayParams {
 
 interface PayUsingGnosisParams extends BatchPayParams {
   safeAddress: string;
+  nonce?: number;
 }
 
 export default function usePaymentGateway(
@@ -51,14 +52,10 @@ export default function usePaymentGateway(
       method: "eth_accounts",
     });
     if (accounts?.length === 0) {
-      // notify(`Cannot fetch account, wallet is most likely locked`, 'error');
       return;
     }
-    if (window.ethereum?.networkVersion !== expectedNetwork) console.log("hi");
-    // notify(
-    //   `Please switch to ${registry[expectedNetwork]?.name} network`,
-    //   'error'
-    // );
+    if (window.ethereum?.networkVersion !== expectedNetwork)
+      console.log("Wrong Network");
     else {
       const [sufficientBalance, insufficientBalanceTokenAddress] =
         await hasBalances(
@@ -66,19 +63,6 @@ export default function usePaymentGateway(
           tokenValues,
           account?.address as string
         );
-      console.log(sufficientBalance, insufficientBalanceTokenAddress);
-      if (!sufficientBalance) {
-        // notify(
-        //   `Insufficient balance of ${
-        //     registry[expectedNetwork].tokens[
-        //       insufficientBalanceTokenAddress as string
-        //     ].name
-        //   }`,
-        //   'error'
-        // );
-      } else {
-        // notify(`${err.message}`, 'error');
-      }
     }
   }
 
@@ -94,7 +78,6 @@ export default function usePaymentGateway(
   }: BatchPayParams) {
     let tx;
     if (paymentType === "tokens") {
-      console.log({ amounts });
       tx = await distributeTokens({
         contributors: userAddresses,
         values: amounts,
@@ -157,6 +140,8 @@ export default function usePaymentGateway(
               href={`${registry && registry[chainId].blockExplorer}/tx/${
                 tx.transactionHash
               }`}
+              target="_blank"
+              rel="noopener noreferrer"
             >
               View Transaction
             </Link>
@@ -188,10 +173,9 @@ export default function usePaymentGateway(
     safeAddress,
     cardIds,
     circleId,
-  }: PayUsingGnosisParams) {
-    console.log({ cardIds, safeAddress });
+    nonce,
+  }: PayUsingGnosisParams): Promise<boolean> {
     if (paymentType === "tokens") {
-      console.log({ amounts });
       const data = await distributeTokens({
         contributors: userAddresses,
         values: amounts,
@@ -202,11 +186,13 @@ export default function usePaymentGateway(
         gnosis: true,
         callerId: connectedUser,
         tokenAddresses,
+        nonce,
       });
       const res = await gnosisPayment(safeAddress, data, chainId);
       if (res)
         toast.success("Transaction sent to your safe", { theme: "dark" });
       else toast.error("Error Occurred while sending your transation to safe");
+      return res;
     } else if (paymentType === "currency") {
       const contractdata = await distributeEther({
         contributors: userAddresses,
@@ -217,12 +203,15 @@ export default function usePaymentGateway(
         circleId,
         gnosis: true,
         callerId: connectedUser,
+        nonce,
       });
       const res = await gnosisPayment(safeAddress, contractdata, chainId);
       if (res)
         toast.success("Transaction sent to your safe", { theme: "dark" });
       else toast.error("Error Occurred while sending your transation to safe");
+      return res;
     }
+    return false;
   }
 
   return {

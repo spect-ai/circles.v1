@@ -1,5 +1,5 @@
 import React, { memo, ReactElement, useEffect } from "react";
-import { Box } from "degen";
+import { Box, Button } from "degen";
 import { motion } from "framer-motion";
 import { useRouter } from "next/router";
 import ExploreSidebar from "./ExploreSidebar";
@@ -58,6 +58,7 @@ function ExtendedSidebar(): ReactElement {
       >
         {!cId && <ExploreSidebar />}
         {cId && <CircleSidebar />}
+
         {connectedUser && <ProfileButton />}
         {!connectedUser && cId && <ConnectModal />}
       </Box>
