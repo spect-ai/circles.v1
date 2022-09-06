@@ -86,8 +86,8 @@ const ProfileCard = ({ username }: Props) => {
   const { data: user, refetch: fetchUser } = useQuery<UserType>(
     ["user", username],
     async () =>
-      await fetch(`${process.env.API_HOST}/user/username/${username}`).then((res) =>
-        res.json()
+      await fetch(`${process.env.API_HOST}/user/username/${username}`).then(
+        (res) => res.json()
       ),
     {
       enabled: false,
@@ -110,6 +110,7 @@ const ProfileCard = ({ username }: Props) => {
   );
 
   useEffect(() => {
+    console.log("here");
     void refetch();
   }, [refetch, currentUser]);
 
@@ -120,9 +121,7 @@ const ProfileCard = ({ username }: Props) => {
   return (
     <>
       <Profile mode={mode}>
-        <Box
-          cursor="pointer"
-        >
+        <Box cursor="pointer">
           <Avatar
             label="profile-pic"
             src={user?.avatar}
@@ -133,10 +132,14 @@ const ProfileCard = ({ username }: Props) => {
         <Box padding="0.5">
           <Heading>{user?.username}</Heading>
         </Box>
-        <Tag as="span" tone="purple" size="small">
-          {user?.ethAddress?.substring(0, 25) + "..."}
-        </Tag>
-        <FollowCount>
+        {user?.ethAddress && (
+          <Tag as="span" tone="purple" size="small">
+            {user?.ethAddress?.substring(0, 6) +
+              "..." +
+              user?.ethAddress?.substring(user?.ethAddress?.length - 6)}
+          </Tag>
+        )}
+        {/* <FollowCount>
           <Box alignItems="center" display="flex" flexDirection="column">
             <Text variant="large" weight="bold">
               {user?.followedByUsers?.length}
@@ -149,7 +152,7 @@ const ProfileCard = ({ username }: Props) => {
             </Text>
             <Text variant="label">Following</Text>
           </Box>
-        </FollowCount>
+        </FollowCount> */}
         <InfoBox gap="1">
           {user?.githubId && (
             <a
@@ -170,7 +173,8 @@ const ProfileCard = ({ username }: Props) => {
             </a>
           )}
         </InfoBox>
-        <InfoBox gap="0.5">
+        <Text variant="label"> Skills </Text>
+        <InfoBox gap="0.5" paddingTop="1">
           {user?.skills?.map((tag) => (
             <Tag as="span" tone="accent" hover size="small" key={tag}>
               {tag}

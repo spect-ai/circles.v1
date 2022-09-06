@@ -5,6 +5,7 @@ import { useRouter } from "next/router";
 import { useQuery } from "react-query";
 import { Registry } from "@/app/types";
 import { AbiCoder } from "ethers/lib/utils";
+import { gasLimits } from "@/app/common/utils/constants";
 
 interface DistributeEtherParams {
   contributors: any;
@@ -33,7 +34,6 @@ export default function useDistributor() {
   function getDistributorContract(chainId: string) {
     if (!registry) return null;
     const provider = new ethers.providers.Web3Provider(window.ethereum as any);
-    console.log(registry[chainId].distributorAddress as string);
     return new ethers.Contract(
       registry[chainId].distributorAddress as string,
       DistributorABI,
@@ -80,20 +80,20 @@ export default function useDistributor() {
         totalValue += values[i];
       }
     }
-
     const overrides = {
       value: ethers.utils.parseEther(totalValue.toString()),
       nonce,
+      gasLimit: 10000000,
     };
-    console.log({
-      contributorsWithPositiveAllocation,
-      valuesInWei,
-      overrides,
-      gnosis,
-      chainId,
-      callerId,
-      circleId,
-    });
+    // console.log({
+    //   contributorsWithPositiveAllocation,
+    //   valuesInWei,
+    //   overrides,
+    //   gnosis,
+    //   chainId,
+    //   callerId,
+    //   circleId,
+    // });
     const encoder = new AbiCoder();
     const id = encoder.encode(
       ["string", "string", "string", "string[]"],
@@ -143,7 +143,6 @@ export default function useDistributor() {
     // eslint-disable-next-line no-restricted-syntax
     for (const tokenAddress of tokenAddresses) {
       // eslint-disable-next-line no-await-in-loop
-      console.log({ tokenAddress });
       numDecimals.push(await decimals(tokenAddress));
     }
     return numDecimals;
@@ -163,22 +162,28 @@ export default function useDistributor() {
   }: DistributeTokenParams) {
     const { filteredTokenAddresses, filteredRecipients, filteredValues } =
       filterInvalidValues(tokenAddresses, contributors, values);
-    const numDecimals = await getDecimals(filteredTokenAddresses);
-    console.log({ numDecimals });
-    const valuesInWei = filteredValues.map((v, index) =>
-      ethers.BigNumber.from(
-        (v * 10 ** numDecimals[index]).toFixed(0).toString()
-      )
-    );
+    const numDecimals = (await getDecimals(filteredTokenAddresses)) as number[];
+    //console.log((values[0] / values[0].toFixed()) * 10 ** numDecimals[0]);
+    const valuesInWei = filteredValues.map((v, index) => {
+      return ethers.BigNumber.from(v.toFixed())
+        .mul(ethers.BigNumber.from(10).pow(numDecimals[index]))
+        .add(
+          ethers.BigNumber.from(
+            ((v - Math.floor(v)) * 10 ** numDecimals[index])
+              .toFixed()
+              .toString()
+          )
+        );
+    });
     const contract = getDistributorContract(chainId);
 
-    console.log({
-      filteredTokenAddresses,
-      filteredRecipients,
-      valuesInWei,
-      gnosis,
-    });
-    let overrides: any = {
+    // console.log({
+    //   filteredTokenAddresses,
+    //   filteredRecipients,
+    //   valuesInWei,
+    //   gnosis,
+    // });
+    const overrides: any = {
       gasLimit: 10000000,
       nonce,
     };
@@ -188,10 +193,7 @@ export default function useDistributor() {
       [callerId, circleId, type, cardIds]
     );
     if (gnosis) {
-      overrides = {
-        gasLimit: 10000000,
-        nonce,
-      };
+      console.log(overrides.gasLimit);
       const data = await contract?.populateTransaction.distributeTokens(
         filteredTokenAddresses,
         filteredRecipients,

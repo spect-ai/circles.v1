@@ -14,6 +14,7 @@ import { useQuery } from "react-query";
 import styled from "styled-components";
 import { useLocalProject } from "../Context/LocalProjectContext";
 import QuickActions from "./QuickActions";
+
 type Props = {
   card: CardType;
   index: number;

@@ -162,7 +162,7 @@ const MultiSelectDropdown: FC<Props> = ({
                 cursor="pointer"
                 onClick={() => {
                   setInputValue(inputValue.filter((i) => i !== item));
-                  setValue(value.filter((i) => i !== selectedOption[0].id));
+                  setValue(value.filter((i) => i !== selectedOption[0]?.id));
                 }}
                 padding="0.5"
                 key={selectedOption[0]?.id}

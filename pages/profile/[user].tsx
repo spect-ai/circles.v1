@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Box } from "degen";
+import { Box, Text } from "degen";
 import MetaHead from "@/app/common/seo/MetaHead/MetaHead";
 import type { NextPage } from "next";
 import ProfileCard from "@/app/modules/Profile/ProfilePage/ProfileCard";
@@ -31,7 +31,7 @@ const ProfilePage: NextPage = () => {
     tab,
   } = useGlobal();
 
-  const { refetch, isLoading } = useQuery<UserType>("getMyUser", getUser, {
+  const { refetch } = useQuery<UserType>("getMyUser", getUser, {
     enabled: false,
   });
 
@@ -48,7 +48,7 @@ const ProfilePage: NextPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const { data: user, refetch: fetchUser } = useQuery<UserType>(
+  const { data: user, refetch: fetchUser, isLoading } = useQuery<UserType>(
     ["user", username],
     async () =>
       await fetch(`${process.env.API_HOST}/user/username/${username}`).then((res) =>
@@ -77,13 +77,20 @@ const ProfilePage: NextPage = () => {
         image="/og.jpg"
       />
       <PublicLayout>
-        {isLoading ||
-          !user?.id ||
-          (!username && <Loader loading text="fetching" />)}
-        <Box display="flex" flexDirection="row">
-          <ProfileCard username={username as string} />
-          <ProfileTabs username={username as string} />
-        </Box>
+        {isLoading && <Loader loading text="fetching" />}
+        {!user?.id && (
+          <Box style={{ width: "90vw", height: "90vh", margin: "25% auto", alignItems: "center"}}>
+            <Text variant="extraLarge" size="headingOne" align="center">
+              Fren not found :(
+            </Text>
+          </Box>
+        )}
+        {user?.id && !isLoading && (
+          <Box display="flex" flexDirection="row">
+            <ProfileCard username={username as string} />
+            <ProfileTabs username={username as string} />
+          </Box>
+        )}
       </PublicLayout>
       {isProfilePanelExpanded && <TaskWalletPanel tab={tab} />}
     </>

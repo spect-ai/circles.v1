@@ -54,7 +54,8 @@ export default function usePaymentGateway(
     if (accounts?.length === 0) {
       return;
     }
-    if (window.ethereum?.networkVersion !== expectedNetwork) console.log("hi");
+    if (window.ethereum?.networkVersion !== expectedNetwork)
+      console.log("Wrong Network");
     else {
       const [sufficientBalance, insufficientBalanceTokenAddress] =
         await hasBalances(
@@ -77,7 +78,6 @@ export default function usePaymentGateway(
   }: BatchPayParams) {
     let tx;
     if (paymentType === "tokens") {
-      console.log({ amounts });
       tx = await distributeTokens({
         contributors: userAddresses,
         values: amounts,
@@ -141,6 +141,7 @@ export default function usePaymentGateway(
                 tx.transactionHash
               }`}
               target="_blank"
+              rel="noopener noreferrer"
             >
               View Transaction
             </Link>
@@ -174,7 +175,6 @@ export default function usePaymentGateway(
     circleId,
     nonce,
   }: PayUsingGnosisParams): Promise<boolean> {
-    console.log({ cardIds, safeAddress });
     if (paymentType === "tokens") {
       const data = await distributeTokens({
         contributors: userAddresses,

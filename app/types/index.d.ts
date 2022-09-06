@@ -79,6 +79,7 @@ export interface Permissions {
   managePaymentOptions: boolean;
   manageProjectSettings: boolean;
   manageRoles: boolean;
+  distributeCredentials: boolean;
   manageCardProperties: {
     Task: true;
     Bounty: false;
@@ -202,6 +203,7 @@ export interface CircleType {
   toBeClaimed: boolean;
   qualifiedClaimee: string[];
   unauthorized?: boolean;
+  labels: string[];
 }
 
 // interface ProjectType {
@@ -251,6 +253,9 @@ export interface CardType {
   myApplication?: ApplicationType;
   children: CardType[];
   parent: CardType;
+  kudosMinted: KudosForType;
+  kudosClaimedBy: KudosClaimedType;
+  eligibleToClaimKudos: KudosClaimedType;
   unauthorized?: boolean;
 }
 
@@ -485,4 +490,65 @@ export type SafeAddresses = {
 
 export type ContentPlaceholder = {
   [key: string]: string;
+};
+
+export type AdvancedFilters = {
+  inputTitle: string;
+  groupBy: "Status" | "Assignee";
+  sortBy: "none" | "Priority" | "Deadline";
+  order: "asc" | "des";
+};
+
+export type KudosRequestType = {
+  creator: string;
+  headline: string;
+  description: string;
+  startDateTimestamp?: number;
+  endDateTimestamp?: number;
+  links: string[];
+  communityUniqId?: string;
+  isSignatureRequired?: boolean;
+  isAllowlistRequired?: boolean;
+  totalClaimCount: number;
+  expirationTimestamp: number;
+  contributors: string[];
+};
+
+export type KudosType = {
+  tokenId: number;
+  headline: string;
+  description: string;
+  startDateTimestamp?: number;
+  endDateTimestamp?: number;
+  links: string[];
+  communityId?: string;
+  createdByAddress?: boolean;
+  createdAtTimestamp?: boolean;
+  imageUrl: string;
+  claimabilityAttributes: ClaimabilityAttributes;
+};
+
+export type KudosForType = {
+  [kudosFor: "assignee" | "reviewer"]: string;
+};
+
+export type KudosClaimedType = {
+  [tokenId: string]: string[];
+};
+
+type ClaimabilityAttributes = {
+  isSignatureRequired: boolean;
+  isAllowlistRequired: boolean;
+  totalClaimCount: number;
+  remainingClaimCount?: number;
+  expirationTimestamp?: number;
+};
+
+export type KudoOfUserType = {
+  kudosTokenId: number;
+  headline: string;
+  createdAt: string;
+  assetUrl: string;
+  claimStatus: string;
+  communityId: string;
 };
