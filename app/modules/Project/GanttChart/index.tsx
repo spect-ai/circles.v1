@@ -6,7 +6,7 @@ import { useLocalProject } from "../Context/LocalProjectContext";
 import { CardType } from "@/app/types";
 import useCardService from "@/app/services/Card/useCardService";
 
-import { Box } from "degen";
+import { Box, Text } from "degen";
 
 function GanttChart() {
   const { localProject: project, updateProject } = useLocalProject();
@@ -114,7 +114,7 @@ function GanttChart() {
   const [tasks, setTasks] = useState<Task[]>(cards);
   const [isChecked, setIsChecked] = useState(true);
 
-  let columnWidth = 65;
+  let columnWidth = 90;
   if (view === ViewMode.Year) {
     columnWidth = 350;
   } else if (view === ViewMode.Month) {
@@ -142,14 +142,53 @@ function GanttChart() {
         isChecked={isChecked}
         viewMode={view}
       />
-      <Gantt
-        tasks={tasks}
-        viewMode={view}
-        onDateChange={handleTaskChange}
-        onClick={handleClick}
-        listCellWidth={isChecked ? "155px" : ""}
-        columnWidth={columnWidth}
-      />
+      <Box
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          gap: "0.5rem",
+        }}
+      >
+        {isChecked && (
+          <Box
+            position={"fixed"}
+            style={{
+              display: "flex",
+              flexDirection: "column",
+            }}
+          >
+            <Box width="60" style={{ padding: "0.7rem 0rem" }}>
+              <Text variant="base" weight="semiBold">
+                Cards
+              </Text>
+            </Box>
+            {tasks?.map((task) => {
+              return (
+                <Box
+                  key={task?.id}
+                  width="60"
+                  style={{ margin: "0.77rem 0rem" }}
+                >
+                  <Text variant="base" weight="semiBold" color="textSecondary">
+                    {task?.name}
+                  </Text>
+                </Box>
+              );
+            })}
+          </Box>
+        )}
+
+        <Box overflow="auto" marginLeft={isChecked ? "60" : "4"}>
+          <Gantt
+            tasks={tasks}
+            viewMode={view}
+            onDateChange={handleTaskChange}
+            onClick={handleClick}
+            listCellWidth={""}
+            columnWidth={columnWidth}
+          />
+        </Box>
+      </Box>
     </Box>
   );
 }
