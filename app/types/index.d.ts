@@ -237,6 +237,7 @@ export interface CardType {
   };
   type: "Task" | "Bounty";
   deadline: string;
+  startDate: string;
   labels: string[];
   priority: number;
   columnId: string;
@@ -339,6 +340,7 @@ export interface CardActions {
   updateAssignee: ActionValidation;
   updateColumn: ActionValidation;
   updateDeadline: ActionValidation;
+  updateStartDate: ActionValidation;
   updateGeneralCardInfo: ActionValidation;
   claim: ActionValidation;
 }

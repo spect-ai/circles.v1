@@ -56,6 +56,8 @@ type CreateCardContextType = {
   setValue: React.Dispatch<React.SetStateAction<string>>;
   deadline: Date | null;
   setDeadline: React.Dispatch<React.SetStateAction<Date | null>>;
+  startDate: Date | null;
+  setStartDate: React.Dispatch<React.SetStateAction<Date | null>>;
   priority: number;
   setPriority: React.Dispatch<React.SetStateAction<number>>;
   onSubmit: (createAnother: boolean) => void;
@@ -189,6 +191,7 @@ export function useProviderLocalCard({
   const [token, setToken] = useState(circle?.defaultPayment?.token as Token);
   const [value, setValue] = useState("0");
   const [deadline, setDeadline] = useState<Date | null>(null);
+  const [startDate, setStartDate] = useState<Date | null>(null);
   const [priority, setPriority] = useState(0);
   const [subTasks, setSubTasks] = useState<
     {
@@ -252,6 +255,7 @@ export function useProviderLocalCard({
       setToken(card.reward.token);
       setValue(card.reward.value?.toString() || "0");
       setDeadline(card.deadline ? new Date(card.deadline) : ({} as Date));
+      setStartDate(card.startDate ? new Date(card.startDate) : ({} as Date));
       setPriority(card.priority || 0);
       setActivity(card.activity);
       setWorkThreads(card.workThreads);
@@ -277,6 +281,7 @@ export function useProviderLocalCard({
       circle: project?.parents[0].id,
       type: cardType,
       deadline,
+      startDate,
       labels,
       priority,
       columnId,
@@ -323,6 +328,7 @@ export function useProviderLocalCard({
       circle: project?.parents[0].id,
       type: cardType,
       deadline: deadline?.getDate ? deadline : null,
+      startDate: startDate?.getDate ? startDate : null,
       labels,
       priority,
       columnId,
@@ -351,6 +357,7 @@ export function useProviderLocalCard({
     setToken(circle?.defaultPayment?.token as Token);
     setValue("0");
     setDeadline(null);
+    setStartDate(null);
     setPriority(0);
     setSubTasks([]);
   };
@@ -382,6 +389,8 @@ export function useProviderLocalCard({
     setValue,
     deadline,
     setDeadline,
+    startDate,
+    setStartDate,
     priority,
     setPriority,
     onSubmit,

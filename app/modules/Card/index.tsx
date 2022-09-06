@@ -28,6 +28,7 @@ import { useLocalCard } from "../Project/CreateCardModal/hooks/LocalCardContext"
 import CardAssignee from "./modals/CardAssignee";
 import CardColumn from "./modals/CardColumn";
 import CardDeadline from "./modals/CardDeadline";
+import CardStartDate from "./modals/CardStartDate";
 import CardLabels from "./modals/CardLabels";
 import CardPriority from "./modals/CardPriority";
 import CardReviewer from "./modals/CardReviewer";
@@ -330,6 +331,7 @@ function Card() {
                 <CardAssignee />
                 <CardReviewer />
                 <CardDeadline />
+                <CardStartDate />
                 <CardPriority />
                 <CardReward />
                 {/* {canTakeAction("cardPayment") && (
