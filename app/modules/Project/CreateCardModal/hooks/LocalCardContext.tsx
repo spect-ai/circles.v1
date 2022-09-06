@@ -338,7 +338,7 @@ export function useProviderLocalCard({
         value: parseFloat(value),
       },
     };
-    console.log(payload.deadline);
+    console.log(payload.startDate);
     const res = await updateCard(payload, card.id);
     if (res) {
       setCard(res);

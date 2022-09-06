@@ -330,8 +330,8 @@ function Card() {
                 <CardProject />
                 <CardAssignee />
                 <CardReviewer />
-                <CardDeadline />
                 <CardStartDate />
+                <CardDeadline />
                 <CardPriority />
                 <CardReward />
                 {/* {canTakeAction("cardPayment") && (

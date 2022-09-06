@@ -5,9 +5,10 @@ import { CalendarOutlined } from "@ant-design/icons";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import ReactDatePicker from "react-datepicker";
 import ClickableTag from "@/app/common/components/EditTag/ClickableTag";
+import { toast } from "react-toastify";
 
 function CardDeadline() {
-  const { deadline, setDeadline, onCardUpdate } = useLocalCard();
+  const { deadline, startDate, setDeadline, onCardUpdate } = useLocalCard();
   const { canTakeAction } = useRoleGate();
   const dateRef = useRef<any>(null);
 
@@ -58,7 +59,16 @@ function CardDeadline() {
               setDeadline(null);
               return;
             }
-            setDeadline(date);
+            if (
+              (startDate?.getTime && startDate.getTime() < date.getTime()) ||
+              !startDate?.getTime
+            )
+              setDeadline(date);
+            if (startDate?.getTime && startDate.getTime() > date.getTime()) {
+              toast("Deadline cannot fall before start date", {
+                theme: "dark",
+              });
+            }
           }}
           customInput={<ExampleCustomInput />}
           disabled={!canTakeAction("cardDeadline")}

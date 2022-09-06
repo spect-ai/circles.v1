@@ -14,7 +14,9 @@ function GanttChart() {
   const currentDate = new Date();
 
   const cards: Task[] = Object.values(project.cards).map((card: CardType) => ({
-    start: new Date(currentDate.getFullYear(), currentDate.getMonth(), 1),
+    start: card?.startDate
+      ? new Date(card?.startDate)
+      : new Date(currentDate.getFullYear(), currentDate.getMonth(), 1),
     end: card?.deadline
       ? new Date(card?.deadline)
       : new Date(currentDate.getFullYear(), currentDate.getMonth(), 2),
@@ -39,6 +41,7 @@ function GanttChart() {
       circle: project?.parents[0].id,
       type: card.type,
       deadline: endDate,
+      startDate: startDate,
       labels: card.labels,
       priority: card.priority,
       columnId: card.columnId,

@@ -5,9 +5,10 @@ import { CalendarOutlined } from "@ant-design/icons";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import ReactDatePicker from "react-datepicker";
 import ClickableTag from "@/app/common/components/EditTag/ClickableTag";
+import { toast } from "react-toastify";
 
 function CardStartDate() {
-  const { startDate, setStartDate, onCardUpdate } = useLocalCard();
+  const { deadline, startDate, setStartDate, onCardUpdate } = useLocalCard();
   const { canTakeAction } = useRoleGate();
   const dateRef = useRef<any>(null);
 
@@ -54,11 +55,22 @@ function CardStartDate() {
           ref={dateRef}
           selected={startDate?.getDay ? startDate : new Date()}
           onChange={(date: Date) => {
-            if (date.getTime() === (startDate?.getTime && startDate.getTime())) {
+            if (
+              date.getTime() === (startDate?.getTime && startDate.getTime())
+            ) {
               setStartDate(null);
               return;
             }
-            setStartDate(date);
+            if (
+              (deadline?.getTime && deadline.getTime() > date.getTime()) ||
+              !deadline?.getTime
+            )
+              setStartDate(date);
+            if (deadline?.getTime && deadline.getTime() < date.getTime()) {
+              toast("Start Date cannot fall after deadline", {
+                theme: "dark",
+              });
+            }
           }}
           customInput={<ExampleCustomInput />}
           disabled={!canTakeAction("cardStartDate")}
