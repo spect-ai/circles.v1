@@ -1,6 +1,9 @@
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { useGlobal } from "@/app/context/globalContext";
-import { joinCircleFromDiscord } from "@/app/services/JoinCircle";
+import {
+  joinCircleFromDiscord,
+  joinCircleFromGuildxyz,
+} from "@/app/services/JoinCircle";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { UserType } from "@/app/types";
 import { Box, IconSearch, Input, Stack, Text, useTheme } from "degen";
@@ -103,6 +106,28 @@ function CircleMembers() {
               </PrimaryButton>
             </Tooltip>
           )}
+        {!circle.members.includes(connectedUser) && circle.guildxyzId && (
+          <Tooltip
+            title="You can join circle if you have an eligible guildxyz role"
+            theme={mode}
+            position="left"
+          >
+            <PrimaryButton
+              loading={loading}
+              onClick={async () => {
+                setLoading(true);
+                const data = await joinCircleFromGuildxyz(circle.id);
+                if (data) {
+                  setCircleData(data);
+                  fetchMemberDetails();
+                }
+                setLoading(false);
+              }}
+            >
+              Join Circle
+            </PrimaryButton>
+          </Tooltip>
+        )}
         <Input
           label=""
           placeholder="Search members"
