@@ -95,7 +95,10 @@ export default function MintKudos() {
         <PrimaryButton
           variant="tertiary"
           onClick={() => {
-            if (hasMintkudosCredentialsSetup) setIsOpen(true);
+            if (!assignees || assignees.length === 0) {
+              toast.error("Kudos can only be minted when there are assignees.");
+              return;
+            } else if (hasMintkudosCredentialsSetup) setIsOpen(true);
             else {
               if (perm?.manageCircleSettings) {
                 setIsSettingsModalOpen(true);
