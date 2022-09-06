@@ -95,48 +95,6 @@ function CircleSidebar() {
         </Stack>
         <Container>
           <Stack>
-            {circle?.toBeClaimed && (
-              <PrimaryButton
-                onClick={async () => {
-                  const circleRes = await fetch(
-                    `${process.env.API_HOST}/circle/v1/${circle?.id}/claimCircle`,
-                    {
-                      method: "PATCH",
-                      headers: {
-                        "Content-Type": "application/json",
-                      },
-                      body: JSON.stringify({}),
-                      credentials: "include",
-                    }
-                  );
-                  if (!circleRes) {
-                    toast.error("Cannot claim circle");
-                    return;
-                  }
-                  const memberDetailsRes = await fetch(
-                    `${process.env.API_HOST}/circle/${circle?.id}/memberDetails?circleIds=${circle?.id}`,
-                    {
-                      method: "GET",
-                      headers: {
-                        "Content-Type": "application/json",
-                      },
-                      credentials: "include",
-                    }
-                  );
-                  const circleData = await circleRes.json();
-                  const memberDetailsData = await memberDetailsRes.json();
-                  console.log(memberDetailsData);
-                  console.log(circleData);
-                  setCircleData(circleData);
-                  setMemberDetailsData(memberDetailsData);
-                }}
-                variant="tertiary"
-              >
-                Claim
-              </PrimaryButton>
-            )}
-          </Stack>
-          <Stack>
             <Accordian
               name="Projects"
               defaultOpen

@@ -28,6 +28,7 @@ export default function ExploreSidebar() {
   const [showCollapseButton, setShowCollapseButton] = useState(false);
   const { mode } = useTheme();
   const router = useRouter();
+
   return (
     <Box
       padding="2"
@@ -78,7 +79,7 @@ export default function ExploreSidebar() {
                   >
                     <PrimaryButton
                       variant={
-                        router.query?.user === connectedUser
+                        router.query?.user === currentUser?.username
                           ? "tertiary"
                           : "transparent"
                       }
