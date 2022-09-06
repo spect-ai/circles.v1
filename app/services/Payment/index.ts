@@ -8,6 +8,12 @@ type AddTokenDTO = {
   name: string;
 };
 
+type ReturnWithType = {
+  type: "circle" | "project";
+  id?: string;
+  filter?: object;
+};
+
 export const getAgregatedPaymentInfo = async (
   cards: string[],
   chainId: string
@@ -28,7 +34,8 @@ export const getAgregatedPaymentInfo = async (
 
 export const updatePaymentInfo = async (
   cardIds: string[],
-  transactionHash: string
+  transactionHash: string,
+  returnWith?: ReturnWithType
 ) => {
   const res = await fetch(
     `${process.env.API_HOST}/card/updatePaymentInfoAndClose`,
@@ -40,6 +47,7 @@ export const updatePaymentInfo = async (
       body: JSON.stringify({
         cardIds,
         transactionHash,
+        returnWith,
       }),
       credentials: "include",
     }

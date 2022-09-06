@@ -324,7 +324,9 @@ export default function Explore() {
                       />
                     </Col>
                   ))}
-                <CreateCircleCard />
+                <Col key={"createCircle"} xs={10} sm={6} md={3}>
+                  <CreateCircleCard />
+                </Col>
               </Row>{" "}
             </Box>
           </>
@@ -362,7 +364,11 @@ export default function Explore() {
                     </Col>
                   );
                 })}
-              {connectedUser && <CreateCircleCard />}
+              {connectedUser && (
+                <Col key={"createCircle"} xs={10} sm={6} md={3}>
+                  <CreateCircleCard />
+                </Col>
+              )}
             </Row>
           </Box>
         )}

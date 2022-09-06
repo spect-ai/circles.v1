@@ -2,6 +2,7 @@ import { kudosTokenTypes, kudosTypes } from "@/app/common/utils/constants";
 import { useCircle } from "@/app/modules/Circle/CircleContext";
 import { useLocalCard } from "@/app/modules/Project/CreateCardModal/hooks/LocalCardContext";
 import { KudosRequestType, KudosType } from "@/app/types";
+import { useTheme } from "degen";
 import { ethers } from "ethers";
 import { toast } from "react-toastify";
 import { useNetwork } from "wagmi";
@@ -21,12 +22,13 @@ export default function useCredentials() {
   const { activeChain, switchNetworkAsync } = useNetwork();
   const { kudosMinted, setKudosMinted, cardId, assignees, reviewers, setCard } =
     useLocalCard();
+  const { mode } = useTheme();
 
   const mintKudos = async (kudos: KudosRequestType, communityId: string) => {
     const value = {
       ...kudos,
       headline: kudos.headline,
-      description: kudos.description?.substring(1, 1000) || "",
+      description: kudos.description?.substring(0, 999) || "",
       communityUniqId: communityId,
       startDateTimestamp: kudos.startDateTimestamp || 0,
       endDateTimestamp: kudos.endDateTimestamp || 0,
@@ -69,11 +71,14 @@ export default function useCredentials() {
           contributors: kudos.contributors,
           signature: signature,
         });
-        toast("Minting Kudos...", {
-          theme: "dark",
-        });
+        toast(
+          "Minting Kudos takes a few seconds. You'll be notified once its successful.",
+          {
+            theme: mode,
+          }
+        );
         const res = await fetch(
-          `http://localhost:8080/circle/v1/${circle?.id}/mintKudos`,
+          `${process.env.API_HOST}/circle/v1/${circle?.id}/mintKudos`,
           {
             credentials: "include",
             method: "PATCH",
@@ -85,12 +90,10 @@ export default function useCredentials() {
         );
         if (res.ok) {
           const data = await res.json();
-          console.log(data);
-
           return data;
         } else {
           toast.error("Error minting retro", {
-            theme: "dark",
+            theme: mode,
           });
           return false;
         }
@@ -109,7 +112,7 @@ export default function useCredentials() {
     const intervalPromise = setInterval(() => {
       time += 1000;
       console.log(time);
-      fetch(`https://api.mintkudos.xyz${operationId}`)
+      fetch(`${process.env.MINTKUDOS_HOST}${operationId}`)
         .then(async (res) => {
           if (res.ok) {
             const data = await res.json();
@@ -118,7 +121,7 @@ export default function useCredentials() {
             if (data.status === "success") {
               clearInterval(intervalPromise);
               const kudosForUsers = kudosFor || "assignee";
-              fetch(`http://localhost:8080/card/v1/${cardId}/recordKudos`, {
+              fetch(`${process.env.API_HOST}/card/v1/${cardId}/recordKudos`, {
                 method: "PATCH",
                 body: JSON.stringify({
                   for: kudosForUsers,
@@ -135,8 +138,14 @@ export default function useCredentials() {
                   if (res.ok) {
                     res
                       .json()
-                      .then((res2) => setCard(res2))
+                      .then((res2) => {
+                        // Only update state if user is on same card
+                        if (cardId === res2.id) setCard(res2);
+                      })
                       .catch((err) => console.log(err));
+                    toast.success("Successfully minted kudos!", {
+                      theme: mode,
+                    });
                   }
                 })
                 .catch((err) => console.log(err));
@@ -155,7 +164,9 @@ export default function useCredentials() {
     console.log("view");
     for (const [role, tokenId] of Object.entries(kudosMinted)) {
       console.log(kudosMinted);
-      const res = await fetch(`https://api.mintkudos.xyz/v1/tokens/${tokenId}`);
+      const res = await fetch(
+        `${process.env.MINTKUDOS_HOST}/v1/tokens/${tokenId}`
+      );
       if (res.ok) {
         kudos.push(await res.json());
       }
@@ -186,10 +197,10 @@ export default function useCredentials() {
         );
 
         toast("Claiming Kudos...", {
-          theme: "dark",
+          theme: mode,
         });
         const res = await fetch(
-          `http://localhost:8080/circle/v1/${circle?.id}/claimKudos`,
+          `${process.env.API_HOST}/circle/v1/${circle?.id}/claimKudos`,
           {
             credentials: "include",
             method: "PATCH",
@@ -222,7 +233,7 @@ export default function useCredentials() {
     const intervalPromise = setInterval(() => {
       time += 1000;
       console.log(time);
-      fetch(`https://api.mintkudos.xyz${operationId}`)
+      fetch(`${process.env.MINTKUDOS_HOST}${operationId}`)
         .then(async (res) => {
           if (res.ok) {
             const data = await res.json();
@@ -230,23 +241,32 @@ export default function useCredentials() {
 
             if (data.status === "success") {
               clearInterval(intervalPromise);
-              fetch(`http://localhost:8080/card/v1/${cardId}/recordClaimInfo`, {
-                method: "PATCH",
-                body: JSON.stringify({
-                  for: kudosFor || "assignee",
-                  tokenId: data.resourceId,
-                }),
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                credentials: "include",
-              })
-                .then((res) => {
-                  if (res.ok)
-                    setKudosMinted({
-                      ...kudosMinted,
-                      [kudosFor || "assignee"]: data.resourceId,
-                    });
+              fetch(
+                `${process.env.API_HOST}/card/v1/${cardId}/recordClaimInfo`,
+                {
+                  method: "PATCH",
+                  body: JSON.stringify({
+                    for: kudosFor || "assignee",
+                    tokenId: data.resourceId,
+                  }),
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  credentials: "include",
+                }
+              )
+                .then((res2) => {
+                  if (res2.ok)
+                    res2
+                      .json()
+                      .then((res2) => {
+                        // Only update state if user is on same card
+                        if (cardId === res2.id) setCard(res2);
+                      })
+                      .catch((err) => console.log(err));
+                  toast.success("Successfully claimed kudos!", {
+                    theme: mode,
+                  });
                 })
                 .catch((err) => console.log(err));
             }
@@ -261,7 +281,7 @@ export default function useCredentials() {
 
   const getKudosOfUser = async (ethAddress: string) => {
     const res = await fetch(
-      `https://api.mintkudos.xyz/v1/wallets/${ethAddress}/tokens`
+      `${process.env.MINTKUDOS_HOST}/v1/wallets/${ethAddress}/tokens`
     );
     if (res.ok) {
       return await res.json();

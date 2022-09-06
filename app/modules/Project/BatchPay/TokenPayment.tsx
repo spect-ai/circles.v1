@@ -23,7 +23,7 @@ export default function TokenPayment() {
     useBatchPayContext();
 
   const router = useRouter();
-  const { circle: cId } = router.query;
+  const { circle: cId, project: pId } = router.query;
   const { data: circle } = useQuery<CircleType>(["circle", cId], {
     enabled: false,
   });
@@ -121,7 +121,11 @@ export default function TokenPayment() {
                   if (!batchPayInfo?.retroId) {
                     const res: ProjectType = await updatePaymentInfo(
                       tokenCards as string[],
-                      txnHash
+                      txnHash,
+                      {
+                        type: "project",
+                        id: pId as string,
+                      }
                     );
                     console.log({ res });
                     if (res) {

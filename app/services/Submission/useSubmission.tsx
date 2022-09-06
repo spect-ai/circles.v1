@@ -25,7 +25,7 @@ export default function useSubmission() {
   ): Promise<boolean> => {
     setLoading(true);
     const res = await fetch(
-      `${process.env.API_HOST}/card/${card?.id}/updateWorkUnit?threadId=${workThreadId}&workUnitId=${workUnitId}`,
+      `${process.env.API_HOST}/card/v1/${card?.id}/updateWorkUnit?threadId=${workThreadId}&workUnitId=${workUnitId}`,
       {
         method: "PATCH",
         headers: {
@@ -58,7 +58,7 @@ export default function useSubmission() {
   ): Promise<boolean> => {
     setLoading(true);
     const res = await fetch(
-      `${process.env.API_HOST}/card/${card?.id}/createWorkUnit?threadId=${workThreadId}`,
+      `${process.env.API_HOST}/card/v1/${card?.id}/createWorkUnit?threadId=${workThreadId}`,
       {
         method: "PATCH",
         headers: {
