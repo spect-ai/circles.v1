@@ -11,6 +11,7 @@ import {
   IconDotsVertical,
   Text,
   useTheme,
+  IconSplit,
 } from "degen";
 import Link from "next/link";
 import CreateViewModal from "./ViewModal/CreateViewModal";
@@ -64,11 +65,9 @@ export const ViewBar = () => {
             <Link href={`/${cId}/${pId}?view=${view_Id}`} key={view_Id}>
               <Button
                 prefix={
-                  view?.type == "Board" ? (
-                    <IconGrid size="4" />
-                  ) : (
-                    <IconList size="4" />
-                  )
+                  (view?.type == "Board" && <IconGrid size="4" />) ||
+                  (view?.type == "List" && <IconList size="4" />) ||
+                  (view?.type == "Gantt" && <IconSplit size="4" />)
                 }
                 variant={view_Id == viewName ? "tertiary" : "transparent"}
                 size="small"

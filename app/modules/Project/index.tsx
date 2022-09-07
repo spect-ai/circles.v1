@@ -16,11 +16,11 @@ import ListView from "./ListView";
 import Apply from "../Card/Apply";
 import { ApartmentOutlined } from "@ant-design/icons";
 import Navigation from "./Navigation";
+import GanttChart from "./GanttChart";
 
 function Project() {
   const [graphOpen, setGraphOpen] = useState(false);
   const {
-    view,
     localProject: project,
     selectedCard,
     isApplyModalOpen,
@@ -30,7 +30,7 @@ function Project() {
   } = useLocalProject();
   const { canDo } = useRoleGate();
   const { onboarded } = useProjectOnboarding();
-  const { setViewName } = useGlobal();
+  const { setViewName, view } = useGlobal();
 
   const router = useRouter();
   const { card: tId, view: vId } = router.query;
@@ -106,6 +106,14 @@ function Project() {
           {!onboarded && canDo(["steward"]) && <Onboarding />}
           {!vId && view === 0 && <BoardView viewId={""} />}
           {!vId && view === 1 && <ListView viewId={""} />}
+          {!vId && view === 2 && <GanttChart viewId={""} />}
+          {vId && selectedView?.type == "Board" && (
+            <BoardView viewId={viewId} />
+          )}
+          {vId && selectedView?.type == "List" && <ListView viewId={viewId} />}
+          {vId && selectedView?.type == "Gantt" && (
+            <GanttChart viewId={viewId} />
+          )}
           <Box
             style={{
               position: "absolute",
@@ -126,10 +134,6 @@ function Project() {
               />
             </Button>
           </Box>
-          {vId && selectedView?.type == "Board" && (
-            <BoardView viewId={viewId} />
-          )}
-          {vId && selectedView?.type == "List" && <ListView viewId={viewId} />}
         </Box>
       </motion.main>
       <AnimatePresence>
