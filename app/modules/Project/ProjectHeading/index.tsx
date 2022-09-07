@@ -27,12 +27,12 @@ export const IconButton = styled(Box)`
 `;
 
 function ProjectHeading() {
-  const { localProject: project, loading, view, setView } = useLocalProject();
+  const { localProject: project, loading} = useLocalProject();
   const { canDo } = useRoleGate();
   const { mode } = useTheme();
   const router = useRouter();
   const { circle: cId, project: pId, view: vId } = router.query;
-  const { setViewName, viewName } = useGlobal();
+  const { setViewName, viewName, view, setView  } = useGlobal();
 
   const defaultView = () => {
     if (viewName.length > 0) setViewName("");

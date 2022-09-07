@@ -21,7 +21,6 @@ import GanttChart from "./GanttChart";
 function Project() {
   const [graphOpen, setGraphOpen] = useState(false);
   const {
-    view,
     localProject: project,
     selectedCard,
     isApplyModalOpen,
@@ -31,7 +30,7 @@ function Project() {
   } = useLocalProject();
   const { canDo } = useRoleGate();
   const { onboarded } = useProjectOnboarding();
-  const { setViewName } = useGlobal();
+  const { setViewName, view } = useGlobal();
 
   const router = useRouter();
   const { card: tId, view: vId } = router.query;
@@ -108,6 +107,10 @@ function Project() {
           {!vId && view === 0 && <BoardView viewId={""} />}
           {!vId && view === 1 && <ListView viewId={""} />}
           {!vId && view === 2 && <GanttChart />}
+          {vId && selectedView?.type == "Board" && (
+            <BoardView viewId={viewId} />
+          )}
+          {vId && selectedView?.type == "List" && <ListView viewId={viewId} />}
           <Box
             style={{
               position: "absolute",
@@ -128,10 +131,6 @@ function Project() {
               />
             </Button>
           </Box>
-          {vId && selectedView?.type == "Board" && (
-            <BoardView viewId={viewId} />
-          )}
-          {vId && selectedView?.type == "List" && <ListView viewId={viewId} />}
         </Box>
       </motion.main>
       <AnimatePresence>

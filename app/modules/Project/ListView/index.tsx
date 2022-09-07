@@ -73,10 +73,6 @@ function ListView({ viewId }: Props) {
     },
   }));
 
-  if (loading) {
-    return <SkeletonLoader />;
-  }
-
   return (
     <ScrollContainer>
       <Stack space="8">

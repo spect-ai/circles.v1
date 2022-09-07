@@ -22,8 +22,6 @@ type LocalProjectContextType = {
   setUpdating: React.Dispatch<React.SetStateAction<boolean>>;
   projectCardActions: ProjectCardActionsType | undefined;
   fetchQuickActions: () => void;
-  view: number;
-  setView: React.Dispatch<React.SetStateAction<number>>;
   batchPayModalOpen: boolean;
   setBatchPayModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
   selectedCard: CardType | null;
@@ -73,7 +71,6 @@ export function useProviderLocalProject() {
 
   const [loading, setLoading] = useState(false);
   const [updating, setUpdating] = useState(false);
-  const [view, setView] = useState(0);
 
   const [localProject, setLocalProject] = useState({} as ProjectType);
   const [error, setError] = useState(false);
@@ -133,8 +130,6 @@ export function useProviderLocalProject() {
     setUpdating,
     projectCardActions: !connectedUser ? undefined : projectCardActions,
     fetchQuickActions,
-    view,
-    setView,
     batchPayModalOpen,
     setBatchPayModalOpen,
     selectedCard,

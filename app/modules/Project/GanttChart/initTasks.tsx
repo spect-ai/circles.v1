@@ -3,6 +3,7 @@ import { Task } from "gantt-task-react/dist/types/public-types";
 
 export function initTasks(project: ProjectType) {
   const currentDate = new Date();
+  if (!project.cards) return [];
   const cards: Task[] = Object.values(project.cards).map(function (
     card: CardType
   ) {

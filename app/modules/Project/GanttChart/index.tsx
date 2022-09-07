@@ -5,11 +5,12 @@ import TaskBar from "./components/TaskBar";
 
 import { memo, useState, useEffect } from "react";
 import { useLocalProject } from "../Context/LocalProjectContext";
+import { SkeletonLoader } from "../SkeletonLoader";
 import { CardType } from "@/app/types";
 import useCardService from "@/app/services/Card/useCardService";
 import styled from "styled-components";
 
-import { Box, useTheme } from "degen";
+import { Box, useTheme, Text } from "degen";
 import { useRouter } from "next/router";
 
 const Container = styled.div`
@@ -32,7 +33,7 @@ const Container = styled.div`
 `;
 
 function GanttChart() {
-  const { localProject: project, updateProject } = useLocalProject();
+  const { localProject: project, updateProject, loading } = useLocalProject();
   const router = useRouter();
   const { circle: cId, project: pId } = router.query;
   const { updateCard } = useCardService();
@@ -108,6 +109,24 @@ function GanttChart() {
   const handleDblClick = (task: Task) => {
     void router.push(`/${cId}/${pId}/${task.project}`);
   };
+
+  useEffect(() => {
+    setTasks(initTasks(project));
+  }, [project, project.cards]);
+
+  if (loading) {
+    return <SkeletonLoader />;
+  }
+
+  if (!tasks?.[0]?.id) {
+    return (
+      <Container>
+        <Box style={{ margin: "21% 42%" }}>
+          <Text color="accent">No cards found</Text>
+        </Box>
+      </Container>
+    );
+  }
 
   return (
     <Container>
