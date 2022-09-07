@@ -1,5 +1,11 @@
 @charset "UTF-8";
 
+/* Donot remove the comments */
+
+.today {
+  display: none;
+}
+
 ._3_ygE {
   display: table;
   border-bottom: #e6e4e4 1px solid;
@@ -70,17 +76,25 @@
   user-select: none;
 }
 
+/* Bg of Pop up box which appears when you hover the card*/
+
 ._3T42e {
-  background: #fff;
+  background: var(--box-background-color);
+  color: var(--text-color);
+  border: 2px solid var(--border-color);
   padding: 12px;
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+  border-radius: 0.3rem;
 }
+
+/* Duration text inside pop up box*/
 
 ._29NTg {
   font-size: 12px;
   margin-bottom: 6px;
   color: #666;
 }
+
+/* Pop up box which appears when you hover the card*/
 
 ._25P-K {
   position: absolute;
@@ -129,25 +143,31 @@
   background-clip: padding-box;
 }
 
+/* Cell bg color*/
+
 ._2dZTy {
   fill: transparent;
 }
+
+/* Cell bg color*/
 
 ._2dZTy:nth-child(even) {
   fill: transparent;
 }
 
 ._3rUKi {
-  stroke: #ebeff2;
+  stroke: transparent;
 }
 
 ._RuwuK {
-  stroke: #e6e4e4;
+  stroke: transparent;
 }
+
+/* Text - Months, Years */
 
 ._9w8d5 {
   text-anchor: middle;
-  fill: #333;
+  fill: rgb(122, 122, 122);
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   -moz-user-select: none;
@@ -157,7 +177,7 @@
 }
 
 ._1rLuZ {
-  stroke: #e6e4e4;
+  stroke: transparent;
 }
 
 ._2q1Kt {
@@ -171,9 +191,11 @@
   pointer-events: none;
 }
 
+/* Months, Days - Top Box */
+
 ._35nLX {
-  fill: #ffffff;
-  stroke: #e0e0e0;
+  fill: var(--border-color);
+  stroke: transparent;
   stroke-width: 1.4;
 }
 
@@ -187,12 +209,16 @@
   opacity: 1;
 }
 
+/* Two rectangles which appear inside the card box when you try to resize it i.e. change the dates*/
+
 ._3w_5u {
-  fill: #ddd;
+  fill: rgb(191, 90, 242, 0.7);
   cursor: ew-resize;
   opacity: 0;
   visibility: hidden;
 }
+
+/* The box which u drag to change the date & inside which the card title appears*/
 
 ._31ERP {
   -webkit-user-select: none;
@@ -236,10 +262,13 @@
   user-select: none;
 }
 
+/* Text inside the box which is dragged to change dates*/
+
 ._3zRJQ {
   fill: rgb(191, 90, 242, 1);
   text-anchor: middle;
-  font-weight: lighter;
+  font-weight: 600;
+  font-family: "Inter";
   dominant-baseline: central;
   -webkit-touch-callout: none;
   -webkit-user-select: none;
@@ -250,7 +279,9 @@
 }
 
 ._3KcaM {
-  fill: #555;
+  fill: rgb(191, 90, 242, 1);
+  font-weight: 600;
+  font-family: "Inter";
   text-anchor: start;
   -webkit-touch-callout: none;
   -webkit-user-select: none;

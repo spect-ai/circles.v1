@@ -1,82 +1,57 @@
 import { Gantt, Task, ViewMode } from "gantt-task-react";
 import { ViewSwitcher } from "./components/ViewSwitcher";
+import { initTasks } from "./initTasks";
+import TaskBar from "./components/TaskBar";
 
-import { memo, useState } from "react";
+import { memo, useState, useEffect } from "react";
 import { useLocalProject } from "../Context/LocalProjectContext";
 import { CardType } from "@/app/types";
 import useCardService from "@/app/services/Card/useCardService";
+import styled from "styled-components";
 
-import { Box, Text } from "degen";
+import { Box, useTheme } from "degen";
+import { useRouter } from "next/router";
+
+const Container = styled.div`
+  margin: 0rem 1rem 1rem 1rem;
+  height: calc(100vh - 7.5rem);
+  overflow-y: auto;
+  ::-webkit-scrollbar {
+    display: none;
+  }
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  @media only screen and (min-width: 0px) {
+    max-width: calc(100vw - 5rem);
+    padding: 0 0.1rem;
+  }
+  @media only screen and (min-width: 768px) {
+    max-width: calc(100vw - 4rem);
+    padding: 0 0.5rem;
+  }
+`;
 
 function GanttChart() {
   const { localProject: project, updateProject } = useLocalProject();
+  const router = useRouter();
+  const { circle: cId, project: pId } = router.query;
   const { updateCard } = useCardService();
-  const currentDate = new Date();
+  const { mode } = useTheme();
 
-  const cards: Task[] = Object.values(project.cards).map(function (
-    card: CardType
-  ) {
-    const dates = {
-      start: currentDate,
-      end: currentDate,
-    };
-    if (!card?.startDate && !card?.deadline) {
-      dates.start = new Date(
-        currentDate.getFullYear(),
-        currentDate.getMonth(),
-        1
-      );
-      dates.end = new Date(
-        currentDate.getFullYear(),
-        currentDate.getMonth(),
-        2
-      );
-    }
-    if (card?.startDate && !card?.deadline) {
-      dates.start = new Date(card?.startDate);
-      if (new Date(card?.startDate).getDate() > 28) {
-        dates.end = new Date(
-          new Date(card?.startDate).getFullYear(),
-          new Date(card?.startDate).getMonth() + 1,
-          1
-        );
-      } else {
-        dates.end = new Date(
-          new Date(card?.startDate).getFullYear(),
-          new Date(card?.startDate).getMonth(),
-          new Date(card?.startDate).getDate() + 2
-        );
-      }
-    }
-    if (!card?.startDate && card?.deadline) {
-      dates.end = new Date(card?.deadline);
-      if (new Date(card?.deadline).getDate() > 1) {
-        dates.start = new Date(
-          new Date(card?.deadline).getFullYear(),
-          new Date(card?.deadline).getMonth(),
-          new Date(card?.deadline).getDate() - 1
-        );
-      } else {
-        dates.start = new Date(
-          new Date(card?.deadline).getFullYear(),
-          new Date(card?.deadline).getMonth() - 1,
-          29
-        );
-      }
-    }
-    if (card?.startDate && card?.deadline) {
-      dates.start = new Date(card?.startDate);
-      dates.end = new Date(card?.deadline);
-    }
-    return {
-      start: dates.start,
-      end: dates.end,
-      name: card.title,
-      id: card.id,
-      type: "task",
-      progress: 0,
-    };
-  });
+  useEffect(() => {
+    document.documentElement.style.setProperty(
+      "--box-background-color",
+      `${mode === "dark" ? "rgb(20,20,20)" : "rgb(255, 255, 255)"}`
+    );
+    document.documentElement.style.setProperty(
+      "--text-color",
+      `${mode === "dark" ? "rgb(240,240,240, 0.7)" : "rgb(20,20,20, 0.7)"}`
+    );
+    document.documentElement.style.setProperty(
+      "--border-color",
+      `${mode === "dark" ? "rgb(255, 255, 255, 0.1)" : "rgb(0, 0, 0, 0.08)"}`
+    );
+  }, [mode]);
 
   const onCardUpdate = async (
     card: CardType,
@@ -111,8 +86,8 @@ function GanttChart() {
   };
 
   const [view, setView] = useState<ViewMode>(ViewMode.Day);
-  const [tasks, setTasks] = useState<Task[]>(cards);
-  const [isChecked, setIsChecked] = useState(true);
+  const [tasks, setTasks] = useState<Task[]>(initTasks(project));
+  const [isChecked, setIsChecked] = useState(false);
 
   let columnWidth = 90;
   if (view === ViewMode.Year) {
@@ -130,12 +105,12 @@ function GanttChart() {
     setTasks(newTasks);
   };
 
-  const handleClick = (task: Task) => {
-    console.log("On Click event Id:" + task.id);
+  const handleDblClick = (task: Task) => {
+    void router.push(`/${cId}/${pId}/${task.project}`);
   };
 
   return (
-    <Box style={{ margin: "0rem 1rem 1rem 1rem" }}>
+    <Container>
       <ViewSwitcher
         onViewModeChange={(viewMode) => setView(viewMode)}
         onViewListChange={setIsChecked}
@@ -146,50 +121,27 @@ function GanttChart() {
         style={{
           display: "flex",
           flexDirection: "row",
-          gap: "0.5rem",
+          gap: "0.0rem",
         }}
       >
-        {isChecked && (
-          <Box
-            position={"fixed"}
-            style={{
-              display: "flex",
-              flexDirection: "column",
-            }}
-          >
-            <Box width="60" style={{ padding: "0.7rem 0rem" }}>
-              <Text variant="base" weight="semiBold">
-                Cards
-              </Text>
-            </Box>
-            {tasks?.map((task) => {
-              return (
-                <Box
-                  key={task?.id}
-                  width="60"
-                  style={{ margin: "0.77rem 0rem" }}
-                >
-                  <Text variant="base" weight="semiBold" color="textSecondary">
-                    {task?.name}
-                  </Text>
-                </Box>
-              );
-            })}
-          </Box>
-        )}
-
-        <Box overflow="auto" marginLeft={isChecked ? "60" : "4"}>
+        {isChecked && <TaskBar tasks={tasks} />}
+        <Box
+          overflow="auto"
+          transitionDuration="700"
+          style={{ width: isChecked ? "calc(100vw - 25rem)" : "100vw" }}
+        >
           <Gantt
             tasks={tasks}
             viewMode={view}
             onDateChange={handleTaskChange}
-            onClick={handleClick}
+            onDoubleClick={handleDblClick}
             listCellWidth={""}
             columnWidth={columnWidth}
+            ganttHeight={isChecked ? undefined : 500}
           />
         </Box>
       </Box>
-    </Box>
+    </Container>
   );
 }
 
