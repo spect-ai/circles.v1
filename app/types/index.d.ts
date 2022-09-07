@@ -456,7 +456,7 @@ export type CardsType = {
 };
 
 export type Views = {
-  type: "List" | "Board";
+  type: "List" | "Board" | "Gantt";
   hidden: boolean;
   filters: Filter;
   slug?: string;

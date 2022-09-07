@@ -6,7 +6,7 @@ import React, { memo, useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import styled from "styled-components";
 import { useLocalProject } from "../Context/LocalProjectContext";
-import { SkeletonLoader } from "../SkeletonLoader";
+
 import ListSection from "./ListSection";
 import { filterCards } from "../Filter/filterCards";
 import { Filter, CardsType, ColumnType } from "@/app/types";
@@ -37,7 +37,6 @@ function ListView({ viewId }: Props) {
   const {
     localProject: project,
     setLocalProject,
-    loading,
     advFilters,
   } = useLocalProject();
   const { currentFilter } = useGlobal();

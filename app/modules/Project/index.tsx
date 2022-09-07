@@ -106,11 +106,14 @@ function Project() {
           {!onboarded && canDo(["steward"]) && <Onboarding />}
           {!vId && view === 0 && <BoardView viewId={""} />}
           {!vId && view === 1 && <ListView viewId={""} />}
-          {!vId && view === 2 && <GanttChart />}
+          {!vId && view === 2 && <GanttChart viewId={""} />}
           {vId && selectedView?.type == "Board" && (
             <BoardView viewId={viewId} />
           )}
           {vId && selectedView?.type == "List" && <ListView viewId={viewId} />}
+          {vId && selectedView?.type == "Gantt" && (
+            <GanttChart viewId={viewId} />
+          )}
           <Box
             style={{
               position: "absolute",

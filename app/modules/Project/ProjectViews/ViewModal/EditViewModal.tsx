@@ -17,6 +17,7 @@ import {
   Stack,
   Button,
   IconTrash,
+  IconSplit,
 } from "degen";
 import { SaveOutlined } from "@ant-design/icons";
 import { editViews } from "@/app/services/ProjectViews";
@@ -68,7 +69,7 @@ function EditViewModal({ setViewOpen, viewId }: Props) {
   const viewFilters = view?.filters;
 
   const [name, setName] = useState<string>(view?.name || " ");
-  const [layout, setLayout] = useState<"Board" | "List">(view?.type || "Board");
+  const [layout, setLayout] = useState<"Board" | "List" | "Gantt">(view?.type || "Board");
   const [reviewer, setReviewer] = useState<string[]>(
     viewFilters?.reviewer || []
   );
@@ -164,6 +165,18 @@ function EditViewModal({ setViewOpen, viewId }: Props) {
                 onClick={() => setLayout("List")}
               >
                 <IconList size="4" />
+              </Box>
+              <Box
+                cursor="pointer"
+                color="textSecondary"
+                padding="2"
+                borderRadius="large"
+                backgroundColor={
+                  layout == "Gantt" ? "accentSecondary" : "background"
+                }
+                onClick={() => setLayout("Gantt")}
+              >
+                <IconSplit size="4" />
               </Box>
             </Box>
           </Box>

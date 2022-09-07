@@ -1,12 +1,9 @@
-import { ProjectType, CardType } from "@/app/types";
+import { CardsType, CardType } from "@/app/types";
 import { Task } from "gantt-task-react/dist/types/public-types";
 
-export function initTasks(project: ProjectType) {
+export function initTasks(taskCards: CardType[]) {
   const currentDate = new Date();
-  if (!project.cards) return [];
-  const cards: Task[] = Object.values(project.cards).map(function (
-    card: CardType
-  ) {
+  const cards: Task[] = taskCards && Object.values(taskCards).map(function (card: CardType) {
     const dates = {
       start: currentDate,
       end: currentDate,
