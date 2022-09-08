@@ -1,9 +1,10 @@
 import Popover from "@/app/common/components/Popover";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
-import { CircleType, ProjectType } from "@/app/types";
-import { AppstoreOutlined } from "@ant-design/icons";
+import { CircleType, Permissions, ProjectType } from "@/app/types";
+import { AppstoreOutlined, SettingOutlined } from "@ant-design/icons";
 import {
   Box,
+  Button,
   IconCog,
   IconUserGroup,
   IconUsersSolid,
@@ -13,7 +14,7 @@ import {
 } from "degen";
 import { AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
-import React, { memo, useState } from "react";
+import React, { memo, useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { PopoverOption } from "../Card/OptionPopover";
 import SettingsModal from "../Circle/CircleSettingsModal";
@@ -34,10 +35,28 @@ function CircleOptions() {
   const [isOpen, setIsOpen] = useState(false);
   const [settingsModalOpen, setSettingsModalOpen] = useState(false);
   const [contributorsModalOpen, setContributorsModalOpen] = useState(false);
+  const [perm, setPerm] = useState({} as Permissions);
   const [rolesModalOpen, setRolesModalOpen] = useState(false);
   const { mode } = useTheme();
 
-  const { canDo } = useRoleGate();
+  useEffect(() => {
+    fetch(
+      `${process.env.API_HOST}/circle/myPermissions?circleIds=${circle?.id}`,
+      {
+        credentials: "include",
+      }
+    )
+      .then((res) => {
+        res
+          .json()
+          .then((permissions: Permissions) => {
+            setPerm(permissions);
+          })
+          .catch((err) => console.log(err));
+      })
+      .catch((err) => console.log(err));
+  }, []);
+
   return (
     <>
       <AnimatePresence>
@@ -53,91 +72,104 @@ function CircleOptions() {
           <RolesModal handleClose={() => setRolesModalOpen(false)} />
         )}
       </AnimatePresence>
-      <Popover
-        data-tour="circle-options-popover"
-        butttonComponent={
-          <HeaderButton
-            data-tour="circle-options-button"
-            padding="1"
-            marginTop="0.5"
-            marginBottom="1"
-            borderRadius="large"
-            width="full"
-            onClick={() => {
-              setIsOpen(!isOpen);
-            }}
-            mode={mode}
+      <Box display="flex" flexDirection="row" alignItems="center" width="64">
+        <Box width="3/4">
+          <Popover
+            data-tour="circle-options-popover"
+            butttonComponent={
+              <HeaderButton
+                data-tour="circle-options-button"
+                padding="1"
+                marginTop="0.5"
+                marginBottom="1"
+                borderRadius="large"
+                width="full"
+                onClick={() => {
+                  setIsOpen(!isOpen);
+                }}
+                mode={mode}
+              >
+                <Stack direction="horizontal" align="center">
+                  <Text size="headingTwo" weight="semiBold" ellipsis>
+                    {circle?.name || project?.parents[0].name}
+                  </Text>
+                </Stack>
+              </HeaderButton>
+            }
+            isOpen={isOpen}
+            setIsOpen={setIsOpen}
           >
-            <Stack direction="horizontal" align="center">
-              <Text size="headingTwo" weight="semiBold" ellipsis>
-                {circle?.name || project?.parents[0].name}
-              </Text>
-            </Stack>
-          </HeaderButton>
-        }
-        isOpen={isOpen}
-        setIsOpen={setIsOpen}
-      >
+            <Box
+              backgroundColor="background"
+              borderWidth="0.5"
+              borderRadius="2xLarge"
+              width="44"
+            >
+              <PopoverOption
+                onClick={() => {
+                  setIsOpen(false);
+                  void router.push(`/${cId}`);
+                }}
+              >
+                <Stack direction="horizontal" space="2">
+                  <AppstoreOutlined
+                    style={{
+                      fontSize: "1.3rem",
+                      marginLeft: "2px",
+                    }}
+                  />
+                  Overview
+                </Stack>
+              </PopoverOption>
+              <PopoverOption
+                onClick={() => {
+                  setIsOpen(false);
+                  setContributorsModalOpen(true);
+                }}
+              >
+                <Stack direction="horizontal" space="2">
+                  <IconUsersSolid />
+                  Contributors
+                </Stack>
+              </PopoverOption>
+              <PopoverOption
+                onClick={() => {
+                  setIsOpen(false);
+                  setRolesModalOpen(true);
+                }}
+              >
+                <Stack direction="horizontal" space="2">
+                  <IconUserGroup />
+                  Roles
+                </Stack>
+              </PopoverOption>
+            </Box>
+          </Popover>
+        </Box>
         <Box
-          backgroundColor="background"
-          borderWidth="0.5"
-          borderRadius="2xLarge"
-          width="44"
+          display="flex"
+          flexDirection="row"
+          width="1/4"
+          justifyContent="flex-end"
         >
-          <PopoverOption
-            onClick={() => {
-              setIsOpen(false);
-              void router.push(`/${cId}`);
-            }}
-          >
-            <Stack direction="horizontal" space="2">
-              <AppstoreOutlined
+          {perm?.manageCircleSettings && (
+            <Button
+              data-tour="circle-settings-button"
+              shape="circle"
+              size="small"
+              variant="transparent"
+              onClick={() => setSettingsModalOpen(true)}
+            >
+              <SettingOutlined
                 style={{
-                  fontSize: "1.3rem",
-                  marginLeft: "2px",
+                  color: "rgb(191, 90, 242, 0.8)",
+                  fontSize: "1.2rem",
                 }}
               />
-              Overview
-            </Stack>
-          </PopoverOption>
-          {canDo(["steward"]) && (
-            <PopoverOption
-              tourId="circle-settings-button"
-              onClick={() => {
-                setIsOpen(false);
-                setSettingsModalOpen(true);
-              }}
-            >
-              <Stack direction="horizontal" space="2">
-                <IconCog />
-                Settings
-              </Stack>
-            </PopoverOption>
+            </Button>
           )}
-          <PopoverOption
-            onClick={() => {
-              setIsOpen(false);
-              setContributorsModalOpen(true);
-            }}
-          >
-            <Stack direction="horizontal" space="2">
-              <IconUsersSolid />
-              Contributors
-            </Stack>
-          </PopoverOption>
-          <PopoverOption
-            onClick={() => {
-              setIsOpen(false);
-              setRolesModalOpen(true);
-            }}
-          >
-            <Stack direction="horizontal" space="2">
-              <IconUserGroup />
-              Roles
-            </Stack>
-          </PopoverOption>
         </Box>
-      </Popover>
+      </Box>
     </>
   );
 }

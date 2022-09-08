@@ -4,7 +4,7 @@ module.exports = {
   exclude: ["/en*", "/de*", "/disallowed"],
   alternateRefs: [
     {
-      href: "https://circles.spect.network",
+      href: "https://circles.spect.network/en",
       hreflang: "en",
     },
     {

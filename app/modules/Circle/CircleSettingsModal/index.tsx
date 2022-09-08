@@ -10,14 +10,16 @@ import CircleIntegrations from "./CircleIntegrations";
 import DefaultPayment from "./CirclePayment";
 import Contributors from "../ContributorsModal/Contributors";
 import { useCircle } from "../CircleContext";
+import Credentials from "./Credentials";
 interface Props {
   handleClose: () => void;
+  initialTab?: number;
 }
 
-export default function SettingsModal({ handleClose }: Props) {
+export default function SettingsModal({ handleClose, initialTab }: Props) {
   const { circle, setCircleData } = useCircle();
 
-  const [tab, setTab] = useState(0);
+  const [tab, setTab] = useState(initialTab || 0);
   const [visibilityTab, setVisibilityTab] = useState(circle?.private ? 1 : 0);
   const onTabClick = (id: number) => setTab(id);
   const onVisibilityTabClick = (id: number) => setVisibilityTab(id);
@@ -29,8 +31,6 @@ export default function SettingsModal({ handleClose }: Props) {
 
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-
-  console.log({ circle });
 
   const onSubmit = async () => {
     setIsLoading(true);
@@ -89,6 +89,7 @@ export default function SettingsModal({ handleClose }: Props) {
             tabs={[
               "Info",
               "Integrations",
+              "Credentials",
               "Payments",
               "Contributors",
               "Archive",
@@ -151,9 +152,10 @@ export default function SettingsModal({ handleClose }: Props) {
             </Stack>
           )}
           {tab === 1 && <CircleIntegrations />}
-          {tab === 2 && <DefaultPayment />}
-          {tab === 3 && <Contributors />}
-          {tab === 4 && (
+          {tab === 2 && <Credentials />}
+          {tab === 3 && <DefaultPayment />}
+          {tab === 4 && <Contributors />}
+          {tab === 5 && (
             <Box width="full">
               <Stack>
                 <Box>

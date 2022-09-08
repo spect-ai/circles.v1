@@ -35,7 +35,7 @@ export default function useModalOptions() {
       case "priority":
         return priority;
       case "labels":
-        return labels.map((label) => {
+        return labels.concat(circle?.labels || []).map((label) => {
           return {
             name: label,
             value: label,
@@ -63,21 +63,29 @@ export default function useModalOptions() {
         tempArr = tempArr?.filter(
           (member: any) => member.value !== connectedUser
         );
-        tempArr?.unshift({
-          name:
-            (memberDetails &&
-              memberDetails.memberDetails[connectedUser]?.username + " (me)") ||
-            " (me)",
-          avatar:
-            (memberDetails &&
-              memberDetails.memberDetails[connectedUser]?.avatar) ||
-            "",
-          value: connectedUser,
-          ethAddress:
-            (memberDetails &&
-              memberDetails.memberDetails[connectedUser]?.ethAddress) ||
-            "",
-        });
+
+        if (
+          memberDetails &&
+          memberDetails.memberDetails[connectedUser]?.username
+        ) {
+          tempArr?.unshift({
+            name:
+              (memberDetails &&
+                memberDetails.memberDetails[connectedUser]?.username +
+                  " (me)") ||
+              " (me)",
+            avatar:
+              (memberDetails &&
+                memberDetails.memberDetails[connectedUser]?.avatar) ||
+              "",
+            value: connectedUser,
+            ethAddress:
+              (memberDetails &&
+                memberDetails.memberDetails[connectedUser]?.ethAddress) ||
+              "",
+          });
+        }
+
         tempArr?.unshift({
           name: "Unassigned",
           avatar: "",

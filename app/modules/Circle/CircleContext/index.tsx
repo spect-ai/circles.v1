@@ -23,6 +23,10 @@ interface CircleContextType {
   setMemberDetailsData: (data: MemberDetails) => void;
   setRegistryData: (data: Registry) => void;
   setRetroData: (data: RetroType) => void;
+  hasMintkudosCredentialsSetup: boolean;
+  setHasMintkudosCredentialsSetup: (isBatchPayOpen: boolean) => void;
+  mintkudosCommunityId: string;
+  setMintkudosCommunityId: (isBatchPayOpen: string) => void;
 }
 
 export const CircleContext = React.createContext<CircleContextType>(
@@ -34,6 +38,10 @@ export function useProviderCircleContext() {
   const { circle: cId, retroSlug } = router.query;
 
   const [page, setPage] = useState<"Overview" | "Retro">("Overview");
+  const [hasMintkudosCredentialsSetup, setHasMintkudosCredentialsSetup] =
+    useState(false);
+  const [mintkudosCommunityId, setMintkudosCommunityId] = useState("");
+
   const [isBatchPayOpen, setIsBatchPayOpen] = useState(false);
 
   const {
@@ -126,6 +134,10 @@ export function useProviderCircleContext() {
     setMemberDetailsData,
     setRegistryData,
     setRetroData,
+    hasMintkudosCredentialsSetup,
+    setHasMintkudosCredentialsSetup,
+    mintkudosCommunityId,
+    setMintkudosCommunityId,
   };
 }
 
