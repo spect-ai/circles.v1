@@ -8,7 +8,7 @@ module.exports = {
       hreflang: "en",
     },
     {
-      href: "https://circles.spect.network/de",
+      href: "https://circles.spect.network",
       hreflang: "de",
     },
   ],
