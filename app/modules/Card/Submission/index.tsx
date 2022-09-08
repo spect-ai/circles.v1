@@ -42,7 +42,7 @@ export default function Submission() {
               </PrimaryButton>
             </Box>
           )}
-          <LinkGithubPR />
+          {canTakeAction("cardSubmission") && <LinkGithubPR />}
         </Stack>
         {workThreadOrder.map((workThreadId) => (
           <WorkThread
