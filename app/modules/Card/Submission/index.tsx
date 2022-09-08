@@ -3,10 +3,11 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useLocalCard } from "../../Project/CreateCardModal/hooks/LocalCardContext";
 import WorkThread from "./WorkThread";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
-import { Box, IconDocuments, Text } from "degen";
+import { Box, Stack, Text } from "degen";
 import { fadeVariant } from "../Utils/variants";
 import CreateSubmission from "./CreateSubmission";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
+import LinkGithubPR from "./LinkGithubPR";
 
 export default function Submission() {
   const { workThreadOrder, workThreads, cardId } = useLocalCard();
@@ -26,18 +27,23 @@ export default function Submission() {
         transition={{ type: "linear" }}
         className=""
       >
-        {canTakeAction("cardSubmission") && (
-          <Box width="1/3" marginBottom="2">
-            <PrimaryButton
-              onClick={() => setIsOpen(true)}
-              variant={workThreadOrder.length > 0 ? "transparent" : "secondary"}
-            >
-              {workThreadOrder.length > 0
-                ? "Add Submission"
-                : "Create Submission Thread"}
-            </PrimaryButton>
-          </Box>
-        )}
+        <Stack direction="horizontal">
+          {canTakeAction("cardSubmission") && (
+            <Box width="1/3" marginBottom="2">
+              <PrimaryButton
+                onClick={() => setIsOpen(true)}
+                variant={
+                  workThreadOrder.length > 0 ? "transparent" : "secondary"
+                }
+              >
+                {workThreadOrder.length > 0
+                  ? "Add Submission"
+                  : "Create Submission Thread"}
+              </PrimaryButton>
+            </Box>
+          )}
+          <LinkGithubPR />
+        </Stack>
         {workThreadOrder.map((workThreadId) => (
           <WorkThread
             key={workThreadId}

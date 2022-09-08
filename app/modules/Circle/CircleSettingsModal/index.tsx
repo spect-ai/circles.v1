@@ -12,6 +12,7 @@ import Contributors from "../ContributorsModal/Contributors";
 import { useCircle } from "../CircleContext";
 import Credentials from "./Credentials";
 import styled from "styled-components";
+import Roles from "../RolesModal/Roles";
 interface Props {
   handleClose: () => void;
   initialTab?: number;
@@ -101,6 +102,7 @@ export default function SettingsModal({ handleClose, initialTab }: Props) {
               "Credentials",
               "Payments",
               "Contributors",
+              "Roles",
               "Archive",
             ]}
             tabTourIds={[
@@ -108,6 +110,7 @@ export default function SettingsModal({ handleClose, initialTab }: Props) {
               "circle-settings-integrations",
               "circle-settings-payments",
               "circle-settings-members",
+              "circle-settings-roles",
               "circle-settings-delete",
             ]}
             orientation="vertical"
@@ -164,7 +167,8 @@ export default function SettingsModal({ handleClose, initialTab }: Props) {
           {tab === 2 && <Credentials />}
           {tab === 3 && <DefaultPayment />}
           {tab === 4 && <Contributors />}
-          {tab === 5 && (
+          {tab === 5 && <Roles />}
+          {tab === 6 && (
             <Box width="full">
               <Stack>
                 <Box>

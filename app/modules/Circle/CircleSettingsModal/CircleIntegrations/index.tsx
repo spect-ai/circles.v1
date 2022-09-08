@@ -29,11 +29,9 @@ export default function CircleIntegrations() {
             <Box width="1/3" marginTop="6">
               <GuildIntegration />
             </Box>
-            {circle?.guildxyzId && (
-              <Box width="1/3" marginTop="6">
-                <GuildRoleMapping />
-              </Box>
-            )}
+            <Box width="1/3" marginTop="6">
+              <GuildRoleMapping />
+            </Box>
           </Stack>
         </Stack>
         <Stack space="1">
@@ -66,11 +64,9 @@ export default function CircleIntegrations() {
               </PrimaryButton>
             </Box>
           </Link>
-          {circle?.discordGuildId && (
-            <Box width="1/3">
-              <DiscordRoleMapping />
-            </Box>
-          )}
+          <Box width="1/3">
+            <DiscordRoleMapping />
+          </Box>
         </Stack>
         <Stack space="1">
           <Heading>Github</Heading>

@@ -6,6 +6,7 @@ import { updateCircle } from "@/app/services/UpdateCircle";
 import { Box, IconClose, Stack, Tag, Text } from "degen";
 import { AnimatePresence } from "framer-motion";
 import React, { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 import { useCircle } from "../../CircleContext";
 import RolePopover from "./RolePopover";
 
@@ -93,7 +94,18 @@ export default function DiscordRoleMapping() {
 
   return (
     <>
-      <PrimaryButton onClick={() => setIsOpen(true)}>
+      <PrimaryButton
+        onClick={() => {
+          if (!circle.discordGuildId)
+            toast.error(
+              "You must connect your discord server to use this feature",
+              {
+                theme: "dark",
+              }
+            );
+          else setIsOpen(true);
+        }}
+      >
         Map Discord Roles
       </PrimaryButton>
       <AnimatePresence>
