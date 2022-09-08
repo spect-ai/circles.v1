@@ -11,10 +11,19 @@ import DefaultPayment from "./CirclePayment";
 import Contributors from "../ContributorsModal/Contributors";
 import { useCircle } from "../CircleContext";
 import Credentials from "./Credentials";
+import styled from "styled-components";
 interface Props {
   handleClose: () => void;
   initialTab?: number;
 }
+
+const ScrollContainer = styled(Box)`
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+  height: 35rem;
+  overflow-y: auto;
+`;
 
 export default function SettingsModal({ handleClose, initialTab }: Props) {
   const { circle, setCircleData } = useCircle();
@@ -105,7 +114,7 @@ export default function SettingsModal({ handleClose, initialTab }: Props) {
             unselectedColor="transparent"
           />
         </Box>
-        <Box width="3/4" paddingX="8" paddingY="4">
+        <ScrollContainer width="3/4" paddingX="8" paddingY="4">
           {tab === 0 && (
             <Stack>
               <Input
@@ -173,7 +182,7 @@ export default function SettingsModal({ handleClose, initialTab }: Props) {
               </Stack>
             </Box>
           )}
-        </Box>
+        </ScrollContainer>
       </Box>
     </Modal>
   );

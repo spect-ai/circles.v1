@@ -109,6 +109,14 @@ export interface DiscordRoleMappingType {
   };
 }
 
+export type GuildxyzToCircleRoles = {
+  [role: number]: {
+    circleRole: string[];
+    name: string;
+    id: number;
+  };
+};
+
 export interface RetroType {
   circle: string;
   createdAt: string;
@@ -204,6 +212,8 @@ export interface CircleType {
   qualifiedClaimee: string[];
   unauthorized?: boolean;
   labels: string[];
+  guildxyzId: number;
+  guildxyzToCircleRoles: GuildxyzToCircleRoles;
 }
 
 // interface ProjectType {

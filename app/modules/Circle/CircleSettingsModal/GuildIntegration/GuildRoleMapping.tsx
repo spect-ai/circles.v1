@@ -3,22 +3,23 @@ import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { getGuildRoles } from "@/app/services/Discord";
 import { updateCircle } from "@/app/services/UpdateCircle";
+import { guild } from "@guildxyz/sdk";
 import { Box, IconClose, Stack, Tag, Text } from "degen";
 import { AnimatePresence } from "framer-motion";
 import React, { useEffect, useState } from "react";
 import { useCircle } from "../../CircleContext";
-import RolePopover from "./RolePopover";
+import RolePopover from "../DiscordRoleMapping/RolePopover";
 
-export default function DiscordRoleMapping() {
+export default function GuildRoleMapping() {
   const [isOpen, setIsOpen] = useState(false);
   const { circle } = useCircle();
-  const [roleMap, setRoleMap] = useState(circle?.discordToCircleRoles || {});
+  const [roleMap, setRoleMap] = useState(circle?.guildxyzToCircleRoles || {});
   const [loading, setLoading] = useState(false);
 
-  const [discordRoles, setDiscordRoles] =
+  const [guildRoles, setGuildRoles] =
     useState<
       | {
-          id: string;
+          id: number;
           name: string;
         }[]
       | undefined
@@ -26,16 +27,19 @@ export default function DiscordRoleMapping() {
 
   useEffect(() => {
     if (isOpen) {
-      const fetchGuildRoles = async () => {
-        const data = await getGuildRoles(circle?.discordGuildId as string);
-        data && setDiscordRoles(data.roles);
-        console.log({ data });
-      };
-      void fetchGuildRoles();
+      void (async () => {
+        setLoading(true);
+        const guildServer = await guild.get(circle?.guildxyzId || "");
+        console.log({ guildServer });
+        setGuildRoles(
+          guildServer.roles.map((role) => ({ id: role.id, name: role.name }))
+        );
+        setLoading(false);
+      })();
     }
-  }, [circle?.discordGuildId, isOpen]);
+  }, [circle?.guildxyzId, isOpen]);
 
-  if (!discordRoles?.map && isOpen) {
+  if (loading && isOpen) {
     return <Loader loading text="Fetching Roles" />;
   }
   const RoleSection = ({ roleName }: { roleName: string }) => (
@@ -45,31 +49,31 @@ export default function DiscordRoleMapping() {
       </Text>
       <Stack direction="horizontal" wrap align="center">
         <RolePopover
-          roles={discordRoles as any}
+          roles={guildRoles as any}
           setRoleMap={setRoleMap}
           roleMap={roleMap}
           circleRole={roleName}
         />
         {roleMap &&
           Object.keys(roleMap).map((role) => {
-            if (roleMap[role].circleRole.includes(roleName))
+            if (roleMap[role as any].circleRole.includes(roleName))
               return (
                 <Box
                   key={role}
                   cursor="pointer"
                   onClick={() => {
-                    if (roleMap[role].circleRole.length > 1) {
+                    if (roleMap[role as any].circleRole.length > 1) {
                       setRoleMap({
                         ...roleMap,
                         [role]: {
-                          ...roleMap[role],
-                          circleRole: roleMap[role].circleRole.filter(
+                          ...roleMap[role as any],
+                          circleRole: roleMap[role as any].circleRole.filter(
                             (r) => r !== roleName
                           ),
                         },
                       });
                     } else {
-                      delete roleMap[role];
+                      delete roleMap[role as any];
                       setRoleMap({ ...roleMap });
                     }
                   }}
@@ -77,7 +81,7 @@ export default function DiscordRoleMapping() {
                   <Tag hover tone="accent">
                     <Stack direction="horizontal" space="1" align="center">
                       <IconClose size="5" />
-                      <Text>{roleMap[role].name}</Text>
+                      <Text>{roleMap[role as any].name}</Text>
                     </Stack>
                   </Tag>
                 </Box>
@@ -94,11 +98,11 @@ export default function DiscordRoleMapping() {
   return (
     <>
       <PrimaryButton onClick={() => setIsOpen(true)}>
-        Map Discord Roles
+        Map Guild Roles
       </PrimaryButton>
       <AnimatePresence>
         {isOpen && (
-          <Modal title="Discord Roles" handleClose={() => setIsOpen(false)}>
+          <Modal title="Guildxyz Roles" handleClose={() => setIsOpen(false)}>
             <Box paddingX="8" paddingY="4">
               <Stack>
                 {Object.keys(circle.roles).map((role) => (
@@ -108,9 +112,10 @@ export default function DiscordRoleMapping() {
                   loading={loading}
                   onClick={async () => {
                     setLoading(true);
+                    console.log({ roleMap });
                     await updateCircle(
                       {
-                        discordToCircleRoles: roleMap,
+                        guildxyzToCircleRoles: roleMap,
                       },
                       circle.id
                     );
