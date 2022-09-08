@@ -1,12 +1,12 @@
 import Loader from "@/app/common/components/Loader";
 import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { getGuildRoles } from "@/app/services/Discord";
 import { updateCircle } from "@/app/services/UpdateCircle";
 import { guild } from "@guildxyz/sdk";
 import { Box, IconClose, Stack, Tag, Text } from "degen";
 import { AnimatePresence } from "framer-motion";
 import React, { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 import { useCircle } from "../../CircleContext";
 import RolePopover from "../DiscordRoleMapping/RolePopover";
 
@@ -97,8 +97,19 @@ export default function GuildRoleMapping() {
 
   return (
     <>
-      <PrimaryButton onClick={() => setIsOpen(true)}>
-        Map Guild Roles
+      <PrimaryButton
+        onClick={() => {
+          if (!circle.guildxyzId)
+            toast.error(
+              "You must have a guild.xyz server connected to use this feature",
+              {
+                theme: "dark",
+              }
+            );
+          else setIsOpen(true);
+        }}
+      >
+        Map guild.xyz Roles
       </PrimaryButton>
       <AnimatePresence>
         {isOpen && (

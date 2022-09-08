@@ -357,7 +357,7 @@ function Card() {
                 {cardType === "Task" && canTakeAction("assignToMe") && (
                   <AssignToMe />
                 )}
-                {project.parents[0].discordGuildId && <Discuss />}
+                <Discuss />
                 {!card?.kudosMinted && <MintKudos />}
                 <ViewKudos />
               </Stack>
