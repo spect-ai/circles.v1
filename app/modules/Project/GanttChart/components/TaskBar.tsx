@@ -32,7 +32,7 @@ export default function TaskBar({ tasks }: { tasks: Task[] }) {
     <Container>
       <CardText mode={mode}>
         <Text variant="base" weight="semiBold" align="center">
-          Cards
+          Name
         </Text>
       </CardText>
       <Box

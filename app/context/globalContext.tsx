@@ -1,5 +1,6 @@
 import React, { createContext, memo, useContext, useState } from "react";
 import { Filter } from "@/app/types";
+import { ViewMode } from "gantt-task-react";
 
 interface GlobalContextType {
   isSidebarExpanded: boolean;
@@ -18,9 +19,11 @@ interface GlobalContextType {
   tab: string;
   setTab: React.Dispatch<React.SetStateAction<string>>;
   notifseen: boolean;
-  setNotifSeen: (notifseen: boolean) => void;
+  setNotifSeen: React.Dispatch<React.SetStateAction<boolean>>;
   currentFilter: Filter;
   setCurrentFilter: React.Dispatch<React.SetStateAction<Filter>>;
+  calendarView: ViewMode;
+  setCalendarView: React.Dispatch<React.SetStateAction<ViewMode>>;
 }
 
 const useProviderGlobalContext = () => {
@@ -30,8 +33,10 @@ const useProviderGlobalContext = () => {
 
   const [isProfilePanelExpanded, setIsProfilePanelExpanded] = useState(false);
   const [quickProfileUser, setQuickProfileUser] = useState("");
+
   const [viewName, setViewName] = useState("" as string);
   const [view, setView] = useState(0);
+  const [calendarView, setCalendarView] = useState<ViewMode>(ViewMode.Day);
 
   const [tab, setTab] = useState("Work");
   const [notifseen, setNotifSeen] = useState(false);
@@ -75,6 +80,8 @@ const useProviderGlobalContext = () => {
     setView,
     viewName,
     setViewName,
+    calendarView,
+    setCalendarView,
     tab,
     setTab,
     notifseen,

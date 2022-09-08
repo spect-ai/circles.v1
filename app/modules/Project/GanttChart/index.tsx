@@ -39,7 +39,7 @@ const Container = styled.div`
 
 function GanttChart({ viewId }: { viewId: string }) {
   const { localProject: project, loading, advFilters } = useLocalProject();
-  const { currentFilter } = useGlobal();
+  const { currentFilter, calendarView, setCalendarView } = useGlobal();
 
   const [viewCards, setViewCards] = useState({} as CardsType);
   const view = project.viewDetails?.[viewId];
@@ -58,9 +58,8 @@ function GanttChart({ viewId }: { viewId: string }) {
 
   const filteredCards = filterCards(project, project.cards, currentFilter);
 
-  const [calendarView, setCalendarView] = useState<ViewMode>(ViewMode.Day);
   const [tasks, setTasks] = useState<Task[]>([]);
-  const [isChecked, setIsChecked] = useState(false);
+  const [isChecked, setIsChecked] = useState(true);
 
   useEffect(() => {
     let tcards;
@@ -76,7 +75,14 @@ function GanttChart({ viewId }: { viewId: string }) {
     cards = sortBy(advFilters.sortBy, fcards, advFilters.order);
     setTasks(initTasks(cards));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [viewCards, project?.cards]);
+  }, [
+    viewCards,
+    project.cards,
+    currentFilter,
+    advFilters.inputTitle,
+    advFilters.sortBy,
+    advFilters.order,
+  ]);
 
   if (loading) {
     return <SkeletonLoader />;
