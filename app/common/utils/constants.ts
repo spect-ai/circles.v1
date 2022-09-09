@@ -97,3 +97,9 @@ export const kudosTypes = {
 export const kudosTokenTypes = {
   Claim: [{ name: "tokenId", type: "uint256" }],
 };
+
+export const viewNameToId = {
+  Board: 0,
+  List: 1,
+  Gantt: 2,
+};

@@ -329,6 +329,7 @@ export interface ProjectType {
   viewDetails?: {
     [key: string]: Views;
   };
+  type: "Board" | "List" | "Gantt";
   unauthorized?: boolean;
 }
 

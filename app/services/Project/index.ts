@@ -6,6 +6,7 @@ type CreateProjectDto = {
   circleId: string;
   fromTemplateId: string;
   description: string;
+  type?: "Board" | "List" | "Gantt";
 };
 
 export const createProject = async (body: CreateProjectDto) => {

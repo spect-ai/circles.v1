@@ -17,6 +17,7 @@ import Apply from "../Card/Apply";
 import { ApartmentOutlined } from "@ant-design/icons";
 import Navigation from "./Navigation";
 import GanttChart from "./GanttChart";
+import { viewNameToId } from "@/app/common/utils/constants";
 
 function Project() {
   const [graphOpen, setGraphOpen] = useState(false);
@@ -30,7 +31,7 @@ function Project() {
   } = useLocalProject();
   const { canDo } = useRoleGate();
   const { onboarded } = useProjectOnboarding();
-  const { setViewName, view } = useGlobal();
+  const { setViewName, view, setView } = useGlobal();
 
   const router = useRouter();
   const { card: tId, view: vId } = router.query;
@@ -49,6 +50,9 @@ function Project() {
   } else {
     viewId = "";
     setViewName(viewId);
+    project.type in viewNameToId
+      ? setView(viewNameToId[project.type])
+      : setView(0);
   }
 
   const selectedView = project.viewDetails?.[viewId];

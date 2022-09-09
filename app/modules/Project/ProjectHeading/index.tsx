@@ -27,12 +27,12 @@ export const IconButton = styled(Box)`
 `;
 
 function ProjectHeading() {
-  const { localProject: project, loading} = useLocalProject();
+  const { localProject: project, loading } = useLocalProject();
   const { canDo } = useRoleGate();
   const { mode } = useTheme();
   const router = useRouter();
   const { circle: cId, project: pId, view: vId } = router.query;
-  const { setViewName, viewName, view, setView  } = useGlobal();
+  const { setViewName, viewName, view, setView } = useGlobal();
 
   const defaultView = () => {
     if (viewName.length > 0) setViewName("");
@@ -90,7 +90,7 @@ function ProjectHeading() {
           {project?.name && canDo(["steward"]) && <ProjectOptions />}
           <ViewBar />
         </Stack>
-        <Stack direction="horizontal" align="center">
+        {/* <Stack direction="horizontal" align="center">
           <Box
             display="flex"
             flexDirection="row"
@@ -149,7 +149,7 @@ function ProjectHeading() {
               <IconSplit size="5" />
             </IconButton>
           </Box>
-        </Stack>
+        </Stack> */}
       </Box>
       <AdvancedOptions />
     </Box>
