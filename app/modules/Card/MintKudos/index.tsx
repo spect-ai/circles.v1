@@ -95,12 +95,21 @@ export default function MintKudos() {
         <PrimaryButton
           variant="tertiary"
           onClick={() => {
-            if (hasMintkudosCredentialsSetup) setIsOpen(true);
+            if (!assignees || assignees.length === 0) {
+              toast.error("Kudos can only be minted when there are assignees.");
+              return;
+            } else if (hasMintkudosCredentialsSetup) setIsOpen(true);
             else {
-              setIsSettingsModalOpen(true);
-              toast.info(
-                "Please add Mintkudos credentials to be able to mint kudos!"
-              );
+              if (perm?.manageCircleSettings) {
+                setIsSettingsModalOpen(true);
+                toast.info(
+                  "Please add Mintkudos credentials to be able to mint kudos!"
+                );
+              } else {
+                toast.info(
+                  `Mintkudos credentials haven't been added. Please check with a member who has permissions to manage circle settings.`
+                );
+              }
             }
           }}
         >

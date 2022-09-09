@@ -6,7 +6,7 @@ import React, { memo, useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import styled from "styled-components";
 import { useLocalProject } from "../Context/LocalProjectContext";
-import { SkeletonLoader } from "../SkeletonLoader";
+
 import ListSection from "./ListSection";
 import { filterCards } from "../Filter/filterCards";
 import { Filter, CardsType, ColumnType } from "@/app/types";
@@ -23,7 +23,7 @@ interface Props {
 }
 
 const ScrollContainer = styled.div`
-  height: calc(100vh - 4.5rem);
+  height: calc(100vh - 7rem);
   ::-webkit-scrollbar {
     display: none;
   }
@@ -37,7 +37,6 @@ function ListView({ viewId }: Props) {
   const {
     localProject: project,
     setLocalProject,
-    loading,
     advFilters,
   } = useLocalProject();
   const { currentFilter } = useGlobal();
@@ -72,10 +71,6 @@ function ListView({ viewId }: Props) {
       canCreateCard: "",
     },
   }));
-
-  if (loading) {
-    return <SkeletonLoader />;
-  }
 
   return (
     <ScrollContainer>

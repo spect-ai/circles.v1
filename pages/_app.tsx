@@ -13,6 +13,7 @@ import "@fontsource/inter/900.css";
 
 import "../styles/globals.css";
 import "@/app/styles/DateTimePicker.css";
+import "@/app/styles/GanttChart.css";
 import "react-toastify/dist/ReactToastify.css";
 import "react-tippy/dist/tippy.css";
 

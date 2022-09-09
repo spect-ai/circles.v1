@@ -12,7 +12,7 @@ export const createWorkThreadFetch = async (
   setCard?: (card: any) => void
 ) => {
   const res = await fetch(
-    `${process.env.API_HOST}/card/${cardId}/createWorkThread`,
+    `${process.env.API_HOST}/card/v1/${cardId}/createWorkThread`,
     {
       method: "PATCH",
       headers: {

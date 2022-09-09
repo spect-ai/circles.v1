@@ -1,24 +1,23 @@
 import Popover from "@/app/common/components/Popover";
 import { PopoverOption } from "@/app/modules/Card/OptionPopover";
-import { DiscordRoleMappingType } from "@/app/types";
 import { Box, Tag, Text } from "degen";
 import React, { useState } from "react";
 
 type Props = {
-  discordRoles: {
+  roles: {
     id: string;
     name: string;
   }[];
   circleRole: string;
-  roleMap: DiscordRoleMappingType;
-  setRoleMap: (roleMap: DiscordRoleMappingType) => void;
+  roleMap: any;
+  setRoleMap: (roleMap: any) => void;
 };
 
 export default function RolePopover({
   setRoleMap,
   roleMap,
   circleRole,
-  discordRoles,
+  roles,
 }: Props) {
   const [isOpen, setIsOpen] = useState(false);
   return (
@@ -42,7 +41,7 @@ export default function RolePopover({
         overflow="auto"
       >
         {/* <Input label="" placeholder="Search" prefix={<IconSearch />} /> */}
-        {discordRoles?.map((role) => (
+        {roles?.map((role) => (
           <PopoverOption
             onClick={() => {
               if (roleMap[role.id]) {

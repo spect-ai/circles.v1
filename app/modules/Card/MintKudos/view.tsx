@@ -158,7 +158,7 @@ export default function ViewKudos() {
                     </PrimaryButton>
                     {alreadyClaimed[kudo.tokenId] && (
                       <TwitterShareButton
-                        url={"https://circles.spect.network/"}
+                        url={`https://circles.spect.network/${currentUser?.username}`}
                         title={
                           "Look mom! I just claimed my Kudos on @JoinSpect via @mintkudosXYZ 🎉"
                         }

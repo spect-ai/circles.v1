@@ -31,7 +31,7 @@ export default function CurrencyPayment() {
   const { setCard, cardId } = useLocalCard();
 
   const router = useRouter();
-  const { circle: cId } = router.query;
+  const { circle: cId, project: pId } = router.query;
   const { data: circle } = useQuery<CircleType>(["circle", cId], {
     enabled: false,
   });
@@ -138,7 +138,11 @@ export default function CurrencyPayment() {
                     if (!batchPayInfo?.retroId) {
                       const res = await updatePaymentInfo(
                         currencyCards as string[],
-                        txnHash
+                        txnHash,
+                        {
+                          type: "project",
+                          id: pId as string,
+                        }
                       );
                       console.log({ res });
                       if (res) {

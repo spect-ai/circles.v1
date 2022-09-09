@@ -9,7 +9,7 @@ import MultiSelectDropdown, {
   InputBox,
 } from "@/app/common/components/MultiSelectDropDown/MultiSelectDropDown";
 
-import { Box, Text, useTheme, IconGrid, IconList } from "degen";
+import { Box, Text, useTheme, IconGrid, IconList, IconSplit } from "degen";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { createViews } from "@/app/services/ProjectViews";
 import { cardType, priorityType, labels } from "../constants";
@@ -53,7 +53,7 @@ function CreateViewModal({ setViewOpen }: Props) {
   }));
 
   const [name, setName] = useState<string>("");
-  const [layout, setLayout] = useState<"Board" | "List">("Board");
+  const [layout, setLayout] = useState<"Board" | "List" | "Gantt">("Board");
   const [reviewer, setReviewer] = useState<string[]>([]);
   const [assignee, setAssignee] = useState<string[]>([]);
   const [label, setLabels] = useState<string[]>([]);
@@ -142,6 +142,18 @@ function CreateViewModal({ setViewOpen }: Props) {
                 onClick={() => setLayout("List")}
               >
                 <IconList size="4" />
+              </Box>
+              <Box
+                cursor="pointer"
+                color="textSecondary"
+                padding="2"
+                borderRadius="large"
+                backgroundColor={
+                  layout == "Gantt" ? "accentSecondary" : "background"
+                }
+                onClick={() => setLayout("Gantt")}
+              >
+                <IconSplit size="4" />
               </Box>
             </Box>
           </Box>
