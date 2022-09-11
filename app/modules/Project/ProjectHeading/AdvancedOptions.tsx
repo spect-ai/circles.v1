@@ -296,7 +296,6 @@ function AdvancedOptions() {
   const { advFilters, setAdvFilters } = useLocalProject();
   const { view, viewName } = useGlobal();
   const [sortIsOpen, setSortIsOpen] = useState(false);
-  const [orderIsOpen, setOrderIsOpen] = useState(false);
   const [groupByIsOpen, setGroupByIsOpen] = useState(false);
   const { mode } = useTheme();
 
@@ -322,10 +321,8 @@ function AdvancedOptions() {
           value={advFilters.inputTitle}
           onChange={(e) => {
             setAdvFilters({
+              ...advFilters,
               inputTitle: e.target.value,
-              groupBy: advFilters.groupBy,
-              sortBy: advFilters.sortBy,
-              order: advFilters.order,
             });
           }}
         />
@@ -333,10 +330,8 @@ function AdvancedOptions() {
           <Box
             onClick={() =>
               setAdvFilters({
+                ...advFilters,
                 inputTitle: "",
-                groupBy: advFilters.groupBy,
-                sortBy: advFilters.sortBy,
-                order: advFilters.order,
               })
             }
             style={{
@@ -355,10 +350,10 @@ function AdvancedOptions() {
         flexDirection="row"
         width={
           advFilters.sortBy == "none"
-            ? view === 2 || viewName !== ""
+            ? view === 2
               ? "48"
-              : "96"
-            : view === 2 || viewName !== ""
+              : "112"
+            : view === 2
             ? "76"
             : "128"
         }
@@ -369,19 +364,48 @@ function AdvancedOptions() {
         <Filter />
         <Popover
           butttonComponent={
-            <Box
-              data-tour="sortby-options-button"
-              cursor="pointer"
-              onClick={() => setSortIsOpen(!sortIsOpen)}
-              color="foreground"
-              display="flex"
-              flexDirection="row"
-              gap="3"
-            >
-              <Text whiteSpace="nowrap">Sort By</Text>
-              <Tag size="medium" hover>
-                {advFilters.sortBy}
-              </Tag>
+            <Box display="flex" flexDirection="row" gap="2">
+              <Box
+                data-tour="sortby-options-button"
+                cursor="pointer"
+                onClick={() => setSortIsOpen(!sortIsOpen)}
+                color="foreground"
+                display="flex"
+                flexDirection="row"
+                gap="3"
+              >
+                <Text whiteSpace="nowrap">Sort By</Text>
+                <Tag size="medium" hover>
+                  {advFilters.sortBy}
+                </Tag>
+              </Box>
+              {advFilters.sortBy !== "none" && (
+                <Box
+                  data-tour="order-options-button"
+                  cursor="pointer"
+                  onClick={() => {
+                    if (advFilters.order == "asc") {
+                      setAdvFilters({
+                        ...advFilters,
+                        order: "des",
+                      });
+                    } else {
+                      setAdvFilters({
+                        ...advFilters,
+                        order: "asc",
+                      });
+                    }
+                  }}
+                  color="foreground"
+                  display="flex"
+                  flexDirection="row"
+                  gap="3"
+                >
+                  <Tag size="medium" hover tone="accent">
+                    {advFilters.order}
+                  </Tag>
+                </Box>
+              )}
             </Box>
           }
           isOpen={sortIsOpen}
@@ -398,10 +422,8 @@ function AdvancedOptions() {
               onClick={() => {
                 setSortIsOpen(false);
                 setAdvFilters({
-                  inputTitle: advFilters.inputTitle,
-                  groupBy: advFilters.groupBy,
+                  ...advFilters,
                   sortBy: "none",
-                  order: advFilters.order,
                 });
               }}
             >
@@ -412,10 +434,8 @@ function AdvancedOptions() {
               onClick={() => {
                 setSortIsOpen(false);
                 setAdvFilters({
-                  inputTitle: advFilters.inputTitle,
-                  groupBy: advFilters.groupBy,
+                  ...advFilters,
                   sortBy: "Priority",
-                  order: advFilters.order,
                 });
               }}
             >
@@ -426,10 +446,8 @@ function AdvancedOptions() {
               onClick={() => {
                 setSortIsOpen(false);
                 setAdvFilters({
-                  inputTitle: advFilters.inputTitle,
-                  groupBy: advFilters.groupBy,
+                  ...advFilters,
                   sortBy: "Deadline",
-                  order: advFilters.order,
                 });
               }}
             >
@@ -437,64 +455,7 @@ function AdvancedOptions() {
             </PopoverOption>
           </Box>
         </Popover>
-        {advFilters.sortBy !== "none" && (
-          <Popover
-            butttonComponent={
-              <Box
-                data-tour="order-options-button"
-                cursor="pointer"
-                onClick={() => setOrderIsOpen(!sortIsOpen)}
-                color="foreground"
-                display="flex"
-                flexDirection="row"
-                gap="3"
-              >
-                <Text whiteSpace="nowrap">Order</Text>
-                <Tag size="medium" hover>
-                  {advFilters.order}
-                </Tag>
-              </Box>
-            }
-            isOpen={orderIsOpen}
-            setIsOpen={setOrderIsOpen}
-          >
-            <Box
-              backgroundColor="background"
-              borderWidth="0.5"
-              borderRadius="2xLarge"
-              width="36"
-            >
-              <PopoverOption
-                tourId="asc-button"
-                onClick={() => {
-                  setOrderIsOpen(false);
-                  setAdvFilters({
-                    inputTitle: advFilters.inputTitle,
-                    groupBy: advFilters.groupBy,
-                    sortBy: advFilters.sortBy,
-                    order: "asc",
-                  });
-                }}
-              >
-                Ascending
-              </PopoverOption>
-              <PopoverOption
-                tourId="des-button"
-                onClick={() => {
-                  setOrderIsOpen(false);
-                  setAdvFilters({
-                    inputTitle: advFilters.inputTitle,
-                    groupBy: advFilters.groupBy,
-                    sortBy: advFilters.sortBy,
-                    order: "des",
-                  });
-                }}
-              >
-                Descending
-              </PopoverOption>
-            </Box>
-          </Popover>
-        )}
+
         {view !== 2 && (
           <Popover
             butttonComponent={
@@ -527,10 +488,8 @@ function AdvancedOptions() {
                 onClick={() => {
                   setGroupByIsOpen(false);
                   setAdvFilters({
-                    inputTitle: advFilters.inputTitle,
+                    ...advFilters,
                     groupBy: "Status",
-                    sortBy: advFilters.sortBy,
-                    order: advFilters.order,
                   });
                 }}
               >
@@ -541,10 +500,8 @@ function AdvancedOptions() {
                 onClick={() => {
                   setGroupByIsOpen(false);
                   setAdvFilters({
-                    inputTitle: advFilters.inputTitle,
+                    ...advFilters,
                     groupBy: "Assignee",
-                    sortBy: advFilters.sortBy,
-                    order: advFilters.order,
                   });
                 }}
               >

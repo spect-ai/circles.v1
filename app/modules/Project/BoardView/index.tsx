@@ -29,10 +29,10 @@ interface Props {
   viewId: string;
 }
 
-const Container = styled.div<{ viewId: string }>`
+const Container = styled.div`
   display: flex;
   flex-direction: row;
-  height: calc(100vh - 7.5rem);
+  height: calc(100vh - 7rem);
   @media only screen and (min-width: 0px) {
     max-width: calc(100vw - 5rem);
     padding: 0 0.1rem;
@@ -89,7 +89,6 @@ function BoardView({ viewId }: Props) {
     <Container
       {...provided.droppableProps}
       ref={provided.innerRef}
-      viewId={viewId}
     >
       <Stack direction="horizontal">
         {!viewId &&

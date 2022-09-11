@@ -2,7 +2,7 @@ import Popover from "@/app/common/components/Popover";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { useQuery } from "react-query";
-import { Box, Button, useTheme } from "degen";
+import { Box, Button, useTheme, Text } from "degen";
 import { FilterOutlined } from "@ant-design/icons";
 import { CircleType, MemberDetails } from "@/app/types";
 import MultiSelectDropdown, {
@@ -100,31 +100,34 @@ export default function Filter() {
       isOpen={filterOpen}
       setIsOpen={setFilterOpen}
       butttonComponent={
-        <Button
-          shape="circle"
-          size="small"
-          variant="transparent"
-          onClick={() => setFilterOpen(!filterOpen)}
-        >
-          {filterIsOn && (
-            <div
+        <Box display="flex" flexDirection="row" gap="2" alignItems="center">
+          <Text whiteSpace="nowrap">Filter By</Text>
+          <Button
+            shape="circle"
+            size="small"
+            variant="transparent"
+            onClick={() => setFilterOpen(!filterOpen)}
+          >
+            {filterIsOn && (
+              <div
+                style={{
+                  backgroundColor: "rgb(191, 90, 242, 1)",
+                  height: "0.4rem",
+                  width: "0.4rem",
+                  borderRadius: "3rem",
+                  position: "absolute",
+                  margin: "0px 4px 0px 12px",
+                }}
+              />
+            )}
+            <FilterOutlined
               style={{
-                backgroundColor: "rgb(191, 90, 242, 1)",
-                height: "0.4rem",
-                width: "0.4rem",
-                borderRadius: "3rem",
-                position: "absolute",
-                margin: "0px 4px 0px 12px",
+                color: `${filterIsOn ? "rgb(191, 90, 242, 0.7)" : "gray"}`,
+                fontSize: "1.1rem",
               }}
             />
-          )}
-          <FilterOutlined
-            style={{
-              color: `${filterIsOn ? "rgb(191, 90, 242, 0.7)" : "gray"}`,
-              fontSize: "1.1rem",
-            }}
-          />
-        </Button>
+          </Button>
+        </Box>
       }
     >
       <AnimatePresence>

@@ -10,6 +10,11 @@ import MultiSelectDropdown, {
 } from "@/app/common/components/MultiSelectDropDown/MultiSelectDropDown";
 
 import { Box, Text, useTheme, IconGrid, IconList, IconSplit } from "degen";
+import {
+  AlignLeftOutlined,
+  BarsOutlined,
+  AppstoreOutlined,
+} from "@ant-design/icons";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { createViews } from "@/app/services/ProjectViews";
 import { cardType, priorityType } from "../constants";
@@ -123,42 +128,45 @@ function CreateViewModal({ setViewOpen }: Props) {
             <Text color="textSecondary" weight="medium" variant="base">
               Layout
             </Text>
-            <Box display="flex" flexDirection="row">
+            <Box display="flex" flexDirection="row" gap={"2"}>
               <Box
                 cursor="pointer"
                 color="textSecondary"
-                padding="2"
+                paddingX="1.5"
+                paddingY="1"
                 borderRadius="large"
                 backgroundColor={
                   layout == "Board" ? "accentSecondary" : "background"
                 }
                 onClick={() => setLayout("Board")}
               >
-                <IconGrid size="4" />
+                <AppstoreOutlined style={{ fontSize: "1.1rem" }} />
               </Box>
               <Box
                 cursor="pointer"
                 color="textSecondary"
-                padding="2"
+                paddingX="1.5"
+                paddingY="1"
                 borderRadius="large"
                 backgroundColor={
                   layout == "List" ? "accentSecondary" : "background"
                 }
                 onClick={() => setLayout("List")}
               >
-                <IconList size="4" />
+                <BarsOutlined style={{ fontSize: "1.1rem" }} />
               </Box>
               <Box
                 cursor="pointer"
                 color="textSecondary"
-                padding="2"
+                paddingX="1.5"
+                paddingY="1"
                 borderRadius="large"
                 backgroundColor={
                   layout == "Gantt" ? "accentSecondary" : "background"
                 }
                 onClick={() => setLayout("Gantt")}
               >
-                <IconSplit size="4" />
+                <AlignLeftOutlined style={{ fontSize: "1.1rem" }} />
               </Box>
             </Box>
           </Box>
