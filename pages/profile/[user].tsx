@@ -3,7 +3,7 @@ import { Box, Text } from "degen";
 import MetaHead from "@/app/common/seo/MetaHead/MetaHead";
 import type { NextPage } from "next";
 import ProfileCard from "@/app/modules/Profile/ProfilePage/ProfileCard";
-import ProfileTabs from "@/app/modules/Profile/ProfilePage/ProfileTab";
+import ProfileTabs from "@/app/modules/Profile/ProfilePage/Tabs";
 import TaskWallet from "@/app/modules/Profile/TaskWallet";
 import { useGlobal } from "@/app/context/globalContext";
 import { useRouter } from "next/router";

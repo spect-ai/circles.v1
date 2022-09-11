@@ -12,8 +12,9 @@ import MultiSelectDropdown, {
 import { Box, Text, useTheme, IconGrid, IconList, IconSplit } from "degen";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { createViews } from "@/app/services/ProjectViews";
-import { cardType, priorityType, labels } from "../constants";
+import { cardType, priorityType } from "../constants";
 import Modal from "@/app/common/components/Modal";
+import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
 
 interface Props {
   setViewOpen: (viewOpen: boolean) => void;
@@ -22,6 +23,7 @@ interface Props {
 function CreateViewModal({ setViewOpen }: Props) {
   const router = useRouter();
   const { mode } = useTheme();
+  const { getOptions } = useModalOptions();
 
   const { circle: cId } = router.query;
   const { localProject: project, setLocalProject } = useLocalProject();
@@ -36,6 +38,9 @@ function CreateViewModal({ setViewOpen }: Props) {
   const [filteredMembers, setFilteredMembers] = useState<OptionType[]>(
     [] as OptionType[]
   );
+
+  const labelsArray = getOptions("labels");
+  const labels = labelsArray?.map((i) => ({ name: i.name, id: i.name }));
 
   useEffect(() => {
     if (circle) {
@@ -173,7 +178,7 @@ function CreateViewModal({ setViewOpen }: Props) {
           />
           <MultiSelectDropdown
             width="30"
-            options={labels}
+            options={labels as OptionType[]}
             value={label}
             setValue={setLabels}
             title={"Labels"}
