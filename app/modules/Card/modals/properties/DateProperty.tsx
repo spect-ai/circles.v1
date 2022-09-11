@@ -21,8 +21,9 @@ function DateProperty({ templateId, propertyId }: props) {
 
   const { mode } = useTheme();
   const [template, setTemplate] = useState(templateId || "Task");
-  const [propertyInProjectTemplate, setPropertyInProjectTemplate] = useState(
-    project?.cardTemplates[templateId || "Task"].properties[propertyId]
+
+  const [localProperty, setLocalProperty] = useState(
+    properties[propertyId].value
   );
   const cardProperty = properties[propertyId];
 
@@ -37,11 +38,19 @@ function DateProperty({ templateId, propertyId }: props) {
     );
   }, [mode]);
 
+  useEffect(() => {
+    if (properties[propertyId].value) {
+      setLocalProperty(new Date(properties[propertyId].value));
+    } else if (properties[propertyId].default) {
+      setLocalProperty(new Date(properties[propertyId].default));
+    }
+  }, [properties]);
+
   // eslint-disable-next-line react/display-name
   const ExampleCustomInput = forwardRef(({ value, onClick }: any, ref) => (
     <Box onClick={onClick} ref={ref as any}>
       <ClickableTag
-        name={cardProperty?.value ? value : "None"}
+        name={localProperty ? value : "None"}
         icon={
           <CalendarOutlined
             style={{
@@ -60,18 +69,16 @@ function DateProperty({ templateId, propertyId }: props) {
   return (
     <Stack direction="horizontal">
       <Box width="1/3">
-        <Text variant="label">{`${propertyInProjectTemplate?.name}`}</Text>
+        <Text variant="label">{`${cardProperty?.name}`}</Text>
       </Box>
       <Box width="2/3">
         <ReactDatePicker
           ref={dateRef}
-          selected={
-            cardProperty?.value?.getDay ? cardProperty.value : new Date()
-          }
+          selected={localProperty?.getTime ? localProperty : new Date()}
           onChange={(date: Date) => {
             if (
               date.getTime() ===
-              (cardProperty?.value?.getTime && cardProperty.value.getTime())
+              (localProperty?.getTime && localProperty.getTime())
             ) {
               updatePropertyState(propertyId, null);
               return;

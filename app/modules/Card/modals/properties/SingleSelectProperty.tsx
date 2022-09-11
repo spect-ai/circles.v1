@@ -21,9 +21,7 @@ function CardPriority({ templateId, propertyId }: props) {
   const [options, setOptions] = useState<Option[]>();
   const [filteredOptions, setFilteredOptions] = useState<Option[]>();
   const [template, setTemplate] = useState(templateId || "Task");
-  const [propertyInProjectTemplate, setPropertyInProjectTemplate] = useState(
-    project?.cardTemplates[templateId || "Task"].properties[propertyId]
-  );
+
   const [localProperty, setLocalProperty] = useState(
     properties[propertyId].value
   );
@@ -50,8 +48,8 @@ function CardPriority({ templateId, propertyId }: props) {
     <EditTag
       tourId="create-card-modal-priority"
       name={localProperty?.label}
-      modalTitle={`Select ${propertyInProjectTemplate?.name}`}
-      label={`${propertyInProjectTemplate?.name}`}
+      modalTitle={`Select ${cardProperty?.name}`}
+      label={`${cardProperty?.name}`}
       modalOpen={modalOpen}
       setModalOpen={setModalOpen}
       icon={
@@ -97,7 +95,7 @@ function CardPriority({ templateId, propertyId }: props) {
               isSelected={localProperty?.value === item.value}
               item={item}
               onClick={() => {
-                updatePropertyState("priority", item);
+                updatePropertyState(propertyId, item);
               }}
             >
               <Box
@@ -121,9 +119,7 @@ function CardPriority({ templateId, propertyId }: props) {
             </ModalOption>
           ))}
           {!filteredOptions?.length && (
-            <Text variant="label">
-              No ${propertyInProjectTemplate?.name} found
-            </Text>
+            <Text variant="label">No ${cardProperty?.name} found</Text>
           )}
         </Box>
       </Box>

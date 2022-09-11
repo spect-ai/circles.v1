@@ -26,7 +26,6 @@ export type props = {
 
 function MultiUserProperty({ templateId, propertyId }: props) {
   const {
-    reviewers,
     onCardUpdate,
     card,
     fetchCardActions,
@@ -42,8 +41,9 @@ function MultiUserProperty({ templateId, propertyId }: props) {
   const { canTakeAction } = useRoleGate();
   const { getOptions, getMemberDetails, getMemberAvatars } = useModalOptions();
   const [template, setTemplate] = useState(templateId || "Task");
-  const [propertyInProjectTemplate, setPropertyInProjectTemplate] = useState(
-    project?.cardTemplates[templateId || "Task"].properties[propertyId]
+
+  const [localProperty, setLocalProperty] = useState(
+    properties[propertyId].value
   );
   const cardProperty = properties[propertyId];
 
@@ -64,45 +64,48 @@ function MultiUserProperty({ templateId, propertyId }: props) {
     }
   }, [memberDetails]);
 
+  useEffect(() => {
+    if (properties[propertyId].value) {
+      setLocalProperty(properties[propertyId].value);
+    } else if (properties[propertyId].default) {
+      setLocalProperty(properties[propertyId].default);
+    }
+  }, [properties]);
+
   const getTagLabel = () => {
-    if (!cardProperty?.value || !cardProperty?.value[0]) {
+    if (!localProperty || !localProperty[0]) {
       return "Unassigned";
     }
     let name = "";
-    name += getMemberDetails(cardProperty?.value[0])?.username;
-    if (cardProperty?.value.length > 1) {
-      // name += ` + ${cardProperty?.value.length - 1}`;
+    name += getMemberDetails(localProperty[0])?.username;
+    if (localProperty.length > 1) {
+      // name += ` + ${localProperty.length - 1}`;
       return "";
     }
     return name;
   };
 
-  if (!propertyInProjectTemplate) return <></>;
   return (
     <EditTag
       tourId={`create-card-modal-${propertyId}`}
       name={getTagLabel()}
-      modalTitle={`Select ${propertyInProjectTemplate.name}`}
-      label={`${propertyInProjectTemplate.name}`}
+      modalTitle={`Select ${cardProperty.name}`}
+      label={`${cardProperty.name}`}
       modalOpen={modalOpen}
       setModalOpen={setModalOpen}
       icon={
-        cardProperty?.value?.length ? (
+        localProperty?.length ? (
           <AvatarGroup
-            members={
-              cardProperty?.value && getMemberAvatars(cardProperty?.value)
-            }
+            members={localProperty && getMemberAvatars(localProperty)}
             hover
           />
         ) : (
           <IconUserSolid color="accent" size="5" />
         )
       }
-      disabled={!canTakeAction("cardReviewer")}
+      //disabled={!canTakeAction("cardReviewer")}
       handleClose={() => {
-        if (
-          card?.properties[propertyId].value !== propertyInProjectTemplate.value
-        ) {
+        if (card?.properties[propertyId].value !== localProperty) {
           cardId && void fetchCardActions();
           void onCardUpdate();
         }
@@ -131,8 +134,8 @@ function MultiUserProperty({ templateId, propertyId }: props) {
               key={item.value}
               isSelected={
                 item.value === ""
-                  ? !cardProperty?.value?.length
-                  : cardProperty?.value?.includes(item.value)
+                  ? !localProperty?.length
+                  : localProperty?.includes(item.value)
               }
               item={item}
               onClick={() => {
@@ -141,21 +144,20 @@ function MultiUserProperty({ templateId, propertyId }: props) {
                   return;
                 }
                 // set assignee if not selected already unselect if selected
-                if (cardProperty?.value?.includes(item.value)) {
+                if (localProperty?.includes(item.value)) {
                   updatePropertyState(
                     propertyId,
-                    cardProperty?.value.filter((i: any) => i !== item.value)
+                    localProperty.filter((i: any) => i !== item.value)
                   );
                 } else {
-                  if (cardProperty?.value?.length) {
+                  if (localProperty?.length) {
                     updatePropertyState(propertyId, [
-                      ...(cardProperty?.value || []),
+                      ...(localProperty || []),
                       item.value,
                     ]);
                   } else {
                     updatePropertyState(propertyId, [item.value]);
                   }
-                  console.log({ reviewers });
                 }
               }}
             >
@@ -179,8 +181,7 @@ function MultiUserProperty({ templateId, propertyId }: props) {
                 <Text
                   size="small"
                   color={
-                    cardProperty?.value &&
-                    cardProperty?.value.includes(item.value)
+                    localProperty && localProperty.includes(item.value)
                       ? "accent"
                       : "text"
                   }

@@ -41,28 +41,12 @@ type CreateCardContextType = {
   setDescription: React.Dispatch<React.SetStateAction<string>>;
   labels: string[];
   setLabels: React.Dispatch<React.SetStateAction<string[]>>;
-  assignees: string[];
-  setAssignees: React.Dispatch<React.SetStateAction<string[]>>;
-  reviewers: string[];
-  setReviewers: React.Dispatch<React.SetStateAction<string[]>>;
   columnId: string;
   setColumnId: React.Dispatch<React.SetStateAction<string>>;
   projectId: string;
   setProjectId: React.Dispatch<React.SetStateAction<string>>;
   cardType: string;
   setCardType: React.Dispatch<React.SetStateAction<string>>;
-  chain: Chain;
-  setChain: React.Dispatch<React.SetStateAction<Chain>>;
-  token: Token;
-  setToken: React.Dispatch<React.SetStateAction<Token>>;
-  value: string;
-  setValue: React.Dispatch<React.SetStateAction<string>>;
-  deadline: Date | null;
-  setDeadline: React.Dispatch<React.SetStateAction<Date | null>>;
-  startDate: Date | null;
-  setStartDate: React.Dispatch<React.SetStateAction<Date | null>>;
-  priority: number;
-  setPriority: React.Dispatch<React.SetStateAction<number>>;
   onSubmit: (createAnother: boolean) => void;
   subTasks: {
     title: string;
@@ -241,8 +225,8 @@ export function useProviderLocalCard({
   ) => {
     console.log(propertyVal, conditionVal, propertyType);
     if (propertyType === "date") {
-      if (conditionVal?.getTime)
-        return propertyVal.getTime() > conditionVal.getTime();
+      if (conditionVal)
+        return propertyVal.getTime() > new Date(conditionVal).getTime();
     }
     return true;
   };
@@ -255,8 +239,8 @@ export function useProviderLocalCard({
     console.log(propertyVal, conditionVal, propertyType);
 
     if (propertyType === "date") {
-      if (conditionVal?.getTime)
-        return propertyVal.getTime() < conditionVal.getTime();
+      if (conditionVal)
+        return propertyVal.getTime() < new Date(conditionVal).getTime();
     }
     return true;
   };
@@ -275,7 +259,6 @@ export function useProviderLocalCard({
   const satisfiesConditions = (propertyId: string, value: any) => {
     const conditions = properties[propertyId]?.conditions;
     const type = properties[propertyId]?.type;
-    console.log(conditions);
     if (conditions) {
       for (const condition of conditions) {
         const conditionVal = properties[condition.propertyId]?.value;
@@ -306,8 +289,6 @@ export function useProviderLocalCard({
   };
 
   useEffect(() => {
-    console.log("hello");
-
     const fetchData = async () => {
       setLoading(true);
       if (tId) {
@@ -331,17 +312,9 @@ export function useProviderLocalCard({
       setTitle(card.title);
       setDescription(card.description);
       setLabels(card.labels);
-      setAssignees(card.assignee);
-      setReviewers(card.reviewer);
       setColumnId(card.columnId);
       setProjectId(card.project.id);
       setCardType(card.type);
-      setChain(card.reward.chain);
-      setToken(card.reward.token);
-      setValue(card.reward.value?.toString() || "0");
-      setDeadline(card.deadline ? new Date(card.deadline) : ({} as Date));
-      setStartDate(card.startDate ? new Date(card.startDate) : ({} as Date));
-      setPriority(card.priority || 0);
       setActivity(card.activity);
       setWorkThreads(card.workThreads);
       setWorkThreadOrder(card.workThreadOrder);
@@ -357,7 +330,6 @@ export function useProviderLocalCard({
         ...project?.cardTemplates[cardType].properties,
         ...card.properties,
       });
-      console.log(card);
       setLoading(false);
     } else if (card?.unauthorized) setLoading(false);
   }, [card, createCard]);
@@ -366,21 +338,11 @@ export function useProviderLocalCard({
     const payload: { [key: string]: any } = {
       title,
       description,
-      // reviewer: reviewers,
-      // assignee: assignees,
       project: project?.id,
       circle: project?.parents[0].id,
       type: cardType,
-      // deadline,
-      // startDate,
       labels,
-      priority,
       columnId,
-      reward: {
-        chain,
-        token,
-        value: Number(value),
-      },
       parent: card?.id,
       childCards: subTasks,
       properties,
@@ -465,28 +427,12 @@ export function useProviderLocalCard({
     setDescription,
     labels,
     setLabels,
-    assignees,
-    setAssignees,
-    reviewers,
-    setReviewers,
     columnId,
     setColumnId,
     projectId,
     setProjectId,
     cardType,
     setCardType,
-    chain,
-    setChain,
-    token,
-    setToken,
-    value,
-    setValue,
-    deadline,
-    setDeadline,
-    startDate,
-    setStartDate,
-    priority,
-    setPriority,
     onSubmit,
     loading,
     setLoading,

@@ -35,9 +35,7 @@ function CardReward({ templateId, propertyId }: props) {
     enabled: false,
   });
   const [template, setTemplate] = useState(templateId || "Task");
-  const [propertyInProjectTemplate, setPropertyInProjectTemplate] = useState(
-    project?.cardTemplates[templateId || "Task"].properties[propertyId]
-  );
+
   const [localProperty, setLocalProperty] = useState(
     properties[propertyId].value
   );
@@ -59,8 +57,8 @@ function CardReward({ templateId, propertyId }: props) {
           ? `${localProperty?.value} ${localProperty?.token?.symbol}`
           : `No ${cardProperty?.name}`
       }
-      modalTitle={`Set ${propertyInProjectTemplate?.name}`}
-      label={`${propertyInProjectTemplate?.name}`}
+      modalTitle={`Set ${cardProperty?.name}`}
+      label={`${cardProperty?.name}`}
       modalOpen={modalOpen}
       setModalOpen={setModalOpen}
       icon={<IconEth color="accent" size="5" />}
@@ -91,7 +89,7 @@ function CardReward({ templateId, propertyId }: props) {
                 <Box
                   key={aChain.name}
                   onClick={() => {
-                    updatePropertyState("reward", {
+                    updatePropertyState(propertyId, {
                       ...localProperty,
                       chain: aChain,
                       token:
@@ -134,7 +132,7 @@ function CardReward({ templateId, propertyId }: props) {
                 <Box
                   key={aToken.address}
                   onClick={() => {
-                    updatePropertyState("reward", {
+                    updatePropertyState(propertyId, {
                       ...localProperty,
                       token: aToken,
                     });
@@ -174,7 +172,7 @@ function CardReward({ templateId, propertyId }: props) {
               value={localProperty?.value}
               onChange={(e) => {
                 console.log(e.target.value);
-                updatePropertyState("reward", {
+                updatePropertyState(propertyId, {
                   ...localProperty,
                   value: e.target.value,
                 });

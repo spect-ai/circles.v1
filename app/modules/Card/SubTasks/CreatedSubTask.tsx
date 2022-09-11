@@ -87,8 +87,6 @@ export default function CreatedSubTask({ child }: Props) {
   const router = useRouter();
   const { circle: cId, project: pId } = router.query;
 
-  console.log({ child });
-
   return (
     <Link href={`/${cId}/${pId}/${child.slug}`}>
       <div>

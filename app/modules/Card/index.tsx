@@ -94,7 +94,6 @@ function Card() {
     columnId,
     kudosMinted,
   } = useLocalCard();
-  console.log(kudosMinted);
   const { canTakeAction } = useRoleGate();
   const { viewName } = useGlobal();
 
@@ -122,8 +121,6 @@ function Card() {
   if (loading) {
     return <Loader loading text="Fetching" />;
   }
-
-  console.log(card);
 
   if (card?.unauthorized)
     return (
