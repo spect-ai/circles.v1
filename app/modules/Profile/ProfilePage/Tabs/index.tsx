@@ -60,7 +60,7 @@ export const TextBox = styled(Box)`
 export const ScrollContainer = styled(Box)`
   overflow: auto;
   width: 50vw;
-  max-height: 85vh;
+  height: 80vh;
   padding-right: 2rem;
   ::-webkit-scrollbar {
     display: none;
@@ -120,7 +120,7 @@ const ProfileTabs = ({ username }: Props) => {
           Kudos
         </PrimaryButton>
       </Box>
-      <Box width="144">
+      <Box width="168">
         {tab === "Activity" && <Activity userData={userData} />}
         {tab === "Retro" && <Retro userData={userData} />}
         {tab === "Kudos" && <Kudos userData={userData} />}
