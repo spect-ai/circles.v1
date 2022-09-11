@@ -79,10 +79,6 @@ export default function NewSubTask({ createCard }: Props) {
 
         <Box paddingY="1">
           <Stack direction="horizontal" space="1">
-            <SubTaskAssignee
-              assignees={assignees}
-              setAssignees={setAssignees}
-            />
             {createCard ? (
               <PrimaryButton
                 disabled={!title}

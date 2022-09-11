@@ -46,6 +46,10 @@ import Discuss from "./Discuss";
 import CardProject from "./modals/CardProject";
 import MintKudos from "./MintKudos";
 import ViewKudos from "./MintKudos/view";
+import MultiUserProperty from "./modals/properties/MultiUserProperty";
+import DateProperty from "./modals/properties/DateProperty";
+import SingleSelectProperty from "./modals/properties/SingleSelectProperty";
+import RewardProperty from "./modals/properties/RewardProperty";
 
 const Container = styled(Box)`
   ::-webkit-scrollbar {
@@ -118,6 +122,8 @@ function Card() {
   if (loading) {
     return <Loader loading text="Fetching" />;
   }
+
+  console.log(card);
 
   if (card?.unauthorized)
     return (
@@ -326,14 +332,24 @@ function Card() {
             {project?.id && (
               <Stack>
                 <CardType />
-                {!card?.parent && <CardColumn />}
                 <CardProject />
-                <CardAssignee />
-                <CardReviewer />
-                <CardStartDate />
-                <CardDeadline />
-                <CardPriority />
-                <CardReward />
+                {!card?.parent && <CardColumn />}
+
+                <MultiUserProperty
+                  templateId={cardType}
+                  propertyId={"assignee"}
+                />
+                <MultiUserProperty
+                  templateId={cardType}
+                  propertyId={"reviewer"}
+                />
+                <DateProperty templateId={cardType} propertyId={"start-date"} />
+                <DateProperty templateId={cardType} propertyId={"deadline"} />
+                <SingleSelectProperty
+                  templateId={cardType}
+                  propertyId={"priority"}
+                />
+                <RewardProperty templateId={cardType} propertyId={"reward"} />
                 {/* {canTakeAction("cardPayment") && (
                   <PrimaryButton
                     onClick={() => {

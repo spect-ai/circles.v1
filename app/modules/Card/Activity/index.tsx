@@ -11,7 +11,7 @@ import { EyeInvisibleOutlined, EyeOutlined } from "@ant-design/icons";
 import { fadeVariant } from "../Utils/variants";
 
 export default function Activity() {
-  const { activity } = useLocalCard();
+  const { activity, card } = useLocalCard();
   const { getMemberDetails } = useModalOptions();
 
   const { canTakeAction } = useRoleGate();
@@ -50,54 +50,56 @@ export default function Activity() {
           onClick={() => setShowActivity(!showActivity)}
         />
         <Stack>
-          {activity?.map((item) => {
-            if (!item.comment) {
-              if (!showActivity) {
-                return (
-                  <Stack>
-                    <Stack
-                      direction="horizontal"
-                      key={item.commitId}
-                      align="center"
-                    >
-                      <Avatar
-                        label=""
-                        placeholder={!getMemberDetails(item.actorId)?.avatar}
-                        src={getMemberDetails(item.actorId)?.avatar}
-                        address={getMemberDetails(item.actorId)?.ethAddress}
-                        size="8"
-                      />
-                      <Stack space="1">
-                        <Stack
-                          direction="horizontal"
-                          align="baseline"
-                          space="2"
-                        >
-                          <Text>
-                            {getMemberDetails(item.actorId)?.username}
-                          </Text>
-                          <Text color="textSecondary">{item.content}</Text>
-                          <Text variant="label">
-                            {timeSince(new Date(item.timestamp))} ago
-                          </Text>
+          {activity &&
+            activity.map &&
+            activity?.map((item) => {
+              if (!item.comment) {
+                if (!showActivity) {
+                  return (
+                    <Stack>
+                      <Stack
+                        direction="horizontal"
+                        key={item.commitId}
+                        align="center"
+                      >
+                        <Avatar
+                          label=""
+                          placeholder={!getMemberDetails(item.actorId)?.avatar}
+                          src={getMemberDetails(item.actorId)?.avatar}
+                          address={getMemberDetails(item.actorId)?.ethAddress}
+                          size="8"
+                        />
+                        <Stack space="1">
+                          <Stack
+                            direction="horizontal"
+                            align="baseline"
+                            space="2"
+                          >
+                            <Text>
+                              {getMemberDetails(item.actorId)?.username}
+                            </Text>
+                            <Text color="textSecondary">{item.content}</Text>
+                            <Text variant="label">
+                              {timeSince(new Date(item.timestamp))} ago
+                            </Text>
+                          </Stack>
                         </Stack>
                       </Stack>
                     </Stack>
-                  </Stack>
+                  );
+                } else return null;
+              } else {
+                return (
+                  <Comment
+                    newComment={false}
+                    commentContent={item.content}
+                    actorId={item.actorId}
+                    commitId={item.commitId}
+                    timestamp={item.timestamp}
+                  />
                 );
-              } else return null;
-            } else {
-              return (
-                <Comment
-                  newComment={false}
-                  commentContent={item.content}
-                  actorId={item.actorId}
-                  commitId={item.commitId}
-                  timestamp={item.timestamp}
-                />
-              );
-            }
-          })}
+              }
+            })}
         </Stack>
       </Stack>
     </motion.main>

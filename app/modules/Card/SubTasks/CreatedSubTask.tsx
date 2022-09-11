@@ -48,7 +48,6 @@ type Props = {
 
 type ContainerProps = {
   title: string;
-  assignees: string[];
 };
 
 const variants = {
@@ -64,9 +63,8 @@ const variants = {
   },
 };
 
-export const SubTaskContainer = ({ title, assignees }: ContainerProps) => {
+export const SubTaskContainer = ({ title }: ContainerProps) => {
   const { mode } = useTheme();
-  const { getMemberAvatars } = useModalOptions();
   return (
     <motion.div
       style={{
@@ -79,9 +77,6 @@ export const SubTaskContainer = ({ title, assignees }: ContainerProps) => {
       <Container paddingX="4" borderWidth="0.5" cursor="pointer" mode={mode}>
         <Stack direction="horizontal" align="center">
           <TitleInput value={title} disabled mode={mode} />
-          <Box paddingY="1">
-            <AvatarGroup members={getMemberAvatars(assignees)} hover size="8" />
-          </Box>
         </Stack>
       </Container>
     </motion.div>
@@ -89,21 +84,15 @@ export const SubTaskContainer = ({ title, assignees }: ContainerProps) => {
 };
 
 export default function CreatedSubTask({ child }: Props) {
-  const [assignees, setAssignees] = useState<string[]>([]);
   const router = useRouter();
   const { circle: cId, project: pId } = router.query;
 
   console.log({ child });
 
-  useEffect(() => {
-    if (child) {
-      setAssignees(child.assignee);
-    }
-  }, [child]);
   return (
     <Link href={`/${cId}/${pId}/${child.slug}`}>
       <div>
-        <SubTaskContainer title={child.title} assignees={child.assignee} />
+        <SubTaskContainer title={child.title} />
       </div>
     </Link>
   );

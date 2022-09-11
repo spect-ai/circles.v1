@@ -267,6 +267,8 @@ export interface CardType {
   kudosMinted: KudosForType;
   kudosClaimedBy: KudosClaimedType;
   eligibleToClaimKudos: KudosClaimedType;
+  propertyOrder: string[];
+  properties: Properties;
   unauthorized?: boolean;
 }
 
@@ -330,6 +332,8 @@ export interface ProjectType {
     [key: string]: Views;
   };
   type: "Board" | "List" | "Gantt";
+  cardTemplateOrder: string[];
+  cardTemplates: { [id: string]: CardTemplate };
   unauthorized?: boolean;
 }
 
@@ -397,6 +401,51 @@ export interface Template {
       [key: string]: Column;
     };
   };
+}
+
+export type Property = {
+  name: string;
+  type: PropertyType;
+  value: any;
+  default?: any;
+  conditions?: Conditions[];
+  options?: Option[];
+};
+
+export type PropertyType =
+  | "shortText"
+  | "longText"
+  | "number"
+  | "user[]"
+  | "user"
+  | "reward"
+  | "date"
+  | "singleSelect"
+  | "multiSelect"
+  | "ethAddress";
+
+export type Conditions = DateConditions;
+
+export type DateConditions = {
+  propertyId: string;
+  condition: Condition;
+  feedback: string;
+};
+
+export type Condition = "greaterThanOrEqualTo" | "lessThanOrEqualTo";
+
+export type Properties = { [id: string]: Property };
+
+export type Option = {
+  label: string;
+  value: string | number;
+};
+
+export interface CardTemplate {
+  name: string;
+  description: string;
+  propertyOrder: string[];
+  properties: Properties;
 }
 
 export interface MemberDetails {

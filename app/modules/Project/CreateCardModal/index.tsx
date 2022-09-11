@@ -14,6 +14,7 @@ import CardReward from "../../Card/modals/CardReward";
 import CardPriority from "../../Card/modals/CardPriority";
 import {
   LocalCardContext,
+  useLocalCard,
   useProviderLocalCard,
 } from "./hooks/LocalCardContext";
 import { ProjectType } from "@/app/types";
@@ -21,6 +22,10 @@ import CardReviewer from "../../Card/modals/CardReviewer";
 import ConfirmModal from "@/app/common/components/Modal/ConfirmModal";
 import SubTasks from "../../Card/SubTasks";
 import { useHotkeys } from "react-hotkeys-hook";
+import MultiUserProperty from "../../Card/modals/properties/MultiUserProperty";
+import DateProperty from "../../Card/modals/properties/DateProperty";
+import SingleSelectProperty from "../../Card/modals/properties/SingleSelectProperty";
+import RewardProperty from "../../Card/modals/properties/RewardProperty";
 
 type Props = {
   column: string;
@@ -77,6 +82,7 @@ export default function CreateCardModal({
   } = context;
 
   const [loading, setLoading] = useState(false);
+  const { cardType } = useLocalCard();
 
   useHotkeys(
     "return",
@@ -168,12 +174,21 @@ export default function CreateCardModal({
               <Stack>
                 <CardType />
                 <CardColumn />
-                <CardAssignee />
-                <CardReviewer />
-                <CardStartDate />
-                <CardDeadline />
-                <CardPriority />
-                <CardReward />
+                <MultiUserProperty
+                  templateId={cardType}
+                  propertyId={"assignee"}
+                />
+                <MultiUserProperty
+                  templateId={cardType}
+                  propertyId={"reviewer"}
+                />
+                <DateProperty templateId={cardType} propertyId={"start-date"} />
+                <DateProperty templateId={cardType} propertyId={"deadline"} />
+                <SingleSelectProperty
+                  templateId={cardType}
+                  propertyId={"priority"}
+                />
+                <RewardProperty templateId={cardType} propertyId={"reward"} />{" "}
               </Stack>
             )}
           </Box>

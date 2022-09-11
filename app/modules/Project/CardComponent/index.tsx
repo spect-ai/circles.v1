@@ -79,11 +79,11 @@ function CardComponent({ card, index }: Props) {
         <Box marginTop="1" marginBottom="4">
           <Stack direction="horizontal" space="2" justify="space-between">
             <Text weight="semiBold">{card.title}</Text>
-            {card.assignee.length > 0 &&
+            {/* {card.assignee.length > 0 &&
               card.assignee[0] &&
               getMemberDetails(card.assignee[0]) && (
                 <AvatarGroup members={getMemberAvatars(card.assignee)} hover />
-              )}
+              )} */}
           </Stack>
         </Box>
         <Stack direction="horizontal" wrap space="2">
@@ -107,15 +107,15 @@ function CardComponent({ card, index }: Props) {
               </Text>
             </Tag>
           ) : null}
-          {card.deadline && (
+          {/* {card.deadline && (
             <Tag size="small">
               <Text color="accent">
                 {deadline.getDate()}{" "}
                 {monthMap[deadline.getMonth() as keyof typeof monthMap]}
               </Text>
             </Tag>
-          )}
-          {card.priority ? <PriorityIcon priority={card.priority} /> : null}
+          )} */}
+          {/* {card.priority ? <PriorityIcon priority={card.priority} /> : null} */}
           {card?.labels?.map((label) => (
             <Tag size="small" key={label}>
               {label}

@@ -7,10 +7,5 @@ type Props = {
 };
 
 export default function CacheSubTask({ child }: Props) {
-  return (
-    <SubTaskContainer
-      title={child.title as string}
-      assignees={child.assignee as string[]}
-    />
-  );
+  return <SubTaskContainer title={child.title as string} />;
 }

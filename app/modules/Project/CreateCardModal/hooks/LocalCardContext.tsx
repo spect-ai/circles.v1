@@ -15,6 +15,9 @@ import {
   KudosForType,
   KudosType,
   KudosClaimedType,
+  Properties,
+  Condition,
+  PropertyType,
 } from "@/app/types";
 import { Stack } from "degen";
 import Link from "next/link";
@@ -117,6 +120,11 @@ type CreateCardContextType = {
   >;
   kudosClaimedBy: KudosClaimedType;
   setKudosClaimedBy: React.Dispatch<React.SetStateAction<KudosClaimedType>>;
+  properties: Properties;
+  setProperties: React.Dispatch<React.SetStateAction<Properties>>;
+  propertyOrder: string[];
+  setPropertyOrder: React.Dispatch<React.SetStateAction<string[]>>;
+  updatePropertyState: (propertyId: string, value: any) => void;
 };
 
 export const LocalCardContext = createContext<CreateCardContextType>(
@@ -219,13 +227,91 @@ export function useProviderLocalCard({
   const [eligibleToClaimKudos, setEligibleToClaimKudos] = useState(
     {} as KudosClaimedType
   );
+  const [propertyOrder, setPropertyOrder] = useState([] as string[]);
+  const [properties, setProperties] = useState(
+    project?.cardTemplates["Task"]?.properties || ({} as Properties)
+  );
 
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
+
+  const checkGreaterThanOrEqualTo = (
+    propertyVal: any,
+    conditionVal: any,
+    propertyType: PropertyType
+  ) => {
+    console.log(propertyVal, conditionVal, propertyType);
+    if (propertyType === "date") {
+      if (conditionVal?.getTime)
+        return propertyVal.getTime() > conditionVal.getTime();
+    }
+    return true;
+  };
+
+  const checkLessThanOrEqualTo = (
+    propertyVal: any,
+    conditionVal: any,
+    propertyType: PropertyType
+  ) => {
+    console.log(propertyVal, conditionVal, propertyType);
+
+    if (propertyType === "date") {
+      if (conditionVal?.getTime)
+        return propertyVal.getTime() < conditionVal.getTime();
+    }
+    return true;
+  };
+  const checkCondition = (
+    condition: Condition,
+    propertyVal: any,
+    conditionVal: any,
+    propertyType: PropertyType
+  ) => {
+    if (condition === "greaterThanOrEqualTo")
+      return checkGreaterThanOrEqualTo(propertyVal, conditionVal, propertyType);
+    else if (condition === "lessThanOrEqualTo")
+      return checkLessThanOrEqualTo(propertyVal, conditionVal, propertyType);
+  };
+
+  const satisfiesConditions = (propertyId: string, value: any) => {
+    const conditions = properties[propertyId]?.conditions;
+    const type = properties[propertyId]?.type;
+    console.log(conditions);
+    if (conditions) {
+      for (const condition of conditions) {
+        const conditionVal = properties[condition.propertyId]?.value;
+        const satisfies = checkCondition(
+          condition.condition,
+          value,
+          conditionVal,
+          type
+        );
+        if (!satisfies) {
+          if (condition.feedback) toast.error(condition.feedback);
+          return false;
+        }
+      }
+    }
+    return true;
+  };
+
+  const updatePropertyState = (propertyId: string, value: any) => {
+    if (!satisfiesConditions(propertyId, value)) return;
+    setProperties({
+      ...properties,
+      [propertyId]: {
+        ...properties[propertyId],
+        value,
+      },
+    });
+  };
 
   useEffect(() => {
+    console.log("hello");
+
     const fetchData = async () => {
       setLoading(true);
       if (tId) {
+        console.log("Fetching Card");
         await fetchCard();
       }
     };
@@ -234,13 +320,12 @@ export function useProviderLocalCard({
 
   useEffect(() => {
     if (tId) {
-      console.log("fetching");
+      console.log("Fetching Card Actions");
       void fetchCardActions();
     }
   }, [tId]);
 
   useEffect(() => {
-    console.log(card);
     if (!createCard && card && card.id) {
       setCardId(card.id);
       setTitle(card.title);
@@ -267,6 +352,12 @@ export function useProviderLocalCard({
       setKudosMinted(card.kudosMinted);
       setKudosClaimedBy(card.kudosClaimedBy);
       setEligibleToClaimKudos(card.eligibleToClaimKudos);
+      setPropertyOrder(project?.cardTemplates[cardType].propertyOrder || []);
+      setProperties({
+        ...project?.cardTemplates[cardType].properties,
+        ...card.properties,
+      });
+      console.log(card);
       setLoading(false);
     } else if (card?.unauthorized) setLoading(false);
   }, [card, createCard]);
@@ -275,13 +366,13 @@ export function useProviderLocalCard({
     const payload: { [key: string]: any } = {
       title,
       description,
-      reviewer: reviewers,
-      assignee: assignees,
+      // reviewer: reviewers,
+      // assignee: assignees,
       project: project?.id,
       circle: project?.parents[0].id,
       type: cardType,
-      deadline,
-      startDate,
+      // deadline,
+      // startDate,
       labels,
       priority,
       columnId,
@@ -292,6 +383,8 @@ export function useProviderLocalCard({
       },
       parent: card?.id,
       childCards: subTasks,
+      properties,
+      propertyOrder,
     };
     const data = await callCreateCard(payload);
     toast(
@@ -322,13 +415,13 @@ export function useProviderLocalCard({
     const payload: { [key: string]: any } = {
       title,
       description,
-      reviewer: reviewers,
-      assignee: assignees,
+      // reviewer: reviewers,
+      // assignee: assignees,
       project: project?.id,
       circle: project?.parents[0].id,
       type: cardType,
-      deadline: deadline?.getDate ? deadline : null,
-      startDate: startDate?.getDate ? startDate : null,
+      // deadline: deadline?.getDate ? deadline : null,
+      // startDate: startDate?.getDate ? startDate : null,
       labels,
       priority,
       columnId,
@@ -337,8 +430,9 @@ export function useProviderLocalCard({
         token,
         value: parseFloat(value),
       },
+      properties,
+      propertyOrder,
     };
-    console.log(payload.startDate);
     const res = await updateCard(payload, card.id);
     if (res) {
       setCard(res);
@@ -426,6 +520,11 @@ export function useProviderLocalCard({
     setKudosClaimedBy,
     eligibleToClaimKudos,
     setEligibleToClaimKudos,
+    properties,
+    setProperties,
+    propertyOrder,
+    setPropertyOrder,
+    updatePropertyState,
   };
 }
 
