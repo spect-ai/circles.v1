@@ -39,13 +39,11 @@ export default function MemberRow({
       <Stack direction="horizontal" align="center" justify="space-between">
         <Box width="1/4">
           <Stack direction="horizontal" align="center" space="2">
-            <ClickableAvatar
+            <Avatar
               src={getMemberDetails(member)?.avatar as string}
               address={getMemberDetails(member)?.ethAddress}
               label=""
               size="9"
-              userId={getMemberDetails(member)?.id as string}
-              username={getMemberDetails(member)?.username as string}
             />
             <Text weight="semiBold" ellipsis>
               {getMemberDetails(member)?.username}

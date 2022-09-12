@@ -104,13 +104,11 @@ export default function Comment({
               size="8"
             />
           ) : (
-            <ClickableAvatar
+            <Avatar
               label=""
               placeholder={!getMemberDetails(actorId as string)?.avatar}
               src={getMemberDetails(actorId as string)?.avatar as string}
               address={getMemberDetails(actorId as string)?.ethAddress}
-              username={getMemberDetails(actorId as string)?.username as string}
-              userId={getMemberDetails(actorId as string)?.id as string}
               size="8"
             />
           )}

@@ -134,11 +134,11 @@ const Activity = ({ userData }: { userData: UserType }) => {
       </ScrollContainer>
       <Paginate
         breakLabel="..."
-        nextLabel="Next >"
+        nextLabel="Next"
         onPageChange={handlePageClick}
         pageRangeDisplayed={2}
         pageCount={pageCount}
-        previousLabel="< Previous"
+        previousLabel="Previous"
         renderOnZeroPageCount={() => null}
         mode={mode}
       />

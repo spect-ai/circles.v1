@@ -5,7 +5,7 @@ import useApplication from "@/app/services/Apply/useApplication";
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { ApplicationType } from "@/app/types";
-import { Box, IconCheck, Stack } from "degen";
+import { Box, IconCheck, Stack, Avatar } from "degen";
 import React, { useState } from "react";
 
 type Props = {
@@ -20,16 +20,12 @@ export default function ApplicationItem({ application }: Props) {
   return (
     <Box marginBottom="8">
       <Stack direction="horizontal" space="6">
-        <ClickableAvatar
+        <Avatar
           src={getMemberDetails(application.user)?.avatar as string}
           label=""
           size="8"
           placeholder={!getMemberDetails(application.user)?.avatar}
           address={getMemberDetails(application.user)?.ethAddress}
-          username={
-            getMemberDetails(application.user)?.username as string
-          }
-          userId={getMemberDetails(application.user)?.id as string}
         />
         <Box
           style={{

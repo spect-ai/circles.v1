@@ -61,15 +61,11 @@ export default function Activity() {
                       key={item.commitId}
                       align="center"
                     >
-                      <ClickableAvatar
+                      <Avatar
                         label=""
                         placeholder={!getMemberDetails(item.actorId)?.avatar}
                         src={getMemberDetails(item.actorId)?.avatar as string}
                         address={getMemberDetails(item.actorId)?.ethAddress}
-                        username={
-                          getMemberDetails(item.actorId)?.username as string
-                        }
-                        userId={getMemberDetails(item.actorId)?.id as string}
                         size="8"
                       />
                       <Stack space="1">

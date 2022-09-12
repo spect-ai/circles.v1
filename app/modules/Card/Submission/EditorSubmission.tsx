@@ -47,13 +47,11 @@ export default function EditorSubmission({
       )}
       <Stack direction="horizontal" space="6">
         {workUnit ? (
-          <ClickableAvatar
+          <Avatar
             label=""
             placeholder={!getMemberDetails(workUnit.user)?.avatar}
             src={getMemberDetails(workUnit.user)?.avatar as string}
             address={getMemberDetails(workUnit.user)?.ethAddress}
-            username={getMemberDetails(workUnit.user)?.username as string}
-            userId={getMemberDetails(workUnit.user)?.id as string}
             size="8"
           />
         ) : (
