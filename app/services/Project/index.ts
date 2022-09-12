@@ -10,7 +10,7 @@ type CreateProjectDto = {
 };
 
 export const createProject = async (body: CreateProjectDto) => {
-  const res = await fetch(`${process.env.API_HOST}/project/`, {
+  const res = await fetch(`${process.env.API_HOST}/project/v1/`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

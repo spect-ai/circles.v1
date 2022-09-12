@@ -16,7 +16,7 @@ export type props = {
   propertyId: string;
 };
 
-function CardReward({ templateId, propertyId }: props) {
+function RewardProperty({ templateId, propertyId }: props) {
   const [modalOpen, setModalOpen] = useState(false);
   const {
     onCardUpdate,
@@ -37,15 +37,15 @@ function CardReward({ templateId, propertyId }: props) {
   const [template, setTemplate] = useState(templateId || "Task");
 
   const [localProperty, setLocalProperty] = useState(
-    properties[propertyId].value
+    properties[propertyId]?.value
   );
   const cardProperty = properties[propertyId];
 
   useEffect(() => {
-    if (properties[propertyId].value) {
-      setLocalProperty(properties[propertyId].value);
-    } else if (properties[propertyId].default) {
-      setLocalProperty(properties[propertyId].default);
+    if (properties[propertyId]?.value) {
+      setLocalProperty(properties[propertyId]?.value);
+    } else if (properties[propertyId]?.default) {
+      setLocalProperty(properties[propertyId]?.default);
     }
   }, [properties]);
 
@@ -188,4 +188,4 @@ function CardReward({ templateId, propertyId }: props) {
   );
 }
 
-export default memo(CardReward);
+export default memo(RewardProperty);

@@ -34,7 +34,7 @@ export default function useRoleGate() {
     if (!connectedUser || !cardActions?.updateColumn) {
       return false;
     }
-
+    console.log(cardActions);
     switch (action) {
       case "cardType":
         return cardActions.updateGeneralCardInfo.valid;

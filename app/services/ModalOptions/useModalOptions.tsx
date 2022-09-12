@@ -6,7 +6,7 @@ import {
   priority,
 } from "@/app/modules/Project/CreateCardModal/constants";
 import { useLocalCard } from "@/app/modules/Project/CreateCardModal/hooks/LocalCardContext";
-import { MemberDetails } from "@/app/types";
+import { MemberDetails, Option } from "@/app/types";
 import { useRouter } from "next/router";
 import React from "react";
 import { useQuery } from "react-query";
@@ -31,7 +31,15 @@ export default function useModalOptions() {
   const getOptions = (type: string) => {
     switch (type) {
       case "card":
-        return cardTypes;
+        console.log(project?.cardTemplateOrder, project?.cardTemplates);
+        return project?.cardTemplateOrder?.map((templateId: string) => {
+          console.log(templateId);
+          return {
+            name: templateId,
+            value: templateId,
+            secondary: project?.cardTemplates[templateId]?.description || "",
+          };
+        });
       case "priority":
         return priority;
       case "labels":

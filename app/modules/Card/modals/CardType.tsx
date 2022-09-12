@@ -10,7 +10,7 @@ import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
 
 function CardType() {
-  const { cardType, setCardType, onCardUpdate, card } = useLocalCard();
+  const { cardType, setCardType, onCardUpdate, card, project } = useLocalCard();
   const [modalOpen, setModalOpen] = useState(false);
 
   const [options, setOptions] = useState<Option[]>();
@@ -21,6 +21,7 @@ function CardType() {
 
   useEffect(() => {
     const ops = getOptions("card") as Option[];
+    console.log(ops);
     setOptions(ops);
     setFilteredOptions(ops);
   }, []);
@@ -77,9 +78,9 @@ function CardType() {
               }}
             >
               <Box style={{ width: "15%" }}>
-                <item.icon
+                {/* <item.icon
                   color={cardType === item.value ? "accent" : "textSecondary"}
-                />
+                /> */}
               </Box>
               <Box
                 style={{

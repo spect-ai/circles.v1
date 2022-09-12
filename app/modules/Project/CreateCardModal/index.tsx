@@ -1,31 +1,22 @@
 import Editor from "@/app/common/components/Editor";
 import Modal from "@/app/common/components/Modal";
+import ConfirmModal from "@/app/common/components/Modal/ConfirmModal";
+import { ProjectType } from "@/app/types";
 import { Box, Button, Stack, Tag } from "degen";
 import { AnimatePresence } from "framer-motion";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import { useHotkeys } from "react-hotkeys-hook";
 import styled from "styled-components";
-import CardAssignee from "../../Card/modals/CardAssignee";
 import CardColumn from "../../Card/modals/CardColumn";
-import CardDeadline from "../../Card/modals/CardDeadline";
-import CardStartDate from "../../Card/modals/CardStartDate";
 import CardLabels from "../../Card/modals/CardLabels";
 import CardType from "../../Card/modals/CardType";
-import CardReward from "../../Card/modals/CardReward";
-import CardPriority from "../../Card/modals/CardPriority";
+import { componentOf } from "../../Card/modals/properties/PropertyMap";
+import SubTasks from "../../Card/SubTasks";
 import {
   LocalCardContext,
   useLocalCard,
   useProviderLocalCard,
 } from "./hooks/LocalCardContext";
-import { ProjectType } from "@/app/types";
-import CardReviewer from "../../Card/modals/CardReviewer";
-import ConfirmModal from "@/app/common/components/Modal/ConfirmModal";
-import SubTasks from "../../Card/SubTasks";
-import { useHotkeys } from "react-hotkeys-hook";
-import MultiUserProperty from "../../Card/modals/properties/MultiUserProperty";
-import DateProperty from "../../Card/modals/properties/DateProperty";
-import SingleSelectProperty from "../../Card/modals/properties/SingleSelectProperty";
-import RewardProperty from "../../Card/modals/properties/RewardProperty";
 
 type Props = {
   column: string;
@@ -79,6 +70,8 @@ export default function CreateCardModal({
     labels,
     setDescription,
     project,
+    propertyOrder,
+    properties,
   } = context;
 
   const [loading, setLoading] = useState(false);
@@ -174,21 +167,17 @@ export default function CreateCardModal({
               <Stack>
                 <CardType />
                 <CardColumn />
-                <MultiUserProperty
-                  templateId={cardType}
-                  propertyId={"assignee"}
-                />
-                <MultiUserProperty
-                  templateId={cardType}
-                  propertyId={"reviewer"}
-                />
-                <DateProperty templateId={cardType} propertyId={"start-date"} />
-                <DateProperty templateId={cardType} propertyId={"deadline"} />
-                <SingleSelectProperty
-                  templateId={cardType}
-                  propertyId={"priority"}
-                />
-                <RewardProperty templateId={cardType} propertyId={"reward"} />{" "}
+                {!loading &&
+                  propertyOrder &&
+                  propertyOrder.map((propertyId) => {
+                    if (properties[propertyId] && properties[propertyId].type) {
+                      return componentOf(
+                        properties[propertyId].type,
+                        cardType,
+                        propertyId
+                      );
+                    }
+                  })}
               </Stack>
             )}
           </Box>

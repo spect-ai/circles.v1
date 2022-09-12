@@ -3,9 +3,9 @@ import Editor from "@/app/common/components/Editor";
 import Loader from "@/app/common/components/Loader";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import Tabs from "@/app/common/components/Tabs";
+import { useGlobal } from "@/app/context/globalContext";
 import useCardDynamism from "@/app/services/Card/useCardDynamism";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
-import { useGlobal } from "@/app/context/globalContext";
 import {
   Box,
   Button,
@@ -21,35 +21,30 @@ import {
 import { AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React, { memo, useEffect, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import { ToastContainer } from "react-toastify";
 import styled from "styled-components";
 import { useLocalCard } from "../Project/CreateCardModal/hooks/LocalCardContext";
-import CardAssignee from "./modals/CardAssignee";
-import CardColumn from "./modals/CardColumn";
-import CardDeadline from "./modals/CardDeadline";
-import CardStartDate from "./modals/CardStartDate";
-import CardLabels from "./modals/CardLabels";
-import CardPriority from "./modals/CardPriority";
-import CardReviewer from "./modals/CardReviewer";
-import CardReward from "./modals/CardReward";
-import CardType from "./modals/CardType";
 import { IconButton } from "../Project/ProjectHeading";
-import ActionPopover from "./OptionPopover";
 import Activity from "./Activity";
 import Application from "./Application";
 import Apply from "./Apply";
 import AssignToMe from "./AssignToMe";
-import Submission from "./Submission";
-import SubTasks from "./SubTasks";
 import Discuss from "./Discuss";
-import CardProject from "./modals/CardProject";
 import MintKudos from "./MintKudos";
 import ViewKudos from "./MintKudos/view";
-import MultiUserProperty from "./modals/properties/MultiUserProperty";
+import CardColumn from "./modals/CardColumn";
+import CardLabels from "./modals/CardLabels";
+import CardProject from "./modals/CardProject";
+import CardType from "./modals/CardType";
 import DateProperty from "./modals/properties/DateProperty";
-import SingleSelectProperty from "./modals/properties/SingleSelectProperty";
+import MultiUserProperty from "./modals/properties/MultiUserProperty";
+import { componentOf } from "./modals/properties/PropertyMap";
 import RewardProperty from "./modals/properties/RewardProperty";
+import SingleSelectProperty from "./modals/properties/SingleSelectProperty";
+import ActionPopover from "./OptionPopover";
+import Submission from "./Submission";
+import SubTasks from "./SubTasks";
 
 const Container = styled(Box)`
   ::-webkit-scrollbar {
@@ -92,7 +87,8 @@ function Card() {
     card,
     cardType,
     columnId,
-    kudosMinted,
+    properties,
+    propertyOrder,
   } = useLocalCard();
   const { canTakeAction } = useRoleGate();
   const { viewName } = useGlobal();
@@ -332,21 +328,17 @@ function Card() {
                 <CardProject />
                 {!card?.parent && <CardColumn />}
 
-                <MultiUserProperty
-                  templateId={cardType}
-                  propertyId={"assignee"}
-                />
-                <MultiUserProperty
-                  templateId={cardType}
-                  propertyId={"reviewer"}
-                />
-                <DateProperty templateId={cardType} propertyId={"start-date"} />
-                <DateProperty templateId={cardType} propertyId={"deadline"} />
-                <SingleSelectProperty
-                  templateId={cardType}
-                  propertyId={"priority"}
-                />
-                <RewardProperty templateId={cardType} propertyId={"reward"} />
+                {!loading &&
+                  propertyOrder &&
+                  propertyOrder.map((propertyId) => {
+                    if (properties[propertyId] && properties[propertyId].type) {
+                      return componentOf(
+                        properties[propertyId].type,
+                        cardType,
+                        propertyId
+                      );
+                    }
+                  })}
                 {/* {canTakeAction("cardPayment") && (
                   <PrimaryButton
                     onClick={() => {
