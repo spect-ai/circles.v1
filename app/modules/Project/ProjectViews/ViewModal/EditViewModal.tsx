@@ -19,12 +19,18 @@ import {
   IconTrash,
   IconSplit,
 } from "degen";
-import { SaveOutlined } from "@ant-design/icons";
+import {
+  AlignLeftOutlined,
+  BarsOutlined,
+  AppstoreOutlined,
+  SaveOutlined,
+} from "@ant-design/icons";
 import { editViews } from "@/app/services/ProjectViews";
-import { cardType, priorityType, labels } from "../constants";
+import { cardType, priorityType } from "../constants";
 import Modal from "@/app/common/components/Modal";
 import ConfirmDelete from "./ConfirmDeleteModal";
 import { AnimatePresence } from "framer-motion";
+import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
 
 interface Props {
   setViewOpen: (viewOpen: boolean) => void;
@@ -34,6 +40,7 @@ interface Props {
 function EditViewModal({ setViewOpen, viewId }: Props) {
   const router = useRouter();
   const { mode } = useTheme();
+  const { getOptions } = useModalOptions();
 
   const { circle: cId } = router.query;
   const { localProject: project, setLocalProject } = useLocalProject();
@@ -49,6 +56,9 @@ function EditViewModal({ setViewOpen, viewId }: Props) {
     [] as OptionType[]
   );
   const [deleteModal, setDeleteModal] = useState(false);
+
+  const labelsArray = getOptions("labels");
+  const labels = labelsArray?.map((i) => ({ name: i.name, id: i.name }));
 
   useEffect(() => {
     if (circle) {
@@ -69,7 +79,9 @@ function EditViewModal({ setViewOpen, viewId }: Props) {
   const viewFilters = view?.filters;
 
   const [name, setName] = useState<string>(view?.name || " ");
-  const [layout, setLayout] = useState<"Board" | "List" | "Gantt">(view?.type || "Board");
+  const [layout, setLayout] = useState<"Board" | "List" | "Gantt">(
+    view?.type || "Board"
+  );
   const [reviewer, setReviewer] = useState<string[]>(
     viewFilters?.reviewer || []
   );
@@ -141,42 +153,45 @@ function EditViewModal({ setViewOpen, viewId }: Props) {
             <Text color="textSecondary" weight="medium" variant="base">
               Layout
             </Text>
-            <Box display="flex" flexDirection="row">
+            <Box display="flex" flexDirection="row" gap={"2"}>
               <Box
                 cursor="pointer"
                 color="textSecondary"
-                padding="2"
+                paddingX="1.5"
+                paddingY="1"
                 borderRadius="large"
                 backgroundColor={
                   layout == "Board" ? "accentSecondary" : "background"
                 }
                 onClick={() => setLayout("Board")}
               >
-                <IconGrid size="4" />
+                <AppstoreOutlined style={{ fontSize: "1.1rem" }} />
               </Box>
               <Box
                 cursor="pointer"
                 color="textSecondary"
-                padding="2"
+                paddingX="1.5"
+                paddingY="1"
                 borderRadius="large"
                 backgroundColor={
                   layout == "List" ? "accentSecondary" : "background"
                 }
                 onClick={() => setLayout("List")}
               >
-                <IconList size="4" />
+                <BarsOutlined style={{ fontSize: "1.1rem" }} />
               </Box>
               <Box
                 cursor="pointer"
                 color="textSecondary"
-                padding="2"
+                paddingX="1.5"
+                paddingY="1"
                 borderRadius="large"
                 backgroundColor={
                   layout == "Gantt" ? "accentSecondary" : "background"
                 }
                 onClick={() => setLayout("Gantt")}
               >
-                <IconSplit size="4" />
+                <AlignLeftOutlined style={{ fontSize: "1.1rem" }} />
               </Box>
             </Box>
           </Box>
@@ -196,7 +211,7 @@ function EditViewModal({ setViewOpen, viewId }: Props) {
           />
           <MultiSelectDropdown
             width="30"
-            options={labels}
+            options={labels as OptionType[]}
             value={label}
             setValue={setLabels}
             title={"Labels"}

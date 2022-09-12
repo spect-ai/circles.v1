@@ -1,14 +1,5 @@
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
-import {
-  Box,
-  Button,
-  IconGrid,
-  IconList,
-  Stack,
-  Text,
-  useTheme,
-  IconSplit,
-} from "degen";
+import { Box, Button, Stack, Text, useTheme } from "degen";
 import React, { memo } from "react";
 import Skeleton from "react-loading-skeleton";
 import styled from "styled-components";
@@ -18,6 +9,11 @@ import { ViewBar } from "../ProjectViews";
 import { useRouter } from "next/router";
 import { useGlobal } from "@/app/context/globalContext";
 import AdvancedOptions from "./AdvancedOptions";
+import {
+  AlignLeftOutlined,
+  BarsOutlined,
+  AppstoreOutlined,
+} from "@ant-design/icons";
 
 export const IconButton = styled(Box)`
   cursor: pointer;
@@ -27,12 +23,12 @@ export const IconButton = styled(Box)`
 `;
 
 function ProjectHeading() {
-  const { localProject: project, loading} = useLocalProject();
+  const { localProject: project, loading } = useLocalProject();
   const { canDo } = useRoleGate();
   const { mode } = useTheme();
   const router = useRouter();
   const { circle: cId, project: pId, view: vId } = router.query;
-  const { setViewName, viewName, view, setView  } = useGlobal();
+  const { setViewName, viewName, view, setView } = useGlobal();
 
   const defaultView = () => {
     if (viewName.length > 0) setViewName("");
@@ -102,6 +98,7 @@ function ProjectHeading() {
               color="textSecondary"
               borderRightWidth="0.375"
               paddingX="2"
+              paddingY="0.5"
               borderLeftRadius="large"
               backgroundColor={
                 view === 0 && viewName === ""
@@ -113,12 +110,13 @@ function ProjectHeading() {
                 defaultView();
               }}
             >
-              <IconGrid size="6" />
+              <AppstoreOutlined style={{ fontSize: "1.4rem" }} />
             </IconButton>
             <IconButton
               color="textSecondary"
               borderRightWidth="0.375"
               paddingX="2"
+              paddingY="0.5"
               backgroundColor={
                 view === 1 && viewName === ""
                   ? "foregroundSecondary"
@@ -129,7 +127,7 @@ function ProjectHeading() {
                 defaultView();
               }}
             >
-              <IconList size="6" />
+              <BarsOutlined style={{ fontSize: "1.4rem" }} />
             </IconButton>
             <IconButton
               color="textSecondary"
@@ -146,7 +144,7 @@ function ProjectHeading() {
                 defaultView();
               }}
             >
-              <IconSplit size="5" />
+              <AlignLeftOutlined style={{ fontSize: "1.3rem" }} />
             </IconButton>
           </Box>
         </Stack>

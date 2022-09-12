@@ -4,6 +4,7 @@ import { Avatar, Box, Input, Stack, Text } from "degen";
 import React from "react";
 import { useCircle } from "../../Circle/CircleContext";
 import Feedback from "./Feedback";
+import ClickableAvatar from "@/app/common/components/Avatar";
 
 type Props = {
   retroId: string;
@@ -39,7 +40,7 @@ export default function MemberRow({
         <Box width="1/4">
           <Stack direction="horizontal" align="center" space="2">
             <Avatar
-              src={getMemberDetails(member)?.avatar}
+              src={getMemberDetails(member)?.avatar as string}
               address={getMemberDetails(member)?.ethAddress}
               label=""
               size="9"
