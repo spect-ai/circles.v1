@@ -104,8 +104,8 @@ type CreateCardContextType = {
   >;
   kudosClaimedBy: KudosClaimedType;
   setKudosClaimedBy: React.Dispatch<React.SetStateAction<KudosClaimedType>>;
-  properties: Properties;
-  setProperties: React.Dispatch<React.SetStateAction<Properties>>;
+  properties: { [id: string]: any };
+  setProperties: React.Dispatch<React.SetStateAction<{ [id: string]: any }>>;
   propertyOrder: string[];
   setPropertyOrder: React.Dispatch<React.SetStateAction<string[]>>;
   updatePropertyState: (propertyId: string, value: any) => void;
@@ -207,14 +207,8 @@ export function useProviderLocalCard({
   const [eligibleToClaimKudos, setEligibleToClaimKudos] = useState(
     {} as KudosClaimedType
   );
-  const [propertyOrder, setPropertyOrder] = useState(
-    (project?.cardTemplates && project?.cardTemplates["Task"]?.propertyOrder) ||
-      ([] as string[])
-  );
-  const [properties, setProperties] = useState(
-    (project?.cardTemplates && project?.cardTemplates["Task"]?.properties) ||
-      ({} as Properties)
-  );
+  const [propertyOrder, setPropertyOrder] = useState([] as string[]);
+  const [properties, setProperties] = useState({} as { [id: string]: any });
 
   const [loading, setLoading] = useState(false);
 
@@ -257,16 +251,19 @@ export function useProviderLocalCard({
   };
 
   const satisfiesConditions = (propertyId: string, value: any) => {
-    const conditions = properties[propertyId]?.conditions;
-    const type = properties[propertyId]?.type;
+    const conditions = project?.properties[propertyId]?.conditions;
+    console.log(conditions);
+    console.log(project?.properties);
+    const type = project?.properties[propertyId]?.type;
     if (conditions) {
       for (const condition of conditions) {
-        const conditionVal = properties[condition.propertyId]?.value;
+        const conditionVal = properties && properties[propertyId];
+        console.log(conditionVal);
         const satisfies = checkCondition(
           condition.condition,
           value,
           conditionVal,
-          type
+          type as PropertyType
         );
         if (!satisfies) {
           if (condition.feedback) toast.error(condition.feedback);
@@ -281,10 +278,7 @@ export function useProviderLocalCard({
     if (!satisfiesConditions(propertyId, value)) return;
     setProperties({
       ...properties,
-      [propertyId]: {
-        ...properties[propertyId],
-        value,
-      },
+      [propertyId]: value,
     });
   };
 
@@ -328,24 +322,16 @@ export function useProviderLocalCard({
       setPropertyOrder(
         project?.cardTemplates[cardType].propertyOrder || ([] as string[])
       );
-      setProperties({
-        ...project?.cardTemplates[cardType].properties,
-        ...card.properties,
-      });
-      console.log(propertyOrder);
+      setProperties(card?.properties || resetProperties());
       setLoading(false);
     } else if (card?.unauthorized) setLoading(false);
-  }, [card, createCard, cardType]);
+  }, [card, createCard]);
 
   useEffect(() => {
     setPropertyOrder(
       project?.cardTemplates[cardType].propertyOrder || ([] as string[])
     );
-    setProperties({
-      ...project?.cardTemplates[cardType].properties,
-      ...card?.properties,
-    });
-    console.log(propertyOrder);
+    setProperties(card?.properties || resetProperties());
   }, [cardType]);
 
   const onSubmit = async (createAnother: boolean) => {
@@ -411,6 +397,14 @@ export function useProviderLocalCard({
     }
   };
 
+  const resetProperties = (): any => {
+    const properties = {} as { [id: string]: any };
+    for (const [propertyId, val] of Object.entries(project?.properties || {})) {
+      properties[propertyId] = val.default;
+    }
+    setProperties(properties);
+  };
+
   const resetData = () => {
     setTitle("");
     setDescription("");
@@ -422,10 +416,8 @@ export function useProviderLocalCard({
     setPriority(0);
     setSubTasks([]);
     setPropertyOrder(project?.cardTemplates[cardType].propertyOrder || []);
-    setProperties(
-      (project?.cardTemplates && project?.cardTemplates["Task"]?.properties) ||
-        ({} as Properties)
-    );
+    const props = resetProperties();
+    setProperties(props);
   };
 
   return {

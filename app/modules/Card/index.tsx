@@ -6,6 +6,7 @@ import Tabs from "@/app/common/components/Tabs";
 import { useGlobal } from "@/app/context/globalContext";
 import useCardDynamism from "@/app/services/Card/useCardDynamism";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
+import { ProjectType } from "@/app/types";
 import {
   Box,
   Button,
@@ -87,9 +88,9 @@ function Card() {
     card,
     cardType,
     columnId,
-    properties,
     propertyOrder,
   } = useLocalCard();
+  const { properties } = project as ProjectType;
   const { canTakeAction } = useRoleGate();
   const { viewName } = useGlobal();
 

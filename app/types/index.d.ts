@@ -268,7 +268,7 @@ export interface CardType {
   kudosClaimedBy: KudosClaimedType;
   eligibleToClaimKudos: KudosClaimedType;
   propertyOrder: string[];
-  properties: Properties;
+  properties: Map<string, any>;
   unauthorized?: boolean;
 }
 
@@ -334,6 +334,7 @@ export interface ProjectType {
   type: "Board" | "List" | "Gantt";
   cardTemplateOrder: string[];
   cardTemplates: { [id: string]: CardTemplate };
+  properties: Properties;
   unauthorized?: boolean;
 }
 
@@ -499,16 +500,18 @@ export interface CardDetails {
   };
 }
 
+export type PropertyFilter = {
+  name: string[] | number[];
+  id: string[];
+};
+
 export type Filter = {
-  assignee: string[];
-  reviewer: string[];
-  column: string[];
-  label: string[];
-  status: string[];
-  title: string;
-  type: string[];
-  priority: string[];
-  deadline: string;
+  properties: PropertyFilter[];
+  // column: string[];
+  // label: string[];
+  // status: string[];
+  // title: string;
+  // type: string[];
 };
 
 export type CardsType = {

@@ -71,8 +71,8 @@ export default function CreateCardModal({
     setDescription,
     project,
     propertyOrder,
-    properties,
   } = context;
+  const { properties } = project as ProjectType;
 
   const [loading, setLoading] = useState(false);
   const { cardType } = useLocalCard();

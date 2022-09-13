@@ -7,6 +7,7 @@ import ReactDatePicker from "react-datepicker";
 import ClickableTag from "@/app/common/components/EditTag/ClickableTag";
 import { toast } from "react-toastify";
 import { useLocalProject } from "@/app/modules/Project/Context/LocalProjectContext";
+import { ProjectType } from "@/app/types";
 
 export type props = {
   templateId?: string;
@@ -14,18 +15,20 @@ export type props = {
 };
 
 function DateProperty({ templateId, propertyId }: props) {
-  const { onCardUpdate, properties, updatePropertyState, project } =
-    useLocalCard();
+  const {
+    onCardUpdate,
+    updatePropertyState,
+    project,
+    properties: cardProperties,
+  } = useLocalCard();
+  const { properties } = project as ProjectType;
+
   const { canTakeAction } = useRoleGate();
   const dateRef = useRef<any>(null);
-
   const { mode } = useTheme();
-  const [template, setTemplate] = useState(templateId || "Task");
-
   const [localProperty, setLocalProperty] = useState(
-    properties[propertyId].value
+    cardProperties && cardProperties[propertyId]
   );
-  const cardProperty = properties[propertyId];
 
   useEffect(() => {
     document.documentElement.style.setProperty(
@@ -39,12 +42,12 @@ function DateProperty({ templateId, propertyId }: props) {
   }, [mode]);
 
   useEffect(() => {
-    if (properties[propertyId].value) {
-      setLocalProperty(new Date(properties[propertyId].value));
+    if (cardProperties && cardProperties[propertyId]) {
+      setLocalProperty(new Date(cardProperties[propertyId]));
     } else if (properties[propertyId].default) {
       setLocalProperty(new Date(properties[propertyId].default));
     }
-  }, [properties]);
+  }, [cardProperties]);
 
   // eslint-disable-next-line react/display-name
   const ExampleCustomInput = forwardRef(({ value, onClick }: any, ref) => (
@@ -69,7 +72,7 @@ function DateProperty({ templateId, propertyId }: props) {
   return (
     <Stack direction="horizontal">
       <Box width="1/3">
-        <Text variant="label">{`${cardProperty?.name}`}</Text>
+        <Text variant="label">{`${properties[propertyId]?.name}`}</Text>
       </Box>
       <Box width="2/3">
         <ReactDatePicker
@@ -86,7 +89,7 @@ function DateProperty({ templateId, propertyId }: props) {
             updatePropertyState(propertyId, date);
           }}
           customInput={<ExampleCustomInput />}
-          //disabled={!canTakeAction("cardDeadline")}
+          disabled={!canTakeAction("cardDeadline")}
           onCalendarClose={() => {
             setTimeout(() => {
               void onCardUpdate();

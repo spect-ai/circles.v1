@@ -1,7 +1,7 @@
 import EditTag from "@/app/common/components/EditTag";
 import ModalOption from "@/app/common/components/ModalOption";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
-import { Option } from "@/app/types";
+import { Option, ProjectType } from "@/app/types";
 import { DashboardOutlined } from "@ant-design/icons";
 import { Box, IconSearch, Input, Text } from "degen";
 import { matchSorter } from "match-sorter";
@@ -14,42 +14,45 @@ export type props = {
 };
 
 function CardPriority({ templateId, propertyId }: props) {
-  const { onCardUpdate, card, properties, project, updatePropertyState } =
-    useLocalCard();
+  const {
+    onCardUpdate,
+    card,
+    properties: cardProperties,
+    project,
+    updatePropertyState,
+  } = useLocalCard();
+  const { properties } = project as ProjectType;
   const [modalOpen, setModalOpen] = useState(false);
 
   const [options, setOptions] = useState<Option[]>();
   const [filteredOptions, setFilteredOptions] = useState<Option[]>();
-  const [template, setTemplate] = useState(templateId || "Task");
 
   const [localProperty, setLocalProperty] = useState(
-    properties[propertyId].value
+    cardProperties && cardProperties[propertyId]
   );
-
-  const cardProperty = properties[propertyId];
 
   const { canTakeAction } = useRoleGate();
 
   useEffect(() => {
-    const ops = cardProperty.options as Option[];
+    const ops = properties[propertyId].options as Option[];
     setOptions(ops);
     setFilteredOptions(ops);
   }, []);
 
   useEffect(() => {
-    if (properties[propertyId].value) {
-      setLocalProperty(properties[propertyId].value);
+    if (cardProperties && cardProperties[propertyId]) {
+      setLocalProperty(cardProperties && cardProperties[propertyId]);
     } else if (properties[propertyId].default) {
       setLocalProperty(properties[propertyId].default);
     }
-  }, [properties]);
+  }, [cardProperties]);
 
   return (
     <EditTag
       tourId="create-card-modal-priority"
       name={localProperty?.label}
-      modalTitle={`Select ${cardProperty?.name}`}
-      label={`${cardProperty?.name}`}
+      modalTitle={`Select ${properties[propertyId]?.name}`}
+      label={`${properties[propertyId]?.name}`}
       modalOpen={modalOpen}
       setModalOpen={setModalOpen}
       icon={
@@ -62,13 +65,10 @@ function CardPriority({ templateId, propertyId }: props) {
           }}
         />
       }
-      //disabled={!canTakeAction("cardPriority")}
+      disabled={!canTakeAction("cardPriority")}
       handleClose={() => {
-        if (
-          card?.properties[propertyId]?.value?.value !== localProperty?.value
-        ) {
-          void onCardUpdate();
-        }
+        void onCardUpdate();
+
         setModalOpen(false);
       }}
     >
@@ -119,7 +119,9 @@ function CardPriority({ templateId, propertyId }: props) {
             </ModalOption>
           ))}
           {!filteredOptions?.length && (
-            <Text variant="label">No ${cardProperty?.name} found</Text>
+            <Text variant="label">
+              No ${properties[propertyId]?.name} found
+            </Text>
           )}
         </Box>
       </Box>

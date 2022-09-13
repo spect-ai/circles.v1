@@ -2,6 +2,7 @@ import { FC, ReactNode, useEffect, useRef, useState } from "react";
 import { Box } from "degen";
 import { Portal } from "../Portal/portal";
 import { usePopper } from "react-popper";
+import { Placement } from "@popperjs/core";
 
 interface Props {
   isOpen: boolean;
@@ -12,6 +13,7 @@ interface Props {
   width?: string;
   disableOutsideClick?: boolean;
   dependentRef?: any;
+  placement?: Placement | undefined;
 }
 
 /**
@@ -58,6 +60,7 @@ const Popover: FC<Props> = ({
   width = "full",
   disableOutsideClick = false,
   dependentRef,
+  placement,
 }) => {
   const wrapperRef = useRef(null);
   useOutsideAlerter(wrapperRef, setIsOpen, disableOutsideClick, dependentRef);
@@ -66,7 +69,7 @@ const Popover: FC<Props> = ({
   const [popperElement, setPopperElement] = useState<any>();
 
   const { styles, attributes } = usePopper(anchorElement, popperElement, {
-    placement: "bottom-start",
+    placement: placement || "bottom-start",
   });
 
   return (

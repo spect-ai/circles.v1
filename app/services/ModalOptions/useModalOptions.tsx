@@ -1,3 +1,4 @@
+import { OptionType } from "@/app/common/components/Dropdown";
 import { labels } from "@/app/common/utils/constants";
 import { useGlobal } from "@/app/context/globalContext";
 import { useCircle } from "@/app/modules/Circle/CircleContext";
@@ -6,7 +7,7 @@ import {
   priority,
 } from "@/app/modules/Project/CreateCardModal/constants";
 import { useLocalCard } from "@/app/modules/Project/CreateCardModal/hooks/LocalCardContext";
-import { MemberDetails, Option } from "@/app/types";
+import { CardType, MemberDetails, Option } from "@/app/types";
 import { useRouter } from "next/router";
 import React from "react";
 import { useQuery } from "react-query";
@@ -31,9 +32,7 @@ export default function useModalOptions() {
   const getOptions = (type: string) => {
     switch (type) {
       case "card":
-        console.log(project?.cardTemplateOrder, project?.cardTemplates);
         return project?.cardTemplateOrder?.map((templateId: string) => {
-          console.log(templateId);
           return {
             name: templateId,
             value: templateId,
@@ -102,6 +101,23 @@ export default function useModalOptions() {
         });
 
         return tempArr;
+      case "filter":
+        // eslint-disable-next-line no-case-declarations
+        const uniqueProperties = new Set();
+        return Object.values(project?.cards || {})?.map((card: CardType) => {
+          return Object.entries(card.properties || {})?.map(
+            ([propertyId, property]) => {
+              if (!uniqueProperties.has(propertyId)) {
+                uniqueProperties.add(propertyId);
+
+                return {
+                  label: propertyId,
+                  value: property.name,
+                } as OptionType;
+              }
+            }
+          );
+        });
       default:
         return [];
     }

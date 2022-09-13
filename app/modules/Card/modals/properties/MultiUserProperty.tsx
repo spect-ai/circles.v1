@@ -2,7 +2,7 @@ import EditTag from "@/app/common/components/EditTag";
 import ModalOption from "@/app/common/components/ModalOption";
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
-import { MemberDetails } from "@/app/types";
+import { MemberDetails, ProjectType } from "@/app/types";
 import {
   Avatar,
   AvatarGroup,
@@ -31,9 +31,10 @@ function MultiUserProperty({ templateId, propertyId }: props) {
     fetchCardActions,
     cardId,
     updatePropertyState,
-    properties,
+    properties: cardProperty,
     project,
   } = useLocalCard();
+  const { properties } = project as ProjectType;
   const [modalOpen, setModalOpen] = useState(false);
 
   const [options, setOptions] = useState<Option[]>();
@@ -41,11 +42,9 @@ function MultiUserProperty({ templateId, propertyId }: props) {
   const { canTakeAction } = useRoleGate();
   const { getOptions, getMemberDetails, getMemberAvatars } = useModalOptions();
   const [template, setTemplate] = useState(templateId || "Task");
-
   const [localProperty, setLocalProperty] = useState(
-    properties[propertyId].value
+    cardProperty && cardProperty[propertyId]
   );
-  const cardProperty = properties[propertyId];
 
   const router = useRouter();
   const { circle: cId } = router.query;
@@ -65,12 +64,12 @@ function MultiUserProperty({ templateId, propertyId }: props) {
   }, [memberDetails]);
 
   useEffect(() => {
-    if (properties[propertyId].value) {
-      setLocalProperty(properties[propertyId].value);
+    if (cardProperty && cardProperty[propertyId]) {
+      setLocalProperty(cardProperty && cardProperty[propertyId]);
     } else if (properties[propertyId].default) {
       setLocalProperty(properties[propertyId].default);
     }
-  }, [properties]);
+  }, [cardProperty]);
 
   const getTagLabel = () => {
     if (!localProperty || !localProperty[0]) {
@@ -89,8 +88,8 @@ function MultiUserProperty({ templateId, propertyId }: props) {
     <EditTag
       tourId={`create-card-modal-${propertyId}`}
       name={getTagLabel()}
-      modalTitle={`Select ${cardProperty.name}`}
-      label={`${cardProperty.name}`}
+      modalTitle={`Select ${properties[propertyId]?.name}`}
+      label={`${properties[propertyId]?.name}`}
       modalOpen={modalOpen}
       setModalOpen={setModalOpen}
       icon={
@@ -105,10 +104,10 @@ function MultiUserProperty({ templateId, propertyId }: props) {
       }
       //disabled={!canTakeAction("cardReviewer")}
       handleClose={() => {
-        if (card?.properties[propertyId].value !== localProperty) {
-          cardId && void fetchCardActions();
-          void onCardUpdate();
-        }
+        // TODO: Add check here to onyly send request when there is an update
+        cardId && void fetchCardActions();
+        void onCardUpdate();
+
         setModalOpen(false);
       }}
     >

@@ -1,200 +1,167 @@
-import Popover from "@/app/common/components/Popover";
-import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
-import { useQuery } from "react-query";
-import { Box, Button, useTheme } from "degen";
-import { FilterOutlined } from "@ant-design/icons";
-import { CircleType, MemberDetails } from "@/app/types";
-import MultiSelectDropdown, {
-  OptionType,
-  Input,
-  InputBox,
-} from "@/app/common/components/MultiSelectDropDown/MultiSelectDropDown";
-import { useLocalProject } from "../Context/LocalProjectContext";
-import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { cardType, priorityType, labels } from "../ProjectViews/constants";
-import { motion, AnimatePresence } from "framer-motion";
+import Dropdown, {
+  OptionType as SingleSelectOptionType,
+} from "@/app/common/components/Dropdown";
 import { grow } from "@/app/common/components/Modal";
+import MultiSelectDropdown from "@/app/common/components/MultiSelectDropDown/MultiSelectDropDown";
+import Popover from "@/app/common/components/Popover";
+import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { useGlobal } from "@/app/context/globalContext";
+import { CircleType } from "@/app/types";
+import { FilterOutlined } from "@ant-design/icons";
+import { Box, Button, Text, useTheme } from "degen";
+import { AnimatePresence, motion } from "framer-motion";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
+import { useQuery } from "react-query";
+import { useLocalProject } from "../Context/LocalProjectContext";
+import { labels } from "../ProjectViews/constants";
+import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
 
 export default function Filter() {
   const [filterOpen, setFilterOpen] = useState(false);
   const router = useRouter();
   const { mode } = useTheme();
   const { currentFilter, setCurrentFilter } = useGlobal();
+  const { getOptions } = useModalOptions();
 
   const { circle: cId } = router.query;
   const { localProject: project } = useLocalProject();
   const { data: circle } = useQuery<CircleType>(["circle", cId], {
     enabled: false,
   });
-  const { data: memberDetails } = useQuery<MemberDetails>(
-    ["memberDetails", cId],
-    { enabled: false }
+  const [filterPropertyId, setFilterPropertyId] = useState(
+    {} as SingleSelectOptionType
   );
-
-  const [filteredMembers, setFilteredMembers] = useState<OptionType[]>(
-    [] as OptionType[]
-  );
-
-  useEffect(() => {
-    if (circle) {
-      const circleMembersArray = circle?.members.map((mem) => ({
-        name: memberDetails?.memberDetails[mem]?.username as string,
-        id: mem,
-      }));
-      setFilteredMembers(circleMembersArray);
-    }
-  }, [circle, memberDetails?.memberDetails]);
-
-  const columns = project?.columnOrder?.map((column: string) => ({
-    name: project?.columnDetails[column].name,
-    id: project?.columnDetails[column].name,
-  }));
-
-  const [reviewer, setReviewer] = useState<string[]>(
-    currentFilter?.reviewer || []
-  );
-  const [assignee, setAssignee] = useState<string[]>(
-    currentFilter?.assignee || []
-  );
-  const [label, setLabels] = useState<string[]>(currentFilter?.label || []);
-  const [title, setTitle] = useState<string>(currentFilter?.title || "");
-  const [column, setColumn] = useState<string[]>(currentFilter?.column || []);
-  const [priority, setPriority] = useState<string[]>(
-    currentFilter.priority || []
-  );
-  const [type, setType] = useState<string[]>(currentFilter?.type || []);
+  const [filterPropertyComparison, setFilterPropertyComparison] = useState({
+    label: "is",
+    value: "is",
+  } as SingleSelectOptionType);
+  const [options, setOptions] = useState([] as SingleSelectOptionType[]);
 
   const filterIsOn: boolean =
-    currentFilter?.assignee?.length > 0 ||
-    currentFilter?.reviewer?.length > 0 ||
-    currentFilter?.label?.length > 0 ||
-    currentFilter?.title?.length > 0 ||
-    currentFilter?.column?.length > 0 ||
-    currentFilter?.priority?.length > 0 ||
-    currentFilter?.type?.length > 0;
+    Object.keys(currentFilter) && Object.keys(currentFilter).length > 0;
 
   const handleClick = () => {
-    setCurrentFilter({
-      assignee: assignee,
-      reviewer: reviewer,
-      column: column,
-      label: label,
-      status: [""],
-      title: title,
-      type: type,
-      priority: priority,
-      deadline: "",
-    });
+    setCurrentFilter({});
     setFilterOpen(!filterOpen);
   };
 
+  useEffect(() => {
+    const ops = getOptions("filter") as unknown as SingleSelectOptionType[];
+    setOptions(ops);
+  }, []);
+
   return (
-      <Popover
-        isOpen={filterOpen}
-        setIsOpen={setFilterOpen}
-        butttonComponent={
-          <Button
-            shape="circle"
-            size="small"
-            variant="transparent"
-            onClick={() => setFilterOpen(!filterOpen)}
-          >
-            {filterIsOn && (
-              <div
-                style={{
-                  backgroundColor: "rgb(191, 90, 242, 1)",
-                  height: "0.4rem",
-                  width: "0.4rem",
-                  borderRadius: "3rem",
-                  position: "absolute",
-                  margin: "0px 4px 0px 12px",
-                }}
-              />
-            )}
-            <FilterOutlined
+    <Popover
+      isOpen={filterOpen}
+      setIsOpen={setFilterOpen}
+      placement="bottom-end"
+      butttonComponent={
+        <Button
+          shape="circle"
+          size="small"
+          variant="transparent"
+          onClick={() => setFilterOpen(!filterOpen)}
+        >
+          {filterIsOn && (
+            <div
               style={{
-                color: `${filterIsOn ? "rgb(191, 90, 242, 0.7)" : "gray"}`,
-                fontSize: "1.1rem",
+                backgroundColor: "rgb(191, 90, 242, 1)",
+                height: "0.4rem",
+                width: "0.4rem",
+                borderRadius: "3rem",
+                position: "absolute",
+                margin: "0px 4px 0px 12px",
               }}
             />
-          </Button>
-        }
-      >
-        <AnimatePresence>
-          <motion.div
-            initial="hidden"
-            animate="visible"
-            exit="exit"
-            variants={grow}
+          )}
+          <FilterOutlined
+            style={{
+              color: `${filterIsOn ? "rgb(191, 90, 242, 0.7)" : "gray"}`,
+              fontSize: "1.1rem",
+            }}
+          />
+        </Button>
+      }
+    >
+      <AnimatePresence>
+        <motion.div
+          initial="hidden"
+          animate="visible"
+          exit="exit"
+          variants={grow}
+        >
+          <Box
+            padding={"3"}
+            backgroundColor="background"
+            width="128"
+            style={{
+              border: `2px solid ${
+                mode == "dark"
+                  ? "rgb(255, 255, 255, 0.05)"
+                  : "rgb(20, 20, 20, 0.05)"
+              }`,
+              borderRadius: "0.7rem",
+            }}
           >
-            <Box
-              padding={"3"}
-              backgroundColor="background"
-              width="96"
-              style={{
-                border: `2px solid ${
-                  mode == "dark"
-                    ? "rgb(255, 255, 255, 0.05)"
-                    : "rgb(20, 20, 20, 0.05)"
-                }`,
-                borderRadius: "0.7rem",
-              }}
-            >
-              <MultiSelectDropdown
-                width="22"
-                options={filteredMembers}
-                value={assignee}
-                setValue={setAssignee}
-                title={"Assignee"}
-              />
-              <MultiSelectDropdown
-                width="22"
-                options={filteredMembers}
-                value={reviewer}
-                setValue={setReviewer}
-                title={"Reviewer"}
-              />
-              <MultiSelectDropdown
-                width="22"
-                options={cardType as OptionType[]}
-                value={type}
-                setValue={setType}
-                title={"Type"}
-              />
-              <MultiSelectDropdown
-                width="22"
-                options={columns as OptionType[]}
-                value={column}
-                setValue={setColumn}
-                title={"Column"}
-              />
-              <MultiSelectDropdown
-                width="22"
-                options={priorityType as OptionType[]}
-                value={priority}
-                setValue={setPriority}
-                title={"Priority"}
-              />
-              <MultiSelectDropdown
-                width="22"
-                options={labels}
-                value={label}
-                setValue={setLabels}
-                title={"Labels"}
-              />
-              <InputBox mode={mode}>
-                <Input
-                  placeholder={"Title"}
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
+            <Box display="flex" flexDirection="row" alignItems="center">
+              <Text variant="large">Where</Text>
+              <Box marginLeft="4">
+                <Dropdown
+                  width="10"
+                  options={options}
+                  selected={filterPropertyId}
+                  onChange={(option) => {
+                    setFilterPropertyId(option);
+                  }}
                 />
-              </InputBox>
-              <PrimaryButton onClick={handleClick}>Filter</PrimaryButton>
+              </Box>
+              <Box marginLeft="4">
+                <Dropdown
+                  width="10"
+                  options={[
+                    {
+                      label: "is",
+                      value: "is",
+                    },
+                  ]}
+                  selected={filterPropertyComparison}
+                  onChange={(option) => {
+                    setFilterPropertyComparison(option);
+                  }}
+                />
+              </Box>
+              {/* <Box marginLeft="4">
+                { 
+                
+                <MultiSelectDropdown
+                  width="22"
+                  options={labels}
+                  value={label}
+                  setValue={setLabels}
+                  title={"Labels"}
+                />}
+              </Box> */}
             </Box>
-          </motion.div>
-        </AnimatePresence>
-      </Popover>
+            <Box
+              marginTop="4"
+              display="flex"
+              flexDirection="row"
+              alignItems="center"
+              width="full"
+            >
+              <Box
+                width="full"
+                display="flex"
+                flexDirection="row"
+                justifyContent="flex-end"
+              >
+                <PrimaryButton onClick={handleClick}>Filter</PrimaryButton>
+              </Box>
+            </Box>
+          </Box>
+        </motion.div>
+      </AnimatePresence>
+    </Popover>
   );
 }

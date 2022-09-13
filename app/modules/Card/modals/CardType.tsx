@@ -10,7 +10,7 @@ import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
 
 function CardType() {
-  const { cardType, setCardType, onCardUpdate, card, project } = useLocalCard();
+  const { cardType, setCardType, onCardUpdate, card, loading } = useLocalCard();
   const [modalOpen, setModalOpen] = useState(false);
 
   const [options, setOptions] = useState<Option[]>();
@@ -68,43 +68,45 @@ function CardType() {
           />
         </Box>
         <Box>
-          {filteredOptions?.map((item: any) => (
-            <ModalOption
-              key={item.value}
-              isSelected={cardType === item.value}
-              item={item}
-              onClick={() => {
-                setCardType(item.value);
-              }}
-            >
-              <Box style={{ width: "15%" }}>
-                {/* <item.icon
-                  color={cardType === item.value ? "accent" : "textSecondary"}
-                /> */}
-              </Box>
-              <Box
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  width: "25%",
+          {!loading &&
+            filteredOptions?.map((item: any) => (
+              <ModalOption
+                key={item.value}
+                isSelected={cardType === item.value}
+                item={item}
+                onClick={() => {
+                  console.log(item);
+                  setCardType(item.value);
                 }}
               >
-                <Text
-                  size="small"
-                  color={cardType === item.value ? "accent" : "text"}
-                  weight="semiBold"
+                <Box style={{ width: "15%" }}>
+                  {/* <item.icon
+                  color={cardType === item.value ? "accent" : "textSecondary"}
+                /> */}
+                </Box>
+                <Box
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    width: "25%",
+                  }}
                 >
-                  {item.name}
-                </Text>
-              </Box>
-              <Box style={{ width: "65%" }}>
-                <Text size="label" color="textSecondary">
-                  {item.secondary}
-                </Text>
-              </Box>
-            </ModalOption>
-          ))}
+                  <Text
+                    size="small"
+                    color={cardType === item.value ? "accent" : "text"}
+                    weight="semiBold"
+                  >
+                    {item.name}
+                  </Text>
+                </Box>
+                <Box style={{ width: "65%" }}>
+                  <Text size="label" color="textSecondary">
+                    {item.secondary}
+                  </Text>
+                </Box>
+              </ModalOption>
+            ))}
           {!filteredOptions?.length && (
             <Text variant="label">No Card type found</Text>
           )}

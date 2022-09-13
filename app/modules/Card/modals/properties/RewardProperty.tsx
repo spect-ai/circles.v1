@@ -4,7 +4,7 @@ import {
   getFlattenedNetworks,
 } from "@/app/common/utils/registry";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
-import { Registry, Token } from "@/app/types";
+import { ProjectType, Registry, Token } from "@/app/types";
 import { Box, IconEth, Input, Stack, Tag, Text } from "degen";
 import { useRouter } from "next/router";
 import React, { memo, useEffect, useState } from "react";
@@ -23,10 +23,12 @@ function RewardProperty({ templateId, propertyId }: props) {
     fetchCardActions,
     card,
     cardId,
-    properties,
     updatePropertyState,
     project,
+    properties: cardProperties,
   } = useLocalCard();
+  const { properties } = project as ProjectType;
+
   const { canTakeAction } = useRoleGate();
 
   const router = useRouter();
@@ -34,15 +36,13 @@ function RewardProperty({ templateId, propertyId }: props) {
   const { data: registry } = useQuery<Registry>(["registry", cId], {
     enabled: false,
   });
-  const [template, setTemplate] = useState(templateId || "Task");
 
   const [localProperty, setLocalProperty] = useState(
-    properties[propertyId]?.value
+    cardProperties && cardProperties[propertyId]
   );
-  const cardProperty = properties[propertyId];
 
   useEffect(() => {
-    if (properties[propertyId]?.value) {
+    if (cardProperties && cardProperties[propertyId]) {
       setLocalProperty(properties[propertyId]?.value);
     } else if (properties[propertyId]?.default) {
       setLocalProperty(properties[propertyId]?.default);
@@ -55,22 +55,19 @@ function RewardProperty({ templateId, propertyId }: props) {
       name={
         localProperty?.value && localProperty?.value !== 0
           ? `${localProperty?.value} ${localProperty?.token?.symbol}`
-          : `No ${cardProperty?.name}`
+          : `No ${properties[propertyId]?.name}`
       }
-      modalTitle={`Set ${cardProperty?.name}`}
-      label={`${cardProperty?.name}`}
+      modalTitle={`Set ${properties[propertyId]?.name}`}
+      label={`${properties[propertyId]?.name}`}
       modalOpen={modalOpen}
       setModalOpen={setModalOpen}
       icon={<IconEth color="accent" size="5" />}
-      //disabled={!canTakeAction("cardReward")}
+      disabled={!canTakeAction("cardReward")}
       handleClose={() => {
         if (
-          parseFloat(localProperty?.value) !==
-            card?.properties[propertyId]?.value?.value ||
-          localProperty?.token.symbol !==
-            card?.properties[propertyId]?.value?.token?.symbol ||
-          localProperty?.chain.chainId !==
-            card?.properties[propertyId]?.value?.chain?.chainId
+          parseFloat(localProperty?.value) !== localProperty?.value ||
+          localProperty?.token.symbol !== localProperty?.token?.symbol ||
+          localProperty?.chain.chainId !== localProperty?.chain?.chainId
         ) {
           void onCardUpdate();
           cardId && void fetchCardActions();

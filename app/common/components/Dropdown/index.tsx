@@ -26,13 +26,17 @@ interface Props {
   options: OptionType[];
   selected: OptionType;
   onChange: (option: OptionType) => void;
+  width?: string;
 }
 
-// const OptionsContainer = styled(Box)<{ isExpanded: boolean }>`
+// const OptionsContainer = styled(Box)<{
+//   isExpanded: boolean;
+//   widthValue: string;
+// }>`
 //   display: ${(props) => (props.isExpanded ? "block" : "none")};
 //   position: absolute;
 //   z-index: 1;
-//   width: 20rem;
+//   width: ${(props) => props.widthValue}rem;
 // `;
 
 const Option = styled(Box)<{ mode: string }>`
@@ -43,13 +47,15 @@ const Option = styled(Box)<{ mode: string }>`
   }
 `;
 
-const ScrollContainer = styled(Box)`
+const ScrollContainer = styled(Box)<{
+  widthValue: string;
+}>`
   ::-webkit-scrollbar {
     width: 10px;
   }
   height: 9.5rem;
   overflow-y: auto;
-  width: 20rem;
+  width: ${(props) => props.widthValue}rem;
 `;
 
 const slide = {
@@ -58,13 +64,14 @@ const slide = {
   collapsed: { height: 0, opacity: 0 },
 };
 
-const Dropdown: FC<Props> = ({ options, selected, onChange, title }) => {
+const Dropdown: FC<Props> = ({ options, selected, onChange, title, width }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [inputValue, setInputValue] = useState(selected?.label);
   const [filteredOptions, setFilteredOptions] = useState(options);
   const { mode } = useTheme();
   const wrapperRef = useRef(null);
   useOutsideAlerter(wrapperRef, setIsExpanded, false);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const [anchorElement, setAnchorElement] = useState<any>();
   const [popperElement, setPopperElement] = useState<any>();
@@ -79,7 +86,7 @@ const Dropdown: FC<Props> = ({ options, selected, onChange, title }) => {
 
   return (
     <>
-      <Box style={{ width: "20rem" }}>
+      <Box style={{ width: width ? `${width.toString()}rem` : "22rem" }}>
         <Input
           ref={setAnchorElement}
           label={title}
@@ -117,10 +124,8 @@ const Dropdown: FC<Props> = ({ options, selected, onChange, title }) => {
       </Box>
       {/* <OptionsContainer
         isExpanded={isExpanded}
-        borderWidth="0.5"
-        backgroundColor="backgroundSecondary"
-        borderRadius="large"
-        ref={wrapperRef}
+        ref={inputRef}
+        widthValue={width || "22rem"}
       > */}
       <AnimatePresence>
         {isExpanded && (
@@ -145,6 +150,7 @@ const Dropdown: FC<Props> = ({ options, selected, onChange, title }) => {
                   borderWidth="0.5"
                   borderRadius="2xLarge"
                   ref={wrapperRef}
+                  widthValue={width || "22"}
                 >
                   {filteredOptions?.map((option) => (
                     <Option
