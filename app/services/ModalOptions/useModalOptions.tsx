@@ -2,6 +2,7 @@ import { OptionType } from "@/app/common/components/Dropdown";
 import { labels } from "@/app/common/utils/constants";
 import { useGlobal } from "@/app/context/globalContext";
 import { useCircle } from "@/app/modules/Circle/CircleContext";
+import { useLocalProject } from "@/app/modules/Project/Context/LocalProjectContext";
 import {
   cardTypes,
   priority,
@@ -23,6 +24,8 @@ export default function useModalOptions() {
   );
   const { project } = useLocalCard();
   const { circle } = useCircle();
+  const { localProject: proj } = useLocalProject();
+
   const { connectedUser } = useGlobal();
 
   const fetchMemberDetails = () => {
@@ -58,6 +61,14 @@ export default function useModalOptions() {
           name: p.name,
           value: p.id,
         }));
+      case "filter":
+        // eslint-disable-next-line no-case-declarations
+        return Object.keys(proj?.properties || {})?.map((p) => {
+          return {
+            label: proj?.properties[p].name,
+            value: p,
+          };
+        });
       case "assignee":
         // eslint-disable-next-line no-case-declarations
         let tempArr = memberDetails?.members?.map((member: string) => ({
@@ -101,23 +112,7 @@ export default function useModalOptions() {
         });
 
         return tempArr;
-      case "filter":
-        // eslint-disable-next-line no-case-declarations
-        const uniqueProperties = new Set();
-        return Object.values(project?.cards || {})?.map((card: CardType) => {
-          return Object.entries(card.properties || {})?.map(
-            ([propertyId, property]) => {
-              if (!uniqueProperties.has(propertyId)) {
-                uniqueProperties.add(propertyId);
 
-                return {
-                  label: propertyId,
-                  value: property.name,
-                } as OptionType;
-              }
-            }
-          );
-        });
       default:
         return [];
     }

@@ -11,7 +11,7 @@ import { useLocalProject } from "../Context/LocalProjectContext";
 import { useGlobal } from "@/app/context/globalContext";
 import { SkeletonLoader } from "../SkeletonLoader";
 import { filterCards } from "../Filter/filterCards";
-import { Filter, CardsType } from "@/app/types";
+import { FilterType, CardsType } from "@/app/types";
 
 import {
   titleFilter,
@@ -45,7 +45,11 @@ function GanttChart({ viewId }: { viewId: string }) {
   const view = project.viewDetails?.[viewId];
 
   useEffect(() => {
-    const vCards = filterCards(project, project.cards, view?.filters as Filter);
+    const vCards = filterCards(
+      project,
+      project.cards,
+      view?.filters as FilterType
+    );
     const fVCards = filterCards(project, vCards, currentFilter);
     setViewCards(fVCards);
   }, [

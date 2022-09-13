@@ -1,9 +1,9 @@
-import { CardsType, CardType, Filter, ProjectType } from "@/app/types";
+import { CardsType, CardType, FilterType, ProjectType } from "@/app/types";
 
 export const filterCards = (
   project: ProjectType,
-  cards : CardsType | CardType[],
-  currentFilter: Filter
+  cards: CardsType | CardType[],
+  currentFilter: FilterType
 ): CardsType => {
   if (!currentFilter || !project.cards) return cards as CardsType;
   const filteredCards = Object.values(cards)?.filter((card) => {

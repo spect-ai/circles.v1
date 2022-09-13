@@ -319,19 +319,22 @@ export function useProviderLocalCard({
       setKudosMinted(card.kudosMinted);
       setKudosClaimedBy(card.kudosClaimedBy);
       setEligibleToClaimKudos(card.eligibleToClaimKudos);
-      setPropertyOrder(
-        project?.cardTemplates[cardType].propertyOrder || ([] as string[])
-      );
-      setProperties(card?.properties || resetProperties());
+      setPropertyOrder(card.propertyOrder);
+      console.log(card.properties);
+      setProperties(card.properties);
       setLoading(false);
     } else if (card?.unauthorized) setLoading(false);
   }, [card, createCard]);
 
   useEffect(() => {
+    setLoading(true);
     setPropertyOrder(
-      project?.cardTemplates[cardType].propertyOrder || ([] as string[])
+      card?.propertyOrder ||
+        project?.cardTemplates[cardType].propertyOrder ||
+        ([] as string[])
     );
-    setProperties(card?.properties || resetProperties());
+    setProperties(card?.properties || {});
+    setLoading(false);
   }, [cardType]);
 
   const onSubmit = async (createAnother: boolean) => {
@@ -402,7 +405,6 @@ export function useProviderLocalCard({
     for (const [propertyId, val] of Object.entries(project?.properties || {})) {
       properties[propertyId] = val.default;
     }
-    setProperties(properties);
   };
 
   const resetData = () => {
@@ -410,10 +412,6 @@ export function useProviderLocalCard({
     setDescription("");
     setLabels([]);
     setCardType("Task");
-    setChain(circle?.defaultPayment?.chain as Chain);
-    setToken(circle?.defaultPayment?.token as Token);
-    setValue("0");
-    setPriority(0);
     setSubTasks([]);
     setPropertyOrder(project?.cardTemplates[cardType].propertyOrder || []);
     const props = resetProperties();

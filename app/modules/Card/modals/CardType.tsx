@@ -21,7 +21,6 @@ function CardType() {
 
   useEffect(() => {
     const ops = getOptions("card") as Option[];
-    console.log(ops);
     setOptions(ops);
     setFilteredOptions(ops);
   }, []);

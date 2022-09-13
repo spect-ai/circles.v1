@@ -39,7 +39,7 @@ export function useOutsideAlerter(
         )
       ) {
         // alert("You clicked outside of me!");
-        setIsOpen(false);
+        //setIsOpen(false);
       }
     }
     // Bind the event listener

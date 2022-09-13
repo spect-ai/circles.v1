@@ -332,6 +332,7 @@ function Card() {
                 {!loading &&
                   propertyOrder &&
                   propertyOrder.map((propertyId) => {
+                    console.log(propertyId);
                     if (properties[propertyId] && properties[propertyId].type) {
                       return componentOf(
                         properties[propertyId].type,

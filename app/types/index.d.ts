@@ -1,3 +1,5 @@
+import { OptionType as SingleSelectOptionType } from "../common/components/Dropdown";
+
 interface UserType {
   accounts: string[];
   createdAt: string;
@@ -500,18 +502,14 @@ export interface CardDetails {
   };
 }
 
-export type PropertyFilter = {
-  name: string[] | number[];
-  id: string[];
+export type FilterProperty = {
+  id: SingleSelectOptionType;
+  value: any;
+  condition: SingleSelectOptionType;
 };
 
-export type Filter = {
-  properties: PropertyFilter[];
-  // column: string[];
-  // label: string[];
-  // status: string[];
-  // title: string;
-  // type: string[];
+export type FilterType = {
+  properties: FilterProperty[];
 };
 
 export type CardsType = {
@@ -521,7 +519,7 @@ export type CardsType = {
 export type Views = {
   type: "List" | "Board" | "Gantt";
   hidden: boolean;
-  filters: Filter;
+  filters: FilterType;
   slug?: string;
   name: string;
 };

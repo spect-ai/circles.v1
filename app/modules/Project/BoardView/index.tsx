@@ -15,7 +15,7 @@ import useDragEnd from "../Hooks/useDragEnd";
 import ColumnComponent from "../Column";
 import { SkeletonLoader } from "../SkeletonLoader";
 import { filterCards } from "../Filter/filterCards";
-import { CardsType, Filter } from "@/app/types";
+import { CardsType, FilterType } from "@/app/types";
 import { useGlobal } from "@/app/context/globalContext";
 import {
   titleFilter,
@@ -64,7 +64,11 @@ function BoardView({ viewId }: Props) {
   useEffect(() => {
     const fCards = filterCards(project, project.cards, currentFilter);
     setFilteredCards(fCards);
-    const vCards = filterCards(project, project.cards, view?.filters as Filter);
+    const vCards = filterCards(
+      project,
+      project.cards,
+      view?.filters as FilterType
+    );
     const fVCards = filterCards(project, vCards, currentFilter);
     setViewCards(fVCards);
   }, [
@@ -133,8 +137,8 @@ function BoardView({ viewId }: Props) {
           project?.columnOrder?.map((columnId, index): any => {
             const column = project.columnDetails[columnId];
             if (
-              (view?.filters as Filter)?.column?.length > 0 &&
-              !(view?.filters as Filter).column?.includes(column?.name)
+              (view?.filters as FilterType)?.column?.length > 0 &&
+              !(view?.filters as FilterType).column?.includes(column?.name)
             )
               return null;
             let cards = column.cards?.map((cardId: string) =>

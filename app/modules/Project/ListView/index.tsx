@@ -9,7 +9,7 @@ import { useLocalProject } from "../Context/LocalProjectContext";
 
 import ListSection from "./ListSection";
 import { filterCards } from "../Filter/filterCards";
-import { Filter, CardsType, ColumnType } from "@/app/types";
+import { FilterType, CardsType, ColumnType } from "@/app/types";
 import { useGlobal } from "@/app/context/globalContext";
 import {
   titleFilter,
@@ -46,7 +46,11 @@ function ListView({ viewId }: Props) {
   const view = project.viewDetails?.[viewId];
 
   useEffect(() => {
-    const vCards = filterCards(project, project.cards, view?.filters as Filter);
+    const vCards = filterCards(
+      project,
+      project.cards,
+      view?.filters as FilterType
+    );
     const fVCards = filterCards(project, vCards, currentFilter);
     setViewCards(fVCards);
   }, [
@@ -122,8 +126,8 @@ function ListView({ viewId }: Props) {
           project?.columnOrder?.map((columnId: string) => {
             const column = project.columnDetails[columnId];
             if (
-              (view?.filters as Filter)?.column?.length > 0 &&
-              !(view?.filters as Filter).column?.includes(column?.name)
+              (view?.filters as FilterType)?.column?.length > 0 &&
+              !(view?.filters as FilterType).column?.includes(column?.name)
             )
               return null;
             let cards = column.cards?.map((cardId: string) =>

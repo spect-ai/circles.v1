@@ -43,11 +43,11 @@ function RewardProperty({ templateId, propertyId }: props) {
 
   useEffect(() => {
     if (cardProperties && cardProperties[propertyId]) {
-      setLocalProperty(properties[propertyId]?.value);
+      setLocalProperty(cardProperties[propertyId]);
     } else if (properties[propertyId]?.default) {
       setLocalProperty(properties[propertyId]?.default);
     }
-  }, [properties]);
+  }, [cardProperties]);
 
   return (
     <EditTag
@@ -175,9 +175,6 @@ function RewardProperty({ templateId, propertyId }: props) {
                 });
               }}
             />
-            {/* <Button width="full" size="small">
-          Save
-        </Button> */}
           </Stack>
         </Box>
       </Box>

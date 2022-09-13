@@ -1,5 +1,5 @@
 import React, { createContext, memo, useContext, useState } from "react";
-import { Filter } from "@/app/types";
+import { FilterType } from "@/app/types";
 import { ViewMode } from "gantt-task-react";
 
 interface GlobalContextType {
@@ -20,8 +20,8 @@ interface GlobalContextType {
   setTab: React.Dispatch<React.SetStateAction<string>>;
   notifseen: boolean;
   setNotifSeen: React.Dispatch<React.SetStateAction<boolean>>;
-  currentFilter: Filter;
-  setCurrentFilter: React.Dispatch<React.SetStateAction<Filter>>;
+  currentFilter: FilterType;
+  setCurrentFilter: React.Dispatch<React.SetStateAction<FilterType>>;
   calendarView: ViewMode;
   setCalendarView: React.Dispatch<React.SetStateAction<ViewMode>>;
 }
@@ -41,7 +41,7 @@ const useProviderGlobalContext = () => {
   const [tab, setTab] = useState("Work");
   const [notifseen, setNotifSeen] = useState(false);
 
-  const [currentFilter, setCurrentFilter] = useState({} as Filter);
+  const [currentFilter, setCurrentFilter] = useState({} as FilterType);
 
   function connectUser(userId: string) {
     setConnectedUser(userId);
