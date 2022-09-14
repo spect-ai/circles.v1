@@ -72,7 +72,6 @@ export default function CreateCardModal({
     project,
     propertyOrder,
   } = context;
-  const { properties } = project as ProjectType;
 
   const [loading, setLoading] = useState(false);
   const { cardType } = useLocalCard();
@@ -170,9 +169,12 @@ export default function CreateCardModal({
                 {!loading &&
                   propertyOrder &&
                   propertyOrder.map((propertyId) => {
-                    if (properties[propertyId] && properties[propertyId].type) {
+                    if (
+                      project?.properties[propertyId] &&
+                      project?.properties[propertyId].type
+                    ) {
                       return componentOf(
-                        properties[propertyId].type,
+                        project?.properties[propertyId].type,
                         cardType,
                         propertyId
                       );

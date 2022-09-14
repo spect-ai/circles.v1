@@ -20,15 +20,7 @@ export default function ViewKudos() {
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [claimLoading, setClaimLoading] = useState(false);
-  const {
-    title,
-    project,
-    assignees,
-    reviewers,
-    eligibleToClaimKudos,
-    kudosClaimedBy,
-    kudosMinted,
-  } = useLocalCard();
+  const { eligibleToClaimKudos, kudosClaimedBy, kudosMinted } = useLocalCard();
   const { circle } = useCircle();
   const { viewKudos, recordClaimInfo, claimKudos } = useCredentials();
   const { getMemberDetails } = useModalOptions();

@@ -21,7 +21,6 @@ function CardPriority({ templateId, propertyId }: props) {
     project,
     updatePropertyState,
   } = useLocalCard();
-  const { properties } = project as ProjectType;
   const [modalOpen, setModalOpen] = useState(false);
 
   const [options, setOptions] = useState<Option[]>();
@@ -34,7 +33,7 @@ function CardPriority({ templateId, propertyId }: props) {
   const { canTakeAction } = useRoleGate();
 
   useEffect(() => {
-    const ops = properties[propertyId].options as Option[];
+    const ops = project?.properties[propertyId].options as Option[];
     setOptions(ops);
     setFilteredOptions(ops);
   }, []);
@@ -42,8 +41,8 @@ function CardPriority({ templateId, propertyId }: props) {
   useEffect(() => {
     if (cardProperties && cardProperties[propertyId]) {
       setLocalProperty(cardProperties && cardProperties[propertyId]);
-    } else if (properties[propertyId].default) {
-      setLocalProperty(properties[propertyId].default);
+    } else if (project?.properties[propertyId].default) {
+      setLocalProperty(project?.properties[propertyId].default);
     }
   }, [cardProperties]);
 
@@ -51,8 +50,8 @@ function CardPriority({ templateId, propertyId }: props) {
     <EditTag
       tourId="create-card-modal-priority"
       name={localProperty?.label}
-      modalTitle={`Select ${properties[propertyId]?.name}`}
-      label={`${properties[propertyId]?.name}`}
+      modalTitle={`Select ${project?.properties[propertyId]?.name}`}
+      label={`${project?.properties[propertyId]?.name}`}
       modalOpen={modalOpen}
       setModalOpen={setModalOpen}
       icon={
@@ -120,7 +119,7 @@ function CardPriority({ templateId, propertyId }: props) {
           ))}
           {!filteredOptions?.length && (
             <Text variant="label">
-              No ${properties[propertyId]?.name} found
+              No ${project?.properties[propertyId]?.name} found
             </Text>
           )}
         </Box>

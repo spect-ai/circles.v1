@@ -27,7 +27,6 @@ function RewardProperty({ templateId, propertyId }: props) {
     project,
     properties: cardProperties,
   } = useLocalCard();
-  const { properties } = project as ProjectType;
 
   const { canTakeAction } = useRoleGate();
 
@@ -44,8 +43,8 @@ function RewardProperty({ templateId, propertyId }: props) {
   useEffect(() => {
     if (cardProperties && cardProperties[propertyId]) {
       setLocalProperty(cardProperties[propertyId]);
-    } else if (properties[propertyId]?.default) {
-      setLocalProperty(properties[propertyId]?.default);
+    } else if (project?.properties[propertyId]?.default) {
+      setLocalProperty(project?.properties[propertyId]?.default);
     }
   }, [cardProperties]);
 
@@ -55,10 +54,10 @@ function RewardProperty({ templateId, propertyId }: props) {
       name={
         localProperty?.value && localProperty?.value !== 0
           ? `${localProperty?.value} ${localProperty?.token?.symbol}`
-          : `No ${properties[propertyId]?.name}`
+          : `No ${project?.properties[propertyId]?.name}`
       }
-      modalTitle={`Set ${properties[propertyId]?.name}`}
-      label={`${properties[propertyId]?.name}`}
+      modalTitle={`Set ${project?.properties[propertyId]?.name}`}
+      label={`${project?.properties[propertyId]?.name}`}
       modalOpen={modalOpen}
       setModalOpen={setModalOpen}
       icon={<IconEth color="accent" size="5" />}

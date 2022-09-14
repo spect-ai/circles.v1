@@ -38,11 +38,7 @@ import CardColumn from "./modals/CardColumn";
 import CardLabels from "./modals/CardLabels";
 import CardProject from "./modals/CardProject";
 import CardType from "./modals/CardType";
-import DateProperty from "./modals/properties/DateProperty";
-import MultiUserProperty from "./modals/properties/MultiUserProperty";
 import { componentOf } from "./modals/properties/PropertyMap";
-import RewardProperty from "./modals/properties/RewardProperty";
-import SingleSelectProperty from "./modals/properties/SingleSelectProperty";
 import ActionPopover from "./OptionPopover";
 import Submission from "./Submission";
 import SubTasks from "./SubTasks";
@@ -90,7 +86,6 @@ function Card() {
     columnId,
     propertyOrder,
   } = useLocalCard();
-  const { properties } = project as ProjectType;
   const { canTakeAction } = useRoleGate();
   const { viewName } = useGlobal();
 
@@ -333,9 +328,12 @@ function Card() {
                   propertyOrder &&
                   propertyOrder.map((propertyId) => {
                     console.log(propertyId);
-                    if (properties[propertyId] && properties[propertyId].type) {
+                    if (
+                      project?.properties[propertyId] &&
+                      project.properties[propertyId].type
+                    ) {
                       return componentOf(
-                        properties[propertyId].type,
+                        project.properties[propertyId].type,
                         cardType,
                         propertyId
                       );

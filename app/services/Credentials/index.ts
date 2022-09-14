@@ -20,8 +20,7 @@ const domainInfo = {
 export default function useCredentials() {
   const { registry, circle } = useCircle();
   const { activeChain, switchNetworkAsync } = useNetwork();
-  const { kudosMinted, setKudosMinted, cardId, assignees, reviewers, setCard } =
-    useLocalCard();
+  const { kudosMinted, setKudosMinted, cardId, setCard } = useLocalCard();
   const { mode } = useTheme();
 
   const mintKudos = async (kudos: KudosRequestType, communityId: string) => {
@@ -126,8 +125,8 @@ export default function useCredentials() {
                 body: JSON.stringify({
                   for: kudosForUsers,
                   tokenId: data.resourceId,
-                  contributors:
-                    kudosForUsers === "assignee" ? assignees : reviewers,
+                  // contributors:
+                  //   kudosForUsers === "assignee" ? assignees : reviewers,
                 }),
                 headers: {
                   "Content-Type": "application/json",

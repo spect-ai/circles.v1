@@ -34,7 +34,6 @@ function MultiUserProperty({ templateId, propertyId }: props) {
     properties: cardProperty,
     project,
   } = useLocalCard();
-  const { properties } = project as ProjectType;
   const [modalOpen, setModalOpen] = useState(false);
 
   const [options, setOptions] = useState<Option[]>();
@@ -69,8 +68,8 @@ function MultiUserProperty({ templateId, propertyId }: props) {
 
     if (cardProperty && cardProperty[propertyId]) {
       setLocalProperty(cardProperty && cardProperty[propertyId]);
-    } else if (properties[propertyId].default) {
-      setLocalProperty(properties[propertyId].default);
+    } else if (project?.properties[propertyId].default) {
+      setLocalProperty(project?.properties[propertyId].default);
     }
   }, [cardProperty]);
 
@@ -91,8 +90,8 @@ function MultiUserProperty({ templateId, propertyId }: props) {
     <EditTag
       tourId={`create-card-modal-${propertyId}`}
       name={getTagLabel()}
-      modalTitle={`Select ${properties[propertyId]?.name}`}
-      label={`${properties[propertyId]?.name}`}
+      modalTitle={`Select ${project?.properties[propertyId]?.name}`}
+      label={`${project?.properties[propertyId]?.name}`}
       modalOpen={modalOpen}
       setModalOpen={setModalOpen}
       icon={

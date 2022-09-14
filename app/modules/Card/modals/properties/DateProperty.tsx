@@ -21,7 +21,6 @@ function DateProperty({ templateId, propertyId }: props) {
     project,
     properties: cardProperties,
   } = useLocalCard();
-  const { properties } = project as ProjectType;
 
   const { canTakeAction } = useRoleGate();
   const dateRef = useRef<any>(null);
@@ -44,8 +43,8 @@ function DateProperty({ templateId, propertyId }: props) {
   useEffect(() => {
     if (cardProperties && cardProperties[propertyId]) {
       setLocalProperty(new Date(cardProperties[propertyId]));
-    } else if (properties[propertyId].default) {
-      setLocalProperty(new Date(properties[propertyId].default));
+    } else if (project?.properties[propertyId].default) {
+      setLocalProperty(new Date(project?.properties[propertyId].default));
     }
   }, [cardProperties]);
 
@@ -72,7 +71,7 @@ function DateProperty({ templateId, propertyId }: props) {
   return (
     <Stack direction="horizontal">
       <Box width="1/3">
-        <Text variant="label">{`${properties[propertyId]?.name}`}</Text>
+        <Text variant="label">{`${project?.properties[propertyId]?.name}`}</Text>
       </Box>
       <Box width="2/3">
         <ReactDatePicker

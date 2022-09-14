@@ -5,7 +5,6 @@ import { AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { Option } from "../../Project/CreateCardModal/constants";
-import { AssigneeModal } from "../modals/CardAssignee";
 
 const CircleButton = styled(Box)<{ empty: boolean }>`
   border: ${(props) =>
@@ -64,13 +63,13 @@ export default function SubTaskAssignee({ assignees, setAssignees }: Props) {
       <AnimatePresence>
         {isOpen && (
           <Modal title="Choose Assignee" handleClose={() => setIsOpen(false)}>
-            <AssigneeModal
+            {/* <AssigneeModal
               setAssignees={setAssignees}
               assignees={assignees}
               options={options}
               setFilteredOptions={setFilteredOptions}
               filteredOptions={filteredOptions}
-            />
+            /> */}
           </Modal>
         )}
       </AnimatePresence>

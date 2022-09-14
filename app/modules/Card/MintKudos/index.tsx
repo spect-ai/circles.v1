@@ -27,7 +27,7 @@ import SoulboundToken from "./SoulboundToken";
 export default function MintKudos() {
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const { title, project, assignees } = useLocalCard();
+  const { title, project } = useLocalCard();
   const { circle: cId, project: pId, card: tId } = router.query;
 
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
@@ -52,9 +52,12 @@ export default function MintKudos() {
   );
 
   const getEthAddress = () => {
-    return assignees.map((userId) => {
-      return getMemberDetails(userId)?.ethAddress;
-    });
+    return (
+      project &&
+      project?.properties["assignee"].value.map((userId: string) => {
+        return getMemberDetails(userId)?.ethAddress;
+      })
+    );
   };
   useEffect(() => {
     fetch(
@@ -95,8 +98,13 @@ export default function MintKudos() {
         <PrimaryButton
           variant="tertiary"
           onClick={() => {
-            if (!assignees || assignees.length === 0) {
-              toast.error("Kudos can only be minted when there are assignees.");
+            if (
+              !project?.properties["assignee"]?.value ||
+              project?.properties["assignee"].value.length === 0
+            ) {
+              toast.error(
+                "Kudos can only be minted when there are project.properties['assignee']."
+              );
               return;
             } else if (hasMintkudosCredentialsSetup) setIsOpen(true);
             else {

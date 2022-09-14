@@ -69,20 +69,22 @@ function EditViewModal({ setViewOpen, viewId }: Props) {
   const viewFilters = view?.filters;
 
   const [name, setName] = useState<string>(view?.name || " ");
-  const [layout, setLayout] = useState<"Board" | "List" | "Gantt">(view?.type || "Board");
-  const [reviewer, setReviewer] = useState<string[]>(
-    viewFilters?.reviewer || []
+  const [layout, setLayout] = useState<"Board" | "List" | "Gantt">(
+    view?.type || "Board"
   );
-  const [assignee, setAssignee] = useState<string[]>(
-    viewFilters?.assignee || []
-  );
-  const [label, setLabels] = useState<string[]>(viewFilters?.label || []);
-  const [title, setTitle] = useState<string>(viewFilters?.title || "");
-  const [column, setColumn] = useState<string[]>(viewFilters?.column || []);
-  const [priority, setPriority] = useState<string[]>(
-    viewFilters?.priority || []
-  );
-  const [type, setType] = useState<string[]>(viewFilters?.type || []);
+  // const [reviewer, setReviewer] = useState<string[]>(
+  //   viewFilters?.reviewer || []
+  // );
+  // const [assignee, setAssignee] = useState<string[]>(
+  //   viewFilters?.assignee || []
+  // );
+  // const [label, setLabels] = useState<string[]>(viewFilters?.label || []);
+  // const [title, setTitle] = useState<string>(viewFilters?.title || "");
+  // const [column, setColumn] = useState<string[]>(viewFilters?.column || []);
+  // const [priority, setPriority] = useState<string[]>(
+  //   viewFilters?.priority || []
+  // );
+  // const [type, setType] = useState<string[]>(viewFilters?.type || []);
 
   const onEdit = async () => {
     const updatedProject = await editViews(
@@ -90,15 +92,16 @@ function EditViewModal({ setViewOpen, viewId }: Props) {
         type: layout,
         hidden: false,
         filters: {
-          assignee: assignee,
-          reviewer: reviewer,
-          column: column,
-          label: label,
-          status: [],
-          title: title,
-          type: type,
-          priority: priority,
-          deadline: "",
+          properties: [],
+          // assignee: assignee,
+          // reviewer: reviewer,
+          // column: column,
+          // label: label,
+          // status: [],
+          // title: title,
+          // type: type,
+          // priority: priority,
+          // deadline: "",
         },
         name: name,
       },
@@ -180,7 +183,7 @@ function EditViewModal({ setViewOpen, viewId }: Props) {
               </Box>
             </Box>
           </Box>
-          <MultiSelectDropdown
+          {/* <MultiSelectDropdown
             width="30"
             options={filteredMembers}
             value={assignee}
@@ -228,7 +231,7 @@ function EditViewModal({ setViewOpen, viewId }: Props) {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
             />
-          </InputBox>
+          </InputBox> */}
           <Stack direction={"horizontal"} flex="initial" justify={"stretch"}>
             <Button
               tone="red"

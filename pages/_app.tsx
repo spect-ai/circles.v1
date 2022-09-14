@@ -96,15 +96,15 @@ function MyApp({ Component, pageProps }: AppProps) {
       <GlobalContextProvider>
         <ThemeProvider defaultAccent="purple" defaultMode="dark">
           <QueryClientProvider client={queryClient}>
-            <Hydrate state={pageProps.dehydratedState}>
-              <AnimatePresence
-                exitBeforeEnter
-                initial={false}
-                onExitComplete={() => window.scrollTo(0, 0)}
-              >
-                <Component {...pageProps} canonical={url} key={url} />
-              </AnimatePresence>
-            </Hydrate>
+            {/* <Hydrate state={pageProps.dehydratedState}> */}
+            <AnimatePresence
+              exitBeforeEnter
+              initial={false}
+              onExitComplete={() => window.scrollTo(0, 0)}
+            >
+              <Component {...pageProps} canonical={url} key={url} />
+            </AnimatePresence>
+            {/* </Hydrate> */}
           </QueryClientProvider>
         </ThemeProvider>
       </GlobalContextProvider>

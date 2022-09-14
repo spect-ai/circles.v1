@@ -82,12 +82,13 @@ function BoardView({ viewId }: Props) {
   const { getOptions } = useModalOptions();
   const options = getOptions("assignee");
   const assigneeIds = options?.map((person) => person.value);
-  const assigneecolumn = options?.map((person) => ({
-    columnId: person.value,
-    name: person.name,
-    cards: [""],
-    defaultCardType: "Task",
-  }));
+  // const assigneecolumn = options?.map((person) => ({
+  //   columnId: person.value,
+  //   name: person.name,
+  //   cards: [""],
+  //   defaultCardType: "Task",
+  // }));
+  const assigneecolumn: any[] = [];
 
   const DroppableContent = (provided: DroppableProvided) => (
     <Container
@@ -116,7 +117,7 @@ function BoardView({ viewId }: Props) {
               />
             );
           })}
-        {!viewId &&
+        {/* {!viewId &&
           advFilters?.groupBy == "Assignee" &&
           assigneeIds?.map((assigneeId, index): any => {
             const column = assigneecolumn?.[index];
@@ -131,16 +132,16 @@ function BoardView({ viewId }: Props) {
                 cards={cards}
               />
             );
-          })}
+          })} */}
         {viewId &&
           advFilters?.groupBy == "Status" &&
           project?.columnOrder?.map((columnId, index): any => {
             const column = project.columnDetails[columnId];
-            if (
-              (view?.filters as FilterType)?.column?.length > 0 &&
-              !(view?.filters as FilterType).column?.includes(column?.name)
-            )
-              return null;
+            // if (
+            //   (view?.filters as FilterType)?.column?.length > 0 &&
+            //   !(view?.filters as FilterType).column?.includes(column?.name)
+            // )
+            //   return null;
             let cards = column.cards?.map((cardId: string) =>
               viewId ? viewCards[cardId] : project.cards[cardId]
             );
@@ -158,7 +159,7 @@ function BoardView({ viewId }: Props) {
               />
             );
           })}
-        {viewId &&
+        {/* {viewId &&
           advFilters?.groupBy == "Assignee" &&
           assigneeIds?.map((assigneeId, index): any => {
             const column = assigneecolumn?.[index];
@@ -173,7 +174,7 @@ function BoardView({ viewId }: Props) {
                 cards={cards}
               />
             );
-          })}
+          })} */}
         {provided.placeholder}
         {!viewId &&
           advFilters.groupBy == "Status" &&

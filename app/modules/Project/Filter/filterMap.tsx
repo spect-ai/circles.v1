@@ -135,7 +135,7 @@ export default function useFilterMap() {
   };
 
   const getValueOptions = (id: string) => {
-    const options = project.properties[id]?.options;
+    const options = project?.properties[id]?.options;
     if (options) {
       return options.map((o) => ({
         name: o.label,

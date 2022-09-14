@@ -66,7 +66,7 @@ function GanttChart({ viewId }: { viewId: string }) {
   const [isChecked, setIsChecked] = useState(true);
 
   useEffect(() => {
-    let tcards;
+    let tcards: CardsType;
     if (viewId === "") {
       tcards = filteredCards;
     } else {

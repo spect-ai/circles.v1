@@ -66,15 +66,15 @@ function ListView({ viewId }: Props) {
   const { getOptions } = useModalOptions();
   const options = getOptions("assignee");
   const assigneeIds = options?.map((person) => person.value);
-  const assigneecolumn = options?.map((person) => ({
-    columnId: person.value as string,
-    name: person.name,
-    cards: [""],
-    defaultCardType: "Task",
-    access: {
-      canCreateCard: "",
-    },
-  }));
+  // const assigneecolumn = options?.map((person) => ({
+  //   columnId: person.value as string,
+  //   name: person.name,
+  //   cards: [""],
+  //   defaultCardType: "Task",
+  //   access: {
+  //     canCreateCard: "",
+  //   },
+  // }));
 
   return (
     <ScrollContainer>
@@ -91,7 +91,7 @@ function ListView({ viewId }: Props) {
             cards = sortBy(advFilters.sortBy, fcards, advFilters.order);
             return <ListSection key={columnId} column={column} cards={cards} />;
           })}
-        {!viewId &&
+        {/* {!viewId &&
           advFilters?.groupBy == "Assignee" &&
           assigneeIds?.map((assigneeId, index): any => {
             const column = assigneecolumn?.[index];
@@ -105,8 +105,8 @@ function ListView({ viewId }: Props) {
                 cards={cards}
               />
             );
-          })}
-        {viewId &&
+          })} */}
+        {/* {viewId &&
           advFilters?.groupBy == "Assignee" &&
           assigneeIds?.map((assigneeId, index): any => {
             const column = assigneecolumn?.[index];
@@ -120,8 +120,8 @@ function ListView({ viewId }: Props) {
                 cards={cards}
               />
             );
-          })}
-        {viewId &&
+          })} */}
+        {/* {viewId &&
           advFilters?.groupBy == "Status" &&
           project?.columnOrder?.map((columnId: string) => {
             const column = project.columnDetails[columnId];
@@ -138,7 +138,7 @@ function ListView({ viewId }: Props) {
             cards = sortBy(advFilters.sortBy, fcards, advFilters.order);
 
             return <ListSection key={columnId} column={column} cards={cards} />;
-          })}
+          })} */}
         {!viewId &&
           advFilters?.groupBy == "Status" &&
           project?.id &&

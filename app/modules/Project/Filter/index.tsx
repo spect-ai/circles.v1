@@ -154,11 +154,11 @@ export default function Filter() {
                           setLoading(true);
                           const conditionOptions =
                             getConditionOptions(
-                              project.properties[option.value].type
+                              project?.properties[option.value].type
                             ) || [];
                           const v = getValue(
                             option.value,
-                            project.properties[option.value].type,
+                            project?.properties[option.value].type,
                             conditionOptions[0].value
                           );
                           console.log(v?.value);
@@ -193,7 +193,7 @@ export default function Filter() {
 
                             const v = getValue(
                               p.id.value,
-                              project.properties[p.id.value].type,
+                              project?.properties[p.id.value].type,
                               option.value
                             );
                             const filterProps = {
