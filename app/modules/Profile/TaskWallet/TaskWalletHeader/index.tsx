@@ -4,10 +4,10 @@ import { useGlobal } from "@/app/context/globalContext";
 import { UserType } from "@/app/types";
 import Link from "next/link";
 import { useQuery } from "react-query";
-import React  from "react";
+import React, { memo } from "react";
 import queryClient from "@/app/common/utils/queryClient";
 
-export const QuickProfileHeader = React.memo(({ userData }: { userData: UserType }) => {
+const TaskWalletHeader = ({ userData }: { userData: UserType }) => {
   const { setIsProfilePanelExpanded, disconnectUser } = useGlobal();
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
@@ -80,6 +80,6 @@ export const QuickProfileHeader = React.memo(({ userData }: { userData: UserType
       </Box>
     </Box>
   );
-});
+};
 
-QuickProfileHeader.displayName = "QuickProfileHeader";
+export default memo(TaskWalletHeader);

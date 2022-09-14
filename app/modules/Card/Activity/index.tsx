@@ -9,6 +9,7 @@ import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
 import ClickableTag from "@/app/common/components/EditTag/ClickableTag";
 import { EyeInvisibleOutlined, EyeOutlined } from "@ant-design/icons";
 import { fadeVariant } from "../Utils/variants";
+import ClickableAvatar from "@/app/common/components/Avatar";
 
 export default function Activity() {
   const { activity } = useLocalCard();
@@ -63,7 +64,7 @@ export default function Activity() {
                       <Avatar
                         label=""
                         placeholder={!getMemberDetails(item.actorId)?.avatar}
-                        src={getMemberDetails(item.actorId)?.avatar}
+                        src={getMemberDetails(item.actorId)?.avatar as string}
                         address={getMemberDetails(item.actorId)?.ethAddress}
                         size="8"
                       />

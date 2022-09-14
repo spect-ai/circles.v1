@@ -2,7 +2,7 @@ import { CardsType, CardType, Filter, ProjectType } from "@/app/types";
 
 export const filterCards = (
   project: ProjectType,
-  cards : CardsType | CardType[],
+  cards: CardsType | CardType[],
   currentFilter: Filter
 ): CardsType => {
   if (!currentFilter || !project.cards) return cards as CardsType;
