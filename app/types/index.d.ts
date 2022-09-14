@@ -564,3 +564,35 @@ export type KudoOfUserType = {
   claimStatus: string;
   communityId: string;
 };
+
+export interface DistributeEtherParams {
+  contributors: any;
+  values: any[];
+  chainId: string;
+  cardIds: string[];
+  circleId: string;
+  type: "card" | "retro";
+  callerId: string;
+  nonce?: number;
+  paymentMethod: "wallet" | "gnosis" | "gasless";
+}
+
+export interface DistributeTokenParams extends DistributeEtherParams {
+  tokenAddresses: string[];
+}
+
+export type ExternalProvider = {
+  isMetaMask?: boolean;
+  isStatus?: boolean;
+  host?: string;
+  path?: string;
+  sendAsync?: (
+    request: { method: string; params?: Array<any> },
+    callback: (error: any, response: any) => void
+  ) => void;
+  send?: (
+    request: { method: string; params?: Array<any> },
+    callback: (error: any, response: any) => void
+  ) => void;
+  request?: (request: { method: string; params?: Array<any> }) => Promise<any>;
+};
