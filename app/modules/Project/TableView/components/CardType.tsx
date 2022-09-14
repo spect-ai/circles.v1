@@ -1,16 +1,25 @@
+import useCardService from "@/app/services/Card/useCardService";
+import { useLocalProject } from "@/app/modules/Project/Context/LocalProjectContext";
+
 import EditTag from "@/app/common/components/EditTag";
 import ModalOption from "@/app/common/components/ModalOption";
 import { AuditOutlined } from "@ant-design/icons";
 import { Box, IconSearch, Input, Text } from "degen";
 import React, { memo, useEffect, useState } from "react";
 import { matchSorter } from "match-sorter";
-import { useLocalCard } from "../../Project/CreateCardModal/hooks/LocalCardContext";
-import { Option } from "../../Project/CreateCardModal/constants";
+
+import { Option } from "@/app/modules/Project/CreateCardModal/constants";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
 
-function CardType() {
-  const { cardType, setCardType, onCardUpdate, card } = useLocalCard();
+export function CardType({
+  id,
+  type,
+}: {
+  id: string;
+  type: "Bounty" | "Task";
+}) {
+  const [cardType, setCardType] = useState(type);
   const [modalOpen, setModalOpen] = useState(false);
 
   const [options, setOptions] = useState<Option[]>();
@@ -18,6 +27,14 @@ function CardType() {
 
   const { canTakeAction } = useRoleGate();
   const { getOptions } = useModalOptions();
+  const { updateProject } = useLocalProject();
+  const { updateCard } = useCardService();
+
+  const onCardUpdate = async () => {
+    const res = await updateCard({ type: cardType }, id);
+    console.log(res);
+    if (res?.id) updateProject(res.project);
+  };
 
   useEffect(() => {
     const ops = getOptions("card") as Option[];
@@ -29,7 +46,6 @@ function CardType() {
       tourId="card-type"
       name={cardType}
       modalTitle="Select Card Type"
-      label="Card Type"
       modalOpen={modalOpen}
       setModalOpen={setModalOpen}
       icon={
@@ -44,7 +60,7 @@ function CardType() {
       }
       disabled={!canTakeAction("cardType")}
       handleClose={() => {
-        if (card?.type !== cardType) {
+        if (type !== cardType) {
           void onCardUpdate();
         }
         setModalOpen(false);
@@ -98,7 +114,7 @@ function CardType() {
                 </Text>
               </Box>
               <Box style={{ width: "65%" }}>
-                <Text size="label" color="textSecondary">
+                <Text size="label" color="textSecondary" whiteSpace="pre-wrap">
                   {item.secondary}
                 </Text>
               </Box>
@@ -112,4 +128,3 @@ function CardType() {
     </EditTag>
   );
 }
-export default memo(CardType);

@@ -92,7 +92,12 @@ export default function useCardService() {
     setUpdating(false);
     if (res.ok) {
       const data: CardType = await res.json();
-      void router.push(`/${cId}/${data.project.slug}/${data.slug}`);
+      if (tId) {
+        void router.push(`/${cId}/${data.project.slug}/${data.slug}`);
+      } else {
+        void router.push(`/${cId}/${data.project.slug}`);
+      }
+
       console.log({ data });
       return data;
     }
