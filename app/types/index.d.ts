@@ -1,4 +1,5 @@
 import { OptionType as SingleSelectOptionType } from "../common/components/Dropdown";
+import { OptionType as MultiSelectOptionType } from "../common/components/MultiSelectDropDown/MultiSelectDropDown";
 
 interface UserType {
   accounts: string[];
@@ -504,8 +505,22 @@ export interface CardDetails {
 
 export type FilterProperty = {
   id: SingleSelectOptionType;
-  value: any;
   condition: SingleSelectOptionType;
+  conditionOptions?: SingleSelectOptionType[];
+  value: any;
+  valueType?:
+    | "string"
+    | "number"
+    | "user[]"
+    | "user"
+    | "reward"
+    | "date"
+    | "singleSelect"
+    | "multiSelect"
+    | "ethAddress"
+    | undefined;
+  valueSingleSelectOptions?: SingleSelectOptionType[];
+  valueMultiSelectOptions?: MultiSelectOptionType[];
 };
 
 export type FilterType = {

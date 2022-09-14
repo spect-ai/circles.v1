@@ -2,55 +2,36 @@ import Dropdown, {
   OptionType as SingleSelectOptionType,
 } from "@/app/common/components/Dropdown";
 import { grow } from "@/app/common/components/Modal";
-import MultiSelectDropdown from "@/app/common/components/MultiSelectDropDown/MultiSelectDropDown";
+import MultiSelectDropdown, {
+  InputBox,
+} from "@/app/common/components/MultiSelectDropDown/MultiSelectDropDown";
 import Popover from "@/app/common/components/Popover";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { useGlobal } from "@/app/context/globalContext";
-import {
-  CircleType,
-  FilterType,
-  FilterProperty,
-  MemberDetails,
-} from "@/app/types";
-import { FilterOutlined } from "@ant-design/icons";
-import { Box, Button, Text, useTheme } from "degen";
-import { AnimatePresence, motion } from "framer-motion";
-import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
-import { useQuery } from "react-query";
-import { useLocalProject } from "../Context/LocalProjectContext";
-import { labels } from "../ProjectViews/constants";
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
-import { getConditionOptions } from "./filterMap";
+import { FilterProperty } from "@/app/types";
+import { FilterOutlined } from "@ant-design/icons";
+import { Box, Button, Input, Text, useTheme } from "degen";
+import { AnimatePresence, motion } from "framer-motion";
+import { useEffect, useState } from "react";
+import { useLocalProject } from "../Context/LocalProjectContext";
+import useFilterMap from "./filterMap";
 
 export default function Filter() {
   const [filterOpen, setFilterOpen] = useState(false);
-  const router = useRouter();
   const { mode } = useTheme();
   const { currentFilter, setCurrentFilter } = useGlobal();
   const { getOptions } = useModalOptions();
+  const { getConditionOptions, getValue } = useFilterMap();
 
-  const { circle: cId } = router.query;
   const { localProject: project } = useLocalProject();
-  const { data: circle } = useQuery<CircleType>(["circle", cId], {
-    enabled: false,
-  });
-  const { data: memberDetails } = useQuery<MemberDetails>(
-    ["memberDetails", cId],
-    { enabled: false }
-  );
+
   const [loading, setLoading] = useState(false);
 
   const [activeFilterProperties, setActiveFilterProperties] = useState(
     [] as FilterProperty[]
   );
   const [options, setOptions] = useState([] as SingleSelectOptionType[]);
-  const [conditionOptions, setConditionOptions] = useState(
-    [] as SingleSelectOptionType[]
-  );
-  const [valueOptions, setValueOptions] = useState([] as any[]);
-
-  const [allMembers, setAllMembers] = useState([] as any[]);
 
   const filterIsOn: boolean =
     Object.keys(currentFilter) && Object.keys(currentFilter).length > 0;
@@ -70,20 +51,14 @@ export default function Filter() {
         value: "is",
       },
       value: "",
-    };
+      conditionOptions: [
+        {
+          label: "is",
+          value: "is",
+        },
+      ],
+    } as FilterProperty;
   };
-
-  useEffect(() => {
-    if (circle) {
-      const circleMembersArray = circle?.members.map((mem) => ({
-        name: memberDetails?.memberDetails[mem]?.username as string,
-        id: mem,
-        label: memberDetails?.memberDetails[mem]?.username as string,
-        value: mem,
-      }));
-      setAllMembers(circleMembersArray);
-    }
-  }, [circle, memberDetails?.memberDetails]);
 
   useEffect(() => {
     const ops = getOptions("filter") as unknown as SingleSelectOptionType[];
@@ -91,14 +66,17 @@ export default function Filter() {
   }, [filterOpen]);
 
   useEffect(() => {
-    setLoading(true);
-    setActiveFilterProperties(
-      currentFilter?.properties?.length > 0
-        ? currentFilter?.properties
-        : [defaultProperty()]
-    );
-    setLoading(false);
-  }, [currentFilter?.properties, filterOpen]);
+    if (filterOpen) {
+      setLoading(true);
+      setActiveFilterProperties(
+        currentFilter?.properties?.length > 0
+          ? currentFilter?.properties
+          : [defaultProperty()]
+      );
+      setLoading(false);
+      console.log(activeFilterProperties);
+    }
+  }, [filterOpen]);
 
   return (
     <Popover
@@ -173,30 +151,85 @@ export default function Filter() {
                         options={options}
                         selected={p.id}
                         onChange={(option) => {
-                          activeFilterProperties[index].id = option;
-                          setActiveFilterProperties(activeFilterProperties);
+                          setLoading(true);
+                          const conditionOptions =
+                            getConditionOptions(
+                              project.properties[option.value].type
+                            ) || [];
+                          const v = getValue(
+                            option.value,
+                            project.properties[option.value].type,
+                            conditionOptions[0].value
+                          );
+                          console.log(v?.value);
+                          const filterProps = {
+                            ...p,
+                            id: option,
+                            conditionOptions: conditionOptions,
+                            condition: conditionOptions[0],
+                            valueType: v?.valueType,
+                            value: v?.value,
+                            valueSingleSelectOptions:
+                              v?.valueSingleSelectOptions,
+                            valueMultiSelectOptions: v?.valueMultiSelectOptions,
+                          } as FilterProperty;
+                          activeFilterProperties.splice(index, 1, filterProps);
+                          setActiveFilterProperties([
+                            ...activeFilterProperties,
+                          ]);
+
+                          setLoading(false);
                         }}
                       />
                     </Box>
+                    {!loading && (
+                      <Box marginLeft="4">
+                        <Dropdown
+                          width="10"
+                          options={p.conditionOptions || []}
+                          selected={p.condition}
+                          onChange={(option) => {
+                            setLoading(true);
+
+                            const v = getValue(
+                              p.id.value,
+                              project.properties[p.id.value].type,
+                              option.value
+                            );
+                            const filterProps = {
+                              ...p,
+                              condition: option,
+                              valueType:
+                                v?.valueType as FilterProperty["valueType"],
+                              value: v?.value,
+                              valueSingleSelectOptions:
+                                v?.valueSingleSelectOptions,
+                              valueMultiSelectOptions:
+                                v?.valueMultiSelectOptions,
+                            };
+                            activeFilterProperties.splice(
+                              index,
+                              1,
+                              filterProps
+                            );
+                            setActiveFilterProperties([
+                              ...activeFilterProperties,
+                            ]);
+                            setLoading(false);
+                          }}
+                        />
+                      </Box>
+                    )}
                     <Box marginLeft="4">
-                      <Dropdown
-                        width="10"
-                        options={conditionOptions}
-                        selected={p.condition}
-                        onChange={(option) => {
-                          activeFilterProperties[index].condition = option;
-                          setActiveFilterProperties(activeFilterProperties);
-                        }}
-                      />
-                    </Box>
-                    <Box marginLeft="4">
-                      {activeFilterProperties[0].condition?.value ===
-                        "isOneOf" &&
-                        valueOptions && (
+                      {!loading &&
+                        p.valueType &&
+                        ["user[]", "string[]", "multiSelect"].includes(
+                          p.valueType
+                        ) && (
                           <MultiSelectDropdown
                             width="8"
-                            options={valueOptions}
-                            value={activeFilterProperties[index].value}
+                            options={p.valueMultiSelectOptions || []}
+                            value={p.value}
                             setValue={(v) => {
                               console.log(v);
                               activeFilterProperties[index].value = v;
@@ -204,17 +237,54 @@ export default function Filter() {
                             }}
                           />
                         )}
-                      {activeFilterProperties[0].condition?.value === "is" &&
-                        valueOptions && (
+                      {!loading &&
+                        p.valueType &&
+                        ["user", "singleSelect"].includes(p.valueType) && (
                           <Dropdown
                             width="12"
-                            options={valueOptions}
-                            selected={activeFilterProperties[index].value}
+                            options={p.valueSingleSelectOptions || []}
+                            selected={p.value}
                             onChange={(option) => {
                               activeFilterProperties[index].value = option;
                               setActiveFilterProperties(activeFilterProperties);
                             }}
                           />
+                        )}
+                      {!loading &&
+                        p.valueType &&
+                        ["string", "date"].includes(p.valueType) && (
+                          <InputBox mode={mode}>
+                            <Input
+                              label={false}
+                              value={p.value}
+                              onChange={(e) => {
+                                activeFilterProperties[index].value =
+                                  e.target.value;
+                                setActiveFilterProperties(
+                                  activeFilterProperties
+                                );
+                              }}
+                              maxLength={15}
+                            />
+                          </InputBox>
+                        )}
+                      {!loading &&
+                        p.valueType &&
+                        ["number"].includes(p.valueType) && (
+                          <InputBox mode={mode}>
+                            <Input
+                              label={false}
+                              value={p.value}
+                              type="number"
+                              onChange={(e) => {
+                                activeFilterProperties[index].value =
+                                  e.target.value;
+                                setActiveFilterProperties(
+                                  activeFilterProperties
+                                );
+                              }}
+                            />
+                          </InputBox>
                         )}
                     </Box>
                   </Box>
