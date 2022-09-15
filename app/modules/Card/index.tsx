@@ -327,7 +327,6 @@ function Card() {
                 {!loading &&
                   propertyOrder &&
                   propertyOrder.map((propertyId) => {
-                    console.log(propertyId);
                     if (
                       project?.properties[propertyId] &&
                       project.properties[propertyId].type

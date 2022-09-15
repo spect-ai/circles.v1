@@ -64,7 +64,6 @@ function MultiUserProperty({ templateId, propertyId }: props) {
 
   useEffect(() => {
     console.log(cardProperty);
-    console.log(propertyId);
 
     if (cardProperty && cardProperty[propertyId]) {
       setLocalProperty(cardProperty && cardProperty[propertyId]);

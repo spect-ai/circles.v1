@@ -63,6 +63,7 @@ function BoardView({ viewId }: Props) {
 
   useEffect(() => {
     const fCards = filterCards(project, project.cards, currentFilter);
+    console.log(fCards);
     setFilteredCards(fCards);
     const vCards = filterCards(
       project,

@@ -1,6 +1,7 @@
 import Dropdown, {
   OptionType as SingleSelectOptionType,
 } from "@/app/common/components/Dropdown";
+import ClickableTag from "@/app/common/components/EditTag/ClickableTag";
 import { grow } from "@/app/common/components/Modal";
 import MultiSelectDropdown, {
   InputBox,
@@ -10,12 +11,30 @@ import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { useGlobal } from "@/app/context/globalContext";
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
 import { FilterProperty } from "@/app/types";
-import { FilterOutlined } from "@ant-design/icons";
-import { Box, Button, Input, Text, useTheme } from "degen";
+import { CalendarOutlined, FilterOutlined } from "@ant-design/icons";
+import { Box, Button, Text, useTheme } from "degen";
 import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { forwardRef, useEffect, useState } from "react";
+import ReactDatePicker from "react-datepicker";
+import styled from "styled-components";
 import { useLocalProject } from "../Context/LocalProjectContext";
 import useFilterMap from "./filterMap";
+
+const Input = styled.input`
+  background-color: transparent;
+  padding: 0.8rem;
+  display: flex;
+  border-style: none;
+  outline: none;
+  outline-offset: 0;
+  box-shadow: none;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  caret-color: rgb(191, 90, 242);
+  color: rgb(191, 90, 242);
+  font-weight: 400;
+  opacity: "40%";
+`;
 
 export default function Filter() {
   const [filterOpen, setFilterOpen] = useState(false);
@@ -34,9 +53,13 @@ export default function Filter() {
   const [options, setOptions] = useState([] as SingleSelectOptionType[]);
 
   const filterIsOn: boolean =
-    Object.keys(currentFilter) && Object.keys(currentFilter).length > 0;
+    currentFilter?.properties && currentFilter?.properties.length > 0;
 
   const handleClick = () => {
+    console.log(activeFilterProperties);
+    setCurrentFilter({
+      properties: activeFilterProperties,
+    });
     setFilterOpen(!filterOpen);
   };
 
@@ -74,7 +97,6 @@ export default function Filter() {
           : [defaultProperty()]
       );
       setLoading(false);
-      console.log(activeFilterProperties);
     }
   }, [filterOpen]);
 
@@ -231,9 +253,21 @@ export default function Filter() {
                             options={p.valueMultiSelectOptions || []}
                             value={p.value}
                             setValue={(v) => {
-                              console.log(v);
-                              activeFilterProperties[index].value = v;
-                              setActiveFilterProperties(activeFilterProperties);
+                              setLoading(true);
+
+                              const filterProps = {
+                                ...p,
+                                value: v,
+                              };
+                              activeFilterProperties.splice(
+                                index,
+                                1,
+                                filterProps
+                              );
+                              setActiveFilterProperties([
+                                ...activeFilterProperties,
+                              ]);
+                              setLoading(false);
                             }}
                           />
                         )}
@@ -245,46 +279,100 @@ export default function Filter() {
                             options={p.valueSingleSelectOptions || []}
                             selected={p.value}
                             onChange={(option) => {
-                              activeFilterProperties[index].value = option;
-                              setActiveFilterProperties(activeFilterProperties);
+                              setLoading(true);
+
+                              const filterProps = {
+                                ...p,
+                                value: option,
+                              };
+                              activeFilterProperties.splice(
+                                index,
+                                1,
+                                filterProps
+                              );
+                              setActiveFilterProperties([
+                                ...activeFilterProperties,
+                              ]);
+                              setLoading(false);
                             }}
                           />
                         )}
                       {!loading &&
                         p.valueType &&
-                        ["string", "date"].includes(p.valueType) && (
-                          <InputBox mode={mode}>
-                            <Input
-                              label={false}
-                              value={p.value}
-                              onChange={(e) => {
-                                activeFilterProperties[index].value =
-                                  e.target.value;
-                                setActiveFilterProperties(
-                                  activeFilterProperties
-                                );
-                              }}
-                              maxLength={15}
-                            />
-                          </InputBox>
+                        ["string"].includes(p.valueType) && (
+                          <Input
+                            value={p.value}
+                            onChange={(e) => {
+                              setLoading(true);
+
+                              const filterProps = {
+                                ...p,
+                                value: e.target.value,
+                              };
+                              activeFilterProperties.splice(
+                                index,
+                                1,
+                                filterProps
+                              );
+                              setActiveFilterProperties([
+                                ...activeFilterProperties,
+                              ]);
+                              setLoading(false);
+                            }}
+                            maxLength={15}
+                          />
+                        )}
+                      {!loading &&
+                        p.valueType &&
+                        ["date"].includes(p.valueType) && (
+                          <ReactDatePicker
+                            // ref={dateRef}
+                            selected={p.value ? p.value : new Date()}
+                            onChange={(date: Date) => {
+                              console.log(date);
+                              setLoading(true);
+
+                              const filterProps = {
+                                ...p,
+                                value: new Date(date),
+                              };
+                              activeFilterProperties.splice(
+                                index,
+                                1,
+                                filterProps
+                              );
+                              setActiveFilterProperties([
+                                ...activeFilterProperties,
+                              ]);
+                              setLoading(false);
+                            }}
+                            customInput={<Input type="text" id={"date"} />}
+                          />
                         )}
                       {!loading &&
                         p.valueType &&
                         ["number"].includes(p.valueType) && (
-                          <InputBox mode={mode}>
-                            <Input
-                              label={false}
-                              value={p.value}
-                              type="number"
-                              onChange={(e) => {
-                                activeFilterProperties[index].value =
-                                  e.target.value;
-                                setActiveFilterProperties(
-                                  activeFilterProperties
-                                );
-                              }}
-                            />
-                          </InputBox>
+                          <Input
+                            value={p.value}
+                            type="number"
+                            onChange={(e) => {
+                              setLoading(true);
+
+                              const filterProps = {
+                                ...p,
+                                value: e.target.value,
+                              };
+                              activeFilterProperties.splice(
+                                index,
+                                1,
+                                filterProps
+                              );
+                              setActiveFilterProperties([
+                                ...activeFilterProperties,
+                              ]);
+                              setLoading(false);
+                            }}
+                          />
                         )}
                     </Box>
                   </Box>
@@ -319,6 +407,27 @@ export default function Filter() {
                   }}
                 >
                   Add Condition
+                </Button>
+              </Box>
+              <Box
+                width="full"
+                display="flex"
+                flexDirection="row"
+                justifyContent="flex-start"
+              >
+                <Button
+                  variant="transparent"
+                  size="small"
+                  onClick={() => {
+                    setLoading(true);
+                    setActiveFilterProperties([]);
+                    setCurrentFilter({
+                      properties: [],
+                    });
+                    setLoading(false);
+                  }}
+                >
+                  Clear Filter
                 </Button>
               </Box>
               <Box

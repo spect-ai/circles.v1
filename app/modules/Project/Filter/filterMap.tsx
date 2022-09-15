@@ -32,15 +32,30 @@ export default function useFilterMap() {
 
   const getConditionOptions = (type: string) => {
     switch (type) {
-      case "user[]":
+      case "user":
         return [
-          {
-            label: "is",
-            value: "is",
-          },
           {
             label: "is one of",
             value: "isOneOf",
+          },
+          {
+            label: "is all of",
+            value: "isAllOf",
+          },
+        ];
+      case "user[]":
+        return [
+          {
+            label: "is exactly",
+            value: "isExactly",
+          },
+          {
+            label: "has any of",
+            value: "hasAnyOf",
+          },
+          {
+            label: "has all of",
+            value: "hasAllOf",
           },
         ];
       case "shortText":
@@ -119,8 +134,16 @@ export default function useFilterMap() {
       case "multiSelect":
         return [
           {
-            label: "value is exactly",
+            label: "is exactly",
             value: "isExactly",
+          },
+          {
+            label: "has any of",
+            value: "hasAnyOf",
+          },
+          {
+            label: "has all of",
+            value: "hasAllOf",
           },
         ];
 
@@ -159,7 +182,7 @@ export default function useFilterMap() {
 
   const getValue = (id: string, type: string, conditionValue: string) => {
     switch (type) {
-      case "user[]":
+      case "user":
         switch (conditionValue) {
           case "is":
             return {
@@ -177,6 +200,14 @@ export default function useFilterMap() {
             };
         }
         break;
+      case "user[]":
+        return {
+          value: [],
+          valueType: "user[]",
+          valueSingleSelectOptions: [],
+          valueMultiSelectOptions: allMembers,
+        };
+
       case "shortText":
       case "longText":
         return {
@@ -213,23 +244,13 @@ export default function useFilterMap() {
         }
         break;
       case "multiSelect":
-        switch (conditionValue) {
-          case "isExactly":
-            return {
-              value: [],
-              valueType: "multiSelect",
-              valueSingleSelectOptions: [],
-              valueMultiSelectOptions: getValueOptions(id),
-            };
-          case "isPartially":
-            return {
-              value: [],
-              valueType: "multiSelect",
-              valueSingleSelectOptions: [],
-              valueMultiSelectOptions: getValueOptions(id),
-            };
-        }
-        break;
+        return {
+          value: [],
+          valueType: "multiSelect",
+          valueSingleSelectOptions: [],
+          valueMultiSelectOptions: getValueOptions(id),
+        };
+
       case "date":
         return {
           value: "",

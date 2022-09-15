@@ -271,7 +271,7 @@ export interface CardType {
   kudosClaimedBy: KudosClaimedType;
   eligibleToClaimKudos: KudosClaimedType;
   propertyOrder: string[];
-  properties: Map<string, any>;
+  properties: { [id: string]: any };
   unauthorized?: boolean;
 }
 
