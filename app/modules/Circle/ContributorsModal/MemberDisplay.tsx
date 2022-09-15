@@ -77,7 +77,7 @@ export default function MemberDisplay({ member, memberDetails }: Props) {
           marginRight="2"
           marginTop="2"
           transitionDuration="700"
-          onClick={() => canDo(["steward"]) && setIsOpen(!isOpen)}
+          onClick={() => canDo("manageMembers") && setIsOpen(!isOpen)}
         >
           <Avatar
             src={memberDetails[member]?.avatar}

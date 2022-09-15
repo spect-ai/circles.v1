@@ -201,7 +201,7 @@ export default function RetroModal({ handleClose }: Props) {
                 )}
               </Box>
               <Box width="full">
-                {retro.status.active && canDo(["steward"]) && (
+                {retro.status.active && canDo("endRetroManually") && (
                   <PrimaryButton
                     icon={<IconClose />}
                     variant="tertiary"
@@ -217,7 +217,7 @@ export default function RetroModal({ handleClose }: Props) {
                 )}
                 {!retro.status.active &&
                   !retro.status.paid &&
-                  canDo(["steward"]) && (
+                  canDo("makePayment") && (
                     <PrimaryButton
                       onClick={() => {
                         handleClose();

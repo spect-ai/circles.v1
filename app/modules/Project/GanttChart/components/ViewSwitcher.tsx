@@ -60,7 +60,7 @@ export const ViewSwitcher: React.FC<ViewSwitcherProps> = ({
 
   useHotkeys("c", (e) => {
     e.preventDefault();
-    if (!canDo(["steward", "contributor"])) {
+    if (!canDo("createNewCard")) {
       toast.error("You don't have permission to add cards in this column", {
         theme: "dark",
       });
@@ -100,7 +100,7 @@ export const ViewSwitcher: React.FC<ViewSwitcherProps> = ({
           size="small"
           variant="secondary"
           onClick={() => {
-            if (!canDo(["steward", "contributor"])) {
+            if (!canDo("createNewCard")) {
               toast.error(
                 "You don't have permission to add cards in this column",
                 { theme: "dark" }

@@ -175,7 +175,6 @@ function CreateProjectModal() {
                 <Stack direction="horizontal">
                   <Dropdown
                     options={[
-                      { label: "Notion", value: "notion" },
                       {
                         label: "Trello",
                         value: "trello",
