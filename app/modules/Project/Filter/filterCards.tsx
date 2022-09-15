@@ -31,9 +31,10 @@ export const filterCards = (
               case "hasAnyOf":
                 // eslint-disable-next-line no-case-declarations
                 const filterSet = new Set(filterValue);
-                for (const user of propValue) {
-                  if (filterSet.has(user)) return true;
-                }
+                if (propValue)
+                  for (const user of propValue) {
+                    if (filterSet.has(user)) return true;
+                  }
                 return false;
               case "hasAllOf":
                 return (

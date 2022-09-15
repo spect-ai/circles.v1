@@ -83,7 +83,6 @@ export const Input = styled.input`
 `;
 
 export const InputBox = styled(Box)<{ mode: string }>`
-  margin-bottom: 0.5rem;
   display: flex;
   flex-direction: row;
   border: 2px solid
@@ -153,7 +152,6 @@ const MultiSelectDropdown: FC<Props> = ({
           flexDirection="row"
           flexWrap="wrap"
           alignItems="center"
-          style={{ width: "92%" }}
         >
           {value?.map((item) => {
             const selectedOption = options.filter((i) => i.id == item);

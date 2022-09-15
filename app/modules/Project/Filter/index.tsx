@@ -41,7 +41,7 @@ export default function Filter() {
   const { mode } = useTheme();
   const { currentFilter, setCurrentFilter } = useGlobal();
   const { getOptions } = useModalOptions();
-  const { getConditionOptions, getValue } = useFilterMap();
+  const { getConditionOptions, getValue, defaultProperty } = useFilterMap();
 
   const { localProject: project } = useLocalProject();
 
@@ -61,26 +61,6 @@ export default function Filter() {
       properties: activeFilterProperties,
     });
     setFilterOpen(!filterOpen);
-  };
-
-  const defaultProperty = () => {
-    return {
-      id: {
-        label: "Assignee",
-        value: "assignee",
-      },
-      condition: {
-        label: "is",
-        value: "is",
-      },
-      value: "",
-      conditionOptions: [
-        {
-          label: "is",
-          value: "is",
-        },
-      ],
-    } as FilterProperty;
   };
 
   useEffect(() => {
@@ -183,7 +163,6 @@ export default function Filter() {
                             project?.properties[option.value].type,
                             conditionOptions[0].value
                           );
-                          console.log(v?.value);
                           const filterProps = {
                             ...p,
                             id: option,
@@ -249,7 +228,7 @@ export default function Filter() {
                           p.valueType
                         ) && (
                           <MultiSelectDropdown
-                            width="8"
+                            width="12"
                             options={p.valueMultiSelectOptions || []}
                             value={p.value}
                             setValue={(v) => {
@@ -420,7 +399,7 @@ export default function Filter() {
                   size="small"
                   onClick={() => {
                     setLoading(true);
-                    setActiveFilterProperties([]);
+                    setActiveFilterProperties([defaultProperty()]);
                     setCurrentFilter({
                       properties: [],
                     });

@@ -1,4 +1,4 @@
-import { CircleType, MemberDetails } from "@/app/types";
+import { CircleType, FilterProperty, MemberDetails } from "@/app/types";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
@@ -275,8 +275,40 @@ export default function useFilterMap() {
     }
   };
 
+  const defaultProperty = () => {
+    return {
+      id: {
+        label: "Assignee",
+        value: "assignee",
+      },
+      condition: {
+        label: "is",
+        value: "is",
+      },
+      conditionOptions: [
+        {
+          label: "is exactly",
+          value: "isExactly",
+        },
+        {
+          label: "has any of",
+          value: "hasAnyOf",
+        },
+        {
+          label: "has all of",
+          value: "hasAllOf",
+        },
+      ],
+      value: [],
+      valueMultiSelectOptions: allMembers,
+      valu: [],
+      valueType: "user[]",
+    } as FilterProperty;
+  };
+
   return {
     getConditionOptions,
     getValue,
+    defaultProperty,
   };
 }
