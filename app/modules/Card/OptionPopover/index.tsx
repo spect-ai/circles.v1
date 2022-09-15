@@ -99,7 +99,7 @@ export default function ActionPopover() {
           >
             <PopoverOption onClick={() => {}}>
               <TwitterShareButton
-                url={"https://circles.spect.network/"}
+                url={window.location.href}
                 title={`Creating magic for ${circle?.name} on Spect!`}
               >
                 <Stack direction="horizontal" space="2">
