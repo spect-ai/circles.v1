@@ -73,21 +73,17 @@ function ColumnComponent({ cards, id, column, index }: Props) {
   const { canDo } = useRoleGate();
   const { mode } = useTheme();
 
-  useHotkeys(
-    'c',
-    (e) => {
-      e.preventDefault()
-      if (!canDo(["steward", "contributor"])) {
-        toast.error(
-          "You don't have permission to add cards in this column",
-          { theme: "dark" }
-        );
-        return;
-      }
-      setIsOpen(true);
-    },
-  );
-  
+  useHotkeys("c", (e) => {
+    e.preventDefault();
+    if (!canDo("createNewCard")) {
+      toast.error("You don't have permission to add cards in this column", {
+        theme: "dark",
+      });
+      return;
+    }
+    setIsOpen(true);
+  });
+
   const updateColumn = useCallback(async () => {
     const updatedProject = await updateColumnDetails(
       project.id,
@@ -153,7 +149,7 @@ function ColumnComponent({ cards, id, column, index }: Props) {
             size="small"
             variant="transparent"
             onClick={() => {
-              if (!canDo(["steward", "contributor"])) {
+              if (!canDo("createNewCard")) {
                 toast.error(
                   "You don't have permission to add cards in this column",
                   { theme: "dark" }
@@ -165,7 +161,7 @@ function ColumnComponent({ cards, id, column, index }: Props) {
           >
             <IconPlusSmall />
           </Button>
-          {canDo(["steward"]) && (
+          {canDo("manageProjectSettings") && (
             <Button
               shape="circle"
               size="small"

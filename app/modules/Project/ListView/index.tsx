@@ -138,7 +138,7 @@ function ListView({ viewId }: Props) {
         {!viewId &&
           advFilters?.groupBy == "Status" &&
           project?.id &&
-          canDo(["steward"]) && (
+          canDo("manageProjectSettings") && (
             <Box style={{ width: "20rem" }} marginTop="2" marginLeft="2">
               <PrimaryButton
                 variant="tertiary"

@@ -106,7 +106,7 @@ function Project() {
               }`,
             }}
           />
-          {!onboarded && canDo(["steward"]) && <Onboarding />}
+          {!onboarded && canDo("createNewCircle") && <Onboarding />}
           {!vId && view === 0 && <BoardView viewId={""} />}
           {!vId && view === 1 && <ListView viewId={""} />}
           {!vId && view === 2 && <GanttChart viewId={""} />}

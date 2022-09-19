@@ -60,8 +60,8 @@ function Contributors() {
   return (
     <Box padding="2">
       <Stack direction="horizontal">
-        <Box width="1/3">{canDo(["steward"]) && <InviteMemberModal />}</Box>
-        <Box width="1/3">{canDo(["steward"]) && <AddRole />}</Box>
+        <Box width="1/3">{canDo("inviteMembers") && <InviteMemberModal />}</Box>
+        <Box width="1/3">{canDo("manageRoles") && <AddRole />}</Box>
       </Stack>
       <Stack>
         {Object.keys(circle?.roles).map((role) => (

@@ -76,7 +76,7 @@ export const ViewBar = () => {
                 variant={view_Id == viewName ? "tertiary" : "transparent"}
                 size="small"
                 suffix={
-                  view_Id == viewName && canDo(["steward"]) ? (
+                  view_Id == viewName && canDo("manageProjectSettings") ? (
                     <>
                       <Box
                         onClick={() => {
@@ -99,7 +99,7 @@ export const ViewBar = () => {
         })}
       </Container>
       <Box width="32">
-        {project?.name && canDo(["steward"]) && (
+        {project?.name && canDo("manageProjectSettings") && (
           <PrimaryButton
             variant="transparent"
             shape="circle"

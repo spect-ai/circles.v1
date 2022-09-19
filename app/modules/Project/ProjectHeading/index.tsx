@@ -84,7 +84,9 @@ function ProjectHeading() {
               }
             />
           )}
-          {project?.name && canDo(["steward"]) && <ProjectOptions />}
+          {project?.name && canDo("manageProjectSettings") && (
+            <ProjectOptions />
+          )}
           <ViewBar />
         </Stack>
         <Stack direction="horizontal" align="center">

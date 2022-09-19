@@ -81,26 +81,45 @@ export interface Permissions {
   manageRoles: boolean;
   distributeCredentials: boolean;
   manageCardProperties: {
-    Task: true;
-    Bounty: false;
+    Task: boolean;
+    Bounty: boolean;
   };
   createNewCard: {
-    Task: true;
-    Bounty: false;
+    Task: boolean;
+    Bounty: boolean;
   };
   manageRewards: {
-    Task: true;
-    Bounty: false;
+    Task: boolean;
+    Bounty: boolean;
   };
   reviewWork: {
-    Task: true;
-    Bounty: false;
+    Task: boolean;
+    Bounty: boolean;
   };
   canClaim: {
-    Task: true;
-    Bounty: false;
+    Task: boolean;
+    Bounty: boolean;
   };
 }
+
+export type Permission =
+  | "createNewCircle"
+  | "createNewProject"
+  | "createNewRetro"
+  | "endRetroManually"
+  | "inviteMembers"
+  | "makePayment"
+  | "manageCircleSettings"
+  | "manageMembers"
+  | "managePaymentOptions"
+  | "manageProjectSettings"
+  | "manageRoles"
+  | "distributeCredentials"
+  | "manageCardProperties"
+  | "createNewCard"
+  | "manageRewards"
+  | "reviewWork"
+  | "canClaim";
 
 export interface DiscordRoleMappingType {
   [roleId: string]: {
