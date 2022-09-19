@@ -46,7 +46,7 @@ export default function ProfileButton() {
       });
       setTimeout(() => {
         if (notifIds.length > 0) setNotifSeen(false);
-      }, 8000);
+      }, 10000);
     }
   }, [currentUser?.notifications]);
 

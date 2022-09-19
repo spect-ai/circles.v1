@@ -107,9 +107,9 @@ function TableView({ viewId }: { viewId: string }) {
     };
     `,
     HeaderRow: `
-      font-size: 10px;
+      font-size: 16px;
       color: ${
-        mode === "dark" ? "rgb(255, 255, 255, 0.7)" : "rgb(20, 20, 20, 0.7)"
+        mode === "dark" ? "rgb(255, 255, 255, 0.4)" : "rgb(20, 20, 20, 0.7)"
       };
       z-index: 0;
   

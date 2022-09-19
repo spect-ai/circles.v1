@@ -135,7 +135,7 @@ function ProjectHeading() {
             <IconButton
               color="textSecondary"
               paddingX="2"
-              paddingY="0.5"
+              paddingY="1"
               borderRightWidth="0.375"
               backgroundColor={
                 view === 2 && viewName === ""
