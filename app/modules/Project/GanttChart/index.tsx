@@ -1,4 +1,4 @@
-import { Task, ViewMode } from "gantt-task-react";
+import { Task } from "gantt-task-react";
 import { ViewSwitcher } from "./components/ViewSwitcher";
 import { initTasks } from "./initTasks";
 import GanttTable from "./components/GanttTable";

@@ -243,7 +243,7 @@ export interface CardType {
     chain: Chain;
     token: Token;
     value: number;
-    transactionHash: string;
+    transactionHash?: string;
   };
   type: "Task" | "Bounty";
   deadline: string;
@@ -466,7 +466,7 @@ export type CardsType = {
 };
 
 export type Views = {
-  type: "List" | "Board" | "Gantt";
+  type: "List" | "Board" | "Gantt" | "Table";
   hidden: boolean;
   filters: Filter;
   slug?: string;

@@ -53,6 +53,8 @@ function Project() {
   }
 
   const selectedView = project.viewDetails?.[viewId];
+  console.log(selectedView);
+  
 
   if (project?.unauthorized)
     return (
@@ -108,13 +110,16 @@ function Project() {
           {!vId && view === 0 && <BoardView viewId={""} />}
           {!vId && view === 1 && <ListView viewId={""} />}
           {!vId && view === 2 && <GanttChart viewId={""} />}
-          {!vId && view === 3 && <TableView />}
+          {!vId && view === 3 && <TableView viewId="" />}
           {vId && selectedView?.type == "Board" && (
             <BoardView viewId={viewId} />
           )}
           {vId && selectedView?.type == "List" && <ListView viewId={viewId} />}
           {vId && selectedView?.type == "Gantt" && (
             <GanttChart viewId={viewId} />
+          )}
+          {vId && selectedView?.type == "Table" && (
+            <TableView viewId={viewId} />
           )}
           <Box
             style={{

@@ -261,10 +261,10 @@ function AdvancedOptions() {
         flexDirection="row"
         width={
           advFilters.sortBy == "none"
-            ? view === 2
-              ? "48"
+            ? view === 2 || view === 3
+              ? "64"
               : "112"
-            : view === 2
+            : view === 2 || view === 3
             ? "76"
             : "128"
         }
@@ -367,7 +367,7 @@ function AdvancedOptions() {
           </Box>
         </Popover>
 
-        {view !== 2 && (
+        {(view == 0 || view == 1) && (
           <Popover
             butttonComponent={
               <Box

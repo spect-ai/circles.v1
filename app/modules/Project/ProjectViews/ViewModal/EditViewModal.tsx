@@ -12,18 +12,16 @@ import {
   Box,
   Text,
   useTheme,
-  IconGrid,
-  IconList,
   Stack,
   Button,
   IconTrash,
-  IconSplit,
 } from "degen";
 import {
   AlignLeftOutlined,
   BarsOutlined,
   AppstoreOutlined,
   SaveOutlined,
+  TableOutlined,
 } from "@ant-design/icons";
 import { editViews } from "@/app/services/ProjectViews";
 import { cardType, priorityType } from "../constants";
@@ -79,7 +77,7 @@ function EditViewModal({ setViewOpen, viewId }: Props) {
   const viewFilters = view?.filters;
 
   const [name, setName] = useState<string>(view?.name || " ");
-  const [layout, setLayout] = useState<"Board" | "List" | "Gantt">(
+  const [layout, setLayout] = useState<"Board" | "List" | "Gantt" | "Table">(
     view?.type || "Board"
   );
   const [reviewer, setReviewer] = useState<string[]>(
@@ -127,6 +125,7 @@ function EditViewModal({ setViewOpen, viewId }: Props) {
         handleClose={() => setViewOpen(false)}
         title={"Edit View"}
         size="small"
+        zIndex={2}
       >
         <Box padding={"4"}>
           <InputBox mode={mode}>
@@ -192,6 +191,19 @@ function EditViewModal({ setViewOpen, viewId }: Props) {
                 onClick={() => setLayout("Gantt")}
               >
                 <AlignLeftOutlined style={{ fontSize: "1.1rem" }} />
+              </Box>
+              <Box
+                cursor="pointer"
+                color="textSecondary"
+                paddingX="1.5"
+                paddingY="1"
+                borderRadius="large"
+                backgroundColor={
+                  layout == "Table" ? "accentSecondary" : "background"
+                }
+                onClick={() => setLayout("Table")}
+              >
+                <TableOutlined style={{ fontSize: "1.1rem" }} />
               </Box>
             </Box>
           </Box>
