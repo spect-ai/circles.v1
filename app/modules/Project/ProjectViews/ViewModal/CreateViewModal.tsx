@@ -9,11 +9,12 @@ import MultiSelectDropdown, {
   InputBox,
 } from "@/app/common/components/MultiSelectDropDown/MultiSelectDropDown";
 
-import { Box, Text, useTheme, IconGrid, IconList, IconSplit } from "degen";
+import { Box, Text, useTheme } from "degen";
 import {
   AlignLeftOutlined,
   BarsOutlined,
   AppstoreOutlined,
+  TableOutlined,
 } from "@ant-design/icons";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { createViews } from "@/app/services/ProjectViews";
@@ -63,7 +64,8 @@ function CreateViewModal({ setViewOpen }: Props) {
   }));
 
   const [name, setName] = useState<string>("");
-  const [layout, setLayout] = useState<"Board" | "List" | "Gantt">("Board");
+  const [layout, setLayout] =
+    useState<"Board" | "List" | "Gantt" | "Table">("Board");
   const [reviewer, setReviewer] = useState<string[]>([]);
   const [assignee, setAssignee] = useState<string[]>([]);
   const [label, setLabels] = useState<string[]>([]);
@@ -102,6 +104,7 @@ function CreateViewModal({ setViewOpen }: Props) {
         handleClose={() => setViewOpen(false)}
         title={"Create View"}
         size="small"
+        zIndex={2}
       >
         <Box padding={"4"}>
           <InputBox mode={mode}>
@@ -167,6 +170,19 @@ function CreateViewModal({ setViewOpen }: Props) {
                 onClick={() => setLayout("Gantt")}
               >
                 <AlignLeftOutlined style={{ fontSize: "1.1rem" }} />
+              </Box>
+              <Box
+                cursor="pointer"
+                color="textSecondary"
+                paddingX="1.5"
+                paddingY="1"
+                borderRadius="large"
+                backgroundColor={
+                  layout == "Table" ? "accentSecondary" : "background"
+                }
+                onClick={() => setLayout("Table")}
+              >
+                <TableOutlined style={{ fontSize: "1.1rem" }} />
               </Box>
             </Box>
           </Box>

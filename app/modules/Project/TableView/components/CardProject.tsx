@@ -1,16 +1,18 @@
+import useCardService from "@/app/services/Card/useCardService";
+import { useLocalProject } from "@/app/modules/Project/Context/LocalProjectContext";
 import EditTag from "@/app/common/components/EditTag";
 import ModalOption from "@/app/common/components/ModalOption";
-import { AuditOutlined } from "@ant-design/icons";
+import { ProjectOutlined } from "@ant-design/icons";
 import { Box, IconSearch, Input, Text } from "degen";
-import React, { memo, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { matchSorter } from "match-sorter";
-import { useLocalCard } from "../../Project/CreateCardModal/hooks/LocalCardContext";
-import { Option } from "../../Project/CreateCardModal/constants";
+import { Option } from "@/app/modules/Project/CreateCardModal/constants";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
 
-function CardType() {
-  const { cardType, setCardType, onCardUpdate, card } = useLocalCard();
+export function CardProject({ id }: { id: string }) {
+  const { localProject: project } = useLocalProject();
+  const [projectId, setProjectId] = useState(project.id);
   const [modalOpen, setModalOpen] = useState(false);
 
   const [options, setOptions] = useState<Option[]>();
@@ -19,21 +21,27 @@ function CardType() {
   const { canTakeAction } = useRoleGate();
   const { getOptions } = useModalOptions();
 
+  const { updateCardProject } = useCardService();
+
+  const onCardUpdate = async () => {
+    const res = await updateCardProject(id, projectId);
+    console.log(res);
+  };
+
   useEffect(() => {
-    const ops = getOptions("card") as Option[];
+    const ops = getOptions("project") as Option[];
     setOptions(ops);
     setFilteredOptions(ops);
   }, []);
   return (
     <EditTag
-      tourId="card-type"
-      name={cardType}
-      modalTitle="Select Card Type"
-      label="Card Type"
+      tourId="create-card-modal-project"
+      name={project.slug || ""}
+      modalTitle="Select Project"
       modalOpen={modalOpen}
       setModalOpen={setModalOpen}
       icon={
-        <AuditOutlined
+        <ProjectOutlined
           style={{
             fontSize: "1rem",
             marginLeft: "0.2rem",
@@ -42,9 +50,9 @@ function CardType() {
           }}
         />
       }
-      disabled={!canTakeAction("cardType")}
+      disabled={!canTakeAction("cardColumn")}
       handleClose={() => {
-        if (card?.type !== cardType) {
+        if (project.id !== projectId) {
           void onCardUpdate();
         }
         setModalOpen(false);
@@ -70,46 +78,35 @@ function CardType() {
           {filteredOptions?.map((item: any) => (
             <ModalOption
               key={item.value}
-              isSelected={cardType === item.value}
+              isSelected={projectId === item.value}
               item={item}
               onClick={() => {
-                setCardType(item.value);
+                setProjectId(item.value);
               }}
             >
-              <Box style={{ width: "15%" }}>
-                <item.icon
-                  color={cardType === item.value ? "accent" : "textSecondary"}
-                />
-              </Box>
               <Box
                 style={{
                   display: "flex",
                   flexDirection: "column",
                   alignItems: "center",
-                  width: "25%",
+                  width: "100%",
                 }}
               >
                 <Text
                   size="small"
-                  color={cardType === item.value ? "accent" : "text"}
+                  color={projectId === item.value ? "accent" : "text"}
                   weight="semiBold"
                 >
                   {item.name}
                 </Text>
               </Box>
-              <Box style={{ width: "65%" }}>
-                <Text size="label" color="textSecondary">
-                  {item.secondary}
-                </Text>
-              </Box>
             </ModalOption>
           ))}
           {!filteredOptions?.length && (
-            <Text variant="label">No Card type found</Text>
+            <Text variant="label">No project found</Text>
           )}
         </Box>
       </Box>
     </EditTag>
   );
 }
-export default memo(CardType);

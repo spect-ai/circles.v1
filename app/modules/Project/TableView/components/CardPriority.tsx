@@ -1,16 +1,29 @@
 import EditTag from "@/app/common/components/EditTag";
 import ModalOption from "@/app/common/components/ModalOption";
-import { AuditOutlined } from "@ant-design/icons";
-import { Box, IconSearch, Input, Text } from "degen";
-import React, { memo, useEffect, useState } from "react";
-import { matchSorter } from "match-sorter";
-import { useLocalCard } from "../../Project/CreateCardModal/hooks/LocalCardContext";
-import { Option } from "../../Project/CreateCardModal/constants";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
+import { DashboardOutlined } from "@ant-design/icons";
+import { Box, IconSearch, Input, Text } from "degen";
+import { matchSorter } from "match-sorter";
+import React, { memo, useEffect, useState } from "react";
+import { CardType } from "@/app/types";
+import useCardService from "@/app/services/Card/useCardService";
+import { useLocalProject } from "@/app/modules/Project/Context/LocalProjectContext";
+
+import {
+  Option,
+  priorityMapping,
+} from "@/app/modules/Project/CreateCardModal/constants";
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
 
-function CardType() {
-  const { cardType, setCardType, onCardUpdate, card } = useLocalCard();
+type CardProps = {
+  id: string;
+  card: Partial<CardType>;
+};
+
+function CardPriority({ id, card }: CardProps) {
+  const { updateProject } = useLocalProject();
+  const { updateCard } = useCardService();
+  const [priority, setPriority] = useState(card.priority || 0);
   const [modalOpen, setModalOpen] = useState(false);
 
   const [options, setOptions] = useState<Option[]>();
@@ -20,20 +33,29 @@ function CardType() {
   const { getOptions } = useModalOptions();
 
   useEffect(() => {
-    const ops = getOptions("card") as Option[];
+    const ops = getOptions("priority") as Option[];
     setOptions(ops);
     setFilteredOptions(ops);
   }, []);
+
+  const onCardUpdate = async () => {
+    const payload: { [key: string]: any } = {
+      priority: priority,
+    };
+    const res = await updateCard(payload, id);
+    console.log(res);
+    if (res?.id) updateProject(res.project);
+  };
+
   return (
     <EditTag
-      tourId="card-type"
-      name={cardType}
-      modalTitle="Select Card Type"
-      label="Card Type"
+      tourId="create-card-modal-priority"
+      name={priorityMapping[priority]}
+      modalTitle="Select Priority"
       modalOpen={modalOpen}
       setModalOpen={setModalOpen}
       icon={
-        <AuditOutlined
+        <DashboardOutlined
           style={{
             fontSize: "1rem",
             marginLeft: "0.2rem",
@@ -42,9 +64,9 @@ function CardType() {
           }}
         />
       }
-      disabled={!canTakeAction("cardType")}
+      disabled={!canTakeAction("cardPriority")}
       handleClose={() => {
-        if (card?.type !== cardType) {
+        if (card?.priority !== priority) {
           void onCardUpdate();
         }
         setModalOpen(false);
@@ -70,46 +92,37 @@ function CardType() {
           {filteredOptions?.map((item: any) => (
             <ModalOption
               key={item.value}
-              isSelected={cardType === item.value}
+              isSelected={priority === item.value}
               item={item}
               onClick={() => {
-                setCardType(item.value);
+                setPriority(item.value);
               }}
             >
-              <Box style={{ width: "15%" }}>
-                <item.icon
-                  color={cardType === item.value ? "accent" : "textSecondary"}
-                />
-              </Box>
               <Box
                 style={{
                   display: "flex",
                   flexDirection: "column",
                   alignItems: "center",
-                  width: "25%",
+                  width: "100%",
                 }}
               >
                 <Text
                   size="small"
-                  color={cardType === item.value ? "accent" : "text"}
+                  color={priority === item.value ? "accent" : "text"}
                   weight="semiBold"
                 >
                   {item.name}
                 </Text>
               </Box>
-              <Box style={{ width: "65%" }}>
-                <Text size="label" color="textSecondary">
-                  {item.secondary}
-                </Text>
-              </Box>
             </ModalOption>
           ))}
           {!filteredOptions?.length && (
-            <Text variant="label">No Card type found</Text>
+            <Text variant="label">No Priority found</Text>
           )}
         </Box>
       </Box>
     </EditTag>
   );
 }
-export default memo(CardType);
+
+export default memo(CardPriority);

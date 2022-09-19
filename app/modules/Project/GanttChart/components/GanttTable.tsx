@@ -50,23 +50,8 @@ export default function GanttTable({
   ) => {
     if (!card?.id) return;
     const payload: { [key: string]: any } = {
-      title: card.title,
-      description: card.description,
-      reviewer: card.reviewer,
-      assignee: card.assignee,
-      project: project?.id,
-      circle: project?.parents[0].id,
-      type: card.type,
       deadline: endDate,
       startDate: startDate,
-      labels: card.labels,
-      priority: card.priority,
-      columnId: card.columnId,
-      reward: {
-        chain: card.reward.chain,
-        token: card.reward.token,
-        value: card.reward.value,
-      },
     };
     console.log(payload.deadline);
     const res = await updateCard(payload, card.id);

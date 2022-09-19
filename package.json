@@ -15,6 +15,7 @@
   "dependencies": {
     "@ant-design/icons": "^4.7.0",
     "@biconomy/mexa": "^3.0.4",
+    "@emotion/react": "^11.10.4",
     "@fontsource/inter": "^4.5.11",
     "@gnosis.pm/safe-core-sdk": "^2.3.2",
     "@gnosis.pm/safe-core-sdk-types": "^1.4.0",
@@ -23,6 +24,7 @@
     "@guildxyz/sdk": "^1.1.1",
     "@popperjs/core": "^2.11.5",
     "@svgr/webpack": "^6.2.1",
+    "@table-library/react-table-library": "^4.0.18",
     "d3": "^5.5.0",
     "degen": "^0.0.109",
     "ethers": "^5.6.8",

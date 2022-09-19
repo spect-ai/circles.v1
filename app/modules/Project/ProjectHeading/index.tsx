@@ -13,6 +13,7 @@ import {
   AlignLeftOutlined,
   BarsOutlined,
   AppstoreOutlined,
+  TableOutlined
 } from "@ant-design/icons";
 
 export const IconButton = styled(Box)`
@@ -134,8 +135,8 @@ function ProjectHeading() {
             <IconButton
               color="textSecondary"
               paddingX="2"
-              paddingY="0.5"
-              borderRightRadius="large"
+              paddingY="1"
+              borderRightWidth="0.375"
               backgroundColor={
                 view === 2 && viewName === ""
                   ? "foregroundSecondary"
@@ -147,6 +148,23 @@ function ProjectHeading() {
               }}
             >
               <AlignLeftOutlined style={{ fontSize: "1.3rem" }} />
+            </IconButton>
+            <IconButton
+              color="textSecondary"
+              paddingX="2"
+              paddingY="1"
+              borderRightRadius="large"
+              backgroundColor={
+                view === 3 && viewName === ""
+                  ? "foregroundSecondary"
+                  : "background"
+              }
+              onClick={() => {
+                setView(3);
+                defaultView();
+              }}
+            >
+              <TableOutlined style={{ fontSize: "1.3rem" }} />
             </IconButton>
           </Box>
         </Stack>

@@ -17,6 +17,7 @@ import Apply from "../Card/Apply";
 import { ApartmentOutlined } from "@ant-design/icons";
 import Navigation from "./Navigation";
 import GanttChart from "./GanttChart";
+import TableView from "./TableView";
 
 function Project() {
   const [graphOpen, setGraphOpen] = useState(false);
@@ -52,6 +53,8 @@ function Project() {
   }
 
   const selectedView = project.viewDetails?.[viewId];
+  console.log(selectedView);
+  
 
   if (project?.unauthorized)
     return (
@@ -107,12 +110,16 @@ function Project() {
           {!vId && view === 0 && <BoardView viewId={""} />}
           {!vId && view === 1 && <ListView viewId={""} />}
           {!vId && view === 2 && <GanttChart viewId={""} />}
+          {!vId && view === 3 && <TableView viewId="" />}
           {vId && selectedView?.type == "Board" && (
             <BoardView viewId={viewId} />
           )}
           {vId && selectedView?.type == "List" && <ListView viewId={viewId} />}
           {vId && selectedView?.type == "Gantt" && (
             <GanttChart viewId={viewId} />
+          )}
+          {vId && selectedView?.type == "Table" && (
+            <TableView viewId={viewId} />
           )}
           <Box
             style={{
