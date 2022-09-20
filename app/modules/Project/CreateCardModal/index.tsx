@@ -7,6 +7,7 @@ import styled from "styled-components";
 import CardAssignee from "../../Card/modals/CardAssignee";
 import CardColumn from "../../Card/modals/CardColumn";
 import CardDeadline from "../../Card/modals/CardDeadline";
+import CardStartDate from "../../Card/modals/CardStartDate";
 import CardLabels from "../../Card/modals/CardLabels";
 import CardType from "../../Card/modals/CardType";
 import CardReward from "../../Card/modals/CardReward";
@@ -169,6 +170,7 @@ export default function CreateCardModal({
                 <CardColumn />
                 <CardAssignee />
                 <CardReviewer />
+                <CardStartDate />
                 <CardDeadline />
                 <CardPriority />
                 <CardReward />

@@ -109,6 +109,14 @@ export interface DiscordRoleMappingType {
   };
 }
 
+export type GuildxyzToCircleRoles = {
+  [role: number]: {
+    circleRole: string[];
+    name: string;
+    id: number;
+  };
+};
+
 export interface RetroType {
   circle: string;
   createdAt: string;
@@ -204,6 +212,8 @@ export interface CircleType {
   qualifiedClaimee: string[];
   unauthorized?: boolean;
   labels: string[];
+  guildxyzId: number;
+  guildxyzToCircleRoles: GuildxyzToCircleRoles;
 }
 
 // interface ProjectType {
@@ -237,6 +247,7 @@ export interface CardType {
   };
   type: "Task" | "Bounty";
   deadline: string;
+  startDate: string;
   labels: string[];
   priority: number;
   columnId: string;
@@ -339,6 +350,7 @@ export interface CardActions {
   updateAssignee: ActionValidation;
   updateColumn: ActionValidation;
   updateDeadline: ActionValidation;
+  updateStartDate: ActionValidation;
   updateGeneralCardInfo: ActionValidation;
   claim: ActionValidation;
 }
@@ -454,7 +466,7 @@ export type CardsType = {
 };
 
 export type Views = {
-  type: "List" | "Board";
+  type: "List" | "Board" | "Gantt";
   hidden: boolean;
   filters: Filter;
   slug?: string;

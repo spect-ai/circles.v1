@@ -110,7 +110,7 @@ export default function useDragEnd() {
       });
       setUpdating(true);
     }
-    fetch(`${process.env.API_HOST}/card/${draggableId}`, {
+    fetch(`${process.env.API_HOST}/card/v1/${draggableId}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",

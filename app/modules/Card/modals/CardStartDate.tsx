@@ -7,8 +7,8 @@ import ReactDatePicker from "react-datepicker";
 import ClickableTag from "@/app/common/components/EditTag/ClickableTag";
 import { toast } from "react-toastify";
 
-function CardDeadline() {
-  const { deadline, startDate, setDeadline, onCardUpdate } = useLocalCard();
+function CardStartDate() {
+  const { deadline, startDate, setStartDate, onCardUpdate } = useLocalCard();
   const { canTakeAction } = useRoleGate();
   const dateRef = useRef<any>(null);
 
@@ -29,7 +29,7 @@ function CardDeadline() {
   const ExampleCustomInput = forwardRef(({ value, onClick }: any, ref) => (
     <Box onClick={onClick} ref={ref as any}>
       <ClickableTag
-        name={deadline?.getDate ? value : "None"}
+        name={startDate?.getDate ? value : "None"}
         icon={
           <CalendarOutlined
             style={{
@@ -48,30 +48,32 @@ function CardDeadline() {
   return (
     <Stack direction="horizontal">
       <Box width="1/3">
-        <Text variant="label">Deadline</Text>
+        <Text variant="label">Start Date</Text>
       </Box>
       <Box width="2/3">
         <ReactDatePicker
           ref={dateRef}
-          selected={deadline?.getDay ? deadline : new Date()}
+          selected={startDate?.getDay ? startDate : new Date()}
           onChange={(date: Date) => {
-            if (date.getTime() === (deadline?.getTime && deadline.getTime())) {
-              setDeadline(null);
+            if (
+              date.getTime() === (startDate?.getTime && startDate.getTime())
+            ) {
+              setStartDate(null);
               return;
             }
             if (
-              (startDate?.getTime && startDate.getTime() < date.getTime()) ||
-              !startDate?.getTime
+              (deadline?.getTime && deadline.getTime() > date.getTime()) ||
+              !deadline?.getTime
             )
-              setDeadline(date);
-            if (startDate?.getTime && startDate.getTime() > date.getTime()) {
-              toast("Deadline cannot fall before start date", {
+              setStartDate(date);
+            if (deadline?.getTime && deadline.getTime() < date.getTime()) {
+              toast("Start Date cannot fall after deadline", {
                 theme: "dark",
               });
             }
           }}
           customInput={<ExampleCustomInput />}
-          disabled={!canTakeAction("cardDeadline")}
+          disabled={!canTakeAction("cardStartDate")}
           onCalendarClose={() => {
             setTimeout(() => {
               void onCardUpdate();
@@ -83,4 +85,4 @@ function CardDeadline() {
   );
 }
 
-export default memo(CardDeadline);
+export default memo(CardStartDate);

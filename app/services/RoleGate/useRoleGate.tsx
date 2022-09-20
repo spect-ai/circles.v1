@@ -42,6 +42,8 @@ export default function useRoleGate() {
         return cardActions.updateColumn.valid;
       case "cardDeadline":
         return cardActions.updateDeadline.valid;
+      case "cardStartDate":
+        return cardActions.updateStartDate.valid;
       case "cardAssignee":
         return cardActions.updateAssignee.valid;
       case "acceptApplication":

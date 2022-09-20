@@ -9,6 +9,8 @@ import { useQuery } from "react-query";
 import DiscordRoleMapping from "../DiscordRoleMapping";
 import DiscordIcon from "@/app/assets/icons/discordIcon.svg";
 import ConnectGnosis from "../ConnectGnosis";
+import GuildIntegration from "../GuildIntegration";
+import GuildRoleMapping from "../GuildIntegration/GuildRoleMapping";
 
 export default function CircleIntegrations() {
   const router = useRouter();
@@ -20,6 +22,18 @@ export default function CircleIntegrations() {
   return (
     <Box>
       <Stack space="8">
+        <Stack space="1">
+          <Heading>Guild.xyz</Heading>
+          <Text>Connect your guild and import roles</Text>
+          <Stack direction="horizontal">
+            <Box width="1/3" marginTop="6">
+              <GuildIntegration />
+            </Box>
+            <Box width="1/3" marginTop="6">
+              <GuildRoleMapping />
+            </Box>
+          </Stack>
+        </Stack>
         <Stack space="1">
           <Heading>Discord</Heading>
           <Text>
@@ -50,11 +64,9 @@ export default function CircleIntegrations() {
               </PrimaryButton>
             </Box>
           </Link>
-          {circle?.discordGuildId && (
-            <Box width="1/3">
-              <DiscordRoleMapping />
-            </Box>
-          )}
+          <Box width="1/3">
+            <DiscordRoleMapping />
+          </Box>
         </Stack>
         <Stack space="1">
           <Heading>Github</Heading>

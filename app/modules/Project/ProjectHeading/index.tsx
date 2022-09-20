@@ -1,5 +1,14 @@
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
-import { Box, Button, IconGrid, IconList, Stack, Text, useTheme } from "degen";
+import {
+  Box,
+  Button,
+  IconGrid,
+  IconList,
+  Stack,
+  Text,
+  useTheme,
+  IconSplit,
+} from "degen";
 import React, { memo } from "react";
 import Skeleton from "react-loading-skeleton";
 import styled from "styled-components";
@@ -18,12 +27,12 @@ export const IconButton = styled(Box)`
 `;
 
 function ProjectHeading() {
-  const { localProject: project, loading, view, setView } = useLocalProject();
+  const { localProject: project, loading} = useLocalProject();
   const { canDo } = useRoleGate();
   const { mode } = useTheme();
   const router = useRouter();
   const { circle: cId, project: pId, view: vId } = router.query;
-  const { setViewName, viewName } = useGlobal();
+  const { setViewName, viewName, view, setView  } = useGlobal();
 
   const defaultView = () => {
     if (viewName.length > 0) setViewName("");
@@ -52,7 +61,7 @@ function ProjectHeading() {
           paddingBottom: "0.0rem",
         }}
       >
-        <Stack direction="horizontal" align="center" >
+        <Stack direction="horizontal" align="center">
           {!loading && (
             <Button
               variant="transparent"
@@ -108,8 +117,8 @@ function ProjectHeading() {
             </IconButton>
             <IconButton
               color="textSecondary"
+              borderRightWidth="0.375"
               paddingX="2"
-              borderRightRadius="large"
               backgroundColor={
                 view === 1 && viewName === ""
                   ? "foregroundSecondary"
@@ -121,6 +130,23 @@ function ProjectHeading() {
               }}
             >
               <IconList size="6" />
+            </IconButton>
+            <IconButton
+              color="textSecondary"
+              paddingX="2"
+              paddingY="0.5"
+              borderRightRadius="large"
+              backgroundColor={
+                view === 2 && viewName === ""
+                  ? "foregroundSecondary"
+                  : "background"
+              }
+              onClick={() => {
+                setView(2);
+                defaultView();
+              }}
+            >
+              <IconSplit size="5" />
             </IconButton>
           </Box>
         </Stack>

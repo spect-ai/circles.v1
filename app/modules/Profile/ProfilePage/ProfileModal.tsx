@@ -67,6 +67,7 @@ export default function ProfileModal({ setIsOpen }: Props) {
     setBio(currentUser?.bio || "");
     setSkills(currentUser?.skills || []);
     setLoading(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

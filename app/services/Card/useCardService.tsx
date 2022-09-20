@@ -33,7 +33,7 @@ export default function useCardService() {
     cardId: string
   ): Promise<CardType | null> => {
     setUpdating(true);
-    const res = await fetch(`${process.env.API_HOST}/card/${cardId}`, {
+    const res = await fetch(`${process.env.API_HOST}/card/v1/${cardId}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",

@@ -11,10 +11,20 @@ import DefaultPayment from "./CirclePayment";
 import Contributors from "../ContributorsModal/Contributors";
 import { useCircle } from "../CircleContext";
 import Credentials from "./Credentials";
+import styled from "styled-components";
+import Roles from "../RolesModal/Roles";
 interface Props {
   handleClose: () => void;
   initialTab?: number;
 }
+
+const ScrollContainer = styled(Box)`
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+  height: 35rem;
+  overflow-y: auto;
+`;
 
 export default function SettingsModal({ handleClose, initialTab }: Props) {
   const { circle, setCircleData } = useCircle();
@@ -92,6 +102,7 @@ export default function SettingsModal({ handleClose, initialTab }: Props) {
               "Credentials",
               "Payments",
               "Contributors",
+              "Roles",
               "Archive",
             ]}
             tabTourIds={[
@@ -99,13 +110,14 @@ export default function SettingsModal({ handleClose, initialTab }: Props) {
               "circle-settings-integrations",
               "circle-settings-payments",
               "circle-settings-members",
+              "circle-settings-roles",
               "circle-settings-delete",
             ]}
             orientation="vertical"
             unselectedColor="transparent"
           />
         </Box>
-        <Box width="3/4" paddingX="8" paddingY="4">
+        <ScrollContainer width="3/4" paddingX="8" paddingY="4">
           {tab === 0 && (
             <Stack>
               <Input
@@ -155,7 +167,8 @@ export default function SettingsModal({ handleClose, initialTab }: Props) {
           {tab === 2 && <Credentials />}
           {tab === 3 && <DefaultPayment />}
           {tab === 4 && <Contributors />}
-          {tab === 5 && (
+          {tab === 5 && <Roles />}
+          {tab === 6 && (
             <Box width="full">
               <Stack>
                 <Box>
@@ -173,7 +186,7 @@ export default function SettingsModal({ handleClose, initialTab }: Props) {
               </Stack>
             </Box>
           )}
-        </Box>
+        </ScrollContainer>
       </Box>
     </Modal>
   );
