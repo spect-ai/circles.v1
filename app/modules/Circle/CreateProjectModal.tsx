@@ -27,7 +27,7 @@ const getPlaceholder: {
 } = {
   // notion: "Notion URL",
   // github: "Github URL",
-  trello: "Trello URL",
+  trello: "Trello Board Id",
 };
 
 function CreateProjectModal() {

@@ -19,9 +19,11 @@ export default function useRoleGate() {
       return false;
     }
     const userRoles = circle?.memberRoles[connectedUser];
-    for (const role of userRoles) {
-      if (circle.roles[role].permissions[roleAction]) {
-        return true;
+    if (userRoles) {
+      for (const role of userRoles) {
+        if (circle.roles[role].permissions[roleAction]) {
+          return true;
+        }
       }
     }
     return false;
