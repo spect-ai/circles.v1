@@ -122,7 +122,7 @@ const MultiSelectDropdown: FC<Props> = ({
 
   useEffect(() => {
     setFilteredOptions(options);
-    if (value.length > 0) {
+    if (value?.length > 0) {
       options.map((option, idx) => {
         if (option.id == value[idx]) setSaved([...saved, option.name]);
       });
@@ -198,7 +198,7 @@ const MultiSelectDropdown: FC<Props> = ({
             right: "0.5rem",
           }}
         >
-          {value.length > 0 && (
+          {value?.length > 0 && (
             <Button
               shape="circle"
               size="small"
