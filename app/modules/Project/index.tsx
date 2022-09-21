@@ -53,8 +53,6 @@ function Project() {
   }
 
   const selectedView = project.viewDetails?.[viewId];
-  console.log(selectedView);
-  
 
   if (project?.unauthorized)
     return (

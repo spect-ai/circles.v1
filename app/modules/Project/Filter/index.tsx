@@ -57,19 +57,23 @@ export default function Filter() {
     id: project?.columnDetails[column].name,
   }));
 
-  const [reviewer, setReviewer] = useState<string[]>(
-    currentFilter?.reviewer || []
-  );
-  const [assignee, setAssignee] = useState<string[]>(
-    currentFilter?.assignee || []
-  );
-  const [label, setLabels] = useState<string[]>(currentFilter?.label || []);
-  const [title, setTitle] = useState<string>(currentFilter?.title || "");
-  const [column, setColumn] = useState<string[]>(currentFilter?.column || []);
-  const [priority, setPriority] = useState<string[]>(
-    currentFilter.priority || []
-  );
-  const [type, setType] = useState<string[]>(currentFilter?.type || []);
+  const [assignee, setAssignee] = useState<string[]>([]);
+  const [reviewer, setReviewer] = useState<string[]>([]);
+  const [label, setLabels] = useState<string[]>([]);
+  const [title, setTitle] = useState<string>("");
+  const [column, setColumn] = useState<string[]>([]);
+  const [priority, setPriority] = useState<string[]>([]);
+  const [type, setType] = useState<string[]>([]);
+
+  useEffect(() => {
+    setAssignee(currentFilter.assignee);
+    setReviewer(currentFilter?.reviewer);
+    setLabels(currentFilter?.label);
+    setTitle(currentFilter?.title);
+    setColumn(currentFilter?.column);
+    setPriority(currentFilter.priority);
+    setType(currentFilter?.type);
+  }, [currentFilter, project.id, filterOpen]);
 
   const filterIsOn: boolean =
     currentFilter?.assignee?.length > 0 ||
@@ -81,7 +85,7 @@ export default function Filter() {
     currentFilter?.type?.length > 0;
 
   const handleClick = () => {
-    setCurrentFilter({
+    const filter = {
       assignee: assignee,
       reviewer: reviewer,
       column: column,
@@ -91,10 +95,12 @@ export default function Filter() {
       type: type,
       priority: priority,
       deadline: "",
-    });
+    };
+    const projectSlug = project.slug;
+    localStorage.setItem(projectSlug, JSON.stringify(filter));
+    setCurrentFilter(filter);
     setFilterOpen(!filterOpen);
   };
-
   return (
     <Popover
       isOpen={filterOpen}

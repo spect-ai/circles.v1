@@ -5,7 +5,7 @@ import useCardService from "@/app/services/Card/useCardService";
 import { useLocalProject } from "@/app/modules/Project/Context/LocalProjectContext";
 
 const NameInput = styled.input<{ mode: string }>`
-  width: auto;
+  width: 100%;
   background: transparent;
   border: 0;
   border-style: none;
