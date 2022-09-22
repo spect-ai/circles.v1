@@ -16,13 +16,14 @@ type ReturnWithType = {
 
 export const getAgregatedPaymentInfo = async (
   cards: string[],
-  chainId: string
+  chainId: string,
+  payCircle: boolean
 ): Promise<BatchPayInfo | undefined> => {
   // convert cards to query params
   const cardIds = cards.map((cardId) => `cardIds=${cardId}`).join("&");
   console.log({ cardIds });
   const res = await fetch(
-    `${process.env.API_HOST}/card/aggregatedPaymentInfo?${cardIds}&chainId=${chainId}`
+    `${process.env.API_HOST}/card/aggregatedPaymentInfo?${cardIds}&chainId=${chainId}&payCircle=${payCircle}`
   );
   if (res.ok) {
     const data = await res.json();
@@ -38,7 +39,7 @@ export const updatePaymentInfo = async (
   returnWith?: ReturnWithType
 ) => {
   const res = await fetch(
-    `${process.env.API_HOST}/card/updatePaymentInfoAndClose`,
+    `${process.env.API_HOST}/card/v1/updatePaymentInfoAndClose`,
     {
       method: "PATCH",
       headers: {

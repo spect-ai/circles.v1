@@ -18,6 +18,7 @@ import { ApartmentOutlined } from "@ant-design/icons";
 import Navigation from "./Navigation";
 import GanttChart from "./GanttChart";
 import TableView from "./TableView";
+import { useCircle } from "../Circle/CircleContext";
 
 function Project() {
   const [graphOpen, setGraphOpen] = useState(false);
@@ -38,6 +39,9 @@ function Project() {
 
   const { mode } = useTheme();
 
+  const { circle } = useCircle();
+  console.log("circle", circle);
+
   if (tId || !project) {
     return null;
   }
@@ -53,8 +57,6 @@ function Project() {
   }
 
   const selectedView = project.viewDetails?.[viewId];
-  console.log(selectedView);
-  
 
   if (project?.unauthorized)
     return (

@@ -17,6 +17,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { grow } from "@/app/common/components/Modal";
 import { useGlobal } from "@/app/context/globalContext";
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
+import { useCircle } from "../../Circle/CircleContext";
 
 export default function Filter() {
   const [filterOpen, setFilterOpen] = useState(false);
@@ -27,9 +28,8 @@ export default function Filter() {
 
   const { circle: cId } = router.query;
   const { localProject: project } = useLocalProject();
-  const { data: circle } = useQuery<CircleType>(["circle", cId], {
-    enabled: false,
-  });
+
+  const { circle } = useCircle();
   const { data: memberDetails } = useQuery<MemberDetails>(
     ["memberDetails", cId],
     { enabled: false }
@@ -57,12 +57,21 @@ export default function Filter() {
     id: project?.columnDetails[column].name,
   }));
 
+  const circles = circle?.children.map((c) => ({
+    name: c.name,
+    id: c.id,
+  }));
+
   const [reviewer, setReviewer] = useState<string[]>(
     currentFilter?.reviewer || []
   );
   const [assignee, setAssignee] = useState<string[]>(
     currentFilter?.assignee || []
   );
+  const [assignedCircle, setAssignedCircle] = useState(
+    currentFilter.assignedCircle || []
+  );
+
   const [label, setLabels] = useState<string[]>(currentFilter?.label || []);
   const [title, setTitle] = useState<string>(currentFilter?.title || "");
   const [column, setColumn] = useState<string[]>(currentFilter?.column || []);
@@ -78,7 +87,8 @@ export default function Filter() {
     currentFilter?.title?.length > 0 ||
     currentFilter?.column?.length > 0 ||
     currentFilter?.priority?.length > 0 ||
-    currentFilter?.type?.length > 0;
+    currentFilter?.type?.length > 0 ||
+    currentFilter?.assignedCircle?.length > 0;
 
   const handleClick = () => {
     setCurrentFilter({
@@ -91,6 +101,7 @@ export default function Filter() {
       type: type,
       priority: priority,
       deadline: "",
+      assignedCircle: assignedCircle,
     });
     setFilterOpen(!filterOpen);
   };
@@ -156,6 +167,13 @@ export default function Filter() {
               value={assignee}
               setValue={setAssignee}
               title={"Assignee"}
+            />
+            <MultiSelectDropdown
+              width="22"
+              options={circles as OptionType[]}
+              value={assignedCircle}
+              setValue={setAssignedCircle}
+              title={"Assigned Circle"}
             />
             <MultiSelectDropdown
               width="22"

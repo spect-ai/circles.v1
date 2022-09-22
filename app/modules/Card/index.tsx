@@ -47,6 +47,7 @@ import Bookmark from "./Bookmark";
 import CardProject from "./modals/CardProject";
 import MintKudos from "./MintKudos";
 import ViewKudos from "./MintKudos/view";
+import CardAssignedCircle from "./modals/CardAssignedCircle";
 
 const Container = styled(Box)`
   ::-webkit-scrollbar {
@@ -331,6 +332,7 @@ function Card() {
                 {!card?.parent && <CardColumn />}
                 <CardProject />
                 <CardAssignee />
+                <CardAssignedCircle />
                 <CardReviewer />
                 <CardStartDate />
                 <CardDeadline />

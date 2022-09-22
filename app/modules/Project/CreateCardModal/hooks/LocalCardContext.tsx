@@ -13,7 +13,6 @@ import {
   WorkThreadType,
   CardActions,
   KudosForType,
-  KudosType,
   KudosClaimedType,
 } from "@/app/types";
 import { Stack } from "degen";
@@ -46,6 +45,8 @@ type CreateCardContextType = {
   setColumnId: React.Dispatch<React.SetStateAction<string>>;
   projectId: string;
   setProjectId: React.Dispatch<React.SetStateAction<string>>;
+  assignedCircle: string;
+  setAssignedCircle: React.Dispatch<React.SetStateAction<string>>;
   cardType: string;
   setCardType: React.Dispatch<React.SetStateAction<string>>;
   chain: Chain;
@@ -186,6 +187,7 @@ export function useProviderLocalCard({
   const [reviewers, setReviewers] = useState([connectedUser] as string[]);
   const [columnId, setColumnId] = useState("");
   const [projectId, setProjectId] = useState("");
+  const [assignedCircle, setAssignedCircle] = useState("");
   const [cardType, setCardType] = useState("Task");
   const [chain, setChain] = useState(circle?.defaultPayment?.chain as Chain);
   const [token, setToken] = useState(circle?.defaultPayment?.token as Token);
@@ -250,6 +252,7 @@ export function useProviderLocalCard({
       setReviewers(card.reviewer);
       setColumnId(card.columnId);
       setProjectId(card.project.id);
+      setAssignedCircle(card.assignedCircle);
       setCardType(card.type);
       setChain(card.reward.chain);
       setToken(card.reward.token);
@@ -292,6 +295,7 @@ export function useProviderLocalCard({
       },
       parent: card?.id,
       childCards: subTasks,
+      assignedCircle,
     };
     const data = await callCreateCard(payload);
     toast(
@@ -337,8 +341,8 @@ export function useProviderLocalCard({
         token,
         value: parseFloat(value),
       },
+      assignedCircle,
     };
-    console.log(payload.startDate);
     const res = await updateCard(payload, card.id);
     if (res) {
       setCard(res);
@@ -379,6 +383,8 @@ export function useProviderLocalCard({
     setColumnId,
     projectId,
     setProjectId,
+    assignedCircle,
+    setAssignedCircle,
     cardType,
     setCardType,
     chain,
