@@ -20,6 +20,10 @@ type CircleUpdateDTO = {
   labels: string[];
   guildxyzId: number;
   guildxyzToCircleRoles: GuildxyzToCircleRoles;
+  questbookWorkspaceId: string;
+  questbookWorkspaceUrl: string;
+  grantMilestoneProject: string;
+  grantApplicantProject: string;
 };
 
 export const updateCircle = async (

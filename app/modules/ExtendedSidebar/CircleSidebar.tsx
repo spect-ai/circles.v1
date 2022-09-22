@@ -29,9 +29,9 @@ export const Container = styled(Box)`
   ::-webkit-scrollbar {
     display: none;
   }
+  height: calc(100vh - 9.1rem);
   -ms-overflow-style: none;
   scrollbar-width: none;
-  height: calc(100vh - 9.1rem);
   overflow-y: auto;
 `;
 
@@ -93,6 +93,53 @@ function CircleSidebar() {
             left="21rem"
           />
         </Stack>
+        {circle?.toBeClaimed && (
+          <Stack>
+            <PrimaryButton
+              onClick={async () => {
+                const circleRes = await fetch(
+                  `${process.env.API_HOST}/circle/v1/${circle?.id}/claimCircle`,
+                  {
+                    method: "PATCH",
+                    headers: {
+                      "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({}),
+                    credentials: "include",
+                  }
+                );
+                console.log({ circleRes });
+                const circleData = await circleRes.json();
+
+                if (!circleData) {
+                  toast.error("Cannot claim circle");
+                  return;
+                }
+                const memberDetailsRes = await fetch(
+                  `${process.env.API_HOST}/circle/${circle?.id}/memberDetails?circleIds=${circle?.id}`,
+                  {
+                    method: "GET",
+                    headers: {
+                      "Content-Type": "application/json",
+                    },
+                    credentials: "include",
+                  }
+                );
+                console.log({ memberDetailsRes });
+
+                const memberDetailsData = await memberDetailsRes.json();
+                console.log({ circleData });
+
+                setCircleData(circleData);
+                setMemberDetailsData(memberDetailsData);
+              }}
+              variant="tertiary"
+            >
+              Claim
+            </PrimaryButton>
+          </Stack>
+        )}
+
         <Container>
           <Stack>
             <Accordian

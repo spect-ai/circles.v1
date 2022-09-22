@@ -233,6 +233,10 @@ export interface CircleType {
   labels: string[];
   guildxyzId: number;
   guildxyzToCircleRoles: GuildxyzToCircleRoles;
+  questbookWorkspaceUrl?: string;
+  questbookWorkspaceId?: string;
+  grantMilestoneProject?: string;
+  grantApplicantProject?: string;
 }
 
 // interface ProjectType {
