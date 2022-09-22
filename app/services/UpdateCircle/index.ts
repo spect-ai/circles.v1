@@ -20,6 +20,7 @@ type CircleUpdateDTO = {
   labels: string[];
   guildxyzId: number;
   guildxyzToCircleRoles: GuildxyzToCircleRoles;
+  paymentAddress: string;
   questbookWorkspaceId: string;
   questbookWorkspaceUrl: string;
   grantMilestoneProject: string;

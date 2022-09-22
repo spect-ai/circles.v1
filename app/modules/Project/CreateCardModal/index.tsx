@@ -21,6 +21,7 @@ import CardReviewer from "../../Card/modals/CardReviewer";
 import ConfirmModal from "@/app/common/components/Modal/ConfirmModal";
 import SubTasks from "../../Card/SubTasks";
 import { useHotkeys } from "react-hotkeys-hook";
+import CardAssignedCircle from "../../Card/modals/CardAssignedCircle";
 
 type Props = {
   column: string;
@@ -106,7 +107,7 @@ export default function CreateCardModal({
 
   return (
     <LocalCardContext.Provider value={context}>
-      <Modal size="large" title="Create Card" handleClose={handleClose}>
+      <Modal size="large" title="Create Card" handleClose={handleClose} zIndex={2}>
         <AnimatePresence>
           {showConfirm && (
             <ConfirmModal
@@ -169,6 +170,7 @@ export default function CreateCardModal({
                 <CardType />
                 <CardColumn />
                 <CardAssignee />
+                <CardAssignedCircle />
                 <CardReviewer />
                 <CardStartDate />
                 <CardDeadline />

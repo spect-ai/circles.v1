@@ -15,8 +15,18 @@ export const filterCards = (
     let typeFiltSat = false;
     let priorityFiltSat = false;
     let columnFiltSat = false;
+    let assignedCircleFiltSat = false;
 
-    const { assignee, reviewer, labels, title, type, priority, id } = card;
+    const {
+      assignee,
+      reviewer,
+      labels,
+      title,
+      type,
+      priority,
+      id,
+      assignedCircle,
+    } = card;
 
     if (currentFilter?.reviewer?.length > 0) {
       for (let i = 0; i < reviewer.length; i += 1) {
@@ -40,6 +50,16 @@ export const filterCards = (
       }
     } else {
       assigneeFiltSat = true;
+    }
+
+    if (currentFilter?.assignedCircle?.length > 0) {
+      const filterATruth =
+        currentFilter.assignedCircle.includes(assignedCircle);
+      if (filterATruth) {
+        assignedCircleFiltSat = true;
+      }
+    } else {
+      assignedCircleFiltSat = true;
     }
 
     if (currentFilter?.label?.length > 0) {
@@ -104,7 +124,8 @@ export const filterCards = (
       typeFiltSat &&
       priorityFiltSat &&
       columnFiltSat &&
-      titleFiltSat
+      titleFiltSat &&
+      assignedCircleFiltSat
     ) {
       return card;
     }

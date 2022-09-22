@@ -40,6 +40,7 @@ export interface Payment {
 }
 
 type BatchPayInfo = {
+  payCircle: boolean;
   retroId?: string;
   approval: {
     tokenAddresses: string[];
@@ -237,6 +238,7 @@ export interface CircleType {
   questbookWorkspaceId?: string;
   grantMilestoneProject?: string;
   grantApplicantProject?: string;
+  paymentAddress: string;
 }
 
 // interface ProjectType {
@@ -291,6 +293,7 @@ export interface CardType {
   kudosClaimedBy: KudosClaimedType;
   eligibleToClaimKudos: KudosClaimedType;
   unauthorized?: boolean;
+  assignedCircle: string;
 }
 
 export interface ApplicationType {
@@ -482,6 +485,7 @@ export type Filter = {
   type: string[];
   priority: string[];
   deadline: string;
+  assignedCircle: string[];
 };
 
 export type CardsType = {

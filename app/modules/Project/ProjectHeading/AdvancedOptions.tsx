@@ -71,8 +71,7 @@ const ScrollContainer = styled(Box)`
 `;
 
 export function AssigneeColumn({ cards, column }: ColumnProps) {
-  console.log(column.columnId);
-
+  
   const CardDraggable = (provided: DroppableProvided) => (
     <ScrollContainer {...provided.droppableProps} ref={provided.innerRef}>
       <Box>

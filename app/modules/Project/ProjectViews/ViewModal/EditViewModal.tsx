@@ -8,14 +8,7 @@ import MultiSelectDropdown, {
   Input,
   InputBox,
 } from "../../../../common/components/MultiSelectDropDown/MultiSelectDropDown";
-import {
-  Box,
-  Text,
-  useTheme,
-  Stack,
-  Button,
-  IconTrash,
-} from "degen";
+import { Box, Text, useTheme, Stack, Button, IconTrash } from "degen";
 import {
   AlignLeftOutlined,
   BarsOutlined,
@@ -109,6 +102,7 @@ function EditViewModal({ setViewOpen, viewId }: Props) {
           type: type,
           priority: priority,
           deadline: "",
+          assignedCircle: [],
         },
         name: name,
       },
