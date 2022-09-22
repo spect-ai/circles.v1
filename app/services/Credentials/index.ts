@@ -10,7 +10,6 @@ import { useNetwork } from "wagmi";
 const chainId = "137";
 const domainInfo = {
   name: "Kudos",
-  version: "7",
 
   // Mumbai
   chainId,
