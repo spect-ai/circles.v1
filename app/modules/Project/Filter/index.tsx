@@ -80,6 +80,16 @@ export default function Filter() {
   );
   const [type, setType] = useState<string[]>(currentFilter?.type || []);
 
+  useEffect(() => {
+    setAssignee(currentFilter.assignee);
+    setReviewer(currentFilter?.reviewer);
+    setLabels(currentFilter?.label);
+    setTitle(currentFilter?.title);
+    setColumn(currentFilter?.column);
+    setPriority(currentFilter.priority);
+    setType(currentFilter?.type);
+  }, [currentFilter, project.id, filterOpen]);
+
   const filterIsOn: boolean =
     currentFilter?.assignee?.length > 0 ||
     currentFilter?.reviewer?.length > 0 ||
@@ -91,7 +101,7 @@ export default function Filter() {
     currentFilter?.assignedCircle?.length > 0;
 
   const handleClick = () => {
-    setCurrentFilter({
+    const filter = {
       assignee: assignee,
       reviewer: reviewer,
       column: column,
@@ -102,10 +112,12 @@ export default function Filter() {
       priority: priority,
       deadline: "",
       assignedCircle: assignedCircle,
-    });
+    };
+    const projectSlug = project.slug;
+    localStorage.setItem(projectSlug, JSON.stringify(filter));
+    setCurrentFilter(filter);
     setFilterOpen(!filterOpen);
   };
-
   return (
     <Popover
       isOpen={filterOpen}

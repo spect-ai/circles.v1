@@ -1,6 +1,13 @@
-import React, { createContext, memo, useContext, useState } from "react";
+import React, {
+  createContext,
+  memo,
+  useContext,
+  useState,
+  useEffect,
+} from "react";
 import { Filter } from "@/app/types";
 import { ViewMode } from "gantt-task-react";
+import { useRouter } from "next/router";
 
 interface GlobalContextType {
   isSidebarExpanded: boolean;
@@ -27,6 +34,9 @@ interface GlobalContextType {
 }
 
 const useProviderGlobalContext = () => {
+  const router = useRouter();
+  const { project: pId } = router.query;
+
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
   // const [registry, setRegistry] = useState<Registry>({} as Registry);
   const [connectedUser, setConnectedUser] = useState("");
@@ -54,6 +64,15 @@ const useProviderGlobalContext = () => {
     setIsProfilePanelExpanded(true);
     setQuickProfileUser(userId);
   };
+
+  useEffect(() => {
+    const filter = localStorage.getItem(pId as string);
+    if (filter == null) {
+      setCurrentFilter({} as Filter);
+    } else {
+      setCurrentFilter(JSON.parse(filter));
+    }
+  }, [pId]);
 
   // useEffect(() => {
   //   fetch(`${process.env.API_HOST}/registry/getGlobalRegistry`)
