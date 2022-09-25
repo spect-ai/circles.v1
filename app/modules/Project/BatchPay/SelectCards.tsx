@@ -81,8 +81,10 @@ export default function SelectCards() {
       // filter the project cards to show only the cards with assignee and reward
       let cards = project.columnDetails[column.value]?.cards.filter((card) => {
         return (
-          project.cards[card]?.assignee.length > 0 &&
-          project.cards[card]?.assignee[0] !== "" &&
+          (project.cards[card]?.assignee.length > 0 ||
+            project.cards[card]?.assignedCircle) &&
+          (project.cards[card]?.assignee[0] !== "" ||
+            project.cards[card]?.assignedCircle !== "") &&
           project.cards[card]?.reward.value > 0 &&
           project.cards[card]?.status.paid === false
         );
@@ -167,7 +169,8 @@ export default function SelectCards() {
                 );
                 const res = await getAgregatedPaymentInfo(
                   selectedCards,
-                  project.cards[filteredCards[0]].reward.chain.chainId
+                  project.cards[filteredCards[0]].reward.chain.chainId,
+                  true
                 );
                 console.log({ res });
                 // cards with token address 0x0

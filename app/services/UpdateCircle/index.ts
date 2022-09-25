@@ -20,6 +20,7 @@ type CircleUpdateDTO = {
   labels: string[];
   guildxyzId: number;
   guildxyzToCircleRoles: GuildxyzToCircleRoles;
+  paymentAddress: string;
 };
 
 export const updateCircle = async (

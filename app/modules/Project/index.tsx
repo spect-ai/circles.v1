@@ -18,6 +18,7 @@ import { ApartmentOutlined } from "@ant-design/icons";
 import Navigation from "./Navigation";
 import GanttChart from "./GanttChart";
 import TableView from "./TableView";
+import { useCircle } from "../Circle/CircleContext";
 
 function Project() {
   const [graphOpen, setGraphOpen] = useState(false);
@@ -37,6 +38,9 @@ function Project() {
   const { card: tId, view: vId } = router.query;
 
   const { mode } = useTheme();
+
+  const { circle } = useCircle();
+  console.log("circle", circle);
 
   if (tId || !project) {
     return null;
