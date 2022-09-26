@@ -9,7 +9,7 @@ type Props = {
 
 export default function ContributorsModal({ handleClose }: Props) {
   return (
-    <Modal title="Contributors" handleClose={handleClose} height="40rem">
+    <Modal title="Contributors" handleClose={handleClose} height="40rem" zIndex={2}>
       <Box padding="6">
         <Contributors />
       </Box>
