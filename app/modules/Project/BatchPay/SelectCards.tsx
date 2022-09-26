@@ -1,5 +1,6 @@
 import Dropdown from "@/app/common/components/Dropdown";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
+import Select from "@/app/common/components/Select";
 import Table from "@/app/common/components/Table";
 import { useLocalProject } from "@/app/modules/Project/Context/LocalProjectContext";
 import { BatchPayInfo, CardType } from "@/app/types";
@@ -75,20 +76,33 @@ export default function SelectCards() {
   }));
 
   const { mode } = useTheme();
+  const [payOption, setPayOption] = useState({
+    label: "Assignees",
+    value: "assignees",
+  });
 
   useEffect(() => {
     if (project?.columnDetails) {
       // filter the project cards to show only the cards with assignee and reward
-      let cards = project.columnDetails[column.value]?.cards.filter((card) => {
-        return (
-          (project.cards[card]?.assignee.length > 0 ||
-            project.cards[card]?.assignedCircle) &&
-          (project.cards[card]?.assignee[0] !== "" ||
-            project.cards[card]?.assignedCircle !== "") &&
-          project.cards[card]?.reward.value > 0 &&
-          project.cards[card]?.status.paid === false
-        );
-      });
+      let cards;
+      if (payOption.value === "assignees") {
+        cards = project.columnDetails[column.value]?.cards.filter((card) => {
+          return (
+            project.cards[card]?.assignee?.length > 0 &&
+            project.cards[card]?.assignee[0] !== "" &&
+            project.cards[card]?.reward.value > 0 &&
+            project.cards[card]?.status.paid === false
+          );
+        });
+      } else {
+        cards = project.columnDetails[column.value]?.cards.filter((card) => {
+          return (
+            project.cards[card]?.assignedCircle?.length > 0 &&
+            project.cards[card]?.reward.value > 0 &&
+            project.cards[card]?.status.paid === false
+          );
+        });
+      }
       if (cards.length > 0) {
         // Take the first network and ignore rest (edge case when more than one network is selected)
         const chainId = project.cards[cards[0]].reward.chain.chainId;
@@ -100,7 +114,7 @@ export default function SelectCards() {
       setRows(formatRows(project.cards, cards));
       setChecked(formatRows(project.cards, cards)?.map(() => true));
     }
-  }, [project, column.value]);
+  }, [project, column.value, payOption.value]);
   return (
     <Box>
       <ScrollContainer paddingX="8" paddingY="4">
@@ -117,13 +131,23 @@ export default function SelectCards() {
             </Button>
           </Tooltip>
         </Stack>
-        <Dropdown
-          options={columns}
-          selected={column}
-          onChange={(option) => {
-            setColumn(option);
-          }}
-        />
+        <Stack direction="horizontal" align={"center"}>
+          <Dropdown
+            options={columns}
+            selected={column}
+            onChange={(option) => {
+              setColumn(option);
+            }}
+          />
+          <Select
+            options={[
+              { label: "Pay Assignee", value: "assignees" },
+              { label: "Pay Circle", value: "circles" },
+            ]}
+            value={payOption}
+            onChange={setPayOption}
+          />
+        </Stack>
         <Box paddingY="4" />
         {rows?.length > 0 && (
           <Table
@@ -139,7 +163,9 @@ export default function SelectCards() {
         {(rows?.length === 0 || !rows) && (
           <Stack space="1">
             <Text variant="base" weight="semiBold">
-              {`For cards to show up here, they must have a reward value and at least one assignee. No such cards were found in ${column.label} column.`}
+              {`For cards to show up here, they must have a reward value and at least one ${
+                payOption.value === "assignees" ? "assignee" : "assigned circle"
+              }. No such cards were found in ${column.label} column.`}
             </Text>
             {/* <Text variant="base" weight="semiBold">
               Card needs to have an assignee and reward

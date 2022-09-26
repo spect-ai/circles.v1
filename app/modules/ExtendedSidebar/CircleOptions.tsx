@@ -40,22 +40,24 @@ function CircleOptions() {
   const { mode } = useTheme();
 
   useEffect(() => {
-    fetch(
-      `${process.env.API_HOST}/circle/myPermissions?circleIds=${circle?.id}`,
-      {
-        credentials: "include",
-      }
-    )
-      .then((res) => {
-        res
-          .json()
-          .then((permissions: Permissions) => {
-            setPerm(permissions);
-          })
-          .catch((err) => console.log(err));
-      })
-      .catch((err) => console.log(err));
-  }, []);
+    if (circle?.id) {
+      fetch(
+        `${process.env.API_HOST}/circle/myPermissions?circleIds=${circle?.id}`,
+        {
+          credentials: "include",
+        }
+      )
+        .then((res) => {
+          res
+            .json()
+            .then((permissions: Permissions) => {
+              setPerm(permissions);
+            })
+            .catch((err) => console.log(err));
+        })
+        .catch((err) => console.log(err));
+    }
+  }, [circle?.id]);
 
   return (
     <>

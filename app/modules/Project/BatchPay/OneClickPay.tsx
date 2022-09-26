@@ -117,8 +117,12 @@ export default function OneClickPayment() {
   const recordPayment = async (txnHash: string, cardIds: string[]) => {
     if (txnHash) {
       if (!batchPayInfo?.retroId && cardIds && cardIds.length > 0) {
-        const res: ProjectType = await updatePaymentInfo(cardIds, txnHash);
+        const res: ProjectType = await updatePaymentInfo(cardIds, txnHash, {
+          type: "project",
+          id: project?.id,
+        });
         if (res) {
+          console.log({ res });
           updateProject && updateProject(res);
           setCard && setCard(res.cards[cardId]);
         }

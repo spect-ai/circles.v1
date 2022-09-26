@@ -8,6 +8,7 @@ import { Chain, Registry, Token } from "@/app/types";
 import { SaveOutlined } from "@ant-design/icons";
 import { Box, Heading, Input, Stack, Tag, Text } from "degen";
 import React, { useState } from "react";
+import { toast } from "react-toastify";
 import styled from "styled-components";
 import { useCircle } from "../../CircleContext";
 import AddToken from "./AddToken";
@@ -35,7 +36,14 @@ export default function DefaultPayment() {
   );
 
   const onSubmit = async () => {
+    // validate if circle address is a valid ethereum address
+    if (!circleAddress.match(/^0x[a-fA-F0-9]{40}$/)) {
+      toast.error("Invalid Payment Address");
+      return;
+    }
+
     setIsLoading(true);
+
     const res = await updateCircle(
       {
         defaultPayment: {
@@ -133,7 +141,10 @@ export default function DefaultPayment() {
         <Box marginTop="4" />
         <Box>
           <Heading>Circle Address</Heading>
-          <Text>Set address where circle should receieve the payments</Text>
+          <Text>
+            Set address where circle should receieve the payments. Please ensure
+            that the address added is NOT a gnosis safe address.
+          </Text>
         </Box>
         <Stack>
           <Input
