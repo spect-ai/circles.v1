@@ -239,6 +239,7 @@ export interface CircleType {
   grantMilestoneProject?: string;
   grantApplicantProject?: string;
   paymentAddress: string;
+  grantNotificationChannel?: DiscordChannel;
 }
 
 // interface ProjectType {
@@ -622,4 +623,9 @@ export type ExternalProvider = {
     callback: (error: any, response: any) => void
   ) => void;
   request?: (request: { method: string; params?: Array<any> }) => Promise<any>;
+};
+
+export type DiscordChannel = {
+  id: string;
+  name: string;
 };

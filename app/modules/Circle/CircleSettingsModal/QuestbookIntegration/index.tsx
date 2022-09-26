@@ -1,7 +1,9 @@
 import Dropdown, { OptionType } from "@/app/common/components/Dropdown";
 import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
+import { fetchGuildChannels } from "@/app/services/Discord";
 import { updateCircle } from "@/app/services/UpdateCircle";
+import { DiscordChannel } from "@/app/types";
 import { Box, Input, Stack, Text } from "degen";
 import { AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
@@ -16,6 +18,10 @@ export default function ConnectQuestbook() {
   const [milestoneProject, setMilestoneProject] = useState({} as OptionType);
   const [applicantProject, setApplicantProject] = useState({} as OptionType);
   const [projectOptions, setProjectOptions] = useState([] as OptionType[]);
+  const [channels, setChannels] = useState<OptionType[]>();
+  const [discordGrantNotifChannel, setDiscordGrantNotifChannel] = useState(
+    {} as DiscordChannel
+  );
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -42,6 +48,7 @@ export default function ConnectQuestbook() {
         questbookWorkspaceUrl: workspaceUrl,
         grantMilestoneProject: milestoneProject?.value,
         grantApplicantProject: applicantProject?.value,
+        grantNotificationChannel: discordGrantNotifChannel,
       },
       circle?.id as string
     );
@@ -76,6 +83,24 @@ export default function ConnectQuestbook() {
     }
   }, [circle]);
 
+  useEffect(() => {
+    const getGuildChannels = async () => {
+      const res = await fetchGuildChannels(circle?.discordGuildId as string);
+      setChannels(
+        res.guildChannels.map((channel: any) => ({
+          label: channel.name,
+          value: channel.id,
+        }))
+      );
+    };
+    if (circle?.discordGuildId) {
+      void getGuildChannels();
+    }
+    setDiscordGrantNotifChannel(
+      circle?.grantNotificationChannel || ({} as DiscordChannel)
+    );
+  }, [circle]);
+
   return (
     <>
       <PrimaryButton onClick={() => setIsOpen(true)}>
@@ -94,7 +119,7 @@ export default function ConnectQuestbook() {
             <Box padding="8">
               <Stack>
                 <Box marginBottom="4">
-                  <Text>1. Add Workspace Url</Text>
+                  <Text>1. Add Questbook Workspace Url</Text>
                   <Input
                     label=""
                     placeholder="Questbook workspace Url"
@@ -106,7 +131,7 @@ export default function ConnectQuestbook() {
 
                 <Box marginBottom="4">
                   <Text>
-                    2. Pick a project to link approved grant applicants
+                    2. Pick a project where approved grant applicants are added
                   </Text>
                   <Dropdown
                     options={projectOptions}
@@ -118,7 +143,9 @@ export default function ConnectQuestbook() {
                 </Box>
 
                 <Box marginBottom="4">
-                  <Text>3. Pick a project to link milestones</Text>
+                  <Text>
+                    3. Pick a project where grant milestones are added
+                  </Text>
                   <Dropdown
                     options={projectOptions}
                     selected={milestoneProject}
@@ -126,6 +153,27 @@ export default function ConnectQuestbook() {
                       setMilestoneProject(value);
                     }}
                   />{" "}
+                </Box>
+
+                <Box marginBottom="4">
+                  <Text>
+                    4. Add a Discord channel for notifications when a grant
+                    application is approved. Please connect a Discord server in
+                    the Integrations section in Circle settings first.
+                  </Text>
+                  <Dropdown
+                    options={channels as OptionType[]}
+                    selected={{
+                      label: discordGrantNotifChannel?.name,
+                      value: discordGrantNotifChannel?.id,
+                    }}
+                    onChange={(channel) =>
+                      setDiscordGrantNotifChannel({
+                        id: channel.value,
+                        name: channel.label,
+                      })
+                    }
+                  />
                 </Box>
 
                 <PrimaryButton

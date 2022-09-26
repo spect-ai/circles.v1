@@ -1,3 +1,4 @@
+import { CardType } from "@/app/types";
 import { toast } from "react-toastify";
 
 export const getGuildRoles = async (guildId: string) => {

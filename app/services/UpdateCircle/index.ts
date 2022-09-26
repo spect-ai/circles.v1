@@ -1,4 +1,5 @@
 import {
+  DiscordChannel,
   DiscordRoleMappingType,
   GuildxyzToCircleRoles,
   Payment,
@@ -25,6 +26,7 @@ type CircleUpdateDTO = {
   questbookWorkspaceUrl: string;
   grantMilestoneProject: string;
   grantApplicantProject: string;
+  grantNotificationChannel: DiscordChannel;
 };
 
 export const updateCircle = async (
