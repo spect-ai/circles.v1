@@ -31,8 +31,6 @@ export default function Circle() {
   const { mode } = useTheme();
   const [graphOpen, setGraphOpen] = useState(false);
 
-  console.log({ circle });
-
   if (isLoading || !circle || !memberDetails) {
     return <Loader text="...." loading />;
   }
