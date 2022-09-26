@@ -34,7 +34,7 @@ const CardPage: NextPage = () => {
   const { data: circle, refetch: refetchCircle } = useQuery<CircleType>(
     ["circle", cId],
     () =>
-      fetch(`${process.env.API_HOST}/circle/slug/${cId as string}`).then(
+      fetch(`${process.env.API_HOST}/circle/v1/slug/${cId as string}`).then(
         (res) => res.json()
       ),
     {
