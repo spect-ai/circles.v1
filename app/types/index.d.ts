@@ -629,3 +629,54 @@ export type DiscordChannel = {
   id: string;
   name: string;
 };
+
+export interface CollectionType {
+  id: string;
+  name: string;
+  slug: string;
+  properties: { [id: string]: Property };
+  createdAt: string;
+  updatedAt: string;
+  purpose: string;
+  private: boolean;
+  parents: CircleType[];
+  unauthorized?: boolean;
+}
+
+export type Property = {
+  name: string;
+  type: PropertyType;
+  value: any;
+  default?: any;
+  condition?: any; // Show property only when condition is met
+  options?: Option[];
+};
+
+export type PropertyType =
+  | "shortText"
+  | "longText"
+  | "number"
+  | "user[]"
+  | "user"
+  | "reward"
+  | "date"
+  | "singleSelect"
+  | "multiSelect"
+  | "ethAddress";
+
+export type Option = {
+  label: string;
+  value: string | number;
+};
+
+export type Conditions = Condition[];
+
+export type Condition = DateConditions;
+
+export type DateConditions = {
+  propertyId: string;
+  condition: ComparisonCondition;
+  feedback: string;
+};
+
+export type ComparisonCondition = "greaterThanOrEqualTo" | "lessThanOrEqualTo";

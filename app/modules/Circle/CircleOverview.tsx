@@ -13,6 +13,7 @@ import CreateRetro from "../Retro/CreateRetro";
 import RetroModal from "../Retro/RetroModal";
 import { useCircle } from "./CircleContext";
 import CircleMembers from "./CircleMembers";
+import CreateCollectionModal from "./CreateCollectionModal";
 import CreateProjectModal from "./CreateProjectModal";
 import CreateSpaceModal from "./CreateSpaceModal";
 
@@ -146,6 +147,30 @@ export default function CircleOverview() {
             </Container>
             <Stack direction="horizontal" align="center">
               <Text size="headingTwo" weight="semiBold" ellipsis>
+                Forms
+              </Text>
+              {canDo("createNewRetro") && <CreateCollectionModal />}
+              {/* <Tooltip html={<Text>View all Retros</Text>} theme={mode}>
+                <Box marginTop="1">
+                  <Button
+                    shape="circle"
+                    size="small"
+                    variant="transparent"
+                    onClick={() => setPage("Retro")}
+                  >
+                    <Text variant="label">
+                      <ExpandAltOutlined
+                        style={{
+                          fontSize: "1.2rem",
+                        }}
+                      />
+                    </Text>
+                  </Button>
+                </Box>
+              </Tooltip> */}
+            </Stack>
+            <Stack direction="horizontal" align="center">
+              <Text size="headingTwo" weight="semiBold" ellipsis>
                 Retro
               </Text>
               {canDo("createNewRetro") && <CreateRetro />}
@@ -168,6 +193,7 @@ export default function CircleOverview() {
                 </Box>
               </Tooltip>
             </Stack>
+
             <Container style={{ padding: "0px", margin: "0px" }}>
               <Row>
                 {circle?.retro?.map((retro) => (
