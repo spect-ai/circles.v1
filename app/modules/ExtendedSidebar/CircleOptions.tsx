@@ -40,8 +40,7 @@ function CircleOptions() {
   const { mode } = useTheme();
 
   useEffect(() => {
-    console.log({ circle });
-    if (circle)
+    if (circle?.id) {
       fetch(
         `${process.env.API_HOST}/circle/myPermissions?circleIds=${circle?.id}`,
         {
@@ -57,7 +56,8 @@ function CircleOptions() {
             .catch((err) => console.log(err));
         })
         .catch((err) => console.log(err));
-  }, []);
+    }
+  }, [circle?.id]);
 
   return (
     <>

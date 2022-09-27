@@ -57,7 +57,7 @@ const Container = styled.div`
 function TableView({ viewId }: { viewId: string }) {
   const { localProject: project, loading, advFilters } = useLocalProject();
   const router = useRouter();
-  const { circle: cId, project: pId, card: tId } = router.query;
+  const { circle: cId, project: pId } = router.query;
   const { currentFilter } = useGlobal();
   const { mode } = useTheme();
 
@@ -105,7 +105,7 @@ function TableView({ viewId }: { viewId: string }) {
     }
     let cards =
       tcards &&
-      Object.values(tcards)?.filter((card) => card.status.active == true);
+      Object.values(tcards)?.filter((card) => card.status.archived == false);
     const fcards = titleFilter(cards, advFilters.inputTitle);
     cards = sortBy(advFilters.sortBy, fcards, advFilters.order);
     setTasks(cards);
@@ -124,13 +124,12 @@ function TableView({ viewId }: { viewId: string }) {
     ::-webkit-scrollbar {
       display: none;
     }
-    height: ${tasks?.length < 12 ? `calc(${tasks.length + 1}*52px)` : "100%"};
+    height: ${tasks?.length < 12 ? `calc(${tasks.length + 1}*52px)` : "90%"};
     border: 1px solid ${
       mode === "dark" ? "rgb(255, 255, 255, 0.1);" : "rgb(0, 0, 0, 0.1)"
     };
     `,
-    Header: `
-      `,
+    Header: ``,
     Body: ``,
     BaseRow: `
     background-color: ${
@@ -164,7 +163,6 @@ function TableView({ viewId }: { viewId: string }) {
   
       padding: 8px;
       height: 52px;
-
       &:nth-of-type(1) {
         left: 0px;
       }

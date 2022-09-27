@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { useState } from "react";
-import { Box, Text, useTheme } from "degen";
+import { useTheme } from "degen";
 import useCardService from "@/app/services/Card/useCardService";
 import { useLocalProject } from "@/app/modules/Project/Context/LocalProjectContext";
 
@@ -29,8 +29,8 @@ export function CardTitle({ id, name }: { id: string; name: string }) {
   const [cardTitle, setCardTitle] = useState(name);
 
   const updateTitle = async () => {
+    if (cardTitle.length == 0) return;
     const res = await updateCard({ title: cardTitle }, id);
-    console.log(res);
     if (res?.id) updateProject(res.project);
   };
 

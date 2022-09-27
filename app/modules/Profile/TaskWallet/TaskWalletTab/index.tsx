@@ -19,6 +19,7 @@ interface UserProps {
 
 export const ScrollContainer = styled(Box)`
   overflow: auto;
+  height: 60vh;
   padding-right: 1rem;
   ::-webkit-scrollbar {
     width: 5px;
@@ -124,29 +125,24 @@ const TaskWalletTabs = ({ userData, tab }: UserProps) => {
           </>
         )}
       </Box>
-
-      {panelTab === "Work" && (
-        <>
-          <Toggle toggle={toggle} setToggle={setToggle} />
-          <ScrollContainer>
+      <Box>
+        {panelTab === "Work" && (
+          <Box>
+            <Toggle toggle={toggle} setToggle={setToggle} />
             <WorkCards
               toggle={toggle}
               setToggle={setToggle}
               userData={userData}
             />
-          </ScrollContainer>
-        </>
-      )}
-      {panelTab == "Notifications" && (
-        <ScrollContainer overflow={"auto"}>
-          <Notifications notifIds={notifIds} />
-        </ScrollContainer>
-      )}
-      {/* {panelTab == "Bookmarks" && (
+          </Box>
+        )}
+        {panelTab == "Notifications" && <Notifications notifIds={notifIds} />}
+        {/* {panelTab == "Bookmarks" && (
         <ScrollContainer overflow={"auto"}>
           <BookMarks />
         </ScrollContainer>
       )} */}
+      </Box>
     </>
   );
 };

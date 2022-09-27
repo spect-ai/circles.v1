@@ -25,11 +25,12 @@ import CircleOptions from "./CircleOptions";
 import CollapseButton from "./CollapseButton";
 import ExploreSidebar from "./ExploreSidebar";
 
-export const Container = styled(Box)`
+export const Container = styled(Box)<{ subH?: string }>`
   ::-webkit-scrollbar {
     display: none;
   }
-  height: calc(100vh - 9.1rem);
+  height: ${({ subH }) =>
+    subH ? `calc(100vh - ${subH})` : "calc(100vh - 9.1rem)"};
   -ms-overflow-style: none;
   scrollbar-width: none;
   overflow-y: auto;
@@ -140,7 +141,7 @@ function CircleSidebar() {
           </Stack>
         )}
 
-        <Container>
+        <Container subH={circle?.toBeClaimed ? "12.1rem" : "9.1rem"}>
           <Stack>
             <Accordian
               name="Projects"
