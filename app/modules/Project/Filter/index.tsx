@@ -83,6 +83,7 @@ export default function Filter() {
   useEffect(() => {
     setAssignee(currentFilter.assignee);
     setReviewer(currentFilter?.reviewer);
+    setAssignedCircle(currentFilter?.assignedCircle);
     setLabels(currentFilter?.label);
     setTitle(currentFilter?.title);
     setColumn(currentFilter?.column);
