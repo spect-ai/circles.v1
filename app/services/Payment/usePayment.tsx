@@ -224,7 +224,7 @@ export default function usePaymentGateway(
     cardIds,
     circleId,
   }: BatchPayParams): Promise<boolean> {
-    if (paymentType === "tokens") {
+    if (paymentType === "tokens" && registry) {
       const {
         filteredTokenAddresses,
         filteredRecipients,
@@ -242,9 +242,9 @@ export default function usePaymentGateway(
         callerId: connectedUser,
         tokenAddresses,
       });
-      const res = await biconomyPayment(
+      await biconomyPayment(
         address || "",
-        "0x2De899142D9B74273EE1e70Ca7AD31A6EF7fCAaE",
+        registry[chainId].distributorAddress as string,
         {
           filteredTokenAddresses,
           filteredRecipients,
@@ -253,10 +253,7 @@ export default function usePaymentGateway(
           overrides,
         }
       );
-      // if (res)
-      //   toast.success("Transaction sent to your safe", { theme: "dark" });
-      // else toast.error("Error Occurred while sending your transation to safe");
-      // return res;
+      toast.success("Transaction sent");
     }
     return false;
   }

@@ -37,6 +37,8 @@ export default function OneClickPayment() {
   const { circle: cId } = router.query;
   const { circle } = useCircle();
 
+  const { address: userAddress } = useAccount();
+
   const { data: registry } = useQuery<Registry>(["registry", cId], {
     enabled: false,
   });
@@ -170,9 +172,7 @@ export default function OneClickPayment() {
   useEffect(() => {
     // initialize tokenStatus
     setLoading(true);
-    console.log({ circle, registry, chain, batchPayInfo });
     if (circle && chain?.id.toString() === batchPayInfo?.chainId && registry) {
-      console.log("hiiii");
       const tokenStatus: any = {};
       let index = 0;
       batchPayInfo?.approval.tokenAddresses.forEach(async (address: string) => {
@@ -185,20 +185,21 @@ export default function OneClickPayment() {
             circleSafe
           );
 
-        if (address)
+        if (address) {
           approvalStatus = await isApproved(
             address,
             registry[batchPayInfo?.chainId].distributorAddress as string,
             batchPayInfo.approval.values[index],
-            address
+            userAddress || ""
           );
+          console.log({ approvalStatus });
+        }
         tokenStatus[address] = {
           loading: false,
           approved: approvalStatus,
           safeApproved: safeApprovalStatus,
           error: "",
         };
-        console.log({ batchPayInfo });
         if (index === batchPayInfo.approval.tokenAddresses.length - 1) {
           setTokenStatus(tokenStatus);
         }
@@ -378,6 +379,7 @@ export default function OneClickPayment() {
                         circleId: circle?.id || "",
                       });
                       setPersonalWalletLoading(false);
+                      setIsOpen(false);
                       return;
                     }
                     const tokenTxnHash = await toast

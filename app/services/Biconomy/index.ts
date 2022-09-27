@@ -4,13 +4,13 @@ import { ExternalProvider } from "@/app/types";
 import { Biconomy } from "@biconomy/mexa";
 import { ethers } from "ethers";
 import DistributorABI from "@/app/common/contracts/mumbai/distributor.json";
+import { toast } from "react-toastify";
 
 export async function biconomyPayment(
   userAddress: string,
   contractAddress: string,
   txnData: any
 ) {
-  console.log({ contractAddress });
   const biconomy = new Biconomy(window.ethereum as ExternalProvider, {
     apiKey: "e10g_XQD-.ff5b071a-8e9a-444d-a08d-287f45ec0086",
     debug: true,
@@ -34,7 +34,6 @@ export async function biconomyPayment(
     id,
     overrides,
   } = txnData;
-  console.log({ txnData });
   const data = await contract?.populateTransaction.distributeTokens(
     filteredTokenAddresses,
     filteredRecipients,
@@ -48,7 +47,15 @@ export async function biconomyPayment(
     from: userAddress,
     signatureType: "EIP712_SIGN",
   };
-  console.log({ txParams });
+
   // @ts-ignore
   await provider.send("eth_sendTransaction", [txParams]);
+
+  biconomy.on(
+    "txMined",
+    (data: { msg: string; id: string; hash: string; receipt: string }) => {
+      console.log(data);
+      toast.success("Transaction Successful");
+    }
+  );
 }

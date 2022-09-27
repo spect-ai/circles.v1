@@ -136,6 +136,7 @@ export default function useERC20() {
     const contract = getERC20Contract(erc20Address);
 
     const numDecimals = await contract.decimals();
+    console.log({ ethAddress, spenderAddress, erc20Address });
     const allowance = await contract.allowance(ethAddress, spenderAddress);
     if (!value) return false;
     const ceilVal = Math.ceil(value).toFixed();
