@@ -75,16 +75,19 @@ function CreateProjectModal() {
 
   const onSubmit = async () => {
     // get board id from trello url
-    const importId = importURL.split("/")[4];
-    console.log({ importId });
-    const trelloRes = await fetch(
-      `https://api.trello.com/1/boards/${importId}`
-    );
-    if (trelloRes.status !== 200) {
-      toast.error(
-        "Invalid Trello URL, ensure that your board is public and the link is of the form https://trello.com/b/BOARD_ID"
+    let importId;
+    if (importURL) {
+      importId = importURL.split("/")[4];
+      console.log({ importId });
+      const trelloRes = await fetch(
+        `https://api.trello.com/1/boards/${importId}`
       );
-      return;
+      if (trelloRes.status !== 200) {
+        toast.error(
+          "Invalid Trello URL, ensure that your board is public and the link is of the form https://trello.com/b/BOARD_ID"
+        );
+        return;
+      }
     }
 
     setIsLoading(true);
