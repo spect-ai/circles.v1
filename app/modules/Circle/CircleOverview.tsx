@@ -104,6 +104,12 @@ export default function CircleOverview() {
   const { mode } = useTheme();
 
   useEffect(() => {
+    setFilteredProjects(circle?.projects);
+    setFilteredWorkstreams(circle?.children);
+    setFilteredRetro(circle?.retro);
+  }, [circle]);
+
+  useEffect(() => {
     if (retroSlug) {
       setIsRetroOpen(true);
     }
@@ -187,7 +193,7 @@ export default function CircleOverview() {
                         (circle as CircleType)?.retro,
                         e.target.value,
                         {
-                          keys: ["name"],
+                          keys: ["title"],
                         }
                       )
                     );
@@ -309,7 +315,7 @@ export default function CircleOverview() {
                 >
                   <Row>
                     {filteredRetro?.map((retro) => (
-                      <Col sm={6} md={4} lg={3} key={retro.id}>
+                      <Col sm={6} md={4} lg={2} key={retro.id}>
                         <Card
                           height="32"
                           onClick={() => {
