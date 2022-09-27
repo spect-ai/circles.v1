@@ -21,13 +21,14 @@ import { QuestionCircleFilled } from "@ant-design/icons";
 import { createProject } from "@/app/services/Project";
 import { useCircle } from "./CircleContext";
 import Dropdown from "@/app/common/components/Dropdown";
+import { toast } from "react-toastify";
 
 const getPlaceholder: {
   [key: string]: string;
 } = {
   // notion: "Notion URL",
   // github: "Github URL",
-  trello: "Trello Board ID",
+  trello: "Trello URL",
 };
 
 function CreateProjectModal() {
@@ -66,14 +67,26 @@ function CreateProjectModal() {
   const { mode } = useTheme();
 
   const [importType, setImportType] = useState({
-    label: "",
-    value: "",
+    label: "Trello",
+    value: "trello",
   });
 
-  const [importId, setImportId] = useState("");
+  const [importURL, setImportURL] = useState("");
 
   const onSubmit = async () => {
-    console.log({ circle });
+    // get board id from trello url
+    const importId = importURL.split("/")[4];
+    console.log({ importId });
+    const trelloRes = await fetch(
+      `https://api.trello.com/1/boards/${importId}`
+    );
+    if (trelloRes.status !== 200) {
+      toast.error(
+        "Invalid Trello URL, ensure that your board is public and the link is of the form https://trello.com/b/BOARD_ID"
+      );
+      return;
+    }
+
     setIsLoading(true);
     const data = await createProject({
       name,
@@ -92,6 +105,7 @@ function CreateProjectModal() {
 
   useEffect(() => {
     void fetchTemplate();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -186,11 +200,9 @@ function CreateProjectModal() {
                   />
                   <Input
                     label=""
-                    placeholder={
-                      getPlaceholder[importType.value] || "Select a platform"
-                    }
-                    value={importId}
-                    onChange={(e) => setImportId(e.target.value)}
+                    placeholder={getPlaceholder[importType.value]}
+                    value={importURL}
+                    onChange={(e) => setImportURL(e.target.value)}
                   />
                 </Stack>
                 <Box width="full" marginTop="4">

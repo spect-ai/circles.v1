@@ -295,8 +295,8 @@ export function useProviderLocalCard({
       },
       parent: card?.id,
       childCards: subTasks,
-      assignedCircle,
     };
+    if (assignedCircle) payload.assignedCircle = assignedCircle;
     const data = await callCreateCard(payload);
     toast(
       <Stack>

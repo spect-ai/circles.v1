@@ -15,13 +15,6 @@ import CircleOverview from "./CircleOverview";
 
 const BoxContainer = styled(Box)`
   width: calc(100vw - 4rem);
-  ::-webkit-scrollbar {
-    display: none;
-  }
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-  height: calc(100vh - 1rem);
-  overflow-y: auto;
 `;
 
 export default function Circle() {
@@ -30,8 +23,6 @@ export default function Circle() {
   const { onboarded } = useCircleOnboarding();
   const { mode } = useTheme();
   const [graphOpen, setGraphOpen] = useState(false);
-
-  console.log({ circle });
 
   if (isLoading || !circle || !memberDetails) {
     return <Loader text="...." loading />;

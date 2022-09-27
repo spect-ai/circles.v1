@@ -71,7 +71,7 @@ export default function ProfileModal({ setIsOpen }: Props) {
   }, []);
 
   return (
-    <Modal title="Profile" handleClose={handleClose}>
+    <Modal title="Profile" handleClose={handleClose} zIndex={2}>
       <Box padding="6">
         <Stack>
           <Text variant="label">Profile Picture</Text>

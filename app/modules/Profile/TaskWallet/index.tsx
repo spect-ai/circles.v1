@@ -48,7 +48,7 @@ const TaskWallet = ({ tab }: { tab: string }) => {
         height: "100%",
         backgroundColor: "transparent",
         alignItems: "flex-end",
-        zIndex: 1,
+        zIndex: 2,
       }}
     >
       <motion.div

@@ -36,11 +36,7 @@ function Project() {
 
   const router = useRouter();
   const { card: tId, view: vId } = router.query;
-
   const { mode } = useTheme();
-
-  const { circle } = useCircle();
-  console.log("circle", circle);
 
   if (tId || !project) {
     return null;

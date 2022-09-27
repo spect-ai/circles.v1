@@ -13,7 +13,7 @@ import { useQuery } from "react-query";
 import { Tooltip } from "react-tippy";
 import { useCircle } from "./CircleContext";
 import InviteMemberModal from "./ContributorsModal/InviteMembersModal";
-import MemberDisplay from "./ContributorsModal/MemberDisplay";
+import ContributorTable from "./ContributorTable";
 
 function CircleMembers() {
   const { circle, memberDetails, setCircleData, fetchMemberDetails } =
@@ -49,39 +49,13 @@ function CircleMembers() {
     }
   }, [circle, memberDetails?.memberDetails]);
 
-  const RoleSection: React.FC<{ roleName: string }> = ({ roleName }) => {
-    const [memberPresent, setMemberPresent] = useState(false);
-    return (
-      <Box>
-        {memberPresent && <Text variant="label">{`${roleName}`}</Text>}
-        <Stack direction="horizontal" wrap>
-          {filteredMembers.map((mem) => {
-            if (circle?.memberRoles[mem.id]?.includes(roleName)) {
-              !memberPresent && setMemberPresent(true);
-              return (
-                <MemberDisplay
-                  key={mem.id}
-                  member={mem.id}
-                  memberDetails={memberDetails?.memberDetails}
-                />
-              );
-            }
-          })}
-        </Stack>
-      </Box>
-    );
-  };
   if (!circle) {
     return <div>Loading...</div>;
   }
 
   return (
     <Box marginRight="8">
-      <Stack>
-        <Text size="headingTwo" weight="semiBold" ellipsis>
-          Members
-        </Text>
-
+      <Stack align={"center"}>
         {!circle.members.includes(connectedUser) &&
           circle.discordGuildId &&
           currentUser?.discordId && (
@@ -128,6 +102,15 @@ function CircleMembers() {
             </PrimaryButton>
           </Tooltip>
         )}
+      </Stack>
+      <Box
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center",
+          gap: "1rem",
+        }}
+      >
         <Input
           label=""
           placeholder="Search members"
@@ -140,11 +123,13 @@ function CircleMembers() {
             );
           }}
         />
-        {canDo("inviteMembers") && <InviteMemberModal />}
-        {Object.keys(circle?.roles).map((role) => (
-          <RoleSection key={role} roleName={role} />
-        ))}
-      </Stack>
+        {canDo("inviteMembers") && (
+          <Box width={"1/3"} marginTop="2">
+            <InviteMemberModal />
+          </Box>
+        )}
+      </Box>
+      <ContributorTable filteredMembers={filteredMembers} />
     </Box>
   );
 }
