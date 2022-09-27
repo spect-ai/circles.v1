@@ -39,7 +39,8 @@ const ProfilePage: NextPage = () => {
     refetch()
       .then((res) => {
         const data = res.data;
-        if (data) connectUser(data.id);
+        console.log("in user page", data);
+        if (data?.id) connectUser(data.id);
       })
       .catch((err) => {
         console.log(err);

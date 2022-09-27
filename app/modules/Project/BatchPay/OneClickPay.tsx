@@ -12,7 +12,7 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { toast } from "react-toastify";
-import { useAccount, useNetwork } from "wagmi";
+import { useAccount, useNetwork, useSwitchNetwork } from "wagmi";
 import { useCircle } from "../../Circle/CircleContext";
 import { useLocalProject } from "../Context/LocalProjectContext";
 import { useLocalCard } from "../CreateCardModal/hooks/LocalCardContext";
@@ -31,7 +31,8 @@ export default function OneClickPayment() {
 
   const { batchPayInfo, setStep, currencyCards, tokenCards, setIsOpen } =
     useBatchPayContext();
-  const { activeChain, switchNetworkAsync } = useNetwork();
+  const { chain } = useNetwork();
+  const { switchNetworkAsync } = useSwitchNetwork();
   const router = useRouter();
   const { circle: cId } = router.query;
   const { circle } = useCircle();
@@ -47,7 +48,6 @@ export default function OneClickPayment() {
       error: string;
     };
   }>({} as any);
-  const { data } = useAccount();
 
   const circleSafe =
     (circle?.safeAddresses &&
@@ -156,23 +156,23 @@ export default function OneClickPayment() {
         filteredBatchPayInfo.userIds.push(batchPayInfo.tokens.userIds[index]);
       }
     });
-    if (type === "card")
+    if (type === "card") {
+      console.log({ tokenStatus });
       tokenCards?.forEach((cardId) => {
-        if (tokenStatus[project.cards[cardId].reward.token.address].approved) {
+        if (tokenStatus[project.cards[cardId].reward.token.address]?.approved) {
           filteredBatchPayInfo.cardIds.push(cardId);
         }
       });
+    }
     return filteredBatchPayInfo;
   };
 
   useEffect(() => {
     // initialize tokenStatus
     setLoading(true);
-    if (
-      circle &&
-      activeChain?.id.toString() === batchPayInfo?.chainId &&
-      registry
-    ) {
+    console.log({ circle, registry, chain, batchPayInfo });
+    if (circle && chain?.id.toString() === batchPayInfo?.chainId && registry) {
+      console.log("hiiii");
       const tokenStatus: any = {};
       let index = 0;
       batchPayInfo?.approval.tokenAddresses.forEach(async (address: string) => {
@@ -185,12 +185,12 @@ export default function OneClickPayment() {
             circleSafe
           );
 
-        if (data?.address)
+        if (address)
           approvalStatus = await isApproved(
             address,
             registry[batchPayInfo?.chainId].distributorAddress as string,
             batchPayInfo.approval.values[index],
-            data.address
+            address
           );
         tokenStatus[address] = {
           loading: false,
@@ -198,6 +198,7 @@ export default function OneClickPayment() {
           safeApproved: safeApprovalStatus,
           error: "",
         };
+        console.log({ batchPayInfo });
         if (index === batchPayInfo.approval.tokenAddresses.length - 1) {
           setTokenStatus(tokenStatus);
         }
@@ -223,7 +224,7 @@ export default function OneClickPayment() {
     }
     // set to final step if all tokens approved
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [batchPayInfo, activeChain]);
+  }, [batchPayInfo, chain]);
 
   const getEthAddress = (specificUserIds: string[], payCircle: boolean) => {
     return specificUserIds.map((userId) => {
@@ -264,28 +265,6 @@ export default function OneClickPayment() {
                 disabled={gnosisLoading}
                 onClick={async () => {
                   setPersonalWalletLoading(true);
-                  // if (
-                  //   (batchPayInfo.chainId === "137" ||
-                  //     batchPayInfo.chainId === "80001") &&
-                  //   batchPayInfo?.currency.values?.length > 0
-                  // ) {
-                  //   await payGasless({
-                  //     chainId: batchPayInfo?.chainId || "",
-                  //     paymentType: "currency",
-                  //     batchPayType: batchPayInfo?.retroId ? "retro" : "card",
-                  //     userAddresses: getEthAddress(
-                  //       batchPayInfo?.currency.userIds
-                  //     ) as string[],
-                  //     amounts: batchPayInfo?.currency.values,
-                  //     tokenAddresses: [""],
-                  //     cardIds: batchPayInfo?.retroId
-                  //       ? [batchPayInfo.retroId]
-                  //       : (currencyCards as string[]),
-                  //     circleId: circle?.id || "",
-                  //   });
-                  //   setPersonalWalletLoading(false);
-                  //   return;
-                  // }
                   if (batchPayInfo?.currency.values?.length > 0) {
                     const currencyTxnHash = await toast
                       .promise(
@@ -378,28 +357,29 @@ export default function OneClickPayment() {
                       return;
                     }
                     setPersonalWalletLoading(true);
-                    // if (
-                    //   (batchPayInfo.chainId === "137" ||
-                    //     batchPayInfo.chainId === "80001") &&
-                    //   batchPayInfo?.tokens.values?.length > 0
-                    // ) {
-                    //   await payGasless({
-                    //     chainId: batchPayInfo?.chainId || "",
-                    //     paymentType: "tokens",
-                    //     batchPayType: batchPayType,
-                    //     userAddresses: getEthAddress(
-                    //       filteredBatchPayInfo.userIds
-                    //     ) as string[],
-                    //     amounts: filteredBatchPayInfo.values,
-                    //     tokenAddresses: filteredBatchPayInfo.tokenAddresses,
-                    //     cardIds: batchPayInfo?.retroId
-                    //       ? [batchPayInfo.retroId]
-                    //       : filteredBatchPayInfo.cardIds,
-                    //     circleId: circle?.id || "",
-                    //   });
-                    //   setPersonalWalletLoading(false);
-                    //   return;
-                    // }
+                    if (
+                      (batchPayInfo.chainId === "137" ||
+                        batchPayInfo.chainId === "80001") &&
+                      batchPayInfo?.tokens.values?.length > 0
+                    ) {
+                      await payGasless({
+                        chainId: batchPayInfo?.chainId || "",
+                        paymentType: "tokens",
+                        batchPayType: batchPayType,
+                        userAddresses: getEthAddress(
+                          filteredBatchPayInfo.userIds,
+                          batchPayInfo.payCircle
+                        ) as string[],
+                        amounts: filteredBatchPayInfo.values,
+                        tokenAddresses: filteredBatchPayInfo.tokenAddresses,
+                        cardIds: batchPayInfo?.retroId
+                          ? [batchPayInfo.retroId]
+                          : filteredBatchPayInfo.cardIds,
+                        circleId: circle?.id || "",
+                      });
+                      setPersonalWalletLoading(false);
+                      return;
+                    }
                     const tokenTxnHash = await toast
                       .promise(
                         batchPay({

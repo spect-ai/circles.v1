@@ -4,8 +4,8 @@ import { ethers } from "ethers";
 import { useRouter } from "next/router";
 import { useQuery } from "react-query";
 import { toast } from "react-toastify";
-import { erc20ABI, useToken } from "wagmi";
-import { getNonce, gnosisPayment } from "../Gnosis";
+import { erc20ABI } from "wagmi";
+import { gnosisPayment } from "../Gnosis";
 
 export default function useERC20() {
   const router = useRouter();
