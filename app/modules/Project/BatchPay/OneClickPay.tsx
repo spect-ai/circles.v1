@@ -20,7 +20,7 @@ import { ScrollContainer } from "./SelectCards";
 
 export default function OneClickPayment() {
   const { getMemberDetails } = useModalOptions();
-  const { payUsingGnosis, batchPay } = usePaymentGateway();
+  const { payUsingGnosis, batchPay, payGasless } = usePaymentGateway();
   const { approve, isApproved } = useERC20();
   const { updateProject, localProject: project } = useLocalProject();
   const { setCard, cardId } = useLocalCard();
@@ -243,6 +243,28 @@ export default function OneClickPayment() {
                 disabled={gnosisLoading}
                 onClick={async () => {
                   setPersonalWalletLoading(true);
+                  if (
+                    (batchPayInfo.chainId === "137" ||
+                      batchPayInfo.chainId === "80001") &&
+                    batchPayInfo?.currency.values?.length > 0
+                  ) {
+                    await payGasless({
+                      chainId: batchPayInfo?.chainId || "",
+                      paymentType: "currency",
+                      batchPayType: batchPayInfo?.retroId ? "retro" : "card",
+                      userAddresses: getEthAddress(
+                        batchPayInfo?.currency.userIds
+                      ) as string[],
+                      amounts: batchPayInfo?.currency.values,
+                      tokenAddresses: [""],
+                      cardIds: batchPayInfo?.retroId
+                        ? [batchPayInfo.retroId]
+                        : (currencyCards as string[]),
+                      circleId: circle?.id || "",
+                    });
+                    setPersonalWalletLoading(false);
+                    return;
+                  }
                   if (batchPayInfo?.currency.values?.length > 0) {
                     const currencyTxnHash = await toast
                       .promise(
@@ -330,6 +352,29 @@ export default function OneClickPayment() {
                       filterUnapprovedTokens(batchPayType);
                     if (filteredBatchPayInfo.tokenAddresses?.length === 0) {
                       toast.error("No approved tokens to distribute");
+                      setPersonalWalletLoading(false);
+                      return;
+                    }
+                    setPersonalWalletLoading(true);
+                    if (
+                      (batchPayInfo.chainId === "137" ||
+                        batchPayInfo.chainId === "80001") &&
+                      batchPayInfo?.tokens.values?.length > 0
+                    ) {
+                      await payGasless({
+                        chainId: batchPayInfo?.chainId || "",
+                        paymentType: "tokens",
+                        batchPayType: batchPayType,
+                        userAddresses: getEthAddress(
+                          filteredBatchPayInfo.userIds
+                        ) as string[],
+                        amounts: filteredBatchPayInfo.values,
+                        tokenAddresses: filteredBatchPayInfo.tokenAddresses,
+                        cardIds: batchPayInfo?.retroId
+                          ? [batchPayInfo.retroId]
+                          : filteredBatchPayInfo.cardIds,
+                        circleId: circle?.id || "",
+                      });
                       setPersonalWalletLoading(false);
                       return;
                     }

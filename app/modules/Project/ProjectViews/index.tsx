@@ -6,13 +6,16 @@ import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import {
   Box,
   Button,
-  IconGrid,
-  IconList,
   IconDotsVertical,
   Text,
   useTheme,
-  IconSplit,
 } from "degen";
+import {
+  AlignLeftOutlined,
+  BarsOutlined,
+  AppstoreOutlined,
+  TableOutlined
+} from "@ant-design/icons";
 import Link from "next/link";
 import CreateViewModal from "./ViewModal/CreateViewModal";
 import EditViewModal from "./ViewModal/EditViewModal";
@@ -65,14 +68,15 @@ export const ViewBar = () => {
             <Link href={`/${cId}/${pId}?view=${view_Id}`} key={view_Id}>
               <Button
                 prefix={
-                  (view?.type == "Board" && <IconGrid size="4" />) ||
-                  (view?.type == "List" && <IconList size="4" />) ||
-                  (view?.type == "Gantt" && <IconSplit size="4" />)
+                  (view?.type == "Board" && <AppstoreOutlined style={{ fontSize: "1.1rem" }} />) ||
+                  (view?.type == "List" && <BarsOutlined style={{ fontSize: "1.1rem" }} />) ||
+                  (view?.type == "Gantt" && <AlignLeftOutlined style={{ fontSize: "1.1rem" }} />) ||
+                  (view?.type == "Table" && <TableOutlined style={{ fontSize: "1.1rem" }} />)
                 }
                 variant={view_Id == viewName ? "tertiary" : "transparent"}
                 size="small"
                 suffix={
-                  view_Id == viewName && canDo(["steward"]) ? (
+                  view_Id == viewName && canDo("manageProjectSettings") ? (
                     <>
                       <Box
                         onClick={() => {
@@ -95,7 +99,7 @@ export const ViewBar = () => {
         })}
       </Container>
       <Box width="32">
-        {project?.name && canDo(["steward"]) && (
+        {project?.name && canDo("manageProjectSettings") && (
           <PrimaryButton
             variant="transparent"
             shape="circle"

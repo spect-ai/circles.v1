@@ -140,7 +140,7 @@ function CircleMembers() {
             );
           }}
         />
-        {canDo(["steward"]) && <InviteMemberModal />}
+        {canDo("inviteMembers") && <InviteMemberModal />}
         {Object.keys(circle?.roles).map((role) => (
           <RoleSection key={role} roleName={role} />
         ))}

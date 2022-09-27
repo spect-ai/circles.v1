@@ -7,6 +7,7 @@ import { useRouter } from "next/router";
 import { useQuery } from "react-query";
 import { toast } from "react-toastify";
 import { useAccount, useNetwork } from "wagmi";
+import { biconomyPayment } from "../Biconomy";
 import { gnosisPayment } from "../Gnosis";
 import useDistributor from "./useDistributor";
 import useERC20 from "./useERC20";
@@ -83,7 +84,7 @@ export default function usePaymentGateway(
         values: amounts,
         chainId,
         tokenAddresses,
-        gnosis: false,
+        paymentMethod: "wallet",
         callerId: connectedUser,
         type: batchPayType,
         cardIds,
@@ -94,7 +95,7 @@ export default function usePaymentGateway(
         contributors: userAddresses,
         values: amounts,
         chainId,
-        gnosis: false,
+        paymentMethod: "wallet",
         callerId: connectedUser,
         type: batchPayType,
         cardIds,
@@ -183,7 +184,7 @@ export default function usePaymentGateway(
         type: batchPayType,
         cardIds,
         circleId,
-        gnosis: true,
+        paymentMethod: "gnosis",
         callerId: connectedUser,
         tokenAddresses,
         nonce,
@@ -201,7 +202,7 @@ export default function usePaymentGateway(
         type: batchPayType,
         cardIds,
         circleId,
-        gnosis: true,
+        paymentMethod: "gnosis",
         callerId: connectedUser,
         nonce,
       });
@@ -214,8 +215,80 @@ export default function usePaymentGateway(
     return false;
   }
 
+  async function payGasless({
+    paymentType,
+    batchPayType,
+    chainId,
+    amounts,
+    userAddresses,
+    tokenAddresses,
+    cardIds,
+    circleId,
+  }: BatchPayParams): Promise<boolean> {
+    if (paymentType === "tokens") {
+      const {
+        filteredTokenAddresses,
+        filteredRecipients,
+        valuesInWei,
+        id,
+        overrides,
+      } = await distributeTokens({
+        contributors: userAddresses,
+        values: amounts,
+        chainId,
+        type: batchPayType,
+        cardIds,
+        circleId,
+        paymentMethod: "gasless",
+        callerId: connectedUser,
+        tokenAddresses,
+      });
+      const res = await biconomyPayment(
+        account?.address || "",
+        "0x2De899142D9B74273EE1e70Ca7AD31A6EF7fCAaE",
+        "token",
+        {
+          filteredTokenAddresses,
+          filteredRecipients,
+          valuesInWei,
+          id,
+          overrides,
+        }
+      );
+    } else if (paymentType === "currency") {
+      const { contributorsWithPositiveAllocation, valuesInWei, id, overrides } =
+        await distributeEther({
+          contributors: userAddresses,
+          values: amounts,
+          chainId,
+          type: batchPayType,
+          cardIds,
+          circleId,
+          paymentMethod: "gasless",
+          callerId: connectedUser,
+        });
+      const res = await biconomyPayment(
+        account?.address || "",
+        "0x2De899142D9B74273EE1e70Ca7AD31A6EF7fCAaE",
+        "currency",
+        {
+          contributorsWithPositiveAllocation,
+          valuesInWei,
+          id,
+          overrides,
+        }
+      );
+      // if (res)
+      //   toast.success("Transaction sent to your safe", { theme: "dark" });
+      // else toast.error("Error Occurred while sending your transation to safe");
+      // return res;
+    }
+    return false;
+  }
+
   return {
     batchPay,
     payUsingGnosis,
+    payGasless,
   };
 }

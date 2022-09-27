@@ -1,12 +1,3 @@
-import { labels as labelArray } from "@/app/common/utils/constants";
-import { OptionType } from "../../../common/components/MultiSelectDropDown/MultiSelectDropDown";
-
-const labels = [] as OptionType[];
-
-labelArray.map((la) => labels.push({ name: la, id: la }));
-
-export { labels };
-
 export const cardType = [
   {
     name: "Task",

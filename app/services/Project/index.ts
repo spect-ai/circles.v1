@@ -6,6 +6,7 @@ type CreateProjectDto = {
   circleId: string;
   fromTemplateId: string;
   description: string;
+  trelloId?: string;
 };
 
 export const createProject = async (body: CreateProjectDto) => {

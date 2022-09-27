@@ -37,7 +37,7 @@ export default function Circle() {
 
   return (
     <BoxContainer paddingX="8" paddingTop="4">
-      {!onboarded && canDo(["steward"]) && <Onboarding />}
+      {!onboarded && canDo("createNewCircle") && <Onboarding />}
       <ToastContainer
         toastStyle={{
           backgroundColor: `${

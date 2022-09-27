@@ -2,7 +2,7 @@ import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { addColumn } from "@/app/services/Column";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { Box, IconPlusSmall, Stack } from "degen";
-import React, { memo, useCallback, useEffect, useState } from "react";
+import React, { memo, useCallback, useEffect, useState, useMemo } from "react";
 import {
   DragDropContext,
   Droppable,
@@ -12,10 +12,11 @@ import { toast } from "react-toastify";
 import styled from "styled-components";
 import { useLocalProject } from "../Context/LocalProjectContext";
 import useDragEnd from "../Hooks/useDragEnd";
+import useDragAssignee from "../Hooks/useDragAssignee";
 import ColumnComponent from "../Column";
 import { SkeletonLoader } from "../SkeletonLoader";
 import { filterCards } from "../Filter/filterCards";
-import { CardsType, Filter } from "@/app/types";
+import { CardsType, CardType, Filter } from "@/app/types";
 import { useGlobal } from "@/app/context/globalContext";
 import {
   titleFilter,
@@ -29,10 +30,10 @@ interface Props {
   viewId: string;
 }
 
-const Container = styled.div<{ viewId: string }>`
+const Container = styled.div`
   display: flex;
   flex-direction: row;
-  height: calc(100vh - 7.5rem);
+  height: calc(100vh - 7rem);
   @media only screen and (min-width: 0px) {
     max-width: calc(100vw - 5rem);
     padding: 0 0.1rem;
@@ -47,6 +48,7 @@ const Container = styled.div<{ viewId: string }>`
 
 function BoardView({ viewId }: Props) {
   const { handleDragEnd } = useDragEnd();
+  const { handleDrag } = useDragAssignee();
   const {
     localProject: project,
     setLocalProject,
@@ -85,12 +87,26 @@ function BoardView({ viewId }: Props) {
     defaultCardType: "Task",
   }));
 
+  const filterAndSort = useCallback(
+    (cards: CardType[]) => {
+      cards = cards.filter((i) => i !== undefined);
+      const fcards = titleFilter(cards, advFilters.inputTitle);
+      cards = sortBy(advFilters.sortBy, fcards, advFilters.order);
+      return cards;
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [
+      advFilters.inputTitle,
+      advFilters.order,
+      advFilters.sortBy,
+      project?.cards,
+      project?.columnDetails,
+      project,
+    ]
+  );
+
   const DroppableContent = (provided: DroppableProvided) => (
-    <Container
-      {...provided.droppableProps}
-      ref={provided.innerRef}
-      viewId={viewId}
-    >
+    <Container {...provided.droppableProps} ref={provided.innerRef}>
       <Stack direction="horizontal">
         {!viewId &&
           advFilters?.groupBy == "Status" &&
@@ -99,9 +115,7 @@ function BoardView({ viewId }: Props) {
             let cards = column.cards?.map(
               (cardId: string) => filteredCards[cardId]
             );
-            cards = cards.filter((i) => i !== undefined);
-            const fcards = titleFilter(cards, advFilters.inputTitle);
-            cards = sortBy(advFilters.sortBy, fcards, advFilters.order);
+            cards = filterAndSort(cards);
             return (
               <ColumnComponent
                 key={columnId}
@@ -109,22 +123,6 @@ function BoardView({ viewId }: Props) {
                 cards={cards}
                 id={columnId}
                 index={index}
-              />
-            );
-          })}
-        {!viewId &&
-          advFilters?.groupBy == "Assignee" &&
-          assigneeIds?.map((assigneeId, index): any => {
-            const column = assigneecolumn?.[index];
-            let cards = groupByAssignee(assigneeId as string, filteredCards);
-            const fcards = titleFilter(cards, advFilters.inputTitle);
-            cards = sortBy(advFilters.sortBy, fcards, advFilters.order);
-
-            return (
-              <AssigneeColumn
-                key={assigneeId}
-                column={column as any}
-                cards={cards}
               />
             );
           })}
@@ -140,9 +138,7 @@ function BoardView({ viewId }: Props) {
             let cards = column.cards?.map((cardId: string) =>
               viewId ? viewCards[cardId] : project.cards[cardId]
             );
-            cards = cards.filter((i) => i !== undefined);
-            const fcards = titleFilter(cards, advFilters.inputTitle);
-            cards = sortBy(advFilters.sortBy, fcards, advFilters.order);
+            cards = filterAndSort(cards);
 
             return (
               <ColumnComponent
@@ -154,27 +150,11 @@ function BoardView({ viewId }: Props) {
               />
             );
           })}
-        {viewId &&
-          advFilters?.groupBy == "Assignee" &&
-          assigneeIds?.map((assigneeId, index): any => {
-            const column = assigneecolumn?.[index];
-            let cards = groupByAssignee(assigneeId as string, viewCards);
-            const fcards = titleFilter(cards, advFilters.inputTitle);
-            cards = sortBy(advFilters.sortBy, fcards, advFilters.order);
-
-            return (
-              <AssigneeColumn
-                key={assigneeId}
-                column={column as any}
-                cards={cards}
-              />
-            );
-          })}
         {provided.placeholder}
         {!viewId &&
           advFilters.groupBy == "Status" &&
           project?.id &&
-          canDo(["steward"]) && (
+          canDo("manageProjectSettings") && (
             <Box style={{ width: "20rem" }} marginTop="2">
               <PrimaryButton
                 variant="tertiary"
@@ -197,6 +177,43 @@ function BoardView({ viewId }: Props) {
     </Container>
   );
 
+  const AssigneeCol = () => (
+    <Container>
+      <Stack direction="horizontal">
+        {!viewId &&
+          advFilters?.groupBy == "Assignee" &&
+          assigneeIds?.map((assigneeId, index): any => {
+            const column = assigneecolumn?.[index];
+            let cards = groupByAssignee(assigneeId as string, filteredCards);
+            cards = filterAndSort(cards);
+
+            return (
+              <AssigneeColumn
+                key={assigneeId}
+                column={column as any}
+                cards={cards}
+              />
+            );
+          })}
+        {viewId &&
+          advFilters?.groupBy == "Assignee" &&
+          assigneeIds?.map((assigneeId, index): any => {
+            const column = assigneecolumn?.[index];
+            let cards = groupByAssignee(assigneeId as string, viewCards);
+            cards = filterAndSort(cards);
+
+            return (
+              <AssigneeColumn
+                key={assigneeId}
+                column={column as any}
+                cards={cards}
+              />
+            );
+          })}
+      </Stack>
+    </Container>
+  );
+
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const DroppableContentCallback = useCallback(DroppableContent, [
     project?.columnOrder,
@@ -212,11 +229,24 @@ function BoardView({ viewId }: Props) {
   }
 
   return (
-    <DragDropContext onDragEnd={handleDragEnd}>
-      <Droppable droppableId="all-columns" direction="horizontal" type="column">
-        {DroppableContentCallback}
-      </Droppable>
-    </DragDropContext>
+    <>
+      {advFilters.groupBy == "Status" && (
+        <DragDropContext onDragEnd={handleDragEnd}>
+          <Droppable
+            droppableId="all-columns"
+            direction="horizontal"
+            type="column"
+          >
+            {DroppableContentCallback}
+          </Droppable>
+        </DragDropContext>
+      )}
+      {advFilters.groupBy == "Assignee" && (
+        <DragDropContext onDragEnd={handleDrag}>
+          <AssigneeCol />
+        </DragDropContext>
+      )}
+    </>
   );
 }
 

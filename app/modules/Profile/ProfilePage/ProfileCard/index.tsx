@@ -14,7 +14,7 @@ import { UserType, CircleType } from "@/app/types";
 import { useGlobal } from "@/app/context/globalContext";
 import { useQuery } from "react-query";
 import React, { useEffect, useState } from "react";
-import ProfileModal from "./ProfileModal";
+import ProfileModal from "../ProfileModal";
 import { AnimatePresence } from "framer-motion";
 
 interface Props {
@@ -110,7 +110,6 @@ const ProfileCard = ({ username }: Props) => {
   );
 
   useEffect(() => {
-    console.log("here");
     void refetch();
   }, [refetch, currentUser]);
 
@@ -197,7 +196,7 @@ const ProfileCard = ({ username }: Props) => {
           />
         </TextInfo>
         <Footer>
-          {currentUser?.id == user?.id ? (
+          {currentUser?.id == user?.id && (
             <Button
               variant="secondary"
               size="small"
@@ -206,11 +205,12 @@ const ProfileCard = ({ username }: Props) => {
             >
               Edit
             </Button>
-          ) : (
+          )}
+          {/* : (
             <Button variant="secondary" size="small" width="full">
               Follow
             </Button>
-          )}
+          )} */}
         </Footer>
       </Profile>
       <AnimatePresence>

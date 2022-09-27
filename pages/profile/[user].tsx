@@ -3,8 +3,8 @@ import { Box, Text } from "degen";
 import MetaHead from "@/app/common/seo/MetaHead/MetaHead";
 import type { NextPage } from "next";
 import ProfileCard from "@/app/modules/Profile/ProfilePage/ProfileCard";
-import ProfileTabs from "@/app/modules/Profile/ProfilePage/ProfileTab";
-import TaskWalletPanel from "@/app/modules/Profile/TaskWallet/TaskWalletPanel";
+import ProfileTabs from "@/app/modules/Profile/ProfilePage/Tabs";
+import TaskWallet from "@/app/modules/Profile/TaskWallet";
 import { useGlobal } from "@/app/context/globalContext";
 import { useRouter } from "next/router";
 import { UserType } from "@/app/types";
@@ -48,11 +48,15 @@ const ProfilePage: NextPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const { data: user, refetch: fetchUser, isLoading } = useQuery<UserType>(
+  const {
+    data: user,
+    refetch: fetchUser,
+    isLoading,
+  } = useQuery<UserType>(
     ["user", username],
     async () =>
-      await fetch(`${process.env.API_HOST}/user/username/${username}`).then((res) =>
-        res.json()
+      await fetch(`${process.env.API_HOST}/user/username/${username}`).then(
+        (res) => res.json()
       ),
     {
       enabled: false,
@@ -79,20 +83,27 @@ const ProfilePage: NextPage = () => {
       <PublicLayout>
         {isLoading && <Loader loading text="fetching" />}
         {!user?.id && (
-          <Box style={{ width: "90vw", height: "90vh", margin: "25% auto", alignItems: "center"}}>
+          <Box
+            style={{
+              width: "90vw",
+              height: "90vh",
+              margin: "25% auto",
+              alignItems: "center",
+            }}
+          >
             <Text variant="extraLarge" size="headingOne" align="center">
               Fren not found :(
             </Text>
           </Box>
         )}
         {user?.id && !isLoading && (
-          <Box display="flex" flexDirection="row">
+          <Box display="flex" flexDirection="row" width="full">
             <ProfileCard username={username as string} />
             <ProfileTabs username={username as string} />
           </Box>
         )}
       </PublicLayout>
-      {isProfilePanelExpanded && <TaskWalletPanel tab={tab} />}
+      {isProfilePanelExpanded && <TaskWallet tab={tab} />}
     </>
   );
 };

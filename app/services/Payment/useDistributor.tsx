@@ -3,25 +3,12 @@ import useERC20 from "./useERC20";
 import DistributorABI from "@/app/common/contracts/mumbai/distributor.json";
 import { useRouter } from "next/router";
 import { useQuery } from "react-query";
-import { Registry } from "@/app/types";
+import {
+  DistributeEtherParams,
+  DistributeTokenParams,
+  Registry,
+} from "@/app/types";
 import { AbiCoder } from "ethers/lib/utils";
-import { gasLimits } from "@/app/common/utils/constants";
-
-interface DistributeEtherParams {
-  contributors: any;
-  values: any[];
-  chainId: string;
-  cardIds: string[];
-  circleId: string;
-  gnosis: boolean;
-  type: "card" | "retro";
-  callerId: string;
-  nonce?: number;
-}
-
-interface DistributeTokenParams extends DistributeEtherParams {
-  tokenAddresses: string[];
-}
 
 export default function useDistributor() {
   const { isCurrency, decimals } = useERC20();
@@ -63,7 +50,7 @@ export default function useDistributor() {
     cardIds,
     circleId,
     type,
-    gnosis,
+    paymentMethod,
     callerId,
     nonce,
   }: DistributeEtherParams) {
@@ -85,21 +72,12 @@ export default function useDistributor() {
       nonce,
       gasLimit: 10000000,
     };
-    // console.log({
-    //   contributorsWithPositiveAllocation,
-    //   valuesInWei,
-    //   overrides,
-    //   gnosis,
-    //   chainId,
-    //   callerId,
-    //   circleId,
-    // });
     const encoder = new AbiCoder();
     const id = encoder.encode(
       ["string", "string", "string", "string[]"],
       [callerId, circleId, type, cardIds]
     );
-    if (gnosis) {
+    if (paymentMethod === "gnosis") {
       const data = await contract?.populateTransaction.distributeEther(
         contributorsWithPositiveAllocation,
         valuesInWei,
@@ -107,6 +85,13 @@ export default function useDistributor() {
         overrides
       );
       return data;
+    } else if (paymentMethod === "gasless") {
+      return {
+        contributorsWithPositiveAllocation,
+        valuesInWei,
+        id,
+        overrides,
+      };
     }
 
     const tx = await contract?.distributeEther(
@@ -153,7 +138,7 @@ export default function useDistributor() {
     values,
     tokenAddresses,
     contributors,
-    gnosis,
+    paymentMethod,
     callerId,
     cardIds,
     circleId,
@@ -177,12 +162,6 @@ export default function useDistributor() {
     });
     const contract = getDistributorContract(chainId);
 
-    // console.log({
-    //   filteredTokenAddresses,
-    //   filteredRecipients,
-    //   valuesInWei,
-    //   gnosis,
-    // });
     const overrides: any = {
       gasLimit: 10000000,
       nonce,
@@ -192,7 +171,7 @@ export default function useDistributor() {
       ["string", "string", "string", "string[]"],
       [callerId, circleId, type, cardIds]
     );
-    if (gnosis) {
+    if (paymentMethod === "gnosis") {
       console.log(overrides.gasLimit);
       const data = await contract?.populateTransaction.distributeTokens(
         filteredTokenAddresses,
@@ -202,6 +181,14 @@ export default function useDistributor() {
         overrides
       );
       return data;
+    } else if (paymentMethod === "gasless") {
+      return {
+        filteredTokenAddresses,
+        filteredRecipients,
+        valuesInWei,
+        id,
+        overrides,
+      };
     }
 
     const tx = await contract?.distributeTokens(

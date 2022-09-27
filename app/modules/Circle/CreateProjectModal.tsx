@@ -20,6 +20,15 @@ import { Tooltip } from "react-tippy";
 import { QuestionCircleFilled } from "@ant-design/icons";
 import { createProject } from "@/app/services/Project";
 import { useCircle } from "./CircleContext";
+import Dropdown from "@/app/common/components/Dropdown";
+
+const getPlaceholder: {
+  [key: string]: string;
+} = {
+  // notion: "Notion URL",
+  // github: "Github URL",
+  trello: "Trello Board ID",
+};
 
 function CreateProjectModal() {
   const [modalOpen, setModalOpen] = useState(false);
@@ -56,6 +65,13 @@ function CreateProjectModal() {
   const [description, setDescription] = useState("");
   const { mode } = useTheme();
 
+  const [importType, setImportType] = useState({
+    label: "",
+    value: "",
+  });
+
+  const [importId, setImportId] = useState("");
+
   const onSubmit = async () => {
     console.log({ circle });
     setIsLoading(true);
@@ -64,6 +80,7 @@ function CreateProjectModal() {
       circleId: circle?.id as string,
       description,
       fromTemplateId: template.value,
+      trelloId: importId,
     });
     setIsLoading(false);
     if (data) {
@@ -139,6 +156,43 @@ function CreateProjectModal() {
                     onChange={setTemplate}
                   />
                 )}
+                <Stack direction="horizontal" space="1" align="center">
+                  <Text variant="extraLarge" weight="semiBold">
+                    Import
+                  </Text>
+
+                  <Button shape="circle" size="small" variant="transparent">
+                    <Tooltip
+                      html={
+                        <Text>Import project board from other platforms</Text>
+                      }
+                      theme={mode}
+                    >
+                      <QuestionCircleFilled style={{ fontSize: "1rem" }} />
+                    </Tooltip>
+                  </Button>
+                </Stack>
+                <Stack direction="horizontal">
+                  <Dropdown
+                    options={[
+                      {
+                        label: "Trello",
+                        value: "trello",
+                      },
+                    ]}
+                    selected={importType}
+                    onChange={setImportType}
+                    title=""
+                  />
+                  <Input
+                    label=""
+                    placeholder={
+                      getPlaceholder[importType.value] || "Select a platform"
+                    }
+                    value={importId}
+                    onChange={(e) => setImportId(e.target.value)}
+                  />
+                </Stack>
                 <Box width="full" marginTop="4">
                   <PrimaryButton
                     onClick={onSubmit}

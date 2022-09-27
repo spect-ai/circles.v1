@@ -42,7 +42,7 @@ export default function RetroPage() {
           <Text size="headingTwo" weight="semiBold" ellipsis>
             Retro
           </Text>
-          {canDo(["steward"]) && <CreateRetro />}
+          {canDo("createNewRetro") && <CreateRetro />}
         </Stack>
         {circle?.retro?.map((retro) => (
           <Box

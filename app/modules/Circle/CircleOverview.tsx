@@ -81,7 +81,7 @@ export default function CircleOverview() {
               <Text size="headingTwo" weight="semiBold" ellipsis>
                 Projects
               </Text>
-              {canDo(["steward"]) && <CreateProjectModal />}
+              {canDo("createNewProject") && <CreateProjectModal />}
             </Stack>
             <Container
               style={{
@@ -117,7 +117,7 @@ export default function CircleOverview() {
               <Text size="headingTwo" weight="semiBold" ellipsis>
                 Workstreams
               </Text>
-              {canDo(["steward"]) && <CreateSpaceModal />}
+              {canDo("createNewCircle") && <CreateSpaceModal />}
             </Stack>
             <Container style={{ padding: "0px", margin: "0px" }}>
               <Row>
@@ -148,7 +148,7 @@ export default function CircleOverview() {
               <Text size="headingTwo" weight="semiBold" ellipsis>
                 Retro
               </Text>
-              {canDo(["steward"]) && <CreateRetro />}
+              {canDo("createNewRetro") && <CreateRetro />}
               <Tooltip html={<Text>View all Retros</Text>} theme={mode}>
                 <Box marginTop="1">
                   <Button

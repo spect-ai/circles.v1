@@ -1,26 +1,14 @@
-import {
-  Box,
-  Stack,
-  Tag,
-  Text,
-  useTheme,
-  IconSearch,
-  IconEth,
-  AvatarGroup,
-} from "degen";
-import { useState, memo, useMemo } from "react";
+import { Box, Stack, Tag, Text, useTheme, IconSearch } from "degen";
+import { useState, memo, useCallback } from "react";
 import styled from "styled-components";
 import { useLocalProject } from "../Context/LocalProjectContext";
 import { CardType, CardsType } from "@/app/types";
 import { PopoverOption } from "../../Card/OptionPopover";
 import Popover from "@/app/common/components/Popover";
 import Filter from "../Filter";
-import QuickActions from "@/app/modules/Project/CardComponent/QuickActions";
-import { useRouter } from "next/router";
-import { PriorityIcon } from "@/app/common/components/PriorityIcon";
-import { monthMap } from "@/app/common/utils/constants";
-import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
 import { useGlobal } from "@/app/context/globalContext";
+import CardComponent from "@/app/modules/Project/CardComponent/index";
+import { Droppable, DroppableProvided } from "react-beautiful-dnd";
 
 type ColumnProps = {
   cards: CardType[];
@@ -33,11 +21,6 @@ type ColumnProps = {
       canCreateCard: string;
     };
   };
-};
-
-type Props = {
-  card: CardType;
-  index: number;
 };
 
 const BoundingBox = styled(Box)<{ mode: string }>`
@@ -78,15 +61,6 @@ const Container = styled(Box)`
   width: 22rem;
 `;
 
-const CardContainer = styled(Box)<{ mode: string }>`
-  border-width: 2px;
-  &:hover {
-    border-color: ${(props) =>
-      props.mode === "dark" ? "rgb(255, 255, 255, 0.1)" : "rgb(20,20,20,0.1)"};
-  }
-  cursor: pointer;
-`;
-
 const ScrollContainer = styled(Box)`
   ::-webkit-scrollbar {
     width: 0px;
@@ -96,86 +70,24 @@ const ScrollContainer = styled(Box)`
   overflow-y: auto;
 `;
 
-function CardComponent({ card, index }: Props) {
-  const router = useRouter();
-  const { circle: cId, project: pId } = router.query;
-  const [hover, setHover] = useState(false);
-  const { mode } = useTheme();
-
-  const { getMemberAvatars, getMemberDetails } = useModalOptions();
-
-  const deadline = useMemo(() => new Date(card.deadline), [card.deadline]);
-
-  return (
-    <CardContainer
-      padding="4"
-      marginBottom="2"
-      borderRadius="large"
-      onClick={() => {
-        void router.push(`/${cId}/${pId}/${card.slug}`);
-      }}
-      onMouseEnter={() => {
-        setHover(true);
-      }}
-      onMouseLeave={() => {
-        setHover(false);
-      }}
-      mode={mode}
-    >
-      <Box>
-        <Box marginTop="1" marginBottom="4">
-          <Stack direction="horizontal" space="2" justify="space-between">
-            <Text weight="semiBold">{card.title}</Text>
-            {card.assignee.length > 0 &&
-              card.assignee[0] &&
-              getMemberDetails(card.assignee[0]) && (
-                <AvatarGroup members={getMemberAvatars(card.assignee)} hover />
-              )}
-          </Stack>
-        </Box>
-        <Stack direction="horizontal" wrap space="2">
-          {card.status.paid && (
-            <Tag size="small" tone="green">
-              <Text color="green">Paid</Text>
-            </Tag>
-          )}
-          {card.type === "Bounty" && (
-            <Tag size="small">
-              <Text color="accent">{card.type}</Text>
-            </Tag>
-          )}
-          {card.reward.value ? (
-            <Tag size="small">
-              <Text color="accent">
-                <Stack direction="horizontal" space="0" align="center">
-                  <IconEth size="3.5" />
-                  {card.reward.value} {card.reward.token?.symbol}
-                </Stack>
-              </Text>
-            </Tag>
-          ) : null}
-          {card.deadline && (
-            <Tag size="small">
-              <Text color="accent">
-                {deadline.getDate()}{" "}
-                {monthMap[deadline.getMonth() as keyof typeof monthMap]}
-              </Text>
-            </Tag>
-          )}
-          {card.priority ? <PriorityIcon priority={card.priority} /> : null}
-          {card?.labels?.map((label) => (
-            <Tag size="small" key={label}>
-              {label}
-            </Tag>
-          ))}
-        </Stack>
-        <QuickActions card={card} hover={hover} />
-      </Box>
-    </CardContainer>
-  );
-}
-
 export function AssigneeColumn({ cards, column }: ColumnProps) {
+  console.log(column.columnId);
+
+  const CardDraggable = (provided: DroppableProvided) => (
+    <ScrollContainer {...provided.droppableProps} ref={provided.innerRef}>
+      <Box>
+        {cards?.map((card, idx) => {
+          if (card) {
+            return <CardComponent card={card} index={idx} key={card.id} />;
+          }
+        })}
+      </Box>
+      {provided.placeholder}
+    </ScrollContainer>
+  );
+
+  const CardDraggableCallback = useCallback(CardDraggable, [cards]);
+
   return (
     <Container
       padding="2"
@@ -195,15 +107,14 @@ export function AssigneeColumn({ cards, column }: ColumnProps) {
           </Text>
         </Stack>
       </Box>
-      <ScrollContainer>
-        <Box>
-          {cards?.map((card, idx) => {
-            if (card) {
-              return <CardComponent card={card} index={idx} key={card.id} />;
-            }
-          })}
-        </Box>
-      </ScrollContainer>
+      <Droppable
+        droppableId={
+          column.columnId.length < 1 ? "unassigned" : column.columnId
+        }
+        type="task"
+      >
+        {CardDraggableCallback}
+      </Droppable>
     </Container>
   );
 }
@@ -296,7 +207,6 @@ function AdvancedOptions() {
   const { advFilters, setAdvFilters } = useLocalProject();
   const { view, viewName } = useGlobal();
   const [sortIsOpen, setSortIsOpen] = useState(false);
-  const [orderIsOpen, setOrderIsOpen] = useState(false);
   const [groupByIsOpen, setGroupByIsOpen] = useState(false);
   const { mode } = useTheme();
 
@@ -322,10 +232,8 @@ function AdvancedOptions() {
           value={advFilters.inputTitle}
           onChange={(e) => {
             setAdvFilters({
+              ...advFilters,
               inputTitle: e.target.value,
-              groupBy: advFilters.groupBy,
-              sortBy: advFilters.sortBy,
-              order: advFilters.order,
             });
           }}
         />
@@ -333,10 +241,8 @@ function AdvancedOptions() {
           <Box
             onClick={() =>
               setAdvFilters({
+                ...advFilters,
                 inputTitle: "",
-                groupBy: advFilters.groupBy,
-                sortBy: advFilters.sortBy,
-                order: advFilters.order,
               })
             }
             style={{
@@ -355,10 +261,10 @@ function AdvancedOptions() {
         flexDirection="row"
         width={
           advFilters.sortBy == "none"
-            ? view === 2 || viewName !== ""
-              ? "48"
-              : "96"
-            : view === 2 || viewName !== ""
+            ? view === 2 || view === 3
+              ? "64"
+              : "112"
+            : view === 2 || view === 3
             ? "76"
             : "128"
         }
@@ -369,19 +275,48 @@ function AdvancedOptions() {
         <Filter />
         <Popover
           butttonComponent={
-            <Box
-              data-tour="sortby-options-button"
-              cursor="pointer"
-              onClick={() => setSortIsOpen(!sortIsOpen)}
-              color="foreground"
-              display="flex"
-              flexDirection="row"
-              gap="3"
-            >
-              <Text whiteSpace="nowrap">Sort By</Text>
-              <Tag size="medium" hover>
-                {advFilters.sortBy}
-              </Tag>
+            <Box display="flex" flexDirection="row" gap="2">
+              <Box
+                data-tour="sortby-options-button"
+                cursor="pointer"
+                onClick={() => setSortIsOpen(!sortIsOpen)}
+                color="foreground"
+                display="flex"
+                flexDirection="row"
+                gap="3"
+              >
+                <Text whiteSpace="nowrap">Sort By</Text>
+                <Tag size="medium" hover>
+                  {advFilters.sortBy}
+                </Tag>
+              </Box>
+              {advFilters.sortBy !== "none" && (
+                <Box
+                  data-tour="order-options-button"
+                  cursor="pointer"
+                  onClick={() => {
+                    if (advFilters.order == "asc") {
+                      setAdvFilters({
+                        ...advFilters,
+                        order: "des",
+                      });
+                    } else {
+                      setAdvFilters({
+                        ...advFilters,
+                        order: "asc",
+                      });
+                    }
+                  }}
+                  color="foreground"
+                  display="flex"
+                  flexDirection="row"
+                  gap="3"
+                >
+                  <Tag size="medium" hover tone="accent">
+                    {advFilters.order}
+                  </Tag>
+                </Box>
+              )}
             </Box>
           }
           isOpen={sortIsOpen}
@@ -398,10 +333,8 @@ function AdvancedOptions() {
               onClick={() => {
                 setSortIsOpen(false);
                 setAdvFilters({
-                  inputTitle: advFilters.inputTitle,
-                  groupBy: advFilters.groupBy,
+                  ...advFilters,
                   sortBy: "none",
-                  order: advFilters.order,
                 });
               }}
             >
@@ -412,10 +345,8 @@ function AdvancedOptions() {
               onClick={() => {
                 setSortIsOpen(false);
                 setAdvFilters({
-                  inputTitle: advFilters.inputTitle,
-                  groupBy: advFilters.groupBy,
+                  ...advFilters,
                   sortBy: "Priority",
-                  order: advFilters.order,
                 });
               }}
             >
@@ -426,10 +357,8 @@ function AdvancedOptions() {
               onClick={() => {
                 setSortIsOpen(false);
                 setAdvFilters({
-                  inputTitle: advFilters.inputTitle,
-                  groupBy: advFilters.groupBy,
+                  ...advFilters,
                   sortBy: "Deadline",
-                  order: advFilters.order,
                 });
               }}
             >
@@ -437,65 +366,8 @@ function AdvancedOptions() {
             </PopoverOption>
           </Box>
         </Popover>
-        {advFilters.sortBy !== "none" && (
-          <Popover
-            butttonComponent={
-              <Box
-                data-tour="order-options-button"
-                cursor="pointer"
-                onClick={() => setOrderIsOpen(!sortIsOpen)}
-                color="foreground"
-                display="flex"
-                flexDirection="row"
-                gap="3"
-              >
-                <Text whiteSpace="nowrap">Order</Text>
-                <Tag size="medium" hover>
-                  {advFilters.order}
-                </Tag>
-              </Box>
-            }
-            isOpen={orderIsOpen}
-            setIsOpen={setOrderIsOpen}
-          >
-            <Box
-              backgroundColor="background"
-              borderWidth="0.5"
-              borderRadius="2xLarge"
-              width="36"
-            >
-              <PopoverOption
-                tourId="asc-button"
-                onClick={() => {
-                  setOrderIsOpen(false);
-                  setAdvFilters({
-                    inputTitle: advFilters.inputTitle,
-                    groupBy: advFilters.groupBy,
-                    sortBy: advFilters.sortBy,
-                    order: "asc",
-                  });
-                }}
-              >
-                Ascending
-              </PopoverOption>
-              <PopoverOption
-                tourId="des-button"
-                onClick={() => {
-                  setOrderIsOpen(false);
-                  setAdvFilters({
-                    inputTitle: advFilters.inputTitle,
-                    groupBy: advFilters.groupBy,
-                    sortBy: advFilters.sortBy,
-                    order: "des",
-                  });
-                }}
-              >
-                Descending
-              </PopoverOption>
-            </Box>
-          </Popover>
-        )}
-        {view !== 2 && (
+
+        {(view == 0 || view == 1) && (
           <Popover
             butttonComponent={
               <Box
@@ -527,10 +399,8 @@ function AdvancedOptions() {
                 onClick={() => {
                   setGroupByIsOpen(false);
                   setAdvFilters({
-                    inputTitle: advFilters.inputTitle,
+                    ...advFilters,
                     groupBy: "Status",
-                    sortBy: advFilters.sortBy,
-                    order: advFilters.order,
                   });
                 }}
               >
@@ -541,10 +411,8 @@ function AdvancedOptions() {
                 onClick={() => {
                   setGroupByIsOpen(false);
                   setAdvFilters({
-                    inputTitle: advFilters.inputTitle,
+                    ...advFilters,
                     groupBy: "Assignee",
-                    sortBy: advFilters.sortBy,
-                    order: advFilters.order,
                   });
                 }}
               >

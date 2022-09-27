@@ -6,6 +6,7 @@ import { UserType } from "@/app/types";
 import { SaveOutlined, SendOutlined } from "@ant-design/icons";
 import { Avatar, Box, IconTrash, Stack, Text, useTheme } from "degen";
 import { AnimatePresence, motion } from "framer-motion";
+import ClickableAvatar from "@/app/common/components/Avatar";
 
 import React, { useEffect, useState } from "react";
 import ContentEditable from "react-contenteditable";
@@ -106,7 +107,7 @@ export default function Comment({
             <Avatar
               label=""
               placeholder={!getMemberDetails(actorId as string)?.avatar}
-              src={getMemberDetails(actorId as string)?.avatar}
+              src={getMemberDetails(actorId as string)?.avatar as string}
               address={getMemberDetails(actorId as string)?.ethAddress}
               size="8"
             />

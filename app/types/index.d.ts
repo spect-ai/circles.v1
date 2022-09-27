@@ -81,26 +81,45 @@ export interface Permissions {
   manageRoles: boolean;
   distributeCredentials: boolean;
   manageCardProperties: {
-    Task: true;
-    Bounty: false;
+    Task: boolean;
+    Bounty: boolean;
   };
   createNewCard: {
-    Task: true;
-    Bounty: false;
+    Task: boolean;
+    Bounty: boolean;
   };
   manageRewards: {
-    Task: true;
-    Bounty: false;
+    Task: boolean;
+    Bounty: boolean;
   };
   reviewWork: {
-    Task: true;
-    Bounty: false;
+    Task: boolean;
+    Bounty: boolean;
   };
   canClaim: {
-    Task: true;
-    Bounty: false;
+    Task: boolean;
+    Bounty: boolean;
   };
 }
+
+export type Permission =
+  | "createNewCircle"
+  | "createNewProject"
+  | "createNewRetro"
+  | "endRetroManually"
+  | "inviteMembers"
+  | "makePayment"
+  | "manageCircleSettings"
+  | "manageMembers"
+  | "managePaymentOptions"
+  | "manageProjectSettings"
+  | "manageRoles"
+  | "distributeCredentials"
+  | "manageCardProperties"
+  | "createNewCard"
+  | "manageRewards"
+  | "reviewWork"
+  | "canClaim";
 
 export interface DiscordRoleMappingType {
   [roleId: string]: {
@@ -243,7 +262,7 @@ export interface CardType {
     chain: Chain;
     token: Token;
     value: number;
-    transactionHash: string;
+    transactionHash?: string;
   };
   type: "Task" | "Bounty";
   deadline: string;
@@ -466,7 +485,7 @@ export type CardsType = {
 };
 
 export type Views = {
-  type: "List" | "Board" | "Gantt";
+  type: "List" | "Board" | "Gantt" | "Table";
   hidden: boolean;
   filters: Filter;
   slug?: string;
@@ -563,4 +582,36 @@ export type KudoOfUserType = {
   assetUrl: string;
   claimStatus: string;
   communityId: string;
+};
+
+export interface DistributeEtherParams {
+  contributors: any;
+  values: any[];
+  chainId: string;
+  cardIds: string[];
+  circleId: string;
+  type: "card" | "retro";
+  callerId: string;
+  nonce?: number;
+  paymentMethod: "wallet" | "gnosis" | "gasless";
+}
+
+export interface DistributeTokenParams extends DistributeEtherParams {
+  tokenAddresses: string[];
+}
+
+export type ExternalProvider = {
+  isMetaMask?: boolean;
+  isStatus?: boolean;
+  host?: string;
+  path?: string;
+  sendAsync?: (
+    request: { method: string; params?: Array<any> },
+    callback: (error: any, response: any) => void
+  ) => void;
+  send?: (
+    request: { method: string; params?: Array<any> },
+    callback: (error: any, response: any) => void
+  ) => void;
+  request?: (request: { method: string; params?: Array<any> }) => Promise<any>;
 };

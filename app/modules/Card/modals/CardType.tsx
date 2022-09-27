@@ -26,7 +26,7 @@ function CardType() {
   }, []);
   return (
     <EditTag
-      tourId="create-card-modal-type"
+      tourId="card-type"
       name={cardType}
       modalTitle="Select Card Type"
       label="Card Type"

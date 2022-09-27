@@ -1,15 +1,7 @@
 import ConfirmModal from "@/app/common/components/Modal/ConfirmModal";
 import Popover from "@/app/common/components/Popover";
-import { ShareAltOutlined, TwitterOutlined } from "@ant-design/icons";
-import {
-  Box,
-  IconDotsHorizontal,
-  IconDuplicate,
-  IconTrash,
-  Stack,
-  Text,
-  useTheme,
-} from "degen";
+import { DownloadOutlined, TwitterOutlined } from "@ant-design/icons";
+import { Box, IconDotsHorizontal, Stack, Text, useTheme } from "degen";
 import { AnimatePresence } from "framer-motion";
 import React, { useState } from "react";
 import { TwitterShareButton } from "react-share";
@@ -105,15 +97,9 @@ export default function ActionPopover() {
             borderWidth="0.5"
             borderRadius="2xLarge"
           >
-            {/* <PopoverOption onClick={() => {}}>
-              <Stack direction="horizontal" space="2">
-                <IconDuplicate />
-                Duplicate
-              </Stack>
-            </PopoverOption> */}
             <PopoverOption onClick={() => {}}>
               <TwitterShareButton
-                url={"https://circles.spect.network/"}
+                url={window.location.href}
                 title={`Creating magic for ${circle?.name} on Spect!`}
               >
                 <Stack direction="horizontal" space="2">
@@ -133,7 +119,7 @@ export default function ActionPopover() {
               }}
             >
               <Stack direction="horizontal" space="2">
-                <IconTrash color="red" />
+                <DownloadOutlined style={{ fontSize: "1.4rem" }} />
                 Archive
               </Stack>
             </PopoverOption>

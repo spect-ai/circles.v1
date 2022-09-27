@@ -1,6 +1,6 @@
 import { useGlobal } from "@/app/context/globalContext";
 import { useLocalCard } from "@/app/modules/Project/CreateCardModal/hooks/LocalCardContext";
-import { CardType, CircleType } from "@/app/types";
+import { CardType, CircleType, Permission } from "@/app/types";
 import { useRouter } from "next/router";
 import { useQuery } from "react-query";
 
@@ -14,16 +14,19 @@ export default function useRoleGate() {
 
   const { card, cardActions } = useLocalCard();
 
-  const canDo = (roles: string[]) => {
+  const canDo = (roleAction: Permission) => {
     if (!connectedUser || !circle?.memberRoles) {
       return false;
     }
-    const arr1 = circle?.memberRoles[connectedUser];
-    const arr2 = roles;
-    const filteredArray =
-      arr1?.filter && arr1?.filter((value) => arr2.includes(value));
-    return (filteredArray && filteredArray?.length > 0) || false;
-    // return circle?.memberRoles[connectedUser]?.includes(roles) || false;
+    const userRoles = circle?.memberRoles[connectedUser];
+    if (userRoles) {
+      for (const role of userRoles) {
+        if (circle.roles[role].permissions[roleAction]) {
+          return true;
+        }
+      }
+    }
+    return false;
   };
 
   const canTakeAction = (action: string) => {
@@ -95,9 +98,9 @@ export default function useRoleGate() {
     if (!connectedUser) {
       return false;
     }
-    if (circle?.memberRoles[connectedUser]?.includes("steward")) {
-      return true;
-    }
+    // if (circle?.memberRoles[connectedUser]?.includes("steward")) {
+    //   return true;
+    // }
     return (
       projectCard?.creator === connectedUser ||
       projectCard.reviewer.includes(connectedUser) ||
