@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useQuery } from "react-query";
 import { toast } from "react-toastify";
-import { useAccount, useNetwork } from "wagmi";
+import { useAccount, useNetwork, useSwitchNetwork } from "wagmi";
 import { biconomyPayment } from "../Biconomy";
 import { gnosisPayment } from "../Gnosis";
 import useDistributor from "./useDistributor";
@@ -35,8 +35,9 @@ export default function usePaymentGateway(
 ) {
   const { distributeEther, distributeTokens } = useDistributor();
   const { hasBalances } = useERC20();
-  const { data: account } = useAccount();
-  const { activeChain, switchNetworkAsync } = useNetwork();
+  const { address } = useAccount();
+  const { chain } = useNetwork();
+  const { switchNetworkAsync } = useSwitchNetwork();
   const { connectedUser } = useGlobal();
   const router = useRouter();
   const { circle: cId } = router.query;
@@ -59,11 +60,7 @@ export default function usePaymentGateway(
       console.log("Wrong Network");
     else {
       const [sufficientBalance, insufficientBalanceTokenAddress] =
-        await hasBalances(
-          tokenAddresses,
-          tokenValues,
-          account?.address as string
-        );
+        await hasBalances(tokenAddresses, tokenValues, address as string);
     }
   }
 
@@ -118,7 +115,7 @@ export default function usePaymentGateway(
   }: BatchPayParams) {
     try {
       console.log({ userAddresses, amounts });
-      if (activeChain?.id.toString() !== chainId) {
+      if (chain?.id.toString() !== chainId) {
         switchNetworkAsync && (await switchNetworkAsync(parseInt(chainId)));
       }
       const tx = await executeBatchPay({
@@ -227,7 +224,7 @@ export default function usePaymentGateway(
     cardIds,
     circleId,
   }: BatchPayParams): Promise<boolean> {
-    if (paymentType === "tokens") {
+    if (paymentType === "tokens" && registry) {
       const {
         filteredTokenAddresses,
         filteredRecipients,
@@ -245,10 +242,9 @@ export default function usePaymentGateway(
         callerId: connectedUser,
         tokenAddresses,
       });
-      const res = await biconomyPayment(
-        account?.address || "",
-        "0x2De899142D9B74273EE1e70Ca7AD31A6EF7fCAaE",
-        "token",
+      await biconomyPayment(
+        address || "",
+        registry[chainId].distributorAddress as string,
         {
           filteredTokenAddresses,
           filteredRecipients,
@@ -257,33 +253,7 @@ export default function usePaymentGateway(
           overrides,
         }
       );
-    } else if (paymentType === "currency") {
-      const { contributorsWithPositiveAllocation, valuesInWei, id, overrides } =
-        await distributeEther({
-          contributors: userAddresses,
-          values: amounts,
-          chainId,
-          type: batchPayType,
-          cardIds,
-          circleId,
-          paymentMethod: "gasless",
-          callerId: connectedUser,
-        });
-      const res = await biconomyPayment(
-        account?.address || "",
-        "0x2De899142D9B74273EE1e70Ca7AD31A6EF7fCAaE",
-        "currency",
-        {
-          contributorsWithPositiveAllocation,
-          valuesInWei,
-          id,
-          overrides,
-        }
-      );
-      // if (res)
-      //   toast.success("Transaction sent to your safe", { theme: "dark" });
-      // else toast.error("Error Occurred while sending your transation to safe");
-      // return res;
+      toast.success("Transaction sent");
     }
     return false;
   }

@@ -5,7 +5,7 @@ import { KudosRequestType, KudosType } from "@/app/types";
 import { useTheme } from "degen";
 import { ethers } from "ethers";
 import { toast } from "react-toastify";
-import { useNetwork } from "wagmi";
+import { useNetwork, useSwitchNetwork } from "wagmi";
 
 const chainId = "137";
 const domainInfo = {
@@ -16,7 +16,8 @@ const domainInfo = {
 
 export default function useCredentials() {
   const { registry, circle } = useCircle();
-  const { activeChain, switchNetworkAsync } = useNetwork();
+  const { chain } = useNetwork();
+  const { switchNetworkAsync } = useSwitchNetwork();
   const { kudosMinted, setKudosMinted, cardId, assignees, reviewers, setCard } =
     useLocalCard();
   const { mode } = useTheme();
@@ -38,7 +39,7 @@ export default function useCredentials() {
 
     if (registry) {
       try {
-        if (activeChain?.id.toString() !== chainId) {
+        if (chain?.id.toString() !== chainId) {
           switchNetworkAsync && (await switchNetworkAsync(parseInt(chainId)));
         }
         const provider = new ethers.providers.Web3Provider(
@@ -177,7 +178,7 @@ export default function useCredentials() {
     };
     if (registry) {
       try {
-        if (activeChain?.id.toString() !== chainId) {
+        if (chain?.id.toString() !== chainId) {
           switchNetworkAsync && (await switchNetworkAsync(parseInt(chainId)));
         }
         const provider = new ethers.providers.Web3Provider(

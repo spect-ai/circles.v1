@@ -254,10 +254,10 @@ const MultiSelectDropdown: FC<Props> = ({
                         setValue([]);
                         return;
                       }
-                      if (value.includes(option.id)) {
+                      if (value?.includes(option.id)) {
                         setValue(value.filter((i) => i !== option.id));
                       } else {
-                        if (value.length) {
+                        if (value?.length) {
                           setValue([...value, option.id]);
                         } else {
                           setValue([option.id]);
@@ -285,7 +285,7 @@ const MultiSelectDropdown: FC<Props> = ({
                   >
                     <Stack align="center">
                       <Text
-                        color={value.includes(option.id) ? "purple" : "text"}
+                        color={value?.includes(option.id) ? "purple" : "text"}
                       >
                         {option.name}
                       </Text>

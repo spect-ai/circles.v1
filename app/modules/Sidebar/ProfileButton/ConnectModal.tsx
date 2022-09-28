@@ -1,5 +1,4 @@
 import Modal from "@/app/common/components/Modal";
-import PrimaryButton from "@/app/common/components/PrimaryButton";
 import queryClient from "@/app/common/utils/queryClient";
 import { useGlobal } from "@/app/context/globalContext";
 import { Box, Button, Stack } from "degen";
@@ -8,6 +7,7 @@ import React, { useState } from "react";
 import { toast } from "react-toastify";
 import { SiweMessage } from "siwe";
 import { useConnect, useDisconnect } from "wagmi";
+import { Connect } from "./ConnectButton";
 
 export default function ConnectModal() {
   const { connectors, pendingConnector, connectAsync } = useConnect();
@@ -62,7 +62,7 @@ export default function ConnectModal() {
   return (
     <>
       <Box paddingX="2">
-        <PrimaryButton onClick={() => setIsOpen(true)}>Connect</PrimaryButton>
+        <Connect />
       </Box>
       <AnimatePresence>
         {isOpen && (

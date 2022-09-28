@@ -58,6 +58,7 @@ function Sidebar(): ReactElement {
     setTimeout(() => {
       localStorage.getItem("lightMode") && setMode("light");
     }, 100);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const {

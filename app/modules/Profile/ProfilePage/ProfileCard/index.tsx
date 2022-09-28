@@ -16,6 +16,7 @@ import { useQuery } from "react-query";
 import React, { useEffect, useState } from "react";
 import ProfileModal from "../ProfileModal";
 import { AnimatePresence } from "framer-motion";
+import { smartTrim } from "@/app/common/utils/utils";
 
 interface Props {
   username: string;
@@ -129,7 +130,7 @@ const ProfileCard = ({ username }: Props) => {
           />
         </Box>
         <Box padding="0.5">
-          <Heading>{user?.username}</Heading>
+          <Heading>{smartTrim(user?.username || "", 16)}</Heading>
         </Box>
         {user?.ethAddress && (
           <Tag as="span" tone="purple" size="small">

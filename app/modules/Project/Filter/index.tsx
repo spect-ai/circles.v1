@@ -69,20 +69,21 @@ export default function Filter() {
     currentFilter?.assignee || []
   );
   const [assignedCircle, setAssignedCircle] = useState(
-    currentFilter.assignedCircle || []
+    currentFilter?.assignedCircle || []
   );
 
   const [label, setLabels] = useState<string[]>(currentFilter?.label || []);
   const [title, setTitle] = useState<string>(currentFilter?.title || "");
   const [column, setColumn] = useState<string[]>(currentFilter?.column || []);
   const [priority, setPriority] = useState<string[]>(
-    currentFilter.priority || []
+    currentFilter?.priority || []
   );
   const [type, setType] = useState<string[]>(currentFilter?.type || []);
 
   useEffect(() => {
     setAssignee(currentFilter.assignee);
     setReviewer(currentFilter?.reviewer);
+    setAssignedCircle(currentFilter?.assignedCircle);
     setLabels(currentFilter?.label);
     setTitle(currentFilter?.title);
     setColumn(currentFilter?.column);

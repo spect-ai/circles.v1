@@ -48,6 +48,7 @@ export default function ProfileButton() {
         if (notifIds.length > 0) setNotifSeen(false);
       }, 10000);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentUser?.notifications]);
 
   return (
@@ -74,7 +75,7 @@ export default function ProfileButton() {
         >
           <Stack direction="horizontal">
             <Stack space="1">
-              <Text>{currentUser?.username}</Text>
+              <Text>{smartTrim(currentUser?.username as string, 16)}</Text>
               <Text size="small" variant="label">
                 {smartTrim(currentUser?.ethAddress as string, 12)}
               </Text>
