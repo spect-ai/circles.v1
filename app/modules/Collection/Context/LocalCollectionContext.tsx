@@ -15,14 +15,6 @@ type LocalCollectionContextType = {
   updateCollection: (collection: CollectionType) => void;
   updating: boolean;
   setUpdating: React.Dispatch<React.SetStateAction<boolean>>;
-  batchPayModalOpen: boolean;
-  setBatchPayModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  selectedCard: CardType | null;
-  setSelectedCard: React.Dispatch<React.SetStateAction<CardType | null>>;
-  isApplyModalOpen: boolean;
-  setIsApplyModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  isSubmitModalOpen: boolean;
-  setIsSubmitModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
   advFilters: AdvancedFilters;
   setAdvFilters: React.Dispatch<React.SetStateAction<AdvancedFilters>>;
 };
@@ -67,6 +59,7 @@ export function useProviderLocalCollection() {
   };
 
   useEffect(() => {
+    console.log(colId);
     if (colId) {
       setLoading(true);
       fetchCollection()
@@ -84,7 +77,7 @@ export function useProviderLocalCollection() {
           setLoading(false);
         });
     }
-  }, [colId]);
+  }, []);
 
   return {
     localCollection,

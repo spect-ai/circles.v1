@@ -14,6 +14,7 @@ type CreateCollectionDto = {
   name: string;
   private: boolean;
   circleId: string;
+  defaultView?: "form" | "table" | "kanban" | "list" | "gantt";
 };
 
 function CreateCollectionModal() {
@@ -23,13 +24,9 @@ function CreateCollectionModal() {
   const close = () => setModalOpen(false);
 
   const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
 
   const router = useRouter();
   const { circle, fetchCircle } = useCircle();
-
-  const [logo, setLogo] = useState(circle?.avatar || "");
-  const [uploading, setUploading] = useState(false);
 
   const { mutateAsync, isLoading } = useMutation(
     (circle: CreateCollectionDto) => {
@@ -50,6 +47,7 @@ function CreateCollectionModal() {
       name,
       private: visibilityTab === 1,
       circleId: circle?.id as string,
+      defaultView: "form", // TODO: Change this when collections are used as general purpose primitive
     })
       .then(async (res) => {
         const resJson = await res.json();

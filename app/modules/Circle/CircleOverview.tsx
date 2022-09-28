@@ -97,6 +97,11 @@ export default function CircleOverview() {
   const [toggle, setToggle] =
     useState<"Overview" | "Members" | "Roles">("Overview");
   const [filteredProjects, setFilteredProjects] = useState(circle?.projects);
+  const [filteredCollections, setFilteredCollections] = useState(
+    circle?.collections
+  );
+
+  console.log(circle);
   const [filteredWorkstreams, setFilteredWorkstreams] = useState(
     circle?.children
   );
@@ -282,25 +287,37 @@ export default function CircleOverview() {
                     Forms
                   </Text>
                   {canDo("createNewRetro") && <CreateCollectionModal />}
-                  {/* <Tooltip html={<Text>View all Retros</Text>} theme={mode}>
-                <Box marginTop="1">
-                  <Button
-                    shape="circle"
-                    size="small"
-                    variant="transparent"
-                    onClick={() => setPage("Retro")}
-                  >
-                    <Text variant="label">
-                      <ExpandAltOutlined
-                        style={{
-                          fontSize: "1.2rem",
-                        }}
-                      />
-                    </Text>
-                  </Button>
-                </Box>
-              </Tooltip> */}
                 </Stack>
+                <Container
+                  style={{
+                    padding: "0px",
+                    marginTop: "1rem",
+                    marginLeft: "0px",
+                  }}
+                >
+                  <Row>
+                    {filteredCollections?.map((collection) => (
+                      <Col sm={6} md={4} lg={2} key={collection.id}>
+                        <Card
+                          onClick={() =>
+                            // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+                            router.push(
+                              `${window.location.href}/r/${collection.slug}`
+                            )
+                          }
+                          height="32"
+                        >
+                          <Text align="center">{collection.name}</Text>
+                        </Card>
+                      </Col>
+                    ))}
+                    {!filteredCollections?.length && (
+                      <Box margin="4">
+                        <Text variant="label">No Forms created yet</Text>
+                      </Box>
+                    )}
+                  </Row>
+                </Container>
                 <Stack direction="horizontal" align="center">
                   <Text size="headingTwo" weight="semiBold" ellipsis>
                     Retro

@@ -205,6 +205,7 @@ export interface CircleType {
   parents: CircleType[];
   private: boolean;
   projects: ProjectType[];
+  collections: CollectionType[];
   slug: string;
   templates: any[];
   updatedAt: string;
@@ -635,6 +636,7 @@ export interface CollectionType {
   name: string;
   slug: string;
   properties: { [id: string]: Property };
+  propertyOrder: string[];
   createdAt: string;
   updatedAt: string;
   purpose: string;
