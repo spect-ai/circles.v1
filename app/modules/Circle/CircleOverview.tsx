@@ -19,6 +19,7 @@ import CircleMembers from "./CircleMembers";
 import CreateProjectModal from "./CreateProjectModal";
 import CreateSpaceModal from "./CreateSpaceModal";
 import InviteMemberModal from "./ContributorsModal/InviteMembersModal";
+import { joinCircle } from "@/app/services/JoinCircle";
 
 interface Props {
   toggle: string;
@@ -89,8 +90,15 @@ export default function CircleOverview() {
   const { isSidebarExpanded } = useGlobal();
   const router = useRouter();
   const { circle: cId, retroSlug } = router.query;
-  const { circle, setPage, setIsBatchPayOpen, isBatchPayOpen, retro } =
-    useCircle();
+  const {
+    circle,
+    setPage,
+    setIsBatchPayOpen,
+    isBatchPayOpen,
+    retro,
+    setCircleData,
+    fetchMemberDetails,
+  } = useCircle();
   const { canDo } = useRoleGate();
   const [isRetroOpen, setIsRetroOpen] = useState(false);
   const [toggle, setToggle] =
@@ -100,6 +108,7 @@ export default function CircleOverview() {
     circle?.children
   );
   const [filteredRetro, setFilteredRetro] = useState(circle?.retro);
+  const [loading, setLoading] = useState(false);
 
   const { mode } = useTheme();
 
@@ -117,18 +126,57 @@ export default function CircleOverview() {
 
   if (circle?.unauthorized)
     return (
-      <>
-        <Text size="headingTwo" weight="semiBold" ellipsis>
-          This circle is private
-        </Text>
-        <Button
-          size="large"
-          variant="transparent"
-          onClick={() => router.back()}
+      <Box
+        display="flex"
+        flexDirection="column"
+        justifyContent="center"
+        alignItems="flex-start"
+        width="128"
+        height="96"
+      >
+        <Box width="128" marginBottom="6">
+          <Text size="headingThree" weight="semiBold">
+            This circle is private. However, you may still qualify for a role.
+          </Text>
+        </Box>
+
+        <Box
+          display="flex"
+          flexDirection="row"
+          alignItems="flex-start"
+          margin="4"
+          width="128"
         >
-          <Text size="extraLarge">Go Back</Text>
-        </Button>
-      </>
+          <Box marginRight="4">
+            <Button
+              size="large"
+              variant="tertiary"
+              onClick={() => router.back()}
+            >
+              <Text size="large">Go Back</Text>
+            </Button>
+          </Box>
+
+          <Box marginLeft="4">
+            <Button
+              size="large"
+              variant="secondary"
+              onClick={async () => {
+                setLoading(true);
+                const data = await joinCircle(circle.id);
+                if (data) {
+                  setCircleData(data);
+                  fetchMemberDetails();
+                }
+                setLoading(false);
+              }}
+              loading={loading}
+            >
+              <Text size="large">Get Role</Text>
+            </Button>
+          </Box>
+        </Box>
+      </Box>
     );
 
   return (
@@ -146,203 +194,209 @@ export default function CircleOverview() {
           <BatchPay setIsOpen={setIsBatchPayOpen} retro={retro} />
         )}
       </AnimatePresence>
-      <Stack direction="horizontal">
-        <Box
-          style={{
-            width: isSidebarExpanded ? "75%" : "100%",
-            alignItems: "center",
-          }}
-          transitionDuration="500"
-        >
-          <Toggle toggle={toggle} setToggle={setToggle} />
-          {toggle == "Overview" && (
-            <>
-              <Box
-                style={{
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  gap: "1rem",
-                }}
-              >
-                <Input
-                  label=""
-                  placeholder="Search anything .."
-                  prefix={<IconSearch />}
-                  onChange={(e) => {
-                    setFilteredProjects(
-                      matchSorter(
-                        (circle as CircleType)?.projects,
-                        e.target.value,
-                        {
-                          keys: ["name"],
-                        }
-                      )
-                    );
-                    setFilteredWorkstreams(
-                      matchSorter(
-                        (circle as CircleType)?.children,
-                        e.target.value,
-                        {
-                          keys: ["name"],
-                        }
-                      )
-                    );
-                    setFilteredRetro(
-                      matchSorter(
-                        (circle as CircleType)?.retro,
-                        e.target.value,
-                        {
-                          keys: ["title"],
-                        }
-                      )
-                    );
-                  }}
-                />
-                {canDo("inviteMembers") && (
-                  <Box width={"1/3"} marginTop="2">
-                    <InviteMemberModal />
-                  </Box>
-                )}
-              </Box>
-              <BoxContainer>
-                <Stack direction="horizontal">
-                  <Text size="headingTwo" weight="semiBold" ellipsis>
-                    Projects
-                  </Text>
-                  {canDo("createNewProject") && <CreateProjectModal />}
-                </Stack>
-                <Container
+      {!loading && (
+        <Stack direction="horizontal">
+          <Box
+            style={{
+              width: isSidebarExpanded ? "75%" : "100%",
+              alignItems: "center",
+            }}
+            transitionDuration="500"
+          >
+            <Toggle toggle={toggle} setToggle={setToggle} />
+            {toggle == "Overview" && (
+              <>
+                <Box
                   style={{
-                    padding: "0px",
-                    marginTop: "1rem",
-                    marginLeft: "0px",
+                    display: "flex",
+                    flexDirection: "row",
+                    alignItems: "center",
+                    gap: "1rem",
                   }}
                 >
-                  <Row>
-                    {filteredProjects?.map((project) => (
-                      <Col sm={6} md={4} lg={2} key={project.id}>
-                        <Card
-                          onClick={() =>
-                            // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-                            router.push(
-                              `${window.location.href}/${project.slug}`
-                            )
+                  <Input
+                    label=""
+                    placeholder="Search anything .."
+                    prefix={<IconSearch />}
+                    onChange={(e) => {
+                      setFilteredProjects(
+                        matchSorter(
+                          (circle as CircleType)?.projects,
+                          e.target.value,
+                          {
+                            keys: ["name"],
                           }
-                          height="32"
-                        >
-                          <Text align="center">{project.name}</Text>
-                          <Text variant="label" align="center">
-                            {project.description}
-                          </Text>
-                        </Card>
-                      </Col>
-                    ))}
-                    {!circle?.projects.length && (
-                      <Box margin="4">
-                        <Text variant="label">No Projects created yet</Text>
-                      </Box>
-                    )}
-                  </Row>
-                </Container>
-                <Stack direction="horizontal">
-                  <Text size="headingTwo" weight="semiBold" ellipsis>
-                    Workstreams
-                  </Text>
-                  {canDo("createNewCircle") && <CreateSpaceModal />}
-                </Stack>
-                <Container
-                  style={{
-                    padding: "0px",
-                    marginTop: "1rem",
-                    marginLeft: "0px",
-                  }}
-                >
-                  <Row>
-                    {filteredWorkstreams?.map((space) => (
-                      <Col sm={6} md={4} lg={2} key={space.id}>
-                        <Card
-                          onClick={() =>
-                            // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-                            router.push(`/${space.slug}`)
+                        )
+                      );
+                      setFilteredWorkstreams(
+                        matchSorter(
+                          (circle as CircleType)?.children,
+                          e.target.value,
+                          {
+                            keys: ["name"],
                           }
-                          height="32"
-                        >
-                          <Text align="center">{space.name}</Text>
-                          <Text variant="label" align="center">
-                            {space.description}
-                          </Text>
-                        </Card>
-                      </Col>
-                    ))}
-                    {!circle?.children.length && (
-                      <Box margin="4">
-                        <Text variant="label">No Workstreams created yet</Text>
-                      </Box>
-                    )}
-                  </Row>
-                </Container>
-                <Stack direction="horizontal" align="center">
-                  <Text size="headingTwo" weight="semiBold" ellipsis>
-                    Retro
-                  </Text>
-                  {canDo("createNewRetro") && <CreateRetro />}
-                  <Tooltip html={<Text>View all Retros</Text>} theme={mode}>
-                    <Box marginTop="1">
-                      <Button
-                        shape="circle"
-                        size="small"
-                        variant="transparent"
-                        onClick={() => setPage("Retro")}
-                      >
-                        <Text variant="label">
-                          <ExpandAltOutlined
-                            style={{
-                              fontSize: "1.2rem",
-                            }}
-                          />
-                        </Text>
-                      </Button>
+                        )
+                      );
+                      setFilteredRetro(
+                        matchSorter(
+                          (circle as CircleType)?.retro,
+                          e.target.value,
+                          {
+                            keys: ["title"],
+                          }
+                        )
+                      );
+                    }}
+                  />
+                  {canDo("inviteMembers") && (
+                    <Box width={"1/3"} marginTop="2">
+                      <InviteMemberModal />
                     </Box>
-                  </Tooltip>
-                </Stack>
-                <Container
-                  style={{
-                    padding: "0px",
-                    marginTop: "1rem",
-                    marginLeft: "0px",
-                  }}
-                >
-                  <Row>
-                    {filteredRetro?.map((retro) => (
-                      <Col sm={6} md={4} lg={2} key={retro.id}>
-                        <Card
-                          height="32"
-                          onClick={() => {
-                            void router.push(`${cId}?retroSlug=${retro.slug}`);
-                            setIsRetroOpen(true);
-                          }}
-                        >
-                          <Text align="center">{retro.title}</Text>
-                          <Text variant="label" align="center">
-                            {retro.description}
+                  )}
+                </Box>
+                <BoxContainer>
+                  <Stack direction="horizontal">
+                    <Text size="headingTwo" weight="semiBold" ellipsis>
+                      Projects
+                    </Text>
+                    {canDo("createNewProject") && <CreateProjectModal />}
+                  </Stack>
+                  <Container
+                    style={{
+                      padding: "0px",
+                      marginTop: "1rem",
+                      marginLeft: "0px",
+                    }}
+                  >
+                    <Row>
+                      {filteredProjects?.map((project) => (
+                        <Col sm={6} md={4} lg={2} key={project.id}>
+                          <Card
+                            onClick={() =>
+                              // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+                              router.push(
+                                `${window.location.href}/${project.slug}`
+                              )
+                            }
+                            height="32"
+                          >
+                            <Text align="center">{project.name}</Text>
+                            <Text variant="label" align="center">
+                              {project.description}
+                            </Text>
+                          </Card>
+                        </Col>
+                      ))}
+                      {!circle?.projects.length && (
+                        <Box margin="4">
+                          <Text variant="label">No Projects created yet</Text>
+                        </Box>
+                      )}
+                    </Row>
+                  </Container>
+                  <Stack direction="horizontal">
+                    <Text size="headingTwo" weight="semiBold" ellipsis>
+                      Workstreams
+                    </Text>
+                    {canDo("createNewCircle") && <CreateSpaceModal />}
+                  </Stack>
+                  <Container
+                    style={{
+                      padding: "0px",
+                      marginTop: "1rem",
+                      marginLeft: "0px",
+                    }}
+                  >
+                    <Row>
+                      {filteredWorkstreams?.map((space) => (
+                        <Col sm={6} md={4} lg={2} key={space.id}>
+                          <Card
+                            onClick={() =>
+                              // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+                              router.push(`/${space.slug}`)
+                            }
+                            height="32"
+                          >
+                            <Text align="center">{space.name}</Text>
+                            <Text variant="label" align="center">
+                              {space.description}
+                            </Text>
+                          </Card>
+                        </Col>
+                      ))}
+                      {!circle?.children.length && (
+                        <Box margin="4">
+                          <Text variant="label">
+                            No Workstreams created yet
                           </Text>
-                        </Card>
-                      </Col>
-                    ))}
-                    {!circle?.retro?.length && (
-                      <Box marginLeft="4">
-                        <Text variant="label">No Retros created yet</Text>
+                        </Box>
+                      )}
+                    </Row>
+                  </Container>
+                  <Stack direction="horizontal" align="center">
+                    <Text size="headingTwo" weight="semiBold" ellipsis>
+                      Retro
+                    </Text>
+                    {canDo("createNewRetro") && <CreateRetro />}
+                    <Tooltip html={<Text>View all Retros</Text>} theme={mode}>
+                      <Box marginTop="1">
+                        <Button
+                          shape="circle"
+                          size="small"
+                          variant="transparent"
+                          onClick={() => setPage("Retro")}
+                        >
+                          <Text variant="label">
+                            <ExpandAltOutlined
+                              style={{
+                                fontSize: "1.2rem",
+                              }}
+                            />
+                          </Text>
+                        </Button>
                       </Box>
-                    )}
-                  </Row>
-                </Container>
-              </BoxContainer>
-            </>
-          )}
-          {toggle == "Members" && <CircleMembers />}
-        </Box>
-      </Stack>
+                    </Tooltip>
+                  </Stack>
+                  <Container
+                    style={{
+                      padding: "0px",
+                      marginTop: "1rem",
+                      marginLeft: "0px",
+                    }}
+                  >
+                    <Row>
+                      {filteredRetro?.map((retro) => (
+                        <Col sm={6} md={4} lg={2} key={retro.id}>
+                          <Card
+                            height="32"
+                            onClick={() => {
+                              void router.push(
+                                `${cId}?retroSlug=${retro.slug}`
+                              );
+                              setIsRetroOpen(true);
+                            }}
+                          >
+                            <Text align="center">{retro.title}</Text>
+                            <Text variant="label" align="center">
+                              {retro.description}
+                            </Text>
+                          </Card>
+                        </Col>
+                      ))}
+                      {!circle?.retro?.length && (
+                        <Box marginLeft="4">
+                          <Text variant="label">No Retros created yet</Text>
+                        </Box>
+                      )}
+                    </Row>
+                  </Container>
+                </BoxContainer>
+              </>
+            )}
+            {toggle == "Members" && <CircleMembers />}
+          </Box>
+        </Stack>
+      )}
     </>
   );
 }
