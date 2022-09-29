@@ -103,14 +103,15 @@ export function useProviderLocalProject() {
   }, [connectedUser, pId]);
 
   useEffect(() => {
-    socket.on("project_update", (project: { project: ProjectType }) => {
-      console.log({ project });
-      if (project.project.id === localProject.id) {
-        updateProject(project.project);
-      }
-    });
+    if (socket && socket.on && localProject) {
+      socket.on("projectUpdate", (project: ProjectType) => {
+        if (project.id === localProject.id) {
+          updateProject(project);
+        }
+      });
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [socket, localProject]);
 
   useEffect(() => {
     if (pId) {
