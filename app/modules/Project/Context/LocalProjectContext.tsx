@@ -88,6 +88,8 @@ export function useProviderLocalProject() {
     order: "des",
   });
 
+  const { socket } = useGlobal();
+
   const updateProject = (project: ProjectType) => {
     queryClient.setQueryData(["project", pId], project);
     setLocalProject(project);
@@ -97,7 +99,18 @@ export function useProviderLocalProject() {
     if (pId) {
       void fetchQuickActions();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [connectedUser, pId]);
+
+  useEffect(() => {
+    socket.on("project_update", (project: { project: ProjectType }) => {
+      console.log({ project });
+      if (project.project.id === localProject.id) {
+        updateProject(project.project);
+      }
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (pId) {
@@ -117,6 +130,7 @@ export function useProviderLocalProject() {
           setLoading(false);
         });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pId]);
 
   return {
