@@ -301,9 +301,7 @@ export function useProviderLocalCard({
         Card created
         <Stack direction="horizontal">
           <PrimaryButton>
-            <Link href={`/${cId}/${pId}/${data.card?._doc?.slug}`}>
-              View Card
-            </Link>
+            <Link href={`/${cId}/${pId}/${data.card?.slug}`}>View Card</Link>
           </PrimaryButton>
         </Stack>
       </Stack>,
