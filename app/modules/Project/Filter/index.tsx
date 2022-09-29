@@ -57,10 +57,12 @@ export default function Filter() {
     id: project?.columnDetails[column].name,
   }));
 
-  const circles = circle?.children.map((c) => ({
-    name: c.name,
-    id: c.id,
-  }));
+  const circles =
+    circle?.children &&
+    circle?.children.map((c) => ({
+      name: c.name,
+      id: c.id,
+    }));
 
   const [reviewer, setReviewer] = useState<string[]>(
     currentFilter?.reviewer || []
