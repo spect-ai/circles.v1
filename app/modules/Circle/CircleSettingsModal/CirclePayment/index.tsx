@@ -142,8 +142,9 @@ export default function DefaultPayment() {
         <Box>
           <Heading>Circle Address</Heading>
           <Text>
-            Set address where circle should receieve the payments. Please ensure
-            that the address added is NOT a gnosis safe address.
+            Set ethereum address where circle should receieve the payments.
+            Please ensure that the ethereum address added is NOT a gnosis safe
+            address.
           </Text>
         </Box>
         <Stack>

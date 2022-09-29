@@ -4,11 +4,13 @@ import { CircleType } from "@/app/types";
 import { ProjectOutlined } from "@ant-design/icons";
 import {
   Box,
+  Button,
   IconUserGroup,
   Skeleton,
   SkeletonGroup,
   Stack,
   Text,
+  useTheme,
 } from "degen";
 import { AnimatePresence } from "framer-motion";
 import Link from "next/link";
@@ -23,7 +25,7 @@ import ContributorsModal from "../Circle/ContributorsModal";
 import CreateRetroModal from "../Retro/CreateRetro/CreateRetroModal";
 import CircleOptions from "./CircleOptions";
 import CollapseButton from "./CollapseButton";
-import ExploreSidebar from "./ExploreSidebar";
+import ExploreSidebar, { HeaderButton } from "./ExploreSidebar";
 
 export const Container = styled(Box)<{ subH?: string }>`
   ::-webkit-scrollbar {
@@ -47,6 +49,7 @@ function CircleSidebar() {
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [isContributorsModalOpen, setIsContributorsModalOpen] = useState(false);
   const [isRetroModalOpen, setIsRetroModalOpen] = useState(false);
+  const { mode } = useTheme();
 
   const [showCollapseButton, setShowCollapseButton] = useState(false);
   if (isLoading) {
@@ -62,7 +65,37 @@ function CircleSidebar() {
     );
   }
 
-  if (circle?.unauthorized) return <ExploreSidebar />;
+  if (circle?.unauthorized)
+    return (
+      <Box
+        paddingY="2"
+        paddingLeft="3"
+        paddingRight="3"
+        onMouseEnter={() => setShowCollapseButton(true)}
+        onMouseLeave={() => setShowCollapseButton(false)}
+      >
+        <Stack space="3">
+          <HeaderButton
+            data-tour="circle-options-button"
+            padding="1"
+            marginTop="0.5"
+            marginBottom="1"
+            borderRadius="large"
+            width="full"
+            onClick={() => {}}
+            mode={mode}
+          >
+            <Stack direction="horizontal" align="center">
+              <Text size="headingTwo" weight="semiBold" ellipsis>
+                {circle?.name}
+              </Text>
+            </Stack>
+          </HeaderButton>
+        </Stack>
+        <Container subH="8.1rem"></Container>
+      </Box>
+    );
+
   return (
     <Box
       paddingY="2"

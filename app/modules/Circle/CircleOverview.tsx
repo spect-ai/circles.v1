@@ -20,6 +20,7 @@ import CreateCollectionModal from "./CreateCollectionModal";
 import CreateProjectModal from "./CreateProjectModal";
 import CreateSpaceModal from "./CreateSpaceModal";
 import InviteMemberModal from "./ContributorsModal/InviteMembersModal";
+import { joinCircle } from "@/app/services/JoinCircle";
 
 interface Props {
   toggle: string;
@@ -90,8 +91,15 @@ export default function CircleOverview() {
   const { isSidebarExpanded } = useGlobal();
   const router = useRouter();
   const { circle: cId, retroSlug } = router.query;
-  const { circle, setPage, setIsBatchPayOpen, isBatchPayOpen, retro } =
-    useCircle();
+  const {
+    circle,
+    setPage,
+    setIsBatchPayOpen,
+    isBatchPayOpen,
+    retro,
+    setCircleData,
+    fetchMemberDetails,
+  } = useCircle();
   const { canDo } = useRoleGate();
   const [isRetroOpen, setIsRetroOpen] = useState(false);
   const [toggle, setToggle] =
@@ -106,6 +114,7 @@ export default function CircleOverview() {
     circle?.children
   );
   const [filteredRetro, setFilteredRetro] = useState(circle?.retro);
+  const [loading, setLoading] = useState(false);
 
   const { mode } = useTheme();
 
@@ -123,18 +132,57 @@ export default function CircleOverview() {
 
   if (circle?.unauthorized)
     return (
-      <>
-        <Text size="headingTwo" weight="semiBold" ellipsis>
-          This circle is private
-        </Text>
-        <Button
-          size="large"
-          variant="transparent"
-          onClick={() => router.back()}
+      <Box
+        display="flex"
+        flexDirection="column"
+        justifyContent="center"
+        alignItems="flex-start"
+        width="128"
+        height="96"
+      >
+        <Box width="128" marginBottom="6">
+          <Text size="headingThree" weight="semiBold">
+            This circle is private. However, you may still qualify for a role.
+          </Text>
+        </Box>
+
+        <Box
+          display="flex"
+          flexDirection="row"
+          alignItems="flex-start"
+          margin="4"
+          width="128"
         >
-          <Text size="extraLarge">Go Back</Text>
-        </Button>
-      </>
+          <Box marginRight="4">
+            <Button
+              size="large"
+              variant="tertiary"
+              onClick={() => router.back()}
+            >
+              <Text size="large">Go Back</Text>
+            </Button>
+          </Box>
+
+          <Box marginLeft="4">
+            <Button
+              size="large"
+              variant="secondary"
+              onClick={async () => {
+                setLoading(true);
+                const data = await joinCircle(circle.id);
+                if (data) {
+                  setCircleData(data);
+                  fetchMemberDetails();
+                }
+                setLoading(false);
+              }}
+              loading={loading}
+            >
+              <Text size="large">Get Role</Text>
+            </Button>
+          </Box>
+        </Box>
+      </Box>
     );
 
   return (

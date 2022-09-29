@@ -6,7 +6,7 @@ import {
 } from "@/app/services/JoinCircle";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { UserType } from "@/app/types";
-import { Box, IconSearch, Input, Stack, Text, useTheme } from "degen";
+import { Box, IconSearch, Input, Stack, useTheme } from "degen";
 import { matchSorter } from "match-sorter";
 import React, { useEffect, useState } from "react";
 import { useQuery } from "react-query";
