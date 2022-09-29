@@ -11,6 +11,7 @@ import DiscordIcon from "@/app/assets/icons/discordIcon.svg";
 import ConnectGnosis from "../ConnectGnosis";
 import GuildIntegration from "../GuildIntegration";
 import GuildRoleMapping from "../GuildIntegration/GuildRoleMapping";
+import ConnectQuestbook from "../QuestbookIntegration";
 
 export default function CircleIntegrations() {
   const router = useRouter();
@@ -94,6 +95,13 @@ export default function CircleIntegrations() {
           <Text>Connect your gnosis safe to pay out from your safe.</Text>
           <Box width="1/3" marginTop="6">
             <ConnectGnosis />
+          </Box>
+        </Stack>
+        <Stack space="1">
+          <Heading>Questbook</Heading>
+          <Text>Connect your Questbook workspace.</Text>
+          <Box width="1/3" marginTop="6">
+            <ConnectQuestbook />
           </Box>
         </Stack>
       </Stack>

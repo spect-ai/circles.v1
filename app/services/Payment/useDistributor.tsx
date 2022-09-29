@@ -54,6 +54,7 @@ export default function useDistributor() {
     callerId,
     nonce,
   }: DistributeEtherParams) {
+    console.log({ contributors });
     const contract = getDistributorContract(chainId);
     const valuesInWei = [];
     const contributorsWithPositiveAllocation: any[] = [];
@@ -93,7 +94,7 @@ export default function useDistributor() {
         overrides,
       };
     }
-
+    console.log({ contributorsWithPositiveAllocation, valuesInWei });
     const tx = await contract?.distributeEther(
       contributorsWithPositiveAllocation,
       valuesInWei,

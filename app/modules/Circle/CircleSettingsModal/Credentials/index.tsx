@@ -90,7 +90,7 @@ export default function Credentials() {
                 marginTop="2"
                 cursor="pointer"
                 onClick={() => {
-                  window.open("https://discord.gg/3By9PAAP", "_blank");
+                  window.open("https://discord.gg/jXtNXTcN87", "_blank");
                 }}
               >
                 <Text>How to generate credentials?</Text>

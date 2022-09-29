@@ -51,6 +51,11 @@ export default function useModalOptions() {
           name: p.name,
           value: p.id,
         }));
+      case "circle":
+        return circle?.children.map((c) => ({
+          name: c.name,
+          value: c.id,
+        }));
       case "assignee":
         // eslint-disable-next-line no-case-declarations
         let tempArr = memberDetails?.members?.map((member: string) => ({

@@ -122,7 +122,7 @@ const MultiSelectDropdown: FC<Props> = ({
 
   useEffect(() => {
     setFilteredOptions(options);
-    if (value.length > 0) {
+    if (value?.length > 0) {
       options.map((option, idx) => {
         if (option.id == value[idx]) setSaved([...saved, option.name]);
       });
@@ -198,7 +198,7 @@ const MultiSelectDropdown: FC<Props> = ({
             right: "0.5rem",
           }}
         >
-          {value.length > 0 && (
+          {value?.length > 0 && (
             <Button
               shape="circle"
               size="small"
@@ -254,10 +254,10 @@ const MultiSelectDropdown: FC<Props> = ({
                         setValue([]);
                         return;
                       }
-                      if (value.includes(option.id)) {
+                      if (value?.includes(option.id)) {
                         setValue(value.filter((i) => i !== option.id));
                       } else {
-                        if (value.length) {
+                        if (value?.length) {
                           setValue([...value, option.id]);
                         } else {
                           setValue([option.id]);
@@ -285,7 +285,7 @@ const MultiSelectDropdown: FC<Props> = ({
                   >
                     <Stack align="center">
                       <Text
-                        color={value.includes(option.id) ? "purple" : "text"}
+                        color={value?.includes(option.id) ? "purple" : "text"}
                       >
                         {option.name}
                       </Text>

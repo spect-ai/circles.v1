@@ -6,8 +6,9 @@ import {
 import { updateCircle } from "@/app/services/UpdateCircle";
 import { Chain, Registry, Token } from "@/app/types";
 import { SaveOutlined } from "@ant-design/icons";
-import { Box, Heading, Stack, Tag, Text } from "degen";
+import { Box, Heading, Input, Stack, Tag, Text } from "degen";
 import React, { useState } from "react";
+import { toast } from "react-toastify";
 import styled from "styled-components";
 import { useCircle } from "../../CircleContext";
 import AddToken from "./AddToken";
@@ -30,14 +31,26 @@ export default function DefaultPayment() {
   const [isLoading, setIsLoading] = useState(false);
   const [isDirty, setIsDirty] = useState(false);
 
+  const [circleAddress, setCircleAddress] = useState(
+    circle?.paymentAddress || ""
+  );
+
   const onSubmit = async () => {
+    // validate if circle address is a valid ethereum address
+    if (!circleAddress.match(/^0x[a-fA-F0-9]{40}$/)) {
+      toast.error("Invalid Payment Address");
+      return;
+    }
+
     setIsLoading(true);
+
     const res = await updateCircle(
       {
         defaultPayment: {
           chain: chain as Chain,
           token: token as Token,
         },
+        paymentAddress: circleAddress,
       },
       circle?.id as string
     );
@@ -124,19 +137,39 @@ export default function DefaultPayment() {
             ))}
             <AddToken chain={chain} />
           </Stack>
-          <Box width="1/3" marginTop="2" paddingLeft="1">
-            {isDirty && (
-              <PrimaryButton
-                icon={<SaveOutlined />}
-                onClick={onSubmit}
-                loading={isLoading}
-                animation="fade"
-              >
-                Save
-              </PrimaryButton>
-            )}
-          </Box>
         </Stack>
+        <Box marginTop="4" />
+        <Box>
+          <Heading>Circle Address</Heading>
+          <Text>
+            Set address where circle should receieve the payments. Please ensure
+            that the address added is NOT a gnosis safe address.
+          </Text>
+        </Box>
+        <Stack>
+          <Input
+            label=""
+            placeholder="Address"
+            width="1/2"
+            value={circleAddress}
+            onChange={(e) => {
+              setIsDirty(true);
+              setCircleAddress(e.target.value);
+            }}
+          />
+        </Stack>
+        <Box width="1/3" marginTop="2" paddingLeft="1">
+          {isDirty && (
+            <PrimaryButton
+              icon={<SaveOutlined />}
+              onClick={onSubmit}
+              loading={isLoading}
+              animation="fade"
+            >
+              Save
+            </PrimaryButton>
+          )}
+        </Box>
       </Stack>
     </Container>
   );

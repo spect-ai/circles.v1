@@ -10,8 +10,6 @@ import { useNetwork } from "wagmi";
 const chainId = "137";
 const domainInfo = {
   name: "Kudos",
-
-  // Mumbai
   chainId,
   verifyingContract: "0x60576A64851C5B42e8c57E3E4A5cF3CF4eEb2ED6",
 };
@@ -155,7 +153,7 @@ export default function useCredentials() {
     }, 1000);
     setTimeout(() => {
       clearInterval(intervalPromise);
-    }, 120000);
+    }, 20000);
   };
 
   const viewKudos = async (): Promise<KudosType[]> => {

@@ -2,15 +2,12 @@ import Modal from "@/app/common/components/Modal";
 import { RetroType } from "@/app/types";
 import { useEffect } from "react";
 import { useLocalProject } from "../Context/LocalProjectContext";
-import ApproveToken from "./ApproveToken";
 import {
   BatchPayContext,
   useProviderBatchPayContext,
 } from "./context/batchPayContext";
-import CurrencyPayment from "./CurrencyPayment";
 import OneClickPayment from "./OneClickPay";
 import SelectCards from "./SelectCards";
-import TokenPayment from "./TokenPayment";
 
 interface Props {
   retro?: RetroType;
@@ -38,6 +35,7 @@ export default function BatchPay({ retro, setIsOpen }: Props) {
     if (retro) {
       if (retro.reward.token.address === "0x0") {
         setBatchPayInfo({
+          payCircle: false,
           retroId: retro.id,
           approval: {
             tokenAddresses: [],
@@ -60,6 +58,7 @@ export default function BatchPay({ retro, setIsOpen }: Props) {
       } else {
         console.log(retro.reward);
         setBatchPayInfo({
+          payCircle: false,
           retroId: retro.id,
           approval: {
             tokenAddresses: [retro.reward.token.address],
@@ -81,6 +80,7 @@ export default function BatchPay({ retro, setIsOpen }: Props) {
     } else {
       setStep(0);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

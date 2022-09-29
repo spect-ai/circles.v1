@@ -3,9 +3,14 @@ import { TableNode } from "@table-library/react-table-library/types";
 import { useTheme as useTableTheme } from "@table-library/react-table-library/theme";
 
 import styled from "styled-components";
-import { useTheme } from "degen";
+import { useTheme, Button, IconPlusSmall, Box } from "degen";
 import { memo, useState, useEffect } from "react";
+import { ArrowsAltOutlined } from "@ant-design/icons";
+import { AnimatePresence } from "framer-motion";
+import { useHotkeys } from "react-hotkeys-hook";
+import { toast } from "react-toastify";
 
+import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { useLocalProject } from "../Context/LocalProjectContext";
 import { useGlobal } from "@/app/context/globalContext";
 import { filterCards } from "../Filter/filterCards";
@@ -15,6 +20,8 @@ import {
   sortBy,
 } from "@/app/modules/Project/ProjectHeading/AdvancedOptions";
 import { CardsType, CardType, Filter } from "@/app/types";
+import { IconButton } from "@/app/modules/Project/ProjectHeading/index";
+import CreateCardModal from "@/app/modules/Project/CreateCardModal";
 
 import { CardTitle } from "./components/CardTitle";
 import { CardType as Type } from "./components/CardType";
@@ -26,6 +33,8 @@ import CardReward from "./components/CardReward";
 import CardDeadline from "./components/CardDeadline";
 import CardStartDate from "./components/CardStartDate";
 import CardPriority from "./components/CardPriority";
+import Link from "next/link";
+import { useRouter } from "next/router";
 
 const Container = styled.div`
   height: calc(100vh - 7.5rem);
@@ -47,8 +56,27 @@ const Container = styled.div`
 
 function TableView({ viewId }: { viewId: string }) {
   const { localProject: project, loading, advFilters } = useLocalProject();
+  const router = useRouter();
+  const { circle: cId, project: pId } = router.query;
   const { currentFilter } = useGlobal();
   const { mode } = useTheme();
+
+  const { canDo } = useRoleGate();
+  const [isOpen, setIsOpen] = useState(false);
+  const [isDirty, setIsDirty] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+
+  useHotkeys("c", (e) => {
+    e.preventDefault();
+    if (!canDo("createNewCard")) {
+      toast.error("You don't have permission to add cards in this column", {
+        theme: "dark",
+      });
+      return;
+    }
+    setIsOpen(true);
+  });
+
   const [viewCards, setViewCards] = useState({} as CardsType);
   const view = project.viewDetails?.[viewId];
 
@@ -77,7 +105,7 @@ function TableView({ viewId }: { viewId: string }) {
     }
     let cards =
       tcards &&
-      Object.values(tcards)?.filter((card) => card.status.active == true);
+      Object.values(tcards)?.filter((card) => card.status.archived == false);
     const fcards = titleFilter(cards, advFilters.inputTitle);
     cards = sortBy(advFilters.sortBy, fcards, advFilters.order);
     setTasks(cards);
@@ -92,14 +120,16 @@ function TableView({ viewId }: { viewId: string }) {
   ]);
 
   const theme = useTableTheme({
-    Table: `--data-table-library_grid-template-columns:  30% 15% 15% 15% 15% 15% 15% 15% 15% 15%;
+    Table: `--data-table-library_grid-template-columns:  4% 40% 15% 15% 15% 15% 15% 15% 15% 15% 15%;
     ::-webkit-scrollbar {
       display: none;
     }
-    height: ${tasks.length < 12 ? `calc(${tasks.length + 1}*52px)` : "100%"};
+    height: ${tasks?.length < 12 ? `calc(${tasks.length + 1}*52px)` : "90%"};
+    border: 1px solid ${
+      mode === "dark" ? "rgb(255, 255, 255, 0.1);" : "rgb(0, 0, 0, 0.1)"
+    };
     `,
-    Header: `
-      `,
+    Header: ``,
     Body: ``,
     BaseRow: `
     background-color: ${
@@ -133,7 +163,6 @@ function TableView({ viewId }: { viewId: string }) {
   
       padding: 8px;
       height: 52px;
-
       &:nth-of-type(1) {
         left: 0px;
       }
@@ -143,6 +172,16 @@ function TableView({ viewId }: { viewId: string }) {
   });
 
   const columns = [
+    {
+      label: "",
+      renderCell: (item: TableNode) => (
+        <Link href={`/${cId}/${pId}/${item.slug}`}>
+          <IconButton color="textSecondary" paddingX="2" paddingY="1">
+            <ArrowsAltOutlined style={{ fontSize: "1.1rem" }} />
+          </IconButton>
+        </Link>
+      ),
+    },
     {
       label: "Title",
       renderCell: (item: TableNode) => (
@@ -219,6 +258,7 @@ function TableView({ viewId }: { viewId: string }) {
       startDate: card.startDate,
       reward: card.reward,
       priority: card.priority,
+      slug: card.slug,
     }));
 
   if (loading || !project.cards) {
@@ -226,14 +266,59 @@ function TableView({ viewId }: { viewId: string }) {
   }
 
   return (
-    <Container>
-      <CompactTable
-        columns={columns}
-        theme={theme}
-        data={{ nodes: data }}
-        layout={{ custom: true, horizontalScroll: true, fixedHeader: true }}
-      />
-    </Container>
+    <>
+      <AnimatePresence>
+        {isOpen && (
+          <CreateCardModal
+            column={project?.columnOrder?.[0]}
+            handleClose={() => {
+              if (isDirty && !showConfirm) {
+                setShowConfirm(true);
+              } else {
+                setIsOpen(false);
+              }
+            }}
+            setIsDirty={setIsDirty}
+            showConfirm={showConfirm}
+            setShowConfirm={setShowConfirm}
+            setIsOpen={setIsOpen}
+          />
+        )}
+      </AnimatePresence>
+      <Container>
+        {viewId === "" && (<Box
+          display="flex"
+          flexDirection="row"
+          justifyContent="space-between"
+          alignItems="center"
+          paddingY="2"
+        >
+          <Button
+            prefix={<IconPlusSmall />}
+            size="small"
+            variant="secondary"
+            onClick={() => {
+              if (!canDo("createNewCard")) {
+                toast.error(
+                  "You don't have permission to add cards in this column",
+                  { theme: "dark" }
+                );
+                return;
+              }
+              setIsOpen(true);
+            }}
+          >
+            Create
+          </Button>
+        </Box>)}
+        <CompactTable
+          columns={columns}
+          theme={theme}
+          data={{ nodes: data }}
+          layout={{ custom: true, horizontalScroll: true, fixedHeader: true }}
+        />
+      </Container>
+    </>
   );
 }
 

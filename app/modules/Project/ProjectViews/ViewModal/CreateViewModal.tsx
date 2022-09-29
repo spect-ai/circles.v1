@@ -89,6 +89,7 @@ function CreateViewModal({ setViewOpen }: Props) {
           type: type,
           priority: priority,
           deadline: "",
+          assignedCircle: [],
         },
         name: name,
       },

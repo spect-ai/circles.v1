@@ -13,6 +13,7 @@ import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { toast } from "react-toastify";
 import { useAccount, useNetwork } from "wagmi";
+import { useCircle } from "../../Circle/CircleContext";
 import { useLocalProject } from "../Context/LocalProjectContext";
 import { useLocalCard } from "../CreateCardModal/hooks/LocalCardContext";
 import { useBatchPayContext } from "./context/batchPayContext";
@@ -33,9 +34,7 @@ export default function OneClickPayment() {
   const { activeChain, switchNetworkAsync } = useNetwork();
   const router = useRouter();
   const { circle: cId } = router.query;
-  const { data: circle } = useQuery<CircleType>(["circle", cId], {
-    enabled: false,
-  });
+  const { circle } = useCircle();
 
   const { data: registry } = useQuery<Registry>(["registry", cId], {
     enabled: false,
@@ -63,14 +62,19 @@ export default function OneClickPayment() {
       return rows.push([
         <Stack key={index} direction="horizontal" align="center">
           <Avatar
-            src={getMemberDetails(userId)?.avatar}
-            placeholder={!getMemberDetails(userId)?.avatar}
+            src={
+              batchPayInfo.payCircle
+                ? getCircleDetails(userId)?.avatar
+                : getMemberDetails(userId)?.avatar
+            }
             label=""
             size="8"
             address={getMemberDetails(userId)?.ethAddress}
           />
           <Text variant="base" weight="semiBold">
-            {getMemberDetails(userId)?.username}
+            {batchPayInfo.payCircle
+              ? getCircleDetails(userId)?.name
+              : getMemberDetails(userId)?.username}
           </Text>
         </Stack>,
         <Text variant="base" weight="semiBold" key={userId}>
@@ -83,14 +87,19 @@ export default function OneClickPayment() {
       return rows.push([
         <Stack key={index} direction="horizontal" align="center">
           <Avatar
-            src={getMemberDetails(userId)?.avatar}
-            placeholder={!getMemberDetails(userId)?.avatar}
+            src={
+              batchPayInfo.payCircle
+                ? getCircleDetails(userId)?.avatar
+                : getMemberDetails(userId)?.avatar
+            }
             label=""
             size="8"
             address={getMemberDetails(userId)?.ethAddress}
           />
           <Text variant="base" weight="semiBold">
-            {getMemberDetails(userId)?.username}
+            {batchPayInfo.payCircle
+              ? getCircleDetails(userId)?.name
+              : getMemberDetails(userId)?.username}
           </Text>
         </Stack>,
         <Text variant="base" weight="semiBold" key={userId}>
@@ -108,8 +117,12 @@ export default function OneClickPayment() {
   const recordPayment = async (txnHash: string, cardIds: string[]) => {
     if (txnHash) {
       if (!batchPayInfo?.retroId && cardIds && cardIds.length > 0) {
-        const res: ProjectType = await updatePaymentInfo(cardIds, txnHash);
+        const res: ProjectType = await updatePaymentInfo(cardIds, txnHash, {
+          type: "project",
+          id: project?.id,
+        });
         if (res) {
+          console.log({ res });
           updateProject && updateProject(res);
           setCard && setCard(res.cards[cardId]);
         }
@@ -209,18 +222,26 @@ export default function OneClickPayment() {
       }
     }
     // set to final step if all tokens approved
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [batchPayInfo, activeChain]);
 
-  const getEthAddress = (specificUserIds?: string[]) => {
-    if (specificUserIds)
-      return specificUserIds.map((userId) => {
-        return getMemberDetails(userId)?.ethAddress;
-      });
+  const getEthAddress = (specificUserIds: string[], payCircle: boolean) => {
+    return specificUserIds.map((userId) => {
+      if (payCircle) return getCircleDetails(userId)?.paymentAddress;
+      else return getMemberDetails(userId)?.ethAddress;
+    });
+  };
+
+  const getCircleDetails = (circleId: string) => {
+    return circle?.children.find((child) => child.id === circleId);
   };
   return (
     <Box>
       <ScrollContainer paddingX="8" paddingY="4">
-        <Table columns={["Member", "Amount"]} rows={formatRows()} />
+        <Table
+          columns={[batchPayInfo?.payCircle ? "Circles" : "Members", "Amount"]}
+          rows={formatRows()}
+        />
       </ScrollContainer>
       <Box borderTopWidth="0.375" paddingX="8" paddingY="4">
         <Stack direction="horizontal">
@@ -243,28 +264,28 @@ export default function OneClickPayment() {
                 disabled={gnosisLoading}
                 onClick={async () => {
                   setPersonalWalletLoading(true);
-                  if (
-                    (batchPayInfo.chainId === "137" ||
-                      batchPayInfo.chainId === "80001") &&
-                    batchPayInfo?.currency.values?.length > 0
-                  ) {
-                    await payGasless({
-                      chainId: batchPayInfo?.chainId || "",
-                      paymentType: "currency",
-                      batchPayType: batchPayInfo?.retroId ? "retro" : "card",
-                      userAddresses: getEthAddress(
-                        batchPayInfo?.currency.userIds
-                      ) as string[],
-                      amounts: batchPayInfo?.currency.values,
-                      tokenAddresses: [""],
-                      cardIds: batchPayInfo?.retroId
-                        ? [batchPayInfo.retroId]
-                        : (currencyCards as string[]),
-                      circleId: circle?.id || "",
-                    });
-                    setPersonalWalletLoading(false);
-                    return;
-                  }
+                  // if (
+                  //   (batchPayInfo.chainId === "137" ||
+                  //     batchPayInfo.chainId === "80001") &&
+                  //   batchPayInfo?.currency.values?.length > 0
+                  // ) {
+                  //   await payGasless({
+                  //     chainId: batchPayInfo?.chainId || "",
+                  //     paymentType: "currency",
+                  //     batchPayType: batchPayInfo?.retroId ? "retro" : "card",
+                  //     userAddresses: getEthAddress(
+                  //       batchPayInfo?.currency.userIds
+                  //     ) as string[],
+                  //     amounts: batchPayInfo?.currency.values,
+                  //     tokenAddresses: [""],
+                  //     cardIds: batchPayInfo?.retroId
+                  //       ? [batchPayInfo.retroId]
+                  //       : (currencyCards as string[]),
+                  //     circleId: circle?.id || "",
+                  //   });
+                  //   setPersonalWalletLoading(false);
+                  //   return;
+                  // }
                   if (batchPayInfo?.currency.values?.length > 0) {
                     const currencyTxnHash = await toast
                       .promise(
@@ -275,7 +296,8 @@ export default function OneClickPayment() {
                             ? "retro"
                             : "card",
                           userAddresses: getEthAddress(
-                            batchPayInfo?.currency.userIds
+                            batchPayInfo?.currency.userIds,
+                            batchPayInfo.payCircle
                           ) as string[],
                           amounts: batchPayInfo?.currency.values,
                           tokenAddresses: [""],
@@ -356,28 +378,28 @@ export default function OneClickPayment() {
                       return;
                     }
                     setPersonalWalletLoading(true);
-                    if (
-                      (batchPayInfo.chainId === "137" ||
-                        batchPayInfo.chainId === "80001") &&
-                      batchPayInfo?.tokens.values?.length > 0
-                    ) {
-                      await payGasless({
-                        chainId: batchPayInfo?.chainId || "",
-                        paymentType: "tokens",
-                        batchPayType: batchPayType,
-                        userAddresses: getEthAddress(
-                          filteredBatchPayInfo.userIds
-                        ) as string[],
-                        amounts: filteredBatchPayInfo.values,
-                        tokenAddresses: filteredBatchPayInfo.tokenAddresses,
-                        cardIds: batchPayInfo?.retroId
-                          ? [batchPayInfo.retroId]
-                          : filteredBatchPayInfo.cardIds,
-                        circleId: circle?.id || "",
-                      });
-                      setPersonalWalletLoading(false);
-                      return;
-                    }
+                    // if (
+                    //   (batchPayInfo.chainId === "137" ||
+                    //     batchPayInfo.chainId === "80001") &&
+                    //   batchPayInfo?.tokens.values?.length > 0
+                    // ) {
+                    //   await payGasless({
+                    //     chainId: batchPayInfo?.chainId || "",
+                    //     paymentType: "tokens",
+                    //     batchPayType: batchPayType,
+                    //     userAddresses: getEthAddress(
+                    //       filteredBatchPayInfo.userIds
+                    //     ) as string[],
+                    //     amounts: filteredBatchPayInfo.values,
+                    //     tokenAddresses: filteredBatchPayInfo.tokenAddresses,
+                    //     cardIds: batchPayInfo?.retroId
+                    //       ? [batchPayInfo.retroId]
+                    //       : filteredBatchPayInfo.cardIds,
+                    //     circleId: circle?.id || "",
+                    //   });
+                    //   setPersonalWalletLoading(false);
+                    //   return;
+                    // }
                     const tokenTxnHash = await toast
                       .promise(
                         batchPay({
@@ -385,7 +407,8 @@ export default function OneClickPayment() {
                           paymentType: "tokens",
                           batchPayType: batchPayType,
                           userAddresses: getEthAddress(
-                            filteredBatchPayInfo.userIds
+                            filteredBatchPayInfo.userIds,
+                            batchPayInfo.payCircle
                           ) as string[],
                           amounts: filteredBatchPayInfo.values,
                           tokenAddresses: filteredBatchPayInfo.tokenAddresses,
@@ -438,7 +461,8 @@ export default function OneClickPayment() {
                             ? "retro"
                             : "card",
                           userAddresses: getEthAddress(
-                            batchPayInfo?.currency.userIds
+                            batchPayInfo?.currency.userIds,
+                            batchPayInfo.payCircle
                           ) as string[],
                           amounts: batchPayInfo?.currency.values,
                           tokenAddresses: [""],
@@ -519,7 +543,8 @@ export default function OneClickPayment() {
                             ? "retro"
                             : "card",
                           userAddresses: getEthAddress(
-                            batchPayInfo?.tokens.userIds
+                            batchPayInfo?.tokens.userIds,
+                            batchPayInfo.payCircle
                           ) as string[],
                           amounts: batchPayInfo?.tokens.values,
                           tokenAddresses: batchPayInfo?.tokens.tokenAddresses,

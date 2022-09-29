@@ -7,7 +7,7 @@ type Props = {
 
 export default function RolesModal({ handleClose }: Props) {
   return (
-    <Modal title="Roles" handleClose={handleClose}>
+    <Modal title="Roles" handleClose={handleClose} zIndex={2}>
       <Roles />
     </Modal>
   );

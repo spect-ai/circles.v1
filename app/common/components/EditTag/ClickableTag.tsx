@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Box, Text, useTheme } from "degen";
 import styled from "styled-components";
+import { smartTrim } from "../../utils/utils";
 
 type Props = {
   onClick: () => void;
@@ -43,7 +44,7 @@ export default function ClickableTag({ name, icon, onClick, tourId }: Props) {
       mode={mode}
     >
       <Box marginRight="1">{icon}</Box>
-      <Text ellipsis>{name}</Text>
+      <Text ellipsis>{smartTrim(name, 16)}</Text>
     </TagContainer>
   );
 }

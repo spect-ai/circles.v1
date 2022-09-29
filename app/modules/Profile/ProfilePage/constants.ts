@@ -2,8 +2,6 @@ export const skillsArray = [
   "Design",
   "Sales",
   "Marketing",
-  "CEO",
-  "Analyst",
   "UI/UX",
   "Frontend",
   "Backend",

@@ -40,6 +40,7 @@ export interface Payment {
 }
 
 type BatchPayInfo = {
+  payCircle: boolean;
   retroId?: string;
   approval: {
     tokenAddresses: string[];
@@ -233,6 +234,12 @@ export interface CircleType {
   labels: string[];
   guildxyzId: number;
   guildxyzToCircleRoles: GuildxyzToCircleRoles;
+  questbookWorkspaceUrl?: string;
+  questbookWorkspaceId?: string;
+  grantMilestoneProject?: string;
+  grantApplicantProject?: string;
+  paymentAddress: string;
+  grantNotificationChannel?: DiscordChannel;
 }
 
 // interface ProjectType {
@@ -287,6 +294,7 @@ export interface CardType {
   kudosClaimedBy: KudosClaimedType;
   eligibleToClaimKudos: KudosClaimedType;
   unauthorized?: boolean;
+  assignedCircle: string;
 }
 
 export interface ApplicationType {
@@ -478,6 +486,7 @@ export type Filter = {
   type: string[];
   priority: string[];
   deadline: string;
+  assignedCircle: string[];
 };
 
 export type CardsType = {
@@ -614,4 +623,9 @@ export type ExternalProvider = {
     callback: (error: any, response: any) => void
   ) => void;
   request?: (request: { method: string; params?: Array<any> }) => Promise<any>;
+};
+
+export type DiscordChannel = {
+  id: string;
+  name: string;
 };

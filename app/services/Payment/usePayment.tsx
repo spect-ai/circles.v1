@@ -91,6 +91,7 @@ export default function usePaymentGateway(
         circleId,
       });
     } else if (paymentType === "currency") {
+      console.log({ userAddresses });
       tx = await distributeEther({
         contributors: userAddresses,
         values: amounts,
@@ -116,6 +117,7 @@ export default function usePaymentGateway(
     batchPayType,
   }: BatchPayParams) {
     try {
+      console.log({ userAddresses, amounts });
       if (activeChain?.id.toString() !== chainId) {
         switchNetworkAsync && (await switchNetworkAsync(parseInt(chainId)));
       }

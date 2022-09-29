@@ -25,13 +25,14 @@ import CircleOptions from "./CircleOptions";
 import CollapseButton from "./CollapseButton";
 import ExploreSidebar from "./ExploreSidebar";
 
-export const Container = styled(Box)`
+export const Container = styled(Box)<{ subH?: string }>`
   ::-webkit-scrollbar {
     display: none;
   }
+  height: ${({ subH }) =>
+    subH ? `calc(100vh - ${subH})` : "calc(100vh - 9.1rem)"};
   -ms-overflow-style: none;
   scrollbar-width: none;
-  height: calc(100vh - 9.1rem);
   overflow-y: auto;
 `;
 
@@ -93,7 +94,54 @@ function CircleSidebar() {
             left="21rem"
           />
         </Stack>
-        <Container>
+        {circle?.toBeClaimed && (
+          <Stack>
+            <PrimaryButton
+              onClick={async () => {
+                const circleRes = await fetch(
+                  `${process.env.API_HOST}/circle/v1/${circle?.id}/claimCircle`,
+                  {
+                    method: "PATCH",
+                    headers: {
+                      "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({}),
+                    credentials: "include",
+                  }
+                );
+                console.log({ circleRes });
+                const circleData = await circleRes.json();
+
+                if (!circleData) {
+                  toast.error("Cannot claim circle");
+                  return;
+                }
+                const memberDetailsRes = await fetch(
+                  `${process.env.API_HOST}/circle/${circle?.id}/memberDetails?circleIds=${circle?.id}`,
+                  {
+                    method: "GET",
+                    headers: {
+                      "Content-Type": "application/json",
+                    },
+                    credentials: "include",
+                  }
+                );
+                console.log({ memberDetailsRes });
+
+                const memberDetailsData = await memberDetailsRes.json();
+                console.log({ circleData });
+
+                setCircleData(circleData);
+                setMemberDetailsData(memberDetailsData);
+              }}
+              variant="tertiary"
+            >
+              Claim
+            </PrimaryButton>
+          </Stack>
+        )}
+
+        <Container subH={circle?.toBeClaimed ? "12.1rem" : "9.1rem"}>
           <Stack>
             <Accordian
               name="Projects"

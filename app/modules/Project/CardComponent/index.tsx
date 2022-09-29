@@ -2,7 +2,16 @@ import { PriorityIcon } from "@/app/common/components/PriorityIcon";
 import { monthMap } from "@/app/common/utils/constants";
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
 import { CardType, MemberDetails } from "@/app/types";
-import { AvatarGroup, Box, IconEth, Stack, Tag, Text, useTheme } from "degen";
+import {
+  Avatar,
+  AvatarGroup,
+  Box,
+  IconEth,
+  Stack,
+  Tag,
+  Text,
+  useTheme,
+} from "degen";
 import { useRouter } from "next/router";
 import React, { memo, useCallback, useMemo, useState } from "react";
 import {
@@ -12,6 +21,7 @@ import {
 } from "react-beautiful-dnd";
 import { useQuery } from "react-query";
 import styled from "styled-components";
+import { useCircle } from "../../Circle/CircleContext";
 import { useLocalProject } from "../Context/LocalProjectContext";
 import QuickActions from "./QuickActions";
 
@@ -52,6 +62,16 @@ function CardComponent({ card, index }: Props) {
 
   const { getMemberAvatars, getMemberDetails } = useModalOptions();
 
+  const { circle } = useCircle();
+
+  const getCircleLogo = useCallback(
+    (circleId: string) => {
+      const ci = circle?.children.find((c) => c.id === circleId);
+      return ci?.avatar;
+    },
+    [circle?.children]
+  );
+
   const DraggableContent = (
     provided: DraggableProvided,
     snapshot: DraggableStateSnapshot
@@ -81,9 +101,17 @@ function CardComponent({ card, index }: Props) {
             <Text weight="semiBold">{card.title}</Text>
             {card.assignee.length > 0 &&
               card.assignee[0] &&
+              !card.assignedCircle &&
               getMemberDetails(card.assignee[0]) && (
                 <AvatarGroup members={getMemberAvatars(card.assignee)} hover />
               )}
+            {card.assignedCircle && (
+              <Avatar
+                src={getCircleLogo(card.assignedCircle)}
+                label=""
+                size="6"
+              />
+            )}
           </Stack>
         </Box>
         <Stack direction="horizontal" wrap space="2">
@@ -129,6 +157,7 @@ function CardComponent({ card, index }: Props) {
 
   const deadline = useMemo(() => new Date(card.deadline), [card.deadline]);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const DraggableContentCallback = useCallback(DraggableContent, [
     card.assignee,
     card.deadline,

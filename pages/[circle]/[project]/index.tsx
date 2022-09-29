@@ -23,7 +23,7 @@ const ProjectPage: NextPage = () => {
   const { data: circle, refetch: fetchCircle } = useQuery<CircleType>(
     ["circle", cId],
     () =>
-      fetch(`${process.env.API_HOST}/circle/slug/${cId as string}`).then(
+      fetch(`${process.env.API_HOST}/circle/v1/slug/${cId as string}`).then(
         (res) => res.json()
       ),
     {
