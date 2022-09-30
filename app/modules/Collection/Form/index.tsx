@@ -42,7 +42,7 @@ export function Form() {
     <Container {...provided.droppableProps} ref={provided.innerRef}>
       <Stack direction="horizontal">
         <Box display="flex" flexDirection="column">
-          <ColumnComponent fields={["1", "2", "3"]} />
+          <ColumnComponent fields={collection.propertyOrder} />
           );
         </Box>
         <Box display="flex" flexDirection="column">

@@ -1,3 +1,9 @@
+import Dropdown, {
+  OptionType as SingleSelectOptionType,
+} from "@/app/common/components/Dropdown";
+import MultiSelectDropdown, {
+  OptionType as MultiSelectOptionType,
+} from "@/app/common/components/MultiSelectDropDown/MultiSelectDropDown";
 import { PriorityIcon } from "@/app/common/components/PriorityIcon";
 import { monthMap } from "@/app/common/utils/constants";
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
@@ -7,11 +13,14 @@ import {
   AvatarGroup,
   Box,
   IconEth,
+  Input,
   Stack,
   Tag,
   Text,
+  Textarea,
   useTheme,
 } from "degen";
+import { ethers } from "ethers";
 import { useRouter } from "next/router";
 import React, { memo, useCallback, useMemo, useState } from "react";
 import {
@@ -21,6 +30,7 @@ import {
 } from "react-beautiful-dnd";
 import { useQuery } from "react-query";
 import styled from "styled-components";
+import { useLocalCollection } from "../../Context/LocalCollectionContext";
 
 type Props = {
   id: string;
@@ -39,8 +49,10 @@ const Container = styled(Box)<{ isDragging: boolean; mode: string }>`
 
 function FieldComponent({ id, index }: Props) {
   const router = useRouter();
-
+  const { localCollection: collection, setLocalCollection } =
+    useLocalCollection();
   const [hover, setHover] = useState(false);
+  const [isBioDirty, setIsBioDirty] = useState(false);
 
   const { mode } = useTheme();
 
@@ -66,9 +78,75 @@ function FieldComponent({ id, index }: Props) {
     >
       <Box>
         <Box marginTop="1" marginBottom="4">
-          <Stack direction="horizontal" space="2" justify="space-between">
-            <Text weight="semiBold">{id}</Text>
-          </Stack>
+          <Text weight="semiBold">{collection.properties[id]?.name}</Text>
+          {collection.properties[id]?.type === "shortText" && (
+            <Input
+              label=""
+              placeholder={`Enter ${collection.properties[id]?.name}`}
+              value={collection.data && collection.data[id]}
+              // onChange={(e) => setLabel(e.target.value)}
+            />
+          )}
+          {collection.properties[id]?.type === "ethAddress" && (
+            <Input
+              label=""
+              placeholder={`Enter ${collection.properties[id]?.name}`}
+              value={collection.data && collection.data[id]}
+              // onChange={(e) => setLabel(e.target.value)}
+              error={
+                collection.data &&
+                !ethers.utils.isAddress(collection.data && collection.data[id])
+              }
+            />
+          )}
+          {collection.properties[id]?.type === "longText" && (
+            <Box marginTop="4">
+              <Textarea
+                label
+                hideLabel
+                maxLength={100}
+                rows={3}
+                placeholder={`Enter ${collection.properties[id]?.name}`}
+                value={collection.data && collection.data[id]}
+                onChange={(e) => {
+                  //  setBio(e.target.value);
+                  setIsBioDirty(true);
+                }}
+              />
+            </Box>
+          )}
+          {collection.properties[id]?.type === "singleSelect" && (
+            <Box marginTop="4">
+              <Dropdown
+                options={
+                  collection.properties[id]?.options as SingleSelectOptionType[]
+                }
+                selected={collection.data && collection.data[id]}
+                onChange={(value) => {
+                  // setselectedSafe(value);
+                }}
+              />
+            </Box>
+          )}
+          {collection.properties[id]?.type === "multiSelect" && (
+            <Box marginTop="4">
+              <MultiSelectDropdown
+                options={
+                  collection.properties[id]?.options?.map(
+                    (a: { value: any; label: any }) => {
+                      return {
+                        id: a.value,
+                        name: a.label,
+                      };
+                    }
+                  ) as MultiSelectOptionType[]
+                }
+                value={collection.data && collection.data[id]}
+                setValue={() => {}}
+                width={""}
+              />
+            </Box>
+          )}
         </Box>
       </Box>
     </Container>

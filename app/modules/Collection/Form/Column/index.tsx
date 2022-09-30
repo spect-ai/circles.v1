@@ -17,6 +17,10 @@ const Container = styled(Box)`
   -ms-overflow-style: none;
   scrollbar-width: none;
   overflow-y: none;
+  width: 36rem;
+  margin-top: 4rem;
+  border-width: 0.2rem;
+  padding: 2rem;
 `;
 
 const ScrollContainer = styled(Box)`
@@ -26,6 +30,36 @@ const ScrollContainer = styled(Box)`
   height: calc(100vh - 6rem);
   border-radius: 0.5rem;
   overflow-y: auto;
+`;
+
+const NameInput = styled.input`
+  width: 100%;
+  background: transparent;
+  border: 0;
+  border-style: none;
+  border-color: transparent;
+  outline: none;
+  outline-offset: 0;
+  box-shadow: none;
+  font-size: 1.8rem;
+  caret-color: rgb(191, 90, 242);
+  color: rgb(191, 90, 242);
+  font-weight: 600;
+`;
+
+const DescriptionInput = styled.input`
+  width: 100%;
+  background: transparent;
+  border: 0;
+  border-style: none;
+  border-color: transparent;
+  outline: none;
+  outline-offset: 0;
+  box-shadow: none;
+  font-size: 1.2rem;
+  caret-color: rgb(255, 255, 255, 0.5);
+  color: rgb(255, 255, 255, 0.5);
+  font-weight: 600;
 `;
 
 type Props = {
@@ -56,13 +90,35 @@ function ColumnComponent({ fields }: Props) {
   const FieldDraggableCallback = useCallback(FieldDraggable, [fields]);
 
   return (
-    <>
+    <ScrollContainer>
       <Container>
+        <Box width="full" height="16" marginBottom="8">
+          <Stack direction="vertical">
+            <NameInput
+              placeholder="Enter title"
+              autoFocus
+              value={collection.name}
+              onChange={(e) => {
+                setIsDirty(true);
+                //setTitle(e.target.value);
+              }}
+            />
+            <DescriptionInput
+              placeholder="Enter description"
+              autoFocus
+              value={collection.description}
+              onChange={(e) => {
+                setIsDirty(true);
+                //setTitle(e.target.value);
+              }}
+            />
+          </Stack>
+        </Box>
         <Droppable droppableId="activeFields" type="field">
           {FieldDraggableCallback}
         </Droppable>
       </Container>
-    </>
+    </ScrollContainer>
   );
 }
 
