@@ -11,12 +11,13 @@ import styled from "styled-components";
 import { SkeletonLoader } from "../../Explore/SkeletonLoader";
 import useDragCollectionProperty from "../../Project/Hooks/useDragCollectionProperty";
 import { useLocalCollection } from "../Context/LocalCollectionContext";
+import ColumnComponent from "./Column";
+import InactiveFieldsColumnComponent from "./InactiveFieldsColumn";
 
 const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  height: calc(100vh - 7rem);
   @media only screen and (min-width: 0px) {
     max-width: calc(100vw - 5rem);
     padding: 0 0.1rem;
@@ -25,9 +26,9 @@ const Container = styled.div`
     max-width: calc(100vw - 4rem);
     padding: 0 0.5rem;
   }
-  overflow-x: auto;
   overflow-y: hidden;
 `;
+
 export function Form() {
   const { handleDragCollectionProperty } = useDragCollectionProperty();
   const {
@@ -39,43 +40,16 @@ export function Form() {
 
   const DroppableContent = (provided: DroppableProvided) => (
     <Container {...provided.droppableProps} ref={provided.innerRef}>
-      <Box display="flex" flexDirection="column">
-        {collection?.propertyOrder?.map((propertyId, index): any => {
-          return (
-            <Box
-              display="flex"
-              flexDirection="column"
-              margin="8"
-              alignItems="flex-start"
-              key={propertyId}
-            >
-              <Box marginBottom="4">
-                <Text>{propertyId}</Text>
-              </Box>
-            </Box>
+      <Stack direction="horizontal">
+        <Box display="flex" flexDirection="column">
+          <ColumnComponent fields={["1", "2", "3"]} />
           );
-        })}
-
-        {collection?.id && (
-          <Box style={{ width: "20rem" }} marginTop="2">
-            <PrimaryButton
-              variant="tertiary"
-              icon={<IconPlusSmall />}
-              onClick={async () => {
-                // const updatedProject = await addColumn(collection.id);
-                // if (!updatedProject) {
-                //   toast.error("Error adding column", {
-                //     theme: "dark",
-                //   });
-                // }
-                // setLocalCollection(updatedProject);
-              }}
-            >
-              Add new field
-            </PrimaryButton>
-          </Box>
-        )}
-      </Box>
+        </Box>
+        <Box display="flex" flexDirection="column">
+          <InactiveFieldsColumnComponent fields={["a", "b", "c"]} />
+          );
+        </Box>
+      </Stack>
     </Container>
   );
 
@@ -94,25 +68,9 @@ export function Form() {
       <Box width="288">
         <DragDropContext onDragEnd={handleDragCollectionProperty}>
           <Droppable
-            droppableId="all-columns"
+            droppableId="all-fields"
             direction="horizontal"
-            type="column"
-          >
-            {DroppableContentCallback}
-          </Droppable>
-        </DragDropContext>
-      </Box>
-      <Box
-        width="128"
-        borderWidth="0.5"
-        borderRadius="medium"
-        borderColor="accentSecondary"
-      >
-        <DragDropContext onDragEnd={handleDragCollectionProperty}>
-          <Droppable
-            droppableId="all-columns"
-            direction="horizontal"
-            type="column"
+            type="fields"
           >
             {DroppableContentCallback}
           </Droppable>
