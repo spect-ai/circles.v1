@@ -14,7 +14,17 @@ const Template: Story<BreadcrumbsProps> = (args) => <Breadcrumbs {...args} />;
 export const Default = Template.bind({});
 Default.args = {
   crumbs: [
-    { name: "Home", href: "/" },
+    {
+      name: "Home",
+      href: "/",
+      children: [
+        { name: "Home", href: "/" },
+        { name: "About", href: "/" },
+        { name: "Trees", href: "/" },
+        { name: "Circle dew", href: "/" },
+        { name: "Anite", href: "/" },
+      ],
+    },
     { name: "Project", href: "/project" },
   ],
 };

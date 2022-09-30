@@ -20,6 +20,7 @@ import CreateProjectModal from "./CreateProjectModal";
 import CreateSpaceModal from "./CreateSpaceModal";
 import InviteMemberModal from "./ContributorsModal/InviteMembersModal";
 import { joinCircle } from "@/app/services/JoinCircle";
+import Breadcrumbs from "@/app/common/components/Breadcrumbs";
 
 interface Props {
   toggle: string;
@@ -98,6 +99,7 @@ export default function CircleOverview() {
     retro,
     setCircleData,
     fetchMemberDetails,
+    navigationBreadcrumbs,
   } = useCircle();
   const { canDo } = useRoleGate();
   const [isRetroOpen, setIsRetroOpen] = useState(false);
@@ -205,7 +207,7 @@ export default function CircleOverview() {
           >
             <Toggle toggle={toggle} setToggle={setToggle} />
             {toggle == "Overview" && (
-              <>
+              <Stack space="2">
                 <Box
                   style={{
                     display: "flex",
@@ -254,6 +256,9 @@ export default function CircleOverview() {
                     </Box>
                   )}
                 </Box>
+                {navigationBreadcrumbs && (
+                  <Breadcrumbs crumbs={navigationBreadcrumbs} />
+                )}
                 <BoxContainer>
                   <Stack direction="horizontal">
                     <Text size="headingTwo" weight="semiBold" ellipsis>
@@ -391,7 +396,7 @@ export default function CircleOverview() {
                     </Row>
                   </Container>
                 </BoxContainer>
-              </>
+              </Stack>
             )}
             {toggle == "Members" && <CircleMembers />}
           </Box>

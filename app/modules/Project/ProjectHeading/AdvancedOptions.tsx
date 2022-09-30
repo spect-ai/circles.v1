@@ -9,6 +9,8 @@ import Filter from "../Filter";
 import { useGlobal } from "@/app/context/globalContext";
 import CardComponent from "@/app/modules/Project/CardComponent/index";
 import { Droppable, DroppableProvided } from "react-beautiful-dnd";
+import Breadcrumbs from "@/app/common/components/Breadcrumbs";
+import { useCircle } from "../../Circle/CircleContext";
 
 type ColumnProps = {
   cards: CardType[];
@@ -71,7 +73,6 @@ const ScrollContainer = styled(Box)`
 `;
 
 export function AssigneeColumn({ cards, column }: ColumnProps) {
-  
   const CardDraggable = (provided: DroppableProvided) => (
     <ScrollContainer {...provided.droppableProps} ref={provided.innerRef}>
       <Box>
@@ -204,188 +205,125 @@ export function sortBy(
 
 function AdvancedOptions() {
   const { advFilters, setAdvFilters } = useLocalProject();
-  const { view, viewName } = useGlobal();
+  const { view } = useGlobal();
   const [sortIsOpen, setSortIsOpen] = useState(false);
   const [groupByIsOpen, setGroupByIsOpen] = useState(false);
   const { mode } = useTheme();
 
+  const { navigationBreadcrumbs } = useCircle();
+
   return (
-    <BoundingBox
-      width="full"
-      height="10"
-      display="flex"
-      flexDirection="row"
-      justifyContent="space-between"
-      alignItems="center"
-      mode={mode}
-    >
-      <Box
+    <Box display="flex" flexDirection="column" width="full">
+      <BoundingBox
+        width="full"
+        height="10"
         display="flex"
         flexDirection="row"
+        justifyContent="space-between"
         alignItems="center"
-        paddingLeft="3"
+        mode={mode}
       >
-        <IconSearch size="4" color="foreground" />
-        <Input
-          placeholder="Search Card"
-          value={advFilters.inputTitle}
-          onChange={(e) => {
-            setAdvFilters({
-              ...advFilters,
-              inputTitle: e.target.value,
-            });
-          }}
-        />
-        {advFilters.inputTitle.length > 0 && (
-          <Box
-            onClick={() =>
+        <Box
+          display="flex"
+          flexDirection="row"
+          alignItems="center"
+          paddingLeft="3"
+        >
+          <IconSearch size="4" color="foreground" />
+          <Input
+            placeholder="Search Card"
+            value={advFilters.inputTitle}
+            onChange={(e) => {
               setAdvFilters({
                 ...advFilters,
-                inputTitle: "",
-              })
-            }
-            style={{
-              cursor: "pointer",
+                inputTitle: e.target.value,
+              });
             }}
-          >
-            <Tag size="medium" hover>
-              Clear
-            </Tag>
-          </Box>
-        )}
-      </Box>
+          />
+          {advFilters.inputTitle.length > 0 && (
+            <Box
+              onClick={() =>
+                setAdvFilters({
+                  ...advFilters,
+                  inputTitle: "",
+                })
+              }
+              style={{
+                cursor: "pointer",
+              }}
+            >
+              <Tag size="medium" hover>
+                Clear
+              </Tag>
+            </Box>
+          )}
+        </Box>
 
-      <Box
-        display="flex"
-        flexDirection="row"
-        width={
-          advFilters.sortBy == "none"
-            ? view === 2 || view === 3
-              ? "64"
-              : "112"
-            : view === 2 || view === 3
-            ? "76"
-            : "128"
-        }
-        gap={view === 2 ? "4" : "10"}
-        alignItems="center"
-        justifyContent="flex-start"
-      >
-        <Filter />
-        <Popover
-          butttonComponent={
-            <Box display="flex" flexDirection="row" gap="2">
-              <Box
-                data-tour="sortby-options-button"
-                cursor="pointer"
-                onClick={() => setSortIsOpen(!sortIsOpen)}
-                color="foreground"
-                display="flex"
-                flexDirection="row"
-                gap="3"
-              >
-                <Text whiteSpace="nowrap">Sort By</Text>
-                <Tag size="medium" hover>
-                  {advFilters.sortBy}
-                </Tag>
-              </Box>
-              {advFilters.sortBy !== "none" && (
+        <Box
+          display="flex"
+          flexDirection="row"
+          width={
+            advFilters.sortBy == "none"
+              ? view === 2 || view === 3
+                ? "64"
+                : "112"
+              : view === 2 || view === 3
+              ? "76"
+              : "128"
+          }
+          gap={view === 2 ? "4" : "10"}
+          alignItems="center"
+          justifyContent="flex-start"
+        >
+          <Filter />
+          <Popover
+            butttonComponent={
+              <Box display="flex" flexDirection="row" gap="2">
                 <Box
-                  data-tour="order-options-button"
+                  data-tour="sortby-options-button"
                   cursor="pointer"
-                  onClick={() => {
-                    if (advFilters.order == "asc") {
-                      setAdvFilters({
-                        ...advFilters,
-                        order: "des",
-                      });
-                    } else {
-                      setAdvFilters({
-                        ...advFilters,
-                        order: "asc",
-                      });
-                    }
-                  }}
+                  onClick={() => setSortIsOpen(!sortIsOpen)}
                   color="foreground"
                   display="flex"
                   flexDirection="row"
                   gap="3"
                 >
-                  <Tag size="medium" hover tone="accent">
-                    {advFilters.order}
+                  <Text whiteSpace="nowrap">Sort By</Text>
+                  <Tag size="medium" hover>
+                    {advFilters.sortBy}
                   </Tag>
                 </Box>
-              )}
-            </Box>
-          }
-          isOpen={sortIsOpen}
-          setIsOpen={setSortIsOpen}
-        >
-          <Box
-            backgroundColor="background"
-            borderWidth="0.5"
-            borderRadius="2xLarge"
-            width="36"
-          >
-            <PopoverOption
-              tourId="sortby-none-button"
-              onClick={() => {
-                setSortIsOpen(false);
-                setAdvFilters({
-                  ...advFilters,
-                  sortBy: "none",
-                });
-              }}
-            >
-              None (default)
-            </PopoverOption>
-            <PopoverOption
-              tourId="sortby-priority-button"
-              onClick={() => {
-                setSortIsOpen(false);
-                setAdvFilters({
-                  ...advFilters,
-                  sortBy: "Priority",
-                });
-              }}
-            >
-              Priority
-            </PopoverOption>
-            <PopoverOption
-              tourId="sortby-deadline-button"
-              onClick={() => {
-                setSortIsOpen(false);
-                setAdvFilters({
-                  ...advFilters,
-                  sortBy: "Deadline",
-                });
-              }}
-            >
-              Deadline
-            </PopoverOption>
-          </Box>
-        </Popover>
-
-        {(view == 0 || view == 1) && (
-          <Popover
-            butttonComponent={
-              <Box
-                data-tour="group-options-button"
-                cursor="pointer"
-                onClick={() => setGroupByIsOpen(!sortIsOpen)}
-                color="foreground"
-                display="flex"
-                flexDirection="row"
-                gap="3"
-              >
-                <Text whiteSpace="nowrap">Group By</Text>
-                <Tag size="medium" hover>
-                  {advFilters.groupBy}
-                </Tag>
+                {advFilters.sortBy !== "none" && (
+                  <Box
+                    data-tour="order-options-button"
+                    cursor="pointer"
+                    onClick={() => {
+                      if (advFilters.order == "asc") {
+                        setAdvFilters({
+                          ...advFilters,
+                          order: "des",
+                        });
+                      } else {
+                        setAdvFilters({
+                          ...advFilters,
+                          order: "asc",
+                        });
+                      }
+                    }}
+                    color="foreground"
+                    display="flex"
+                    flexDirection="row"
+                    gap="3"
+                  >
+                    <Tag size="medium" hover tone="accent">
+                      {advFilters.order}
+                    </Tag>
+                  </Box>
+                )}
               </Box>
             }
-            isOpen={groupByIsOpen}
-            setIsOpen={setGroupByIsOpen}
+            isOpen={sortIsOpen}
+            setIsOpen={setSortIsOpen}
           >
             <Box
               backgroundColor="background"
@@ -394,34 +332,106 @@ function AdvancedOptions() {
               width="36"
             >
               <PopoverOption
-                tourId="default-button"
+                tourId="sortby-none-button"
                 onClick={() => {
-                  setGroupByIsOpen(false);
+                  setSortIsOpen(false);
                   setAdvFilters({
                     ...advFilters,
-                    groupBy: "Status",
+                    sortBy: "none",
                   });
                 }}
               >
-                Status (default)
+                None (default)
               </PopoverOption>
               <PopoverOption
-                tourId="groupby-assignee-button"
+                tourId="sortby-priority-button"
                 onClick={() => {
-                  setGroupByIsOpen(false);
+                  setSortIsOpen(false);
                   setAdvFilters({
                     ...advFilters,
-                    groupBy: "Assignee",
+                    sortBy: "Priority",
                   });
                 }}
               >
-                Assignee
+                Priority
+              </PopoverOption>
+              <PopoverOption
+                tourId="sortby-deadline-button"
+                onClick={() => {
+                  setSortIsOpen(false);
+                  setAdvFilters({
+                    ...advFilters,
+                    sortBy: "Deadline",
+                  });
+                }}
+              >
+                Deadline
               </PopoverOption>
             </Box>
           </Popover>
+
+          {(view == 0 || view == 1) && (
+            <Popover
+              butttonComponent={
+                <Box
+                  data-tour="group-options-button"
+                  cursor="pointer"
+                  onClick={() => setGroupByIsOpen(!sortIsOpen)}
+                  color="foreground"
+                  display="flex"
+                  flexDirection="row"
+                  gap="3"
+                >
+                  <Text whiteSpace="nowrap">Group By</Text>
+                  <Tag size="medium" hover>
+                    {advFilters.groupBy}
+                  </Tag>
+                </Box>
+              }
+              isOpen={groupByIsOpen}
+              setIsOpen={setGroupByIsOpen}
+            >
+              <Box
+                backgroundColor="background"
+                borderWidth="0.5"
+                borderRadius="2xLarge"
+                width="36"
+              >
+                <PopoverOption
+                  tourId="default-button"
+                  onClick={() => {
+                    setGroupByIsOpen(false);
+                    setAdvFilters({
+                      ...advFilters,
+                      groupBy: "Status",
+                    });
+                  }}
+                >
+                  Status (default)
+                </PopoverOption>
+                <PopoverOption
+                  tourId="groupby-assignee-button"
+                  onClick={() => {
+                    setGroupByIsOpen(false);
+                    setAdvFilters({
+                      ...advFilters,
+                      groupBy: "Assignee",
+                    });
+                  }}
+                >
+                  Assignee
+                </PopoverOption>
+              </Box>
+            </Popover>
+          )}
+        </Box>
+      </BoundingBox>
+      <Box marginLeft="2">
+        {navigationBreadcrumbs && (
+          <Breadcrumbs crumbs={navigationBreadcrumbs} />
         )}
       </Box>
-    </BoundingBox>
+    </Box>
   );
 }
 

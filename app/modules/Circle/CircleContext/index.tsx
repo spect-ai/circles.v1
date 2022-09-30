@@ -27,6 +27,10 @@ interface CircleContextType {
   setHasMintkudosCredentialsSetup: (isBatchPayOpen: boolean) => void;
   mintkudosCommunityId: string;
   setMintkudosCommunityId: (isBatchPayOpen: string) => void;
+  navigationData: any;
+  setNavigationData: (data: any) => void;
+  navigationBreadcrumbs: any;
+  setNavigationBreadcrumbs: (data: any) => void;
 }
 
 export const CircleContext = React.createContext<CircleContextType>(
@@ -43,6 +47,9 @@ export function useProviderCircleContext() {
   const [mintkudosCommunityId, setMintkudosCommunityId] = useState("");
 
   const [isBatchPayOpen, setIsBatchPayOpen] = useState(false);
+
+  const [navigationData, setNavigationData] = useState();
+  const [navigationBreadcrumbs, setNavigationBreadcrumbs] = useState();
 
   const {
     data: circle,
@@ -107,6 +114,36 @@ export function useProviderCircleContext() {
     queryClient.setQueryData(["retro", retroSlug], data);
   };
 
+  const fetchNavigation = async () => {
+    const res = await fetch(
+      `${process.env.API_HOST}/circle/v1/${circle?.id}/circleNav`,
+      {
+        credentials: "include",
+      }
+    );
+    if (res.ok) {
+      const data = await res.json();
+      setNavigationData(data);
+    } else {
+      return false;
+    }
+  };
+
+  const fetchNavigationBreadcrumbs = async () => {
+    const res = await fetch(
+      `${process.env.API_HOST}/circle/v1/${circle?.id}/circleNavBreadcrumbs`,
+      {
+        credentials: "include",
+      }
+    );
+    if (res.ok) {
+      const data = await res.json();
+      setNavigationBreadcrumbs(data);
+    } else {
+      return false;
+    }
+  };
+
   useEffect(() => {
     if (cId) {
       void fetchCircle();
@@ -114,6 +151,13 @@ export function useProviderCircleContext() {
       void fetchMemberDetails();
     }
   }, [cId]);
+
+  useEffect(() => {
+    if (circle?.id) {
+      void fetchNavigation();
+      void fetchNavigationBreadcrumbs();
+    }
+  }, [circle?.id]);
 
   return {
     page,
@@ -137,6 +181,10 @@ export function useProviderCircleContext() {
     setHasMintkudosCredentialsSetup,
     mintkudosCommunityId,
     setMintkudosCommunityId,
+    navigationData,
+    setNavigationData,
+    navigationBreadcrumbs,
+    setNavigationBreadcrumbs,
   };
 }
 
