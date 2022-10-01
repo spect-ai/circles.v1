@@ -116,7 +116,7 @@ export default function RetroModal({ handleClose }: Props) {
 
   return (
     <Modal handleClose={handleClose} title={retro.title} size="large">
-      {retro.members.includes(connectedUser) ? (
+      {retro.members?.includes(connectedUser) ? (
         <Box
           padding="8"
           style={{

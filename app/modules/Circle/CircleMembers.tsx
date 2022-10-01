@@ -54,7 +54,7 @@ function CircleMembers() {
   }
 
   return (
-    <Box marginRight="8">
+    <Box>
       <Stack align={"center"}>
         {!circle.members.includes(connectedUser) &&
           circle.discordGuildId &&

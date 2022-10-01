@@ -233,6 +233,14 @@ export interface CircleType {
   qualifiedClaimee: string[];
   unauthorized?: boolean;
   labels: string[];
+  folderOrder: string[];
+  folderDetails: {
+    [key: string]: {
+      name: string;
+      avatar: string;
+      contentIds?: string[];
+    };
+  };
   guildxyzId: number;
   guildxyzToCircleRoles: GuildxyzToCircleRoles;
   questbookWorkspaceUrl?: string;
