@@ -647,6 +647,7 @@ export type DiscordChannel = {
 export interface CollectionType {
   id: string;
   name: string;
+  description: string;
   slug: string;
   properties: { [id: string]: Property };
   propertyOrder: string[];
@@ -655,13 +656,16 @@ export interface CollectionType {
   purpose: string;
   private: boolean;
   parents: CircleType[];
+  data: MappedItem<any>;
+  indexes: MappedItem<string[]>;
+  defaultView: DefaultViewType;
   unauthorized?: boolean;
 }
 
 export type Property = {
   name: string;
   type: PropertyType;
-  value: any;
+  isPartOfFormView: boolean;
   default?: any;
   condition?: any; // Show property only when condition is met
   options?: Option[];

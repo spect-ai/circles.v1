@@ -18,8 +18,6 @@ import { ApartmentOutlined } from "@ant-design/icons";
 import Navigation from "./Navigation";
 import GanttChart from "./GanttChart";
 import TableView from "./TableView";
-import { useCircle } from "../Circle/CircleContext";
-import { log } from "console";
 
 function Project() {
   const [graphOpen, setGraphOpen] = useState(false);

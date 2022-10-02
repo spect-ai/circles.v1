@@ -98,9 +98,15 @@ export default function useRoleGate() {
     if (!connectedUser) {
       return false;
     }
-    // if (circle?.memberRoles[connectedUser]?.includes("steward")) {
-    //   return true;
-    // }
+    const userRoles = circle?.memberRoles[connectedUser];
+    if (userRoles) {
+      for (const role of userRoles) {
+        if (circle.roles[role].permissions.manageCardProperties) {
+          return true;
+        }
+      }
+    }
+
     return (
       projectCard?.creator === connectedUser ||
       projectCard.reviewer.includes(connectedUser) ||

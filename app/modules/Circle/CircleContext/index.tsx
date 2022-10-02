@@ -56,7 +56,6 @@ export function useProviderCircleContext() {
       fetch(`${process.env.API_HOST}/circle/v1/slug/${cId as string}`, {
         credentials: "include",
       }).then((res) => {
-        if (res.status === 403) return { unauthorized: true };
         return res.json();
       }),
     {

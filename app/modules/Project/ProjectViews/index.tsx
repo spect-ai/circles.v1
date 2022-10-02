@@ -3,18 +3,12 @@ import React, { useState, useEffect } from "react";
 import { useLocalProject } from "../Context/LocalProjectContext";
 import { useGlobal } from "@/app/context/globalContext";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
-import {
-  Box,
-  Button,
-  IconDotsVertical,
-  Text,
-  useTheme,
-} from "degen";
+import { Box, Button, IconDotsVertical, Text, useTheme } from "degen";
 import {
   AlignLeftOutlined,
   BarsOutlined,
   AppstoreOutlined,
-  TableOutlined
+  TableOutlined,
 } from "@ant-design/icons";
 import Link from "next/link";
 import CreateViewModal from "./ViewModal/CreateViewModal";
@@ -68,10 +62,18 @@ export const ViewBar = () => {
             <Link href={`/${cId}/${pId}?view=${view_Id}`} key={view_Id}>
               <Button
                 prefix={
-                  (view?.type == "Board" && <AppstoreOutlined style={{ fontSize: "1.1rem" }} />) ||
-                  (view?.type == "List" && <BarsOutlined style={{ fontSize: "1.1rem" }} />) ||
-                  (view?.type == "Gantt" && <AlignLeftOutlined style={{ fontSize: "1.1rem" }} />) ||
-                  (view?.type == "Table" && <TableOutlined style={{ fontSize: "1.1rem" }} />)
+                  (view?.type == "Board" && (
+                    <AppstoreOutlined style={{ fontSize: "1.1rem" }} />
+                  )) ||
+                  (view?.type == "List" && (
+                    <BarsOutlined style={{ fontSize: "1.1rem" }} />
+                  )) ||
+                  (view?.type == "Gantt" && (
+                    <AlignLeftOutlined style={{ fontSize: "1.1rem" }} />
+                  )) ||
+                  (view?.type == "Table" && (
+                    <TableOutlined style={{ fontSize: "1.1rem" }} />
+                  ))
                 }
                 variant={view_Id == viewName ? "tertiary" : "transparent"}
                 size="small"

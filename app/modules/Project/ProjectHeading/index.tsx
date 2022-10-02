@@ -13,7 +13,7 @@ import {
   AlignLeftOutlined,
   BarsOutlined,
   AppstoreOutlined,
-  TableOutlined
+  TableOutlined,
 } from "@ant-design/icons";
 
 export const IconButton = styled(Box)`
@@ -35,6 +35,8 @@ function ProjectHeading() {
     if (viewName.length > 0) setViewName("");
     if (vId) void router.push(`/${cId}/${pId}/`);
   };
+
+  console.log(project);
 
   return (
     <Box
