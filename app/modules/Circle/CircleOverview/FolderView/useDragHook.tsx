@@ -1,8 +1,8 @@
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
-import { CircleType } from "@/app/types";
 import { DropResult } from "react-beautiful-dnd";
 import { toast } from "react-toastify";
 import { useCircle } from "../../CircleContext";
+import { updateFolderDetails, updateFolder } from "@/app/services/Folders";
 
 export default function useDragFolder() {
   const { localCircle: circle, setCircleData, setLocalCircle } = useCircle();
@@ -69,8 +69,18 @@ export default function useDragFolder() {
     const start = circle.folderDetails[source.droppableId];
     const finish = circle.folderDetails[destination.droppableId];
 
-    if (start === finish) {
-      const newList = reorder(start.contentIds, source.index, destination.index);
+    if (
+      source.droppableId === "unclassified" &&
+      destination.droppableId === "unclassified"
+    )
+      return;
+
+    if (start === finish && source.droppableId !== "unclassified") {
+      const newList = reorder(
+        start.contentIds,
+        source.index,
+        destination.index
+      );
 
       setLocalCircle({
         ...circle,
@@ -83,51 +93,104 @@ export default function useDragFolder() {
         },
       });
 
+      async () => {
+        const res = await updateFolder(
+          { contentIds: newList },
+          circle.id,
+          source.droppableId
+        );
+        console.log({ res });
+        if (res.id) {
+          setCircleData(res);
+        }
+      };
+      return;
     } else {
-      const startContentIds = Array.from(start.contentIds); // copy
+      const startContentIds = Array.from(start.contentIds);
       startContentIds.splice(source.index, 1);
       const newStart = {
         ...start,
         contentIds: startContentIds,
       };
 
-      const finishContentIds = Array.from(finish.contentIds); // copy
+      const finishContentIds = Array.from(finish.contentIds);
       finishContentIds.splice(destination.index, 0, draggableId);
       const newFinish = {
         ...finish,
         contentIds: finishContentIds,
       };
 
-      setLocalCircle({
-        ...circle,
-        folderDetails: {
-          ...circle.folderDetails,
-          [newStart.id]: newStart,
-          [newFinish.id]: newFinish,
-        },
-      });
-    }
-    fetch(`${process.env.API_HOST}/circle/v1/${circle?.id}/updateFolder`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        columnId: destination.droppableId,
-        cardIndex: destination.index,
-      }),
-      credentials: "include",
-    })
-      .then(async (res) => {
-        const data: CircleType = await res.json();
-        console.log({ data });
-        if (data.id) {
-          setCircleData(data);
+      if (
+        source.droppableId !== "unclassified" &&
+        destination.droppableId !== "unclassified"
+      ) {
+        setLocalCircle({
+          ...circle,
+          folderDetails: {
+            ...circle.folderDetails,
+            [newStart.id]: newStart,
+            [newFinish.id]: newFinish,
+          },
+        });
+
+        async () => {
+          const res = await updateFolderDetails(circle.id, {
+            folderDetails: [
+              { id: newStart.id, contentIds: startContentIds },
+              { id: newFinish.id, contentIds: finishContentIds },
+            ],
+          });
+          console.log({ res });
+          if (res.id) {
+            setCircleData(res);
+          }
+        };
+        return;
+      } else {
+        if (destination.droppableId === "unclassified") {
+          setLocalCircle({
+            ...circle,
+            folderDetails: {
+              ...circle.folderDetails,
+              [newStart.id]: newStart,
+            },
+          });
+          async () => {
+            const res = await updateFolder(
+              { contentIds: startContentIds },
+              circle.id,
+              source.droppableId
+            );
+            console.log({ res });
+            if (res.id) {
+              setCircleData(res);
+            }
+          };
+          return;
         }
-      })
-      .catch((err) => {
-        console.log({ err });
-      });
+        if (source.droppableId === "unclassified") {
+          setLocalCircle({
+            ...circle,
+            folderDetails: {
+              ...circle.folderDetails,
+              [newFinish.id]: newFinish,
+            },
+          });
+          async () => {
+            const res = await updateFolder(
+              { contentIds: finishContentIds },
+              circle.id,
+              destination.droppableId
+            );
+            console.log({ res });
+            if (res.id) {
+              setCircleData(res);
+            }
+          };
+          return;
+        }
+      }
+    }
   };
 
   return {

@@ -36,14 +36,15 @@ interface Props {
 const ScrollContainer = styled(Box)``;
 
 const Folder = ({ content, avatar, id, name, index, projects }: Props) => {
-  
   const CardDraggable = (provided: DroppableProvided) => (
     <ScrollContainer {...provided.droppableProps} ref={provided.innerRef}>
       <Text>{name}</Text>
       <Box>
         {content?.map((card, i) => {
           if (projects?.[card] && card) {
-            return <Card card={card} index={i} key={card} projects={projects} />;
+            return (
+              <Card card={card} index={i} key={card} projects={projects} />
+            );
           }
         })}
         {provided.placeholder}
@@ -75,7 +76,7 @@ const Folder = ({ content, avatar, id, name, index, projects }: Props) => {
     <Draggable
       draggableId={id}
       index={index}
-      // isDragDisabled={space.roles[user?.id as string] !== 3}
+      isDragDisabled={id == "unclassified"}
     >
       {DraggableContentCallback}
     </Draggable>
