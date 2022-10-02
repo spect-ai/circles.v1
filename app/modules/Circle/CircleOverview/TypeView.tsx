@@ -20,9 +20,13 @@ import CreateProjectModal from "../CreateProjectModal";
 import CreateSpaceModal from "../CreateSpaceModal";
 
 interface Props {
-  filteredProjects: ProjectType[] | undefined;
+  filteredProjects: {
+    [key: string]: ProjectType;
+  };
   filteredRetro: RetroType[] | undefined;
-  filteredWorkstreams: CircleType[] | undefined;
+  filteredWorkstreams: {
+    [key: string]: CircleType;
+  };
   filteredCollections: CollectionType[] | undefined;
   setIsRetroOpen: (isRetroOpen: boolean) => void;
 }
@@ -68,7 +72,7 @@ export const TypeView = ({
         }}
       >
         <Row>
-          {filteredProjects?.map((project) => (
+          {filteredProjects && Object.values(filteredProjects)?.map((project) => (
             <Col sm={6} md={4} lg={2} key={project.id}>
               <Card
                 onClick={() =>
@@ -84,7 +88,7 @@ export const TypeView = ({
               </Card>
             </Col>
           ))}
-          {!filteredProjects?.length && (
+          {filteredProjects && Object.values(filteredProjects)?.length < 0 && (
             <Box margin="4">
               <Text variant="label">No Projects created yet</Text>
             </Box>
@@ -105,7 +109,7 @@ export const TypeView = ({
         }}
       >
         <Row>
-          {filteredWorkstreams?.map((space) => (
+          {filteredWorkstreams && Object.values(filteredWorkstreams)?.map((space) => (
             <Col sm={6} md={4} lg={2} key={space.id}>
               <Card
                 onClick={() =>
@@ -121,7 +125,7 @@ export const TypeView = ({
               </Card>
             </Col>
           ))}
-          {!filteredWorkstreams?.length && (
+          {filteredWorkstreams && !Object.values(filteredWorkstreams)?.length && (
             <Box margin="4">
               <Text variant="label">No Workstreams created yet</Text>
             </Box>

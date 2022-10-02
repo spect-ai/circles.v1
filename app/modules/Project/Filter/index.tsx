@@ -57,7 +57,7 @@ export default function Filter() {
     id: project?.columnDetails[column].name,
   }));
 
-  const circles = circle?.children.map((c) => ({
+  const circles = circle?.children && Object.values(circle?.children).map((c) => ({
     name: c.name,
     id: c.id,
   }));

@@ -195,7 +195,9 @@ export interface CircleType {
   activity: string[];
   archived: boolean;
   avatar: string;
-  children: CircleType[];
+  children: {
+    [key: string]: CircleType;
+  };
   createdAt: string;
   defaultPayment: Payment;
   description: string;
@@ -204,7 +206,9 @@ export interface CircleType {
   name: string;
   parents: CircleType[];
   private: boolean;
-  projects: ProjectType[];
+  projects: {
+    [key: string]: ProjectType;
+  };
   collections: CollectionType[];
   slug: string;
   templates: any[];
@@ -238,7 +242,8 @@ export interface CircleType {
     [key: string]: {
       name: string;
       avatar: string;
-      contentIds?: string[];
+      contentIds: string[];
+      id: string;
     };
   };
   guildxyzId: number;

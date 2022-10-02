@@ -235,7 +235,7 @@ export default function OneClickPayment() {
   };
 
   const getCircleDetails = (circleId: string) => {
-    return circle?.children.find((child) => child.id === circleId);
+    return circle?.children && Object.values(circle?.children).find((child) => child.id === circleId);
   };
   return (
     <Box>

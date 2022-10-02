@@ -14,7 +14,21 @@ import {
   Text,
   useTheme,
 } from "degen";
+import {
+  CircleType,
+  ProjectType,
+  RetroType,
+  CollectionType,
+} from "@/app/types";
 import styled from "styled-components";
+
+interface Props {
+  card: string;
+  index: number;
+  projects: {
+    [key: string]: ProjectType;
+  };
+}
 
 const Container = styled(Box)<{ isDragging: boolean; mode: string }>`
   border-width: 2px;
@@ -31,9 +45,8 @@ const Container = styled(Box)<{ isDragging: boolean; mode: string }>`
   }
 `;
 
-const Card = ({card, index} : any) => {
+const Card = ({ card, index, projects }: Props) => {
   const { mode } = useTheme();
-
   const DraggableContent = (
     provided: DraggableProvided,
     snapshot: DraggableStateSnapshot
@@ -48,13 +61,13 @@ const Card = ({card, index} : any) => {
       isDragging={snapshot.isDragging}
       mode={mode}
     >
-      {" "}
+      <Text>{projects?.[card]?.name}</Text>
     </Container>
   );
   const DraggableContentCallback = useCallback(DraggableContent, []);
 
   return (
-    <Draggable draggableId={card.id} index={index}>
+    <Draggable draggableId={card} index={index}>
       {DraggableContentCallback}
     </Draggable>
   );

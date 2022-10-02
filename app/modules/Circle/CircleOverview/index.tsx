@@ -1,6 +1,6 @@
 import { useGlobal } from "@/app/context/globalContext";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
-import { CircleType } from "@/app/types";
+import { CircleType, ProjectType } from "@/app/types";
 import { Box, Button, Stack, Text, useTheme, Input, IconSearch } from "degen";
 import { AnimatePresence } from "framer-motion";
 import { matchSorter } from "match-sorter";
@@ -161,16 +161,20 @@ export default function CircleOverview() {
                   placeholder="Search anything .."
                   prefix={<IconSearch />}
                   onChange={(e) => {
-                    setFilteredProjects(
-                      matchSorter(circle?.projects, e.target.value, {
-                        keys: ["name"],
-                      })
-                    );
-                    setFilteredWorkstreams(
-                      matchSorter(circle?.children, e.target.value, {
-                        keys: ["name"],
-                      })
-                    );
+                    // setFilteredProjects(
+                    //   matchSorter(
+                    //     circle?.projects,
+                    //     e.target.value,
+                    //     {
+                    //       keys: ["name"],
+                    //     }
+                    //   )
+                    // );
+                    // setFilteredWorkstreams(
+                    //   matchSorter(circle?.children, e.target.value, {
+                    //     keys: ["name"],
+                    //   })
+                    // );
                     setFilteredRetro(
                       matchSorter(circle?.retro, e.target.value, {
                         keys: ["title"],
@@ -207,7 +211,15 @@ export default function CircleOverview() {
                   setIsRetroOpen={setIsRetroOpen}
                 />
               )}
-              {groupBy == "Folder" && <FolderView />}
+              {groupBy == "Folder" && (
+                <FolderView
+                  filteredCollections={filteredCollections}
+                  filteredRetro={filteredRetro}
+                  filteredProjects={filteredProjects}
+                  filteredWorkstreams={filteredWorkstreams}
+                  setIsRetroOpen={setIsRetroOpen}
+                />
+              )}
             </>
           )}
           {toggle == "Members" && <CircleMembers />}

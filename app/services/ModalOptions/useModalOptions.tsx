@@ -47,12 +47,12 @@ export default function useModalOptions() {
           value: column,
         }));
       case "project":
-        return circle?.projects.map((p) => ({
+        return circle?.projects && Object.values(circle?.projects)?.map((p) => ({
           name: p.name,
           value: p.id,
         }));
       case "circle":
-        return circle?.children.map((c) => ({
+        return circle?.children && Object.values(circle?.children).map((c) => ({
           name: c.name,
           value: c.id,
         }));

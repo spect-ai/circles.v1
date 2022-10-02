@@ -17,16 +17,33 @@ import {
 } from "degen";
 import styled from "styled-components";
 import Card from "./card";
+import {
+  CircleType,
+  ProjectType,
+  RetroType,
+  CollectionType,
+} from "@/app/types";
+
+interface Props {
+  content: string[];
+  avatar: string;
+  name: string;
+  id: string;
+  index: number;
+  projects: { [key: string]: ProjectType };
+}
 
 const ScrollContainer = styled(Box)``;
 
-const Folder = ({ content, avatar, id, name, index }: any) => {
+const Folder = ({ content, avatar, id, name, index, projects }: Props) => {
+  
   const CardDraggable = (provided: DroppableProvided) => (
     <ScrollContainer {...provided.droppableProps} ref={provided.innerRef}>
+      <Text>{name}</Text>
       <Box>
-        {content?.map(({ card, idx }: any) => {
-          if (card) {
-            return <Card card={card} index={idx} key={card.id} />;
+        {content?.map((card, i) => {
+          if (projects?.[card] && card) {
+            return <Card card={card} index={i} key={card} projects={projects} />;
           }
         })}
         {provided.placeholder}
@@ -49,7 +66,10 @@ const Folder = ({ content, avatar, id, name, index }: any) => {
       </Droppable>
     </Box>
   );
-  const DraggableContentCallback = useCallback(DraggableContent, [CardDraggableCallback, id]);
+  const DraggableContentCallback = useCallback(DraggableContent, [
+    CardDraggableCallback,
+    id,
+  ]);
 
   return (
     <Draggable

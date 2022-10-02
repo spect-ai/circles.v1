@@ -66,7 +66,7 @@ function CardComponent({ card, index }: Props) {
 
   const getCircleLogo = useCallback(
     (circleId: string) => {
-      const ci = circle?.children.find((c) => c.id === circleId);
+      const ci = circle?.children && Object.values(circle?.children).find((c) => c.id === circleId);
       return ci?.avatar;
     },
     [circle?.children]

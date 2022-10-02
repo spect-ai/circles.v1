@@ -149,7 +149,7 @@ function CircleSidebar() {
               icon={<ProjectOutlined style={{ fontSize: "1.3rem" }} />}
             >
               <Stack space="0">
-                {circle?.projects.map((proj) => (
+                {circle?.projects && Object.values(circle?.projects).map((proj) => (
                   <Stack key={proj.id} direction="horizontal" space="0">
                     {/* <Box borderRightWidth="0.5" /> */}
                     <Box width="full" padding="1">
@@ -165,7 +165,7 @@ function CircleSidebar() {
                     </Box>
                   </Stack>
                 ))}
-                {!circle?.projects.length && (
+                {circle?.projects && !Object.values(circle?.projects).length && (
                   <Box paddingLeft="7" paddingY="2">
                     <Text variant="label">No projects created</Text>
                   </Box>
@@ -174,7 +174,7 @@ function CircleSidebar() {
             </Accordian>
             <Accordian name="Workstreams" defaultOpen icon={<IconUserGroup />}>
               <Stack space="0">
-                {circle?.children.map((space) => (
+                {circle?.children && Object.values(circle?.children).map((space) => (
                   <Stack key={space.id} direction="horizontal" space="0">
                     {/* <Box borderRightWidth="0.5" /> */}
                     <Box width="full" padding="1">
@@ -186,7 +186,7 @@ function CircleSidebar() {
                     </Box>
                   </Stack>
                 ))}
-                {!circle?.children.length && (
+                {circle?.children && !Object.values(circle?.children).length && (
                   <Box paddingLeft="7" paddingY="2">
                     <Text variant="label">No workstreams created</Text>
                   </Box>
