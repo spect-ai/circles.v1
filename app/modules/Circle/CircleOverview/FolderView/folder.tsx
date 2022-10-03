@@ -13,6 +13,7 @@ import { CircleType, ProjectType, RetroType } from "@/app/types";
 import { deleteFolder, updateFolder } from "@/app/services/Folders";
 import { useCircle } from "../../CircleContext";
 import { Container, Row, Col } from "react-grid-system";
+import CreateFolderItem from "./CreateFolderItem";
 
 interface Props {
   content: string[];
@@ -155,6 +156,7 @@ const Folder = ({
             mode={mode}
             maxLength={20}
           />
+          {canDo("manageCircleSettings") && <CreateFolderItem folderId={id} />}
           {avatar !== "All" &&
             content.length == 0 &&
             canDo("manageCircleSettings") && (

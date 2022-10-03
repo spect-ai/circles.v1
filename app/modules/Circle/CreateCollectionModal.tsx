@@ -46,7 +46,7 @@ function CreateCollectionModal() {
     mutateAsync({
       name,
       private: visibilityTab === 1,
-      circleId: circle?.id as string,
+      circleId: circle?.id,
       defaultView: "form", // TODO: Change this when collections are used as general purpose primitive
     })
       .then(async (res) => {

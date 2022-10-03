@@ -147,6 +147,13 @@ export const FolderView = ({
           </Button>
         )}
       </Box>
+      {circle?.folderOrder?.length == 0 && (
+        <Box>
+          <Text variant="label">
+            Create Folders to classify and view Projects, Workstreams & Retro
+          </Text>
+        </Box>
+      )}
       {circle?.folderOrder?.map((folder, i) => {
         const folderDetail = circle?.folderDetails?.[folder];
         return (
