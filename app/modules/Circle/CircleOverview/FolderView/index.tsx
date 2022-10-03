@@ -56,9 +56,12 @@ export const FolderView = ({
 
   const { canDo } = useRoleGate();
   const createNewFolder = useCallback(async () => {
+    console.log(circle?.folderOrder?.length);
+    console.log(circle?.folderOrder);
+    console.log(circle?.folderOrder?.[0]);
     const payload = {
       name:
-        circle?.folderOrder?.length == 0
+        (circle?.folderOrder?.length === undefined || NaN || 0)
           ? "All"
           : `Folder-${circle?.folderOrder?.length + 1}`,
       avatar: circle?.folderOrder?.length == 0 ? "All" : "New Avatar",
