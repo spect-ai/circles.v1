@@ -147,7 +147,7 @@ export const FolderView = ({
           </Button>
         )}
       </Box>
-      {circle?.folderOrder?.length == 0 && (
+      {(circle?.folderOrder?.length == 0 || circle?.folderOrder?.length === undefined) && (
         <Box>
           <Text variant="label">
             Create Folders to classify and view Projects, Workstreams & Retro
