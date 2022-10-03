@@ -14,7 +14,7 @@ function CreateFolderItem({ folderId }: { folderId: string }) {
       onMouseLeave={() => setHover(false)}
     >
       <Box display={"flex"} flexDirection={"row"} alignItems="center">
-        <Button size="small" variant="transparent" shape="circle">
+        <Button size="small" variant="transparent" shape="circle" data-tour="create-proj-workstream-retro">
           <IconPlusSmall size={"5"} />
         </Button>
         {hover && (

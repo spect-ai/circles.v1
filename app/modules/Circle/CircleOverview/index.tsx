@@ -1,7 +1,17 @@
 import { useGlobal } from "@/app/context/globalContext";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
-import { CircleType, ProjectType } from "@/app/types";
-import { Box, Button, Stack, Text, useTheme, Input, IconSearch } from "degen";
+
+import {
+  Box,
+  Button,
+  Stack,
+  Text,
+  useTheme,
+  Input,
+  IconSearch,
+  IconCollection,
+  IconGrid,
+} from "degen";
 import { AnimatePresence } from "framer-motion";
 import { matchSorter } from "match-sorter";
 import { useRouter } from "next/router";
@@ -14,7 +24,6 @@ import CircleMembers from "../CircleMembers";
 import InviteMemberModal from "../ContributorsModal/InviteMembersModal";
 import { TypeView } from "./TypeView";
 import { FolderView } from "./FolderView";
-import { UngroupOutlined } from "@ant-design/icons";
 
 interface Props {
   toggle: string;
@@ -49,7 +58,7 @@ const Toggle: FunctionComponent<Props> = ({ toggle, setToggle }) => {
         borderRadius: "2rem",
         width: "13.6rem",
         margin: "0rem auto",
-        marginBottom : "0.5rem",
+        marginBottom: "0.5rem",
         boxShadow: `0px 1px 5px ${
           mode == "dark" ? "rgba(0, 0, 0, 0.3)" : "rgba(0, 0, 0, 0.1)"
         }`,
@@ -167,41 +176,60 @@ export default function CircleOverview() {
                   placeholder="Search anything .."
                   prefix={<IconSearch />}
                   onChange={(e) => {
-                    // setFilteredProjects(
-                    //   matchSorter(
-                    //     circle?.projects,
-                    //     e.target.value,
-                    //     {
-                    //       keys: ["name"],
-                    //     }
-                    //   )
-                    // );
-                    // setFilteredWorkstreams(
-                    //   matchSorter(circle?.children, e.target.value, {
+                    const proj = matchSorter(
+                      Object.values(circle?.projects),
+                      e.target.value,
+                      {
+                        keys: ["name"],
+                      }
+                    );
+                    const workstream = matchSorter(
+                      Object.values(circle?.children),
+                      e.target.value,
+                      {
+                        keys: ["name"],
+                      }
+                    );
+                    const retro = matchSorter(
+                      Object.values(circle?.retro),
+                      e.target.value,
+                      {
+                        keys: ["title"],
+                      }
+                    );
+                    setFilteredProjects(
+                      proj.reduce((rest, p) => ({ ...rest, [p.id]: p }), {})
+                    );
+                    setFilteredWorkstreams(
+                      workstream.reduce(
+                        (rest, w) => ({ ...rest, [w.id]: w }),
+                        {}
+                      )
+                    );
+                    setFilteredRetro(
+                      retro.reduce((rest, r) => ({ ...rest, [r.id]: r }), {})
+                    );
+                    // setFilteredCollections(
+                    //   matchSorter(circle?.collections, e.target.value, {
                     //     keys: ["name"],
                     //   })
                     // );
-                    // setFilteredRetro(
-                    //   matchSorter(circle?.retro, e.target.value, {
-                    //     keys: ["title"],
-                    //   })
-                    // );
-                    setFilteredCollections(
-                      matchSorter(circle?.collections, e.target.value, {
-                        keys: ["name"],
-                      })
-                    );
                   }}
                 />
-                <Box
-                  cursor="pointer"
-                  color={"accent"}
+                <Button
+                  size="small"
+                  variant="secondary"
+                  shape="circle"
                   onClick={() =>
                     setGroupBy(groupBy == "Type" ? "Folder" : "Type")
                   }
                 >
-                  <UngroupOutlined />
-                </Box>
+                  {groupBy == "Type" ? (
+                    <IconGrid size={"4"} />
+                  ) : (
+                    <IconCollection size={"4"} />
+                  )}
+                </Button>
                 {canDo("inviteMembers") && (
                   <Box width={"1/3"} marginTop="2">
                     <InviteMemberModal />

@@ -89,7 +89,7 @@ export default function Filter() {
     setColumn(currentFilter?.column);
     setPriority(currentFilter.priority);
     setType(currentFilter?.type);
-  }, [currentFilter, project.id, filterOpen]);
+  }, [currentFilter, project?.id, filterOpen]);
 
   const filterIsOn: boolean =
     currentFilter?.assignee?.length > 0 ||
