@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useMemo, useState } from "react";
+import React, { memo, useCallback, useState } from "react";
 import {
   Draggable,
   DraggableProvided,
@@ -12,6 +12,7 @@ import Card from "./card";
 import { CircleType, ProjectType, RetroType } from "@/app/types";
 import { deleteFolder, updateFolder } from "@/app/services/Folders";
 import { useCircle } from "../../CircleContext";
+import { Container, Row, Col } from "react-grid-system";
 
 interface Props {
   content: string[];
@@ -88,6 +89,7 @@ const Folder = ({
     if (updatedCircle?.id) {
       setCircleData(updatedCircle);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [folderTitle]);
 
   const CardDraggable = (provided: DroppableProvided) => (
@@ -96,19 +98,30 @@ const Folder = ({
       ref={provided.innerRef}
       mode={mode}
     >
-      {content?.map((card, i) => {
-        if (projects?.[card] && card) {
-          return <Card card={card} index={i} key={card} projects={projects} />;
-        }
-        if (workstreams?.[card] && card) {
-          return (
-            <Card card={card} index={i} key={card} workstreams={workstreams} />
-          );
-        }
-        if (retros?.[card] && card) {
-          return <Card card={card} index={i} key={card} retros={retros} />;
-        }
-      })}
+      <Container style={{ marginLeft: "0px" }}>
+        <Row>
+          {content?.map((card, i) => {
+            if (projects?.[card] && card) {
+              return (
+                <Card card={card} index={i} key={card} projects={projects} />
+              );
+            }
+            if (workstreams?.[card] && card) {
+              return (
+                <Card
+                  card={card}
+                  index={i}
+                  key={card}
+                  workstreams={workstreams}
+                />
+              );
+            }
+            if (retros?.[card] && card) {
+              return <Card card={card} index={i} key={card} retros={retros} />;
+            }
+          })}
+        </Row>
+      </Container>
       {provided.placeholder}
     </ScrollContainer>
   );

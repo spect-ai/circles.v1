@@ -11,7 +11,7 @@ interface CircleContextType {
   isLoading: boolean;
   isBatchPayOpen: boolean;
   setIsBatchPayOpen: (isBatchPayOpen: boolean) => void;
-  circle: CircleType | undefined;
+  circle: CircleType;
   memberDetails: MemberDetails | undefined;
   registry: Registry | undefined;
   retro: RetroType | undefined;
@@ -50,7 +50,7 @@ export function useProviderCircleContext() {
 
   const [isBatchPayOpen, setIsBatchPayOpen] = useState(false);
 
-  const { data: circle, refetch: fetchCircle } = useQuery<CircleType>(
+  const { data: circle, refetch: refetchCircle } = useQuery<CircleType>(
     ["circle", cId],
     () =>
       fetch(`${process.env.API_HOST}/circle/v1/slug/${cId as string}`, {
@@ -98,6 +98,16 @@ export function useProviderCircleContext() {
     setLocalCircle(data);
   };
 
+  const fetchCircle = async () => {
+    setLoading(true);
+    await refetchCircle().then((res) => {
+      if (res.data) {
+        setCircleData(res.data);
+      }
+      setLoading(false);
+    });
+  };
+
   const setMemberDetailsData = (data: MemberDetails) => {
     queryClient.setQueryData(["memberDetails", cId], data);
   };
@@ -115,26 +125,6 @@ export function useProviderCircleContext() {
       void fetchCircle();
       void fetchRegistry();
       void fetchMemberDetails();
-    }
-  }, [cId]);
-
-  useEffect(() => {
-    if (cId) {
-      setLoading(true);
-      fetchCircle()
-        .then((res) => {
-          if (res.data) {
-            setLocalCircle(res.data);
-          }
-          setLoading(false);
-        })
-        .catch((err) => {
-          console.error(err);
-          toast.error("Something went wrong", {
-            theme: "dark",
-          });
-          setLoading(false);
-        });
     }
   }, [cId]);
 

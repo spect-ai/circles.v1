@@ -48,7 +48,8 @@ const Toggle: FunctionComponent<Props> = ({ toggle, setToggle }) => {
         padding: "0.2rem",
         borderRadius: "2rem",
         width: "13.6rem",
-        margin: "1rem auto",
+        margin: "0rem auto",
+        marginBottom : "0.5rem",
         boxShadow: `0px 1px 5px ${
           mode == "dark" ? "rgba(0, 0, 0, 0.3)" : "rgba(0, 0, 0, 0.1)"
         }`,

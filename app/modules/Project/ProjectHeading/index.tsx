@@ -36,8 +36,6 @@ function ProjectHeading() {
     if (vId) void router.push(`/${cId}/${pId}/`);
   };
 
-  console.log(project);
-
   return (
     <Box
       width="full"

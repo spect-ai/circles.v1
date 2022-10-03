@@ -38,6 +38,8 @@ const Container = styled(Box)<{ isDragging: boolean; mode: string }>`
       props.mode === "dark" ? "rgb(255, 255, 255, 0.1)" : "rgb(20,20,20,0.1)"};
   }
   color: rgb(191, 90, 242, 0.5);
+  width: 30%;
+  margin-right: 1rem;
 `;
 
 const Card = ({ card, index, projects, workstreams, retros }: Props) => {
@@ -76,12 +78,20 @@ const Card = ({ card, index, projects, workstreams, retros }: Props) => {
         )}
         {workstreams?.[card].id && <IconUserGroup />}
         {retros?.[card]?.id && <IconEth />}
-        <Text>
+        <Text ellipsis variant="base" weight={"semiBold"}>
           {projects?.[card]?.name ||
             workstreams?.[card].name ||
             retros?.[card].title}
         </Text>
       </Stack>
+      <Box paddingTop={"2"}>
+      <Text color={"textSecondary"}>
+        {projects?.[card]?.description ||
+          workstreams?.[card].description ||
+          retros?.[card].description}
+      </Text>
+      </Box>
+      
     </Container>
   );
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -90,6 +100,7 @@ const Card = ({ card, index, projects, workstreams, retros }: Props) => {
     card,
     workstreams,
     retros,
+    mode,
   ]);
 
   return (

@@ -16,6 +16,7 @@ import { useCircle } from "../../CircleContext";
 import { createFolder } from "@/app/services/Folders";
 import Folder from "./folder";
 import useDragFolder from "./useDragHook";
+import styled from "styled-components";
 
 interface Props {
   filteredProjects: {
@@ -31,6 +32,16 @@ interface Props {
   setIsRetroOpen: (isRetroOpen: boolean) => void;
 }
 
+const ScrollContainer = styled(Box)`
+  overflow-y: auto;
+  ::-webkit-scrollbar {
+    display: none;
+  }
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  height: calc(100vh - 7.5rem);
+`;
+
 export const FolderView = ({
   filteredProjects,
   filteredCollections,
@@ -38,7 +49,6 @@ export const FolderView = ({
   filteredRetro,
   setIsRetroOpen,
 }: Props) => {
-
   const { handleDrag } = useDragFolder();
   const { localCircle: circle, setCircleData, setLocalCircle } = useCircle();
   const [allContentIds, setAllContentIds] = useState([] as string[]);
@@ -64,7 +74,7 @@ export const FolderView = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [circle?.folderOrder?.length, circle?.id, unclassified]);
 
-  function getFormattedData() {
+  const getFormattedData = useCallback(() => {
     let ids = [] as string[];
     circle?.folderDetails &&
       Object.values(circle?.folderDetails)?.map((folder) => {
@@ -95,7 +105,13 @@ export const FolderView = ({
       });
 
     setUnclassified(unclassifiedIds);
-  }
+  }, [
+    allContentIds,
+    circle?.folderDetails,
+    filteredProjects,
+    filteredRetro,
+    filteredWorkstreams,
+  ]);
 
   useEffect(() => {
     setAllContentIds([]);
@@ -104,7 +120,11 @@ export const FolderView = ({
   }, [circle]);
 
   const DroppableContent = (provided: DroppableProvided) => (
-    <Box {...provided.droppableProps} ref={provided.innerRef} paddingTop="4">
+    <ScrollContainer
+      {...provided.droppableProps}
+      ref={provided.innerRef}
+      paddingTop="4"
+    >
       <Box
         display={"flex"}
         flexDirection={"row"}
@@ -144,7 +164,7 @@ export const FolderView = ({
         );
       })}
       {provided.placeholder}
-    </Box>
+    </ScrollContainer>
   );
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -160,7 +180,7 @@ export const FolderView = ({
 
   return (
     <DragDropContext onDragEnd={handleDrag}>
-      <Droppable droppableId="all-folders" type="folder">
+      <Droppable droppableId="all-folders" direction="vertical" type="folder">
         {DroppableContentCallback}
       </Droppable>
     </DragDropContext>

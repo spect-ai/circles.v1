@@ -52,7 +52,7 @@ function CreateSpaceModal() {
       name,
       description,
       private: visibilityTab === 1,
-      parent: circle?.id as string,
+      parent: circle?.id,
       avatar: logo,
     })
       .then(async (res) => {
