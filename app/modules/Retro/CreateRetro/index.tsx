@@ -1,24 +1,35 @@
-import { Box, Button, IconPlusSmall, IconLightningBolt } from "degen";
+import {
+  Box,
+  Button,
+  IconPlusSmall,
+  IconLightningBolt,
+  useTheme,
+  Text,
+} from "degen";
 import { AnimatePresence } from "framer-motion";
 import React, { useState } from "react";
 import CreateRetroModal from "./CreateRetroModal";
+import { Tooltip } from "react-tippy";
 
 export default function CreateRetro({ folderId }: { folderId?: string }) {
+  const { mode } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
   return (
     <>
       {folderId ? (
-        <Button
-          size="small"
-          variant="transparent"
-          shape="circle"
-          onClick={(e) => {
-            e.stopPropagation();
-            setIsOpen(true);
-          }}
-        >
-          <IconLightningBolt size={"4"} color="accent" />
-        </Button>
+        <Tooltip html={<Text>Create Retro</Text>} theme={mode}>
+          <Button
+            size="small"
+            variant="transparent"
+            shape="circle"
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsOpen(true);
+            }}
+          >
+            <IconLightningBolt size={"4"} color="accent" />
+          </Button>
+        </Tooltip>
       ) : (
         <Box marginTop="1">
           <Button

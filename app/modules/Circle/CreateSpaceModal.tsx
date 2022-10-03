@@ -6,6 +6,8 @@ import {
   MediaPicker,
   Stack,
   IconUserGroup,
+  useTheme,
+  Text,
 } from "degen";
 import React, { useState } from "react";
 import { AnimatePresence } from "framer-motion";
@@ -18,6 +20,7 @@ import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { storeImage } from "@/app/common/utils/ipfs";
 import { useCircle } from "./CircleContext";
 import { updateFolder } from "@/app/services/Folders";
+import { Tooltip } from "react-tippy";
 
 type CreateWorkspaceDto = {
   name: string;
@@ -28,6 +31,7 @@ type CreateWorkspaceDto = {
 };
 
 function CreateSpaceModal({ folderId }: { folderId?: string }) {
+  const { mode } = useTheme();
   const [modalOpen, setModalOpen] = useState(false);
   const [visibilityTab, setVisibilityTab] = useState(0);
   const onVisibilityTabClick = (id: number) => setVisibilityTab(id);
@@ -83,7 +87,9 @@ function CreateSpaceModal({ folderId }: { folderId?: string }) {
           const folder = Object.entries(circle?.folderDetails)?.find(
             (pair) => pair[1].avatar === "All"
           );
-          const prev = Array.from(circle?.folderDetails[folder?.[0] as string]?.contentIds);
+          const prev = Array.from(
+            circle?.folderDetails[folder?.[0] as string]?.contentIds
+          );
           prev.push(resJson.id);
           const payload = {
             contentIds: prev,
@@ -110,18 +116,20 @@ function CreateSpaceModal({ folderId }: { folderId?: string }) {
     <>
       <Loader loading={isLoading} text="Creating your workstream" />
       {folderId ? (
-        <Button
-          data-tour="folder-create-workstream-button"
-          size="small"
-          variant="transparent"
-          shape="circle"
-          onClick={(e) => {
-            e.stopPropagation();
-            setModalOpen(true);
-          }}
-        >
-          <IconUserGroup size={"4"} color="accent" />
-        </Button>
+        <Tooltip html={<Text>Create Workstream</Text>} theme={mode}>
+          <Button
+            data-tour="folder-create-workstream-button"
+            size="small"
+            variant="transparent"
+            shape="circle"
+            onClick={(e) => {
+              e.stopPropagation();
+              setModalOpen(true);
+            }}
+          >
+            <IconUserGroup size={"4"} color="accent" />
+          </Button>
+        </Tooltip>
       ) : (
         <Button
           data-tour="circle-create-workstream-button"

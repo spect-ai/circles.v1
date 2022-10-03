@@ -139,19 +139,24 @@ function CreateProjectModal({ folderId }: { folderId?: string }) {
     <>
       <Loader loading={isLoading} text="Creating your project" />
       {folderId ? (
-        <Button
-          size="small"
-          variant="transparent"
-          shape="circle"
-          onClick={(e) => {
-            e.stopPropagation();
-            setModalOpen(true);
-          }}
+        <Tooltip
+          html={<Text>Create Project</Text>}
+          theme={mode}
         >
-          <ProjectOutlined
-            style={{ fontSize: "1.1rem", color: "rgb(191, 90, 242, 1)" }}
-          />
-        </Button>
+          <Button
+            size="small"
+            variant="transparent"
+            shape="circle"
+            onClick={(e) => {
+              e.stopPropagation();
+              setModalOpen(true);
+            }}
+          >
+            <ProjectOutlined
+              style={{ fontSize: "1.1rem", color: "rgb(191, 90, 242, 1)" }}
+            />
+          </Button>
+        </Tooltip>
       ) : (
         <Button
           data-tour="circle-create-project-button"
