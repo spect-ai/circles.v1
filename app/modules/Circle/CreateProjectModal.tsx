@@ -22,6 +22,8 @@ import { createProject } from "@/app/services/Project";
 import { useCircle } from "./CircleContext";
 import Dropdown from "@/app/common/components/Dropdown";
 import { toast } from "react-toastify";
+import { ProjectOutlined } from "@ant-design/icons";
+import { updateFolder } from "@/app/services/Folders";
 
 const getPlaceholder: {
   [key: string]: string;
@@ -31,7 +33,7 @@ const getPlaceholder: {
   trello: "Trello URL",
 };
 
-function CreateProjectModal() {
+function CreateProjectModal({ folderId }: { folderId?: string }) {
   const [modalOpen, setModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const close = () => setModalOpen(false);
@@ -93,7 +95,7 @@ function CreateProjectModal() {
     setIsLoading(true);
     const data = await createProject({
       name,
-      circleId: circle?.id as string,
+      circleId: circle?.id,
       description,
       fromTemplateId: template.value,
       trelloId: importId,
@@ -102,6 +104,28 @@ function CreateProjectModal() {
     if (data) {
       void router.push(`/${cId}/${data.slug}`);
       void close();
+      if (folderId) {
+        const prev = Array.from(circle?.folderDetails[folderId]?.contentIds);
+        prev.push(data.id);
+        const payload = {
+          contentIds: prev,
+        };
+        console.log(payload);
+        await updateFolder(payload, circle?.id, folderId);
+      } else if (circle?.folderOrder.length !== 0) {
+        const folder = Object.entries(circle?.folderDetails)?.find(
+          (pair) => pair[1].avatar === "All"
+        );
+        const prev = Array.from(
+          circle?.folderDetails[folder?.[0] as string]?.contentIds
+        );
+        prev.push(data.id);
+        const payload = {
+          contentIds: prev,
+        };
+        console.log(payload);
+        await updateFolder(payload, circle?.id, folder?.[0] as string);
+      }
       fetchCircle();
     }
   };
@@ -114,19 +138,34 @@ function CreateProjectModal() {
   return (
     <>
       <Loader loading={isLoading} text="Creating your project" />
-
-      <Button
-        data-tour="circle-create-project-button"
-        size="small"
-        variant="transparent"
-        shape="circle"
-        onClick={(e) => {
-          e.stopPropagation();
-          setModalOpen(true);
-        }}
-      >
-        <IconPlusSmall />
-      </Button>
+      {folderId ? (
+        <Button
+          size="small"
+          variant="transparent"
+          shape="circle"
+          onClick={(e) => {
+            e.stopPropagation();
+            setModalOpen(true);
+          }}
+        >
+          <ProjectOutlined
+            style={{ fontSize: "1.1rem", color: "rgb(191, 90, 242, 1)" }}
+          />
+        </Button>
+      ) : (
+        <Button
+          data-tour="circle-create-project-button"
+          size="small"
+          variant="transparent"
+          shape="circle"
+          onClick={(e) => {
+            e.stopPropagation();
+            setModalOpen(true);
+          }}
+        >
+          <IconPlusSmall />
+        </Button>
+      )}
       <AnimatePresence
         initial={false}
         exitBeforeEnter

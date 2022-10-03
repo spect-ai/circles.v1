@@ -8,6 +8,7 @@ import { Chain, Token } from "@/app/types";
 import MemberRow from "./MemberRow";
 import { createRetro } from "@/app/services/Retro";
 import { useCircle } from "../../Circle/CircleContext";
+import { updateFolder } from "@/app/services/Folders";
 
 type Props = {
   handleClose: () => void;
@@ -18,6 +19,7 @@ type Props = {
     token: Token;
     value: string;
   };
+  folderId: string | undefined;
 };
 
 export type MemberDetails = {
@@ -33,6 +35,7 @@ export default function RetroMembers({
   setStep,
   retroBudget,
   retroDetails,
+  folderId,
 }: Props) {
   const [loading, setLoading] = useState(false);
 
@@ -138,11 +141,39 @@ export default function RetroMembers({
                   });
                   console.log({ res });
                   setLoading(false);
+                  if (res.id) {
+                    handleClose();
+                    if (folderId) {
+                      const prev = Array.from(
+                        circle?.folderDetails[folderId]?.contentIds
+                      );
+                      prev.push(res.id);
+                      const payload = {
+                        contentIds: prev,
+                      };
+                      console.log(payload);
+                      await updateFolder(payload, circle?.id, folderId);
+                    } else if (circle?.folderOrder.length !== 0) {
+                      const folder = Object.entries(
+                        circle?.folderDetails
+                      )?.find((pair) => pair[1].avatar === "All");
+                      const prev = Array.from(
+                        circle?.folderDetails[folder?.[0] as string]?.contentIds
+                      );
+                      prev.push(res.id);
+                      const payload = {
+                        contentIds: prev,
+                      };
+                      console.log(payload);
+                      await updateFolder(
+                        payload,
+                        circle?.id,
+                        folder?.[0] as string
+                      );
+                    }
+                  }
                   void fetchCircle();
                   void router.push(`/${circle?.slug}?retroSlug=${res?.slug}`);
-                  if (res) {
-                    handleClose();
-                  }
                 }}
                 suffix={<IconCheck />}
               >

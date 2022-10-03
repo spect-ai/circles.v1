@@ -1,4 +1,12 @@
-import { Box, Button, IconPlusSmall, Input, MediaPicker, Stack } from "degen";
+import {
+  Box,
+  Button,
+  IconPlusSmall,
+  Input,
+  MediaPicker,
+  Stack,
+  IconUserGroup,
+} from "degen";
 import React, { useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
@@ -9,6 +17,7 @@ import { useMutation } from "react-query";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { storeImage } from "@/app/common/utils/ipfs";
 import { useCircle } from "./CircleContext";
+import { updateFolder } from "@/app/services/Folders";
 
 type CreateWorkspaceDto = {
   name: string;
@@ -18,7 +27,7 @@ type CreateWorkspaceDto = {
   avatar: string;
 };
 
-function CreateSpaceModal() {
+function CreateSpaceModal({ folderId }: { folderId?: string }) {
   const [modalOpen, setModalOpen] = useState(false);
   const [visibilityTab, setVisibilityTab] = useState(0);
   const onVisibilityTabClick = (id: number) => setVisibilityTab(id);
@@ -52,7 +61,7 @@ function CreateSpaceModal() {
       name,
       description,
       private: visibilityTab === 1,
-      parent: circle?.id as string,
+      parent: circle?.id,
       avatar: logo,
     })
       .then(async (res) => {
@@ -60,6 +69,28 @@ function CreateSpaceModal() {
         console.log({ resJson });
         void router.push(`/${resJson.slug}`);
         void close();
+        if (resJson.id && folderId) {
+          const prev = Array.from(circle?.folderDetails[folderId]?.contentIds);
+          prev.push(resJson.id);
+          const payload = {
+            contentIds: prev,
+          };
+          console.log(payload);
+          await updateFolder(payload, circle?.id, folderId);
+        }
+
+        if (resJson.id && !folderId && circle?.folderOrder.length !== 0) {
+          const folder = Object.entries(circle?.folderDetails)?.find(
+            (pair) => pair[1].avatar === "All"
+          );
+          const prev = Array.from(circle?.folderDetails[folder?.[0] as string]?.contentIds);
+          prev.push(resJson.id);
+          const payload = {
+            contentIds: prev,
+          };
+          console.log(payload);
+          await updateFolder(payload, circle?.id, folder?.[0] as string);
+        }
         fetchCircle();
       })
       .catch((err) => console.log({ err }));
@@ -78,19 +109,34 @@ function CreateSpaceModal() {
   return (
     <>
       <Loader loading={isLoading} text="Creating your workstream" />
+      {folderId ? (
+        <Button
+          data-tour="folder-create-workstream-button"
+          size="small"
+          variant="transparent"
+          shape="circle"
+          onClick={(e) => {
+            e.stopPropagation();
+            setModalOpen(true);
+          }}
+        >
+          <IconUserGroup size={"4"} color="accent" />
+        </Button>
+      ) : (
+        <Button
+          data-tour="circle-create-workstream-button"
+          size="small"
+          variant="transparent"
+          shape="circle"
+          onClick={(e) => {
+            e.stopPropagation();
+            setModalOpen(true);
+          }}
+        >
+          <IconPlusSmall />
+        </Button>
+      )}
 
-      <Button
-        data-tour="circle-create-workstream-button"
-        size="small"
-        variant="transparent"
-        shape="circle"
-        onClick={(e) => {
-          e.stopPropagation();
-          setModalOpen(true);
-        }}
-      >
-        <IconPlusSmall />
-      </Button>
       <AnimatePresence>
         {modalOpen && (
           <Modal handleClose={close} title="Create Workstream">

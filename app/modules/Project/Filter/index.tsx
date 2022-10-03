@@ -57,12 +57,10 @@ export default function Filter() {
     id: project?.columnDetails[column].name,
   }));
 
-  const circles =
-    circle?.children &&
-    circle?.children.map((c) => ({
-      name: c.name,
-      id: c.id,
-    }));
+  const circles = circle?.children && Object.values(circle?.children).map((c) => ({
+    name: c.name,
+    id: c.id,
+  }));
 
   const [reviewer, setReviewer] = useState<string[]>(
     currentFilter?.reviewer || []
@@ -91,7 +89,7 @@ export default function Filter() {
     setColumn(currentFilter?.column);
     setPriority(currentFilter.priority);
     setType(currentFilter?.type);
-  }, [currentFilter, project.id, filterOpen]);
+  }, [currentFilter, project?.id, filterOpen]);
 
   const filterIsOn: boolean =
     currentFilter?.assignee?.length > 0 ||

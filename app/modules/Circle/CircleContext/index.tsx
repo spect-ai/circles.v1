@@ -1,9 +1,9 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import queryClient from "@/app/common/utils/queryClient";
 import { CircleType, MemberDetails, Registry, RetroType } from "@/app/types";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { useQuery } from "react-query";
+import { toast } from "react-toastify";
 
 interface CircleContextType {
   page: "Overview" | "Retro";
@@ -11,7 +11,7 @@ interface CircleContextType {
   isLoading: boolean;
   isBatchPayOpen: boolean;
   setIsBatchPayOpen: (isBatchPayOpen: boolean) => void;
-  circle: CircleType | undefined;
+  circle: CircleType;
   memberDetails: MemberDetails | undefined;
   registry: Registry | undefined;
   retro: RetroType | undefined;
@@ -27,6 +27,10 @@ interface CircleContextType {
   setHasMintkudosCredentialsSetup: (isBatchPayOpen: boolean) => void;
   mintkudosCommunityId: string;
   setMintkudosCommunityId: (isBatchPayOpen: string) => void;
+  localCircle: CircleType;
+  setLocalCircle: (circle: CircleType) => void;
+  loading: boolean;
+  setLoading: (loading: boolean) => void;
 }
 
 export const CircleContext = React.createContext<CircleContextType>(
@@ -41,14 +45,12 @@ export function useProviderCircleContext() {
   const [hasMintkudosCredentialsSetup, setHasMintkudosCredentialsSetup] =
     useState(false);
   const [mintkudosCommunityId, setMintkudosCommunityId] = useState("");
+  const [localCircle, setLocalCircle] = useState({} as CircleType);
+  const [loading, setLoading] = useState(false);
 
   const [isBatchPayOpen, setIsBatchPayOpen] = useState(false);
 
-  const {
-    data: circle,
-    refetch: fetchCircle,
-    isLoading,
-  } = useQuery<CircleType>(
+  const { data: circle, refetch: refetchCircle } = useQuery<CircleType>(
     ["circle", cId],
     () =>
       fetch(`${process.env.API_HOST}/circle/v1/slug/${cId as string}`, {
@@ -93,6 +95,17 @@ export function useProviderCircleContext() {
 
   const setCircleData = (data: CircleType) => {
     queryClient.setQueryData(["circle", cId], data);
+    setLocalCircle(data);
+  };
+
+  const fetchCircle = async () => {
+    setLoading(true);
+    await refetchCircle().then((res) => {
+      if (res.data) {
+        setCircleData(res.data);
+      }
+      setLoading(false);
+    });
   };
 
   const setMemberDetailsData = (data: MemberDetails) => {
@@ -118,7 +131,8 @@ export function useProviderCircleContext() {
   return {
     page,
     setPage,
-    isLoading,
+    loading,
+    setLoading,
     isBatchPayOpen,
     setIsBatchPayOpen,
     circle,
@@ -137,6 +151,8 @@ export function useProviderCircleContext() {
     setHasMintkudosCredentialsSetup,
     mintkudosCommunityId,
     setMintkudosCommunityId,
+    localCircle,
+    setLocalCircle,
   };
 }
 

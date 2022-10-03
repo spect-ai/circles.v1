@@ -62,7 +62,7 @@ export default function ConnectQuestbook() {
 
   useEffect(() => {
     if (circle?.projects) {
-      const options = circle.projects.map((p) => {
+      const options = Object.values(circle?.projects).map((p) => {
         if (circle.grantApplicantProject === p.id)
           setApplicantProject({
             label: p.name,

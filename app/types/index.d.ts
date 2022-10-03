@@ -195,7 +195,9 @@ export interface CircleType {
   activity: string[];
   archived: boolean;
   avatar: string;
-  children: CircleType[];
+  children: {
+    [key: string]: CircleType;
+  };
   createdAt: string;
   defaultPayment: Payment;
   description: string;
@@ -204,7 +206,9 @@ export interface CircleType {
   name: string;
   parents: CircleType[];
   private: boolean;
-  projects: ProjectType[];
+  projects: {
+    [key: string]: ProjectType;
+  };
   collections: CollectionType[];
   slug: string;
   templates: any[];
@@ -227,12 +231,23 @@ export interface CircleType {
   discordToCircleRoles: DiscordRoleMappingType;
   githubRepos: string[];
   gradient: string;
-  retro: RetroType[];
+  retro: {
+    [key: string]: RetroType;
+  };
   safeAddresses: SafeAddresses;
   toBeClaimed: boolean;
   qualifiedClaimee: string[];
   unauthorized?: boolean;
   labels: string[];
+  folderOrder: string[];
+  folderDetails: {
+    [key: string]: {
+      name: string;
+      avatar: string;
+      contentIds: string[];
+      id: string;
+    };
+  };
   guildxyzId: number;
   guildxyzToCircleRoles: GuildxyzToCircleRoles;
   questbookWorkspaceUrl?: string;
