@@ -56,22 +56,14 @@ export const FolderView = ({
 
   const { canDo } = useRoleGate();
   const createNewFolder = useCallback(async () => {
-    console.log(circle?.folderOrder?.length);
-    console.log(circle?.folderOrder);
-    console.log(circle?.folderOrder?.[0]);
+    const fol =
+      circle?.folderOrder?.length === undefined ||
+      NaN ||
+      circle?.folderOrder?.length == 0;
     const payload = {
-      name:
-        circle?.folderOrder?.length === undefined || NaN || 0
-          ? "All"
-          : `Folder-${circle?.folderOrder?.length + 1}`,
-      avatar:
-        circle?.folderOrder?.length === undefined || NaN || 0
-          ? "All"
-          : "New Avatar",
-      contentIds:
-        circle?.folderOrder?.length === undefined || NaN || 0
-          ? unclassified
-          : ([] as string[]),
+      name: fol ? "All" : `Folder-${circle?.folderOrder?.length + 1}`,
+      avatar: fol ? "All" : "New Avatar",
+      contentIds: fol ? unclassified : ([] as string[]),
     };
     const res = await createFolder(payload, circle?.id);
     if (res) {
