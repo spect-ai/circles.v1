@@ -57,7 +57,7 @@ export default function useDragFolder() {
       })
         .then(async (res) => {
           const data = await res.json();
-          if (data.id) {
+          if (data?.id) {
             setCircleData(data);
           }
           console.log({ data });
@@ -92,17 +92,18 @@ export default function useDragFolder() {
         },
       });
 
-      async () => {
+      const update = async () => {
         const res = await updateFolder(
           { contentIds: newList },
           circle.id,
           source.droppableId
         );
         console.log({ res });
-        if (res.id) {
+        if (res?.id) {
           setCircleData(res);
         }
       };
+      void update();
       return;
     } else {
       console.log("Content shifted from folder to another folder");
@@ -128,7 +129,7 @@ export default function useDragFolder() {
         },
       });
 
-      async () => {
+      const update = async () => {
         const res = await updateFolderDetails(circle.id, {
           folderDetails: [
             { id: newStart.id, contentIds: startContentIds },
@@ -136,10 +137,11 @@ export default function useDragFolder() {
           ],
         });
         console.log({ res });
-        if (res.id) {
+        if (res?.id) {
           setCircleData(res);
         }
       };
+      void update();
       return;
     }
   };

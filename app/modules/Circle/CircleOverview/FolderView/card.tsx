@@ -23,6 +23,9 @@ interface Props {
   workstreams?: {
     [key: string]: CircleType;
   };
+  retros?: {
+    [key: string]: RetroType;
+  };
 }
 
 const Container = styled(Box)<{ isDragging: boolean; mode: string }>`
@@ -40,8 +43,7 @@ const Container = styled(Box)<{ isDragging: boolean; mode: string }>`
   }
 `;
 
-const Card = ({ card, index, projects, workstreams }: Props) => {
-  console.log('i am getting rendered')
+const Card = ({ card, index, projects, workstreams, retros }: Props) => {
   const { localCircle: circle } = useCircle();
   const { mode } = useTheme();
   const DraggableContent = (
@@ -58,7 +60,11 @@ const Card = ({ card, index, projects, workstreams }: Props) => {
       isDragging={snapshot.isDragging}
       mode={mode}
     >
-      <Text>{projects?.[card]?.name || workstreams?.[card].name}</Text>
+      <Text>
+        {projects?.[card]?.name ||
+          workstreams?.[card].name ||
+          retros?.[card].title}
+      </Text>
     </Container>
   );
   const DraggableContentCallback = useCallback(DraggableContent, [

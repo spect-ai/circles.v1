@@ -180,11 +180,11 @@ export default function CircleOverview() {
                     //     keys: ["name"],
                     //   })
                     // );
-                    setFilteredRetro(
-                      matchSorter(circle?.retro, e.target.value, {
-                        keys: ["title"],
-                      })
-                    );
+                    // setFilteredRetro(
+                    //   matchSorter(circle?.retro, e.target.value, {
+                    //     keys: ["title"],
+                    //   })
+                    // );
                     setFilteredCollections(
                       matchSorter(circle?.collections, e.target.value, {
                         keys: ["name"],

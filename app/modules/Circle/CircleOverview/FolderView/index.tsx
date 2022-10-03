@@ -23,7 +23,9 @@ interface Props {
   filteredProjects: {
     [key: string]: ProjectType;
   };
-  filteredRetro: RetroType[];
+  filteredRetro: {
+    [key: string]: RetroType;
+  };
   filteredWorkstreams: {
     [key: string]: CircleType;
   };
@@ -91,11 +93,11 @@ export const FolderView = ({
         }
       });
 
-    // filteredRetro?.map((re) => {
-    //   if (!allContentIds.includes(re.id)) {
-    //     setUnclassified([...unclassified, re.id]);
-    //   }
-    // });
+    filteredRetro && Object.values(filteredRetro)?.map((re) => {
+      if (!allContentIds.includes(re.id)) {
+        unclassifiedIds = unclassifiedIds.concat(re.id);
+      }
+    });
 
     setUnclassified(unclassifiedIds);
   }
@@ -105,8 +107,6 @@ export const FolderView = ({
     setUnclassified([]);
     getFormattedData();
   }, []);
-
-  console.log(unclassified);
 
   const DroppableContent = (provided: DroppableProvided) => (
     <Box {...provided.droppableProps} ref={provided.innerRef}>
@@ -132,6 +132,7 @@ export const FolderView = ({
             index={i}
             projects={filteredProjects}
             workstreams={filteredWorkstreams}
+            retros={filteredRetro}
           />
         );
       })}

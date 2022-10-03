@@ -35,6 +35,9 @@ interface Props {
   index: number;
   projects: { [key: string]: ProjectType };
   workstreams: { [key: string]: CircleType };
+  retros: {
+    [key: string]: RetroType;
+  };
 }
 
 const ScrollContainer = styled(Box)``;
@@ -47,8 +50,9 @@ const Folder = ({
   index,
   projects,
   workstreams,
+  retros,
 }: Props) => {
-  console.log(content);
+
   const { canDo } = useRoleGate();
   const { localCircle: circle, setCircleData, setLocalCircle } = useCircle();
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -66,9 +70,7 @@ const Folder = ({
     <ScrollContainer {...provided.droppableProps} ref={provided.innerRef}>
       <Box>
         {content?.map((card, i) => {
-          console.log(projects)
           if (projects?.[card] && card) {
-            console.log(projects)
             return (
               <Card card={card} index={i} key={card} projects={projects} />
             );
@@ -80,6 +82,16 @@ const Folder = ({
                 index={i}
                 key={card}
                 workstreams={workstreams}
+              />
+            );
+          }
+          if (retros?.[card] && card) {
+            return (
+              <Card
+                card={card}
+                index={i}
+                key={card}
+                retros={retros}
               />
             );
           }

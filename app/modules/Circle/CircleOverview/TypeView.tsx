@@ -23,7 +23,9 @@ interface Props {
   filteredProjects: {
     [key: string]: ProjectType;
   };
-  filteredRetro: RetroType[] | undefined;
+  filteredRetro: {
+    [key: string]: RetroType;
+  };
   filteredWorkstreams: {
     [key: string]: CircleType;
   };
@@ -88,7 +90,7 @@ export const TypeView = ({
               </Card>
             </Col>
           ))}
-          {filteredProjects && Object.values(filteredProjects)?.length < 0 && (
+          {filteredProjects && Object.values(filteredProjects)?.length == 0 && (
             <Box margin="4">
               <Text variant="label">No Projects created yet</Text>
             </Box>
@@ -198,7 +200,7 @@ export const TypeView = ({
         }}
       >
         <Row>
-          {filteredRetro?.map((retro) => (
+          {filteredRetro && Object.values(filteredRetro)?.map((retro) => (
             <Col sm={6} md={4} lg={2} key={retro.id}>
               <Card
                 height="32"
@@ -214,7 +216,7 @@ export const TypeView = ({
               </Card>
             </Col>
           ))}
-          {!filteredRetro?.length && (
+          {filteredRetro && !Object.values(filteredRetro)?.length && (
             <Box marginLeft="4">
               <Text variant="label">No Retros created yet</Text>
             </Box>

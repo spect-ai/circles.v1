@@ -231,7 +231,9 @@ export interface CircleType {
   discordToCircleRoles: DiscordRoleMappingType;
   githubRepos: string[];
   gradient: string;
-  retro: RetroType[];
+  retro: {
+    [key: string]: RetroType;
+  };
   safeAddresses: SafeAddresses;
   toBeClaimed: boolean;
   qualifiedClaimee: string[];
