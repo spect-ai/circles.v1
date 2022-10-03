@@ -1,10 +1,10 @@
-import React, { memo, useCallback, useMemo, useState } from "react";
+import React, { memo, useCallback } from "react";
 import {
   Draggable,
   DraggableProvided,
   DraggableStateSnapshot,
 } from "react-beautiful-dnd";
-import { Box, Text, useTheme, Stack, IconUserGroup, IconEth } from "degen";
+import { Box, Text, useTheme, Stack, IconUserGroup, IconLightningBolt } from "degen";
 import { CircleType, ProjectType, RetroType } from "@/app/types";
 import styled from "styled-components";
 import { ProjectOutlined } from "@ant-design/icons";
@@ -37,7 +37,7 @@ const Container = styled(Box)<{ isDragging: boolean; mode: string }>`
     border-color: ${(props) =>
       props.mode === "dark" ? "rgb(255, 255, 255, 0.1)" : "rgb(20,20,20,0.1)"};
   }
-  color: rgb(191, 90, 242, 0.5);
+  color: rgb(191, 90, 242, 0.7);
   width: 30%;
   margin-right: 1rem;
 `;
@@ -76,8 +76,8 @@ const Card = ({ card, index, projects, workstreams, retros }: Props) => {
         {projects?.[card]?.id && (
           <ProjectOutlined style={{ fontSize: "1.1rem" }} />
         )}
-        {workstreams?.[card].id && <IconUserGroup />}
-        {retros?.[card]?.id && <IconEth />}
+        {workstreams?.[card].id && <IconUserGroup size={"5"}/>}
+        {retros?.[card]?.id && <IconLightningBolt size={"5"}/>}
         <Text ellipsis variant="base" weight={"semiBold"}>
           {projects?.[card]?.name ||
             workstreams?.[card].name ||

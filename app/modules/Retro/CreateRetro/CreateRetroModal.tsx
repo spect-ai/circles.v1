@@ -9,7 +9,7 @@ import RetroMembers from "./RetroMembers";
 
 type Props = {
   handleClose: () => void;
-  folderId: string | undefined;
+  folderId?: string | undefined;
 };
 
 export default function CreateRetroModal({ handleClose, folderId }: Props) {
@@ -22,7 +22,7 @@ export default function CreateRetroModal({ handleClose, folderId }: Props) {
   }>({} as any);
 
   return (
-    <Modal title="Start Retro" handleClose={handleClose} size="large">
+    <Modal title="Start Retro" handleClose={handleClose} size="large" zIndex={2}>
       <Box
         padding="8"
         style={{

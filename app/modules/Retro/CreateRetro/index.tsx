@@ -1,4 +1,4 @@
-import { Box, Button, IconPlusSmall, IconEth } from "degen";
+import { Box, Button, IconPlusSmall, IconLightningBolt } from "degen";
 import { AnimatePresence } from "framer-motion";
 import React, { useState } from "react";
 import CreateRetroModal from "./CreateRetroModal";
@@ -17,7 +17,7 @@ export default function CreateRetro({ folderId }: { folderId?: string }) {
             setIsOpen(true);
           }}
         >
-          <IconEth size={"4"} color="accent" />
+          <IconLightningBolt size={"4"} color="accent" />
         </Button>
       ) : (
         <Box marginTop="1">

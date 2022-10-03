@@ -133,7 +133,7 @@ export const FolderView = ({
         paddingBottom={"4"}
       >
         <Text size="headingTwo" weight="semiBold" ellipsis>
-          Folders
+          Sections
         </Text>
         {canDo("manageCircleSettings") && (
           <Button

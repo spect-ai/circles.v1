@@ -1,11 +1,12 @@
-import { Box, IconPlusSmall, IconEth, Button, IconUserGroup } from "degen";
+import { Box, IconPlusSmall, Button } from "degen";
 import { useState } from "react";
-import { ProjectOutlined } from "@ant-design/icons";
+
 import CreateSpaceModal from "../../CreateSpaceModal";
 import CreateProjectModal from "../../CreateProjectModal";
 import CreateRetro from "@/app/modules/Retro/CreateRetro";
 
 function CreateFolderItem({ folderId }: { folderId: string }) {
+
   const [hover, setHover] = useState(false);
 
   return (
@@ -14,7 +15,12 @@ function CreateFolderItem({ folderId }: { folderId: string }) {
       onMouseLeave={() => setHover(false)}
     >
       <Box display={"flex"} flexDirection={"row"} alignItems="center">
-        <Button size="small" variant="transparent" shape="circle" data-tour="create-proj-workstream-retro">
+        <Button
+          size="small"
+          variant="transparent"
+          shape="circle"
+          data-tour="create-proj-workstream-retro"
+        >
           <IconPlusSmall size={"5"} />
         </Button>
         {hover && (

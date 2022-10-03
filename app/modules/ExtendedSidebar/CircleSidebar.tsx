@@ -4,7 +4,7 @@ import { CircleType } from "@/app/types";
 import { ProjectOutlined } from "@ant-design/icons";
 import {
   Box,
-  Button,
+  IconLightningBolt,
   IconUserGroup,
   Skeleton,
   SkeletonGroup,
@@ -176,56 +176,70 @@ function CircleSidebar() {
 
         <Container subH={circle?.toBeClaimed ? "12.1rem" : "9.1rem"}>
           <Stack>
-            <Accordian
-              name="Projects"
-              defaultOpen
-              icon={<ProjectOutlined style={{ fontSize: "1.3rem" }} />}
-            >
-              <Stack space="0">
-                {circle?.projects && Object.values(circle?.projects).map((proj) => (
-                  <Stack key={proj.id} direction="horizontal" space="0">
-                    {/* <Box borderRightWidth="0.5" /> */}
-                    <Box width="full" padding="1">
-                      <Link href={`/${cId}/${proj.slug}`}>
-                        <PrimaryButton
-                          variant={
-                            pId === proj.slug ? "tertiary" : "transparent"
-                          }
-                        >
-                          {proj.name}
-                        </PrimaryButton>
-                      </Link>
-                    </Box>
-                  </Stack>
-                ))}
-                {circle?.projects && !Object.values(circle?.projects).length && (
-                  <Box paddingLeft="7" paddingY="2">
-                    <Text variant="label">No projects created</Text>
-                  </Box>
-                )}
-              </Stack>
-            </Accordian>
-            <Accordian name="Workstreams" defaultOpen icon={<IconUserGroup />}>
-              <Stack space="0">
-                {circle?.children && Object.values(circle?.children).map((space) => (
-                  <Stack key={space.id} direction="horizontal" space="0">
-                    {/* <Box borderRightWidth="0.5" /> */}
-                    <Box width="full" padding="1">
-                      <Link href={`/${space.slug}`} key={space.id}>
-                        <PrimaryButton variant="transparent">
-                          {space.name}
-                        </PrimaryButton>
-                      </Link>
-                    </Box>
-                  </Stack>
-                ))}
-                {circle?.children && !Object.values(circle?.children).length && (
-                  <Box paddingLeft="7" paddingY="2">
-                    <Text variant="label">No workstreams created</Text>
-                  </Box>
-                )}
-              </Stack>
-            </Accordian>
+            {circle?.folderOrder?.map((fol) => {
+              const folder = circle?.folderDetails?.[fol];
+              return (
+                <Accordian name={folder.name} key={fol} defaultOpen>
+                  {folder.contentIds?.map((content) => {
+                    return (
+                      <Stack key={content} direction="horizontal" space="0">
+                        <Box width="full" padding="1">
+                          {circle?.children?.[content] && content && (
+                            <Link
+                              href={`/${circle?.children?.[content].slug}`}
+                            >
+                              <PrimaryButton
+                                variant={
+                                  pId === circle?.children?.[content].slug
+                                    ? "tertiary"
+                                    : "transparent"
+                                }
+                                icon={<IconUserGroup size={"5"} />}
+                              >
+                                {circle?.children?.[content].name}
+                              </PrimaryButton>
+                            </Link>
+                          )}
+                          {circle?.projects?.[content] && content && (
+                            <Link
+                              href={`/${cId}/${circle?.projects?.[content].slug}`}
+                            >
+                              <PrimaryButton
+                                variant={
+                                  pId === circle?.projects?.[content].slug
+                                    ? "tertiary"
+                                    : "transparent"
+                                }
+                                icon={<ProjectOutlined style={{ fontSize: "1.1rem" }} />}
+                              >
+                                {circle?.projects?.[content].name}
+                              </PrimaryButton>
+                            </Link>
+                          )}
+                          {circle?.retro?.[content] && content && (
+                            <Link
+                              href={`/${cId}?retroSlug=${circle?.retro?.[content].slug}`}
+                            >
+                              <PrimaryButton
+                                variant={
+                                  pId === circle?.retro?.[content].slug
+                                    ? "tertiary"
+                                    : "transparent"
+                                }
+                                icon={<IconLightningBolt size={"5"} />}
+                              >
+                                {circle?.retro?.[content].title}
+                              </PrimaryButton>
+                            </Link>
+                          )}
+                        </Box>
+                      </Stack>
+                    );
+                  })}
+                </Accordian>
+              );
+            })}
+            
           </Stack>
         </Container>
       </Stack>
@@ -234,3 +248,56 @@ function CircleSidebar() {
 }
 
 export default memo(CircleSidebar);
+
+{/* <Accordian
+              name="Projects"
+              defaultOpen
+              icon={<ProjectOutlined style={{ fontSize: "1.3rem" }} />}
+            >
+              <Stack space="0">
+                {circle?.projects &&
+                  Object.values(circle?.projects).map((proj) => (
+                    <Stack key={proj.id} direction="horizontal" space="0">
+                      {/* <Box borderRightWidth="0.5" /> */}
+            //           <Box width="full" padding="1">
+            //             <Link href={`/${cId}/${proj.slug}`}>
+            //               <PrimaryButton
+            //                 variant={
+            //                   pId === proj.slug ? "tertiary" : "transparent"
+            //                 }
+            //               >
+            //                 {proj.name}
+            //               </PrimaryButton>
+            //             </Link>
+            //           </Box>
+            //         </Stack>
+            //       ))}
+            //     {circle?.projects && !Object.values(circle?.projects).length && (
+            //       <Box paddingLeft="7" paddingY="2">
+            //         <Text variant="label">No projects created</Text>
+            //       </Box>
+            //     )}
+            //   </Stack>
+            // </Accordian>
+            // <Accordian name="Workstreams" defaultOpen icon={<IconUserGroup />}>
+            //   <Stack space="0">
+            //     {circle?.children &&
+            //       Object.values(circle?.children).map((space) => (
+            //         <Stack key={space.id} direction="horizontal" space="0">
+            //           {/* <Box borderRightWidth="0.5" /> */}
+            //           <Box width="full" padding="1">
+            //             <Link href={`/${space.slug}`} key={space.id}>
+            //               <PrimaryButton variant="transparent">
+            //                 {space.name}
+            //               </PrimaryButton>
+            //             </Link>
+            //           </Box>
+            //         </Stack>
+            //       ))}
+            //     {circle?.children && !Object.values(circle?.children).length && (
+            //       <Box paddingLeft="7" paddingY="2">
+            //         <Text variant="label">No workstreams created</Text>
+            //       </Box>
+            //     )}
+            //   </Stack>
+            // </Accordian> */}
