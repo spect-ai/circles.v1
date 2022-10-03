@@ -1,16 +1,11 @@
-import Loader from "@/app/common/components/Loader";
 import Popover from "@/app/common/components/Popover";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { useGlobal } from "@/app/context/globalContext";
-import useConnectDiscord from "@/app/services/Discord/useConnectDiscord";
 import useJoinCircle from "@/app/services/JoinCircle/useJoinCircle";
 import useExploreOnboarding from "@/app/services/Onboarding/useExploreOnboarding";
 import { BucketizedCircleType, CircleType } from "@/app/types";
-import { TwitterCircleFilled } from "@ant-design/icons";
 import {
-  Avatar,
   Box,
-  Button,
   IconDotsHorizontal,
   IconSearch,
   Input,
@@ -19,7 +14,6 @@ import {
   useTheme,
 } from "degen";
 import { matchSorter } from "match-sorter";
-import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { Container, Row, Col } from "react-grid-system";
 import { useQuery } from "react-query";

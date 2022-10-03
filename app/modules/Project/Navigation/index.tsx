@@ -1,7 +1,6 @@
 import Modal from "@/app/common/components/Modal";
 import { Box } from "degen";
 import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
 import { Graph } from "react-d3-graph";
 import { useCircle } from "../../Circle/CircleContext";
 
@@ -10,10 +9,7 @@ type Props = {
 };
 
 export default function Navigation({ handleClose }: Props) {
-  const { circle } = useCircle();
-
-  const [graphData, setGraphData] = useState();
-  const [loading, setLoading] = useState(false);
+  const { navigationData } = useCircle();
 
   const router = useRouter();
 
@@ -56,36 +52,13 @@ export default function Navigation({ handleClose }: Props) {
     window.alert(`Clicked link between ${source} and ${target}`);
   };
 
-  const fetchNavigation = async () => {
-    setLoading(true);
-    const res = await fetch(
-      `${process.env.API_HOST}/circle/v1/${circle?.id}/circleNav`,
-      {
-        credentials: "include",
-      }
-    );
-    if (res.ok) {
-      const data = await res.json();
-      console.log({ data });
-      setGraphData(data);
-      setLoading(false);
-    } else {
-      setLoading(false);
-      return false;
-    }
-  };
-
-  useEffect(() => {
-    void fetchNavigation();
-  }, []);
-
   return (
     <Modal handleClose={handleClose} title="Circle Map">
       <Box padding="8">
-        {!loading && graphData && (
+        {navigationData && (
           <Graph
             id="graph-id" // id is mandatory
-            data={graphData}
+            data={navigationData}
             config={myConfig}
             onClickNode={onClickNode}
             onClickLink={onClickLink}

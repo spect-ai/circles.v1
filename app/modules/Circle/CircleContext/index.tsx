@@ -3,7 +3,6 @@ import { CircleType, MemberDetails, Registry, RetroType } from "@/app/types";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { useQuery } from "react-query";
-import { toast } from "react-toastify";
 
 interface CircleContextType {
   page: "Overview" | "Retro";
@@ -31,6 +30,10 @@ interface CircleContextType {
   setLocalCircle: (circle: CircleType) => void;
   loading: boolean;
   setLoading: (loading: boolean) => void;
+  navigationData: any;
+  setNavigationData: (data: any) => void;
+  navigationBreadcrumbs: any;
+  setNavigationBreadcrumbs: (data: any) => void;
 }
 
 export const CircleContext = React.createContext<CircleContextType>(
@@ -50,7 +53,14 @@ export function useProviderCircleContext() {
 
   const [isBatchPayOpen, setIsBatchPayOpen] = useState(false);
 
-  const { data: circle, refetch: refetchCircle } = useQuery<CircleType>(
+  const [navigationData, setNavigationData] = useState();
+  const [navigationBreadcrumbs, setNavigationBreadcrumbs] = useState();
+
+  const {
+    data: circle,
+    refetch: refetchCircle,
+    isLoading,
+  } = useQuery<CircleType>(
     ["circle", cId],
     () =>
       fetch(`${process.env.API_HOST}/circle/v1/slug/${cId as string}`, {
@@ -120,13 +130,52 @@ export function useProviderCircleContext() {
     queryClient.setQueryData(["retro", retroSlug], data);
   };
 
+  const fetchNavigation = async () => {
+    const res = await fetch(
+      `${process.env.API_HOST}/circle/v1/${circle?.id}/circleNav`,
+      {
+        credentials: "include",
+      }
+    );
+    if (res.ok) {
+      const data = await res.json();
+      setNavigationData(data);
+    } else {
+      return false;
+    }
+  };
+
+  const fetchNavigationBreadcrumbs = async () => {
+    const res = await fetch(
+      `${process.env.API_HOST}/circle/v1/${circle?.id}/circleNavBreadcrumbs`,
+      {
+        credentials: "include",
+      }
+    );
+    if (res.ok) {
+      const data = await res.json();
+      setNavigationBreadcrumbs(data);
+    } else {
+      return false;
+    }
+  };
+
   useEffect(() => {
     if (cId) {
       void fetchCircle();
       void fetchRegistry();
       void fetchMemberDetails();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cId]);
+
+  useEffect(() => {
+    if (circle?.id) {
+      void fetchNavigation();
+      void fetchNavigationBreadcrumbs();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [circle?.id]);
 
   return {
     page,
@@ -153,6 +202,10 @@ export function useProviderCircleContext() {
     setMintkudosCommunityId,
     localCircle,
     setLocalCircle,
+    navigationData,
+    setNavigationData,
+    navigationBreadcrumbs,
+    setNavigationBreadcrumbs,
   };
 }
 
