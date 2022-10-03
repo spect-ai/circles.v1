@@ -61,12 +61,17 @@ export const FolderView = ({
     console.log(circle?.folderOrder?.[0]);
     const payload = {
       name:
-        (circle?.folderOrder?.length === undefined || NaN || 0)
+        circle?.folderOrder?.length === undefined || NaN || 0
           ? "All"
           : `Folder-${circle?.folderOrder?.length + 1}`,
-      avatar: circle?.folderOrder?.length == 0 ? "All" : "New Avatar",
+      avatar:
+        circle?.folderOrder?.length === undefined || NaN || 0
+          ? "All"
+          : "New Avatar",
       contentIds:
-        circle?.folderOrder?.length == 0 ? unclassified : ([] as string[]),
+        circle?.folderOrder?.length === undefined || NaN || 0
+          ? unclassified
+          : ([] as string[]),
     };
     const res = await createFolder(payload, circle?.id);
     if (res) {
