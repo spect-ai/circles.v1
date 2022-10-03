@@ -9,9 +9,10 @@ import RetroMembers from "./RetroMembers";
 
 type Props = {
   handleClose: () => void;
+  folderId?: string | undefined;
 };
 
-export default function CreateRetroModal({ handleClose }: Props) {
+export default function CreateRetroModal({ handleClose, folderId }: Props) {
   const [step, setStep] = useState(0);
   const [details, setDetails] = useState<RetroForm | undefined>();
   const [budget, setBudget] = useState<{
@@ -21,7 +22,7 @@ export default function CreateRetroModal({ handleClose }: Props) {
   }>({} as any);
 
   return (
-    <Modal title="Start Retro" handleClose={handleClose} size="large">
+    <Modal title="Start Retro" handleClose={handleClose} size="large" zIndex={2}>
       <Box
         padding="8"
         style={{
@@ -47,6 +48,7 @@ export default function CreateRetroModal({ handleClose }: Props) {
               key="members"
               retroDetails={details}
               retroBudget={budget}
+              folderId={folderId}
             />
           )}
         </AnimatePresence>

@@ -44,7 +44,7 @@ export default function RetroPage() {
           </Text>
           {canDo("createNewRetro") && <CreateRetro />}
         </Stack>
-        {circle?.retro?.map((retro) => (
+        {circle?.retro && Object.values(circle?.retro)?.map((retro) => (
           <Box
             key={retro.id}
             cursor="pointer"

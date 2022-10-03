@@ -25,7 +25,8 @@
     "**/*.ts",
     "**/*.tsx",
     "**/*.js",
-    "pages/[circle]/[project]"
+    "pages/[circle]/[project]",
+    "pages/[circle]/r"
   ],
   "exclude": ["node_modules"]
 }

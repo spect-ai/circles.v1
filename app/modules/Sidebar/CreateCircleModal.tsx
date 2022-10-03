@@ -74,7 +74,7 @@ function CreateCircle() {
         onExitComplete={() => null}
       >
         {modalOpen && (
-          <Modal handleClose={close} title="Create Circle">
+          <Modal handleClose={close} title="Create Circle" zIndex={2}>
             <Box width="full" padding="8">
               <Stack>
                 <Input

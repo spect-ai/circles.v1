@@ -13,7 +13,7 @@ import {
   AlignLeftOutlined,
   BarsOutlined,
   AppstoreOutlined,
-  TableOutlined
+  TableOutlined,
 } from "@ant-design/icons";
 
 export const IconButton = styled(Box)`

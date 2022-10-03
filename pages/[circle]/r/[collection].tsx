@@ -4,11 +4,12 @@ import {
   CircleContext,
   useProviderCircleContext,
 } from "@/app/modules/Circle/CircleContext";
-import Project from "@/app/modules/Project";
+import { Collection } from "@/app/modules/Collection";
+import CollectionHeading from "@/app/modules/Collection/CollectionHeading";
 import {
-  LocalProjectContext,
-  useProviderLocalProject,
-} from "@/app/modules/Project/Context/LocalProjectContext";
+  LocalCollectionContext,
+  useProviderLocalCollection,
+} from "@/app/modules/Collection/Context/LocalCollectionContext";
 import ProjectHeading from "@/app/modules/Project/ProjectHeading";
 import { CircleType, MemberDetails, Registry } from "@/app/types";
 import { AnimatePresence } from "framer-motion";
@@ -17,9 +18,12 @@ import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { useQuery } from "react-query";
 
-const ProjectPage: NextPage = () => {
+const CollectionPage: NextPage = () => {
   const router = useRouter();
-  const { circle: cId, project: pId } = router.query;
+  const { circle: cId, collection: colId } = router.query;
+  const circlecontext = useProviderCircleContext();
+  const context = useProviderLocalCollection();
+
   const { data: circle, refetch: fetchCircle } = useQuery<CircleType>(
     ["circle", cId],
     () =>
@@ -66,11 +70,6 @@ const ProjectPage: NextPage = () => {
     }
   }, [circle]);
 
-  const context = useProviderLocalProject();
-  const circlecontext = useProviderCircleContext();
-
-  if (pId === "r") return <></>;
-
   return (
     <>
       <MetaHead
@@ -79,21 +78,21 @@ const ProjectPage: NextPage = () => {
         image="/og.jpg"
       />
       <CircleContext.Provider value={circlecontext}>
-        <LocalProjectContext.Provider value={context}>
+        <LocalCollectionContext.Provider value={context}>
           <PublicLayout>
-            <ProjectHeading />
+            <CollectionHeading />
             <AnimatePresence
               exitBeforeEnter
               initial={false}
               onExitComplete={() => window.scrollTo(0, 0)}
             >
-              <Project key={pId as string} />
+              <Collection key={colId as string} />
             </AnimatePresence>
           </PublicLayout>
-        </LocalProjectContext.Provider>
+        </LocalCollectionContext.Provider>
       </CircleContext.Provider>
     </>
   );
 };
 
-export default ProjectPage;
+export default CollectionPage;
