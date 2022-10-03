@@ -34,10 +34,11 @@ export const createFolder = async (
       }
     );
     const data = await res.json();
-    if (data.success) {
+    console.log(data);
+    if (data.id) {
       return data;
     } else {
-      console.log(data);
+      return false;
     }
   } catch (error) {
     console.log(error);
@@ -62,10 +63,11 @@ export const updateFolder = async (
       }
     );
     const data = await res.json();
-    if (data.success) {
+    if (data.id) {
+      console.log(data);
       return data;
     } else {
-      console.log(data);
+      console.log("Error updating folders");
     }
   } catch (error) {
     console.log(error);
@@ -85,10 +87,11 @@ export const deleteFolder = async (circleId: string, folderId: string) => {
       }
     );
     const data = await res.json();
-    if (data.success) {
+    console.log(data);
+    if (data.id) {
       return data;
     } else {
-      console.log(data);
+      return false;
     }
   } catch (error) {
     console.log(error);
@@ -112,7 +115,7 @@ export const updateFolderDetails = async (
       }
     );
     const data = await res.json();
-    if (data.success) {
+    if (data.id) {
       return data;
     } else {
       console.log(data);

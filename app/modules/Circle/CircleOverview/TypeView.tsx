@@ -49,7 +49,7 @@ export const TypeView = ({
   filteredCollections,
   filteredWorkstreams,
   filteredRetro,
-  setIsRetroOpen
+  setIsRetroOpen,
 }: Props) => {
   const router = useRouter();
   const { circle: cId } = router.query;
@@ -74,22 +74,23 @@ export const TypeView = ({
         }}
       >
         <Row>
-          {filteredProjects && Object.values(filteredProjects)?.map((project) => (
-            <Col sm={6} md={4} lg={2} key={project.id}>
-              <Card
-                onClick={() =>
-                  // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-                  router.push(`${window.location.href}/${project.slug}`)
-                }
-                height="32"
-              >
-                <Text align="center">{project.name}</Text>
-                <Text variant="label" align="center">
-                  {project.description}
-                </Text>
-              </Card>
-            </Col>
-          ))}
+          {filteredProjects &&
+            Object.values(filteredProjects)?.map((project) => (
+              <Col sm={6} md={4} lg={2} key={project.id}>
+                <Card
+                  onClick={() =>
+                    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+                    router.push(`${window.location.href}/${project.slug}`)
+                  }
+                  height="32"
+                >
+                  <Text align="center">{project.name}</Text>
+                  <Text variant="label" align="center">
+                    {project.description}
+                  </Text>
+                </Card>
+              </Col>
+            ))}
           {filteredProjects && Object.values(filteredProjects)?.length == 0 && (
             <Box margin="4">
               <Text variant="label">No Projects created yet</Text>
@@ -111,22 +112,23 @@ export const TypeView = ({
         }}
       >
         <Row>
-          {filteredWorkstreams && Object.values(filteredWorkstreams)?.map((space) => (
-            <Col sm={6} md={4} lg={2} key={space.id}>
-              <Card
-                onClick={() =>
-                  // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-                  router.push(`/${space.slug}`)
-                }
-                height="32"
-              >
-                <Text align="center">{space.name}</Text>
-                <Text variant="label" align="center">
-                  {space.description}
-                </Text>
-              </Card>
-            </Col>
-          ))}
+          {filteredWorkstreams &&
+            Object.values(filteredWorkstreams)?.map((space) => (
+              <Col sm={6} md={4} lg={2} key={space.id}>
+                <Card
+                  onClick={() =>
+                    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+                    router.push(`/${space.slug}`)
+                  }
+                  height="32"
+                >
+                  <Text align="center">{space.name}</Text>
+                  <Text variant="label" align="center">
+                    {space.description}
+                  </Text>
+                </Card>
+              </Col>
+            ))}
           {filteredWorkstreams && !Object.values(filteredWorkstreams)?.length && (
             <Box margin="4">
               <Text variant="label">No Workstreams created yet</Text>
@@ -200,22 +202,23 @@ export const TypeView = ({
         }}
       >
         <Row>
-          {filteredRetro && Object.values(filteredRetro)?.map((retro) => (
-            <Col sm={6} md={4} lg={2} key={retro.id}>
-              <Card
-                height="32"
-                onClick={() => {
-                  void router.push(`${cId}?retroSlug=${retro.slug}`);
-                  setIsRetroOpen(true);
-                }}
-              >
-                <Text align="center">{retro.title}</Text>
-                <Text variant="label" align="center">
-                  {retro.description}
-                </Text>
-              </Card>
-            </Col>
-          ))}
+          {filteredRetro &&
+            Object.values(filteredRetro)?.map((retro) => (
+              <Col sm={6} md={4} lg={2} key={retro.id}>
+                <Card
+                  height="32"
+                  onClick={() => {
+                    void router.push(`${cId}?retroSlug=${retro.slug}`);
+                    setIsRetroOpen(true);
+                  }}
+                >
+                  <Text align="center">{retro.title}</Text>
+                  <Text variant="label" align="center">
+                    {retro.description}
+                  </Text>
+                </Card>
+              </Col>
+            ))}
           {filteredRetro && !Object.values(filteredRetro)?.length && (
             <Box marginLeft="4">
               <Text variant="label">No Retros created yet</Text>

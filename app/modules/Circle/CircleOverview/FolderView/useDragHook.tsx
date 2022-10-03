@@ -39,7 +39,6 @@ export default function useDragFolder() {
         source.index,
         destination.index
       );
-      console.log(newFolderOrder);
 
       setLocalCircle({
         ...circle,

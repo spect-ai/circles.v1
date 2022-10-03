@@ -4,15 +4,11 @@ import {
   DraggableProvided,
   DraggableStateSnapshot,
 } from "react-beautiful-dnd";
-import { Box, Text, useTheme } from "degen";
-import {
-  CircleType,
-  ProjectType,
-  RetroType,
-  CollectionType,
-} from "@/app/types";
+import { Box, Text, useTheme, Stack, IconUserGroup, IconEth } from "degen";
+import { CircleType, ProjectType, RetroType } from "@/app/types";
 import styled from "styled-components";
-import { useCircle } from "../../CircleContext";
+import { ProjectOutlined } from "@ant-design/icons";
+import { useRouter } from "next/router";
 
 interface Props {
   card: string;
@@ -41,11 +37,14 @@ const Container = styled(Box)<{ isDragging: boolean; mode: string }>`
     border-color: ${(props) =>
       props.mode === "dark" ? "rgb(255, 255, 255, 0.1)" : "rgb(20,20,20,0.1)"};
   }
+  color: rgb(191, 90, 242, 0.5);
 `;
 
 const Card = ({ card, index, projects, workstreams, retros }: Props) => {
-  const { localCircle: circle } = useCircle();
   const { mode } = useTheme();
+  const router = useRouter();
+  const { circle: cId } = router.query;
+
   const DraggableContent = (
     provided: DraggableProvided,
     snapshot: DraggableStateSnapshot
@@ -59,17 +58,38 @@ const Card = ({ card, index, projects, workstreams, retros }: Props) => {
       borderRadius="large"
       isDragging={snapshot.isDragging}
       mode={mode}
+      onClick={() => {
+        if (projects?.[card]?.slug) {
+          void router.push(`/${cId}/${projects?.[card]?.slug}`);
+        }
+        if (workstreams?.[card]?.slug) {
+          void router.push(`/${workstreams?.[card]?.slug}`);
+        }
+        if (retros?.[card]?.slug) {
+          void router.push(`/${cId}?retroSlug=${retros?.[card]?.slug}`);
+        }
+      }}
     >
-      <Text>
-        {projects?.[card]?.name ||
-          workstreams?.[card].name ||
-          retros?.[card].title}
-      </Text>
+      <Stack direction={"horizontal"} align="center">
+        {projects?.[card]?.id && (
+          <ProjectOutlined style={{ fontSize: "1.1rem" }} />
+        )}
+        {workstreams?.[card].id && <IconUserGroup />}
+        {retros?.[card]?.id && <IconEth />}
+        <Text>
+          {projects?.[card]?.name ||
+            workstreams?.[card].name ||
+            retros?.[card].title}
+        </Text>
+      </Stack>
     </Container>
   );
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const DraggableContentCallback = useCallback(DraggableContent, [
-    circle?.folderOrder,
-    circle?.folderDetails,
+    projects,
+    card,
+    workstreams,
+    retros,
   ]);
 
   return (

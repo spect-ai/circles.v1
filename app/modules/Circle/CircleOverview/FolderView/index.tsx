@@ -10,14 +10,12 @@ import {
   Droppable,
   DroppableProvided,
 } from "react-beautiful-dnd";
-import { Box, Button, IconPlusSmall, Stack, Text, useTheme } from "degen";
-import { useRouter } from "next/router";
+import { Box, Button, IconPlusSmall, Text } from "degen";
 import React, { useCallback, useEffect, useState } from "react";
 import { useCircle } from "../../CircleContext";
 import { createFolder } from "@/app/services/Folders";
 import Folder from "./folder";
 import useDragFolder from "./useDragHook";
-import { matchSorter } from "match-sorter";
 
 interface Props {
   filteredProjects: {
@@ -40,7 +38,7 @@ export const FolderView = ({
   filteredRetro,
   setIsRetroOpen,
 }: Props) => {
-  const router = useRouter();
+
   const { handleDrag } = useDragFolder();
   const { localCircle: circle, setCircleData, setLocalCircle } = useCircle();
   const [allContentIds, setAllContentIds] = useState([] as string[]);
@@ -59,16 +57,12 @@ export const FolderView = ({
     };
     const res = await createFolder(payload, circle?.id);
     if (res) {
+      console.log(`New Folder with name - ${payload.name} created `);
       setCircleData(res);
       setLocalCircle(res);
     }
-  }, [
-    circle.folderOrder?.length,
-    circle?.id,
-    setCircleData,
-    setLocalCircle,
-    unclassified,
-  ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [circle?.folderOrder?.length, circle?.id, unclassified]);
 
   function getFormattedData() {
     let ids = [] as string[];
@@ -93,11 +87,12 @@ export const FolderView = ({
         }
       });
 
-    filteredRetro && Object.values(filteredRetro)?.map((re) => {
-      if (!allContentIds.includes(re.id)) {
-        unclassifiedIds = unclassifiedIds.concat(re.id);
-      }
-    });
+    filteredRetro &&
+      Object.values(filteredRetro)?.map((re) => {
+        if (!allContentIds.includes(re.id)) {
+          unclassifiedIds = unclassifiedIds.concat(re.id);
+        }
+      });
 
     setUnclassified(unclassifiedIds);
   }
@@ -106,20 +101,32 @@ export const FolderView = ({
     setAllContentIds([]);
     setUnclassified([]);
     getFormattedData();
-  }, []);
+  }, [circle]);
 
   const DroppableContent = (provided: DroppableProvided) => (
-    <Box {...provided.droppableProps} ref={provided.innerRef}>
-      <Stack>
+    <Box {...provided.droppableProps} ref={provided.innerRef} paddingTop="4">
+      <Box
+        display={"flex"}
+        flexDirection={"row"}
+        alignItems="center"
+        gap="3"
+        paddingBottom={"4"}
+      >
         <Text size="headingTwo" weight="semiBold" ellipsis>
           Folders
         </Text>
         {canDo("manageCircleSettings") && (
-          <Box onClick={createNewFolder} cursor="pointer">
+          <Button
+            data-tour="circle-create-folder-button"
+            size="small"
+            variant="transparent"
+            shape="circle"
+            onClick={createNewFolder}
+          >
             <IconPlusSmall />
-          </Box>
+          </Button>
         )}
-      </Stack>
+      </Box>
       {circle?.folderOrder?.map((folder, i) => {
         const folderDetail = circle?.folderDetails?.[folder];
         return (
@@ -140,18 +147,20 @@ export const FolderView = ({
     </Box>
   );
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const DroppableContentCallback = useCallback(DroppableContent, [
     canDo,
     circle?.folderDetails,
     circle?.folderOrder,
-    createNewFolder,
+    circle,
     filteredProjects,
+    filteredRetro,
     filteredWorkstreams,
   ]);
 
   return (
     <DragDropContext onDragEnd={handleDrag}>
-      <Droppable droppableId="all-columns" type="folder">
+      <Droppable droppableId="all-folders" type="folder">
         {DroppableContentCallback}
       </Droppable>
     </DragDropContext>
