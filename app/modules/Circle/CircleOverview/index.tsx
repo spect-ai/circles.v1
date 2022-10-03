@@ -24,6 +24,7 @@ import CircleMembers from "../CircleMembers";
 import InviteMemberModal from "../ContributorsModal/InviteMembersModal";
 import { TypeView } from "./TypeView";
 import { FolderView } from "./FolderView";
+import Breadcrumbs from "@/app/common/components/Breadcrumbs";
 
 interface Props {
   toggle: string;
@@ -90,6 +91,7 @@ export default function CircleOverview() {
     isBatchPayOpen,
     retro,
     loading,
+    navigationBreadcrumbs,
   } = useCircle();
   const { canDo } = useRoleGate();
   const [isRetroOpen, setIsRetroOpen] = useState(false);
@@ -162,12 +164,12 @@ export default function CircleOverview() {
         >
           <Toggle toggle={toggle} setToggle={setToggle} />
           {toggle == "Overview" && (
-            <>
+            <Stack space="2">
               <Box
                 style={{
                   display: "flex",
                   flexDirection: "row",
-                  alignItems: "center",
+                  alignItems: "flex-end",
                   gap: "1rem",
                 }}
               >
@@ -235,6 +237,9 @@ export default function CircleOverview() {
                     <InviteMemberModal />
                   </Box>
                 )}
+                {navigationBreadcrumbs && (
+                  <Breadcrumbs crumbs={navigationBreadcrumbs} />
+                )}
               </Box>
               {groupBy == "Type" && (
                 <TypeView
@@ -254,7 +259,7 @@ export default function CircleOverview() {
                   setIsRetroOpen={setIsRetroOpen}
                 />
               )}
-            </>
+            </Stack>
           )}
           {toggle == "Members" && <CircleMembers />}
         </Box>

@@ -184,7 +184,7 @@ export function useProviderCircleContext() {
     setLoading,
     isBatchPayOpen,
     setIsBatchPayOpen,
-    circle,
+    circle: circle || localCircle,
     memberDetails,
     registry,
     retro,
@@ -206,6 +206,7 @@ export function useProviderCircleContext() {
     setNavigationData,
     navigationBreadcrumbs,
     setNavigationBreadcrumbs,
+    isLoading,
   };
 }
 
