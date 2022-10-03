@@ -49,6 +49,7 @@ const NameInput = styled.input<{ mode: string }>`
 const ScrollContainer = styled(Box)<{ mode: string }>`
   margin-top: 0.3rem;
   padding: 0.5rem;
+  min-height: 7rem;
 `;
 
 const Folder = ({
