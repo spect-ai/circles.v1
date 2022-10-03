@@ -79,6 +79,7 @@ export default function CircleOverview() {
     setIsBatchPayOpen,
     isBatchPayOpen,
     retro,
+    loading
   } = useCircle();
   const { canDo } = useRoleGate();
   const [isRetroOpen, setIsRetroOpen] = useState(false);
@@ -121,6 +122,10 @@ export default function CircleOverview() {
         </Button>
       </>
     );
+  
+  if (loading) {
+    return null;
+  }
 
   return (
     <>

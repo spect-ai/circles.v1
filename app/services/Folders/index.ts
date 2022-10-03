@@ -51,7 +51,7 @@ export const updateFolder = async (
 ) => {
   try {
     const res = await fetch(
-      `${process.env.API_HOST}/circle/v1/${circleId}/folder/${folderId}`,
+      `${process.env.API_HOST}/circle/v1/${circleId}/folder/${folderId}/update`,
       {
         method: "PATCH",
         headers: {

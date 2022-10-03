@@ -4,16 +4,7 @@ import {
   DraggableProvided,
   DraggableStateSnapshot,
 } from "react-beautiful-dnd";
-import {
-  Avatar,
-  AvatarGroup,
-  Box,
-  IconEth,
-  Stack,
-  Tag,
-  Text,
-  useTheme,
-} from "degen";
+import { Box, Text, useTheme } from "degen";
 import {
   CircleType,
   ProjectType,
@@ -21,12 +12,16 @@ import {
   CollectionType,
 } from "@/app/types";
 import styled from "styled-components";
+import { useCircle } from "../../CircleContext";
 
 interface Props {
   card: string;
   index: number;
-  projects: {
+  projects?: {
     [key: string]: ProjectType;
+  };
+  workstreams?: {
+    [key: string]: CircleType;
   };
 }
 
@@ -45,7 +40,9 @@ const Container = styled(Box)<{ isDragging: boolean; mode: string }>`
   }
 `;
 
-const Card = ({ card, index, projects }: Props) => {
+const Card = ({ card, index, projects, workstreams }: Props) => {
+  console.log('i am getting rendered')
+  const { localCircle: circle } = useCircle();
   const { mode } = useTheme();
   const DraggableContent = (
     provided: DraggableProvided,
@@ -61,10 +58,13 @@ const Card = ({ card, index, projects }: Props) => {
       isDragging={snapshot.isDragging}
       mode={mode}
     >
-      <Text>{projects?.[card]?.name}</Text>
+      <Text>{projects?.[card]?.name || workstreams?.[card].name}</Text>
     </Container>
   );
-  const DraggableContentCallback = useCallback(DraggableContent, []);
+  const DraggableContentCallback = useCallback(DraggableContent, [
+    circle?.folderOrder,
+    circle?.folderDetails,
+  ]);
 
   return (
     <Draggable draggableId={card} index={index}>

@@ -43,21 +43,30 @@ export const FolderView = ({
   const { localCircle: circle, setCircleData, setLocalCircle } = useCircle();
   const [allContentIds, setAllContentIds] = useState([] as string[]);
   const [unclassified, setUnclassified] = useState([] as string[]);
-  const [projects, setProjects] = useState({});
 
   const { canDo } = useRoleGate();
   const createNewFolder = useCallback(async () => {
     const payload = {
-      name: `Folder-${circle.folderOrder?.length + 1}`,
-      avatar: "newFolder",
-      contentIds: [] as string[],
+      name:
+        circle.folderOrder?.length == 0
+          ? "All"
+          : `Folder-${circle.folderOrder?.length + 1}`,
+      avatar: circle.folderOrder?.length == 0 ? "All" : "New Avatar",
+      contentIds:
+        circle.folderOrder?.length == 0 ? unclassified : ([] as string[]),
     };
     const res = await createFolder(payload, circle?.id);
     if (res) {
       setCircleData(res);
       setLocalCircle(res);
     }
-  }, [circle.folderOrder]);
+  }, [
+    circle.folderOrder?.length,
+    circle?.id,
+    setCircleData,
+    setLocalCircle,
+    unclassified,
+  ]);
 
   function getFormattedData() {
     let ids = [] as string[];
@@ -67,38 +76,33 @@ export const FolderView = ({
       });
     setAllContentIds(ids);
 
-    // const workstreams = filteredWorkstreams?.reduce(
-    //   (rest, workstream) => ({ ...rest, [workstream.id]: workstream }),
-    //   {}
-    // );
-    // const retros = filteredRetro?.reduce(
-    //   (rest, retro) => ({ ...rest, [retro.id]: retro }),
-    //   {}
-    // );
-
+    let unclassifiedIds = [] as string[];
     filteredProjects &&
       Object.values(filteredProjects)?.map((project) => {
-        if (!allContentIds.includes(project.id)) {
-          setUnclassified([...unclassified, project.id]);
+        if (!ids.includes(project.id)) {
+          unclassifiedIds = unclassifiedIds.concat(project.id);
         }
       });
 
-    // filteredWorkstreams?.map((child) => {
-    //   if (!allContentIds.includes(child.id)) {
-    //     setUnclassified([...unclassified, child.id]);
-    //   }
-    // });
+    filteredWorkstreams &&
+      Object.values(filteredWorkstreams)?.map((child) => {
+        if (!allContentIds.includes(child.id)) {
+          unclassifiedIds = unclassifiedIds.concat(child.id);
+        }
+      });
 
     // filteredRetro?.map((re) => {
     //   if (!allContentIds.includes(re.id)) {
     //     setUnclassified([...unclassified, re.id]);
     //   }
     // });
+
+    setUnclassified(unclassifiedIds);
   }
 
   useEffect(() => {
+    setAllContentIds([]);
     setUnclassified([]);
-    setProjects({});
     getFormattedData();
   }, []);
 
@@ -110,7 +114,7 @@ export const FolderView = ({
         <Text size="headingTwo" weight="semiBold" ellipsis>
           Folders
         </Text>
-        {canDo("createNewRetro") && (
+        {canDo("manageCircleSettings") && (
           <Box onClick={createNewFolder} cursor="pointer">
             <IconPlusSmall />
           </Box>
@@ -127,17 +131,10 @@ export const FolderView = ({
             name={folderDetail?.name}
             index={i}
             projects={filteredProjects}
+            workstreams={filteredWorkstreams}
           />
         );
       })}
-      <Folder
-        content={unclassified}
-        avatar={"null"}
-        id="unclassified"
-        name="Unclassified"
-        index={circle?.folderOrder?.length}
-        projects={filteredProjects}
-      />
       {provided.placeholder}
     </Box>
   );
@@ -148,7 +145,7 @@ export const FolderView = ({
     circle?.folderOrder,
     createNewFolder,
     filteredProjects,
-    setCircleData,
+    filteredWorkstreams,
   ]);
 
   return (

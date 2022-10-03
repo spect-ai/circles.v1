@@ -33,11 +33,13 @@ export default function useDragFolder() {
       return;
     }
     if (type === "folder") {
+      console.log("Reordering folders");
       const newFolderOrder = reorder(
         circle.folderOrder,
         source.index,
         destination.index
       );
+      console.log(newFolderOrder);
 
       setLocalCircle({
         ...circle,
@@ -69,13 +71,10 @@ export default function useDragFolder() {
     const start = circle.folderDetails[source.droppableId];
     const finish = circle.folderDetails[destination.droppableId];
 
-    if (
-      source.droppableId === "unclassified" &&
-      destination.droppableId === "unclassified"
-    )
-      return;
-
-    if (start === finish && source.droppableId !== "unclassified") {
+    if (start === finish) {
+      console.log(
+        "Content shifted from folder to same folder at different index"
+      );
       const newList = reorder(
         start.contentIds,
         source.index,
@@ -106,6 +105,7 @@ export default function useDragFolder() {
       };
       return;
     } else {
+      console.log("Content shifted from folder to another folder");
       const startContentIds = Array.from(start.contentIds);
       startContentIds.splice(source.index, 1);
       const newStart = {
@@ -119,77 +119,28 @@ export default function useDragFolder() {
         ...finish,
         contentIds: finishContentIds,
       };
+      setLocalCircle({
+        ...circle,
+        folderDetails: {
+          ...circle.folderDetails,
+          [newStart.id]: newStart,
+          [newFinish.id]: newFinish,
+        },
+      });
 
-      if (
-        source.droppableId !== "unclassified" &&
-        destination.droppableId !== "unclassified"
-      ) {
-        setLocalCircle({
-          ...circle,
-          folderDetails: {
-            ...circle.folderDetails,
-            [newStart.id]: newStart,
-            [newFinish.id]: newFinish,
-          },
+      async () => {
+        const res = await updateFolderDetails(circle.id, {
+          folderDetails: [
+            { id: newStart.id, contentIds: startContentIds },
+            { id: newFinish.id, contentIds: finishContentIds },
+          ],
         });
-
-        async () => {
-          const res = await updateFolderDetails(circle.id, {
-            folderDetails: [
-              { id: newStart.id, contentIds: startContentIds },
-              { id: newFinish.id, contentIds: finishContentIds },
-            ],
-          });
-          console.log({ res });
-          if (res.id) {
-            setCircleData(res);
-          }
-        };
-        return;
-      } else {
-        if (destination.droppableId === "unclassified") {
-          setLocalCircle({
-            ...circle,
-            folderDetails: {
-              ...circle.folderDetails,
-              [newStart.id]: newStart,
-            },
-          });
-          async () => {
-            const res = await updateFolder(
-              { contentIds: startContentIds },
-              circle.id,
-              source.droppableId
-            );
-            console.log({ res });
-            if (res.id) {
-              setCircleData(res);
-            }
-          };
-          return;
+        console.log({ res });
+        if (res.id) {
+          setCircleData(res);
         }
-        if (source.droppableId === "unclassified") {
-          setLocalCircle({
-            ...circle,
-            folderDetails: {
-              ...circle.folderDetails,
-              [newFinish.id]: newFinish,
-            },
-          });
-          async () => {
-            const res = await updateFolder(
-              { contentIds: finishContentIds },
-              circle.id,
-              destination.droppableId
-            );
-            console.log({ res });
-            if (res.id) {
-              setCircleData(res);
-            }
-          };
-          return;
-        }
-      }
+      };
+      return;
     }
   };
 
