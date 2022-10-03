@@ -58,12 +58,12 @@ export const FolderView = ({
   const createNewFolder = useCallback(async () => {
     const payload = {
       name:
-        circle.folderOrder?.length == 0
+        circle?.folderOrder?.length == 0
           ? "All"
-          : `Folder-${circle.folderOrder?.length + 1}`,
-      avatar: circle.folderOrder?.length == 0 ? "All" : "New Avatar",
+          : `Folder-${circle?.folderOrder?.length + 1}`,
+      avatar: circle?.folderOrder?.length == 0 ? "All" : "New Avatar",
       contentIds:
-        circle.folderOrder?.length == 0 ? unclassified : ([] as string[]),
+        circle?.folderOrder?.length == 0 ? unclassified : ([] as string[]),
     };
     const res = await createFolder(payload, circle?.id);
     if (res) {
@@ -78,7 +78,7 @@ export const FolderView = ({
     let ids = [] as string[];
     circle?.folderDetails &&
       Object.values(circle?.folderDetails)?.map((folder) => {
-        ids = ids.concat(folder.contentIds);
+        ids = ids.concat(folder?.contentIds);
       });
     setAllContentIds(ids);
 
