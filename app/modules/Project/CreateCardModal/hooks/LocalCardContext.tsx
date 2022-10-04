@@ -146,7 +146,6 @@ export function useProviderLocalCard({
         `${process.env.API_HOST}/card/v1/byProjectSlugAndCardSlug/${pId}/${tId}`,
         { credentials: "include" }
       ).then((res) => {
-        console.log({ res });
         if (res.status === 403) return { unauthorized: true };
         return res.json();
       }),
@@ -236,13 +235,12 @@ export function useProviderLocalCard({
 
   useEffect(() => {
     if (tId) {
-      console.log("fetching");
       void fetchCardActions();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tId]);
 
   useEffect(() => {
-    console.log(card);
     if (!createCard && card && card.id) {
       setCardId(card.id);
       setTitle(card.title);
@@ -303,9 +301,7 @@ export function useProviderLocalCard({
         Card created
         <Stack direction="horizontal">
           <PrimaryButton>
-            <Link href={`/${cId}/${pId}/${data.card?._doc?.slug}`}>
-              View Card
-            </Link>
+            <Link href={`/${cId}/${pId}/${data.card?.slug}`}>View Card</Link>
           </PrimaryButton>
         </Stack>
       </Stack>,
@@ -313,7 +309,6 @@ export function useProviderLocalCard({
         theme: "dark",
       }
     );
-    console.log(data.project);
     updateProject(data.project);
     void fetchQuickActions();
     // queryClient.setQueryData(["project", pId], data.project);

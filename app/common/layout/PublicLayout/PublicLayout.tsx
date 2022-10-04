@@ -1,4 +1,4 @@
-import React, { memo, useEffect } from "react";
+import React, { memo } from "react";
 
 import { ReactNodeNoStrings } from "degen/dist/types/types";
 import { Box, Text, useTheme } from "degen";
@@ -6,7 +6,6 @@ import { AnimatePresence } from "framer-motion";
 import ExtendedSidebar from "../../../modules/ExtendedSidebar/ExtendedSidebar";
 import Sidebar from "@/app/modules/Sidebar";
 import styled from "styled-components";
-import { useConnect } from "wagmi";
 import { useGlobal } from "@/app/context/globalContext";
 
 type PublicLayoutProps = {
@@ -49,14 +48,14 @@ function PublicLayout(props: PublicLayoutProps) {
 
   const { mode } = useTheme();
 
-  const { connect, connectors, isConnected } = useConnect();
+  // const { connect, connectors, isConnected } = useConnect();
 
-  useEffect(() => {
-    if (localStorage.getItem("connectorIndex") && !isConnected) {
-      const index = parseInt(localStorage.getItem("connectorIndex") as string);
-      connect(connectors[index]);
-    }
-  }, [connect, connectors, isConnected]);
+  // useEffect(() => {
+  //   if (localStorage.getItem("connectorIndex") && !isConnected) {
+  //     const index = parseInt(localStorage.getItem("connectorIndex") as string);
+  //     connect(connectors[index]);
+  //   }
+  // }, [connect, connectors, isConnected]);
 
   return (
     <>

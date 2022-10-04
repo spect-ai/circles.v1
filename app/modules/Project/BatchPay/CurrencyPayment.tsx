@@ -12,7 +12,7 @@ import React, { useState } from "react";
 import { useQuery } from "react-query";
 import { Tooltip } from "react-tippy";
 import { toast } from "react-toastify";
-import { useNetwork } from "wagmi";
+import { useNetwork, useSwitchNetwork } from "wagmi";
 import { useLocalProject } from "../Context/LocalProjectContext";
 import { useLocalCard } from "../CreateCardModal/hooks/LocalCardContext";
 import { useBatchPayContext } from "./context/batchPayContext";
@@ -25,7 +25,8 @@ export default function CurrencyPayment() {
   const [gnosisLoading, setGnosisLoading] = useState(false);
   const { batchPayInfo, setStep, currencyCards, tokenCards, setIsOpen } =
     useBatchPayContext();
-  const { activeChain, switchNetworkAsync } = useNetwork();
+  const { chain } = useNetwork();
+  const { switchNetworkAsync } = useSwitchNetwork();
 
   const { updateProject } = useLocalProject();
   const { setCard, cardId } = useLocalCard();
@@ -196,7 +197,7 @@ export default function CurrencyPayment() {
                   loading={gnosisLoading}
                   onClick={async () => {
                     setGnosisLoading(true);
-                    if (activeChain?.id.toString() !== batchPayInfo?.chainId) {
+                    if (chain?.id.toString() !== batchPayInfo?.chainId) {
                       switchNetworkAsync &&
                         batchPayInfo &&
                         (await switchNetworkAsync(

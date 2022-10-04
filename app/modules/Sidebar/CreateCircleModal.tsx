@@ -1,13 +1,4 @@
-import {
-  Box,
-  Button,
-  IconPlus,
-  Input,
-  MediaPicker,
-  Stack,
-  Text,
-  Textarea,
-} from "degen";
+import { Box, Button, IconPlus, Input, MediaPicker, Stack, Text } from "degen";
 import React, { useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";

@@ -30,7 +30,6 @@ import CreateCircleCard from "./CircleCard/CreateCircleCard";
 import Onboarding from "./ExploreOnboarding";
 import ExploreOptions from "./ExploreOptions";
 import { SkeletonLoader } from "./SkeletonLoader";
-import TwitterLogo from "@/app/assets/icons/twitterLogo.svg";
 
 const ScrollContainer = styled(Box)`
   ::-webkit-scrollbar {
@@ -100,13 +99,12 @@ export const PopoverOption = ({
 };
 
 export default function Explore() {
-  const {
-    data: circles,
-    isLoading,
-    refetch,
-  } = useQuery<BucketizedCircleType>("exploreCircles", {
-    enabled: false,
-  });
+  const { data: circles, isLoading } = useQuery<BucketizedCircleType>(
+    "exploreCircles",
+    {
+      enabled: false,
+    }
+  );
   const { connectedUser } = useGlobal();
   useJoinCircle();
   const { onboarded } = useExploreOnboarding();
@@ -115,13 +113,11 @@ export default function Explore() {
   const [joinableCircles, setJoinableCircles] = useState<CircleType[]>([]);
   const [claimableCircles, setClaimableCircles] = useState<CircleType[]>([]);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
   const { setIsSidebarExpanded } = useGlobal();
   const { mode } = useTheme();
 
   useEffect(() => {
     if (circles && connectedUser) {
-      console.log(connectedUser);
       setJoinableCircles(circles.joinable);
       setClaimableCircles(circles.claimable);
       setIsSidebarExpanded(true);
@@ -136,7 +132,7 @@ export default function Explore() {
     if (circles && connectedUser && circles.memberOf?.length !== 0) {
       setFilteredCircles(circles.memberOf);
     }
-  }, [circles, connectedUser]);
+  }, [circles, connectedUser, setIsSidebarExpanded]);
 
   if (isLoading) {
     return <SkeletonLoader />;

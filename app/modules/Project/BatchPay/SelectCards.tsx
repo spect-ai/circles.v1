@@ -196,9 +196,8 @@ export default function SelectCards() {
                 const res = await getAgregatedPaymentInfo(
                   selectedCards,
                   project.cards[filteredCards[0]].reward.chain.chainId,
-                  true
+                  payOption.value === "circles"
                 );
-                console.log({ res });
                 // cards with token address 0x0
                 const currencyCards = selectedCards?.filter(
                   (card) => project.cards[card].reward.token.address === "0x0"

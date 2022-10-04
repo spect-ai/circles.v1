@@ -24,7 +24,6 @@ export default function ExploreSidebar() {
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
-  const { connectedUser } = useGlobal();
   const [showCollapseButton, setShowCollapseButton] = useState(false);
   const { mode } = useTheme();
   const router = useRouter();
@@ -51,7 +50,7 @@ export default function ExploreSidebar() {
             left="21rem"
           />
           <Box marginTop="2" marginX="1">
-            {connectedUser && (
+            {currentUser?.id && (
               <Stack key="Dashboard" direction="horizontal" space="0">
                 {/* <Box borderRightWidth="0.5" /> */}
                 <Box width="full" padding="1">
@@ -69,7 +68,7 @@ export default function ExploreSidebar() {
                 </Box>
               </Stack>
             )}
-            {connectedUser && (
+            {currentUser?.id && (
               <Stack key="Profile" direction="horizontal" space="0">
                 {/* <Box borderRightWidth="0.5" /> */}
                 <Box width="full" padding="1">
@@ -90,7 +89,7 @@ export default function ExploreSidebar() {
                 </Box>
               </Stack>
             )}
-            {!connectedUser && <ConnectModal />}
+            {!currentUser?.id && <ConnectModal />}
           </Box>
         </Container>
       </Stack>

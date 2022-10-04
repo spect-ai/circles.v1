@@ -76,3 +76,27 @@ export const joinCircleFromGuildxyz = async (circleId: string) => {
     return null;
   }
 };
+
+export const joinCircle = async (circleId: string) => {
+  const res = await fetch(
+    `${process.env.API_HOST}/circle/v1/${circleId}/join`,
+    {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+    }
+  );
+  if (res.ok) {
+    const data = await res.json();
+    toast("You have joined circle successfully", {
+      theme: "dark",
+    });
+    console.log({ data });
+    return data;
+  } else {
+    toast.error("Sorry, you dont meet the requirements to join this circle");
+    return null;
+  }
+};

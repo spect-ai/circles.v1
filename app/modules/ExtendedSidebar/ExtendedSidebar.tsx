@@ -1,5 +1,5 @@
 import React, { memo, ReactElement, useEffect } from "react";
-import { Box, Button } from "degen";
+import { Box } from "degen";
 import { motion } from "framer-motion";
 import { useRouter } from "next/router";
 import ExploreSidebar from "./ExploreSidebar";
@@ -10,6 +10,7 @@ import { UserType } from "@/app/types";
 import { toast } from "react-toastify";
 import { useGlobal } from "@/app/context/globalContext";
 import ProfileButton from "../Sidebar/ProfileButton";
+import { Connect } from "../Sidebar/ProfileButton/ConnectButton";
 
 const getUser = async () => {
   const res = await fetch(`${process.env.API_HOST}/user/me`, {
@@ -21,21 +22,31 @@ const getUser = async () => {
 function ExtendedSidebar(): ReactElement {
   const router = useRouter();
   const { circle: cId } = router.query;
-  const { connectedUser, connectUser } = useGlobal();
-  const { refetch } = useQuery<UserType>("getMyUser", getUser, {
-    enabled: false,
-  });
+  const { connectUser, connectedUser } = useGlobal();
+  const { data: currentUser, refetch } = useQuery<UserType>(
+    "getMyUser",
+    getUser,
+    {
+      enabled: false,
+    }
+  );
+
+  useEffect(() => {
+    if (!connectedUser && currentUser?.id) connectUser(currentUser.id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentUser, connectedUser]);
 
   useEffect(() => {
     refetch()
       .then((res) => {
         const data = res.data;
-        if (data) connectUser(data.id);
+        if (data?.id) connectUser(data.id);
       })
       .catch((err) => {
         console.log(err);
         toast.error("Could not fetch user data");
       });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -60,7 +71,7 @@ function ExtendedSidebar(): ReactElement {
         {cId && <CircleSidebar />}
 
         {connectedUser && <ProfileButton />}
-        {!connectedUser && cId && <ConnectModal />}
+        {!connectedUser && cId && <Connect />}
       </Box>
     </motion.div>
   );

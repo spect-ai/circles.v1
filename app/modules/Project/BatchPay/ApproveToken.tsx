@@ -3,13 +3,13 @@ import PrimaryButton from "@/app/common/components/PrimaryButton";
 import useERC20 from "@/app/services/Payment/useERC20";
 import { CircleType, Registry } from "@/app/types";
 import { QuestionCircleFilled } from "@ant-design/icons";
-import { Box, Button, Heading, IconCheck, Stack, Text, useTheme } from "degen";
+import { Box, Button, Heading, Stack, Text, useTheme } from "degen";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { Tooltip } from "react-tippy";
 import { toast } from "react-toastify";
-import { useAccount, useNetwork } from "wagmi";
+import { useAccount, useNetwork, useSwitchNetwork } from "wagmi";
 
 import { useBatchPayContext } from "./context/batchPayContext";
 import { ScrollContainer } from "./SelectCards";
@@ -25,10 +25,11 @@ export default function ApproveToken() {
     enabled: false,
   });
 
-  const { data } = useAccount();
+  const { address } = useAccount();
   const [loading, setLoading] = useState(true);
   const { batchPayInfo, setStep, setIsOpen } = useBatchPayContext();
-  const { activeChain, switchNetworkAsync } = useNetwork();
+  const { chain } = useNetwork();
+  const { switchNetworkAsync } = useSwitchNetwork();
 
   const { mode } = useTheme();
 
@@ -51,7 +52,7 @@ export default function ApproveToken() {
     setLoading(true);
     if (
       circle &&
-      activeChain?.id.toString() === circle.defaultPayment.chain.chainId &&
+      chain?.id.toString() === circle.defaultPayment.chain.chainId &&
       registry
     ) {
       const tokenStatus: any = {};
@@ -65,7 +66,7 @@ export default function ApproveToken() {
           registry[circle.defaultPayment.chain.chainId]
             .distributorAddress as string,
           batchPayInfo.approval.values[index],
-          circleSafe || data?.address || ""
+          circleSafe || address || ""
         );
         tokenStatus[address] = {
           loading: false,
@@ -93,7 +94,8 @@ export default function ApproveToken() {
       setLoading(false);
     }
     // set to final step if all tokens approved
-  }, [batchPayInfo, activeChain]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [batchPayInfo, chain]);
 
   if (!registry) {
     return <Heading>Registry not found</Heading>;

@@ -6,6 +6,9 @@ import Link from "next/link";
 import { useQuery } from "react-query";
 import React, { memo } from "react";
 import queryClient from "@/app/common/utils/queryClient";
+import { smartTrim } from "@/app/common/utils/utils";
+import { useAtom } from "jotai";
+import { authStatusAtom } from "@/pages/_app";
 
 const TaskWalletHeader = ({ userData }: { userData: UserType }) => {
   const { setIsProfilePanelExpanded, disconnectUser } = useGlobal();
@@ -13,6 +16,9 @@ const TaskWalletHeader = ({ userData }: { userData: UserType }) => {
     enabled: false,
   });
   const { disconnect } = useDisconnect();
+  const [authenticationStatus, setAuthenticationStatus] =
+    useAtom(authStatusAtom);
+
   return (
     <Box
       paddingBottom="4"
@@ -34,10 +40,10 @@ const TaskWalletHeader = ({ userData }: { userData: UserType }) => {
       />
       <Box style={{ gap: "1.5rem" }}>
         <Text variant="extraLarge" weight="semiBold">
-          {userData?.username}
+          {smartTrim(userData?.username, 16)}
         </Text>
         <Tag tone="purple" size="small">
-          {userData?.ethAddress?.substring(0, 20) + "..."}
+          {smartTrim(userData?.ethAddress, 12)}
         </Tag>
       </Box>
       <Box
@@ -71,6 +77,7 @@ const TaskWalletHeader = ({ userData }: { userData: UserType }) => {
               queryClient.setQueryData("getMyUser", null);
               void queryClient.invalidateQueries("getMyUser");
               localStorage.removeItem("connectorIndex");
+              setAuthenticationStatus("unauthenticated");
               disconnectUser();
             }}
           >

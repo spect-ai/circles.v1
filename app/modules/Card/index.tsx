@@ -90,9 +90,7 @@ function Card() {
     card,
     cardType,
     columnId,
-    kudosMinted,
   } = useLocalCard();
-  console.log(kudosMinted);
   const { canTakeAction } = useRoleGate();
   const { viewName } = useGlobal();
 

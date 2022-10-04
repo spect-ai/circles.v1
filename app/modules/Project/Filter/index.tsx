@@ -57,10 +57,12 @@ export default function Filter() {
     id: project?.columnDetails[column].name,
   }));
 
-  const circles = circle?.children.map((c) => ({
-    name: c.name,
-    id: c.id,
-  }));
+  const circles =
+    circle?.children &&
+    circle?.children.map((c) => ({
+      name: c.name,
+      id: c.id,
+    }));
 
   const [reviewer, setReviewer] = useState<string[]>(
     currentFilter?.reviewer || []
@@ -69,14 +71,14 @@ export default function Filter() {
     currentFilter?.assignee || []
   );
   const [assignedCircle, setAssignedCircle] = useState(
-    currentFilter.assignedCircle || []
+    currentFilter?.assignedCircle || []
   );
 
   const [label, setLabels] = useState<string[]>(currentFilter?.label || []);
   const [title, setTitle] = useState<string>(currentFilter?.title || "");
   const [column, setColumn] = useState<string[]>(currentFilter?.column || []);
   const [priority, setPriority] = useState<string[]>(
-    currentFilter.priority || []
+    currentFilter?.priority || []
   );
   const [type, setType] = useState<string[]>(currentFilter?.type || []);
 
