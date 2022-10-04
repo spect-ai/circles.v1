@@ -1,5 +1,5 @@
 import { FC, useState } from "react";
-import { Box, Stack, Text, useTheme } from "degen";
+import { Box, IconChevronDown, Stack, Text, useTheme } from "degen";
 import styled from "styled-components";
 import Popover from "../Popover";
 import Link from "next/link";
@@ -73,28 +73,24 @@ const DropdownOption = ({ name, href, children }: CrumbWithChildren) => {
       butttonComponent={
         <Box
           cursor="pointer"
-          onClick={() => setIsOpen(!isOpen)}
-          color="foreground"
+          onClick={() => setIsOpen(true)}
+          paddingTop="0.5"
+          paddingX="0.5"
         >
-          <Text>{name}</Text>
+          <Text>
+            <IconChevronDown size="5" />
+          </Text>
         </Box>
       }
       isOpen={isOpen}
       setIsOpen={setIsOpen}
+      width="fit"
     >
       <ScrollContainer
         backgroundColor="background"
         borderWidth="0.5"
         borderRadius="2xLarge"
       >
-        <PopoverOption
-          onClick={() => {
-            void router.push(href);
-            setIsOpen(false);
-          }}
-        >
-          <Text>{name}</Text>
-        </PopoverOption>
         {children?.map(({ name, href }) => (
           <PopoverOption
             onClick={() => {
@@ -113,36 +109,26 @@ const DropdownOption = ({ name, href, children }: CrumbWithChildren) => {
 
 const Breadcrumbs: FC<Props> = ({ crumbs }) => {
   return (
-    <Box>
-      <Stack direction="horizontal" space="2">
-        {crumbs.map((crumb, index) => (
-          <Stack direction="horizontal" space="2" key={index}>
-            <Container href={crumb.href}>
-              {crumb.children ? (
-                <DropdownOption {...crumb} />
+    <Stack direction="horizontal" space="2">
+      {crumbs.map((crumb, index) => (
+        <Stack direction="horizontal" space="2" key={crumb.href}>
+          <Container key={crumb.href}>
+            <Text>
+              {crumb.href ? (
+                <Link href={crumb.href}>{crumb.name}</Link>
               ) : (
-                <Text>
-                  {crumb.href ? (
-                    <Link href={crumb.href}>{crumb.name}</Link>
-                  ) : (
-                    crumb.name
-                  )}
-                </Text>
+                crumb.name
               )}
-              {/* <Text>
-                {crumb.href ? (
-                  <Link href={crumb.href}>{crumb.name}</Link>
-                ) : (
-                  crumb.name
-                )}
-              </Text> */}
-            </Container>
+            </Text>
+          </Container>
 
-            {index !== crumbs.length - 1 && <Text>/</Text>}
-          </Stack>
-        ))}
-      </Stack>
-    </Box>
+          {crumb.children && crumb.children?.length > 0 && (
+            <DropdownOption {...crumb} />
+          )}
+          {index !== crumbs.length - 1 && <Text>/</Text>}
+        </Stack>
+      ))}
+    </Stack>
   );
 };
 

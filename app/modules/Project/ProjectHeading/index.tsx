@@ -15,6 +15,8 @@ import {
   AppstoreOutlined,
   TableOutlined,
 } from "@ant-design/icons";
+import Breadcrumbs from "@/app/common/components/Breadcrumbs";
+import { useCircle } from "../../Circle/CircleContext";
 
 export const IconButton = styled(Box)`
   cursor: pointer;
@@ -30,6 +32,7 @@ function ProjectHeading() {
   const router = useRouter();
   const { circle: cId, project: pId, view: vId } = router.query;
   const { setViewName, viewName, view, setView } = useGlobal();
+  const { navigationBreadcrumbs } = useCircle();
 
   const defaultView = () => {
     if (viewName.length > 0) setViewName("");
@@ -41,22 +44,22 @@ function ProjectHeading() {
       width="full"
       display="flex"
       flexDirection="column"
-      alignItems="center"
       // borderBottomWidth="0.375"
       paddingLeft="3"
       paddingRight="5"
     >
+      <Box marginLeft="4" marginTop="2">
+        {navigationBreadcrumbs && (
+          <Breadcrumbs crumbs={navigationBreadcrumbs} />
+        )}
+      </Box>
       <Box
         width="full"
-        height="16"
+        height="14"
         display="flex"
         flexDirection="row"
         justifyContent="space-between"
         alignItems="center"
-        style={{
-          paddingTop: "0.5rem",
-          paddingBottom: "0.0rem",
-        }}
       >
         <Stack direction="horizontal" align="center">
           {!loading && (
