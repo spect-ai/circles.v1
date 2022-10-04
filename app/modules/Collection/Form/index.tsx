@@ -37,6 +37,8 @@ export function Form() {
     setPropertyOrder(collection.propertyOrder);
   }, [collection]);
 
+  console.log({ collection });
+
   const handleDragCollectionProperty = (result: DropResult) => {
     const { destination, source, draggableId, type } = result;
 
