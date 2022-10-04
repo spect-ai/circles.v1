@@ -2,7 +2,7 @@ import Loader from "@/app/common/components/Loader";
 import useCircleOnboarding from "@/app/services/Onboarding/useCircleOnboarding";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { ApartmentOutlined } from "@ant-design/icons";
-import { Box, Button, useTheme } from "degen";
+import { Box, Button, useTheme, Text } from "degen";
 import { AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import { ToastContainer } from "react-toastify";
@@ -12,6 +12,8 @@ import RetroPage from "../Retro";
 import { useCircle } from "./CircleContext";
 import Onboarding from "./CircleOnboarding";
 import CircleOverview from "./CircleOverview";
+import { useRouter } from "next/router";
+import { useGlobal } from "@/app/context/globalContext";
 
 const BoxContainer = styled(Box)`
   width: calc(100vw - 4rem);
@@ -19,14 +21,32 @@ const BoxContainer = styled(Box)`
 
 export default function Circle() {
   const { circle, isLoading, memberDetails, page } = useCircle();
+  const { connectedUser } = useGlobal();
   const { canDo } = useRoleGate();
   const { onboarded } = useCircleOnboarding();
   const { mode } = useTheme();
   const [graphOpen, setGraphOpen] = useState(false);
+  const router = useRouter();
 
   if (isLoading || !circle || !memberDetails) {
     return <Loader text="...." loading />;
   }
+
+  if (circle?.unauthorized)
+    return (
+      <BoxContainer padding={"16"}>
+        <Text size="headingTwo" weight="semiBold" ellipsis>
+          This circle is private
+        </Text>
+        <Button
+          size="large"
+          variant="transparent"
+          onClick={() => router.back()}
+        >
+          <Text size="extraLarge">Go Back</Text>
+        </Button>
+      </BoxContainer>
+    );
 
   return (
     <BoxContainer paddingX="8" paddingTop="4">

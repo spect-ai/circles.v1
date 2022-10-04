@@ -44,7 +44,7 @@ export default function Filter() {
 
   useEffect(() => {
     if (circle) {
-      const circleMembersArray = circle?.members.map((mem) => ({
+      const circleMembersArray = circle?.members?.map((mem) => ({
         name: memberDetails?.memberDetails[mem]?.username as string,
         id: mem,
       }));

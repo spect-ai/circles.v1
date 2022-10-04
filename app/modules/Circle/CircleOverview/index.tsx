@@ -82,7 +82,7 @@ const Toggle: FunctionComponent<Props> = ({ toggle, setToggle }) => {
 };
 
 export default function CircleOverview() {
-  const { isSidebarExpanded } = useGlobal();
+  const { isSidebarExpanded, groupBy, setGroupBy } = useGlobal();
   const router = useRouter();
   const { circle: cId, retroSlug } = router.query;
   const {
@@ -97,7 +97,6 @@ export default function CircleOverview() {
   const [isRetroOpen, setIsRetroOpen] = useState(false);
   const [toggle, setToggle] =
     useState<"Overview" | "Members" | "Roles">("Overview");
-  const [groupBy, setGroupBy] = useState<"Folder" | "Type">("Folder");
   const [filteredProjects, setFilteredProjects] = useState(circle?.projects);
   const [filteredCollections, setFilteredCollections] = useState(
     circle?.collections

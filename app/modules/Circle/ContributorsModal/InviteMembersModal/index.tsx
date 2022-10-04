@@ -55,7 +55,7 @@ function InviteMemberModal() {
       </Box>
       <AnimatePresence>
         {isOpen && (
-          <Modal title="Create Invite" handleClose={handleClose}>
+          <Modal title="Create Invite" handleClose={handleClose} zIndex={2}>
             <Box
               padding="8"
               display="flex"
