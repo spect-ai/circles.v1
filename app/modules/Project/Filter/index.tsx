@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { Box, Button, useTheme, Text } from "degen";
 import { FilterOutlined } from "@ant-design/icons";
-import { CircleType, MemberDetails } from "@/app/types";
+import { MemberDetails } from "@/app/types";
 import MultiSelectDropdown, {
   OptionType,
   Input,
@@ -57,10 +57,12 @@ export default function Filter() {
     id: project?.columnDetails[column].name,
   }));
 
-  const circles = circle?.children && Object.values(circle?.children).map((c) => ({
-    name: c.name,
-    id: c.id,
-  }));
+  const circles =
+    circle?.children &&
+    Object.values(circle?.children).map((c) => ({
+      name: c.name,
+      id: c.id,
+    }));
 
   const [reviewer, setReviewer] = useState<string[]>(
     currentFilter?.reviewer || []
