@@ -33,7 +33,6 @@ export default function useDragFolder() {
       return;
     }
     if (type === "folder") {
-      console.log("Reordering folders");
       const newFolderOrder = reorder(
         circle.folderOrder,
         source.index,
@@ -59,7 +58,6 @@ export default function useDragFolder() {
           if (data?.id) {
             setCircleData(data);
           }
-          console.log({ data });
         })
         .catch((err) => {
           console.log({ err });
@@ -71,9 +69,6 @@ export default function useDragFolder() {
     const finish = circle.folderDetails[destination.droppableId];
 
     if (start === finish) {
-      console.log(
-        "Content shifted from folder to same folder at different index"
-      );
       const newList = reorder(
         start.contentIds,
         source.index,
@@ -97,7 +92,6 @@ export default function useDragFolder() {
           circle.id,
           source.droppableId
         );
-        console.log({ res });
         if (res?.id) {
           setCircleData(res);
         }
@@ -105,7 +99,6 @@ export default function useDragFolder() {
       void update();
       return;
     } else {
-      console.log("Content shifted from folder to another folder");
       const startContentIds = Array.from(start.contentIds);
       startContentIds.splice(source.index, 1);
       const newStart = {
@@ -135,7 +128,7 @@ export default function useDragFolder() {
             { id: newFinish.id, contentIds: finishContentIds },
           ],
         });
-        console.log({ res });
+        ({ res });
         if (res?.id) {
           setCircleData(res);
         }
