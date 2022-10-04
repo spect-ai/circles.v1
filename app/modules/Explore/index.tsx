@@ -251,7 +251,7 @@ export default function Explore() {
                     </PopoverOption>
                     <PopoverOption
                       onClick={() => {
-                        window.open("https://discord.gg/6WhHZ7sm", "_blank");
+                        window.open("https://discord.gg/sbPnAdKA6c", "_blank");
                       }}
                     >
                       <Stack direction="horizontal" space="1">
