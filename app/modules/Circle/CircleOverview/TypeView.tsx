@@ -136,7 +136,7 @@ export const TypeView = ({
           )}
         </Row>
       </Container>
-      {/* <Stack direction="horizontal" align="center">
+      <Stack direction="horizontal" align="center">
         <Text size="headingTwo" weight="semiBold" ellipsis>
           Forms
         </Text>
@@ -169,7 +169,7 @@ export const TypeView = ({
             </Box>
           )}
         </Row>
-      </Container> */}
+      </Container>
       <Stack direction="horizontal" align="center">
         <Text size="headingTwo" weight="semiBold" ellipsis>
           Retro

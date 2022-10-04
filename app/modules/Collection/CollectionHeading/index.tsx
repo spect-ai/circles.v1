@@ -1,7 +1,5 @@
 import { useGlobal } from "@/app/context/globalContext";
-import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { Box, Button, Stack, Text, useTheme } from "degen";
-import { useRouter } from "next/router";
 import { memo } from "react";
 import Skeleton from "react-loading-skeleton";
 import styled from "styled-components";
@@ -16,13 +14,9 @@ export const IconButton = styled(Box)`
 
 function CollectionHeading() {
   const { localCollection: collection, loading } = useLocalCollection();
-  const { canDo } = useRoleGate();
   const { mode } = useTheme();
-  const router = useRouter();
-  const { circle: cId, collection: colId } = router.query;
-  const { setViewName, viewName, view, setView } = useGlobal();
+  const { setViewName, viewName } = useGlobal();
 
-  console.log(collection);
   const defaultView = () => {
     if (viewName.length > 0) setViewName("");
   };

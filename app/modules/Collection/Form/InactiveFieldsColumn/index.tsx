@@ -1,12 +1,8 @@
-import { Box, Stack, Text } from "degen";
-import { memo, useCallback, useState } from "react";
-import {
-  Draggable,
-  DraggableProvided,
-  Droppable,
-  DroppableProvided,
-} from "react-beautiful-dnd";
+import { Box, Stack } from "degen";
+import { memo, useCallback } from "react";
+import { Droppable, DroppableProvided } from "react-beautiful-dnd";
 import styled from "styled-components";
+import AddField from "../../AddField";
 import { useLocalCollection } from "../../Context/LocalCollectionContext";
 import InactiveFieldComponent from "../InactiveField";
 
@@ -23,7 +19,6 @@ const ScrollContainer = styled(Box)`
   ::-webkit-scrollbar {
     width: 0px;
   }
-  height: calc(100vh - 6rem);
   border-radius: 0.5rem;
   overflow-y: auto;
 `;
@@ -33,16 +28,11 @@ type Props = {
 };
 
 function InactiveFieldsColumnComponent({ fields }: Props) {
-  const [isOpen, setIsOpen] = useState(false);
-  const [isDirty, setIsDirty] = useState(false);
-  const [showConfirm, setShowConfirm] = useState(false);
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const { localCollection: collection, setLocalCollection } =
-    useLocalCollection();
+  const { updateCollection } = useLocalCollection();
 
   const FieldDraggable = (provided: DroppableProvided) => (
     <ScrollContainer {...provided.droppableProps} ref={provided.innerRef}>
-      <Box>
+      <Stack space="1">
         {fields?.map((field, idx) => {
           if (field) {
             return (
@@ -51,20 +41,21 @@ function InactiveFieldsColumnComponent({ fields }: Props) {
           }
         })}
         {provided.placeholder}
-      </Box>
+      </Stack>
     </ScrollContainer>
   );
 
   const FieldDraggableCallback = useCallback(FieldDraggable, [fields]);
 
   return (
-    <>
-      <Container>
+    <Container>
+      <Stack space="2">
         <Droppable droppableId="inactiveFields" type="field">
           {FieldDraggableCallback}
         </Droppable>
-      </Container>
-    </>
+        <AddField />
+      </Stack>
+    </Container>
   );
 }
 

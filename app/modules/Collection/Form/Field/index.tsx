@@ -4,31 +4,14 @@ import Dropdown, {
 import MultiSelectDropdown, {
   OptionType as MultiSelectOptionType,
 } from "@/app/common/components/MultiSelectDropDown/MultiSelectDropDown";
-import { PriorityIcon } from "@/app/common/components/PriorityIcon";
-import { monthMap } from "@/app/common/utils/constants";
-import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
-import { CardType, MemberDetails } from "@/app/types";
-import {
-  Avatar,
-  AvatarGroup,
-  Box,
-  IconEth,
-  Input,
-  Stack,
-  Tag,
-  Text,
-  Textarea,
-  useTheme,
-} from "degen";
+import { Box, Input, Text, Textarea, useTheme } from "degen";
 import { ethers } from "ethers";
-import { useRouter } from "next/router";
-import React, { memo, useCallback, useMemo, useState } from "react";
+import React, { memo, useCallback } from "react";
 import {
   Draggable,
   DraggableProvided,
   DraggableStateSnapshot,
 } from "react-beautiful-dnd";
-import { useQuery } from "react-query";
 import styled from "styled-components";
 import { useLocalCollection } from "../../Context/LocalCollectionContext";
 
@@ -39,7 +22,13 @@ type Props = {
 
 const Container = styled(Box)<{ isDragging: boolean; mode: string }>`
   border-color: ${(props) => props.isDragging && "rgb(191, 90, 242, 1)"};
-  border-width: ${(props) => props.isDragging && "2px"};
+  border: ${(props) =>
+    props.isDragging
+      ? "2px solid rgb(191, 90, 242, 1)"
+      : "2px solid transparent"};
+
+  transition: border-color 0.5s ease;
+
   &:hover {
     border-color: ${(props) =>
       props.mode === "dark" ? "rgb(255, 255, 255, 0.1)" : "rgb(20,20,20,0.1)"};
@@ -48,11 +37,7 @@ const Container = styled(Box)<{ isDragging: boolean; mode: string }>`
 `;
 
 function FieldComponent({ id, index }: Props) {
-  const router = useRouter();
-  const { localCollection: collection, setLocalCollection } =
-    useLocalCollection();
-  const [hover, setHover] = useState(false);
-  const [isBioDirty, setIsBioDirty] = useState(false);
+  const { localCollection: collection } = useLocalCollection();
 
   const { mode } = useTheme();
 
@@ -68,12 +53,12 @@ function FieldComponent({ id, index }: Props) {
       margin="1"
       borderRadius="large"
       isDragging={snapshot.isDragging}
-      onMouseEnter={() => {
-        setHover(true);
-      }}
-      onMouseLeave={() => {
-        setHover(false);
-      }}
+      // onMouseEnter={() => {
+      //   setHover(true);
+      // }}
+      // onMouseLeave={() => {
+      //   setHover(false);
+      // }}
       mode={mode}
     >
       <Box>
@@ -110,7 +95,6 @@ function FieldComponent({ id, index }: Props) {
                 value={collection.data && collection.data[id]}
                 onChange={(e) => {
                   //  setBio(e.target.value);
-                  setIsBioDirty(true);
                 }}
               />
             </Box>

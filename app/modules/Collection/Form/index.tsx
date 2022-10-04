@@ -1,15 +1,14 @@
-import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { Box, IconPlusSmall, Stack, Text } from "degen";
-import { useCallback } from "react";
+import { reorder } from "@/app/common/utils/utils";
+import { Box, Stack } from "degen";
+import { useCallback, useEffect, useState } from "react";
 import {
   DragDropContext,
   Droppable,
   DroppableProvided,
+  DropResult,
 } from "react-beautiful-dnd";
-import { toast } from "react-toastify";
 import styled from "styled-components";
 import { SkeletonLoader } from "../../Explore/SkeletonLoader";
-import useDragCollectionProperty from "../../Project/Hooks/useDragCollectionProperty";
 import { useLocalCollection } from "../Context/LocalCollectionContext";
 import ColumnComponent from "./Column";
 import InactiveFieldsColumnComponent from "./InactiveFieldsColumn";
@@ -30,33 +29,43 @@ const Container = styled.div`
 `;
 
 export function Form() {
-  const { handleDragCollectionProperty } = useDragCollectionProperty();
-  const {
-    localCollection: collection,
-    setLocalCollection,
-    loading,
-    advFilters,
-  } = useLocalCollection();
+  const { localCollection: collection, loading } = useLocalCollection();
+
+  const [propertyOrder, setPropertyOrder] = useState(collection.propertyOrder);
+
+  useEffect(() => {
+    setPropertyOrder(collection.propertyOrder);
+  }, [collection]);
+
+  const handleDragCollectionProperty = (result: DropResult) => {
+    const { destination, source, draggableId, type } = result;
+
+    if (!destination) {
+      return;
+    }
+
+    if (
+      destination?.droppableId === source.droppableId &&
+      destination?.index === source.index
+    ) {
+      return;
+    }
+
+    if (destination?.droppableId === "activeFields")
+      setPropertyOrder(reorder(propertyOrder, source.index, destination.index));
+  };
 
   const DroppableContent = (provided: DroppableProvided) => (
     <Container {...provided.droppableProps} ref={provided.innerRef}>
       <Stack direction="horizontal">
-        <Box display="flex" flexDirection="column">
-          <ColumnComponent fields={collection.propertyOrder} />
-          );
-        </Box>
-        <Box display="flex" flexDirection="column">
-          <InactiveFieldsColumnComponent fields={["a", "b", "c"]} />
-          );
-        </Box>
+        <ColumnComponent fields={propertyOrder} />
+        <InactiveFieldsColumnComponent fields={["budget"]} />
       </Stack>
     </Container>
   );
 
   const DroppableContentCallback = useCallback(DroppableContent, [
-    collection?.propertyOrder,
-    collection.id,
-    setLocalCollection,
+    propertyOrder,
   ]);
 
   if (loading) {

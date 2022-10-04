@@ -79,7 +79,7 @@ const Dropdown: FC<Props> = ({ options, selected, onChange, title }) => {
 
   return (
     <>
-      <Box style={{ width: "20rem" }}>
+      <Box width="full">
         <Input
           ref={setAnchorElement}
           label={title}

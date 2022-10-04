@@ -132,13 +132,15 @@ export default function SelectCards() {
           </Tooltip>
         </Stack>
         <Stack direction="horizontal" align={"center"}>
-          <Dropdown
-            options={columns}
-            selected={column}
-            onChange={(option) => {
-              setColumn(option);
-            }}
-          />
+          <Box width="1/3">
+            <Dropdown
+              options={columns}
+              selected={column}
+              onChange={(option) => {
+                setColumn(option);
+              }}
+            />
+          </Box>
           <Select
             options={[
               { label: "Pay Assignee", value: "assignees" },

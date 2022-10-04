@@ -1,3 +1,4 @@
+import { reorder } from "@/app/common/utils/utils";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { CardType, ColumnType } from "@/app/types";
 import { DropResult } from "react-beautiful-dnd";
@@ -9,13 +10,6 @@ export default function useDragEnd() {
     useLocalProject();
   const { canMoveCard } = useRoleGate();
 
-  const reorder = (list: string[], startIndex: number, endIndex: number) => {
-    const result = Array.from(list);
-    const [removed] = result.splice(startIndex, 1);
-    result.splice(endIndex, 0, removed);
-
-    return result;
-  };
   const handleDragEnd = (result: DropResult) => {
     const { destination, source, draggableId, type } = result;
     if (!canMoveCard(localProject.cards[draggableId])) {

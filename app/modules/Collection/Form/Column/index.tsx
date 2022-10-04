@@ -1,11 +1,6 @@
-import { Box, Stack, Text } from "degen";
+import { Box, Stack } from "degen";
 import { memo, useCallback, useState } from "react";
-import {
-  Draggable,
-  DraggableProvided,
-  Droppable,
-  DroppableProvided,
-} from "react-beautiful-dnd";
+import { Droppable, DroppableProvided } from "react-beautiful-dnd";
 import styled from "styled-components";
 import { useLocalCollection } from "../../Context/LocalCollectionContext";
 import FieldComponent from "../Field";
@@ -18,8 +13,7 @@ const Container = styled(Box)`
   scrollbar-width: none;
   overflow-y: none;
   width: 36rem;
-  margin-top: 4rem;
-  border-width: 0.2rem;
+  border-width: 2px;
   padding: 2rem;
 `;
 
@@ -27,7 +21,6 @@ const ScrollContainer = styled(Box)`
   ::-webkit-scrollbar {
     width: 0px;
   }
-  height: calc(100vh - 6rem);
   border-radius: 0.5rem;
   overflow-y: auto;
 `;
@@ -59,7 +52,7 @@ const DescriptionInput = styled.input`
   font-size: 1.2rem;
   caret-color: rgb(255, 255, 255, 0.5);
   color: rgb(255, 255, 255, 0.5);
-  font-weight: 600;
+  font-weight: 400;
 `;
 
 type Props = {
@@ -67,12 +60,9 @@ type Props = {
 };
 
 function ColumnComponent({ fields }: Props) {
-  const [isOpen, setIsOpen] = useState(false);
-  const [isDirty, setIsDirty] = useState(false);
-  const [showConfirm, setShowConfirm] = useState(false);
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const { localCollection: collection, setLocalCollection } =
-    useLocalCollection();
+  const { localCollection: collection } = useLocalCollection();
+  const [title, setTitle] = useState(collection.name);
+  const [description, setDescription] = useState(collection.description);
 
   const FieldDraggable = (provided: DroppableProvided) => (
     <ScrollContainer {...provided.droppableProps} ref={provided.innerRef}>
@@ -91,25 +81,23 @@ function ColumnComponent({ fields }: Props) {
 
   return (
     <ScrollContainer>
-      <Container>
+      <Container borderRadius="2xLarge">
         <Box width="full" height="16" marginBottom="8">
           <Stack direction="vertical">
             <NameInput
               placeholder="Enter title"
               autoFocus
-              value={collection.name}
+              value={title}
               onChange={(e) => {
-                setIsDirty(true);
-                //setTitle(e.target.value);
+                setTitle(e.target.value);
               }}
             />
             <DescriptionInput
               placeholder="Enter description"
               autoFocus
-              value={collection.description}
+              value={description}
               onChange={(e) => {
-                setIsDirty(true);
-                //setTitle(e.target.value);
+                setDescription(e.target.value);
               }}
             />
           </Stack>
