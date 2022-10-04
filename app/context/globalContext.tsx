@@ -34,6 +34,8 @@ interface GlobalContextType {
   setCalendarView: React.Dispatch<React.SetStateAction<ViewMode>>;
   socket: Socket;
   setSocket: React.Dispatch<React.SetStateAction<Socket>>;
+  groupBy: "Folder" | "Type";
+  setGroupBy: React.Dispatch<React.SetStateAction<"Folder" | "Type">>;
 }
 
 const useProviderGlobalContext = () => {
@@ -46,6 +48,8 @@ const useProviderGlobalContext = () => {
 
   const [isProfilePanelExpanded, setIsProfilePanelExpanded] = useState(false);
   const [quickProfileUser, setQuickProfileUser] = useState("");
+
+  const [groupBy, setGroupBy] = useState<"Folder" | "Type">("Folder");
 
   const [viewName, setViewName] = useState("" as string);
   const [view, setView] = useState(0);
@@ -117,6 +121,8 @@ const useProviderGlobalContext = () => {
     setNotifSeen,
     currentFilter,
     setCurrentFilter,
+    groupBy,
+    setGroupBy,
     socket,
     setSocket,
   };
