@@ -6,7 +6,7 @@ import {
 } from "@/app/services/JoinCircle";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { UserType } from "@/app/types";
-import { Box, IconSearch, Input, Stack, useTheme } from "degen";
+import { Box, IconSearch, Input, useTheme } from "degen";
 import { matchSorter } from "match-sorter";
 import React, { useEffect, useState } from "react";
 import { useQuery } from "react-query";
@@ -55,54 +55,6 @@ function CircleMembers() {
 
   return (
     <Box>
-      <Stack align={"center"}>
-        {!circle.members.includes(connectedUser) &&
-          circle.discordGuildId &&
-          currentUser?.discordId && (
-            <Tooltip
-              title="You can join circle if you have an eligible discord role"
-              theme={mode}
-              position="left"
-            >
-              <PrimaryButton
-                loading={loading}
-                onClick={async () => {
-                  setLoading(true);
-                  const data = await joinCircleFromDiscord(circle.id);
-                  if (data) {
-                    setCircleData(data);
-                    fetchMemberDetails();
-                  }
-                  setLoading(false);
-                }}
-              >
-                Join Circle
-              </PrimaryButton>
-            </Tooltip>
-          )}
-        {!circle.members.includes(connectedUser) && circle.guildxyzId && (
-          <Tooltip
-            title="You can join circle if you have an eligible guildxyz role"
-            theme={mode}
-            position="left"
-          >
-            <PrimaryButton
-              loading={loading}
-              onClick={async () => {
-                setLoading(true);
-                const data = await joinCircleFromGuildxyz(circle.id);
-                if (data) {
-                  setCircleData(data);
-                  fetchMemberDetails();
-                }
-                setLoading(false);
-              }}
-            >
-              Join Circle
-            </PrimaryButton>
-          </Tooltip>
-        )}
-      </Stack>
       <Box
         style={{
           display: "flex",
@@ -123,6 +75,52 @@ function CircleMembers() {
             );
           }}
         />
+          {!circle.members.includes(connectedUser) &&
+            circle.discordGuildId &&
+            currentUser?.discordId && (
+              <Tooltip
+                title="You can join circle if you have an eligible discord role"
+                theme={mode}
+                position="top"
+              >
+                <PrimaryButton
+                  loading={loading}
+                  onClick={async () => {
+                    setLoading(true);
+                    const data = await joinCircleFromDiscord(circle.id);
+                    if (data) {
+                      setCircleData(data);
+                      fetchMemberDetails();
+                    }
+                    setLoading(false);
+                  }}
+                >
+                  Join Circle
+                </PrimaryButton>
+              </Tooltip>
+            )}
+          {!circle.members.includes(connectedUser) && circle.guildxyzId && (
+            <Tooltip
+              title="You can join circle if you have an eligible guildxyz role"
+              theme={mode}
+              position="top"
+            >
+              <PrimaryButton
+                loading={loading}
+                onClick={async () => {
+                  setLoading(true);
+                  const data = await joinCircleFromGuildxyz(circle.id);
+                  if (data) {
+                    setCircleData(data);
+                    fetchMemberDetails();
+                  }
+                  setLoading(false);
+                }}
+              >
+                Join Circle
+              </PrimaryButton>
+            </Tooltip>
+          )}
         {canDo("inviteMembers") && (
           <Box width={"1/3"} marginTop="2">
             <InviteMemberModal />

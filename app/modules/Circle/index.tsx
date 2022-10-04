@@ -32,9 +32,9 @@ export default function Circle() {
     return <Loader text="...." loading />;
   }
 
-  if (!circle.members.includes(connectedUser))
+  if (!circle.members.includes(connectedUser) && circle?.private)
     return (
-      <>
+      <BoxContainer padding={"16"}>
         <Text size="headingTwo" weight="semiBold" ellipsis>
           This circle is private
         </Text>
@@ -45,7 +45,7 @@ export default function Circle() {
         >
           <Text size="extraLarge">Go Back</Text>
         </Button>
-      </>
+      </BoxContainer>
     );
 
   return (
