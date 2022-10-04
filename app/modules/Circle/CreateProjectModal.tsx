@@ -110,7 +110,6 @@ function CreateProjectModal({ folderId }: { folderId?: string }) {
         const payload = {
           contentIds: prev,
         };
-        console.log(payload);
         await updateFolder(payload, circle?.id, folderId);
       } else if (circle?.folderOrder.length !== 0) {
         const folder = Object.entries(circle?.folderDetails)?.find(
@@ -123,7 +122,6 @@ function CreateProjectModal({ folderId }: { folderId?: string }) {
         const payload = {
           contentIds: prev,
         };
-        console.log(payload);
         await updateFolder(payload, circle?.id, folder?.[0] as string);
       }
       fetchCircle();
@@ -139,10 +137,7 @@ function CreateProjectModal({ folderId }: { folderId?: string }) {
     <>
       <Loader loading={isLoading} text="Creating your project" />
       {folderId ? (
-        <Tooltip
-          html={<Text>Create Project</Text>}
-          theme={mode}
-        >
+        <Tooltip html={<Text>Create Project</Text>} theme={mode}>
           <Button
             size="small"
             variant="transparent"

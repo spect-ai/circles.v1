@@ -33,7 +33,7 @@ interface Props {
 const Container = styled.div`
   display: flex;
   flex-direction: row;
-  height: calc(100vh - 7rem);
+  height: calc(100vh - 9rem);
   @media only screen and (min-width: 0px) {
     max-width: calc(100vw - 5rem);
     padding: 0 0.1rem;

@@ -9,8 +9,6 @@ import Filter from "../Filter";
 import { useGlobal } from "@/app/context/globalContext";
 import CardComponent from "@/app/modules/Project/CardComponent/index";
 import { Droppable, DroppableProvided } from "react-beautiful-dnd";
-import Breadcrumbs from "@/app/common/components/Breadcrumbs";
-import { useCircle } from "../../Circle/CircleContext";
 
 type ColumnProps = {
   cards: CardType[];
@@ -209,8 +207,6 @@ function AdvancedOptions() {
   const [sortIsOpen, setSortIsOpen] = useState(false);
   const [groupByIsOpen, setGroupByIsOpen] = useState(false);
   const { mode } = useTheme();
-
-  const { navigationBreadcrumbs } = useCircle();
 
   return (
     <Box display="flex" flexDirection="column" width="full">
@@ -426,11 +422,6 @@ function AdvancedOptions() {
           )}
         </Box>
       </BoundingBox>
-      <Box marginLeft="2">
-        {navigationBreadcrumbs && (
-          <Breadcrumbs crumbs={navigationBreadcrumbs} />
-        )}
-      </Box>
     </Box>
   );
 }

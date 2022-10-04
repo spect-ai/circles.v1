@@ -34,7 +34,6 @@ export const createFolder = async (
       }
     );
     const data = await res.json();
-    console.log(data);
     if (data.id) {
       return data;
     } else {

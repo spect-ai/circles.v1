@@ -154,6 +154,11 @@ export default function CircleOverview() {
           <BatchPay setIsOpen={setIsBatchPayOpen} retro={retro} />
         )}
       </AnimatePresence>
+      <Box marginTop="1">
+        {navigationBreadcrumbs && (
+          <Breadcrumbs crumbs={navigationBreadcrumbs} />
+        )}
+      </Box>
       <Stack direction="horizontal">
         <Box
           style={{
@@ -236,9 +241,6 @@ export default function CircleOverview() {
                   <Box width={"1/3"} marginTop="2">
                     <InviteMemberModal />
                   </Box>
-                )}
-                {navigationBreadcrumbs && (
-                  <Breadcrumbs crumbs={navigationBreadcrumbs} />
                 )}
               </Box>
               {groupBy == "Type" && (
