@@ -12,7 +12,7 @@ export async function biconomyPayment(
   txnData: any
 ) {
   const biconomy = new Biconomy(window.ethereum as ExternalProvider, {
-    apiKey: "e10g_XQD-.ff5b071a-8e9a-444d-a08d-287f45ec0086",
+    apiKey: process.env.BICONOMY_API_KEY || "",
     debug: true,
     contractAddresses: [contractAddress], // list of contract address you want to enable gasless on
   });

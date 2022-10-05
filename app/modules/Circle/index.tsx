@@ -32,7 +32,7 @@ export default function Circle() {
     return <Loader text="...." loading />;
   }
 
-  if (!circle.members.includes(connectedUser) && circle?.private)
+  if (circle?.unauthorized)
     return (
       <BoxContainer padding={"16"}>
         <Text size="headingTwo" weight="semiBold" ellipsis>
