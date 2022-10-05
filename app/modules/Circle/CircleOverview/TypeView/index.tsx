@@ -146,7 +146,7 @@ export const TypeView = ({
                   <Text align="center" wordBreak="break-word">
                     {space.name}
                   </Text>
-                  {space.description.length > 0 && (
+                  {space?.description?.length > 0 && (
                     <Tooltip
                       html={<Text>{space.description}</Text>}
                       theme={mode}
@@ -252,9 +252,9 @@ export const TypeView = ({
                   <Text align="center" wordBreak="break-word">
                     {retro.title}
                   </Text>
-                  {retro.description.length > 0 && (
+                  {retro?.description?.length > 0 && (
                     <Tooltip
-                      html={<Text>{retro.description}</Text>}
+                      html={<Text>{retro?.description}</Text>}
                       theme={mode}
                       position="bottom"
                     >
