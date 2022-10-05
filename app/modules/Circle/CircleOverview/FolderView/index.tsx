@@ -187,7 +187,7 @@ export const FolderView = ({
 
   return (
     <DragDropContext onDragEnd={handleDrag}>
-      <Droppable droppableId="all-folders" direction="vertical" type="folder">
+      <Droppable droppableId="all-folders" direction="horizontal" type="folder">
         {DroppableContentCallback}
       </Droppable>
     </DragDropContext>

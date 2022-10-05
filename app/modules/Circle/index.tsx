@@ -41,7 +41,7 @@ export default function Circle() {
     return <Loader text="...." loading />;
   }
 
-  if (circle?.unauthorized)
+  if (circle?.unauthorized && !isLoading && circle?.id)
     return (
       <Box
         style={{
