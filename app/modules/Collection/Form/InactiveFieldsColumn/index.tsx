@@ -28,24 +28,28 @@ type Props = {
 };
 
 function InactiveFieldsColumnComponent({ fields }: Props) {
-  const { updateCollection } = useLocalCollection();
-
+  const { localCollection: collection, updateCollection } =
+    useLocalCollection();
   const FieldDraggable = (provided: DroppableProvided) => (
     <ScrollContainer {...provided.droppableProps} ref={provided.innerRef}>
       <Stack space="1">
         {fields?.map((field, idx) => {
-          if (field) {
+          if (!collection.properties[field].isPartOfFormView) {
             return (
               <InactiveFieldComponent id={field} index={idx} key={field} />
             );
           }
         })}
+        <Box height="4" />
         {provided.placeholder}
       </Stack>
     </ScrollContainer>
   );
 
-  const FieldDraggableCallback = useCallback(FieldDraggable, [fields]);
+  const FieldDraggableCallback = useCallback(FieldDraggable, [
+    fields,
+    collection.properties,
+  ]);
 
   return (
     <Container>

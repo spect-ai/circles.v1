@@ -68,7 +68,7 @@ function ColumnComponent({ fields }: Props) {
     <ScrollContainer {...provided.droppableProps} ref={provided.innerRef}>
       <Box>
         {fields?.map((field, idx) => {
-          if (field) {
+          if (collection.properties[field].isPartOfFormView) {
             return <FieldComponent id={field} index={idx} key={field} />;
           }
         })}
@@ -77,7 +77,10 @@ function ColumnComponent({ fields }: Props) {
     </ScrollContainer>
   );
 
-  const FieldDraggableCallback = useCallback(FieldDraggable, [fields]);
+  const FieldDraggableCallback = useCallback(FieldDraggable, [
+    fields,
+    collection.properties,
+  ]);
 
   return (
     <ScrollContainer>

@@ -12,7 +12,7 @@ export default function AddField() {
   const { localCollection: collection } = useLocalCollection();
 
   const [name, setName] = useState("");
-  const [type, setType] = useState({ label: "Text", value: "text" });
+  const [type, setType] = useState({ label: "Short Text", value: "shortText" });
   const [loading, setLoading] = useState(false);
   return (
     <>

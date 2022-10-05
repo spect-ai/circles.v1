@@ -77,7 +77,7 @@ export function useProviderLocalCollection() {
           setLoading(false);
         });
     }
-  }, []);
+  }, [colId, fetchCollection]);
 
   return {
     localCollection,

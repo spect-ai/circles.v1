@@ -1,5 +1,6 @@
 import { useGlobal } from "@/app/context/globalContext";
-import { Box, Button, Stack, Text, useTheme } from "degen";
+import { TableOutlined } from "@ant-design/icons";
+import { Box, Button, IconList, Stack, Text, useTheme } from "degen";
 import { memo } from "react";
 import Skeleton from "react-loading-skeleton";
 import styled from "styled-components";
@@ -43,34 +44,55 @@ function CollectionHeading() {
           paddingBottom: "0.0rem",
         }}
       >
-        <Stack direction="horizontal" align="center">
-          {!loading && (
-            <Button
-              variant="transparent"
-              size="small"
-              onClick={() => defaultView()}
-            >
-              <Text size="headingTwo" weight="semiBold" ellipsis>
-                {collection?.name}
-              </Text>
-            </Button>
-          )}
-          {loading && (
-            <Skeleton
-              enableAnimation
-              style={{
-                height: "2rem",
-                width: "15rem",
-                borderRadius: "0.5rem",
-              }}
-              baseColor={mode === "dark" ? "rgb(20,20,20)" : "rgb(255,255,255)"}
-              highlightColor={
-                mode === "dark" ? "rgb(255,255,255,0.1)" : "rgb(20,20,20,0.1)"
-              }
-            />
-          )}
-          {/* {collection?.name && <ProjectOptions />} */}
-        </Stack>
+        {!loading && (
+          <Button
+            variant="transparent"
+            size="small"
+            onClick={() => defaultView()}
+          >
+            <Text size="headingTwo" weight="semiBold" ellipsis>
+              {collection?.name}
+            </Text>
+          </Button>
+        )}
+        {loading && (
+          <Skeleton
+            enableAnimation
+            style={{
+              height: "2rem",
+              width: "15rem",
+              borderRadius: "0.5rem",
+            }}
+            baseColor={mode === "dark" ? "rgb(20,20,20)" : "rgb(255,255,255)"}
+            highlightColor={
+              mode === "dark" ? "rgb(255,255,255,0.1)" : "rgb(20,20,20,0.1)"
+            }
+          />
+        )}
+        <Box
+          display="flex"
+          flexDirection="row"
+          borderWidth="0.375"
+          borderRadius="large"
+          backgroundColor="foregroundSecondary"
+        >
+          <IconButton
+            color="textSecondary"
+            paddingX="2"
+            paddingY="1"
+            borderRightRadius="large"
+          >
+            <IconList />
+          </IconButton>
+          <IconButton
+            color="textSecondary"
+            paddingX="2"
+            paddingY="1"
+            borderRightRadius="large"
+          >
+            <TableOutlined style={{ fontSize: "1.3rem" }} />
+          </IconButton>
+        </Box>
       </Box>
     </Box>
   );

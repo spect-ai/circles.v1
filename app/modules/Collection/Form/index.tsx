@@ -17,6 +17,7 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  margin-top: 2rem;
   @media only screen and (min-width: 0px) {
     max-width: calc(100vw - 5rem);
     padding: 0 0.1rem;
@@ -29,15 +30,17 @@ const Container = styled.div`
 `;
 
 export function Form() {
-  const { localCollection: collection, loading } = useLocalCollection();
+  const {
+    localCollection: collection,
+    loading,
+    updateCollection,
+  } = useLocalCollection();
 
   const [propertyOrder, setPropertyOrder] = useState(collection.propertyOrder);
 
   useEffect(() => {
     setPropertyOrder(collection.propertyOrder);
   }, [collection]);
-
-  console.log({ collection });
 
   const handleDragCollectionProperty = (result: DropResult) => {
     const { destination, source, draggableId, type } = result;
@@ -53,15 +56,42 @@ export function Form() {
       return;
     }
 
-    if (destination?.droppableId === "activeFields")
+    if (destination?.droppableId === "activeFields") {
       setPropertyOrder(reorder(propertyOrder, source.index, destination.index));
+      if (collection.properties[draggableId].isPartOfFormView === false) {
+        updateCollection({
+          ...collection,
+          properties: {
+            ...collection.properties,
+            [draggableId]: {
+              ...collection.properties[draggableId],
+              isPartOfFormView: true,
+            },
+          },
+        });
+      }
+    } else if (destination?.droppableId === "inactiveFields") {
+      // setPropertyOrder(reorder(propertyOrder, source.index, destination.index));
+      if (collection.properties[draggableId].isPartOfFormView === true) {
+        updateCollection({
+          ...collection,
+          properties: {
+            ...collection.properties,
+            [draggableId]: {
+              ...collection.properties[draggableId],
+              isPartOfFormView: false,
+            },
+          },
+        });
+      }
+    }
   };
 
   const DroppableContent = (provided: DroppableProvided) => (
     <Container {...provided.droppableProps} ref={provided.innerRef}>
       <Stack direction="horizontal">
         <ColumnComponent fields={propertyOrder} />
-        <InactiveFieldsColumnComponent fields={["budget"]} />
+        <InactiveFieldsColumnComponent fields={propertyOrder} />
       </Stack>
     </Container>
   );
