@@ -2,7 +2,7 @@ import Loader from "@/app/common/components/Loader";
 import useCircleOnboarding from "@/app/services/Onboarding/useCircleOnboarding";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { ApartmentOutlined } from "@ant-design/icons";
-import { Box, Button, useTheme, Text } from "degen";
+import { Box, Button, useTheme, Text, IconLockClosed, Stack } from "degen";
 import { AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import { ToastContainer } from "react-toastify";
@@ -13,15 +13,24 @@ import { useCircle } from "./CircleContext";
 import Onboarding from "./CircleOnboarding";
 import CircleOverview from "./CircleOverview";
 import { useRouter } from "next/router";
-import { useGlobal } from "@/app/context/globalContext";
+import { joinCircle } from "@/app/services/JoinCircle";
 
 const BoxContainer = styled(Box)`
   width: calc(100vw - 4rem);
 `;
 
 export default function Circle() {
-  const { circle, isLoading, memberDetails, page } = useCircle();
-  const { connectedUser } = useGlobal();
+  const {
+    circle,
+    isLoading,
+    memberDetails,
+    page,
+    fetchCircle,
+    fetchMemberDetails,
+    loading,
+    setLoading,
+  } = useCircle();
+
   const { canDo } = useRoleGate();
   const { onboarded } = useCircleOnboarding();
   const { mode } = useTheme();
@@ -34,18 +43,48 @@ export default function Circle() {
 
   if (circle?.unauthorized)
     return (
-      <BoxContainer padding={"16"}>
+      <Box
+        style={{
+          margin: "20% 35%",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          gap: "1rem",
+        }}
+      >
+        <Button shape="circle" variant="secondary" size="large">
+          <IconLockClosed color={"accent"} size="6" />
+        </Button>
+
         <Text size="headingTwo" weight="semiBold" ellipsis>
           This circle is private
         </Text>
-        <Button
-          size="large"
-          variant="transparent"
-          onClick={() => router.back()}
-        >
-          <Text size="extraLarge">Go Back</Text>
-        </Button>
-      </BoxContainer>
+        <Stack direction="horizontal" space="4" align="center">
+          <Button
+            size="small"
+            variant="transparent"
+            onClick={() => router.back()}
+          >
+            <Text size="base">Go Back</Text>
+          </Button>
+          <Button
+            size="small"
+            variant="secondary"
+            onClick={async () => {
+              setLoading(true);
+              const data = await joinCircle(circle.id);
+              if (data) {
+                fetchCircle();
+                fetchMemberDetails();
+              }
+              setLoading(false);
+            }}
+            loading={loading}
+          >
+            <Text size="base" color={"accent"}>Get Role</Text>
+          </Button>
+        </Stack>
+      </Box>
     );
 
   return (

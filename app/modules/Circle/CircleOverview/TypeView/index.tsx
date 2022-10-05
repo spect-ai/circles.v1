@@ -13,11 +13,11 @@ import React from "react";
 import { Col, Container, Row } from "react-grid-system";
 import { Tooltip } from "react-tippy";
 import styled from "styled-components";
-import CreateRetro from "../../Retro/CreateRetro";
-import { useCircle } from "../CircleContext";
-import CreateCollectionModal from "../CreateCollectionModal";
-import CreateProjectModal from "../CreateProjectModal";
-import CreateSpaceModal from "../CreateSpaceModal";
+import CreateRetro from "../../../Retro/CreateRetro";
+import { useCircle } from "../../CircleContext";
+import CreateCollectionModal from "../../CreateCollectionModal";
+import CreateProjectModal from "../../CreateProjectModal";
+import CreateSpaceModal from "../../CreateSpaceModal";
 
 interface Props {
   filteredProjects: {
