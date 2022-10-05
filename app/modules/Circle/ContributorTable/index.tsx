@@ -153,7 +153,7 @@ function ContributorTable({ filteredMembers }: Props) {
       resize: true,
     },
   ];
-  const data = filteredMembers?.map((mem) => ({
+  const data = filteredMembers && filteredMembers?.map((mem) => ({
     id: mem.id,
     roles: circle?.memberRoles[mem.id],
     avatar: memberDetails?.memberDetails[mem.id]?.avatar,

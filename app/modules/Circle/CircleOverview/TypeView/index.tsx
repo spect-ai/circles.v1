@@ -7,7 +7,14 @@ import {
   CollectionType,
 } from "@/app/types";
 import { ExpandAltOutlined } from "@ant-design/icons";
-import { Box, Button, Stack, Text, useTheme } from "degen";
+import {
+  Box,
+  Button,
+  Stack,
+  Text,
+  useTheme,
+  IconExclamationCircleSolid,
+} from "degen";
 import { useRouter } from "next/router";
 import React from "react";
 import { Col, Container, Row } from "react-grid-system";
@@ -84,10 +91,24 @@ export const TypeView = ({
                   }
                   height="32"
                 >
-                  <Text align="center">{project.name}</Text>
-                  <Text variant="label" align="center">
-                    {project.description}
+                  <Text align="center" wordBreak="break-word">
+                    {project.name}
                   </Text>
+                  {project.description.length > 0 && <Tooltip
+                    html={<Text>{project.description}</Text>}
+                    theme={mode}
+                    position="bottom"
+                  >
+                    <Box
+                      style={{
+                        marginTop: "0.5rem",
+                        transform: "rotate(180deg)",
+                        opacity: "40%",
+                      }}
+                    >
+                      <IconExclamationCircleSolid size={"4"} color="text" />
+                    </Box>
+                  </Tooltip>}
                 </Card>
               </Col>
             ))}
@@ -122,10 +143,26 @@ export const TypeView = ({
                   }
                   height="32"
                 >
-                  <Text align="center">{space.name}</Text>
-                  <Text variant="label" align="center">
-                    {space.description}
+                  <Text align="center" wordBreak="break-word">
+                    {space.name}
                   </Text>
+                  {space.description.length > 0 && (
+                    <Tooltip
+                      html={<Text>{space.description}</Text>}
+                      theme={mode}
+                      position="bottom"
+                    >
+                      <Box
+                        style={{
+                          marginTop: "0.5rem",
+                          transform: "rotate(180deg)",
+                          opacity: "40%",
+                        }}
+                      >
+                        <IconExclamationCircleSolid size={"4"} color="text" />
+                      </Box>
+                    </Tooltip>
+                  )}
                 </Card>
               </Col>
             ))}
@@ -212,10 +249,26 @@ export const TypeView = ({
                     setIsRetroOpen(true);
                   }}
                 >
-                  <Text align="center">{retro.title}</Text>
-                  <Text variant="label" align="center">
-                    {retro.description}
+                  <Text align="center" wordBreak="break-word">
+                    {retro.title}
                   </Text>
+                  {retro.description.length > 0 && (
+                    <Tooltip
+                      html={<Text>{retro.description}</Text>}
+                      theme={mode}
+                      position="bottom"
+                    >
+                      <Box
+                        style={{
+                          marginTop: "0.5rem",
+                          transform: "rotate(180deg)",
+                          opacity: "40%",
+                        }}
+                      >
+                        <IconExclamationCircleSolid size={"4"} color="text" />
+                      </Box>
+                    </Tooltip>
+                  )}
                 </Card>
               </Col>
             ))}
