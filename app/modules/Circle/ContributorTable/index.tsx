@@ -103,7 +103,7 @@ function ContributorTable({ filteredMembers }: Props) {
     {
       label: "Fren",
       renderCell: (item: TableNode) => (
-        <Link href={`profile/${item.username}`}>
+        <Link href={`profile/${item?.username}`}>
           <Box
             width="fit"
             display="flex"
@@ -112,14 +112,14 @@ function ContributorTable({ filteredMembers }: Props) {
             style={{ cursor: "pointer" }}
           >
             <Avatar
-              src={item.avatar}
-              placeholder={!item.avatar}
+              src={item?.avatar}
+              placeholder={!item?.avatar}
               label="Avatar"
-              address={item.ethAddress}
+              address={item?.ethAddress}
               size="6"
             />
             <Box marginLeft="2">
-              <Text variant="base">{item.username}</Text>
+              <Text variant="base">{item?.username}</Text>
             </Box>
           </Box>
         </Link>
@@ -130,7 +130,7 @@ function ContributorTable({ filteredMembers }: Props) {
       label: "Role",
       renderCell: (item: TableNode) => (
         <Box display="flex" flexDirection="row" gap="2" alignItems="center">
-          {item.roles.map((role: string) => {
+          {item?.roles && item?.roles?.map((role: string) => {
             return (
               <Tag key={role} tone="accent" hover>
                 {role}
