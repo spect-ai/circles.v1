@@ -209,7 +209,9 @@ export interface CircleType {
   projects: {
     [key: string]: ProjectType;
   };
-  collections: CollectionType[];
+  collections: {
+    [key: string]: CollectionType;
+  };
   slug: string;
   templates: any[];
   updatedAt: string;

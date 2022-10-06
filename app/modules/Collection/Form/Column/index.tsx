@@ -1,3 +1,4 @@
+import { updateFormCollection } from "@/app/services/Collection";
 import { Box, Stack } from "degen";
 import { memo, useCallback, useState } from "react";
 import { Droppable, DroppableProvided } from "react-beautiful-dnd";
@@ -60,7 +61,8 @@ type Props = {
 };
 
 function ColumnComponent({ fields }: Props) {
-  const { localCollection: collection } = useLocalCollection();
+  const { localCollection: collection, updateCollection } =
+    useLocalCollection();
   const [title, setTitle] = useState(collection.name);
   const [description, setDescription] = useState(collection.description);
 
@@ -101,6 +103,12 @@ function ColumnComponent({ fields }: Props) {
               value={description}
               onChange={(e) => {
                 setDescription(e.target.value);
+              }}
+              onBlur={async () => {
+                const res = await updateFormCollection(collection.id, {
+                  description,
+                });
+                res && updateCollection(res);
               }}
             />
           </Stack>

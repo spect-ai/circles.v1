@@ -81,7 +81,9 @@ export default function Circle() {
             }}
             loading={loading}
           >
-            <Text size="base" color={"accent"}>Get Role</Text>
+            <Text size="base" color={"accent"}>
+              Get Role
+            </Text>
           </Button>
         </Stack>
       </Box>

@@ -36,7 +36,9 @@ interface Props {
   filteredWorkstreams: {
     [key: string]: CircleType;
   };
-  filteredCollections: CollectionType[] | undefined;
+  filteredCollections: {
+    [key: string]: CollectionType;
+  };
   setIsRetroOpen: (isRetroOpen: boolean) => void;
 }
 
@@ -94,21 +96,23 @@ export const TypeView = ({
                   <Text align="center" wordBreak="break-word">
                     {project.name}
                   </Text>
-                  {project.description.length > 0 && <Tooltip
-                    html={<Text>{project.description}</Text>}
-                    theme={mode}
-                    position="bottom"
-                  >
-                    <Box
-                      style={{
-                        marginTop: "0.5rem",
-                        transform: "rotate(180deg)",
-                        opacity: "40%",
-                      }}
+                  {project.description.length > 0 && (
+                    <Tooltip
+                      html={<Text>{project.description}</Text>}
+                      theme={mode}
+                      position="bottom"
                     >
-                      <IconExclamationCircleSolid size={"4"} color="text" />
-                    </Box>
-                  </Tooltip>}
+                      <Box
+                        style={{
+                          marginTop: "0.5rem",
+                          transform: "rotate(180deg)",
+                          opacity: "40%",
+                        }}
+                      >
+                        <IconExclamationCircleSolid size={"4"} color="text" />
+                      </Box>
+                    </Tooltip>
+                  )}
                 </Card>
               </Col>
             ))}
@@ -187,20 +191,21 @@ export const TypeView = ({
         }}
       >
         <Row>
-          {filteredCollections?.map((collection) => (
-            <Col sm={6} md={4} lg={2} key={collection.id}>
-              <Card
-                onClick={() =>
-                  // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-                  router.push(`${window.location.href}/r/${collection.slug}`)
-                }
-                height="32"
-              >
-                <Text align="center">{collection.name}</Text>
-              </Card>
-            </Col>
-          ))}
-          {!filteredCollections?.length && (
+          {filteredCollections &&
+            Object.values(filteredCollections)?.map((collection) => (
+              <Col sm={6} md={4} lg={2} key={collection.id}>
+                <Card
+                  onClick={() =>
+                    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+                    router.push(`${window.location.href}/r/${collection.slug}`)
+                  }
+                  height="32"
+                >
+                  <Text align="center">{collection.name}</Text>
+                </Card>
+              </Col>
+            ))}
+          {filteredCollections && !Object.values(filteredCollections)?.length && (
             <Box margin="4">
               <Text variant="label">No Forms created yet</Text>
             </Box>

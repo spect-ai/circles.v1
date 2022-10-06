@@ -21,7 +21,7 @@ import { AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
 import queryClient from "@/app/common/utils/queryClient";
 import GlobalContextProvider, { useGlobal } from "@/app/context/globalContext";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import * as gtag from "../lib/gtag";
 
 import "@rainbow-me/rainbowkit/styles.css";

@@ -5,7 +5,6 @@ import {
   Box,
   Button,
   Stack,
-  Text,
   useTheme,
   Input,
   IconSearch,
@@ -90,7 +89,6 @@ export default function CircleOverview() {
     setIsBatchPayOpen,
     isBatchPayOpen,
     retro,
-    loading,
     navigationBreadcrumbs,
   } = useCircle();
   const { canDo } = useRoleGate();
@@ -110,6 +108,7 @@ export default function CircleOverview() {
     setFilteredProjects(circle?.projects);
     setFilteredWorkstreams(circle?.children);
     setFilteredRetro(circle?.retro);
+    setFilteredCollections(circle?.collections);
   }, [circle]);
 
   useEffect(() => {

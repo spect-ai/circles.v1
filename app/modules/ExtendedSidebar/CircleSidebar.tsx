@@ -4,6 +4,7 @@ import { CircleType } from "@/app/types";
 import { ProjectOutlined } from "@ant-design/icons";
 import {
   Box,
+  IconCollection,
   IconLightningBolt,
   IconUserGroup,
   Skeleton,
@@ -25,7 +26,7 @@ import ContributorsModal from "../Circle/ContributorsModal";
 import CreateRetroModal from "../Retro/CreateRetro/CreateRetroModal";
 import CircleOptions from "./CircleOptions";
 import CollapseButton from "./CollapseButton";
-import ExploreSidebar, { HeaderButton } from "./ExploreSidebar";
+import { HeaderButton } from "./ExploreSidebar";
 
 export const Container = styled(Box)<{ subH?: string }>`
   ::-webkit-scrollbar {
@@ -40,7 +41,7 @@ export const Container = styled(Box)<{ subH?: string }>`
 
 function CircleSidebar() {
   const router = useRouter();
-  const { circle: cId, project: pId } = router.query;
+  const { circle: cId, project: pId, collection: cSlug } = router.query;
   const { data: circle, isLoading } = useQuery<CircleType>(["circle", cId], {
     enabled: false,
   });
@@ -159,10 +160,8 @@ function CircleSidebar() {
                     credentials: "include",
                   }
                 );
-                console.log({ memberDetailsRes });
 
                 const memberDetailsData = await memberDetailsRes.json();
-                console.log({ circleData });
 
                 setCircleData(circleData);
                 setMemberDetailsData(memberDetailsData);
@@ -185,9 +184,7 @@ function CircleSidebar() {
                       <Stack key={content} direction="horizontal" space="0">
                         <Box width="full" padding="1">
                           {circle?.children?.[content] && content && (
-                            <Link
-                              href={`/${circle?.children?.[content].slug}`}
-                            >
+                            <Link href={`/${circle?.children?.[content].slug}`}>
                               <PrimaryButton
                                 variant={
                                   pId === circle?.children?.[content].slug
@@ -210,7 +207,11 @@ function CircleSidebar() {
                                     ? "tertiary"
                                     : "transparent"
                                 }
-                                icon={<ProjectOutlined style={{ fontSize: "1.1rem" }} />}
+                                icon={
+                                  <ProjectOutlined
+                                    style={{ fontSize: "1.1rem" }}
+                                  />
+                                }
                               >
                                 {circle?.projects?.[content].name}
                               </PrimaryButton>
@@ -232,6 +233,22 @@ function CircleSidebar() {
                               </PrimaryButton>
                             </Link>
                           )}
+                          {circle?.collections?.[content] && content && (
+                            <Link
+                              href={`/${cId}/r/${circle?.collections?.[content].slug}`}
+                            >
+                              <PrimaryButton
+                                variant={
+                                  cSlug === circle?.collections?.[content].slug
+                                    ? "tertiary"
+                                    : "transparent"
+                                }
+                                icon={<IconCollection size={"5"} />}
+                              >
+                                {circle?.collections?.[content].name}
+                              </PrimaryButton>
+                            </Link>
+                          )}
                         </Box>
                       </Stack>
                     );
@@ -239,7 +256,6 @@ function CircleSidebar() {
                 </Accordian>
               );
             })}
-            
           </Stack>
         </Container>
       </Stack>
@@ -249,7 +265,7 @@ function CircleSidebar() {
 
 export default memo(CircleSidebar);
 
-{/* <Accordian
+/* <Accordian
               name="Projects"
               defaultOpen
               icon={<ProjectOutlined style={{ fontSize: "1.3rem" }} />}
@@ -258,46 +274,46 @@ export default memo(CircleSidebar);
                 {circle?.projects &&
                   Object.values(circle?.projects).map((proj) => (
                     <Stack key={proj.id} direction="horizontal" space="0">
-                      {/* <Box borderRightWidth="0.5" /> */}
-            //           <Box width="full" padding="1">
-            //             <Link href={`/${cId}/${proj.slug}`}>
-            //               <PrimaryButton
-            //                 variant={
-            //                   pId === proj.slug ? "tertiary" : "transparent"
-            //                 }
-            //               >
-            //                 {proj.name}
-            //               </PrimaryButton>
-            //             </Link>
-            //           </Box>
-            //         </Stack>
-            //       ))}
-            //     {circle?.projects && !Object.values(circle?.projects).length && (
-            //       <Box paddingLeft="7" paddingY="2">
-            //         <Text variant="label">No projects created</Text>
-            //       </Box>
-            //     )}
-            //   </Stack>
-            // </Accordian>
-            // <Accordian name="Workstreams" defaultOpen icon={<IconUserGroup />}>
-            //   <Stack space="0">
-            //     {circle?.children &&
-            //       Object.values(circle?.children).map((space) => (
-            //         <Stack key={space.id} direction="horizontal" space="0">
-            //           {/* <Box borderRightWidth="0.5" /> */}
-            //           <Box width="full" padding="1">
-            //             <Link href={`/${space.slug}`} key={space.id}>
-            //               <PrimaryButton variant="transparent">
-            //                 {space.name}
-            //               </PrimaryButton>
-            //             </Link>
-            //           </Box>
-            //         </Stack>
-            //       ))}
-            //     {circle?.children && !Object.values(circle?.children).length && (
-            //       <Box paddingLeft="7" paddingY="2">
-            //         <Text variant="label">No workstreams created</Text>
-            //       </Box>
-            //     )}
-            //   </Stack>
-            // </Accordian> */}
+                      {/* <Box borderRightWidth="0.5" /> */
+//           <Box width="full" padding="1">
+//             <Link href={`/${cId}/${proj.slug}`}>
+//               <PrimaryButton
+//                 variant={
+//                   pId === proj.slug ? "tertiary" : "transparent"
+//                 }
+//               >
+//                 {proj.name}
+//               </PrimaryButton>
+//             </Link>
+//           </Box>
+//         </Stack>
+//       ))}
+//     {circle?.projects && !Object.values(circle?.projects).length && (
+//       <Box paddingLeft="7" paddingY="2">
+//         <Text variant="label">No projects created</Text>
+//       </Box>
+//     )}
+//   </Stack>
+// </Accordian>
+// <Accordian name="Workstreams" defaultOpen icon={<IconUserGroup />}>
+//   <Stack space="0">
+//     {circle?.children &&
+//       Object.values(circle?.children).map((space) => (
+//         <Stack key={space.id} direction="horizontal" space="0">
+//           {/* <Box borderRightWidth="0.5" /> */}
+//           <Box width="full" padding="1">
+//             <Link href={`/${space.slug}`} key={space.id}>
+//               <PrimaryButton variant="transparent">
+//                 {space.name}
+//               </PrimaryButton>
+//             </Link>
+//           </Box>
+//         </Stack>
+//       ))}
+//     {circle?.children && !Object.values(circle?.children).length && (
+//       <Box paddingLeft="7" paddingY="2">
+//         <Text variant="label">No workstreams created</Text>
+//       </Box>
+//     )}
+//   </Stack>
+// </Accordian> */}

@@ -1,6 +1,5 @@
-import { useGlobal } from "@/app/context/globalContext";
 import { TableOutlined } from "@ant-design/icons";
-import { Box, Button, IconList, Stack, Text, useTheme } from "degen";
+import { Box, Button, IconList, Text, useTheme } from "degen";
 import { memo } from "react";
 import Skeleton from "react-loading-skeleton";
 import styled from "styled-components";
@@ -14,13 +13,13 @@ export const IconButton = styled(Box)`
 `;
 
 function CollectionHeading() {
-  const { localCollection: collection, loading } = useLocalCollection();
+  const {
+    localCollection: collection,
+    loading,
+    view,
+    setView,
+  } = useLocalCollection();
   const { mode } = useTheme();
-  const { setViewName, viewName } = useGlobal();
-
-  const defaultView = () => {
-    if (viewName.length > 0) setViewName("");
-  };
 
   return (
     <Box
@@ -45,11 +44,7 @@ function CollectionHeading() {
         }}
       >
         {!loading && (
-          <Button
-            variant="transparent"
-            size="small"
-            onClick={() => defaultView()}
-          >
+          <Button variant="transparent" size="small">
             <Text size="headingTwo" weight="semiBold" ellipsis>
               {collection?.name}
             </Text>
@@ -81,6 +76,10 @@ function CollectionHeading() {
             paddingX="2"
             paddingY="1"
             borderRightRadius="large"
+            backgroundColor={view === 0 ? "foregroundSecondary" : "background"}
+            onClick={() => {
+              setView(0);
+            }}
           >
             <IconList />
           </IconButton>
@@ -89,6 +88,10 @@ function CollectionHeading() {
             paddingX="2"
             paddingY="1"
             borderRightRadius="large"
+            backgroundColor={view === 1 ? "foregroundSecondary" : "background"}
+            onClick={() => {
+              setView(1);
+            }}
           >
             <TableOutlined style={{ fontSize: "1.3rem" }} />
           </IconButton>

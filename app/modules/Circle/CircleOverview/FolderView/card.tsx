@@ -4,8 +4,21 @@ import {
   DraggableProvided,
   DraggableStateSnapshot,
 } from "react-beautiful-dnd";
-import { Box, Text, useTheme, Stack, IconUserGroup, IconLightningBolt } from "degen";
-import { CircleType, ProjectType, RetroType } from "@/app/types";
+import {
+  Box,
+  Text,
+  useTheme,
+  Stack,
+  IconUserGroup,
+  IconLightningBolt,
+  IconCollection,
+} from "degen";
+import {
+  CircleType,
+  CollectionType,
+  ProjectType,
+  RetroType,
+} from "@/app/types";
 import styled from "styled-components";
 import { ProjectOutlined } from "@ant-design/icons";
 import { useRouter } from "next/router";
@@ -21,6 +34,9 @@ interface Props {
   };
   retros?: {
     [key: string]: RetroType;
+  };
+  collections?: {
+    [key: string]: CollectionType;
   };
 }
 
@@ -42,10 +58,19 @@ const Container = styled(Box)<{ isDragging: boolean; mode: string }>`
   margin-right: 1rem;
 `;
 
-const Card = ({ card, index, projects, workstreams, retros }: Props) => {
+const Card = ({
+  card,
+  index,
+  projects,
+  workstreams,
+  retros,
+  collections,
+}: Props) => {
   const { mode } = useTheme();
   const router = useRouter();
   const { circle: cId } = router.query;
+
+  console.log(projects?.[card]);
 
   const DraggableContent = (
     provided: DraggableProvided,
@@ -70,28 +95,33 @@ const Card = ({ card, index, projects, workstreams, retros }: Props) => {
         if (retros?.[card]?.slug) {
           void router.push(`/${cId}?retroSlug=${retros?.[card]?.slug}`);
         }
+        if (collections?.[card]?.slug) {
+          void router.push(`/${cId}/r/${collections?.[card]?.slug}`);
+        }
       }}
     >
       <Stack direction={"horizontal"} align="center">
         {projects?.[card]?.id && (
           <ProjectOutlined style={{ fontSize: "1.1rem" }} />
         )}
-        {workstreams?.[card].id && <IconUserGroup size={"5"}/>}
-        {retros?.[card]?.id && <IconLightningBolt size={"5"}/>}
+        {workstreams?.[card].id && <IconUserGroup size={"5"} />}
+        {retros?.[card]?.id && <IconLightningBolt size={"5"} />}
+        {collections?.[card]?.id && <IconCollection size={"5"} />}
         <Text ellipsis variant="base" weight={"semiBold"}>
           {projects?.[card]?.name ||
             workstreams?.[card].name ||
-            retros?.[card].title}
+            retros?.[card].title ||
+            collections?.[card].name}
         </Text>
       </Stack>
       <Box paddingTop={"2"}>
-      <Text color={"textSecondary"}>
-        {projects?.[card]?.description ||
-          workstreams?.[card].description ||
-          retros?.[card].description}
-      </Text>
+        <Text color={"textSecondary"}>
+          {projects?.[card]?.description ||
+            workstreams?.[card].description ||
+            retros?.[card].description ||
+            collections?.[card].description}
+        </Text>
       </Box>
-      
     </Container>
   );
   // eslint-disable-next-line react-hooks/exhaustive-deps

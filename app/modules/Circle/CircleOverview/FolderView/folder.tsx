@@ -9,7 +9,12 @@ import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { Box, IconTrash, Stack, useTheme, Button } from "degen";
 import styled from "styled-components";
 import Card from "./card";
-import { CircleType, ProjectType, RetroType } from "@/app/types";
+import {
+  CircleType,
+  CollectionType,
+  ProjectType,
+  RetroType,
+} from "@/app/types";
 import { deleteFolder, updateFolder } from "@/app/services/Folders";
 import { useCircle } from "../../CircleContext";
 import { Container, Row, Col } from "react-grid-system";
@@ -25,6 +30,9 @@ interface Props {
   workstreams: { [key: string]: CircleType };
   retros: {
     [key: string]: RetroType;
+  };
+  collections: {
+    [key: string]: CollectionType;
   };
 }
 
@@ -61,6 +69,7 @@ const Folder = ({
   projects,
   workstreams,
   retros,
+  collections,
 }: Props) => {
   const { canDo } = useRoleGate();
   const { mode } = useTheme();
@@ -120,6 +129,16 @@ const Folder = ({
             }
             if (retros?.[card] && card) {
               return <Card card={card} index={i} key={card} retros={retros} />;
+            }
+            if (collections?.[card] && card) {
+              return (
+                <Card
+                  card={card}
+                  index={i}
+                  key={card}
+                  collections={collections}
+                />
+              );
             }
           })}
         </Row>

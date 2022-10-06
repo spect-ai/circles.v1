@@ -1,4 +1,5 @@
 import { reorder } from "@/app/common/utils/utils";
+import { updateField } from "@/app/services/Collection";
 import { Box, Stack } from "degen";
 import { useCallback, useEffect, useState } from "react";
 import {
@@ -42,7 +43,7 @@ export function Form() {
     setPropertyOrder(collection.propertyOrder);
   }, [collection]);
 
-  const handleDragCollectionProperty = (result: DropResult) => {
+  const handleDragCollectionProperty = async (result: DropResult) => {
     const { destination, source, draggableId, type } = result;
 
     if (!destination) {
@@ -69,6 +70,10 @@ export function Form() {
             },
           },
         });
+        const res = await updateField(collection.id, draggableId, {
+          isPartOfFormView: true,
+        });
+        res && updateCollection(res);
       }
     } else if (destination?.droppableId === "inactiveFields") {
       // setPropertyOrder(reorder(propertyOrder, source.index, destination.index));
@@ -83,6 +88,10 @@ export function Form() {
             },
           },
         });
+        const res = await updateField(collection.id, draggableId, {
+          isPartOfFormView: false,
+        });
+        res && updateCollection(res);
       }
     }
   };

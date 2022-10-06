@@ -1,4 +1,13 @@
-import { Box, Button, IconPlusSmall, Input, MediaPicker, Stack } from "degen";
+import {
+  Box,
+  Button,
+  IconCollection,
+  IconPlusSmall,
+  Input,
+  Stack,
+  Text,
+  useTheme,
+} from "degen";
 import React, { useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
@@ -7,8 +16,9 @@ import Modal from "@/app/common/components/Modal";
 import Tabs from "@/app/common/components/Tabs";
 import { useMutation } from "react-query";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { storeImage } from "@/app/common/utils/ipfs";
 import { useCircle } from "./CircleContext";
+import { Tooltip } from "react-tippy";
+import { updateFolder } from "@/app/services/Folders";
 
 type CreateCollectionDto = {
   name: string;
@@ -17,11 +27,12 @@ type CreateCollectionDto = {
   defaultView?: "form" | "table" | "kanban" | "list" | "gantt";
 };
 
-function CreateCollectionModal() {
+function CreateCollectionModal({ folderId }: { folderId?: string }) {
   const [modalOpen, setModalOpen] = useState(false);
   const [visibilityTab, setVisibilityTab] = useState(0);
   const onVisibilityTabClick = (id: number) => setVisibilityTab(id);
   const close = () => setModalOpen(false);
+  const { mode } = useTheme();
 
   const [name, setName] = useState("");
 
@@ -47,13 +58,37 @@ function CreateCollectionModal() {
       name,
       private: visibilityTab === 1,
       circleId: circle?.id,
-      defaultView: "form", // TODO: Change this when collections are used as general purpose primitive
+      defaultView: "form",
     })
       .then(async (res) => {
         const resJson = await res.json();
         console.log({ resJson });
         void router.push(`/${circle?.slug}/r/${resJson.slug}`);
         void close();
+        if (folderId) {
+          const prev = Array.from(circle?.folderDetails[folderId]?.contentIds);
+          prev.push(resJson.id);
+          const payload = {
+            contentIds: prev,
+          };
+          void updateFolder(payload, circle?.id, folderId).then(
+            () => void fetchCircle()
+          );
+        } else if (circle?.folderOrder.length !== 0) {
+          const folder = Object.entries(circle?.folderDetails)?.find(
+            (pair) => pair[1].avatar === "All"
+          );
+          const prev = Array.from(
+            circle?.folderDetails[folder?.[0] as string]?.contentIds
+          );
+          prev.push(resJson.id);
+          const payload = {
+            contentIds: prev,
+          };
+          void updateFolder(payload, circle?.id, folder?.[0] as string).then(
+            () => void fetchCircle()
+          );
+        }
       })
       .catch((err) => console.log({ err }));
   };
@@ -61,19 +96,34 @@ function CreateCollectionModal() {
   return (
     <>
       <Loader loading={isLoading} text="Creating your collection" />
-
-      <Button
-        data-tour="circle-create-workstream-button"
-        size="small"
-        variant="transparent"
-        shape="circle"
-        onClick={(e) => {
-          e.stopPropagation();
-          setModalOpen(true);
-        }}
-      >
-        <IconPlusSmall />
-      </Button>
+      {folderId ? (
+        <Tooltip html={<Text>Create Form</Text>} theme={mode}>
+          <Button
+            size="small"
+            variant="transparent"
+            shape="circle"
+            onClick={(e) => {
+              e.stopPropagation();
+              setModalOpen(true);
+            }}
+          >
+            <IconCollection size="4" color="accent" />
+          </Button>
+        </Tooltip>
+      ) : (
+        <Button
+          data-tour="circle-create-workstream-button"
+          size="small"
+          variant="transparent"
+          shape="circle"
+          onClick={(e) => {
+            e.stopPropagation();
+            setModalOpen(true);
+          }}
+        >
+          <IconPlusSmall />
+        </Button>
+      )}
       <AnimatePresence>
         {modalOpen && (
           <Modal handleClose={close} title="Create Form">

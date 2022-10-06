@@ -4,9 +4,9 @@ import { useState } from "react";
 import CreateSpaceModal from "../../CreateSpaceModal";
 import CreateProjectModal from "../../CreateProjectModal";
 import CreateRetro from "@/app/modules/Retro/CreateRetro";
+import CreateCollectionModal from "../../CreateCollectionModal";
 
 function CreateFolderItem({ folderId }: { folderId: string }) {
-
   const [hover, setHover] = useState(false);
 
   return (
@@ -34,6 +34,7 @@ function CreateFolderItem({ folderId }: { folderId: string }) {
             <CreateProjectModal folderId={folderId} />
             <CreateSpaceModal folderId={folderId} />
             <CreateRetro folderId={folderId} />
+            <CreateCollectionModal folderId={folderId} />
           </Box>
         )}
       </Box>
