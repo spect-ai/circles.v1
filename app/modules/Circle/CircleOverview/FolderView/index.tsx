@@ -39,7 +39,7 @@ const ScrollContainer = styled(Box)`
   }
   -ms-overflow-style: none;
   scrollbar-width: none;
-  height: calc(100vh - 7.5rem);
+  height: calc(100vh - 9.5rem);
 `;
 
 export const FolderView = ({
@@ -187,7 +187,7 @@ export const FolderView = ({
 
   return (
     <DragDropContext onDragEnd={handleDrag}>
-      <Droppable droppableId="all-folders" direction="vertical" type="folder">
+      <Droppable droppableId="all-folders" direction="horizontal" type="folder">
         {DroppableContentCallback}
       </Droppable>
     </DragDropContext>

@@ -12,7 +12,7 @@ import { useCircle } from "../../CircleContext";
 
 export default function ConnectGnosis() {
   const [isOpen, setIsOpen] = useState(false);
-  const { circle, registry, setCircleData } = useCircle();
+  const { circle, registry, fetchCircle } = useCircle();
   const [chain, setChain] = useState(
     Object.keys(circle?.safeAddresses || {})[0]
   );
@@ -36,12 +36,12 @@ export default function ConnectGnosis() {
         chainId: chain,
         address: selectedSafe.value,
       },
-      circle?.id as string
+      circle?.id
     );
     console.log({ res });
     setIsLoading(false);
     if (res) {
-      setCircleData(res);
+      fetchCircle();
     }
     setIsOpen(false);
   };

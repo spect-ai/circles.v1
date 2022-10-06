@@ -21,7 +21,7 @@ export default function AddLabel() {
       {
         labels: [...(circle?.labels || []), label],
       },
-      circle?.id as string
+      circle?.id
     );
     setLoading(false);
     if (res) {

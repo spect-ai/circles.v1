@@ -34,8 +34,8 @@ function CardAssignedCircle() {
     <EditTag
       tourId="create-card-modal-project"
       name={getCircleName(assignedCircle) || "Unassigned"}
-      modalTitle="Select Circle"
-      label="Circle"
+      modalTitle="Assign Circle"
+      label="Assigned Circle"
       modalOpen={modalOpen}
       setModalOpen={setModalOpen}
       icon={<IconUserGroup color="accent" size="5" />}

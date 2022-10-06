@@ -47,12 +47,12 @@ export default function DefaultPayment() {
     const res = await updateCircle(
       {
         defaultPayment: {
-          chain: chain as Chain,
-          token: token as Token,
+          chain: chain,
+          token: token,
         },
         paymentAddress: circleAddress,
       },
-      circle?.id as string
+      circle?.id
     );
     setIsDirty(false);
     setIsLoading(false);
@@ -109,7 +109,7 @@ export default function DefaultPayment() {
           <Stack direction="horizontal" wrap>
             {getFlattenedCurrencies(
               registry as Registry,
-              chain?.chainId as string
+              chain?.chainId
             )?.map((aToken) => (
               <Box
                 cursor="pointer"
