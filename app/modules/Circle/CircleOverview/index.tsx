@@ -25,6 +25,7 @@ import InviteMemberModal from "../ContributorsModal/InviteMembersModal";
 import { TypeView } from "./TypeView";
 import { FolderView } from "./FolderView";
 import Breadcrumbs from "@/app/common/components/Breadcrumbs";
+import Roles from "../RolesTab";
 
 interface Props {
   toggle: string;
@@ -57,7 +58,7 @@ const Toggle: FunctionComponent<Props> = ({ toggle, setToggle }) => {
         display: "block",
         padding: "0.2rem",
         borderRadius: "2rem",
-        width: "13.6rem",
+        width: "20rem",
         margin: "0rem auto",
         marginBottom: "0.5rem",
         boxShadow: `0px 1px 5px ${
@@ -75,14 +76,21 @@ const Toggle: FunctionComponent<Props> = ({ toggle, setToggle }) => {
         onClick={() => setToggle("Members")}
         bgcolor={toggle == "Members" ? true : false}
       >
-        Members
+        Contributors
+      </ToggleButton>
+      <ToggleButton
+        onClick={() => setToggle("Roles")}
+        bgcolor={toggle == "Roles" ? true : false}
+      >
+        Roles
       </ToggleButton>
     </Box>
   );
 };
 
 export default function CircleOverview() {
-  const { isSidebarExpanded, groupBy, setGroupBy } = useGlobal();
+  const { isSidebarExpanded, groupBy, setGroupBy, toggle, setToggle } =
+    useGlobal();
   const router = useRouter();
   const { circle: cId, retroSlug } = router.query;
   const {
@@ -90,13 +98,10 @@ export default function CircleOverview() {
     setIsBatchPayOpen,
     isBatchPayOpen,
     retro,
-    loading,
     navigationBreadcrumbs,
   } = useCircle();
   const { canDo } = useRoleGate();
   const [isRetroOpen, setIsRetroOpen] = useState(false);
-  const [toggle, setToggle] =
-    useState<"Overview" | "Members" | "Roles">("Overview");
   const [filteredProjects, setFilteredProjects] = useState(circle?.projects);
   const [filteredCollections, setFilteredCollections] = useState(
     circle?.collections
@@ -243,6 +248,7 @@ export default function CircleOverview() {
             </Stack>
           )}
           {toggle == "Members" && <CircleMembers />}
+          {toggle == "Roles" && <Roles />}
         </Box>
       </Stack>
     </>
