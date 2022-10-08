@@ -703,3 +703,5 @@ export type DateConditions = {
 };
 
 export type ComparisonCondition = "greaterThanOrEqualTo" | "lessThanOrEqualTo";
+
+export type UserType = "assignee" | "reviewer" | "grantee" | "applicant";

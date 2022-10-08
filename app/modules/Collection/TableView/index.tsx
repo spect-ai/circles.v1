@@ -8,6 +8,7 @@ import {
 } from "react-datasheet-grid";
 import styled from "styled-components";
 import { mockData } from "../Constants";
+import HeaderComponent from "./HeaderComponent";
 import SelectComponent from "./SelectComponent";
 
 type Row = {
@@ -18,44 +19,34 @@ type Row = {
 
 export default function TableView() {
   const [data, setData] = useState<Row[]>(mockData);
-  const [sort, setSort] = useState(true);
 
-  const HeaderComponent = ({ columnName }: { columnName: string }) => {
-    return (
-      <TableHeader
-        onClick={() => {
-          // sort data if  ascending or descending
-          const sorteddata = data.sort((a: any, b: any) => {
-            if (sort) {
-              return a[columnName].localeCompare(b[columnName]);
-            } else {
-              return b[columnName].localeCompare(a[columnName]);
-            }
-          });
-          console.log({ sorteddata });
-          setData(sorteddata);
-          setSort(!sort);
-        }}
-      >
-        <Text variant="label">{columnName}</Text>
-      </TableHeader>
-    );
+  const sortData = (columnName: string, asc: boolean) => {
+    const sortedData = [...data].sort((a: any, b: any) => {
+      if (a[columnName] < b[columnName]) {
+        return asc ? -1 : 1;
+      }
+      if (a[columnName] > b[columnName]) {
+        return asc ? 1 : -1;
+      }
+      return 0;
+    });
+    setData(sortedData);
   };
 
   const columns: Column<Row>[] = [
     {
       ...keyColumn<Row, "title">("title", textColumn as any),
-      title: <HeaderComponent columnName="title" />,
+      title: <HeaderComponent columnName="title" sortData={sortData} />,
       minWidth: 200,
     },
     {
       ...keyColumn<Row, "description">("description", textColumn as any),
-      title: <HeaderComponent columnName="description" />,
+      title: <HeaderComponent columnName="description" sortData={sortData} />,
       minWidth: 200,
     },
     {
       component: SelectComponent as any,
-      title: <HeaderComponent columnName="status" />,
+      title: <HeaderComponent columnName="status" sortData={sortData} />,
       minWidth: 200,
     },
   ];

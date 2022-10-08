@@ -19,12 +19,12 @@ export const mockData = [
   },
   {
     title: "Second",
-    description: "Second description",
+    description: "A description",
     status: "Active",
   },
   {
     title: "Third",
-    description: "Third description",
+    description: "AB description",
     status: "Active",
   },
   {

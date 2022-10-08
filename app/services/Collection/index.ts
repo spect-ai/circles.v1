@@ -1,7 +1,16 @@
+import { UserType } from "@/app/types";
+
 export const addField = async (
   collectionId: string,
-  name: string,
-  type: string
+  createDto: {
+    name: string;
+    type: string;
+    default?: string;
+    options?: { label: string; value: string }[];
+    isPartOfFormView: boolean;
+    userType?: UserType;
+    onUpdateNotifyUserTypes?: UserType[];
+  }
 ) => {
   return await (
     await fetch(
@@ -12,12 +21,7 @@ export const addField = async (
           "Content-Type": "application/json",
         },
         credentials: "include",
-        body: JSON.stringify({
-          id: collectionId,
-          name,
-          type,
-          isPartOfFormView: false,
-        }),
+        body: JSON.stringify(createDto),
       }
     )
   ).json();

@@ -11,7 +11,7 @@ import {
 import styled from "styled-components";
 import { SkeletonLoader } from "../../Explore/SkeletonLoader";
 import { useLocalCollection } from "../Context/LocalCollectionContext";
-import ColumnComponent from "./Column";
+import ColumnComponent from "./ColumnComponent";
 import InactiveFieldsColumnComponent from "./InactiveFieldsColumn";
 
 const Container = styled.div`

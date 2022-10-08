@@ -1,183 +1,129 @@
-import {
-  Box,
-  Button,
-  IconChevronRight,
-  Input,
-  Stack,
-  Text,
-  useTheme,
-} from "degen";
-import { motion, AnimatePresence } from "framer-motion";
-import { matchSorter } from "match-sorter";
-import { FC, useEffect, useRef, useState } from "react";
-import { usePopper } from "react-popper";
-import styled from "styled-components";
-import { smartTrim } from "../../utils/utils";
-import { useOutsideAlerter } from "../Popover";
-import { Portal } from "../Portal/portal";
+import { Stack, useTheme } from "degen";
+import { FC } from "react";
+
+import Select from "react-select";
 
 export type OptionType = {
   label: string;
   value: string;
 };
 
-interface Props {
-  title?: string;
-  options: OptionType[];
-  selected: OptionType;
-  onChange: (option: OptionType) => void;
-}
+type Props =
+  | {
+      multiple: false;
+      options: OptionType[];
+      selected: OptionType;
+      onChange: (option: OptionType) => void;
+      placeholder?: string;
+    }
+  | {
+      multiple: true;
+      options: OptionType[];
+      selected: OptionType[];
+      onChange: (option: OptionType[]) => void;
+      placeholder?: string;
+    };
 
-// const OptionsContainer = styled(Box)<{ isExpanded: boolean }>`
-//   display: ${(props) => (props.isExpanded ? "block" : "none")};
-//   position: absolute;
-//   z-index: 1;
-//   width: 20rem;
-// `;
-
-const Option = styled(Box)<{ mode: string }>`
-  cursor: pointer;
-  &:hover {
-    background-color: ${({ mode }) =>
-      mode === "dark" ? "rgba(255, 255, 255, 0.1)" : "rgba(20, 20, 20, 0.1)"};
-  }
-`;
-
-const ScrollContainer = styled(Box)`
-  ::-webkit-scrollbar {
-    width: 10px;
-  }
-  height: 9.5rem;
-  overflow-y: auto;
-  width: 20rem;
-`;
-
-const slide = {
-  hidden: { height: 0, opacity: 0 },
-  open: { height: "10rem", opacity: 1 },
-  collapsed: { height: 0, opacity: 0 },
-};
-
-const Dropdown: FC<Props> = ({ options, selected, onChange, title }) => {
-  const [isExpanded, setIsExpanded] = useState(false);
-  const [inputValue, setInputValue] = useState(selected?.label);
-  const [filteredOptions, setFilteredOptions] = useState(options);
+const Dropdown: FC<Props> = ({
+  options,
+  selected,
+  onChange,
+  multiple,
+  placeholder,
+}) => {
   const { mode } = useTheme();
-  const wrapperRef = useRef(null);
-  useOutsideAlerter(wrapperRef, setIsExpanded, false);
-
-  const [anchorElement, setAnchorElement] = useState<any>();
-  const [popperElement, setPopperElement] = useState<any>();
-
-  const { styles, attributes } = usePopper(anchorElement, popperElement, {
-    placement: "bottom-start",
-  });
-
-  useEffect(() => {
-    setFilteredOptions(options);
-  }, [options]);
 
   return (
-    <>
-      <Box width="full">
-        <Input
-          ref={setAnchorElement}
-          label={title}
-          value={inputValue}
-          onChange={(e) => {
-            setInputValue(e.target.value);
-            setFilteredOptions(
-              matchSorter(options, e.target.value, {
-                keys: ["label"],
-              })
-            );
-          }}
-          suffix={
-            <Button
-              shape="circle"
-              size="small"
-              variant="transparent"
-              onClick={() => {
-                // inputRef.current?.focus();
-                setIsExpanded(!isExpanded);
-              }}
-            >
-              <Box
-                transitionDuration="700"
-                style={{
-                  transform: isExpanded ? "rotate(90deg)" : "rotate(0deg)",
-                }}
-              >
-                <IconChevronRight color="textTertiary" size="5" />
-              </Box>
-            </Button>
-          }
-          onFocus={() => setIsExpanded(true)}
-        />
-      </Box>
-      {/* <OptionsContainer
-        isExpanded={isExpanded}
-        borderWidth="0.5"
-        backgroundColor="backgroundSecondary"
-        borderRadius="large"
-        ref={wrapperRef}
-      > */}
-      <AnimatePresence>
-        {isExpanded && (
-          <Portal>
-            <Box
-              position="absolute"
-              zIndex="10"
-              ref={setPopperElement}
-              style={styles.popper}
-              {...attributes.popper}
-            >
-              <motion.div
-                key="content"
-                initial="hidden"
-                animate="open"
-                exit="collapsed"
-                variants={slide}
-                transition={{ duration: 0.3 }}
-              >
-                <ScrollContainer
-                  backgroundColor="background"
-                  borderWidth="0.5"
-                  borderRadius="2xLarge"
-                  ref={wrapperRef}
-                >
-                  {filteredOptions?.map((option) => (
-                    <Option
-                      key={option.value}
-                      padding="4"
-                      borderRadius="3xLarge"
-                      mode={mode}
-                      onClick={() => {
-                        onChange(option);
-                        setInputValue(option.label);
-                        setIsExpanded(false);
-                      }}
-                    >
-                      <Stack align="center">
-                        <Text>{smartTrim(option.label, 24)}</Text>
-                      </Stack>
-                    </Option>
-                  ))}
-                  {!filteredOptions?.length && (
-                    <Option padding="4" borderRadius="3xLarge" mode={mode}>
-                      <Stack align="center">
-                        <Text variant="label">Not Found</Text>
-                      </Stack>
-                    </Option>
-                  )}
-                </ScrollContainer>
-              </motion.div>
-            </Box>
-          </Portal>
-        )}
-      </AnimatePresence>
-      {/* </OptionsContainer> */}
-    </>
+    <Stack>
+      <Select
+        placeholder={placeholder}
+        options={options}
+        value={selected}
+        isMulti={multiple}
+        onChange={(option) => onChange(option as any)}
+        menuPortalTarget={document.body}
+        isClearable={true}
+        styles={{
+          container: (provided) => ({
+            ...provided,
+            flex: 1, // full width
+            alignSelf: "stretch", // full height
+          }),
+          menu: (provided) => ({
+            ...provided,
+            backgroundColor: mode === "dark" ? "#1A1A1A" : "#FFFFFF",
+            color: mode === "dark" ? "#FFFFFF" : "#000000",
+          }),
+          control: (provided) => ({
+            ...provided,
+            height: "100%",
+            boxShadow: "none",
+            background: mode === "dark" ? "rgb(20,20,20)" : "#FFFFFF",
+            border:
+              mode === "dark"
+                ? "1px solid rgb(255, 255, 255, 0.1) !important"
+                : "1px solid rgb(20, 20, 20, 0.1) !important",
+            borderRadius: "8px",
+            padding: "6px",
+          }),
+          input: (provided) => ({
+            ...provided,
+            color: mode === "dark" ? "#FFFFFF" : "#000000",
+          }),
+          singleValue: (provided) => ({
+            ...provided,
+            color: "rgb(255, 255, 255)",
+          }),
+          multiValue: (styles) => {
+            return {
+              ...styles,
+              backgroundColor: "rgb(191, 90, 242, 0.1)",
+              borderRadius: "12px",
+            };
+          },
+          multiValueLabel: (styles) => ({
+            ...styles,
+            color: "rgb(191, 90, 242)",
+          }),
+          multiValueRemove: (styles) => ({
+            ...styles,
+            color: "rgb(191, 90, 242)",
+            cursor: "pointer",
+            marginTop: "2px",
+            ":hover": {
+              color: "white",
+            },
+          }),
+          indicatorSeparator: (provided) => ({
+            ...provided,
+            opacity: 0,
+          }),
+          option: (provided, state) => ({
+            ...provided,
+            backgroundColor: state.isFocused
+              ? mode === "dark"
+                ? "rgb(255, 255, 255, 0.1) !important"
+                : "rgb(20, 20, 20, 0.1) !important"
+              : state.isSelected
+              ? mode === "dark"
+                ? "rgb(255, 255, 255, 0.1) !important"
+                : "rgb(20, 20, 20, 0.1) !important"
+              : "transparent",
+            color: mode === "dark" ? "#FFFFFF" : "#000000",
+            cursor: "pointer",
+          }),
+
+          // indicatorsContainer: (provided) => ({
+          //   ...provided,
+          //   opacity: active ? 1 : 0,
+          // }),
+          // placeholder: (provided) => ({
+          //   ...provided,
+          //   opacity: active ? 1 : 0,
+          // }),
+        }}
+      />
+    </Stack>
   );
 };
 

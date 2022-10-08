@@ -102,32 +102,32 @@ function FieldComponent({ id, index }: Props) {
           {collection.properties[id]?.type === "singleSelect" && (
             <Box marginTop="4">
               <Dropdown
+                placeholder={`Select ${collection.properties[id]?.name}`}
+                multiple={false}
                 options={
                   collection.properties[id]?.options as SingleSelectOptionType[]
                 }
                 selected={collection.data && collection.data[id]}
                 onChange={(value) => {
                   // setselectedSafe(value);
+                  console.log({ value });
                 }}
               />
             </Box>
           )}
           {collection.properties[id]?.type === "multiSelect" && (
             <Box marginTop="4">
-              <MultiSelectDropdown
+              <Dropdown
+                placeholder={`Select ${collection.properties[id]?.name}`}
+                multiple={true}
                 options={
-                  collection.properties[id]?.options?.map(
-                    (a: { value: any; label: any }) => {
-                      return {
-                        id: a.value,
-                        name: a.label,
-                      };
-                    }
-                  ) as MultiSelectOptionType[]
+                  collection.properties[id]?.options as SingleSelectOptionType[]
                 }
-                value={collection.data && collection.data[id]}
-                setValue={() => {}}
-                width={""}
+                selected={collection.data && collection.data[id]}
+                onChange={(value) => {
+                  // setselectedSafe(value);
+                  console.log({ value });
+                }}
               />
             </Box>
           )}
