@@ -14221,6 +14221,11 @@ react-syntax-highlighter@^15.4.5:
     prismjs "^1.27.0"
     refractor "^3.6.0"
 
+react-tiny-popover@^7.1.0:
+  version "7.1.0"
+  resolved "https://registry.yarnpkg.com/react-tiny-popover/-/react-tiny-popover-7.1.0.tgz#809bffefd54c7921eba96991f964953858e3388f"
+  integrity sha512-vlZFs8/uFWwLY+JwXL4Fwjvz+c5rqKUlg5b9UOgc/gJiRdp1lk+FachCdZlDIQwk8UOADMu8YxYp0VV3rXLU9g==
+
 react-tippy@^1.4.0:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/react-tippy/-/react-tippy-1.4.0.tgz#e8a8b4085ec985e5c94fe128918b733b588a1465"

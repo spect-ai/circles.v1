@@ -14,22 +14,51 @@ export const fields = [
 export const mockData = [
   {
     title: "First",
-    description: "First description",
-    status: "Active",
+    description: "This is just the description \n of the first collection",
+    status: {
+      label: "To Do",
+      value: "To Do",
+    },
+    Tags: [
+      {
+        label: "Bug",
+        value: "Bug",
+      },
+      {
+        label: "Frontend",
+        value: "Frontend",
+      },
+      {
+        label: "Backend",
+        value: "Backend",
+      },
+      {
+        label: "Test",
+        value: "Test",
+      },
+      {
+        label: "Feature",
+        value: "Feature",
+      },
+    ],
   },
   {
     title: "Second",
-    description: "A description",
-    status: "Active",
-  },
-  {
-    title: "Third",
-    description: "AB description",
-    status: "Active",
-  },
-  {
-    title: "Fourth",
-    description: "Fourth description",
-    status: "Inactive",
+    description:
+      "This is just the second description \n of the first collection",
+    status: {
+      label: "To Do",
+      value: "To Do",
+    },
+    Tags: [
+      {
+        label: "Integration",
+        value: "Integration",
+      },
+      {
+        label: "Frontend",
+        value: "Frontend",
+      },
+    ],
   },
 ];

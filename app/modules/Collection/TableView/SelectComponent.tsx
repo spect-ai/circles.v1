@@ -1,11 +1,29 @@
+import { useTheme } from "degen";
 import { useLayoutEffect, useRef } from "react";
 import { CellProps } from "react-datasheet-grid";
 import Select from "react-select";
 
-export default function SelectComponent({ focus, active }: CellProps) {
+type Props = {
+  focus: boolean;
+  active: boolean;
+  rowData: any;
+  columnData: any;
+  setRowData: any;
+  stopEditing: any;
+  isModalOpen?: boolean;
+};
+
+export default function SelectComponent({
+  focus,
+  active,
+  rowData,
+  columnData,
+  setRowData,
+  stopEditing,
+  isModalOpen,
+}: Props) {
   const ref: any = useRef<Select>(null);
 
-  // This function will be called only when `focus` changes
   useLayoutEffect(() => {
     if (focus) {
       ref.current?.focus();
@@ -13,41 +31,104 @@ export default function SelectComponent({ focus, active }: CellProps) {
       ref.current?.blur();
     }
   }, [focus]);
+
+  const { mode } = useTheme();
+
   return (
     <Select
+      isMulti={columnData.type === "multiSelect"}
+      options={columnData.options}
+      value={rowData}
       ref={ref}
-      options={[
-        { value: "chocolate", label: "Chocolate" },
-        { value: "strawberry", label: "Strawberry" },
-        { value: "vanilla", label: "Vanilla" },
-      ]}
-      menuIsOpen={focus}
-      menuPortalTarget={document.body}
+      menuIsOpen={columnData.type === "singleSelect" ? focus : undefined}
+      menuPortalTarget={
+        columnData.type === "singleSelect" ? document.body : undefined
+      }
+      menuPlacement="bottom"
+      menuPosition="absolute"
+      onChange={(option) => {
+        setRowData(option);
+        // We don't just do `stopEditing()` because it is triggered too early by react-select
+        setTimeout(() => {
+          stopEditing();
+        }, 0);
+      }}
       styles={{
         container: (provided) => ({
           ...provided,
           flex: 1, // full width
           alignSelf: "stretch", // full height
-          pointerEvents: focus ? undefined : "none", // disable pointer events when not focused
+          pointerEvents: isModalOpen ? undefined : focus ? undefined : "none",
+        }),
+        menu: (provided) => ({
+          ...provided,
+          backgroundColor: mode === "dark" ? "#1A1A1A" : "#FFFFFF",
+          color: mode === "dark" ? "#FFFFFF" : "#000000",
+        }),
+        menuPortal: (provided) => ({
+          ...provided,
+          zIndex: 9999,
         }),
         control: (provided) => ({
           ...provided,
-          height: "100%",
-          border: "none",
           boxShadow: "none",
-          background: "none",
+          border: "none",
+          background: mode === "dark" ? "rgb(20,20,20)" : "#FFFFFF",
         }),
         input: (provided) => ({
           ...provided,
-          color: "white",
+          color: mode === "dark" ? "#FFFFFF" : "#000000",
         }),
-        singleValue: (provided, state) => ({
+        singleValue: (provided) => ({
           ...provided,
           color: "rgb(255, 255, 255)",
+        }),
+        multiValue: () => ({
+          backgroundColor: "rgb(191, 90, 242, 0.1)",
+          borderRadius: "12px",
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center",
+        }),
+        valueContainer: (provided, state) => ({
+          ...provided,
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          flexWrap: isModalOpen ? "wrap" : "nowrap",
+          maxWidth: "90%",
+        }),
+        multiValueLabel: (styles) => ({
+          ...styles,
+          color: "rgb(191, 90, 242)",
+          padding: "0 8px",
+        }),
+        multiValueRemove: (styles) => ({
+          ...styles,
+          color: "rgb(191, 90, 242)",
+          cursor: "pointer",
+          marginTop: "2px",
+          ":hover": {
+            color: "white",
+          },
+          display: isModalOpen ? "flex" : "none",
         }),
         indicatorSeparator: (provided) => ({
           ...provided,
           opacity: 0,
+        }),
+        option: (provided, state) => ({
+          ...provided,
+          backgroundColor: state.isFocused
+            ? mode === "dark"
+              ? "rgb(255, 255, 255, 0.1) !important"
+              : "rgb(20, 20, 20, 0.1) !important"
+            : state.isSelected
+            ? mode === "dark"
+              ? "rgb(255, 255, 255, 0.1) !important"
+              : "rgb(20, 20, 20, 0.1) !important"
+            : "transparent",
+          color: mode === "dark" ? "#FFFFFF" : "#000000",
+          cursor: "pointer",
         }),
         indicatorsContainer: (provided) => ({
           ...provided,
