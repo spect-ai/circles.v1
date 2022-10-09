@@ -43,7 +43,6 @@ import AssignToMe from "./AssignToMe";
 import Submission from "./Submission";
 import SubTasks from "./SubTasks";
 import Discuss from "./Discuss";
-import Bookmark from "./Bookmark";
 import CardProject from "./modals/CardProject";
 import MintKudos from "./MintKudos";
 import ViewKudos from "./MintKudos/view";

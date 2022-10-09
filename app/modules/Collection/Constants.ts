@@ -44,8 +44,7 @@ export const mockData = [
   },
   {
     title: "Second",
-    description:
-      "This is just the second description \n of the first collection",
+    description: "",
     status: {
       label: "To Do",
       value: "To Do",

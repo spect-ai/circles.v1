@@ -1,17 +1,17 @@
-import { useOutsideAlerter } from "@/app/common/components/Popover";
 import { Portal } from "@/app/common/components/Portal/portal";
 import { PropertyType } from "@/app/types";
-import { Box } from "degen";
+import { Box, IconClose, Stack, Text } from "degen";
 import React, { useRef, useState } from "react";
 import { CellProps } from "react-datasheet-grid";
 import { usePopper } from "react-popper";
 import styled from "styled-components";
+import LongTextComponent from "../../TableView/LongTextComponent";
 import SelectComponent from "../../TableView/SelectComponent";
 
 const getComponent = (type: PropertyType) => {
   switch (type) {
-    case "singleSelect":
-      return SelectComponent;
+    case "longText":
+      return LongTextComponent;
     case "multiSelect":
       return SelectComponent;
     default:
@@ -69,7 +69,7 @@ export default function ExandableCell({
 
   const Component = getComponent(columnData.type);
 
-  useOutsideAlerter(wrapperRef, setIsOpen);
+  // useOutsideAlerter(wrapperRef, setIsOpen);
 
   if (!Component) {
     return null;
@@ -92,6 +92,14 @@ export default function ExandableCell({
                 width: "100%",
               }}
             >
+              <Box marginTop="-2">
+                <Stack direction="horizontal" justify="space-between">
+                  <Box />
+                  <Box cursor="pointer" onClick={() => setIsOpen(!isOpen)}>
+                    <IconClose color="accent" size="5" />
+                  </Box>
+                </Stack>
+              </Box>
               <Component
                 focus={focus}
                 active={active}
@@ -101,6 +109,14 @@ export default function ExandableCell({
                 setRowData={setRowData}
                 stopEditing={stopEditing}
               />
+              <Box marginBottom="4" padding="2">
+                <Stack direction="horizontal" justify="space-between">
+                  <Box cursor="pointer" onClick={() => setIsOpen(!isOpen)}>
+                    <Text color="accent">Close</Text>
+                  </Box>
+                  <Box />
+                </Stack>
+              </Box>
             </div>
           </Container>
         </Portal>
@@ -109,7 +125,12 @@ export default function ExandableCell({
   }
 
   return (
-    <Box onClick={() => setIsOpen(!isOpen)} width="full" overflow="hidden">
+    <Box
+      onClick={() => setIsOpen(!isOpen)}
+      width="full"
+      height="8"
+      overflow="hidden"
+    >
       <Component
         focus={focus}
         active={active}
@@ -130,4 +151,5 @@ const Container = styled(Box)`
   padding: 1rem;
   border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 0 1rem rgba(0, 0, 0, 1);
+  overflow-y: auto;
 `;

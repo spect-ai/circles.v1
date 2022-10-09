@@ -1,7 +1,9 @@
+import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { TableOutlined } from "@ant-design/icons";
-import { Box, Button, IconList, Text, useTheme } from "degen";
+import { Box, Button, IconList, Stack, Text, useTheme } from "degen";
 import { memo } from "react";
 import Skeleton from "react-loading-skeleton";
+import { toast } from "react-toastify";
 import styled from "styled-components";
 import { useLocalCollection } from "../Context/LocalCollectionContext";
 
@@ -44,11 +46,23 @@ function CollectionHeading() {
         }}
       >
         {!loading && (
-          <Button variant="transparent" size="small">
-            <Text size="headingTwo" weight="semiBold" ellipsis>
-              {collection?.name}
-            </Text>
-          </Button>
+          <Stack direction="horizontal">
+            <Button variant="transparent" size="small">
+              <Text size="headingTwo" weight="semiBold" ellipsis>
+                {collection?.name}
+              </Text>
+            </Button>
+            <PrimaryButton
+              onClick={() => {
+                void navigator.clipboard.writeText(
+                  `https://spect.network/form/${collection?.slug}`
+                );
+                toast.success("Copied to clipboard");
+              }}
+            >
+              Share
+            </PrimaryButton>
+          </Stack>
         )}
         {loading && (
           <Skeleton

@@ -1,6 +1,5 @@
 import { useTheme } from "degen";
 import { useLayoutEffect, useRef } from "react";
-import { CellProps } from "react-datasheet-grid";
 import Select from "react-select";
 
 type Props = {
@@ -41,9 +40,7 @@ export default function SelectComponent({
       value={rowData}
       ref={ref}
       menuIsOpen={columnData.type === "singleSelect" ? focus : undefined}
-      menuPortalTarget={
-        columnData.type === "singleSelect" ? document.body : undefined
-      }
+      menuPortalTarget={document.body}
       menuPlacement="bottom"
       menuPosition="absolute"
       onChange={(option) => {

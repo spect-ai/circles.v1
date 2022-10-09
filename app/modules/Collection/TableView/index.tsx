@@ -12,6 +12,7 @@ import {
 import { mockData } from "../Constants";
 import { useLocalCollection } from "../Context/LocalCollectionContext";
 import ExandableCell from "../Form/ExpandableCell";
+import GutterColumnComponent from "./GutterColumnComponent";
 import HeaderComponent from "./HeaderComponent";
 import SelectComponent from "./SelectComponent";
 
@@ -37,7 +38,7 @@ export default function TableView() {
       case "shortText":
         return textColumn;
       case "longText":
-        return textColumn;
+        return ExandableCell;
       case "number":
         return floatColumn;
       case "date":
@@ -53,7 +54,7 @@ export default function TableView() {
 
   const columns: Column<any>[] = Object.values(collection.properties).map(
     (property) => {
-      if (["singleSelect", "multiSelect"].includes(property.type)) {
+      if (["singleSelect", "multiSelect", "longText"].includes(property.type)) {
         return {
           ...keyColumn(property.name, {
             component: getCellComponent(property.type) as any,
@@ -83,6 +84,10 @@ export default function TableView() {
           setData(value);
         }}
         columns={columns}
+        gutterColumn={{
+          component: GutterColumnComponent,
+          minWidth: 50,
+        }}
       />
     </Box>
   );
