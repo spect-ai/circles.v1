@@ -4,7 +4,10 @@ import { useRouter } from "next/router";
 import React, { useState } from "react";
 import { CellProps } from "react-datasheet-grid";
 
-export default function GutterColumnComponent({ rowIndex }: CellProps) {
+export default function GutterColumnComponent({
+  rowIndex,
+  rowData,
+}: CellProps) {
   const [hover, setHover] = useState(false);
   const router = useRouter();
   const { circle: cId, collection: cUID } = router.query;
@@ -14,7 +17,7 @@ export default function GutterColumnComponent({ rowIndex }: CellProps) {
       width="full"
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
-      onClick={() => router.push(`/${cId}/r/${cUID}?row=${rowIndex}`)}
+      onClick={() => router.push(`/${cId}/r/${cUID}?dataId=${rowData.id}`)}
     >
       <Stack align="center">
         {!hover && <Text variant="label">{rowIndex + 1}</Text>}

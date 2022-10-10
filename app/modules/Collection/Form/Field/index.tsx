@@ -1,9 +1,6 @@
 import Dropdown, {
   OptionType as SingleSelectOptionType,
 } from "@/app/common/components/Dropdown";
-import MultiSelectDropdown, {
-  OptionType as MultiSelectOptionType,
-} from "@/app/common/components/MultiSelectDropDown/MultiSelectDropDown";
 import { Box, Input, Text, Textarea, useTheme } from "degen";
 import { ethers } from "ethers";
 import React, { memo, useCallback } from "react";

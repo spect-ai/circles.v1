@@ -1,6 +1,7 @@
 import { PropertyType } from "@/app/types";
 import { Box } from "degen";
-import React, { useState } from "react";
+import { AnimatePresence } from "framer-motion";
+import React, { useEffect, useState } from "react";
 import {
   Column,
   dateColumn,
@@ -11,6 +12,7 @@ import {
 } from "react-datasheet-grid";
 import { mockData } from "../Constants";
 import { useLocalCollection } from "../Context/LocalCollectionContext";
+import DataModal from "../Form/DataModal";
 import ExandableCell from "../Form/ExpandableCell";
 import GutterColumnComponent from "./GutterColumnComponent";
 import HeaderComponent from "./HeaderComponent";
@@ -19,6 +21,17 @@ import SelectComponent from "./SelectComponent";
 export default function TableView() {
   const [data, setData] = useState<any[]>(mockData);
   const { localCollection: collection } = useLocalCollection();
+
+  useEffect(() => {
+    setData(
+      Object.keys(collection.data).map((key) => {
+        return {
+          id: key,
+          ...collection.data[key],
+        };
+      })
+    );
+  }, [collection.data]);
 
   const sortData = (columnName: string, asc: boolean) => {
     const sortedData = [...data].sort((a: any, b: any) => {
@@ -78,17 +91,20 @@ export default function TableView() {
   );
   return (
     <Box padding="8">
-      <DynamicDataSheetGrid
-        value={data}
-        onChange={(value) => {
-          setData(value);
-        }}
-        columns={columns}
-        gutterColumn={{
-          component: GutterColumnComponent,
-          minWidth: 50,
-        }}
-      />
+      <DataModal />
+      {collection.name && (
+        <DynamicDataSheetGrid
+          value={data}
+          onChange={(value) => {
+            setData(value);
+          }}
+          columns={columns}
+          gutterColumn={{
+            component: GutterColumnComponent,
+            minWidth: 50,
+          }}
+        />
+      )}
     </Box>
   );
 }

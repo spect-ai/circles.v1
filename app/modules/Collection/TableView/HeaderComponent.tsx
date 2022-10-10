@@ -1,5 +1,4 @@
 import Popover from "@/app/common/components/Popover";
-import { DownloadOutlined, TwitterOutlined } from "@ant-design/icons";
 import {
   Box,
   IconDotsHorizontal,
@@ -9,7 +8,6 @@ import {
   useTheme,
 } from "degen";
 import React, { useState } from "react";
-import { TwitterShareButton } from "react-share";
 import styled from "styled-components";
 
 type Props = {
