@@ -1,5 +1,9 @@
+import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
+import { MemberDetails, Option } from "@/app/types";
 import { useTheme } from "degen";
+import { useRouter } from "next/router";
 import { useLayoutEffect, useRef } from "react";
+import { useQuery } from "react-query";
 import Select from "react-select";
 
 type Props = {
@@ -22,6 +26,19 @@ export default function SelectComponent({
   isModalOpen,
 }: Props) {
   const ref: any = useRef<Select>(null);
+  const router = useRouter();
+  const { circle: cId } = router.query;
+  const { data: memberDetails } = useQuery<MemberDetails>(
+    ["memberDetails", cId],
+    {
+      enabled: false,
+    }
+  );
+
+  const memberOptions = memberDetails?.members?.map((member: string) => ({
+    label: memberDetails && memberDetails.memberDetails[member]?.username,
+    value: member,
+  }));
 
   useLayoutEffect(() => {
     if (focus) {
@@ -36,7 +53,11 @@ export default function SelectComponent({
   return (
     <Select
       isMulti={columnData.type === "multiSelect"}
-      options={columnData.options}
+      options={
+        ["user", "user[]"].includes(columnData.type)
+          ? memberOptions
+          : columnData.options
+      }
       value={rowData}
       ref={ref}
       menuIsOpen={columnData.type === "singleSelect" ? focus : undefined}

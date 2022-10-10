@@ -1,4 +1,4 @@
-import { UserType } from "@/app/types";
+import { FormUserType } from "@/app/types";
 
 export const addField = async (
   collectionId: string,
@@ -8,8 +8,8 @@ export const addField = async (
     default?: string;
     options?: { label: string; value: string }[];
     isPartOfFormView: boolean;
-    userType?: UserType;
-    onUpdateNotifyUserTypes?: UserType[];
+    userType?: FormUserType;
+    onUpdateNotifyUserTypes?: FormUserType[];
   }
 ) => {
   return await (

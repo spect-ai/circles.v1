@@ -19,31 +19,35 @@ import HeaderComponent from "./HeaderComponent";
 import SelectComponent from "./SelectComponent";
 
 export default function TableView() {
-  const [data, setData] = useState<any[]>(mockData);
+  const [data, setData] = useState<any[]>();
   const { localCollection: collection } = useLocalCollection();
 
   useEffect(() => {
-    setData(
-      Object.keys(collection.data).map((key) => {
-        return {
-          id: key,
-          ...collection.data[key],
-        };
-      })
-    );
+    if (collection.data) {
+      setData(
+        Object.keys(collection.data).map((key) => {
+          return {
+            id: key,
+            ...collection.data[key],
+          };
+        })
+      );
+    }
   }, [collection.data]);
 
   const sortData = (columnName: string, asc: boolean) => {
-    const sortedData = [...data].sort((a: any, b: any) => {
-      if (a[columnName] < b[columnName]) {
-        return asc ? -1 : 1;
-      }
-      if (a[columnName] > b[columnName]) {
-        return asc ? 1 : -1;
-      }
-      return 0;
-    });
-    setData(sortedData);
+    if (data) {
+      const sortedData = [...data].sort((a: any, b: any) => {
+        if (a[columnName] < b[columnName]) {
+          return asc ? -1 : 1;
+        }
+        if (a[columnName] > b[columnName]) {
+          return asc ? 1 : -1;
+        }
+        return 0;
+      });
+      setData(sortedData);
+    }
   };
 
   const getCellComponent = (type: PropertyType) => {
@@ -58,6 +62,10 @@ export default function TableView() {
         return dateColumn;
       case "singleSelect":
         return SelectComponent;
+      case "user":
+        return SelectComponent;
+      case "user[]":
+        return ExandableCell;
       case "multiSelect":
         return ExandableCell;
       default:
@@ -67,7 +75,11 @@ export default function TableView() {
 
   const columns: Column<any>[] = Object.values(collection.properties).map(
     (property) => {
-      if (["singleSelect", "multiSelect", "longText"].includes(property.type)) {
+      if (
+        ["singleSelect", "multiSelect", "longText", "user", "user[]"].includes(
+          property.type
+        )
+      ) {
         return {
           ...keyColumn(property.name, {
             component: getCellComponent(property.type) as any,

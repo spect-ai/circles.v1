@@ -1,4 +1,4 @@
-import { Stack, useTheme } from "degen";
+import { useTheme } from "degen";
 import { FC } from "react";
 
 import Select from "react-select";

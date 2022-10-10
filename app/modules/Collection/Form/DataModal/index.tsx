@@ -1,10 +1,12 @@
 import Dropdown, { OptionType } from "@/app/common/components/Dropdown";
 import Editor from "@/app/common/components/Editor";
 import Modal from "@/app/common/components/Modal";
+import { MemberDetails } from "@/app/types";
 import { Box, Input, Stack, Text } from "degen";
 import { ethers } from "ethers";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
+import { useQuery } from "react-query";
 import { useLocalCollection } from "../../Context/LocalCollectionContext";
 
 export default function DataModal() {
@@ -13,6 +15,17 @@ export default function DataModal() {
 
   const router = useRouter();
   const { dataId, circle: cId } = router.query;
+  const { data: memberDetails } = useQuery<MemberDetails>(
+    ["memberDetails", cId],
+    {
+      enabled: false,
+    }
+  );
+
+  const memberOptions = memberDetails?.members?.map((member: string) => ({
+    label: memberDetails && memberDetails.memberDetails[member]?.username,
+    value: member,
+  }));
 
   useEffect(() => {
     dataId ? setIsOpen(true) : setIsOpen(false);
@@ -107,6 +120,36 @@ export default function DataModal() {
                   placeholder={`Select ${property?.name}`}
                   multiple={true}
                   options={property?.options as OptionType[]}
+                  selected={
+                    collection.data &&
+                    collection.data[dataId as string][property.name]
+                  }
+                  onChange={(value) => {
+                    // setselectedSafe(value);
+                    console.log({ value });
+                  }}
+                />
+              )}
+              {property?.type === "user" && (
+                <Dropdown
+                  placeholder={`Select ${property?.name}`}
+                  multiple={false}
+                  options={memberOptions as OptionType[]}
+                  selected={
+                    collection.data &&
+                    collection.data[dataId as string][property.name]
+                  }
+                  onChange={(value) => {
+                    // setselectedSafe(value);
+                    console.log({ value });
+                  }}
+                />
+              )}
+              {property?.type === "user[]" && (
+                <Dropdown
+                  placeholder={`Select ${property?.name}`}
+                  multiple={false}
+                  options={property.options as OptionType[]}
                   selected={
                     collection.data &&
                     collection.data[dataId as string][property.name]

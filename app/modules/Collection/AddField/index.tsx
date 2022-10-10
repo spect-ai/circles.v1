@@ -1,9 +1,10 @@
 import Dropdown from "@/app/common/components/Dropdown";
 import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
+import Select from "@/app/common/components/Select";
 import { addField } from "@/app/services/Collection";
-import { UserType } from "@/app/types";
-import { Box, Input, Stack } from "degen";
+import { FormUserType } from "@/app/types";
+import { Box, Input, Stack, Text } from "degen";
 import { AnimatePresence } from "framer-motion";
 import React, { useState } from "react";
 import { fields } from "../Constants";
@@ -12,7 +13,8 @@ import AddOptions from "./AddOptions";
 
 export default function AddField() {
   const [isOpen, setIsOpen] = useState(false);
-  const { localCollection: collection } = useLocalCollection();
+  const { localCollection: collection, setLocalCollection } =
+    useLocalCollection();
 
   const [name, setName] = useState("");
   const [type, setType] = useState({ label: "Short Text", value: "shortText" });
@@ -24,8 +26,8 @@ export default function AddField() {
     },
   ]);
 
-  const [userType, setUserType] = useState<UserType>();
-  const [notifyUserType, setNotifyUserType] = useState<UserType[]>([]);
+  const [userType, setUserType] = useState<FormUserType>();
+  const [notifyUserType, setNotifyUserType] = useState<FormUserType[]>([]);
   return (
     <>
       <PrimaryButton onClick={() => setIsOpen(true)}>Add Field</PrimaryButton>
@@ -50,6 +52,7 @@ export default function AddField() {
                   onChange={(type) => {
                     setType(type);
                   }}
+                  multiple={false}
                 />
                 {type.value === "singleSelect" ||
                 type.value === "multiSelect" ? (
@@ -58,20 +61,44 @@ export default function AddField() {
                     setFieldOptions={setFieldOptions}
                   />
                 ) : null}
+                {type.value === "user" || type.value === "user[]" ? (
+                  <Stack>
+                    <Text variant="label">User Type</Text>
+                    <Select
+                      options={[
+                        { label: "Assignee", value: "assignee" },
+                        { label: "Reviewer", value: "reviewer" },
+                        { label: "Grantee", value: "grantee" },
+                        { label: "Applicant", value: "applicant" },
+                        { label: "None", value: "none" },
+                      ]}
+                      value={{
+                        label: userType as string,
+                        value: userType as string,
+                      }}
+                      onChange={(type) => {
+                        setUserType(type.value as FormUserType);
+                      }}
+                    />
+                  </Stack>
+                ) : null}
+
                 <PrimaryButton
                   loading={loading}
                   onClick={async () => {
                     setLoading(true);
+                    console.log({ userType });
                     const res = await addField(collection.id, {
                       name,
                       type: type.value,
                       isPartOfFormView: false,
                       options: fieldOptions,
-                      userType,
+                      userType: userType,
                       onUpdateNotifyUserTypes: notifyUserType,
                     });
                     setLoading(false);
                     setIsOpen(false);
+                    setLocalCollection(res);
                     console.log({ res });
                   }}
                 >
