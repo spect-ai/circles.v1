@@ -36,6 +36,8 @@ interface GlobalContextType {
   setSocket: React.Dispatch<React.SetStateAction<Socket>>;
   groupBy: "Folder" | "Type";
   setGroupBy: React.Dispatch<React.SetStateAction<"Folder" | "Type">>;
+  toggle: "Overview" | "Members" | "Roles";
+  setToggle: (toggle: "Overview" | "Members" | "Roles") => void;
 }
 
 const useProviderGlobalContext = () => {
@@ -50,6 +52,8 @@ const useProviderGlobalContext = () => {
   const [quickProfileUser, setQuickProfileUser] = useState("");
 
   const [groupBy, setGroupBy] = useState<"Folder" | "Type">("Folder");
+  const [toggle, setToggle] =
+    useState<"Overview" | "Members" | "Roles">("Overview");
 
   const [viewName, setViewName] = useState("" as string);
   const [view, setView] = useState(0);
@@ -117,6 +121,8 @@ const useProviderGlobalContext = () => {
     setCalendarView,
     tab,
     setTab,
+    toggle,
+    setToggle,
     notifseen,
     setNotifSeen,
     currentFilter,

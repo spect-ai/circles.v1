@@ -58,7 +58,7 @@ export default function Roles() {
                     </Stack>
                   </Text>
                 </Box>
-                <Box width="1/4">
+                <Box width="1/2">
                   <AddRole role={role} />
                 </Box>
               </Stack>
