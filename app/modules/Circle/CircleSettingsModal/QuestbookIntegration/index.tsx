@@ -139,6 +139,7 @@ export default function ConnectQuestbook() {
                     onChange={(value) => {
                       setApplicantProject(value);
                     }}
+                    multiple={false}
                   />
                 </Box>
 
@@ -152,6 +153,7 @@ export default function ConnectQuestbook() {
                     onChange={(value) => {
                       setMilestoneProject(value);
                     }}
+                    multiple={false}
                   />{" "}
                 </Box>
 
@@ -173,6 +175,7 @@ export default function ConnectQuestbook() {
                         name: channel.label,
                       })
                     }
+                    multiple={false}
                   />
                 </Box>
 

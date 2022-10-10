@@ -139,6 +139,7 @@ export default function SelectCards() {
               onChange={(option) => {
                 setColumn(option);
               }}
+              multiple={false}
             />
           </Box>
           <Select

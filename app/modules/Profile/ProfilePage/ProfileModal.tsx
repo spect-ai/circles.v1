@@ -53,7 +53,7 @@ export default function ProfileModal({ setIsOpen }: Props) {
     setIsDirty(true);
     if (file) {
       setUploading(true);
-      const { imageGatewayURL } = await storeImage(file, "avatar");
+      const { imageGatewayURL } = await storeImage(file);
       console.log({ imageGatewayURL });
       setAvatar(imageGatewayURL);
       setUploading(false);

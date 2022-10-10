@@ -21,6 +21,7 @@ const Template: Story<DropdownProps> = (args) => {
           setSelected(option);
         }}
         selected={selected}
+        multiple={false}
       />
     </Box>
   );

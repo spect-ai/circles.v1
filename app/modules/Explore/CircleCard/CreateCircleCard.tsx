@@ -1,19 +1,7 @@
-import { FC, useState } from "react";
+import { useState } from "react";
 
-import {
-  Avatar,
-  Box,
-  Button,
-  Input,
-  MediaPicker,
-  Stack,
-  Text,
-  useTheme,
-} from "degen";
-import styled, { keyframes } from "styled-components";
-import Link from "next/link";
-import { useGlobal } from "@/app/context/globalContext";
-import CreateCircle from "../../Sidebar/CreateCircleModal";
+import { Box, Button, Input, MediaPicker, Stack, useTheme } from "degen";
+import styled from "styled-components";
 import { useMutation } from "react-query";
 import { useRouter } from "next/router";
 import Modal from "@/app/common/components/Modal";
@@ -42,7 +30,6 @@ type CreateCircleDto = {
 };
 
 const CreateCircleCard = () => {
-  const { connectedUser } = useGlobal();
   const [modalOpen, setModalOpen] = useState(false);
   const [visibilityTab, setVisibilityTab] = useState(0);
   const onVisibilityTabClick = (id: number) => setVisibilityTab(id);
@@ -56,7 +43,7 @@ const CreateCircleCard = () => {
   const router = useRouter();
   const { mode } = useTheme();
 
-  const { mutateAsync, isLoading } = useMutation((circle: CreateCircleDto) => {
+  const { mutateAsync } = useMutation((circle: CreateCircleDto) => {
     return fetch(`${process.env.API_HOST}/circle/v1`, {
       headers: {
         Accept: "application/json",
@@ -71,7 +58,7 @@ const CreateCircleCard = () => {
   const uploadFile = async (file: File) => {
     if (file) {
       setUploading(true);
-      const { imageGatewayURL } = await storeImage(file, "circleLogo");
+      const { imageGatewayURL } = await storeImage(file);
       console.log({ imageGatewayURL });
       setLogo(imageGatewayURL);
       setUploading(false);

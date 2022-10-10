@@ -129,6 +129,7 @@ export default function ProjectSettings({ setIsOpen }: Props) {
                       name: channel.label,
                     })
                   }
+                  multiple={false}
                 />
               </Box>
             )}

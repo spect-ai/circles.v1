@@ -238,7 +238,7 @@ function CreateProjectModal({ folderId }: { folderId?: string }) {
                     ]}
                     selected={importType}
                     onChange={setImportType}
-                    title=""
+                    multiple={false}
                   />
                   <Input
                     label=""
