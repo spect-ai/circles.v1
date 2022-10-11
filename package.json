@@ -55,6 +55,7 @@
     "reactour": "^1.18.7",
     "rich-markdown-editor": "^11.21.3",
     "siwe": "^1.1.6",
+    "socket.io-client": "4.3.2",
     "styled-components": "^5.3.5",
     "wagmi": "^0.6.7",
     "web3.storage": "^4.2.0"

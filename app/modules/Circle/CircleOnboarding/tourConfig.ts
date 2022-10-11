@@ -1,18 +1,9 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 export const tourConfig = [
   {
-    selector: '[data-tour="circle-create-project-button"]',
+    selector: '[data-tour="circle-create-folder-button"]',
     content:
-      "You can create a new project if you want to start managing tasks among your circle members",
-    style: {
-      backgroundColor: "rgb(20,20,20)",
-      color: "rgb(255,255,255,0.8)",
-    },
-  },
-  {
-    selector: '[data-tour="circle-create-workstream-button"]',
-    content:
-      "If you wish to create dedicated workstreams within your circle you can do so by creating a workstream. Each workstream can be thought of as a smaller circle and can have their own projects",
+      "You can create folders and then create projects, workstreams, retro to start managing tasks among your circle members",
     style: {
       backgroundColor: "rgb(20,20,20)",
       color: "rgb(255,255,255,0.8)",

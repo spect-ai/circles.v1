@@ -195,7 +195,9 @@ export interface CircleType {
   activity: string[];
   archived: boolean;
   avatar: string;
-  children: CircleType[];
+  children: {
+    [key: string]: CircleType;
+  };
   createdAt: string;
   defaultPayment: Payment;
   description: string;
@@ -204,7 +206,10 @@ export interface CircleType {
   name: string;
   parents: CircleType[];
   private: boolean;
-  projects: ProjectType[];
+  projects: {
+    [key: string]: ProjectType;
+  };
+  collections: CollectionType[];
   slug: string;
   templates: any[];
   updatedAt: string;
@@ -226,12 +231,23 @@ export interface CircleType {
   discordToCircleRoles: DiscordRoleMappingType;
   githubRepos: string[];
   gradient: string;
-  retro: RetroType[];
+  retro: {
+    [key: string]: RetroType;
+  };
   safeAddresses: SafeAddresses;
   toBeClaimed: boolean;
   qualifiedClaimee: string[];
   unauthorized?: boolean;
   labels: string[];
+  folderOrder: string[];
+  folderDetails: {
+    [key: string]: {
+      name: string;
+      avatar: string;
+      contentIds: string[];
+      id: string;
+    };
+  };
   guildxyzId: number;
   guildxyzToCircleRoles: GuildxyzToCircleRoles;
   questbookWorkspaceUrl?: string;
@@ -629,3 +645,59 @@ export type DiscordChannel = {
   id: string;
   name: string;
 };
+
+export interface CollectionType {
+  id: string;
+  name: string;
+  description: string;
+  slug: string;
+  properties: { [id: string]: Property };
+  propertyOrder: string[];
+  createdAt: string;
+  updatedAt: string;
+  purpose: string;
+  private: boolean;
+  parents: CircleType[];
+  data: MappedItem<any>;
+  indexes: MappedItem<string[]>;
+  defaultView: DefaultViewType;
+  unauthorized?: boolean;
+}
+
+export type Property = {
+  name: string;
+  type: PropertyType;
+  isPartOfFormView: boolean;
+  default?: any;
+  condition?: any; // Show property only when condition is met
+  options?: Option[];
+};
+
+export type PropertyType =
+  | "shortText"
+  | "longText"
+  | "number"
+  | "user[]"
+  | "user"
+  | "reward"
+  | "date"
+  | "singleSelect"
+  | "multiSelect"
+  | "ethAddress";
+
+export type Option = {
+  label: string;
+  value: string | number;
+};
+
+export type Conditions = Condition[];
+
+export type Condition = DateConditions;
+
+export type DateConditions = {
+  propertyId: string;
+  condition: ComparisonCondition;
+  feedback: string;
+};
+
+export type ComparisonCondition = "greaterThanOrEqualTo" | "lessThanOrEqualTo";

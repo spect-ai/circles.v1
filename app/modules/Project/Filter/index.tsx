@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { Box, Button, useTheme, Text } from "degen";
 import { FilterOutlined } from "@ant-design/icons";
-import { CircleType, MemberDetails } from "@/app/types";
+import { MemberDetails } from "@/app/types";
 import MultiSelectDropdown, {
   OptionType,
   Input,
@@ -44,7 +44,7 @@ export default function Filter() {
 
   useEffect(() => {
     if (circle) {
-      const circleMembersArray = circle?.members.map((mem) => ({
+      const circleMembersArray = circle?.members?.map((mem) => ({
         name: memberDetails?.memberDetails[mem]?.username as string,
         id: mem,
       }));
@@ -59,7 +59,7 @@ export default function Filter() {
 
   const circles =
     circle?.children &&
-    circle?.children.map((c) => ({
+    Object.values(circle?.children).map((c) => ({
       name: c.name,
       id: c.id,
     }));
@@ -91,7 +91,7 @@ export default function Filter() {
     setColumn(currentFilter?.column);
     setPriority(currentFilter.priority);
     setType(currentFilter?.type);
-  }, [currentFilter, project.id, filterOpen]);
+  }, [currentFilter, project?.id, filterOpen]);
 
   const filterIsOn: boolean =
     currentFilter?.assignee?.length > 0 ||

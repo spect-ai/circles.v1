@@ -8,6 +8,7 @@ import React, {
 import { Filter } from "@/app/types";
 import { ViewMode } from "gantt-task-react";
 import { useRouter } from "next/router";
+import { io, Socket } from "socket.io-client";
 
 interface GlobalContextType {
   isSidebarExpanded: boolean;
@@ -31,6 +32,10 @@ interface GlobalContextType {
   setCurrentFilter: React.Dispatch<React.SetStateAction<Filter>>;
   calendarView: ViewMode;
   setCalendarView: React.Dispatch<React.SetStateAction<ViewMode>>;
+  socket: Socket;
+  setSocket: React.Dispatch<React.SetStateAction<Socket>>;
+  groupBy: "Folder" | "Type";
+  setGroupBy: React.Dispatch<React.SetStateAction<"Folder" | "Type">>;
 }
 
 const useProviderGlobalContext = () => {
@@ -44,6 +49,8 @@ const useProviderGlobalContext = () => {
   const [isProfilePanelExpanded, setIsProfilePanelExpanded] = useState(false);
   const [quickProfileUser, setQuickProfileUser] = useState("");
 
+  const [groupBy, setGroupBy] = useState<"Folder" | "Type">("Folder");
+
   const [viewName, setViewName] = useState("" as string);
   const [view, setView] = useState(0);
   const [calendarView, setCalendarView] = useState<ViewMode>(ViewMode.Day);
@@ -52,6 +59,8 @@ const useProviderGlobalContext = () => {
   const [notifseen, setNotifSeen] = useState(false);
 
   const [currentFilter, setCurrentFilter] = useState({} as Filter);
+
+  const [socket, setSocket] = useState<Socket>({} as Socket);
 
   function connectUser(userId: string) {
     setConnectedUser(userId);
@@ -74,16 +83,21 @@ const useProviderGlobalContext = () => {
     }
   }, [pId]);
 
-  // useEffect(() => {
-  //   fetch(`${process.env.API_HOST}/registry/getGlobalRegistry`)
-  //     .then(async (res) => {
-  //       const data = await res.json();
-  //       setRegistry(data);
-  //     })
-  //     .catch((err) => {
-  //       console.log({ err });
-  //     });
-  // }, []);
+  useEffect(() => {
+    const socket = io(process.env.API_HOST || "");
+    socket.on("connect", function () {
+      console.log("Connected");
+      setSocket(socket);
+    });
+
+    socket.on("disconnect", function () {
+      console.log("Disconnected");
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
 
   return {
     isSidebarExpanded,
@@ -107,6 +121,10 @@ const useProviderGlobalContext = () => {
     setNotifSeen,
     currentFilter,
     setCurrentFilter,
+    groupBy,
+    setGroupBy,
+    socket,
+    setSocket,
   };
 };
 

@@ -39,7 +39,6 @@ export default function useDragEnd() {
         source.index,
         destination.index
       );
-      const tempData = { ...localProject };
       setLocalProject({
         ...localProject,
         columnOrder: newColumnOrder,
@@ -59,7 +58,6 @@ export default function useDragEnd() {
           if (data.id) {
             updateProject(data);
           }
-          console.log({ data });
         })
         .catch((err) => {
           console.log({ err });
@@ -72,7 +70,6 @@ export default function useDragEnd() {
 
     if (start === finish) {
       const newList = reorder(start.cards, source.index, destination.index);
-      const tempData = { ...localProject };
       setLocalProject({
         ...localProject,
         columnDetails: {
@@ -98,8 +95,6 @@ export default function useDragEnd() {
         ...finish,
         cards: finishTaskIds,
       };
-      const tempData = { ...localProject };
-
       setLocalProject({
         ...localProject,
         columnDetails: {

@@ -31,7 +31,7 @@ export default function ConnectModal() {
       uri: window.location.origin,
       version: "1",
       chainId: res.chain?.id,
-      nonce: await nonceRes.text(),
+      nonce: 'o2FsXp12NVkciQRN6',
     });
 
     const signer = await connector.getSigner();

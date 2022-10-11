@@ -69,6 +69,8 @@ const ProjectPage: NextPage = () => {
   const context = useProviderLocalProject();
   const circlecontext = useProviderCircleContext();
 
+  if (pId === "r") return <></>;
+
   return (
     <>
       <MetaHead

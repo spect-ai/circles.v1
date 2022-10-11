@@ -142,6 +142,7 @@ function CardAssignee() {
       setOptions(ops);
       setFilteredOptions(ops);
     }
+    //eslint-disable-next-line react-hooks/exhaustive-deps
   }, [memberDetails]);
 
   const getTagLabel = () => {
