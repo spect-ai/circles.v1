@@ -65,7 +65,6 @@ function ColumnComponent({ fields }: Props) {
     useLocalCollection();
   const [title, setTitle] = useState(collection.name);
   const [description, setDescription] = useState(collection.description);
-
   const FieldDraggable = (provided: DroppableProvided) => (
     <ScrollContainer {...provided.droppableProps} ref={provided.innerRef}>
       <Box>

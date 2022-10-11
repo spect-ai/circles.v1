@@ -4,6 +4,7 @@ import { Droppable, DroppableProvided } from "react-beautiful-dnd";
 import styled from "styled-components";
 import AddField from "../../AddField";
 import { useLocalCollection } from "../../Context/LocalCollectionContext";
+import RoleGate from "../../RoleGate";
 import InactiveFieldComponent from "../InactiveField";
 
 const Container = styled(Box)`
@@ -58,6 +59,7 @@ function InactiveFieldsColumnComponent({ fields }: Props) {
           {FieldDraggableCallback}
         </Droppable>
         <AddField />
+        <RoleGate />
       </Stack>
     </Container>
   );
