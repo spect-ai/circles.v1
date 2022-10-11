@@ -220,7 +220,6 @@ export interface CircleType {
   roles: {
     [role: string]: {
       name: string;
-      role: string;
       description: string;
       permissions: Permissions;
       selfAssignable: boolean;

@@ -165,20 +165,28 @@ export default function AddRole({ role }: props) {
                     loading={loading}
                     onClick={async () => {
                       setLoading(true);
-                      const payload = {
-                        name: name,
-                        role: role ? role : name.replace(/\s/g, ""),
-                        description: role
-                          ? circle.roles[role]?.description
-                          : `${name} role`,
-                        selfAssignable: false,
-                        permissions,
-                      };
-                      console.log({ payload });
                       let res;
                       if (role) {
+                        const payload = {
+                          name: name,
+                          description: role
+                            ? circle.roles[role]?.description
+                            : `${name} role`,
+                          selfAssignable: false,
+                          permissions,
+                        };
+                        console.log({ payload });
                         res = await updateRole(circle?.id, role, payload);
                       } else {
+                        const payload = {
+                          name: name,
+                          description: role
+                            ? circle.roles[role]?.description
+                            : `${name} role`,
+                          selfAssignable: false,
+                          permissions,
+                        };
+                        console.log({ payload });
                         res = await addRole(circle?.id, payload);
                       }
                       console.log({ res });

@@ -40,6 +40,8 @@ function Roles() {
     return <Loader text="...." loading />;
   }
 
+  console.log({ circleRoles });
+
   return (
     <Box>
       <Box
@@ -103,10 +105,11 @@ function Roles() {
       >
         <Row gutterWidth={10}>
           {circle?.roles &&
-            Object.values(circleRoles)?.map((role) => {
+            Object.keys(circleRoles)?.map((roleKey) => {
+              const role = circleRoles?.[roleKey];
               return (
-                <Col key={role.role} lg={6}>
-                  <RoleCard role={role} />
+                <Col key={roleKey} lg={6}>
+                  <RoleCard roleKey={roleKey} role={role} />
                 </Col>
               );
             })}
