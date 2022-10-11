@@ -191,7 +191,7 @@ const Folder = ({
   ]);
 
   return (
-    <Draggable draggableId={id} index={index}>
+    <Draggable draggableId={id} index={index} isDragDisabled={true}>
       {DraggableContentCallback}
     </Draggable>
   );
