@@ -164,7 +164,7 @@ export default function CircleOverview() {
               >
                 <Input
                   label=""
-                  placeholder="Search anything .."
+                  placeholder="Search projects, workstreams, retros"
                   prefix={<IconSearch />}
                   onChange={(e) => {
                     const proj = matchSorter(

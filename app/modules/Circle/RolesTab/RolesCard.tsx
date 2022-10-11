@@ -24,9 +24,9 @@ const Container = styled(Box)<{ mode: string }>`
 `;
 
 interface Props {
+  roleKey: string;
   role: {
     name: string;
-    role: string;
     description: string;
     permissions: Permissions;
     selfAssignable: boolean;
@@ -34,7 +34,7 @@ interface Props {
   };
 }
 
-function RoleCard({ role }: Props) {
+function RoleCard({ roleKey ,role }: Props) {
   const { localCircle: circle, setCircleData } = useCircle();
   const { mode } = useTheme();
   const { canDo } = useRoleGate();
@@ -47,7 +47,7 @@ function RoleCard({ role }: Props) {
       description: description,
     };
     console.log({ payload });
-    const res = await updateRole(circle?.id, role.role, payload);
+    const res = await updateRole(circle?.id, roleKey, payload);
     if (res) setCircleData(res);
     console.log({ res });
   };
@@ -62,7 +62,7 @@ function RoleCard({ role }: Props) {
           <Stack direction="horizontal" space="1" align="center">
             <IconUserSolid size="5" />
             {Object.values(circle.memberRoles).reduce((acc, memberRole) => {
-              if (memberRole.includes(role.role)) {
+              if (memberRole.includes(roleKey)) {
                 return acc + 1;
               }
               return acc;
@@ -84,7 +84,7 @@ function RoleCard({ role }: Props) {
         isDirty={isDirty}
         setIsDirty={setIsDirty}
       />
-      <AddRole role={role.role} />
+      <AddRole role={roleKey} />
     </Container>
   );
 }

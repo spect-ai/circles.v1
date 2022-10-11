@@ -14,6 +14,7 @@ import Onboarding from "./CircleOnboarding";
 import CircleOverview from "./CircleOverview";
 import { useRouter } from "next/router";
 import { joinCircle } from "@/app/services/JoinCircle";
+import Roles from "./RolesTab";
 
 const BoxContainer = styled(Box)`
   width: calc(100vw - 4rem);
@@ -43,47 +44,49 @@ export default function Circle() {
 
   if (circle?.unauthorized && !isLoading && circle?.id)
     return (
-      <Box
-        style={{
-          margin: "20% 35%",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          gap: "1rem",
-        }}
-      >
-        <Button shape="circle" variant="secondary" size="large">
-          <IconLockClosed color={"accent"} size="6" />
-        </Button>
+      <Box marginX="6">
+        <Box
+          style={{
+            margin: "1rem auto",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: "1rem",
+          }}
+        >
+          <Button shape="circle" variant="secondary" size="large">
+            <IconLockClosed color={"accent"} size="6" />
+          </Button>
 
-        <Text size="headingTwo" weight="semiBold" ellipsis>
-          This circle is private
-        </Text>
-        <Stack direction="horizontal" space="4" align="center">
-          <Button
-            size="small"
-            variant="transparent"
-            onClick={() => router.back()}
-          >
-            <Text size="base">Go Back</Text>
-          </Button>
-          <Button
-            size="small"
-            variant="secondary"
-            onClick={async () => {
-              setLoading(true);
-              const data = await joinCircle(circle.id);
-              if (data) {
-                fetchCircle();
-                fetchMemberDetails();
-              }
-              setLoading(false);
-            }}
-            loading={loading}
-          >
-            <Text size="base" color={"accent"}>Get Role</Text>
-          </Button>
-        </Stack>
+          <Text size="headingTwo" weight="semiBold" ellipsis>
+            This circle is private
+          </Text>
+          <Stack direction="horizontal" space="4" align="center">
+            <Button
+              size="small"
+              variant="transparent"
+              onClick={() => router.back()}
+            >
+              <Text size="base">Go Back</Text>
+            </Button>
+            <Button
+              size="small"
+              variant="secondary"
+              onClick={async () => {
+                const data = await joinCircle(circle.id);
+                if (data) {
+                  fetchCircle();
+                  fetchMemberDetails();
+                }
+              }}
+            >
+              <Text size="base" color={"accent"}>
+                Get Role
+              </Text>
+            </Button>
+          </Stack>
+        </Box>
+        <Roles />
       </Box>
     );
 

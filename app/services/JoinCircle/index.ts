@@ -96,7 +96,10 @@ export const joinCircle = async (circleId: string) => {
     console.log({ data });
     return data;
   } else {
-    toast.error("Sorry, you dont meet the requirements to join this circle");
+    toast("Sorry, you dont meet the requirements to join this circle", {
+      theme: "dark",
+    });
+    console.log("Error joining circle");
     return null;
   }
 };
