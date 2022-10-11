@@ -1,5 +1,7 @@
+import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { Box, Stack } from "degen";
-import { memo, useCallback } from "react";
+import { AnimatePresence } from "framer-motion";
+import { memo, useCallback, useState } from "react";
 import { Droppable, DroppableProvided } from "react-beautiful-dnd";
 import styled from "styled-components";
 import AddField from "../../AddField";
@@ -28,8 +30,9 @@ type Props = {
 };
 
 function InactiveFieldsColumnComponent({ fields }: Props) {
-  const { localCollection: collection, updateCollection } =
-    useLocalCollection();
+  const { localCollection: collection } = useLocalCollection();
+  const [isAddFieldOpen, setIsAddFieldOpen] = useState(false);
+
   const FieldDraggable = (provided: DroppableProvided) => (
     <ScrollContainer {...provided.droppableProps} ref={provided.innerRef}>
       <Stack space="1">
@@ -54,10 +57,17 @@ function InactiveFieldsColumnComponent({ fields }: Props) {
   return (
     <Container>
       <Stack space="2">
+        <PrimaryButton onClick={() => setIsAddFieldOpen(true)}>
+          Add Field
+        </PrimaryButton>
         <Droppable droppableId="inactiveFields" type="field">
           {FieldDraggableCallback}
         </Droppable>
-        <AddField />
+        <AnimatePresence>
+          {isAddFieldOpen && (
+            <AddField handleClose={() => setIsAddFieldOpen(false)} />
+          )}
+        </AnimatePresence>
       </Stack>
     </Container>
   );

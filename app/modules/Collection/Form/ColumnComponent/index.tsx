@@ -1,8 +1,10 @@
 import { updateFormCollection } from "@/app/services/Collection";
 import { Box, Stack } from "degen";
+import { AnimatePresence } from "framer-motion";
 import { memo, useCallback, useState } from "react";
 import { Droppable, DroppableProvided } from "react-beautiful-dnd";
 import styled from "styled-components";
+import AddField from "../../AddField";
 import { useLocalCollection } from "../../Context/LocalCollectionContext";
 import FieldComponent from "../Field";
 
@@ -65,13 +67,23 @@ function ColumnComponent({ fields }: Props) {
     useLocalCollection();
   const [title, setTitle] = useState(collection.name);
   const [description, setDescription] = useState(collection.description);
+  const [isEditFieldOpen, setIsEditFieldOpen] = useState(false);
+  const [propertyName, setPropertyName] = useState("");
 
   const FieldDraggable = (provided: DroppableProvided) => (
     <ScrollContainer {...provided.droppableProps} ref={provided.innerRef}>
       <Box>
         {fields?.map((field, idx) => {
           if (collection.properties[field].isPartOfFormView) {
-            return <FieldComponent id={field} index={idx} key={field} />;
+            return (
+              <FieldComponent
+                id={field}
+                index={idx}
+                key={field}
+                setIsEditFieldOpen={setIsEditFieldOpen}
+                setPropertyName={setPropertyName}
+              />
+            );
           }
         })}
         {provided.placeholder}
@@ -113,6 +125,14 @@ function ColumnComponent({ fields }: Props) {
             />
           </Stack>
         </Box>
+        <AnimatePresence>
+          {isEditFieldOpen && (
+            <AddField
+              propertyName={propertyName}
+              handleClose={() => setIsEditFieldOpen(false)}
+            />
+          )}
+        </AnimatePresence>
         <Droppable droppableId="activeFields" type="field">
           {FieldDraggableCallback}
         </Droppable>

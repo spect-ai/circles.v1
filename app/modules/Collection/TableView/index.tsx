@@ -10,7 +10,7 @@ import {
   keyColumn,
   textColumn,
 } from "react-datasheet-grid";
-import { mockData } from "../Constants";
+import AddField from "../AddField";
 import { useLocalCollection } from "../Context/LocalCollectionContext";
 import DataModal from "../Form/DataModal";
 import ExandableCell from "../Form/ExpandableCell";
@@ -19,6 +19,9 @@ import HeaderComponent from "./HeaderComponent";
 import SelectComponent from "./SelectComponent";
 
 export default function TableView() {
+  const [isEditFieldOpen, setIsEditFieldOpen] = useState(false);
+  const [propertyName, setPropertyName] = useState("");
+
   const [data, setData] = useState<any[]>();
   const { localCollection: collection } = useLocalCollection();
 
@@ -86,7 +89,12 @@ export default function TableView() {
             columnData: property,
           }),
           title: (
-            <HeaderComponent sortData={sortData} columnName={property.name} />
+            <HeaderComponent
+              sortData={sortData}
+              columnName={property.name}
+              setIsEditFieldOpen={setIsEditFieldOpen}
+              setPropertyName={setPropertyName}
+            />
           ),
           minWidth: 200,
         };
@@ -94,7 +102,12 @@ export default function TableView() {
         return {
           ...keyColumn(property.name, getCellComponent(property.type) as any),
           title: (
-            <HeaderComponent sortData={sortData} columnName={property.name} />
+            <HeaderComponent
+              sortData={sortData}
+              columnName={property.name}
+              setIsEditFieldOpen={setIsEditFieldOpen}
+              setPropertyName={setPropertyName}
+            />
           ),
           minWidth: 200,
         };
@@ -103,6 +116,14 @@ export default function TableView() {
   );
   return (
     <Box padding="8">
+      <AnimatePresence>
+        {isEditFieldOpen && (
+          <AddField
+            propertyName={propertyName}
+            handleClose={() => setIsEditFieldOpen(false)}
+          />
+        )}
+      </AnimatePresence>
       <DataModal />
       {collection.name && (
         <DynamicDataSheetGrid
