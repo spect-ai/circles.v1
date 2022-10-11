@@ -13,6 +13,8 @@ import styled from "styled-components";
 type Props = {
   sortData: (columnName: string, asc: boolean) => void;
   columnName: string;
+  setPropertyName: (name: string) => void;
+  setIsEditFieldOpen: (value: boolean) => void;
 };
 
 type PopoverOptionProps = {
@@ -31,7 +33,12 @@ const ScrollContainer = styled(Box)`
   width: 30rem;
 `;
 
-export default function HeaderComponent({ sortData, columnName }: Props) {
+export default function HeaderComponent({
+  sortData,
+  columnName,
+  setIsEditFieldOpen,
+  setPropertyName,
+}: Props) {
   const [isOpen, setIsOpen] = useState(false);
   return (
     <Popover
@@ -61,7 +68,13 @@ export default function HeaderComponent({ sortData, columnName }: Props) {
         borderWidth="0.5"
         borderRadius="large"
       >
-        <PopoverOption onClick={() => {}}>
+        <PopoverOption
+          onClick={() => {
+            setIsOpen(false);
+            setIsEditFieldOpen(true);
+            setPropertyName(columnName);
+          }}
+        >
           <Stack direction="horizontal" space="2" align="center">
             <IconPencil />
             <Text

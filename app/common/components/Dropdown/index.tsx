@@ -40,7 +40,7 @@ const Dropdown: FC<Props> = ({
       value={selected}
       isMulti={multiple}
       onChange={(option) => onChange(option as any)}
-      menuPortalTarget={document.body}
+      // menuPortalTarget={document.body}
       isClearable={true}
       styles={{
         container: (provided) => ({

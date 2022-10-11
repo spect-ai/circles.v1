@@ -673,6 +673,8 @@ export type Property = {
   default?: any;
   condition?: any; // Show property only when condition is met
   options?: Option[];
+  userType?: FormUserType; // user type only relevant when type is user or user[]
+  onUpdateNotifyUserTypes?: FormUserType[];
 };
 
 export type PropertyType =
@@ -689,7 +691,7 @@ export type PropertyType =
 
 export type Option = {
   label: string;
-  value: string | number;
+  value: string;
 };
 
 export type Conditions = Condition[];
