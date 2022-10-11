@@ -10,6 +10,7 @@ export default function useConnectDiscord() {
   const { updateProfile } = useProfileUpdate();
 
   const fetchDiscordUser = async () => {
+    if (!code) return;
     const res = await fetch(
       `${process.env.BOT_HOST}/api/connectDiscord?code=${code}`
     );
