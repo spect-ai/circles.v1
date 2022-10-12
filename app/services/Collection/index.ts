@@ -35,6 +35,9 @@ export const updateField = async (
     name?: string;
     type?: string;
     default?: string;
+    options?: { label: string; value: string }[];
+    userType?: FormUserType;
+    onUpdateNotifyUserTypes?: FormUserType[];
   }
 ) => {
   return await (

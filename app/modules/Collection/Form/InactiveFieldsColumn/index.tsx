@@ -1,5 +1,5 @@
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { Box, Stack } from "degen";
+import { Box, Heading, Stack } from "degen";
 import { AnimatePresence } from "framer-motion";
 import { memo, useCallback, useState } from "react";
 import { Droppable, DroppableProvided } from "react-beautiful-dnd";
@@ -9,12 +9,7 @@ import { useLocalCollection } from "../../Context/LocalCollectionContext";
 import InactiveFieldComponent from "../InactiveField";
 
 const Container = styled(Box)`
-  ::-webkit-scrollbar {
-    display: none;
-  }
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-  overflow-y: none;
+  width: 25%;
 `;
 
 const ScrollContainer = styled(Box)`
@@ -56,10 +51,8 @@ function InactiveFieldsColumnComponent({ fields }: Props) {
 
   return (
     <Container>
-      <Stack space="2">
-        <PrimaryButton onClick={() => setIsAddFieldOpen(true)}>
-          Add Field
-        </PrimaryButton>
+      <Stack space="4">
+        <Heading>Inactive Fields</Heading>
         <Droppable droppableId="inactiveFields" type="field">
           {FieldDraggableCallback}
         </Droppable>
@@ -67,6 +60,9 @@ function InactiveFieldsColumnComponent({ fields }: Props) {
           {isAddFieldOpen && (
             <AddField handleClose={() => setIsAddFieldOpen(false)} />
           )}
+          <PrimaryButton onClick={() => setIsAddFieldOpen(true)}>
+            Add Field
+          </PrimaryButton>
         </AnimatePresence>
       </Stack>
     </Container>

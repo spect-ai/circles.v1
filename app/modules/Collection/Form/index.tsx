@@ -16,18 +16,10 @@ import InactiveFieldsColumnComponent from "./InactiveFieldsColumn";
 
 const Container = styled.div`
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  flex-direction: row;
+  width: 100%;
   margin-top: 2rem;
-  @media only screen and (min-width: 0px) {
-    max-width: calc(100vw - 5rem);
-    padding: 0 0.1rem;
-  }
-  @media only screen and (min-width: 768px) {
-    max-width: calc(100vw - 4rem);
-    padding: 0 0.5rem;
-  }
-  overflow-y: hidden;
+  padding: 2rem;
 `;
 
 export function Form() {
@@ -59,7 +51,10 @@ export function Form() {
 
     if (destination?.droppableId === "activeFields") {
       setPropertyOrder(reorder(propertyOrder, source.index, destination.index));
-      if (collection.properties[draggableId].isPartOfFormView === false) {
+      if (
+        collection.properties[draggableId].isPartOfFormView === false ||
+        !collection.properties[draggableId].isPartOfFormView
+      ) {
         updateCollection({
           ...collection,
           properties: {
@@ -98,10 +93,8 @@ export function Form() {
 
   const DroppableContent = (provided: DroppableProvided) => (
     <Container {...provided.droppableProps} ref={provided.innerRef}>
-      <Stack direction="horizontal">
-        <ColumnComponent fields={propertyOrder} />
-        <InactiveFieldsColumnComponent fields={propertyOrder} />
-      </Stack>
+      <ColumnComponent fields={propertyOrder} />
+      <InactiveFieldsColumnComponent fields={propertyOrder} />
     </Container>
   );
 
@@ -114,18 +107,10 @@ export function Form() {
   }
 
   return (
-    <Box display="flex" flexDirection="row" marginRight="6">
-      <Box width="288">
-        <DragDropContext onDragEnd={handleDragCollectionProperty}>
-          <Droppable
-            droppableId="all-fields"
-            direction="horizontal"
-            type="fields"
-          >
-            {DroppableContentCallback}
-          </Droppable>
-        </DragDropContext>
-      </Box>
-    </Box>
+    <DragDropContext onDragEnd={handleDragCollectionProperty}>
+      <Droppable droppableId="all-fields" direction="horizontal" type="fields">
+        {DroppableContentCallback}
+      </Droppable>
+    </DragDropContext>
   );
 }

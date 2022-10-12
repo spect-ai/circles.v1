@@ -15,6 +15,7 @@ type Props =
       selected: OptionType;
       onChange: (option: OptionType) => void;
       placeholder?: string;
+      portal?: boolean;
     }
   | {
       multiple: true;
@@ -22,6 +23,7 @@ type Props =
       selected: OptionType[];
       onChange: (option: OptionType[]) => void;
       placeholder?: string;
+      portal?: boolean;
     };
 
 const Dropdown: FC<Props> = ({
@@ -30,6 +32,7 @@ const Dropdown: FC<Props> = ({
   onChange,
   multiple,
   placeholder,
+  portal = true,
 }) => {
   const { mode } = useTheme();
 
@@ -40,7 +43,7 @@ const Dropdown: FC<Props> = ({
       value={selected}
       isMulti={multiple}
       onChange={(option) => onChange(option as any)}
-      // menuPortalTarget={document.body}
+      menuPortalTarget={portal ? document.body : undefined}
       isClearable={true}
       styles={{
         container: (provided) => ({

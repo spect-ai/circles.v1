@@ -14,12 +14,14 @@ const getComponent = (type: PropertyType) => {
       return LongTextComponent;
     case "multiSelect":
       return SelectComponent;
+    case "user[]":
+      return SelectComponent;
     default:
       return null;
   }
 };
 
-export default function ExandableCell({
+export default function ExpandableCell({
   focus,
   active,
   rowData,

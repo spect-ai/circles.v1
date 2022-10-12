@@ -9,23 +9,12 @@ import { useLocalCollection } from "../../Context/LocalCollectionContext";
 import FieldComponent from "../Field";
 
 const Container = styled(Box)`
-  ::-webkit-scrollbar {
-    display: none;
-  }
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-  overflow-y: none;
-  width: 36rem;
-  border-width: 2px;
+  width: 50%;
+  border-width: 1px;
   padding: 2rem;
-`;
-
-const ScrollContainer = styled(Box)`
-  ::-webkit-scrollbar {
-    width: 0px;
-  }
-  border-radius: 0.5rem;
+  max-height: calc(100vh - 10rem);
   overflow-y: auto;
+  margin-right: 4rem;
 `;
 
 const NameInput = styled.input`
@@ -71,24 +60,22 @@ function ColumnComponent({ fields }: Props) {
   const [propertyName, setPropertyName] = useState("");
 
   const FieldDraggable = (provided: DroppableProvided) => (
-    <ScrollContainer {...provided.droppableProps} ref={provided.innerRef}>
-      <Box>
-        {fields?.map((field, idx) => {
-          if (collection.properties[field].isPartOfFormView) {
-            return (
-              <FieldComponent
-                id={field}
-                index={idx}
-                key={field}
-                setIsEditFieldOpen={setIsEditFieldOpen}
-                setPropertyName={setPropertyName}
-              />
-            );
-          }
-        })}
-        {provided.placeholder}
-      </Box>
-    </ScrollContainer>
+    <Box {...provided.droppableProps} ref={provided.innerRef}>
+      {fields?.map((field, idx) => {
+        if (collection.properties[field]?.isPartOfFormView) {
+          return (
+            <FieldComponent
+              id={field}
+              index={idx}
+              key={field}
+              setIsEditFieldOpen={setIsEditFieldOpen}
+              setPropertyName={setPropertyName}
+            />
+          );
+        }
+      })}
+      {provided.placeholder}
+    </Box>
   );
 
   const FieldDraggableCallback = useCallback(FieldDraggable, [
@@ -97,47 +84,45 @@ function ColumnComponent({ fields }: Props) {
   ]);
 
   return (
-    <ScrollContainer>
-      <Container borderRadius="2xLarge">
-        <Box width="full" height="16" marginBottom="8">
-          <Stack direction="vertical">
-            <NameInput
-              placeholder="Enter title"
-              autoFocus
-              value={title}
-              onChange={(e) => {
-                setTitle(e.target.value);
-              }}
-            />
-            <DescriptionInput
-              placeholder="Enter description"
-              autoFocus
-              value={description}
-              onChange={(e) => {
-                setDescription(e.target.value);
-              }}
-              onBlur={async () => {
-                const res = await updateFormCollection(collection.id, {
-                  description,
-                });
-                res && updateCollection(res);
-              }}
-            />
-          </Stack>
-        </Box>
-        <AnimatePresence>
-          {isEditFieldOpen && (
-            <AddField
-              propertyName={propertyName}
-              handleClose={() => setIsEditFieldOpen(false)}
-            />
-          )}
-        </AnimatePresence>
-        <Droppable droppableId="activeFields" type="field">
-          {FieldDraggableCallback}
-        </Droppable>
-      </Container>
-    </ScrollContainer>
+    <Container borderRadius="2xLarge">
+      <Box width="full" height="16" marginBottom="8">
+        <Stack direction="vertical">
+          <NameInput
+            placeholder="Enter title"
+            autoFocus
+            value={title}
+            onChange={(e) => {
+              setTitle(e.target.value);
+            }}
+          />
+          <DescriptionInput
+            placeholder="Enter description"
+            autoFocus
+            value={description}
+            onChange={(e) => {
+              setDescription(e.target.value);
+            }}
+            onBlur={async () => {
+              const res = await updateFormCollection(collection.id, {
+                description,
+              });
+              res && updateCollection(res);
+            }}
+          />
+        </Stack>
+      </Box>
+      <AnimatePresence>
+        {isEditFieldOpen && (
+          <AddField
+            propertyName={propertyName}
+            handleClose={() => setIsEditFieldOpen(false)}
+          />
+        )}
+      </AnimatePresence>
+      <Droppable droppableId="activeFields" type="field">
+        {FieldDraggableCallback}
+      </Droppable>
+    </Container>
   );
 }
 

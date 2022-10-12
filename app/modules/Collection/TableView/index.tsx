@@ -13,14 +13,18 @@ import {
 import AddField from "../AddField";
 import { useLocalCollection } from "../Context/LocalCollectionContext";
 import DataModal from "../Form/DataModal";
-import ExandableCell from "../Form/ExpandableCell";
+import ExpandableCell from "../Form/ExpandableCell";
 import GutterColumnComponent from "./GutterColumnComponent";
 import HeaderComponent from "./HeaderComponent";
+import RewardComponent from "./RewardComponent";
+import RewardModal from "./RewardModal";
 import SelectComponent from "./SelectComponent";
 
 export default function TableView() {
   const [isEditFieldOpen, setIsEditFieldOpen] = useState(false);
+  const [isRewardFieldOpen, setIsRewardFieldOpen] = useState(false);
   const [propertyName, setPropertyName] = useState("");
+  const [dataId, setDataId] = useState("");
 
   const [data, setData] = useState<any[]>();
   const { localCollection: collection } = useLocalCollection();
@@ -57,8 +61,10 @@ export default function TableView() {
     switch (type) {
       case "shortText":
         return textColumn;
+      case "ethAddress":
+        return textColumn;
       case "longText":
-        return ExandableCell;
+        return ExpandableCell;
       case "number":
         return floatColumn;
       case "date":
@@ -67,10 +73,12 @@ export default function TableView() {
         return SelectComponent;
       case "user":
         return SelectComponent;
+      case "reward":
+        return RewardComponent;
       case "user[]":
-        return ExandableCell;
+        return ExpandableCell;
       case "multiSelect":
-        return ExandableCell;
+        return ExpandableCell;
       default:
         return textColumn;
     }
@@ -87,6 +95,27 @@ export default function TableView() {
           ...keyColumn(property.name, {
             component: getCellComponent(property.type) as any,
             columnData: property,
+          }),
+          title: (
+            <HeaderComponent
+              sortData={sortData}
+              columnName={property.name}
+              setIsEditFieldOpen={setIsEditFieldOpen}
+              setPropertyName={setPropertyName}
+            />
+          ),
+          minWidth: 200,
+        };
+      } else if (["reward"].includes(property.type)) {
+        return {
+          ...keyColumn("id", {
+            component: getCellComponent(property.type) as any,
+            columnData: {
+              property,
+              setIsRewardFieldOpen,
+              setPropertyName,
+              setDataId,
+            },
           }),
           title: (
             <HeaderComponent
@@ -121,6 +150,13 @@ export default function TableView() {
           <AddField
             propertyName={propertyName}
             handleClose={() => setIsEditFieldOpen(false)}
+          />
+        )}
+        {isRewardFieldOpen && (
+          <RewardModal
+            propertyName={propertyName}
+            handleClose={() => setIsRewardFieldOpen(false)}
+            dataId={dataId}
           />
         )}
       </AnimatePresence>
