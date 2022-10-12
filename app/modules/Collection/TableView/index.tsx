@@ -1,3 +1,4 @@
+import { updateCollectionData } from "@/app/services/Collection";
 import { PropertyType } from "@/app/types";
 import { Box } from "degen";
 import { AnimatePresence } from "framer-motion";
@@ -10,6 +11,8 @@ import {
   keyColumn,
   textColumn,
 } from "react-datasheet-grid";
+import { CellWithId } from "react-datasheet-grid/dist/types";
+import { toast } from "react-toastify";
 import AddField from "../AddField";
 import { useLocalCollection } from "../Context/LocalCollectionContext";
 import DataModal from "../Form/DataModal";
@@ -28,6 +31,33 @@ export default function TableView() {
 
   const [data, setData] = useState<any[]>();
   const { localCollection: collection } = useLocalCollection();
+
+  const updateData = async ({ cell }: { cell: CellWithId }) => {
+    if (data) {
+      console.log(data);
+      const row = data[cell.row];
+      console.log({ row, cell });
+      if (row) {
+        const res = await updateCollectionData(collection.id, row.id, {
+          [cell.colId as string]: row[cell.colId as string],
+        });
+        console.log({ res });
+        // res.id &&
+        //   setData(
+        //     Object.keys(res.data).map((key) => {
+        //       return {
+        //         id: key,
+        //         ...collection.data[key],
+        //       };
+        //     })
+        //   );
+        if (!res.id) {
+          // setData(tempData);
+          toast.error("Error updating data");
+        }
+      }
+    }
+  };
 
   useEffect(() => {
     if (collection.data) {
@@ -68,7 +98,8 @@ export default function TableView() {
       case "number":
         return floatColumn;
       case "date":
-        return dateColumn;
+        // return dateColumn;
+        return textColumn;
       case "singleSelect":
         return SelectComponent;
       case "user":
@@ -164,14 +195,13 @@ export default function TableView() {
       {collection.name && (
         <DynamicDataSheetGrid
           value={data}
-          onChange={(value) => {
-            setData(value);
-          }}
+          onChange={(data) => setData(data)}
           columns={columns}
           gutterColumn={{
             component: GutterColumnComponent,
             minWidth: 50,
           }}
+          onBlur={updateData}
         />
       )}
     </Box>
