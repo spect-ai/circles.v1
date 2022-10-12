@@ -6,7 +6,9 @@ import { useLocalCollection } from "../Context/LocalCollectionContext";
 
 const RewardComponent = ({ rowData, columnData }: CellProps) => {
   const { localCollection: collection } = useLocalCollection();
-  const reward = collection?.data[rowData][columnData.property.name];
+  const reward =
+    collection?.data[rowData] &&
+    collection?.data[rowData][columnData.property.name];
   return (
     <ClickableTag
       name={

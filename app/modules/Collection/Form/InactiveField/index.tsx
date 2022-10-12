@@ -1,4 +1,4 @@
-import { Box, Stack, Text, useTheme } from "degen";
+import { Box, Text, useTheme } from "degen";
 import React, { memo, useCallback } from "react";
 import {
   Draggable,
@@ -18,6 +18,10 @@ const Container = styled(Box)<{ isDragging: boolean; mode: string }>`
     props.isDragging
       ? "2px solid rgb(191, 90, 242, 1)"
       : "2px solid rgb(255, 255, 255, 0.1)"};
+
+  &:hover {
+    border: 1px solid rgb(191, 90, 242, 1);
+  }
 
   transition: border-color 0.5s ease;
   border-width: 1px;

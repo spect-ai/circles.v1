@@ -10,14 +10,8 @@ import InactiveFieldComponent from "../InactiveField";
 
 const Container = styled(Box)`
   width: 25%;
-`;
-
-const ScrollContainer = styled(Box)`
-  ::-webkit-scrollbar {
-    width: 0px;
-  }
-  border-radius: 0.5rem;
   overflow-y: auto;
+  max-height: calc(100vh - 10rem);
 `;
 
 type Props = {
@@ -29,7 +23,7 @@ function InactiveFieldsColumnComponent({ fields }: Props) {
   const [isAddFieldOpen, setIsAddFieldOpen] = useState(false);
 
   const FieldDraggable = (provided: DroppableProvided) => (
-    <ScrollContainer {...provided.droppableProps} ref={provided.innerRef}>
+    <Box {...provided.droppableProps} ref={provided.innerRef}>
       <Stack space="1">
         {fields?.map((field, idx) => {
           if (!collection.properties[field].isPartOfFormView) {
@@ -41,7 +35,7 @@ function InactiveFieldsColumnComponent({ fields }: Props) {
         <Box height="4" />
         {provided.placeholder}
       </Stack>
-    </ScrollContainer>
+    </Box>
   );
 
   const FieldDraggableCallback = useCallback(FieldDraggable, [
@@ -53,6 +47,9 @@ function InactiveFieldsColumnComponent({ fields }: Props) {
     <Container>
       <Stack space="4">
         <Heading>Inactive Fields</Heading>
+        <PrimaryButton onClick={() => setIsAddFieldOpen(true)}>
+          Add Field
+        </PrimaryButton>
         <Droppable droppableId="inactiveFields" type="field">
           {FieldDraggableCallback}
         </Droppable>
@@ -60,9 +57,6 @@ function InactiveFieldsColumnComponent({ fields }: Props) {
           {isAddFieldOpen && (
             <AddField handleClose={() => setIsAddFieldOpen(false)} />
           )}
-          <PrimaryButton onClick={() => setIsAddFieldOpen(true)}>
-            Add Field
-          </PrimaryButton>
         </AnimatePresence>
       </Stack>
     </Container>
