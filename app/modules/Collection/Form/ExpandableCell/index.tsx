@@ -128,7 +128,9 @@ export default function ExpandableCell({
 
   return (
     <Box
-      onClick={() => setIsOpen(!isOpen)}
+      onClick={() => {
+        focus && setIsOpen(true);
+      }}
       width="full"
       height="8"
       overflow="hidden"

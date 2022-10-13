@@ -28,7 +28,6 @@ export default function LongTextComponent({
       <Editor
         value={rowData}
         onSave={(value) => {
-          console.log({ value });
           setRowData(value);
           stopEditing();
         }}

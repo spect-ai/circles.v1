@@ -70,8 +70,6 @@ const Card = ({
   const router = useRouter();
   const { circle: cId } = router.query;
 
-  console.log(projects?.[card]);
-
   const DraggableContent = (
     provided: DraggableProvided,
     snapshot: DraggableStateSnapshot

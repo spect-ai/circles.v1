@@ -77,6 +77,24 @@ export const updateFormCollection = async (
   ).json();
 };
 
+export const addCollectionData = async (collectionId: string, data: object) => {
+  return await (
+    await fetch(
+      `${process.env.API_HOST}/collection/v1/${collectionId}/addDataGuarded`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          data,
+        }),
+      }
+    )
+  ).json();
+};
+
 export const updateCollectionData = async (
   collectionId: string,
   dataId: string,
