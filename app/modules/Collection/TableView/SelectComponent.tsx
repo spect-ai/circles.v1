@@ -52,7 +52,9 @@ export default function SelectComponent({
 
   return (
     <Select
-      isMulti={columnData.type === "multiSelect"}
+      isMulti={
+        columnData.type === "multiSelect" || columnData.type === "user[]"
+      }
       options={
         ["user", "user[]"].includes(columnData.type)
           ? memberOptions
@@ -60,7 +62,11 @@ export default function SelectComponent({
       }
       value={rowData}
       ref={ref}
-      menuIsOpen={columnData.type === "singleSelect" ? focus : undefined}
+      menuIsOpen={
+        columnData.type === "singleSelect" || columnData.type === "user"
+          ? focus
+          : undefined
+      }
       menuPortalTarget={document.body}
       menuPlacement="bottom"
       menuPosition="absolute"

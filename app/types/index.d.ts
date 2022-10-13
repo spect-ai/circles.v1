@@ -707,3 +707,9 @@ export type DateConditions = {
 export type ComparisonCondition = "greaterThanOrEqualTo" | "lessThanOrEqualTo";
 
 export type FormUserType = "assignee" | "reviewer" | "grantee" | "applicant";
+
+export type Reward = {
+  chain: Chain;
+  token: Token;
+  value: number;
+};

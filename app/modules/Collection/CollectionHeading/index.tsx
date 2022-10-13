@@ -1,6 +1,15 @@
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { TableOutlined } from "@ant-design/icons";
-import { Box, Button, IconList, Stack, Text, useTheme } from "degen";
+import { ShareAltOutlined, TableOutlined } from "@ant-design/icons";
+import {
+  Box,
+  Button,
+  IconDocuments,
+  IconList,
+  IconPencil,
+  Stack,
+  Text,
+  useTheme,
+} from "degen";
 import { memo } from "react";
 import Skeleton from "react-loading-skeleton";
 import { toast } from "react-toastify";
@@ -29,7 +38,6 @@ function CollectionHeading() {
       display="flex"
       flexDirection="column"
       alignItems="center"
-      // borderBottomWidth="0.375"
       paddingLeft="3"
       paddingRight="5"
     >
@@ -53,6 +61,7 @@ function CollectionHeading() {
               </Text>
             </Button>
             <PrimaryButton
+              // icon={<ShareAltOutlined />}
               onClick={() => {
                 void navigator.clipboard.writeText(
                   `https://spect.network/form/${collection?.slug}`
@@ -61,6 +70,20 @@ function CollectionHeading() {
               }}
             >
               Share
+            </PrimaryButton>
+            <PrimaryButton
+              // icon={<IconPencil />}
+              variant={view === 0 ? "tertiary" : "transparent"}
+              onClick={() => setView(0)}
+            >
+              Edit Form
+            </PrimaryButton>
+            <PrimaryButton
+              // icon={<IconDocuments />}
+              variant={view === 1 ? "tertiary" : "transparent"}
+              onClick={() => setView(1)}
+            >
+              Responses
             </PrimaryButton>
           </Stack>
         )}
@@ -78,7 +101,7 @@ function CollectionHeading() {
             }
           />
         )}
-        <Box
+        {/* <Box
           display="flex"
           flexDirection="row"
           borderWidth="0.375"
@@ -109,7 +132,7 @@ function CollectionHeading() {
           >
             <TableOutlined style={{ fontSize: "1.3rem" }} />
           </IconButton>
-        </Box>
+        </Box> */}
       </Box>
     </Box>
   );

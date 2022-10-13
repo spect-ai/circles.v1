@@ -1,5 +1,5 @@
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { Box, Stack } from "degen";
+import { Box, Heading, Stack } from "degen";
 import { AnimatePresence } from "framer-motion";
 import { memo, useCallback, useState } from "react";
 import { Droppable, DroppableProvided } from "react-beautiful-dnd";
@@ -10,20 +10,9 @@ import RoleGate from "../../RoleGate";
 import InactiveFieldComponent from "../InactiveField";
 
 const Container = styled(Box)`
-  ::-webkit-scrollbar {
-    display: none;
-  }
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-  overflow-y: none;
-`;
-
-const ScrollContainer = styled(Box)`
-  ::-webkit-scrollbar {
-    width: 0px;
-  }
-  border-radius: 0.5rem;
+  width: 25%;
   overflow-y: auto;
+  max-height: calc(100vh - 10rem);
 `;
 
 type Props = {
@@ -35,7 +24,7 @@ function InactiveFieldsColumnComponent({ fields }: Props) {
   const [isAddFieldOpen, setIsAddFieldOpen] = useState(false);
 
   const FieldDraggable = (provided: DroppableProvided) => (
-    <ScrollContainer {...provided.droppableProps} ref={provided.innerRef}>
+    <Box {...provided.droppableProps} ref={provided.innerRef}>
       <Stack space="1">
         {fields?.map((field, idx) => {
           if (!collection.properties[field].isPartOfFormView) {
@@ -47,7 +36,7 @@ function InactiveFieldsColumnComponent({ fields }: Props) {
         <Box height="4" />
         {provided.placeholder}
       </Stack>
-    </ScrollContainer>
+    </Box>
   );
 
   const FieldDraggableCallback = useCallback(FieldDraggable, [
@@ -57,7 +46,8 @@ function InactiveFieldsColumnComponent({ fields }: Props) {
 
   return (
     <Container>
-      <Stack space="2">
+      <Stack space="4">
+        <Heading>Inactive Fields</Heading>
         <PrimaryButton onClick={() => setIsAddFieldOpen(true)}>
           Add Field
         </PrimaryButton>

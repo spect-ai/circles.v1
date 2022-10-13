@@ -35,6 +35,9 @@ export const updateField = async (
     name?: string;
     type?: string;
     default?: string;
+    options?: { label: string; value: string }[];
+    userType?: FormUserType;
+    onUpdateNotifyUserTypes?: FormUserType[];
   }
 ) => {
   return await (
@@ -71,5 +74,27 @@ export const updateFormCollection = async (
       credentials: "include",
       body: JSON.stringify(update),
     })
+  ).json();
+};
+
+export const updateCollectionData = async (
+  collectionId: string,
+  dataId: string,
+  update: object
+) => {
+  return await (
+    await fetch(
+      `${process.env.API_HOST}/collection/v1/${collectionId}/updateData?dataId=${dataId}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          data: update,
+        }),
+      }
+    )
   ).json();
 };

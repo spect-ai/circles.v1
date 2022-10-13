@@ -1,4 +1,4 @@
-import { Box, Stack, Text, useTheme } from "degen";
+import { Box, Text, useTheme } from "degen";
 import React, { memo, useCallback } from "react";
 import {
   Draggable,
@@ -17,13 +17,14 @@ const Container = styled(Box)<{ isDragging: boolean; mode: string }>`
   border: ${(props) =>
     props.isDragging
       ? "2px solid rgb(191, 90, 242, 1)"
-      : "2px solid transparent"};
+      : "2px solid rgb(255, 255, 255, 0.1)"};
+
+  &:hover {
+    border: 1px solid rgb(191, 90, 242, 1);
+  }
 
   transition: border-color 0.5s ease;
-  &:hover {
-    border-color: ${(props) =>
-      props.mode === "dark" ? "rgb(255, 255, 255, 0.1)" : "rgb(20,20,20,0.1)"};
-    border-width: 2px;
+  border-width: 1px;
   }
 `;
 
@@ -42,10 +43,10 @@ function InactiveFieldComponent({ id, index }: Props) {
       isDragging={snapshot.isDragging}
       mode={mode}
       padding="4"
+      display="flex"
+      justifyContent="center"
     >
-      <Stack direction="horizontal" space="2" justify="space-between">
-        <Text weight="semiBold">{id}</Text>
-      </Stack>
+      <Text weight="semiBold">{id}</Text>
     </Container>
   );
 

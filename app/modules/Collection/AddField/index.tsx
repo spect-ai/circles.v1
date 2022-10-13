@@ -2,10 +2,11 @@ import Dropdown from "@/app/common/components/Dropdown";
 import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import Select from "@/app/common/components/Select";
-import { addField } from "@/app/services/Collection";
+import { addField, updateField } from "@/app/services/Collection";
 import { FormUserType } from "@/app/types";
 import { Box, Input, Stack, Text } from "degen";
 import React, { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 import { fields } from "../Constants";
 import { useLocalCollection } from "../Context/LocalCollectionContext";
 import AddOptions from "./AddOptions";
@@ -101,18 +102,35 @@ export default function AddField({ propertyName, handleClose }: Props) {
             loading={loading}
             onClick={async () => {
               setLoading(true);
-              console.log({ userType });
-              const res = await addField(collection.id, {
-                name,
-                type: type.value,
-                isPartOfFormView: false,
-                options: fieldOptions,
-                userType: userType,
-                onUpdateNotifyUserTypes: notifyUserType,
-              });
+              let res;
+              if (propertyName) {
+                res = await updateField(collection.id, propertyName, {
+                  name,
+                  type: type.value,
+                  options: fieldOptions,
+                  userType,
+                  onUpdateNotifyUserTypes: notifyUserType,
+                  isPartOfFormView: true,
+                });
+              } else {
+                res = await addField(collection.id, {
+                  name,
+                  type: type.value,
+                  isPartOfFormView: false,
+                  options: fieldOptions,
+                  userType: userType,
+                  onUpdateNotifyUserTypes: notifyUserType,
+                });
+              }
               setLoading(false);
-              handleClose();
-              setLocalCollection(res);
+              if (res.id) {
+                console.log({ res });
+                handleClose();
+
+                setLocalCollection(res);
+              } else {
+                toast.error(res.message);
+              }
               console.log({ res });
             }}
           >
