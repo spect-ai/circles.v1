@@ -2,9 +2,10 @@ import Dropdown from "@/app/common/components/Dropdown";
 import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import Select from "@/app/common/components/Select";
-import { addField, updateField } from "@/app/services/Collection";
-import { FormUserType } from "@/app/types";
-import { Box, Input, Stack, Text } from "degen";
+import { addField, deleteField, updateField } from "@/app/services/Collection";
+import { FormUserType, Option } from "@/app/types";
+import { SaveFilled } from "@ant-design/icons";
+import { Box, IconTrash, Input, Stack, Text } from "degen";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { fields } from "../Constants";
@@ -31,11 +32,18 @@ export default function AddField({ propertyName, handleClose }: Props) {
   ]);
 
   const [userType, setUserType] = useState<FormUserType>();
-  const [notifyUserType, setNotifyUserType] = useState<FormUserType[]>([]);
+  const [notifyUserType, setNotifyUserType] = useState<Option[] | undefined>(
+    []
+  );
 
   useEffect(() => {
-    if (propertyName) {
+    if (propertyName && collection.properties) {
       setName(propertyName);
+      setNotifyUserType(
+        collection.properties[propertyName].onUpdateNotifyUserTypes?.map(
+          (type) => ({ label: type, value: type })
+        )
+      );
       const property = collection.properties[propertyName];
       setType({
         label:
@@ -47,7 +55,6 @@ export default function AddField({ propertyName, handleClose }: Props) {
       }
       if (property.type === "user") {
         setUserType(property.userType);
-        setNotifyUserType(property.onUpdateNotifyUserTypes as FormUserType[]);
       }
     }
   }, [collection.properties, propertyName]);
@@ -98,7 +105,26 @@ export default function AddField({ propertyName, handleClose }: Props) {
             </Stack>
           ) : null}
 
+          <Stack space="2">
+            <Text variant="label">Notify User Type on Changes</Text>
+            <Dropdown
+              placeholder="Select User Types"
+              options={[
+                { label: "Assignee", value: "assignee" },
+                { label: "Reviewer", value: "reviewer" },
+                { label: "Grantee", value: "grantee" },
+                { label: "Applicant", value: "applicant" },
+              ]}
+              selected={notifyUserType}
+              onChange={(type: Option[]) => {
+                setNotifyUserType(type);
+              }}
+              multiple={true}
+            />
+          </Stack>
+
           <PrimaryButton
+            icon={<SaveFilled style={{ fontSize: "1.3rem" }} />}
             loading={loading}
             onClick={async () => {
               setLoading(true);
@@ -109,7 +135,9 @@ export default function AddField({ propertyName, handleClose }: Props) {
                   type: type.value,
                   options: fieldOptions,
                   userType,
-                  onUpdateNotifyUserTypes: notifyUserType,
+                  onUpdateNotifyUserTypes: notifyUserType?.map(
+                    (type) => type.value
+                  ) as FormUserType[],
                   isPartOfFormView: true,
                 });
               } else {
@@ -119,7 +147,9 @@ export default function AddField({ propertyName, handleClose }: Props) {
                   isPartOfFormView: false,
                   options: fieldOptions,
                   userType: userType,
-                  onUpdateNotifyUserTypes: notifyUserType,
+                  onUpdateNotifyUserTypes: notifyUserType?.map(
+                    (type) => type.value
+                  ) as FormUserType[],
                 });
               }
               setLoading(false);
@@ -135,6 +165,25 @@ export default function AddField({ propertyName, handleClose }: Props) {
             }}
           >
             Save
+          </PrimaryButton>
+          <PrimaryButton
+            tone="red"
+            icon={<IconTrash />}
+            onClick={async () => {
+              const res = await deleteField(
+                collection.id,
+                propertyName as string
+              );
+              console.log({ res });
+              if (res.id) {
+                handleClose();
+                setLocalCollection(res);
+              } else {
+                toast.error(res.message);
+              }
+            }}
+          >
+            Delete
           </PrimaryButton>
         </Stack>
       </Box>

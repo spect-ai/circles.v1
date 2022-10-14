@@ -1,5 +1,8 @@
-import { updateCollectionData } from "@/app/services/Collection";
-import { PropertyType } from "@/app/types";
+import {
+  addCollectionData,
+  updateCollectionData,
+} from "@/app/services/Collection";
+import { PropertyType, Reward } from "@/app/types";
 import { Box } from "degen";
 import { AnimatePresence } from "framer-motion";
 import React, { useEffect, useState } from "react";
@@ -30,13 +33,17 @@ export default function TableView() {
   const [dataId, setDataId] = useState("");
 
   const [data, setData] = useState<any[]>();
-  const { localCollection: collection } = useLocalCollection();
+  const { localCollection: collection, setLocalCollection } =
+    useLocalCollection();
 
   const updateData = async ({ cell }: { cell: CellWithId }) => {
     if (data) {
-      console.log(data);
       const row = data[cell.row];
-      console.log({ row, cell });
+      if (!row) return;
+      if (!row.id && Object.keys(row).length > 0) {
+        return addData(row);
+      }
+      if (!row.id) return;
       if (row) {
         const res = await updateCollectionData(collection.id, row.id, {
           [cell.colId as string]: row[cell.colId as string],
@@ -59,18 +66,56 @@ export default function TableView() {
     }
   };
 
+  const addData = async (newData: any) => {
+    if (data) {
+      const res = await addCollectionData(collection.id, newData);
+      if (res.id) {
+        console.log({ res });
+        console.log(
+          Object.keys(res.data).map((key) => {
+            return {
+              id: key,
+              ...res.data[key],
+            };
+          })
+        );
+        console.log({ data });
+        // setData(
+        //   Object.keys(res.data).map((key) => {
+        //     return {
+        //       id: key,
+        //       ...res.data[key],
+        //     };
+        //   })
+        // );
+        setLocalCollection(res);
+      } else {
+        console.error({ res });
+        toast.error("Error adding data");
+      }
+    }
+  };
+
   useEffect(() => {
     if (collection.data) {
-      setData(
-        Object.keys(collection.data).map((key) => {
-          return {
-            id: key,
-            ...collection.data[key],
-          };
-        })
-      );
+      // for each data property in the data, convert the date string to a date object for all the rows
+      const dataProperties = collection.propertyOrder.map((property) => {
+        if (collection.properties[property].type === "date")
+          return collection.properties[property].name;
+      });
+      const data = Object.keys(collection.data).map((key) => {
+        const row = collection.data[key];
+        dataProperties.forEach((property) => {
+          if (row[property]) row[property] = new Date(row[property]);
+        });
+        return {
+          id: key,
+          ...row,
+        };
+      });
+      setData(data);
     }
-  }, [collection.data]);
+  }, [collection.data, collection.properties, collection.propertyOrder]);
 
   const sortData = (columnName: string, asc: boolean) => {
     if (data) {
@@ -98,8 +143,7 @@ export default function TableView() {
       case "number":
         return floatColumn;
       case "date":
-        // return dateColumn;
-        return textColumn;
+        return dateColumn;
       case "singleSelect":
         return SelectComponent;
       case "user":
@@ -115,8 +159,9 @@ export default function TableView() {
     }
   };
 
-  const columns: Column<any>[] = Object.values(collection.properties).map(
-    (property) => {
+  const columns: Column<any>[] =
+    collection.properties &&
+    Object.values(collection.properties).map((property) => {
       if (
         ["singleSelect", "multiSelect", "longText", "user", "user[]"].includes(
           property.type
@@ -139,15 +184,13 @@ export default function TableView() {
         };
       } else if (["reward"].includes(property.type)) {
         return {
-          ...keyColumn("id", {
-            component: getCellComponent(property.type) as any,
-            columnData: {
-              property,
-              setIsRewardFieldOpen,
-              setPropertyName,
-              setDataId,
-            },
-          }),
+          component: getCellComponent(property.type) as any,
+          columnData: {
+            property,
+            setIsRewardFieldOpen,
+            setPropertyName,
+            setDataId,
+          },
           title: (
             <HeaderComponent
               sortData={sortData}
@@ -172,8 +215,7 @@ export default function TableView() {
           minWidth: 200,
         };
       }
-    }
-  );
+    });
   return (
     <Box padding="8">
       <AnimatePresence>
@@ -186,7 +228,26 @@ export default function TableView() {
         {isRewardFieldOpen && (
           <RewardModal
             propertyName={propertyName}
-            handleClose={() => setIsRewardFieldOpen(false)}
+            handleClose={async (
+              reward: Reward,
+              dataId: string,
+              propertyName: string
+            ) => {
+              if (data) {
+                const row = data.findIndex((row) => row.id === dataId);
+                console.log({ row });
+                if (row === 0 || row) {
+                  const tempData = [...data];
+                  tempData[row][propertyName] = reward;
+                  setData(tempData);
+                  setIsRewardFieldOpen(false);
+                  await updateData({
+                    cell: { row, col: 0, colId: propertyName },
+                  });
+                }
+                setIsRewardFieldOpen(false);
+              }
+            }}
             dataId={dataId}
           />
         )}
@@ -195,7 +256,9 @@ export default function TableView() {
       {collection.name && (
         <DynamicDataSheetGrid
           value={data}
-          onChange={(data) => setData(data)}
+          onChange={(data) => {
+            setData(data);
+          }}
           columns={columns}
           gutterColumn={{
             component: GutterColumnComponent,

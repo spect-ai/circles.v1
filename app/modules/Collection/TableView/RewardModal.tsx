@@ -3,7 +3,7 @@ import {
   getFlattenedCurrencies,
   getFlattenedNetworks,
 } from "@/app/common/utils/registry";
-import { Registry, Token } from "@/app/types";
+import { Registry, Reward, Token } from "@/app/types";
 import { Box, Input, Stack, Tag, Text } from "degen";
 import { useRouter } from "next/router";
 import React, { memo, useState } from "react";
@@ -13,10 +13,10 @@ import { useLocalCollection } from "../Context/LocalCollectionContext";
 type Props = {
   dataId: string;
   propertyName: string;
-  handleClose: () => void;
+  handleClose: (reward: Reward, dataId: string, propertyName: string) => void;
 };
 
-function RewardComponent({ propertyName, dataId, handleClose }: Props) {
+function RewardModal({ propertyName, dataId, handleClose }: Props) {
   const router = useRouter();
   const { circle: cId } = router.query;
   const { data: registry } = useQuery<Registry>(["registry", cId], {
@@ -33,29 +33,20 @@ function RewardComponent({ propertyName, dataId, handleClose }: Props) {
   const [value, setValue] = useState(reward?.value.toString());
 
   return (
-    // <EditTag
-    //   tourId="create-card-modal-reward"
-    //   name={
-    //     reward?.value && reward?.value !== 0
-    //       ? `${reward.value} ${reward.token.symbol}`
-    //       : "Set Reward"
-    //   }
-    //   modalTitle="Set Reward"
-    //   label=""
-    //   modalOpen={modalOpen}
-    //   setModalOpen={setModalOpen}
-    //   icon={<IconEth color="accent" size="5" />}
-    //   //   disabled={!canTakeAction("cardReward")}
-    //   handleClose={() => {
-    //     setModalOpen(false);
-    //     setReward({
-    //       chain,
-    //       token,
-    //       value: parseFloat(value),
-    //     });
-    //   }}
-    // >
-    <Modal handleClose={handleClose} title="Reward">
+    <Modal
+      handleClose={() => {
+        handleClose(
+          {
+            chain,
+            token,
+            value: parseFloat(value),
+          },
+          dataId,
+          propertyName
+        );
+      }}
+      title="Reward"
+    >
       <Box height="96">
         <Box padding="8">
           <Stack>
@@ -146,4 +137,4 @@ function RewardComponent({ propertyName, dataId, handleClose }: Props) {
   );
 }
 
-export default memo(RewardComponent);
+export default memo(RewardModal);

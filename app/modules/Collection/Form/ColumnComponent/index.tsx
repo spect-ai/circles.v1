@@ -1,3 +1,4 @@
+import { useGlobal } from "@/app/context/globalContext";
 import { updateFormCollection } from "@/app/services/Collection";
 import { Box, Stack, Text } from "degen";
 import { AnimatePresence } from "framer-motion";
@@ -58,6 +59,7 @@ function ColumnComponent({ fields }: Props) {
   const [description, setDescription] = useState(collection.description);
   const [isEditFieldOpen, setIsEditFieldOpen] = useState(false);
   const [propertyName, setPropertyName] = useState("");
+  const { connectedUser } = useGlobal();
 
   const FieldDraggable = (provided: DroppableProvided) => (
     <Box {...provided.droppableProps} ref={provided.innerRef}>
@@ -103,10 +105,12 @@ function ColumnComponent({ fields }: Props) {
               setDescription(e.target.value);
             }}
             onBlur={async () => {
-              const res = await updateFormCollection(collection.id, {
-                description,
-              });
-              res && updateCollection(res);
+              if (connectedUser) {
+                const res = await updateFormCollection(collection.id, {
+                  description,
+                });
+                res.id && updateCollection(res);
+              }
             }}
           />
         </Stack>

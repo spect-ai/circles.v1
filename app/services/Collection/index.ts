@@ -58,6 +58,21 @@ export const updateField = async (
   ).json();
 };
 
+export const deleteField = async (collectionId: string, name: string) => {
+  return await (
+    await fetch(
+      `${process.env.API_HOST}/collection/v1/${collectionId}/removeProperty?propertyId=${name}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      }
+    )
+  ).json();
+};
+
 export const updateFormCollection = async (
   collectionId: string,
   update: {
@@ -74,6 +89,24 @@ export const updateFormCollection = async (
       credentials: "include",
       body: JSON.stringify(update),
     })
+  ).json();
+};
+
+export const addCollectionData = async (collectionId: string, data: object) => {
+  return await (
+    await fetch(
+      `${process.env.API_HOST}/collection/v1/${collectionId}/addDataGuarded`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          data,
+        }),
+      }
+    )
   ).json();
 };
 

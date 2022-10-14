@@ -41,12 +41,14 @@ const Container = styled(Box)<{
   -ms-overflow-style: none;
   scrollbar-width: none;
   height: ${(props) => props.modalHeight};
+  max-height: 90vh;
 `;
 
 type props = {
   children: React.ReactNode;
   title: string;
-  handleClose: () => void;
+  // function with any arguments
+  handleClose: (...args: any[]) => void;
   height?: string;
   size?: "small" | "medium" | "large";
   zIndex?: number;

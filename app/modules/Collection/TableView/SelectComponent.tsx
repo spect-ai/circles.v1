@@ -75,7 +75,7 @@ export default function SelectComponent({
         // We don't just do `stopEditing()` because it is triggered too early by react-select
         setTimeout(() => {
           stopEditing();
-        }, 0);
+        }, 100);
       }}
       styles={{
         container: (provided) => ({

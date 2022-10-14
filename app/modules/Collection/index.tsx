@@ -1,12 +1,18 @@
 import { useTheme } from "degen";
+import { useEffect } from "react";
 import { ToastContainer } from "react-toastify";
 import { useLocalCollection } from "./Context/LocalCollectionContext";
 import { Form } from "./Form";
 import TableView from "./TableView";
 
 export function Collection() {
-  const { view } = useLocalCollection();
+  const { view, setView } = useLocalCollection();
   const { mode } = useTheme();
+
+  useEffect(() => {
+    setView(0);
+  }, [setView]);
+
   return (
     <>
       <ToastContainer

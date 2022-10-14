@@ -235,7 +235,7 @@ const Container = styled(Box)<{ isDragging: boolean; mode: string }>`
   }
 `;
 
-const DateInput = styled.input`
+export const DateInput = styled.input`
   padding: 1rem;
   border-radius: 0.55rem;
   border 1px solid rgb(255, 255, 255, 0.1);
