@@ -198,7 +198,6 @@ export default function RoleGate() {
           )}
         </AnimatePresence>
       }
-      <AnimatePresence></AnimatePresence>
     </>
   );
 }

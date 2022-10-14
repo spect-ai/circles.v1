@@ -1,5 +1,6 @@
 import { kudosTokenTypes, kudosTypes } from "@/app/common/utils/constants";
 import { useCircle } from "@/app/modules/Circle/CircleContext";
+import { useLocalCollection } from "@/app/modules/Collection/Context/LocalCollectionContext";
 import { useLocalCard } from "@/app/modules/Project/CreateCardModal/hooks/LocalCardContext";
 import { KudosRequestType, KudosType } from "@/app/types";
 import { useTheme } from "degen";
@@ -20,6 +21,8 @@ export default function useCredentials() {
   const { switchNetworkAsync } = useSwitchNetwork();
   const { kudosMinted, setKudosMinted, cardId, assignees, reviewers, setCard } =
     useLocalCard();
+  const { localCollection: collection, setLocalCollection } =
+    useLocalCollection();
   const { mode } = useTheme();
 
   const mintKudos = async (kudos: KudosRequestType, communityId: string) => {
@@ -31,10 +34,10 @@ export default function useCredentials() {
       startDateTimestamp: kudos.startDateTimestamp || 0,
       endDateTimestamp: kudos.endDateTimestamp || 0,
       expirationTimestamp: kudos.expirationTimestamp || 0,
-      isSignatureRequired: true,
-      isAllowlistRequired: true,
+      isSignatureRequired: kudos.isSignatureRequired,
+      isAllowlistRequired: kudos.isAllowlistRequired,
       links: kudos.links || [],
-      totalClaimCount: 0,
+      totalClaimCount: kudos.totalClaimCount || 0,
     };
 
     if (registry) {
@@ -67,8 +70,10 @@ export default function useCredentials() {
           communityId: communityId,
           nftTypeId: "defaultOrangeRed",
           contributors: kudos.contributors,
+          totalClaimCount: value.totalClaimCount,
           signature: signature,
         });
+        console.log(body);
         toast(
           "Minting Kudos takes a few seconds. You'll be notified once its successful.",
           {
@@ -139,6 +144,55 @@ export default function useCredentials() {
                       .then((res2) => {
                         // Only update state if user is on same card
                         if (cardId === res2.id) setCard(res2);
+                      })
+                      .catch((err) => console.log(err));
+                    toast.success("Successfully minted kudos!", {
+                      theme: mode,
+                    });
+                  }
+                })
+                .catch((err) => console.log(err));
+            }
+          }
+        })
+        .catch((err) => console.log(err));
+    }, 1000);
+    setTimeout(() => {
+      clearInterval(intervalPromise);
+    }, 20000);
+  };
+
+  const recordCollectionKudos = (operationId: string) => {
+    let time = 1000;
+    const intervalPromise = setInterval(() => {
+      time += 1000;
+      console.log(time);
+      fetch(`${process.env.MINTKUDOS_HOST}${operationId}`)
+        .then(async (res) => {
+          if (res.ok) {
+            const data = await res.json();
+            console.log(data);
+
+            if (data.status === "success") {
+              clearInterval(intervalPromise);
+              fetch(`${process.env.API_HOST}/collection/v1/${collection.id}`, {
+                method: "PATCH",
+                body: JSON.stringify({
+                  mintkudosTokenId: data.resourceId,
+                }),
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                credentials: "include",
+              })
+                .then((res) => {
+                  if (res.ok) {
+                    res
+                      .json()
+                      .then((res2) => {
+                        // Only update state if user is on same card
+                        if (collection.slug === res2.slug)
+                          setLocalCollection(res2);
                       })
                       .catch((err) => console.log(err));
                     toast.success("Successfully minted kudos!", {
@@ -297,5 +351,6 @@ export default function useCredentials() {
     viewKudos,
     recordClaimInfo,
     getKudosOfUser,
+    recordCollectionKudos,
   };
 }

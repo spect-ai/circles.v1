@@ -560,16 +560,16 @@ export type AdvancedFilters = {
 export type KudosRequestType = {
   creator: string;
   headline: string;
-  description: string;
+  description?: string;
   startDateTimestamp?: number;
   endDateTimestamp?: number;
-  links: string[];
+  links?: string[];
   communityUniqId?: string;
-  isSignatureRequired?: boolean;
-  isAllowlistRequired?: boolean;
-  totalClaimCount: number;
-  expirationTimestamp: number;
-  contributors: string[];
+  isSignatureRequired: boolean;
+  isAllowlistRequired: boolean;
+  totalClaimCount?: number;
+  expirationTimestamp?: number;
+  contributors?: string[];
 };
 
 export type KudosType = {

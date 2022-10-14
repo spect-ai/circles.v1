@@ -1,5 +1,5 @@
 import { updateFormCollection } from "@/app/services/Collection";
-import { Box, Stack } from "degen";
+import { Box, Stack, Text } from "degen";
 import { AnimatePresence } from "framer-motion";
 import { memo, useCallback, useState } from "react";
 import { Droppable, DroppableProvided } from "react-beautiful-dnd";
@@ -9,7 +9,7 @@ import { useLocalCollection } from "../../Context/LocalCollectionContext";
 import FieldComponent from "../Field";
 
 const Container = styled(Box)`
-  width: 50%;
+  width: 70%;
   border-width: 1px;
   padding: 2rem;
   max-height: calc(100vh - 10rem);

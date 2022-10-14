@@ -169,6 +169,8 @@ export default function MintKudos() {
                         `https://circles.spect.network/${cId}/${pId}/${tId}`,
                       ],
                       contributors: getEthAddress(),
+                      isSignatureRequired: true,
+                      isAllowlistRequired: true,
                     } as KudosRequestType,
                     mintkudosCommunityId
                   );
