@@ -41,6 +41,7 @@ const Container = styled(Box)<{
   -ms-overflow-style: none;
   scrollbar-width: none;
   height: ${(props) => props.modalHeight};
+  max-height: 90vh;
 `;
 
 type props = {

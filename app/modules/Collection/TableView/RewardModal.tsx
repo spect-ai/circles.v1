@@ -33,28 +33,6 @@ function RewardModal({ propertyName, dataId, handleClose }: Props) {
   const [value, setValue] = useState(reward?.value.toString());
 
   return (
-    // <EditTag
-    //   tourId="create-card-modal-reward"
-    //   name={
-    //     reward?.value && reward?.value !== 0
-    //       ? `${reward.value} ${reward.token.symbol}`
-    //       : "Set Reward"
-    //   }
-    //   modalTitle="Set Reward"
-    //   label=""
-    //   modalOpen={modalOpen}
-    //   setModalOpen={setModalOpen}
-    //   icon={<IconEth color="accent" size="5" />}
-    //   //   disabled={!canTakeAction("cardReward")}
-    //   handleClose={() => {
-    //     setModalOpen(false);
-    //     setReward({
-    //       chain,
-    //       token,
-    //       value: parseFloat(value),
-    //     });
-    //   }}
-    // >
     <Modal
       handleClose={() => {
         handleClose(

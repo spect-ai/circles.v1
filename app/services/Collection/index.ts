@@ -58,6 +58,21 @@ export const updateField = async (
   ).json();
 };
 
+export const deleteField = async (collectionId: string, name: string) => {
+  return await (
+    await fetch(
+      `${process.env.API_HOST}/collection/v1/${collectionId}/removeProperty?propertyId=${name}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      }
+    )
+  ).json();
+};
+
 export const updateFormCollection = async (
   collectionId: string,
   update: {

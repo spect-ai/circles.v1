@@ -12,7 +12,7 @@ type Props =
   | {
       multiple: false;
       options: OptionType[];
-      selected: OptionType;
+      selected: OptionType | undefined;
       onChange: (option: OptionType) => void;
       placeholder?: string;
       portal?: boolean;
@@ -20,7 +20,7 @@ type Props =
   | {
       multiple: true;
       options: OptionType[];
-      selected: OptionType[];
+      selected: OptionType[] | undefined;
       onChange: (option: OptionType[]) => void;
       placeholder?: string;
       portal?: boolean;

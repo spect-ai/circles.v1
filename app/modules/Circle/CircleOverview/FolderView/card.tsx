@@ -56,6 +56,7 @@ const Container = styled(Box)<{ isDragging: boolean; mode: string }>`
   color: rgb(191, 90, 242, 0.7);
   width: 30%;
   margin-right: 1rem;
+  overflow-x: hidden;
 `;
 
 const Card = ({

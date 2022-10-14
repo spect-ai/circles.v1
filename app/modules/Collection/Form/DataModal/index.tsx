@@ -1,17 +1,24 @@
 import Dropdown, { OptionType } from "@/app/common/components/Dropdown";
 import Editor from "@/app/common/components/Editor";
+import ClickableTag from "@/app/common/components/EditTag/ClickableTag";
 import Modal from "@/app/common/components/Modal";
 import { MemberDetails } from "@/app/types";
-import { Box, Input, Stack, Text } from "degen";
+import { Box, IconEth, Input, Stack, Text } from "degen";
 import { ethers } from "ethers";
+import { AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { useLocalCollection } from "../../Context/LocalCollectionContext";
+import RewardModal from "../../TableView/RewardModal";
+import { DateInput } from "../Field";
 
 export default function DataModal() {
   const [isOpen, setIsOpen] = useState(false);
   const { localCollection: collection } = useLocalCollection();
+
+  const [propertyName, setPropertyName] = useState("");
+  const [isRewardModalOpen, setIsRewardModalOpen] = useState(false);
 
   const router = useRouter();
   const { dataId, circle: cId } = router.query;
@@ -43,6 +50,18 @@ export default function DataModal() {
       title={collection.data[dataId].title}
     >
       <Box padding="8">
+        <AnimatePresence>
+          {isRewardModalOpen && (
+            <RewardModal
+              handleClose={(reward, dataId, propertyName) => {
+                collection.data[dataId][propertyName] = reward;
+                setIsRewardModalOpen(false);
+              }}
+              dataId={dataId as string}
+              propertyName={propertyName}
+            />
+          )}
+        </AnimatePresence>
         <Stack>
           {Object.values(collection.properties).map((property) => (
             <Stack direction="horizontal" key={property.name} align="center">
@@ -157,6 +176,48 @@ export default function DataModal() {
                   onChange={(value) => {
                     // setselectedSafe(value);
                     console.log({ value });
+                  }}
+                />
+              )}
+              {property?.type === "date" && (
+                <DateInput
+                  placeholder={`Enter ${property?.name}`}
+                  value={
+                    collection.data &&
+                    collection.data[dataId as string][property.name]
+                  }
+                  // onChange={(e) => setLabel(e.target.value)}
+                  type="date"
+                />
+              )}
+              {property?.type === "number" && (
+                <DateInput
+                  placeholder={`Enter ${property?.name}`}
+                  value={
+                    collection.data &&
+                    collection.data[dataId as string][property.name]
+                  }
+                  // onChange={(e) => setLabel(e.target.value)}
+                  type="number"
+                />
+              )}
+              {property?.type === "reward" && (
+                <ClickableTag
+                  name={
+                    collection.data &&
+                    collection.data[dataId as string][property.name].value
+                      ? `${
+                          collection.data[dataId as string][property.name].value
+                        } ${
+                          collection.data[dataId as string][property.name].token
+                            .symbol
+                        }`
+                      : "Set Reward"
+                  }
+                  icon={<IconEth color="accent" size="5" />}
+                  onClick={() => {
+                    setPropertyName(property.name);
+                    setIsRewardModalOpen(true);
                   }}
                 />
               )}

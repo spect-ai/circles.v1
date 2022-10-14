@@ -27,7 +27,7 @@ function InactiveFieldsColumnComponent({ fields }: Props) {
     <Box {...provided.droppableProps} ref={provided.innerRef}>
       <Stack space="1">
         {fields?.map((field, idx) => {
-          if (!collection.properties[field].isPartOfFormView) {
+          if (!collection.properties[field]?.isPartOfFormView) {
             return (
               <InactiveFieldComponent id={field} index={idx} key={field} />
             );
