@@ -65,11 +65,17 @@ export default function RoleGate() {
         const currentlySelectedRoles = new Set([
           ...(collection.formRoleGating?.map((r) => r.id) || []),
         ]);
-        setSelectedRoles(
-          Array(guildRoles?.length).fill((a: GuildRole) =>
-            currentlySelectedRoles.has(a.id)
-          )
-        );
+        const initSelectedRoles = Array(guildRoles?.length).fill(false);
+
+        guildRoles?.forEach((role, index) => {
+          if (currentlySelectedRoles.has(role.id)) {
+            initSelectedRoles[index] = true;
+          }
+        });
+        setSelectedRoles(initSelectedRoles);
+        console.log({ currentlySelectedRoles });
+
+        console.log({ selectedRoles });
         setLoading(false);
       })();
     }
@@ -193,12 +199,15 @@ export default function RoleGate() {
                       cursor="pointer"
                       onClick={() => toggleSelectedRole(index)}
                     >
-                      <Tag
-                        tone={selectedRoles[index] ? "accent" : "secondary"}
-                        hover
-                      >
-                        <Box paddingX="2">{option.name}</Box>
-                      </Tag>
+                      {selectedRoles[index] ? (
+                        <Tag tone={"accent"} hover>
+                          <Box paddingX="2">{option.name}</Box>
+                        </Tag>
+                      ) : (
+                        <Tag hover>
+                          <Box paddingX="2">{option.name}</Box>
+                        </Tag>
+                      )}
                     </Box>
                   ))}
                 </Stack>
