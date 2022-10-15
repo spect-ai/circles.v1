@@ -662,7 +662,7 @@ export interface CollectionType {
   data: MappedItem<any>;
   indexes: MappedItem<string[]>;
   defaultView: DefaultViewType;
-  formRoleGating: number[];
+  formRoleGating: GuildRole[];
   mintkudosTokenId: number;
   messageOnSubmission: string;
   unauthorized?: boolean;
@@ -714,4 +714,9 @@ export type Reward = {
   chain: Chain;
   token: Token;
   value: number;
+};
+
+export type GuildRole = {
+  id: number;
+  name: string;
 };

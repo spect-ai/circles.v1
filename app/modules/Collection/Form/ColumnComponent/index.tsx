@@ -10,7 +10,7 @@ import { useLocalCollection } from "../../Context/LocalCollectionContext";
 import FieldComponent from "../Field";
 
 const Container = styled(Box)`
-  width: 50%;
+  width: 80%;
   border-width: 2px;
   padding: 2rem;
   overflow-y: auto;

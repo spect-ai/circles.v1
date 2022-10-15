@@ -5,7 +5,7 @@ import Select from "@/app/common/components/Select";
 import { addField } from "@/app/services/Collection";
 import { updateCircle } from "@/app/services/UpdateCircle";
 import { updateCollection } from "@/app/services/UpdateCollection";
-import { FormUserType } from "@/app/types";
+import { FormUserType, GuildRole } from "@/app/types";
 import { guild } from "@guildxyz/sdk";
 import { Box, Input, Stack, Tag, Text } from "degen";
 import { AnimatePresence } from "framer-motion";
@@ -59,11 +59,17 @@ export default function RoleGate() {
       void (async () => {
         setLoading(true);
         const guildServer = await guild.get(circle?.guildxyzId || "");
-        console.log({ guildServer });
         setGuildRoles(
           guildServer.roles.map((role) => ({ id: role.id, name: role.name }))
         );
-        setSelectedRoles(Array(guildRoles?.length).fill(false));
+        const currentlySelectedRoles = new Set([
+          ...(collection.formRoleGating?.map((r) => r.id) || []),
+        ]);
+        setSelectedRoles(
+          Array(guildRoles?.length).fill((a: GuildRole) =>
+            currentlySelectedRoles.has(a.id)
+          )
+        );
         setLoading(false);
       })();
     }
@@ -75,12 +81,25 @@ export default function RoleGate() {
         {collection.formRoleGating && collection.formRoleGating.length > 0 && (
           <Text variant="small">{`Responses to form can only be added by these roles`}</Text>
         )}
+        {!collection.formRoleGating ||
+          (collection.formRoleGating.length === 0 && (
+            <Text variant="small">{`Only allow holders of specific roles to submit response`}</Text>
+          ))}
       </Stack>
+      {collection.formRoleGating && collection.formRoleGating.length > 0 && (
+        <Stack direction="horizontal" space="4">
+          {collection.formRoleGating.map((role: GuildRole) => (
+            <Tag tone="accent" key={role.id}>
+              {role.name}
+            </Tag>
+          ))}
+        </Stack>
+      )}
       <PrimaryButton
         variant={
           collection.formRoleGating && collection.formRoleGating.length > 0
             ? "tertiary"
-            : "primary"
+            : "secondary"
         }
         onClick={() => setIsOpen(true)}
       >
@@ -162,6 +181,11 @@ export default function RoleGate() {
               size="small"
             >
               <Box padding="8" width="full">
+                <Box marginBottom="6">
+                  {" "}
+                  <Text>{`Pick guild.xyz roles that can submit a response to this form`}</Text>
+                </Box>
+
                 <Stack direction="horizontal">
                   {guildRoles?.map((option, index) => (
                     <Box
@@ -191,17 +215,18 @@ export default function RoleGate() {
                     loading={loading}
                     onClick={async () => {
                       setLoading(true);
-                      const res = await updateCollection(
-                        {
-                          formRoleGating: guildRoles
-                            ?.filter(
-                              (r, index) => selectedRoles[index] === true
-                            )
-                            ?.map((r) => r.id),
-                        },
-                        collection.id
+                      const selectedRoleIds = guildRoles?.filter(
+                        (r, index) => selectedRoles[index] === true
                       );
-                      setLocalCollection(res);
+                      if (selectedRoleIds) {
+                        const res = await updateCollection(
+                          {
+                            formRoleGating: selectedRoleIds,
+                          },
+                          collection.id
+                        );
+                        setLocalCollection(res);
+                      }
                       setIsOpen(false);
                       setLoading(false);
                     }}

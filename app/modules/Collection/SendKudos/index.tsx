@@ -18,6 +18,7 @@ import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { useCircle } from "../../Circle/CircleContext";
 import { useLocalCollection } from "../Context/LocalCollectionContext";
+import Credentials from "../../Circle/CircleSettingsModal/Credentials";
 import Image from "next/image";
 
 export default function SendKudos() {
@@ -160,48 +161,12 @@ export default function SendKudos() {
               handleClose={() => setIsOpen(false)}
               size="small"
             >
-              <Box padding="8" width="full">
-                <Stack>
-                  <Box
-                    width="full"
-                    display="flex"
-                    flexDirection="row"
-                    justifyContent="space-between"
-                    alignItems="center"
-                  >
-                    <PrimaryButton
-                      loading={loading}
-                      onClick={async () => {
-                        setLoading(true);
-
-                        setLoading(false);
-                      }}
-                    >
-                      Save
-                    </PrimaryButton>
-                    <Box
-                      display="flex"
-                      flexDirection="row"
-                      justifyContent="center"
-                      alignItems="center"
-                    >
-                      <Box
-                        margin="4"
-                        cursor="pointer"
-                        width="2/3"
-                        onClick={() => {
-                          window.open("https://guild.xyz/explorer", "_blank");
-                        }}
-                      >
-                        <Text>{`I haven't setup my guild yet`}</Text>
-                      </Box>
-                    </Box>
-                  </Box>
-                </Stack>
+              <Box padding="8">
+                <Credentials />
               </Box>
             </Modal>
           )}
-          {isOpen && circle.guildxyzId && (
+          {isOpen && hasMintkudosCredentialsSetup && (
             <Modal
               size="small"
               title="Send Kudos 🎉"

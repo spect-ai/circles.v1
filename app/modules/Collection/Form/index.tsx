@@ -28,7 +28,6 @@ const Container = styled.div`
 const ScrollContainer = styled(Box)`
   overflow-y: auto;
   height: 45rem;
-  width: 70%;
   ::-webkit-scrollbar {
     width: 5px;
   }
@@ -116,67 +115,78 @@ export function Form() {
     return (
       <Container {...provided.droppableProps} ref={provided.innerRef}>
         <InactiveFieldsColumnComponent fields={propertyOrder} />
+        <Box
+          style={{
+            width: "80%",
+          }}
+        >
+          <ScrollContainer>
+            <ColumnComponent fields={propertyOrder} />
+            <Box
+              marginTop="16"
+              marginBottom="4"
+              display="flex"
+              flexDirection="column"
+              style={{
+                width: "80%",
+              }}
+            >
+              <Stack direction="vertical" space="4">
+                <Text variant="large">After the form is submitted.</Text>
+                <Text variant="label">Show the following message</Text>
 
-        <ScrollContainer>
-          <ColumnComponent fields={propertyOrder} />
-          <Box
-            marginTop="16"
-            marginBottom="4"
-            display="flex"
-            flexDirection="column"
-          >
-            <Stack direction="vertical" space="4">
-              <Text variant="large">After the form is submitted.</Text>
-              <Text variant="label">Show the following message</Text>
-
-              <Input
-                label=""
-                value={messageOnSubmission}
-                onChange={(e) => {
-                  console.log(e.target.value);
-                  setMessageOnSubmission(e.target.value);
-                }}
-              />
-              <Box
-                display="flex"
-                flexDirection="row"
-                justifyContent="flex-start"
-                alignItems="flex-start"
-              >
-                <PrimaryButton
-                  disabled={currMessageOnSubmission === messageOnSubmission}
-                  onClick={async () => {
-                    const res = await (
-                      await fetch(
-                        `${process.env.API_HOST}/collection/v1/${collection.id}`,
-                        {
-                          method: "PATCH",
-                          body: JSON.stringify({
-                            messageOnSubmission,
-                          }),
-                          headers: {
-                            "Content-Type": "application/json",
-                          },
-                          credentials: "include",
-                        }
-                      )
-                    ).json();
-                    updateCollection(res);
+                <Textarea
+                  label=""
+                  value={messageOnSubmission}
+                  rows={2}
+                  onChange={(e) => {
+                    console.log(e.target.value);
+                    setMessageOnSubmission(e.target.value);
                   }}
+                />
+                <Box
+                  display="flex"
+                  flexDirection="row"
+                  justifyContent="flex-start"
+                  alignItems="flex-start"
                 >
-                  Save
-                </PrimaryButton>
-              </Box>
+                  <PrimaryButton
+                    disabled={currMessageOnSubmission === messageOnSubmission}
+                    onClick={async () => {
+                      const res = await (
+                        await fetch(
+                          `${process.env.API_HOST}/collection/v1/${collection.id}`,
+                          {
+                            method: "PATCH",
+                            body: JSON.stringify({
+                              messageOnSubmission,
+                            }),
+                            headers: {
+                              "Content-Type": "application/json",
+                            },
+                            credentials: "include",
+                          }
+                        )
+                      ).json();
+                      updateCollection(res);
+                    }}
+                  >
+                    Save
+                  </PrimaryButton>
+                </Box>
 
-              {!collection.mintkudosTokenId && <Text variant="label">And</Text>}
-              {collection.mintkudosTokenId && (
-                <Text variant="label">And send the following kudos</Text>
-              )}
+                {!collection.mintkudosTokenId && (
+                  <Text variant="label">And</Text>
+                )}
+                {collection.mintkudosTokenId && (
+                  <Text variant="label">And send the following kudos</Text>
+                )}
 
-              <SendKudos />
-            </Stack>
-          </Box>
-        </ScrollContainer>
+                <SendKudos />
+              </Stack>
+            </Box>
+          </ScrollContainer>
+        </Box>
       </Container>
     );
   };

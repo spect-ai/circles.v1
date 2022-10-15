@@ -1,10 +1,11 @@
+import { GuildRole } from "@/app/types";
 import { toast } from "react-toastify";
 
 export type UpdateCollectionDto = {
   name?: string;
   private?: boolean;
   description?: string;
-  formRoleGating?: number[];
+  formRoleGating?: GuildRole[];
 };
 
 export const updateCollection = async (
