@@ -105,7 +105,7 @@ export default function SelectComponent({
         }),
         singleValue: (provided) => ({
           ...provided,
-          color: "rgb(255, 255, 255)",
+          color: mode === "dark" ? "#FFFFFF" : "#000000",
         }),
         multiValue: () => ({
           backgroundColor: "rgb(191, 90, 242, 0.1)",

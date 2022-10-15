@@ -81,6 +81,7 @@ export default function ExpandableCell({
       <Box ref={setReferenceElement}>
         <Portal>
           <Container
+            backgroundColor="background"
             position="absolute"
             zIndex="100"
             ref={setPopperElement}
@@ -150,10 +151,9 @@ export default function ExpandableCell({
 const Container = styled(Box)`
   height: 7rem;
   width: 24rem;
-  background: rgba(20, 20, 20);
   border-radius: 0.5rem;
   padding: 1rem;
   border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 0 1rem rgba(0, 0, 0, 1);
+  box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.5);
   overflow-y: auto;
 `;

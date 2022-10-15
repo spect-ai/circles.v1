@@ -4,7 +4,7 @@ import ClickableTag from "@/app/common/components/EditTag/ClickableTag";
 import Modal from "@/app/common/components/Modal";
 import { updateCollectionData } from "@/app/services/Collection";
 import { MemberDetails } from "@/app/types";
-import { Box, IconEth, Input, Stack, Text } from "degen";
+import { Box, IconEth, Input, Stack, Text, useTheme } from "degen";
 import { AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
@@ -36,7 +36,8 @@ export default function DataModal() {
     value: member,
   }));
 
-  const [data, setData] = useState(collection?.data[dataId as string]);
+  const [data, setData] = useState({} as any);
+  const { mode } = useTheme();
 
   useEffect(() => {
     if (dataId) {
@@ -48,8 +49,6 @@ export default function DataModal() {
   if (!isOpen) return null;
 
   if (!dataId || !data) return null;
-
-  console.log({ isOpen });
 
   return (
     <Modal
@@ -185,6 +184,7 @@ export default function DataModal() {
               )}
               {property?.type === "date" && (
                 <DateInput
+                  mode={mode}
                   placeholder={`Enter ${property?.name}`}
                   value={
                     data[property.name] &&
@@ -199,6 +199,7 @@ export default function DataModal() {
               )}
               {property?.type === "number" && (
                 <DateInput
+                  mode={mode}
                   placeholder={`Enter ${property?.name}`}
                   value={data[property.name]}
                   onChange={(e) => {

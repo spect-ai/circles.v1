@@ -77,7 +77,7 @@ const Dropdown: FC<Props> = ({
         }),
         singleValue: (provided) => ({
           ...provided,
-          color: "rgb(255, 255, 255)",
+          color: mode === "dark" ? "#FFFFFF" : "#000000",
         }),
         multiValue: (styles) => {
           return {

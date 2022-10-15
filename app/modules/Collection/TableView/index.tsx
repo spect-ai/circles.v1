@@ -79,7 +79,7 @@ export default function TableView() {
     if (collection.data) {
       // for each data property in the data, convert the date string to a date object for all the rows
       const dataProperties = collection.propertyOrder.map((property) => {
-        if (collection.properties[property].type === "date")
+        if (collection.properties[property]?.type === "date")
           return collection.properties[property].name;
       });
       const data = Object.keys(collection.data).map((key) => {
