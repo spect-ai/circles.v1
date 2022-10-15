@@ -2,20 +2,22 @@ import Dropdown, { OptionType } from "@/app/common/components/Dropdown";
 import Editor from "@/app/common/components/Editor";
 import ClickableTag from "@/app/common/components/EditTag/ClickableTag";
 import Modal from "@/app/common/components/Modal";
+import { updateCollectionData } from "@/app/services/Collection";
 import { MemberDetails } from "@/app/types";
-import { Box, IconEth, Input, Stack, Text } from "degen";
-import { ethers } from "ethers";
+import { Box, IconEth, Input, Stack, Text, useTheme } from "degen";
 import { AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { useQuery } from "react-query";
+import { toast } from "react-toastify";
 import { useLocalCollection } from "../../Context/LocalCollectionContext";
 import RewardModal from "../../TableView/RewardModal";
 import { DateInput } from "../Field";
 
 export default function DataModal() {
   const [isOpen, setIsOpen] = useState(false);
-  const { localCollection: collection } = useLocalCollection();
+  const { localCollection: collection, setLocalCollection } =
+    useLocalCollection();
 
   const [propertyName, setPropertyName] = useState("");
   const [isRewardModalOpen, setIsRewardModalOpen] = useState(false);
@@ -34,18 +36,38 @@ export default function DataModal() {
     value: member,
   }));
 
+  const [data, setData] = useState({} as any);
+  const { mode } = useTheme();
+
   useEffect(() => {
-    dataId ? setIsOpen(true) : setIsOpen(false);
-  }, [dataId]);
+    if (dataId) {
+      setData(collection?.data[dataId as string]);
+      setIsOpen(true);
+    } else setIsOpen(false);
+  }, [collection?.data, dataId]);
 
   if (!isOpen) return null;
 
-  if (!dataId) return null;
+  if (!dataId || !data) return null;
 
   return (
     <Modal
-      handleClose={() => {
+      handleClose={async () => {
+        console.log({ data });
         void router.push(`/${cId}/r/${collection.slug}`);
+        setIsOpen(false);
+        const res = await updateCollectionData(
+          collection.id,
+          dataId as string,
+          { ...data }
+        );
+        console.log({ res });
+        if (res.id) {
+          setLocalCollection(res);
+        } else {
+          setData({} as any);
+          toast.error("Error updating data");
+        }
       }}
       title={collection.data[dataId].title}
     >
@@ -72,27 +94,22 @@ export default function DataModal() {
                 <Input
                   label=""
                   placeholder={`Enter ${property?.name}`}
-                  value={
-                    collection.data &&
-                    collection.data[dataId as string][property.name]
-                  }
+                  value={data[property.name]}
+                  onChange={(e) => {
+                    data[property.name] = e.target.value;
+                    setData({ ...data });
+                  }}
                 />
               )}
               {property?.type === "ethAddress" && (
                 <Input
                   label=""
                   placeholder={`Enter ${property?.name}`}
-                  value={
-                    collection.data &&
-                    collection.data[dataId as string][property.name]
-                  }
-                  // onChange={(e) => setLabel(e.target.value)}
-                  error={
-                    collection.data &&
-                    !ethers.utils.isAddress(
-                      collection.data && collection.data[dataId as string]
-                    )
-                  }
+                  value={data[property.name]}
+                  onChange={(e) => {
+                    data[property.name] = e.target.value;
+                    setData({ ...data });
+                  }}
                 />
               )}
               {property?.type === "longText" && (
@@ -106,14 +123,10 @@ export default function DataModal() {
                   overflow="auto"
                 >
                   <Editor
-                    value={
-                      collection.data &&
-                      collection.data[dataId as string][property.name]
-                    }
+                    value={data[property.name]}
                     onSave={(value) => {
-                      console.log({ value });
-                      //   setRowData(value);
-                      //   stopEditing();
+                      data[property.name] = value;
+                      setData({ ...data });
                     }}
                     placeholder={`Type here to edit ${property.name}`}
                   />
@@ -124,13 +137,12 @@ export default function DataModal() {
                   placeholder={`Select ${property?.name}`}
                   multiple={false}
                   options={property.options as OptionType[]}
-                  selected={
-                    collection.data &&
-                    collection.data[dataId as string][property.name]
-                  }
+                  selected={data[property.name]}
                   onChange={(value) => {
                     // setselectedSafe(value);
                     console.log({ value });
+                    data[property.name] = value;
+                    setData({ ...data });
                   }}
                 />
               )}
@@ -139,13 +151,10 @@ export default function DataModal() {
                   placeholder={`Select ${property?.name}`}
                   multiple={true}
                   options={property?.options as OptionType[]}
-                  selected={
-                    collection.data &&
-                    collection.data[dataId as string][property.name]
-                  }
+                  selected={data[property.name]}
                   onChange={(value) => {
-                    // setselectedSafe(value);
-                    console.log({ value });
+                    data[property.name] = value;
+                    setData({ ...data });
                   }}
                 />
               )}
@@ -154,13 +163,10 @@ export default function DataModal() {
                   placeholder={`Select ${property?.name}`}
                   multiple={false}
                   options={memberOptions as OptionType[]}
-                  selected={
-                    collection.data &&
-                    collection.data[dataId as string][property.name]
-                  }
+                  selected={data[property.name]}
                   onChange={(value) => {
-                    // setselectedSafe(value);
-                    console.log({ value });
+                    data[property.name] = value;
+                    setData({ ...data });
                   }}
                 />
               )}
@@ -169,35 +175,37 @@ export default function DataModal() {
                   placeholder={`Select ${property?.name}`}
                   multiple={false}
                   options={property.options as OptionType[]}
-                  selected={
-                    collection.data &&
-                    collection.data[dataId as string][property.name]
-                  }
+                  selected={data[property.name]}
                   onChange={(value) => {
-                    // setselectedSafe(value);
-                    console.log({ value });
+                    data[property.name] = value;
+                    setData({ ...data });
                   }}
                 />
               )}
               {property?.type === "date" && (
                 <DateInput
+                  mode={mode}
                   placeholder={`Enter ${property?.name}`}
                   value={
-                    collection.data &&
-                    collection.data[dataId as string][property.name]
+                    data[property.name] &&
+                    new Date(data[property.name]).toISOString().split("T")[0]
                   }
-                  // onChange={(e) => setLabel(e.target.value)}
+                  onChange={(e) => {
+                    data[property.name] = e.target.value;
+                    setData({ ...data });
+                  }}
                   type="date"
                 />
               )}
               {property?.type === "number" && (
                 <DateInput
+                  mode={mode}
                   placeholder={`Enter ${property?.name}`}
-                  value={
-                    collection.data &&
-                    collection.data[dataId as string][property.name]
-                  }
-                  // onChange={(e) => setLabel(e.target.value)}
+                  value={data[property.name]}
+                  onChange={(e) => {
+                    data[property.name] = e.target.value;
+                    setData({ ...data });
+                  }}
                   type="number"
                 />
               )}
@@ -205,7 +213,7 @@ export default function DataModal() {
                 <ClickableTag
                   name={
                     collection.data &&
-                    collection.data[dataId as string][property.name].value
+                    collection.data[dataId as string][property.name]?.value
                       ? `${
                           collection.data[dataId as string][property.name].value
                         } ${

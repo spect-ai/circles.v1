@@ -135,6 +135,7 @@ function FieldComponent({
           value={collection.data && collection.data[id]}
           // onChange={(e) => setLabel(e.target.value)}
           type="date"
+          mode={mode}
         />
       )}
       {collection.properties[id]?.type === "ethAddress" && (
@@ -233,12 +234,15 @@ const Container = styled(Box)<{ isDragging: boolean; mode: string }>`
   }
 `;
 
-export const DateInput = styled.input`
+export const DateInput = styled.input<{ mode: string }>`
   padding: 1rem;
   border-radius: 0.55rem;
-  border 1px solid rgb(255, 255, 255, 0.1);
-  background-color: transparent;
+  border 1px solid ${(props) =>
+    props.mode === "dark" ? "rgb(255, 255, 255,0.1)" : "rgb(20,20,20,0.1)"};
+  background-color: ${(props) =>
+    props.mode === "dark" ? "rgb(20,20,20)" : "rgb(255, 255, 255)"};
   width: 100%;
-  color: rgb(255, 255, 255, 0.7);
+  color: ${(props) =>
+    props.mode === "dark" ? "rgb(255, 255, 255,0.7)" : "rgb(20,20,20,0.7)"}
   margin-top: 10px;
 `;

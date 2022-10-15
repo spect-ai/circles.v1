@@ -1,5 +1,6 @@
 import {
   addCollectionData,
+  deleteCollectionData,
   updateCollectionData,
 } from "@/app/services/Collection";
 import { PropertyType, Reward } from "@/app/types";
@@ -48,18 +49,7 @@ export default function TableView() {
         const res = await updateCollectionData(collection.id, row.id, {
           [cell.colId as string]: row[cell.colId as string],
         });
-        console.log({ res });
-        // res.id &&
-        //   setData(
-        //     Object.keys(res.data).map((key) => {
-        //       return {
-        //         id: key,
-        //         ...collection.data[key],
-        //       };
-        //     })
-        //   );
         if (!res.id) {
-          // setData(tempData);
           toast.error("Error updating data");
         }
       }
@@ -70,8 +60,7 @@ export default function TableView() {
     if (data) {
       const res = await addCollectionData(collection.id, newData);
       if (res.id) {
-        console.log({ res });
-        console.log(
+        setData(
           Object.keys(res.data).map((key) => {
             return {
               id: key,
@@ -79,16 +68,6 @@ export default function TableView() {
             };
           })
         );
-        console.log({ data });
-        // setData(
-        //   Object.keys(res.data).map((key) => {
-        //     return {
-        //       id: key,
-        //       ...res.data[key],
-        //     };
-        //   })
-        // );
-        setLocalCollection(res);
       } else {
         console.error({ res });
         toast.error("Error adding data");
@@ -100,7 +79,7 @@ export default function TableView() {
     if (collection.data) {
       // for each data property in the data, convert the date string to a date object for all the rows
       const dataProperties = collection.propertyOrder.map((property) => {
-        if (collection.properties[property].type === "date")
+        if (collection.properties[property]?.type === "date")
           return collection.properties[property].name;
       });
       const data = Object.keys(collection.data).map((key) => {
@@ -256,8 +235,24 @@ export default function TableView() {
       {collection.name && (
         <DynamicDataSheetGrid
           value={data}
-          onChange={(data) => {
-            setData(data);
+          onChange={async (newData, operations) => {
+            if (operations[0].type === "DELETE") {
+              const dataIds = [];
+              for (
+                let i = operations[0].fromRowIndex;
+                i < operations[0].toRowIndex;
+                i++
+              ) {
+                data && dataIds.push(data[i].id);
+              }
+              setData(newData);
+              const res = await deleteCollectionData(collection.id, dataIds);
+              if (res.id) {
+                setLocalCollection(res);
+              } else toast.error("Error deleting data");
+              return;
+            }
+            setData(newData);
           }}
           columns={columns}
           gutterColumn={{

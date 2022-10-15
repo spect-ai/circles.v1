@@ -1,6 +1,6 @@
 import { useGlobal } from "@/app/context/globalContext";
 import { updateFormCollection } from "@/app/services/Collection";
-import { Box, Stack, Text } from "degen";
+import { Box, Stack, useTheme } from "degen";
 import { AnimatePresence } from "framer-motion";
 import { memo, useCallback, useState } from "react";
 import { Droppable, DroppableProvided } from "react-beautiful-dnd";
@@ -10,11 +10,15 @@ import { useLocalCollection } from "../../Context/LocalCollectionContext";
 import FieldComponent from "../Field";
 
 const Container = styled(Box)`
-  width: 70%;
-  border-width: 1px;
+  width: 50%;
+  border-width: 2px;
   padding: 2rem;
   overflow-y: auto;
   margin-right: 4rem;
+
+  &::-webkit-scrollbar {
+    width: 0.5rem;
+  }
 `;
 
 const NameInput = styled.input`
@@ -32,7 +36,7 @@ const NameInput = styled.input`
   font-weight: 600;
 `;
 
-const DescriptionInput = styled.input`
+const DescriptionInput = styled.input<{ mode: "dark" | "light" }>`
   width: 100%;
   background: transparent;
   border: 0;
@@ -42,8 +46,10 @@ const DescriptionInput = styled.input`
   outline-offset: 0;
   box-shadow: none;
   font-size: 1.2rem;
-  caret-color: rgb(255, 255, 255, 0.5);
-  color: rgb(255, 255, 255, 0.5);
+  caret-color: ${(props) =>
+    props.mode === "dark" ? "rgb(255, 255, 255, 0.7)" : "rgb(20,20,20,0.7)"};
+  color: ${(props) =>
+    props.mode === "dark" ? "rgb(255, 255, 255, 0.7)" : "rgb(20,20,20,0.7)"};
   font-weight: 400;
 `;
 
@@ -59,6 +65,7 @@ function ColumnComponent({ fields }: Props) {
   const [isEditFieldOpen, setIsEditFieldOpen] = useState(false);
   const [propertyName, setPropertyName] = useState("");
   const { connectedUser } = useGlobal();
+  const { mode } = useTheme();
 
   const FieldDraggable = (provided: DroppableProvided) => (
     <Box {...provided.droppableProps} ref={provided.innerRef}>
@@ -97,6 +104,7 @@ function ColumnComponent({ fields }: Props) {
             }}
           />
           <DescriptionInput
+            mode={mode}
             placeholder="Enter description"
             autoFocus
             value={description}

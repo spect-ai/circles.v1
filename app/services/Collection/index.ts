@@ -113,8 +113,9 @@ export const addCollectionData = async (collectionId: string, data: object) => {
 export const updateCollectionData = async (
   collectionId: string,
   dataId: string,
-  update: object
+  update: any
 ) => {
+  delete update.slug;
   return await (
     await fetch(
       `${process.env.API_HOST}/collection/v1/${collectionId}/updateData?dataId=${dataId}`,
@@ -127,6 +128,41 @@ export const updateCollectionData = async (
         body: JSON.stringify({
           data: update,
         }),
+      }
+    )
+  ).json();
+};
+
+export const deleteCollectionData = async (
+  collectionId: string,
+  dataIds: string[]
+) => {
+  if (dataIds.length > 1) {
+    return await (
+      await fetch(
+        `${process.env.API_HOST}/collection/v1/${collectionId}/removeMultipleData`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify({
+            dataIds,
+          }),
+        }
+      )
+    ).json();
+  }
+  return await (
+    await fetch(
+      `${process.env.API_HOST}/collection/v1/${collectionId}/removeData?dataId=${dataIds[0]}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
       }
     )
   ).json();

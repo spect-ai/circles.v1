@@ -16,6 +16,7 @@ type Props =
       onChange: (option: OptionType) => void;
       placeholder?: string;
       portal?: boolean;
+      isClearable?: boolean;
     }
   | {
       multiple: true;
@@ -24,6 +25,7 @@ type Props =
       onChange: (option: OptionType[]) => void;
       placeholder?: string;
       portal?: boolean;
+      isClearable?: boolean;
     };
 
 const Dropdown: FC<Props> = ({
@@ -33,6 +35,7 @@ const Dropdown: FC<Props> = ({
   multiple,
   placeholder,
   portal = true,
+  isClearable = true,
 }) => {
   const { mode } = useTheme();
 
@@ -44,7 +47,7 @@ const Dropdown: FC<Props> = ({
       isMulti={multiple}
       onChange={(option) => onChange(option as any)}
       menuPortalTarget={portal ? document.body : undefined}
-      isClearable={true}
+      isClearable={isClearable}
       styles={{
         container: (provided) => ({
           ...provided,
@@ -74,7 +77,7 @@ const Dropdown: FC<Props> = ({
         }),
         singleValue: (provided) => ({
           ...provided,
-          color: "rgb(255, 255, 255)",
+          color: mode === "dark" ? "#FFFFFF" : "#000000",
         }),
         multiValue: (styles) => {
           return {

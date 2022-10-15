@@ -56,7 +56,21 @@ function Sidebar(): ReactElement {
 
   useEffect(() => {
     setTimeout(() => {
-      localStorage.getItem("lightMode") && setMode("light");
+      if (localStorage.getItem("lightMode")) {
+        setMode("light");
+        document.documentElement.style.setProperty(
+          "--dsg-cell-background-color",
+          "rgb(255, 255, 255)"
+        );
+        document.documentElement.style.setProperty(
+          "--dsg-border-color",
+          "rgb(20,20,20,0.1)"
+        );
+        document.documentElement.style.setProperty(
+          "--dsg-cell-text-color",
+          "rgb(20,20,20,0.9)"
+        );
+      }
     }, 100);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -119,6 +133,18 @@ function Sidebar(): ReactElement {
                 size="small"
                 onClick={() => {
                   localStorage.setItem("lightMode", "true");
+                  document.documentElement.style.setProperty(
+                    "--dsg-cell-background-color",
+                    "rgb(255, 255, 255)"
+                  );
+                  document.documentElement.style.setProperty(
+                    "--dsg-border-color",
+                    "rgb(20,20,20,0.1)"
+                  );
+                  document.documentElement.style.setProperty(
+                    "--dsg-cell-text-color",
+                    "rgb(20,20,20,0.9)"
+                  );
                   setMode("light");
                 }}
               >
@@ -131,6 +157,18 @@ function Sidebar(): ReactElement {
                 size="small"
                 onClick={() => {
                   localStorage.removeItem("lightMode");
+                  document.documentElement.style.setProperty(
+                    "--dsg-cell-background-color",
+                    "rgb(20,20,20)"
+                  );
+                  document.documentElement.style.setProperty(
+                    "--dsg-border-color",
+                    "rgb(255,255,255,0.1)"
+                  );
+                  document.documentElement.style.setProperty(
+                    "--dsg-cell-text-color",
+                    "rgb(255,255,255,0.9)"
+                  );
                   setMode("dark");
                 }}
               >
