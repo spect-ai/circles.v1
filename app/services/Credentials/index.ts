@@ -344,6 +344,19 @@ export default function useCredentials() {
     }
   };
 
+  const getKudos = async (tokenId: number) => {
+    const res = await fetch(
+      `${process.env.MINTKUDOS_HOST}/v1/tokens/${tokenId}`
+    );
+    if (res.ok) {
+      return await res.json();
+    } else {
+      toast.error("Something went wrong while fetching your kudos");
+      console.log(res);
+      return [];
+    }
+  };
+
   return {
     mintKudos,
     recordTokenId,
@@ -352,5 +365,6 @@ export default function useCredentials() {
     recordClaimInfo,
     getKudosOfUser,
     recordCollectionKudos,
+    getKudos,
   };
 }

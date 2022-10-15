@@ -1,3 +1,4 @@
+import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { reorder } from "@/app/common/utils/utils";
 import { updateField } from "@/app/services/Collection";
 import { Box, Input, Stack, Text, Textarea } from "degen";
@@ -42,10 +43,6 @@ export function Form() {
   } = useLocalCollection();
 
   const [propertyOrder, setPropertyOrder] = useState(collection.propertyOrder);
-  const [responseMessage, setResponseMessage] = useState(
-    "Thanks for your response!"
-  );
-  const [isDirty, setIsDirty] = useState(false);
 
   useEffect(() => {
     setPropertyOrder(collection.propertyOrder);
@@ -107,41 +104,82 @@ export function Form() {
     }
   };
 
-  const DroppableContent = (provided: DroppableProvided) => (
-    <Container {...provided.droppableProps} ref={provided.innerRef}>
-      <InactiveFieldsColumnComponent fields={propertyOrder} />
+  const DroppableContent = (provided: DroppableProvided) => {
+    const [messageOnSubmission, setMessageOnSubmission] = useState("");
+    const [currMessageOnSubmission, setCurrMessageOnSubmission] = useState("");
 
-      <ScrollContainer>
-        <ColumnComponent fields={propertyOrder} />
-        <Box
-          marginTop="16"
-          marginBottom="4"
-          display="flex"
-          flexDirection="column"
-        >
-          <Stack direction="vertical" space="4">
-            <Text variant="large">After the form is submitted.</Text>
-            <Text variant="label">Show the following message</Text>
-            <Textarea
-              label
-              hideLabel
-              width="144"
-              rows={2}
-              value={responseMessage}
-              onChange={(e) => {
-                setResponseMessage(e.target.value);
-                setIsDirty(true);
-              }}
-            />
-            <Text variant="label">And</Text>
-            <Box width="48">
+    useEffect(() => {
+      setMessageOnSubmission(collection.messageOnSubmission);
+      setCurrMessageOnSubmission(collection.messageOnSubmission);
+    }, [collection]);
+
+    return (
+      <Container {...provided.droppableProps} ref={provided.innerRef}>
+        <InactiveFieldsColumnComponent fields={propertyOrder} />
+
+        <ScrollContainer>
+          <ColumnComponent fields={propertyOrder} />
+          <Box
+            marginTop="16"
+            marginBottom="4"
+            display="flex"
+            flexDirection="column"
+          >
+            <Stack direction="vertical" space="4">
+              <Text variant="large">After the form is submitted.</Text>
+              <Text variant="label">Show the following message</Text>
+
+              <Input
+                label=""
+                value={messageOnSubmission}
+                onChange={(e) => {
+                  console.log(e.target.value);
+                  setMessageOnSubmission(e.target.value);
+                }}
+              />
+              <Box
+                display="flex"
+                flexDirection="row"
+                justifyContent="flex-start"
+                alignItems="flex-start"
+              >
+                <PrimaryButton
+                  disabled={currMessageOnSubmission === messageOnSubmission}
+                  onClick={async () => {
+                    const res = await (
+                      await fetch(
+                        `${process.env.API_HOST}/collection/v1/${collection.id}`,
+                        {
+                          method: "PATCH",
+                          body: JSON.stringify({
+                            messageOnSubmission,
+                          }),
+                          headers: {
+                            "Content-Type": "application/json",
+                          },
+                          credentials: "include",
+                        }
+                      )
+                    ).json();
+                    updateCollection(res);
+                  }}
+                >
+                  Save
+                </PrimaryButton>
+              </Box>
+
+              {!collection.mintkudosTokenId && <Text variant="label">And</Text>}
+              {collection.mintkudosTokenId && (
+                <Text variant="label">And send the following kudos</Text>
+              )}
+
               <SendKudos />
-            </Box>
-          </Stack>
-        </Box>
-      </ScrollContainer>
-    </Container>
-  );
+            </Stack>
+          </Box>
+        </ScrollContainer>
+      </Container>
+    );
+  };
 
   const DroppableContentCallback = useCallback(DroppableContent, [
     propertyOrder,

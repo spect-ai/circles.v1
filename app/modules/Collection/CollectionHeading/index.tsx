@@ -54,38 +54,63 @@ function CollectionHeading() {
         }}
       >
         {!loading && (
-          <Stack direction="horizontal">
-            <Button variant="transparent" size="small">
-              <Text size="headingTwo" weight="semiBold" ellipsis>
-                {collection?.name}
-              </Text>
-            </Button>
-            <PrimaryButton
-              // icon={<ShareAltOutlined />}
-              onClick={() => {
-                void navigator.clipboard.writeText(
-                  `https://spect.network/form/${collection?.slug}`
-                );
-                toast.success("Copied to clipboard");
-              }}
-            >
-              Share
-            </PrimaryButton>
-            <PrimaryButton
-              // icon={<IconPencil />}
-              variant={view === 0 ? "tertiary" : "transparent"}
-              onClick={() => setView(0)}
-            >
-              Edit Form
-            </PrimaryButton>
-            <PrimaryButton
-              // icon={<IconDocuments />}
-              variant={view === 1 ? "tertiary" : "transparent"}
-              onClick={() => setView(1)}
-            >
-              Responses
-            </PrimaryButton>
-          </Stack>
+          <Box display="flex" flexDirection="row" width="full">
+            <Box width="3/4">
+              <Stack direction="horizontal">
+                <Button
+                  variant="transparent"
+                  size="small"
+                  onClick={() => setView(0)}
+                >
+                  <Text size="headingTwo" weight="semiBold" ellipsis>
+                    {collection?.name}
+                  </Text>
+                </Button>
+
+                <PrimaryButton
+                  // icon={<IconPencil />}
+                  variant={view === 0 ? "tertiary" : "transparent"}
+                  onClick={() => setView(0)}
+                >
+                  Edit Form
+                </PrimaryButton>
+                <PrimaryButton
+                  // icon={<IconDocuments />}
+                  variant={view === 1 ? "tertiary" : "transparent"}
+                  onClick={() => setView(1)}
+                >
+                  Responses
+                </PrimaryButton>
+              </Stack>
+            </Box>
+            <Box width="1/4" justifyContent="center">
+              <Stack direction="horizontal" space="8" align="center">
+                <PrimaryButton
+                  // icon={<IconDocuments />}
+                  variant={"transparent"}
+                  onClick={() => {
+                    window.open(
+                      `https://spect.network/form/${collection?.slug}`,
+                      "_blank"
+                    );
+                  }}
+                >
+                  Preview
+                </PrimaryButton>
+                <PrimaryButton
+                  // icon={<ShareAltOutlined />}
+                  onClick={() => {
+                    void navigator.clipboard.writeText(
+                      `https://spect.network/form/${collection?.slug}`
+                    );
+                    toast.success("Copied to clipboard");
+                  }}
+                >
+                  Share
+                </PrimaryButton>
+              </Stack>
+            </Box>
+          </Box>
         )}
         {loading && (
           <Skeleton

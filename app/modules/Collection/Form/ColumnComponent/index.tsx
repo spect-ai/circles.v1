@@ -13,7 +13,6 @@ const Container = styled(Box)`
   width: 70%;
   border-width: 1px;
   padding: 2rem;
-  max-height: calc(100vh - 10rem);
   overflow-y: auto;
   margin-right: 4rem;
 `;

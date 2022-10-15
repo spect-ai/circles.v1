@@ -126,7 +126,7 @@ function CreateCollectionModal({ folderId }: { folderId?: string }) {
       )}
       <AnimatePresence>
         {modalOpen && (
-          <Modal handleClose={close} title="Create Form">
+          <Modal handleClose={close} title="Create Form" size="small">
             <Box width="full" padding="8">
               <Stack>
                 <Input
@@ -134,13 +134,6 @@ function CreateCollectionModal({ folderId }: { folderId?: string }) {
                   placeholder="Name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                />
-                <Tabs
-                  selectedTab={visibilityTab}
-                  onTabClick={onVisibilityTabClick}
-                  tabs={["Public", "Private"]}
-                  orientation="horizontal"
-                  unselectedColor="transparent"
                 />
                 <Box width="full" marginTop="4">
                   <PrimaryButton

@@ -71,7 +71,23 @@ export default function RoleGate() {
 
   return (
     <>
-      <PrimaryButton onClick={() => setIsOpen(true)}>Role Gate</PrimaryButton>
+      <Stack direction="vertical">
+        {collection.formRoleGating && collection.formRoleGating.length > 0 && (
+          <Text variant="small">{`Responses to form can only be added by these roles`}</Text>
+        )}
+      </Stack>
+      <PrimaryButton
+        variant={
+          collection.formRoleGating && collection.formRoleGating.length > 0
+            ? "tertiary"
+            : "primary"
+        }
+        onClick={() => setIsOpen(true)}
+      >
+        {collection.formRoleGating && collection.formRoleGating.length > 0
+          ? `Update Roles`
+          : `Role Gate`}
+      </PrimaryButton>
       {
         <AnimatePresence>
           {isOpen && !circle.guildxyzId && (

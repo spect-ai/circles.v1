@@ -610,7 +610,6 @@ export type KudoOfUserType = {
   claimStatus: string;
   communityId: string;
 };
-
 export interface DistributeEtherParams {
   contributors: any;
   values: any[];
@@ -663,6 +662,9 @@ export interface CollectionType {
   data: MappedItem<any>;
   indexes: MappedItem<string[]>;
   defaultView: DefaultViewType;
+  formRoleGating: number[];
+  mintkudosTokenId: number;
+  messageOnSubmission: string;
   unauthorized?: boolean;
 }
 

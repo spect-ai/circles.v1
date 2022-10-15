@@ -158,9 +158,7 @@ function FieldComponent({
             rows={3}
             placeholder={`Enter ${collection.properties[id]?.name}`}
             value={collection.data && collection.data[id]}
-            onChange={(e) => {
-              //  setBio(e.target.value);
-            }}
+            onChange={(e) => {}}
           />
         </Box>
       )}

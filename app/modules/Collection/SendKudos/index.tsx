@@ -18,6 +18,7 @@ import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { useCircle } from "../../Circle/CircleContext";
 import { useLocalCollection } from "../Context/LocalCollectionContext";
+import Image from "next/image";
 
 export default function SendKudos() {
   const [isOpen, setIsOpen] = useState(false);
@@ -28,17 +29,18 @@ export default function SendKudos() {
     setMintkudosCommunityId,
     mintkudosCommunityId,
   } = useCircle();
-  const { localCollection: collection, setLocalCollection } =
+  const { localCollection: collection, updateCollection } =
     useLocalCollection();
   const [loading, setLoading] = useState(false);
   const [headlineContent, setHeadlineContent] = useState(
     "Thanks for filling up the form!"
   );
-  const { mintKudos, recordCollectionKudos } = useCredentials();
+  const { mintKudos, recordCollectionKudos, getKudos } = useCredentials();
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
   const [perm, setPerm] = useState({} as Permissions);
+  const [kudos, setKudos] = useState({} as KudosType);
 
   useEffect(() => {
     fetch(
@@ -73,14 +75,88 @@ export default function SendKudos() {
       .catch((err) => console.log(err));
   }, []);
 
+  useEffect(() => {
+    console.log("kekek");
+    if (collection.mintkudosTokenId) {
+      setLoading(true);
+      getKudos(collection.mintkudosTokenId)
+        .then((res) => {
+          console.log(res);
+          setKudos(res);
+          setLoading(false);
+        })
+        .catch((err) => {
+          console.log(err);
+          setLoading(false);
+        });
+    } else {
+      setKudos({} as KudosType);
+    }
+  }, [collection]);
+
+  console.log(kudos.imageUrl);
+
   return (
     <>
-      <PrimaryButton onClick={() => setIsOpen(true)}>Send Kudos</PrimaryButton>
+      {!loading && kudos.imageUrl && (
+        <Box display="flex" flexDirection="row" width="full">
+          {" "}
+          <Box width="1/2">
+            {" "}
+            <Image
+              src="https://images.mintkudos.xyz/token/16.png"
+              width="100%"
+              height="100%"
+              objectFit="contain"
+              alt="Kudos img"
+              layout="responsive"
+            />
+          </Box>
+          <Box marginLeft="4">
+            <Stack direction="vertical" space="4">
+              <PrimaryButton onClick={() => setIsOpen(true)}>
+                Update kudos
+              </PrimaryButton>
+              <PrimaryButton
+                onClick={async () => {
+                  const res = await (
+                    await fetch(
+                      `${process.env.API_HOST}/collection/v1/${collection.id}`,
+                      {
+                        method: "PATCH",
+                        body: JSON.stringify({
+                          mintkudosTokenId: null,
+                        }),
+                        headers: {
+                          "Content-Type": "application/json",
+                        },
+                        credentials: "include",
+                      }
+                    )
+                  ).json();
+                  updateCollection(res);
+                }}
+                variant="tertiary"
+              >
+                Remove kudos
+              </PrimaryButton>
+            </Stack>
+          </Box>
+        </Box>
+      )}
+
+      {!collection.mintkudosTokenId && (
+        <Box width="48">
+          <PrimaryButton onClick={() => setIsOpen(true)}>
+            Send Kudos
+          </PrimaryButton>
+        </Box>
+      )}
       {
         <AnimatePresence>
           {isOpen && !hasMintkudosCredentialsSetup && (
             <Modal
-              title="Guild Integration"
+              title="Mintkudos Integration"
               handleClose={() => setIsOpen(false)}
               size="small"
             >
@@ -147,14 +223,6 @@ export default function SendKudos() {
                     />
                   </Stack>
                 </Box>
-                {/* <Box width="1/2" paddingRight="8" paddingBottom="4">
-                    <SoulboundToken
-                      content={`${headlineContent}`}
-                      issuedBy={`${circle?.name}`}
-                      issuedOn={new Date().toISOString().slice(0, 10)}
-                      issuerAvatar={`${circle?.avatar}`}
-                    />
-                  </Box> */}
                 <PrimaryButton
                   loading={loading}
                   onClick={async () => {
