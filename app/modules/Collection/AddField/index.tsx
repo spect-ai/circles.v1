@@ -1,3 +1,4 @@
+import Accordian from "@/app/common/components/Accordian";
 import Dropdown from "@/app/common/components/Dropdown";
 import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
@@ -36,6 +37,8 @@ export default function AddField({ propertyName, handleClose }: Props) {
     []
   );
 
+  const [defaultValue, setDefaultValue] = useState("");
+
   useEffect(() => {
     if (propertyName && collection.properties) {
       setName(propertyName);
@@ -60,7 +63,11 @@ export default function AddField({ propertyName, handleClose }: Props) {
   }, [collection.properties, propertyName]);
 
   return (
-    <Modal title="Add Field" handleClose={handleClose} size="small">
+    <Modal
+      title={propertyName ? "Edit Field" : "Add Field"}
+      handleClose={handleClose}
+      size="small"
+    >
       <Box padding="8">
         <Stack>
           <Input
@@ -76,6 +83,7 @@ export default function AddField({ propertyName, handleClose }: Props) {
               setType(type);
             }}
             multiple={false}
+            isClearable={false}
           />
           {type.value === "singleSelect" || type.value === "multiSelect" ? (
             <AddOptions
@@ -105,23 +113,29 @@ export default function AddField({ propertyName, handleClose }: Props) {
             </Stack>
           ) : null}
 
-          <Stack space="2">
-            <Text variant="label">Notify User Type on Changes</Text>
-            <Dropdown
-              placeholder="Select User Types"
-              options={[
-                { label: "Assignee", value: "assignee" },
-                { label: "Reviewer", value: "reviewer" },
-                { label: "Grantee", value: "grantee" },
-                { label: "Applicant", value: "applicant" },
-              ]}
-              selected={notifyUserType}
-              onChange={(type: Option[]) => {
-                setNotifyUserType(type);
-              }}
-              multiple={true}
-            />
-          </Stack>
+          <Accordian name="Advanced Settings" defaultOpen={false}>
+            <Stack space="2">
+              {["shortText", "longText", "ethAddress"].includes(type.value) && (
+                <Input label="" placeholder="Default Value" />
+              )}
+
+              <Text>Notify User Type on Changes</Text>
+              <Dropdown
+                placeholder="Select User Types"
+                options={[
+                  { label: "Assignee", value: "assignee" },
+                  { label: "Reviewer", value: "reviewer" },
+                  { label: "Grantee", value: "grantee" },
+                  { label: "Applicant", value: "applicant" },
+                ]}
+                selected={notifyUserType}
+                onChange={(type: Option[]) => {
+                  setNotifyUserType(type);
+                }}
+                multiple={true}
+              />
+            </Stack>
+          </Accordian>
 
           <PrimaryButton
             icon={<SaveFilled style={{ fontSize: "1.3rem" }} />}
@@ -135,6 +149,7 @@ export default function AddField({ propertyName, handleClose }: Props) {
                   type: type.value,
                   options: fieldOptions,
                   userType,
+                  default: defaultValue,
                   onUpdateNotifyUserTypes: notifyUserType?.map(
                     (type) => type.value
                   ) as FormUserType[],
@@ -147,6 +162,7 @@ export default function AddField({ propertyName, handleClose }: Props) {
                   isPartOfFormView: false,
                   options: fieldOptions,
                   userType: userType,
+                  default: defaultValue,
                   onUpdateNotifyUserTypes: notifyUserType?.map(
                     (type) => type.value
                   ) as FormUserType[],
@@ -166,25 +182,24 @@ export default function AddField({ propertyName, handleClose }: Props) {
           >
             Save
           </PrimaryButton>
-          <PrimaryButton
-            tone="red"
-            icon={<IconTrash />}
-            onClick={async () => {
-              const res = await deleteField(
-                collection.id,
-                propertyName as string
-              );
-              console.log({ res });
-              if (res.id) {
-                handleClose();
-                setLocalCollection(res);
-              } else {
-                toast.error(res.message);
-              }
-            }}
-          >
-            Delete
-          </PrimaryButton>
+          {propertyName && (
+            <PrimaryButton
+              tone="red"
+              icon={<IconTrash />}
+              onClick={async () => {
+                const res = await deleteField(collection.id, propertyName);
+                console.log({ res });
+                if (res.id) {
+                  handleClose();
+                  setLocalCollection(res);
+                } else {
+                  toast.error(res.message);
+                }
+              }}
+            >
+              Delete
+            </PrimaryButton>
+          )}
         </Stack>
       </Box>
     </Modal>
