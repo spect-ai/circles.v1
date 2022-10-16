@@ -12,7 +12,7 @@ import {
   Permissions,
   UserType,
 } from "@/app/types";
-import { Box, Input, Stack, Text, Textarea } from "degen";
+import { Box, Button, Input, MediaPicker, Stack, Text, Textarea } from "degen";
 import { AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
@@ -20,6 +20,9 @@ import { useCircle } from "../../Circle/CircleContext";
 import { useLocalCollection } from "../Context/LocalCollectionContext";
 import Credentials from "../../Circle/CircleSettingsModal/Credentials";
 import Image from "next/image";
+import { storeImage } from "@/app/common/utils/ipfs";
+import { InfoCircleOutlined } from "@ant-design/icons";
+import { Tooltip } from "react-tippy";
 
 export default function SendKudos() {
   const [isOpen, setIsOpen] = useState(false);
@@ -36,12 +39,28 @@ export default function SendKudos() {
   const [headlineContent, setHeadlineContent] = useState(
     "Thanks for filling up the form!"
   );
-  const { mintKudos, recordCollectionKudos, getKudos } = useCredentials();
+  const { mintKudos, recordCollectionKudos, getKudos, addCustomKudosDesign } =
+    useCredentials();
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
   const [perm, setPerm] = useState({} as Permissions);
   const [kudos, setKudos] = useState({} as KudosType);
+  const [uploading, setUploading] = useState(false);
+  const [uploadedImage, setUploadedImage] = useState(kudos?.imageUrl || "");
+  const [asset, setAsset] = useState({} as File);
+
+  console.log(uploadedImage);
+
+  const uploadFile = async (file: File) => {
+    if (file) {
+      setUploading(true);
+      const { imageGatewayURL } = await storeImage(file);
+      console.log({ imageGatewayURL });
+      setUploadedImage(imageGatewayURL);
+      setUploading(false);
+    }
+  };
 
   useEffect(() => {
     fetch(
@@ -105,7 +124,7 @@ export default function SendKudos() {
           <Box width="1/2">
             {" "}
             <Image
-              src="https://images.mintkudos.xyz/token/16.png"
+              src={`${kudos.imageUrl}`}
               width="100%"
               height="100%"
               objectFit="contain"
@@ -168,52 +187,144 @@ export default function SendKudos() {
           )}
           {isOpen && hasMintkudosCredentialsSetup && (
             <Modal
-              size="small"
+              size="medium"
               title="Send Kudos 🎉"
               handleClose={() => setIsOpen(false)}
             >
               <Box
-                paddingTop="2"
-                paddingRight="8"
+                display="flex"
+                flexDirection="row"
+                paddingTop="4"
                 paddingLeft="8"
+                paddingRight="8"
                 paddingBottom="4"
+                justifyContent="center"
+                alignItems="flex-start"
+                width="full"
               >
-                <Box padding="1" paddingTop="4" paddingBottom="4" width="full">
-                  <Stack>
-                    <Textarea
-                      label="Headline"
-                      value={headlineContent}
-                      onChange={(e) => setHeadlineContent(e.target.value)}
-                      maxLength={50}
-                    />
-                  </Stack>
-                </Box>
-                <PrimaryButton
-                  loading={loading}
-                  onClick={async () => {
-                    setLoading(true);
-
-                    const res = await mintKudos(
-                      {
-                        headline: headlineContent,
-                        creator: currentUser?.ethAddress as string,
-                        totalClaimCount: 10000,
-                        isSignatureRequired: false,
-                        isAllowlistRequired: false,
-                      } as KudosRequestType,
-                      mintkudosCommunityId
-                    );
-                    if (res) {
-                      recordCollectionKudos(res.operationId);
-                    }
-                    setLoading(false);
-                    if (res) {
-                      setIsOpen(false);
-                    }
-                  }}
+                <Box
+                  width="1/2"
+                  display="flex"
+                  flexDirection="column"
+                  justifyContent="center"
                 >
-                  Mint
-                </PrimaryButton>
+                  <Box
+                    marginBottom="4"
+                    marginTop="4"
+                    display="flex"
+                    flexDirection="column"
+                    justifyContent="center"
+                    marginRight="8"
+                  >
+                    <Image
+                      src={
+                        uploadedImage ||
+                        kudos.imageUrl ||
+                        "https://spect.infura-ipfs.io/ipfs/QmU2pYbqiVnNc7WKQ9yBkEmUvxWg6Ha1LAzpHdCSABwct7"
+                      }
+                      width="250%"
+                      height="250%"
+                      objectFit="contain"
+                      alt="Kudos img"
+                    />
+                  </Box>
+                </Box>
+                <Box width="1/2">
+                  <Box paddingBottom="4" width="full">
+                    <Stack>
+                      <Stack direction="horizontal" space="4">
+                        <Textarea
+                          label={
+                            <Stack direction="horizontal" space="2">
+                              <Text variant="label">Headline</Text>
+                              <Tooltip title="The headline only shows up in the image for the default mintkudos image. For custom images, the headline is still added on chain with the NFT, however it doesn't show up in the image.">
+                                <InfoCircleOutlined />
+                              </Tooltip>
+                            </Stack>
+                          }
+                          value={headlineContent}
+                          onChange={(e) => setHeadlineContent(e.target.value)}
+                          maxLength={50}
+                        />
+                      </Stack>
+                      <MediaPicker
+                        compact
+                        defaultValue={{
+                          type: "image/png",
+                          url: uploadedImage,
+                        }}
+                        label="Choose or drag and drop custom kudos image"
+                        uploaded={!!uploadedImage}
+                        onChange={async (f) => {
+                          await uploadFile(f);
+                          setAsset(f);
+                        }}
+                        onReset={() => setUploadedImage(kudos?.imageUrl || "")}
+                        uploading={uploading}
+                        maxSize={10}
+                      />
+                    </Stack>
+                  </Box>
+                </Box>
+              </Box>
+              <Box
+                display="flex"
+                flexDirection="row"
+                justifyContent="flex-end"
+                width="full"
+                paddingBottom="8"
+                paddingLeft="8"
+                paddingRight="8"
+              >
+                <Box
+                  width="1/2"
+                  display="flex"
+                  flexDirection="row"
+                  justifyContent="flex-end"
+                >
+                  <Button
+                    loading={loading}
+                    width="full"
+                    size="small"
+                    variant="secondary"
+                    onClick={async () => {
+                      setLoading(true);
+                      try {
+                        let communityAsset;
+                        if (asset && asset.name) {
+                          communityAsset = await addCustomKudosDesign(
+                            asset.name,
+                            asset
+                          );
+                        }
+
+                        const res = await mintKudos(
+                          {
+                            headline: headlineContent,
+                            creator: currentUser?.ethAddress as string,
+                            totalClaimCount: 10000,
+                            isSignatureRequired: false,
+                            isAllowlistRequired: false,
+                          } as KudosRequestType,
+                          mintkudosCommunityId,
+                          communityAsset
+                        );
+                        if (res) {
+                          recordCollectionKudos(res.operationId);
+                        }
+                        setLoading(false);
+                        if (res) {
+                          setIsOpen(false);
+                        }
+                      } catch (err: any) {
+                        setLoading(false);
+                        console.log(err);
+                      }
+                    }}
+                  >
+                    Mint
+                  </Button>
+                </Box>
               </Box>
             </Modal>
           )}

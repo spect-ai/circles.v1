@@ -25,7 +25,11 @@ export default function useCredentials() {
     useLocalCollection();
   const { mode } = useTheme();
 
-  const mintKudos = async (kudos: KudosRequestType, communityId: string) => {
+  const mintKudos = async (
+    kudos: KudosRequestType,
+    communityId: string,
+    assetFile?: File
+  ) => {
     const value = {
       ...kudos,
       headline: kudos.headline,
@@ -68,7 +72,7 @@ export default function useCredentials() {
           isSignatureRequired: value.isSignatureRequired,
           isAllowlistRequired: value.isAllowlistRequired,
           communityId: communityId,
-          nftTypeId: "defaultOrangeRed",
+          nftTypeId: assetFile || "defaultOrangeRed",
           contributors: kudos.contributors,
           totalClaimCount: value.totalClaimCount,
           signature: signature,
@@ -357,6 +361,29 @@ export default function useCredentials() {
     }
   };
 
+  const addCustomKudosDesign = async (name: string, file: File) => {
+    console.log({ name, file });
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const res = await fetch(
+      `${process.env.API_HOST}/circle/v1/${circle?.id}/addKudosDesign`,
+      {
+        method: "PATCH",
+        body: formData,
+        credentials: "include",
+      }
+    );
+    console.log(await res.json());
+    if (res.ok) {
+      return await res.json();
+    } else {
+      toast.error("Something went wrong while adding custom design");
+      console.log(res);
+      return [];
+    }
+  };
+
   return {
     mintKudos,
     recordTokenId,
@@ -366,5 +393,6 @@ export default function useCredentials() {
     getKudosOfUser,
     recordCollectionKudos,
     getKudos,
+    addCustomKudosDesign,
   };
 }
