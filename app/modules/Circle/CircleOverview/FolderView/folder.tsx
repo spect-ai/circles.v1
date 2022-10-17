@@ -159,9 +159,6 @@ const Folder = ({
   function DraggableContent(provided: DraggableProvided) {
     return (
       <Box
-        {...provided.draggableProps}
-        {...provided.dragHandleProps}
-        ref={provided.innerRef}
         paddingY={"2"}
         display="flex"
         flexDirection="column"
@@ -191,9 +188,15 @@ const Folder = ({
               </Button>
             )}
         </Stack>
-        <Droppable droppableId={id} type="content">
-          {CardDraggableCallback}
-        </Droppable>
+        <Box
+          {...provided.draggableProps}
+          {...provided.dragHandleProps}
+          ref={provided.innerRef}
+        >
+          <Droppable droppableId={id} type="content">
+            {CardDraggableCallback}
+          </Droppable>
+        </Box>
       </Box>
     );
   }
@@ -207,7 +210,7 @@ const Folder = ({
   ]);
 
   return (
-    <Draggable draggableId={id} index={index}>
+    <Draggable draggableId={id} index={index} isDragDisabled={true}>
       {DraggableContentCallback}
     </Draggable>
   );

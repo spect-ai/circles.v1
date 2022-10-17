@@ -220,7 +220,7 @@ export interface CircleType {
     [key: string]: string[];
   };
   roles: {
-    [name: string]: {
+    [role: string]: {
       name: string;
       description: string;
       permissions: Permissions;

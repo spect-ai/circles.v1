@@ -112,6 +112,7 @@ function BoardView({ viewId }: Props) {
           advFilters?.groupBy == "Status" &&
           project?.columnOrder?.map((columnId, index): any => {
             const column = project.columnDetails[columnId];
+            if (!column) return null;
             let cards = column.cards?.map(
               (cardId: string) => filteredCards[cardId]
             );
