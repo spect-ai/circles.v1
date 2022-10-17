@@ -610,6 +610,14 @@ export type KudoOfUserType = {
   claimStatus: string;
   communityId: string;
 };
+
+export type CommunityKudosType = {
+  name: string;
+  nftTypeId: string;
+  previewAssetUrl: string;
+  isUserAdded: boolean;
+};
+
 export interface DistributeEtherParams {
   contributors: any;
   values: any[];

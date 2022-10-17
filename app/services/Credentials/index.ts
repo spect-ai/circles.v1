@@ -28,7 +28,7 @@ export default function useCredentials() {
   const mintKudos = async (
     kudos: KudosRequestType,
     communityId: string,
-    assetFile?: File
+    nftTypeId?: File
   ) => {
     const value = {
       ...kudos,
@@ -72,7 +72,7 @@ export default function useCredentials() {
           isSignatureRequired: value.isSignatureRequired,
           isAllowlistRequired: value.isAllowlistRequired,
           communityId: communityId,
-          nftTypeId: assetFile || "defaultOrangeRed",
+          nftTypeId: nftTypeId || "defaultOrangeRed",
           contributors: kudos.contributors,
           totalClaimCount: value.totalClaimCount,
           signature: signature,
@@ -362,7 +362,6 @@ export default function useCredentials() {
   };
 
   const addCustomKudosDesign = async (name: string, file: File) => {
-    console.log({ name, file });
     const formData = new FormData();
     formData.append("file", file);
 
@@ -374,11 +373,25 @@ export default function useCredentials() {
         credentials: "include",
       }
     );
-    console.log(await res.json());
     if (res.ok) {
       return await res.json();
     } else {
       toast.error("Something went wrong while adding custom design");
+      console.log(res);
+      return [];
+    }
+  };
+
+  const getCommunityKudosDesigns = async () => {
+    const res = await fetch(
+      `${process.env.API_HOST}/circle/v1/${circle?.id}/communityKudosDesigns`
+    );
+    if (res.ok) {
+      return await res.json();
+    } else {
+      toast.error(
+        "Something went wrong while fetching community kudos designs"
+      );
       console.log(res);
       return [];
     }
@@ -394,5 +407,6 @@ export default function useCredentials() {
     recordCollectionKudos,
     getKudos,
     addCustomKudosDesign,
+    getCommunityKudosDesigns,
   };
 }

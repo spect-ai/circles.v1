@@ -7,6 +7,7 @@ import {
   GetPrivateCirclePropertiesDto,
 } from "@/app/services/PrivateCircle";
 import {
+  CommunityKudosType,
   KudosRequestType,
   KudosType,
   Permissions,
@@ -23,6 +24,12 @@ import Image from "next/image";
 import { storeImage } from "@/app/common/utils/ipfs";
 import { InfoCircleOutlined } from "@ant-design/icons";
 import { Tooltip } from "react-tippy";
+import styled from "styled-components";
+
+const ScrollContainer = styled(Box)`
+  overflow-x: auto;
+  max-width: 24rem;
+`;
 
 export default function SendKudos() {
   const [isOpen, setIsOpen] = useState(false);
@@ -39,8 +46,13 @@ export default function SendKudos() {
   const [headlineContent, setHeadlineContent] = useState(
     "Thanks for filling up the form!"
   );
-  const { mintKudos, recordCollectionKudos, getKudos, addCustomKudosDesign } =
-    useCredentials();
+  const {
+    mintKudos,
+    recordCollectionKudos,
+    getKudos,
+    addCustomKudosDesign,
+    getCommunityKudosDesigns,
+  } = useCredentials();
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
@@ -49,8 +61,15 @@ export default function SendKudos() {
   const [uploading, setUploading] = useState(false);
   const [uploadedImage, setUploadedImage] = useState(kudos?.imageUrl || "");
   const [asset, setAsset] = useState({} as File);
+  const [selectedNftTypeId, setSelectedNftTypeId] = useState("");
+  const [assetToUse, setAssetToUse] = useState("defaultOrangeRed");
+  const [assetUrl, setAssetUrl] = useState(
+    "https://spect.infura-ipfs.io/ipfs/QmU2pYbqiVnNc7WKQ9yBkEmUvxWg6Ha1LAzpHdCSABwct7"
+  );
 
-  console.log(uploadedImage);
+  const [communityKudosDesigns, setCommunityKudosDesigns] = useState(
+    [] as CommunityKudosType[]
+  );
 
   const uploadFile = async (file: File) => {
     if (file) {
@@ -59,6 +78,7 @@ export default function SendKudos() {
       console.log({ imageGatewayURL });
       setUploadedImage(imageGatewayURL);
       setUploading(false);
+      setAssetUrl(imageGatewayURL);
     }
   };
 
@@ -113,6 +133,17 @@ export default function SendKudos() {
       setKudos({} as KudosType);
     }
   }, [collection]);
+
+  useEffect(() => {
+    getCommunityKudosDesigns()
+      .then((res) => {
+        console.log(res);
+        setCommunityKudosDesigns(res);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
 
   console.log(kudos.imageUrl);
 
@@ -217,16 +248,37 @@ export default function SendKudos() {
                     marginRight="8"
                   >
                     <Image
-                      src={
-                        uploadedImage ||
-                        kudos.imageUrl ||
-                        "https://spect.infura-ipfs.io/ipfs/QmU2pYbqiVnNc7WKQ9yBkEmUvxWg6Ha1LAzpHdCSABwct7"
-                      }
+                      src={assetUrl}
                       width="250%"
                       height="250%"
                       objectFit="contain"
                       alt="Kudos img"
                     />
+                    {communityKudosDesigns.length > 0 && (
+                      <ScrollContainer
+                        display="flex"
+                        flexDirection="row"
+                        alignItems="center"
+                        marginBottom="4"
+                        marginTop="4"
+                      >
+                        {communityKudosDesigns.map((k: CommunityKudosType) => (
+                          <Box margin="0.5" key={k.nftTypeId}>
+                            <Image
+                              src={k.previewAssetUrl}
+                              width="100%"
+                              height="100%"
+                              objectFit="contain"
+                              alt="Kudos img"
+                              onClick={() => {
+                                setAssetToUse(k.nftTypeId);
+                                setAssetUrl(k.previewAssetUrl);
+                              }}
+                            />
+                          </Box>
+                        ))}
+                      </ScrollContainer>
+                    )}
                   </Box>
                 </Box>
                 <Box width="1/2">
@@ -258,8 +310,15 @@ export default function SendKudos() {
                         onChange={async (f) => {
                           await uploadFile(f);
                           setAsset(f);
+                          setAssetToUse("custom");
                         }}
-                        onReset={() => setUploadedImage(kudos?.imageUrl || "")}
+                        onReset={() => {
+                          setUploadedImage("");
+                          setAssetUrl(
+                            "https://spect.infura-ipfs.io/ipfs/QmU2pYbqiVnNc7WKQ9yBkEmUvxWg6Ha1LAzpHdCSABwct7"
+                          );
+                          setAssetToUse("defaultOrangeRed");
+                        }}
                         uploading={uploading}
                         maxSize={10}
                       />
@@ -291,7 +350,7 @@ export default function SendKudos() {
                       setLoading(true);
                       try {
                         let communityAsset;
-                        if (asset && asset.name) {
+                        if (assetToUse === "custom" && asset && asset.name) {
                           communityAsset = await addCustomKudosDesign(
                             asset.name,
                             asset
@@ -307,7 +366,7 @@ export default function SendKudos() {
                             isAllowlistRequired: false,
                           } as KudosRequestType,
                           mintkudosCommunityId,
-                          communityAsset
+                          communityAsset?.nftTypeId || assetToUse
                         );
                         if (res) {
                           recordCollectionKudos(res.operationId);
