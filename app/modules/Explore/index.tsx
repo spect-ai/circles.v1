@@ -317,7 +317,7 @@ export default function Explore() {
                 <Col key={"createCircle"} xs={10} sm={6} md={3}>
                   <CreateCircleCard />
                 </Col>
-              </Row>{" "}
+              </Row>
             </Box>
           </>
         )}
