@@ -8,7 +8,6 @@ import {
   useTheme,
 } from "degen";
 import React, { useEffect, useState } from "react";
-import { AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
 import Loader from "@/app/common/components/Loader";
 import Modal from "@/app/common/components/Modal";
@@ -22,7 +21,6 @@ import { createProject } from "@/app/services/Project";
 import { useCircle } from "./CircleContext";
 import Dropdown from "@/app/common/components/Dropdown";
 import { toast } from "react-toastify";
-import { ProjectOutlined } from "@ant-design/icons";
 import { updateFolder } from "@/app/services/Folders";
 
 const getPlaceholder: {
@@ -33,8 +31,12 @@ const getPlaceholder: {
   trello: "Trello URL",
 };
 
-function CreateProjectModal({ folderId }: { folderId?: string }) {
-  const [modalOpen, setModalOpen] = useState(false);
+interface Props {
+  folderId?: string;
+  setModalOpen: (modal: boolean) => void;
+}
+
+function CreateProjectModal({ folderId, setModalOpen }: Props) {
   const [isLoading, setIsLoading] = useState(false);
   const close = () => setModalOpen(false);
   const router = useRouter();
@@ -134,134 +136,89 @@ function CreateProjectModal({ folderId }: { folderId?: string }) {
   }, []);
 
   return (
-    <>
-      <Loader loading={isLoading} text="Creating your project" />
-      {folderId ? (
-        <Tooltip html={<Text>Create Project</Text>} theme={mode}>
-          <Button
-            size="small"
-            variant="transparent"
-            shape="circle"
-            onClick={(e) => {
-              e.stopPropagation();
-              setModalOpen(true);
-            }}
-          >
-            <ProjectOutlined
-              style={{ fontSize: "1.1rem", color: "rgb(191, 90, 242, 1)" }}
+    <Modal handleClose={close} title="Create Project">
+      <Box width="full" padding="8">
+        <Stack>
+          <Input
+            label=""
+            placeholder="Name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+          <Input
+            label=""
+            placeholder="Description"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+          />
+          <Stack direction="horizontal" space="1" align="center">
+            <Text variant="extraLarge" weight="semiBold">
+              Template
+            </Text>
+
+            <Button shape="circle" size="small" variant="transparent">
+              <Tooltip
+                html={
+                  <Text>Pre built board with columns and automations set</Text>
+                }
+                theme={mode}
+              >
+                <QuestionCircleFilled style={{ fontSize: "1rem" }} />
+              </Tooltip>
+            </Button>
+          </Stack>
+          {templates && (
+            <Select
+              options={templates}
+              value={template}
+              onChange={setTemplate}
             />
-          </Button>
-        </Tooltip>
-      ) : (
-        <Button
-          data-tour="circle-create-project-button"
-          size="small"
-          variant="transparent"
-          shape="circle"
-          onClick={(e) => {
-            e.stopPropagation();
-            setModalOpen(true);
-          }}
-        >
-          <IconPlusSmall />
-        </Button>
-      )}
-      <AnimatePresence
-        initial={false}
-        exitBeforeEnter
-        onExitComplete={() => null}
-      >
-        {modalOpen && (
-          <Modal handleClose={close} title="Create Project">
-            <Box width="full" padding="8">
-              <Stack>
-                <Input
-                  label=""
-                  placeholder="Name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                />
-                <Input
-                  label=""
-                  placeholder="Description"
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                />
-                <Stack direction="horizontal" space="1" align="center">
-                  <Text variant="extraLarge" weight="semiBold">
-                    Template
-                  </Text>
+          )}
+          <Stack direction="horizontal" space="1" align="center">
+            <Text variant="extraLarge" weight="semiBold">
+              Import
+            </Text>
 
-                  <Button shape="circle" size="small" variant="transparent">
-                    <Tooltip
-                      html={
-                        <Text>
-                          Pre built board with columns and automations set
-                        </Text>
-                      }
-                      theme={mode}
-                    >
-                      <QuestionCircleFilled style={{ fontSize: "1rem" }} />
-                    </Tooltip>
-                  </Button>
-                </Stack>
-                {templates && (
-                  <Select
-                    options={templates}
-                    value={template}
-                    onChange={setTemplate}
-                  />
-                )}
-                <Stack direction="horizontal" space="1" align="center">
-                  <Text variant="extraLarge" weight="semiBold">
-                    Import
-                  </Text>
-
-                  <Button shape="circle" size="small" variant="transparent">
-                    <Tooltip
-                      html={
-                        <Text>Import project board from other platforms</Text>
-                      }
-                      theme={mode}
-                    >
-                      <QuestionCircleFilled style={{ fontSize: "1rem" }} />
-                    </Tooltip>
-                  </Button>
-                </Stack>
-                <Stack direction="horizontal">
-                  <Dropdown
-                    options={[
-                      {
-                        label: "Trello",
-                        value: "trello",
-                      },
-                    ]}
-                    selected={importType}
-                    onChange={setImportType}
-                    title=""
-                  />
-                  <Input
-                    label=""
-                    placeholder={getPlaceholder[importType.value]}
-                    value={importURL}
-                    onChange={(e) => setImportURL(e.target.value)}
-                  />
-                </Stack>
-                <Box width="full" marginTop="4">
-                  <PrimaryButton
-                    onClick={onSubmit}
-                    loading={isLoading}
-                    disabled={!name}
-                  >
-                    Create Project
-                  </PrimaryButton>
-                </Box>
-              </Stack>
-            </Box>
-          </Modal>
-        )}
-      </AnimatePresence>
-    </>
+            <Button shape="circle" size="small" variant="transparent">
+              <Tooltip
+                html={<Text>Import project board from other platforms</Text>}
+                theme={mode}
+              >
+                <QuestionCircleFilled style={{ fontSize: "1rem" }} />
+              </Tooltip>
+            </Button>
+          </Stack>
+          <Stack direction="horizontal">
+            <Dropdown
+              options={[
+                {
+                  label: "Trello",
+                  value: "trello",
+                },
+              ]}
+              selected={importType}
+              onChange={setImportType}
+              title=""
+            />
+            <Input
+              label=""
+              placeholder={getPlaceholder[importType.value]}
+              value={importURL}
+              onChange={(e) => setImportURL(e.target.value)}
+            />
+          </Stack>
+          <Box width="full" marginTop="4">
+            <PrimaryButton
+              onClick={onSubmit}
+              loading={isLoading}
+              disabled={!name}
+            >
+              Create Project
+            </PrimaryButton>
+          </Box>
+        </Stack>
+      </Box>
+    </Modal>
   );
 }
 

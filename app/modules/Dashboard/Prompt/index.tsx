@@ -1,8 +1,5 @@
 import {
   Box,
-  Avatar,
-  Tag,
-  IconCollection,
   Button,
   IconPlusSmall,
   IconLockClosedSolid,
@@ -13,16 +10,10 @@ import {
   Stack,
   useTheme,
 } from "degen";
-import { useDisconnect } from "wagmi";
-import { useGlobal } from "@/app/context/globalContext";
-import { UserType, BucketizedCircleType, CircleType } from "@/app/types";
+import { UserType } from "@/app/types";
 import Link from "next/link";
-import { useQuery } from "react-query";
-import React, { memo, useState, useEffect } from "react";
-import queryClient from "@/app/common/utils/queryClient";
-import { ProjectOutlined } from "@ant-design/icons";
+import React, {useState } from "react";
 import { AnimatePresence } from "framer-motion";
-import { useRouter } from "next/router";
 import CreateCircle from "@/app/modules/Sidebar/CreateCircleModal";
 
 const ProfilePrompt = ({
@@ -32,7 +23,6 @@ const ProfilePrompt = ({
   currentUser: UserType;
   setIsOpen: (open: boolean) => void;
 }) => {
-  const router = useRouter();
 
   const { mode } = useTheme();
   const Visibility =

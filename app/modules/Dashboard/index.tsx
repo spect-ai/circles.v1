@@ -175,7 +175,7 @@ function Dashboard() {
             />
           )}
         </Box>
-        <ProfilePrompt currentUser={currentUser} setIsOpen={setIsOpen}/>
+        {/* <ProfilePrompt currentUser={currentUser} setIsOpen={setIsOpen}/> */}
       </Box>
       <AnimatePresence>
         {isOpen && <ProfileModal setIsOpen={setIsOpen} />}
