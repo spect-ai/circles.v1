@@ -470,6 +470,7 @@ export interface CardDetails {
     id: string;
   }[];
   assignee: {
+    ethAddress: string | undefined;
     username: string;
     avatar: string;
     id: string;

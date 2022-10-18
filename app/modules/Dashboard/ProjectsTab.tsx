@@ -52,9 +52,6 @@ const ProjectCards = ({
                   {project?.name}
                 </Text>
               </Stack>
-              <Box paddingTop={"2"}>
-                <Text color={"textSecondary"}>{project?.description}</Text>
-              </Box>
             </Card>
           </Link>
         </Col>
@@ -72,7 +69,7 @@ function YourProjects({
 }) {
   return (
     <ScrollContainer>
-      <Row>
+      <Row gutterWidth={10}>
         {!isLoading &&
           circles?.map &&
           circles?.map((circle: CircleType) => {
