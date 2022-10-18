@@ -674,6 +674,8 @@ export interface CollectionType {
   mintkudosTokenId: number;
   messageOnSubmission: string;
   unauthorized?: boolean;
+  multipleResponsesAllowed: boolean;
+  updatingResponseAllowed: boolean;
 }
 
 export type Property = {

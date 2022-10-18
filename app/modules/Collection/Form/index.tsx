@@ -1,6 +1,6 @@
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { reorder } from "@/app/common/utils/utils";
-import { updateField } from "@/app/services/Collection";
+import { updateField, updateFormCollection } from "@/app/services/Collection";
 import { Box, Input, Stack, Text, Textarea } from "degen";
 import { useCallback, useEffect, useState } from "react";
 import {
@@ -153,35 +153,15 @@ export function Form() {
                   <PrimaryButton
                     disabled={currMessageOnSubmission === messageOnSubmission}
                     onClick={async () => {
-                      const res = await (
-                        await fetch(
-                          `${process.env.API_HOST}/collection/v1/${collection.id}`,
-                          {
-                            method: "PATCH",
-                            body: JSON.stringify({
-                              messageOnSubmission,
-                            }),
-                            headers: {
-                              "Content-Type": "application/json",
-                            },
-                            credentials: "include",
-                          }
-                        )
-                      ).json();
+                      const res = await updateFormCollection(collection.id, {
+                        messageOnSubmission,
+                      });
                       updateCollection(res);
                     }}
                   >
                     Save
                   </PrimaryButton>
                 </Box>
-
-                {!collection.mintkudosTokenId && (
-                  <Text variant="label">And</Text>
-                )}
-                {collection.mintkudosTokenId && (
-                  <Text variant="label">And send the following kudos</Text>
-                )}
-
                 <SendKudos />
               </Stack>
             </Box>

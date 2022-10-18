@@ -78,6 +78,9 @@ export const updateFormCollection = async (
   update: {
     name?: string;
     description?: string;
+    messageOnSubmission?: string;
+    multipleResponsesAllowed?: boolean;
+    updatingResponseAllowed?: boolean;
   }
 ) => {
   return await (

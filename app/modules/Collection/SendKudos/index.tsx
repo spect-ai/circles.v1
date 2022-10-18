@@ -25,6 +25,7 @@ import { storeImage } from "@/app/common/utils/ipfs";
 import { InfoCircleOutlined } from "@ant-design/icons";
 import { Tooltip } from "react-tippy";
 import styled from "styled-components";
+import { AdditionalSettings } from "../Form/AdditionalSettings";
 
 const ScrollContainer = styled(Box)`
   overflow-x: auto;
@@ -149,6 +150,10 @@ export default function SendKudos() {
 
   return (
     <>
+      {!collection.mintkudosTokenId && <Text variant="label">And</Text>}
+      {collection.mintkudosTokenId && (
+        <Text variant="label">And send the following kudos</Text>
+      )}
       {!loading && kudos.imageUrl && (
         <Box display="flex" flexDirection="row" width="full">
           {" "}
@@ -195,6 +200,10 @@ export default function SendKudos() {
           </Box>
         </Box>
       )}
+      <Text variant="label">Some Additional Stuff</Text>
+      <Stack direction="vertical" space="4">
+        <AdditionalSettings />
+      </Stack>
 
       {!collection.mintkudosTokenId && (
         <Box width="48">

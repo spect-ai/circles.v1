@@ -60,7 +60,7 @@ type Props = {
 function ColumnComponent({ fields }: Props) {
   const { localCollection: collection, updateCollection } =
     useLocalCollection();
-  const [title, setTitle] = useState(collection.name);
+  const [name, setName] = useState(collection.name);
   const [description, setDescription] = useState(collection.description);
   const [isEditFieldOpen, setIsEditFieldOpen] = useState(false);
   const [propertyName, setPropertyName] = useState("");
@@ -96,11 +96,19 @@ function ColumnComponent({ fields }: Props) {
       <Box width="full" height="16" marginBottom="8">
         <Stack direction="vertical">
           <NameInput
-            placeholder="Enter title"
+            placeholder="Enter name"
             autoFocus
-            value={title}
+            value={name}
             onChange={(e) => {
-              setTitle(e.target.value);
+              setName(e.target.value);
+            }}
+            onBlur={async () => {
+              if (connectedUser) {
+                const res = await updateFormCollection(collection.id, {
+                  name,
+                });
+                res.id && updateCollection(res);
+              }
             }}
           />
           <DescriptionInput
