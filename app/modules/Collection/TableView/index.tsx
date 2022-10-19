@@ -206,6 +206,7 @@ export default function TableView() {
         )}
         {isRewardFieldOpen && (
           <RewardModal
+            form={collection}
             propertyName={propertyName}
             handleClose={async (
               reward: Reward,
