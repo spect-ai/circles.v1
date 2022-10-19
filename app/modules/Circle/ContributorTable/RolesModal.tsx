@@ -31,7 +31,7 @@ export function RolesModal({ handleClose, user }: Props) {
             margin="auto"
           >
             {userRoles?.map &&
-              Object.keys((circle as CircleType).roles).map((role) => (
+              Object.keys((circle).roles).map((role) => (
                 <Box
                   key={role}
                   cursor="pointer"
@@ -41,7 +41,7 @@ export function RolesModal({ handleClose, user }: Props) {
                       const newRoles = userRoles.filter((r) => r !== role);
                       setUserRoles(newRoles);
                       const data = await updateMemberRole(
-                        (circle as CircleType).id,
+                        (circle).id,
                         user,
                         {
                           roles: newRoles,
@@ -57,7 +57,7 @@ export function RolesModal({ handleClose, user }: Props) {
                       const newUserRoles = [...userRoles, role];
                       setUserRoles(newUserRoles);
                       const data = await updateMemberRole(
-                        (circle as CircleType).id,
+                        (circle).id,
                         user,
                         {
                           roles: newUserRoles,
@@ -93,7 +93,7 @@ export function RolesModal({ handleClose, user }: Props) {
             tone="red"
             icon={<IconClose />}
             onClick={async () => {
-              const data = await removeMember((circle as CircleType).id, user);
+              const data = await removeMember((circle).id, user);
               if (data) {
                 queryClient.setQueryData(["circle", cId], data);
               }

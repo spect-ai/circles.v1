@@ -5,11 +5,9 @@ import {
   Box,
   Button,
   Stack,
-  Text,
   useTheme,
   Input,
   IconSearch,
-  IconCollection,
   IconGrid,
 } from "degen";
 import { AnimatePresence } from "framer-motion";
@@ -25,6 +23,8 @@ import InviteMemberModal from "../ContributorsModal/InviteMembersModal";
 import { TypeView } from "./TypeView";
 import { FolderView } from "./FolderView";
 import Breadcrumbs from "@/app/common/components/Breadcrumbs";
+import Roles from "../RolesTab";
+import { FolderOpenOutlined } from "@ant-design/icons";
 
 interface Props {
   toggle: string;
@@ -57,7 +57,7 @@ const Toggle: FunctionComponent<Props> = ({ toggle, setToggle }) => {
         display: "block",
         padding: "0.2rem",
         borderRadius: "2rem",
-        width: "13.6rem",
+        width: "20rem",
         margin: "0rem auto",
         marginBottom: "0.5rem",
         boxShadow: `0px 1px 5px ${
@@ -75,14 +75,21 @@ const Toggle: FunctionComponent<Props> = ({ toggle, setToggle }) => {
         onClick={() => setToggle("Members")}
         bgcolor={toggle == "Members" ? true : false}
       >
-        Members
+        Contributors
+      </ToggleButton>
+      <ToggleButton
+        onClick={() => setToggle("Roles")}
+        bgcolor={toggle == "Roles" ? true : false}
+      >
+        Roles
       </ToggleButton>
     </Box>
   );
 };
 
 export default function CircleOverview() {
-  const { isSidebarExpanded, groupBy, setGroupBy } = useGlobal();
+  const { isSidebarExpanded, groupBy, setGroupBy, toggle, setToggle } =
+    useGlobal();
   const router = useRouter();
   const { circle: cId, retroSlug } = router.query;
   const {
@@ -90,13 +97,10 @@ export default function CircleOverview() {
     setIsBatchPayOpen,
     isBatchPayOpen,
     retro,
-    loading,
     navigationBreadcrumbs,
   } = useCircle();
   const { canDo } = useRoleGate();
   const [isRetroOpen, setIsRetroOpen] = useState(false);
-  const [toggle, setToggle] =
-    useState<"Overview" | "Members" | "Roles">("Overview");
   const [filteredProjects, setFilteredProjects] = useState(circle?.projects);
   const [filteredCollections, setFilteredCollections] = useState(
     circle?.collections
@@ -117,26 +121,6 @@ export default function CircleOverview() {
       setIsRetroOpen(true);
     }
   }, [retroSlug]);
-
-  if (circle?.unauthorized)
-    return (
-      <>
-        <Text size="headingTwo" weight="semiBold" ellipsis>
-          This circle is private
-        </Text>
-        <Button
-          size="large"
-          variant="transparent"
-          onClick={() => router.back()}
-        >
-          <Text size="extraLarge">Go Back</Text>
-        </Button>
-      </>
-    );
-
-  if (loading) {
-    return null;
-  }
 
   return (
     <>
@@ -179,7 +163,7 @@ export default function CircleOverview() {
               >
                 <Input
                   label=""
-                  placeholder="Search anything .."
+                  placeholder="Search projects, workstreams, retros"
                   prefix={<IconSearch />}
                   onChange={(e) => {
                     const proj = matchSorter(
@@ -233,11 +217,11 @@ export default function CircleOverview() {
                   {groupBy == "Type" ? (
                     <IconGrid size={"4"} />
                   ) : (
-                    <IconCollection size={"4"} />
+                    <FolderOpenOutlined style={{ fontSize: "1.1rem" }}/>
                   )}
                 </Button>
                 {canDo("inviteMembers") && (
-                  <Box width={"1/3"} marginTop="2">
+                  <Box width={"1/3"} marginBottom="1">
                     <InviteMemberModal />
                   </Box>
                 )}
@@ -263,6 +247,7 @@ export default function CircleOverview() {
             </Stack>
           )}
           {toggle == "Members" && <CircleMembers />}
+          {toggle == "Roles" && <Roles />}
         </Box>
       </Stack>
     </>

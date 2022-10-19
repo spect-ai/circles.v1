@@ -15,14 +15,14 @@ import {
 import { AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { memo, useState } from "react";
+import { memo, useState, useEffect } from "react";
 import { useQuery } from "react-query";
 import { toast } from "react-toastify";
 import styled from "styled-components";
 import { useCircle } from "../Circle/CircleContext";
 import SettingsModal from "../Circle/CircleSettingsModal";
 import ContributorsModal from "../Circle/ContributorsModal";
-import CreateRetroModal from "../Retro/CreateRetro/CreateRetroModal";
+import CreateRetroModal from "../Retro/CreateRetro";
 import CircleOptions from "./CircleOptions";
 import CollapseButton from "./CollapseButton";
 import ExploreSidebar, { HeaderButton } from "./ExploreSidebar";
@@ -41,10 +41,7 @@ export const Container = styled(Box)<{ subH?: string }>`
 function CircleSidebar() {
   const router = useRouter();
   const { circle: cId, project: pId } = router.query;
-  const { data: circle, isLoading } = useQuery<CircleType>(["circle", cId], {
-    enabled: false,
-  });
-  const { setCircleData, setMemberDetailsData } = useCircle();
+  const { setCircleData, setMemberDetailsData, circle, isLoading } = useCircle();
 
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [isContributorsModalOpen, setIsContributorsModalOpen] = useState(false);
@@ -185,9 +182,7 @@ function CircleSidebar() {
                       <Stack key={content} direction="horizontal" space="0">
                         <Box width="full" padding="1">
                           {circle?.children?.[content] && content && (
-                            <Link
-                              href={`/${circle?.children?.[content].slug}`}
-                            >
+                            <Link href={`/${circle?.children?.[content].slug}`}>
                               <PrimaryButton
                                 variant={
                                   pId === circle?.children?.[content].slug
@@ -210,7 +205,11 @@ function CircleSidebar() {
                                     ? "tertiary"
                                     : "transparent"
                                 }
-                                icon={<ProjectOutlined style={{ fontSize: "1.1rem" }} />}
+                                icon={
+                                  <ProjectOutlined
+                                    style={{ fontSize: "1.1rem" }}
+                                  />
+                                }
                               >
                                 {circle?.projects?.[content].name}
                               </PrimaryButton>
@@ -239,7 +238,6 @@ function CircleSidebar() {
                 </Accordian>
               );
             })}
-            
           </Stack>
         </Container>
       </Stack>
@@ -248,56 +246,3 @@ function CircleSidebar() {
 }
 
 export default memo(CircleSidebar);
-
-{/* <Accordian
-              name="Projects"
-              defaultOpen
-              icon={<ProjectOutlined style={{ fontSize: "1.3rem" }} />}
-            >
-              <Stack space="0">
-                {circle?.projects &&
-                  Object.values(circle?.projects).map((proj) => (
-                    <Stack key={proj.id} direction="horizontal" space="0">
-                      {/* <Box borderRightWidth="0.5" /> */}
-            //           <Box width="full" padding="1">
-            //             <Link href={`/${cId}/${proj.slug}`}>
-            //               <PrimaryButton
-            //                 variant={
-            //                   pId === proj.slug ? "tertiary" : "transparent"
-            //                 }
-            //               >
-            //                 {proj.name}
-            //               </PrimaryButton>
-            //             </Link>
-            //           </Box>
-            //         </Stack>
-            //       ))}
-            //     {circle?.projects && !Object.values(circle?.projects).length && (
-            //       <Box paddingLeft="7" paddingY="2">
-            //         <Text variant="label">No projects created</Text>
-            //       </Box>
-            //     )}
-            //   </Stack>
-            // </Accordian>
-            // <Accordian name="Workstreams" defaultOpen icon={<IconUserGroup />}>
-            //   <Stack space="0">
-            //     {circle?.children &&
-            //       Object.values(circle?.children).map((space) => (
-            //         <Stack key={space.id} direction="horizontal" space="0">
-            //           {/* <Box borderRightWidth="0.5" /> */}
-            //           <Box width="full" padding="1">
-            //             <Link href={`/${space.slug}`} key={space.id}>
-            //               <PrimaryButton variant="transparent">
-            //                 {space.name}
-            //               </PrimaryButton>
-            //             </Link>
-            //           </Box>
-            //         </Stack>
-            //       ))}
-            //     {circle?.children && !Object.values(circle?.children).length && (
-            //       <Box paddingLeft="7" paddingY="2">
-            //         <Text variant="label">No workstreams created</Text>
-            //       </Box>
-            //     )}
-            //   </Stack>
-            // </Accordian> */}

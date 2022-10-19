@@ -52,7 +52,7 @@ export default function SettingsModal({ handleClose, initialTab }: Props) {
         avatar: logo,
         private: visibilityTab === 1,
       },
-      circle?.id as string
+      circle?.id
     );
     setIsLoading(false);
     if (res) {
@@ -62,7 +62,7 @@ export default function SettingsModal({ handleClose, initialTab }: Props) {
   };
 
   const onDelete = async () => {
-    const res = await deleteCircle(circle?.id as string);
+    const res = await deleteCircle(circle?.id);
     if (res) {
       handleClose();
       void router.push("/");
