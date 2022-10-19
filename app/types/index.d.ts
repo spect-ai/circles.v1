@@ -734,3 +734,42 @@ export type GuildRole = {
   id: number;
   name: string;
 };
+
+export interface FormType {
+  name: string;
+  circleId: string;
+  slug: string;
+  private: boolean;
+  description: string;
+  properties: {
+    [key: string]: {
+      type: string;
+      name: string;
+      default: string;
+      isPartOfFormView: boolean;
+      options?: {
+        label: string;
+        value: string;
+      }[];
+    };
+  };
+  propertyOrder: string[];
+  creator: string;
+  parents: {
+    id: string;
+    name: string;
+    slug: string;
+  }[];
+  defaultView: string;
+  formRoleGating: number[];
+  canFillForm: boolean;
+  mintkudosTokenId: number;
+  messageOnSubmission: string;
+  kudosClaimedByUser: boolean;
+  multipleResponsesAllowed: boolean;
+  updatingResponseAllowed: boolean;
+  previousResponses: MappedItem<object>;
+  createdAt: string;
+  updatedAt: string;
+  id: string;
+}

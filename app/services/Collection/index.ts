@@ -174,3 +174,33 @@ export const deleteCollectionData = async (
     )
   ).json();
 };
+
+export const getForm = async (formId: string) => {
+  return await (
+    await fetch(`${process.env.API_HOST}/collection/v1/slug/${formId}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+    })
+  ).json();
+};
+
+export const addData = async (collectionId: string, data: any) => {
+  return await (
+    await fetch(
+      `${process.env.API_HOST}/collection/v1/${collectionId}/addData`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          data,
+        }),
+        credentials: "include",
+      }
+    )
+  ).json();
+};

@@ -8,23 +8,23 @@ import { Box, Input, Stack, Tag, Text } from "degen";
 import { useRouter } from "next/router";
 import React, { memo, useState } from "react";
 import { useQuery } from "react-query";
-import { useLocalCollection } from "../Context/LocalCollectionContext";
 
 type Props = {
-  dataId: string;
+  form: any;
+  dataId?: string;
   propertyName: string;
   handleClose: (reward: Reward, dataId: string, propertyName: string) => void;
 };
 
-function RewardModal({ propertyName, dataId, handleClose }: Props) {
-  const router = useRouter();
-  const { circle: cId } = router.query;
-  const { data: registry } = useQuery<Registry>(["registry", cId], {
-    enabled: false,
-  });
+function RewardModal({ propertyName, dataId, handleClose, form }: Props) {
+  const { data: registry } = useQuery<Registry>(
+    ["registry", form.parents[0].slug],
+    {
+      enabled: false,
+    }
+  );
 
-  const { localCollection: collection } = useLocalCollection();
-  const reward = collection?.data[dataId][propertyName];
+  const reward = dataId ? form?.data[dataId][propertyName] : undefined;
 
   const [chain, setChain] = useState(
     reward?.chain || (registry && registry["137"])
@@ -41,7 +41,7 @@ function RewardModal({ propertyName, dataId, handleClose }: Props) {
             token,
             value: parseFloat(value),
           },
-          dataId,
+          dataId || "",
           propertyName
         );
       }}

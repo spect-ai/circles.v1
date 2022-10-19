@@ -24,7 +24,6 @@ import {
 import { useQuery } from "react-query";
 import styled from "styled-components";
 import { useLocalCollection } from "../../Context/LocalCollectionContext";
-import RewardComponent from "../../TableView/RewardModal";
 
 type Props = {
   id: string;
@@ -252,6 +251,11 @@ export const DateInput = styled.input<{ mode: string }>`
     props.mode === "dark" ? "rgb(20,20,20)" : "rgb(255, 255, 255)"};
   width: 100%;
   color: ${(props) =>
-    props.mode === "dark" ? "rgb(255, 255, 255,0.7)" : "rgb(20,20,20,0.7)"}
+    props.mode === "dark" ? "rgb(255, 255, 255,0.7)" : "rgb(20,20,20,0.7)"};
   margin-top: 10px;
+  outline: none;
+  &:focus {
+    border-color: rgb(191, 90, 242, 1);
+  }
+  transition: border-color 0.5s ease;
 `;
