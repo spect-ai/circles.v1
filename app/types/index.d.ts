@@ -692,6 +692,7 @@ export type Property = {
 
 export type PropertyType =
   | "shortText"
+  | "email"
   | "longText"
   | "number"
   | "user[]"

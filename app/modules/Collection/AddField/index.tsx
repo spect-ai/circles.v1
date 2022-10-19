@@ -53,13 +53,17 @@ export default function AddField({ propertyName, handleClose }: Props) {
       //   )
       // );
       const property = collection.properties[propertyName];
+
       setType({
         label:
-          fields.find((field) => field.value === property.type)?.label || "",
-        value: property.type,
+          fields.find((field) => field.value === property?.type)?.label || "",
+        value: property?.type,
       });
-      if (property.type === "singleSelect" || property.type === "multiSelect") {
-        setFieldOptions(property.options || []);
+      if (
+        property.type === "singleSelect" ||
+        property?.type === "multiSelect"
+      ) {
+        setFieldOptions(property?.options || []);
       }
       if (property.type === "user") {
         setUserType(property.userType);

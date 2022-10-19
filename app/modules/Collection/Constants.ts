@@ -2,6 +2,7 @@ export const fields = [
   { label: "Short Text", value: "shortText" },
   { label: "Long Text", value: "longText" },
   { label: "Number", value: "number" },
+  { label: "Email", value: "email" },
   { label: "Multiple Users", value: "user[]" },
   { label: "Single User", value: "user" },
   { label: "Reward", value: "reward" },

@@ -120,6 +120,15 @@ function FieldComponent({
           // onChange={(e) => setLabel(e.target.value)}
         />
       )}
+      {collection.properties[id]?.type === "email" && (
+        <Input
+          label=""
+          placeholder={`Enter ${collection.properties[id]?.name}`}
+          value={collection.data && collection.data[id]}
+          inputMode="email"
+          // onChange={(e) => setLabel(e.target.value)}
+        />
+      )}
       {collection.properties[id]?.type === "number" && (
         <Input
           label=""

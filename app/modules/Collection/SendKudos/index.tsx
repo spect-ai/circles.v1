@@ -199,10 +199,6 @@ export default function SendKudos() {
           </Box>
         </Box>
       )}
-      <Text variant="label">Some Additional Stuff</Text>
-      <Stack direction="vertical" space="4">
-        <AdditionalSettings />
-      </Stack>
 
       {!collection.mintkudosTokenId && (
         <Box width="48">

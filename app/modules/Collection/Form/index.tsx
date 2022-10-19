@@ -14,6 +14,7 @@ import { TextArea } from "../../Card/Activity/Comment";
 import { SkeletonLoader } from "../../Explore/SkeletonLoader";
 import { useLocalCollection } from "../Context/LocalCollectionContext";
 import SendKudos from "../SendKudos";
+import { AdditionalSettings } from "./AdditionalSettings";
 import ColumnComponent from "./ColumnComponent";
 import InactiveFieldsColumnComponent from "./InactiveFieldsColumn";
 
@@ -163,6 +164,10 @@ export function Form() {
                   </PrimaryButton>
                 </Box>
                 <SendKudos />
+                <Text variant="label">Some Additional Stuff</Text>
+                <Stack direction="vertical" space="4">
+                  <AdditionalSettings />
+                </Stack>
               </Stack>
             </Box>
           </ScrollContainer>

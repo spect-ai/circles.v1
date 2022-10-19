@@ -83,6 +83,7 @@ export const updateFormCollection = async (
     messageOnSubmission?: string;
     multipleResponsesAllowed?: boolean;
     updatingResponseAllowed?: boolean;
+    sendConfirmationEmail?: boolean;
   }
 ) => {
   return await (

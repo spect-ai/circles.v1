@@ -112,6 +112,18 @@ export default function DataModal() {
                   }}
                 />
               )}
+              {property?.type === "email" && (
+                <Input
+                  label=""
+                  placeholder={`Enter ${property?.name}`}
+                  value={data[property.name]}
+                  onChange={(e) => {
+                    data[property.name] = e.target.value;
+                    setData({ ...data });
+                  }}
+                  inputMode="email"
+                />
+              )}
               {property?.type === "longText" && (
                 <Box
                   marginTop="4"
