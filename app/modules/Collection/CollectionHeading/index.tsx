@@ -10,6 +10,7 @@ import {
   Text,
   useTheme,
 } from "degen";
+import { useRouter } from "next/router";
 import { memo } from "react";
 import Skeleton from "react-loading-skeleton";
 import { toast } from "react-toastify";
@@ -31,6 +32,7 @@ function CollectionHeading() {
     setView,
   } = useLocalCollection();
   const { mode } = useTheme();
+  const router = useRouter();
 
   return (
     <Box
@@ -89,10 +91,7 @@ function CollectionHeading() {
                   // icon={<IconDocuments />}
                   variant={"transparent"}
                   onClick={() => {
-                    window.open(
-                      `https://spect.network/form/${collection?.slug}`,
-                      "_blank"
-                    );
+                    void router.push(`/r/${collection?.slug}`);
                   }}
                 >
                   Preview

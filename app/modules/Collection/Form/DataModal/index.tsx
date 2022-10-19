@@ -81,6 +81,7 @@ export default function DataModal() {
               }}
               dataId={dataId as string}
               propertyName={propertyName}
+              form={collection}
             />
           )}
         </AnimatePresence>

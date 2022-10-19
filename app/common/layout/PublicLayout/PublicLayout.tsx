@@ -1,4 +1,4 @@
-import React, { memo } from "react";
+import React, { memo, useEffect } from "react";
 
 import { ReactNodeNoStrings } from "degen/dist/types/types";
 import { Box, Text, useTheme } from "degen";
@@ -10,6 +10,7 @@ import { useGlobal } from "@/app/context/globalContext";
 
 type PublicLayoutProps = {
   children: ReactNodeNoStrings;
+  hideSidebar?: boolean;
 };
 
 const Container = styled(Box)<{ issidebarexpanded: boolean }>`
@@ -43,19 +44,10 @@ const MobileContainer = styled(Box)`
 `;
 
 function PublicLayout(props: PublicLayoutProps) {
-  const { children } = props;
+  const { children, hideSidebar } = props;
   const { isSidebarExpanded } = useGlobal();
 
   const { mode } = useTheme();
-
-  // const { connect, connectors, isConnected } = useConnect();
-
-  // useEffect(() => {
-  //   if (localStorage.getItem("connectorIndex") && !isConnected) {
-  //     const index = parseInt(localStorage.getItem("connectorIndex") as string);
-  //     connect(connectors[index]);
-  //   }
-  // }, [connect, connectors, isConnected]);
 
   return (
     <>
@@ -64,18 +56,24 @@ function PublicLayout(props: PublicLayoutProps) {
         id="public-layout"
       >
         <Sidebar />
-        <AnimatePresence initial={false}>
-          {isSidebarExpanded && <ExtendedSidebar />}
-        </AnimatePresence>
+        {!hideSidebar && (
+          <AnimatePresence initial={false}>
+            {isSidebarExpanded && <ExtendedSidebar />}
+          </AnimatePresence>
+        )}
         <Box
           display="flex"
           flexDirection="column"
           width="full"
           overflow="hidden"
         >
-          <Container issidebarexpanded={isSidebarExpanded}>
-            {children}
-          </Container>
+          {!hideSidebar ? (
+            <Container issidebarexpanded={isSidebarExpanded}>
+              {children}
+            </Container>
+          ) : (
+            <Box flexGrow={1}>{children}</Box>
+          )}
         </Box>
       </DesktopContainer>
       <MobileContainer
