@@ -40,6 +40,7 @@ const Card = styled(Box)<{ mode: string }>`
   position: relative;
   cursor: pointer;
   transition: all 0.3s ease-in-out;
+  margin-bottom: 0.5rem;
 `;
 
 const groupByCircles = (
