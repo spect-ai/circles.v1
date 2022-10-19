@@ -22,9 +22,10 @@ const ToggleButton = styled.button<{ bgcolor: boolean }>`
   font-weight: 600;
   font-family: Inter;
   transition-duration: 0.4s;
-  color: ${(props) => (props.bgcolor ? "white" : "rgb(191,90,242)")};
+  color: ${(props) =>
+    props.bgcolor ? "rgb(191,90,242)" : "rgb(191,90,242,0.8)"};
   background-color: ${(props) =>
-    props.bgcolor ? "rgb(191,90,242)" : "transparent"};
+    props.bgcolor ? "rgb(191,90,242,0.1)" : "transparent"};
 `;
 
 export const Paginate = styled(ReactPaginate)<{ mode: string }>`
@@ -73,37 +74,35 @@ export const Toggle: FunctionComponent<Props> = ({ toggle, setToggle }) => {
   const { mode } = useTheme();
 
   return (
-    <>
-      <Box
-        backgroundColor={mode === "dark" ? "background" : "white"}
-        style={{
-          display: "block",
-          padding: "0.2rem",
-          borderRadius: "2rem",
-          margin: "0.7rem 140px",
-          boxShadow: "0px 1px 3px rgba(0, 0, 0, 0.2)",
-        }}
+    <Box
+      backgroundColor={mode === "dark" ? "background" : "white"}
+      style={{
+        display: "block",
+        padding: "0.2rem",
+        borderRadius: "2rem",
+        margin: "0.7rem auto",
+        boxShadow: "0px 1px 3px rgba(0, 0, 0, 0.2)",
+      }}
+    >
+      <ToggleButton
+        onClick={() => setToggle("Assignee")}
+        bgcolor={toggle == "Assignee" ? true : false}
       >
-        <ToggleButton
-          onClick={() => setToggle("Assignee")}
-          bgcolor={toggle == "Assignee" ? true : false}
-        >
-          As Assignee
-        </ToggleButton>
-        <ToggleButton
-          onClick={() => setToggle("Reviewer")}
-          bgcolor={toggle == "Reviewer" ? true : false}
-        >
-          As Reviewer
-        </ToggleButton>
-        <ToggleButton
-          onClick={() => setToggle("Applicant")}
-          bgcolor={toggle == "Applicant" ? true : false}
-        >
-          As Applicant
-        </ToggleButton>
-      </Box>
-    </>
+        As Assignee
+      </ToggleButton>
+      <ToggleButton
+        onClick={() => setToggle("Reviewer")}
+        bgcolor={toggle == "Reviewer" ? true : false}
+      >
+        As Reviewer
+      </ToggleButton>
+      <ToggleButton
+        onClick={() => setToggle("Applicant")}
+        bgcolor={toggle == "Applicant" ? true : false}
+      >
+        As Applicant
+      </ToggleButton>
+    </Box>
   );
 };
 

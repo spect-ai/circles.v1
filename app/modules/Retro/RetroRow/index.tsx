@@ -30,7 +30,7 @@ export default function RetroRow({ retro }: Props) {
       }}
     >
       <RowContainer
-        width="full"
+        width="3/4"
         borderWidth="0.375"
         borderRadius="2xLarge"
         paddingY="4"

@@ -32,6 +32,12 @@ interface UserType {
   followedUsers: string[];
   followedByUsers: string[];
   userDetails: any;
+  circleDetails: {
+    [key: string]: {
+      slug: string;
+      avatar: string;
+    }
+  }
 }
 
 export interface Payment {
@@ -470,6 +476,7 @@ export interface CardDetails {
     id: string;
   }[];
   assignee: {
+    ethAddress: string | undefined;
     username: string;
     avatar: string;
     id: string;

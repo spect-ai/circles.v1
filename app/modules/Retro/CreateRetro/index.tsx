@@ -1,60 +1,63 @@
-import {
-  Box,
-  Button,
-  IconPlusSmall,
-  IconLightningBolt,
-  useTheme,
-  Text,
-} from "degen";
+import Modal from "@/app/common/components/Modal";
+import { Chain, Token } from "@/app/types";
+import { Box } from "degen";
 import { AnimatePresence } from "framer-motion";
 import React, { useState } from "react";
-import CreateRetroModal from "./CreateRetroModal";
-import { Tooltip } from "react-tippy";
+import RetroBudget from "./RetroBudget";
+import RetroDetails, { RetroForm } from "./RetroDetails";
+import RetroMembers from "./RetroMembers";
 
-export default function CreateRetro({ folderId }: { folderId?: string }) {
-  const { mode } = useTheme();
-  const [isOpen, setIsOpen] = useState(false);
+type Props = {
+  handleClose: () => void;
+  folderId?: string | undefined;
+};
+
+export default function CreateRetroModal({ handleClose, folderId }: Props) {
+  const [step, setStep] = useState(0);
+  const [details, setDetails] = useState<RetroForm | undefined>();
+  const [budget, setBudget] = useState<{
+    chain: Chain;
+    token: Token;
+    value: string;
+  }>({} as any);
+
   return (
-    <>
-      {folderId ? (
-        <Tooltip html={<Text>Create Retro</Text>} theme={mode}>
-          <Button
-            size="small"
-            variant="transparent"
-            shape="circle"
-            onClick={(e) => {
-              e.stopPropagation();
-              setIsOpen(true);
-            }}
-          >
-            <IconLightningBolt size={"4"} color="accent" />
-          </Button>
-        </Tooltip>
-      ) : (
-        <Box marginTop="1">
-          <Button
-            data-tour="circle-create-workstream-button"
-            size="small"
-            variant="transparent"
-            shape="circle"
-            onClick={(e) => {
-              e.stopPropagation();
-              setIsOpen(true);
-            }}
-          >
-            <IconPlusSmall />
-          </Button>
-        </Box>
-      )}
-
-      <AnimatePresence>
-        {isOpen && (
-          <CreateRetroModal
-            handleClose={() => setIsOpen(false)}
-            folderId={folderId}
-          />
-        )}
-      </AnimatePresence>
-    </>
+    <Modal
+      title="Start Retro"
+      handleClose={handleClose}
+      size="large"
+      zIndex={2}
+    >
+      <Box
+        padding="8"
+        style={{
+          height: "35rem",
+        }}
+      >
+        <AnimatePresence exitBeforeEnter>
+          {step === 0 && (
+            <RetroDetails
+              setStep={setStep}
+              key="details"
+              setDetails={setDetails}
+              details={details}
+            />
+          )}
+          {step === 1 && (
+            <RetroBudget setStep={setStep} key="budget" setBudget={setBudget} />
+          )}
+          {step === 2 && (
+            <RetroMembers
+              handleClose={handleClose}
+              setStep={setStep}
+              key="members"
+              retroDetails={details}
+              retroBudget={budget}
+              folderId={folderId}
+            />
+          )}
+        </AnimatePresence>
+      </Box>
+    </Modal>
   );
 }
