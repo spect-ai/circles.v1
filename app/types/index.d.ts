@@ -32,6 +32,12 @@ interface UserType {
   followedUsers: string[];
   followedByUsers: string[];
   userDetails: any;
+  circleDetails: {
+    [key: string]: {
+      slug: string;
+      avatar: string;
+    }
+  }
 }
 
 export interface Payment {

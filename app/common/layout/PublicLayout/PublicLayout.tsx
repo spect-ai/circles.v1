@@ -13,7 +13,6 @@ import { UserType } from "@/app/types";
 import { toast } from "react-toastify";
 import ConnectPage from "./ConnectPage";
 
-
 type PublicLayoutProps = {
   children?: ReactNodeNoStrings;
 };
@@ -102,7 +101,9 @@ function PublicLayout(props: PublicLayoutProps) {
         backgroundColor={mode === "dark" ? "background" : "backgroundSecondary"}
         id="public-layout"
       >
-        {connectedUser ? (
+        {!connectedUser && !currentUser?.id ? (
+          <ConnectPage />
+        ) : (
           <>
             <Sidebar />
             <AnimatePresence initial={false}>
@@ -119,8 +120,6 @@ function PublicLayout(props: PublicLayoutProps) {
               </Container>
             </Box>
           </>
-        ) : (
-          <ConnectPage />
         )}
       </DesktopContainer>
       <MobileContainer

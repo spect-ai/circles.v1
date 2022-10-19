@@ -2,10 +2,12 @@ import { PriorityIcon } from "@/app/common/components/PriorityIcon";
 import { monthMap } from "@/app/common/utils/constants";
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
 import { CardType, MemberDetails } from "@/app/types";
+import { EnterOutlined } from "@ant-design/icons";
 import {
   Avatar,
   AvatarGroup,
   Box,
+  Button,
   IconEth,
   Stack,
   Tag,
@@ -66,7 +68,9 @@ function CardComponent({ card, index }: Props) {
 
   const getCircleLogo = useCallback(
     (circleId: string) => {
-      const ci = circle?.children && Object.values(circle?.children).find((c) => c.id === circleId);
+      const ci =
+        circle?.children &&
+        Object.values(circle?.children).find((c) => c.id === circleId);
       return ci?.avatar;
     },
     [circle?.children]
@@ -114,6 +118,17 @@ function CardComponent({ card, index }: Props) {
             )}
           </Stack>
         </Box>
+        {card.children.length > 0 && (
+          <Tag size="small" hover>
+            <Stack direction="horizontal" space="0.5" align="center">
+              <EnterOutlined
+                style={{ transform: "rotateY(180deg)", fontSize: "0.8rem" }}
+              />
+              <Text color="textSecondary">{card.children.length}</Text>
+            </Stack>
+          </Tag>
+        )}
+
         <Stack direction="horizontal" wrap space="2">
           {card.status.paid && (
             <Tag size="small" tone="green">
@@ -138,7 +153,7 @@ function CardComponent({ card, index }: Props) {
           {card.deadline && (
             <Tag size="small">
               <Text color="accent">
-                {deadline.getDate()}{" "}
+                {deadline.getDate()}
                 {monthMap[deadline.getMonth() as keyof typeof monthMap]}
               </Text>
             </Tag>
