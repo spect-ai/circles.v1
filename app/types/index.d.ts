@@ -676,6 +676,8 @@ export interface CollectionType {
   unauthorized?: boolean;
   multipleResponsesAllowed: boolean;
   updatingResponseAllowed: boolean;
+  circleRolesToNotifyUponUpdatedResponse: string[];
+  circleRolesToNotifyUponNewResponse: string[];
 }
 
 export type Property = {

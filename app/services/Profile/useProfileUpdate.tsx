@@ -5,6 +5,7 @@ interface UpdateProfileDTO {
   username?: string;
   avatar?: string;
   bio?: string;
+  email?: string;
   skills?: string[];
   discordId?: string;
   githubId?: string;

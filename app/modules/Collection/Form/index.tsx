@@ -17,6 +17,7 @@ import SendKudos from "../SendKudos";
 import { AdditionalSettings } from "./AdditionalSettings";
 import ColumnComponent from "./ColumnComponent";
 import InactiveFieldsColumnComponent from "./InactiveFieldsColumn";
+import { Notifications } from "./Notifications";
 
 const Container = styled.div`
   display: flex;
@@ -164,10 +165,8 @@ export function Form() {
                   </PrimaryButton>
                 </Box>
                 <SendKudos />
-                <Text variant="label">Some Additional Stuff</Text>
-                <Stack direction="vertical" space="4">
-                  <AdditionalSettings />
-                </Stack>
+                <AdditionalSettings />
+                <Notifications />
               </Stack>
             </Box>
           </ScrollContainer>

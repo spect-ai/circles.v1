@@ -1,6 +1,7 @@
 import { useGlobal } from "@/app/context/globalContext";
+import { useCircle } from "@/app/modules/Circle/CircleContext";
 import { updateFormCollection } from "@/app/services/Collection";
-import { Box, Text } from "degen";
+import { Box, Stack, Tag, Text } from "degen";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { useLocalCollection } from "../../Context/LocalCollectionContext";
@@ -28,7 +29,6 @@ export function AdditionalSettings() {
   const [multipleResponsesAllowed, setMultipleResponsesAllowed] =
     useState(false);
   const [updatingResponseAllowed, setUpdatingResponseAllowed] = useState(false);
-  const [sendConfirmationEmail, setSendConfirmationEmail] = useState(false);
 
   const { localCollection: collection, updateCollection } =
     useLocalCollection();
@@ -40,73 +40,57 @@ export function AdditionalSettings() {
   }, [collection]);
 
   return (
-    <Box display="flex" flexDirection="column" gap="1">
-      <Box
-        display="flex"
-        flexDirection="row"
-        gap="2"
-        justifyContent="flex-start"
-        alignItems="center"
-      >
-        <Input
-          type="checkbox"
-          checked={multipleResponsesAllowed}
-          onChange={async () => {
-            if (connectedUser) {
-              setMultipleResponsesAllowed(!multipleResponsesAllowed);
+    <>
+      <Text variant="label">Some Additional Stuff</Text>
+      <Stack direction="vertical" space="4">
+        <Box display="flex" flexDirection="column" gap="1">
+          <Box
+            display="flex"
+            flexDirection="row"
+            gap="2"
+            justifyContent="flex-start"
+            alignItems="center"
+          >
+            <Input
+              type="checkbox"
+              checked={multipleResponsesAllowed}
+              onChange={async () => {
+                if (connectedUser) {
+                  setMultipleResponsesAllowed(!multipleResponsesAllowed);
 
-              const res = await updateFormCollection(collection.id, {
-                multipleResponsesAllowed: !multipleResponsesAllowed,
-              });
-            }
-          }}
-        />
-        <Text variant="label">Allow multiple responses</Text>
-      </Box>
-      <Box
-        display="flex"
-        flexDirection="row"
-        gap="2"
-        justifyContent="flex-start"
-        alignItems="center"
-      >
-        <Input
-          type="checkbox"
-          checked={updatingResponseAllowed}
-          onChange={async (e) => {
-            if (connectedUser) {
-              setUpdatingResponseAllowed(!updatingResponseAllowed);
-              const res = await updateFormCollection(collection.id, {
-                updatingResponseAllowed: !updatingResponseAllowed,
-              });
-            }
-          }}
-        />
-        <Text variant="label">Allow changing responses after submission</Text>
-      </Box>
-      <Box
-        display="flex"
-        flexDirection="row"
-        gap="2"
-        justifyContent="flex-start"
-        alignItems="center"
-      >
-        <Input
-          type="checkbox"
-          checked={sendConfirmationEmail}
-          onChange={async (e) => {
-            if (connectedUser) {
-              setSendConfirmationEmail(!sendConfirmationEmail);
-              const res = await updateFormCollection(collection.id, {
-                sendConfirmationEmail: !sendConfirmationEmail,
-              });
-            }
-          }}
-        />
-        <Text variant="label">
-          Send a confirmation email to the email added in the form
-        </Text>
-      </Box>
-    </Box>
+                  const res = await updateFormCollection(collection.id, {
+                    multipleResponsesAllowed: !multipleResponsesAllowed,
+                  });
+                }
+              }}
+            />
+            <Text variant="small">Allow multiple responses</Text>
+          </Box>
+          <Box
+            display="flex"
+            flexDirection="row"
+            gap="2"
+            justifyContent="flex-start"
+            alignItems="center"
+          >
+            <Input
+              type="checkbox"
+              checked={updatingResponseAllowed}
+              onChange={async (e) => {
+                if (connectedUser) {
+                  setUpdatingResponseAllowed(!updatingResponseAllowed);
+                  const res = await updateFormCollection(collection.id, {
+                    updatingResponseAllowed: !updatingResponseAllowed,
+                  });
+                }
+              }}
+            />
+            <Text variant="small">
+              Allow changing responses after submission
+            </Text>
+          </Box>
+        </Box>
+      </Stack>
+    </>
   );
 }

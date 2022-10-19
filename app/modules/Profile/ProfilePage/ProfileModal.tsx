@@ -37,6 +37,7 @@ export default function ProfileModal({ setIsOpen }: Props) {
   const [avatar, setAvatar] = useState("");
   const [username, setUsername] = useState("");
   const [bio, setBio] = useState("");
+  const [email, setEmail] = useState("");
   const [skills, setSkills] = useState([] as string[]);
 
   const [isDirty, setIsDirty] = useState(false);
@@ -104,6 +105,7 @@ export default function ProfileModal({ setIsOpen }: Props) {
               setUsername(e.target.value);
               setIsDirty(true);
             }}
+            required
           />
           <Stack direction="horizontal" justify="space-between">
             <Text variant="label">Bio</Text>
@@ -118,6 +120,20 @@ export default function ProfileModal({ setIsOpen }: Props) {
             value={bio}
             onChange={(e) => {
               setBio(e.target.value);
+              setIsDirty(true);
+            }}
+          />
+          <Text variant="label">Email</Text>
+          <Input
+            label
+            hideLabel
+            placeholder="Email"
+            inputMode="email"
+            type="email"
+            error={email.length > 0 && !email.includes("@")}
+            value={email}
+            onChange={(e) => {
+              setEmail(e.target.value);
               setIsDirty(true);
             }}
           />
@@ -171,6 +187,7 @@ export default function ProfileModal({ setIsOpen }: Props) {
                 avatar,
                 bio,
                 skills,
+                email,
               });
               setLoading(false);
               handleClose();
