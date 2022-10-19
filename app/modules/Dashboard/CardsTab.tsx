@@ -40,6 +40,7 @@ const Card = styled(Box)<{ mode: string }>`
   position: relative;
   cursor: pointer;
   transition: all 0.3s ease-in-out;
+  margin-bottom: 0.5rem;
 `;
 
 const groupByCircles = (
@@ -164,16 +165,8 @@ function YourCards({
             circle.id,
             currentUser.assignedCards
           );
-          const ApplicationIds = currentUser.activeApplications.map(
-            (appl) => appl.cardId
-          );
-          const Applications = groupByCircles(
-            currentUser,
-            circle.id,
-            ApplicationIds
-          );
 
-          if (ReviewingCards.length > 0 && toggle == "Reviewer")
+          if (ReviewingCards?.length > 0 && toggle == "Reviewer") {
             return (
               <Box key={circle?.id} marginBottom="5">
                 <Stack direction={"horizontal"} align="center">
@@ -188,7 +181,8 @@ function YourCards({
                 <Cards cards={ReviewingCards as any} toggle={toggle} />
               </Box>
             );
-          if (AssignedCards.length > 0 && toggle == "Assignee")
+          }
+          if (AssignedCards?.length > 0 && toggle == "Assignee")
             return (
               <Box key={circle?.id} marginBottom="5">
                 <Stack direction={"horizontal"} align="center">
@@ -203,7 +197,19 @@ function YourCards({
                 <Cards cards={AssignedCards as any} toggle={toggle} />
               </Box>
             );
-          if (Applications.length > 0 && toggle == "Applicant")
+          if (
+            currentUser?.activeApplications &&
+            currentUser?.activeApplications?.length > 0 &&
+            toggle == "Applicant"
+          ) {
+            const ApplicationIds = currentUser?.activeApplications?.map(
+              (appl) => appl.cardId
+            );
+            const Applications = groupByCircles(
+              currentUser,
+              circle.id,
+              ApplicationIds
+            );
             return (
               <Box key={circle?.id} marginBottom="5">
                 <Stack direction={"horizontal"} align="center">
@@ -218,6 +224,7 @@ function YourCards({
                 <Cards cards={Applications as any} toggle={toggle} />
               </Box>
             );
+          }
         })}
     </ScrollContainer>
   );
