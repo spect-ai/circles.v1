@@ -80,7 +80,7 @@ export const Toggle: FunctionComponent<Props> = ({ toggle, setToggle }) => {
         display: "block",
         padding: "0.2rem",
         borderRadius: "2rem",
-        margin: "0.7rem auto",
+        margin: "0rem auto",
         boxShadow: "0px 1px 3px rgba(0, 0, 0, 0.2)",
       }}
     >
