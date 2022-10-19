@@ -685,6 +685,7 @@ export type Property = {
   default?: any;
   condition?: any; // Show property only when condition is met
   options?: Option[];
+  rewardOptions?: Registry;
   userType?: FormUserType; // user type only relevant when type is user or user[]
   onUpdateNotifyUserTypes?: FormUserType[];
 };

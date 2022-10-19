@@ -136,17 +136,16 @@ export default function SendKudos() {
   }, [collection]);
 
   useEffect(() => {
-    getCommunityKudosDesigns()
-      .then((res) => {
-        console.log(res);
-        setCommunityKudosDesigns(res);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }, []);
-
-  console.log(kudos.imageUrl);
+    if (isOpen)
+      getCommunityKudosDesigns()
+        .then((res) => {
+          console.log(res);
+          setCommunityKudosDesigns(res);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+  }, [isOpen]);
 
   return (
     <>

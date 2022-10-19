@@ -4,14 +4,16 @@ import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import Select from "@/app/common/components/Select";
 import { addField, deleteField, updateField } from "@/app/services/Collection";
-import { FormUserType, Option } from "@/app/types";
+import { FormUserType, Option, Registry } from "@/app/types";
 import { SaveFilled } from "@ant-design/icons";
 import { Box, IconTrash, Input, Stack, Text } from "degen";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import { useCircle } from "../../Circle/CircleContext";
 import { fields } from "../Constants";
 import { useLocalCollection } from "../Context/LocalCollectionContext";
 import AddOptions from "./AddOptions";
+import RewardOptions from "./RewardOptions";
 
 type Props = {
   propertyName?: string;
@@ -21,6 +23,9 @@ type Props = {
 export default function AddField({ propertyName, handleClose }: Props) {
   const { localCollection: collection, setLocalCollection } =
     useLocalCollection();
+  const { registry } = useCircle();
+  const [networks, setNetworks] = useState(registry);
+  const [selectedRewardOptions, setSelectedRewardOptions] = useState(registry);
 
   const [name, setName] = useState("");
   const [type, setType] = useState({ label: "Short Text", value: "shortText" });
@@ -42,11 +47,11 @@ export default function AddField({ propertyName, handleClose }: Props) {
   useEffect(() => {
     if (propertyName && collection.properties) {
       setName(propertyName);
-      setNotifyUserType(
-        collection.properties[propertyName].onUpdateNotifyUserTypes?.map(
-          (type) => ({ label: type, value: type })
-        )
-      );
+      // setNotifyUserType(
+      //   collection.properties[propertyName].onUpdateNotifyUserTypes?.map(
+      //     (type) => ({ label: type, value: type })
+      //   )
+      // );
       const property = collection.properties[propertyName];
       setType({
         label:
@@ -58,6 +63,9 @@ export default function AddField({ propertyName, handleClose }: Props) {
       }
       if (property.type === "user") {
         setUserType(property.userType);
+      }
+      if (property.type === "reward") {
+        setNetworks(property.rewardOptions);
       }
     }
   }, [collection.properties, propertyName]);
@@ -112,8 +120,10 @@ export default function AddField({ propertyName, handleClose }: Props) {
               />
             </Stack>
           ) : null}
-
-          <Accordian name="Advanced Settings" defaultOpen={false}>
+          {type.value === "reward" ? (
+            <RewardOptions networks={networks} setNetworks={setNetworks} />
+          ) : null}
+          {/* <Accordian name="Advanced Settings" defaultOpen={false}>
             <Stack space="2">
               {["shortText", "longText", "ethAddress"].includes(type.value) && (
                 <Input label="" placeholder="Default Value" />
@@ -135,7 +145,7 @@ export default function AddField({ propertyName, handleClose }: Props) {
                 multiple={true}
               />
             </Stack>
-          </Accordian>
+          </Accordian> */}
 
           <PrimaryButton
             icon={<SaveFilled style={{ fontSize: "1.3rem" }} />}
@@ -143,11 +153,17 @@ export default function AddField({ propertyName, handleClose }: Props) {
             onClick={async () => {
               setLoading(true);
               let res;
+              let rewardOptions = {} as Registry | undefined;
+              if (type.value === "reward") {
+                rewardOptions = networks;
+              }
+              console.log({ rewardOptions });
               if (propertyName) {
                 res = await updateField(collection.id, propertyName, {
                   name,
                   type: type.value,
                   options: fieldOptions,
+                  rewardOptions,
                   userType,
                   default: defaultValue,
                   onUpdateNotifyUserTypes: notifyUserType?.map(
@@ -161,6 +177,7 @@ export default function AddField({ propertyName, handleClose }: Props) {
                   type: type.value,
                   isPartOfFormView: false,
                   options: fieldOptions,
+                  rewardOptions,
                   userType: userType,
                   default: defaultValue,
                   onUpdateNotifyUserTypes: notifyUserType?.map(

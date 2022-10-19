@@ -1,4 +1,4 @@
-import { FormUserType } from "@/app/types";
+import { FormUserType, Registry } from "@/app/types";
 
 export const addField = async (
   collectionId: string,
@@ -7,6 +7,7 @@ export const addField = async (
     type: string;
     default?: string;
     options?: { label: string; value: string }[];
+    rewardOptions?: Registry;
     isPartOfFormView: boolean;
     userType?: FormUserType;
     onUpdateNotifyUserTypes?: FormUserType[];
@@ -36,6 +37,7 @@ export const updateField = async (
     type?: string;
     default?: string;
     options?: { label: string; value: string }[];
+    rewardOptions?: Registry;
     userType?: FormUserType;
     onUpdateNotifyUserTypes?: FormUserType[];
   }
