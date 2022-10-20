@@ -773,3 +773,25 @@ export interface FormType {
   updatedAt: string;
   id: string;
 }
+
+export type KudosType = {
+  tokenId: number;
+  headline: string;
+  description: string;
+  startDateTimestamp?: number;
+  endDateTimestamp?: number;
+  links: string[];
+  communityId?: string;
+  createdByAddress?: boolean;
+  createdAtTimestamp?: boolean;
+  imageUrl: string;
+  claimabilityAttributes: ClaimabilityAttributes;
+};
+
+type ClaimabilityAttributes = {
+  isSignatureRequired: boolean;
+  isAllowlistRequired: boolean;
+  totalClaimCount: number;
+  remainingClaimCount?: number;
+  expirationTimestamp?: number;
+};

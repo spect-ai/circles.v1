@@ -4,7 +4,6 @@ import { FormType, Registry } from "@/app/types";
 import { Box, Heading, Stack, Text } from "degen";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
-import { useQuery } from "react-query";
 import { toast } from "react-toastify";
 import FormFields from "./FormFields";
 
@@ -13,16 +12,15 @@ export default function PublicForm() {
   const { formId } = router.query;
   const [form, setForm] = useState<FormType>();
 
-  const [cId, setCId] = useState("");
-
   useEffect(() => {
     console.log({ formId });
     void (async () => {
       if (formId) {
         const res = await getForm(formId as string);
         console.log({ res });
-        if (res.id) setForm(res);
-        else toast.error("Error fetching form");
+        if (res.id) {
+          setForm(res);
+        } else toast.error("Error fetching form");
       }
     })();
   }, [formId]);

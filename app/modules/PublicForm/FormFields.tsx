@@ -1,12 +1,13 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { addData, updateCollectionData } from "@/app/services/Collection";
-import { FormType, Registry } from "@/app/types";
+import { FormType, KudosType, Registry } from "@/app/types";
 import { Box } from "degen";
 import React, { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { toast } from "react-toastify";
 import styled from "styled-components";
+import FormResponse from "./FormResponse";
 import PublicField from "./PublicField";
 
 type Props = {
@@ -19,6 +20,8 @@ export default function FormFields({ form }: Props) {
   const [updateResponse, setUpdateResponse] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [submitAnotherResponse, setSubmitAnotherResponse] = useState(false);
+  const [claimed, setClaimed] = useState(false);
+  const [kudos, setKudos] = useState({} as KudosType);
 
   const { refetch: fetchRegistry } = useQuery<Registry>(
     ["registry", form.parents[0].slug],
@@ -33,6 +36,20 @@ export default function FormFields({ form }: Props) {
 
   useEffect(() => {
     void fetchRegistry();
+    setClaimed(form.kudosClaimedByUser);
+    setSubmitted(form.previousResponses?.length > 0);
+
+    if (form.mintkudosTokenId) {
+      void (async () => {
+        const kudo = await (
+          await fetch(
+            `${process.env.MINTKUDOS_API_HOST}/v1/tokens/${form.mintkudosTokenId}`
+          )
+        ).json();
+        setKudos(kudo);
+      })();
+    }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -118,6 +135,18 @@ export default function FormFields({ form }: Props) {
     }
   };
 
+  if (submitted && !submitAnotherResponse && !updateResponse) {
+    return (
+      <FormResponse
+        form={form}
+        setSubmitAnotherResponse={setSubmitAnotherResponse}
+        setUpdateResponse={setUpdateResponse}
+        setSubmitted={setSubmitted}
+        kudos={kudos}
+      />
+    );
+  }
+
   return (
     <Container borderRadius="2xLarge">
       {form.propertyOrder.map((propertyName) => (
@@ -142,7 +171,7 @@ const Container = styled(Box)`
   border-width: 2px;
   padding: 2rem;
   overflow-y: auto;
-  height: calc(100vh - 10rem);
+  max-height: calc(100vh - 10rem);
   margin-right: 4rem;
 
   &::-webkit-scrollbar {

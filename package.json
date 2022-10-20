@@ -39,6 +39,7 @@
     "next-seo": "^5.4.0",
     "react": "^17",
     "react-beautiful-dnd": "^13.1.0",
+    "react-confetti": "^6.1.0",
     "react-contenteditable": "^3.3.6",
     "react-d3-graph": "^2.6.0",
     "react-datasheet-grid": "^4.5.0",

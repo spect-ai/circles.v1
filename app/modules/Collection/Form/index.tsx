@@ -1,7 +1,7 @@
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { reorder } from "@/app/common/utils/utils";
 import { updateField, updateFormCollection } from "@/app/services/Collection";
-import { Box, Input, Stack, Text, Textarea } from "degen";
+import { Box, Stack, Text, Textarea } from "degen";
 import { useCallback, useEffect, useState } from "react";
 import {
   DragDropContext,
@@ -10,7 +10,6 @@ import {
   DropResult,
 } from "react-beautiful-dnd";
 import styled from "styled-components";
-import { TextArea } from "../../Card/Activity/Comment";
 import { SkeletonLoader } from "../../Explore/SkeletonLoader";
 import { useLocalCollection } from "../Context/LocalCollectionContext";
 import SendKudos from "../SendKudos";
@@ -112,7 +111,7 @@ export function Form() {
     useEffect(() => {
       setMessageOnSubmission(collection.messageOnSubmission);
       setCurrMessageOnSubmission(collection.messageOnSubmission);
-    }, [collection]);
+    }, []);
 
     return (
       <Container {...provided.droppableProps} ref={provided.innerRef}>
@@ -142,7 +141,6 @@ export function Form() {
                   value={messageOnSubmission}
                   rows={2}
                   onChange={(e) => {
-                    console.log(e.target.value);
                     setMessageOnSubmission(e.target.value);
                   }}
                 />
