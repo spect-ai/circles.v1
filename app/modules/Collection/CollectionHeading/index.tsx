@@ -91,7 +91,10 @@ function CollectionHeading() {
                   // icon={<IconDocuments />}
                   variant={"transparent"}
                   onClick={() => {
-                    void router.push(`/r/${collection?.slug}`);
+                    window.open(
+                      `https://circles.spect.network/r/${collection?.slug}`,
+                      "_blank"
+                    );
                   }}
                 >
                   Preview

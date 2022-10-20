@@ -242,6 +242,18 @@ export default function DataModal() {
                   }}
                 />
               )}
+              {/* {property?.type === "milestone" && (
+                <DateInput
+                  mode={mode}
+                  placeholder={`Enter ${property?.name}`}
+                  value={data[property.name]}
+                  onChange={(e) => {
+                    data[property.name] = e.target.value;
+                    setData({ ...data });
+                  }}
+                  type="number"
+                />
+              )} */}
             </Stack>
           ))}
         </Stack>

@@ -57,7 +57,7 @@ export default function AddField({ propertyName, handleClose }: Props) {
       //   )
       // );
       const property = collection.properties[propertyName];
-      setRequired(property.required ? 1 : 0);
+      setRequired(property?.required ? 1 : 0);
 
       setType({
         label:

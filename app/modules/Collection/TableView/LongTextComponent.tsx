@@ -31,7 +31,7 @@ export default function LongTextComponent({
           setRowData(value);
           stopEditing();
         }}
-        placeholder={`Type here to edit ${columnData.name}`}
+        placeholder={``}
         isDirty={dirty}
         setIsDirty={setDirty}
       />

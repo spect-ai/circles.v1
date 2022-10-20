@@ -691,6 +691,7 @@ export type Property = {
   userType?: FormUserType; // user type only relevant when type is user or user[]
   onUpdateNotifyUserTypes?: FormUserType[];
   required?: boolean;
+  description?: string;
 };
 
 export type PropertyType =
@@ -704,7 +705,8 @@ export type PropertyType =
   | "date"
   | "singleSelect"
   | "multiSelect"
-  | "ethAddress";
+  | "ethAddress"
+  | "milestone";
 
 export type Option = {
   label: string;
@@ -752,6 +754,7 @@ export interface FormType {
         label: string;
         value: string;
       }[];
+      required: boolean;
     };
   };
   propertyOrder: string[];

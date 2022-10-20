@@ -2,11 +2,14 @@ import Dropdown, {
   OptionType as SingleSelectOptionType,
 } from "@/app/common/components/Dropdown";
 import ClickableTag from "@/app/common/components/EditTag/ClickableTag";
+import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { MemberDetails } from "@/app/types";
 import {
   Box,
+  Button,
   IconEth,
   IconPencil,
+  IconPlusSmall,
   Input,
   Stack,
   Tag,
@@ -211,6 +214,17 @@ function FieldComponent({
             icon={<IconEth color="accent" size="5" />}
             onClick={() => {}}
           />
+        </Box>
+      )}
+      {collection.properties[id]?.type === "milestone" && (
+        <Box marginTop="4" width="72">
+          <PrimaryButton
+            variant="tertiary"
+            icon={<IconPlusSmall />}
+            onClick={async () => {}}
+          >
+            Add new milestone
+          </PrimaryButton>
         </Box>
       )}
     </Container>

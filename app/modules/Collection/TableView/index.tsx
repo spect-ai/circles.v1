@@ -23,6 +23,7 @@ import DataModal from "../Form/DataModal";
 import ExpandableCell from "../Form/ExpandableCell";
 import GutterColumnComponent from "./GutterColumnComponent";
 import HeaderComponent from "./HeaderComponent";
+import MilestoneComponent from "./MilestoneComponent";
 import RewardComponent from "./RewardComponent";
 import RewardModal from "./RewardModal";
 import SelectComponent from "./SelectComponent";
@@ -112,6 +113,7 @@ export default function TableView() {
   };
 
   const getCellComponent = (type: PropertyType) => {
+    console.log(type);
     switch (type) {
       case "shortText":
         return textColumn;
@@ -133,6 +135,8 @@ export default function TableView() {
         return ExpandableCell;
       case "multiSelect":
         return ExpandableCell;
+      case "milestone":
+        return MilestoneComponent;
       default:
         return textColumn;
     }

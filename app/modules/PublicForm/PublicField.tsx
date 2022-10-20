@@ -1,12 +1,14 @@
 import Dropdown from "@/app/common/components/Dropdown";
 import Editor from "@/app/common/components/Editor";
 import ClickableTag from "@/app/common/components/EditTag/ClickableTag";
+import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { FormType, Option } from "@/app/types";
-import { Box, IconEth, Input, Text, useTheme } from "degen";
+import { Box, IconEth, IconPlusSmall, Input, Tag, Text, useTheme } from "degen";
 import { AnimatePresence } from "framer-motion";
 import React, { useState } from "react";
 import { DateInput } from "../Collection/Form/Field";
 import RewardModal from "../Collection/TableView/RewardModal";
+import AddMilestone from "./MilestoneModal";
 
 type Props = {
   form: FormType;
@@ -44,7 +46,20 @@ export default function PublicField({
           />
         )}
       </AnimatePresence>
-      <Text variant="label">{form.properties[propertyName].name}</Text>
+      <Box
+        width="full"
+        display="flex"
+        flexDirection="row"
+        gap="2"
+        alignItems="center"
+      >
+        <Text variant="label">{form.properties[propertyName]?.name}</Text>
+        {form.properties[propertyName].required && (
+          <Tag size="small" tone="accent">
+            Required
+          </Tag>
+        )}
+      </Box>
       {form.properties[propertyName]?.type === "shortText" && (
         <Input
           label=""
@@ -160,6 +175,7 @@ export default function PublicField({
           />
         </Box>
       )}
+      {form.properties[propertyName]?.type === "milestone" && <AddMilestone />}
     </Box>
   );
 }
