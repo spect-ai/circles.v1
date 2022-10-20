@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { getForm } from "@/app/services/Collection";
-import { FormType, Registry } from "@/app/types";
+import { FormType } from "@/app/types";
 import { Box, Heading, Stack, Text } from "degen";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";

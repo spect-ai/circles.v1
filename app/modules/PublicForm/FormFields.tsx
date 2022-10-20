@@ -1,7 +1,9 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import PrimaryButton from "@/app/common/components/PrimaryButton";
+import { useGlobal } from "@/app/context/globalContext";
 import { addData, updateCollectionData } from "@/app/services/Collection";
-import { FormType, KudosType, Registry } from "@/app/types";
+import { FormType, KudosType, Registry, UserType } from "@/app/types";
+import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { Box } from "degen";
 import React, { useEffect, useState } from "react";
 import { useQuery } from "react-query";
@@ -14,6 +16,13 @@ type Props = {
   form: FormType;
 };
 
+const getUser = async () => {
+  const res = await fetch(`${process.env.API_HOST}/user/me`, {
+    credentials: "include",
+  });
+  return await res.json();
+};
+
 export default function FormFields({ form }: Props) {
   const [data, setData] = useState<any>({});
   const [memberOptions, setMemberOptions] = useState([]);
@@ -22,6 +31,16 @@ export default function FormFields({ form }: Props) {
   const [submitAnotherResponse, setSubmitAnotherResponse] = useState(false);
   const [claimed, setClaimed] = useState(false);
   const [kudos, setKudos] = useState({} as KudosType);
+  const { openConnectModal } = useConnectModal();
+  const { connectedUser, connectUser } = useGlobal();
+  const [loading, setLoading] = useState(false);
+  const { data: currentUser, refetch } = useQuery<UserType>(
+    "getMyUser",
+    getUser,
+    {
+      enabled: false,
+    }
+  );
 
   const { refetch: fetchRegistry } = useQuery<Registry>(
     ["registry", form.parents[0].slug],
@@ -72,27 +91,75 @@ export default function FormFields({ form }: Props) {
   }, [form]);
 
   useEffect(() => {
-    if (form?.id) {
+    if (form) {
+      setLoading(true);
       const tempData: any = {};
-      form.propertyOrder.forEach((propertyId) => {
-        if (
-          ["longText", "shortText", "ethAddress", "user", "date"].includes(
-            form.properties[propertyId].type
-          )
-        ) {
-          tempData[propertyId] = "";
-        } else if (form.properties[propertyId].type === "singleSelect") {
-          // @ts-ignore
-          tempData[propertyId] = form.properties[propertyId].options[0];
-        } else if (
-          ["multiSelect", "user[]"].includes(form.properties[propertyId].type)
-        ) {
-          tempData[propertyId] = [];
-        }
-      });
+
+      if (updateResponse && form?.previousResponses?.length > 0) {
+        const lastResponse =
+          form.previousResponses[form.previousResponses.length - 1];
+        form.propertyOrder.forEach((propertyId) => {
+          if (
+            ["longText", "shortText", "ethAddress", "user", "date"].includes(
+              form.properties[propertyId].type
+            )
+          ) {
+            tempData[propertyId] = lastResponse[propertyId] || "";
+          } else if (form.properties[propertyId].type === "singleSelect") {
+            tempData[propertyId] =
+              lastResponse[propertyId] ||
+              // @ts-ignore
+              form.properties[propertyId].options[0];
+          } else if (
+            ["multiSelect", "user[]"].includes(form.properties[propertyId].type)
+          ) {
+            tempData[propertyId] = lastResponse[propertyId] || [];
+          }
+        });
+      } else {
+        console.log("setting data to empty object");
+        const tempData: any = {};
+        form.propertyOrder.forEach((propertyId) => {
+          if (
+            ["longText", "shortText", "ethAddress", "user", "date"].includes(
+              form.properties[propertyId].type
+            )
+          ) {
+            tempData[propertyId] = "";
+          } else if (form.properties[propertyId].type === "singleSelect") {
+            // @ts-ignore
+            tempData[propertyId] = form.properties[propertyId].options[0];
+          } else if (
+            ["multiSelect", "user[]"].includes(form.properties[propertyId].type)
+          ) {
+            tempData[propertyId] = [];
+          }
+        });
+      }
       setData(tempData);
+      setTimeout(() => {
+        setLoading(false);
+      }, 100);
     }
-  }, [form]);
+  }, [form, updateResponse]);
+
+  useEffect(() => {
+    if (!connectedUser && currentUser?.id) connectUser(currentUser.id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentUser, connectedUser]);
+
+  useEffect(() => {
+    refetch()
+      .then((res) => {
+        const data = res.data;
+        if (data?.id) connectUser(data.id);
+      })
+      .catch((err) => {
+        console.log(err);
+        toast.error("Could not fetch user data");
+      });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const onSubmit = async () => {
     let res;
@@ -149,19 +216,28 @@ export default function FormFields({ form }: Props) {
 
   return (
     <Container borderRadius="2xLarge">
-      {form.propertyOrder.map((propertyName) => (
-        <PublicField
-          form={form}
-          propertyName={propertyName}
-          data={data}
-          setData={setData}
-          memberOptions={memberOptions}
-          key={propertyName}
-        />
-      ))}
-      <Box width="1/4" paddingLeft="5">
-        <PrimaryButton onClick={onSubmit}>Submit</PrimaryButton>
-      </Box>
+      {!loading &&
+        form.propertyOrder.map((propertyName) => (
+          <PublicField
+            form={form}
+            propertyName={propertyName}
+            data={data}
+            setData={setData}
+            memberOptions={memberOptions}
+            key={propertyName}
+          />
+        ))}
+      {connectedUser ? (
+        <Box width="1/4" paddingLeft="5">
+          <PrimaryButton onClick={onSubmit}>Submit</PrimaryButton>
+        </Box>
+      ) : (
+        <Box width="1/4" paddingLeft="5">
+          <PrimaryButton onClick={openConnectModal}>
+            Connect Wallet
+          </PrimaryButton>
+        </Box>
+      )}
     </Container>
   );
 }
