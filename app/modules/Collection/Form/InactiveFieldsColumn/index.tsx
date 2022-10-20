@@ -22,7 +22,6 @@ type Props = {
 function InactiveFieldsColumnComponent({ fields }: Props) {
   const { localCollection: collection } = useLocalCollection();
   const [isAddFieldOpen, setIsAddFieldOpen] = useState(false);
-  console.log(fields);
   const FieldDraggable = (provided: DroppableProvided) => (
     <Box {...provided.droppableProps} ref={provided.innerRef}>
       <Stack space="1">

@@ -1,15 +1,14 @@
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { useGlobal } from "@/app/context/globalContext";
 import { Box, Heading, Stack, useTheme } from "degen";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import styled from "styled-components";
-import ConnectModal from "../Sidebar/ProfileButton/ConnectModal";
 import { Container } from "./CircleSidebar";
 import CollapseButton from "./CollapseButton";
 import { useQuery } from "react-query";
 import { UserType } from "@/app/types";
+import { useConnectModal } from "@rainbow-me/rainbowkit";
 
 export const HeaderButton = styled(Box)<{ mode: string }>`
   cursor: pointer;
@@ -27,6 +26,7 @@ export default function ExploreSidebar() {
   const [showCollapseButton, setShowCollapseButton] = useState(false);
   const { mode } = useTheme();
   const router = useRouter();
+  const { openConnectModal } = useConnectModal();
 
   return (
     <Box
@@ -89,7 +89,11 @@ export default function ExploreSidebar() {
                 </Box>
               </Stack>
             )}
-            {!currentUser?.id && <ConnectModal />}
+            {!currentUser?.id && (
+              <PrimaryButton onClick={openConnectModal}>
+                Connect Wallet
+              </PrimaryButton>
+            )}
           </Box>
         </Container>
       </Stack>

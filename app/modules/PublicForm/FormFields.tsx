@@ -1,16 +1,26 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import PrimaryButton from "@/app/common/components/PrimaryButton";
+import { useGlobal } from "@/app/context/globalContext";
 import { addData, updateCollectionData } from "@/app/services/Collection";
-import { FormType, Registry } from "@/app/types";
+import { FormType, KudosType, Registry, UserType } from "@/app/types";
+import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { Box, Text } from "degen";
 import React, { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { toast } from "react-toastify";
 import styled from "styled-components";
+import FormResponse from "./FormResponse";
 import PublicField from "./PublicField";
 
 type Props = {
   form: FormType;
+};
+
+const getUser = async () => {
+  const res = await fetch(`${process.env.API_HOST}/user/me`, {
+    credentials: "include",
+  });
+  return await res.json();
 };
 
 export default function FormFields({ form }: Props) {
@@ -19,6 +29,18 @@ export default function FormFields({ form }: Props) {
   const [updateResponse, setUpdateResponse] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [submitAnotherResponse, setSubmitAnotherResponse] = useState(false);
+  const [claimed, setClaimed] = useState(false);
+  const [kudos, setKudos] = useState({} as KudosType);
+  const { openConnectModal } = useConnectModal();
+  const { connectedUser, connectUser } = useGlobal();
+  const [loading, setLoading] = useState(false);
+  const { data: currentUser, refetch } = useQuery<UserType>(
+    "getMyUser",
+    getUser,
+    {
+      enabled: false,
+    }
+  );
   const [requiredFieldsNotSet, setRequiredFieldsNotSet] = useState(
     {} as { [key: string]: boolean }
   );
@@ -48,6 +70,20 @@ export default function FormFields({ form }: Props) {
 
   useEffect(() => {
     void fetchRegistry();
+    setClaimed(form.kudosClaimedByUser);
+    setSubmitted(form.previousResponses?.length > 0);
+
+    if (form.mintkudosTokenId) {
+      void (async () => {
+        const kudo = await (
+          await fetch(
+            `${process.env.MINTKUDOS_API_HOST}/v1/tokens/${form.mintkudosTokenId}`
+          )
+        ).json();
+        setKudos(kudo);
+      })();
+    }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -70,27 +106,75 @@ export default function FormFields({ form }: Props) {
   }, [form]);
 
   useEffect(() => {
-    if (form?.id) {
+    if (form) {
+      setLoading(true);
       const tempData: any = {};
-      form.propertyOrder.forEach((propertyId) => {
-        if (
-          ["longText", "shortText", "ethAddress", "user", "date"].includes(
-            form.properties[propertyId].type
-          )
-        ) {
-          tempData[propertyId] = "";
-        } else if (form.properties[propertyId].type === "singleSelect") {
-          // @ts-ignore
-          tempData[propertyId] = form.properties[propertyId].options[0];
-        } else if (
-          ["multiSelect", "user[]"].includes(form.properties[propertyId].type)
-        ) {
-          tempData[propertyId] = [];
-        }
-      });
+
+      if (updateResponse && form?.previousResponses?.length > 0) {
+        const lastResponse =
+          form.previousResponses[form.previousResponses.length - 1];
+        form.propertyOrder.forEach((propertyId) => {
+          if (
+            ["longText", "shortText", "ethAddress", "user", "date"].includes(
+              form.properties[propertyId].type
+            )
+          ) {
+            tempData[propertyId] = lastResponse[propertyId] || "";
+          } else if (form.properties[propertyId].type === "singleSelect") {
+            tempData[propertyId] =
+              lastResponse[propertyId] ||
+              // @ts-ignore
+              form.properties[propertyId].options[0];
+          } else if (
+            ["multiSelect", "user[]"].includes(form.properties[propertyId].type)
+          ) {
+            tempData[propertyId] = lastResponse[propertyId] || [];
+          }
+        });
+      } else {
+        console.log("setting data to empty object");
+        const tempData: any = {};
+        form.propertyOrder.forEach((propertyId) => {
+          if (
+            ["longText", "shortText", "ethAddress", "user", "date"].includes(
+              form.properties[propertyId].type
+            )
+          ) {
+            tempData[propertyId] = "";
+          } else if (form.properties[propertyId].type === "singleSelect") {
+            // @ts-ignore
+            tempData[propertyId] = form.properties[propertyId].options[0];
+          } else if (
+            ["multiSelect", "user[]"].includes(form.properties[propertyId].type)
+          ) {
+            tempData[propertyId] = [];
+          }
+        });
+      }
       setData(tempData);
+      setTimeout(() => {
+        setLoading(false);
+      }, 100);
     }
-  }, [form]);
+  }, [form, updateResponse]);
+
+  useEffect(() => {
+    if (!connectedUser && currentUser?.id) connectUser(currentUser.id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentUser, connectedUser]);
+
+  useEffect(() => {
+    refetch()
+      .then((res) => {
+        const data = res.data;
+        if (data?.id) connectUser(data.id);
+      })
+      .catch((err) => {
+        console.log(err);
+        toast.error("Could not fetch user data");
+      });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const onSubmit = async () => {
     let res;
@@ -134,6 +218,18 @@ export default function FormFields({ form }: Props) {
     }
   };
 
+  if (submitted && !submitAnotherResponse && !updateResponse) {
+    return (
+      <FormResponse
+        form={form}
+        setSubmitAnotherResponse={setSubmitAnotherResponse}
+        setUpdateResponse={setUpdateResponse}
+        setSubmitted={setSubmitted}
+        kudos={kudos}
+      />
+    );
+  }
+
   const isEmpty = (propertyName: string, value: any) => {
     switch (form.properties[propertyName].type) {
       case "longText":
@@ -169,18 +265,19 @@ export default function FormFields({ form }: Props) {
 
   return (
     <Container borderRadius="2xLarge">
-      {form.propertyOrder.map((propertyName) => (
-        <PublicField
-          form={form}
-          propertyName={propertyName}
-          data={data}
-          setData={setData}
-          memberOptions={memberOptions}
-          requiredFieldsNotSet={requiredFieldsNotSet}
-          key={propertyName}
-          updateRequiredFieldNotSet={updateRequiredFieldNotSet}
-        />
-      ))}
+      {!loading &&
+        form.propertyOrder.map((propertyName) => (
+          <PublicField
+            form={form}
+            propertyName={propertyName}
+            data={data}
+            setData={setData}
+            memberOptions={memberOptions}
+            requiredFieldsNotSet={requiredFieldsNotSet}
+            key={propertyName}
+            updateRequiredFieldNotSet={updateRequiredFieldNotSet}
+          />
+        ))}
       <Box width="full">
         <Box
           paddingRight="5"
@@ -190,15 +287,25 @@ export default function FormFields({ form }: Props) {
           justifyContent="flex-end"
           alignItems="center"
         >
-          {Object.keys(requiredFieldsNotSet).length > 0 && (
-            <Text color="red" variant="small">
-              {" "}
-              {`Required fields are empty: ${Object.keys(
-                requiredFieldsNotSet
-              ).join(",")}`}{" "}
-            </Text>
+          {connectedUser ? (
+            <Box width="1/4" paddingLeft="5">
+              {Object.keys(requiredFieldsNotSet).length > 0 && (
+                <Text color="red" variant="small">
+                  {" "}
+                  {`Required fields are empty: ${Object.keys(
+                    requiredFieldsNotSet
+                  ).join(",")}`}{" "}
+                </Text>
+              )}
+              <PrimaryButton onClick={onSubmit}>Submit</PrimaryButton>
+            </Box>
+          ) : (
+            <Box width="1/4" paddingLeft="5">
+              <PrimaryButton onClick={openConnectModal}>
+                Connect Wallet
+              </PrimaryButton>
+            </Box>
           )}
-          <PrimaryButton onClick={onSubmit}>Submit</PrimaryButton>
         </Box>
       </Box>
     </Container>
@@ -210,7 +317,7 @@ const Container = styled(Box)`
   border-width: 2px;
   padding: 2rem;
   overflow-y: auto;
-  height: calc(100vh - 10rem);
+  max-height: calc(100vh - 10rem);
   margin-right: 4rem;
 
   &::-webkit-scrollbar {
