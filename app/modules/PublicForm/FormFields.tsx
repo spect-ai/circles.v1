@@ -60,7 +60,7 @@ export default function FormFields({ form }: Props) {
     const requiredFieldsNotSet = {} as { [key: string]: boolean };
     form.propertyOrder.forEach((propertyId) => {
       const property = form.properties[propertyId];
-      if (property.required && !data[propertyId]) {
+      if (property.required && isEmpty(propertyId, data[propertyId])) {
         requiredFieldsNotSet[propertyId] = true;
       }
     });
@@ -231,6 +231,10 @@ export default function FormFields({ form }: Props) {
   }
 
   const isEmpty = (propertyName: string, value: any) => {
+    console.log({ propertyName, value });
+    console.log({ length: value?.length });
+    console.log({ type: form.properties[propertyName].type });
+    console.log({ value: value?.value });
     switch (form.properties[propertyName].type) {
       case "longText":
       case "shortText":
@@ -240,14 +244,13 @@ export default function FormFields({ form }: Props) {
       case "email":
         return !value;
       case "singleSelect":
-        return typeof value !== "object" || Object.keys(value).length === 0;
+        return !value || !value.value || !value.label;
       case "multiSelect":
+      case "milestone":
       case "user[]":
         return !value || value.length === 0;
       case "reward":
-        return !value.value;
-      case "milestone":
-        return !value || value.length === 0;
+        return !value;
       default:
         return false;
     }
@@ -284,11 +287,19 @@ export default function FormFields({ form }: Props) {
           gap="4"
           display="flex"
           flexDirection="row"
+          width="full"
           justifyContent="flex-end"
-          alignItems="center"
         >
           {connectedUser ? (
-            <Box width="1/4" paddingLeft="5">
+            <Box
+              width="1/4"
+              paddingLeft="5"
+              display="flex"
+              flexDirection="row"
+              justifyContent="flex-end"
+              alignItems="center"
+              gap="8"
+            >
               {Object.keys(requiredFieldsNotSet).length > 0 && (
                 <Text color="red" variant="small">
                   {" "}

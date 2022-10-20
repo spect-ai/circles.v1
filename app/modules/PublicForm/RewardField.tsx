@@ -9,6 +9,10 @@ type Props = {
   propertyName: string;
   data: any;
   setData: (value: any) => void;
+  updateData: (
+    key: "chain" | "token" | "value",
+    value: string | object
+  ) => void;
 };
 
 export default function RewardField({
@@ -17,6 +21,7 @@ export default function RewardField({
   propertyName,
   data,
   setData,
+  updateData,
 }: Props) {
   const rewardOptions = (form.properties[propertyName]?.rewardOptions ||
     {}) as Registry;
@@ -58,6 +63,17 @@ export default function RewardField({
     }
   }, [selectedChain]);
 
+  useEffect(() => {
+    setData({
+      ...data,
+      [propertyName]: {
+        chain: selectedChain,
+        token: selectedToken,
+        value: 0,
+      },
+    });
+  }, []);
+
   return (
     <Stack direction="horizontal">
       <Box width="72" marginTop="2">
@@ -77,13 +93,7 @@ export default function RewardField({
           selected={selectedChain}
           onChange={(option) => {
             setSelectedChain(option);
-            setData({
-              ...data,
-              [propertyName]: {
-                ...data[propertyName],
-                chain: option,
-              },
-            });
+            updateData("chain", option);
           }}
           multiple={false}
           isClearable={false}
@@ -95,13 +105,7 @@ export default function RewardField({
           selected={selectedToken}
           onChange={(option) => {
             setSelectedToken(option);
-            setData({
-              ...data,
-              [propertyName]: {
-                ...data[propertyName],
-                token: option,
-              },
-            });
+            updateData("token", option);
           }}
           multiple={false}
           isClearable={false}
@@ -112,13 +116,7 @@ export default function RewardField({
         placeholder={`Enter Reward Amount`}
         value={data && data[propertyName]?.value}
         onChange={(e) => {
-          setData({
-            ...data,
-            [propertyName]: {
-              ...data[propertyName],
-              value: e.target.value,
-            },
-          });
+          updateData("value", e.target.value);
         }}
       />
     </Stack>

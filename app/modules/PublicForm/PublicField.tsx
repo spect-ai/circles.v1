@@ -30,7 +30,7 @@ type Props = {
   setData: (value: any) => void;
   memberOptions: Option[];
   requiredFieldsNotSet: { [key: string]: boolean };
-  updateRequiredFieldNotSet: (key: string, value: string) => void;
+  updateRequiredFieldNotSet: (key: string, value: any) => void;
 };
 
 export default function PublicField({
@@ -139,6 +139,7 @@ export default function PublicField({
           mode={mode}
           onChange={(e) => {
             setData({ ...data, [propertyName]: e.target.value });
+            updateRequiredFieldNotSet(propertyName, e.target.value);
           }}
         />
       )}
@@ -149,6 +150,7 @@ export default function PublicField({
           value={data && data[propertyName]}
           onChange={(e) => {
             setData({ ...data, [propertyName]: e.target.value });
+            updateRequiredFieldNotSet(propertyName, e.target.value);
           }}
         />
       )}
@@ -195,6 +197,7 @@ export default function PublicField({
             selected={data && data[propertyName]}
             onChange={(value: any) => {
               setData({ ...data, [propertyName]: value });
+              updateRequiredFieldNotSet(propertyName, value);
             }}
             portal={false}
           />
@@ -202,22 +205,21 @@ export default function PublicField({
       )}
       {form.properties[propertyName]?.type === "reward" && (
         <Box marginTop="4">
-          {/* <ClickableTag
-            name={
-              data[propertyName] && data[propertyName].value
-                ? `${data[propertyName].value} ${data[propertyName].token.symbol} on ${data[propertyName].chain.name}`
-                : `Add Reward`
-            }
-            icon={<IconEth color="accent" size="5" />}
-            onClick={() => {
-              setIsRewardModalOpen(true);
-            }}
-          /> */}
           <RewardField
             form={form}
             data={data}
             setData={setData}
             propertyName={propertyName}
+            updateData={(key, value) => {
+              setData({
+                ...data,
+                [propertyName]: {
+                  ...data[propertyName],
+                  [key]: value,
+                },
+              });
+              updateRequiredFieldNotSet(propertyName, value);
+            }}
           />
         </Box>
       )}

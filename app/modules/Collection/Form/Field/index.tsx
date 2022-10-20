@@ -3,6 +3,7 @@ import Dropdown, {
 } from "@/app/common/components/Dropdown";
 import ClickableTag from "@/app/common/components/EditTag/ClickableTag";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
+import RewardField from "@/app/modules/PublicForm/RewardField";
 import { MemberDetails } from "@/app/types";
 import {
   Box,
@@ -209,10 +210,12 @@ function FieldComponent({
       )}
       {collection.properties[id]?.type === "reward" && (
         <Box marginTop="4">
-          <ClickableTag
-            name="Add Reward"
-            icon={<IconEth color="accent" size="5" />}
-            onClick={() => {}}
+          <RewardField
+            form={collection}
+            propertyName={collection.properties[id]?.name}
+            data={{}}
+            setData={() => {}}
+            updateData={() => {}}
           />
         </Box>
       )}
