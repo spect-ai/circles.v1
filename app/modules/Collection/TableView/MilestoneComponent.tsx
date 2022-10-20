@@ -26,7 +26,6 @@ const milestones = [
 const MilestoneComponent = ({ rowData, columnData }: CellProps) => {
   //const milestones = rowData[columnData.property.name];
   const id = rowData.id;
-  console.log("adsdsd");
   return (
     <ClickableTag
       name={"Set Reward"}

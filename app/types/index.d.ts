@@ -733,6 +733,14 @@ export type Reward = {
   value: number;
 };
 
+export type Milestone = {
+  id?: string;
+  title: string;
+  description: string;
+  dueDate: string;
+  reward: Reward;
+};
+
 export type GuildRole = {
   id: number;
   name: string;
@@ -754,6 +762,7 @@ export interface FormType {
         label: string;
         value: string;
       }[];
+      rewardOptions?: Registry;
       required: boolean;
     };
   };

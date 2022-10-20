@@ -2,13 +2,26 @@ import Dropdown from "@/app/common/components/Dropdown";
 import Editor from "@/app/common/components/Editor";
 import ClickableTag from "@/app/common/components/EditTag/ClickableTag";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { FormType, Option } from "@/app/types";
-import { Box, IconEth, IconPlusSmall, Input, Tag, Text, useTheme } from "degen";
+import { validateEmail } from "@/app/common/utils/utils";
+import { FormType, Milestone, Option, Registry } from "@/app/types";
+import { useEffect } from "@storybook/addons";
+import {
+  Box,
+  Button,
+  IconEth,
+  IconPlusSmall,
+  Input,
+  Stack,
+  Tag,
+  Text,
+  useTheme,
+} from "degen";
 import { AnimatePresence } from "framer-motion";
 import React, { useState } from "react";
 import { DateInput } from "../Collection/Form/Field";
 import RewardModal from "../Collection/TableView/RewardModal";
-import AddMilestone from "./MilestoneModal";
+import MilestoneModal from "./MilestoneModal";
+import RewardField from "./RewardField";
 
 type Props = {
   form: FormType;
@@ -16,6 +29,8 @@ type Props = {
   data: any;
   setData: (value: any) => void;
   memberOptions: Option[];
+  requiredFieldsNotSet: { [key: string]: boolean };
+  updateRequiredFieldNotSet: (key: string, value: string) => void;
 };
 
 export default function PublicField({
@@ -24,9 +39,14 @@ export default function PublicField({
   data,
   setData,
   memberOptions,
+  requiredFieldsNotSet,
+  updateRequiredFieldNotSet,
 }: Props) {
   const { mode } = useTheme();
   const [isRewardModalOpen, setIsRewardModalOpen] = useState(false);
+  const [isMilestoneModalOpen, setIsMilestoneModalOpen] = useState(false);
+
+  console.log({ data });
   return (
     <Box
       padding="4"
@@ -35,31 +55,44 @@ export default function PublicField({
       //   mode={mode}
     >
       <AnimatePresence>
-        {isRewardModalOpen && (
-          <RewardModal
-            handleClose={(value) => {
-              setData({ ...data, [propertyName]: value });
-              setIsRewardModalOpen(false);
+        {isMilestoneModalOpen && (
+          <MilestoneModal
+            handleClose={() => {
+              setIsMilestoneModalOpen(false);
+            }}
+            addMilestone={(value, dataId, propertyName) => {
+              setData({
+                ...data,
+                [propertyName]: [data[propertyName] || [], value],
+              });
+              setIsMilestoneModalOpen(false);
             }}
             propertyName={propertyName}
             form={form}
           />
         )}
       </AnimatePresence>
-      <Box
-        width="full"
-        display="flex"
-        flexDirection="row"
-        gap="2"
-        alignItems="center"
-      >
-        <Text variant="label">{form.properties[propertyName]?.name}</Text>
-        {form.properties[propertyName].required && (
-          <Tag size="small" tone="accent">
-            Required
-          </Tag>
+      <Stack direction="vertical" space="2">
+        <Box
+          width="full"
+          display="flex"
+          flexDirection="row"
+          gap="2"
+          alignItems="center"
+        >
+          <Text variant="label">{form.properties[propertyName]?.name}</Text>
+          {form.properties[propertyName].required && (
+            <Tag size="small" tone="accent">
+              Required
+            </Tag>
+          )}
+        </Box>
+        {requiredFieldsNotSet[propertyName] && (
+          <Text color="red" variant="small">
+            This is a required field and cannot be empty
+          </Text>
         )}
-      </Box>
+      </Stack>
       {form.properties[propertyName]?.type === "shortText" && (
         <Input
           label=""
@@ -67,6 +100,7 @@ export default function PublicField({
           value={data && data[propertyName]}
           onChange={(e) => {
             setData({ ...data, [propertyName]: e.target.value });
+            updateRequiredFieldNotSet(propertyName, e.target.value);
           }}
         />
       )}
@@ -78,7 +112,11 @@ export default function PublicField({
           inputMode="email"
           onChange={(e) => {
             setData({ ...data, [propertyName]: e.target.value });
+            updateRequiredFieldNotSet(propertyName, e.target.value);
           }}
+          error={
+            data && data[propertyName] && !validateEmail(data[propertyName])
+          }
         />
       )}
       {form.properties[propertyName]?.type === "number" && (
@@ -89,6 +127,7 @@ export default function PublicField({
           type="number"
           onChange={(e) => {
             setData({ ...data, [propertyName]: e.target.value });
+            updateRequiredFieldNotSet(propertyName, e.target.value);
           }}
         />
       )}
@@ -129,6 +168,7 @@ export default function PublicField({
               console.log({ value });
               data[propertyName] = value;
               setData({ ...data });
+              updateRequiredFieldNotSet(propertyName, value);
             }}
             placeholder={`Type here to edit ${propertyName}`}
             isDirty={true}
@@ -162,7 +202,7 @@ export default function PublicField({
       )}
       {form.properties[propertyName]?.type === "reward" && (
         <Box marginTop="4">
-          <ClickableTag
+          {/* <ClickableTag
             name={
               data[propertyName] && data[propertyName].value
                 ? `${data[propertyName].value} ${data[propertyName].token.symbol} on ${data[propertyName].chain.name}`
@@ -172,10 +212,85 @@ export default function PublicField({
             onClick={() => {
               setIsRewardModalOpen(true);
             }}
+          /> */}
+          <RewardField
+            form={form}
+            data={data}
+            setData={setData}
+            propertyName={propertyName}
           />
         </Box>
       )}
-      {form.properties[propertyName]?.type === "milestone" && <AddMilestone />}
+      {form.properties[propertyName]?.type === "milestone" && (
+        <Box marginTop="4">
+          <Stack direction="vertical" space="2">
+            {data[propertyName]?.length &&
+              data[propertyName].map((milestone: Milestone, index: number) => {
+                return (
+                  <Box
+                    key={index}
+                    display="flex"
+                    flexDirection="row"
+                    gap="4"
+                    alignItems="flex-start"
+                    borderRadius="large"
+                    marginBottom="4"
+                    width="full"
+                  >
+                    <Box
+                      display="flex"
+                      flexDirection="column"
+                      width="128"
+                      marginBottom="4"
+                    >
+                      <Text variant="extraLarge" weight="semiBold">
+                        {milestone.title}
+                      </Text>
+                      {milestone.reward?.value && (
+                        <Text variant="small" weight="light">
+                          {`${milestone.reward?.value} ${milestone.reward?.token.name}`}
+                        </Text>
+                      )}
+                      {milestone.dueDate && (
+                        <Text variant="small" weight="light">
+                          {`Due on ${milestone.dueDate}`}
+                        </Text>
+                      )}
+                    </Box>
+                    <Box display="flex" flexDirection="row" gap="2">
+                      <Button
+                        variant="tertiary"
+                        size="small"
+                        onClick={() => {}}
+                      >
+                        Edit
+                      </Button>
+                      <PrimaryButton
+                        onClick={() => {
+                          const newMilestones = data[propertyName].filter(
+                            (milestone: Milestone, i: number) => i !== index
+                          );
+                          setData({ ...data, [propertyName]: newMilestones });
+                        }}
+                      >
+                        Remove
+                      </PrimaryButton>
+                    </Box>
+                  </Box>
+                );
+              })}
+          </Stack>
+          <Box width="72">
+            <PrimaryButton
+              variant="tertiary"
+              icon={<IconPlusSmall />}
+              onClick={() => setIsMilestoneModalOpen(true)}
+            >
+              Add new milestone
+            </PrimaryButton>
+          </Box>
+        </Box>
+      )}
     </Box>
   );
 }
