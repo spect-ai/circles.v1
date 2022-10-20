@@ -1,19 +1,10 @@
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { ShareAltOutlined, TableOutlined } from "@ant-design/icons";
-import {
-  Box,
-  Button,
-  IconDocuments,
-  IconList,
-  IconPencil,
-  Stack,
-  Text,
-  useTheme,
-} from "degen";
+import { Box, Button, Stack, Text, useTheme } from "degen";
 import { useRouter } from "next/router";
-import { memo } from "react";
+import { memo, useEffect } from "react";
 import Skeleton from "react-loading-skeleton";
 import { toast } from "react-toastify";
+import { useLocation } from "react-use";
 import styled from "styled-components";
 import { useLocalCollection } from "../Context/LocalCollectionContext";
 
@@ -33,6 +24,15 @@ function CollectionHeading() {
   } = useLocalCollection();
   const { mode } = useTheme();
   const router = useRouter();
+  const { responses } = router.query;
+
+  const location = useLocation();
+
+  useEffect(() => {
+    if (typeof responses === "string") {
+      setView(1);
+    }
+  }, [responses, setView]);
 
   return (
     <Box
@@ -72,7 +72,10 @@ function CollectionHeading() {
                 <PrimaryButton
                   // icon={<IconPencil />}
                   variant={view === 0 ? "tertiary" : "transparent"}
-                  onClick={() => setView(0)}
+                  onClick={() => {
+                    void router.push(location.pathname as string);
+                    setView(0);
+                  }}
                 >
                   Edit Form
                 </PrimaryButton>
