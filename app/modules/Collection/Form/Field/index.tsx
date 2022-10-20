@@ -9,6 +9,7 @@ import {
   IconPencil,
   Input,
   Stack,
+  Tag,
   Text,
   Textarea,
   useTheme,
@@ -78,7 +79,14 @@ function FieldComponent({
       mode={mode}
     >
       <Stack direction="horizontal">
-        <Text weight="semiBold">{collection.properties[id]?.name}</Text>
+        <Box width="full" display="flex" flexDirection="row" gap="2">
+          <Text weight="semiBold">{collection.properties[id]?.name}</Text>
+          {collection.properties[id].required && (
+            <Tag size="small" tone="accent">
+              Required
+            </Tag>
+          )}
+        </Box>
         {hover ? (
           <Box
             cursor="pointer"

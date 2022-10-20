@@ -11,6 +11,7 @@ export const addField = async (
     isPartOfFormView: boolean;
     userType?: FormUserType;
     onUpdateNotifyUserTypes?: FormUserType[];
+    required?: boolean;
   }
 ) => {
   return await (
@@ -40,6 +41,7 @@ export const updateField = async (
     rewardOptions?: Registry;
     userType?: FormUserType;
     onUpdateNotifyUserTypes?: FormUserType[];
+    required?: boolean;
   }
 ) => {
   return await (

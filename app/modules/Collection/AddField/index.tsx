@@ -3,6 +3,7 @@ import Dropdown from "@/app/common/components/Dropdown";
 import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import Select from "@/app/common/components/Select";
+import Tabs from "@/app/common/components/Tabs";
 import { addField, deleteField, updateField } from "@/app/services/Collection";
 import { FormUserType, Option, Registry } from "@/app/types";
 import { SaveFilled } from "@ant-design/icons";
@@ -29,6 +30,9 @@ export default function AddField({ propertyName, handleClose }: Props) {
 
   const [name, setName] = useState("");
   const [type, setType] = useState({ label: "Short Text", value: "shortText" });
+  const [required, setRequired] = useState(0);
+  const onRequiredTabClick = (id: number) => setRequired(id);
+
   const [loading, setLoading] = useState(false);
   const [fieldOptions, setFieldOptions] = useState([
     {
@@ -53,6 +57,7 @@ export default function AddField({ propertyName, handleClose }: Props) {
       //   )
       // );
       const property = collection.properties[propertyName];
+      setRequired(property.required ? 1 : 0);
 
       setType({
         label:
@@ -96,6 +101,13 @@ export default function AddField({ propertyName, handleClose }: Props) {
             }}
             multiple={false}
             isClearable={false}
+          />
+          <Tabs
+            selectedTab={required}
+            onTabClick={onRequiredTabClick}
+            tabs={["Optional", "Required"]}
+            orientation="horizontal"
+            unselectedColor="transparent"
           />
           {type.value === "singleSelect" || type.value === "multiSelect" ? (
             <AddOptions
@@ -174,6 +186,7 @@ export default function AddField({ propertyName, handleClose }: Props) {
                     (type) => type.value
                   ) as FormUserType[],
                   isPartOfFormView: true,
+                  required: required === 1,
                 });
               } else {
                 res = await addField(collection.id, {
@@ -187,6 +200,7 @@ export default function AddField({ propertyName, handleClose }: Props) {
                   onUpdateNotifyUserTypes: notifyUserType?.map(
                     (type) => type.value
                   ) as FormUserType[],
+                  required: required === 1,
                 });
               }
               setLoading(false);

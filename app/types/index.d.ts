@@ -690,6 +690,7 @@ export type Property = {
   rewardOptions?: Registry;
   userType?: FormUserType; // user type only relevant when type is user or user[]
   onUpdateNotifyUserTypes?: FormUserType[];
+  required?: boolean;
 };
 
 export type PropertyType =
