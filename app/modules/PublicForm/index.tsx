@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { getForm } from "@/app/services/Collection";
 import { FormType } from "@/app/types";
-import { Avatar, Box, FileInput, Heading, Stack, Text, useTheme } from "degen";
+import { Avatar, Box, Stack, useTheme } from "degen";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -29,7 +29,7 @@ export default function PublicForm() {
 
   if (form) {
     return (
-      <Box paddingX="0">
+      <ScrollContainer>
         <CoverImage src={form.cover} backgroundColor="accentSecondary" />
         <Container>
           <FormContainer backgroundColor="background">
@@ -54,7 +54,7 @@ export default function PublicForm() {
             <FormFields form={form} />
           </FormContainer>
         </Container>
-      </Box>
+      </ScrollContainer>
     );
   }
   return <Box>Loading</Box>;
@@ -112,3 +112,13 @@ export const CoverImage = styled(Box)<{ src: string }>`
 `;
 
 const FormContainer = styled(Box)``;
+
+const ScrollContainer = styled(Box)`
+  ::-webkit-scrollbar {
+    display: none;
+  }
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  max-height: calc(100vh);
+  overflow-y: auto;
+`;
