@@ -99,10 +99,24 @@ const ProfileCard = ({ username }: Props) => {
     void fetchUser();
   }, [user, username, isOpen, fetchUser, isSidebarExpanded]);
 
-  const circlesArray = user?.circles?.map((aCircle) => ({
-    label: user.circleDetails?.[aCircle].slug,
-    src: user.circleDetails?.[aCircle].avatar,
-  }));
+  const { data: myCircles, refetch } = useQuery<CircleType[]>(
+    "myOrganizations",
+    () =>
+      fetch(`${process.env.API_HOST}/circle/myOrganizations`, {
+        credentials: "include",
+      }).then((res) => res.json()),
+    {
+      enabled: false,
+    }
+  );
+
+  useEffect(() => {
+    void refetch();
+  }, [refetch, currentUser]);
+
+  const circlesArray =
+    myCircles?.map &&
+    myCircles?.map((aCircle) => ({ label: aCircle.slug, src: aCircle.avatar }));
 
   return (
     <>
@@ -173,9 +187,14 @@ const ProfileCard = ({ username }: Props) => {
             {user?.bio}
           </Text>
           <Text variant="label"> Circles </Text>
-          {(user as UserType)?.circles?.length > 0 && (
-            <AvatarGroup limit={9} members={circlesArray as any} />
-          )}
+          <AvatarGroup
+            limit={9}
+            members={
+              circlesArray?.length
+                ? circlesArray
+                : [{ label: "Noun 97", src: "/og.jpg" }]
+            }
+          />
         </TextInfo>
         <Footer>
           {currentUser?.id == user?.id && (

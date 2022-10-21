@@ -14,7 +14,6 @@ export default function useConnectDiscordServer() {
 
   useEffect(() => {
     const connectServer = async () => {
-      if (!guild_id || guild_id === "undefined") return;
       const data = await updateCircle(
         {
           discordGuildId: guild_id as string,
@@ -25,6 +24,6 @@ export default function useConnectDiscordServer() {
       void router.push(`/${cId}`);
     };
     if (circle?.id && guild_id) void connectServer();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    //;
   }, [cId, circle?.id, guild_id]);
 }

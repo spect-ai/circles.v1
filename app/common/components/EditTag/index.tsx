@@ -36,7 +36,9 @@ function EditTag({
       <Stack direction="horizontal">
         {label && (
           <Box width="1/3">
-            <Text variant="label">{label}</Text>
+            <Text variant="label" ellipsis>
+              {label}
+            </Text>
           </Box>
         )}
         <Box width={label ? "2/3" : "full"}>

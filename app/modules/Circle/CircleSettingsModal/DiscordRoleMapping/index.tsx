@@ -28,7 +28,7 @@ export default function DiscordRoleMapping() {
   useEffect(() => {
     if (isOpen) {
       const fetchGuildRoles = async () => {
-        const data = await getGuildRoles(circle?.discordGuildId);
+        const data = await getGuildRoles(circle?.discordGuildId as string);
         data && setDiscordRoles(data.roles);
         console.log({ data });
       };

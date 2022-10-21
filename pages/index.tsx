@@ -1,5 +1,5 @@
 import { PublicLayout } from "@/app/common/layout";
-import Dashboard from "@/app/modules/Dashboard";
+import Explore from "@/app/modules/Explore";
 import { BucketizedCircleType, CircleType } from "@/app/types";
 import type { NextPage } from "next";
 import { useQuery } from "react-query";
@@ -20,7 +20,7 @@ const Home: NextPage = () => {
         image="/og.jpg"
       />
       <PublicLayout>
-        <Dashboard />
+        <Explore />
       </PublicLayout>
     </>
   );

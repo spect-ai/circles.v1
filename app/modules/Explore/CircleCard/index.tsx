@@ -3,7 +3,6 @@ import type { FC } from "react";
 import { Avatar, Box, Button, Stack, Text } from "degen";
 import styled, { keyframes } from "styled-components";
 import Link from "next/link";
-import Image from "next/image";
 
 interface Props {
   href: string;
