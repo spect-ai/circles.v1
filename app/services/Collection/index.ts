@@ -91,6 +91,8 @@ export const updateFormCollection = async (
     updatingResponseAllowed?: boolean;
     circleRolesToNotifyUponNewResponse?: string[];
     circleRolesToNotifyUponUpdatedResponse?: string[];
+    logo?: string;
+    cover?: string;
   }
 ) => {
   return await (

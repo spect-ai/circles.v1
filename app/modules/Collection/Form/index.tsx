@@ -14,7 +14,7 @@ import { SkeletonLoader } from "../../Explore/SkeletonLoader";
 import { useLocalCollection } from "../Context/LocalCollectionContext";
 import SendKudos from "../SendKudos";
 import { AdditionalSettings } from "./AdditionalSettings";
-import ColumnComponent from "./ColumnComponent";
+import FormBuilder from "./FormBuilder";
 import InactiveFieldsColumnComponent from "./InactiveFieldsColumn";
 import { Notifications } from "./Notifications";
 
@@ -28,11 +28,10 @@ const Container = styled.div`
 
 const ScrollContainer = styled(Box)`
   overflow-y: auto;
-  height: 45rem;
+  height: calc(100vh - 10rem);
   ::-webkit-scrollbar {
     width: 5px;
   }
-  margin-left: 8rem;
 `;
 
 export function Form() {
@@ -116,13 +115,9 @@ export function Form() {
     return (
       <Container {...provided.droppableProps} ref={provided.innerRef}>
         <InactiveFieldsColumnComponent fields={propertyOrder} />
-        <Box
-          style={{
-            width: "80%",
-          }}
-        >
+        <Box width="full">
           <ScrollContainer>
-            <ColumnComponent fields={propertyOrder} />
+            <FormBuilder fields={propertyOrder} />
             <Box
               marginTop="16"
               marginBottom="4"
@@ -173,6 +168,7 @@ export function Form() {
     );
   };
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const DroppableContentCallback = useCallback(DroppableContent, [
     propertyOrder,
   ]);

@@ -657,6 +657,8 @@ export type DiscordChannel = {
 };
 
 export interface CollectionType {
+  cover: string;
+  logo: string;
   id: string;
   name: string;
   description: string;
@@ -752,6 +754,8 @@ export type GuildRole = {
 };
 
 export interface FormType {
+  logo: string;
+  cover: string;
   name: string;
   circleId: string;
   slug: string;
