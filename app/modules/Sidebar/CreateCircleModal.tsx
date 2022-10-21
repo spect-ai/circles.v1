@@ -17,7 +17,7 @@ type CreateCircleDto = {
   gradient: string;
 };
 
-function CreateCircle({ size }: { size: "small" | "large" }) {
+function CreateCircle() {
   const [modalOpen, setModalOpen] = useState(false);
   const [visibilityTab, setVisibilityTab] = useState(0);
   const onVisibilityTabClick = (id: number) => setVisibilityTab(id);
@@ -63,7 +63,9 @@ function CreateCircle({ size }: { size: "small" | "large" }) {
           onClick={open}
           data-tour="create-circle-sidebar-button"
         >
-          <IconPlus color={"accent"} size={size == "large" ? "6" : "4"} />
+          <Text color="accent">
+            <IconPlus />
+          </Text>
         </Button>
       </Box>
       <AnimatePresence

@@ -18,12 +18,12 @@ import React, { memo, useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { PopoverOption } from "../Card/OptionPopover";
 import SettingsModal from "../Circle/CircleSettingsModal";
+import ContributorsModal from "../Circle/ContributorsModal";
+import RolesModal from "../Circle/RolesModal";
 import { HeaderButton } from "./ExploreSidebar";
-import { useGlobal } from "@/app/context/globalContext";
 
 function CircleOptions() {
   const router = useRouter();
-  const { toggle, setToggle } = useGlobal();
   const { circle: cId, project: pId } = router.query;
   const { data: circle } = useQuery<CircleType>(["circle", cId], {
     enabled: false,
@@ -34,7 +34,9 @@ function CircleOptions() {
   });
   const [isOpen, setIsOpen] = useState(false);
   const [settingsModalOpen, setSettingsModalOpen] = useState(false);
+  const [contributorsModalOpen, setContributorsModalOpen] = useState(false);
   const [perm, setPerm] = useState({} as Permissions);
+  const [rolesModalOpen, setRolesModalOpen] = useState(false);
   const { mode } = useTheme();
 
   useEffect(() => {
@@ -62,6 +64,14 @@ function CircleOptions() {
       <AnimatePresence>
         {settingsModalOpen && (
           <SettingsModal handleClose={() => setSettingsModalOpen(false)} />
+        )}
+        {contributorsModalOpen && (
+          <ContributorsModal
+            handleClose={() => setContributorsModalOpen(false)}
+          />
+        )}
+        {rolesModalOpen && (
+          <RolesModal handleClose={() => setRolesModalOpen(false)} />
         )}
       </AnimatePresence>
       <Box display="flex" flexDirection="row" alignItems="center" width="64">
@@ -101,7 +111,6 @@ function CircleOptions() {
                 onClick={() => {
                   setIsOpen(false);
                   void router.push(`/${cId}`);
-                  setToggle("Overview")
                 }}
               >
                 <Stack direction="horizontal" space="2">
@@ -117,8 +126,7 @@ function CircleOptions() {
               <PopoverOption
                 onClick={() => {
                   setIsOpen(false);
-                  void router.push(`/${cId}`);
-                  setToggle("Members");
+                  setContributorsModalOpen(true);
                 }}
               >
                 <Stack direction="horizontal" space="2">
@@ -129,8 +137,7 @@ function CircleOptions() {
               <PopoverOption
                 onClick={() => {
                   setIsOpen(false);
-                  void router.push(`/${cId}`);
-                  setToggle("Roles");
+                  setRolesModalOpen(true);
                 }}
               >
                 <Stack direction="horizontal" space="2">

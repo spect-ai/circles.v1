@@ -12,12 +12,8 @@ import Card from "./card";
 import { CircleType, ProjectType, RetroType } from "@/app/types";
 import { deleteFolder, updateFolder } from "@/app/services/Folders";
 import { useCircle } from "../../CircleContext";
-import { Container, Row } from "react-grid-system";
+import { Container, Row, Col } from "react-grid-system";
 import CreateFolderItem from "./CreateFolderItem";
-import CreateProjectModal from "@/app/modules/Circle/CreateProjectModal";
-import CreateSpaceModal from "@/app/modules/Circle/CreateSpaceModal";
-import CreateRetroModal from "@/app/modules/Retro/CreateRetro";
-import { AnimatePresence } from "framer-motion";
 
 interface Props {
   content: string[];
@@ -70,9 +66,6 @@ const Folder = ({
   const { mode } = useTheme();
   const { localCircle: circle, setCircleData } = useCircle();
   const [folderTitle, setFolderTitle] = useState(name);
-  const [projectModal, setProjectModal] = useState(false);
-  const [workstreamModal, setWorkstreamModal] = useState(false);
-  const [retroOpen, setRetroOpen] = useState(false);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const ondeleteFolder = async () => {
     const res = await deleteFolder(circle.id, id);
@@ -147,13 +140,13 @@ const Folder = ({
   function DraggableContent(provided: DraggableProvided) {
     return (
       <Box
+        {...provided.draggableProps}
+        {...provided.dragHandleProps}
+        ref={provided.innerRef}
         paddingY={"2"}
         display="flex"
         flexDirection="column"
         justifyContent="space-between"
-        {...provided.draggableProps}
-        {...provided.dragHandleProps}
-        ref={provided.innerRef}
       >
         <Stack direction={"horizontal"} align={"center"}>
           <NameInput
@@ -164,13 +157,7 @@ const Folder = ({
             mode={mode}
             maxLength={20}
           />
-          {canDo("manageCircleSettings") && (
-            <CreateFolderItem
-              setProjectModal={setProjectModal}
-              setWorkstreamModal={setWorkstreamModal}
-              setRetroOpen={setRetroOpen}
-            />
-          )}
+          {canDo("manageCircleSettings") && <CreateFolderItem folderId={id} />}
           {avatar !== "All" &&
             content.length == 0 &&
             canDo("manageCircleSettings") && (
@@ -201,32 +188,9 @@ const Folder = ({
   ]);
 
   return (
-    <>
-      <Draggable draggableId={id} index={index}>
-        {DraggableContentCallback}
-      </Draggable>
-      {projectModal && (
-        <AnimatePresence>
-          <CreateProjectModal folderId={id} setModalOpen={setProjectModal} />
-        </AnimatePresence>
-      )}
-      {workstreamModal && (
-        <AnimatePresence>
-          <CreateSpaceModal
-            folderId={id}
-            setWorkstreamModal={setWorkstreamModal}
-          />
-        </AnimatePresence>
-      )}
-      {retroOpen && (
-        <AnimatePresence>
-          <CreateRetroModal
-            folderId={id}
-            handleClose={() => setRetroOpen(false)}
-          />
-        </AnimatePresence>
-      )}
-    </>
+    <Draggable draggableId={id} index={index}>
+      {DraggableContentCallback}
+    </Draggable>
   );
 };
 

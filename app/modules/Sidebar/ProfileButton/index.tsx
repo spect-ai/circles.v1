@@ -24,9 +24,16 @@ export default function ProfileButton() {
   const { mode } = useTheme();
 
   const [notifIds, setNotifIds] = useState([] as string[]);
-  const { data: currentUser, refetch: fetchUser } = useQuery<UserType>("getMyUser", {
-    enabled: false,
-  });
+  const { data: currentUser, refetch: fetchUser } = useQuery<UserType>(
+    "user",
+    async () =>
+      await fetch(`${process.env.API_HOST}/user/me`, {
+        credentials: "include",
+      }).then((res) => res.json()),
+    {
+      enabled: false,
+    }
+  );
 
   useEffect(() => {
     void fetchUser();

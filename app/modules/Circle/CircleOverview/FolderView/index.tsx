@@ -39,7 +39,7 @@ const ScrollContainer = styled(Box)`
   }
   -ms-overflow-style: none;
   scrollbar-width: none;
-  height: calc(100vh - 9.5rem);
+  height: calc(100vh - 7.5rem);
 `;
 
 export const FolderView = ({
@@ -61,13 +61,13 @@ export const FolderView = ({
       NaN ||
       circle?.folderOrder?.length == 0;
     const payload = {
-      name: fol ? "All" : `Section-${circle?.folderOrder?.length + 1}`,
+      name: fol ? "All" : `Folder-${circle?.folderOrder?.length + 1}`,
       avatar: fol ? "All" : "New Avatar",
       contentIds: fol ? unclassified : ([] as string[]),
     };
     const res = await createFolder(payload, circle?.id);
     if (res) {
-      console.log(`New Section with name - ${payload.name} created `);
+      console.log(`New Folder with name - ${payload.name} created `);
       setCircleData(res);
       setLocalCircle(res);
     }
@@ -154,7 +154,7 @@ export const FolderView = ({
           </Text>
         </Box>
       )}
-      {circle?.folderOrder?.slice(0)?.reverse().map((folder, i) => {
+      {circle?.folderOrder?.map((folder, i) => {
         const folderDetail = circle?.folderDetails?.[folder];
         return (
           <Folder
@@ -187,7 +187,7 @@ export const FolderView = ({
 
   return (
     <DragDropContext onDragEnd={handleDrag}>
-      <Droppable droppableId="all-folders" direction="horizontal" type="folder">
+      <Droppable droppableId="all-folders" direction="vertical" type="folder">
         {DroppableContentCallback}
       </Droppable>
     </DragDropContext>

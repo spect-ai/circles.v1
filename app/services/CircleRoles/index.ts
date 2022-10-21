@@ -22,10 +22,10 @@ export async function addRole(circleId: string, body: any) {
       toast("Role added successfully", { theme: "dark" });
       return response;
     } else {
-      toast.error("Error adding role", { theme: "dark" });
+      toast.error("Error adding role");
     }
   } catch (error) {
-    toast.error("Error adding role", { theme: "dark" });
+    toast.error("Error adding role");
     return error;
   }
 }
@@ -45,12 +45,13 @@ export async function updateRole(circleId: string, role: string, body: any) {
     );
     if (res.ok) {
       const response = await res.json();
+      toast("Role added successfully", { theme: "dark" });
       return response;
     } else {
-      toast.error("Error updating role", { theme: "dark" });
+      toast.error("Error adding role");
     }
   } catch (error) {
-    toast.error("Error updating role", { theme: "dark" });
+    toast.error("Error adding role");
     return error;
   }
 }
@@ -76,7 +77,7 @@ export async function updateMemberRole(
     console.log({ data });
     return data;
   } else {
-    toast.error("Something went wrong updating the member role");
+    toast.error("Something went wrong updating the role");
     return null;
   }
 }
