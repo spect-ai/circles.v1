@@ -1,7 +1,7 @@
 import {
   addCollectionData,
   deleteCollectionData,
-  updateCollectionData,
+  updateCollectionDataGuarded,
 } from "@/app/services/Collection";
 import { PropertyType, Reward } from "@/app/types";
 import { Box } from "degen";
@@ -47,7 +47,7 @@ export default function TableView() {
       }
       if (!row.id) return;
       if (row) {
-        const res = await updateCollectionData(collection.id, row.id, {
+        const res = await updateCollectionDataGuarded(collection.id, row.id, {
           [cell.colId as string]: row[cell.colId as string],
         });
         if (!res.id) {

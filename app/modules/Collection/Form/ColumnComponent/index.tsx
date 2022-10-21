@@ -103,7 +103,7 @@ function ColumnComponent({ fields }: Props) {
               setName(e.target.value);
             }}
             onBlur={async () => {
-              if (connectedUser) {
+              if (connectedUser && name !== collection.name) {
                 const res = await updateFormCollection(collection.id, {
                   name,
                 });

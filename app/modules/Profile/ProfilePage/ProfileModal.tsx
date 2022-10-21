@@ -68,6 +68,7 @@ export default function ProfileModal({ setIsOpen }: Props) {
     setUsername(currentUser?.username || "");
     setBio(currentUser?.bio || "");
     setSkills(currentUser?.skills || []);
+    setEmail(currentUser?.email || "");
     setLoading(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -183,13 +184,14 @@ export default function ProfileModal({ setIsOpen }: Props) {
             icon={<SaveFilled style={{ fontSize: "1.3rem" }} />}
             onClick={async () => {
               setLoading(true);
-              await updateProfile({
+              const res = await updateProfile({
                 username,
                 avatar,
                 bio,
                 skills,
                 email,
               });
+              console.log(res);
               setLoading(false);
               handleClose();
               setIsDirty(false);

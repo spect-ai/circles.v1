@@ -2,7 +2,7 @@ import Dropdown, { OptionType } from "@/app/common/components/Dropdown";
 import Editor from "@/app/common/components/Editor";
 import ClickableTag from "@/app/common/components/EditTag/ClickableTag";
 import Modal from "@/app/common/components/Modal";
-import { updateCollectionData } from "@/app/services/Collection";
+import { updateCollectionDataGuarded } from "@/app/services/Collection";
 import { MemberDetails } from "@/app/types";
 import { Box, IconEth, Input, Stack, Text, useTheme } from "degen";
 import { AnimatePresence } from "framer-motion";
@@ -56,7 +56,7 @@ export default function DataModal() {
         console.log({ data });
         void router.push(`/${cId}/r/${collection.slug}`);
         setIsOpen(false);
-        const res = await updateCollectionData(
+        const res = await updateCollectionDataGuarded(
           collection.id,
           dataId as string,
           { ...data }

@@ -146,6 +146,29 @@ export const updateCollectionData = async (
   ).json();
 };
 
+export const updateCollectionDataGuarded = async (
+  collectionId: string,
+  dataId: string,
+  update: any
+) => {
+  delete update.slug;
+  return await (
+    await fetch(
+      `${process.env.API_HOST}/collection/v1/${collectionId}/updateDataGuarded?dataId=${dataId}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          data: update,
+        }),
+      }
+    )
+  ).json();
+};
+
 export const deleteCollectionData = async (
   collectionId: string,
   dataIds: string[]
@@ -153,7 +176,7 @@ export const deleteCollectionData = async (
   if (dataIds.length > 1) {
     return await (
       await fetch(
-        `${process.env.API_HOST}/collection/v1/${collectionId}/removeMultipleData`,
+        `${process.env.API_HOST}/collection/v1/${collectionId}/removeMultipleDataGuarded`,
         {
           method: "PATCH",
           headers: {
@@ -169,7 +192,7 @@ export const deleteCollectionData = async (
   }
   return await (
     await fetch(
-      `${process.env.API_HOST}/collection/v1/${collectionId}/removeData?dataId=${dataIds[0]}`,
+      `${process.env.API_HOST}/collection/v1/${collectionId}/removeDataGuarded?dataId=${dataIds[0]}`,
       {
         method: "PATCH",
         headers: {
