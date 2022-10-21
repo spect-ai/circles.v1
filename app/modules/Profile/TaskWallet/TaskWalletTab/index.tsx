@@ -126,7 +126,7 @@ const TaskWalletTabs = ({ userData, tab }: UserProps) => {
       </Box>
       <Box>
         {panelTab === "Work" && (
-          <Box display={"flex"} flexDirection="column" marginTop={"4"}>
+          <Box display={"flex"} flexDirection="column">
             <Toggle toggle={toggle} setToggle={setToggle} />
             <WorkCards
               toggle={toggle}

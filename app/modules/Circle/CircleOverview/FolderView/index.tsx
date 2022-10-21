@@ -154,7 +154,7 @@ export const FolderView = ({
           </Text>
         </Box>
       )}
-      {circle?.folderOrder?.map((folder, i) => {
+      {circle?.folderOrder?.slice(0)?.reverse().map((folder, i) => {
         const folderDetail = circle?.folderDetails?.[folder];
         return (
           <Folder
@@ -187,7 +187,7 @@ export const FolderView = ({
 
   return (
     <DragDropContext onDragEnd={handleDrag}>
-      <Droppable droppableId="all-folders" direction="vertical" type="folder">
+      <Droppable droppableId="all-folders" direction="horizontal" type="folder">
         {DroppableContentCallback}
       </Droppable>
     </DragDropContext>
