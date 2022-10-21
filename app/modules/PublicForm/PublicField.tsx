@@ -1,27 +1,10 @@
 import Dropdown from "@/app/common/components/Dropdown";
 import Editor from "@/app/common/components/Editor";
-import ClickableTag from "@/app/common/components/EditTag/ClickableTag";
-import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { validateEmail } from "@/app/common/utils/utils";
-import { FormType, Milestone, Option, Registry } from "@/app/types";
-import { useEffect } from "@storybook/addons";
-import {
-  Box,
-  Button,
-  IconEth,
-  IconPlusSmall,
-  Input,
-  Stack,
-  Tag,
-  Text,
-  useTheme,
-} from "degen";
-import { AnimatePresence } from "framer-motion";
-import React, { useState } from "react";
+import { FormType, Option } from "@/app/types";
+import { Box, Input, Stack, Tag, Text, useTheme } from "degen";
 import { DateInput } from "../Collection/Form/Field";
-import RewardModal from "../Collection/TableView/RewardModal";
 import MilestoneField from "./MilestoneField";
-import MilestoneModal from "./MilestoneModal";
 import RewardField from "./RewardField";
 
 type Props = {
@@ -44,7 +27,6 @@ export default function PublicField({
   updateRequiredFieldNotSet,
 }: Props) {
   const { mode } = useTheme();
-  console.log({ data });
   return (
     <Box
       padding="4"
@@ -147,7 +129,6 @@ export default function PublicField({
           <Editor
             value={data[propertyName]}
             onSave={(value) => {
-              console.log({ value });
               data[propertyName] = value;
               setData({ ...data });
               updateRequiredFieldNotSet(propertyName, value);

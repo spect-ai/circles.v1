@@ -320,8 +320,6 @@ export default function FormFields({ form }: Props) {
 }
 
 const Container = styled(Box)`
-  width: 80%;
-  border-width: 2px;
   padding: 2rem;
   overflow-y: auto;
   max-height: calc(100vh - 10rem);

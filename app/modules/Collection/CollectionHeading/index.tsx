@@ -94,10 +94,12 @@ function CollectionHeading() {
                   // icon={<IconDocuments />}
                   variant={"transparent"}
                   onClick={() => {
-                    window.open(
-                      `https://circles.spect.network/r/${collection?.slug}`,
-                      "_blank"
-                    );
+                    void router.push(`/r/${collection?.slug}`);
+                    // uncomment this when pushing to prod, need the above line while we are testing
+                    // window.open(
+                    //   `https://circles.spect.network/r/${collection?.slug}`,
+                    //   "_blank"
+                    // );
                   }}
                 >
                   Preview

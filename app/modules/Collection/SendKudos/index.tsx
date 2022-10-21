@@ -117,7 +117,6 @@ export default function SendKudos() {
   }, []);
 
   useEffect(() => {
-    console.log("kekek");
     if (collection.mintkudosTokenId) {
       setLoading(true);
       getKudos(collection.mintkudosTokenId)
