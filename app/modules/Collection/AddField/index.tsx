@@ -14,6 +14,7 @@ import { useCircle } from "../../Circle/CircleContext";
 import { fields } from "../Constants";
 import { useLocalCollection } from "../Context/LocalCollectionContext";
 import AddOptions from "./AddOptions";
+import MilestoneOptions from "./MilestoneOptions";
 import RewardOptions from "./RewardOptions";
 
 type Props = {
@@ -139,6 +140,9 @@ export default function AddField({ propertyName, handleClose }: Props) {
           {type.value === "reward" ? (
             <RewardOptions networks={networks} setNetworks={setNetworks} />
           ) : null}
+          {type.value === "milestone" ? (
+            <MilestoneOptions networks={networks} setNetworks={setNetworks} />
+          ) : null}
           {/* <Accordian name="Advanced Settings" defaultOpen={false}>
             <Stack space="2">
               {["shortText", "longText", "ethAddress"].includes(type.value) && (
@@ -170,8 +174,12 @@ export default function AddField({ propertyName, handleClose }: Props) {
               setLoading(true);
               let res;
               let rewardOptions = {} as Registry | undefined;
-              if (type.value === "reward") {
+              if (type.value === "reward" || type.value === "milestone") {
                 rewardOptions = networks;
+              }
+              let milestoneFields = [] as string[];
+              if (type.value === "milestone") {
+                milestoneFields = ["name", "description", "dueDate", "reward"];
               }
               console.log({ rewardOptions });
               if (propertyName) {
@@ -187,6 +195,7 @@ export default function AddField({ propertyName, handleClose }: Props) {
                   ) as FormUserType[],
                   isPartOfFormView: true,
                   required: required === 1,
+                  milestoneFields,
                 });
               } else {
                 res = await addField(collection.id, {
@@ -201,6 +210,7 @@ export default function AddField({ propertyName, handleClose }: Props) {
                     (type) => type.value
                   ) as FormUserType[],
                   required: required === 1,
+                  milestoneFields,
                 });
               }
               setLoading(false);

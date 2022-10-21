@@ -1,47 +1,31 @@
 import Dropdown from "@/app/common/components/Dropdown";
 import Editor from "@/app/common/components/Editor";
-import ClickableTag from "@/app/common/components/EditTag/ClickableTag";
 import Modal from "@/app/common/components/Modal";
-import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { Chain, Milestone, Registry, Reward, Token } from "@/app/types";
-import {
-  Box,
-  IconPlusSmall,
-  Input,
-  useTheme,
-  Text,
-  IconEth,
-  Stack,
-  Tag,
-  Button,
-} from "degen";
-import { AnimatePresence } from "framer-motion";
+import { Chain, Milestone, Option, Registry, Token } from "@/app/types";
+import { Box, Button, Input, Tag, Text, useTheme } from "degen";
 import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { useLocalCollection } from "../Collection/Context/LocalCollectionContext";
 import { DateInput } from "../Collection/Form/Field";
-import RewardModal from "../Collection/TableView/RewardModal";
 
 type Props = {
   form: any;
-  dataId?: string;
-  milestoneId?: string;
   propertyName: string;
+  data: any;
   handleClose: () => void;
-  addMilestone: (
-    milestone: Milestone,
-    dataId: string,
-    propertyName: string
-  ) => void;
+  addMilestone: (milestone: Milestone) => void;
+  modalMode: "create" | "edit";
+  milestoneIndex?: number;
 };
 
 export default function MilestoneModal({
-  propertyName,
-  dataId,
-  milestoneId,
   form,
+  propertyName,
+  data,
   handleClose,
   addMilestone,
+  modalMode,
+  milestoneIndex,
 }: Props) {
   const { localCollection: collection, setLocalCollection } =
     useLocalCollection();
@@ -52,27 +36,89 @@ export default function MilestoneModal({
     }
   );
 
-  const [chain, setChain] = useState({} as Chain);
-  const [token, setToken] = useState({} as Token);
   const [value, setValue] = useState("");
   const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
+  const [description, setDescription] = useState(
+    propertyName &&
+      (milestoneIndex || milestoneIndex === 0) &&
+      modalMode === "edit"
+      ? data[propertyName][milestoneIndex].description
+      : ""
+  );
   const [date, setDate] = useState("");
+  const rewardOptions = (form.properties[propertyName]?.rewardOptions ||
+    {}) as Registry;
+  const firstChainName =
+    Object.values(rewardOptions).length > 0
+      ? Object.values(rewardOptions)[0].name
+      : "";
+  const firstChainId =
+    Object.keys(rewardOptions).length > 0 ? Object.keys(rewardOptions)[0] : "";
+  const firstTokenSymbol = Object.values(
+    rewardOptions[firstChainId]?.tokenDetails
+  )[0].symbol;
+  const firstTokenAddress = Object.keys(
+    rewardOptions[firstChainId]?.tokenDetails
+  )[0];
+
+  const [tokenOptions, setTokenOptions] = useState<Option[]>([]);
+  const [selectedChain, setSelectedChain] = useState<Option>({
+    label: firstChainName,
+    value: firstChainId,
+  });
+  const [selectedToken, setSelectedToken] = useState<Option>({
+    label: firstTokenSymbol,
+    value: firstTokenAddress,
+  });
+
+  const [requiredFieldsNotSet, setRequiredFieldsNotSet] = useState({
+    title: false,
+    description: false,
+    date: false,
+    reward: false,
+  });
 
   const { mode } = useTheme();
 
+  const isEmpty = (fieldName: string, value: any) => {
+    switch (fieldName) {
+      case "title":
+      case "description":
+      case "dueDate":
+      case "reward":
+        return !value;
+      default:
+        return false;
+    }
+  };
+
+  console.log({ description });
   useEffect(() => {
-    if (milestoneId && dataId) {
-      const milestone = form[dataId][propertyName].find(
-        (milestone: Milestone) => milestone.id === milestoneId
-      );
+    if (form.properties[propertyName]?.rewardOptions && selectedChain) {
+      const tokens = Object.entries(
+        rewardOptions[selectedChain.value].tokenDetails
+      ).map(([address, token]) => {
+        return {
+          label: token.symbol,
+          value: address,
+        };
+      });
+      setSelectedToken(tokens[0]);
+      setTokenOptions(tokens);
+    }
+  }, [selectedChain]);
+
+  useEffect(() => {
+    if (modalMode === "edit" && (milestoneIndex || milestoneIndex === 0)) {
+      const milestone = data[propertyName][milestoneIndex];
+      console.log(milestone.description);
       if (milestone) {
         setTitle(milestone.title);
         setDescription(milestone.description);
         setDate(milestone.dueDate);
-        setChain(milestone.reward.chain);
-        setToken(milestone.reward.token);
-        setValue(milestone.reward.value);
+        setSelectedChain(milestone.reward?.chain || selectedChain);
+        setSelectedToken(milestone.reward?.token || selectedToken);
+        setValue(milestone.reward?.value || "");
       }
     }
   }, []);
@@ -99,17 +145,27 @@ export default function MilestoneModal({
               Required
             </Tag>
           </Box>
+          {requiredFieldsNotSet["title"] && (
+            <Text color="red" variant="small">
+              This is a required field and cannot be empty
+            </Text>
+          )}
           <Input
             label=""
             placeholder={`Enter Milestone Title`}
             value={title}
             onChange={(e) => {
               setTitle(e.target.value);
+              setRequiredFieldsNotSet({
+                ...requiredFieldsNotSet,
+                title: isEmpty("title", e.target.value),
+              });
             }}
           />
         </Box>
         <Box>
           <Text variant="label">Description</Text>
+
           <Box
             marginTop="2"
             width="full"
@@ -134,34 +190,33 @@ export default function MilestoneModal({
           <Box display="flex" flexDirection="row" alignItems="center" gap="2">
             <Box width="72" marginTop="2">
               <Dropdown
-                options={[
-                  {
-                    value: "1",
-                    label: "Ethereum",
-                  },
-                ]}
-                selected={{
-                  value: "1",
-                  label: "Ethereum",
+                options={
+                  form.properties[propertyName]?.rewardOptions
+                    ? Object.entries(
+                        form.properties[propertyName].rewardOptions as Registry
+                      ).map(([chainId, network]) => {
+                        return {
+                          label: network.name,
+                          value: chainId,
+                        };
+                      })
+                    : []
+                }
+                selected={selectedChain}
+                onChange={(option) => {
+                  setSelectedChain(option);
                 }}
-                onChange={(option) => {}}
                 multiple={false}
                 isClearable={false}
               />
             </Box>
             <Box width="72" marginTop="2">
               <Dropdown
-                options={[
-                  {
-                    value: "1",
-                    label: "Ethereum",
-                  },
-                ]}
-                selected={{
-                  value: "1",
-                  label: "Ethereum",
+                options={tokenOptions}
+                selected={selectedToken}
+                onChange={(option) => {
+                  setSelectedToken(option);
                 }}
-                onChange={(option) => {}}
                 multiple={false}
                 isClearable={false}
               />
@@ -204,20 +259,24 @@ export default function MilestoneModal({
             size="small"
             width="32"
             onClick={() => {
-              addMilestone(
-                {
-                  title,
-                  description,
-                  dueDate: date,
-                  reward: {
-                    value: parseFloat(value),
-                    token,
-                    chain,
-                  },
+              if (!title) {
+                setRequiredFieldsNotSet({
+                  ...requiredFieldsNotSet,
+                  title: true,
+                });
+                return;
+              }
+
+              addMilestone({
+                title,
+                description,
+                dueDate: date,
+                reward: {
+                  value: parseFloat(value),
+                  token: selectedToken,
+                  chain: selectedChain,
                 },
-                dataId || "",
-                propertyName
-              );
+              });
             }}
           >
             Add

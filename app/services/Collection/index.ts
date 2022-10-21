@@ -13,6 +13,7 @@ export const addField = async (
     onUpdateNotifyUserTypes?: FormUserType[];
     required?: boolean;
     description?: string;
+    milestoneFields?: string[];
   }
 ) => {
   return await (
@@ -44,6 +45,7 @@ export const updateField = async (
     onUpdateNotifyUserTypes?: FormUserType[];
     required?: boolean;
     description?: string;
+    milestoneFields?: string[];
   }
 ) => {
   return await (

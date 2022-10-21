@@ -231,10 +231,6 @@ export default function FormFields({ form }: Props) {
   }
 
   const isEmpty = (propertyName: string, value: any) => {
-    console.log({ propertyName, value });
-    console.log({ length: value?.length });
-    console.log({ type: form.properties[propertyName].type });
-    console.log({ value: value?.value });
     switch (form.properties[propertyName].type) {
       case "longText":
       case "shortText":

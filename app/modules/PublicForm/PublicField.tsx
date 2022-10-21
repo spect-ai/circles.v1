@@ -20,6 +20,7 @@ import { AnimatePresence } from "framer-motion";
 import React, { useState } from "react";
 import { DateInput } from "../Collection/Form/Field";
 import RewardModal from "../Collection/TableView/RewardModal";
+import MilestoneField from "./MilestoneField";
 import MilestoneModal from "./MilestoneModal";
 import RewardField from "./RewardField";
 
@@ -43,9 +44,6 @@ export default function PublicField({
   updateRequiredFieldNotSet,
 }: Props) {
   const { mode } = useTheme();
-  const [isRewardModalOpen, setIsRewardModalOpen] = useState(false);
-  const [isMilestoneModalOpen, setIsMilestoneModalOpen] = useState(false);
-
   console.log({ data });
   return (
     <Box
@@ -54,24 +52,6 @@ export default function PublicField({
       borderRadius="large"
       //   mode={mode}
     >
-      <AnimatePresence>
-        {isMilestoneModalOpen && (
-          <MilestoneModal
-            handleClose={() => {
-              setIsMilestoneModalOpen(false);
-            }}
-            addMilestone={(value, dataId, propertyName) => {
-              setData({
-                ...data,
-                [propertyName]: [data[propertyName] || [], value],
-              });
-              setIsMilestoneModalOpen(false);
-            }}
-            propertyName={propertyName}
-            form={form}
-          />
-        )}
-      </AnimatePresence>
       <Stack direction="vertical" space="2">
         <Box
           width="full"
@@ -224,74 +204,12 @@ export default function PublicField({
         </Box>
       )}
       {form.properties[propertyName]?.type === "milestone" && (
-        <Box marginTop="4">
-          <Stack direction="vertical" space="2">
-            {data[propertyName]?.length &&
-              data[propertyName].map((milestone: Milestone, index: number) => {
-                return (
-                  <Box
-                    key={index}
-                    display="flex"
-                    flexDirection="row"
-                    gap="4"
-                    alignItems="flex-start"
-                    borderRadius="large"
-                    marginBottom="4"
-                    width="full"
-                  >
-                    <Box
-                      display="flex"
-                      flexDirection="column"
-                      width="128"
-                      marginBottom="4"
-                    >
-                      <Text variant="extraLarge" weight="semiBold">
-                        {milestone.title}
-                      </Text>
-                      {milestone.reward?.value && (
-                        <Text variant="small" weight="light">
-                          {`${milestone.reward?.value} ${milestone.reward?.token.name}`}
-                        </Text>
-                      )}
-                      {milestone.dueDate && (
-                        <Text variant="small" weight="light">
-                          {`Due on ${milestone.dueDate}`}
-                        </Text>
-                      )}
-                    </Box>
-                    <Box display="flex" flexDirection="row" gap="2">
-                      <Button
-                        variant="tertiary"
-                        size="small"
-                        onClick={() => {}}
-                      >
-                        Edit
-                      </Button>
-                      <PrimaryButton
-                        onClick={() => {
-                          const newMilestones = data[propertyName].filter(
-                            (milestone: Milestone, i: number) => i !== index
-                          );
-                          setData({ ...data, [propertyName]: newMilestones });
-                        }}
-                      >
-                        Remove
-                      </PrimaryButton>
-                    </Box>
-                  </Box>
-                );
-              })}
-          </Stack>
-          <Box width="72">
-            <PrimaryButton
-              variant="tertiary"
-              icon={<IconPlusSmall />}
-              onClick={() => setIsMilestoneModalOpen(true)}
-            >
-              Add new milestone
-            </PrimaryButton>
-          </Box>
-        </Box>
+        <MilestoneField
+          form={form}
+          data={data}
+          setData={setData}
+          propertyName={propertyName}
+        />
       )}
     </Box>
   );

@@ -738,7 +738,11 @@ export type Milestone = {
   title: string;
   description: string;
   dueDate: string;
-  reward: Reward;
+  reward: {
+    chain: Option;
+    token: Option;
+    value: number;
+  };
 };
 
 export type GuildRole = {
