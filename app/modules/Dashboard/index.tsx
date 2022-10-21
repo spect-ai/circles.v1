@@ -23,11 +23,13 @@ import YourCards from "./CardsTab";
 import { AnimatePresence } from "framer-motion";
 import Loader from "@/app/common/components/Loader";
 import ProfilePrompt from "./Prompt";
+import useJoinCircle from "@/app/services/JoinCircle/useJoinCircle";
 import ProfileModal from "../Profile/ProfilePage/ProfileModal";
 
 function Dashboard() {
   const { setIsProfilePanelExpanded, disconnectUser, connectedUser } =
     useGlobal();
+  useJoinCircle();
   const [circles, setCircles] = useState([] as CircleType[]);
   const [isOpen, setIsOpen] = useState(false);
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
