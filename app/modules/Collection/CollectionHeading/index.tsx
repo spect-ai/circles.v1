@@ -1,11 +1,13 @@
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { Box, Button, Stack, Text, useTheme } from "degen";
+import { AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
-import { memo, useEffect } from "react";
+import { memo, useEffect, useState } from "react";
 import Skeleton from "react-loading-skeleton";
 import { toast } from "react-toastify";
 import { useLocation } from "react-use";
 import styled from "styled-components";
+import AddField from "../AddField";
 import { useLocalCollection } from "../Context/LocalCollectionContext";
 
 export const IconButton = styled(Box)`
@@ -25,6 +27,7 @@ function CollectionHeading() {
   const { mode } = useTheme();
   const router = useRouter();
   const { responses } = router.query;
+  const [isAddFieldOpen, setIsAddFieldOpen] = useState(false);
 
   const location = useLocation();
 
@@ -68,7 +71,6 @@ function CollectionHeading() {
                     {collection?.name}
                   </Text>
                 </Button>
-
                 <PrimaryButton
                   // icon={<IconPencil />}
                   variant={view === 0 ? "tertiary" : "transparent"}
@@ -86,6 +88,9 @@ function CollectionHeading() {
                 >
                   Responses
                 </PrimaryButton>
+                <PrimaryButton onClick={() => setIsAddFieldOpen(true)}>
+                  Add Field
+                </PrimaryButton>{" "}
               </Stack>
             </Box>
             <Box width="1/4" justifyContent="center">
@@ -133,39 +138,12 @@ function CollectionHeading() {
             }
           />
         )}
-        {/* <Box
-          display="flex"
-          flexDirection="row"
-          borderWidth="0.375"
-          borderRadius="large"
-          backgroundColor="foregroundSecondary"
-        >
-          <IconButton
-            color="textSecondary"
-            paddingX="2"
-            paddingY="1"
-            borderRightRadius="large"
-            backgroundColor={view === 0 ? "foregroundSecondary" : "background"}
-            onClick={() => {
-              setView(0);
-            }}
-          >
-            <IconList />
-          </IconButton>
-          <IconButton
-            color="textSecondary"
-            paddingX="2"
-            paddingY="1"
-            borderRightRadius="large"
-            backgroundColor={view === 1 ? "foregroundSecondary" : "background"}
-            onClick={() => {
-              setView(1);
-            }}
-          >
-            <TableOutlined style={{ fontSize: "1.3rem" }} />
-          </IconButton>
-        </Box> */}
       </Box>
+      <AnimatePresence>
+        {isAddFieldOpen && (
+          <AddField handleClose={() => setIsAddFieldOpen(false)} />
+        )}
+      </AnimatePresence>
     </Box>
   );
 }

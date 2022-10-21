@@ -1,5 +1,5 @@
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { Box, Heading, Stack } from "degen";
+import { Box, Heading, Stack, Text } from "degen";
 import { AnimatePresence } from "framer-motion";
 import { memo, useCallback, useState } from "react";
 import { Droppable, DroppableProvided } from "react-beautiful-dnd";
@@ -21,7 +21,6 @@ type Props = {
 
 function InactiveFieldsColumnComponent({ fields }: Props) {
   const { localCollection: collection } = useLocalCollection();
-  const [isAddFieldOpen, setIsAddFieldOpen] = useState(false);
   const FieldDraggable = (provided: DroppableProvided) => (
     <Box {...provided.droppableProps} ref={provided.innerRef}>
       <Stack space="1">
@@ -32,8 +31,19 @@ function InactiveFieldsColumnComponent({ fields }: Props) {
             );
           }
         })}
+
         <Box height="4" />
         {provided.placeholder}
+        <Box
+          borderColor="foregroundSecondary"
+          borderWidth="0.375"
+          padding="2"
+          borderRadius="medium"
+        >
+          <Text variant="label">
+            Drag and drop fields above to remove them from the form view
+          </Text>
+        </Box>
       </Stack>
     </Box>
   );
@@ -47,17 +57,11 @@ function InactiveFieldsColumnComponent({ fields }: Props) {
     <Container>
       <Stack space="4">
         <Heading>Inactive Fields</Heading>
-        <PrimaryButton onClick={() => setIsAddFieldOpen(true)}>
-          Add Field
-        </PrimaryButton>
+
         <Droppable droppableId="inactiveFields" type="field">
           {FieldDraggableCallback}
         </Droppable>
-        <AnimatePresence>
-          {isAddFieldOpen && (
-            <AddField handleClose={() => setIsAddFieldOpen(false)} />
-          )}
-        </AnimatePresence>
+
         <RoleGate />
       </Stack>
     </Container>
