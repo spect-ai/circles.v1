@@ -164,7 +164,9 @@ const Folder = ({
             mode={mode}
             maxLength={20}
           />
-          {canDo("manageCircleSettings") && (
+          {(canDo("createNewCircle") ||
+            canDo("createNewProject") ||
+            canDo("createNewRetro")) && (
             <CreateFolderItem
               setProjectModal={setProjectModal}
               setWorkstreamModal={setWorkstreamModal}

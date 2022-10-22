@@ -10,6 +10,8 @@ import {
 import { useState } from "react";
 import { ProjectOutlined } from "@ant-design/icons";
 import { Tooltip } from "react-tippy";
+import useRoleGate from "@/app/services/RoleGate/useRoleGate";
+import { toast } from "react-toastify";
 
 interface Props {
   setProjectModal: (a: boolean) => void;
@@ -23,6 +25,7 @@ function CreateFolderItem({
   setRetroOpen,
 }: Props) {
   const { mode } = useTheme();
+  const { canDo } = useRoleGate();
   const [hover, setHover] = useState(false);
 
   return (
@@ -53,8 +56,14 @@ function CreateFolderItem({
                 variant="transparent"
                 shape="circle"
                 onClick={(e) => {
-                  e.stopPropagation();
-                  setProjectModal(true);
+                  if (canDo("createNewProject")) {
+                    e.stopPropagation();
+                    setProjectModal(true);
+                  } else {
+                    toast.error(
+                      "You don't have the permission to create a new Project"
+                    );
+                  }
                 }}
               >
                 <ProjectOutlined
@@ -69,8 +78,14 @@ function CreateFolderItem({
                 variant="transparent"
                 shape="circle"
                 onClick={(e) => {
-                  e.stopPropagation();
-                  setWorkstreamModal(true);
+                  if (canDo("createNewCircle")) {
+                    e.stopPropagation();
+                    setWorkstreamModal(true);
+                  } else {
+                    toast.error(
+                      "You don't have the permission to create a new Workstream"
+                    );
+                  }
                 }}
               >
                 <IconUserGroup size={"4"} color="accent" />
@@ -82,8 +97,14 @@ function CreateFolderItem({
                 variant="transparent"
                 shape="circle"
                 onClick={(e) => {
-                  e.stopPropagation();
-                  setRetroOpen(true);
+                  if (canDo("createNewRetro")) {
+                    e.stopPropagation();
+                    setRetroOpen(true);
+                  } else {
+                    toast.error(
+                      "You don't have the permission to create a new Retro"
+                    );
+                  }
                 }}
               >
                 <IconLightningBolt size={"4"} color="accent" />
