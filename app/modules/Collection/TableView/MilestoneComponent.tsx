@@ -1,41 +1,43 @@
 import ClickableTag from "@/app/common/components/EditTag/ClickableTag";
-import { Box, IconEth, Text } from "degen";
-import React from "react";
+import Modal from "@/app/common/components/Modal";
+import PrimaryButton from "@/app/common/components/PrimaryButton";
+import { Box, Button, IconEth, IconPlusSmall, Text } from "degen";
+import { AnimatePresence } from "framer-motion";
+import React, { useState } from "react";
 import { CellProps } from "react-datasheet-grid";
-
-const milestones = [
-  {
-    id: "123",
-    title: "test",
-    description: "test",
-    dueDate: new Date(),
-    reward: {
-      chain: {
-        name: "Ethereum",
-        chainId: 1,
-      },
-      token: {
-        symbol: "ETH",
-        address: "0x0000000000000000000000000000000000000000",
-      },
-      value: 1,
-    },
-  },
-];
+import MilestoneModal from "../../PublicForm/MilestoneModal";
 
 const MilestoneComponent = ({ rowData, columnData }: CellProps) => {
-  //const milestones = rowData[columnData.property.name];
+  const milestones = rowData[columnData.property.name];
   const id = rowData.id;
+
   return (
-    <ClickableTag
-      name={"Set Reward"}
-      icon={<IconEth color="accent" size="5" />}
-      onClick={() => {
-        columnData.setPropertyName(columnData.property.name);
-        columnData.setDataId(id);
-        columnData.setIsRewardFieldOpen(true);
-      }}
-    />
+    <>
+      <Box
+        marginLeft="1"
+        display="flex"
+        flexDirection="row"
+        alignItems="center"
+      >
+        <Button
+          variant="transparent"
+          size="small"
+          onClick={() => {
+            columnData.setPropertyName(columnData.property.name);
+            columnData.setDataId(id);
+            columnData.setMultipleMilestoneModalOpen(true);
+          }}
+        >
+          {milestones && milestones.length > 0 ? (
+            <Text variant="small">{`${milestones.length} milestone${
+              milestones.length > 1 ? "s" : ""
+            }`}</Text>
+          ) : (
+            <Text variant="small">{"No milestones"}</Text>
+          )}
+        </Button>
+      </Box>
+    </>
   );
 };
 

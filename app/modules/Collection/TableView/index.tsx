@@ -1,10 +1,11 @@
+import Modal from "@/app/common/components/Modal";
 import {
   addCollectionData,
   deleteCollectionData,
   updateCollectionDataGuarded,
 } from "@/app/services/Collection";
-import { PropertyType, Reward } from "@/app/types";
-import { Box } from "degen";
+import { Milestone, PropertyType, Reward } from "@/app/types";
+import { Box, Text } from "degen";
 import { AnimatePresence } from "framer-motion";
 import React, { useEffect, useState } from "react";
 import {
@@ -24,6 +25,7 @@ import ExpandableCell from "../Form/ExpandableCell";
 import GutterColumnComponent from "./GutterColumnComponent";
 import HeaderComponent from "./HeaderComponent";
 import MilestoneComponent from "./MilestoneComponent";
+import MultiMilestoneModal from "./MultiMilestoneModal";
 import RewardComponent from "./RewardComponent";
 import RewardModal from "./RewardModal";
 import SelectComponent from "./SelectComponent";
@@ -32,8 +34,9 @@ export default function TableView() {
   const [isEditFieldOpen, setIsEditFieldOpen] = useState(false);
   const [isRewardFieldOpen, setIsRewardFieldOpen] = useState(false);
   const [propertyName, setPropertyName] = useState("");
-  const [dataId, setDataId] = useState("");
-
+  const [dataId, setDataId] = useState<string>("");
+  const [multipleMilestoneModalOpen, setMultipleMilestoneModalOpen] =
+    useState(false);
   const [data, setData] = useState<any[]>();
   const { localCollection: collection, setLocalCollection } =
     useLocalCollection();
@@ -53,6 +56,7 @@ export default function TableView() {
         if (!res.id) {
           toast.error("Error updating data");
         }
+        return res;
       }
     }
   };
@@ -184,6 +188,25 @@ export default function TableView() {
           ),
           minWidth: 200,
         };
+      } else if (["milestone"].includes(property.type)) {
+        return {
+          component: getCellComponent(property.type) as any,
+          columnData: {
+            property,
+            setMultipleMilestoneModalOpen,
+            setPropertyName,
+            setDataId,
+          },
+          title: (
+            <HeaderComponent
+              sortData={sortData}
+              columnName={property.name}
+              setIsEditFieldOpen={setIsEditFieldOpen}
+              setPropertyName={setPropertyName}
+            />
+          ),
+          minWidth: 200,
+        };
       } else {
         return {
           ...keyColumn(property.name, getCellComponent(property.type) as any),
@@ -236,6 +259,39 @@ export default function TableView() {
           />
         )}
       </AnimatePresence>
+      <AnimatePresence>
+        {multipleMilestoneModalOpen && (
+          <MultiMilestoneModal
+            form={collection}
+            propertyName={propertyName}
+            dataId={dataId}
+            handleClose={async (
+              value: Milestone[],
+              dataId: string,
+              propertyName: string
+            ) => {
+              if (data) {
+                const row = data.findIndex((row) => row.id === dataId);
+                console.log({ value });
+                if (row === 0 || row) {
+                  const tempData = [...data];
+                  tempData[row][propertyName] = value;
+                  console.log({ tempData });
+                  setData(tempData);
+                  setMultipleMilestoneModalOpen(false);
+                  console.log({ tempData });
+                  const res = await updateData({
+                    cell: { row, col: 0, colId: propertyName },
+                  });
+                  if (res.id) setLocalCollection(res);
+                }
+                setMultipleMilestoneModalOpen(false);
+              }
+            }}
+          />
+        )}
+      </AnimatePresence>
+
       <DataModal />
       {collection.name && (
         <DynamicDataSheetGrid

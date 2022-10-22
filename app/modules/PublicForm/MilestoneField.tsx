@@ -2,7 +2,7 @@ import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { Milestone } from "@/app/types";
 import { Box, Button, IconPlusSmall, Stack, Text } from "degen";
 import { AnimatePresence } from "framer-motion";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import MilestoneModal from "./MilestoneModal";
 
 type Props = {
@@ -23,6 +23,9 @@ export default function MilestoneField({
   const [isMilestoneModalOpen, setIsMilestoneModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<"create" | "edit">("create");
   const [milestoneIndex, setMilestoneIndex] = useState<number>(0);
+  console.log({ data });
+  console.log({ dataId });
+  console.log({ propertyName });
 
   return (
     <>
@@ -33,6 +36,8 @@ export default function MilestoneField({
               setIsMilestoneModalOpen(false);
             }}
             addMilestone={(value) => {
+              console.log({ value });
+              console.log({ data });
               if (modalMode === "create") {
                 setData({
                   ...data,
