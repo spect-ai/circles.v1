@@ -115,9 +115,14 @@ export default function FormFields({ form }: Props) {
           form.previousResponses[form.previousResponses.length - 1];
         form.propertyOrder.forEach((propertyId) => {
           if (
-            ["longText", "shortText", "ethAddress", "user", "date"].includes(
-              form.properties[propertyId].type
-            )
+            [
+              "longText",
+              "shortText",
+              "ethAddress",
+              "user",
+              "date",
+              "email",
+            ].includes(form.properties[propertyId].type)
           ) {
             tempData[propertyId] = lastResponse[propertyId] || "";
           } else if (form.properties[propertyId].type === "singleSelect") {
@@ -126,9 +131,13 @@ export default function FormFields({ form }: Props) {
               // @ts-ignore
               form.properties[propertyId].options[0];
           } else if (
-            ["multiSelect", "user[]"].includes(form.properties[propertyId].type)
+            ["multiSelect", "user[]", "milestone"].includes(
+              form.properties[propertyId].type
+            )
           ) {
             tempData[propertyId] = lastResponse[propertyId] || [];
+          } else if (["reward"].includes(form.properties[propertyId].type)) {
+            tempData[propertyId] = lastResponse[propertyId];
           }
         });
       } else {

@@ -11,7 +11,7 @@ type Props = {
   setData: (value: any) => void;
   updateData: (
     key: "chain" | "token" | "value",
-    value: string | object
+    value: number | object
   ) => void;
 };
 
@@ -63,17 +63,6 @@ export default function RewardField({
     }
   }, [selectedChain]);
 
-  useEffect(() => {
-    setData({
-      ...data,
-      [propertyName]: {
-        chain: selectedChain,
-        token: selectedToken,
-        value: 0,
-      },
-    });
-  }, []);
-
   return (
     <Stack direction="horizontal">
       <Box width="72" marginTop="2">
@@ -116,8 +105,9 @@ export default function RewardField({
         placeholder={`Enter Reward Amount`}
         value={data && data[propertyName]?.value}
         onChange={(e) => {
-          updateData("value", e.target.value);
+          updateData("value", parseFloat(e.target.value));
         }}
+        type="number"
       />
     </Stack>
   );
