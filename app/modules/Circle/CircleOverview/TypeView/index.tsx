@@ -265,7 +265,7 @@ export const TypeView = ({
           {canDo("createNewRetro") && (
             <Box marginTop="1">
               <Button
-                data-tour="circle-create-workstream-button"
+                data-tour="circle-create-retro-button"
                 size="small"
                 variant="transparent"
                 shape="circle"

@@ -41,7 +41,8 @@ export const Container = styled(Box)<{ subH?: string }>`
 function CircleSidebar() {
   const router = useRouter();
   const { circle: cId, project: pId } = router.query;
-  const { setCircleData, setMemberDetailsData, circle, isLoading } = useCircle();
+  const { setCircleData, setMemberDetailsData, circle, isLoading } =
+    useCircle();
 
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [isContributorsModalOpen, setIsContributorsModalOpen] = useState(false);
@@ -124,7 +125,7 @@ function CircleSidebar() {
             left="21rem"
           />
         </Stack>
-        {circle?.toBeClaimed && (
+        {!isLoading && circle?.toBeClaimed && (
           <Stack>
             <PrimaryButton
               onClick={async () => {
@@ -173,71 +174,74 @@ function CircleSidebar() {
 
         <Container subH={circle?.toBeClaimed ? "12.1rem" : "9.1rem"}>
           <Stack>
-            {circle?.folderOrder?.map((fol) => {
-              const folder = circle?.folderDetails?.[fol];
-              return (
-                <Accordian name={folder.name} key={fol} defaultOpen>
-                  {folder.contentIds?.map((content) => {
-                    return (
-                      <Stack key={content} direction="horizontal" space="0">
-                        <Box width="full" padding="1">
-                          {circle?.children?.[content] && content && (
-                            <Link href={`/${circle?.children?.[content].slug}`}>
-                              <PrimaryButton
-                                variant={
-                                  pId === circle?.children?.[content].slug
-                                    ? "tertiary"
-                                    : "transparent"
-                                }
-                                icon={<IconUserGroup size={"5"} />}
+            {!isLoading &&
+              circle?.folderOrder?.map((fol) => {
+                const folder = circle?.folderDetails?.[fol];
+                return (
+                  <Accordian name={folder.name} key={fol} defaultOpen>
+                    {folder.contentIds?.map((content) => {
+                      return (
+                        <Stack key={content} direction="horizontal" space="0">
+                          <Box width="full" padding="1">
+                            {circle?.children?.[content] && content && (
+                              <Link
+                                href={`/${circle?.children?.[content].slug}`}
                               >
-                                {circle?.children?.[content].name}
-                              </PrimaryButton>
-                            </Link>
-                          )}
-                          {circle?.projects?.[content] && content && (
-                            <Link
-                              href={`/${cId}/${circle?.projects?.[content].slug}`}
-                            >
-                              <PrimaryButton
-                                variant={
-                                  pId === circle?.projects?.[content].slug
-                                    ? "tertiary"
-                                    : "transparent"
-                                }
-                                icon={
-                                  <ProjectOutlined
-                                    style={{ fontSize: "1.1rem" }}
-                                  />
-                                }
+                                <PrimaryButton
+                                  variant={
+                                    pId === circle?.children?.[content].slug
+                                      ? "tertiary"
+                                      : "transparent"
+                                  }
+                                  icon={<IconUserGroup size={"5"} />}
+                                >
+                                  {circle?.children?.[content].name}
+                                </PrimaryButton>
+                              </Link>
+                            )}
+                            {circle?.projects?.[content] && content && (
+                              <Link
+                                href={`/${cId}/${circle?.projects?.[content].slug}`}
                               >
-                                {circle?.projects?.[content].name}
-                              </PrimaryButton>
-                            </Link>
-                          )}
-                          {circle?.retro?.[content] && content && (
-                            <Link
-                              href={`/${cId}?retroSlug=${circle?.retro?.[content].slug}`}
-                            >
-                              <PrimaryButton
-                                variant={
-                                  pId === circle?.retro?.[content].slug
-                                    ? "tertiary"
-                                    : "transparent"
-                                }
-                                icon={<IconLightningBolt size={"5"} />}
+                                <PrimaryButton
+                                  variant={
+                                    pId === circle?.projects?.[content].slug
+                                      ? "tertiary"
+                                      : "transparent"
+                                  }
+                                  icon={
+                                    <ProjectOutlined
+                                      style={{ fontSize: "1.1rem" }}
+                                    />
+                                  }
+                                >
+                                  {circle?.projects?.[content].name}
+                                </PrimaryButton>
+                              </Link>
+                            )}
+                            {circle?.retro?.[content] && content && (
+                              <Link
+                                href={`/${cId}?retroSlug=${circle?.retro?.[content].slug}`}
                               >
-                                {circle?.retro?.[content].title}
-                              </PrimaryButton>
-                            </Link>
-                          )}
-                        </Box>
-                      </Stack>
-                    );
-                  })}
-                </Accordian>
-              );
-            })}
+                                <PrimaryButton
+                                  variant={
+                                    pId === circle?.retro?.[content].slug
+                                      ? "tertiary"
+                                      : "transparent"
+                                  }
+                                  icon={<IconLightningBolt size={"5"} />}
+                                >
+                                  {circle?.retro?.[content].title}
+                                </PrimaryButton>
+                              </Link>
+                            )}
+                          </Box>
+                        </Stack>
+                      );
+                    })}
+                  </Accordian>
+                );
+              })}
           </Stack>
         </Container>
       </Stack>

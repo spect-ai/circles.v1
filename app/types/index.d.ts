@@ -36,8 +36,8 @@ interface UserType {
     [key: string]: {
       slug: string;
       avatar: string;
-    }
-  }
+    };
+  };
 }
 
 export interface Payment {
@@ -109,7 +109,7 @@ export interface Permissions {
   };
 }
 
-export type Permission =
+export type NonCardPermissions =
   | "createNewCircle"
   | "createNewProject"
   | "createNewRetro"
@@ -121,7 +121,9 @@ export type Permission =
   | "managePaymentOptions"
   | "manageProjectSettings"
   | "manageRoles"
-  | "distributeCredentials"
+  | "distributeCredentials";
+
+export type CardPermissions =
   | "manageCardProperties"
   | "createNewCard"
   | "manageRewards"
