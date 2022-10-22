@@ -255,7 +255,7 @@ export default function FormFields({ form }: Props) {
       case "user[]":
         return !value || value.length === 0;
       case "reward":
-        return !value;
+        return !value?.value;
       default:
         return false;
     }

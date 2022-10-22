@@ -23,8 +23,6 @@ function MultiMilestoneModal({
   handleClose,
 }: Props) {
   console;
-
-  const { localCollection } = useLocalCollection();
   const [value, setValue] = useState(form.data[dataId]);
 
   return (

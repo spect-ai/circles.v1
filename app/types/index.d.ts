@@ -731,8 +731,8 @@ export type ComparisonCondition = "greaterThanOrEqualTo" | "lessThanOrEqualTo";
 export type FormUserType = "assignee" | "reviewer" | "grantee" | "applicant";
 
 export type Reward = {
-  chain: Chain;
-  token: Token;
+  chain: Option;
+  token: Option;
   value: number;
 };
 

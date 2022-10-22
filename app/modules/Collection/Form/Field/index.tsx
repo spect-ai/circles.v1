@@ -214,7 +214,6 @@ function FieldComponent({
             form={collection}
             propertyName={collection.properties[id]?.name}
             data={{}}
-            setData={() => {}}
             updateData={() => {}}
           />
         </Box>

@@ -1,26 +1,19 @@
 import Dropdown from "@/app/common/components/Dropdown";
-import { Chain, Option, Registry, Token } from "@/app/types";
+import { Chain, Option, Registry, Reward, Token } from "@/app/types";
 import { Box, Input, Stack } from "degen";
 import { useEffect, useState } from "react";
 
 type Props = {
   form: any;
-  dataId?: string;
   propertyName: string;
   data: any;
-  setData: (value: any) => void;
-  updateData: (
-    key: "chain" | "token" | "value",
-    value: number | object
-  ) => void;
+  updateData: (reward: Reward) => void;
 };
 
 export default function RewardField({
   form,
-  dataId,
   propertyName,
   data,
-  setData,
   updateData,
 }: Props) {
   const rewardOptions = (form.properties[propertyName]?.rewardOptions ||
@@ -40,8 +33,8 @@ export default function RewardField({
 
   const [tokenOptions, setTokenOptions] = useState<Option[]>([]);
   const [selectedChain, setSelectedChain] = useState<Option>({
-    label: firstChainName,
-    value: firstChainId,
+    label: (data && data[propertyName]?.chain?.label) || firstChainName,
+    value: (data && data[propertyName]?.chain?.value) || firstChainId,
   });
   const [selectedToken, setSelectedToken] = useState<Option>({
     label: firstTokenSymbol,
@@ -82,7 +75,11 @@ export default function RewardField({
           selected={selectedChain}
           onChange={(option) => {
             setSelectedChain(option);
-            updateData("chain", option);
+            updateData({
+              chain: option,
+              token: selectedToken,
+              value: data[propertyName]?.value,
+            });
           }}
           multiple={false}
           isClearable={false}
@@ -94,7 +91,11 @@ export default function RewardField({
           selected={selectedToken}
           onChange={(option) => {
             setSelectedToken(option);
-            updateData("token", option);
+            updateData({
+              chain: selectedChain,
+              token: option,
+              value: data[propertyName]?.value,
+            });
           }}
           multiple={false}
           isClearable={false}
@@ -105,7 +106,11 @@ export default function RewardField({
         placeholder={`Enter Reward Amount`}
         value={data && data[propertyName]?.value}
         onChange={(e) => {
-          updateData("value", parseFloat(e.target.value));
+          updateData({
+            chain: selectedChain,
+            token: selectedToken,
+            value: parseFloat(e.target.value),
+          });
         }}
         type="number"
       />

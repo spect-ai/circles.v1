@@ -18,9 +18,12 @@ const MilestoneComponent = ({ rowData, columnData }: CellProps) => {
         display="flex"
         flexDirection="row"
         alignItems="center"
+        width="full"
       >
         <Button
           variant="transparent"
+          width="full"
+          justifyContent="flex-start"
           size="small"
           onClick={() => {
             columnData.setPropertyName(columnData.property.name);

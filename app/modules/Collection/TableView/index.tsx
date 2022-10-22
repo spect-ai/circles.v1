@@ -4,7 +4,7 @@ import {
   deleteCollectionData,
   updateCollectionDataGuarded,
 } from "@/app/services/Collection";
-import { Milestone, PropertyType, Reward } from "@/app/types";
+import { Milestone, Option, PropertyType, Reward } from "@/app/types";
 import { Box, Text } from "degen";
 import { AnimatePresence } from "framer-motion";
 import React, { useEffect, useState } from "react";
@@ -117,7 +117,6 @@ export default function TableView() {
   };
 
   const getCellComponent = (type: PropertyType) => {
-    console.log(type);
     switch (type) {
       case "shortText":
         return textColumn;
@@ -242,7 +241,7 @@ export default function TableView() {
             ) => {
               if (data) {
                 const row = data.findIndex((row) => row.id === dataId);
-                console.log({ row });
+
                 if (row === 0 || row) {
                   const tempData = [...data];
                   tempData[row][propertyName] = reward;

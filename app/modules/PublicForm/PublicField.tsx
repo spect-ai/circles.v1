@@ -1,7 +1,7 @@
 import Dropdown from "@/app/common/components/Dropdown";
 import Editor from "@/app/common/components/Editor";
 import { validateEmail } from "@/app/common/utils/utils";
-import { FormType, Option } from "@/app/types";
+import { FormType, Option, Reward } from "@/app/types";
 import { Box, Input, Stack, Tag, Text, useTheme } from "degen";
 import { DateInput } from "../Collection/Form/Field";
 import MilestoneField from "./MilestoneField";
@@ -169,17 +169,13 @@ export default function PublicField({
           <RewardField
             form={form}
             data={data}
-            setData={setData}
             propertyName={propertyName}
-            updateData={(key, value) => {
+            updateData={(reward: Reward) => {
               setData({
                 ...data,
-                [propertyName]: {
-                  ...data[propertyName],
-                  [key]: value,
-                },
+                [propertyName]: reward,
               });
-              updateRequiredFieldNotSet(propertyName, value);
+              updateRequiredFieldNotSet(propertyName, reward);
             }}
           />
         </Box>

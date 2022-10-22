@@ -1,5 +1,5 @@
 import ClickableTag from "@/app/common/components/EditTag/ClickableTag";
-import { IconEth } from "degen";
+import { Box, Button, Text } from "degen";
 import React from "react";
 import { CellProps } from "react-datasheet-grid";
 
@@ -7,17 +7,31 @@ const RewardComponent = ({ rowData, columnData }: CellProps) => {
   const reward = rowData[columnData.property.name];
   const id = rowData.id;
   return (
-    <ClickableTag
-      name={
-        reward?.value ? `${reward.value} ${reward.token.symbol}` : "Set Reward"
-      }
-      icon={<IconEth color="accent" size="5" />}
-      onClick={() => {
-        columnData.setPropertyName(columnData.property.name);
-        columnData.setDataId(id);
-        columnData.setIsRewardFieldOpen(true);
-      }}
-    />
+    <Box
+      marginLeft="1"
+      display="flex"
+      flexDirection="row"
+      alignItems="center"
+      width="full"
+    >
+      <Button
+        variant="transparent"
+        width="full"
+        size="small"
+        justifyContent="flex-start"
+        onClick={() => {
+          columnData.setPropertyName(columnData.property.name);
+          columnData.setDataId(id);
+          columnData.setIsRewardFieldOpen(true);
+        }}
+      >
+        {reward?.value ? (
+          <Text variant="small">{`${reward.value} ${reward.token?.label}`}</Text>
+        ) : (
+          <Text variant="small">{"No reward"}</Text>
+        )}
+      </Button>
+    </Box>
   );
 };
 

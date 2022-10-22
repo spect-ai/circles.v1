@@ -8,6 +8,7 @@ import { Box, Input, Stack, Tag, Text } from "degen";
 import { useRouter } from "next/router";
 import React, { memo, useState } from "react";
 import { useQuery } from "react-query";
+import RewardField from "../../PublicForm/RewardField";
 
 type Props = {
   form: any;
@@ -17,29 +18,17 @@ type Props = {
 };
 
 function RewardModal({ propertyName, dataId, handleClose, form }: Props) {
-  const { data: registry } = useQuery<Registry>(
-    ["registry", form.parents[0].slug],
-    {
-      enabled: false,
-    }
-  );
+  const [data, setData] = useState(dataId ? form?.data[dataId] : undefined);
 
-  const reward = dataId ? form?.data[dataId][propertyName] : undefined;
-
-  const [chain, setChain] = useState(
-    reward?.chain || (registry && registry["137"])
-  );
-  const [token, setToken] = useState(reward?.token);
-  const [value, setValue] = useState(reward?.value.toString());
-
+  console.log({ data });
   return (
     <Modal
       handleClose={() => {
         handleClose(
           {
-            chain,
-            token,
-            value: parseFloat(value),
+            chain: data.reward.chain,
+            token: data.reward.token,
+            value: parseFloat(data.reward.value),
           },
           dataId || "",
           propertyName
@@ -47,7 +36,20 @@ function RewardModal({ propertyName, dataId, handleClose, form }: Props) {
       }}
       title="Reward"
     >
-      <Box height="96">
+      <Box padding="8">
+        <RewardField
+          form={form}
+          propertyName={propertyName}
+          data={data}
+          updateData={(reward: Reward) => {
+            setData({
+              ...data,
+              [propertyName]: reward,
+            });
+          }}
+        />
+      </Box>
+      {/* <Box height="96">
         <Box padding="8">
           <Stack>
             <Text size="extraLarge" weight="semiBold">
@@ -120,7 +122,7 @@ function RewardModal({ propertyName, dataId, handleClose, form }: Props) {
             </Text>
             <Input
               label=""
-              units={token?.symbol}
+              units={token?.label}
               min={0}
               placeholder="10"
               type="number"
@@ -131,7 +133,7 @@ function RewardModal({ propertyName, dataId, handleClose, form }: Props) {
             />
           </Stack>
         </Box>
-      </Box>
+      </Box> */}
     </Modal>
     // </EditTag>
   );
