@@ -16,6 +16,7 @@ import { useLocalCollection } from "../Context/LocalCollectionContext";
 import AddOptions from "./AddOptions";
 import MilestoneOptions from "./MilestoneOptions";
 import RewardOptions from "./RewardOptions";
+import uuid from "react-uuid";
 
 type Props = {
   propertyName?: string;
@@ -38,7 +39,7 @@ export default function AddField({ propertyName, handleClose }: Props) {
   const [fieldOptions, setFieldOptions] = useState([
     {
       label: "Option 1",
-      value: "Option 1",
+      value: `option-${uuid()}`,
     },
   ]);
 
@@ -50,7 +51,11 @@ export default function AddField({ propertyName, handleClose }: Props) {
   const [defaultValue, setDefaultValue] = useState("");
 
   useEffect(() => {
-    if (propertyName && collection.properties) {
+    if (
+      propertyName &&
+      collection.properties &&
+      collection.properties[propertyName]
+    ) {
       setName(propertyName);
       // setNotifyUserType(
       //   collection.properties[propertyName].onUpdateNotifyUserTypes?.map(

@@ -58,6 +58,7 @@
     "react-tippy": "^1.4.0",
     "react-toastify": "^9.0.4",
     "react-use": "^17.4.0",
+    "react-uuid": "^1.0.3",
     "reactour": "^1.18.7",
     "rich-markdown-editor": "^11.21.3",
     "siwe": "^1.1.6",

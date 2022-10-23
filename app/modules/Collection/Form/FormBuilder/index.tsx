@@ -19,7 +19,7 @@ import {
   VisuallyHidden,
 } from "degen";
 import { AnimatePresence } from "framer-motion";
-import { memo, useCallback, useState } from "react";
+import { memo, useCallback, useEffect, useState } from "react";
 import { Droppable, DroppableProvided } from "react-beautiful-dnd";
 import styled from "styled-components";
 import AddField from "../../AddField";
@@ -44,6 +44,8 @@ function FormBuilder({ fields }: Props) {
   const { connectedUser } = useGlobal();
   const { mode } = useTheme();
 
+  console.log({ propertyName });
+
   const FieldDraggable = (provided: DroppableProvided) => (
     <Box {...provided.droppableProps} ref={provided.innerRef}>
       {fields?.map((field, idx) => {
@@ -67,6 +69,8 @@ function FormBuilder({ fields }: Props) {
     fields,
     collection.properties,
   ]);
+
+  useEffect(() => {}, []);
 
   return (
     <>

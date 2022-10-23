@@ -2,6 +2,7 @@ import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { Box, IconClose, Stack, Text, useTheme } from "degen";
 import React from "react";
 import styled from "styled-components";
+import uuid from "react-uuid";
 
 type Props = {
   fieldOptions: { label: string; value: string }[];
@@ -51,7 +52,7 @@ export default function AddOptions({ fieldOptions, setFieldOptions }: Props) {
             const newOptions = [...fieldOptions];
             newOptions.push({
               label: `Option ${fieldOptions.length + 1}`,
-              value: `Option ${fieldOptions.length + 1}`,
+              value: `option-${uuid()}`,
             });
             setFieldOptions(newOptions);
           }}
