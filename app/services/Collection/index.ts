@@ -93,6 +93,7 @@ export const updateFormCollection = async (
     circleRolesToNotifyUponUpdatedResponse?: string[];
     logo?: string;
     cover?: string;
+    propertyOrder?: string[];
   }
 ) => {
   return await (

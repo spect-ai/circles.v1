@@ -62,7 +62,12 @@ export function Form() {
     }
 
     if (destination?.droppableId === "activeFields") {
-      setPropertyOrder(reorder(propertyOrder, source.index, destination.index));
+      const newPropertyOrder = reorder(
+        propertyOrder,
+        source.index,
+        destination.index
+      );
+      setPropertyOrder(newPropertyOrder);
       if (
         collection.properties[draggableId].isPartOfFormView === false ||
         !collection.properties[draggableId].isPartOfFormView
@@ -79,6 +84,15 @@ export function Form() {
         });
         const res = await updateField(collection.id, draggableId, {
           isPartOfFormView: true,
+        });
+        res && updateCollection(res);
+      } else {
+        updateCollection({
+          ...collection,
+          propertyOrder: newPropertyOrder,
+        });
+        const res = await updateFormCollection(collection.id, {
+          propertyOrder: newPropertyOrder,
         });
         res && updateCollection(res);
       }
