@@ -8,6 +8,7 @@ type Props = {
   propertyName: string;
   data: any;
   updateData: (reward: Reward) => void;
+  onValueKeyDown?: (e: any) => void;
 };
 
 export default function RewardField({
@@ -15,6 +16,7 @@ export default function RewardField({
   propertyName,
   data,
   updateData,
+  onValueKeyDown,
 }: Props) {
   const rewardOptions = (form.properties[propertyName]?.rewardOptions ||
     {}) as Registry;
@@ -113,6 +115,7 @@ export default function RewardField({
           });
         }}
         type="number"
+        onKeyDown={onValueKeyDown}
       />
     </Stack>
   );

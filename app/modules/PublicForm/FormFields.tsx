@@ -1,10 +1,12 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import PrimaryButton from "@/app/common/components/PrimaryButton";
+import { isEmail } from "@/app/common/utils/utils";
 import { useGlobal } from "@/app/context/globalContext";
 import { addData, updateCollectionData } from "@/app/services/Collection";
 import { FormType, KudosType, Registry, UserType } from "@/app/types";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { Box, Text } from "degen";
+import { isAddress } from "ethers/lib/utils";
 import React, { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { toast } from "react-toastify";
@@ -44,6 +46,9 @@ export default function FormFields({ form }: Props) {
   const [requiredFieldsNotSet, setRequiredFieldsNotSet] = useState(
     {} as { [key: string]: boolean }
   );
+  const [fieldHasInvalidType, setFieldHasInvalidType] = useState(
+    {} as { [key: string]: boolean }
+  );
 
   const { refetch: fetchRegistry } = useQuery<Registry>(
     ["registry", form.parents[0].slug],
@@ -66,6 +71,17 @@ export default function FormFields({ form }: Props) {
     });
     setRequiredFieldsNotSet(requiredFieldsNotSet);
     return Object.keys(requiredFieldsNotSet).length === 0;
+  };
+
+  const checkValue = (data: any) => {
+    const fieldHasInvalidType = {} as { [key: string]: boolean };
+    form.propertyOrder.forEach((propertyId) => {
+      if (isIncorrectType(propertyId, data[propertyId])) {
+        fieldHasInvalidType[propertyId] = true;
+      }
+    });
+    setFieldHasInvalidType(fieldHasInvalidType);
+    return Object.keys(fieldHasInvalidType).length === 0;
   };
 
   useEffect(() => {
@@ -188,6 +204,8 @@ export default function FormFields({ form }: Props) {
   const onSubmit = async () => {
     let res;
     if (!checkRequired(data)) return;
+    if (!checkValue(data)) return;
+
     if (updateResponse) {
       console.log("update");
       const lastResponse =
@@ -239,6 +257,19 @@ export default function FormFields({ form }: Props) {
     );
   }
 
+  const isIncorrectType = (propertyName: string, value: any) => {
+    switch (form.properties[propertyName].type) {
+      case "ethAddress":
+        return value && !isAddress(value);
+
+      case "email":
+        return value && !isEmail(value);
+
+      default:
+        return false;
+    }
+  };
+
   const isEmpty = (propertyName: string, value: any) => {
     switch (form.properties[propertyName].type) {
       case "longText":
@@ -271,6 +302,16 @@ export default function FormFields({ form }: Props) {
     }
   };
 
+  const updateFieldHasInvalidType = (propertyName: string, value: any) => {
+    if (!isIncorrectType(propertyName, value)) {
+      setFieldHasInvalidType((prev) => {
+        const temp = { ...prev };
+        delete temp[propertyName];
+        return temp;
+      });
+    }
+  };
+
   return (
     <Container borderRadius="2xLarge">
       {!loading &&
@@ -284,6 +325,8 @@ export default function FormFields({ form }: Props) {
             requiredFieldsNotSet={requiredFieldsNotSet}
             key={propertyName}
             updateRequiredFieldNotSet={updateRequiredFieldNotSet}
+            fieldHasInvalidType={fieldHasInvalidType}
+            updateFieldHasInvalidType={updateFieldHasInvalidType}
           />
         ))}
       <Box width="full">

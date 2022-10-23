@@ -119,7 +119,7 @@ export const generateColorHEX = () => {
   return rgbToHex(color.r, color.g, color.b);
 };
 
-export const validateEmail = (email: string) => {
+export const isEmail = (email: string) => {
   return String(email)
     .toLowerCase()
     .match(

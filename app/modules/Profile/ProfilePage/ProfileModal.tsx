@@ -20,7 +20,7 @@ import React, { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import DiscordIcon from "@/app/assets/icons/discordIcon.svg";
 import { skillsArray } from "./constants";
-import { validateEmail } from "@/app/common/utils/utils";
+import { isEmail } from "@/app/common/utils/utils";
 
 interface Props {
   setIsOpen: (isOpen: boolean) => void;
@@ -132,7 +132,7 @@ export default function ProfileModal({ setIsOpen }: Props) {
             placeholder="Email"
             inputMode="email"
             type="email"
-            error={email && !validateEmail(email)}
+            error={email && !isEmail(email)}
             value={email}
             onChange={(e) => {
               setEmail(e.target.value);

@@ -26,9 +26,9 @@ function RewardModal({ propertyName, dataId, handleClose, form }: Props) {
       handleClose={() => {
         handleClose(
           {
-            chain: data.reward.chain,
-            token: data.reward.token,
-            value: parseFloat(data.reward.value),
+            chain: data[propertyName].chain,
+            token: data[propertyName].token,
+            value: parseFloat(data[propertyName].value),
           },
           dataId || "",
           propertyName

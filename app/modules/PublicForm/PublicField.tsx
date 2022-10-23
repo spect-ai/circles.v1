@@ -1,8 +1,9 @@
 import Dropdown from "@/app/common/components/Dropdown";
 import Editor from "@/app/common/components/Editor";
-import { validateEmail } from "@/app/common/utils/utils";
+import { isEmail } from "@/app/common/utils/utils";
 import { FormType, Option, Reward } from "@/app/types";
 import { Box, Input, Stack, Tag, Text, useTheme } from "degen";
+import { useState } from "react";
 import { DateInput } from "../Collection/Form/Field";
 import MilestoneField from "./MilestoneField";
 import RewardField from "./RewardField";
@@ -15,6 +16,8 @@ type Props = {
   memberOptions: Option[];
   requiredFieldsNotSet: { [key: string]: boolean };
   updateRequiredFieldNotSet: (key: string, value: any) => void;
+  fieldHasInvalidType: { [key: string]: boolean };
+  updateFieldHasInvalidType: (key: string, value: any) => void;
 };
 
 export default function PublicField({
@@ -25,8 +28,14 @@ export default function PublicField({
   memberOptions,
   requiredFieldsNotSet,
   updateRequiredFieldNotSet,
+  fieldHasInvalidType,
+  updateFieldHasInvalidType,
 }: Props) {
   const { mode } = useTheme();
+  const [invalidNumberCharEntered, setInvalidNumberCharEntered] = useState(
+    {} as { [key: string]: boolean }
+  );
+
   return (
     <Box
       padding="4"
@@ -54,6 +63,11 @@ export default function PublicField({
             This is a required field and cannot be empty
           </Text>
         )}
+        {fieldHasInvalidType[propertyName] && (
+          <Text color="red" variant="small">
+            {`This field is of type ${form.properties[propertyName].type}`}
+          </Text>
+        )}
       </Stack>
       {form.properties[propertyName]?.type === "shortText" && (
         <Input
@@ -75,10 +89,9 @@ export default function PublicField({
           onChange={(e) => {
             setData({ ...data, [propertyName]: e.target.value });
             updateRequiredFieldNotSet(propertyName, e.target.value);
+            updateFieldHasInvalidType(propertyName, e.target.value);
           }}
-          error={
-            data && data[propertyName] && !validateEmail(data[propertyName])
-          }
+          error={data && data[propertyName] && !isEmail(data[propertyName])}
         />
       )}
       {form.properties[propertyName]?.type === "number" && (
@@ -88,8 +101,22 @@ export default function PublicField({
           value={data && data[propertyName]}
           type="number"
           onChange={(e) => {
+            console.log(e.target.value);
             setData({ ...data, [propertyName]: e.target.value });
             updateRequiredFieldNotSet(propertyName, e.target.value);
+          }}
+          onKeyDown={(e) => {
+            if (isNaN(e.key as any)) {
+              setInvalidNumberCharEntered({
+                ...invalidNumberCharEntered,
+                [propertyName]: true,
+              });
+            } else {
+              setInvalidNumberCharEntered({
+                ...invalidNumberCharEntered,
+                [propertyName]: false,
+              });
+            }
           }}
         />
       )}
@@ -113,6 +140,7 @@ export default function PublicField({
           onChange={(e) => {
             setData({ ...data, [propertyName]: e.target.value });
             updateRequiredFieldNotSet(propertyName, e.target.value);
+            updateFieldHasInvalidType(propertyName, e.target.value);
           }}
         />
       )}
@@ -177,6 +205,19 @@ export default function PublicField({
               });
               updateRequiredFieldNotSet(propertyName, reward);
             }}
+            onValueKeyDown={(e: any) => {
+              if (isNaN(e.key)) {
+                setInvalidNumberCharEntered({
+                  ...invalidNumberCharEntered,
+                  [propertyName]: true,
+                });
+              } else {
+                setInvalidNumberCharEntered({
+                  ...invalidNumberCharEntered,
+                  [propertyName]: false,
+                });
+              }
+            }}
           />
         </Box>
       )}
@@ -187,6 +228,12 @@ export default function PublicField({
           setData={setData}
           propertyName={propertyName}
         />
+      )}
+
+      {invalidNumberCharEntered[propertyName] && (
+        <Text variant="label" size="small">
+          Please enter a number{" "}
+        </Text>
       )}
     </Box>
   );
