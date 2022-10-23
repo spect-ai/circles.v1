@@ -47,6 +47,7 @@ function MultiMilestoneModal({
             propertyName={propertyName}
             data={value}
             setData={setValue}
+            showDescription={true}
           />
         )}
       </Box>

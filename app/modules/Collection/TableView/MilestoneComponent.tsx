@@ -10,7 +10,9 @@ import MilestoneModal from "../../PublicForm/MilestoneModal";
 const MilestoneComponent = ({ rowData, columnData }: CellProps) => {
   const milestones = rowData[columnData.property.name];
   const id = rowData.id;
+  console.log({ rowData });
 
+  console.log({ milestones });
   return (
     <>
       <Box

@@ -1,3 +1,4 @@
+import Editor from "@/app/common/components/Editor";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { Milestone } from "@/app/types";
 import { Box, Button, IconPlusSmall, Stack, Text } from "degen";
@@ -11,6 +12,7 @@ type Props = {
   propertyName: string;
   data: any;
   setData: (value: any) => void;
+  showDescription?: boolean;
 };
 
 export default function MilestoneField({
@@ -19,13 +21,11 @@ export default function MilestoneField({
   propertyName,
   data,
   setData,
+  showDescription,
 }: Props) {
   const [isMilestoneModalOpen, setIsMilestoneModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<"create" | "edit">("create");
   const [milestoneIndex, setMilestoneIndex] = useState<number>(0);
-  console.log({ data });
-  console.log({ dataId });
-  console.log({ propertyName });
 
   return (
     <>
@@ -95,6 +95,9 @@ export default function MilestoneField({
                       <Text variant="small" weight="light">
                         {`Due on ${milestone.dueDate}`}
                       </Text>
+                    )}
+                    {showDescription && milestone.description && (
+                      <Editor value={milestone.description} disabled={true} />
                     )}
                   </Box>
                   <Box display="flex" flexDirection="row" gap="2">
