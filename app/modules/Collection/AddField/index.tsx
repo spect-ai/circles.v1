@@ -29,7 +29,7 @@ export default function AddField({ propertyName, handleClose }: Props) {
   const { registry } = useCircle();
   const [networks, setNetworks] = useState(registry);
   const [selectedRewardOptions, setSelectedRewardOptions] = useState(registry);
-
+  const [initialName, setInitialName] = useState("");
   const [name, setName] = useState("");
   const [type, setType] = useState({ label: "Short Text", value: "shortText" });
   const [required, setRequired] = useState(0);
@@ -49,6 +49,7 @@ export default function AddField({ propertyName, handleClose }: Props) {
   );
 
   const [defaultValue, setDefaultValue] = useState("");
+  const [showNameCollissionError, setShowNameCollissionError] = useState(false);
 
   useEffect(() => {
     if (
@@ -57,6 +58,7 @@ export default function AddField({ propertyName, handleClose }: Props) {
       collection.properties[propertyName]
     ) {
       setName(propertyName);
+      setInitialName(propertyName);
       // setNotifyUserType(
       //   collection.properties[propertyName].onUpdateNotifyUserTypes?.map(
       //     (type) => ({ label: type, value: type })
@@ -97,8 +99,22 @@ export default function AddField({ propertyName, handleClose }: Props) {
             label=""
             placeholder="Field Name"
             value={name}
-            onChange={(e) => setName(e.target.value)}
+            onChange={(e) => {
+              setName(e.target.value);
+              if (
+                collection.properties &&
+                collection.properties[e.target.value] &&
+                e.target.value !== initialName
+              ) {
+                setShowNameCollissionError(true);
+              } else setShowNameCollissionError(false);
+            }}
           />
+          {showNameCollissionError && (
+            <Text color="red" size="small">
+              Field name already exists
+            </Text>
+          )}
           <Dropdown
             options={fields}
             selected={type}
@@ -175,6 +191,7 @@ export default function AddField({ propertyName, handleClose }: Props) {
           <PrimaryButton
             icon={<SaveFilled style={{ fontSize: "1.3rem" }} />}
             loading={loading}
+            disabled={showNameCollissionError || !name}
             onClick={async () => {
               setLoading(true);
               let res;

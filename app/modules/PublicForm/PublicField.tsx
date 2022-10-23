@@ -101,7 +101,6 @@ export default function PublicField({
           value={data && data[propertyName]}
           type="number"
           onChange={(e) => {
-            console.log(e.target.value);
             setData({ ...data, [propertyName]: e.target.value });
             updateRequiredFieldNotSet(propertyName, e.target.value);
           }}
