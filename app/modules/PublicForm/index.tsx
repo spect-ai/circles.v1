@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { getForm } from "@/app/services/Collection";
-import { FormType } from "@/app/types";
-import { Avatar, Box, Stack, useTheme } from "degen";
+import { FormType, GuildRole } from "@/app/types";
+import { Avatar, Box, Text, Stack, useTheme, Button, Tag } from "degen";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -51,7 +51,69 @@ export default function PublicForm() {
                 />
               </Stack>
             </Box>
-            <FormFields form={form} />
+            {form.canFillForm && <FormFields form={form} />}
+            {!form.canFillForm && (
+              <Box
+                display="flex"
+                flexDirection="column"
+                padding="4"
+                marginTop="4"
+                gap="4"
+              >
+                {" "}
+                <Text weight="bold">
+                  You require one of the following roles to fill this form
+                </Text>
+                <Stack space="2">
+                  {form.formRoleGating.map((role: GuildRole) => (
+                    <Tag tone="accent" key={role.id}>
+                      {role.name}
+                    </Tag>
+                  ))}
+                </Stack>
+                <Text variant="label">
+                  You do not have the correct roles to access this form
+                </Text>{" "}
+                <Box display="flex" flexDirection="row" gap="4">
+                  <Button
+                    variant="tertiary"
+                    size="small"
+                    onClick={async () => {
+                      const externalCircleData = await (
+                        await fetch(
+                          `${process.env.API_HOST}/circle/external/v1/${form.parents[0].id}/guild`,
+                          {
+                            headers: {
+                              Accept: "application/json",
+                              "Content-Type": "application/json",
+                            },
+                            credentials: "include",
+                          }
+                        )
+                      ).json();
+                      if (!externalCircleData.urlName) {
+                        toast.error(
+                          "Error fetching guild, please visit guild.xyz and find the roles or contact support"
+                        );
+                      }
+                      window.open(
+                        `https://guild.xyz/${externalCircleData.urlName}`,
+                        "_blank"
+                      );
+                    }}
+                  >
+                    How do I get these roles?
+                  </Button>
+                  <Button
+                    variant="tertiary"
+                    size="small"
+                    onClick={() => router.push("/")}
+                  >
+                    No worries, go to dashboard
+                  </Button>
+                </Box>
+              </Box>
+            )}
           </FormContainer>
         </Container>
       </ScrollContainer>
@@ -86,7 +148,7 @@ export const NameInput = styled.input`
   font-weight: 600;
 `;
 
-export const DescriptionInput = styled.input<{ mode: "dark" | "light" }>`
+export const DescriptionInput = styled.textarea<{ mode: "dark" | "light" }>`
   width: 100%;
   background: transparent;
   border: 0;
@@ -101,6 +163,7 @@ export const DescriptionInput = styled.input<{ mode: "dark" | "light" }>`
   color: ${(props) =>
     props.mode === "dark" ? "rgb(255, 255, 255, 0.7)" : "rgb(20,20,20,0.7)"};
   font-weight: 400;
+  font-size: 14px;
 `;
 
 export const CoverImage = styled(Box)<{ src: string }>`

@@ -783,7 +783,7 @@ export interface FormType {
     slug: string;
   }[];
   defaultView: string;
-  formRoleGating: number[];
+  formRoleGating: GuildRole[];
   canFillForm: boolean;
   mintkudosTokenId: number;
   messageOnSubmission: string;

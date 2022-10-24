@@ -67,6 +67,7 @@ export default function SendKudos() {
   const [assetUrl, setAssetUrl] = useState(
     "https://spect.infura-ipfs.io/ipfs/QmU2pYbqiVnNc7WKQ9yBkEmUvxWg6Ha1LAzpHdCSABwct7"
   );
+  const [filenameExceedsLimit, setFilenameExceedsLimit] = useState(false);
 
   const [communityKudosDesigns, setCommunityKudosDesigns] = useState(
     [] as CommunityKudosType[]
@@ -311,6 +312,10 @@ export default function SendKudos() {
                         label="Choose or drag and drop custom kudos image"
                         uploaded={!!uploadedImage}
                         onChange={async (f) => {
+                          if (f.name?.length > 20) {
+                            setFilenameExceedsLimit(true);
+                            return;
+                          } else setFilenameExceedsLimit(false);
                           await uploadFile(f);
                           setAsset(f);
                           setAssetToUse("custom");
@@ -321,10 +326,17 @@ export default function SendKudos() {
                             "https://spect.infura-ipfs.io/ipfs/QmU2pYbqiVnNc7WKQ9yBkEmUvxWg6Ha1LAzpHdCSABwct7"
                           );
                           setAssetToUse("defaultOrangeRed");
+                          setFilenameExceedsLimit(false);
                         }}
                         uploading={uploading}
                         maxSize={10}
                       />
+                      {filenameExceedsLimit && (
+                        <Text variant="small" color="red">
+                          Please add a file with filename less than 20
+                          characters.
+                        </Text>
+                      )}
                     </Stack>
                   </Box>
                 </Box>
