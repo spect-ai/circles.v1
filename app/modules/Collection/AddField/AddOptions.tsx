@@ -25,7 +25,6 @@ export default function AddOptions({ fieldOptions, setFieldOptions }: Props) {
                 onChange={(e) => {
                   const newOptions = [...fieldOptions];
                   newOptions[index].label = e.target.value;
-                  newOptions[index].value = e.target.value;
                   setFieldOptions(newOptions);
                 }}
                 mode={mode}
