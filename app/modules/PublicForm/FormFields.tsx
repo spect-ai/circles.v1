@@ -2,7 +2,11 @@
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { isEmail } from "@/app/common/utils/utils";
 import { useGlobal } from "@/app/context/globalContext";
-import { addData, updateCollectionData } from "@/app/services/Collection";
+import {
+  addData,
+  getForm,
+  updateCollectionData,
+} from "@/app/services/Collection";
 import { FormType, KudosType, Registry, UserType } from "@/app/types";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { Box, Text } from "degen";
@@ -16,6 +20,7 @@ import PublicField from "./PublicField";
 
 type Props = {
   form: FormType;
+  setForm: (form: FormType) => void;
 };
 
 const getUser = async () => {
@@ -25,7 +30,7 @@ const getUser = async () => {
   return await res.json();
 };
 
-export default function FormFields({ form }: Props) {
+export default function FormFields({ form, setForm }: Props) {
   const [data, setData] = useState<any>({});
   const [memberOptions, setMemberOptions] = useState([]);
   const [updateResponse, setUpdateResponse] = useState(false);
@@ -215,28 +220,10 @@ export default function FormFields({ form }: Props) {
       console.log("add");
       res = await addData(form.id || "", data);
     }
+    const resAfterSave = await getForm(form.slug);
     if (res.id) {
       toast.success("Form submitted successfully");
-      // reset data
-      const tempData: any = {};
-      form.propertyOrder.forEach((propertyId) => {
-        if (
-          ["longText", "shortText", "ethAddress", "user", "date"].includes(
-            form.properties[propertyId].type
-          )
-        ) {
-          tempData[propertyId] = "";
-        } else if (form.properties[propertyId].type === "singleSelect") {
-          tempData[propertyId] = (
-            form.properties[propertyId] as any
-          ).options[0];
-        } else if (
-          ["multiSelect", "user[]"].includes(form.properties[propertyId].type)
-        ) {
-          tempData[propertyId] = [];
-        }
-      });
-      setData(tempData);
+      setForm(resAfterSave);
       setSubmitted(true);
       setSubmitAnotherResponse(false);
       setUpdateResponse(false);

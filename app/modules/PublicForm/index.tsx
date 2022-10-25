@@ -90,7 +90,7 @@ export default function PublicForm() {
                 }}
               >
                 {" "}
-                <FormFields form={form} />
+                <FormFields form={form} setForm={setForm} />
               </motion.div>
             )}
             {!canFillForm && !currentUser && (
