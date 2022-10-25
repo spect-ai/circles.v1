@@ -109,13 +109,14 @@ export default function SendKudos() {
                     setMintkudosCommunityId(credentials.mintkudosCommunityId);
                   }
                 })
-                .catch((err) => console.log(err));
+                .catch((err) => console.error(err));
             }
           })
           .catch((err) => console.log(err));
       })
       .catch((err) => console.log(err));
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [circle?.id]);
 
   useEffect(() => {
     if (collection.mintkudosTokenId) {
@@ -133,6 +134,7 @@ export default function SendKudos() {
     } else {
       setKudos({} as KudosType);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [collection]);
 
   useEffect(() => {

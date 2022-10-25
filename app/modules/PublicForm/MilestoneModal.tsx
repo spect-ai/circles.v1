@@ -1,11 +1,9 @@
 import Dropdown from "@/app/common/components/Dropdown";
 import Editor from "@/app/common/components/Editor";
 import Modal from "@/app/common/components/Modal";
-import { Chain, Milestone, Option, Registry, Token } from "@/app/types";
+import { Milestone, Option, Registry } from "@/app/types";
 import { Box, Button, Input, Tag, Text, useTheme } from "degen";
 import { useEffect, useState } from "react";
-import { useQuery } from "react-query";
-import { useLocalCollection } from "../Collection/Context/LocalCollectionContext";
 import { DateInput } from "../Collection/Form/Field";
 
 type Props = {
@@ -27,15 +25,6 @@ export default function MilestoneModal({
   modalMode,
   milestoneIndex,
 }: Props) {
-  const { localCollection: collection, setLocalCollection } =
-    useLocalCollection();
-  const { data: registry } = useQuery<Registry>(
-    ["registry", form.parents[0].slug],
-    {
-      enabled: false,
-    }
-  );
-
   const [value, setValue] = useState("");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState(
@@ -92,7 +81,6 @@ export default function MilestoneModal({
     }
   };
 
-  console.log({ description });
   useEffect(() => {
     if (form.properties[propertyName]?.rewardOptions && selectedChain) {
       const tokens = Object.entries(
@@ -106,7 +94,7 @@ export default function MilestoneModal({
       setSelectedToken(tokens[0]);
       setTokenOptions(tokens);
     }
-  }, [selectedChain]);
+  }, [form.properties, propertyName, rewardOptions, selectedChain]);
 
   useEffect(() => {
     if (modalMode === "edit" && (milestoneIndex || milestoneIndex === 0)) {
@@ -121,6 +109,7 @@ export default function MilestoneModal({
         setValue(milestone.reward?.value || "");
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -228,6 +217,7 @@ export default function MilestoneModal({
               onChange={(e) => {
                 setValue(e.target.value);
               }}
+              units={selectedToken.label}
             />
           </Box>
         </Box>
@@ -279,7 +269,7 @@ export default function MilestoneModal({
               });
             }}
           >
-            Add
+            {modalMode === "create" ? "Add" : "Update"}
           </Button>
         </Box>
       </Box>

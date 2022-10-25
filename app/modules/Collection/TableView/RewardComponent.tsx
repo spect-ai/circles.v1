@@ -1,4 +1,3 @@
-import ClickableTag from "@/app/common/components/EditTag/ClickableTag";
 import { Box, Button, Text } from "degen";
 import React from "react";
 import { CellProps } from "react-datasheet-grid";

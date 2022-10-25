@@ -1,13 +1,7 @@
 import Modal from "@/app/common/components/Modal";
-import {
-  getFlattenedCurrencies,
-  getFlattenedNetworks,
-} from "@/app/common/utils/registry";
-import { Registry, Reward, Token } from "@/app/types";
-import { Box, Input, Stack, Tag, Text } from "degen";
-import { useRouter } from "next/router";
+import { Reward } from "@/app/types";
+import { Box } from "degen";
 import React, { memo, useState } from "react";
-import { useQuery } from "react-query";
 import RewardField from "../../PublicForm/RewardField";
 
 type Props = {

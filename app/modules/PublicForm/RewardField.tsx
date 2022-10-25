@@ -1,5 +1,5 @@
 import Dropdown from "@/app/common/components/Dropdown";
-import { Chain, Option, Registry, Reward, Token } from "@/app/types";
+import { Option, Registry, Reward } from "@/app/types";
 import { Box, Input, Stack } from "degen";
 import { useEffect, useState } from "react";
 
@@ -56,7 +56,7 @@ export default function RewardField({
       setSelectedToken(tokens[0]);
       setTokenOptions(tokens);
     }
-  }, [selectedChain]);
+  }, [form.properties, propertyName, rewardOptions, selectedChain]);
 
   return (
     <Stack direction="horizontal">
@@ -116,6 +116,7 @@ export default function RewardField({
         }}
         type="number"
         onKeyDown={onValueKeyDown}
+        units={selectedToken.label}
       />
     </Stack>
   );

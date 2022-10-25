@@ -8,16 +8,7 @@ import {
   NameInput,
 } from "@/app/modules/PublicForm";
 import { updateFormCollection } from "@/app/services/Collection";
-import {
-  Avatar,
-  Box,
-  Button,
-  FileInput,
-  IconClose,
-  Stack,
-  useTheme,
-  VisuallyHidden,
-} from "degen";
+import { Avatar, Box, FileInput, Stack, useTheme } from "degen";
 import { AnimatePresence } from "framer-motion";
 import { memo, useCallback, useEffect, useState } from "react";
 import { Droppable, DroppableProvided } from "react-beautiful-dnd";
@@ -43,8 +34,6 @@ function FormBuilder({ fields }: Props) {
 
   const { connectedUser } = useGlobal();
   const { mode } = useTheme();
-
-  console.log({ propertyName });
 
   const FieldDraggable = (provided: DroppableProvided) => (
     <Box {...provided.droppableProps} ref={provided.innerRef}>

@@ -2,6 +2,8 @@ import Dropdown, { OptionType } from "@/app/common/components/Dropdown";
 import Editor from "@/app/common/components/Editor";
 import ClickableTag from "@/app/common/components/EditTag/ClickableTag";
 import Modal from "@/app/common/components/Modal";
+import MilestoneField from "@/app/modules/PublicForm/MilestoneField";
+import RewardField from "@/app/modules/PublicForm/RewardField";
 import { updateCollectionDataGuarded } from "@/app/services/Collection";
 import { MemberDetails } from "@/app/types";
 import { Box, IconEth, Input, Stack, Text, useTheme } from "degen";
@@ -52,6 +54,7 @@ export default function DataModal() {
 
   return (
     <Modal
+      size="large"
       handleClose={async () => {
         console.log({ data });
         void router.push(`/${cId}/r/${collection.slug}`);
@@ -65,7 +68,7 @@ export default function DataModal() {
         if (res.id) {
           setLocalCollection(res);
         } else {
-          setData({} as any);
+          setData({});
           toast.error("Error updating data");
         }
       }}
@@ -223,37 +226,21 @@ export default function DataModal() {
                 />
               )}
               {property?.type === "reward" && (
-                <ClickableTag
-                  name={
-                    collection.data &&
-                    collection.data[dataId as string][property.name]?.value
-                      ? `${
-                          collection.data[dataId as string][property.name].value
-                        } ${
-                          collection.data[dataId as string][property.name].token
-                            .symbol
-                        }`
-                      : "Set Reward"
-                  }
-                  icon={<IconEth color="accent" size="5" />}
-                  onClick={() => {
-                    setPropertyName(property.name);
-                    setIsRewardModalOpen(true);
-                  }}
+                <RewardField
+                  form={collection}
+                  propertyName={property.name}
+                  data={data}
+                  updateData={setData}
                 />
               )}
-              {/* {property?.type === "milestone" && (
-                <DateInput
-                  mode={mode}
-                  placeholder={`Enter ${property?.name}`}
-                  value={data[property.name]}
-                  onChange={(e) => {
-                    data[property.name] = e.target.value;
-                    setData({ ...data });
-                  }}
-                  type="number"
+              {property?.type === "milestone" && (
+                <MilestoneField
+                  form={collection}
+                  propertyName={property.name}
+                  data={data}
+                  setData={setData}
                 />
-              )} */}
+              )}
             </Stack>
           ))}
         </Stack>

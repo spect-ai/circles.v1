@@ -9,6 +9,7 @@ import {
   DroppableProvided,
   DropResult,
 } from "react-beautiful-dnd";
+import { toast } from "react-toastify";
 import styled from "styled-components";
 import { SkeletonLoader } from "../../Explore/SkeletonLoader";
 import { useLocalCollection } from "../Context/LocalCollectionContext";
@@ -85,7 +86,9 @@ export function Form() {
         const res = await updateField(collection.id, draggableId, {
           isPartOfFormView: true,
         });
-        res && updateCollection(res);
+        console.log({ res });
+        if (res.id) updateCollection(res);
+        else toast.error(`Request failed with error ${res.message}`);
       } else {
         updateCollection({
           ...collection,
@@ -94,7 +97,9 @@ export function Form() {
         const res = await updateFormCollection(collection.id, {
           propertyOrder: newPropertyOrder,
         });
-        res && updateCollection(res);
+        console.log({ res });
+        if (res.id) updateCollection(res);
+        else toast.error(`Request failed with error ${res.message}`);
       }
     } else if (destination?.droppableId === "inactiveFields") {
       // setPropertyOrder(reorder(propertyOrder, source.index, destination.index));
@@ -112,7 +117,9 @@ export function Form() {
         const res = await updateField(collection.id, draggableId, {
           isPartOfFormView: false,
         });
-        res && updateCollection(res);
+        console.log({ res });
+        if (res.id) updateCollection(res);
+        else toast.error(`Request failed with error ${res.message}`);
       }
     }
   };
@@ -129,7 +136,7 @@ export function Form() {
     return (
       <Container {...provided.droppableProps} ref={provided.innerRef}>
         <InactiveFieldsColumnComponent fields={propertyOrder} />
-        <Box width="full">
+        <Box width="full" paddingLeft="8">
           <ScrollContainer>
             <FormBuilder fields={propertyOrder} />
             <Box
@@ -165,7 +172,15 @@ export function Form() {
                       const res = await updateFormCollection(collection.id, {
                         messageOnSubmission,
                       });
-                      updateCollection(res);
+                      console.log({ res });
+                      if (res.id) {
+                        toast.success("Saved!");
+                        setCurrMessageOnSubmission(messageOnSubmission);
+                        updateCollection(res);
+                      } else
+                        toast.error(
+                          `Request failed with error : ${res?.message}`
+                        );
                     }}
                   >
                     Save

@@ -1,18 +1,9 @@
-import ClickableTag from "@/app/common/components/EditTag/ClickableTag";
-import Modal from "@/app/common/components/Modal";
-import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { Box, Button, IconEth, IconPlusSmall, Text } from "degen";
-import { AnimatePresence } from "framer-motion";
-import React, { useState } from "react";
+import { Box, Button, Text } from "degen";
 import { CellProps } from "react-datasheet-grid";
-import MilestoneModal from "../../PublicForm/MilestoneModal";
 
 const MilestoneComponent = ({ rowData, columnData }: CellProps) => {
   const milestones = rowData[columnData.property.name] || [];
   const id = rowData.id;
-  console.log({ rowData });
-
-  console.log({ milestones });
   return (
     <>
       <Box
