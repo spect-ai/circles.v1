@@ -1,18 +1,29 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
+import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { getForm } from "@/app/services/Collection";
-import { FormType, GuildRole } from "@/app/types";
+import { FormType, GuildRole, UserType } from "@/app/types";
+import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { Avatar, Box, Text, Stack, useTheme, Button, Tag } from "degen";
+import { AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
+import { useQuery } from "react-query";
 import { toast } from "react-toastify";
 import styled from "styled-components";
 import FormFields from "./FormFields";
+import { motion } from "framer-motion";
 
 export default function PublicForm() {
   const router = useRouter();
   const { formId } = router.query;
   const [form, setForm] = useState<FormType>();
   const { mode } = useTheme();
+  const { data: currentUser } = useQuery<UserType>("getMyUser", {
+    enabled: false,
+  });
+  const { openConnectModal } = useConnectModal();
+  const [loading, setLoading] = useState(false);
+  const [canFillForm, setCanFillForm] = useState(form?.canFillForm || false);
 
   useEffect(() => {
     console.log({ formId });
@@ -22,10 +33,26 @@ export default function PublicForm() {
         console.log({ res });
         if (res.id) {
           setForm(res);
+          setCanFillForm(res.canFillForm);
         } else toast.error("Error fetching form");
       }
     })();
   }, [formId]);
+
+  useEffect(() => {
+    console.log({ formId });
+    void (async () => {
+      if (formId) {
+        setLoading(true);
+        const res = await getForm(formId as string);
+        console.log({ res });
+        if (res.id) {
+          setCanFillForm(res.canFillForm);
+        } else toast.error("Error fetching form");
+        setLoading(false);
+      }
+    })();
+  }, [currentUser]);
 
   if (form) {
     return (
@@ -51,8 +78,22 @@ export default function PublicForm() {
                 />
               </Stack>
             </Box>
-            {form.canFillForm && <FormFields form={form} />}
-            {!form.canFillForm && (
+            {canFillForm && (
+              <motion.div
+                className="box"
+                initial={{ opacity: 0, scale: 0.5 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{
+                  duration: 0.8,
+                  delay: 0.5,
+                  ease: [0, 0.71, 0.2, 1.01],
+                }}
+              >
+                {" "}
+                <FormFields form={form} />
+              </motion.div>
+            )}
+            {!canFillForm && !currentUser && (
               <Box
                 display="flex"
                 flexDirection="column"
@@ -61,58 +102,86 @@ export default function PublicForm() {
                 gap="4"
               >
                 {" "}
-                <Text weight="bold">
-                  You require one of the following roles to fill this form
-                </Text>
-                <Stack space="2">
-                  {form.formRoleGating.map((role: GuildRole) => (
-                    <Tag tone="accent" key={role.id}>
-                      {role.name}
-                    </Tag>
-                  ))}
-                </Stack>
-                <Text variant="label">
-                  You do not have the correct roles to access this form
-                </Text>{" "}
-                <Box display="flex" flexDirection="row" gap="4">
-                  <Button
-                    variant="tertiary"
-                    size="small"
-                    onClick={async () => {
-                      const externalCircleData = await (
-                        await fetch(
-                          `${process.env.API_HOST}/circle/external/v1/${form.parents[0].id}/guild`,
-                          {
-                            headers: {
-                              Accept: "application/json",
-                              "Content-Type": "application/json",
-                            },
-                            credentials: "include",
-                          }
-                        )
-                      ).json();
-                      if (!externalCircleData.urlName) {
-                        toast.error(
-                          "Error fetching guild, please visit guild.xyz and find the roles or contact support"
-                        );
-                      }
-                      window.open(
-                        `https://guild.xyz/${externalCircleData.urlName}`,
-                        "_blank"
-                      );
-                    }}
-                  >
-                    How do I get these roles?
-                  </Button>
-                  <Button
-                    variant="tertiary"
-                    size="small"
-                    onClick={() => router.push("/")}
-                  >
-                    No worries, go to dashboard
-                  </Button>
+                <Text weight="bold">This form is role gated</Text>
+                <Box width="1/4">
+                  <PrimaryButton onClick={openConnectModal}>
+                    Connect Wallet
+                  </PrimaryButton>
                 </Box>
               </Box>
+            )}
+            {!canFillForm && currentUser && !loading && (
+              <motion.div
+                className="box"
+                initial={{ opacity: 0, scale: 0.5 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{
+                  duration: 0.8,
+                  delay: 0.5,
+                  ease: [0, 0.71, 0.2, 1.01],
+                }}
+              >
+                <Box
+                  display="flex"
+                  flexDirection="column"
+                  padding="4"
+                  marginTop="4"
+                  gap="4"
+                >
+                  {" "}
+                  <Text weight="bold">
+                    You require one of the following roles to fill this form
+                  </Text>
+                  <Stack space="2">
+                    {form.formRoleGating.map((role: GuildRole) => (
+                      <Tag tone="accent" key={role.id}>
+                        {role.name}
+                      </Tag>
+                    ))}
+                  </Stack>
+                  <Text variant="label">
+                    You do not have the correct roles to access this form
+                  </Text>{" "}
+                  <Box display="flex" flexDirection="row" gap="4">
+                    <Button
+                      variant="tertiary"
+                      size="small"
+                      onClick={async () => {
+                        const externalCircleData = await (
+                          await fetch(
+                            `${process.env.API_HOST}/circle/external/v1/${form.parents[0].id}/guild`,
+                            {
+                              headers: {
+                                Accept: "application/json",
+                                "Content-Type": "application/json",
+                              },
+                              credentials: "include",
+                            }
+                          )
+                        ).json();
+                        if (!externalCircleData.urlName) {
+                          toast.error(
+                            "Error fetching guild, please visit guild.xyz and find the roles or contact support"
+                          );
+                        }
+                        window.open(
+                          `https://guild.xyz/${externalCircleData.urlName}`,
+                          "_blank"
+                        );
+                      }}
+                    >
+                      How do I get these roles?
+                    </Button>
+                    <Button
+                      variant="tertiary"
+                      size="small"
+                      onClick={() => router.push("/")}
+                    >
+                      No worries, go to dashboard
+                    </Button>
+                  </Box>
+                </Box>
+              </motion.div>
             )}
           </FormContainer>
         </Container>
