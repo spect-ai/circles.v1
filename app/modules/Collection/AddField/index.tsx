@@ -17,6 +17,9 @@ import AddOptions from "./AddOptions";
 import MilestoneOptions from "./MilestoneOptions";
 import RewardOptions from "./RewardOptions";
 import uuid from "react-uuid";
+import { prevPropertyTypeToNewPropertyTypeThatDoesntRequiresClarance } from "@/app/common/utils/constants";
+import { AnimatePresence } from "framer-motion";
+import ConfirmModal from "@/app/common/components/Modal/ConfirmModal";
 
 type Props = {
   propertyName?: string;
@@ -50,6 +53,62 @@ export default function AddField({ propertyName, handleClose }: Props) {
 
   const [defaultValue, setDefaultValue] = useState("");
   const [showNameCollissionError, setShowNameCollissionError] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+
+  const onSave = async () => {
+    setLoading(true);
+    let res;
+    let rewardOptions = {} as Registry | undefined;
+    if (type.value === "reward" || type.value === "milestone") {
+      rewardOptions = networks;
+    }
+    let milestoneFields = [] as string[];
+    if (type.value === "milestone") {
+      milestoneFields = ["name", "description", "dueDate", "reward"];
+    }
+    console.log({ rewardOptions });
+    if (propertyName) {
+      res = await updateField(collection.id, propertyName, {
+        name,
+        type: type.value,
+        options: fieldOptions,
+        rewardOptions,
+        userType,
+        default: defaultValue,
+        onUpdateNotifyUserTypes: notifyUserType?.map(
+          (type) => type.value
+        ) as FormUserType[],
+        isPartOfFormView: true,
+        required: required === 1,
+        milestoneFields,
+      });
+    } else {
+      res = await addField(collection.id, {
+        name,
+        type: type.value,
+        isPartOfFormView: false,
+        options: fieldOptions,
+        rewardOptions,
+        userType: userType,
+        default: defaultValue,
+        onUpdateNotifyUserTypes: notifyUserType?.map(
+          (type) => type.value
+        ) as FormUserType[],
+        required: required === 1,
+        milestoneFields,
+      });
+    }
+    setLoading(false);
+    if (res.id) {
+      console.log({ res });
+      handleClose();
+
+      setLocalCollection(res);
+    } else {
+      toast.error(res.message);
+    }
+    console.log({ res });
+  };
 
   useEffect(() => {
     if (
@@ -88,83 +147,97 @@ export default function AddField({ propertyName, handleClose }: Props) {
   }, [collection.properties, propertyName]);
 
   return (
-    <Modal
-      title={propertyName ? "Edit Field" : "Add Field"}
-      handleClose={handleClose}
-      size="small"
-    >
-      <Box padding="8">
-        <Stack>
-          <Input
-            label=""
-            placeholder="Field Name"
-            value={name}
-            onChange={(e) => {
-              setName(e.target.value);
-              if (
-                collection.properties &&
-                collection.properties[e.target.value] &&
-                e.target.value !== initialName
-              ) {
-                setShowNameCollissionError(true);
-              } else setShowNameCollissionError(false);
+    <>
+      <AnimatePresence>
+        {showConfirm && (
+          <ConfirmModal
+            title="This will remove existing data associated with this field as the field type is changed. Are you sure you want to continue?"
+            handleClose={() => setShowConfirm(false)}
+            onConfirm={() => {
+              setShowConfirm(false);
+              void onSave();
             }}
+            onCancel={() => setShowConfirm(false)}
           />
-          {showNameCollissionError && (
-            <Text color="red" size="small">
-              Field name already exists
-            </Text>
-          )}
-          <Dropdown
-            options={fields}
-            selected={type}
-            onChange={(type) => {
-              setType(type);
-            }}
-            multiple={false}
-            isClearable={false}
-          />
-          <Tabs
-            selectedTab={required}
-            onTabClick={onRequiredTabClick}
-            tabs={["Optional", "Required"]}
-            orientation="horizontal"
-            unselectedColor="transparent"
-          />
-          {type.value === "singleSelect" || type.value === "multiSelect" ? (
-            <AddOptions
-              fieldOptions={fieldOptions}
-              setFieldOptions={setFieldOptions}
+        )}
+      </AnimatePresence>
+      <Modal
+        title={propertyName ? "Edit Field" : "Add Field"}
+        handleClose={handleClose}
+        size="small"
+      >
+        <Box padding="8">
+          <Stack>
+            <Input
+              label=""
+              placeholder="Field Name"
+              value={name}
+              onChange={(e) => {
+                setName(e.target.value);
+                if (
+                  collection.properties &&
+                  collection.properties[e.target.value] &&
+                  e.target.value !== initialName
+                ) {
+                  setShowNameCollissionError(true);
+                } else setShowNameCollissionError(false);
+              }}
             />
-          ) : null}
-          {type.value === "user" || type.value === "user[]" ? (
-            <Stack>
-              <Text variant="label">User Type</Text>
-              <Select
-                options={[
-                  { label: "Assignee", value: "assignee" },
-                  { label: "Reviewer", value: "reviewer" },
-                  { label: "Grantee", value: "grantee" },
-                  { label: "Applicant", value: "applicant" },
-                  { label: "None", value: "none" },
-                ]}
-                value={{
-                  label: userType as string,
-                  value: userType as string,
-                }}
-                onChange={(type) => {
-                  setUserType(type.value as FormUserType);
-                }}
+            {showNameCollissionError && (
+              <Text color="red" size="small">
+                Field name already exists
+              </Text>
+            )}
+            <Dropdown
+              options={fields}
+              selected={type}
+              onChange={(type) => {
+                setType(type);
+              }}
+              multiple={false}
+              isClearable={false}
+            />
+            <Tabs
+              selectedTab={required}
+              onTabClick={onRequiredTabClick}
+              tabs={["Optional", "Required"]}
+              orientation="horizontal"
+              unselectedColor="transparent"
+            />
+            {type.value === "singleSelect" || type.value === "multiSelect" ? (
+              <AddOptions
+                fieldOptions={fieldOptions}
+                setFieldOptions={setFieldOptions}
               />
-            </Stack>
-          ) : null}
-          {type.value === "reward" ? (
-            <RewardOptions networks={networks} setNetworks={setNetworks} />
-          ) : null}
-          {type.value === "milestone" ? (
-            <MilestoneOptions networks={networks} setNetworks={setNetworks} />
-          ) : null}
-          {/* <Accordian name="Advanced Settings" defaultOpen={false}>
+            ) : null}
+            {type.value === "user" || type.value === "user[]" ? (
+              <Stack>
+                <Text variant="label">User Type</Text>
+                <Select
+                  options={[
+                    { label: "Assignee", value: "assignee" },
+                    { label: "Reviewer", value: "reviewer" },
+                    { label: "Grantee", value: "grantee" },
+                    { label: "Applicant", value: "applicant" },
+                    { label: "None", value: "none" },
+                  ]}
+                  value={{
+                    label: userType as string,
+                    value: userType as string,
+                  }}
+                  onChange={(type) => {
+                    setUserType(type.value as FormUserType);
+                  }}
+                />
+              </Stack>
+            ) : null}
+            {type.value === "reward" ? (
+              <RewardOptions networks={networks} setNetworks={setNetworks} />
+            ) : null}
+            {type.value === "milestone" ? (
+              <MilestoneOptions networks={networks} setNetworks={setNetworks} />
+            ) : null}
+            {/* <Accordian name="Advanced Settings" defaultOpen={false}>
             <Stack space="2">
               {["shortText", "longText", "ethAddress"].includes(type.value) && (
                 <Input label="" placeholder="Default Value" />
@@ -188,87 +261,46 @@ export default function AddField({ propertyName, handleClose }: Props) {
             </Stack>
           </Accordian> */}
 
-          <PrimaryButton
-            icon={<SaveFilled style={{ fontSize: "1.3rem" }} />}
-            loading={loading}
-            disabled={showNameCollissionError || !name}
-            onClick={async () => {
-              setLoading(true);
-              let res;
-              let rewardOptions = {} as Registry | undefined;
-              if (type.value === "reward" || type.value === "milestone") {
-                rewardOptions = networks;
-              }
-              let milestoneFields = [] as string[];
-              if (type.value === "milestone") {
-                milestoneFields = ["name", "description", "dueDate", "reward"];
-              }
-              console.log({ rewardOptions });
-              if (propertyName) {
-                res = await updateField(collection.id, propertyName, {
-                  name,
-                  type: type.value,
-                  options: fieldOptions,
-                  rewardOptions,
-                  userType,
-                  default: defaultValue,
-                  onUpdateNotifyUserTypes: notifyUserType?.map(
-                    (type) => type.value
-                  ) as FormUserType[],
-                  isPartOfFormView: true,
-                  required: required === 1,
-                  milestoneFields,
-                });
-              } else {
-                res = await addField(collection.id, {
-                  name,
-                  type: type.value,
-                  isPartOfFormView: false,
-                  options: fieldOptions,
-                  rewardOptions,
-                  userType: userType,
-                  default: defaultValue,
-                  onUpdateNotifyUserTypes: notifyUserType?.map(
-                    (type) => type.value
-                  ) as FormUserType[],
-                  required: required === 1,
-                  milestoneFields,
-                });
-              }
-              setLoading(false);
-              if (res.id) {
-                console.log({ res });
-                handleClose();
-
-                setLocalCollection(res);
-              } else {
-                toast.error(res.message);
-              }
-              console.log({ res });
-            }}
-          >
-            Save
-          </PrimaryButton>
-          {propertyName && (
             <PrimaryButton
-              tone="red"
-              icon={<IconTrash />}
+              icon={<SaveFilled style={{ fontSize: "1.3rem" }} />}
+              loading={loading}
+              disabled={showNameCollissionError || !name}
               onClick={async () => {
-                const res = await deleteField(collection.id, propertyName);
-                console.log({ res });
-                if (res.id) {
-                  handleClose();
-                  setLocalCollection(res);
+                if (
+                  propertyName &&
+                  !prevPropertyTypeToNewPropertyTypeThatDoesntRequiresClarance[
+                    collection.properties[propertyName].type
+                  ].includes(type.value)
+                ) {
+                  setShowConfirm(true);
                 } else {
-                  toast.error(res.message);
+                  await onSave();
                 }
               }}
             >
-              Delete
+              Save
             </PrimaryButton>
-          )}
-        </Stack>
-      </Box>
-    </Modal>
+            {propertyName && (
+              <PrimaryButton
+                tone="red"
+                icon={<IconTrash />}
+                onClick={async () => {
+                  const res = await deleteField(collection.id, propertyName);
+                  console.log({ res });
+                  if (res.id) {
+                    handleClose();
+                    setLocalCollection(res);
+                  } else {
+                    toast.error(res.message);
+                  }
+                }}
+              >
+                Delete
+              </PrimaryButton>
+            )}
+          </Stack>
+        </Box>
+      </Modal>
+    </>
   );
 }
