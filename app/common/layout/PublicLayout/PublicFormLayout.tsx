@@ -1,7 +1,6 @@
 import React, { memo, useEffect } from "react";
-
 import { ReactNodeNoStrings } from "degen/dist/types/types";
-import { Box, Text, useTheme } from "degen";
+import { Box, useTheme } from "degen";
 import { AnimatePresence } from "framer-motion";
 import ExtendedSidebar from "../../../modules/ExtendedSidebar/ExtendedSidebar";
 import Sidebar from "@/app/modules/Sidebar";
@@ -10,20 +9,26 @@ import { useGlobal } from "@/app/context/globalContext";
 import { useQuery } from "react-query";
 import { UserType } from "@/app/types";
 import { toast } from "react-toastify";
-import ConnectPage from "./ConnectPage";
 
 type PublicLayoutProps = {
   children: ReactNodeNoStrings;
 };
 
 const Container = styled(Box)<{ issidebarexpanded: boolean }>`
-  max-width: ${(props) =>
-    props.issidebarexpanded ? "calc(100vw - 22rem)" : "calc(100vw - 2rem)"};
+  max-width: 100vw;
   flex-grow: 1;
 `;
 
 // show this only desktop screens
 const DesktopContainer = styled(Box)`
+  display: flex;
+  flexdirection: row;
+  height: 100vh;
+  overflowy: auto;
+  overflowx: hidden;
+`;
+
+const MobileContainer = styled(Box)`
   display: none;
   @media (min-width: 768px) {
     display: flex;
@@ -32,18 +37,6 @@ const DesktopContainer = styled(Box)`
   }
   overflowy: auto;
   overflowx: hidden;
-`;
-
-// show this only mobile screens
-const MobileContainer = styled(Box)`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-  @media (min-width: 768px) {
-    display: none;
-  }
 `;
 
 const getUser = async () => {
@@ -89,41 +82,25 @@ function PublicLayout(props: PublicLayoutProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    setIsSidebarExpanded(false);
+  }, [setIsSidebarExpanded]);
+
   return (
-    <>
-      <DesktopContainer
-        backgroundColor={mode === "dark" ? "background" : "backgroundSecondary"}
-        id="public-layout"
-      >
-        {!connectedUser && !currentUser?.id ? (
-          <ConnectPage />
-        ) : (
-          <>
-            <Sidebar />
-            <AnimatePresence initial={false}>
-              {isSidebarExpanded && <ExtendedSidebar />}
-            </AnimatePresence>
-            <Box
-              display="flex"
-              flexDirection="column"
-              width="full"
-              overflow="hidden"
-            >
-              <Container issidebarexpanded={isSidebarExpanded}>
-                {children}
-              </Container>
-            </Box>
-          </>
-        )}
-      </DesktopContainer>
-      <MobileContainer
-        backgroundColor={mode === "dark" ? "background" : "backgroundSecondary"}
-      >
-        <Text variant="label">
-          Mobile not supported yet, please use desktop
-        </Text>
+    <DesktopContainer
+      backgroundColor={mode === "dark" ? "background" : "backgroundSecondary"}
+      id="public-layout"
+    >
+      <MobileContainer>
+        <Sidebar />
+        <AnimatePresence initial={false}>
+          {isSidebarExpanded && <ExtendedSidebar />}
+        </AnimatePresence>
       </MobileContainer>
-    </>
+      <Box display="flex" flexDirection="column" width="full" overflow="hidden">
+        <Container issidebarexpanded={isSidebarExpanded}>{children}</Container>
+      </Box>
+    </DesktopContainer>
   );
 }
 

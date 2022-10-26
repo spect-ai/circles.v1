@@ -19,8 +19,7 @@ export default function useCredentials() {
   const { registry, circle } = useCircle();
   const { chain } = useNetwork();
   const { switchNetworkAsync } = useSwitchNetwork();
-  const { kudosMinted, setKudosMinted, cardId, assignees, reviewers, setCard } =
-    useLocalCard();
+  const { kudosMinted, cardId, assignees, reviewers, setCard } = useLocalCard();
   const { localCollection: collection, setLocalCollection } =
     useLocalCollection();
   const { mode } = useTheme();
@@ -208,7 +207,7 @@ export default function useCredentials() {
             }
           }
         })
-        .catch((err) => console.log(err));
+        .catch((err) => console.error(err));
     }, 1000);
     setTimeout(() => {
       clearInterval(intervalPromise);
