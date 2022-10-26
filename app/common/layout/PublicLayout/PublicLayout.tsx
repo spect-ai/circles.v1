@@ -100,26 +100,6 @@ function PublicLayout(props: PublicLayoutProps) {
         backgroundColor={mode === "dark" ? "background" : "backgroundSecondary"}
         id="public-layout"
       >
-        <Sidebar />
-        {!hideSidebar && (
-          <AnimatePresence initial={false}>
-            {isSidebarExpanded && <ExtendedSidebar />}
-          </AnimatePresence>
-        )}
-        <Box
-          display="flex"
-          flexDirection="column"
-          width="full"
-          overflow="hidden"
-        >
-          {!hideSidebar ? (
-            <Container issidebarexpanded={isSidebarExpanded}>
-              {children}
-            </Container>
-          ) : (
-            <Box flexGrow={1}>{children}</Box>
-          )}
-        </Box>
         {!connectedUser && !currentUser?.id ? (
           <ConnectPage />
         ) : (

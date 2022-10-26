@@ -105,10 +105,18 @@ export const FolderView = ({
         }
       });
 
+    filteredCollections &&
+      Object.values(filteredCollections)?.map((collection) => {
+        if (!allContentIds.includes(collection.id)) {
+          unclassifiedIds = unclassifiedIds.concat(collection.id);
+        }
+      });
+
     setUnclassified(unclassifiedIds);
   }, [
     allContentIds,
     circle?.folderDetails,
+    filteredCollections,
     filteredProjects,
     filteredRetro,
     filteredWorkstreams,

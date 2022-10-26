@@ -188,6 +188,13 @@ export default function CircleOverview() {
                         keys: ["title"],
                       }
                     );
+                    const collections = matchSorter(
+                      Object.values(circle?.collections),
+                      e.target.value,
+                      {
+                        keys: ["name"],
+                      }
+                    );
                     setFilteredProjects(
                       proj.reduce((rest, p) => ({ ...rest, [p.id]: p }), {})
                     );
@@ -200,11 +207,12 @@ export default function CircleOverview() {
                     setFilteredRetro(
                       retro.reduce((rest, r) => ({ ...rest, [r.id]: r }), {})
                     );
-                    // setFilteredCollections(
-                    //   matchSorter(circle?.collections, e.target.value, {
-                    //     keys: ["name"],
-                    //   })
-                    // );
+                    setFilteredCollections(
+                      collections.reduce(
+                        (rest, c) => ({ ...rest, [c.id]: c }),
+                        {}
+                      )
+                    );
                   }}
                 />
                 <Button
@@ -218,7 +226,7 @@ export default function CircleOverview() {
                   {groupBy == "Type" ? (
                     <IconGrid size={"4"} />
                   ) : (
-                    <FolderOpenOutlined style={{ fontSize: "1.1rem" }}/>
+                    <FolderOpenOutlined style={{ fontSize: "1.1rem" }} />
                   )}
                 </Button>
                 {canDo("inviteMembers") && (

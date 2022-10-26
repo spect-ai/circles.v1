@@ -1,23 +1,11 @@
-import {
-  Box,
-  Button,
-  IconCollection,
-  IconPlusSmall,
-  Input,
-  Stack,
-  Text,
-  useTheme,
-} from "degen";
+import { Box, Input, Stack, useTheme } from "degen";
 import React, { useState } from "react";
-import { AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
 import Loader from "@/app/common/components/Loader";
 import Modal from "@/app/common/components/Modal";
-import Tabs from "@/app/common/components/Tabs";
 import { useMutation } from "react-query";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { useCircle } from "./CircleContext";
-import { Tooltip } from "react-tippy";
 import { updateFolder } from "@/app/services/Folders";
 
 type CreateCollectionDto = {
@@ -27,12 +15,13 @@ type CreateCollectionDto = {
   defaultView?: "form" | "table" | "kanban" | "list" | "gantt";
 };
 
-function CreateCollectionModal({ folderId }: { folderId?: string }) {
-  const [modalOpen, setModalOpen] = useState(false);
-  const [visibilityTab, setVisibilityTab] = useState(0);
-  const onVisibilityTabClick = (id: number) => setVisibilityTab(id);
-  const close = () => setModalOpen(false);
-  const { mode } = useTheme();
+interface Props {
+  folderId: string;
+  setCollectionModal: (value: boolean) => void;
+}
+
+function CreateCollectionModal({ folderId, setCollectionModal }: Props) {
+  const close = () => setCollectionModal(false);
 
   const [name, setName] = useState("");
 
@@ -56,7 +45,7 @@ function CreateCollectionModal({ folderId }: { folderId?: string }) {
   const onSubmit = () => {
     mutateAsync({
       name,
-      private: visibilityTab === 1,
+      private: false,
       circleId: circle?.id,
       defaultView: "form",
     })
@@ -96,58 +85,23 @@ function CreateCollectionModal({ folderId }: { folderId?: string }) {
   return (
     <>
       <Loader loading={isLoading} text="Creating your collection" />
-      {folderId ? (
-        <Tooltip html={<Text>Create Form</Text>} theme={mode}>
-          <Button
-            size="small"
-            variant="transparent"
-            shape="circle"
-            onClick={(e) => {
-              e.stopPropagation();
-              setModalOpen(true);
-            }}
-          >
-            <IconCollection size="4" color="accent" />
-          </Button>
-        </Tooltip>
-      ) : (
-        <Button
-          data-tour="circle-create-workstream-button"
-          size="small"
-          variant="transparent"
-          shape="circle"
-          onClick={(e) => {
-            e.stopPropagation();
-            setModalOpen(true);
-          }}
-        >
-          <IconPlusSmall />
-        </Button>
-      )}
-      <AnimatePresence>
-        {modalOpen && (
-          <Modal handleClose={close} title="Create Form" size="small">
-            <Box width="full" padding="8">
-              <Stack>
-                <Input
-                  label=""
-                  placeholder="Name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                />
-                <Box width="full" marginTop="4">
-                  <PrimaryButton
-                    onClick={onSubmit}
-                    disabled={name.length === 0}
-                  >
-                    Create Form
-                  </PrimaryButton>
-                </Box>
-              </Stack>
+      <Modal handleClose={close} title="Create Form" size="small">
+        <Box width="full" padding="8">
+          <Stack>
+            <Input
+              label=""
+              placeholder="Name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+            <Box width="full" marginTop="4">
+              <PrimaryButton onClick={onSubmit} disabled={name.length === 0}>
+                Create Form
+              </PrimaryButton>
             </Box>
-          </Modal>
-        )}
-      </AnimatePresence>
+          </Stack>
+        </Box>
+      </Modal>
     </>
   );
 }

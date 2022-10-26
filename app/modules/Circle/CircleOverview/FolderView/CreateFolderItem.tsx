@@ -6,6 +6,7 @@ import {
   useTheme,
   IconUserGroup,
   IconLightningBolt,
+  IconCollection,
 } from "degen";
 import { useState } from "react";
 import { ProjectOutlined } from "@ant-design/icons";
@@ -16,12 +17,14 @@ interface Props {
   setProjectModal: (a: boolean) => void;
   setWorkstreamModal: (a: boolean) => void;
   setRetroOpen: (a: boolean) => void;
+  setCollectionModal: (a: boolean) => void;
 }
 
 export default function CreateFolderItem({
   setProjectModal,
   setWorkstreamModal,
   setRetroOpen,
+  setCollectionModal,
 }: Props) {
   const { mode } = useTheme();
   const { canDo } = useRoleGate();
@@ -111,6 +114,19 @@ export default function CreateFolderItem({
                 }}
               >
                 <IconLightningBolt size={"4"} color="accent" />
+              </Button>
+            </Tooltip>
+            <Tooltip html={<Text>Create Form</Text>} theme={mode}>
+              <Button
+                size="small"
+                variant="transparent"
+                shape="circle"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setCollectionModal(true);
+                }}
+              >
+                <IconCollection size="4" color="accent" />
               </Button>
             </Tooltip>
           </Box>

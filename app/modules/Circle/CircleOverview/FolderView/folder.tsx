@@ -23,6 +23,7 @@ import CreateProjectModal from "@/app/modules/Circle/CreateProjectModal";
 import CreateSpaceModal from "@/app/modules/Circle/CreateSpaceModal";
 import CreateRetroModal from "@/app/modules/Retro/CreateRetro";
 import { AnimatePresence } from "framer-motion";
+import CreateCollectionModal from "../../CreateCollectionModal";
 
 interface Props {
   content: string[];
@@ -82,6 +83,8 @@ const Folder = ({
   const [projectModal, setProjectModal] = useState(false);
   const [workstreamModal, setWorkstreamModal] = useState(false);
   const [retroOpen, setRetroOpen] = useState(false);
+  const [collectionModal, setCollectionModal] = useState(false);
+
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const ondeleteFolder = async () => {
     const res = await deleteFolder(circle.id, id);
@@ -103,7 +106,6 @@ const Folder = ({
       circle.id,
       id
     );
-    console.log({ updatedCircle });
     if (updatedCircle?.id) {
       setCircleData(updatedCircle);
     }
@@ -190,6 +192,7 @@ const Folder = ({
               setProjectModal={setProjectModal}
               setWorkstreamModal={setWorkstreamModal}
               setRetroOpen={setRetroOpen}
+              setCollectionModal={setCollectionModal}
             />
           )}
           {avatar !== "All" &&
@@ -244,6 +247,14 @@ const Folder = ({
           <CreateRetroModal
             folderId={id}
             handleClose={() => setRetroOpen(false)}
+          />
+        </AnimatePresence>
+      )}
+      {collectionModal && (
+        <AnimatePresence>
+          <CreateCollectionModal
+            folderId={id}
+            setCollectionModal={setCollectionModal}
           />
         </AnimatePresence>
       )}

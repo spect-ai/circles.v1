@@ -4,6 +4,7 @@ import { CircleType } from "@/app/types";
 import { ProjectOutlined } from "@ant-design/icons";
 import {
   Box,
+  IconCollection,
   IconLightningBolt,
   IconUserGroup,
   Skeleton,
@@ -232,6 +233,23 @@ function CircleSidebar() {
                                   icon={<IconLightningBolt size={"5"} />}
                                 >
                                   {circle?.retro?.[content].title}
+                                </PrimaryButton>
+                              </Link>
+                            )}
+                            {circle?.collections?.[content] && content && (
+                              <Link
+                                href={`/${cId}/r/${circle?.collections?.[content].slug}`}
+                              >
+                                <PrimaryButton
+                                  variant={
+                                    cSlug ===
+                                    circle?.collections?.[content].slug
+                                      ? "tertiary"
+                                      : "transparent"
+                                  }
+                                  icon={<IconCollection size={"5"} />}
+                                >
+                                  {circle?.collections?.[content].name}
                                 </PrimaryButton>
                               </Link>
                             )}
