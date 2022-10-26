@@ -211,7 +211,7 @@ export default function useCredentials() {
     }, 1000);
     setTimeout(() => {
       clearInterval(intervalPromise);
-    }, 20000);
+    }, 60000);
   };
 
   const viewKudos = async (): Promise<KudosType[]> => {
