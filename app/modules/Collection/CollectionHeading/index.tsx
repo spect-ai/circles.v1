@@ -99,12 +99,12 @@ function CollectionHeading() {
                   // icon={<IconDocuments />}
                   variant={"transparent"}
                   onClick={() => {
-                    void router.push(`/r/${collection?.slug}`);
+                    // void router.push(`/r/${collection?.slug}`);
                     // uncomment this when pushing to prod, need the above line while we are testing
-                    // window.open(
-                    //   `https://circles.spect.network/r/${collection?.slug}`,
-                    //   "_blank"
-                    // );
+                    window.open(
+                      `https://circles.spect.network/r/${collection?.slug}`,
+                      "_blank"
+                    );
                   }}
                 >
                   Preview
@@ -113,7 +113,7 @@ function CollectionHeading() {
                   // icon={<ShareAltOutlined />}
                   onClick={() => {
                     void navigator.clipboard.writeText(
-                      `https://spect.network/form/${collection?.slug}`
+                      `https://circles.spect.network/r/${collection?.slug}`
                     );
                     toast.success("Copied to clipboard");
                   }}

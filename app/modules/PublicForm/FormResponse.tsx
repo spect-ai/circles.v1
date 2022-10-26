@@ -38,7 +38,12 @@ export default function FormResponse({
   const [claimedJustNow, setClaimedJustNow] = useState(false);
 
   return (
-    <Box>
+    <Box
+      padding={{
+        xs: "2",
+        md: "8",
+      }}
+    >
       {claimedJustNow && (
         <Confetti
           width={width}
@@ -130,7 +135,7 @@ export default function FormResponse({
           ) : (
             <Box>
               {form.mintkudosTokenId && (
-                <Box>
+                <Stack>
                   <Heading>
                     The creator of this form is distributing kudos to everyone
                     that submitted a response 🎉
@@ -170,7 +175,7 @@ export default function FormResponse({
                       Claim Kudos
                     </PrimaryButton>
                   </Box>
-                </Box>
+                </Stack>
               )}
             </Box>
           )}
