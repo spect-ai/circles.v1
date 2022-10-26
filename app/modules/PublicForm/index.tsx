@@ -233,6 +233,7 @@ export const DescriptionInput = styled.textarea<{ mode: "dark" | "light" }>`
     props.mode === "dark" ? "rgb(255, 255, 255, 0.7)" : "rgb(20,20,20,0.7)"};
   font-weight: 400;
   font-size: 14px;
+  resize: none;
 `;
 
 export const CoverImage = styled(Box)<{ src: string }>`

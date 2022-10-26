@@ -302,20 +302,23 @@ export default function FormFields({ form, setForm }: Props) {
   return (
     <Container borderRadius="2xLarge">
       {!loading &&
-        form.propertyOrder.map((propertyName) => (
-          <PublicField
-            form={form}
-            propertyName={propertyName}
-            data={data}
-            setData={setData}
-            memberOptions={memberOptions}
-            requiredFieldsNotSet={requiredFieldsNotSet}
-            key={propertyName}
-            updateRequiredFieldNotSet={updateRequiredFieldNotSet}
-            fieldHasInvalidType={fieldHasInvalidType}
-            updateFieldHasInvalidType={updateFieldHasInvalidType}
-          />
-        ))}
+        form.propertyOrder.map((propertyName) => {
+          if (form.properties[propertyName].isPartOfFormView)
+            return (
+              <PublicField
+                form={form}
+                propertyName={propertyName}
+                data={data}
+                setData={setData}
+                memberOptions={memberOptions}
+                requiredFieldsNotSet={requiredFieldsNotSet}
+                key={propertyName}
+                updateRequiredFieldNotSet={updateRequiredFieldNotSet}
+                fieldHasInvalidType={fieldHasInvalidType}
+                updateFieldHasInvalidType={updateFieldHasInvalidType}
+              />
+            );
+        })}
       <Box width="full">
         <Box
           paddingRight="5"

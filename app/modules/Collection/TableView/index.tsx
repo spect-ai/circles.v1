@@ -1,11 +1,10 @@
-import Modal from "@/app/common/components/Modal";
 import {
   addCollectionData,
   deleteCollectionData,
   updateCollectionDataGuarded,
 } from "@/app/services/Collection";
-import { Milestone, Option, PropertyType, Reward } from "@/app/types";
-import { Box, Text } from "degen";
+import { Milestone, PropertyType, Reward } from "@/app/types";
+import { Box } from "degen";
 import { AnimatePresence } from "framer-motion";
 import React, { useEffect, useState } from "react";
 import {
@@ -104,11 +103,27 @@ export default function TableView() {
   const sortData = (columnName: string, asc: boolean) => {
     if (data) {
       const sortedData = [...data].sort((a: any, b: any) => {
-        if (a[columnName] < b[columnName]) {
-          return asc ? -1 : 1;
+        if (
+          ["longText", "shortText", "date"].includes(
+            collection.properties[columnName].type
+          )
+        ) {
+          if (a[columnName] < b[columnName]) {
+            return asc ? -1 : 1;
+          }
+          if (a[columnName] > b[columnName]) {
+            return asc ? 1 : -1;
+          }
+          return 0;
         }
-        if (a[columnName] > b[columnName]) {
-          return asc ? 1 : -1;
+        if (["reward"].includes(collection.properties[columnName].type)) {
+          if (a[columnName].value < b[columnName].value) {
+            return asc ? -1 : 1;
+          }
+          if (a[columnName].value > b[columnName].value) {
+            return asc ? 1 : -1;
+          }
+          return 0;
         }
         return 0;
       });
@@ -295,6 +310,7 @@ export default function TableView() {
       {collection.name && (
         <DynamicDataSheetGrid
           value={data}
+          height={550}
           onChange={async (newData, operations) => {
             if (operations[0].type === "DELETE") {
               const dataIds = [];
@@ -320,6 +336,8 @@ export default function TableView() {
             minWidth: 50,
           }}
           onBlur={updateData}
+          lockRows
+          disableExpandSelection
         />
       )}
     </Box>

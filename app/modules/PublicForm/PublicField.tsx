@@ -226,6 +226,7 @@ export default function PublicField({
           data={data}
           setData={setData}
           propertyName={propertyName}
+          updateRequiredFieldNotSet={updateRequiredFieldNotSet}
         />
       )}
 

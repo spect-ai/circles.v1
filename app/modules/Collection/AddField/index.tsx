@@ -1,4 +1,3 @@
-import Accordian from "@/app/common/components/Accordian";
 import Dropdown from "@/app/common/components/Dropdown";
 import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
@@ -9,7 +8,7 @@ import { FormUserType, Option, Registry } from "@/app/types";
 import { SaveFilled } from "@ant-design/icons";
 import { Box, IconTrash, Input, Stack, Text } from "degen";
 import React, { useEffect, useState } from "react";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import { useCircle } from "../../Circle/CircleContext";
 import { fields } from "../Constants";
 import { useLocalCollection } from "../Context/LocalCollectionContext";
@@ -31,7 +30,6 @@ export default function AddField({ propertyName, handleClose }: Props) {
     useLocalCollection();
   const { registry } = useCircle();
   const [networks, setNetworks] = useState(registry);
-  const [selectedRewardOptions, setSelectedRewardOptions] = useState(registry);
   const [initialName, setInitialName] = useState("");
   const [name, setName] = useState("");
   const [type, setType] = useState({ label: "Short Text", value: "shortText" });
@@ -102,12 +100,10 @@ export default function AddField({ propertyName, handleClose }: Props) {
     if (res.id) {
       console.log({ res });
       handleClose();
-
       setLocalCollection(res);
     } else {
-      toast.error(res.message);
+      toast.error(res.message.toString());
     }
-    console.log({ res });
   };
 
   useEffect(() => {

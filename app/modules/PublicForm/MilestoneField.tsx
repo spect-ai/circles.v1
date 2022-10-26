@@ -3,7 +3,7 @@ import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { Milestone } from "@/app/types";
 import { Box, Button, IconPlusSmall, Stack, Text } from "degen";
 import { AnimatePresence } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import MilestoneModal from "./MilestoneModal";
 
 type Props = {
@@ -13,15 +13,16 @@ type Props = {
   data: any;
   setData: (value: any) => void;
   showDescription?: boolean;
+  updateRequiredFieldNotSet?: (key: string, value: any) => void;
 };
 
 export default function MilestoneField({
   form,
-  dataId,
   propertyName,
   data,
   setData,
   showDescription,
+  updateRequiredFieldNotSet,
 }: Props) {
   const [isMilestoneModalOpen, setIsMilestoneModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<"create" | "edit">("create");
@@ -45,6 +46,13 @@ export default function MilestoneField({
                     ? [...data[propertyName], value]
                     : [value],
                 });
+                updateRequiredFieldNotSet &&
+                  updateRequiredFieldNotSet(
+                    propertyName,
+                    data[propertyName]
+                      ? [...data[propertyName], value]
+                      : [value]
+                  );
               } else {
                 data[propertyName][milestoneIndex] = value;
                 setData({
