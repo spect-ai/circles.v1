@@ -97,6 +97,7 @@ export function RolesModal({ handleClose, user }: Props) {
               if (data) {
                 queryClient.setQueryData(["circle", cId], data);
               }
+              handleClose();
             }}
           >
             Remove Member

@@ -1,11 +1,9 @@
 import { useGlobal } from "@/app/context/globalContext";
-import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { Box, Stack, Text } from "degen";
 import { AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
 import { useCircle } from "../Circle/CircleContext";
-import CreateRetro from "./CreateRetro";
 import RetroModal from "./RetroModal";
 import RetroRow from "./RetroRow";
 
@@ -13,7 +11,6 @@ export default function RetroPage() {
   const { circle, setPage } = useCircle();
   const { isSidebarExpanded } = useGlobal();
   const [isRetroOpen, setIsRetroOpen] = useState(false);
-  const { canDo } = useRoleGate();
 
   const router = useRouter();
 
@@ -42,7 +39,6 @@ export default function RetroPage() {
           <Text size="headingTwo" weight="semiBold" ellipsis>
             Retro
           </Text>
-          {canDo("createNewRetro") && <CreateRetro />}
         </Stack>
         {circle?.retro && Object.values(circle?.retro)?.map((retro) => (
           <Box

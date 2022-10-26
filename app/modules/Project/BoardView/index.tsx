@@ -31,9 +31,8 @@ interface Props {
 }
 
 const Container = styled.div`
-  display: flex;
-  flex-direction: row;
-  height: calc(100vh - 9rem);
+  display: inline-flex;
+  height: calc(100vh - 7.5rem);
   @media only screen and (min-width: 0px) {
     max-width: calc(100vw - 5rem);
     padding: 0 0.1rem;
@@ -42,8 +41,7 @@ const Container = styled.div`
     max-width: calc(100vw - 4rem);
     padding: 0 0.5rem;
   }
-  overflow-x: auto;
-  overflow-y: hidden;
+  overflow-x: scroll;
 `;
 
 function BoardView({ viewId }: Props) {

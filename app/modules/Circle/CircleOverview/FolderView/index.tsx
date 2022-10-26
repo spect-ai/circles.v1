@@ -62,13 +62,13 @@ export const FolderView = ({
       NaN ||
       circle?.folderOrder?.length == 0;
     const payload = {
-      name: fol ? "All" : `Folder-${circle?.folderOrder?.length + 1}`,
+      name: fol ? "All" : `Section-${circle?.folderOrder?.length + 1}`,
       avatar: fol ? "All" : "New Avatar",
       contentIds: fol ? unclassified : ([] as string[]),
     };
     const res = await createFolder(payload, circle?.id);
     if (res) {
-      console.log(`New Folder with name - ${payload.name} created `);
+      console.log(`New Section with name - ${payload.name} created `);
       setCircleData(res);
       setLocalCircle(res);
     }
@@ -192,7 +192,7 @@ export const FolderView = ({
 
   return (
     <DragDropContext onDragEnd={handleDrag}>
-      <Droppable droppableId="all-folders" direction="horizontal" type="folder">
+      <Droppable droppableId="all-folders" direction="vertical" type="folder">
         {DroppableContentCallback}
       </Droppable>
     </DragDropContext>

@@ -31,7 +31,6 @@ export const Card = styled(Box)<{ mode: string }>`
   flex-direction: column;
   flex-wrap: wrap;
   width: 630px;
-  // max-height: 300px;
   padding: 0.6rem;
   border-radius: 0.5rem;
   background-color: transparent;
@@ -127,7 +126,7 @@ const TaskWalletTabs = ({ userData, tab }: UserProps) => {
       </Box>
       <Box>
         {panelTab === "Work" && (
-          <Box>
+          <Box display={"flex"} flexDirection="column" marginTop={"4"}>
             <Toggle toggle={toggle} setToggle={setToggle} />
             <WorkCards
               toggle={toggle}

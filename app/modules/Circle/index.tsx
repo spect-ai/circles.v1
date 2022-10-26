@@ -28,8 +28,6 @@ export default function Circle() {
     page,
     fetchCircle,
     fetchMemberDetails,
-    loading,
-    setLoading,
   } = useCircle();
 
   const { canDo } = useRoleGate();

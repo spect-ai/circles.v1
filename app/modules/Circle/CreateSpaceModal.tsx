@@ -1,16 +1,10 @@
 import {
   Box,
-  Button,
-  IconPlusSmall,
   Input,
   MediaPicker,
   Stack,
-  IconUserGroup,
-  useTheme,
-  Text,
 } from "degen";
 import React, { useState } from "react";
-import { AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
 import Loader from "@/app/common/components/Loader";
 import Modal from "@/app/common/components/Modal";
@@ -20,7 +14,6 @@ import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { storeImage } from "@/app/common/utils/ipfs";
 import { useCircle } from "./CircleContext";
 import { updateFolder } from "@/app/services/Folders";
-import { Tooltip } from "react-tippy";
 
 type CreateWorkspaceDto = {
   name: string;
@@ -30,12 +23,16 @@ type CreateWorkspaceDto = {
   avatar: string;
 };
 
-function CreateSpaceModal({ folderId }: { folderId?: string }) {
-  const { mode } = useTheme();
-  const [modalOpen, setModalOpen] = useState(false);
+interface Props {
+  setWorkstreamModal: (a: boolean) => void;
+  folderId?: string;
+}
+
+function CreateSpaceModal({ setWorkstreamModal, folderId }: Props) {
+
   const [visibilityTab, setVisibilityTab] = useState(0);
   const onVisibilityTabClick = (id: number) => setVisibilityTab(id);
-  const close = () => setModalOpen(false);
+  const close = () => setWorkstreamModal(false);
 
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -115,85 +112,48 @@ function CreateSpaceModal({ folderId }: { folderId?: string }) {
   return (
     <>
       <Loader loading={isLoading} text="Creating your workstream" />
-      {folderId ? (
-        <Tooltip html={<Text>Create Workstream</Text>} theme={mode}>
-          <Button
-            data-tour="folder-create-workstream-button"
-            size="small"
-            variant="transparent"
-            shape="circle"
-            onClick={(e) => {
-              e.stopPropagation();
-              setModalOpen(true);
-            }}
-          >
-            <IconUserGroup size={"4"} color="accent" />
-          </Button>
-        </Tooltip>
-      ) : (
-        <Button
-          data-tour="circle-create-workstream-button"
-          size="small"
-          variant="transparent"
-          shape="circle"
-          onClick={(e) => {
-            e.stopPropagation();
-            setModalOpen(true);
-          }}
-        >
-          <IconPlusSmall />
-        </Button>
-      )}
-
-      <AnimatePresence>
-        {modalOpen && (
-          <Modal handleClose={close} title="Create Workstream">
-            <Box width="full" padding="8">
-              <Stack>
-                <Input
-                  label=""
-                  placeholder="Name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                />
-                <Input
-                  label=""
-                  placeholder="Description"
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                />
-                <MediaPicker
-                  compact
-                  defaultValue={{
-                    type: "image/png",
-                    url: logo,
-                  }}
-                  label="Choose or drag and drop media"
-                  uploaded={!!logo}
-                  onChange={uploadFile}
-                  uploading={uploading}
-                  maxSize={10}
-                />
-                <Tabs
-                  selectedTab={visibilityTab}
-                  onTabClick={onVisibilityTabClick}
-                  tabs={["Public", "Private"]}
-                  orientation="horizontal"
-                  unselectedColor="transparent"
-                />
-                <Box width="full" marginTop="4">
-                  <PrimaryButton
-                    onClick={onSubmit}
-                    disabled={name.length === 0}
-                  >
-                    Create Workstream
-                  </PrimaryButton>
-                </Box>
-              </Stack>
+      <Modal handleClose={close} title="Create Workstream">
+        <Box width="full" padding="8">
+          <Stack>
+            <Input
+              label=""
+              placeholder="Name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+            <Input
+              label=""
+              placeholder="Description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+            />
+            <MediaPicker
+              compact
+              defaultValue={{
+                type: "image/png",
+                url: logo,
+              }}
+              label="Choose or drag and drop media"
+              uploaded={!!logo}
+              onChange={uploadFile}
+              uploading={uploading}
+              maxSize={10}
+            />
+            <Tabs
+              selectedTab={visibilityTab}
+              onTabClick={onVisibilityTabClick}
+              tabs={["Public", "Private"]}
+              orientation="horizontal"
+              unselectedColor="transparent"
+            />
+            <Box width="full" marginTop="4">
+              <PrimaryButton onClick={onSubmit} disabled={name.length === 0}>
+                Create Workstream
+              </PrimaryButton>
             </Box>
-          </Modal>
-        )}
-      </AnimatePresence>
+          </Stack>
+        </Box>
+      </Modal>
     </>
   );
 }

@@ -8,7 +8,6 @@ import {
   useTheme,
   Input,
   IconSearch,
-  IconCollection,
   IconGrid,
 } from "degen";
 import { AnimatePresence } from "framer-motion";
@@ -25,6 +24,7 @@ import { TypeView } from "./TypeView";
 import { FolderView } from "./FolderView";
 import Breadcrumbs from "@/app/common/components/Breadcrumbs";
 import Roles from "../RolesTab";
+import { FolderOpenOutlined } from "@ant-design/icons";
 
 interface Props {
   toggle: string;
@@ -218,11 +218,11 @@ export default function CircleOverview() {
                   {groupBy == "Type" ? (
                     <IconGrid size={"4"} />
                   ) : (
-                    <IconCollection size={"4"} />
+                    <FolderOpenOutlined style={{ fontSize: "1.1rem" }}/>
                   )}
                 </Button>
                 {canDo("inviteMembers") && (
-                  <Box width={"1/3"} marginTop="2">
+                  <Box width={"1/3"} marginBottom="1">
                     <InviteMemberModal />
                   </Box>
                 )}

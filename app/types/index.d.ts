@@ -33,6 +33,12 @@ interface UserType {
   followedUsers: string[];
   followedByUsers: string[];
   userDetails: any;
+  circleDetails: {
+    [key: string]: {
+      slug: string;
+      avatar: string;
+    };
+  };
 }
 
 export interface Payment {
@@ -104,7 +110,7 @@ export interface Permissions {
   };
 }
 
-export type Permission =
+export type NonCardPermissions =
   | "createNewCircle"
   | "createNewProject"
   | "createNewRetro"
@@ -116,7 +122,9 @@ export type Permission =
   | "managePaymentOptions"
   | "manageProjectSettings"
   | "manageRoles"
-  | "distributeCredentials"
+  | "distributeCredentials";
+
+export type CardPermissions =
   | "manageCardProperties"
   | "createNewCard"
   | "manageRewards"
@@ -473,6 +481,7 @@ export interface CardDetails {
     id: string;
   }[];
   assignee: {
+    ethAddress: string | undefined;
     username: string;
     avatar: string;
     id: string;

@@ -1,6 +1,11 @@
 import { useGlobal } from "@/app/context/globalContext";
 import { useLocalCard } from "@/app/modules/Project/CreateCardModal/hooks/LocalCardContext";
-import { CardType, CircleType, Permission } from "@/app/types";
+import {
+  CardPermissions,
+  CardType,
+  CircleType,
+  NonCardPermissions,
+} from "@/app/types";
 import { useRouter } from "next/router";
 import { useQuery } from "react-query";
 
@@ -14,14 +19,19 @@ export default function useRoleGate() {
 
   const { card, cardActions } = useLocalCard();
 
-  const canDo = (roleAction: Permission) => {
+  const canDo = (roleAction: NonCardPermissions | CardPermissions) => {
     if (!connectedUser || !circle?.memberRoles) {
       return false;
     }
     const userRoles = circle?.memberRoles[connectedUser];
     if (userRoles) {
       for (const role of userRoles) {
-        if (circle.roles[role].permissions[roleAction]) {
+        if (
+          circle.roles[role].permissions[roleAction as NonCardPermissions] ===
+            true ||
+          circle.roles[role].permissions[roleAction as CardPermissions].Task ===
+            true
+        ) {
           return true;
         }
       }

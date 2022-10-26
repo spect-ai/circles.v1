@@ -13,7 +13,7 @@ export default function CreateSubTask() {
   return (
     <>
       <Button
-        data-tour="circle-sidebar-create-project-button"
+        data-tour="create-subtask-button"
         size="small"
         variant="tertiary"
         shape="circle"

@@ -31,7 +31,7 @@ const Container = styled(Box)`
   }
   -ms-overflow-style: none;
   scrollbar-width: none;
-  height: calc(100vh - 7.5rem);
+  height: calc(100vh - 8rem);
   overflow-y: none;
   width: 22rem;
 `;
