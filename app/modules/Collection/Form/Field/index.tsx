@@ -172,11 +172,8 @@ function FieldComponent({
       )}
       {collection.properties[id]?.type === "longText" && (
         <Box marginTop="4">
-          <Textarea
-            label
-            hideLabel
-            maxLength={100}
-            rows={3}
+          <LongTextInput
+            mode={mode}
             placeholder={`Enter ${collection.properties[id]?.name}`}
             value={collection.data && collection.data[id]}
             onChange={(e) => {}}
@@ -282,4 +279,26 @@ export const DateInput = styled.input<{ mode: string }>`
     border-color: rgb(191, 90, 242, 1);
   }
   transition: border-color 0.5s ease;
+`;
+
+export const LongTextInput = styled.textarea<{ mode: "dark" | "light" }>`
+  width: 100%;
+  background: transparent;
+  border-radius: 0.55rem;
+  border 1px solid ${(props) =>
+    props.mode === "dark" ? "rgb(255, 255, 255,0.1)" : "rgb(20,20,20,0.1)"};
+  background-color: ${(props) =>
+    props.mode === "dark" ? "rgb(20,20,20)" : "rgb(255, 255, 255)"};
+  caret-color: ${(props) =>
+    props.mode === "dark" ? "rgb(255, 255, 255, 0.7)" : "rgb(20,20,20,0.7)"};
+  color: ${(props) =>
+    props.mode === "dark" ? "rgb(255, 255, 255, 0.7)" : "rgb(20,20,20,0.7)"};
+  resize: none;
+  padding: 1rem;
+  outline: none;
+  &:focus {
+    border-color: rgb(191, 90, 242, 1);
+  }
+  transition: border-color 0.5s ease;
+
 `;
