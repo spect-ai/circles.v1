@@ -44,7 +44,7 @@ export default function ClickableTag({ name, icon, onClick, tourId }: Props) {
       mode={mode}
     >
       <Box marginRight="1">{icon}</Box>
-      <Text ellipsis>{smartTrim(name, 16)}</Text>
+      <Text ellipsis>{smartTrim(name, 18)}</Text>
     </TagContainer>
   );
 }

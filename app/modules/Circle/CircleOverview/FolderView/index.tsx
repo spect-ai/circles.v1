@@ -28,7 +28,9 @@ interface Props {
   filteredWorkstreams: {
     [key: string]: CircleType;
   };
-  filteredCollections: CollectionType[];
+  filteredCollections: {
+    [key: string]: CollectionType;
+  };
   setIsRetroOpen: (isRetroOpen: boolean) => void;
 }
 
@@ -44,10 +46,9 @@ const ScrollContainer = styled(Box)`
 
 export const FolderView = ({
   filteredProjects,
-  filteredCollections,
   filteredWorkstreams,
   filteredRetro,
-  setIsRetroOpen,
+  filteredCollections,
 }: Props) => {
   const { handleDrag } = useDragFolder();
   const { localCircle: circle, setCircleData, setLocalCircle } = useCircle();
@@ -104,10 +105,18 @@ export const FolderView = ({
         }
       });
 
+    filteredCollections &&
+      Object.values(filteredCollections)?.map((collection) => {
+        if (!allContentIds.includes(collection.id)) {
+          unclassifiedIds = unclassifiedIds.concat(collection.id);
+        }
+      });
+
     setUnclassified(unclassifiedIds);
   }, [
     allContentIds,
     circle?.folderDetails,
+    filteredCollections,
     filteredProjects,
     filteredRetro,
     filteredWorkstreams,
@@ -117,6 +126,7 @@ export const FolderView = ({
     setAllContentIds([]);
     setUnclassified([]);
     getFormattedData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [circle]);
 
   const DroppableContent = (provided: DroppableProvided) => (
@@ -147,10 +157,12 @@ export const FolderView = ({
           </Button>
         )}
       </Box>
-      {(circle?.folderOrder?.length == 0 || circle?.folderOrder?.length === undefined) && (
+      {(circle?.folderOrder?.length == 0 ||
+        circle?.folderOrder?.length === undefined) && (
         <Box>
           <Text variant="label">
-            Create Folders to classify and view Projects, Workstreams & Retro
+            Create Folders to classify and view Projects, Workstreams, Forms &
+            Retro
           </Text>
         </Box>
       )}
@@ -166,6 +178,7 @@ export const FolderView = ({
             index={i}
             projects={filteredProjects}
             workstreams={filteredWorkstreams}
+            collections={filteredCollections}
             retros={filteredRetro}
           />
         );

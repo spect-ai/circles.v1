@@ -14,6 +14,7 @@ import "@fontsource/inter/900.css";
 import "../styles/globals.css";
 import "@/app/styles/DateTimePicker.css";
 import "@/app/styles/GanttChart.css";
+import "@/app/styles/Table.css";
 import "react-toastify/dist/ReactToastify.css";
 import "react-tippy/dist/tippy.css";
 
@@ -21,10 +22,11 @@ import { AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
 import queryClient from "@/app/common/utils/queryClient";
 import GlobalContextProvider, { useGlobal } from "@/app/context/globalContext";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import * as gtag from "../lib/gtag";
 
 import "@rainbow-me/rainbowkit/styles.css";
+
 import {
   getDefaultWallets,
   RainbowKitProvider,

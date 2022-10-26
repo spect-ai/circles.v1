@@ -7,7 +7,7 @@ import Logo from "@/app/common/components/Logo";
 import { useState } from "react";
 import { Toggle } from "../Profile/TaskWallet/TaskWalletTab/Work";
 import { PriorityIcon } from "@/app/common/components/PriorityIcon";
-import { GigInfo, TextBox } from "../Profile/TaskWallet/TaskWalletTab";
+import { GigInfo } from "../Profile/TaskWallet/TaskWalletTab";
 
 const ScrollContainer = styled(Box)`
   ::-webkit-scrollbar {
@@ -51,7 +51,7 @@ const groupByCircles = (
   const res = Object.values(currentUser.cardDetails)?.filter((card: any) => {
     if (card === undefined) return currentUser.cardDetails;
     let assigneeFilt = false;
-    const circleId = card.circle.id;
+    const circleId = card.circle?.id;
 
     if (circleId == id && cardsArray.includes(card.id)) {
       assigneeFilt = true;

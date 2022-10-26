@@ -5,6 +5,7 @@ interface UpdateProfileDTO {
   username?: string;
   avatar?: string;
   bio?: string;
+  email?: string;
   skills?: string[];
   discordId?: string;
   githubId?: string;
@@ -21,6 +22,8 @@ export default function useProfileUpdate() {
       body: JSON.stringify(body),
       credentials: "include",
     });
+    // console.log({ data: await res.json() });
+
     if (res.ok) {
       const data = await res.json();
       queryClient.setQueryData("getMyUser", data);

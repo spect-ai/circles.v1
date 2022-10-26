@@ -1,6 +1,5 @@
 import queryClient from "@/app/common/utils/queryClient";
-import { useGlobal } from "@/app/context/globalContext";
-import { CardType, CollectionType, AdvancedFilters } from "@/app/types";
+import { CollectionType, AdvancedFilters } from "@/app/types";
 import { useRouter } from "next/router";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useQuery } from "react-query";
@@ -17,6 +16,8 @@ type LocalCollectionContextType = {
   setUpdating: React.Dispatch<React.SetStateAction<boolean>>;
   advFilters: AdvancedFilters;
   setAdvFilters: React.Dispatch<React.SetStateAction<AdvancedFilters>>;
+  view: number;
+  setView: React.Dispatch<React.SetStateAction<number>>;
 };
 
 export const LocalCollectionContext = createContext<LocalCollectionContextType>(
@@ -52,6 +53,7 @@ export function useProviderLocalCollection() {
     sortBy: "none",
     order: "des",
   });
+  const [view, setView] = useState(0);
 
   const updateCollection = (collection: CollectionType) => {
     queryClient.setQueryData(["collection", colId], collection);
@@ -59,7 +61,6 @@ export function useProviderLocalCollection() {
   };
 
   useEffect(() => {
-    console.log(colId);
     if (colId) {
       setLoading(true);
       fetchCollection()
@@ -77,7 +78,7 @@ export function useProviderLocalCollection() {
           setLoading(false);
         });
     }
-  }, []);
+  }, [colId, fetchCollection]);
 
   return {
     localCollection,
@@ -90,6 +91,8 @@ export function useProviderLocalCollection() {
     setUpdating,
     advFilters,
     setAdvFilters,
+    view,
+    setView,
   };
 }
 

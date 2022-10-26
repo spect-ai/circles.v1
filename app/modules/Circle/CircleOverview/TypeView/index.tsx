@@ -38,7 +38,9 @@ interface Props {
   filteredWorkstreams: {
     [key: string]: CircleType;
   };
-  filteredCollections: CollectionType[] | undefined;
+  filteredCollections: {
+    [key: string]: CollectionType;
+  };
   setIsRetroOpen: (isRetroOpen: boolean) => void;
 }
 
@@ -85,7 +87,7 @@ export const TypeView = ({
       )}
       {retroOpen && (
         <AnimatePresence>
-          <CreateRetroModal handleClose={()=> setRetroOpen(false)} />
+          <CreateRetroModal handleClose={() => setRetroOpen(false)} />
         </AnimatePresence>
       )}
       <BoxContainer>
@@ -238,20 +240,21 @@ export const TypeView = ({
         }}
       >
         <Row>
-          {filteredCollections?.map((collection) => (
-            <Col sm={6} md={4} lg={2} key={collection.id}>
-              <Card
-                onClick={() =>
-                  // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-                  router.push(`${window.location.href}/r/${collection.slug}`)
-                }
-                height="32"
-              >
-                <Text align="center">{collection.name}</Text>
-              </Card>
-            </Col>
-          ))}
-          {!filteredCollections?.length && (
+          {filteredCollections &&
+            Object.values(filteredCollections)?.map((collection) => (
+              <Col sm={6} md={4} lg={2} key={collection.id}>
+                <Card
+                  onClick={() =>
+                    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+                    router.push(`${window.location.href}/r/${collection.slug}`)
+                  }
+                  height="32"
+                >
+                  <Text align="center">{collection.name}</Text>
+                </Card>
+              </Col>
+            ))}
+          {filteredCollections && !Object.values(filteredCollections)?.length && (
             <Box margin="4">
               <Text variant="label">No Forms created yet</Text>
             </Box>

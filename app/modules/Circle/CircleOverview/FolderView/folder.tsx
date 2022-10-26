@@ -9,7 +9,12 @@ import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { Box, IconTrash, Stack, useTheme, Button } from "degen";
 import styled from "styled-components";
 import Card from "./card";
-import { CircleType, ProjectType, RetroType } from "@/app/types";
+import {
+  CircleType,
+  CollectionType,
+  ProjectType,
+  RetroType,
+} from "@/app/types";
 import { deleteFolder, updateFolder } from "@/app/services/Folders";
 import { useCircle } from "../../CircleContext";
 import { Container, Row } from "react-grid-system";
@@ -18,6 +23,7 @@ import CreateProjectModal from "@/app/modules/Circle/CreateProjectModal";
 import CreateSpaceModal from "@/app/modules/Circle/CreateSpaceModal";
 import CreateRetroModal from "@/app/modules/Retro/CreateRetro";
 import { AnimatePresence } from "framer-motion";
+import CreateCollectionModal from "../../CreateCollectionModal";
 
 interface Props {
   content: string[];
@@ -29,6 +35,9 @@ interface Props {
   workstreams: { [key: string]: CircleType };
   retros: {
     [key: string]: RetroType;
+  };
+  collections: {
+    [key: string]: CollectionType;
   };
 }
 
@@ -65,6 +74,7 @@ const Folder = ({
   projects,
   workstreams,
   retros,
+  collections,
 }: Props) => {
   const { canDo } = useRoleGate();
   const { mode } = useTheme();
@@ -73,6 +83,8 @@ const Folder = ({
   const [projectModal, setProjectModal] = useState(false);
   const [workstreamModal, setWorkstreamModal] = useState(false);
   const [retroOpen, setRetroOpen] = useState(false);
+  const [collectionModal, setCollectionModal] = useState(false);
+
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const ondeleteFolder = async () => {
     const res = await deleteFolder(circle.id, id);
@@ -94,7 +106,6 @@ const Folder = ({
       circle.id,
       id
     );
-    console.log({ updatedCircle });
     if (updatedCircle?.id) {
       setCircleData(updatedCircle);
     }
@@ -127,6 +138,16 @@ const Folder = ({
             }
             if (retros?.[card] && card) {
               return <Card card={card} index={i} key={card} retros={retros} />;
+            }
+            if (collections?.[card] && card) {
+              return (
+                <Card
+                  card={card}
+                  index={i}
+                  key={card}
+                  collections={collections}
+                />
+              );
             }
           })}
         </Row>
@@ -171,6 +192,7 @@ const Folder = ({
               setProjectModal={setProjectModal}
               setWorkstreamModal={setWorkstreamModal}
               setRetroOpen={setRetroOpen}
+              setCollectionModal={setCollectionModal}
             />
           )}
           {avatar !== "All" &&
@@ -225,6 +247,14 @@ const Folder = ({
           <CreateRetroModal
             folderId={id}
             handleClose={() => setRetroOpen(false)}
+          />
+        </AnimatePresence>
+      )}
+      {collectionModal && (
+        <AnimatePresence>
+          <CreateCollectionModal
+            folderId={id}
+            setCollectionModal={setCollectionModal}
           />
         </AnimatePresence>
       )}

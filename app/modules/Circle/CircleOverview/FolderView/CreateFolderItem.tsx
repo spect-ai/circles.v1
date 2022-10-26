@@ -6,23 +6,25 @@ import {
   useTheme,
   IconUserGroup,
   IconLightningBolt,
+  IconCollection,
 } from "degen";
 import { useState } from "react";
 import { ProjectOutlined } from "@ant-design/icons";
 import { Tooltip } from "react-tippy";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { toast } from "react-toastify";
-
 interface Props {
   setProjectModal: (a: boolean) => void;
   setWorkstreamModal: (a: boolean) => void;
   setRetroOpen: (a: boolean) => void;
+  setCollectionModal: (a: boolean) => void;
 }
 
-function CreateFolderItem({
+export default function CreateFolderItem({
   setProjectModal,
   setWorkstreamModal,
   setRetroOpen,
+  setCollectionModal,
 }: Props) {
   const { mode } = useTheme();
   const { canDo } = useRoleGate();
@@ -50,6 +52,10 @@ function CreateFolderItem({
             gap={"3"}
             marginLeft="3"
           >
+            {/* <CreateProjectModal folderId={folderId} />
+            <CreateSpaceModal folderId={folderId} />
+            <CreateRetro folderId={folderId} />
+            <CreateCollectionModal folderId={folderId} /> */}
             <Tooltip html={<Text>Create Project</Text>} theme={mode}>
               <Button
                 size="small"
@@ -110,11 +116,22 @@ function CreateFolderItem({
                 <IconLightningBolt size={"4"} color="accent" />
               </Button>
             </Tooltip>
+            <Tooltip html={<Text>Create Form</Text>} theme={mode}>
+              <Button
+                size="small"
+                variant="transparent"
+                shape="circle"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setCollectionModal(true);
+                }}
+              >
+                <IconCollection size="4" color="accent" />
+              </Button>
+            </Tooltip>
           </Box>
         )}
       </Box>
     </Box>
   );
 }
-
-export default CreateFolderItem;

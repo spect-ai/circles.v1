@@ -102,7 +102,7 @@ function CreateSpaceModal({ setWorkstreamModal, folderId }: Props) {
   const uploadFile = async (file: File) => {
     if (file) {
       setUploading(true);
-      const { imageGatewayURL } = await storeImage(file, "circleLogo");
+      const { imageGatewayURL } = await storeImage(file);
       console.log({ imageGatewayURL });
       setLogo(imageGatewayURL);
       setUploading(false);

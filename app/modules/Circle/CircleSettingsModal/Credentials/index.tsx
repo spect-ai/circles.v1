@@ -54,8 +54,8 @@ export default function Credentials() {
               setHasMintkudosCredentialsSetup(true);
               setMintkudosCommunityId(properties.mintkudosCommunityId);
             }
-            setIsLoading(false);
           }
+          setIsLoading(false);
         })
         .catch((err) => {
           console.log(err);

@@ -1,15 +1,6 @@
-import {
-  Box,
-  Button,
-  IconPlusSmall,
-  Input,
-  Stack,
-  Text,
-  useTheme,
-} from "degen";
+import { Box, Button, Input, Stack, Text, useTheme } from "degen";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import Loader from "@/app/common/components/Loader";
 import Modal from "@/app/common/components/Modal";
 import Select, { option } from "@/app/common/components/Select";
 import { useQuery } from "react-query";
@@ -198,7 +189,7 @@ function CreateProjectModal({ folderId, setModalOpen }: Props) {
               ]}
               selected={importType}
               onChange={setImportType}
-              title=""
+              multiple={false}
             />
             <Input
               label=""

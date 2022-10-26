@@ -108,6 +108,7 @@ export default function ConnectGnosis() {
                   onChange={(value) => {
                     setselectedSafe(value);
                   }}
+                  multiple={false}
                 />
                 <PrimaryButton
                   shape="circle"

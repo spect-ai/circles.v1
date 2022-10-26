@@ -4,6 +4,7 @@ import { CircleType } from "@/app/types";
 import { ProjectOutlined } from "@ant-design/icons";
 import {
   Box,
+  IconCollection,
   IconLightningBolt,
   IconUserGroup,
   Skeleton,
@@ -15,7 +16,7 @@ import {
 import { AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { memo, useState, useEffect } from "react";
+import { memo, useState } from "react";
 import { useQuery } from "react-query";
 import { toast } from "react-toastify";
 import styled from "styled-components";
@@ -25,7 +26,7 @@ import ContributorsModal from "../Circle/ContributorsModal";
 import CreateRetroModal from "../Retro/CreateRetro";
 import CircleOptions from "./CircleOptions";
 import CollapseButton from "./CollapseButton";
-import ExploreSidebar, { HeaderButton } from "./ExploreSidebar";
+import { HeaderButton } from "./ExploreSidebar";
 
 export const Container = styled(Box)<{ subH?: string }>`
   ::-webkit-scrollbar {
@@ -40,9 +41,11 @@ export const Container = styled(Box)<{ subH?: string }>`
 
 function CircleSidebar() {
   const router = useRouter();
-  const { circle: cId, project: pId } = router.query;
-  const { setCircleData, setMemberDetailsData, circle, isLoading } =
-    useCircle();
+  const { circle: cId, project: pId, collection: cSlug } = router.query;
+  const { data: circle, isLoading } = useQuery<CircleType>(["circle", cId], {
+    enabled: false,
+  });
+  const { setCircleData, setMemberDetailsData } = useCircle();
 
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [isContributorsModalOpen, setIsContributorsModalOpen] = useState(false);
@@ -157,10 +160,8 @@ function CircleSidebar() {
                     credentials: "include",
                   }
                 );
-                console.log({ memberDetailsRes });
 
                 const memberDetailsData = await memberDetailsRes.json();
-                console.log({ circleData });
 
                 setCircleData(circleData);
                 setMemberDetailsData(memberDetailsData);
@@ -232,6 +233,23 @@ function CircleSidebar() {
                                   icon={<IconLightningBolt size={"5"} />}
                                 >
                                   {circle?.retro?.[content].title}
+                                </PrimaryButton>
+                              </Link>
+                            )}
+                            {circle?.collections?.[content] && content && (
+                              <Link
+                                href={`/${cId}/r/${circle?.collections?.[content].slug}`}
+                              >
+                                <PrimaryButton
+                                  variant={
+                                    cSlug ===
+                                    circle?.collections?.[content].slug
+                                      ? "tertiary"
+                                      : "transparent"
+                                  }
+                                  icon={<IconCollection size={"5"} />}
+                                >
+                                  {circle?.collections?.[content].name}
                                 </PrimaryButton>
                               </Link>
                             )}

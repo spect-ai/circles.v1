@@ -10,7 +10,6 @@ import {
   LocalCollectionContext,
   useProviderLocalCollection,
 } from "@/app/modules/Collection/Context/LocalCollectionContext";
-import ProjectHeading from "@/app/modules/Project/ProjectHeading";
 import { CircleType, MemberDetails, Registry } from "@/app/types";
 import { AnimatePresence } from "framer-motion";
 import type { NextPage } from "next";
@@ -62,12 +61,14 @@ const CollectionPage: NextPage = () => {
       void fetchCircle();
       void fetchRegistry();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [circle, cId]);
 
   useEffect(() => {
     if (circle?.id) {
       void fetchMemberDetails();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [circle]);
 
   return (

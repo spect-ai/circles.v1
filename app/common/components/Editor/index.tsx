@@ -44,16 +44,13 @@ function Editor({
       placeholder={placeholder}
       uploadImage={async (file) => {
         console.log({ file });
-        const { imageGatewayURL } = await toast.promise(
-          storeImage(file, "circleLogo"),
-          {
-            pending: "Upload is pending",
-            success: {
-              render: "Image Uploaded",
-            },
-            error: "Some error occured🤯",
-          }
-        );
+        const { imageGatewayURL } = await toast.promise(storeImage(file), {
+          pending: "Upload is pending",
+          success: {
+            render: "Image Uploaded",
+          },
+          error: "Some error occured🤯",
+        });
         console.log({ imageGatewayURL });
         return imageGatewayURL;
       }}

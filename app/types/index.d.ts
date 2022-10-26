@@ -7,6 +7,7 @@ interface UserType {
   username: string;
   avatar: string;
   bio: string;
+  email: string;
   skills: string[];
   discordId?: string;
   githubId?: string;
@@ -217,7 +218,9 @@ export interface CircleType {
   projects: {
     [key: string]: ProjectType;
   };
-  collections: CollectionType[];
+  collections: {
+    [key: string]: CollectionType;
+  };
   slug: string;
   templates: any[];
   updatedAt: string;
@@ -567,16 +570,16 @@ export type AdvancedFilters = {
 export type KudosRequestType = {
   creator: string;
   headline: string;
-  description: string;
+  description?: string;
   startDateTimestamp?: number;
   endDateTimestamp?: number;
-  links: string[];
+  links?: string[];
   communityUniqId?: string;
-  isSignatureRequired?: boolean;
-  isAllowlistRequired?: boolean;
-  totalClaimCount: number;
-  expirationTimestamp: number;
-  contributors: string[];
+  isSignatureRequired: boolean;
+  isAllowlistRequired: boolean;
+  totalClaimCount?: number;
+  expirationTimestamp?: number;
+  contributors?: string[];
 };
 
 export type KudosType = {
@@ -618,6 +621,13 @@ export type KudoOfUserType = {
   communityId: string;
 };
 
+export type CommunityKudosType = {
+  name: string;
+  nftTypeId: string;
+  previewAssetUrl: string;
+  isUserAdded: boolean;
+};
+
 export interface DistributeEtherParams {
   contributors: any;
   values: any[];
@@ -656,6 +666,8 @@ export type DiscordChannel = {
 };
 
 export interface CollectionType {
+  cover: string;
+  logo: string;
   id: string;
   name: string;
   description: string;
@@ -670,7 +682,14 @@ export interface CollectionType {
   data: MappedItem<any>;
   indexes: MappedItem<string[]>;
   defaultView: DefaultViewType;
+  formRoleGating: GuildRole[];
+  mintkudosTokenId: number;
+  messageOnSubmission: string;
   unauthorized?: boolean;
+  multipleResponsesAllowed: boolean;
+  updatingResponseAllowed: boolean;
+  circleRolesToNotifyUponUpdatedResponse: string[];
+  circleRolesToNotifyUponNewResponse: string[];
 }
 
 export type Property = {
@@ -680,10 +699,16 @@ export type Property = {
   default?: any;
   condition?: any; // Show property only when condition is met
   options?: Option[];
+  rewardOptions?: Registry;
+  userType?: FormUserType; // user type only relevant when type is user or user[]
+  onUpdateNotifyUserTypes?: FormUserType[];
+  required?: boolean;
+  description?: string;
 };
 
 export type PropertyType =
   | "shortText"
+  | "email"
   | "longText"
   | "number"
   | "user[]"
@@ -692,11 +717,12 @@ export type PropertyType =
   | "date"
   | "singleSelect"
   | "multiSelect"
-  | "ethAddress";
+  | "ethAddress"
+  | "milestone";
 
 export type Option = {
   label: string;
-  value: string | number;
+  value: string;
 };
 
 export type Conditions = Condition[];
@@ -710,3 +736,93 @@ export type DateConditions = {
 };
 
 export type ComparisonCondition = "greaterThanOrEqualTo" | "lessThanOrEqualTo";
+
+export type FormUserType = "assignee" | "reviewer" | "grantee" | "applicant";
+
+export type Reward = {
+  chain: Option;
+  token: Option;
+  value: number;
+};
+
+export type Milestone = {
+  id?: string;
+  title: string;
+  description: string;
+  dueDate: string;
+  reward: {
+    chain: Option;
+    token: Option;
+    value: number;
+  };
+};
+
+export type GuildRole = {
+  id: number;
+  name: string;
+};
+
+export interface FormType {
+  logo: string;
+  cover: string;
+  name: string;
+  circleId: string;
+  slug: string;
+  private: boolean;
+  description: string;
+  properties: {
+    [key: string]: {
+      type: string;
+      name: string;
+      default: string;
+      isPartOfFormView: boolean;
+      options?: {
+        label: string;
+        value: string;
+      }[];
+      rewardOptions?: Registry;
+      required: boolean;
+    };
+  };
+  propertyOrder: string[];
+  creator: string;
+  parents: {
+    id: string;
+    name: string;
+    slug: string;
+  }[];
+  defaultView: string;
+  formRoleGating: GuildRole[];
+  canFillForm: boolean;
+  mintkudosTokenId: number;
+  messageOnSubmission: string;
+  kudosClaimedByUser: boolean;
+  multipleResponsesAllowed: boolean;
+  updatingResponseAllowed: boolean;
+  previousResponses: MappedItem<object>;
+  createdAt: string;
+  updatedAt: string;
+  id: string;
+}
+
+export type KudosType = {
+  tokenId: number;
+  headline: string;
+  description: string;
+  startDateTimestamp?: number;
+  endDateTimestamp?: number;
+  links: string[];
+  communityId?: string;
+  createdByAddress?: boolean;
+  createdAtTimestamp?: boolean;
+  imageUrl: string;
+  claimabilityAttributes: ClaimabilityAttributes;
+};
+
+type ClaimabilityAttributes = {
+  isSignatureRequired: boolean;
+  isAllowlistRequired: boolean;
+  totalClaimCount: number;
+  remainingClaimCount?: number;
+  expirationTimestamp?: number;
+};

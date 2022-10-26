@@ -2,7 +2,11 @@
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ["s3.amazonaws.com", "images.mintkudos.xyz"],
+    domains: [
+      "s3.amazonaws.com",
+      "images.mintkudos.xyz",
+      "spect.infura-ipfs.io",
+    ],
   },
   env: {
     ALCHEMY_KEY: process.env.ALCHEMY_KEY,

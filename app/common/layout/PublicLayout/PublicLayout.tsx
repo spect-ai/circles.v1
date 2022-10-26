@@ -7,14 +7,14 @@ import ExtendedSidebar from "../../../modules/ExtendedSidebar/ExtendedSidebar";
 import Sidebar from "@/app/modules/Sidebar";
 import styled from "styled-components";
 import { useGlobal } from "@/app/context/globalContext";
-import Dashboard from "@/app/modules/Dashboard";
 import { useQuery } from "react-query";
 import { UserType } from "@/app/types";
 import { toast } from "react-toastify";
 import ConnectPage from "./ConnectPage";
 
 type PublicLayoutProps = {
-  children?: ReactNodeNoStrings;
+  children: ReactNodeNoStrings;
+  hideSidebar?: boolean;
 };
 
 const Container = styled(Box)<{ issidebarexpanded: boolean }>`
@@ -55,9 +55,8 @@ const getUser = async () => {
 };
 
 function PublicLayout(props: PublicLayoutProps) {
-  const { children } = props;
+  const { children, hideSidebar } = props;
   const { isSidebarExpanded, connectedUser, connectUser } = useGlobal();
-
   const { mode } = useTheme();
 
   const { data: currentUser, refetch } = useQuery<UserType>(

@@ -11,17 +11,6 @@ export const reorder = (
   return result;
 };
 
-// export function formatTime(date: Date) {
-//   let hours = date.getHours();
-//   let minutes = date.getMinutes();
-//   const ampm = hours >= 12 ? "pm" : "am";
-//   hours %= 12;
-//   hours = hours || 12; // the hour '0' should be '12'
-//   minutes = `0${minutes}`.slice(-2);
-//   const strTime = `${hours}:${minutes} ${ampm}`;
-//   return strTime;
-// }
-
 export function downloadCSV(content: Array<Array<any>>, filename: string) {
   const csvContent = `data:text/csv;charset=utf-8,${content
     .map((e) => e.join(","))
@@ -128,4 +117,12 @@ export const generateColorHEX = () => {
     b: getRgb(),
   };
   return rgbToHex(color.r, color.g, color.b);
+};
+
+export const isEmail = (email: string) => {
+  return String(email)
+    .toLowerCase()
+    .match(
+      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+    );
 };

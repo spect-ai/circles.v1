@@ -1,25 +1,10 @@
-import { PriorityIcon } from "@/app/common/components/PriorityIcon";
-import { monthMap } from "@/app/common/utils/constants";
-import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
-import { CardType, MemberDetails } from "@/app/types";
-import {
-  Avatar,
-  AvatarGroup,
-  Box,
-  IconEth,
-  Stack,
-  Tag,
-  Text,
-  useTheme,
-} from "degen";
-import { useRouter } from "next/router";
-import React, { memo, useCallback, useMemo, useState } from "react";
+import { Box, Text, useTheme } from "degen";
+import React, { memo, useCallback } from "react";
 import {
   Draggable,
   DraggableProvided,
   DraggableStateSnapshot,
 } from "react-beautiful-dnd";
-import { useQuery } from "react-query";
 import styled from "styled-components";
 
 type Props = {
@@ -29,19 +14,21 @@ type Props = {
 
 const Container = styled(Box)<{ isDragging: boolean; mode: string }>`
   border-color: ${(props) => props.isDragging && "rgb(191, 90, 242, 1)"};
-  border-width: ${(props) => props.isDragging && "2px"};
+  border: ${(props) =>
+    props.isDragging
+      ? "2px solid rgb(191, 90, 242, 1)"
+      : "2px solid rgb(255, 255, 255, 0.1)"};
+
   &:hover {
-    border-color: ${(props) =>
-      props.mode === "dark" ? "rgb(255, 255, 255, 0.1)" : "rgb(20,20,20,0.1)"};
-    border-width: 2px;
+    border: 1px solid rgb(191, 90, 242, 1);
+  }
+
+  transition: border-color 0.5s ease;
+  border-width: 1px;
   }
 `;
 
 function InactiveFieldComponent({ id, index }: Props) {
-  const router = useRouter();
-
-  const [hover, setHover] = useState(false);
-
   const { mode } = useTheme();
 
   const DraggableContent = (
@@ -52,25 +39,14 @@ function InactiveFieldComponent({ id, index }: Props) {
       {...provided.draggableProps}
       {...provided.dragHandleProps}
       ref={provided.innerRef}
-      padding="4"
-      margin="1"
-      borderRadius="large"
+      borderRadius="2xLarge"
       isDragging={snapshot.isDragging}
-      onMouseEnter={() => {
-        setHover(true);
-      }}
-      onMouseLeave={() => {
-        setHover(false);
-      }}
       mode={mode}
+      padding="4"
+      display="flex"
+      justifyContent="center"
     >
-      <Box>
-        <Box marginTop="1" marginBottom="4">
-          <Stack direction="horizontal" space="2" justify="space-between">
-            <Text weight="semiBold">{id}</Text>
-          </Stack>
-        </Box>
-      </Box>
+      <Text weight="semiBold">{id}</Text>
     </Container>
   );
 

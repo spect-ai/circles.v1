@@ -4,7 +4,6 @@ import { motion } from "framer-motion";
 import { useRouter } from "next/router";
 import ExploreSidebar from "./ExploreSidebar";
 import CircleSidebar from "./CircleSidebar";
-import ConnectModal from "../Sidebar/ProfileButton/ConnectModal";
 import { useQuery } from "react-query";
 import { UserType } from "@/app/types";
 import { toast } from "react-toastify";

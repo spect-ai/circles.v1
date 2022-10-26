@@ -1,31 +1,18 @@
-import { Box, Stack, Text } from "degen";
+import PrimaryButton from "@/app/common/components/PrimaryButton";
+import { Box, Heading, Stack, Text } from "degen";
+import { AnimatePresence } from "framer-motion";
 import { memo, useCallback, useState } from "react";
-import {
-  Draggable,
-  DraggableProvided,
-  Droppable,
-  DroppableProvided,
-} from "react-beautiful-dnd";
+import { Droppable, DroppableProvided } from "react-beautiful-dnd";
 import styled from "styled-components";
+import AddField from "../../AddField";
 import { useLocalCollection } from "../../Context/LocalCollectionContext";
+import RoleGate from "../../RoleGate";
 import InactiveFieldComponent from "../InactiveField";
 
 const Container = styled(Box)`
-  ::-webkit-scrollbar {
-    display: none;
-  }
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-  overflow-y: none;
-`;
-
-const ScrollContainer = styled(Box)`
-  ::-webkit-scrollbar {
-    width: 0px;
-  }
-  height: calc(100vh - 6rem);
-  border-radius: 0.5rem;
+  width: 25%;
   overflow-y: auto;
+  max-height: calc(100vh - 10rem);
 `;
 
 type Props = {
@@ -33,38 +20,51 @@ type Props = {
 };
 
 function InactiveFieldsColumnComponent({ fields }: Props) {
-  const [isOpen, setIsOpen] = useState(false);
-  const [isDirty, setIsDirty] = useState(false);
-  const [showConfirm, setShowConfirm] = useState(false);
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const { localCollection: collection, setLocalCollection } =
-    useLocalCollection();
-
+  const { localCollection: collection } = useLocalCollection();
   const FieldDraggable = (provided: DroppableProvided) => (
-    <ScrollContainer {...provided.droppableProps} ref={provided.innerRef}>
-      <Box>
+    <Box {...provided.droppableProps} ref={provided.innerRef}>
+      <Stack space="1">
         {fields?.map((field, idx) => {
-          if (field) {
+          if (!collection.properties[field]?.isPartOfFormView) {
             return (
               <InactiveFieldComponent id={field} index={idx} key={field} />
             );
           }
         })}
+
+        <Box height="4" />
         {provided.placeholder}
-      </Box>
-    </ScrollContainer>
+        <Box
+          borderColor="foregroundSecondary"
+          borderWidth="0.375"
+          padding="2"
+          borderRadius="medium"
+        >
+          <Text variant="label">
+            Drag and drop fields above to remove them from the form view
+          </Text>
+        </Box>
+      </Stack>
+    </Box>
   );
 
-  const FieldDraggableCallback = useCallback(FieldDraggable, [fields]);
+  const FieldDraggableCallback = useCallback(FieldDraggable, [
+    fields,
+    collection.properties,
+  ]);
 
   return (
-    <>
-      <Container>
+    <Container>
+      <Stack space="4">
+        <Heading>Inactive Fields</Heading>
+
         <Droppable droppableId="inactiveFields" type="field">
           {FieldDraggableCallback}
         </Droppable>
-      </Container>
-    </>
+
+        <RoleGate />
+      </Stack>
+    </Container>
   );
 }
 

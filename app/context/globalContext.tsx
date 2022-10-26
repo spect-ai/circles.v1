@@ -45,7 +45,6 @@ const useProviderGlobalContext = () => {
   const { project: pId } = router.query;
 
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
-  // const [registry, setRegistry] = useState<Registry>({} as Registry);
   const [connectedUser, setConnectedUser] = useState("");
 
   const [isProfilePanelExpanded, setIsProfilePanelExpanded] = useState(false);

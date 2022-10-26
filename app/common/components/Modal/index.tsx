@@ -5,27 +5,6 @@ import React from "react";
 import styled from "styled-components";
 import Backdrop from "./backdrop";
 
-const dropIn = {
-  hidden: {
-    y: "-100vh",
-    opacity: 0,
-  },
-  visible: {
-    y: "0",
-    opacity: 1,
-    transition: {
-      duration: 0.1,
-      type: "spring",
-      damping: 25,
-      stiffness: 500,
-    },
-  },
-  exit: {
-    y: "100vh",
-    opacity: 0,
-  },
-};
-
 // grow animation from center of screen
 export const grow = {
   hidden: {
@@ -62,12 +41,14 @@ const Container = styled(Box)<{
   -ms-overflow-style: none;
   scrollbar-width: none;
   height: ${(props) => props.modalHeight};
+  max-height: 90vh;
 `;
 
 type props = {
   children: React.ReactNode;
   title: string;
-  handleClose: () => void;
+  // function with any arguments
+  handleClose: (...args: any[]) => void;
   height?: string;
   size?: "small" | "medium" | "large";
   zIndex?: number;

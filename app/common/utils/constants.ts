@@ -97,3 +97,18 @@ export const kudosTypes = {
 export const kudosTokenTypes = {
   Claim: [{ name: "tokenId", type: "uint256" }],
 };
+
+export const prevPropertyTypeToNewPropertyTypeThatDoesntRequiresClarance = {
+  shortText: ["shortText", "longText"],
+  longText: ["shortText", "longText"],
+  number: ["number", "shortText", "longText"],
+  ethAddress: ["ethAddress", "shortText", "longText"],
+  email: ["email", "shortText", "longText"],
+  date: ["date", "shortText", "longText"],
+  singleSelect: ["singleSelect", "multiSelect"],
+  multiSelect: ["multiSelect"],
+  user: ["user", "user[]"],
+  "user[]": ["user[]"],
+  reward: ["reward"],
+  milestone: ["milestone"],
+};

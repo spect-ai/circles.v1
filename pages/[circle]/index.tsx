@@ -6,15 +6,8 @@ import {
   useProviderCircleContext,
 } from "@/app/modules/Circle/CircleContext";
 import useConnectDiscordServer from "@/app/services/Discord/useConnectDiscordServer";
-import type {
-  GetServerSideProps,
-  InferGetServerSidePropsType,
-  NextPage,
-} from "next";
+import { NextPage } from "next";
 
-// const CirclePage: NextPage = ({
-//   circle,
-// }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
 const CirclePage: NextPage = () => {
   useConnectDiscordServer();
   const context = useProviderCircleContext();
@@ -34,18 +27,5 @@ const CirclePage: NextPage = () => {
     </>
   );
 };
-
-// export const getServerSideProps: GetServerSideProps = async (context) => {
-//   const { circle: cId } = context.query;
-//   const res = await fetch(
-//     `${process.env.API_HOST}/circle/slug/${cId as string}`
-//   );
-//   const data = await res.json();
-//   return {
-//     props: {
-//       circle: data,
-//     },
-//   };
-// };
 
 export default CirclePage;

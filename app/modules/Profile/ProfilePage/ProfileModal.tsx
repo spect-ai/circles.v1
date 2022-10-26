@@ -20,6 +20,7 @@ import React, { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import DiscordIcon from "@/app/assets/icons/discordIcon.svg";
 import { skillsArray } from "./constants";
+import { isEmail } from "@/app/common/utils/utils";
 
 interface Props {
   setIsOpen: (isOpen: boolean) => void;
@@ -37,6 +38,7 @@ export default function ProfileModal({ setIsOpen }: Props) {
   const [avatar, setAvatar] = useState("");
   const [username, setUsername] = useState("");
   const [bio, setBio] = useState("");
+  const [email, setEmail] = useState("");
   const [skills, setSkills] = useState([] as string[]);
 
   const [isDirty, setIsDirty] = useState(false);
@@ -53,7 +55,7 @@ export default function ProfileModal({ setIsOpen }: Props) {
     setIsDirty(true);
     if (file) {
       setUploading(true);
-      const { imageGatewayURL } = await storeImage(file, "avatar");
+      const { imageGatewayURL } = await storeImage(file);
       console.log({ imageGatewayURL });
       setAvatar(imageGatewayURL);
       setUploading(false);
@@ -66,6 +68,7 @@ export default function ProfileModal({ setIsOpen }: Props) {
     setUsername(currentUser?.username || "");
     setBio(currentUser?.bio || "");
     setSkills(currentUser?.skills || []);
+    setEmail(currentUser?.email || "");
     setLoading(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -104,6 +107,7 @@ export default function ProfileModal({ setIsOpen }: Props) {
               setUsername(e.target.value);
               setIsDirty(true);
             }}
+            required
           />
           <Stack direction="horizontal" justify="space-between">
             <Text variant="label">Bio</Text>
@@ -118,6 +122,20 @@ export default function ProfileModal({ setIsOpen }: Props) {
             value={bio}
             onChange={(e) => {
               setBio(e.target.value);
+              setIsDirty(true);
+            }}
+          />
+          <Text variant="label">Email</Text>
+          <Input
+            label
+            hideLabel
+            placeholder="Email"
+            inputMode="email"
+            type="email"
+            error={email && !isEmail(email)}
+            value={email}
+            onChange={(e) => {
+              setEmail(e.target.value);
               setIsDirty(true);
             }}
           />
@@ -166,12 +184,14 @@ export default function ProfileModal({ setIsOpen }: Props) {
             icon={<SaveFilled style={{ fontSize: "1.3rem" }} />}
             onClick={async () => {
               setLoading(true);
-              await updateProfile({
+              const res = await updateProfile({
                 username,
                 avatar,
                 bio,
                 skills,
+                email,
               });
+              console.log(res);
               setLoading(false);
               handleClose();
               setIsDirty(false);
