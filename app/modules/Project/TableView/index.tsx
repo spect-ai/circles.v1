@@ -13,12 +13,10 @@ import { toast } from "react-toastify";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { useLocalProject } from "../Context/LocalProjectContext";
 import { useGlobal } from "@/app/context/globalContext";
-import { filterCards } from "../Filter/filterCards";
+import { filterCards } from "../ProjectHeading/MoreOptions/Helper/filterCards";
 import { SkeletonLoader } from "../SkeletonLoader";
-import {
-  titleFilter,
-  sortBy,
-} from "@/app/modules/Project/ProjectHeading/AdvancedOptions";
+import { titleFilter } from "@/app/modules/Project/ProjectHeading/MoreOptions/Helper/searchBy";
+import { sortBy } from "@/app/modules/Project/ProjectHeading/MoreOptions/Helper/sortBy";
 import { CardsType, CardType, Filter } from "@/app/types";
 import { IconButton } from "@/app/modules/Project/ProjectHeading/index";
 import CreateCardModal from "@/app/modules/Project/CreateCardModal";
@@ -286,31 +284,33 @@ function TableView({ viewId }: { viewId: string }) {
         )}
       </AnimatePresence>
       <Container>
-        {viewId === "" && (<Box
-          display="flex"
-          flexDirection="row"
-          justifyContent="space-between"
-          alignItems="center"
-          paddingY="2"
-        >
-          <Button
-            prefix={<IconPlusSmall />}
-            size="small"
-            variant="secondary"
-            onClick={() => {
-              if (!canDo("createNewCard")) {
-                toast.error(
-                  "You don't have permission to add cards in this column",
-                  { theme: "dark" }
-                );
-                return;
-              }
-              setIsOpen(true);
-            }}
+        {viewId === "" && (
+          <Box
+            display="flex"
+            flexDirection="row"
+            justifyContent="space-between"
+            alignItems="center"
+            paddingY="2"
           >
-            Create
-          </Button>
-        </Box>)}
+            <Button
+              prefix={<IconPlusSmall />}
+              size="small"
+              variant="secondary"
+              onClick={() => {
+                if (!canDo("createNewCard")) {
+                  toast.error(
+                    "You don't have permission to add cards in this column",
+                    { theme: "dark" }
+                  );
+                  return;
+                }
+                setIsOpen(true);
+              }}
+            >
+              Create
+            </Button>
+          </Box>
+        )}
         <CompactTable
           columns={columns}
           theme={theme}

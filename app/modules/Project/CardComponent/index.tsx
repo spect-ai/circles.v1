@@ -7,7 +7,6 @@ import {
   Avatar,
   AvatarGroup,
   Box,
-  Button,
   IconEth,
   Stack,
   Tag,
@@ -118,7 +117,7 @@ function CardComponent({ card, index }: Props) {
             )}
           </Stack>
         </Box>
-        {card.children.length > 0 && (
+        {card.children?.length > 0 && (
           <Tag size="small" hover>
             <Stack direction="horizontal" space="0.5" align="center">
               <EnterOutlined

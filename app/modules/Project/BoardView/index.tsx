@@ -15,15 +15,13 @@ import useDragEnd from "../Hooks/useDragEnd";
 import useDragAssignee from "../Hooks/useDragAssignee";
 import ColumnComponent from "../Column";
 import { SkeletonLoader } from "../SkeletonLoader";
-import { filterCards } from "../Filter/filterCards";
+import { filterCards } from "../ProjectHeading/MoreOptions/Helper/filterCards";
 import { CardsType, CardType, Filter } from "@/app/types";
 import { useGlobal } from "@/app/context/globalContext";
-import {
-  titleFilter,
-  sortBy,
-  groupByAssignee,
-  AssigneeColumn,
-} from "@/app/modules/Project/ProjectHeading/AdvancedOptions";
+import { titleFilter } from "@/app/modules/Project/ProjectHeading/MoreOptions/Helper/searchBy";
+import { sortBy } from "@/app/modules/Project/ProjectHeading/MoreOptions/Helper/sortBy";
+import { groupByAssignee } from "@/app/modules/Project/ProjectHeading/MoreOptions/Helper/groupBy";
+import { AssigneeColumn } from "@/app/modules/Project/ProjectHeading/MoreOptions/index";
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
 
 interface Props {
