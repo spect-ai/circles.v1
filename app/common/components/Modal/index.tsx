@@ -59,7 +59,7 @@ const getResponsiveWidth = (size: "small" | "medium" | "large") => {
     case "small":
       return { xs: "full", md: "128" };
     case "medium":
-      return { xs: "full", md: "192" };
+      return { xs: "80", md: "192" };
     case "large":
       return { xs: "full", md: "256" };
     default:
@@ -86,14 +86,10 @@ function Modal({
       >
         <Container
           backgroundColor="background"
-          // borderWidth="0.375"
           borderRadius="2xLarge"
           width={getResponsiveWidth(size) as any}
           minHeight="48"
           modalHeight={height}
-          // style={{
-          //   backgroundColor: "rgba(21,20,21,255)",
-          // }}
         >
           <Box
             paddingX={{

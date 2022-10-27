@@ -1,6 +1,5 @@
 import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { useGlobal } from "@/app/context/globalContext";
 import useCredentials from "@/app/services/Credentials";
 import {
   getPrivateCircleCredentials,
@@ -13,7 +12,7 @@ import {
   Permissions,
   UserType,
 } from "@/app/types";
-import { Box, Button, Input, MediaPicker, Stack, Text, Textarea } from "degen";
+import { Box, Button, MediaPicker, Stack, Text, Textarea } from "degen";
 import { AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
@@ -62,7 +61,6 @@ export default function SendKudos() {
   const [uploading, setUploading] = useState(false);
   const [uploadedImage, setUploadedImage] = useState(kudos?.imageUrl || "");
   const [asset, setAsset] = useState({} as File);
-  const [selectedNftTypeId, setSelectedNftTypeId] = useState("");
   const [assetToUse, setAssetToUse] = useState("defaultOrangeRed");
   const [assetUrl, setAssetUrl] = useState(
     "https://spect.infura-ipfs.io/ipfs/QmU2pYbqiVnNc7WKQ9yBkEmUvxWg6Ha1LAzpHdCSABwct7"
@@ -123,7 +121,6 @@ export default function SendKudos() {
       setLoading(true);
       getKudos(collection.mintkudosTokenId)
         .then((res) => {
-          console.log(res);
           setKudos(res);
           setLoading(false);
         })
@@ -141,12 +138,12 @@ export default function SendKudos() {
     if (isOpen)
       getCommunityKudosDesigns()
         .then((res) => {
-          console.log(res);
           setCommunityKudosDesigns(res);
         })
         .catch((err) => {
-          console.log(err);
+          console.error(err);
         });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen]);
 
   return (

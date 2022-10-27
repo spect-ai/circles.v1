@@ -100,7 +100,10 @@ function Sidebar(): ReactElement {
         display="flex"
         flexDirection="column"
         borderRightWidth="0.375"
-        paddingX="2"
+        paddingX={{
+          xs: "1",
+          md: "2",
+        }}
         onMouseEnter={() => {
           !isSidebarExpanded && setShowCollapseButton(true);
         }}
@@ -182,7 +185,7 @@ function Sidebar(): ReactElement {
                 </Text>
               </Button>
             </Link>
-            {connectedUser && <CreateCircle size="large"/>}
+            {connectedUser && <CreateCircle size="large" />}
           </Stack>
         </Box>
         <CollapseButton
@@ -223,7 +226,10 @@ function Sidebar(): ReactElement {
                 src={currentUser?.avatar}
                 address={currentUser.ethAddress}
                 label=""
-                size="10"
+                size={{
+                  xs: "8",
+                  md: "10",
+                }}
               />
             </Button>
           )}

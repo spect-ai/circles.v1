@@ -41,7 +41,10 @@ const ScrollContainer = styled(Box)`
   }
   -ms-overflow-style: none;
   scrollbar-width: none;
-  height: calc(100vh - 9.5rem);
+  @media (max-width: 768px) {
+    height: calc(100vh - 16rem);
+  }
+  height: calc(100vh - 12rem);
 `;
 
 export const FolderView = ({

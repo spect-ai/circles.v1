@@ -1,17 +1,15 @@
 /* eslint-disable @next/next/no-img-element */
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { useGlobal } from "@/app/context/globalContext";
 import { FormType, KudosType } from "@/app/types";
-import { authStatusAtom } from "@/pages/_app";
 import { TwitterOutlined } from "@ant-design/icons";
 import { Box, Heading, Stack, Text } from "degen";
-import { useAtom } from "jotai";
+import Link from "next/link";
 import React, { useState } from "react";
 import Confetti from "react-confetti";
 import { TwitterShareButton } from "react-share";
 import { toast } from "react-toastify";
 import { useWindowSize } from "react-use";
-import { useDisconnect } from "wagmi";
+import styled from "styled-components";
 
 type Props = {
   form: FormType;
@@ -21,6 +19,13 @@ type Props = {
   setUpdateResponse: (val: boolean) => void;
 };
 
+const StyledImage = styled.img`
+  @media (max-width: 768px) {
+    width: 12rem;
+  }
+  width: 24rem;
+`;
+
 export default function FormResponse({
   form,
   kudos,
@@ -29,16 +34,17 @@ export default function FormResponse({
   setUpdateResponse,
 }: Props) {
   const { width, height } = useWindowSize();
-  const { disconnect } = useDisconnect();
-  const [authenticationStatus, setAuthenticationStatus] =
-    useAtom(authStatusAtom);
-  const { connectedUser, disconnectUser } = useGlobal();
   const [claiming, setClaiming] = useState(false);
-  const [claimed, setClaimed] = useState(false);
+  const [claimed, setClaimed] = useState(form.kudosClaimedByUser);
   const [claimedJustNow, setClaimedJustNow] = useState(false);
 
   return (
-    <Box>
+    <Box
+      padding={{
+        xs: "2",
+        md: "8",
+      }}
+    >
       {claimedJustNow && (
         <Confetti
           width={width}
@@ -48,39 +54,16 @@ export default function FormResponse({
           numberOfPieces={600}
         />
       )}
-      {/* <Box>
-          {connectedUser && (
-            <button
-              className="px-8 py-3 rounded-xl text-md text-purple text-bold bg-purple bg-opacity-5 hover:bg-opacity-25 duration-700"
-              onClick={async () => {
-                await fetch(`${process.env.API_HOST}/auth/disconnect`, {
-                  method: "POST",
-                  credentials: "include",
-                });
-                disconnect();
-                localStorage.removeItem("connectorIndex");
-                setAuthenticationStatus("unauthenticated");
-                disconnectUser();
-              }}
-            >
-              Logout
-            </button>
-          )}
-      </Box> */}
       <Stack>
         <Heading>{`${
           form?.messageOnSubmission || "Your response has been submitted!"
         }`}</Heading>
         <Box>
           {kudos?.imageUrl && (
-            <img
-              src={`${kudos.imageUrl}`}
-              alt="kudos"
-              className="max-w-sm h-auto ease-in-out duration-300 mb-8"
-            />
+            <StyledImage src={`${kudos.imageUrl}`} alt="kudos" />
           )}
           {claimed ? (
-            <Box>
+            <Stack>
               <Heading>You have claimed this Kudos 🎉</Heading>
               <Box>
                 <Box>
@@ -102,39 +85,58 @@ export default function FormResponse({
                     </PrimaryButton>
                   </TwitterShareButton>
                 </Box>
-                <Box>
-                  <PrimaryButton
-                    onClick={() => {
-                      window.open(
-                        `https://opensea.io/assets/matic/0x60576A64851C5B42e8c57E3E4A5cF3CF4eEb2ED6/${kudos.tokenId}`,
-                        "_blank"
-                      );
+                <Stack
+                  direction={{
+                    xs: "vertical",
+                    md: "horizontal",
+                  }}
+                >
+                  <Box
+                    width={{
+                      xs: "full",
+                      md: "1/3",
                     }}
                   >
-                    <img src="/openseaLogo.svg" alt="src" />
-                    <Text>View on Opensea</Text>
-                  </PrimaryButton>
-                </Box>
-                <Box>
-                  <PrimaryButton
-                    onClick={() => {
-                      window.open(
-                        `https://rarible.com/token/polygon/0x60576a64851c5b42e8c57e3e4a5cf3cf4eeb2ed6:${kudos.tokenId}?tab=overview`,
-                        "_blank"
-                      );
+                    <PrimaryButton
+                      variant="tertiary"
+                      icon={<img src="/openseaLogo.svg" alt="src" />}
+                      onClick={() => {
+                        window.open(
+                          `https://opensea.io/assets/matic/0x60576A64851C5B42e8c57E3E4A5cF3CF4eEb2ED6/${kudos.tokenId}`,
+                          "_blank"
+                        );
+                      }}
+                    >
+                      <Text>View on Opensea</Text>
+                    </PrimaryButton>
+                  </Box>
+                  <Box
+                    width={{
+                      xs: "full",
+                      md: "1/3",
                     }}
                   >
-                    {" "}
-                    <img src="/raribleLogo.svg" alt="src" />
-                    <Text>View on Rarible</Text>
-                  </PrimaryButton>
-                </Box>
+                    <PrimaryButton
+                      variant="tertiary"
+                      icon={<img src="/raribleLogo.svg" alt="src" />}
+                      onClick={() => {
+                        window.open(
+                          `https://rarible.com/token/polygon/0x60576a64851c5b42e8c57e3e4a5cf3cf4eeb2ed6:${kudos.tokenId}?tab=overview`,
+                          "_blank"
+                        );
+                      }}
+                    >
+                      {" "}
+                      <Text>View on Rarible</Text>
+                    </PrimaryButton>
+                  </Box>
+                </Stack>
               </Box>
-            </Box>
+            </Stack>
           ) : (
             <Box>
               {form.mintkudosTokenId && (
-                <Box>
+                <Stack>
                   <Heading>
                     The creator of this form is distributing kudos to everyone
                     that submitted a response 🎉
@@ -174,7 +176,7 @@ export default function FormResponse({
                       Claim Kudos
                     </PrimaryButton>
                   </Box>
-                </Box>
+                </Stack>
               )}
             </Box>
           )}
@@ -201,11 +203,11 @@ export default function FormResponse({
               Submit another response
             </PrimaryButton>
           )}
-          <a href="https://circles.spect.network/">
+          <Link href="/">
             <PrimaryButton onClick={() => {}}>
               Create your own form
             </PrimaryButton>
-          </a>
+          </Link>
         </Stack>
       </Stack>
     </Box>

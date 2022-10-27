@@ -1,18 +1,14 @@
-import Dropdown from "@/app/common/components/Dropdown";
 import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import Select from "@/app/common/components/Select";
-import { addField } from "@/app/services/Collection";
 import { updateCircle } from "@/app/services/UpdateCircle";
 import { updateCollection } from "@/app/services/UpdateCollection";
-import { FormUserType, GuildRole } from "@/app/types";
+import { GuildRole } from "@/app/types";
 import { guild } from "@guildxyz/sdk";
 import { Box, Input, Stack, Tag, Text } from "degen";
 import { AnimatePresence } from "framer-motion";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useCircle } from "../../Circle/CircleContext";
-import { fields } from "../Constants";
 import { useLocalCollection } from "../Context/LocalCollectionContext";
 
 export default function RoleGate() {
@@ -213,36 +209,28 @@ export default function RoleGate() {
                 </Stack>
               </Box>
               <Box padding="8" width="full">
-                <Box
-                  width="full"
-                  display="flex"
-                  flexDirection="row"
-                  justifyContent="space-between"
-                  alignItems="center"
-                >
-                  <PrimaryButton
-                    loading={loading}
-                    onClick={async () => {
-                      setLoading(true);
-                      const selectedRoleIds = guildRoles?.filter(
-                        (r, index) => selectedRoles[index] === true
+                <PrimaryButton
+                  loading={loading}
+                  onClick={async () => {
+                    setLoading(true);
+                    const selectedRoleIds = guildRoles?.filter(
+                      (r, index) => selectedRoles[index] === true
+                    );
+                    if (selectedRoleIds) {
+                      const res = await updateCollection(
+                        {
+                          formRoleGating: selectedRoleIds,
+                        },
+                        collection.id
                       );
-                      if (selectedRoleIds) {
-                        const res = await updateCollection(
-                          {
-                            formRoleGating: selectedRoleIds,
-                          },
-                          collection.id
-                        );
-                        setLocalCollection(res);
-                      }
-                      setIsOpen(false);
-                      setLoading(false);
-                    }}
-                  >
-                    Save
-                  </PrimaryButton>
-                </Box>
+                      setLocalCollection(res);
+                    }
+                    setIsOpen(false);
+                    setLoading(false);
+                  }}
+                >
+                  Save
+                </PrimaryButton>
               </Box>
             </Modal>
           )}

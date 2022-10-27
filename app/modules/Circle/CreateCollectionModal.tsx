@@ -16,7 +16,7 @@ type CreateCollectionDto = {
 };
 
 interface Props {
-  folderId: string;
+  folderId?: string;
   setCollectionModal: (value: boolean) => void;
 }
 
@@ -85,7 +85,7 @@ function CreateCollectionModal({ folderId, setCollectionModal }: Props) {
   return (
     <>
       <Loader loading={isLoading} text="Creating your collection" />
-      <Modal handleClose={close} title="Create Form" size="small">
+      <Modal handleClose={close} title="Create Form">
         <Box width="full" padding="8">
           <Stack>
             <Input

@@ -120,7 +120,10 @@ export default function MilestoneModal({
       title={`Add Milestone`}
     >
       <Box
-        padding="8"
+        padding={{
+          xs: "2",
+          md: "8",
+        }}
         width="full"
         display="flex"
         flexDirection="column"

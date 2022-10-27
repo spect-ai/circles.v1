@@ -1,5 +1,4 @@
 import React, { memo, useEffect } from "react";
-
 import { ReactNodeNoStrings } from "degen/dist/types/types";
 import { Box, useTheme } from "degen";
 import { AnimatePresence } from "framer-motion";
@@ -10,15 +9,13 @@ import { useGlobal } from "@/app/context/globalContext";
 import { useQuery } from "react-query";
 import { UserType } from "@/app/types";
 import { toast } from "react-toastify";
-import ConnectPage from "./ConnectPage";
 
 type PublicLayoutProps = {
   children: ReactNodeNoStrings;
 };
 
 const Container = styled(Box)<{ issidebarexpanded: boolean }>`
-  max-width: ${(props) =>
-    props.issidebarexpanded ? "calc(100vw - 22rem)" : "calc(100vw - 2rem)"};
+  max-width: 100vw;
   flex-grow: 1;
 `;
 
@@ -27,6 +24,17 @@ const DesktopContainer = styled(Box)`
   display: flex;
   flexdirection: row;
   height: 100vh;
+  overflowy: auto;
+  overflowx: hidden;
+`;
+
+const MobileContainer = styled(Box)`
+  display: none;
+  @media (min-width: 768px) {
+    display: flex;
+    flexdirection: row;
+    height: 100vh;
+  }
   overflowy: auto;
   overflowx: hidden;
 `;
@@ -40,7 +48,12 @@ const getUser = async () => {
 
 function PublicLayout(props: PublicLayoutProps) {
   const { children } = props;
-  const { isSidebarExpanded, connectedUser, connectUser } = useGlobal();
+  const {
+    isSidebarExpanded,
+    connectedUser,
+    connectUser,
+    setIsSidebarExpanded,
+  } = useGlobal();
   const { mode } = useTheme();
 
   const { data: currentUser, refetch } = useQuery<UserType>(
@@ -69,31 +82,24 @@ function PublicLayout(props: PublicLayoutProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    setIsSidebarExpanded(false);
+  }, [setIsSidebarExpanded]);
+
   return (
     <DesktopContainer
       backgroundColor={mode === "dark" ? "background" : "backgroundSecondary"}
       id="public-layout"
     >
-      {!connectedUser && !currentUser?.id ? (
-        <ConnectPage />
-      ) : (
-        <>
-          <Sidebar />
-          <AnimatePresence initial={false}>
-            {isSidebarExpanded && <ExtendedSidebar />}
-          </AnimatePresence>
-          <Box
-            display="flex"
-            flexDirection="column"
-            width="full"
-            overflow="hidden"
-          >
-            <Container issidebarexpanded={isSidebarExpanded}>
-              {children}
-            </Container>
-          </Box>
-        </>
-      )}
+      <MobileContainer>
+        <Sidebar />
+        <AnimatePresence initial={false}>
+          {isSidebarExpanded && <ExtendedSidebar />}
+        </AnimatePresence>
+      </MobileContainer>
+      <Box display="flex" flexDirection="column" width="full" overflow="hidden">
+        <Container issidebarexpanded={isSidebarExpanded}>{children}</Container>
+      </Box>
     </DesktopContainer>
   );
 }

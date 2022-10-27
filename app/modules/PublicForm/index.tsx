@@ -4,7 +4,6 @@ import { getForm } from "@/app/services/Collection";
 import { FormType, GuildRole, UserType } from "@/app/types";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { Avatar, Box, Text, Stack, useTheme, Button, Tag } from "degen";
-import { AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { useQuery } from "react-query";
@@ -12,6 +11,7 @@ import { toast } from "react-toastify";
 import styled from "styled-components";
 import FormFields from "./FormFields";
 import { motion } from "framer-motion";
+import Loader from "@/app/common/components/Loader";
 
 export default function PublicForm() {
   const router = useRouter();
@@ -26,11 +26,9 @@ export default function PublicForm() {
   const [canFillForm, setCanFillForm] = useState(form?.canFillForm || false);
 
   useEffect(() => {
-    console.log({ formId });
     void (async () => {
       if (formId) {
         const res = await getForm(formId as string);
-        console.log({ res });
         if (res.id) {
           setForm(res);
           setCanFillForm(res.canFillForm);
@@ -40,19 +38,17 @@ export default function PublicForm() {
   }, [formId]);
 
   useEffect(() => {
-    console.log({ formId });
     void (async () => {
       if (formId) {
         setLoading(true);
         const res = await getForm(formId as string);
-        console.log({ res });
         if (res.id) {
           setCanFillForm(res.canFillForm);
         } else toast.error("Error fetching form");
         setLoading(false);
       }
     })();
-  }, [currentUser]);
+  }, [currentUser, formId]);
 
   if (form) {
     return (
@@ -71,14 +67,13 @@ export default function PublicForm() {
                 />
                 <DescriptionInput
                   mode={mode}
-                  placeholder="Enter description"
                   autoFocus
                   value={form.description}
                   disabled
                 />
               </Stack>
             </Box>
-            {canFillForm && (
+            {canFillForm && currentUser?.id && (
               <motion.div
                 className="box"
                 initial={{ opacity: 0, scale: 0.5 }}
@@ -93,7 +88,7 @@ export default function PublicForm() {
                 <FormFields form={form} setForm={setForm} />
               </motion.div>
             )}
-            {!canFillForm && !currentUser && (
+            {!currentUser?.id && (
               <Box
                 display="flex"
                 flexDirection="column"
@@ -102,15 +97,23 @@ export default function PublicForm() {
                 gap="4"
               >
                 {" "}
-                <Text weight="bold">This form is role gated</Text>
-                <Box width="1/4">
+                <Text weight="semiBold" variant="large">
+                  This form is role gated
+                </Text>
+                <Box
+                  width={{
+                    xs: "full",
+                    sm: "full",
+                    md: "1/4",
+                  }}
+                >
                   <PrimaryButton onClick={openConnectModal}>
                     Connect Wallet
                   </PrimaryButton>
                 </Box>
               </Box>
             )}
-            {!canFillForm && currentUser && !loading && (
+            {!canFillForm && currentUser?.id && !loading && (
               <motion.div
                 className="box"
                 initial={{ opacity: 0, scale: 0.5 }}
@@ -188,18 +191,32 @@ export default function PublicForm() {
       </ScrollContainer>
     );
   }
-  return <Box>Loading</Box>;
+  return <Loader loading text="Fetching form..." />;
 }
 
 const Container = styled(Box)`
-  overflow-y: auto;
-  padding: 2rem 14rem;
+  @media (max-width: 768px) {
+    padding: 0rem 1rem;
+    margin-top: -16rem;
+  }
+
+  @media (min-width: 768px) and (max-width: 1024px) {
+    padding: 2rem 4rem;
+    margin-top: -12rem;
+  }
+
+  @media (min-width: 1024px) and (max-width: 1280px) {
+    padding: 2rem 14rem;
+    margin-top: -10rem;
+  }
 
   &::-webkit-scrollbar {
     width: 0.5rem;
   }
   z-index: 999;
   margin-top: -10rem;
+  padding: 2rem 14rem;
+  overflow-y: auto;
 `;
 
 export const NameInput = styled.input`

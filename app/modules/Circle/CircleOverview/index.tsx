@@ -154,13 +154,12 @@ export default function CircleOverview() {
           <Toggle toggle={toggle} setToggle={setToggle} />
           {toggle == "Overview" && (
             <Stack space="2">
-              <Box
-                style={{
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "flex-end",
-                  gap: "1rem",
+              <Stack
+                direction={{
+                  xs: "vertical",
+                  md: "horizontal",
                 }}
+                align="center"
               >
                 <Input
                   label=""
@@ -215,26 +214,35 @@ export default function CircleOverview() {
                     );
                   }}
                 />
-                <Button
-                  size="small"
-                  variant="secondary"
-                  shape="circle"
-                  onClick={() =>
-                    setGroupBy(groupBy == "Type" ? "Folder" : "Type")
-                  }
+                <Box
+                  width="full"
+                  display="flex"
+                  flexDirection="row"
+                  alignItems="flex-start"
+                  justifyContent={{ xs: "center", md: "flex-start" }}
+                  gap="4"
                 >
-                  {groupBy == "Type" ? (
-                    <IconGrid size={"4"} />
-                  ) : (
-                    <FolderOpenOutlined style={{ fontSize: "1.1rem" }} />
+                  <Button
+                    size="small"
+                    variant="secondary"
+                    shape="circle"
+                    onClick={() =>
+                      setGroupBy(groupBy == "Type" ? "Folder" : "Type")
+                    }
+                  >
+                    {groupBy == "Type" ? (
+                      <IconGrid size={"4"} />
+                    ) : (
+                      <FolderOpenOutlined style={{ fontSize: "1.1rem" }} />
+                    )}
+                  </Button>
+                  {canDo("inviteMembers") && (
+                    <Box width="1/2" marginBottom="1">
+                      <InviteMemberModal />
+                    </Box>
                   )}
-                </Button>
-                {canDo("inviteMembers") && (
-                  <Box width={"1/3"} marginBottom="1">
-                    <InviteMemberModal />
-                  </Box>
-                )}
-              </Box>
+                </Box>
+              </Stack>
               {groupBy == "Type" && (
                 <TypeView
                   filteredCollections={filteredCollections}

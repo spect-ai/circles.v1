@@ -1,4 +1,4 @@
-import { Box, Input, IconSearch } from "degen";
+import { Box, Input, IconSearch, Stack } from "degen";
 import { useCircle } from "../CircleContext";
 import { useGlobal } from "@/app/context/globalContext";
 import Loader from "@/app/common/components/Loader";
@@ -22,6 +22,10 @@ const ScrollContainer = styled(GridContainer)`
   }
   -ms-overflow-style: none;
   scrollbar-width: none;
+
+  @media (max-width: 768px) {
+    height: calc(100vh - 25rem);
+  }
   height: calc(100vh - 13rem);
 `;
 
@@ -43,14 +47,13 @@ function Roles() {
   console.log({ circleRoles });
 
   return (
-    <Box>
-      <Box
-        style={{
-          display: "flex",
-          flexDirection: "row",
-          alignItems: "flex-end",
-          gap: "1rem",
+    <Stack>
+      <Stack
+        direction={{
+          xs: "vertical",
+          md: "horizontal",
         }}
+        align="center"
       >
         <Input
           label=""
@@ -70,35 +73,53 @@ function Roles() {
           }}
         />
         {canDo("inviteMembers") && (
-          <Box width={"1/3"} marginBottom="1">
+          <Box
+            width={{
+              xs: "full",
+              md: "1/3",
+            }}
+            marginBottom="1"
+          >
             <InviteMemberModal />
           </Box>
         )}
-      </Box>
+      </Stack>
       {canDo("manageRoles") && (
-        <Box
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            alignItems: "flex-end",
-            gap: "0.5rem",
-            paddingTop: "1rem",
+        <Stack
+          direction={{
+            xs: "vertical",
+            md: "horizontal",
           }}
         >
-          <Box width="1/3">
+          <Box
+            width={{
+              xs: "full",
+              md: "1/3",
+            }}
+          >
             <AddRole />
           </Box>
-          <Box width="1/3">
+          <Box
+            width={{
+              xs: "full",
+              md: "1/3",
+            }}
+          >
             <GuildRoleMapping />
           </Box>
-          <Box width="1/3">
+          <Box
+            width={{
+              xs: "full",
+              md: "1/3",
+            }}
+          >
             <DiscordRoleMapping />
           </Box>
-        </Box>
+        </Stack>
       )}
       <ScrollContainer
         style={{
-          marginLeft: isSidebarExpanded ? "0px" : "8rem",
+          marginLeft: isSidebarExpanded ? "0px" : "0rem",
           alignItems: "center",
           paddingTop: "1rem",
         }}
@@ -115,7 +136,7 @@ function Roles() {
             })}
         </Row>
       </ScrollContainer>
-    </Box>
+    </Stack>
   );
 }
 

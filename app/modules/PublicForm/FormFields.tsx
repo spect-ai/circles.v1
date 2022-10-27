@@ -98,7 +98,7 @@ export default function FormFields({ form, setForm }: Props) {
       void (async () => {
         const kudo = await (
           await fetch(
-            `${process.env.MINTKUDOS_API_HOST}/v1/tokens/${form.mintkudosTokenId}`
+            `${process.env.MINTKUDOS_HOST}/v1/tokens/${form.mintkudosTokenId}`
           )
         ).json();
         setKudos(kudo);
@@ -362,6 +362,22 @@ export default function FormFields({ form, setForm }: Props) {
 }
 
 const Container = styled(Box)`
+  @media (max-width: 768px) {
+    padding: 0rem;
+    margin-right: 0rem;
+    margin-bottom: 0.5rem;
+  }
+
+  @media (min-width: 768px) and (max-width: 1024px) {
+    padding: 2rem;
+    margin-right: 4rem;
+  }
+
+  @media (min-width: 1024px) and (max-width: 1280px) {
+    padding: 2rem;
+    margin-right: 4rem;
+  }
+
   padding: 2rem;
   overflow-y: auto;
   max-height: calc(100vh - 10rem);
