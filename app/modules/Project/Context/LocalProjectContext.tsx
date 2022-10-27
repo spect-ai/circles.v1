@@ -86,6 +86,9 @@ export function useProviderLocalProject() {
     groupBy: "Status",
     sortBy: "none",
     order: "des",
+    show: {
+      subTasks: false,
+    },
   });
 
   const { socket } = useGlobal();

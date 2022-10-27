@@ -10,13 +10,11 @@ import { Box, Text } from "degen";
 import { useLocalProject } from "../Context/LocalProjectContext";
 import { useGlobal } from "@/app/context/globalContext";
 import { SkeletonLoader } from "../SkeletonLoader";
-import { filterCards } from "../Filter/filterCards";
+import { filterCards } from "../ProjectHeading/MoreOptions/Helper/filterCards";
 import { Filter, CardsType } from "@/app/types";
 
-import {
-  titleFilter,
-  sortBy,
-} from "@/app/modules/Project/ProjectHeading/AdvancedOptions";
+import { titleFilter } from "@/app/modules/Project/ProjectHeading/MoreOptions/Helper/searchBy";
+import { sortBy } from "@/app/modules/Project/ProjectHeading/MoreOptions/Helper/sortBy";
 
 const Container = styled.div`
   margin: 0rem 1rem 1rem 1rem;

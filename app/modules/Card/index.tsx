@@ -191,10 +191,10 @@ function Card() {
                   if (project) {
                     const index = project?.columnDetails[
                       columnId
-                    ].cards.findIndex((c) => c === card?.id);
+                    ]?.cards.findIndex((c) => c === card?.id);
                     const prevCard =
                       project.cards[
-                        project?.columnDetails[columnId].cards[index - 1]
+                        project?.columnDetails[columnId]?.cards[index - 1]
                       ];
                     if (prevCard) {
                       void router.push(`/${cId}/${pId}/${prevCard.slug}`);
@@ -212,10 +212,10 @@ function Card() {
                   if (project) {
                     const index = project?.columnDetails[
                       columnId
-                    ].cards.findIndex((c) => c === card?.id);
+                    ]?.cards.findIndex((c) => c === card?.id);
                     const nextCard =
                       project.cards[
-                        project?.columnDetails[columnId].cards[index + 1]
+                        project?.columnDetails[columnId]?.cards[index + 1]
                       ];
                     if (nextCard) {
                       void router.push(`/${cId}/${pId}/${nextCard.slug}`);

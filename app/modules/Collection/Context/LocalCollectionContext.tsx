@@ -53,6 +53,9 @@ export function useProviderLocalCollection() {
     groupBy: "Status",
     sortBy: "none",
     order: "des",
+    show: {
+      subTasks: false,
+    }
   });
   const [view, setView] = useState(0);
 

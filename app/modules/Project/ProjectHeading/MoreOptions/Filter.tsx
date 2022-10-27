@@ -10,14 +10,14 @@ import MultiSelectDropdown, {
   Input,
   InputBox,
 } from "@/app/common/components/MultiSelectDropDown/MultiSelectDropDown";
-import { useLocalProject } from "../Context/LocalProjectContext";
+import { useLocalProject } from "../../Context/LocalProjectContext";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { cardType, priorityType } from "../ProjectViews/constants";
+import { cardType, priorityType } from "../../ProjectViews/constants";
 import { motion, AnimatePresence } from "framer-motion";
 import { grow } from "@/app/common/components/Modal";
 import { useGlobal } from "@/app/context/globalContext";
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
-import { useCircle } from "../../Circle/CircleContext";
+import { useCircle } from "../../../Circle/CircleContext";
 
 export default function Filter() {
   const [filterOpen, setFilterOpen] = useState(false);
