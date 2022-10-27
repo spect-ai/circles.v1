@@ -41,7 +41,7 @@ interface Props {
 }
 
 const Container = styled(Box)<{ isDragging: boolean; mode: string }>`
-  border-width: 2px;
+  border-width: 1px;
   border-color: ${(props) =>
     props.isDragging
       ? "rgb(191, 90, 242, 1)"
@@ -54,8 +54,8 @@ const Container = styled(Box)<{ isDragging: boolean; mode: string }>`
       props.mode === "dark" ? "rgb(255, 255, 255, 0.1)" : "rgb(20,20,20,0.1)"};
   }
   color: rgb(191, 90, 242, 0.7);
-  width: 30%;
-  margin-right: 1rem;
+  width: 100%;
+  height: 100%;
   overflow-x: hidden;
 `;
 
@@ -80,7 +80,6 @@ const Card = ({
       {...provided.dragHandleProps}
       ref={provided.innerRef}
       padding="4"
-      marginBottom="2"
       borderRadius="large"
       isDragging={snapshot.isDragging}
       mode={mode}

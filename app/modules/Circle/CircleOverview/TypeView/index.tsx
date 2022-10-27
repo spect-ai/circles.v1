@@ -50,9 +50,13 @@ const BoxContainer = styled(Box)`
   }
   -ms-overflow-style: none;
   scrollbar-width: none;
-  height: calc(100vh - 11rem);
   overflow-y: auto;
   margin-top: 1.2rem;
+
+  @media (max-width: 768px) {
+    height: calc(100vh - 16rem);
+  }
+  height: calc(100vh - 12rem);
 `;
 
 export const TypeView = ({
@@ -66,6 +70,7 @@ export const TypeView = ({
   const [projectModal, setProjectModal] = useState(false);
   const [workstreamModal, setWorkstreamModal] = useState(false);
   const [retroOpen, setRetroOpen] = useState(false);
+  const [collectionModal, setCollectionModal] = useState(false);
 
   const { circle: cId } = router.query;
   const { setPage } = useCircle();
@@ -75,22 +80,88 @@ export const TypeView = ({
 
   return (
     <>
-      {projectModal && (
-        <AnimatePresence>
-          <CreateProjectModal setModalOpen={setProjectModal} />
-        </AnimatePresence>
-      )}
-      {workstreamModal && (
-        <AnimatePresence>
-          <CreateSpaceModal setWorkstreamModal={setWorkstreamModal} />
-        </AnimatePresence>
-      )}
-      {retroOpen && (
-        <AnimatePresence>
+      <AnimatePresence>
+        {collectionModal && (
+          <CreateCollectionModal setCollectionModal={setCollectionModal} />
+        )}
+        {retroOpen && (
           <CreateRetroModal handleClose={() => setRetroOpen(false)} />
-        </AnimatePresence>
-      )}
+        )}
+        {workstreamModal && (
+          <CreateSpaceModal setWorkstreamModal={setWorkstreamModal} />
+        )}
+        {projectModal && <CreateProjectModal setModalOpen={setProjectModal} />}
+      </AnimatePresence>
       <BoxContainer>
+        <Stack direction="horizontal">
+          <Text size="headingTwo" weight="semiBold" ellipsis>
+            Forms
+          </Text>
+          {canDo("createNewProject") && (
+            <Button
+              data-tour="circle-create-project-button"
+              size="small"
+              variant="transparent"
+              shape="circle"
+              onClick={(e) => {
+                e.stopPropagation();
+                setCollectionModal(true);
+              }}
+            >
+              <IconPlusSmall />
+            </Button>
+          )}
+        </Stack>
+        <Container
+          style={{
+            padding: "0px",
+            marginTop: "1rem",
+            marginLeft: "0px",
+          }}
+        >
+          <Row>
+            {filteredCollections &&
+              Object.values(filteredCollections)?.map((collection) => (
+                <Col sm={6} md={4} lg={2} key={collection.id}>
+                  <Card
+                    onClick={() =>
+                      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+                      router.push(
+                        `${window.location.href}/r/${collection.slug}`
+                      )
+                    }
+                    height="32"
+                  >
+                    <Text align="center" wordBreak="break-word">
+                      {collection.name}
+                    </Text>
+                    {collection.description?.length > 0 && (
+                      <Tooltip
+                        html={<Text>{collection.description}</Text>}
+                        theme={mode}
+                        position="bottom"
+                      >
+                        <Box
+                          style={{
+                            marginTop: "0.5rem",
+                            transform: "rotate(180deg)",
+                            opacity: "40%",
+                          }}
+                        >
+                          <IconExclamationCircleSolid size={"4"} color="text" />
+                        </Box>
+                      </Tooltip>
+                    )}
+                  </Card>
+                </Col>
+              ))}
+            {filteredProjects && Object.values(filteredProjects)?.length == 0 && (
+              <Box margin="4">
+                <Text variant="label">No Projects created yet</Text>
+              </Box>
+            )}
+          </Row>
+        </Container>
         <Stack direction="horizontal">
           <Text size="headingTwo" weight="semiBold" ellipsis>
             Projects

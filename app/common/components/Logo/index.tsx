@@ -18,11 +18,24 @@ export default function Logo({ href, src, gradient }: props) {
     <Link href={href || "/"} passHref>
       <Button shape="circle" variant="transparent" size="small">
         {src ? (
-          <Avatar label="logo" src={src} size="10" />
+          <Avatar
+            label="logo"
+            src={src}
+            size={{
+              xs: "8",
+              md: "10",
+            }}
+          />
         ) : (
           <Placeholder
-            height="10"
-            width="10"
+            height={{
+              xs: "8",
+              md: "10",
+            }}
+            width={{
+              xs: "8",
+              md: "10",
+            }}
             borderRadius="full"
             gradient={gradient}
           />
