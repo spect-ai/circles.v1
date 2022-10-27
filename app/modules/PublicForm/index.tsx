@@ -29,7 +29,6 @@ export default function PublicForm() {
     void (async () => {
       if (formId) {
         const res = await getForm(formId as string);
-        console.log({ res });
         if (res.id) {
           setForm(res);
           setCanFillForm(res.canFillForm);
@@ -44,8 +43,6 @@ export default function PublicForm() {
         setLoading(true);
         const res = await getForm(formId as string);
         if (res.id) {
-          console.log({ res });
-          console.log({ res: res.canFillForm });
           setCanFillForm(res.canFillForm);
         } else toast.error("Error fetching form");
         setLoading(false);

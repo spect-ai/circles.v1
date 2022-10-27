@@ -20,19 +20,27 @@ import InactiveFieldsColumnComponent from "./InactiveFieldsColumn";
 import { Notifications } from "./Notifications";
 
 const Container = styled.div`
-  display: flex;
-  flex-direction: row;
   width: 100%;
-  margin-top: 2rem;
-  padding: 2rem;
 `;
 
 const ScrollContainer = styled(Box)`
   overflow-y: auto;
-  height: calc(100vh - 10rem);
   ::-webkit-scrollbar {
     width: 5px;
   }
+  display: flex;
+  width: 100%;
+
+  @media (max-width: 992px) {
+    flex-direction: column;
+    padding: 0.5rem;
+    margin-top: 0rem;
+  }
+  flex-direction: row;
+  padding: 2rem;
+  margin-top: 2rem;
+
+  height: calc(100vh - 9rem);
 `;
 
 export function Form() {
@@ -135,9 +143,15 @@ export function Form() {
 
     return (
       <Container {...provided.droppableProps} ref={provided.innerRef}>
-        <InactiveFieldsColumnComponent fields={propertyOrder} />
-        <Box width="full" paddingLeft="8">
-          <ScrollContainer>
+        <ScrollContainer>
+          <InactiveFieldsColumnComponent fields={propertyOrder} />
+          <Box
+            width="full"
+            paddingLeft={{
+              xs: "0",
+              lg: "8",
+            }}
+          >
             <FormBuilder fields={propertyOrder} />
             <Box
               marginTop="16"
@@ -145,7 +159,7 @@ export function Form() {
               display="flex"
               flexDirection="column"
               style={{
-                width: "80%",
+                width: "100%",
               }}
             >
               <Stack direction="vertical" space="4">
@@ -191,8 +205,8 @@ export function Form() {
                 <Notifications />
               </Stack>
             </Box>
-          </ScrollContainer>
-        </Box>
+          </Box>
+        </ScrollContainer>
       </Container>
     );
   };
