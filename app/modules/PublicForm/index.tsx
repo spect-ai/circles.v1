@@ -67,14 +67,13 @@ export default function PublicForm() {
                 />
                 <DescriptionInput
                   mode={mode}
-                  placeholder="Enter description"
                   autoFocus
                   value={form.description}
                   disabled
                 />
               </Stack>
             </Box>
-            {canFillForm && (
+            {canFillForm && currentUser?.id && (
               <motion.div
                 className="box"
                 initial={{ opacity: 0, scale: 0.5 }}
@@ -89,7 +88,7 @@ export default function PublicForm() {
                 <FormFields form={form} setForm={setForm} />
               </motion.div>
             )}
-            {!canFillForm && !currentUser?.id && (
+            {!currentUser?.id && (
               <Box
                 display="flex"
                 flexDirection="column"

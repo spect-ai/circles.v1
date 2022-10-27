@@ -1,3 +1,4 @@
+import Breadcrumbs from "@/app/common/components/Breadcrumbs";
 import Popover from "@/app/common/components/Popover";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { DownloadOutlined, TwitterOutlined } from "@ant-design/icons";
@@ -12,6 +13,7 @@ import { toast } from "react-toastify";
 import { useLocation } from "react-use";
 import styled from "styled-components";
 import { PopoverOption } from "../../Card/OptionPopover";
+import { useCircle } from "../../Circle/CircleContext";
 import { ScrollContainer } from "../../Sidebar";
 import AddField from "../AddField";
 import { useLocalCollection } from "../Context/LocalCollectionContext";
@@ -35,6 +37,7 @@ function CollectionHeading() {
   const { responses } = router.query;
   const [isAddFieldOpen, setIsAddFieldOpen] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const { navigationBreadcrumbs } = useCircle();
 
   const location = useLocation();
 
@@ -49,10 +52,14 @@ function CollectionHeading() {
       width="full"
       display="flex"
       flexDirection="column"
-      alignItems="center"
       paddingLeft="3"
       paddingRight="5"
     >
+      <Box marginLeft="4" marginTop="2">
+        {navigationBreadcrumbs && (
+          <Breadcrumbs crumbs={navigationBreadcrumbs} />
+        )}
+      </Box>
       <Box
         width="full"
         display="flex"

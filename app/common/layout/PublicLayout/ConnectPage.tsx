@@ -21,7 +21,7 @@ const VioletBlur = styled.div`
 export default function ConnectPage() {
   return (
     <Box position={"relative"} display="flex" width={"full"} gap="11">
-      <VioletBlur style={{bottom: "0px", left: "80rem"}} />
+      {/* <VioletBlur style={{ bottom: "0px", left: "80rem" }} /> */}
       <Box
         style={{
           margin: "40vh auto",
@@ -32,13 +32,15 @@ export default function ConnectPage() {
       >
         <Stack justify={"center"} direction="horizontal" align={"center"}>
           <IconSparkles color="accent" />
-          <Text variant="large" >Connect your wallet to explore the world of Spect</Text>
+          <Text variant="large">
+            Connect your wallet to explore the world of Spect
+          </Text>
         </Stack>
         <Connect />
         <Stack justify={"center"} direction="horizontal" align={"center"}>
           <Link href={"https://twitter.com/joinSpect"}>
             <Button shape="circle" size="small" variant="transparent">
-              <TwitterOutlined style={{ fontSize: "1.3rem" }}/>
+              <TwitterOutlined style={{ fontSize: "1.3rem" }} />
             </Button>
           </Link>
 
@@ -64,7 +66,7 @@ export default function ConnectPage() {
         </Stack>
       </Box>
 
-      <VioletBlur style={{top: "0px", left: "0rem"}}/>
+      <VioletBlur style={{ top: "0px", left: "0rem" }} />
     </Box>
   );
 }

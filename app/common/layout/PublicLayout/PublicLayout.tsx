@@ -40,12 +40,7 @@ const getUser = async () => {
 
 function PublicLayout(props: PublicLayoutProps) {
   const { children } = props;
-  const {
-    isSidebarExpanded,
-    connectedUser,
-    connectUser,
-    setIsSidebarExpanded,
-  } = useGlobal();
+  const { isSidebarExpanded, connectedUser, connectUser } = useGlobal();
   const { mode } = useTheme();
 
   const { data: currentUser, refetch } = useQuery<UserType>(
