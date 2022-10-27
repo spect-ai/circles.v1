@@ -10,6 +10,7 @@ import { Droppable, DroppableProvided } from "react-beautiful-dnd";
 import { SortBy } from "./Sort";
 import { GroupBy } from "./Group";
 import { SearchByTitle } from "./Search";
+import { Show } from "./Show";
 
 type ColumnProps = {
   cards: CardType[];
@@ -99,13 +100,11 @@ export function AssigneeColumn({ cards, column }: ColumnProps) {
   );
 }
 
-
-
 function AdvancedOptions() {
   const { advFilters } = useLocalProject();
   const { view } = useGlobal();
   const { mode } = useTheme();
-
+  const Hide = view == 2 || view == 3;
   return (
     <Box display="flex" flexDirection="column" width="full">
       <BoundingBox
@@ -121,22 +120,15 @@ function AdvancedOptions() {
         <Box
           display="flex"
           flexDirection="row"
-          width={
-            advFilters.sortBy == "none"
-              ? view === 2 || view === 3
-                ? "64"
-                : "112"
-              : view === 2 || view === 3
-              ? "76"
-              : "128"
-          }
+          width={Hide ? "76" : advFilters.sortBy == "none" ? "1/2" : "168"}
           gap={view === 2 ? "4" : "10"}
           alignItems="center"
-          justifyContent="flex-start"
+          justifyContent="flex-end"
         >
           <Filter />
           <SortBy />
           {(view == 0 || view == 1) && <GroupBy />}
+          {(view == 0 || view == 1) && <Show />}
         </Box>
       </BoundingBox>
     </Box>
