@@ -119,11 +119,17 @@ export function CreateContent() {
 
   if (loading)
     return (
-      <Box marginTop={"20"}>
+      <Box
+        marginTop={"20"}
+        display="flex"
+        flexDirection="column"
+        gap={{ xs: "10", md: "10", lg: "5" }}
+      >
         <RocketOutlined
           style={{ fontSize: "5rem", color: "rgb(191, 90, 242, 1)" }}
           rotate={30}
         />
+        <Heading align={"center"}>Boosting up your Spect experience</Heading>
       </Box>
     );
 

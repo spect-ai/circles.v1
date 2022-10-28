@@ -7,6 +7,9 @@ import {
   IconTokens,
   Heading,
   Stack,
+  IconMoon,
+  IconSun,
+  useTheme,
 } from "degen";
 import { useDisconnect } from "wagmi";
 import { useGlobal } from "@/app/context/globalContext";
@@ -47,6 +50,30 @@ function Dashboard() {
   const [panelTab, setPanelTab] = useState("Circle");
   const [authenticationStatus, setAuthenticationStatus] =
     useAtom(authStatusAtom);
+  
+  // eslint-disable-next-line @typescript-eslint/unbound-method
+  const { mode, setMode } = useTheme();
+
+  useEffect(() => {
+    setTimeout(() => {
+      if (localStorage.getItem("lightMode")) {
+        setMode("light");
+        document.documentElement.style.setProperty(
+          "--dsg-cell-background-color",
+          "rgb(255, 255, 255)"
+        );
+        document.documentElement.style.setProperty(
+          "--dsg-border-color",
+          "rgb(20,20,20,0.1)"
+        );
+        document.documentElement.style.setProperty(
+          "--dsg-cell-text-color",
+          "rgb(20,20,20,0.9)"
+        );
+      }
+    }, 100);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (circlesArray?.memberOf?.length == 0) void refetch();
@@ -86,6 +113,55 @@ function Dashboard() {
             flexDirection="row"
             gap="1.5"
           >
+            {mode === "dark" ? (
+              <Button
+                shape="circle"
+                variant="secondary"
+                size="small"
+                onClick={() => {
+                  localStorage.setItem("lightMode", "true");
+                  document.documentElement.style.setProperty(
+                    "--dsg-cell-background-color",
+                    "rgb(255, 255, 255)"
+                  );
+                  document.documentElement.style.setProperty(
+                    "--dsg-border-color",
+                    "rgb(20,20,20,0.1)"
+                  );
+                  document.documentElement.style.setProperty(
+                    "--dsg-cell-text-color",
+                    "rgb(20,20,20,0.9)"
+                  );
+                  setMode("light");
+                }}
+              >
+                <IconSun size="5" />
+              </Button>
+            ) : (
+              <Button
+                shape="circle"
+                variant="secondary"
+                size="small"
+                onClick={() => {
+                  localStorage.removeItem("lightMode");
+                  document.documentElement.style.setProperty(
+                    "--dsg-cell-background-color",
+                    "rgb(20,20,20)"
+                  );
+                  document.documentElement.style.setProperty(
+                    "--dsg-border-color",
+                    "rgb(255,255,255,0.1)"
+                  );
+                  document.documentElement.style.setProperty(
+                    "--dsg-cell-text-color",
+                    "rgb(255,255,255,0.9)"
+                  );
+                  setMode("dark");
+                }}
+              >
+                <IconMoon size="5" />
+              </Button>
+            )}
             <Button
               data-tour="profile-settings-button"
               shape="circle"
@@ -111,6 +187,8 @@ function Dashboard() {
             <Logout />
           </Box>
         </Stack>
+        <Box margin={"4"}>
+        </Box>
         <Stack direction="horizontal" wrap>
           <Button
             size="small"
@@ -152,7 +230,7 @@ function Dashboard() {
             />
           )}
         </Box>
-        <ProfilePrompt currentUser={currentUser} setIsOpen={setIsOpen}/>
+        <ProfilePrompt currentUser={currentUser} setIsOpen={setIsOpen} />
       </Box>
       <AnimatePresence>
         {isOpen && <ProfileModal setIsOpen={setIsOpen} />}
