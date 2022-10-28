@@ -69,7 +69,6 @@ export function CreateContent() {
   });
 
   const createSorm = () => {
-    setIsLoading(true);
     mutateAsync({
       name: itemName,
       private: false,
@@ -86,7 +85,6 @@ export function CreateContent() {
           };
           const res = await createFolder(payload, myCircles?.[0]?.id as string);
           if (res) {
-            setIsLoading(false);
             void router.push(`/${res.slug}/r/${resJson.slug}`);
           }
         }
@@ -95,7 +93,6 @@ export function CreateContent() {
   };
 
   const createProj = async () => {
-    setIsLoading(true);
     const data = await createProject({
       name: itemName,
       circleId: myCircles?.[0]?.id as string,
@@ -111,7 +108,6 @@ export function CreateContent() {
       };
       const res = await createFolder(payload, myCircles?.[0]?.id as string);
       if (res) {
-        setIsLoading(false);
         void router.push(`/${res.slug}/${data.slug}`);
       }
     }
@@ -121,17 +117,30 @@ export function CreateContent() {
     void refetch();
   }, []);
 
+  if (loading)
+    return (
+      <Box marginTop={"20"}>
+        <RocketOutlined
+          style={{ fontSize: "5rem", color: "rgb(191, 90, 242, 1)" }}
+          rotate={30}
+        />
+      </Box>
+    );
+
   return (
     <Stack justify={"center"} direction="vertical" align={"center"} space="6">
-      <Stack direction={"horizontal"} align="center">
+      <Stack
+        direction={{ xs: "vertical", md: "horizontal", lg: "horizontal" }}
+        align="center"
+      >
         <RocketOutlined
           style={{ fontSize: "2.5rem", color: "rgb(191, 90, 242, 1)" }}
           rotate={30}
         />
-        <Heading>All set ! This is the final step</Heading>
+        <Heading align={"center"}>All set ! This is the final step</Heading>
       </Stack>
       <Text>What would you like to create ?</Text>
-      <Stack direction={"horizontal"}>
+      <Stack direction={{ xs: "vertical", md: "horizontal", lg: "horizontal" }}>
         <Card border={itemType == "Sorm"} onClick={() => setItemType("Sorm")}>
           <Stack direction={"horizontal"} align="center" space={"2"}>
             <ProfileOutlined
@@ -186,6 +195,7 @@ export function CreateContent() {
       />
       <Button
         onClick={() => {
+          setIsLoading(true);
           void refetch();
           if (itemType == "Sorm") {
             createSorm();

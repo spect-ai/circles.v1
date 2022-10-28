@@ -33,9 +33,12 @@ export function BasicProfile({ setStep }: { setStep: (step: number) => void }) {
   };
   return (
     <Stack justify={"center"} direction="vertical" align={"center"} space="6">
-      <Stack direction={"horizontal"} align="center">
+      <Stack
+        direction={{ xs: "vertical", md: "horizontal", lg: "horizontal" }}
+        align="center"
+      >
         <IconSparkles color={"accent"} size="8" />
-        <Heading>You made it to Spect, WAGMI !</Heading>
+        <Heading responsive>You made it to Spect, WAGMI !</Heading>
       </Stack>
       <Text>So, how should we call you ?</Text>
       <NameInput
