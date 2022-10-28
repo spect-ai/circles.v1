@@ -8,7 +8,7 @@ import Sidebar from "@/app/modules/Sidebar";
 import styled from "styled-components";
 import { useGlobal } from "@/app/context/globalContext";
 import { useQuery } from "react-query";
-import { UserType } from "@/app/types";
+import { CircleType, UserType } from "@/app/types";
 import { toast } from "react-toastify";
 import ConnectPage from "../../../modules/Dashboard/ConnectPage";
 import Onboard from "../../../modules/Dashboard/Onboard";
@@ -52,12 +52,31 @@ function PublicLayout(props: PublicLayoutProps) {
     }
   );
 
+  const { data: myCircles, refetch: refetchCircles } = useQuery<CircleType[]>(
+    "myOrganizations",
+    () =>
+      fetch(`${process.env.API_HOST}/circle/myOrganizations`, {
+        credentials: "include",
+      }).then((res) => res.json()),
+    {
+      enabled: false,
+    }
+  );
+
+  const onboard =
+    myCircles?.length == 0 ||
+    (myCircles?.[0]?.projects &&
+      Object.values(myCircles?.[0]?.projects)?.length == 0) ||
+    (myCircles?.[0]?.collections &&
+      Object.values(myCircles?.[0]?.collections)?.length == 0);
+
   useEffect(() => {
     if (!connectedUser && currentUser?.id) connectUser(currentUser.id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentUser, connectedUser]);
 
   useEffect(() => {
+    void refetchCircles();
     refetch()
       .then((res) => {
         const data = res.data;
@@ -75,11 +94,9 @@ function PublicLayout(props: PublicLayoutProps) {
       backgroundColor={mode === "dark" ? "background" : "backgroundSecondary"}
       id="public-layout"
     >
-      {connectedUser && currentUser?.id && currentUser.circles.length == 0 && (
-        <Onboard />
-      )}
+      {connectedUser && currentUser?.id && onboard && <Onboard />}
       {!connectedUser && !currentUser?.id && <ConnectPage />}
-      {connectedUser && currentUser?.id && currentUser.circles.length > 0 && (
+      {connectedUser && currentUser?.id && !onboard && (
         <>
           <Sidebar />
           <AnimatePresence initial={false}>

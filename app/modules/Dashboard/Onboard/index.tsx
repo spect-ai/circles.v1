@@ -1,4 +1,4 @@
-import { Box, Stack } from "degen";
+import { Box } from "degen";
 import { VioletBlur } from "../ConnectPage";
 import Logout from "@/app/common/components/LogoutButton";
 import { BasicProfile } from "./BasicProfile";
@@ -36,7 +36,7 @@ const Onboard = () => {
       </Box>
       <Box
         style={{
-          margin: "30vh auto",
+          margin: "25vh auto",
           display: "flex",
           flexDirection: "column",
           gap: "1rem",
