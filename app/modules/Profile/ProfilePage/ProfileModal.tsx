@@ -202,7 +202,12 @@ export default function ProfileModal({ setIsOpen }: Props) {
           >
             Save Profile
           </PrimaryButton>
-          <Stack direction="horizontal">
+          <Stack
+            direction={{
+              xs: "vertical",
+              md: "horizontal",
+            }}
+          >
             {!currentUser?.discordId && (
               <Link
                 href={`https://discord.com/api/oauth2/authorize?client_id=942494607239958609&redirect_uri=${

@@ -24,14 +24,34 @@ export default function Roles() {
             );
           }}
         />
-        <Stack direction="horizontal">
-          <Box width="1/3">
+        <Stack
+          direction={{
+            xs: "vertical",
+            md: "horizontal",
+          }}
+        >
+          <Box
+            width={{
+              xs: "full",
+              md: "1/3",
+            }}
+          >
             <AddRole />
           </Box>
-          <Box width="1/3">
+          <Box
+            width={{
+              xs: "full",
+              md: "1/3",
+            }}
+          >
             <GuildRoleMapping />
           </Box>
-          <Box width="1/3">
+          <Box
+            width={{
+              xs: "full",
+              md: "1/3",
+            }}
+          >
             <DiscordRoleMapping />
           </Box>
         </Stack>
