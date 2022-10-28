@@ -13,7 +13,7 @@ import { UserType, BucketizedCircleType, CircleType } from "@/app/types";
 import Link from "next/link";
 import { useQuery } from "react-query";
 import React, { memo, useState, useEffect } from "react";
-import queryClient from "@/app/common/utils/queryClient";
+import Logout from "@/app/common/components/LogoutButton";
 import { ProjectOutlined, SettingOutlined } from "@ant-design/icons";
 import { useAtom } from "jotai";
 import { authStatusAtom } from "@/pages/_app";
@@ -109,25 +109,7 @@ function Dashboard() {
                 View Profile
               </Button>
             </Link>
-            <Button
-              size="small"
-              variant="tertiary"
-              onClick={async () => {
-                setIsProfilePanelExpanded(false);
-                await fetch(`${process.env.API_HOST}/auth/disconnect`, {
-                  method: "POST",
-                  credentials: "include",
-                });
-                disconnect();
-                queryClient.setQueryData("getMyUser", null);
-                void queryClient.invalidateQueries("getMyUser");
-                localStorage.removeItem("connectorIndex");
-                setAuthenticationStatus("unauthenticated");
-                disconnectUser();
-              }}
-            >
-              Logout
-            </Button>
+            <Logout />
           </Box>
         </Box>
         <Box

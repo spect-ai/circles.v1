@@ -10,7 +10,8 @@ import { useGlobal } from "@/app/context/globalContext";
 import { useQuery } from "react-query";
 import { UserType } from "@/app/types";
 import { toast } from "react-toastify";
-import ConnectPage from "./ConnectPage";
+import ConnectPage from "../../../modules/Dashboard/ConnectPage";
+import Onboard from "../../../modules/Dashboard/Onboard";
 
 type PublicLayoutProps = {
   children: ReactNodeNoStrings;
@@ -74,9 +75,11 @@ function PublicLayout(props: PublicLayoutProps) {
       backgroundColor={mode === "dark" ? "background" : "backgroundSecondary"}
       id="public-layout"
     >
-      {!connectedUser && !currentUser?.id ? (
-        <ConnectPage />
-      ) : (
+      {connectedUser && currentUser?.id && currentUser.circles.length == 0 && (
+        <Onboard />
+      )}
+      {!connectedUser && !currentUser?.id && <ConnectPage />}
+      {connectedUser && currentUser?.id && currentUser.circles.length > 0 && (
         <>
           <Sidebar />
           <AnimatePresence initial={false}>
