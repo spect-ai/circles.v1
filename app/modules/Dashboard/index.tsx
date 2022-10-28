@@ -6,6 +6,7 @@ import {
   Button,
   IconTokens,
   Heading,
+  Stack,
 } from "degen";
 import { useDisconnect } from "wagmi";
 import { useGlobal } from "@/app/context/globalContext";
@@ -58,21 +59,19 @@ function Dashboard() {
   return (
     <>
       <Box padding="4" position={"relative"}>
-        <Box
-          paddingBottom="4"
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            gap: "1rem",
-            position: "relative",
-            alignItems: "center",
-            borderBottom: "1px solid rgba(255, 255, 255, .1)",
+        <Stack
+          direction={{
+            xs: "vertical",
+            md: "horizontal",
           }}
         >
           <Avatar
             label="profile-pic"
             src={currentUser?.avatar}
-            size="20"
+            size={{
+              xs: "14",
+              md: "20",
+            }}
             address={currentUser?.ethAddress}
           />
           <Box style={{ gap: "1.5rem" }}>
@@ -111,14 +110,8 @@ function Dashboard() {
             </Link>
             <Logout />
           </Box>
-        </Box>
-        <Box
-          display="flex"
-          flexDirection="row"
-          width="112"
-          paddingTop="2"
-          justifyContent="space-between"
-        >
+        </Stack>
+        <Stack direction="horizontal" wrap>
           <Button
             size="small"
             prefix={<IconTokens />}
@@ -143,7 +136,7 @@ function Dashboard() {
           >
             Your Cards
           </Button>
-        </Box>
+        </Stack>
         <Box>
           {panelTab == "Circle" && (
             <YourCircles circles={circles} isLoading={isLoading} />

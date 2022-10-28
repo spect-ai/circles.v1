@@ -10,6 +10,7 @@ import {
   useTheme,
   IconMoon,
   IconSun,
+  IconMenu,
 } from "degen";
 import { useRouter } from "next/router";
 import CreateCircle from "./CreateCircleModal";
@@ -21,6 +22,7 @@ import { useGlobal } from "@/app/context/globalContext";
 import CollapseButton from "../ExtendedSidebar/CollapseButton";
 import styled from "styled-components";
 import TaskWallet from "@/app/modules/Profile/TaskWallet";
+import { Visible } from "react-grid-system";
 
 export const ScrollContainer = styled(Box)`
   ::-webkit-scrollbar {
@@ -45,6 +47,7 @@ function Sidebar(): ReactElement {
     setTab,
     isProfilePanelExpanded,
     tab,
+    setIsSidebarExpanded,
   } = useGlobal();
   const [showCollapseButton, setShowCollapseButton] = useState(false);
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
@@ -129,6 +132,20 @@ function Sidebar(): ReactElement {
         </Box>
         <Box borderBottomWidth="0.375" paddingY="3">
           <Stack space="2">
+            <Visible xs sm>
+              <Button
+                shape="circle"
+                variant="transparent"
+                size="small"
+                onClick={() => {
+                  setIsSidebarExpanded(!isSidebarExpanded);
+                }}
+              >
+                <Text color="accent">
+                  <IconMenu size="5" />
+                </Text>
+              </Button>
+            </Visible>
             {mode === "dark" ? (
               <Button
                 shape="circle"
@@ -185,6 +202,7 @@ function Sidebar(): ReactElement {
                 </Text>
               </Button>
             </Link>
+
             {connectedUser && <CreateCircle size="large" />}
           </Stack>
         </Box>

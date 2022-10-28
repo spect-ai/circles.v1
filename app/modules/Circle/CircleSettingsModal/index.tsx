@@ -118,7 +118,15 @@ export default function SettingsModal({ handleClose, initialTab }: Props) {
             unselectedColor="transparent"
           />
         </Box>
-        <ScrollContainer width="3/4" paddingX="8" paddingY="4">
+        <ScrollContainer
+          width="3/4"
+          paddingX={{
+            xs: "2",
+            md: "4",
+            lg: "8",
+          }}
+          paddingY="4"
+        >
           {tab === 0 && (
             <Stack>
               <Input

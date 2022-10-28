@@ -4,7 +4,7 @@ import {
   getFlattenedNetworks,
 } from "@/app/common/utils/registry";
 import { updateCircle } from "@/app/services/UpdateCircle";
-import { Chain, Registry, Token } from "@/app/types";
+import { Registry } from "@/app/types";
 import { SaveOutlined } from "@ant-design/icons";
 import { Box, Heading, Input, Stack, Tag, Text } from "degen";
 import React, { useState } from "react";
@@ -64,14 +64,6 @@ export default function DefaultPayment() {
   return (
     <Container>
       <Stack space="4">
-        {/* <Stack>
-          <Box>
-            <Heading>Token Approvals</Heading>
-            <Text>Set approvals for tokens you wish to use for payments</Text>
-          </Box>
-          <Text size="extraLarge">Approved Tokens</Text>
-          <ApproveToken />
-        </Stack> */}
         <Box>
           <Heading>Default Payment</Heading>
           <Text>Set the default way that contributors get paid</Text>
@@ -107,34 +99,33 @@ export default function DefaultPayment() {
           </Stack>
           <Text size="extraLarge">Whitelisted Tokens</Text>
           <Stack direction="horizontal" wrap>
-            {getFlattenedCurrencies(
-              registry as Registry,
-              chain?.chainId
-            )?.map((aToken) => (
-              <Box
-                cursor="pointer"
-                key={aToken.address}
-                onClick={() => {
-                  setIsDirty(true);
-                  setToken(aToken);
-                }}
-              >
-                <Tag
-                  hover
-                  tone={
-                    token?.address === aToken.address ? "accent" : "secondary"
-                  }
+            {getFlattenedCurrencies(registry as Registry, chain?.chainId)?.map(
+              (aToken) => (
+                <Box
+                  cursor="pointer"
+                  key={aToken.address}
+                  onClick={() => {
+                    setIsDirty(true);
+                    setToken(aToken);
+                  }}
                 >
-                  <Text
-                    color={
-                      token?.address === aToken.address ? "accent" : "inherit"
+                  <Tag
+                    hover
+                    tone={
+                      token?.address === aToken.address ? "accent" : "secondary"
                     }
                   >
-                    {aToken.symbol}
-                  </Text>
-                </Tag>
-              </Box>
-            ))}
+                    <Text
+                      color={
+                        token?.address === aToken.address ? "accent" : "inherit"
+                      }
+                    >
+                      {aToken.symbol}
+                    </Text>
+                  </Tag>
+                </Box>
+              )
+            )}
             <AddToken chain={chain} />
           </Stack>
         </Stack>
@@ -151,7 +142,10 @@ export default function DefaultPayment() {
           <Input
             label=""
             placeholder="Address"
-            width="1/2"
+            width={{
+              xs: "full",
+              md: "1/2",
+            }}
             value={circleAddress}
             onChange={(e) => {
               setIsDirty(true);

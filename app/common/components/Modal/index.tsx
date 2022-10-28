@@ -30,6 +30,25 @@ export const grow = {
   },
 };
 
+// slide up animation from bottom of screen
+export const slideUp = {
+  hidden: {
+    y: "100%",
+  },
+  visible: {
+    y: 0,
+    transition: {
+      duration: 0.4,
+    },
+  },
+  exit: {
+    y: "100%",
+    transition: {
+      duration: 0.4,
+    },
+  },
+};
+
 const Container = styled(Box)<{
   modalWidth?: string;
   modalHeight?: string;
@@ -57,13 +76,13 @@ type props = {
 const getResponsiveWidth = (size: "small" | "medium" | "large") => {
   switch (size) {
     case "small":
-      return { xs: "full", md: "128" };
+      return "128";
     case "medium":
-      return { xs: "80", md: "192" };
+      return "192";
     case "large":
-      return { xs: "full", md: "256" };
+      return "256";
     default:
-      return { xs: "full", md: "192" };
+      return "192";
   }
 };
 
@@ -79,15 +98,23 @@ function Modal({
     <Backdrop onClick={handleClose} zIndex={zIndex}>
       <motion.div
         onClick={(e) => e.stopPropagation()}
-        variants={grow}
+        variants={slideUp}
         initial="hidden"
         animate="visible"
         exit="exit"
+        style={{ width: "100%", display: "flex", justifyContent: "center" }}
       >
         <Container
           backgroundColor="background"
-          borderRadius="2xLarge"
-          width={getResponsiveWidth(size) as any}
+          borderRadius={{
+            xs: "none",
+            md: "2xLarge",
+          }}
+          borderTopRadius="2xLarge"
+          width={{
+            xs: "full",
+            md: size ? getResponsiveWidth(size) : "192",
+          }}
           minHeight="48"
           modalHeight={height}
         >
