@@ -92,7 +92,7 @@ export default function SybilResistance() {
                   cursor="pointer"
                 >
                   <a
-                    href="https://docs.spect.network/spect-docs/introduction/how-it-works"
+                    href="https://docs.passport.gitcoin.co/"
                     rel="noopener noreferrer"
                     target="_blank"
                   >

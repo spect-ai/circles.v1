@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { getForm } from "@/app/services/Collection";
-import { FormType, GuildRole, UserType } from "@/app/types";
+import { FormType, GuildRole, Stamp, UserType } from "@/app/types";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { Avatar, Box, Text, Stack, useTheme, Button, Tag } from "degen";
 import { useRouter } from "next/router";
@@ -12,7 +12,11 @@ import styled from "styled-components";
 import FormFields from "./FormFields";
 import { motion } from "framer-motion";
 import Loader from "@/app/common/components/Loader";
-import { getPassport } from "@/app/services/Credentials/AggregatedCredentials";
+import {
+  getAllCredentials,
+  getPassport,
+} from "@/app/services/Credentials/AggregatedCredentials";
+import Logo from "@/app/common/components/Logo";
 
 export default function PublicForm() {
   const router = useRouter();
@@ -25,7 +29,19 @@ export default function PublicForm() {
   const { openConnectModal } = useConnectModal();
   const [loading, setLoading] = useState(false);
   const [canFillForm, setCanFillForm] = useState(form?.canFillForm || false);
-  const [passedSybilThreshold, setPassedSybilThreshold] = useState(false);
+  const [stamps, setStamps] = useState([] as Stamp[]);
+
+  const addStamps = async (form: FormType) => {
+    const stamps = await getAllCredentials();
+    if (form.sybilProtectionEnabled) {
+      for (const stamp of stamps) {
+        if (form.sybilProtectionScores[stamp.id]) {
+          stamp.score = form.sybilProtectionScores[stamp.id];
+        }
+        setStamps(stamps);
+      }
+    }
+  };
 
   useEffect(() => {
     void (async () => {
@@ -35,6 +51,7 @@ export default function PublicForm() {
         if (res.id) {
           setForm(res);
           setCanFillForm(res.canFillForm);
+          await addStamps(res);
         } else toast.error("Error fetching form");
       }
     })();
@@ -46,41 +63,13 @@ export default function PublicForm() {
         setLoading(true);
         const res = await getForm(formId as string);
         if (res.id) {
-          console.log({ res });
-          console.log({ res: res.canFillForm });
           setCanFillForm(res.canFillForm);
+          await addStamps(res);
         } else toast.error("Error fetching form");
         setLoading(false);
       }
     })();
   }, [currentUser, formId]);
-
-  useEffect(() => {
-    if (currentUser) {
-      console.log(currentUser.ethAddress);
-      getPassport(currentUser.ethAddress)
-        .then((res) => {
-          console.log(res);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-      // if (!form?.sybilProtectionEnabled) {
-      //   setPassedSybilThreshold(true);
-      // } else {
-      //   getScore(currentUser.ethAddress, form?.sybilProtectionScores)
-      //     .then((res) => {
-      //       console.log(res);
-      //       if (res >= form?.sybilProtectionThreshold) {
-      //         setPassedSybilThreshold(true);
-      //       }
-      //     })
-      //     .catch((err) => {
-      //       console.log(err);
-      //     });
-      // }
-    }
-  }, [currentUser]);
 
   if (form) {
     return (
@@ -130,9 +119,21 @@ export default function PublicForm() {
                 gap="4"
               >
                 {" "}
-                <Text weight="semiBold" variant="large">
-                  This form is role gated
-                </Text>
+                {form.formRoleGating && form.formRoleGating.length > 0 && (
+                  <Text weight="semiBold" variant="large">
+                    This form is role gated
+                  </Text>
+                )}
+                {form.mintkudosTokenId && (
+                  <Text weight="semiBold" variant="large">
+                    This form distribute Kudos to responders
+                  </Text>
+                )}
+                {form.sybilProtectionEnabled && (
+                  <Text weight="semiBold" variant="large">
+                    This form is Sybil protected
+                  </Text>
+                )}
                 <Box
                   width={{
                     xs: "full",
@@ -157,66 +158,150 @@ export default function PublicForm() {
                   ease: [0, 0.71, 0.2, 1.01],
                 }}
               >
-                <Box
-                  display="flex"
-                  flexDirection="column"
-                  padding="4"
-                  marginTop="4"
-                  gap="4"
-                >
-                  {" "}
-                  <Text weight="bold">
-                    You require one of the following roles to fill this form
-                  </Text>
-                  <Stack space="2">
-                    {form.formRoleGating.map((role: GuildRole) => (
-                      <Tag tone="accent" key={role.id}>
-                        {role.name}
-                      </Tag>
-                    ))}
-                  </Stack>
-                  <Text variant="label">
-                    You do not have the correct roles to access this form
-                  </Text>{" "}
-                  <Box display="flex" flexDirection="row" gap="4">
-                    <Button
-                      variant="tertiary"
-                      size="small"
-                      onClick={async () => {
-                        const externalCircleData = await (
-                          await fetch(
-                            `${process.env.API_HOST}/circle/external/v1/${form.parents[0].id}/guild`,
-                            {
-                              headers: {
-                                Accept: "application/json",
-                                "Content-Type": "application/json",
-                              },
-                              credentials: "include",
-                            }
-                          )
-                        ).json();
-                        if (!externalCircleData.urlName) {
-                          toast.error(
-                            "Error fetching guild, please visit guild.xyz and find the roles or contact support"
+                {form.formRoleGating?.length && (
+                  <Box
+                    display="flex"
+                    flexDirection="column"
+                    padding="4"
+                    marginTop="4"
+                    gap="4"
+                  >
+                    {" "}
+                    <Text weight="bold">
+                      You require one of the following roles to fill this form
+                    </Text>
+                    <Stack space="2">
+                      {form.formRoleGating.map((role: GuildRole) => (
+                        <Tag tone="accent" key={role.id}>
+                          {role.name}
+                        </Tag>
+                      ))}
+                    </Stack>
+                    <Text variant="label">
+                      You do not have the correct roles to access this form
+                    </Text>{" "}
+                    <Box display="flex" flexDirection="row" gap="4">
+                      <Button
+                        variant="tertiary"
+                        size="small"
+                        onClick={async () => {
+                          const externalCircleData = await (
+                            await fetch(
+                              `${process.env.API_HOST}/circle/external/v1/${form.parents[0].id}/guild`,
+                              {
+                                headers: {
+                                  Accept: "application/json",
+                                  "Content-Type": "application/json",
+                                },
+                                credentials: "include",
+                              }
+                            )
+                          ).json();
+                          if (!externalCircleData.urlName) {
+                            toast.error(
+                              "Error fetching guild, please visit guild.xyz and find the roles or contact support"
+                            );
+                          }
+                          window.open(
+                            `https://guild.xyz/${externalCircleData.urlName}`,
+                            "_blank"
                           );
-                        }
-                        window.open(
-                          `https://guild.xyz/${externalCircleData.urlName}`,
-                          "_blank"
-                        );
-                      }}
-                    >
-                      How do I get these roles?
-                    </Button>
-                    <Button
-                      variant="tertiary"
-                      size="small"
-                      onClick={() => router.push("/")}
-                    >
-                      No worries, go to dashboard
-                    </Button>
+                        }}
+                      >
+                        How do I get these roles?
+                      </Button>
+                      <Button
+                        variant="tertiary"
+                        size="small"
+                        onClick={() => router.push("/")}
+                      >
+                        No worries, go to dashboard
+                      </Button>
+                    </Box>
                   </Box>
-                </Box>
+                )}
+                {form.sybilProtectionEnabled && (
+                  <Box
+                    display="flex"
+                    flexDirection="column"
+                    padding="4"
+                    marginTop="4"
+                    gap="4"
+                  >
+                    {" "}
+                    <Text weight="bold">
+                      This form is sybil protected. You must have a minimum
+                      score of 100% to fill this form. Please check the assigned
+                      scores below.
+                    </Text>
+                    <StampScrollContainer>
+                      {stamps.map((stamp: Stamp, index: number) => {
+                        if (stamp.score)
+                          return (
+                            <Box
+                              display="flex"
+                              flexDirection="row"
+                              alignItems="center"
+                              padding="4"
+                              width="full"
+                              key={index}
+                            >
+                              <Box
+                                display="flex"
+                                flexDirection="row"
+                                width="full"
+                                alignItems="center"
+                              >
+                                <Box
+                                  display="flex"
+                                  flexDirection="row"
+                                  alignItems="center"
+                                  width="full"
+                                  paddingRight="4"
+                                >
+                                  <Box paddingRight="4">
+                                    <Logo
+                                      src={stamp.providerImage}
+                                      href={"/"}
+                                      gradient={""}
+                                    />
+                                  </Box>
+                                  <Box>
+                                    <Text as="h1">{stamp.stampName}</Text>
+                                    <Text variant="small">
+                                      {stamp.stampDescription}
+                                    </Text>
+                                  </Box>
+                                </Box>
+                                <Text variant="small">{stamp.score}%</Text>
+                              </Box>
+                            </Box>
+                          );
+                      })}
+                    </StampScrollContainer>
+                    <Text variant="label">
+                      You do not have the correct roles to access this form
+                    </Text>{" "}
+                    <Box display="flex" flexDirection="row" gap="4">
+                      <Button
+                        variant="tertiary"
+                        size="small"
+                        onClick={() =>
+                          window.open("https://passport.gitcoin.co/", "_blank")
+                        }
+                      >
+                        Get Stamps
+                      </Button>
+                      <Button
+                        variant="tertiary"
+                        size="small"
+                        onClick={() => router.push("/")}
+                      >
+                        No worries, go to dashboard
+                      </Button>
+                    </Box>
+                  </Box>
+                )}
               </motion.div>
             )}
           </FormContainer>
@@ -304,4 +389,12 @@ const ScrollContainer = styled(Box)`
   scrollbar-width: none;
   max-height: calc(100vh);
   overflow-y: auto;
+`;
+
+const StampScrollContainer = styled(Box)`
+  overflow-y: auto;
+  height: calc(100vh - 35rem);
+  ::-webkit-scrollbar {
+    width: 5px;
+  }
 `;

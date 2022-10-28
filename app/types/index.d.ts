@@ -848,4 +848,5 @@ export type Stamp = {
   defaultScore: number;
   stampName: string;
   stampDescription: string;
+  score?: number;
 };
