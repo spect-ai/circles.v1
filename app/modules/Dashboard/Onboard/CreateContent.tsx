@@ -1,17 +1,23 @@
 import { Heading, Stack, Text, Button, IconSparkles, Box } from "degen";
 import styled from "styled-components";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   ProfileOutlined,
   RocketOutlined,
   ProjectOutlined,
 } from "@ant-design/icons";
 import { NameInput } from "./BasicProfile";
+import { createProject } from "@/app/services/Project";
+import { createFolder } from "@/app/services/Folders";
+import { useRouter } from "next/router";
+import { useQuery } from "react-query";
+import { CircleType } from "@/app/types";
 
 const Card = styled(Box)<{ border: boolean }>`
-  max-width: 20rem;
+  max-width: 18rem;
   display: flex;
   flex-direction: column;
+  gap: 0.5rem;
   padding: 1rem;
   border-radius: 1rem;
   border: 2px solid
@@ -27,8 +33,50 @@ const Card = styled(Box)<{ border: boolean }>`
 `;
 
 export function CreateContent() {
+  const router = useRouter();
   const [itemName, setItemName] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const [itemType, setItemType] = useState<"Sorm" | "Project">("Sorm");
+
+  const { data: myCircles, refetch } = useQuery<CircleType[]>(
+    "myOrganizations",
+    () =>
+      fetch(`${process.env.API_HOST}/circle/myOrganizations`, {
+        credentials: "include",
+      }).then((res) => res.json()),
+    {
+      enabled: false,
+    }
+  );
+
+  const createSorm = () => {};
+
+  const createProj = async () => {
+    setIsLoading(true);
+    const data = await createProject({
+      name: itemName,
+      circleId: myCircles?.[0]?.id as string,
+      description: "",
+      fromTemplateId: "6316cfe0013982438514cc7a",
+    });
+
+    if (data) {
+      const payload = {
+        name: "Section 1",
+        avatar: "All",
+        contentIds: [data.id],
+      };
+      const res = await createFolder(payload, myCircles?.[0]?.id as string);
+      if (res) {
+        setIsLoading(false);
+        void router.push(`/${res.slug}`)
+      }
+    }
+  };
+
+  useEffect(() => {
+    void refetch();
+  },[])
   return (
     <Stack justify={"center"} direction="vertical" align={"center"} space="6">
       <Stack direction={"horizontal"} align="center">
@@ -56,7 +104,7 @@ export function CreateContent() {
           </Stack>
           <Text>
             Sorms are sybil-resistant Web3 enabled forms with mintkudos, poap
-            integrations with e-mail service for the applicants
+            integrations and e-mail service for the applicants
           </Text>
         </Card>
         <Card
@@ -93,7 +141,17 @@ export function CreateContent() {
         }}
       />
       <Button
-        onClick={() => {}}
+        onClick={() => {
+          void refetch();
+          if (itemType == "Sorm") {
+            createSorm();
+            return;
+          }
+          if (itemType == "Project" && myCircles?.[0]?.id ) {
+            void createProj();
+            return;
+          }
+        }}
         prefix={<IconSparkles size="5" />}
         variant="secondary"
         size="small"

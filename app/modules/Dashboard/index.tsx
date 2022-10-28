@@ -48,7 +48,7 @@ function Dashboard() {
     useAtom(authStatusAtom);
 
   useEffect(() => {
-    if (circlesArray?.memberOf.length == 0) void refetch();
+    if (circlesArray?.memberOf?.length == 0) void refetch();
     if (circlesArray) setCircles(circlesArray?.memberOf);
   }, [circlesArray, connectedUser, refetch, panelTab, isOpen]);
 

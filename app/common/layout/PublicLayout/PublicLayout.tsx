@@ -66,10 +66,14 @@ function PublicLayout(props: PublicLayoutProps) {
   const onboard =
     myCircles?.length == 0 ||
     (myCircles?.[0]?.projects &&
-      Object.values(myCircles?.[0]?.projects)?.length == 0) ||
+      Object.values(myCircles?.[0]?.projects)?.length == 0) &&
     (myCircles?.[0]?.collections &&
       Object.values(myCircles?.[0]?.collections)?.length == 0);
 
+  console.log((myCircles?.[0]?.projects &&
+    Object.values(myCircles?.[0]?.projects)?.length == 0) &&
+  (myCircles?.[0]?.collections &&
+    Object.values(myCircles?.[0]?.collections)?.length == 0));
   useEffect(() => {
     if (!connectedUser && currentUser?.id) connectUser(currentUser.id);
     // eslint-disable-next-line react-hooks/exhaustive-deps

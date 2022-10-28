@@ -13,7 +13,11 @@ type CreateCircleDto = {
   gradient: string;
 };
 
-export function CreateCircle({ setStep }: { setStep: (step: number) => void }) {
+interface Props {
+  setStep: (step: number) => void;
+}
+
+export function CreateCircle({ setStep }: Props) {
   const [circleName, setCircleName] = useState("");
 
   const { mutateAsync } = useMutation((circle: CreateCircleDto) => {
