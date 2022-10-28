@@ -10,7 +10,7 @@ import { NameInput } from "./BasicProfile";
 import { createProject } from "@/app/services/Project";
 import { createFolder } from "@/app/services/Folders";
 import { useRouter } from "next/router";
-import { useQuery } from "react-query";
+import { useMutation, useQuery } from "react-query";
 import { CircleType } from "@/app/types";
 
 const Card = styled(Box)<{ border: boolean }>`
@@ -32,10 +32,17 @@ const Card = styled(Box)<{ border: boolean }>`
   cursor: pointer;
 `;
 
+type CreateCollectionDto = {
+  name: string;
+  private: boolean;
+  circleId: string;
+  defaultView?: "form" | "table" | "kanban" | "list" | "gantt";
+};
+
 export function CreateContent() {
   const router = useRouter();
   const [itemName, setItemName] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [loading, setIsLoading] = useState(false);
   const [itemType, setItemType] = useState<"Sorm" | "Project">("Sorm");
 
   const { data: myCircles, refetch } = useQuery<CircleType[]>(
@@ -49,7 +56,43 @@ export function CreateContent() {
     }
   );
 
-  const createSorm = () => {};
+  const { mutateAsync } = useMutation((circle: CreateCollectionDto) => {
+    return fetch(`${process.env.API_HOST}/collection/v1`, {
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      method: "POST",
+      body: JSON.stringify(circle),
+      credentials: "include",
+    });
+  });
+
+  const createSorm = () => {
+    setIsLoading(true);
+    mutateAsync({
+      name: itemName,
+      private: false,
+      circleId: myCircles?.[0]?.id as string,
+      defaultView: "form",
+    })
+      .then(async (res) => {
+        const resJson = await res.json();
+        if (resJson.slug) {
+          const payload = {
+            name: "Section 1",
+            avatar: "All",
+            contentIds: [resJson.id],
+          };
+          const res = await createFolder(payload, myCircles?.[0]?.id as string);
+          if (res) {
+            setIsLoading(false);
+            void router.push(`/${res.slug}/r/${resJson.slug}`);
+          }
+        }
+      })
+      .catch((err) => console.log({ err }));
+  };
 
   const createProj = async () => {
     setIsLoading(true);
@@ -69,14 +112,15 @@ export function CreateContent() {
       const res = await createFolder(payload, myCircles?.[0]?.id as string);
       if (res) {
         setIsLoading(false);
-        void router.push(`/${res.slug}`)
+        void router.push(`/${res.slug}/${data.slug}`);
       }
     }
   };
 
   useEffect(() => {
     void refetch();
-  },[])
+  }, []);
+
   return (
     <Stack justify={"center"} direction="vertical" align={"center"} space="6">
       <Stack direction={"horizontal"} align="center">
@@ -147,7 +191,7 @@ export function CreateContent() {
             createSorm();
             return;
           }
-          if (itemType == "Project" && myCircles?.[0]?.id ) {
+          if (itemType == "Project" && myCircles?.[0]?.id) {
             void createProj();
             return;
           }
