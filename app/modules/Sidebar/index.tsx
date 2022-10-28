@@ -7,9 +7,6 @@ import {
   Button,
   Stack,
   Text,
-  useTheme,
-  IconMoon,
-  IconSun,
   IconMenu,
 } from "degen";
 import { useRouter } from "next/router";
@@ -53,30 +50,6 @@ function Sidebar(): ReactElement {
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
-
-  // eslint-disable-next-line @typescript-eslint/unbound-method
-  const { mode, setMode } = useTheme();
-
-  useEffect(() => {
-    setTimeout(() => {
-      if (localStorage.getItem("lightMode")) {
-        setMode("light");
-        document.documentElement.style.setProperty(
-          "--dsg-cell-background-color",
-          "rgb(255, 255, 255)"
-        );
-        document.documentElement.style.setProperty(
-          "--dsg-border-color",
-          "rgb(20,20,20,0.1)"
-        );
-        document.documentElement.style.setProperty(
-          "--dsg-cell-text-color",
-          "rgb(20,20,20,0.9)"
-        );
-      }
-    }, 100);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const {
     data: myCircles,
@@ -146,55 +119,6 @@ function Sidebar(): ReactElement {
                 </Text>
               </Button>
             </Visible>
-            {mode === "dark" ? (
-              <Button
-                shape="circle"
-                variant="secondary"
-                size="small"
-                onClick={() => {
-                  localStorage.setItem("lightMode", "true");
-                  document.documentElement.style.setProperty(
-                    "--dsg-cell-background-color",
-                    "rgb(255, 255, 255)"
-                  );
-                  document.documentElement.style.setProperty(
-                    "--dsg-border-color",
-                    "rgb(20,20,20,0.1)"
-                  );
-                  document.documentElement.style.setProperty(
-                    "--dsg-cell-text-color",
-                    "rgb(20,20,20,0.9)"
-                  );
-                  setMode("light");
-                }}
-              >
-                <IconSun size="5" />
-              </Button>
-            ) : (
-              <Button
-                shape="circle"
-                variant="secondary"
-                size="small"
-                onClick={() => {
-                  localStorage.removeItem("lightMode");
-                  document.documentElement.style.setProperty(
-                    "--dsg-cell-background-color",
-                    "rgb(20,20,20)"
-                  );
-                  document.documentElement.style.setProperty(
-                    "--dsg-border-color",
-                    "rgb(255,255,255,0.1)"
-                  );
-                  document.documentElement.style.setProperty(
-                    "--dsg-cell-text-color",
-                    "rgb(255,255,255,0.9)"
-                  );
-                  setMode("dark");
-                }}
-              >
-                <IconMoon size="5" />
-              </Button>
-            )}
             <Link href="/" passHref>
               <Button shape="circle" variant="transparent" size="small">
                 <Text color="accent">

@@ -9,13 +9,14 @@ import {
 } from "@ant-design/icons";
 import Link from "next/link";
 
-const VioletBlur = styled.div`
+export const VioletBlur = styled.div`
   filter: blur(150px);
   height: 200px;
   width: 200px;
   border-radius: 100px;
   background: linear-gradient(126.86deg, #5200ff 0%, #a900ff 100%);
   position: absolute;
+  z-index: 0;
 `;
 
 export default function ConnectPage() {
