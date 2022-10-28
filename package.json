@@ -17,6 +17,7 @@
     "@biconomy/mexa": "^3.0.4",
     "@emotion/react": "^11.10.4",
     "@fontsource/inter": "^4.5.11",
+    "@gitcoinco/passport-sdk-scorer": "^0.1.4",
     "@gnosis.pm/safe-core-sdk": "^2.3.2",
     "@gnosis.pm/safe-core-sdk-types": "^1.4.0",
     "@gnosis.pm/safe-ethers-lib": "^1.4.0",

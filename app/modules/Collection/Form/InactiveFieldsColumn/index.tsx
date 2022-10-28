@@ -7,6 +7,7 @@ import styled from "styled-components";
 import AddField from "../../AddField";
 import { useLocalCollection } from "../../Context/LocalCollectionContext";
 import RoleGate from "../../RoleGate";
+import SybilResistance from "../../SybilResistance";
 import InactiveFieldComponent from "../InactiveField";
 
 const Container = styled(Box)`
@@ -63,6 +64,7 @@ function InactiveFieldsColumnComponent({ fields }: Props) {
         </Droppable>
 
         <RoleGate />
+        <SybilResistance />
       </Stack>
     </Container>
   );

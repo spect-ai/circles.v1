@@ -12,6 +12,7 @@ import styled from "styled-components";
 import FormFields from "./FormFields";
 import { motion } from "framer-motion";
 import Loader from "@/app/common/components/Loader";
+import { getPassport } from "@/app/services/Credentials/AggregatedCredentials";
 
 export default function PublicForm() {
   const router = useRouter();
@@ -24,6 +25,7 @@ export default function PublicForm() {
   const { openConnectModal } = useConnectModal();
   const [loading, setLoading] = useState(false);
   const [canFillForm, setCanFillForm] = useState(form?.canFillForm || false);
+  const [passedSybilThreshold, setPassedSybilThreshold] = useState(false);
 
   useEffect(() => {
     void (async () => {
@@ -52,6 +54,33 @@ export default function PublicForm() {
       }
     })();
   }, [currentUser, formId]);
+
+  useEffect(() => {
+    if (currentUser) {
+      console.log(currentUser.ethAddress);
+      getPassport(currentUser.ethAddress)
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+      // if (!form?.sybilProtectionEnabled) {
+      //   setPassedSybilThreshold(true);
+      // } else {
+      //   getScore(currentUser.ethAddress, form?.sybilProtectionScores)
+      //     .then((res) => {
+      //       console.log(res);
+      //       if (res >= form?.sybilProtectionThreshold) {
+      //         setPassedSybilThreshold(true);
+      //       }
+      //     })
+      //     .catch((err) => {
+      //       console.log(err);
+      //     });
+      // }
+    }
+  }, [currentUser]);
 
   if (form) {
     return (

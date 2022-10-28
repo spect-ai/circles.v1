@@ -683,6 +683,8 @@ export interface CollectionType {
   indexes: MappedItem<string[]>;
   defaultView: DefaultViewType;
   formRoleGating: GuildRole[];
+  sybilProtectionEnabled: boolean;
+  sybilProtectionScores: MappedItem<GitcoinScoreType>;
   mintkudosTokenId: number;
   messageOnSubmission: string;
   unauthorized?: boolean;
@@ -800,6 +802,8 @@ export interface FormType {
   multipleResponsesAllowed: boolean;
   updatingResponseAllowed: boolean;
   previousResponses: MappedItem<object>;
+  sybilProtectionEnabled: boolean;
+  sybilProtectionScores: GitcoinScoreType[];
   createdAt: string;
   updatedAt: string;
   id: string;
@@ -825,4 +829,23 @@ type ClaimabilityAttributes = {
   totalClaimCount: number;
   remainingClaimCount?: number;
   expirationTimestamp?: number;
+};
+
+export type GitcoinScoreType = {
+  score: number;
+  provider: string;
+  issuer: string;
+};
+
+export type Stamp = {
+  id: string;
+  provider: string;
+  providerName: string;
+  providerUrl: string;
+  providerImage: string;
+  issuer: string;
+  issuerName: string;
+  defaultScore: number;
+  stampName: string;
+  stampDescription: string;
 };

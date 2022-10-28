@@ -2283,6 +2283,37 @@
   resolved "https://registry.npmjs.org/@gar/promisify/-/promisify-1.1.3.tgz"
   integrity sha512-k2Ty1JcVojjJFwrg/ThKi2ujJ7XNLYaFGNB/bWT9wGR+oSMJHMa5w+CUq6p/pVrKeNNgA7pCqEcjSnHVoqJQFw==
 
+"@gitcoinco/passport-sdk-reader@^0.1.4":
+  version "0.1.4"
+  resolved "https://registry.yarnpkg.com/@gitcoinco/passport-sdk-reader/-/passport-sdk-reader-0.1.4.tgz#875ee9cc421c6f93e97fcba6d530b5c1882ce71f"
+  integrity sha512-MRZ+p3ZdBz7/7U7/+3/LnwU4nXMeWGwPWakvPLTXL0ys74jmIrn0b1j2uh0D8EsdstoAnksbO9wEBRED40wHAg==
+  dependencies:
+    "@gitcoinco/passport-sdk-types" "^0.2.0"
+    tulons "^0.0.7"
+
+"@gitcoinco/passport-sdk-scorer@^0.1.4":
+  version "0.1.4"
+  resolved "https://registry.yarnpkg.com/@gitcoinco/passport-sdk-scorer/-/passport-sdk-scorer-0.1.4.tgz#b0d1d93480af627b8dae4148e6ab30cb37ca8bee"
+  integrity sha512-hGPEfi/RB9qnSWkE5jX3qHXB2qbIAnIHgUekCbPhhBrNXPkbHE07oAomcwva3dHxEdWdOwOo+Oc7vEXtjwCE3g==
+  dependencies:
+    "@gitcoinco/passport-sdk-reader" "^0.1.4"
+    "@gitcoinco/passport-sdk-types" "^0.2.0"
+    "@gitcoinco/passport-sdk-verifier" "^0.2.1"
+
+"@gitcoinco/passport-sdk-types@^0.2.0":
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/@gitcoinco/passport-sdk-types/-/passport-sdk-types-0.2.0.tgz#51be289db9621c84c247fc5f05bcd46196bfe94d"
+  integrity sha512-qS7P4atgeAEfI6VlGcoXr10E6SsKAlHiPNfSyr25HJpnNomi7J0Yy6krscUPiPsn1eCKOFQeC8uDqTdiXXMGLw==
+
+"@gitcoinco/passport-sdk-verifier@^0.2.1":
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/@gitcoinco/passport-sdk-verifier/-/passport-sdk-verifier-0.2.1.tgz#01bb32a47d97ebd55d634b59432c5226b4717ba9"
+  integrity sha512-Wf4EEPSbfzjsEgIyzFd978R6aufveN6cKj427fEuSTH5uM3hb6tJiHimX+4rOPs97wy1BGVyZB+1Uqoz4qoE1g==
+  dependencies:
+    "@gitcoinco/passport-sdk-reader" "^0.1.4"
+    "@gitcoinco/passport-sdk-types" "^0.2.0"
+    "@spruceid/didkit-wasm" "^0.2.1"
+
 "@gnosis.pm/safe-core-sdk-types@^1.2.1", "@gnosis.pm/safe-core-sdk-types@^1.3.0", "@gnosis.pm/safe-core-sdk-types@^1.4.0":
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/@gnosis.pm/safe-core-sdk-types/-/safe-core-sdk-types-1.4.0.tgz#c6615333177765b58f03cd77e165d4d36b9d2c91"
@@ -2932,6 +2963,11 @@
     secp256k1 "^4.0.2"
     superstruct "^0.14.2"
     tweetnacl "^1.0.3"
+
+"@spruceid/didkit-wasm@^0.2.1":
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/@spruceid/didkit-wasm/-/didkit-wasm-0.2.1.tgz#c9cb67df962e568414e6d9946f8563056f263abe"
+  integrity sha512-Qi0ZVS2vNA6iVwOzfIdyVQSj1Q88DgV0HyjnQGZ84YsrjaxbCSPwyhZs3TBzUGKwvoyiGCvWohYnL0G3BsPEMQ==
 
 "@spruceid/siwe-parser@^1.1.3":
   version "1.1.3"
@@ -16336,6 +16372,13 @@ tty-browserify@0.0.0:
   version "0.0.0"
   resolved "https://registry.npmjs.org/tty-browserify/-/tty-browserify-0.0.0.tgz"
   integrity sha512-JVa5ijo+j/sOoHGjw0sxw734b1LhBkQ3bvUGNdxnVXDCX81Yx7TFgnZygxrIIWn23hbfTaMYLwRmAxFyDuFmIw==
+
+tulons@^0.0.7:
+  version "0.0.7"
+  resolved "https://registry.yarnpkg.com/tulons/-/tulons-0.0.7.tgz#31677402ab51dc51478d375f90df76ea2ca8cbb9"
+  integrity sha512-JyL9Vn4PPG2TTEJS35yqQgAMLd3IX9pFIlbiLmv47HuHTo2F3ihYg2yfMqde4hqGY1nGk77iJ/lvsTbAURJ8rg==
+  dependencies:
+    axios "^0.27.2"
 
 tunnel-agent@^0.6.0:
   version "0.6.0"
