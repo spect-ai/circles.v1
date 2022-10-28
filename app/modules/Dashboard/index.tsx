@@ -7,6 +7,9 @@ import {
   IconTokens,
   Heading,
   Stack,
+  IconMoon,
+  IconSun,
+  useTheme,
 } from "degen";
 import { useDisconnect } from "wagmi";
 import { useGlobal } from "@/app/context/globalContext";
@@ -14,7 +17,7 @@ import { UserType, BucketizedCircleType, CircleType } from "@/app/types";
 import Link from "next/link";
 import { useQuery } from "react-query";
 import React, { memo, useState, useEffect } from "react";
-import queryClient from "@/app/common/utils/queryClient";
+import Logout from "@/app/common/components/LogoutButton";
 import { ProjectOutlined, SettingOutlined } from "@ant-design/icons";
 import { useAtom } from "jotai";
 import { authStatusAtom } from "@/pages/_app";
@@ -47,9 +50,33 @@ function Dashboard() {
   const [panelTab, setPanelTab] = useState("Circle");
   const [authenticationStatus, setAuthenticationStatus] =
     useAtom(authStatusAtom);
+  
+  // eslint-disable-next-line @typescript-eslint/unbound-method
+  const { mode, setMode } = useTheme();
 
   useEffect(() => {
-    if (circlesArray?.memberOf.length == 0) void refetch();
+    setTimeout(() => {
+      if (localStorage.getItem("lightMode")) {
+        setMode("light");
+        document.documentElement.style.setProperty(
+          "--dsg-cell-background-color",
+          "rgb(255, 255, 255)"
+        );
+        document.documentElement.style.setProperty(
+          "--dsg-border-color",
+          "rgb(20,20,20,0.1)"
+        );
+        document.documentElement.style.setProperty(
+          "--dsg-cell-text-color",
+          "rgb(20,20,20,0.9)"
+        );
+      }
+    }, 100);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (circlesArray?.memberOf?.length == 0) void refetch();
     if (circlesArray) setCircles(circlesArray?.memberOf);
   }, [circlesArray, connectedUser, refetch, panelTab, isOpen]);
 
@@ -86,6 +113,55 @@ function Dashboard() {
             flexDirection="row"
             gap="1.5"
           >
+            {mode === "dark" ? (
+              <Button
+                shape="circle"
+                variant="secondary"
+                size="small"
+                onClick={() => {
+                  localStorage.setItem("lightMode", "true");
+                  document.documentElement.style.setProperty(
+                    "--dsg-cell-background-color",
+                    "rgb(255, 255, 255)"
+                  );
+                  document.documentElement.style.setProperty(
+                    "--dsg-border-color",
+                    "rgb(20,20,20,0.1)"
+                  );
+                  document.documentElement.style.setProperty(
+                    "--dsg-cell-text-color",
+                    "rgb(20,20,20,0.9)"
+                  );
+                  setMode("light");
+                }}
+              >
+                <IconSun size="5" />
+              </Button>
+            ) : (
+              <Button
+                shape="circle"
+                variant="secondary"
+                size="small"
+                onClick={() => {
+                  localStorage.removeItem("lightMode");
+                  document.documentElement.style.setProperty(
+                    "--dsg-cell-background-color",
+                    "rgb(20,20,20)"
+                  );
+                  document.documentElement.style.setProperty(
+                    "--dsg-border-color",
+                    "rgb(255,255,255,0.1)"
+                  );
+                  document.documentElement.style.setProperty(
+                    "--dsg-cell-text-color",
+                    "rgb(255,255,255,0.9)"
+                  );
+                  setMode("dark");
+                }}
+              >
+                <IconMoon size="5" />
+              </Button>
+            )}
             <Button
               data-tour="profile-settings-button"
               shape="circle"
@@ -108,27 +184,11 @@ function Dashboard() {
                 View Profile
               </Button>
             </Link>
-            <Button
-              size="small"
-              variant="tertiary"
-              onClick={async () => {
-                setIsProfilePanelExpanded(false);
-                await fetch(`${process.env.API_HOST}/auth/disconnect`, {
-                  method: "POST",
-                  credentials: "include",
-                });
-                disconnect();
-                queryClient.setQueryData("getMyUser", null);
-                void queryClient.invalidateQueries("getMyUser");
-                localStorage.removeItem("connectorIndex");
-                setAuthenticationStatus("unauthenticated");
-                disconnectUser();
-              }}
-            >
-              Logout
-            </Button>
+            <Logout />
           </Box>
         </Stack>
+        <Box margin={"4"}>
+        </Box>
         <Stack direction="horizontal" wrap>
           <Button
             size="small"
@@ -170,7 +230,7 @@ function Dashboard() {
             />
           )}
         </Box>
-        {/* <ProfilePrompt currentUser={currentUser} setIsOpen={setIsOpen}/> */}
+        <ProfilePrompt currentUser={currentUser} setIsOpen={setIsOpen} />
       </Box>
       <AnimatePresence>
         {isOpen && <ProfileModal setIsOpen={setIsOpen} />}

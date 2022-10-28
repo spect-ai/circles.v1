@@ -26,7 +26,6 @@ const ProfilePrompt = ({
 
   const { mode } = useTheme();
   const Visibility =
-    currentUser.avatar &&
     currentUser.circles.length !== 0 &&
     !currentUser.username.startsWith("fren");
   const [promptOpen, setPromptOpen] = useState(true);
