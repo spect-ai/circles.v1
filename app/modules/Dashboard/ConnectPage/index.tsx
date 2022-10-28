@@ -1,4 +1,4 @@
-import { Box, Button, Stack, Text, IconSparkles } from "degen";
+import { Box, Button, Stack, Text, IconSparkles, Heading } from "degen";
 import { Connect } from "@/app/modules/Sidebar/ProfileButton/ConnectButton";
 import styled from "styled-components";
 import DiscordIcon from "@/app/assets/icons/discordIcon.svg";
@@ -26,16 +26,22 @@ export default function ConnectPage() {
       <Box
         style={{
           margin: "40vh auto",
+          paddingLeft: "1rem",
+          paddingRight: "1rem",
           display: "flex",
           flexDirection: "column",
-          gap: "1rem",
+          gap: "2rem",
         }}
       >
-        <Stack justify={"center"} direction="horizontal" align={"center"}>
-          <IconSparkles color="accent" />
-          <Text variant="large">
+        <Stack
+          justify={"center"}
+          direction={{ xs: "vertical", md: "horizontal", lg: "horizontal" }}
+          align="center"
+        >
+          <IconSparkles color="accent" size="8"/>
+          <Heading responsive align={"center"}>
             Connect your wallet to explore the world of Spect
-          </Text>
+          </Heading>
         </Stack>
         <Connect />
         <Stack justify={"center"} direction="horizontal" align={"center"}>

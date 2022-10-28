@@ -33,7 +33,13 @@ export function CreateCircle({ setStep }: Props) {
   });
 
   return (
-    <Stack justify={"center"} direction="vertical" align={"center"} space="6">
+    <Box
+      display={"flex"}
+      flexDirection="column"
+      gap={"5"}
+      alignItems="center"
+      marginTop={"60"}
+    >
       <Stack direction={"horizontal"} align="center">
         <IconTokens color={"accent"} size="8" />
         <Heading>Let&apos;s create a Circle</Heading>
@@ -85,6 +91,6 @@ export function CreateCircle({ setStep }: Props) {
       >
         LFG
       </Button>
-    </Stack>
+    </Box>
   );
 }

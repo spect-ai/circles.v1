@@ -50,7 +50,7 @@ const Onboard = () => {
       </Box>
       <Box
         style={{
-          margin: "25vh auto",
+          margin: "5vh auto",
           display: "flex",
           flexDirection: "column",
           gap: "1rem",

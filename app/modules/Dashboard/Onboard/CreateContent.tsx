@@ -120,7 +120,7 @@ export function CreateContent() {
   if (loading)
     return (
       <Box
-        marginTop={"20"}
+        marginTop={"40"}
         display="flex"
         flexDirection="column"
         gap={{ xs: "10", md: "10", lg: "5" }}
@@ -134,7 +134,13 @@ export function CreateContent() {
     );
 
   return (
-    <Stack justify={"center"} direction="vertical" align={"center"} space="6">
+    <Box
+      display={"flex"}
+      flexDirection="column"
+      gap={"5"}
+      alignItems="center"
+      marginTop={"20"}
+    >
       <Stack
         direction={{ xs: "vertical", md: "horizontal", lg: "horizontal" }}
         align="center"
@@ -219,6 +225,6 @@ export function CreateContent() {
       >
         Create {itemType}
       </Button>
-    </Stack>
+    </Box>
   );
 }

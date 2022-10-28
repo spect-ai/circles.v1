@@ -1,4 +1,4 @@
-import { Heading, Stack, Text, Button, IconSparkles } from "degen";
+import { Heading, Stack, Text, Button, IconSparkles, Box } from "degen";
 import styled from "styled-components";
 import { useState } from "react";
 import useProfileUpdate from "@/app/services/Profile/useProfileUpdate";
@@ -32,7 +32,13 @@ export function BasicProfile({ setStep }: { setStep: (step: number) => void }) {
     }
   };
   return (
-    <Stack justify={"center"} direction="vertical" align={"center"} space="6">
+    <Box
+      display={"flex"}
+      flexDirection="column"
+      gap={"5"}
+      alignItems="center"
+      marginTop={"60"}
+    >
       <Stack
         direction={{ xs: "vertical", md: "horizontal", lg: "horizontal" }}
         align="center"
@@ -57,6 +63,6 @@ export function BasicProfile({ setStep }: { setStep: (step: number) => void }) {
       >
         Let&apos;s Go
       </Button>
-    </Stack>
+    </Box>
   );
 }
