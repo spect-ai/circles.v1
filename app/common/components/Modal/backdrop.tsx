@@ -17,12 +17,12 @@ function Backdrop({ children, onClick, zIndex }: props) {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
     >
-      <Container>{children}</Container>
+      <Container zindex={zIndex as number}>{children}</Container>
     </motion.div>
   );
 }
 
-const Container = styled(Box)`
+const Container = styled(Box)<{ zindex: number }>`
   position: fixed;
   top: 0;
   left: 0;
@@ -31,7 +31,7 @@ const Container = styled(Box)`
   background-color: rgba(0, 0, 0, 0.6);
   display: flex;
 
-  z-index: 1000;
+  z-index: ${(props) => props.zindex || 1};
   backdrop-filter: blur(4px);
 
   @media (max-width: 768px) {
