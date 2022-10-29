@@ -165,7 +165,7 @@ export default function useCredentials() {
     }, 20000);
   };
 
-  const recordCollectionKudos = (operationId: string) => {
+  const recordCollectionKudos = (operationId: string, numOfKudos?: number) => {
     let time = 1000;
     const intervalPromise = setInterval(() => {
       time += 1000;
@@ -182,6 +182,7 @@ export default function useCredentials() {
                 method: "PATCH",
                 body: JSON.stringify({
                   mintkudosTokenId: data.resourceId,
+                  numOfKudos: numOfKudos || 10000,
                 }),
                 headers: {
                   "Content-Type": "application/json",

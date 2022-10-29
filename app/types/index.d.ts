@@ -807,6 +807,7 @@ export interface FormType {
   previousResponses: MappedItem<object>;
   sybilProtectionEnabled: boolean;
   sybilProtectionScores: GitcoinScoreType[];
+  canClaimKudos: boolean;
   createdAt: string;
   updatedAt: string;
   id: string;

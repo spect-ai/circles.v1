@@ -135,7 +135,7 @@ export default function FormResponse({
             </Stack>
           ) : (
             <Box>
-              {form.mintkudosTokenId && (
+              {form.canClaimKudos && (
                 <Stack>
                   <Heading>
                     The creator of this form is distributing kudos to everyone

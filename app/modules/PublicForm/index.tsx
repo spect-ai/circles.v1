@@ -31,30 +31,25 @@ export default function PublicForm() {
   const [canFillForm, setCanFillForm] = useState(form?.canFillForm || false);
   const [stamps, setStamps] = useState([] as Stamp[]);
 
+  console.log({ stamps });
+
   const addStamps = async (form: FormType) => {
     const stamps = await getAllCredentials();
+    console.log({ sybilScores: form.sybilProtectionScores });
+    const stampsWithScore = [];
     if (form.sybilProtectionEnabled) {
       for (const stamp of stamps) {
         if (form.sybilProtectionScores[stamp.id]) {
-          stamp.score = form.sybilProtectionScores[stamp.id];
+          const stampWithScore = {
+            ...stamp,
+            score: form.sybilProtectionScores[stamp.id],
+          };
+          stampsWithScore.push(stampWithScore);
         }
-        setStamps(stamps);
       }
+      setStamps(stampsWithScore);
     }
   };
-
-  useEffect(() => {
-    void (async () => {
-      if (formId) {
-        const res = await getForm(formId as string);
-        if (res.id) {
-          setForm(res);
-          setCanFillForm(res.canFillForm);
-          await addStamps(res);
-        } else toast.error("Error fetching form");
-      }
-    })();
-  }, [formId]);
 
   useEffect(() => {
     void (async () => {
@@ -62,6 +57,7 @@ export default function PublicForm() {
         setLoading(true);
         const res = await getForm(formId as string);
         if (res.id) {
+          setForm(res);
           setCanFillForm(res.canFillForm);
           await addStamps(res);
         } else toast.error("Error fetching form");
@@ -234,47 +230,46 @@ export default function PublicForm() {
                     </Text>
                     <StampScrollContainer>
                       {stamps.map((stamp: Stamp, index: number) => {
-                        if (stamp.score)
-                          return (
+                        return (
+                          <Box
+                            display="flex"
+                            flexDirection="row"
+                            alignItems="center"
+                            padding="4"
+                            width="full"
+                            key={index}
+                          >
                             <Box
                               display="flex"
                               flexDirection="row"
-                              alignItems="center"
-                              padding="4"
                               width="full"
-                              key={index}
+                              alignItems="center"
                             >
                               <Box
                                 display="flex"
                                 flexDirection="row"
-                                width="full"
                                 alignItems="center"
+                                width="full"
+                                paddingRight="4"
                               >
-                                <Box
-                                  display="flex"
-                                  flexDirection="row"
-                                  alignItems="center"
-                                  width="full"
-                                  paddingRight="4"
-                                >
-                                  <Box paddingRight="4">
-                                    <Logo
-                                      src={stamp.providerImage}
-                                      href={"/"}
-                                      gradient={""}
-                                    />
-                                  </Box>
-                                  <Box>
-                                    <Text as="h1">{stamp.stampName}</Text>
-                                    <Text variant="small">
-                                      {stamp.stampDescription}
-                                    </Text>
-                                  </Box>
+                                <Box paddingRight="4">
+                                  <Logo
+                                    src={stamp.providerImage}
+                                    href={"/"}
+                                    gradient={""}
+                                  />
                                 </Box>
-                                <Text variant="small">{stamp.score}%</Text>
+                                <Box>
+                                  <Text as="h1">{stamp.stampName}</Text>
+                                  <Text variant="small">
+                                    {stamp.stampDescription}
+                                  </Text>
+                                </Box>
                               </Box>
+                              <Text variant="small">{stamp.score}%</Text>
                             </Box>
-                          );
+                          </Box>
+                        );
                       })}
                     </StampScrollContainer>
                     <Text variant="label">

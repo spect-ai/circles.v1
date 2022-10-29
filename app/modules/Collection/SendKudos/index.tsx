@@ -12,7 +12,7 @@ import {
   Permissions,
   UserType,
 } from "@/app/types";
-import { Box, Button, MediaPicker, Stack, Text, Textarea } from "degen";
+import { Box, Button, Input, MediaPicker, Stack, Text, Textarea } from "degen";
 import { AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
@@ -62,6 +62,7 @@ export default function SendKudos() {
   const [uploadedImage, setUploadedImage] = useState(kudos?.imageUrl || "");
   const [asset, setAsset] = useState({} as File);
   const [assetToUse, setAssetToUse] = useState("defaultOrangeRed");
+  const [numberOfKudosToMint, setNumberOfKudosToMint] = useState(1000);
   const [assetUrl, setAssetUrl] = useState(
     "https://spect.infura-ipfs.io/ipfs/QmU2pYbqiVnNc7WKQ9yBkEmUvxWg6Ha1LAzpHdCSABwct7"
   );
@@ -135,7 +136,7 @@ export default function SendKudos() {
   }, [collection]);
 
   useEffect(() => {
-    if (isOpen)
+    if (isOpen && hasMintkudosCredentialsSetup)
       getCommunityKudosDesigns()
         .then((res) => {
           setCommunityKudosDesigns(res);
@@ -144,7 +145,7 @@ export default function SendKudos() {
           console.error(err);
         });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isOpen]);
+  }, [isOpen, hasMintkudosCredentialsSetup]);
 
   return (
     <>
@@ -330,6 +331,17 @@ export default function SendKudos() {
                         uploading={uploading}
                         maxSize={10}
                       />
+                      <Input
+                        label="Number of Kudos"
+                        value={numberOfKudosToMint}
+                        type="number"
+                        min={1}
+                        max={10000}
+                        required={true}
+                        onChange={(e) =>
+                          setNumberOfKudosToMint(parseInt(e.target.value))
+                        }
+                      />
                       {filenameExceedsLimit && (
                         <Text variant="small" color="red">
                           Please add a file with filename less than 20
@@ -375,7 +387,7 @@ export default function SendKudos() {
                           {
                             headline: headlineContent,
                             creator: currentUser?.ethAddress as string,
-                            totalClaimCount: 10000,
+                            totalClaimCount: numberOfKudosToMint || 10000,
                             isSignatureRequired: false,
                             isAllowlistRequired: false,
                           } as KudosRequestType,
@@ -383,7 +395,10 @@ export default function SendKudos() {
                           communityAsset?.nftTypeId || assetToUse
                         );
                         if (res) {
-                          recordCollectionKudos(res.operationId);
+                          recordCollectionKudos(
+                            res.operationId,
+                            numberOfKudosToMint
+                          );
                         }
                         setLoading(false);
                         if (res) {
