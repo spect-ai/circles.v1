@@ -40,18 +40,19 @@ export default function RetroPage() {
             Retro
           </Text>
         </Stack>
-        {circle?.retro && Object.values(circle?.retro)?.map((retro) => (
-          <Box
-            key={retro.id}
-            cursor="pointer"
-            onClick={() => {
-              void router.push(`${circle.slug}?retroSlug=${retro.slug}`);
-              setIsRetroOpen(true);
-            }}
-          >
-            <RetroRow retro={retro} key={retro.id} />
-          </Box>
-        ))}
+        {circle?.retro &&
+          Object.values(circle?.retro)?.map((retro) => (
+            <Box
+              key={retro.id}
+              cursor="pointer"
+              onClick={() => {
+                void router.push(`${circle.slug}?retroSlug=${retro.slug}`);
+                setIsRetroOpen(true);
+              }}
+            >
+              <RetroRow retro={retro} key={retro.id} />
+            </Box>
+          ))}
       </Stack>
     </Box>
   );
