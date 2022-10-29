@@ -61,7 +61,7 @@ export async function updateMemberRole(
   body: UpdateRoleDTO
 ) {
   const res = await fetch(
-    `${process.env.API_HOST}/circle/${circleId}/updateMemberRoles?member=${member}`,
+    `${process.env.API_HOST}/circle/v1/${circleId}/updateMemberRoles?member=${member}`,
     {
       method: "PATCH",
       headers: {

@@ -8,7 +8,7 @@ import ProjectOptions from "./ProjectOptions";
 import { ViewBar } from "../ProjectViews";
 import { useRouter } from "next/router";
 import { useGlobal } from "@/app/context/globalContext";
-import AdvancedOptions from "./AdvancedOptions";
+import AdvancedOptions from "./MoreOptions";
 import {
   AlignLeftOutlined,
   BarsOutlined,

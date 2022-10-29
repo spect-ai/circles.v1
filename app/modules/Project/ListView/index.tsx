@@ -8,14 +8,12 @@ import styled from "styled-components";
 import { useLocalProject } from "../Context/LocalProjectContext";
 
 import ListSection from "./ListSection";
-import { filterCards } from "../Filter/filterCards";
+import { filterCards } from "../ProjectHeading/MoreOptions/Helper/filterCards";
 import { Filter, CardsType, ColumnType } from "@/app/types";
 import { useGlobal } from "@/app/context/globalContext";
-import {
-  titleFilter,
-  sortBy,
-  groupByAssignee,
-} from "@/app/modules/Project/ProjectHeading/AdvancedOptions";
+import { titleFilter } from "@/app/modules/Project/ProjectHeading/MoreOptions/Helper/searchBy";
+import { sortBy } from "@/app/modules/Project/ProjectHeading/MoreOptions/Helper/sortBy";
+import { groupByAssignee } from "@/app/modules/Project/ProjectHeading/MoreOptions/Helper/groupBy";
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
 
 interface Props {

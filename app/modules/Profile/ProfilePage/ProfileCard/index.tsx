@@ -10,7 +10,7 @@ import {
 } from "degen";
 import styled from "styled-components";
 import { GithubOutlined, TwitterOutlined } from "@ant-design/icons";
-import { UserType, CircleType } from "@/app/types";
+import { UserType } from "@/app/types";
 import { useGlobal } from "@/app/context/globalContext";
 import { useQuery } from "react-query";
 import React, { useEffect, useState } from "react";
@@ -23,6 +23,12 @@ interface Props {
 }
 
 const Profile = styled(Box)<{ mode: string }>`
+  @media (max-width: 768px) {
+    width: 100%;
+    padding: 0;
+    margin: 1rem;
+  }
+
   width: 23vw;
   height: 90vh;
   margin: 2rem;
@@ -68,13 +74,6 @@ const Footer = styled(Box)`
   width: 90%;
 `;
 
-const FollowCount = styled(Box)`
-  display: flex;
-  flex-direction: row;
-  gap: 2rem;
-  padding: 1rem;
-`;
-
 const ProfileCard = ({ username }: Props) => {
   const { mode } = useTheme();
   const { isSidebarExpanded } = useGlobal();
@@ -111,7 +110,10 @@ const ProfileCard = ({ username }: Props) => {
           <Avatar
             label="profile-pic"
             src={user?.avatar}
-            size="28"
+            size={{
+              xs: "20",
+              md: "28",
+            }}
             address={user?.ethAddress}
           />
         </Box>
@@ -125,20 +127,6 @@ const ProfileCard = ({ username }: Props) => {
               user?.ethAddress?.substring(user?.ethAddress?.length - 6)}
           </Tag>
         )}
-        {/* <FollowCount>
-          <Box alignItems="center" display="flex" flexDirection="column">
-            <Text variant="large" weight="bold">
-              {user?.followedByUsers?.length}
-            </Text>
-            <Text variant="label">Followers</Text>
-          </Box>
-          <Box alignItems="center" display="flex" flexDirection="column">
-            <Text variant="large" weight="bold">
-              {user?.followedUsers?.length}
-            </Text>
-            <Text variant="label">Following</Text>
-          </Box>
-        </FollowCount> */}
         <InfoBox gap="1">
           {user?.githubId && (
             <a
@@ -188,11 +176,6 @@ const ProfileCard = ({ username }: Props) => {
               Edit
             </Button>
           )}
-          {/* : (
-            <Button variant="secondary" size="small" width="full">
-              Follow
-            </Button>
-          )} */}
         </Footer>
       </Profile>
       <AnimatePresence>

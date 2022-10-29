@@ -1,10 +1,7 @@
-import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { Box, Heading, Stack, Text } from "degen";
-import { AnimatePresence } from "framer-motion";
-import { memo, useCallback, useState } from "react";
+import { memo, useCallback } from "react";
 import { Droppable, DroppableProvided } from "react-beautiful-dnd";
 import styled from "styled-components";
-import AddField from "../../AddField";
 import { useLocalCollection } from "../../Context/LocalCollectionContext";
 import RoleGate from "../../RoleGate";
 import SybilResistance from "../../SybilResistance";
@@ -12,8 +9,10 @@ import InactiveFieldComponent from "../InactiveField";
 
 const Container = styled(Box)`
   width: 25%;
-  overflow-y: auto;
-  max-height: calc(100vh - 10rem);
+  @media (max-width: 992px) {
+    width: 100%;
+    margin-bottom: 2rem;
+  }
 `;
 
 type Props = {
@@ -58,11 +57,9 @@ function InactiveFieldsColumnComponent({ fields }: Props) {
     <Container>
       <Stack space="4">
         <Heading>Inactive Fields</Heading>
-
         <Droppable droppableId="inactiveFields" type="field">
           {FieldDraggableCallback}
         </Droppable>
-
         <RoleGate />
         <SybilResistance />
       </Stack>

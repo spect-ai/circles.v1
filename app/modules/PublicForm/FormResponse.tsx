@@ -3,6 +3,7 @@ import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { FormType, KudosType } from "@/app/types";
 import { TwitterOutlined } from "@ant-design/icons";
 import { Box, Heading, Stack, Text } from "degen";
+import Link from "next/link";
 import React, { useState } from "react";
 import Confetti from "react-confetti";
 import { TwitterShareButton } from "react-share";
@@ -202,11 +203,11 @@ export default function FormResponse({
               Submit another response
             </PrimaryButton>
           )}
-          <a href="https://circles.spect.network/">
+          <Link href="/">
             <PrimaryButton onClick={() => {}}>
               Create your own form
             </PrimaryButton>
-          </a>
+          </Link>
         </Stack>
       </Stack>
     </Box>

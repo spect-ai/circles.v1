@@ -1,12 +1,20 @@
+import Breadcrumbs from "@/app/common/components/Breadcrumbs";
+import Popover from "@/app/common/components/Popover";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { Box, Button, Stack, Text, useTheme } from "degen";
+import { DownloadOutlined, TwitterOutlined } from "@ant-design/icons";
+import { Box, Button, IconDotsHorizontal, Stack, Text, useTheme } from "degen";
 import { AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
 import { memo, useEffect, useState } from "react";
+import { Hidden, Visible } from "react-grid-system";
 import Skeleton from "react-loading-skeleton";
+import { TwitterShareButton } from "react-share";
 import { toast } from "react-toastify";
 import { useLocation } from "react-use";
 import styled from "styled-components";
+import { PopoverOption } from "../../Card/OptionPopover";
+import { useCircle } from "../../Circle/CircleContext";
+import { ScrollContainer } from "../../Sidebar";
 import AddField from "../AddField";
 import { useLocalCollection } from "../Context/LocalCollectionContext";
 
@@ -28,6 +36,8 @@ function CollectionHeading() {
   const router = useRouter();
   const { responses } = router.query;
   const [isAddFieldOpen, setIsAddFieldOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const { navigationBreadcrumbs } = useCircle();
 
   const location = useLocation();
 
@@ -42,35 +52,42 @@ function CollectionHeading() {
       width="full"
       display="flex"
       flexDirection="column"
-      alignItems="center"
       paddingLeft="3"
       paddingRight="5"
     >
+      <Visible xs sm>
+        <Box marginLeft="4" marginTop="2">
+          {navigationBreadcrumbs && (
+            <Breadcrumbs crumbs={navigationBreadcrumbs} />
+          )}
+        </Box>
+      </Visible>
       <Box
         width="full"
-        height="16"
         display="flex"
         flexDirection="row"
         justifyContent="space-between"
         alignItems="center"
-        style={{
-          paddingTop: "0.5rem",
-          paddingBottom: "0.0rem",
-        }}
+        paddingTop="2"
       >
         {!loading && (
-          <Box display="flex" flexDirection="row" width="full">
-            <Box width="3/4">
-              <Stack direction="horizontal">
-                <Button
-                  variant="transparent"
-                  size="small"
-                  onClick={() => setView(0)}
-                >
-                  <Text size="headingTwo" weight="semiBold" ellipsis>
-                    {collection?.name}
-                  </Text>
-                </Button>
+          <Stack
+            direction={{
+              xs: "vertical",
+              md: "horizontal",
+            }}
+          >
+            <Stack direction="horizontal" align="center">
+              <Button
+                variant="transparent"
+                size="small"
+                onClick={() => setView(0)}
+              >
+                <Text size="headingTwo" weight="semiBold" ellipsis>
+                  {collection?.name}
+                </Text>
+              </Button>
+              <Hidden xs md>
                 <PrimaryButton
                   // icon={<IconPencil />}
                   variant={view === 0 ? "tertiary" : "transparent"}
@@ -91,38 +108,89 @@ function CollectionHeading() {
                 <PrimaryButton onClick={() => setIsAddFieldOpen(true)}>
                   Add Field
                 </PrimaryButton>{" "}
-              </Stack>
-            </Box>
-            <Box width="1/4" justifyContent="center">
-              <Stack direction="horizontal" space="8" align="center">
-                <PrimaryButton
-                  // icon={<IconDocuments />}
-                  variant={"transparent"}
-                  onClick={() => {
-                    // void router.push(`/r/${collection?.slug}`);
-                    // uncomment this when pushing to prod, need the above line while we are testing
-                    window.open(
-                      `https://circles.spect.network/r/${collection?.slug}`,
-                      "_blank"
-                    );
-                  }}
+              </Hidden>
+              <Visible xs md>
+                <Popover
+                  butttonComponent={
+                    <Box
+                      cursor="pointer"
+                      onClick={() => setIsOpen(!isOpen)}
+                      color="foreground"
+                    >
+                      <IconDotsHorizontal color="textSecondary" />
+                    </Box>
+                  }
+                  isOpen={isOpen}
+                  setIsOpen={setIsOpen}
                 >
-                  Preview
-                </PrimaryButton>
-                <PrimaryButton
-                  // icon={<ShareAltOutlined />}
-                  onClick={() => {
-                    void navigator.clipboard.writeText(
-                      `https://circles.spect.network/r/${collection?.slug}`
-                    );
-                    toast.success("Copied to clipboard");
-                  }}
-                >
-                  Share
-                </PrimaryButton>
-              </Stack>
-            </Box>
-          </Box>
+                  <Box
+                    backgroundColor="background"
+                    borderWidth="0.5"
+                    borderRadius="2xLarge"
+                  >
+                    <PopoverOption
+                      onClick={() => {
+                        setIsAddFieldOpen(true);
+                        setIsOpen(false);
+                      }}
+                    >
+                      Add Field
+                    </PopoverOption>
+                    <PopoverOption
+                      onClick={() => {
+                        setView(0);
+                        setIsOpen(false);
+                      }}
+                    >
+                      Edit Form
+                    </PopoverOption>
+                    <PopoverOption
+                      onClick={() => {
+                        setView(1);
+                        setIsOpen(false);
+                      }}
+                    >
+                      Responses
+                    </PopoverOption>
+                  </Box>
+                </Popover>
+              </Visible>
+            </Stack>
+            <Stack
+              direction="horizontal"
+              space={{
+                xs: "2",
+                md: "8",
+              }}
+              align="center"
+            >
+              <PrimaryButton
+                // icon={<IconDocuments />}
+                variant={"transparent"}
+                onClick={() => {
+                  // void router.push(`/r/${collection?.slug}`);
+                  // uncomment this when pushing to prod, need the above line while we are testing
+                  window.open(
+                    `https://circles.spect.network/r/${collection?.slug}`,
+                    "_blank"
+                  );
+                }}
+              >
+                Preview
+              </PrimaryButton>
+              <PrimaryButton
+                // icon={<ShareAltOutlined />}
+                onClick={() => {
+                  void navigator.clipboard.writeText(
+                    `https://circles.spect.network/r/${collection?.slug}`
+                  );
+                  toast.success("Copied to clipboard");
+                }}
+              >
+                Share
+              </PrimaryButton>
+            </Stack>
+          </Stack>
         )}
         {loading && (
           <Skeleton

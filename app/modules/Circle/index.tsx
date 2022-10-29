@@ -89,8 +89,14 @@ export default function Circle() {
     );
 
   return (
-    <BoxContainer paddingX="8" paddingTop="4">
-      {!onboarded && canDo("createNewCircle") && <Onboarding />}
+    <BoxContainer
+      paddingX={{
+        xs: "2",
+        md: "8",
+      }}
+      paddingTop="4"
+    >
+      {/* {!onboarded && canDo("createNewCircle") && <Onboarding />} */}
       <ToastContainer
         toastStyle={{
           backgroundColor: `${

@@ -17,7 +17,7 @@ import {
 } from "@/app/types";
 import { deleteFolder, updateFolder } from "@/app/services/Folders";
 import { useCircle } from "../../CircleContext";
-import { Container, Row } from "react-grid-system";
+import { Col, Container, Row } from "react-grid-system";
 import CreateFolderItem from "./CreateFolderItem";
 import CreateProjectModal from "@/app/modules/Circle/CreateProjectModal";
 import CreateSpaceModal from "@/app/modules/Circle/CreateSpaceModal";
@@ -42,7 +42,10 @@ interface Props {
 }
 
 const NameInput = styled.input<{ mode: string }>`
-  width: 15rem;
+  @media (max-width: 768px) {
+    width: 5rem;
+  }
+  width: 12rem;
   background: transparent;
   border: 0;
   border-style: none;
@@ -50,7 +53,7 @@ const NameInput = styled.input<{ mode: string }>`
   outline: none;
   outline-offset: 0;
   box-shadow: none;
-  font-size: 1.3rem;
+  font-size: 1.2rem;
   caret-color: ${(props) =>
     props.mode === "dark" ? "rgb(255, 255, 255, 0.7)" : "rgb(20, 20, 20, 0.7)"};
   color: ${(props) =>
@@ -118,22 +121,42 @@ const Folder = ({
       ref={provided.innerRef}
       mode={mode}
     >
-      <Container style={{ marginLeft: "0px" }}>
+      <Container style={{ marginLeft: "-1rem" }}>
         <Row>
           {content?.map((card, i) => {
             if (projects?.[card] && card) {
               return (
-                <Card card={card} index={i} key={card} projects={projects} />
+                <Col
+                  sm={6}
+                  md={4}
+                  lg={2}
+                  key={card}
+                  style={{
+                    margin: "0.5rem 0",
+                  }}
+                >
+                  <Card card={card} index={i} projects={projects} />
+                </Col>
               );
             }
             if (workstreams?.[card] && card) {
               return (
-                <Card
-                  card={card}
-                  index={i}
+                <Col
+                  sm={6}
+                  md={4}
+                  lg={2}
                   key={card}
-                  workstreams={workstreams}
-                />
+                  style={{
+                    margin: "0.5rem 0",
+                  }}
+                >
+                  <Card
+                    card={card}
+                    index={i}
+                    key={card}
+                    workstreams={workstreams}
+                  />
+                </Col>
               );
             }
             if (retros?.[card] && card) {
@@ -141,12 +164,22 @@ const Folder = ({
             }
             if (collections?.[card] && card) {
               return (
-                <Card
-                  card={card}
-                  index={i}
+                <Col
+                  sm={6}
+                  md={4}
+                  lg={2}
                   key={card}
-                  collections={collections}
-                />
+                  style={{
+                    margin: "0.5rem 0",
+                  }}
+                >
+                  <Card
+                    card={card}
+                    index={i}
+                    key={card}
+                    collections={collections}
+                  />
+                </Col>
               );
             }
           })}

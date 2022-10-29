@@ -7,7 +7,6 @@ import {
   Avatar,
   AvatarGroup,
   Box,
-  Button,
   IconEth,
   Stack,
   Tag,
@@ -59,7 +58,7 @@ function CardComponent({ card, index }: Props) {
 
   const [hover, setHover] = useState(false);
 
-  const { projectCardActions } = useLocalProject();
+  const { projectCardActions, advFilters } = useLocalProject();
   const { mode } = useTheme();
 
   const { getMemberAvatars, getMemberDetails } = useModalOptions();
@@ -118,18 +117,45 @@ function CardComponent({ card, index }: Props) {
             )}
           </Stack>
         </Box>
-        {card.children.length > 0 && (
-          <Tag size="small" hover>
-            <Stack direction="horizontal" space="0.5" align="center">
-              <EnterOutlined
-                style={{ transform: "rotateY(180deg)", fontSize: "0.8rem" }}
-              />
-              <Text color="textSecondary">{card.children.length}</Text>
-            </Stack>
-          </Tag>
-        )}
+
+        {showSubTasks &&
+          card.children?.map((child) => (
+            <Box
+              key={child.id}
+              style={{
+                backgroundColor:
+                  mode == "dark"
+                    ? "rgba(255, 255, 255, 0.03)"
+                    : "rgba(0, 0, 0, 0.02)",
+              }}
+              borderRightRadius="medium"
+              marginY="2"
+              padding="1.5"
+              borderLeftWidth="0.75"
+              borderColor="textTertiary"
+              cursor="pointer"
+              onClick={(e) => {
+                e.stopPropagation();
+                void router.push(`/${cId}/${pId}/${child.slug}`);
+              }}
+            >
+              <Text size={"extraSmall"} color="textSecondary">
+                {child.title}
+              </Text>
+            </Box>
+          ))}
 
         <Stack direction="horizontal" wrap space="2">
+          {card.children?.length > 0 && (
+            <Tag size="small" hover tone="accent">
+              <Stack direction="horizontal" space="0.5" align="center">
+                <EnterOutlined
+                  style={{ transform: "rotateY(180deg)", fontSize: "0.8rem" }}
+                />
+                <Text color="textSecondary">{card.children.length}</Text>
+              </Stack>
+            </Tag>
+          )}
           {card.status.paid && (
             <Tag size="small" tone="green">
               <Text color="green">Paid</Text>
@@ -170,6 +196,7 @@ function CardComponent({ card, index }: Props) {
     </Container>
   );
 
+  const showSubTasks = useMemo(() => advFilters.show.subTasks, [advFilters]);
   const deadline = useMemo(() => new Date(card.deadline), [card.deadline]);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -188,6 +215,7 @@ function CardComponent({ card, index }: Props) {
     hover,
     projectCardActions,
     mode,
+    advFilters.show.subTasks,
   ]);
 
   return (

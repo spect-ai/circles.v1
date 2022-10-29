@@ -565,6 +565,9 @@ export type AdvancedFilters = {
   groupBy: "Status" | "Assignee";
   sortBy: "none" | "Priority" | "Deadline";
   order: "asc" | "des";
+  show: {
+    subTasks: boolean;
+  };
 };
 
 export type KudosRequestType = {

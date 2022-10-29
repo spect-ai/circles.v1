@@ -49,13 +49,25 @@ export default function CreateFolderItem({
             transitionDuration={"700"}
             display={"flex"}
             flexDirection={"row"}
-            gap={"3"}
+            gap={{
+              xs: "0",
+              md: "3",
+            }}
             marginLeft="3"
           >
-            {/* <CreateProjectModal folderId={folderId} />
-            <CreateSpaceModal folderId={folderId} />
-            <CreateRetro folderId={folderId} />
-            <CreateCollectionModal folderId={folderId} /> */}
+            <Tooltip html={<Text>Create Form</Text>} theme={mode}>
+              <Button
+                size="small"
+                variant="transparent"
+                shape="circle"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setCollectionModal(true);
+                }}
+              >
+                <IconCollection size="4" color="accent" />
+              </Button>
+            </Tooltip>
             <Tooltip html={<Text>Create Project</Text>} theme={mode}>
               <Button
                 size="small"
@@ -114,19 +126,6 @@ export default function CreateFolderItem({
                 }}
               >
                 <IconLightningBolt size={"4"} color="accent" />
-              </Button>
-            </Tooltip>
-            <Tooltip html={<Text>Create Form</Text>} theme={mode}>
-              <Button
-                size="small"
-                variant="transparent"
-                shape="circle"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setCollectionModal(true);
-                }}
-              >
-                <IconCollection size="4" color="accent" />
               </Button>
             </Tooltip>
           </Box>

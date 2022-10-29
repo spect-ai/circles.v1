@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Box, Text } from "degen";
+import { Box, Stack, Text, useTheme } from "degen";
 import MetaHead from "@/app/common/seo/MetaHead/MetaHead";
 import type { NextPage } from "next";
 import ProfileCard from "@/app/modules/Profile/ProfilePage/ProfileCard";
@@ -12,6 +12,7 @@ import { useQuery } from "react-query";
 import { toast } from "react-toastify";
 import Loader from "@/app/common/components/Loader";
 import { PublicLayout } from "@/app/common/layout";
+import styled from "styled-components";
 
 const getUser = async () => {
   const res = await fetch(`${process.env.API_HOST}/user/me`, {
@@ -34,6 +35,8 @@ const ProfilePage: NextPage = () => {
   const { refetch } = useQuery<UserType>("getMyUser", getUser, {
     enabled: false,
   });
+
+  const { mode } = useTheme();
 
   useEffect(() => {
     refetch()
@@ -90,6 +93,7 @@ const ProfilePage: NextPage = () => {
               height: "90vh",
               margin: "25% auto",
               alignItems: "center",
+              overflowY: "auto",
             }}
           >
             <Text variant="extraLarge" size="headingOne" align="center">
@@ -98,15 +102,35 @@ const ProfilePage: NextPage = () => {
           </Box>
         )}
         {user?.id && !isLoading && (
-          <Box display="flex" flexDirection="row" width="full">
-            <ProfileCard username={username as string} />
-            <ProfileTabs username={username as string} />
-          </Box>
+          <ScrollContainer mode={mode}>
+            <Stack
+              direction={{
+                xs: "vertical",
+                md: "horizontal",
+              }}
+            >
+              <ProfileCard username={username as string} />
+              <ProfileTabs username={username as string} />
+            </Stack>
+          </ScrollContainer>
         )}
       </PublicLayout>
       {isProfilePanelExpanded && <TaskWallet tab={tab} />}
     </>
   );
 };
+
+const ScrollContainer = styled(Box)<{ mode: string }>`
+  ::-webkit-scrollbar {
+    width: 5px;
+    height: 2rem;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: ${(props) =>
+      props.mode === "dark" ? "rgb(255, 255, 255, 0.3)" : "rgb(0, 0, 0, 0.2)"};
+  }
+  max-height: 100vh;
+  overflow-y: auto;
+`;
 
 export default ProfilePage;
