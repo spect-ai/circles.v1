@@ -60,7 +60,10 @@ export default function FormResponse({
         }`}</Heading>
         <Box
           display="flex"
-          flexDirection="row"
+          flexDirection={{
+            xs: "column",
+            md: "row",
+          }}
           justifyContent="flex-start"
           gap="4"
         >
