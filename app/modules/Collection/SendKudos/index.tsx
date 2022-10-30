@@ -62,7 +62,9 @@ export default function SendKudos() {
   const [uploadedImage, setUploadedImage] = useState(kudos?.imageUrl || "");
   const [asset, setAsset] = useState({} as File);
   const [assetToUse, setAssetToUse] = useState("defaultOrangeRed");
-  const [numberOfKudosToMint, setNumberOfKudosToMint] = useState(1000);
+  const [numberOfKudosToMint, setNumberOfKudosToMint] = useState(
+    collection.numOfKudos || 1000
+  );
   const [assetUrl, setAssetUrl] = useState(
     "https://spect.infura-ipfs.io/ipfs/QmU2pYbqiVnNc7WKQ9yBkEmUvxWg6Ha1LAzpHdCSABwct7"
   );

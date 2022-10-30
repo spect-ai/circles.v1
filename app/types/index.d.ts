@@ -695,6 +695,7 @@ export interface CollectionType {
   updatingResponseAllowed: boolean;
   circleRolesToNotifyUponUpdatedResponse: string[];
   circleRolesToNotifyUponNewResponse: string[];
+  numOfKudos: number;
 }
 
 export type Property = {

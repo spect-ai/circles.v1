@@ -67,7 +67,9 @@ export default function SybilResistance() {
         variant={collection.sybilProtectionEnabled ? "tertiary" : "secondary"}
         onClick={() => setIsOpen(true)}
       >
-        {collection.sybilProtectionEnabled ? `Update Scores` : `Add Scores`}
+        {collection.sybilProtectionEnabled
+          ? `Update Sybil Protection`
+          : `Enable Sybil Protection`}
       </PrimaryButton>
       <AnimatePresence>
         {isOpen && (
@@ -216,7 +218,7 @@ export default function SybilResistance() {
                         setLoading(false);
                       }}
                     >
-                      Disable Sybil Resistance
+                      Disable Sybil Protection
                     </Button>
                   )}
                   <Box width="1/2">
