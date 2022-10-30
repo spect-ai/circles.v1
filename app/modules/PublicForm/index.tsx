@@ -31,8 +31,6 @@ export default function PublicForm() {
   const [canFillForm, setCanFillForm] = useState(form?.canFillForm || false);
   const [stamps, setStamps] = useState([] as Stamp[]);
 
-  console.log({ stamps });
-
   const addStamps = async (form: FormType) => {
     const stamps = await getAllCredentials();
     console.log({ sybilScores: form.sybilProtectionScores });

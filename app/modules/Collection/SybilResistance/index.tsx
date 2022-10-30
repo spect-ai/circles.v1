@@ -3,17 +3,14 @@ import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { Box, Button, Input, Stack, Text } from "degen";
 import { AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
-import { useCircle } from "../../Circle/CircleContext";
 import { useLocalCollection } from "../Context/LocalCollectionContext";
 import Logo from "@/app/common/components/Logo";
 import styled from "styled-components";
-import Link from "next/link";
 import { getAllCredentials } from "@/app/services/Credentials/AggregatedCredentials";
 import { Stamp } from "@/app/types";
 
 export default function SybilResistance() {
   const [isOpen, setIsOpen] = useState(false);
-  const { circle, setCircleData } = useCircle();
   const { localCollection: collection, updateCollection } =
     useLocalCollection();
   const [loading, setLoading] = useState(false);
@@ -45,7 +42,7 @@ export default function SybilResistance() {
         })
         .catch((err) => console.log(err));
     }
-  }, []);
+  }, [collection]);
 
   useEffect(() => {
     const total = allocations.reduce((a, b) => a + b, 0);
