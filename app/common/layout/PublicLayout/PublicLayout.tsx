@@ -26,10 +26,10 @@ const Container = styled(Box)<{ issidebarexpanded: boolean }>`
 // show this only desktop screens
 const DesktopContainer = styled(Box)`
   display: flex;
-  flexdirection: row;
+  flex-direction: row;
   height: 100vh;
-  overflowy: auto;
-  overflowx: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
 `;
 
 const getUser = async () => {
@@ -66,8 +66,8 @@ function PublicLayout(props: PublicLayoutProps) {
   const onboard =
     myCircles?.length == 0 ||
     (myCircles?.[0]?.projects &&
-      Object.values(myCircles?.[0]?.projects)?.length == 0) &&
-    (myCircles?.[0]?.collections &&
+      Object.values(myCircles?.[0]?.projects)?.length == 0 &&
+      myCircles?.[0]?.collections &&
       Object.values(myCircles?.[0]?.collections)?.length == 0);
 
   useEffect(() => {

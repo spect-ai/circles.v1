@@ -55,13 +55,13 @@ function CollectionHeading() {
       paddingLeft="3"
       paddingRight="5"
     >
-      <Visible xs sm>
+      <Hidden xs sm>
         <Box marginLeft="4" marginTop="2">
           {navigationBreadcrumbs && (
             <Breadcrumbs crumbs={navigationBreadcrumbs} />
           )}
         </Box>
-      </Visible>
+      </Hidden>
       <Box
         width="full"
         display="flex"

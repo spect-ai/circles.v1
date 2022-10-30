@@ -11,7 +11,6 @@ import {
   IconSun,
   useTheme,
 } from "degen";
-import { useDisconnect } from "wagmi";
 import { useGlobal } from "@/app/context/globalContext";
 import { UserType, BucketizedCircleType, CircleType } from "@/app/types";
 import Link from "next/link";
@@ -19,8 +18,6 @@ import { useQuery } from "react-query";
 import React, { memo, useState, useEffect } from "react";
 import Logout from "@/app/common/components/LogoutButton";
 import { ProjectOutlined, SettingOutlined } from "@ant-design/icons";
-import { useAtom } from "jotai";
-import { authStatusAtom } from "@/pages/_app";
 import YourCircles from "./CirclesTab";
 import YourProjects from "./ProjectsTab";
 import YourCards from "./CardsTab";
@@ -31,8 +28,7 @@ import useJoinCircle from "@/app/services/JoinCircle/useJoinCircle";
 import ProfileModal from "../Profile/ProfilePage/ProfileModal";
 
 function Dashboard() {
-  const { setIsProfilePanelExpanded, disconnectUser, connectedUser } =
-    useGlobal();
+  const { setIsProfilePanelExpanded, connectedUser } = useGlobal();
   useJoinCircle();
   const [circles, setCircles] = useState([] as CircleType[]);
   const [isOpen, setIsOpen] = useState(false);
@@ -46,11 +42,7 @@ function Dashboard() {
   } = useQuery<BucketizedCircleType>("exploreCircles", {
     enabled: false,
   });
-  const { disconnect } = useDisconnect();
   const [panelTab, setPanelTab] = useState("Circle");
-  const [authenticationStatus, setAuthenticationStatus] =
-    useAtom(authStatusAtom);
-  
   // eslint-disable-next-line @typescript-eslint/unbound-method
   const { mode, setMode } = useTheme();
 
@@ -187,8 +179,7 @@ function Dashboard() {
             <Logout />
           </Box>
         </Stack>
-        <Box margin={"4"}>
-        </Box>
+        <Box margin={"4"}></Box>
         <Stack direction="horizontal" wrap>
           <Button
             size="small"
