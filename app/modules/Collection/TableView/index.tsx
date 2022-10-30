@@ -21,6 +21,7 @@ import AddField from "../AddField";
 import { useLocalCollection } from "../Context/LocalCollectionContext";
 import DataModal from "../Form/DataModal";
 import ExpandableCell from "../Form/ExpandableCell";
+import CredentialComponent from "./CredentialComponent";
 import GutterColumnComponent from "./GutterColumnComponent";
 import HeaderComponent from "./HeaderComponent";
 import MilestoneComponent from "./MilestoneComponent";
@@ -55,6 +56,7 @@ export default function TableView() {
         if (!res.id) {
           toast.error("Error updating data");
         }
+        console.log({ res });
         return res;
       }
     }
@@ -236,6 +238,27 @@ export default function TableView() {
         };
       }
     });
+
+  const columnsWithCredentials = collection.credentialCurationEnabled
+    ? [
+        {
+          component: CredentialComponent,
+          columnData: {},
+          title: (
+            <HeaderComponent
+              sortData={sortData}
+              columnName={"Responder"}
+              setIsEditFieldOpen={setIsEditFieldOpen}
+              setPropertyName={setPropertyName}
+            />
+          ),
+          minWidth: 50,
+          maxWidth: 150,
+        },
+        ...columns,
+      ]
+    : columns;
+
   return (
     <Box padding="8">
       <AnimatePresence>
@@ -330,7 +353,7 @@ export default function TableView() {
             }
             setData(newData);
           }}
-          columns={columns}
+          columns={columnsWithCredentials}
           gutterColumn={{
             component: GutterColumnComponent,
             minWidth: 50,

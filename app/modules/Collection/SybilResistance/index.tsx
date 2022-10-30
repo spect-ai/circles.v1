@@ -1,6 +1,6 @@
 import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { Box, Button, Input, Stack, Text } from "degen";
+import { Avatar, Box, Button, Input, Stack, Text } from "degen";
 import { AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useCircle } from "../../Circle/CircleContext";
@@ -155,10 +155,13 @@ export default function SybilResistance() {
                             flexDirection="row"
                             justifyContent="flex-start"
                           >
-                            <Logo
+                            <Avatar
+                              label="logo"
                               src={stamp.providerImage}
-                              href={"/"}
-                              gradient={""}
+                              size={{
+                                xs: "8",
+                                md: "10",
+                              }}
                             />
                           </Box>
                           <Box>

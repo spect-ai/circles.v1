@@ -59,8 +59,6 @@ function FormBuilder({ fields }: Props) {
     collection.properties,
   ]);
 
-  useEffect(() => {}, []);
-
   return (
     <>
       <AnimatePresence>
