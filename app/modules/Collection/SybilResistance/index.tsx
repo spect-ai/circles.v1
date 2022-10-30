@@ -26,7 +26,6 @@ export default function SybilResistance() {
     if (collection) {
       getAllCredentials()
         .then((res) => {
-          console.log({ res });
           setStamps(res);
           const allocs = [];
           for (const stamp of res) {
@@ -38,7 +37,6 @@ export default function SybilResistance() {
             else allocs.push(stamp.defaultScore * 100);
           }
           setAllocations(allocs);
-          console.log({ allocs });
         })
         .catch((err) => console.log(err));
     }

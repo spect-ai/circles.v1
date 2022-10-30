@@ -12,11 +12,9 @@ import styled from "styled-components";
 import FormFields from "./FormFields";
 import { motion } from "framer-motion";
 import Loader from "@/app/common/components/Loader";
-import {
-  getAllCredentials,
-  getPassport,
-} from "@/app/services/Credentials/AggregatedCredentials";
+import { getAllCredentials } from "@/app/services/Credentials/AggregatedCredentials";
 import Logo from "@/app/common/components/Logo";
+import { useGlobal } from "@/app/context/globalContext";
 
 export default function PublicForm() {
   const router = useRouter();
@@ -31,9 +29,10 @@ export default function PublicForm() {
   const [canFillForm, setCanFillForm] = useState(form?.canFillForm || false);
   const [stamps, setStamps] = useState([] as Stamp[]);
 
+  const { connectedUser } = useGlobal();
+
   const addStamps = async (form: FormType) => {
     const stamps = await getAllCredentials();
-    console.log({ sybilScores: form.sybilProtectionScores });
     const stampsWithScore = [];
     if (form.sybilProtectionEnabled) {
       for (const stamp of stamps) {
@@ -51,6 +50,7 @@ export default function PublicForm() {
 
   useEffect(() => {
     void (async () => {
+      console.log({ connectedUser, formId });
       if (formId) {
         setLoading(true);
         const res = await getForm(formId as string);
@@ -62,7 +62,11 @@ export default function PublicForm() {
         setLoading(false);
       }
     })();
-  }, [currentUser, formId]);
+  }, [connectedUser, formId]);
+
+  if (loading) {
+    return <Loader loading text="Fetching form..." />;
+  }
 
   if (form) {
     return (
