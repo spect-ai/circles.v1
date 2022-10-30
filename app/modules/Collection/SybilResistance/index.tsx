@@ -71,6 +71,7 @@ export default function SybilResistance() {
           ? `Update Sybil Protection`
           : `Enable Sybil Protection`}
       </PrimaryButton>
+
       <AnimatePresence>
         {isOpen && (
           <Modal
@@ -134,12 +135,26 @@ export default function SybilResistance() {
                       >
                         <Box
                           display="flex"
-                          flexDirection="row"
-                          alignItems="center"
+                          flexDirection={{
+                            xs: "column",
+                            md: "row",
+                          }}
+                          alignItems={{
+                            md: "center",
+                          }}
                           width="full"
-                          paddingRight="4"
+                          paddingRight={{
+                            xs: "1",
+                            md: "4",
+                          }}
+                          justifyContent="flex-start"
                         >
-                          <Box paddingRight="4">
+                          <Box
+                            paddingRight="4"
+                            display="flex"
+                            flexDirection="row"
+                            justifyContent="flex-start"
+                          >
                             <Logo
                               src={stamp.providerImage}
                               href={"/"}
@@ -158,7 +173,10 @@ export default function SybilResistance() {
                           type="number"
                           units="%"
                           placeholder="0"
-                          width="1/2"
+                          width={{
+                            xs: "3/4",
+                            md: "auto",
+                          }}
                           max={100}
                           min={0}
                           value={allocations[index]}

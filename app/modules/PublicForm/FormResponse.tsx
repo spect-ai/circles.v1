@@ -78,7 +78,7 @@ export default function FormResponse({
                   <TwitterShareButton
                     url={`https://spect.network/`}
                     title={
-                      "I just filled out a web3 native form and claimed my Kudos on @JoinSpect via @mintkudosXYZ 🎉"
+                      "I just filled out a web3 enabled form and claimed my Kudos on @JoinSpect via @mintkudosXYZ 🎉"
                     }
                   >
                     <Box

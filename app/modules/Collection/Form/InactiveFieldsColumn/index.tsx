@@ -1,3 +1,4 @@
+import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { Box, Heading, Stack, Text } from "degen";
 import { memo, useCallback } from "react";
 import { Droppable, DroppableProvided } from "react-beautiful-dnd";
@@ -20,7 +21,8 @@ type Props = {
 };
 
 function InactiveFieldsColumnComponent({ fields }: Props) {
-  const { localCollection: collection } = useLocalCollection();
+  const { localCollection: collection, updateCollection } =
+    useLocalCollection();
   const FieldDraggable = (provided: DroppableProvided) => (
     <Box {...provided.droppableProps} ref={provided.innerRef}>
       <Stack space="1">
@@ -62,6 +64,42 @@ function InactiveFieldsColumnComponent({ fields }: Props) {
         </Droppable>
         <RoleGate />
         <SybilResistance />
+        <Stack direction="vertical">
+          {collection.sybilProtectionEnabled && (
+            <Text variant="small">{`This form has credential curation enabled!`}</Text>
+          )}
+          {!collection.sybilProtectionEnabled && (
+            <Text variant="small">{`Receive responder's credentials across web3 along with their response`}</Text>
+          )}
+        </Stack>
+        <PrimaryButton
+          variant={
+            collection.credentialCurationEnabled ? "tertiary" : "secondary"
+          }
+          onClick={async () => {
+            const res = await (
+              await fetch(
+                `${process.env.API_HOST}/collection/v1/${collection.id}`,
+                {
+                  method: "PATCH",
+                  body: JSON.stringify({
+                    credentialCurationEnabled:
+                      !collection.credentialCurationEnabled,
+                  }),
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  credentials: "include",
+                }
+              )
+            ).json();
+            updateCollection(res);
+          }}
+        >
+          {collection.credentialCurationEnabled
+            ? `Disable Credential Curation`
+            : `Enable Credential Curation`}
+        </PrimaryButton>
       </Stack>
     </Container>
   );
