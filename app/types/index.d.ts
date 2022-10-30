@@ -695,6 +695,10 @@ export interface CollectionType {
   updatingResponseAllowed: boolean;
   circleRolesToNotifyUponUpdatedResponse: string[];
   circleRolesToNotifyUponNewResponse: string[];
+  numOfKudos: number;
+  credentialCurationEnabled: boolean;
+  dataOwner: { [key: string]: string };
+  profiles: { [key: string]: UserType };
 }
 
 export type Property = {

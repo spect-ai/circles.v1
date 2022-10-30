@@ -319,7 +319,28 @@ export default function FormFields({ form, setForm }: Props) {
               />
             );
         })}
-      <Box width="full">
+      <Box width="full" display="flex" flexDirection="row">
+        {(submitAnotherResponse || updateResponse) && (
+          <Box
+            width="1/4"
+            paddingLeft="5"
+            display="flex"
+            flexDirection="row"
+            justifyContent="flex-start"
+            alignItems="center"
+            gap="8"
+          >
+            <PrimaryButton
+              variant="tertiary"
+              onClick={() => {
+                setSubmitAnotherResponse(false);
+                setUpdateResponse(false);
+              }}
+            >
+              Nevermind
+            </PrimaryButton>
+          </Box>
+        )}
         <Box
           paddingRight="5"
           gap="4"
@@ -346,6 +367,7 @@ export default function FormFields({ form, setForm }: Props) {
                   ).join(",")}`}{" "}
                 </Text>
               )}
+
               <PrimaryButton onClick={onSubmit}>Submit</PrimaryButton>
             </Box>
           ) : (

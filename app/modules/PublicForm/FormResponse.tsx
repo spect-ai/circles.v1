@@ -58,47 +58,58 @@ export default function FormResponse({
         <Heading>{`${
           form?.messageOnSubmission || "Your response has been submitted!"
         }`}</Heading>
-        <Box>
-          {kudos?.imageUrl && (
+        <Box
+          display="flex"
+          flexDirection={{
+            xs: "column",
+            md: "row",
+          }}
+          justifyContent="flex-start"
+          gap="4"
+        >
+          {kudos?.imageUrl && (claimed || form.canClaimKudos) && (
             <StyledImage src={`${kudos.imageUrl}`} alt="kudos" />
           )}
           {claimed ? (
             <Stack>
               <Heading>You have claimed this Kudos 🎉</Heading>
               <Box>
-                <Box>
+                <Stack direction="vertical">
                   <TwitterShareButton
                     url={`https://spect.network/`}
                     title={
-                      "I just filled out a web3 native form and claimed my Kudos on @JoinSpect via @mintkudosXYZ 🎉"
+                      "I just filled out a web3 enabled form and claimed my Kudos on @JoinSpect via @mintkudosXYZ 🎉"
                     }
                   >
-                    <PrimaryButton>
-                      <TwitterOutlined
-                        style={{
-                          fontSize: "1.8rem",
-                          marginRight: "0.2rem",
-                          color: "rgb(29, 155, 240, 1)",
-                        }}
-                      />
-                      <Text>Share on Twitter</Text>
-                    </PrimaryButton>
+                    <Box
+                      width={{
+                        xs: "full",
+                        md: "72",
+                      }}
+                    >
+                      <PrimaryButton
+                        variant="transparent"
+                        icon={
+                          <TwitterOutlined
+                            style={{
+                              fontSize: "1.8rem",
+                              color: "rgb(29, 155, 240, 1)",
+                            }}
+                          />
+                        }
+                      >
+                        <Text>Share on Twitter</Text>
+                      </PrimaryButton>
+                    </Box>
                   </TwitterShareButton>
-                </Box>
-                <Stack
-                  direction={{
-                    xs: "vertical",
-                    md: "horizontal",
-                  }}
-                >
                   <Box
                     width={{
                       xs: "full",
-                      md: "1/3",
+                      md: "72",
                     }}
                   >
                     <PrimaryButton
-                      variant="tertiary"
+                      variant="transparent"
                       icon={<img src="/openseaLogo.svg" alt="src" />}
                       onClick={() => {
                         window.open(
@@ -113,11 +124,11 @@ export default function FormResponse({
                   <Box
                     width={{
                       xs: "full",
-                      md: "1/3",
+                      md: "72",
                     }}
                   >
                     <PrimaryButton
-                      variant="tertiary"
+                      variant="transparent"
                       icon={<img src="/raribleLogo.svg" alt="src" />}
                       onClick={() => {
                         window.open(
@@ -137,11 +148,11 @@ export default function FormResponse({
             <Box>
               {form.canClaimKudos && (
                 <Stack>
-                  <Heading>
+                  <Text as="h2">
                     The creator of this form is distributing kudos to everyone
                     that submitted a response 🎉
-                  </Heading>
-                  <Box>
+                  </Text>
+                  <Box width="72">
                     <PrimaryButton
                       loading={claiming}
                       onClick={async () => {
@@ -181,34 +192,49 @@ export default function FormResponse({
             </Box>
           )}
         </Box>
-        <Stack>
-          {form?.updatingResponseAllowed && (
-            <PrimaryButton
-              variant="transparent"
-              onClick={() => {
-                setUpdateResponse(true);
-                setSubmitted(false);
-              }}
-            >
-              Update response
-            </PrimaryButton>
-          )}
-          {form?.multipleResponsesAllowed && (
-            <PrimaryButton
-              variant="transparent"
-              onClick={() => {
-                setSubmitAnotherResponse(true);
-              }}
-            >
-              Submit another response
-            </PrimaryButton>
-          )}
-          <Link href="/">
-            <PrimaryButton onClick={() => {}}>
-              Create your own form
-            </PrimaryButton>
-          </Link>
-        </Stack>
+        <Box
+          width="full"
+          display="flex"
+          flexDirection="row"
+          justifyContent="flex-start"
+          marginTop="8"
+        >
+          <Box
+            width="72"
+            display="flex"
+            flexDirection="column"
+            justifyContent="flex-start"
+          >
+            <Stack>
+              {form?.updatingResponseAllowed && (
+                <PrimaryButton
+                  variant="transparent"
+                  onClick={() => {
+                    setUpdateResponse(true);
+                    setSubmitted(false);
+                  }}
+                >
+                  Update response
+                </PrimaryButton>
+              )}
+              {form?.multipleResponsesAllowed && (
+                <PrimaryButton
+                  variant="transparent"
+                  onClick={() => {
+                    setSubmitAnotherResponse(true);
+                  }}
+                >
+                  Submit another response
+                </PrimaryButton>
+              )}
+              <Link href="/">
+                <PrimaryButton onClick={() => {}}>
+                  Create your own form
+                </PrimaryButton>
+              </Link>
+            </Stack>
+          </Box>
+        </Box>
       </Stack>
     </Box>
   );
