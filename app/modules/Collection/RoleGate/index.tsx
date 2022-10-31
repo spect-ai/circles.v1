@@ -75,6 +75,7 @@ export default function RoleGate() {
         setLoading(false);
       })();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [circle?.guildxyzId, isOpen]);
 
   return (

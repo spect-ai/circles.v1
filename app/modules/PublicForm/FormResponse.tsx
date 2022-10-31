@@ -67,8 +67,8 @@ export default function FormResponse({
             xs: "column",
             md: "row",
           }}
-          justifyContent="flex-start"
           gap="4"
+          alignItems="center"
         >
           {kudos?.imageUrl && (claimed || form.canClaimKudos) && (
             <StyledImage src={`${kudos.imageUrl}`} alt="kudos" />
@@ -79,7 +79,7 @@ export default function FormResponse({
               <Box>
                 <Stack direction="vertical">
                   <TwitterShareButton
-                    url={`https://spect.network/`}
+                    url={`https://circles.spect.network/`}
                     title={
                       "I just filled out a web3 enabled form and claimed my Kudos on @JoinSpect via @mintkudosXYZ 🎉"
                     }
@@ -155,7 +155,7 @@ export default function FormResponse({
                     The creator of this form is distributing kudos to everyone
                     that submitted a response 🎉
                   </Text>
-                  <Box width="72">
+                  <Box width="full">
                     <PrimaryButton
                       loading={claiming}
                       onClick={async () => {

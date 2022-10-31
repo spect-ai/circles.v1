@@ -156,10 +156,16 @@ export default function SendKudos() {
         <Text variant="label">And send the following kudos</Text>
       )}
       {!loading && kudos.imageUrl && (
-        <Box display="flex" flexDirection="row" width="full">
-          {" "}
-          <Box width="1/2">
-            {" "}
+        <Box
+          display="flex"
+          flexDirection={{
+            xs: "column",
+            md: "row",
+          }}
+          width="full"
+          id="imagecontainer"
+        >
+          <Box width="1/2" marginBottom="4" id="imagebox">
             <Image
               src={`${kudos.imageUrl}`}
               width="100%"
@@ -169,7 +175,12 @@ export default function SendKudos() {
               layout="responsive"
             />
           </Box>
-          <Box marginLeft="4">
+          <Box
+            marginLeft={{
+              xs: "0",
+              md: "4",
+            }}
+          >
             <Stack direction="vertical" space="4">
               <PrimaryButton onClick={() => setIsOpen(true)}>
                 Update kudos
@@ -230,28 +241,36 @@ export default function SendKudos() {
             >
               <Box
                 display="flex"
-                flexDirection="row"
-                paddingTop="4"
-                paddingLeft="8"
-                paddingRight="8"
-                paddingBottom="4"
+                flexDirection={{
+                  xs: "column",
+                  md: "row",
+                }}
+                padding={{
+                  xs: "4",
+                  md: "8",
+                }}
                 justifyContent="center"
                 alignItems="flex-start"
                 width="full"
               >
                 <Box
-                  width="1/2"
+                  width={{
+                    xs: "full",
+                    md: "1/2",
+                  }}
                   display="flex"
                   flexDirection="column"
                   justifyContent="center"
                 >
                   <Box
-                    marginBottom="4"
-                    marginTop="4"
+                    marginY="4"
                     display="flex"
                     flexDirection="column"
                     justifyContent="center"
-                    marginRight="8"
+                    marginRight={{
+                      xs: "0",
+                      md: "8",
+                    }}
                   >
                     <Image
                       src={assetUrl}
@@ -265,11 +284,10 @@ export default function SendKudos() {
                         display="flex"
                         flexDirection="row"
                         alignItems="center"
-                        marginBottom="4"
-                        marginTop="4"
+                        marginY="4"
                       >
                         {communityKudosDesigns.map((k: CommunityKudosType) => (
-                          <Box margin="0.5" key={k.nftTypeId}>
+                          <Box key={k.nftTypeId}>
                             <Image
                               src={k.previewAssetUrl}
                               width="100%"
@@ -287,7 +305,12 @@ export default function SendKudos() {
                     )}
                   </Box>
                 </Box>
-                <Box width="1/2">
+                <Box
+                  width={{
+                    xs: "full",
+                    md: "1/2",
+                  }}
+                >
                   <Box paddingBottom="4" width="full">
                     <Stack>
                       <Stack direction="horizontal" space="4">

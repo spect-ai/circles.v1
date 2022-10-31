@@ -58,7 +58,10 @@ function InactiveFieldsColumnComponent({ fields }: Props) {
   return (
     <Container>
       <Stack space="4">
-        <Heading>Inactive Fields</Heading>
+        <Text size="headingTwo" weight="semiBold" ellipsis>
+          Inactive Fields
+        </Text>
+
         <Droppable droppableId="inactiveFields" type="field">
           {FieldDraggableCallback}
         </Droppable>
