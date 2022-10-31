@@ -1,24 +1,18 @@
-import Dropdown, {
-  OptionType as SingleSelectOptionType,
-} from "@/app/common/components/Dropdown";
-import ClickableTag from "@/app/common/components/EditTag/ClickableTag";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import Dropdown from "@/app/common/components/Dropdown";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import RewardField from "@/app/modules/PublicForm/RewardField";
 import { MemberDetails } from "@/app/types";
 import {
   Box,
-  Button,
-  IconEth,
   IconPencil,
   IconPlusSmall,
   Input,
   Stack,
   Tag,
   Text,
-  Textarea,
   useTheme,
 } from "degen";
-import { ethers } from "ethers";
 import { useRouter } from "next/router";
 import React, { memo, useCallback, useState } from "react";
 import {
@@ -91,37 +85,21 @@ function FieldComponent({
             </Tag>
           )}
         </Box>
-        {hover ? (
-          <Box
-            cursor="pointer"
-            backgroundColor="accentSecondary"
-            borderRadius="large"
-            paddingY="1"
-            paddingX="2"
-            onClick={() => {
-              setPropertyName(collection.properties[id]?.name);
-              setIsEditFieldOpen(true);
-            }}
-          >
-            <Stack direction="horizontal" space="1" align="center">
-              <IconPencil color="accent" size="4" />
-              <Text color="accent">Edit</Text>
-            </Stack>
-          </Box>
-        ) : (
-          <Box
-            paddingY="1"
-            paddingX="2"
-            onClick={() => {
-              setPropertyName(collection.properties[id]?.name);
-              setIsEditFieldOpen(true);
-            }}
-          >
-            <Stack direction="horizontal" space="1" align="center">
-              <Text color="transparent">Edit</Text>
-            </Stack>
-          </Box>
-        )}
+        <Box
+          cursor="pointer"
+          backgroundColor="accentSecondary"
+          borderRadius="full"
+          paddingY="1"
+          paddingX="2"
+          onClick={() => {
+            setPropertyName(collection.properties[id]?.name);
+            setIsEditFieldOpen(true);
+          }}
+        >
+          <Stack direction="horizontal" space="1" align="center">
+            <IconPencil color="accent" size="4" />
+          </Stack>
+        </Box>
       </Stack>
       {collection.properties[id]?.type === "shortText" && (
         <Input
@@ -176,7 +154,7 @@ function FieldComponent({
             mode={mode}
             placeholder={`Enter ${collection.properties[id]?.name}`}
             value={collection.data && collection.data[id]}
-            onChange={(e) => {}}
+            onChange={() => {}}
           />
         </Box>
       )}

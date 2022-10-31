@@ -88,7 +88,7 @@ export default function HeaderComponent({
           </Stack>
         </PopoverOption>
 
-        <PopoverOption
+        {/* <PopoverOption
           onClick={() => {
             sortData(columnName, true);
             setIsOpen(false);
@@ -123,7 +123,7 @@ export default function HeaderComponent({
               Sort Descending
             </Text>
           </Stack>
-        </PopoverOption>
+        </PopoverOption> */}
       </ScrollContainer>
     </Popover>
   );

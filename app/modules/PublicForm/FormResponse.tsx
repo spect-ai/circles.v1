@@ -18,6 +18,8 @@ type Props = {
   setSubmitAnotherResponse: (val: boolean) => void;
   setSubmitted: (val: boolean) => void;
   setUpdateResponse: (val: boolean) => void;
+  claimed: boolean;
+  setClaimed: (val: boolean) => void;
 };
 
 const StyledImage = styled.img`
@@ -33,10 +35,12 @@ export default function FormResponse({
   setSubmitAnotherResponse,
   setSubmitted,
   setUpdateResponse,
+  claimed,
+  setClaimed,
 }: Props) {
   const { width, height } = useWindowSize();
   const [claiming, setClaiming] = useState(false);
-  const [claimed, setClaimed] = useState(form.kudosClaimedByUser);
+
   const [claimedJustNow, setClaimedJustNow] = useState(false);
 
   const router = useRouter();

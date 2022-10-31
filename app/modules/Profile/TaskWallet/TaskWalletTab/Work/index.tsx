@@ -77,30 +77,30 @@ export const Toggle: FunctionComponent<Props> = ({ toggle, setToggle }) => {
     <Box
       backgroundColor={mode === "dark" ? "background" : "white"}
       style={{
-        display: "block",
         padding: "0.2rem",
         borderRadius: "2rem",
-        margin: "0rem auto",
         boxShadow: "0px 1px 3px rgba(0, 0, 0, 0.2)",
+        width: "fit-content",
+        margin: "0 auto",
       }}
     >
       <ToggleButton
         onClick={() => setToggle("Assignee")}
         bgcolor={toggle == "Assignee" ? true : false}
       >
-        As Assignee
+        assignee
       </ToggleButton>
       <ToggleButton
         onClick={() => setToggle("Reviewer")}
         bgcolor={toggle == "Reviewer" ? true : false}
       >
-        As Reviewer
+        reviewer
       </ToggleButton>
       <ToggleButton
         onClick={() => setToggle("Applicant")}
         bgcolor={toggle == "Applicant" ? true : false}
       >
-        As Applicant
+        applicant
       </ToggleButton>
     </Box>
   );

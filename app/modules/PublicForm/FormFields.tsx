@@ -39,6 +39,7 @@ export default function FormFields({ form, setForm }: Props) {
   const [kudos, setKudos] = useState({} as KudosType);
   const { connectedUser, connectUser } = useGlobal();
   const [loading, setLoading] = useState(false);
+  const [claimed, setClaimed] = useState(form.kudosClaimedByUser);
   const [submitting, setSubmitting] = useState(false);
   const { data: currentUser, refetch } = useQuery<UserType>(
     "getMyUser",
@@ -236,6 +237,8 @@ export default function FormFields({ form, setForm }: Props) {
         setUpdateResponse={setUpdateResponse}
         setSubmitted={setSubmitted}
         kudos={kudos}
+        claimed={claimed}
+        setClaimed={setClaimed}
       />
     );
   }
