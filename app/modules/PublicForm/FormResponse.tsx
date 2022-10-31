@@ -11,6 +11,7 @@ import { toast } from "react-toastify";
 import { useWindowSize } from "react-use";
 import styled from "styled-components";
 import mixpanel from "@/app/common/utils/mixpanel";
+import Link from "next/link";
 
 type Props = {
   form: FormType;
@@ -234,18 +235,20 @@ export default function FormResponse({
                   Submit another response
                 </PrimaryButton>
               )}
-              <PrimaryButton
-                onClick={() => {
-                  process.env.NODE_ENV === "production" &&
-                    mixpanel.track("Create your own form", {
-                      formId: form.slug,
-                      sybilEnabled: form.sybilProtectionEnabled,
-                    });
-                  void router.push("/");
-                }}
-              >
-                Create your own form
-              </PrimaryButton>
+              <Link href="/">
+                <PrimaryButton
+                  onClick={() => {
+                    process.env.NODE_ENV === "production" &&
+                      mixpanel.track("Create your own form", {
+                        formId: form.slug,
+                        sybilEnabled: form.sybilProtectionEnabled,
+                      });
+                    // void router.push("/");
+                  }}
+                >
+                  Create your own form
+                </PrimaryButton>
+              </Link>
             </Stack>
           </Box>
         </Box>
