@@ -23,7 +23,6 @@ import YourProjects from "./ProjectsTab";
 import YourCards from "./CardsTab";
 import { AnimatePresence } from "framer-motion";
 import Loader from "@/app/common/components/Loader";
-import ProfilePrompt from "./Prompt";
 import useJoinCircle from "@/app/services/JoinCircle/useJoinCircle";
 import ProfileModal from "../Profile/ProfilePage/ProfileModal";
 
@@ -221,7 +220,6 @@ function Dashboard() {
             />
           )}
         </Box>
-        <ProfilePrompt currentUser={currentUser} setIsOpen={setIsOpen} />
       </Box>
       <AnimatePresence>
         {isOpen && <ProfileModal setIsOpen={setIsOpen} />}
