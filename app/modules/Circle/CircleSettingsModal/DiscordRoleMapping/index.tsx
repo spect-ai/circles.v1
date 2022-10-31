@@ -95,6 +95,7 @@ export default function DiscordRoleMapping() {
   return (
     <>
       <PrimaryButton
+        variant="tertiary"
         onClick={() => {
           if (!circle.discordGuildId)
             toast.error(

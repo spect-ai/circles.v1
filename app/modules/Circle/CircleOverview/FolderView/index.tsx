@@ -42,7 +42,7 @@ const ScrollContainer = styled(Box)`
   -ms-overflow-style: none;
   scrollbar-width: none;
   @media (max-width: 768px) {
-    height: calc(100vh - 16rem);
+    height: calc(100vh - 14rem);
   }
   height: calc(100vh - 12rem);
 `;
@@ -71,7 +71,6 @@ export const FolderView = ({
     };
     const res = await createFolder(payload, circle?.id);
     if (res) {
-      console.log(`New Section with name - ${payload.name} created `);
       setCircleData(res);
       setLocalCircle(res);
     }
@@ -142,7 +141,7 @@ export const FolderView = ({
         display={"flex"}
         flexDirection={"row"}
         alignItems="center"
-        gap="3"
+        gap="2"
         paddingBottom={"4"}
       >
         <Text size="headingTwo" weight="semiBold" ellipsis>

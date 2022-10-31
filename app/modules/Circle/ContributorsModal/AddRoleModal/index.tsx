@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
@@ -45,7 +46,7 @@ export default function AddRole({ role }: props) {
         <PrimaryButton
           icon={<IconPlusSmall />}
           onClick={() => setIsOpen(true)}
-          variant="tertiary"
+          variant="transparent"
         >
           Add Role
         </PrimaryButton>
@@ -82,7 +83,12 @@ export default function AddRole({ role }: props) {
             }
             handleClose={() => setIsOpen(false)}
           >
-            <Box padding="8" overflow="auto" style={{ height: "40rem" }}>
+            <Box
+              padding={{
+                xs: "4",
+                md: "8",
+              }}
+            >
               <Stack space="2">
                 {(!role || (role && circle.roles[role]?.mutable)) && (
                   <>
@@ -112,8 +118,13 @@ export default function AddRole({ role }: props) {
                 {permissions &&
                   Object.keys(permissions)?.map((key) => (
                     <Box key={key} paddingY="2">
-                      <Stack direction="horizontal">
-                        <Box width="1/2">
+                      <Stack direction="horizontal" wrap>
+                        <Box
+                          width={{
+                            xs: "full",
+                            md: "1/2",
+                          }}
+                        >
                           <Text variant="label">{key}</Text>
                         </Box>
                         {typeof (permissions as any)[key] === "boolean" ? (

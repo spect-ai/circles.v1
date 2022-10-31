@@ -11,21 +11,17 @@ import AddRole from "../ContributorsModal/AddRoleModal";
 import GuildRoleMapping from "../CircleSettingsModal/GuildIntegration/GuildRoleMapping";
 import DiscordRoleMapping from "../CircleSettingsModal/DiscordRoleMapping";
 import RoleCard from "./RolesCard";
-import { Container as GridContainer, Row, Col } from "react-grid-system";
+import { Row, Col, Hidden, Visible } from "react-grid-system";
 import { useRouter } from "next/router";
 import styled from "styled-components";
 
-const ScrollContainer = styled(GridContainer)`
+const ScrollContainer = styled(Box)`
   overflow-y: auto;
   ::-webkit-scrollbar {
     display: none;
   }
   -ms-overflow-style: none;
   scrollbar-width: none;
-
-  @media (max-width: 768px) {
-    height: calc(100vh - 25rem);
-  }
   height: calc(100vh - 13rem);
 `;
 
@@ -44,10 +40,13 @@ function Roles() {
     return <Loader text="...." loading />;
   }
 
-  console.log({ circleRoles });
-
   return (
-    <Stack>
+    <Stack
+      space={{
+        xs: "0",
+        md: "4",
+      }}
+    >
       <Stack
         direction={{
           xs: "vertical",
@@ -84,57 +83,95 @@ function Roles() {
           </Box>
         )}
       </Stack>
-      {canDo("manageRoles") && (
-        <Stack
-          direction={{
-            xs: "vertical",
-            md: "horizontal",
-          }}
-        >
-          <Box
-            width={{
-              xs: "full",
-              md: "1/3",
+      <Hidden xs sm>
+        {canDo("manageRoles") && (
+          <Stack
+            direction={{
+              xs: "vertical",
+              md: "horizontal",
             }}
           >
-            <AddRole />
-          </Box>
-          <Box
-            width={{
-              xs: "full",
-              md: "1/3",
-            }}
-          >
-            <GuildRoleMapping />
-          </Box>
-          <Box
-            width={{
-              xs: "full",
-              md: "1/3",
-            }}
-          >
-            <DiscordRoleMapping />
-          </Box>
-        </Stack>
-      )}
+            <Box
+              width={{
+                xs: "full",
+                md: "1/3",
+              }}
+            >
+              <AddRole />
+            </Box>
+            <Box
+              width={{
+                xs: "full",
+                md: "1/3",
+              }}
+            >
+              <GuildRoleMapping />
+            </Box>
+            <Box
+              width={{
+                xs: "full",
+                md: "1/3",
+              }}
+            >
+              <DiscordRoleMapping />
+            </Box>
+          </Stack>
+        )}
+      </Hidden>
       <ScrollContainer
         style={{
           marginLeft: isSidebarExpanded ? "0px" : "0rem",
           alignItems: "center",
           paddingTop: "1rem",
         }}
+        id="scroll"
       >
-        <Row gutterWidth={10}>
+        <Row id="row">
           {circle?.roles &&
             Object.keys(circleRoles)?.map((roleKey) => {
               const role = circleRoles?.[roleKey];
               return (
-                <Col key={roleKey} lg={6}>
+                <Col sm={12} md={6} lg={4} key={roleKey} id="col">
                   <RoleCard roleKey={roleKey} role={role} />
                 </Col>
               );
             })}
         </Row>
+        <Visible xs sm>
+          {canDo("manageRoles") && (
+            <Stack
+              direction={{
+                xs: "vertical",
+                md: "horizontal",
+              }}
+            >
+              <Box
+                width={{
+                  xs: "full",
+                  md: "1/3",
+                }}
+              >
+                <AddRole />
+              </Box>
+              <Box
+                width={{
+                  xs: "full",
+                  md: "1/3",
+                }}
+              >
+                <GuildRoleMapping />
+              </Box>
+              <Box
+                width={{
+                  xs: "full",
+                  md: "1/3",
+                }}
+              >
+                <DiscordRoleMapping />
+              </Box>
+            </Stack>
+          )}
+        </Visible>
       </ScrollContainer>
     </Stack>
   );

@@ -25,6 +25,7 @@ import { FolderView } from "./FolderView";
 import Breadcrumbs from "@/app/common/components/Breadcrumbs";
 import Roles from "../RolesTab";
 import { FolderOpenOutlined } from "@ant-design/icons";
+import { Hidden } from "react-grid-system";
 
 interface Props {
   toggle: string;
@@ -45,6 +46,10 @@ const ToggleButton = styled.button<{ bgcolor: boolean }>`
     props.bgcolor ? "rgb(191,90,242)" : "rgb(191,90,242,0.8)"};
   background-color: ${(props) =>
     props.bgcolor ? "rgb(191,90,242,0.1)" : "transparent"};
+
+  @media (max-width: 768px) {
+    font-size: 0.8rem;
+  }
 `;
 
 const Toggle: FunctionComponent<Props> = ({ toggle, setToggle }) => {
@@ -57,7 +62,7 @@ const Toggle: FunctionComponent<Props> = ({ toggle, setToggle }) => {
         display: "block",
         padding: "0.2rem",
         borderRadius: "2rem",
-        width: "20rem",
+        width: "fit-content",
         margin: "0rem auto",
         marginBottom: "0.5rem",
         boxShadow: `0px 1px 5px ${
@@ -139,9 +144,11 @@ export default function CircleOverview() {
         )}
       </AnimatePresence>
       <Box marginTop="1">
-        {navigationBreadcrumbs && (
-          <Breadcrumbs crumbs={navigationBreadcrumbs} />
-        )}
+        <Hidden xs sm>
+          {navigationBreadcrumbs && (
+            <Breadcrumbs crumbs={navigationBreadcrumbs} />
+          )}
+        </Hidden>
       </Box>
       <Stack direction="horizontal">
         <Box
@@ -153,7 +160,7 @@ export default function CircleOverview() {
         >
           <Toggle toggle={toggle} setToggle={setToggle} />
           {toggle == "Overview" && (
-            <Stack space="2">
+            <Stack space="1">
               <Stack
                 direction={{
                   xs: "vertical",

@@ -27,13 +27,13 @@ function CircleMembers() {
 
   const [filteredMembers, setFilteredMembers] = useState<
     { name: string; id: string }[]
-  >([] as any);
+  >([]);
   const [circleMembers, setCircleMembers] = useState<
     {
       name: string;
       id: string;
     }[]
-  >([] as any);
+  >([]);
 
   const [loading, setLoading] = useState(false);
   const { mode } = useTheme();
@@ -126,7 +126,6 @@ function CircleMembers() {
               xs: "full",
               md: "1/3",
             }}
-            marginTop="2"
           >
             <InviteMemberModal />
           </Box>

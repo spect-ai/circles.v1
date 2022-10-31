@@ -34,7 +34,7 @@ interface Props {
   };
 }
 
-function RoleCard({ roleKey ,role }: Props) {
+function RoleCard({ roleKey, role }: Props) {
   const { localCircle: circle, setCircleData } = useCircle();
   const { mode } = useTheme();
   const { canDo } = useRoleGate();

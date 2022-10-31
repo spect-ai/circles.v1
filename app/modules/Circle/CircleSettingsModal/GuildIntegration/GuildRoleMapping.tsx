@@ -98,6 +98,7 @@ export default function GuildRoleMapping() {
   return (
     <>
       <PrimaryButton
+        variant="tertiary"
         onClick={() => {
           if (!circle.guildxyzId)
             toast.error(
