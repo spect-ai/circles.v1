@@ -68,7 +68,7 @@ export const ScrollContainer = styled(Box)`
 `;
 
 const ProfileTabs = ({ username }: Props) => {
-  const [tab, setProfileTab] = useState("Activity");
+  const [tab, setProfileTab] = useState("Credentials");
   const [userData, setUserData] = useState({} as UserType);
 
   const fetchUser = async () => {
@@ -101,7 +101,7 @@ const ProfileTabs = ({ username }: Props) => {
         paddingTop="10"
         justifyContent="space-between"
       >
-        <PrimaryButton
+        {/* <PrimaryButton
           variant={tab === "Activity" ? "tertiary" : "transparent"}
           onClick={() => setProfileTab("Activity")}
         >
@@ -112,18 +112,18 @@ const ProfileTabs = ({ username }: Props) => {
           onClick={() => setProfileTab("Retro")}
         >
           Retro
-        </PrimaryButton>
+        </PrimaryButton> */}
         <PrimaryButton
-          variant={tab === "Kudos" ? "tertiary" : "transparent"}
-          onClick={() => setProfileTab("Kudos")}
+          variant={tab === "Credentials" ? "tertiary" : "transparent"}
+          onClick={() => setProfileTab("Credentials")}
         >
-          Kudos
+          Credentials
         </PrimaryButton>
       </Box>
       <Box width="168">
-        {tab === "Activity" && <Activity userData={userData} />}
-        {tab === "Retro" && <Retro userData={userData} />}
-        {tab === "Kudos" && <Kudos userData={userData} />}
+        {/* {tab === "Activity" && <Activity userData={userData} />}
+        {tab === "Retro" && <Retro userData={userData} />} */}
+        {tab === "Credentials" && <Kudos userData={userData} />}
       </Box>
     </Box>
   );
