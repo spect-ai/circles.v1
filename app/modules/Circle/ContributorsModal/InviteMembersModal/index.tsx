@@ -10,6 +10,8 @@ import React, { useState } from "react";
 import { useQuery } from "react-query";
 import { toast } from "react-toastify";
 import { expiryOptions, usesOptions } from "./constants";
+import { useGlobal } from "@/app/context/globalContext";
+import mixpanel from "@/app/common/utils/mixpanel";
 
 function InviteMemberModal() {
   const router = useRouter();
@@ -20,19 +22,21 @@ function InviteMemberModal() {
 
   const [isOpen, setIsOpen] = useState(false);
   const handleClose = () => setIsOpen(false);
-  const [role, setRole] = useState<any>({
+  const [role, setRole] = useState({
     name: "member",
     role: "member",
   });
-  const [uses, setUses] = useState<any>({
+  const [uses, setUses] = useState({
     name: "No Limit",
     uses: 1000,
   });
-  const [expiry, setExpiry] = useState<any>({
+  const [expiry, setExpiry] = useState({
     name: "7 Days",
     expiry: 604800,
   });
   const [isLoading, setIsLoading] = useState(false);
+
+  const { connectedUser } = useGlobal();
 
   const roleOptions =
     circle &&
@@ -47,6 +51,12 @@ function InviteMemberModal() {
           tourId="invite-member-button"
           onClick={() => {
             setIsOpen(true);
+            console.log(process.env.NODE_ENV);
+            process.env.NODE_ENV === "production" &&
+              mixpanel.track("Invite Open", {
+                circle: cId,
+                user: connectedUser,
+              });
           }}
           icon={<SendOutlined />}
         >

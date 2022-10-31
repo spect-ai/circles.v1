@@ -45,7 +45,7 @@ const isProd = process.env.NODE_ENV === "production";
 
 const { chains, provider } = configureChains(
   [chain.mainnet, chain.polygon, chain.optimism, chain.arbitrum],
-  [alchemyProvider({ apiKey: process.env.ALCHEMY_ID }), publicProvider()]
+  [alchemyProvider({ apiKey: process.env.ALCHEMY_KEY }), publicProvider()]
 );
 
 const { connectors } = getDefaultWallets({

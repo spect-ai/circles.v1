@@ -1,4 +1,4 @@
-import { Box } from "degen";
+import { Box, Heading } from "degen";
 import React from "react";
 import Backdrop from "../Modal/backdrop";
 
@@ -69,7 +69,7 @@ function Loader({ loading, text }: Props) {
             </g>
           </svg>
         </div>
-        {/* <Heading>{text}</Heading> */}
+        <Heading>{text}</Heading>
       </Box>
     </Backdrop>
   );

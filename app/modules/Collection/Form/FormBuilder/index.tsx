@@ -35,6 +35,8 @@ function FormBuilder({ fields }: Props) {
   const { connectedUser } = useGlobal();
   const { mode } = useTheme();
 
+  console.log({ collection });
+
   const FieldDraggable = (provided: DroppableProvided) => (
     <Box {...provided.droppableProps} ref={provided.innerRef}>
       {fields?.map((field, idx) => {

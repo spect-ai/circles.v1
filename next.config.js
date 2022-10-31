@@ -16,6 +16,7 @@ const nextConfig = {
     BOT_HOST: process.env.BOT_HOST,
     MINTKUDOS_HOST: process.env.MINTKUDOS_HOST,
     BICONOMY_API_KEY: process.env.BICONOMY_API_KEY,
+    MIXPANEL_TOKEN: process.env.MIXPANEL_TOKEN,
   },
   webpack(config) {
     config.module.rules.push({

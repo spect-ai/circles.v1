@@ -55,7 +55,7 @@ export function useProviderLocalCollection() {
     order: "des",
     show: {
       subTasks: false,
-    }
+    },
   });
   const [view, setView] = useState(0);
 

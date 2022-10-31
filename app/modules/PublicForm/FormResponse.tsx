@@ -3,13 +3,14 @@ import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { FormType, KudosType } from "@/app/types";
 import { TwitterOutlined } from "@ant-design/icons";
 import { Box, Heading, Stack, Text } from "degen";
-import Link from "next/link";
+import { useRouter } from "next/router";
 import React, { useState } from "react";
 import Confetti from "react-confetti";
 import { TwitterShareButton } from "react-share";
 import { toast } from "react-toastify";
 import { useWindowSize } from "react-use";
 import styled from "styled-components";
+import mixpanel from "@/app/common/utils/mixpanel";
 
 type Props = {
   form: FormType;
@@ -37,6 +38,8 @@ export default function FormResponse({
   const [claiming, setClaiming] = useState(false);
   const [claimed, setClaimed] = useState(form.kudosClaimedByUser);
   const [claimedJustNow, setClaimedJustNow] = useState(false);
+
+  const router = useRouter();
 
   return (
     <Box
@@ -227,11 +230,18 @@ export default function FormResponse({
                   Submit another response
                 </PrimaryButton>
               )}
-              <Link href="/">
-                <PrimaryButton onClick={() => {}}>
-                  Create your own form
-                </PrimaryButton>
-              </Link>
+              <PrimaryButton
+                onClick={() => {
+                  process.env.NODE_ENV === "production" &&
+                    mixpanel.track("Create your own form", {
+                      formId: form.slug,
+                      sybilEnabled: form.sybilProtectionEnabled,
+                    });
+                  void router.push("/");
+                }}
+              >
+                Create your own form
+              </PrimaryButton>
             </Stack>
           </Box>
         </Box>
