@@ -238,12 +238,13 @@ export default function FormResponse({
               <Link href="/">
                 <PrimaryButton
                   onClick={() => {
+                    alert("hello");
+                    alert(process.env.NODE_ENV);
                     process.env.NODE_ENV === "production" &&
                       mixpanel.track("Create your own form", {
                         formId: form.slug,
                         sybilEnabled: form.sybilProtectionEnabled,
                       });
-                    // void router.push("/");
                   }}
                 >
                   Create your own form
