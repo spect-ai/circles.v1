@@ -1,20 +1,17 @@
 import Breadcrumbs from "@/app/common/components/Breadcrumbs";
 import Popover from "@/app/common/components/Popover";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { DownloadOutlined, TwitterOutlined } from "@ant-design/icons";
 import { Box, Button, IconDotsHorizontal, Stack, Text, useTheme } from "degen";
 import { AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
 import { memo, useEffect, useState } from "react";
 import { Hidden, Visible } from "react-grid-system";
 import Skeleton from "react-loading-skeleton";
-import { TwitterShareButton } from "react-share";
 import { toast } from "react-toastify";
 import { useLocation } from "react-use";
 import styled from "styled-components";
 import { PopoverOption } from "../../Card/OptionPopover";
 import { useCircle } from "../../Circle/CircleContext";
-import { ScrollContainer } from "../../Sidebar";
 import AddField from "../AddField";
 import { useLocalCollection } from "../Context/LocalCollectionContext";
 
@@ -87,7 +84,7 @@ function CollectionHeading() {
                   {collection?.name}
                 </Text>
               </Button>
-              <Hidden xs md>
+              <Hidden xs sm>
                 <PrimaryButton
                   // icon={<IconPencil />}
                   variant={view === 0 ? "tertiary" : "transparent"}
@@ -109,7 +106,7 @@ function CollectionHeading() {
                   Add Field
                 </PrimaryButton>{" "}
               </Hidden>
-              <Visible xs md>
+              <Visible xs sm>
                 <Popover
                   butttonComponent={
                     <Box

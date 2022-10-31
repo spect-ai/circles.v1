@@ -58,7 +58,7 @@ export default function FormResponse({
         />
       )}
       <Stack align="center">
-        <Heading>{`${
+        <Heading align="center">{`${
           form?.messageOnSubmission || "Your response has been submitted!"
         }`}</Heading>
         <Box

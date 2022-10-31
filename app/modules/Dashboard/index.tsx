@@ -10,6 +10,7 @@ import {
   IconMoon,
   IconSun,
   useTheme,
+  IconDotsHorizontal,
 } from "degen";
 import { useGlobal } from "@/app/context/globalContext";
 import { UserType, BucketizedCircleType, CircleType } from "@/app/types";
@@ -26,12 +27,18 @@ import Loader from "@/app/common/components/Loader";
 import ProfilePrompt from "./Prompt";
 import useJoinCircle from "@/app/services/JoinCircle/useJoinCircle";
 import ProfileModal from "../Profile/ProfilePage/ProfileModal";
+import { Hidden, Visible } from "react-grid-system";
+import { smartTrim } from "@/app/common/utils/utils";
+import Popover from "@/app/common/components/Popover";
+import { PopoverOption } from "../Card/OptionPopover";
+import { useRouter } from "next/router";
 
 function Dashboard() {
   const { setIsProfilePanelExpanded, connectedUser } = useGlobal();
   useJoinCircle();
   const [circles, setCircles] = useState([] as CircleType[]);
   const [isOpen, setIsOpen] = useState(false);
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
@@ -45,6 +52,7 @@ function Dashboard() {
   const [panelTab, setPanelTab] = useState("Circle");
   // eslint-disable-next-line @typescript-eslint/unbound-method
   const { mode, setMode } = useTheme();
+  const router = useRouter();
 
   useEffect(() => {
     setTimeout(() => {
@@ -75,111 +83,180 @@ function Dashboard() {
   if (isLoading || !currentUser?.id)
     return <Loader loading={isLoading} text="Fetching circles" />;
 
+  const SetModeButton = () => {
+    if (mode === "dark") {
+      return (
+        <Button
+          shape="circle"
+          variant="secondary"
+          size="small"
+          onClick={() => {
+            localStorage.setItem("lightMode", "true");
+            document.documentElement.style.setProperty(
+              "--dsg-cell-background-color",
+              "rgb(255, 255, 255)"
+            );
+            document.documentElement.style.setProperty(
+              "--dsg-border-color",
+              "rgb(20,20,20,0.1)"
+            );
+            document.documentElement.style.setProperty(
+              "--dsg-cell-text-color",
+              "rgb(20,20,20,0.9)"
+            );
+            setMode("light");
+          }}
+        >
+          <IconSun size="5" />
+        </Button>
+      );
+    }
+    return (
+      <Button
+        shape="circle"
+        variant="secondary"
+        size="small"
+        onClick={() => {
+          localStorage.removeItem("lightMode");
+          document.documentElement.style.setProperty(
+            "--dsg-cell-background-color",
+            "rgb(20,20,20)"
+          );
+          document.documentElement.style.setProperty(
+            "--dsg-border-color",
+            "rgb(255,255,255,0.1)"
+          );
+          document.documentElement.style.setProperty(
+            "--dsg-cell-text-color",
+            "rgb(255,255,255,0.9)"
+          );
+          setMode("dark");
+        }}
+      >
+        <IconMoon size="5" />
+      </Button>
+    );
+  };
+
   return (
     <>
-      <Box padding="4" position={"relative"}>
+      <Box padding="4">
         <Stack
           direction={{
             xs: "vertical",
             md: "horizontal",
           }}
+          justify="space-between"
         >
-          <Avatar
-            label="profile-pic"
-            src={currentUser?.avatar}
-            size={{
-              xs: "14",
-              md: "20",
-            }}
-            address={currentUser?.ethAddress}
-          />
-          <Box style={{ gap: "1.5rem" }}>
-            <Heading>{currentUser?.username}</Heading>
-            <Tag tone="purple" size="small">
-              {currentUser?.ethAddress}
-            </Tag>
-          </Box>
-          <Box
-            style={{ position: "absolute", right: "1rem" }}
-            display="flex"
-            flexDirection="row"
-            gap="1.5"
-          >
-            {mode === "dark" ? (
+          <Stack direction="horizontal" align="center">
+            <Avatar
+              label="profile-pic"
+              src={currentUser?.avatar}
+              size={{
+                xs: "14",
+                md: "20",
+              }}
+              address={currentUser?.ethAddress}
+            />
+            <Box style={{ gap: "1.5rem" }}>
+              <Heading>{currentUser?.username}</Heading>
+              <Tag tone="purple" size="small">
+                {smartTrim(currentUser?.ethAddress, 12)}
+              </Tag>
+            </Box>
+            <Visible xs sm>
+              <Popover
+                butttonComponent={
+                  <Box
+                    cursor="pointer"
+                    onClick={() => {
+                      setIsPopoverOpen(!isPopoverOpen);
+                    }}
+                    color="foreground"
+                  >
+                    <IconDotsHorizontal color="textSecondary" />
+                  </Box>
+                }
+                isOpen={isPopoverOpen}
+                setIsOpen={setIsPopoverOpen}
+              >
+                <Box
+                  backgroundColor="background"
+                  borderWidth="0.5"
+                  borderRadius="2xLarge"
+                >
+                  <PopoverOption
+                    onClick={() => {
+                      setIsPopoverOpen(false);
+                    }}
+                  >
+                    <SetModeButton />
+                  </PopoverOption>
+                  <PopoverOption
+                    onClick={() => {
+                      setIsPopoverOpen(false);
+                      setIsOpen(true);
+                    }}
+                  >
+                    Settings
+                  </PopoverOption>
+                  <PopoverOption
+                    onClick={() => {
+                      setIsPopoverOpen(false);
+                      void router.push(`/profile/${currentUser?.username}`);
+                    }}
+                  >
+                    View Profile
+                  </PopoverOption>
+                  <PopoverOption
+                    onClick={() => {
+                      setIsPopoverOpen(false);
+                    }}
+                  >
+                    <Logout />
+                  </PopoverOption>
+                </Box>
+              </Popover>
+            </Visible>
+          </Stack>
+          <Hidden xs sm>
+            <Stack direction="horizontal">
+              <SetModeButton />
               <Button
+                data-tour="profile-settings-button"
                 shape="circle"
-                variant="secondary"
                 size="small"
-                onClick={() => {
-                  localStorage.setItem("lightMode", "true");
-                  document.documentElement.style.setProperty(
-                    "--dsg-cell-background-color",
-                    "rgb(255, 255, 255)"
-                  );
-                  document.documentElement.style.setProperty(
-                    "--dsg-border-color",
-                    "rgb(20,20,20,0.1)"
-                  );
-                  document.documentElement.style.setProperty(
-                    "--dsg-cell-text-color",
-                    "rgb(20,20,20,0.9)"
-                  );
-                  setMode("light");
-                }}
+                variant="transparent"
+                onClick={() => setIsOpen(true)}
               >
-                <IconSun size="5" />
+                <SettingOutlined
+                  style={{
+                    color: "rgb(191, 90, 242, 0.8)",
+                    fontSize: "1.2rem",
+                  }}
+                />
               </Button>
-            ) : (
-              <Button
-                shape="circle"
-                variant="secondary"
-                size="small"
-                onClick={() => {
-                  localStorage.removeItem("lightMode");
-                  document.documentElement.style.setProperty(
-                    "--dsg-cell-background-color",
-                    "rgb(20,20,20)"
-                  );
-                  document.documentElement.style.setProperty(
-                    "--dsg-border-color",
-                    "rgb(255,255,255,0.1)"
-                  );
-                  document.documentElement.style.setProperty(
-                    "--dsg-cell-text-color",
-                    "rgb(255,255,255,0.9)"
-                  );
-                  setMode("dark");
-                }}
-              >
-                <IconMoon size="5" />
-              </Button>
-            )}
-            <Button
-              data-tour="profile-settings-button"
-              shape="circle"
-              size="small"
-              variant="transparent"
-              onClick={() => setIsOpen(true)}
-            >
-              <SettingOutlined
-                style={{ color: "rgb(191, 90, 242, 0.8)", fontSize: "1.2rem" }}
-              />
-            </Button>
-            <Link href={`/profile/${currentUser?.username}`}>
-              <Button
-                size="small"
-                variant="secondary"
-                onClick={() => {
-                  setIsProfilePanelExpanded(false);
-                }}
-              >
-                View Profile
-              </Button>
-            </Link>
-            <Logout />
-          </Box>
+              <Link href={`/profile/${currentUser?.username}`}>
+                <Button
+                  size="small"
+                  variant="secondary"
+                  onClick={() => {
+                    setIsProfilePanelExpanded(false);
+                  }}
+                >
+                  View Profile
+                </Button>
+              </Link>
+              <Logout />
+            </Stack>
+          </Hidden>
         </Stack>
-        <Box margin={"4"}></Box>
+        <Box
+          marginTop={{
+            xs: "2",
+            md: "4",
+          }}
+        />
         <Stack direction="horizontal" wrap>
           <Button
             size="small"
@@ -187,7 +264,7 @@ function Dashboard() {
             variant={panelTab === "Circle" ? "tertiary" : "transparent"}
             onClick={() => setPanelTab("Circle")}
           >
-            Your Circles
+            Circles
           </Button>
           <Button
             size="small"
@@ -195,7 +272,7 @@ function Dashboard() {
             variant={panelTab === "Project" ? "tertiary" : "transparent"}
             onClick={() => setPanelTab("Project")}
           >
-            Your Projects
+            Projects
           </Button>
           <Button
             size="small"
@@ -203,7 +280,7 @@ function Dashboard() {
             variant={panelTab === "Card" ? "tertiary" : "transparent"}
             onClick={() => setPanelTab("Card")}
           >
-            Your Cards
+            Cards
           </Button>
         </Stack>
         <Box>
