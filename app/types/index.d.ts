@@ -848,7 +848,22 @@ export type GitcoinScoreType = {
 export type Stamp = {
   id: string;
   provider: string;
-  providerName: string;
+  providerName:
+    | "Gitcoin"
+    | "Discord"
+    | "Twitter"
+    | "Github"
+    | "Linkedin"
+    | "Lens"
+    | "Google"
+    | "Facebook"
+    | "Poh"
+    | "Brightid"
+    | "POAP"
+    | "ETH"
+    | "NFT"
+    | "GnosisSafe"
+    | "Snapshot";
   providerUrl: string;
   providerImage: string;
   issuer: string;

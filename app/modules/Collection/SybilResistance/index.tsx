@@ -1,6 +1,6 @@
 import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { Avatar, Box, Button, Input, Stack, Text } from "degen";
+import { Avatar, Box, Button, Input, Stack, Text, useTheme } from "degen";
 import { AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useLocalCollection } from "../Context/LocalCollectionContext";
@@ -8,6 +8,8 @@ import Logo from "@/app/common/components/Logo";
 import styled from "styled-components";
 import { getAllCredentials } from "@/app/services/Credentials/AggregatedCredentials";
 import { Stamp } from "@/app/types";
+import { PassportStampIcons, PassportStampIconsLightMode } from "@/app/assets";
+import Image from "next/image";
 
 export default function SybilResistance() {
   const [isOpen, setIsOpen] = useState(false);
@@ -17,6 +19,7 @@ export default function SybilResistance() {
   const [stamps, setStamps] = useState([] as Stamp[]);
   const [allocations, setAllocations] = useState([] as number[]);
   const [minAllocationNotMet, setMinAllocationNotMet] = useState(false);
+  const { mode } = useTheme();
 
   const useDefaults = () => {
     setAllocations(stamps.map((stamp) => stamp.defaultScore * 100));
@@ -149,15 +152,21 @@ export default function SybilResistance() {
                             display="flex"
                             flexDirection="row"
                             justifyContent="flex-start"
+                            alignItems="center"
                           >
-                            <Avatar
-                              label="logo"
-                              src={stamp.providerImage}
-                              size={{
-                                xs: "8",
-                                md: "10",
-                              }}
-                            />
+                            <Box
+                              width="8"
+                              height="8"
+                              flexDirection="row"
+                              justifyContent="flex-start"
+                              alignItems="center"
+                            >
+                              {mode === "dark"
+                                ? PassportStampIcons[stamp.providerName]
+                                : PassportStampIconsLightMode[
+                                    stamp.providerName
+                                  ]}
+                            </Box>
                           </Box>
                           <Box>
                             <Text as="h1">{stamp.stampName}</Text>

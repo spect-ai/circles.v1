@@ -15,6 +15,7 @@ import Loader from "@/app/common/components/Loader";
 import { getAllCredentials } from "@/app/services/Credentials/AggregatedCredentials";
 import Logo from "@/app/common/components/Logo";
 import { useGlobal } from "@/app/context/globalContext";
+import { PassportStampIcons, PassportStampIconsLightMode } from "@/app/assets";
 
 export default function PublicForm() {
   const router = useRouter();
@@ -254,12 +255,19 @@ export default function PublicForm() {
                                 width="full"
                                 paddingRight="4"
                               >
-                                <Box paddingRight="4">
-                                  <Logo
-                                    src={stamp.providerImage}
-                                    href={"/"}
-                                    gradient={""}
-                                  />
+                                <Box
+                                  width="8"
+                                  height="8"
+                                  flexDirection="row"
+                                  justifyContent="flex-start"
+                                  alignItems="center"
+                                  marginRight="4"
+                                >
+                                  {mode === "dark"
+                                    ? PassportStampIcons[stamp.providerName]
+                                    : PassportStampIconsLightMode[
+                                        stamp.providerName
+                                      ]}
                                 </Box>
                                 <Box>
                                   <Text as="h1">{stamp.stampName}</Text>
@@ -274,9 +282,6 @@ export default function PublicForm() {
                         );
                       })}
                     </StampScrollContainer>
-                    <Text variant="label">
-                      You do not have the correct roles to access this form
-                    </Text>{" "}
                     <Box display="flex" flexDirection="row" gap="4">
                       <Button
                         variant="tertiary"

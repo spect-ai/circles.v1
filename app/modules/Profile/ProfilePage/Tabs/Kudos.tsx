@@ -48,7 +48,7 @@ const Kudos = ({ userData }: { userData: UserType }) => {
           setLoading(false);
         });
     }
-  }, []);
+  }, [userData?.ethAddress]);
 
   return (
     <ScrollContainer>
