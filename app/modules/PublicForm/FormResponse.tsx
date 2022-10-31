@@ -10,12 +10,7 @@ import { toast } from "react-toastify";
 import { useWindowSize } from "react-use";
 import styled from "styled-components";
 import Link from "next/link";
-import mixpanel from "mixpanel-browser";
-
-mixpanel.init(process.env.MIXPANEL_TOKEN || "", {
-  debug: true,
-  api_host: "https://tracking.spect.network",
-});
+import mixpanel from "@/app/common/utils/mixpanel";
 
 type Props = {
   form: FormType;

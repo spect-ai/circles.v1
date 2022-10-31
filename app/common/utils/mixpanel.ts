@@ -5,4 +5,4 @@ mixpanel.init(process.env.MIXPANEL_TOKEN || "", {
   api_host: "https://tracking.spect.network",
 });
 
-// export default mixpanel;
+export default mixpanel;
