@@ -11,7 +11,13 @@ import { useQuery } from "react-query";
 import { toast } from "react-toastify";
 import { expiryOptions, usesOptions } from "./constants";
 import { useGlobal } from "@/app/context/globalContext";
-import mixpanel from "@/app/common/utils/mixpanel";
+
+import mixpanel from "mixpanel-browser";
+
+mixpanel.init(process.env.MIXPANEL_TOKEN || "", {
+  debug: true,
+  api_host: "https://tracking.spect.network",
+});
 
 function InviteMemberModal() {
   const router = useRouter();

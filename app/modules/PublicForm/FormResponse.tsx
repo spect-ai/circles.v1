@@ -3,15 +3,19 @@ import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { FormType, KudosType } from "@/app/types";
 import { TwitterOutlined } from "@ant-design/icons";
 import { Box, Heading, Stack, Text } from "degen";
-import { useRouter } from "next/router";
 import React, { useState } from "react";
 import Confetti from "react-confetti";
 import { TwitterShareButton } from "react-share";
 import { toast } from "react-toastify";
 import { useWindowSize } from "react-use";
 import styled from "styled-components";
-import mixpanel from "@/app/common/utils/mixpanel";
 import Link from "next/link";
+import mixpanel from "mixpanel-browser";
+
+mixpanel.init(process.env.MIXPANEL_TOKEN || "", {
+  debug: true,
+  api_host: "https://tracking.spect.network",
+});
 
 type Props = {
   form: FormType;
@@ -41,10 +45,7 @@ export default function FormResponse({
 }: Props) {
   const { width, height } = useWindowSize();
   const [claiming, setClaiming] = useState(false);
-
   const [claimedJustNow, setClaimedJustNow] = useState(false);
-
-  const router = useRouter();
 
   return (
     <Box
@@ -238,8 +239,6 @@ export default function FormResponse({
               <Link href="/">
                 <PrimaryButton
                   onClick={() => {
-                    alert("hello");
-                    alert(process.env.NODE_ENV);
                     process.env.NODE_ENV === "production" &&
                       mixpanel.track("Create your own form", {
                         formId: form.slug,
