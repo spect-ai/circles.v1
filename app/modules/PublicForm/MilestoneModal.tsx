@@ -2,7 +2,7 @@ import Dropdown from "@/app/common/components/Dropdown";
 import Editor from "@/app/common/components/Editor";
 import Modal from "@/app/common/components/Modal";
 import { Milestone, Option, Registry } from "@/app/types";
-import { Box, Button, Input, Tag, Text, useTheme } from "degen";
+import { Box, Button, Input, Stack, Tag, Text, useTheme } from "degen";
 import { useEffect, useState } from "react";
 import { DateInput } from "../Collection/Form/Field";
 
@@ -179,8 +179,19 @@ export default function MilestoneModal({
         </Box>
         <Box>
           <Text variant="label">Reward</Text>
-          <Box display="flex" flexDirection="row" alignItems="center" gap="2">
-            <Box width="72" marginTop="2">
+          <Stack
+            direction={{
+              xs: "vertical",
+              md: "horizontal",
+            }}
+          >
+            <Box
+              width={{
+                xs: "full",
+                md: "72",
+              }}
+              marginTop="2"
+            >
               <Dropdown
                 options={
                   form.properties[propertyName]?.rewardOptions
@@ -202,7 +213,12 @@ export default function MilestoneModal({
                 isClearable={false}
               />
             </Box>
-            <Box width="72" marginTop="2">
+            <Box
+              width={{
+                xs: "full",
+                md: "72",
+              }}
+            >
               <Dropdown
                 options={tokenOptions}
                 selected={selectedToken}
@@ -213,20 +229,32 @@ export default function MilestoneModal({
                 isClearable={false}
               />
             </Box>
-            <Input
-              label=""
-              placeholder={`Enter Reward Amount`}
-              value={value}
-              onChange={(e) => {
-                setValue(e.target.value);
+            <Box
+              width={{
+                xs: "full",
+                md: "72",
               }}
-              units={selectedToken.label}
-            />
-          </Box>
+            >
+              <Input
+                label=""
+                placeholder={`Enter Reward Amount`}
+                value={value}
+                onChange={(e) => {
+                  setValue(e.target.value);
+                }}
+                units={selectedToken.label}
+              />
+            </Box>
+          </Stack>
         </Box>
         <Box>
           <Text variant="label">Due Date</Text>
-          <Box width="56">
+          <Box
+            width={{
+              xs: "full",
+              md: "56",
+            }}
+          >
             <DateInput
               placeholder={`Enter Milestone Due Date`}
               value={date}

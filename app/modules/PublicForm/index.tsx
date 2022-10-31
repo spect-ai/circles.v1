@@ -50,7 +50,6 @@ export default function PublicForm() {
 
   useEffect(() => {
     void (async () => {
-      console.log({ connectedUser, formId });
       if (formId) {
         setLoading(true);
         const res = await getForm(formId as string);
@@ -64,9 +63,9 @@ export default function PublicForm() {
     })();
   }, [connectedUser, formId]);
 
-  if (loading) {
-    return <Loader loading text="Fetching form..." />;
-  }
+  // if (loading) {
+  //   return <Loader loading text="Fetching form..." />;
+  // }
 
   if (form) {
     return (
@@ -329,7 +328,6 @@ const Container = styled(Box)`
   z-index: 999;
   margin-top: -10rem;
   padding: 2rem 14rem;
-  overflow-y: auto;
 `;
 
 export const NameInput = styled.input`
@@ -377,11 +375,9 @@ export const CoverImage = styled(Box)<{ src: string }>`
 const FormContainer = styled(Box)``;
 
 const ScrollContainer = styled(Box)`
-  ::-webkit-scrollbar {
-    display: none;
+  &::-webkit-scrollbar {
+    width: 0.2rem;
   }
-  -ms-overflow-style: none;
-  scrollbar-width: none;
   max-height: calc(100vh);
   overflow-y: auto;
 `;

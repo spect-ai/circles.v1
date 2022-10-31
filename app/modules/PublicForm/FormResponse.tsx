@@ -57,7 +57,7 @@ export default function FormResponse({
           numberOfPieces={600}
         />
       )}
-      <Stack>
+      <Stack align="center">
         <Heading>{`${
           form?.messageOnSubmission || "Your response has been submitted!"
         }`}</Heading>
@@ -203,7 +203,7 @@ export default function FormResponse({
           marginTop="8"
         >
           <Box
-            width="72"
+            width="full"
             display="flex"
             flexDirection="column"
             justifyContent="flex-start"

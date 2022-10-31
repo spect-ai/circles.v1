@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { isEmail } from "@/app/common/utils/utils";
@@ -8,8 +9,7 @@ import {
   updateCollectionData,
 } from "@/app/services/Collection";
 import { FormType, KudosType, Registry, UserType } from "@/app/types";
-import { useConnectModal } from "@rainbow-me/rainbowkit";
-import { Box, Text } from "degen";
+import { Box, Stack, Text } from "degen";
 import { isAddress } from "ethers/lib/utils";
 import React, { useEffect, useState } from "react";
 import { useQuery } from "react-query";
@@ -36,11 +36,10 @@ export default function FormFields({ form, setForm }: Props) {
   const [updateResponse, setUpdateResponse] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [submitAnotherResponse, setSubmitAnotherResponse] = useState(false);
-  const [claimed, setClaimed] = useState(false);
   const [kudos, setKudos] = useState({} as KudosType);
-  const { openConnectModal } = useConnectModal();
   const { connectedUser, connectUser } = useGlobal();
   const [loading, setLoading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const { data: currentUser, refetch } = useQuery<UserType>(
     "getMyUser",
     getUser,
@@ -91,7 +90,7 @@ export default function FormFields({ form, setForm }: Props) {
 
   useEffect(() => {
     void fetchRegistry();
-    setClaimed(form.kudosClaimedByUser);
+    // setClaimed(form.kudosClaimedByUser);
     setSubmitted(form.previousResponses?.length > 0);
 
     if (form.mintkudosTokenId) {
@@ -109,7 +108,6 @@ export default function FormFields({ form, setForm }: Props) {
   }, []);
 
   useEffect(() => {
-    console.log({ form });
     if (form?.parents) {
       void (async () => {
         const res = await (
@@ -162,7 +160,6 @@ export default function FormFields({ form, setForm }: Props) {
           }
         });
       } else {
-        console.log("setting data to empty object");
         const tempData: any = {};
         form.propertyOrder.forEach((propertyId) => {
           if (
@@ -210,14 +207,12 @@ export default function FormFields({ form, setForm }: Props) {
     let res;
     if (!checkRequired(data)) return;
     if (!checkValue(data)) return;
-
+    setSubmitting(true);
     if (updateResponse) {
-      console.log("update");
       const lastResponse =
         form.previousResponses[form.previousResponses.length - 1];
       res = await updateCollectionData(form.id || "", lastResponse.slug, data);
     } else {
-      console.log("add");
       res = await addData(form.id || "", data);
     }
     const resAfterSave = await getForm(form.slug);
@@ -230,6 +225,7 @@ export default function FormFields({ form, setForm }: Props) {
     } else {
       toast.error("Error adding data");
     }
+    setSubmitting(false);
   };
 
   if (submitted && !submitAnotherResponse && !updateResponse) {
@@ -319,66 +315,41 @@ export default function FormFields({ form, setForm }: Props) {
               />
             );
         })}
-      <Box width="full" display="flex" flexDirection="row">
+      <Stack
+        direction={{
+          xs: "vertical",
+          md: "horizontal",
+        }}
+      >
+        <Box width="full" paddingX="5">
+          {Object.keys(requiredFieldsNotSet).length > 0 && (
+            <Text color="red" variant="small">
+              {" "}
+              {`Required fields are empty: ${Object.keys(
+                requiredFieldsNotSet
+              ).join(",")}`}{" "}
+            </Text>
+          )}
+
+          <PrimaryButton onClick={onSubmit} loading={submitting}>
+            Submit
+          </PrimaryButton>
+        </Box>
         {(submitAnotherResponse || updateResponse) && (
-          <Box
-            width="1/4"
-            paddingLeft="5"
-            display="flex"
-            flexDirection="row"
-            justifyContent="flex-start"
-            alignItems="center"
-            gap="8"
-          >
+          <Box width="full" paddingX="5">
             <PrimaryButton
               variant="tertiary"
               onClick={() => {
                 setSubmitAnotherResponse(false);
                 setUpdateResponse(false);
+                setSubmitted(true);
               }}
             >
               Nevermind
             </PrimaryButton>
           </Box>
         )}
-        <Box
-          paddingRight="5"
-          gap="4"
-          display="flex"
-          flexDirection="row"
-          width="full"
-          justifyContent="flex-end"
-        >
-          {connectedUser ? (
-            <Box
-              width="1/4"
-              paddingLeft="5"
-              display="flex"
-              flexDirection="row"
-              justifyContent="flex-end"
-              alignItems="center"
-              gap="8"
-            >
-              {Object.keys(requiredFieldsNotSet).length > 0 && (
-                <Text color="red" variant="small">
-                  {" "}
-                  {`Required fields are empty: ${Object.keys(
-                    requiredFieldsNotSet
-                  ).join(",")}`}{" "}
-                </Text>
-              )}
-
-              <PrimaryButton onClick={onSubmit}>Submit</PrimaryButton>
-            </Box>
-          ) : (
-            <Box width="1/4" paddingLeft="5">
-              <PrimaryButton onClick={openConnectModal}>
-                Connect Wallet
-              </PrimaryButton>
-            </Box>
-          )}
-        </Box>
-      </Box>
+      </Stack>
     </Container>
   );
 }
@@ -399,13 +370,6 @@ const Container = styled(Box)`
     padding: 2rem;
     margin-right: 4rem;
   }
-
   padding: 2rem;
-  overflow-y: auto;
-  max-height: calc(100vh - 10rem);
   margin-right: 4rem;
-
-  &::-webkit-scrollbar {
-    width: 0.5rem;
-  }
 `;

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Editor from "@/app/common/components/Editor";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { Milestone } from "@/app/types";
@@ -37,8 +38,6 @@ export default function MilestoneField({
               setIsMilestoneModalOpen(false);
             }}
             addMilestone={(value) => {
-              console.log({ value });
-              console.log({ data });
               if (modalMode === "create") {
                 setData({
                   ...data,
