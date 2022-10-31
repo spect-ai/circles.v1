@@ -35,8 +35,6 @@ function FormBuilder({ fields }: Props) {
   const { connectedUser } = useGlobal();
   const { mode } = useTheme();
 
-  console.log({ collection });
-
   const FieldDraggable = (provided: DroppableProvided) => (
     <Box {...provided.droppableProps} ref={provided.innerRef}>
       {fields?.map((field, idx) => {
@@ -61,8 +59,6 @@ function FormBuilder({ fields }: Props) {
     collection.properties,
   ]);
 
-  useEffect(() => {}, []);
-
   return (
     <>
       <AnimatePresence>
@@ -76,7 +72,7 @@ function FormBuilder({ fields }: Props) {
       <Box
         paddingX={{
           xs: "1",
-          md: "4",
+          md: "2",
         }}
       >
         <CoverImageButtonContainer>
