@@ -315,41 +315,43 @@ export default function FormFields({ form, setForm }: Props) {
               />
             );
         })}
-      <Stack
-        direction={{
-          xs: "vertical",
-          md: "horizontal",
-        }}
-      >
-        <Box width="full" paddingX="5">
-          {Object.keys(requiredFieldsNotSet).length > 0 && (
-            <Text color="red" variant="small">
-              {" "}
-              {`Required fields are empty: ${Object.keys(
-                requiredFieldsNotSet
-              ).join(",")}`}{" "}
-            </Text>
-          )}
-
-          <PrimaryButton onClick={onSubmit} loading={submitting}>
-            Submit
-          </PrimaryButton>
-        </Box>
-        {(submitAnotherResponse || updateResponse) && (
+      <Box marginBottom="24">
+        <Stack
+          direction={{
+            xs: "vertical",
+            md: "horizontal",
+          }}
+        >
           <Box width="full" paddingX="5">
-            <PrimaryButton
-              variant="tertiary"
-              onClick={() => {
-                setSubmitAnotherResponse(false);
-                setUpdateResponse(false);
-                setSubmitted(true);
-              }}
-            >
-              Nevermind
+            {Object.keys(requiredFieldsNotSet).length > 0 && (
+              <Text color="red" variant="small">
+                {" "}
+                {`Required fields are empty: ${Object.keys(
+                  requiredFieldsNotSet
+                ).join(",")}`}{" "}
+              </Text>
+            )}
+
+            <PrimaryButton onClick={onSubmit} loading={submitting}>
+              Submit
             </PrimaryButton>
           </Box>
-        )}
-      </Stack>
+          {(submitAnotherResponse || updateResponse) && (
+            <Box width="full" paddingX="5">
+              <PrimaryButton
+                variant="tertiary"
+                onClick={() => {
+                  setSubmitAnotherResponse(false);
+                  setUpdateResponse(false);
+                  setSubmitted(true);
+                }}
+              >
+                Nevermind
+              </PrimaryButton>
+            </Box>
+          )}
+        </Stack>
+      </Box>
     </Container>
   );
 }
