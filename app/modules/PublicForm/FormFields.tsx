@@ -151,7 +151,7 @@ export default function FormFields({ form, setForm }: Props) {
             tempData[propertyId] =
               lastResponse[propertyId] ||
               // @ts-ignore
-              form.properties[propertyId].options[0];
+              {};
           } else if (
             ["multiSelect", "user[]", "milestone"].includes(
               form.properties[propertyId].type
@@ -178,7 +178,7 @@ export default function FormFields({ form, setForm }: Props) {
             tempData[propertyId] = "";
           } else if (form.properties[propertyId].type === "singleSelect") {
             // @ts-ignore
-            tempData[propertyId] = form.properties[propertyId].options[0];
+            tempData[propertyId] = {};
           } else if (
             ["multiSelect", "user[]"].includes(form.properties[propertyId].type)
           ) {
