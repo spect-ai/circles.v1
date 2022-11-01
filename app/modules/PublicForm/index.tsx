@@ -339,21 +339,23 @@ export default function PublicForm() {
           </FormContainer>
           <Stack align={"center"}>
             <Text>Powered By</Text>
-            {mode == "dark" ? (
-              <Image
-                src={"/logo2.svg"}
-                alt="dark-mode-logo"
-                height={"35"}
-                width="138"
-              />
-            ) : (
-              <Image
-                src={"/logo1.svg"}
-                alt="light-mode-logo"
-                height={"35"}
-                width="138"
-              />
-            )}
+            <Link href="/">
+              {mode == "dark" ? (
+                <Image
+                  src={"/logo2.svg"}
+                  alt="dark-mode-logo"
+                  height={"35"}
+                  width="138"
+                />
+              ) : (
+                <Image
+                  src={"/logo1.svg"}
+                  alt="light-mode-logo"
+                  height={"35"}
+                  width="138"
+                />
+              )}
+            </Link>
             <Stack justify={"center"} direction="horizontal" align={"center"}>
               <Link href={"https://twitter.com/joinSpect"}>
                 <Button shape="circle" size="small" variant="transparent">
@@ -384,6 +386,7 @@ export default function PublicForm() {
               </Link>
             </Stack>
           </Stack>
+          <Box marginBottom="8" />
         </Container>
       </ScrollContainer>
     );
