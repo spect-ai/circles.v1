@@ -52,6 +52,7 @@ export default function AddField({ propertyName, handleClose }: Props) {
   const [defaultValue, setDefaultValue] = useState("");
   const [showNameCollissionError, setShowNameCollissionError] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [showConfirmOnDelete, setShowConfirmOnDelete] = useState(false);
 
   const onSave = async () => {
     setLoading(true);
@@ -150,6 +151,27 @@ export default function AddField({ propertyName, handleClose }: Props) {
             onConfirm={() => {
               setShowConfirm(false);
               void onSave();
+            }}
+            onCancel={() => setShowConfirm(false)}
+          />
+        )}
+        {showConfirmOnDelete && (
+          <ConfirmModal
+            title="This will remove existing data associated with this field, if you're looking to avoid this please set the field as inactive. Are you sure you want to delete this field?"
+            handleClose={() => setShowConfirm(false)}
+            onConfirm={async () => {
+              setShowConfirm(false);
+              const res = await deleteField(
+                collection.id,
+                propertyName as string
+              );
+              console.log({ res });
+              if (res.id) {
+                handleClose();
+                setLocalCollection(res);
+              } else {
+                toast.error(res.message);
+              }
             }}
             onCancel={() => setShowConfirm(false)}
           />
@@ -278,15 +300,8 @@ export default function AddField({ propertyName, handleClose }: Props) {
               <PrimaryButton
                 tone="red"
                 icon={<IconTrash />}
-                onClick={async () => {
-                  const res = await deleteField(collection.id, propertyName);
-                  console.log({ res });
-                  if (res.id) {
-                    handleClose();
-                    setLocalCollection(res);
-                  } else {
-                    toast.error(res.message);
-                  }
+                onClick={() => {
+                  setShowConfirmOnDelete(true);
                 }}
               >
                 Delete
