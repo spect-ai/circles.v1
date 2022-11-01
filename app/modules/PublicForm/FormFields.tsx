@@ -17,6 +17,7 @@ import { toast } from "react-toastify";
 import styled from "styled-components";
 import FormResponse from "./FormResponse";
 import PublicField from "./PublicField";
+import mixpanel from "@/app/common/utils/mixpanel";
 
 type Props = {
   form: FormType;
@@ -232,6 +233,12 @@ export default function FormFields({ form, setForm }: Props) {
     } else {
       toast.error("Error adding data");
     }
+    process.env.NODE_ENV === "production" &&
+      mixpanel.track("Form Submit", {
+        formId: form.slug,
+        sybilEnabled: form.sybilProtectionEnabled,
+        user: connectedUser,
+      });
     setSubmitting(false);
   };
 

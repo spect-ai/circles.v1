@@ -3,6 +3,8 @@ import styled from "styled-components";
 import { useState } from "react";
 import useProfileUpdate from "@/app/services/Profile/useProfileUpdate";
 import { RocketOutlined } from "@ant-design/icons";
+import mixpanel from "@/app/common/utils/mixpanel";
+import { useGlobal } from "@/app/context/globalContext";
 
 export const NameInput = styled.input`
   width: 100%;
@@ -23,6 +25,7 @@ export const NameInput = styled.input`
 export function BasicProfile({ setStep }: { setStep: (step: number) => void }) {
   const { updateProfile } = useProfileUpdate();
   const [userName, setUserName] = useState("");
+  const { connectedUser } = useGlobal();
   const updateUser = async () => {
     const res = await updateProfile({
       username: userName,
@@ -30,6 +33,10 @@ export function BasicProfile({ setStep }: { setStep: (step: number) => void }) {
     if (res) {
       setStep(1);
     }
+    process.env.NODE_ENV === "production" &&
+      mixpanel.track("Onboard profile", {
+        user: connectedUser,
+      });
   };
   return (
     <Box

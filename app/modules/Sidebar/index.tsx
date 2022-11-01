@@ -1,14 +1,7 @@
 import Link from "next/link";
 import React, { ReactElement, useEffect, useState } from "react";
 import { AnimatePresence } from "framer-motion";
-import {
-  Avatar,
-  Box,
-  Button,
-  Stack,
-  Text,
-  IconMenu,
-} from "degen";
+import { Avatar, Box, Button, Stack, Text, IconMenu } from "degen";
 import { useRouter } from "next/router";
 import CreateCircle from "./CreateCircleModal";
 import Logo from "@/app/common/components/Logo";
@@ -20,6 +13,7 @@ import CollapseButton from "../ExtendedSidebar/CollapseButton";
 import styled from "styled-components";
 import TaskWallet from "@/app/modules/Profile/TaskWallet";
 import { Visible } from "react-grid-system";
+import mixpanel from "@/app/common/utils/mixpanel";
 
 export const ScrollContainer = styled(Box)`
   ::-webkit-scrollbar {
@@ -112,6 +106,11 @@ function Sidebar(): ReactElement {
                 size="small"
                 onClick={() => {
                   setIsSidebarExpanded(!isSidebarExpanded);
+                  process.env.NODE_ENV === "production" &&
+                    mixpanel.track("Expand Sidebar Button", {
+                      user: connectedUser,
+                      url: window.location.href,
+                    });
                 }}
               >
                 <Text color="accent">
@@ -120,7 +119,18 @@ function Sidebar(): ReactElement {
               </Button>
             </Visible>
             <Link href="/" passHref>
-              <Button shape="circle" variant="transparent" size="small">
+              <Button
+                shape="circle"
+                variant="transparent"
+                size="small"
+                onClick={() => {
+                  process.env.NODE_ENV === "production" &&
+                    mixpanel.track("Home Button", {
+                      user: connectedUser,
+                      url: window.location.href,
+                    });
+                }}
+              >
                 <Text color="accent">
                   <HomeOutlined style={{ fontSize: "1.3rem" }} />
                 </Text>

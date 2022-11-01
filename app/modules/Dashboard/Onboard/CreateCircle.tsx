@@ -4,6 +4,8 @@ import { useState } from "react";
 import { RocketOutlined } from "@ant-design/icons";
 import { useMutation } from "react-query";
 import { generateColorHEX } from "@/app/common/utils/utils";
+import { useGlobal } from "@/app/context/globalContext";
+import mixpanel from "@/app/common/utils/mixpanel";
 
 type CreateCircleDto = {
   name: string;
@@ -19,6 +21,7 @@ interface Props {
 
 export function CreateCircle({ setStep }: Props) {
   const [circleName, setCircleName] = useState("");
+  const { connectedUser } = useGlobal();
 
   const { mutateAsync } = useMutation((circle: CreateCircleDto) => {
     return fetch(`${process.env.API_HOST}/circle/v1`, {
@@ -52,7 +55,9 @@ export function CreateCircle({ setStep }: Props) {
           A Circle maps to a DAO. Circles come with roles, integrations such as
           Gnosis, Discord and Guild.xyz
         </Text>
-        <Text align={"center"} color="textSecondary">Give your Circle a name</Text>
+        <Text align={"center"} color="textSecondary">
+          Give your Circle a name
+        </Text>
       </Box>
 
       <NameInput
@@ -81,6 +86,10 @@ export function CreateCircle({ setStep }: Props) {
               if (resJson.slug) {
                 setStep(2);
               }
+              process.env.NODE_ENV === "production" &&
+                mixpanel.track("Onboard circle", {
+                  user: connectedUser,
+                });
             })
             .catch((err) => console.log({ err }));
         }}

@@ -17,6 +17,7 @@ import styled from "styled-components";
 import AddField from "../../AddField";
 import { useLocalCollection } from "../../Context/LocalCollectionContext";
 import FieldComponent from "../Field";
+import mixpanel from "@/app/common/utils/mixpanel";
 
 type Props = {
   fields: string[];
@@ -174,7 +175,13 @@ function FormBuilder({ fields }: Props) {
             <Box paddingX="5">
               <PrimaryButton
                 icon={<IconPlusSmall />}
-                onClick={() => setIsAddFieldOpen(true)}
+                onClick={() => {
+                  setIsAddFieldOpen(true);
+                  process.env.NODE_ENV === "production" &&
+                    mixpanel.track("Add Field Button", {
+                      user: connectedUser,
+                    });
+                }}
               >
                 Add Field
               </PrimaryButton>

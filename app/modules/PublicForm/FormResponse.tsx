@@ -11,6 +11,7 @@ import { useWindowSize } from "react-use";
 import styled from "styled-components";
 import Link from "next/link";
 import mixpanel from "@/app/common/utils/mixpanel";
+import { useGlobal } from "@/app/context/globalContext";
 
 type Props = {
   form: FormType;
@@ -41,6 +42,8 @@ export default function FormResponse({
   const { width, height } = useWindowSize();
   const [claiming, setClaiming] = useState(false);
   const [claimedJustNow, setClaimedJustNow] = useState(false);
+
+  const { connectedUser } = useGlobal();
 
   return (
     <Box
@@ -238,6 +241,7 @@ export default function FormResponse({
                       mixpanel.track("Create your own form", {
                         formId: form.slug,
                         sybilEnabled: form.sybilProtectionEnabled,
+                        user: connectedUser,
                       });
                   }}
                 >

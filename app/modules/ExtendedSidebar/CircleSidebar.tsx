@@ -28,6 +28,8 @@ import CreateRetroModal from "../Retro/CreateRetro";
 import CircleOptions from "./CircleOptions";
 import CollapseButton from "./CollapseButton";
 import { HeaderButton } from "./ExploreSidebar";
+import mixpanel from "@/app/common/utils/mixpanel";
+import { useGlobal } from "@/app/context/globalContext";
 
 export const Container = styled(Box)<{ subH?: string }>`
   ::-webkit-scrollbar {
@@ -52,6 +54,7 @@ function CircleSidebar() {
   const [isContributorsModalOpen, setIsContributorsModalOpen] = useState(false);
   const [isRetroModalOpen, setIsRetroModalOpen] = useState(false);
   const { mode } = useTheme();
+  const { connectedUser } = useGlobal();
 
   const [showCollapseButton, setShowCollapseButton] = useState(false);
   if (isLoading) {
@@ -173,6 +176,13 @@ function CircleSidebar() {
           <PrimaryButton
             variant={pId || cSlug ? "transparent" : "tertiary"}
             icon={<IconSparkles size="5" />}
+            onClick={() => {
+              process.env.NODE_ENV === "production" &&
+                mixpanel.track("Circle Dashboard Button", {
+                  user: connectedUser,
+                  url: window.location.href,
+                });
+            }}
           >
             Circle Dashboard
           </PrimaryButton>

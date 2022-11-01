@@ -14,6 +14,8 @@ import { PopoverOption } from "../../Card/OptionPopover";
 import { useCircle } from "../../Circle/CircleContext";
 import AddField from "../AddField";
 import { useLocalCollection } from "../Context/LocalCollectionContext";
+import { useGlobal } from "@/app/context/globalContext";
+import mixpanel from "@/app/common/utils/mixpanel";
 
 export const IconButton = styled(Box)`
   cursor: pointer;
@@ -35,6 +37,7 @@ function CollectionHeading() {
   const [isAddFieldOpen, setIsAddFieldOpen] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const { navigationBreadcrumbs } = useCircle();
+  const { connectedUser } = useGlobal();
 
   const location = useLocation();
 
@@ -128,6 +131,11 @@ function CollectionHeading() {
                               `https://circles.spect.network/r/${collection?.slug}`
                             );
                             toast.success("Copied to clipboard");
+                            process.env.NODE_ENV === "production" &&
+                              mixpanel.track("Share Form", {
+                                user: connectedUser,
+                                formId: collection?.slug,
+                              });
                           }}
                         >
                           Share
@@ -202,6 +210,11 @@ function CollectionHeading() {
                       `https://circles.spect.network/r/${collection?.slug}`
                     );
                     toast.success("Copied to clipboard");
+                    process.env.NODE_ENV === "production" &&
+                      mixpanel.track("Share Form", {
+                        user: connectedUser,
+                        formId: collection?.slug,
+                      });
                   }}
                 >
                   Share

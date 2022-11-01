@@ -23,6 +23,8 @@ import {
 import { useQuery } from "react-query";
 import styled from "styled-components";
 import { useLocalCollection } from "../../Context/LocalCollectionContext";
+import mixpanel from "@/app/common/utils/mixpanel";
+import { useGlobal } from "@/app/context/globalContext";
 
 type Props = {
   id: string;
@@ -39,9 +41,8 @@ function FieldComponent({
 }: Props) {
   const { localCollection: collection } = useLocalCollection();
   const [hover, setHover] = useState(false);
-
+  const { connectedUser } = useGlobal();
   const { mode } = useTheme();
-
   const router = useRouter();
   const { circle: cId } = router.query;
   const { data: memberDetails } = useQuery<MemberDetails>(
@@ -94,11 +95,14 @@ function FieldComponent({
           onClick={() => {
             setPropertyName(collection.properties[id]?.name);
             setIsEditFieldOpen(true);
+            process.env.NODE_ENV === "production" &&
+              mixpanel.track("Edit Field Button", {
+                user: connectedUser,
+                field: collection.properties[id]?.name,
+              });
           }}
         >
-          <Stack direction="horizontal" space="1" align="center">
-            <IconPencil color="accent" size="4" />
-          </Stack>
+          <IconPencil color="accent" size="4" />
         </Box>
       </Stack>
       {collection.properties[id]?.type === "shortText" && (

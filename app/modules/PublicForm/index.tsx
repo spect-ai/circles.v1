@@ -15,6 +15,7 @@ import Loader from "@/app/common/components/Loader";
 import { getAllCredentials } from "@/app/services/Credentials/AggregatedCredentials";
 import { useGlobal } from "@/app/context/globalContext";
 import { PassportStampIcons, PassportStampIconsLightMode } from "@/app/assets";
+import mixpanel from "@/app/common/utils/mixpanel";
 
 export default function PublicForm() {
   const router = useRouter();
@@ -146,7 +147,15 @@ export default function PublicForm() {
                     md: "1/4",
                   }}
                 >
-                  <PrimaryButton onClick={openConnectModal}>
+                  <PrimaryButton
+                    onClick={() => {
+                      process.env.NODE_ENV === "production" &&
+                        mixpanel.track("Connect Wallet Form", {
+                          formId: form.slug,
+                        });
+                      openConnectModal && openConnectModal();
+                    }}
+                  >
                     Connect Wallet
                   </PrimaryButton>
                 </Box>

@@ -1,7 +1,8 @@
 import { ThemeProvider } from "degen";
 import "degen/styles";
 import type { AppProps } from "next/app";
-import { Hydrate, QueryClientProvider, useQuery } from "react-query";
+import { Hydrate, QueryClientProvider } from "react-query";
+import mixpanel from "@/app/common/utils/mixpanel";
 
 import "@fontsource/inter/300.css";
 import "@fontsource/inter/400.css";
@@ -107,6 +108,10 @@ function MyApp({ Component, pageProps }: AppProps) {
       queryClient.setQueryData("getMyUser", res);
       console.log("connect user", res.id);
       connectUser(res.id);
+      process.env.NODE_ENV === "production" &&
+        mixpanel.track("User Connected", {
+          user: res.id,
+        });
       return Boolean(verifyRes.ok);
     },
     signOut: async () => {
