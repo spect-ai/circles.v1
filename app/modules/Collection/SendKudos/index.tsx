@@ -435,7 +435,7 @@ export default function SendKudos() {
                       }
                     }}
                   >
-                    Mint
+                    Send Kudos to Responders
                   </Button>
                 </Box>
               </Box>

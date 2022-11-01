@@ -98,7 +98,7 @@ export default function useCredentials() {
           const data = await res.json();
           return data;
         } else {
-          toast.error("Error minting retro", {
+          toast.error("Error creating kudos", {
             theme: mode,
           });
           return false;
