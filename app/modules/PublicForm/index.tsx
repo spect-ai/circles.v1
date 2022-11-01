@@ -16,6 +16,14 @@ import { getAllCredentials } from "@/app/services/Credentials/AggregatedCredenti
 import { useGlobal } from "@/app/context/globalContext";
 import { PassportStampIcons, PassportStampIconsLightMode } from "@/app/assets";
 import mixpanel from "@/app/common/utils/mixpanel";
+import Link from "next/link";
+import {
+  GithubOutlined,
+  TwitterOutlined,
+  YoutubeFilled,
+} from "@ant-design/icons";
+import DiscordIcon from "@/app/assets/icons/discordIcon.svg";
+import Image from "next/image";
 
 export default function PublicForm() {
   const router = useRouter();
@@ -83,9 +91,16 @@ export default function PublicForm() {
         />
         <CoverImage src={form.cover} backgroundColor="accentSecondary" />
         <Container>
-          <FormContainer backgroundColor="background">
+          <FormContainer
+            backgroundColor="background"
+            style={{
+              boxShadow: `0rem 0.2rem 0.5rem ${
+                mode === "dark" ? "rgba(0, 0, 0, 0.25)" : "rgba(0, 0, 0, 0.1)"
+              }`,
+            }}
+          >
             <Box width="full" marginBottom="2" padding="4">
-              <Stack space="2">
+              <Stack space="2" align={"center"}>
                 {form.logo && <Avatar src={form.logo} label="" size="20" />}
                 <NameInput
                   placeholder="Enter name"
@@ -322,6 +337,53 @@ export default function PublicForm() {
               </motion.div>
             )}
           </FormContainer>
+          <Stack align={"center"}>
+            <Text>Powered By</Text>
+            {mode == "dark" ? (
+              <Image
+                src={"/logo2.svg"}
+                alt="dark-mode-logo"
+                height={"35"}
+                width="138"
+              />
+            ) : (
+              <Image
+                src={"/logo1.svg"}
+                alt="light-mode-logo"
+                height={"35"}
+                width="138"
+              />
+            )}
+            <Stack justify={"center"} direction="horizontal" align={"center"}>
+              <Link href={"https://twitter.com/joinSpect"}>
+                <Button shape="circle" size="small" variant="transparent">
+                  <TwitterOutlined style={{ fontSize: "1.3rem" }} />
+                </Button>
+              </Link>
+
+              <Link href={"https://discord.gg/AF2qRMMpZ9"}>
+                <Button shape="circle" size="small" variant="transparent">
+                  <DiscordIcon />
+                </Button>
+              </Link>
+
+              <Link href={"https://github.com/spect-ai"}>
+                <Button shape="circle" size="small" variant="transparent">
+                  <GithubOutlined style={{ fontSize: "1.3rem" }} />
+                </Button>
+              </Link>
+
+              <Link
+                href={
+                  "https://www.youtube.com/channel/UCUXOC62aiZqT_ijL-dz379Q"
+                }
+              >
+                <Button shape="circle" size="small" variant="transparent">
+                  <YoutubeFilled style={{ fontSize: "1.3rem" }} />
+                </Button>
+              </Link>
+            </Stack>
+          </Stack>
         </Container>
       </ScrollContainer>
     );
@@ -395,7 +457,11 @@ export const CoverImage = styled(Box)<{ src: string }>`
   z-index: -1;
 `;
 
-const FormContainer = styled(Box)``;
+const FormContainer = styled(Box)`
+  border-radius: 1rem;
+  padding: 0.5rem;
+  margin-bottom: 2rem;
+`;
 
 const ScrollContainer = styled(Box)`
   &::-webkit-scrollbar {

@@ -52,8 +52,8 @@ export function CreateCircle({ setStep }: Props) {
         style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
       >
         <Text align={"center"}>
-          A Circle maps to a DAO. Circles come with roles, integrations such as
-          Gnosis, Discord and Guild.xyz
+          A Circle is a workspace for you and your frens. Circles come with
+          roles, integrations such as Gnosis, Discord and Guild.xyz
         </Text>
         <Text align={"center"} color="textSecondary">
           Give your Circle a name
