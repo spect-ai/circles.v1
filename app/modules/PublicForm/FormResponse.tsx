@@ -3,13 +3,13 @@ import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { FormType, KudosType } from "@/app/types";
 import { TwitterOutlined } from "@ant-design/icons";
 import { Box, Heading, Stack, Text } from "degen";
-import { useRouter } from "next/router";
 import React, { useState } from "react";
 import Confetti from "react-confetti";
 import { TwitterShareButton } from "react-share";
 import { toast } from "react-toastify";
 import { useWindowSize } from "react-use";
 import styled from "styled-components";
+import Link from "next/link";
 import mixpanel from "@/app/common/utils/mixpanel";
 
 type Props = {
@@ -18,6 +18,8 @@ type Props = {
   setSubmitAnotherResponse: (val: boolean) => void;
   setSubmitted: (val: boolean) => void;
   setUpdateResponse: (val: boolean) => void;
+  claimed: boolean;
+  setClaimed: (val: boolean) => void;
 };
 
 const StyledImage = styled.img`
@@ -33,13 +35,12 @@ export default function FormResponse({
   setSubmitAnotherResponse,
   setSubmitted,
   setUpdateResponse,
+  claimed,
+  setClaimed,
 }: Props) {
   const { width, height } = useWindowSize();
   const [claiming, setClaiming] = useState(false);
-  const [claimed, setClaimed] = useState(form.kudosClaimedByUser);
   const [claimedJustNow, setClaimedJustNow] = useState(false);
-
-  const router = useRouter();
 
   return (
     <Box
@@ -57,8 +58,8 @@ export default function FormResponse({
           numberOfPieces={600}
         />
       )}
-      <Stack>
-        <Heading>{`${
+      <Stack align="center">
+        <Heading align="center">{`${
           form?.messageOnSubmission || "Your response has been submitted!"
         }`}</Heading>
         <Box
@@ -67,8 +68,8 @@ export default function FormResponse({
             xs: "column",
             md: "row",
           }}
-          justifyContent="flex-start"
           gap="4"
+          alignItems="center"
         >
           {kudos?.imageUrl && (claimed || form.canClaimKudos) && (
             <StyledImage src={`${kudos.imageUrl}`} alt="kudos" />
@@ -79,7 +80,7 @@ export default function FormResponse({
               <Box>
                 <Stack direction="vertical">
                   <TwitterShareButton
-                    url={`https://spect.network/`}
+                    url={`https://circles.spect.network/`}
                     title={
                       "I just filled out a web3 enabled form and claimed my Kudos on @JoinSpect via @mintkudosXYZ 🎉"
                     }
@@ -155,7 +156,7 @@ export default function FormResponse({
                     The creator of this form is distributing kudos to everyone
                     that submitted a response 🎉
                   </Text>
-                  <Box width="72">
+                  <Box width="full">
                     <PrimaryButton
                       loading={claiming}
                       onClick={async () => {
@@ -203,7 +204,7 @@ export default function FormResponse({
           marginTop="8"
         >
           <Box
-            width="72"
+            width="full"
             display="flex"
             flexDirection="column"
             justifyContent="flex-start"
@@ -230,18 +231,19 @@ export default function FormResponse({
                   Submit another response
                 </PrimaryButton>
               )}
-              <PrimaryButton
-                onClick={() => {
-                  process.env.NODE_ENV === "production" &&
-                    mixpanel.track("Create your own form", {
-                      formId: form.slug,
-                      sybilEnabled: form.sybilProtectionEnabled,
-                    });
-                  void router.push("/");
-                }}
-              >
-                Create your own form
-              </PrimaryButton>
+              <Link href="/">
+                <PrimaryButton
+                  onClick={() => {
+                    process.env.NODE_ENV === "production" &&
+                      mixpanel.track("Create your own form", {
+                        formId: form.slug,
+                        sybilEnabled: form.sybilProtectionEnabled,
+                      });
+                  }}
+                >
+                  Create your own form
+                </PrimaryButton>
+              </Link>
             </Stack>
           </Box>
         </Box>

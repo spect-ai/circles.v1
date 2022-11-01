@@ -3,7 +3,7 @@ import { TableNode } from "@table-library/react-table-library/types";
 import { useTheme as useTableTheme } from "@table-library/react-table-library/theme";
 import styled from "styled-components";
 import { useCircle } from "@/app/modules/Circle/CircleContext";
-import { useTheme, IconPencil, Box, Text, Avatar, Tag } from "degen";
+import { useTheme, IconPencil, Box, Text, Avatar, Tag, Stack } from "degen";
 import Link from "next/link";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { useEffect, useState } from "react";
@@ -129,14 +129,15 @@ function ContributorTable({ filteredMembers }: Props) {
     {
       label: "Role",
       renderCell: (item: TableNode) => (
-        <Box display="flex" flexDirection="row" gap="2" alignItems="center">
-          {item?.roles && item?.roles?.map((role: string) => {
-            return (
-              <Tag key={role} tone="accent" hover>
-                {role}
-              </Tag>
-            );
-          })}
+        <Stack direction="horizontal" wrap>
+          {item?.roles &&
+            item?.roles?.map((role: string) => {
+              return (
+                <Tag key={role} tone="accent" hover>
+                  {role}
+                </Tag>
+              );
+            })}
           {canDo("manageMembers") && (
             <IconBox
               transitionDuration="700"
@@ -148,18 +149,20 @@ function ContributorTable({ filteredMembers }: Props) {
               <IconPencil size="3" />
             </IconBox>
           )}
-        </Box>
+        </Stack>
       ),
       resize: true,
     },
   ];
-  const data = filteredMembers && filteredMembers?.map((mem) => ({
-    id: mem.id,
-    roles: circle?.memberRoles[mem.id],
-    avatar: memberDetails?.memberDetails[mem.id]?.avatar,
-    address: memberDetails?.memberDetails[mem.id]?.ethAddress,
-    username: memberDetails?.memberDetails[mem.id]?.username,
-  }));
+  const data =
+    filteredMembers &&
+    filteredMembers?.map((mem) => ({
+      id: mem.id,
+      roles: circle?.memberRoles[mem.id],
+      avatar: memberDetails?.memberDetails[mem.id]?.avatar,
+      address: memberDetails?.memberDetails[mem.id]?.ethAddress,
+      username: memberDetails?.memberDetails[mem.id]?.username,
+    }));
   return (
     <>
       <Box marginTop="3">

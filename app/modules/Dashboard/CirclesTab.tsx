@@ -1,21 +1,10 @@
-import { CircleType, BucketizedCircleType } from "@/app/types";
-import {
-  Box,
-  IconDotsHorizontal,
-  IconSearch,
-  Input,
-  Stack,
-  Text,
-  useTheme,
-} from "degen";
-import { matchSorter } from "match-sorter";
-import { useQuery } from "react-query";
-import { useEffect, useState, memo } from "react";
-import { Container, Row, Col } from "react-grid-system";
-import { useGlobal } from "@/app/context/globalContext";
+import { CircleType } from "@/app/types";
+import { Box } from "degen";
 import CircleCard from "@/app/modules/Explore/CircleCard/index";
 import CreateCircleCard from "@/app/modules/Explore/CircleCard/CreateCircleCard";
 import styled from "styled-components";
+import { Col, Row } from "react-grid-system";
+import { memo } from "react";
 
 const ScrollContainer = styled(Box)`
   ::-webkit-scrollbar {
@@ -24,8 +13,13 @@ const ScrollContainer = styled(Box)`
   -ms-overflow-style: none;
   scrollbar-width: none;
   padding-top: 1rem;
-  height: calc(100vh - 10rem);
   overflow-y: auto;
+
+  @media (max-width: 768px) {
+    height: calc(100vh - 12rem);
+  }
+
+  height: calc(100vh - 10rem);
 `;
 
 function YourCircles({
@@ -41,7 +35,7 @@ function YourCircles({
         {!isLoading &&
           circles?.map &&
           circles?.map((circle: CircleType) => (
-            <Col key={circle.id} xs={10} sm={6} md={3}>
+            <Col key={circle.id} xs={12} sm={6} md={3}>
               <CircleCard
                 href={`/${circle.slug}`}
                 name={circle.name}
@@ -51,7 +45,7 @@ function YourCircles({
               />
             </Col>
           ))}
-        <Col key={"createCircle"} xs={10} sm={6} md={3}>
+        <Col key={"createCircle"} xs={12} sm={6} md={3}>
           <CreateCircleCard />
         </Col>
       </Row>

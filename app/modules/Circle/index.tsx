@@ -1,6 +1,4 @@
 import Loader from "@/app/common/components/Loader";
-import useCircleOnboarding from "@/app/services/Onboarding/useCircleOnboarding";
-import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { ApartmentOutlined } from "@ant-design/icons";
 import { Box, Button, useTheme, Text, IconLockClosed, Stack } from "degen";
 import { AnimatePresence } from "framer-motion";
@@ -10,14 +8,13 @@ import styled from "styled-components";
 import Navigation from "../Project/Navigation";
 import RetroPage from "../Retro";
 import { useCircle } from "./CircleContext";
-import Onboarding from "./CircleOnboarding";
 import CircleOverview from "./CircleOverview";
 import { useRouter } from "next/router";
 import { joinCircle } from "@/app/services/JoinCircle";
 import Roles from "./RolesTab";
 
 const BoxContainer = styled(Box)`
-  width: calc(100vw - 4rem);
+  width: calc(100vw - 3.5rem);
 `;
 
 export default function Circle() {
@@ -29,9 +26,6 @@ export default function Circle() {
     fetchCircle,
     fetchMemberDetails,
   } = useCircle();
-
-  const { canDo } = useRoleGate();
-  const { onboarded } = useCircleOnboarding();
   const { mode } = useTheme();
   const [graphOpen, setGraphOpen] = useState(false);
   const router = useRouter();
@@ -95,6 +89,7 @@ export default function Circle() {
         md: "8",
       }}
       paddingTop="4"
+      id="box-container"
     >
       {/* {!onboarded && canDo("createNewCircle") && <Onboarding />} */}
       <ToastContainer
@@ -121,10 +116,11 @@ export default function Circle() {
           variant="secondary"
           onClick={() => setGraphOpen(true)}
           shape="circle"
+          size="small"
         >
           <ApartmentOutlined
             style={{
-              fontSize: "1.5rem",
+              fontSize: "1.3rem",
             }}
           />
         </Button>

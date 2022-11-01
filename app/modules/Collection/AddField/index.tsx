@@ -64,7 +64,6 @@ export default function AddField({ propertyName, handleClose }: Props) {
     if (type.value === "milestone") {
       milestoneFields = ["name", "description", "dueDate", "reward"];
     }
-    console.log({ rewardOptions });
     if (propertyName) {
       res = await updateField(collection.id, propertyName, {
         name,
@@ -98,7 +97,6 @@ export default function AddField({ propertyName, handleClose }: Props) {
     }
     setLoading(false);
     if (res.id) {
-      console.log({ res });
       handleClose();
       setLocalCollection(res);
     } else {

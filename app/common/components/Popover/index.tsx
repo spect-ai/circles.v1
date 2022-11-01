@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { FC, ReactNode, useEffect, useRef, useState } from "react";
 import { Box } from "degen";
 import { Portal } from "../Portal/portal";
@@ -46,6 +47,7 @@ export function useOutsideAlerter(
       // Unbind the event listener on clean up
       document.removeEventListener("mousedown", handleClickOutside);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ref, setIsOpen]);
 }
 

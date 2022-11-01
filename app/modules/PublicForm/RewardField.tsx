@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Dropdown from "@/app/common/components/Dropdown";
 import { Option, Registry, Reward } from "@/app/types";
 import { Box, Input, Stack } from "degen";
@@ -18,6 +19,7 @@ export default function RewardField({
   updateData,
   onValueKeyDown,
 }: Props) {
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const rewardOptions = (form.properties[propertyName]?.rewardOptions ||
     {}) as Registry;
   const firstChainName =
@@ -59,8 +61,19 @@ export default function RewardField({
   }, [form.properties, propertyName, rewardOptions, selectedChain]);
 
   return (
-    <Stack direction="horizontal">
-      <Box width="72" marginTop="2">
+    <Stack
+      direction={{
+        xs: "vertical",
+        md: "horizontal",
+      }}
+    >
+      <Box
+        width={{
+          xs: "full",
+          md: "72",
+        }}
+        marginTop="2"
+      >
         <Dropdown
           options={
             form.properties[propertyName]?.rewardOptions
@@ -87,7 +100,12 @@ export default function RewardField({
           isClearable={false}
         />
       </Box>
-      <Box width="72" marginTop="2">
+      <Box
+        width={{
+          xs: "full",
+          md: "72",
+        }}
+      >
         <Dropdown
           options={tokenOptions}
           selected={selectedToken}
@@ -103,21 +121,28 @@ export default function RewardField({
           isClearable={false}
         />
       </Box>
-      <Input
-        label=""
-        placeholder={`Enter Reward Amount`}
-        value={data && data[propertyName]?.value}
-        onChange={(e) => {
-          updateData({
-            chain: selectedChain,
-            token: selectedToken,
-            value: parseFloat(e.target.value),
-          });
+      <Box
+        width={{
+          xs: "full",
+          md: "72",
         }}
-        type="number"
-        onKeyDown={onValueKeyDown}
-        units={selectedToken.label}
-      />
+      >
+        <Input
+          label=""
+          placeholder={`Enter Reward Amount`}
+          value={data && data[propertyName]?.value}
+          onChange={(e) => {
+            updateData({
+              chain: selectedChain,
+              token: selectedToken,
+              value: parseFloat(e.target.value),
+            });
+          }}
+          type="number"
+          onKeyDown={onValueKeyDown}
+          units={selectedToken.label}
+        />
+      </Box>
     </Stack>
   );
 }

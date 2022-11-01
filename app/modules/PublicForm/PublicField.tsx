@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Dropdown from "@/app/common/components/Dropdown";
 import Editor from "@/app/common/components/Editor";
 import { isEmail } from "@/app/common/utils/utils";
@@ -37,12 +38,7 @@ export default function PublicField({
   );
 
   return (
-    <Box
-      padding="4"
-      margin="1"
-      borderRadius="large"
-      //   mode={mode}
-    >
+    <Box padding="4" margin="1" borderRadius="large">
       <Stack direction="vertical" space="2">
         <Box
           width="full"

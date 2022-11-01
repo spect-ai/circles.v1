@@ -19,30 +19,6 @@ import FormBuilder from "./FormBuilder";
 import InactiveFieldsColumnComponent from "./InactiveFieldsColumn";
 import { Notifications } from "./Notifications";
 
-const Container = styled.div`
-  width: 100%;
-`;
-
-const ScrollContainer = styled(Box)`
-  overflow-y: auto;
-  ::-webkit-scrollbar {
-    width: 5px;
-  }
-  display: flex;
-  width: 100%;
-
-  @media (max-width: 992px) {
-    flex-direction: column;
-    padding: 0.5rem;
-    margin-top: 0rem;
-  }
-  flex-direction: row;
-  padding: 2rem;
-  margin-top: 2rem;
-
-  height: calc(100vh - 9rem);
-`;
-
 export function Form() {
   const {
     localCollection: collection,
@@ -142,11 +118,10 @@ export function Form() {
     }, []);
 
     return (
-      <Container {...provided.droppableProps} ref={provided.innerRef}>
+      <Box {...provided.droppableProps} ref={provided.innerRef}>
         <ScrollContainer>
           <InactiveFieldsColumnComponent fields={propertyOrder} />
-          <Box
-            width="full"
+          <FormContainer
             paddingLeft={{
               xs: "0",
               lg: "8",
@@ -158,9 +133,6 @@ export function Form() {
               marginBottom="4"
               display="flex"
               flexDirection="column"
-              style={{
-                width: "100%",
-              }}
             >
               <Stack direction="vertical" space="4">
                 <Text variant="large">After the form is submitted.</Text>
@@ -205,9 +177,9 @@ export function Form() {
                 <Notifications />
               </Stack>
             </Box>
-          </Box>
+          </FormContainer>
         </ScrollContainer>
-      </Container>
+      </Box>
     );
   };
 
@@ -228,3 +200,29 @@ export function Form() {
     </DragDropContext>
   );
 }
+
+const ScrollContainer = styled(Box)`
+  overflow-y: auto;
+  ::-webkit-scrollbar {
+    width: 5px;
+  }
+  display: flex;
+
+  @media (max-width: 992px) {
+    flex-direction: column;
+    padding: 0.5rem;
+    margin-top: 0rem;
+    height: calc(100vh - 4rem);
+  }
+  flex-direction: row;
+  padding: 2rem;
+  margin-top: 2rem;
+  height: calc(100vh - 9rem);
+`;
+
+const FormContainer = styled(Box)`
+  @media (max-width: 992px) {
+    width: 100%;
+  }
+  width: 80%;
+`;

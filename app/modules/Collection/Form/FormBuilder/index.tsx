@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/unbound-method */
 import ClickableTag from "@/app/common/components/EditTag/ClickableTag";
+import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { storeImage } from "@/app/common/utils/ipfs";
 import { useGlobal } from "@/app/context/globalContext";
 import {
@@ -8,9 +9,9 @@ import {
   NameInput,
 } from "@/app/modules/PublicForm";
 import { updateFormCollection } from "@/app/services/Collection";
-import { Avatar, Box, FileInput, Stack, useTheme } from "degen";
+import { Avatar, Box, FileInput, IconPlusSmall, Stack, useTheme } from "degen";
 import { AnimatePresence } from "framer-motion";
-import { memo, useCallback, useEffect, useState } from "react";
+import { memo, useCallback, useState } from "react";
 import { Droppable, DroppableProvided } from "react-beautiful-dnd";
 import styled from "styled-components";
 import AddField from "../../AddField";
@@ -28,14 +29,13 @@ function FormBuilder({ fields }: Props) {
   const [description, setDescription] = useState(collection.description);
   const [isEditFieldOpen, setIsEditFieldOpen] = useState(false);
   const [propertyName, setPropertyName] = useState("");
+  const [isAddFieldOpen, setIsAddFieldOpen] = useState(false);
 
   const [cover, setCover] = useState(collection.cover || "");
   const [logo, setLogo] = useState(collection.logo || "");
 
   const { connectedUser } = useGlobal();
   const { mode } = useTheme();
-
-  console.log({ collection });
 
   const FieldDraggable = (provided: DroppableProvided) => (
     <Box {...provided.droppableProps} ref={provided.innerRef}>
@@ -70,11 +70,14 @@ function FormBuilder({ fields }: Props) {
             handleClose={() => setIsEditFieldOpen(false)}
           />
         )}
+        {isAddFieldOpen && (
+          <AddField handleClose={() => setIsAddFieldOpen(false)} />
+        )}
       </AnimatePresence>
       <Box
         paddingX={{
           xs: "1",
-          md: "4",
+          md: "2",
         }}
       >
         <CoverImageButtonContainer>
@@ -112,7 +115,6 @@ function FormBuilder({ fields }: Props) {
                 <FileInput
                   onChange={async (file) => {
                     const res = await storeImage(file);
-                    console.log({ res });
                     setLogo(res.imageGatewayURL);
                     if (connectedUser) {
                       const newCollection = await updateFormCollection(
@@ -170,6 +172,14 @@ function FormBuilder({ fields }: Props) {
             <Droppable droppableId="activeFields" type="field">
               {FieldDraggableCallback}
             </Droppable>
+            <Box paddingX="5">
+              <PrimaryButton
+                icon={<IconPlusSmall />}
+                onClick={() => setIsAddFieldOpen(true)}
+              >
+                Add Field
+              </PrimaryButton>
+            </Box>
           </FormContainer>
         </Container>
       </Box>

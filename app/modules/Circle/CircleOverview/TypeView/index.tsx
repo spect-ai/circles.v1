@@ -54,7 +54,7 @@ const BoxContainer = styled(Box)`
   margin-top: 1.2rem;
 
   @media (max-width: 768px) {
-    height: calc(100vh - 16rem);
+    height: calc(100vh - 14rem);
   }
   height: calc(100vh - 12rem);
 `;

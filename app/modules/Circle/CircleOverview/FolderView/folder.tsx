@@ -120,71 +120,82 @@ const Folder = ({
       {...provided.droppableProps}
       ref={provided.innerRef}
       mode={mode}
+      id="scroll-container"
     >
-      <Container style={{ marginLeft: "-1rem" }}>
-        <Row>
-          {content?.map((card, i) => {
-            if (projects?.[card] && card) {
-              return (
-                <Col
-                  sm={6}
-                  md={4}
-                  lg={2}
+      <Row id="row">
+        {content?.map((card, i) => {
+          if (projects?.[card] && card) {
+            return (
+              <Col
+                sm={6}
+                md={4}
+                lg={2}
+                key={card}
+                style={{
+                  margin: "0.2rem 0",
+                }}
+              >
+                <Card card={card} index={i} projects={projects} />
+              </Col>
+            );
+          }
+          if (workstreams?.[card] && card) {
+            return (
+              <Col
+                sm={6}
+                md={4}
+                lg={2}
+                key={card}
+                style={{
+                  margin: "0.2rem 0",
+                }}
+              >
+                <Card
+                  card={card}
+                  index={i}
                   key={card}
-                  style={{
-                    margin: "0.5rem 0",
-                  }}
-                >
-                  <Card card={card} index={i} projects={projects} />
-                </Col>
-              );
-            }
-            if (workstreams?.[card] && card) {
-              return (
-                <Col
-                  sm={6}
-                  md={4}
-                  lg={2}
+                  workstreams={workstreams}
+                />
+              </Col>
+            );
+          }
+          if (retros?.[card] && card) {
+            return (
+              <Col
+                sm={6}
+                md={4}
+                lg={2}
+                key={card}
+                style={{
+                  margin: "0.2rem 0",
+                }}
+              >
+                <Card card={card} index={i} key={card} retros={retros} />
+              </Col>
+            );
+          }
+          if (collections?.[card] && card) {
+            return (
+              <Col
+                sm={6}
+                md={4}
+                lg={2}
+                key={card}
+                style={{
+                  margin: "0.2rem 0",
+                }}
+              >
+                <Card
+                  card={card}
+                  index={i}
                   key={card}
-                  style={{
-                    margin: "0.5rem 0",
-                  }}
-                >
-                  <Card
-                    card={card}
-                    index={i}
-                    key={card}
-                    workstreams={workstreams}
-                  />
-                </Col>
-              );
-            }
-            if (retros?.[card] && card) {
-              return <Card card={card} index={i} key={card} retros={retros} />;
-            }
-            if (collections?.[card] && card) {
-              return (
-                <Col
-                  sm={6}
-                  md={4}
-                  lg={2}
-                  key={card}
-                  style={{
-                    margin: "0.5rem 0",
-                  }}
-                >
-                  <Card
-                    card={card}
-                    index={i}
-                    key={card}
-                    collections={collections}
-                  />
-                </Col>
-              );
-            }
-          })}
-        </Row>
-      </Container>
+                  collections={collections}
+                />
+              </Col>
+            );
+          }
+        })}
+      </Row>
       {provided.placeholder}
     </ScrollContainer>
   );
@@ -201,7 +212,6 @@ const Folder = ({
   function DraggableContent(provided: DraggableProvided) {
     return (
       <Box
-        paddingY={"2"}
         display="flex"
         flexDirection="column"
         justifyContent="space-between"
@@ -209,7 +219,7 @@ const Folder = ({
         {...provided.dragHandleProps}
         ref={provided.innerRef}
       >
-        <Stack direction={"horizontal"} align={"center"}>
+        <Stack direction={"horizontal"} align={"center"} space="1">
           <NameInput
             placeholder="Add Title"
             value={folderTitle}

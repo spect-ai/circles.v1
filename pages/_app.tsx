@@ -141,10 +141,10 @@ function MyApp({ Component, pageProps }: AppProps) {
         if (user.ethAddress) {
           queryClient.setQueryData("getMyUser", user);
           console.log("connectUser");
-          connectUser(user.id);
+          connectUser && connectUser(user.id);
         }
       } catch (e) {
-        console.log(e);
+        console.error(e);
         setAuthenticationStatus("unauthenticated");
       }
     })();

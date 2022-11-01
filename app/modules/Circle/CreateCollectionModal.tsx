@@ -84,7 +84,7 @@ function CreateCollectionModal({ folderId, setCollectionModal }: Props) {
 
   return (
     <>
-      <Loader loading={isLoading} text="Creating your collection" />
+      <Loader loading={isLoading} text="Creating your form..." />
       <Modal handleClose={close} title="Create Form">
         <Box width="full" padding="8">
           <Stack>
