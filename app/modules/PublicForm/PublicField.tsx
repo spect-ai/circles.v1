@@ -37,6 +37,8 @@ export default function PublicField({
     {} as { [key: string]: boolean }
   );
 
+  console.log({ data });
+
   return (
     <Box padding="4" margin="1" borderRadius="large">
       <Stack direction="vertical" space="2">
@@ -94,10 +96,10 @@ export default function PublicField({
         <Input
           label=""
           placeholder={`Enter ${form.properties[propertyName]?.name}`}
-          value={data && data[propertyName]}
+          value={data && data[propertyName]?.toString()}
           type="number"
           onChange={(e) => {
-            setData({ ...data, [propertyName]: e.target.value });
+            setData({ ...data, [propertyName]: parseFloat(e.target.value) });
             updateRequiredFieldNotSet(propertyName, e.target.value);
           }}
           onKeyDown={(e) => {

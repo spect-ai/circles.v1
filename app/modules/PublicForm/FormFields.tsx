@@ -141,6 +141,7 @@ export default function FormFields({ form, setForm }: Props) {
               "ethAddress",
               "user",
               "date",
+              "number",
               "email",
             ].includes(form.properties[propertyId].type)
           ) {
@@ -164,9 +165,14 @@ export default function FormFields({ form, setForm }: Props) {
         const tempData: any = {};
         form.propertyOrder.forEach((propertyId) => {
           if (
-            ["longText", "shortText", "ethAddress", "user", "date"].includes(
-              form.properties[propertyId].type
-            )
+            [
+              "longText",
+              "shortText",
+              "ethAddress",
+              "user",
+              "date",
+              "number",
+            ].includes(form.properties[propertyId].type)
           ) {
             tempData[propertyId] = "";
           } else if (form.properties[propertyId].type === "singleSelect") {

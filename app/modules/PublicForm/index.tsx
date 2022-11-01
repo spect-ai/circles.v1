@@ -154,7 +154,7 @@ export default function PublicForm() {
                   ease: [0, 0.71, 0.2, 1.01],
                 }}
               >
-                {form.formRoleGating?.length && (
+                {!form.hasRole && (
                   <Box
                     display="flex"
                     flexDirection="column"
@@ -216,7 +216,7 @@ export default function PublicForm() {
                     </Box>
                   </Box>
                 )}
-                {form.sybilProtectionEnabled && (
+                {!form.hasPassedSybilCheck && (
                   <Box
                     display="flex"
                     flexDirection="column"

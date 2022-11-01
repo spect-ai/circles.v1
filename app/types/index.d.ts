@@ -812,6 +812,8 @@ export interface FormType {
   sybilProtectionEnabled: boolean;
   sybilProtectionScores: GitcoinScoreType[];
   canClaimKudos: boolean;
+  hasRole: boolean;
+  hasPassedSybilCheck: boolean;
   createdAt: string;
   updatedAt: string;
   id: string;

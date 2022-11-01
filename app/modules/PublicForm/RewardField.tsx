@@ -105,6 +105,7 @@ export default function RewardField({
           xs: "full",
           md: "72",
         }}
+        marginTop="2"
       >
         <Dropdown
           options={tokenOptions}

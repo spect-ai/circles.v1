@@ -253,8 +253,7 @@ export default function TableView() {
               setPropertyName={setPropertyName}
             />
           ),
-          minWidth: 50,
-          maxWidth: 150,
+          minWidth: 150,
         },
         ...columns,
       ]

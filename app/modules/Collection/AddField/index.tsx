@@ -206,7 +206,7 @@ export default function AddField({ propertyName, handleClose }: Props) {
             ) : null}
             {type.value === "user" || type.value === "user[]" ? (
               <Stack>
-                <Text variant="label">User Type</Text>
+                {/* <Text variant="label">User Type</Text>
                 <Select
                   options={[
                     { label: "Assignee", value: "assignee" },
@@ -222,7 +222,7 @@ export default function AddField({ propertyName, handleClose }: Props) {
                   onChange={(type) => {
                     setUserType(type.value as FormUserType);
                   }}
-                />
+                /> */}
               </Stack>
             ) : null}
             {type.value === "reward" ? (
