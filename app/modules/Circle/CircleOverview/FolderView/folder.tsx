@@ -129,7 +129,7 @@ const Folder = ({
               <Col
                 sm={6}
                 md={4}
-                lg={2}
+                lg={3}
                 key={card}
                 style={{
                   margin: "0.2rem 0",
@@ -144,7 +144,7 @@ const Folder = ({
               <Col
                 sm={6}
                 md={4}
-                lg={2}
+                lg={3}
                 key={card}
                 style={{
                   margin: "0.2rem 0",
@@ -164,7 +164,7 @@ const Folder = ({
               <Col
                 sm={6}
                 md={4}
-                lg={2}
+                lg={3}
                 key={card}
                 style={{
                   margin: "0.2rem 0",
@@ -179,7 +179,7 @@ const Folder = ({
               <Col
                 sm={6}
                 md={4}
-                lg={2}
+                lg={3}
                 key={card}
                 style={{
                   margin: "0.2rem 0",

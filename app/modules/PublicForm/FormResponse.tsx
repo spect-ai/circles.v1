@@ -152,7 +152,7 @@ export default function FormResponse({
             <Box>
               {form.canClaimKudos && (
                 <Stack>
-                  <Text as="h2">
+                  <Text weight="semiBold" variant="large">
                     The creator of this form is distributing kudos to everyone
                     that submitted a response 🎉
                   </Text>

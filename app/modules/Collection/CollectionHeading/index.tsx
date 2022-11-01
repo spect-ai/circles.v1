@@ -1,7 +1,6 @@
 import Breadcrumbs from "@/app/common/components/Breadcrumbs";
 import Popover from "@/app/common/components/Popover";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { ShareAltOutlined } from "@ant-design/icons";
 import { Box, Heading, IconDotsHorizontal, Stack, useTheme } from "degen";
 import { AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
@@ -150,17 +149,19 @@ function CollectionHeading() {
                           Responses
                         </PopoverOption>
                       )}
-                      <PopoverOption
-                        onClick={() => {
-                          window.open(
-                            `https://circles.spect.network/r/${collection?.slug}`,
-                            "_blank"
-                          );
-                          setIsOpen(false);
-                        }}
+                      <a
+                        href={`/r/${collection?.slug}`}
+                        target="_blank"
+                        rel="noreferrer"
                       >
-                        Preview
-                      </PopoverOption>
+                        <PopoverOption
+                          onClick={() => {
+                            setIsOpen(false);
+                          }}
+                        >
+                          Preview
+                        </PopoverOption>
+                      </a>
                       <PopoverOption onClick={() => {}}>
                         <PrimaryButton
                           onClick={() => {
@@ -187,17 +188,13 @@ function CollectionHeading() {
                 }}
                 align="center"
               >
-                <PrimaryButton
-                  variant={"transparent"}
-                  onClick={() => {
-                    window.open(
-                      `https://circles.spect.network/r/${collection?.slug}`,
-                      "_blank"
-                    );
-                  }}
+                <a
+                  href={`/r/${collection?.slug}`}
+                  target="_blank"
+                  rel="noreferrer"
                 >
-                  Preview
-                </PrimaryButton>
+                  <PrimaryButton variant={"transparent"}>Preview</PrimaryButton>
+                </a>
                 <PrimaryButton
                   // icon={<ShareAltOutlined />}
                   onClick={() => {

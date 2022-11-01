@@ -373,7 +373,7 @@ export const CoverImage = styled(Box)<{ src: string }>`
   width: 100%;
   height: 20rem;
   background-image: url(${(props) => props.src});
-  background-size: contain;
+  background-size: auto;
   z-index: -1;
 `;
 

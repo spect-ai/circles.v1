@@ -1,5 +1,4 @@
-/* eslint-disable */
-import { Box, useTheme } from "degen";
+import { Box } from "degen";
 import React from "react";
 import styled from "styled-components";
 
@@ -7,7 +6,7 @@ const SoulboundContainer = styled(Box)`
   height: 400px;
   width: 300px;
   background-image: url("/SpectNFTCard.svg");
-  background-size: cover;
+  background-size: auto;
   border-radius: 4px;
   margin: 1rem;
   &:hover {
@@ -51,7 +50,7 @@ export default function SoulboundToken({
           <text
             fill="white"
             fontFamily="Poppins"
-            font-weight="bold"
+            fontWeight="bold"
             x="150px"
             textAnchor="middle"
             fontSize="20"
@@ -84,7 +83,7 @@ export default function SoulboundToken({
             height="45px"
             width="175px"
             stroke="rgba(255, 255, 255, 0.2)"
-            stroke-width="1"
+            strokeWidth="1"
             rx="25"
             ry="25"
             fill="rgba(255, 255, 255, 0.1)"
@@ -118,8 +117,8 @@ export default function SoulboundToken({
           <text
             x="50%"
             y="87%"
-            dominant-baseline="middle"
-            text-anchor="middle"
+            dominantBaseline="middle"
+            textAnchor="middle"
             fill="white"
             fontSize="16"
             fontFamily="Poppins"
