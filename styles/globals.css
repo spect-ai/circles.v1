@@ -40,6 +40,10 @@ a {
   margin-top: 0 !important;
 }
 
+.ProseMirror > p {
+  font-size: 0.9em;
+}
+
 .block-menu-trigger {
   display: none !important;
 }

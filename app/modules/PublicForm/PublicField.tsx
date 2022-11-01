@@ -37,8 +37,6 @@ export default function PublicField({
     {} as { [key: string]: boolean }
   );
 
-  console.log({ data });
-
   return (
     <Box padding="4" margin="1" borderRadius="large">
       <Stack direction="vertical" space="2">
@@ -150,6 +148,7 @@ export default function PublicField({
           borderRadius="large"
           maxHeight="64"
           overflow="auto"
+          id="editorContainer"
         >
           <Editor
             value={data[propertyName]}

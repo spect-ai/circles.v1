@@ -6,6 +6,7 @@ import {
   Box,
   IconCollection,
   IconLightningBolt,
+  IconSparkles,
   IconUserGroup,
   Skeleton,
   SkeletonGroup,
@@ -93,7 +94,6 @@ function CircleSidebar() {
             </Stack>
           </HeaderButton>
         </Stack>
-        <Container subH="8.1rem"></Container>
       </Box>
     );
 
@@ -129,51 +129,56 @@ function CircleSidebar() {
           />
         </Stack>
         {!isLoading && circle?.toBeClaimed && (
-          <Stack>
-            <PrimaryButton
-              onClick={async () => {
-                const circleRes = await fetch(
-                  `${process.env.API_HOST}/circle/v1/${circle?.id}/claimCircle`,
-                  {
-                    method: "PATCH",
-                    headers: {
-                      "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({}),
-                    credentials: "include",
-                  }
-                );
-                console.log({ circleRes });
-                const circleData = await circleRes.json();
-
-                if (!circleData) {
-                  toast.error("Cannot claim circle");
-                  return;
+          <PrimaryButton
+            onClick={async () => {
+              const circleRes = await fetch(
+                `${process.env.API_HOST}/circle/v1/${circle?.id}/claimCircle`,
+                {
+                  method: "PATCH",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({}),
+                  credentials: "include",
                 }
-                const memberDetailsRes = await fetch(
-                  `${process.env.API_HOST}/circle/${circle?.id}/memberDetails?circleIds=${circle?.id}`,
-                  {
-                    method: "GET",
-                    headers: {
-                      "Content-Type": "application/json",
-                    },
-                    credentials: "include",
-                  }
-                );
+              );
+              const circleData = await circleRes.json();
 
-                const memberDetailsData = await memberDetailsRes.json();
+              if (!circleData) {
+                toast.error("Cannot claim circle");
+                return;
+              }
+              const memberDetailsRes = await fetch(
+                `${process.env.API_HOST}/circle/${circle?.id}/memberDetails?circleIds=${circle?.id}`,
+                {
+                  method: "GET",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  credentials: "include",
+                }
+              );
 
-                setCircleData(circleData);
-                setMemberDetailsData(memberDetailsData);
-              }}
-              variant="tertiary"
-            >
-              Claim
-            </PrimaryButton>
-          </Stack>
+              const memberDetailsData = await memberDetailsRes.json();
+
+              setCircleData(circleData);
+              setMemberDetailsData(memberDetailsData);
+            }}
+            variant="tertiary"
+          >
+            Claim
+          </PrimaryButton>
         )}
+        <Link href={`/${cId}`}>
+          <PrimaryButton
+            variant={pId || cSlug ? "transparent" : "tertiary"}
+            icon={<IconSparkles size="5" />}
+          >
+            Circle Dashboard
+          </PrimaryButton>
+        </Link>
 
-        <Container subH={circle?.toBeClaimed ? "12.1rem" : "9.1rem"}>
+        <Container subH="12.1rem">
           <Stack>
             {!isLoading &&
               circle?.folderOrder?.map((fol) => {

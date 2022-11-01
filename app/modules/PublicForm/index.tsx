@@ -7,13 +7,12 @@ import { Avatar, Box, Text, Stack, useTheme, Button, Tag } from "degen";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { useQuery } from "react-query";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import styled from "styled-components";
 import FormFields from "./FormFields";
 import { motion } from "framer-motion";
 import Loader from "@/app/common/components/Loader";
 import { getAllCredentials } from "@/app/services/Credentials/AggregatedCredentials";
-import Logo from "@/app/common/components/Logo";
 import { useGlobal } from "@/app/context/globalContext";
 import { PassportStampIcons, PassportStampIconsLightMode } from "@/app/assets";
 
@@ -71,6 +70,16 @@ export default function PublicForm() {
   if (form) {
     return (
       <ScrollContainer>
+        <ToastContainer
+          toastStyle={{
+            backgroundColor: `${
+              mode === "dark" ? "rgb(20,20,20)" : "rgb(240,240,240)"
+            }`,
+            color: `${
+              mode === "dark" ? "rgb(255,255,255,0.7)" : "rgb(20,20,20,0.7)"
+            }`,
+          }}
+        />
         <CoverImage src={form.cover} backgroundColor="accentSecondary" />
         <Container>
           <FormContainer backgroundColor="background">
@@ -116,17 +125,17 @@ export default function PublicForm() {
               >
                 {" "}
                 {form.formRoleGating && form.formRoleGating.length > 0 && (
-                  <Text weight="semiBold" variant="large">
+                  <Text weight="semiBold" variant="large" color="accentText">
                     This form is role gated
                   </Text>
                 )}
                 {form.mintkudosTokenId && (
-                  <Text weight="semiBold" variant="large">
-                    This form distribute Kudos to responders
+                  <Text weight="semiBold" variant="large" color="accentText">
+                    This form distributes Kudos to responders
                   </Text>
                 )}
                 {form.sybilProtectionEnabled && (
-                  <Text weight="semiBold" variant="large">
+                  <Text weight="semiBold" variant="large" color="accentText">
                     This form is Sybil protected
                   </Text>
                 )}

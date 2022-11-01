@@ -194,7 +194,7 @@ function FieldComponent({
         </Box>
       )}
       {collection.properties[id]?.type === "milestone" && (
-        <Box marginTop="4" width="72">
+        <Box marginTop="4" width="full">
           <PrimaryButton
             variant="tertiary"
             icon={<IconPlusSmall />}

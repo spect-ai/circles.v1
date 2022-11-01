@@ -121,6 +121,18 @@ function CollectionHeading() {
                       borderWidth="0.5"
                       borderRadius="2xLarge"
                     >
+                      <PopoverOption onClick={() => {}}>
+                        <PrimaryButton
+                          onClick={() => {
+                            void navigator.clipboard.writeText(
+                              `https://circles.spect.network/r/${collection?.slug}`
+                            );
+                            toast.success("Copied to clipboard");
+                          }}
+                        >
+                          Share
+                        </PrimaryButton>
+                      </PopoverOption>
                       <PopoverOption
                         onClick={() => {
                           setIsAddFieldOpen(true);
@@ -162,18 +174,6 @@ function CollectionHeading() {
                           Preview
                         </PopoverOption>
                       </a>
-                      <PopoverOption onClick={() => {}}>
-                        <PrimaryButton
-                          onClick={() => {
-                            void navigator.clipboard.writeText(
-                              `https://circles.spect.network/r/${collection?.slug}`
-                            );
-                            toast.success("Copied to clipboard");
-                          }}
-                        >
-                          Share
-                        </PrimaryButton>
-                      </PopoverOption>
                     </Box>
                   </Popover>
                 </Box>

@@ -84,7 +84,6 @@ function FormBuilder({ fields }: Props) {
           <FileInput
             onChange={async (file) => {
               const res = await storeImage(file);
-              console.log({ res });
               setCover(res.imageGatewayURL);
               if (connectedUser) {
                 const newCollection = await updateFormCollection(

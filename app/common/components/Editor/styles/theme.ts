@@ -20,7 +20,8 @@ export const base = {
   fontFamily: "Inter",
   fontFamilyMono:
     "'SFMono-Regular',Consolas,'Liberation Mono', Menlo, Courier,monospace",
-  fontWeight: 300,
+  fontWeight: 200,
+  fontSize: "0.9em",
   zIndex: 100,
   link: colors.primary,
   placeholder: "#B1BECC",

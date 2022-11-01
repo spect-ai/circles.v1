@@ -134,7 +134,7 @@ export default function MilestoneField({
               );
             })}
         </Stack>
-        <Box width="72">
+        <Box width="full">
           <PrimaryButton
             variant="tertiary"
             icon={<IconPlusSmall />}
