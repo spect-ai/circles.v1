@@ -339,7 +339,7 @@ export default function PublicForm() {
           </FormContainer>
           <Stack align={"center"}>
             <Text>Powered By</Text>
-            <Link href="/">
+            <a href="/" target="_blank" rel="noopener noreferrer">
               {mode == "dark" ? (
                 <Image
                   src={"/logo2.svg"}
@@ -355,35 +355,49 @@ export default function PublicForm() {
                   width="138"
                 />
               )}
-            </Link>
+            </a>
             <Stack justify={"center"} direction="horizontal" align={"center"}>
-              <Link href={"https://twitter.com/joinSpect"}>
+              <a
+                href={"https://twitter.com/joinSpect"}
+                target="_blank"
+                rel="noreferrer"
+              >
                 <Button shape="circle" size="small" variant="transparent">
                   <TwitterOutlined style={{ fontSize: "1.3rem" }} />
                 </Button>
-              </Link>
+              </a>
 
-              <Link href={"https://discord.gg/AF2qRMMpZ9"}>
+              <a
+                href={"https://discord.gg/AF2qRMMpZ9"}
+                target="_blank"
+                rel="noreferrer"
+              >
                 <Button shape="circle" size="small" variant="transparent">
                   <DiscordIcon />
                 </Button>
-              </Link>
+              </a>
 
-              <Link href={"https://github.com/spect-ai"}>
+              <a
+                href={"https://github.com/spect-ai"}
+                target="_blank"
+                rel="noreferrer"
+              >
                 <Button shape="circle" size="small" variant="transparent">
                   <GithubOutlined style={{ fontSize: "1.3rem" }} />
                 </Button>
-              </Link>
+              </a>
 
-              <Link
+              <a
                 href={
                   "https://www.youtube.com/channel/UCUXOC62aiZqT_ijL-dz379Q"
                 }
+                target="_blank"
+                rel="noreferrer"
               >
                 <Button shape="circle" size="small" variant="transparent">
                   <YoutubeFilled style={{ fontSize: "1.3rem" }} />
                 </Button>
-              </Link>
+              </a>
             </Stack>
           </Stack>
           <Box marginBottom="8" />
