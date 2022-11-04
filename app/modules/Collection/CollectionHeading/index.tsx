@@ -14,8 +14,9 @@ import { PopoverOption } from "../../Card/OptionPopover";
 import { useCircle } from "../../Circle/CircleContext";
 import AddField from "../AddField";
 import { useLocalCollection } from "../Context/LocalCollectionContext";
-import { useGlobal } from "@/app/context/globalContext";
 import mixpanel from "@/app/common/utils/mixpanel";
+import { useQuery } from "react-query";
+import { UserType } from "@/app/types";
 
 export const IconButton = styled(Box)`
   cursor: pointer;
@@ -37,9 +38,12 @@ function CollectionHeading() {
   const [isAddFieldOpen, setIsAddFieldOpen] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const { navigationBreadcrumbs } = useCircle();
-  const { connectedUser } = useGlobal();
 
   const location = useLocation();
+
+  const { data: currentUser } = useQuery<UserType>("getMyUser", {
+    enabled: false,
+  });
 
   useEffect(() => {
     if (typeof responses === "string") {
@@ -133,7 +137,7 @@ function CollectionHeading() {
                             toast.success("Copied to clipboard");
                             process.env.NODE_ENV === "production" &&
                               mixpanel.track("Share Form", {
-                                user: connectedUser,
+                                user: currentUser?.username,
                                 formId: collection?.slug,
                               });
                           }}
@@ -212,7 +216,7 @@ function CollectionHeading() {
                     toast.success("Copied to clipboard");
                     process.env.NODE_ENV === "production" &&
                       mixpanel.track("Share Form", {
-                        user: connectedUser,
+                        user: currentUser?.username,
                         formId: collection?.slug,
                       });
                   }}

@@ -2,7 +2,7 @@
 import Dropdown from "@/app/common/components/Dropdown";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import RewardField from "@/app/modules/PublicForm/RewardField";
-import { MemberDetails } from "@/app/types";
+import { MemberDetails, UserType } from "@/app/types";
 import {
   Box,
   IconPencil,
@@ -24,7 +24,7 @@ import { useQuery } from "react-query";
 import styled from "styled-components";
 import { useLocalCollection } from "../../Context/LocalCollectionContext";
 import mixpanel from "@/app/common/utils/mixpanel";
-import { useGlobal } from "@/app/context/globalContext";
+import Editor from "@/app/common/components/Editor";
 
 type Props = {
   id: string;
@@ -41,7 +41,6 @@ function FieldComponent({
 }: Props) {
   const { localCollection: collection } = useLocalCollection();
   const [hover, setHover] = useState(false);
-  const { connectedUser } = useGlobal();
   const { mode } = useTheme();
   const router = useRouter();
   const { circle: cId } = router.query;
@@ -51,6 +50,9 @@ function FieldComponent({
       enabled: false,
     }
   );
+  const { data: currentUser } = useQuery<UserType>("getMyUser", {
+    enabled: false,
+  });
 
   const memberOptions = memberDetails?.members?.map((member: string) => ({
     label: memberDetails && memberDetails.memberDetails[member]?.username,
@@ -97,7 +99,7 @@ function FieldComponent({
             setIsEditFieldOpen(true);
             process.env.NODE_ENV === "production" &&
               mixpanel.track("Edit Field Button", {
-                user: connectedUser,
+                user: currentUser?.username,
                 field: collection.properties[id]?.name,
               });
           }}
@@ -153,12 +155,19 @@ function FieldComponent({
         />
       )}
       {collection.properties[id]?.type === "longText" && (
-        <Box marginTop="4">
-          <LongTextInput
-            mode={mode}
-            placeholder={`Enter ${collection.properties[id]?.name}`}
-            value={collection.data && collection.data[id]}
-            onChange={() => {}}
+        <Box
+          marginTop="4"
+          width="full"
+          borderWidth="0.375"
+          padding="4"
+          borderRadius="large"
+          maxHeight="64"
+          overflow="auto"
+          id="editorContainer"
+        >
+          <Editor
+            placeholder={`Type here to edit ${collection.properties[id]?.name}`}
+            isDirty={true}
           />
         </Box>
       )}
@@ -261,26 +270,4 @@ export const DateInput = styled.input<{ mode: string }>`
     border-color: rgb(191, 90, 242, 1);
   }
   transition: border-color 0.5s ease;
-`;
-
-export const LongTextInput = styled.textarea<{ mode: "dark" | "light" }>`
-  width: 100%;
-  background: transparent;
-  border-radius: 0.55rem;
-  border 1px solid ${(props) =>
-    props.mode === "dark" ? "rgb(255, 255, 255,0.1)" : "rgb(20,20,20,0.1)"};
-  background-color: ${(props) =>
-    props.mode === "dark" ? "rgb(20,20,20)" : "rgb(255, 255, 255)"};
-  caret-color: ${(props) =>
-    props.mode === "dark" ? "rgb(255, 255, 255, 0.7)" : "rgb(20,20,20,0.7)"};
-  color: ${(props) =>
-    props.mode === "dark" ? "rgb(255, 255, 255, 0.7)" : "rgb(20,20,20,0.7)"};
-  resize: none;
-  padding: 1rem;
-  outline: none;
-  &:focus {
-    border-color: rgb(191, 90, 242, 1);
-  }
-  transition: border-color 0.5s ease;
-
 `;

@@ -2,10 +2,11 @@ import { Stack, IconTokens, Heading, Text, Box, Button } from "degen";
 import { NameInput } from "./BasicProfile";
 import { useState } from "react";
 import { RocketOutlined } from "@ant-design/icons";
-import { useMutation } from "react-query";
+import { useMutation, useQuery } from "react-query";
 import { generateColorHEX } from "@/app/common/utils/utils";
 import { useGlobal } from "@/app/context/globalContext";
 import mixpanel from "@/app/common/utils/mixpanel";
+import { UserType } from "@/app/types";
 
 type CreateCircleDto = {
   name: string;
@@ -21,7 +22,9 @@ interface Props {
 
 export function CreateCircle({ setStep }: Props) {
   const [circleName, setCircleName] = useState("");
-  const { connectedUser } = useGlobal();
+  const { data: currentUser } = useQuery<UserType>("getMyUser", {
+    enabled: false,
+  });
 
   const { mutateAsync } = useMutation((circle: CreateCircleDto) => {
     return fetch(`${process.env.API_HOST}/circle/v1`, {
@@ -88,7 +91,7 @@ export function CreateCircle({ setStep }: Props) {
               }
               process.env.NODE_ENV === "production" &&
                 mixpanel.track("Onboard circle", {
-                  user: connectedUser,
+                  user: currentUser?.username,
                 });
             })
             .catch((err) => console.log({ err }));

@@ -106,11 +106,11 @@ function MyApp({ Component, pageProps }: AppProps) {
         verifyRes.ok ? "authenticated" : "unauthenticated"
       );
       queryClient.setQueryData("getMyUser", res);
-      console.log("connect user", res.id);
+      console.log("connect user", res.username);
       connectUser(res.id);
       process.env.NODE_ENV === "production" &&
         mixpanel.track("User Connected", {
-          user: res.id,
+          user: res.username,
         });
       return Boolean(verifyRes.ok);
     },

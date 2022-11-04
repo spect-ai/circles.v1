@@ -11,9 +11,8 @@ import { createProject } from "@/app/services/Project";
 import { createFolder } from "@/app/services/Folders";
 import { useRouter } from "next/router";
 import { useMutation, useQuery } from "react-query";
-import { CircleType } from "@/app/types";
+import { CircleType, UserType } from "@/app/types";
 import mixpanel from "@/app/common/utils/mixpanel";
-import { useGlobal } from "@/app/context/globalContext";
 import { Hidden } from "react-grid-system";
 
 const Card = styled(Box)<{ border: boolean }>`
@@ -47,7 +46,10 @@ export function CreateContent() {
   const [itemName, setItemName] = useState("");
   const [loading, setIsLoading] = useState(false);
   const [itemType, setItemType] = useState<"Sorm" | "Project">("Sorm");
-  const { connectedUser } = useGlobal();
+
+  const { data: currentUser } = useQuery<UserType>("getMyUser", {
+    enabled: false,
+  });
 
   const { data: myCircles, refetch } = useQuery<CircleType[]>(
     "myOrganizations",
@@ -90,7 +92,7 @@ export function CreateContent() {
           const res = await createFolder(payload, myCircles?.[0]?.id as string);
           process.env.NODE_ENV === "production" &&
             mixpanel.track("Onboard sorms", {
-              user: connectedUser,
+              user: currentUser?.username,
             });
           if (res) {
             void router.push(`/${res.slug}/r/${resJson.slug}`);
@@ -117,7 +119,7 @@ export function CreateContent() {
       const res = await createFolder(payload, myCircles?.[0]?.id as string);
       process.env.NODE_ENV === "production" &&
         mixpanel.track("Onboard project", {
-          user: connectedUser,
+          user: currentUser?.username,
         });
       if (res) {
         void router.push(`/${res.slug}/${data.slug}`);

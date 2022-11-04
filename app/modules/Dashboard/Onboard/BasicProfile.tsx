@@ -4,7 +4,8 @@ import { useState } from "react";
 import useProfileUpdate from "@/app/services/Profile/useProfileUpdate";
 import { RocketOutlined } from "@ant-design/icons";
 import mixpanel from "@/app/common/utils/mixpanel";
-import { useGlobal } from "@/app/context/globalContext";
+import { UserType } from "@/app/types";
+import { useQuery } from "react-query";
 
 export const NameInput = styled.input`
   width: 100%;
@@ -25,7 +26,9 @@ export const NameInput = styled.input`
 export function BasicProfile({ setStep }: { setStep: (step: number) => void }) {
   const { updateProfile } = useProfileUpdate();
   const [userName, setUserName] = useState("");
-  const { connectedUser } = useGlobal();
+  const { data: currentUser } = useQuery<UserType>("getMyUser", {
+    enabled: false,
+  });
   const updateUser = async () => {
     const res = await updateProfile({
       username: userName,
@@ -35,7 +38,7 @@ export function BasicProfile({ setStep }: { setStep: (step: number) => void }) {
     }
     process.env.NODE_ENV === "production" &&
       mixpanel.track("Onboard profile", {
-        user: connectedUser,
+        user: currentUser?.username,
       });
   };
   return (

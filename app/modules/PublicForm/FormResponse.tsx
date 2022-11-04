@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { FormType, KudosType } from "@/app/types";
+import { FormType, KudosType, UserType } from "@/app/types";
 import { TwitterOutlined } from "@ant-design/icons";
 import { Box, Heading, Stack, Text } from "degen";
 import React, { useState } from "react";
@@ -11,7 +11,7 @@ import { useWindowSize } from "react-use";
 import styled from "styled-components";
 import Link from "next/link";
 import mixpanel from "@/app/common/utils/mixpanel";
-import { useGlobal } from "@/app/context/globalContext";
+import { useQuery } from "react-query";
 
 type Props = {
   form: FormType;
@@ -43,7 +43,9 @@ export default function FormResponse({
   const [claiming, setClaiming] = useState(false);
   const [claimedJustNow, setClaimedJustNow] = useState(false);
 
-  const { connectedUser } = useGlobal();
+  const { data: currentUser } = useQuery<UserType>("getMyUser", {
+    enabled: false,
+  });
 
   return (
     <Box
@@ -241,7 +243,7 @@ export default function FormResponse({
                       mixpanel.track("Create your own form", {
                         formId: form.slug,
                         sybilEnabled: form.sybilProtectionEnabled,
-                        user: connectedUser,
+                        user: currentUser?.username,
                       });
                   }}
                 >

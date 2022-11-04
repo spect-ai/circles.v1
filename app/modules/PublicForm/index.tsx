@@ -16,7 +16,6 @@ import { getAllCredentials } from "@/app/services/Credentials/AggregatedCredenti
 import { useGlobal } from "@/app/context/globalContext";
 import { PassportStampIcons, PassportStampIconsLightMode } from "@/app/assets";
 import mixpanel from "@/app/common/utils/mixpanel";
-import Link from "next/link";
 import {
   GithubOutlined,
   TwitterOutlined,
@@ -24,6 +23,7 @@ import {
 } from "@ant-design/icons";
 import DiscordIcon from "@/app/assets/icons/discordIcon.svg";
 import Image from "next/image";
+import Editor from "@/app/common/components/Editor";
 
 export default function PublicForm() {
   const router = useRouter();
@@ -108,12 +108,7 @@ export default function PublicForm() {
                   value={form.name}
                   disabled
                 />
-                <DescriptionInput
-                  mode={mode}
-                  autoFocus
-                  value={form.description}
-                  disabled
-                />
+                <Editor value={form.description} isDirty={true} />
               </Stack>
             </Box>
             {canFillForm && currentUser?.id && (
@@ -447,30 +442,11 @@ export const NameInput = styled.input`
   font-weight: 600;
 `;
 
-export const DescriptionInput = styled.textarea<{ mode: "dark" | "light" }>`
-  width: 100%;
-  background: transparent;
-  border: 0;
-  border-style: none;
-  border-color: transparent;
-  outline: none;
-  outline-offset: 0;
-  box-shadow: none;
-  font-size: 1.2rem;
-  caret-color: ${(props) =>
-    props.mode === "dark" ? "rgb(255, 255, 255, 0.7)" : "rgb(20,20,20,0.7)"};
-  color: ${(props) =>
-    props.mode === "dark" ? "rgb(255, 255, 255, 0.7)" : "rgb(20,20,20,0.7)"};
-  font-weight: 400;
-  font-size: 14px;
-  resize: none;
-`;
-
 export const CoverImage = styled(Box)<{ src: string }>`
   width: 100%;
   height: 20rem;
   background-image: url(${(props) => props.src});
-  background-size: auto;
+  background-size: cover;
   z-index: -1;
 `;
 

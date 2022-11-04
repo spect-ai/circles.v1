@@ -1,11 +1,9 @@
 import Popover from "@/app/common/components/Popover";
-import useRoleGate from "@/app/services/RoleGate/useRoleGate";
-import { CircleType, Permissions, ProjectType } from "@/app/types";
+import { CircleType, Permissions, ProjectType, UserType } from "@/app/types";
 import { AppstoreOutlined, SettingOutlined } from "@ant-design/icons";
 import {
   Box,
   Button,
-  IconCog,
   IconUserGroup,
   IconUsersSolid,
   Stack,
@@ -20,10 +18,11 @@ import { PopoverOption } from "../Card/OptionPopover";
 import SettingsModal from "../Circle/CircleSettingsModal";
 import { HeaderButton } from "./ExploreSidebar";
 import { useGlobal } from "@/app/context/globalContext";
+import mixpanel from "@/app/common/utils/mixpanel";
 
 function CircleOptions() {
   const router = useRouter();
-  const { toggle, setToggle } = useGlobal();
+  const { setToggle } = useGlobal();
   const { circle: cId, project: pId } = router.query;
   const { data: circle } = useQuery<CircleType>(["circle", cId], {
     enabled: false,
@@ -36,6 +35,9 @@ function CircleOptions() {
   const [settingsModalOpen, setSettingsModalOpen] = useState(false);
   const [perm, setPerm] = useState({} as Permissions);
   const { mode } = useTheme();
+  const { data: currentUser } = useQuery<UserType>("getMyUser", {
+    enabled: false,
+  });
 
   useEffect(() => {
     if (circle?.id) {
@@ -78,6 +80,11 @@ function CircleOptions() {
                 width="full"
                 onClick={() => {
                   setIsOpen(!isOpen);
+                  process.env.NODE_ENV === "production" &&
+                    mixpanel.track("Sidebar header button", {
+                      circle: cId,
+                      user: currentUser?.username,
+                    });
                 }}
                 mode={mode}
               >
@@ -101,7 +108,7 @@ function CircleOptions() {
                 onClick={() => {
                   setIsOpen(false);
                   void router.push(`/${cId}`);
-                  setToggle("Overview")
+                  setToggle("Overview");
                 }}
               >
                 <Stack direction="horizontal" space="2">
@@ -153,7 +160,14 @@ function CircleOptions() {
               shape="circle"
               size="small"
               variant="transparent"
-              onClick={() => setSettingsModalOpen(true)}
+              onClick={() => {
+                setSettingsModalOpen(true);
+                process.env.NODE_ENV === "production" &&
+                  mixpanel.track("Sidebar circle settings", {
+                    circle: cId,
+                    user: currentUser?.username,
+                  });
+              }}
             >
               <SettingOutlined
                 style={{

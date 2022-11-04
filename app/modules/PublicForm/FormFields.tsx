@@ -237,7 +237,7 @@ export default function FormFields({ form, setForm }: Props) {
       mixpanel.track("Form Submit", {
         formId: form.slug,
         sybilEnabled: form.sybilProtectionEnabled,
-        user: connectedUser,
+        user: currentUser?.username,
       });
     setSubmitting(false);
   };

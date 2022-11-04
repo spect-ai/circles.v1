@@ -1,7 +1,7 @@
 import Accordian from "@/app/common/components/Accordian";
 import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { CircleType } from "@/app/types";
+import { CircleType, UserType } from "@/app/types";
 import { SendOutlined } from "@ant-design/icons";
 import { Box, Stack, Tag, Text } from "degen";
 import { motion, AnimatePresence } from "framer-motion";
@@ -10,13 +10,15 @@ import React, { useState } from "react";
 import { useQuery } from "react-query";
 import { toast } from "react-toastify";
 import { expiryOptions, usesOptions } from "./constants";
-import { useGlobal } from "@/app/context/globalContext";
 import mixpanel from "@/app/common/utils/mixpanel";
 
 function InviteMemberModal() {
   const router = useRouter();
   const { circle: cId } = router.query;
   const { data: circle } = useQuery<CircleType>(["circle", cId], {
+    enabled: false,
+  });
+  const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
 
@@ -36,8 +38,6 @@ function InviteMemberModal() {
   });
   const [isLoading, setIsLoading] = useState(false);
 
-  const { connectedUser } = useGlobal();
-
   const roleOptions =
     circle &&
     Object.keys(circle.roles).map((role) => ({
@@ -55,7 +55,7 @@ function InviteMemberModal() {
             process.env.NODE_ENV === "production" &&
               mixpanel.track("Invite Open", {
                 circle: cId,
-                user: connectedUser,
+                user: currentUser?.username,
               });
           }}
           icon={<SendOutlined />}

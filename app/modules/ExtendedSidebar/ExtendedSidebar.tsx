@@ -1,12 +1,9 @@
-import React, { memo, ReactElement, useEffect } from "react";
+import React, { memo, ReactElement } from "react";
 import { Box } from "degen";
 import { motion } from "framer-motion";
 import { useRouter } from "next/router";
 import ExploreSidebar from "./ExploreSidebar";
 import CircleSidebar from "./CircleSidebar";
-import { useQuery } from "react-query";
-import { UserType } from "@/app/types";
-import { toast } from "react-toastify";
 import { useGlobal } from "@/app/context/globalContext";
 import ProfileButton from "../Sidebar/ProfileButton";
 import { Connect } from "../Sidebar/ProfileButton/ConnectButton";
@@ -15,7 +12,6 @@ function ExtendedSidebar(): ReactElement {
   const router = useRouter();
   const { circle: cId } = router.query;
   const { connectedUser } = useGlobal();
-
 
   return (
     <motion.div
