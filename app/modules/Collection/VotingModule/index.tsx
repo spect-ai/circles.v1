@@ -32,12 +32,16 @@ export default function VotingModule() {
     useLocalCollection();
 
   useEffect(() => {
-    if (collection.voting.enabled && collection.voting.options) {
+    if (
+      collection?.voting &&
+      collection.voting.enabled &&
+      collection.voting.options
+    ) {
       setVotingOptions(collection.voting.options);
       setMessage(collection.voting.message || "");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [collection]);
 
   return (
     <>
@@ -69,27 +73,62 @@ export default function VotingModule() {
                     label="Voting Options"
                   />
                 </Stack>
-                <PrimaryButton
-                  loading={loading}
-                  onClick={async () => {
-                    setLoading(true);
-                    const res = await updateFormCollection(collection.id, {
-                      voting: {
-                        enabled: true,
-                        options: votingOptions,
-                        message,
-                      },
-                    });
-                    console.log({ res });
-                    setLoading(false);
-                    if (res.id) {
-                      setIsOpen(false);
-                      setLocalCollection(res);
-                    } else toast.error("Something went wrong");
+                <Stack
+                  direction={{
+                    xs: "vertical",
+                    md: "horizontal",
                   }}
                 >
-                  Enable Voting
-                </PrimaryButton>
+                  {collection.voting.enabled && (
+                    <Box width="full">
+                      <PrimaryButton
+                        variant="secondary"
+                        tone="red"
+                        loading={loading}
+                        onClick={async () => {
+                          setLoading(true);
+                          const res = await updateFormCollection(
+                            collection.id,
+                            {
+                              voting: {
+                                enabled: false,
+                              },
+                            }
+                          );
+                          setLoading(false);
+                          if (res.id) {
+                            setIsOpen(false);
+                            setLocalCollection(res);
+                          } else toast.error("Something went wrong");
+                        }}
+                      >
+                        Disable Voting
+                      </PrimaryButton>
+                    </Box>
+                  )}
+                  <Box width="full">
+                    <PrimaryButton
+                      loading={loading}
+                      onClick={async () => {
+                        setLoading(true);
+                        const res = await updateFormCollection(collection.id, {
+                          voting: {
+                            enabled: true,
+                            options: votingOptions,
+                            message,
+                          },
+                        });
+                        setLoading(false);
+                        if (res.id) {
+                          setIsOpen(false);
+                          setLocalCollection(res);
+                        } else toast.error("Something went wrong");
+                      }}
+                    >
+                      {collection?.voting?.enabled ? "Update" : "Enable"} Voting
+                    </PrimaryButton>
+                  </Box>
+                </Stack>
               </Stack>
             </Box>
           </Modal>
