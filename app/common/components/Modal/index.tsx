@@ -38,7 +38,7 @@ export const slideUp = {
   visible: {
     y: 0,
     transition: {
-      duration: 0.4,
+      duration: 0.5,
     },
   },
   exit: {

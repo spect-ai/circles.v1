@@ -32,7 +32,7 @@ export default function DataModal() {
   const [data, setData] = useState({} as any);
   const [comment, setComment] = useState("");
   const [isDirty, setIsDirty] = useState(false);
-  const [vote, setVote] = useState(2);
+  const [vote, setVote] = useState(-1);
 
   useEffect(() => {
     if (dataId) {
@@ -66,7 +66,7 @@ export default function DataModal() {
                   <Text>{data[property.name]}</Text>
                 )}
                 {property?.type === "ethAddress" && (
-                  <Text>{data[property.name]}</Text>
+                  <Text ellipsis>{data[property.name]}</Text>
                 )}
                 {property?.type === "email" && (
                   <Text>{data[property.name]}</Text>
@@ -78,7 +78,7 @@ export default function DataModal() {
                   <Text>{data[property.name].label}</Text>
                 )}
                 {property?.type === "multiSelect" && (
-                  <Stack space="2" direction="horizontal">
+                  <Stack space="2" direction="horizontal" wrap>
                     {data[property.name].map((option: OptionType) => (
                       <Tag key={option.value} tone="accent" hover>
                         {option.label}
@@ -90,7 +90,7 @@ export default function DataModal() {
                   <Text>{data[property.name].label}</Text>
                 )}
                 {property?.type === "user[]" && (
-                  <Stack space="2" direction="horizontal" align="baseline">
+                  <Stack space="2" direction="horizontal" align="baseline" wrap>
                     {data[property.name].map((option: OptionType) => (
                       <Tag key={option.value} tone="accent" hover>
                         {option.label}
@@ -116,14 +116,14 @@ export default function DataModal() {
                     {data[property.name].map(
                       (milestone: any, index: number) => (
                         <Stack key={milestone.id} space="2">
-                          <Stack direction="horizontal" align="baseline">
+                          <Stack direction="horizontal" align="baseline" wrap>
                             <Text variant="label">Milestone {index + 1}</Text>
                             <Text weight="semiBold" color="textPrimary">
                               {milestone.title}
                             </Text>
                           </Stack>
                           <Editor value={milestone.description} disabled />
-                          <Stack direction="horizontal" align="baseline">
+                          <Stack direction="horizontal" align="baseline" wrap>
                             <Text variant="label">Reward</Text>
                             <Text weight="semiBold" color="textPrimary">
                               {milestone.reward?.value}{" "}
@@ -131,7 +131,7 @@ export default function DataModal() {
                               {milestone.reward?.chain.label}
                             </Text>
                           </Stack>
-                          <Stack direction="horizontal" align="baseline">
+                          <Stack direction="horizontal" align="baseline" wrap>
                             <Text variant="label">Due date</Text>
                             <Text weight="semiBold" color="textPrimary">
                               {milestone.dueDate}
@@ -145,17 +145,22 @@ export default function DataModal() {
               </Stack>
             );
           })}
-          <Text weight="semiBold" variant="extraLarge" color="accent">
-            Your Vote
-          </Text>
-          <Tabs
-            tabs={["For", "Against", "Abstain"]}
-            selectedTab={vote}
-            onTabClick={(tab) => setVote(tab)}
-            orientation="horizontal"
-            unselectedColor="transparent"
-            selectedColor="secondary"
-          />
+          {collection.voting.enabled && collection.voting.options && (
+            <Stack space="1">
+              <Text weight="semiBold" variant="extraLarge" color="accent">
+                Your Vote
+              </Text>
+              <Text>{collection.voting.message}</Text>
+              <Tabs
+                tabs={collection.voting.options.map((option) => option.label)}
+                selectedTab={vote}
+                onTabClick={(tab) => setVote(tab)}
+                orientation="horizontal"
+                unselectedColor="transparent"
+                selectedColor="secondary"
+              />
+            </Stack>
+          )}
         </Stack>
         <Box
           width="full"
@@ -204,7 +209,7 @@ const ScrollContainer = styled(Box)`
   overflow-y: auto;
 
   ::-webkit-scrollbar {
-    width: 0.3rem;
+    width: 0.5rem;
     border-radius: 0rem;
   }
 `;

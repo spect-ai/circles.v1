@@ -1,15 +1,23 @@
 import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { Avatar, Box, Button, Input, Stack, Text, useTheme } from "degen";
+import {
+  Box,
+  Button,
+  IconUserSolid,
+  Input,
+  Stack,
+  Text,
+  useTheme,
+} from "degen";
 import { AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useLocalCollection } from "../Context/LocalCollectionContext";
-import Logo from "@/app/common/components/Logo";
 import styled from "styled-components";
 import { getAllCredentials } from "@/app/services/Credentials/AggregatedCredentials";
 import { Stamp } from "@/app/types";
 import { PassportStampIcons, PassportStampIconsLightMode } from "@/app/assets";
 import Image from "next/image";
+import { toast } from "react-toastify";
 
 export default function SybilResistance() {
   const [isOpen, setIsOpen] = useState(false);
@@ -62,6 +70,7 @@ export default function SybilResistance() {
         )}
       </Stack>
       <PrimaryButton
+        icon={<IconUserSolid />}
         variant={collection.sybilProtectionEnabled ? "tertiary" : "secondary"}
         onClick={() => setIsOpen(true)}
       >
@@ -238,9 +247,11 @@ export default function SybilResistance() {
                             }
                           )
                         ).json();
-                        updateCollection(res);
-                        setIsOpen(false);
-                        setLoading(false);
+                        if (res.id) {
+                          updateCollection(res);
+                          setIsOpen(false);
+                          setLoading(false);
+                        } else toast.error("Something went wrong");
                       }}
                     >
                       Disable Sybil Protection

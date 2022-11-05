@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 interface UserType {
   accounts: string[];
   createdAt: string;
@@ -699,6 +700,7 @@ export interface CollectionType {
   credentialCurationEnabled: boolean;
   dataOwner: { [key: string]: string };
   profiles: { [key: string]: UserType };
+  voting: Voting;
 }
 
 export type Property = {
@@ -874,4 +876,10 @@ export type Stamp = {
   stampName: string;
   stampDescription: string;
   score?: number;
+};
+
+export type Voting = {
+  enabled: boolean;
+  message?: string;
+  options?: Option[];
 };

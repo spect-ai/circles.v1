@@ -4,7 +4,7 @@ import { updateCircle } from "@/app/services/UpdateCircle";
 import { updateCollection } from "@/app/services/UpdateCollection";
 import { GuildRole } from "@/app/types";
 import { guild } from "@guildxyz/sdk";
-import { Box, Input, Stack, Tag, Text } from "degen";
+import { Box, IconPlug, Input, Stack, Tag, Text } from "degen";
 import { AnimatePresence } from "framer-motion";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -99,6 +99,7 @@ export default function RoleGate() {
         </Stack>
       )}
       <PrimaryButton
+        icon={<IconPlug />}
         variant={
           collection.formRoleGating && collection.formRoleGating.length > 0
             ? "tertiary"

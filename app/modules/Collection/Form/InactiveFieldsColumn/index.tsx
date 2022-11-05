@@ -1,11 +1,12 @@
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { Box, Heading, Stack, Text } from "degen";
+import { Box, Stack, Text } from "degen";
 import { memo, useCallback } from "react";
 import { Droppable, DroppableProvided } from "react-beautiful-dnd";
 import styled from "styled-components";
 import { useLocalCollection } from "../../Context/LocalCollectionContext";
 import RoleGate from "../../RoleGate";
 import SybilResistance from "../../SybilResistance";
+import VotingModule from "../../VotingModule";
 import InactiveFieldComponent from "../InactiveField";
 
 const Container = styled(Box)`
@@ -67,7 +68,8 @@ function InactiveFieldsColumnComponent({ fields }: Props) {
         </Droppable>
         <RoleGate />
         <SybilResistance />
-        <Stack direction="vertical">
+        <VotingModule />
+        <Stack>
           {collection.sybilProtectionEnabled && (
             <Text variant="small">{`This form has credential curation enabled!`}</Text>
           )}

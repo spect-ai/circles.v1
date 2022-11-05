@@ -9,14 +9,19 @@ type Props = {
   setFieldOptions: React.Dispatch<
     React.SetStateAction<{ label: string; value: string }[]>
   >;
+  label?: string;
 };
 
-export default function AddOptions({ fieldOptions, setFieldOptions }: Props) {
+export default function AddOptions({
+  fieldOptions,
+  setFieldOptions,
+  label = "Options",
+}: Props) {
   const { mode } = useTheme();
   return (
     <Box maxHeight="56" overflow="auto">
       <Stack>
-        <Text variant="label">Options</Text>
+        <Text variant="label">{label}</Text>
         {fieldOptions.map((option, index) => (
           <Box key={index}>
             <Stack direction="horizontal" align="center">
@@ -45,19 +50,21 @@ export default function AddOptions({ fieldOptions, setFieldOptions }: Props) {
         {!fieldOptions.length && (
           <Text variant="label">No options added yet</Text>
         )}
-        <PrimaryButton
-          variant="tertiary"
-          onClick={() => {
-            const newOptions = [...fieldOptions];
-            newOptions.push({
-              label: `Option ${fieldOptions.length + 1}`,
-              value: `option-${uuid()}`,
-            });
-            setFieldOptions(newOptions);
-          }}
-        >
-          Add Option
-        </PrimaryButton>
+        <Box padding="1">
+          <PrimaryButton
+            variant="tertiary"
+            onClick={() => {
+              const newOptions = [...fieldOptions];
+              newOptions.push({
+                label: `Option ${fieldOptions.length + 1}`,
+                value: `option-${uuid()}`,
+              });
+              setFieldOptions(newOptions);
+            }}
+          >
+            Add Option
+          </PrimaryButton>
+        </Box>
       </Stack>
     </Box>
   );

@@ -51,8 +51,8 @@ const Dropdown: FC<Props> = ({
       styles={{
         container: (provided) => ({
           ...provided,
-          flex: 1, // full width
-          alignSelf: "stretch", // full height
+          flex: 1,
+          alignSelf: "stretch",
         }),
         menu: (provided) => ({
           ...provided,

@@ -1,4 +1,4 @@
-import { FormUserType, Registry } from "@/app/types";
+import { FormUserType, Registry, Voting } from "@/app/types";
 
 export const addField = async (
   collectionId: string,
@@ -94,6 +94,7 @@ export const updateFormCollection = async (
     logo?: string;
     cover?: string;
     propertyOrder?: string[];
+    voting?: Voting;
   }
 ) => {
   return await (

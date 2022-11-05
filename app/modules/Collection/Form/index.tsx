@@ -136,8 +136,8 @@ export function Form() {
               <Stack direction="vertical" space="4">
                 <Text variant="large">After the form is submitted.</Text>
                 <Text variant="label">Show the following message</Text>
-
                 <Textarea
+                  width="1/2"
                   label=""
                   value={messageOnSubmission}
                   rows={2}
