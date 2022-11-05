@@ -1,45 +1,27 @@
-import Dropdown, { OptionType } from "@/app/common/components/Dropdown";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import Drawer from "@/app/common/components/Drawer";
+import { OptionType } from "@/app/common/components/Dropdown";
 import Editor from "@/app/common/components/Editor";
-import ClickableTag from "@/app/common/components/EditTag/ClickableTag";
-import Modal from "@/app/common/components/Modal";
-import MilestoneField from "@/app/modules/PublicForm/MilestoneField";
-import RewardField from "@/app/modules/PublicForm/RewardField";
-import { updateCollectionDataGuarded } from "@/app/services/Collection";
-import { MemberDetails } from "@/app/types";
-import { Box, IconEth, Input, Stack, Text, useTheme } from "degen";
-import { AnimatePresence } from "framer-motion";
+import { Box, Stack, Tag, Text } from "degen";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
-import { useQuery } from "react-query";
-import { toast } from "react-toastify";
+import styled from "styled-components";
 import { useLocalCollection } from "../../Context/LocalCollectionContext";
-import RewardModal from "../../TableView/RewardModal";
-import { DateInput } from "../Field";
 
 export default function DataModal() {
   const [isOpen, setIsOpen] = useState(false);
-  const { localCollection: collection, setLocalCollection } =
-    useLocalCollection();
-
-  const [propertyName, setPropertyName] = useState("");
-  const [isRewardModalOpen, setIsRewardModalOpen] = useState(false);
+  const { localCollection: collection } = useLocalCollection();
 
   const router = useRouter();
   const { dataId, circle: cId } = router.query;
-  const { data: memberDetails } = useQuery<MemberDetails>(
-    ["memberDetails", cId],
-    {
-      enabled: false,
-    }
-  );
-
-  const memberOptions = memberDetails?.members?.map((member: string) => ({
-    label: memberDetails && memberDetails.memberDetails[member]?.username,
-    value: member,
-  }));
+  // const { data: memberDetails } = useQuery<MemberDetails>(
+  //   ["memberDetails", cId],
+  //   {
+  //     enabled: false,
+  //   }
+  // );
 
   const [data, setData] = useState({} as any);
-  const { mode } = useTheme();
 
   useEffect(() => {
     if (dataId) {
@@ -53,198 +35,117 @@ export default function DataModal() {
   if (!dataId || !data) return null;
 
   return (
-    <Modal
-      size="large"
+    <Drawer
       handleClose={async () => {
-        console.log({ data });
-        void router.push(`/${cId}/r/${collection.slug}`);
+        await router.push(`/${cId}/r/${collection.slug}`);
         setIsOpen(false);
-        const res = await updateCollectionDataGuarded(
-          collection.id,
-          dataId as string,
-          { ...data }
-        );
-        console.log({ res });
-        if (res.id) {
-          setLocalCollection(res);
-        } else {
-          setData({});
-          toast.error("Error updating data");
-        }
       }}
       title={collection.data[dataId].title}
     >
-      <Box padding="8">
-        <AnimatePresence>
-          {isRewardModalOpen && (
-            <RewardModal
-              handleClose={(reward, dataId, propertyName) => {
-                collection.data[dataId][propertyName] = reward;
-                setIsRewardModalOpen(false);
-              }}
-              dataId={dataId as string}
-              propertyName={propertyName}
-              form={collection}
-            />
-          )}
-        </AnimatePresence>
-        <Stack>
-          {Object.values(collection.properties).map((property) => (
-            <Stack direction="horizontal" key={property.name} align="center">
-              <Box width="1/4">
-                <Text variant="label">{property.name}</Text>
-              </Box>
-              {property?.type === "shortText" && (
-                <Input
-                  label=""
-                  placeholder={`Enter ${property?.name}`}
-                  value={data[property.name]}
-                  onChange={(e) => {
-                    data[property.name] = e.target.value;
-                    setData({ ...data });
-                  }}
-                />
-              )}
-              {property?.type === "ethAddress" && (
-                <Input
-                  label=""
-                  placeholder={`Enter ${property?.name}`}
-                  value={data[property.name]}
-                  onChange={(e) => {
-                    data[property.name] = e.target.value;
-                    setData({ ...data });
-                  }}
-                />
-              )}
-              {property?.type === "email" && (
-                <Input
-                  label=""
-                  placeholder={`Enter ${property?.name}`}
-                  value={data[property.name]}
-                  onChange={(e) => {
-                    data[property.name] = e.target.value;
-                    setData({ ...data });
-                  }}
-                  inputMode="email"
-                />
-              )}
-              {property?.type === "longText" && (
-                <Box
-                  marginTop="4"
-                  width="full"
-                  borderWidth="0.375"
-                  padding="4"
-                  borderRadius="large"
-                  maxHeight="64"
-                  overflow="auto"
-                >
-                  <Editor
-                    value={data[property.name]}
-                    onSave={(value) => {
-                      data[property.name] = value;
-                      setData({ ...data });
-                    }}
-                    placeholder={`Type here to edit ${property.name}`}
-                  />
-                </Box>
-              )}
-              {property?.type === "singleSelect" && (
-                <Dropdown
-                  placeholder={`Select ${property?.name}`}
-                  multiple={false}
-                  options={property.options as OptionType[]}
-                  selected={data[property.name]}
-                  onChange={(value) => {
-                    // setselectedSafe(value);
-                    console.log({ value });
-                    data[property.name] = value;
-                    setData({ ...data });
-                  }}
-                />
-              )}
-              {property?.type === "multiSelect" && (
-                <Dropdown
-                  placeholder={`Select ${property?.name}`}
-                  multiple={true}
-                  options={property?.options as OptionType[]}
-                  selected={data[property.name]}
-                  onChange={(value) => {
-                    data[property.name] = value;
-                    setData({ ...data });
-                  }}
-                />
-              )}
-              {property?.type === "user" && (
-                <Dropdown
-                  placeholder={`Select ${property?.name}`}
-                  multiple={false}
-                  options={memberOptions as OptionType[]}
-                  selected={data[property.name]}
-                  onChange={(value) => {
-                    data[property.name] = value;
-                    setData({ ...data });
-                  }}
-                />
-              )}
-              {property?.type === "user[]" && (
-                <Dropdown
-                  placeholder={`Select ${property?.name}`}
-                  multiple={false}
-                  options={property.options as OptionType[]}
-                  selected={data[property.name]}
-                  onChange={(value) => {
-                    data[property.name] = value;
-                    setData({ ...data });
-                  }}
-                />
-              )}
-              {property?.type === "date" && (
-                <DateInput
-                  mode={mode}
-                  placeholder={`Enter ${property?.name}`}
-                  value={
-                    data[property.name] &&
-                    new Date(data[property.name]).toISOString().split("T")[0]
-                  }
-                  onChange={(e) => {
-                    data[property.name] = e.target.value;
-                    setData({ ...data });
-                  }}
-                  type="date"
-                />
-              )}
-              {property?.type === "number" && (
-                <DateInput
-                  mode={mode}
-                  placeholder={`Enter ${property?.name}`}
-                  value={data[property.name]}
-                  onChange={(e) => {
-                    data[property.name] = e.target.value;
-                    setData({ ...data });
-                  }}
-                  type="number"
-                />
-              )}
-              {property?.type === "reward" && (
-                <RewardField
-                  form={collection}
-                  propertyName={property.name}
-                  data={data}
-                  updateData={setData}
-                />
-              )}
-              {property?.type === "milestone" && (
-                <MilestoneField
-                  form={collection}
-                  propertyName={property.name}
-                  data={data}
-                  setData={setData}
-                />
-              )}
-            </Stack>
-          ))}
+      <ScrollContainer paddingX="8" paddingY="2">
+        <Stack space="6">
+          {collection.propertyOrder.map((propertyName: string) => {
+            const property = collection.properties[propertyName];
+            return (
+              <Stack key={property.name} space="1">
+                <Text weight="semiBold" variant="extraLarge" color="accent">
+                  {property.name}
+                </Text>
+                {property?.type === "shortText" && (
+                  <Text>{data[property.name]}</Text>
+                )}
+                {property?.type === "ethAddress" && (
+                  <Text>{data[property.name]}</Text>
+                )}
+                {property?.type === "email" && (
+                  <Text>{data[property.name]}</Text>
+                )}
+                {property?.type === "longText" && (
+                  <Editor value={data[property.name]} disabled />
+                )}
+                {property?.type === "singleSelect" && (
+                  <Text>{data[property.name].label}</Text>
+                )}
+                {property?.type === "multiSelect" && (
+                  <Stack space="2" direction="horizontal">
+                    {data[property.name].map((option: OptionType) => (
+                      <Tag key={option.value} tone="accent" hover>
+                        {option.label}
+                      </Tag>
+                    ))}
+                  </Stack>
+                )}
+                {property?.type === "user" && (
+                  <Text>{data[property.name].label}</Text>
+                )}
+                {property?.type === "user[]" && (
+                  <Stack space="2" direction="horizontal" align="baseline">
+                    {data[property.name].map((option: OptionType) => (
+                      <Tag key={option.value} tone="accent" hover>
+                        {option.label}
+                      </Tag>
+                    ))}
+                  </Stack>
+                )}
+                {property?.type === "date" && (
+                  <Text>{data[property.name]}</Text>
+                )}
+                {property?.type === "number" && (
+                  <Text>{data[property.name]}</Text>
+                )}
+                {property?.type === "reward" && (
+                  <Text>
+                    {data[property.name].value}{" "}
+                    {data[property.name].token.label} on{" "}
+                    {data[property.name].chain.label}
+                  </Text>
+                )}
+                {property?.type === "milestone" && (
+                  <Stack>
+                    {data[property.name].map(
+                      (milestone: any, index: number) => (
+                        <Stack key={milestone.id} space="2">
+                          <Stack direction="horizontal" align="baseline">
+                            <Text variant="label">Milestone {index + 1}</Text>
+                            <Text weight="semiBold" color="accentText">
+                              {milestone.title}
+                            </Text>
+                          </Stack>
+                          <Editor value={milestone.description} disabled />
+                          <Stack direction="horizontal" align="baseline">
+                            <Text variant="label">Reward</Text>
+                            <Text weight="semiBold" color="accentText">
+                              {milestone.reward?.value}{" "}
+                              {milestone.reward?.token.label} on{" "}
+                              {milestone.reward?.chain.label}
+                            </Text>
+                          </Stack>
+                          <Stack direction="horizontal" align="baseline">
+                            <Text variant="label">Due date</Text>
+                            <Text weight="semiBold" color="accentText">
+                              {milestone.dueDate}
+                            </Text>
+                          </Stack>
+                        </Stack>
+                      )
+                    )}
+                  </Stack>
+                )}
+              </Stack>
+            );
+          })}
         </Stack>
-      </Box>
-    </Modal>
+      </ScrollContainer>
+    </Drawer>
   );
 }
+
+const ScrollContainer = styled(Box)`
+  height: calc(100vh - 5rem);
+  overflow-y: auto;
+
+  ::-webkit-scrollbar {
+    width: 0.3rem;
+    border-radius: 0rem;
+  }
+`;

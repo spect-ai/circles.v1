@@ -84,14 +84,14 @@ export default function TableView() {
 
   useEffect(() => {
     if (collection.data) {
-      // for each data property in the data, convert the date string to a date object for all the rows
-      const dataProperties = collection.propertyOrder.map((property) => {
+      // for each date property in the data, convert the date string to a date object for all the rows
+      const dateProperties = collection.propertyOrder.map((property) => {
         if (collection.properties[property]?.type === "date")
           return collection.properties[property].name;
       });
       const data = Object.keys(collection.data).map((key) => {
         const row = collection.data[key];
-        dataProperties.forEach((property) => {
+        dateProperties.forEach((property) => {
           if (row[property]) row[property] = new Date(row[property]);
         });
         return {
@@ -164,8 +164,9 @@ export default function TableView() {
   };
 
   const columns: Column<any>[] =
-    collection.properties &&
-    Object.values(collection.properties).map((property) => {
+    collection.propertyOrder &&
+    collection.propertyOrder.map((propertyName: string) => {
+      const property = collection.properties[propertyName];
       if (
         ["singleSelect", "multiSelect", "longText", "user", "user[]"].includes(
           property.type
