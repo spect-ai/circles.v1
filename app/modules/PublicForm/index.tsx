@@ -136,17 +136,17 @@ export default function PublicForm() {
               >
                 {" "}
                 {form.formRoleGating && form.formRoleGating.length > 0 && (
-                  <Text weight="semiBold" variant="large" color="accentText">
+                  <Text weight="semiBold" variant="large" color="textPrimary">
                     This form is role gated
                   </Text>
                 )}
                 {form.mintkudosTokenId && (
-                  <Text weight="semiBold" variant="large" color="accentText">
+                  <Text weight="semiBold" variant="large" color="textPrimary">
                     This form distributes Kudos to responders
                   </Text>
                 )}
                 {form.sybilProtectionEnabled && (
-                  <Text weight="semiBold" variant="large" color="accentText">
+                  <Text weight="semiBold" variant="large" color="textPrimary">
                     This form is Sybil protected
                   </Text>
                 )}

@@ -2,9 +2,14 @@
 import Drawer from "@/app/common/components/Drawer";
 import { OptionType } from "@/app/common/components/Dropdown";
 import Editor from "@/app/common/components/Editor";
-import { Box, Stack, Tag, Text } from "degen";
+import PrimaryButton from "@/app/common/components/PrimaryButton";
+import Tabs from "@/app/common/components/Tabs";
+import { MemberDetails, UserType } from "@/app/types";
+import { SaveOutlined } from "@ant-design/icons";
+import { Avatar, Box, Stack, Tag, Text } from "degen";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
+import { useQuery } from "react-query";
 import styled from "styled-components";
 import { useLocalCollection } from "../../Context/LocalCollectionContext";
 
@@ -14,14 +19,20 @@ export default function DataModal() {
 
   const router = useRouter();
   const { dataId, circle: cId } = router.query;
-  // const { data: memberDetails } = useQuery<MemberDetails>(
-  //   ["memberDetails", cId],
-  //   {
-  //     enabled: false,
-  //   }
-  // );
+  const { data: memberDetails } = useQuery<MemberDetails>(
+    ["memberDetails", cId],
+    {
+      enabled: false,
+    }
+  );
 
+  const { data: currentUser } = useQuery<UserType>("getMyUser", {
+    enabled: false,
+  });
   const [data, setData] = useState({} as any);
+  const [comment, setComment] = useState("");
+  const [isDirty, setIsDirty] = useState(false);
+  const [vote, setVote] = useState(2);
 
   useEffect(() => {
     if (dataId) {
@@ -43,7 +54,7 @@ export default function DataModal() {
       title={collection.data[dataId].title}
     >
       <ScrollContainer paddingX="8" paddingY="2">
-        <Stack space="6">
+        <Stack space="5">
           {collection.propertyOrder.map((propertyName: string) => {
             const property = collection.properties[propertyName];
             return (
@@ -107,14 +118,14 @@ export default function DataModal() {
                         <Stack key={milestone.id} space="2">
                           <Stack direction="horizontal" align="baseline">
                             <Text variant="label">Milestone {index + 1}</Text>
-                            <Text weight="semiBold" color="accentText">
+                            <Text weight="semiBold" color="textPrimary">
                               {milestone.title}
                             </Text>
                           </Stack>
                           <Editor value={milestone.description} disabled />
                           <Stack direction="horizontal" align="baseline">
                             <Text variant="label">Reward</Text>
-                            <Text weight="semiBold" color="accentText">
+                            <Text weight="semiBold" color="textPrimary">
                               {milestone.reward?.value}{" "}
                               {milestone.reward?.token.label} on{" "}
                               {milestone.reward?.chain.label}
@@ -122,7 +133,7 @@ export default function DataModal() {
                           </Stack>
                           <Stack direction="horizontal" align="baseline">
                             <Text variant="label">Due date</Text>
-                            <Text weight="semiBold" color="accentText">
+                            <Text weight="semiBold" color="textPrimary">
                               {milestone.dueDate}
                             </Text>
                           </Stack>
@@ -134,6 +145,54 @@ export default function DataModal() {
               </Stack>
             );
           })}
+          <Text weight="semiBold" variant="extraLarge" color="accent">
+            Your Vote
+          </Text>
+          <Tabs
+            tabs={["For", "Against", "Abstain"]}
+            selectedTab={vote}
+            onTabClick={(tab) => setVote(tab)}
+            orientation="horizontal"
+            unselectedColor="transparent"
+            selectedColor="secondary"
+          />
+        </Stack>
+        <Box
+          width="full"
+          borderTopWidth="0.375"
+          marginY="4"
+          borderRadius="full"
+        />
+        <Stack>
+          <Stack direction="horizontal">
+            <Avatar
+              label=""
+              placeholder={!currentUser?.avatar}
+              src={currentUser?.avatar}
+              address={currentUser?.ethAddress}
+              size="10"
+            />
+            <Box width="full" gap="2">
+              <Editor
+                placeholder="Write a reply..."
+                value={comment}
+                onSave={(value) => {
+                  setComment(value);
+                }}
+                isDirty={isDirty}
+                setIsDirty={setIsDirty}
+              />
+              {isDirty && (
+                <Box width="1/4">
+                  <PrimaryButton
+                    icon={<SaveOutlined style={{ fontSize: "1.3rem" }} />}
+                  >
+                    Save
+                  </PrimaryButton>
+                </Box>
+              )}
+            </Box>
+          </Stack>
         </Stack>
       </ScrollContainer>
     </Drawer>

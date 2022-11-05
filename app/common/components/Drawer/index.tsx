@@ -10,7 +10,7 @@ type props = {
 
 function Drawer({ handleClose, title, children }: props) {
   return (
-    <Container backgroundColor="background" borderWidth="0.375">
+    <Container backgroundColor="background" borderLeftWidth="0.375">
       <Box
         paddingX={{
           xs: "4",
@@ -47,6 +47,8 @@ const Container = styled(Box)`
   padding-top: 10px;
   display: flex;
   flex-direction: column;
+
+  box-shadow: 0 0 16px 0 rgba(0, 0, 0, 0.5);
 
   @media (max-width: 768px) {
     width: 100%;
