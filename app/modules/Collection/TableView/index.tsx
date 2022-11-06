@@ -92,7 +92,8 @@ export default function TableView() {
       const data = Object.keys(collection.data).map((key) => {
         const row = collection.data[key];
         dateProperties.forEach((property) => {
-          if (row[property]) row[property] = new Date(row[property]);
+          if (row[property as string])
+            row[property as string] = new Date(row[property as string]);
         });
         return {
           id: key,

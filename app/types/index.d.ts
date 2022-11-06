@@ -810,7 +810,7 @@ export interface FormType {
   kudosClaimedByUser: boolean;
   multipleResponsesAllowed: boolean;
   updatingResponseAllowed: boolean;
-  previousResponses: MappedItem<object>;
+  previousResponses: any[];
   sybilProtectionEnabled: boolean;
   sybilProtectionScores: GitcoinScoreType[];
   canClaimKudos: boolean;

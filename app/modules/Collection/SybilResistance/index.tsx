@@ -47,7 +47,7 @@ export default function SybilResistance() {
               );
             else allocs.push(stamp.defaultScore * 100);
           }
-          setAllocations(allocs);
+          setAllocations(allocs as number[]);
         })
         .catch((err) => console.log(err));
     }
