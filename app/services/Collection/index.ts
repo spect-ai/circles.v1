@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { FormUserType, Registry, Voting } from "@/app/types";
 
 export const addField = async (
@@ -233,6 +234,28 @@ export const addData = async (collectionId: string, data: any) => {
           data,
         }),
         credentials: "include",
+      }
+    )
+  ).json();
+};
+
+export const voteCollectionData = async (
+  collectionId: string,
+  dataId: string,
+  vote: number
+) => {
+  return await (
+    await fetch(
+      `${process.env.API_HOST}/collection/v1/${collectionId}/voteOnData?dataId=${dataId}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          vote,
+        }),
       }
     )
   ).json();

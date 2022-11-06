@@ -72,10 +72,6 @@ export default function PublicForm() {
     })();
   }, [connectedUser, formId]);
 
-  // if (loading) {
-  //   return <Loader loading text="Fetching form..." />;
-  // }
-
   if (form) {
     return (
       <ScrollContainer>
@@ -100,7 +96,7 @@ export default function PublicForm() {
             }}
           >
             <Box width="full" marginBottom="2" padding="4">
-              <Stack space="2" align={"center"}>
+              <Stack space="2">
                 {form.logo && <Avatar src={form.logo} label="" size="20" />}
                 <NameInput
                   placeholder="Enter name"
@@ -108,7 +104,9 @@ export default function PublicForm() {
                   value={form.name}
                   disabled
                 />
-                <Editor value={form.description} isDirty={true} />
+                {form.description && (
+                  <Editor value={form.description} isDirty={true} disabled />
+                )}
               </Stack>
             </Box>
             {canFillForm && currentUser?.id && (

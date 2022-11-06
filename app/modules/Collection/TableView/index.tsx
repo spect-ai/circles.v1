@@ -20,7 +20,7 @@ import { CellWithId } from "react-datasheet-grid/dist/types";
 import { toast } from "react-toastify";
 import AddField from "../AddField";
 import { useLocalCollection } from "../Context/LocalCollectionContext";
-import DataModal from "../Form/DataModal";
+import DataModal from "../Form/DataDrawer";
 import ExpandableCell from "../Form/ExpandableCell";
 import CredentialComponent from "./CredentialComponent";
 import GutterColumnComponent from "./GutterColumnComponent";

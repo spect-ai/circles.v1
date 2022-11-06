@@ -39,6 +39,8 @@ function FormBuilder({ fields }: Props) {
     enabled: false,
   });
 
+  console.log({ collection });
+
   const FieldDraggable = (provided: DroppableProvided) => (
     <Box {...provided.droppableProps} ref={provided.innerRef}>
       {fields?.map((field, idx) => {
@@ -155,7 +157,6 @@ function FormBuilder({ fields }: Props) {
                   value={description}
                   onSave={async (value) => {
                     setDescription(value);
-                    console.log({ value });
                     if (connectedUser) {
                       const res = await updateFormCollection(collection.id, {
                         description,
