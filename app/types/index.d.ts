@@ -878,8 +878,13 @@ export type Stamp = {
   score?: number;
 };
 
+export interface MappedItem<T> {
+  [id: string]: T;
+}
+
 export type Voting = {
   enabled: boolean;
   message?: string;
   options?: Option[];
+  votes?: MappedItem<MappedItem<number>>;
 };

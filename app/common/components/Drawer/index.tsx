@@ -4,7 +4,7 @@ import styled from "styled-components";
 
 type props = {
   children: React.ReactNode;
-  title: string;
+  title?: string;
   handleClose: (...args: any[]) => void;
 };
 
