@@ -4,6 +4,7 @@ import { memo, useCallback } from "react";
 import { Droppable, DroppableProvided } from "react-beautiful-dnd";
 import styled from "styled-components";
 import { useLocalCollection } from "../../Context/LocalCollectionContext";
+import OpportunityMode from "../../OpportunityMode";
 import RoleGate from "../../RoleGate";
 import SybilResistance from "../../SybilResistance";
 import InactiveFieldComponent from "../InactiveField";
@@ -103,6 +104,7 @@ function InactiveFieldsColumnComponent({ fields }: Props) {
             ? `Disable Credential Curation`
             : `Enable Credential Curation`}
         </PrimaryButton>
+        <OpportunityMode />
       </Stack>
     </Container>
   );

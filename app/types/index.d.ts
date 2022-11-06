@@ -667,6 +667,12 @@ export type DiscordChannel = {
   id: string;
   name: string;
 };
+export type OpportunityInfoType = {
+  type: string;
+  experience: string;
+  skills: string[];
+  tags: string[];
+};
 
 export interface CollectionType {
   cover: string;
@@ -699,6 +705,8 @@ export interface CollectionType {
   credentialCurationEnabled: boolean;
   dataOwner: { [key: string]: string };
   profiles: { [key: string]: UserType };
+  isAnOpportunity: boolean;
+  opportunityInfo: OpportunityInfoType;
 }
 
 export type Property = {
