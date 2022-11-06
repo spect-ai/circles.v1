@@ -16,6 +16,14 @@ import { getAllCredentials } from "@/app/services/Credentials/AggregatedCredenti
 import { useGlobal } from "@/app/context/globalContext";
 import { PassportStampIcons, PassportStampIconsLightMode } from "@/app/assets";
 import mixpanel from "@/app/common/utils/mixpanel";
+import {
+  GithubOutlined,
+  TwitterOutlined,
+  YoutubeFilled,
+} from "@ant-design/icons";
+import DiscordIcon from "@/app/assets/icons/discordIcon.svg";
+import Image from "next/image";
+import Editor from "@/app/common/components/Editor";
 
 export default function PublicForm() {
   const router = useRouter();
@@ -83,9 +91,16 @@ export default function PublicForm() {
         />
         <CoverImage src={form.cover} backgroundColor="accentSecondary" />
         <Container>
-          <FormContainer backgroundColor="background">
+          <FormContainer
+            backgroundColor="background"
+            style={{
+              boxShadow: `0rem 0.2rem 0.5rem ${
+                mode === "dark" ? "rgba(0, 0, 0, 0.25)" : "rgba(0, 0, 0, 0.1)"
+              }`,
+            }}
+          >
             <Box width="full" marginBottom="2" padding="4">
-              <Stack space="2">
+              <Stack space="2" align={"center"}>
                 {form.logo && <Avatar src={form.logo} label="" size="20" />}
                 <NameInput
                   placeholder="Enter name"
@@ -93,12 +108,7 @@ export default function PublicForm() {
                   value={form.name}
                   disabled
                 />
-                <DescriptionInput
-                  mode={mode}
-                  autoFocus
-                  value={form.description}
-                  disabled
-                />
+                <Editor value={form.description} isDirty={true} />
               </Stack>
             </Box>
             {canFillForm && currentUser?.id && (
@@ -322,6 +332,70 @@ export default function PublicForm() {
               </motion.div>
             )}
           </FormContainer>
+          <Stack align={"center"}>
+            <Text>Powered By</Text>
+            <a href="/" target="_blank" rel="noopener noreferrer">
+              {mode == "dark" ? (
+                <Image
+                  src={"/logo2.svg"}
+                  alt="dark-mode-logo"
+                  height={"35"}
+                  width="138"
+                />
+              ) : (
+                <Image
+                  src={"/logo1.svg"}
+                  alt="light-mode-logo"
+                  height={"35"}
+                  width="138"
+                />
+              )}
+            </a>
+            <Stack justify={"center"} direction="horizontal" align={"center"}>
+              <a
+                href={"https://twitter.com/joinSpect"}
+                target="_blank"
+                rel="noreferrer"
+              >
+                <Button shape="circle" size="small" variant="transparent">
+                  <TwitterOutlined style={{ fontSize: "1.3rem" }} />
+                </Button>
+              </a>
+
+              <a
+                href={"https://discord.gg/AF2qRMMpZ9"}
+                target="_blank"
+                rel="noreferrer"
+              >
+                <Button shape="circle" size="small" variant="transparent">
+                  <DiscordIcon />
+                </Button>
+              </a>
+
+              <a
+                href={"https://github.com/spect-ai"}
+                target="_blank"
+                rel="noreferrer"
+              >
+                <Button shape="circle" size="small" variant="transparent">
+                  <GithubOutlined style={{ fontSize: "1.3rem" }} />
+                </Button>
+              </a>
+
+              <a
+                href={
+                  "https://www.youtube.com/channel/UCUXOC62aiZqT_ijL-dz379Q"
+                }
+                target="_blank"
+                rel="noreferrer"
+              >
+                <Button shape="circle" size="small" variant="transparent">
+                  <YoutubeFilled style={{ fontSize: "1.3rem" }} />
+                </Button>
+              </a>
+            </Stack>
+          </Stack>
+          <Box marginBottom="8" />
         </Container>
       </ScrollContainer>
     );
@@ -368,34 +442,19 @@ export const NameInput = styled.input`
   font-weight: 600;
 `;
 
-export const DescriptionInput = styled.textarea<{ mode: "dark" | "light" }>`
-  width: 100%;
-  background: transparent;
-  border: 0;
-  border-style: none;
-  border-color: transparent;
-  outline: none;
-  outline-offset: 0;
-  box-shadow: none;
-  font-size: 1.2rem;
-  caret-color: ${(props) =>
-    props.mode === "dark" ? "rgb(255, 255, 255, 0.7)" : "rgb(20,20,20,0.7)"};
-  color: ${(props) =>
-    props.mode === "dark" ? "rgb(255, 255, 255, 0.7)" : "rgb(20,20,20,0.7)"};
-  font-weight: 400;
-  font-size: 14px;
-  resize: none;
-`;
-
 export const CoverImage = styled(Box)<{ src: string }>`
   width: 100%;
   height: 20rem;
   background-image: url(${(props) => props.src});
-  background-size: auto;
+  background-size: cover;
   z-index: -1;
 `;
 
-const FormContainer = styled(Box)``;
+const FormContainer = styled(Box)`
+  border-radius: 1rem;
+  padding: 0.5rem;
+  margin-bottom: 2rem;
+`;
 
 const ScrollContainer = styled(Box)`
   &::-webkit-scrollbar {

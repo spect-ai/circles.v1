@@ -237,7 +237,7 @@ export default function FormFields({ form, setForm }: Props) {
       mixpanel.track("Form Submit", {
         formId: form.slug,
         sybilEnabled: form.sybilProtectionEnabled,
-        user: connectedUser,
+        user: currentUser?.username,
       });
     setSubmitting(false);
   };
@@ -331,7 +331,7 @@ export default function FormFields({ form, setForm }: Props) {
               />
             );
         })}
-      <Box marginBottom="24">
+      <Box>
         <Stack
           direction={{
             xs: "vertical",
@@ -381,13 +381,13 @@ const Container = styled(Box)`
 
   @media (min-width: 768px) and (max-width: 1024px) {
     padding: 2rem;
-    margin-right: 4rem;
+    margin-right: 2rem;
   }
 
   @media (min-width: 1024px) and (max-width: 1280px) {
     padding: 2rem;
-    margin-right: 4rem;
+    margin-right: 2rem;
   }
   padding: 2rem;
-  margin-right: 4rem;
+  margin-right: 2rem;
 `;

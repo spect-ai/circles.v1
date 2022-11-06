@@ -8,6 +8,7 @@ import styled from "styled-components";
 import { useGlobal } from "@/app/context/globalContext";
 import { SettingOutlined, BellOutlined } from "@ant-design/icons";
 import ProfileModal from "../../Profile/ProfilePage/ProfileModal";
+import mixpanel from "@/app/common/utils/mixpanel";
 
 const Container = styled(Box)<{ mode: string }>`
   cursor: pointer;
@@ -24,9 +25,12 @@ export default function ProfileButton() {
   const { mode } = useTheme();
 
   const [notifIds, setNotifIds] = useState([] as string[]);
-  const { data: currentUser, refetch: fetchUser } = useQuery<UserType>("getMyUser", {
-    enabled: false,
-  });
+  const { data: currentUser, refetch: fetchUser } = useQuery<UserType>(
+    "getMyUser",
+    {
+      enabled: false,
+    }
+  );
 
   useEffect(() => {
     void fetchUser();
@@ -80,7 +84,13 @@ export default function ProfileButton() {
           shape="circle"
           size="small"
           variant="transparent"
-          onClick={() => setIsOpen(true)}
+          onClick={() => {
+            setIsOpen(true);
+            process.env.NODE_ENV === "production" &&
+              mixpanel.track("Profile settings", {
+                user: currentUser?.username,
+              });
+          }}
         >
           <SettingOutlined
             style={{ color: "rgb(191, 90, 242, 0.8)", fontSize: "1.2rem" }}

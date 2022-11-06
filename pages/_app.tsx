@@ -24,6 +24,8 @@ import { useRouter } from "next/router";
 import queryClient from "@/app/common/utils/queryClient";
 import GlobalContextProvider, { useGlobal } from "@/app/context/globalContext";
 import { useEffect } from "react";
+import { ErrorBoundary } from "react-error-boundary";
+import ErrorFallBack from "@/app/common/components/Error";
 import * as gtag from "../lib/gtag";
 
 import "@rainbow-me/rainbowkit/styles.css";
@@ -106,11 +108,11 @@ function MyApp({ Component, pageProps }: AppProps) {
         verifyRes.ok ? "authenticated" : "unauthenticated"
       );
       queryClient.setQueryData("getMyUser", res);
-      console.log("connect user", res.id);
+      console.log("connect user", res.username);
       connectUser(res.id);
       process.env.NODE_ENV === "production" &&
         mixpanel.track("User Connected", {
-          user: res.id,
+          user: res.username,
         });
       return Boolean(verifyRes.ok);
     },
@@ -176,7 +178,11 @@ function MyApp({ Component, pageProps }: AppProps) {
                     initial={false}
                     onExitComplete={() => window.scrollTo(0, 0)}
                   >
-                    <Component {...pageProps} canonical={url} key={url} />
+                    <ErrorBoundary
+                      FallbackComponent={ErrorFallBack}
+                    >
+                      <Component {...pageProps} canonical={url} key={url} />
+                    </ErrorBoundary>
                   </AnimatePresence>
                 </Hydrate>
               </QueryClientProvider>

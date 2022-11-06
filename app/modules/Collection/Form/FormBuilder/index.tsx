@@ -3,13 +3,9 @@ import ClickableTag from "@/app/common/components/EditTag/ClickableTag";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { storeImage } from "@/app/common/utils/ipfs";
 import { useGlobal } from "@/app/context/globalContext";
-import {
-  CoverImage,
-  DescriptionInput,
-  NameInput,
-} from "@/app/modules/PublicForm";
+import { CoverImage, NameInput } from "@/app/modules/PublicForm";
 import { updateFormCollection } from "@/app/services/Collection";
-import { Avatar, Box, FileInput, IconPlusSmall, Stack, useTheme } from "degen";
+import { Avatar, Box, FileInput, IconPlusSmall, Stack } from "degen";
 import { AnimatePresence } from "framer-motion";
 import { memo, useCallback, useState } from "react";
 import { Droppable, DroppableProvided } from "react-beautiful-dnd";
@@ -18,6 +14,9 @@ import AddField from "../../AddField";
 import { useLocalCollection } from "../../Context/LocalCollectionContext";
 import FieldComponent from "../Field";
 import mixpanel from "@/app/common/utils/mixpanel";
+import Editor from "@/app/common/components/Editor";
+import { useQuery } from "react-query";
+import { UserType } from "@/app/types";
 
 type Props = {
   fields: string[];
@@ -36,7 +35,9 @@ function FormBuilder({ fields }: Props) {
   const [logo, setLogo] = useState(collection.logo || "");
 
   const { connectedUser } = useGlobal();
-  const { mode } = useTheme();
+  const { data: currentUser } = useQuery<UserType>("getMyUser", {
+    enabled: false,
+  });
 
   const FieldDraggable = (provided: DroppableProvided) => (
     <Box {...provided.droppableProps} ref={provided.innerRef}>
@@ -53,6 +54,7 @@ function FormBuilder({ fields }: Props) {
           );
         }
       })}
+      <Box height="4" />
       {provided.placeholder}
     </Box>
   );
@@ -106,7 +108,6 @@ function FormBuilder({ fields }: Props) {
           </FileInput>
         </CoverImageButtonContainer>
         <CoverImage src={cover} backgroundColor="accentSecondary" />
-
         <Container>
           <FormContainer backgroundColor="background">
             <Box width="full" marginBottom="2" padding="4">
@@ -150,15 +151,11 @@ function FormBuilder({ fields }: Props) {
                     }
                   }}
                 />
-                <DescriptionInput
-                  mode={mode}
-                  placeholder="Enter description"
-                  autoFocus
+                <Editor
                   value={description}
-                  onChange={(e) => {
-                    setDescription(e.target.value);
-                  }}
-                  onBlur={async () => {
+                  onSave={async (value) => {
+                    setDescription(value);
+                    console.log({ value });
                     if (connectedUser) {
                       const res = await updateFormCollection(collection.id, {
                         description,
@@ -166,6 +163,8 @@ function FormBuilder({ fields }: Props) {
                       res.id && updateCollection(res);
                     }
                   }}
+                  placeholder={`Edit description`}
+                  isDirty={true}
                 />
               </Stack>
             </Box>
@@ -179,7 +178,7 @@ function FormBuilder({ fields }: Props) {
                   setIsAddFieldOpen(true);
                   process.env.NODE_ENV === "production" &&
                     mixpanel.track("Add Field Button", {
-                      user: connectedUser,
+                      user: currentUser?.username,
                     });
                 }}
               >
@@ -197,7 +196,7 @@ export default memo(FormBuilder);
 
 const Container = styled(Box)`
   overflow-y: auto;
-  padding: 2rem 14rem;
+  padding: 2rem 15%;
 
   &::-webkit-scrollbar {
     width: 0.5rem;
@@ -206,17 +205,17 @@ const Container = styled(Box)`
   margin-top: -10rem;
 
   @media (max-width: 768px) {
-    padding: 0rem 1rem;
+    padding: 0rem 5%;
     margin-top: -16rem;
   }
 
   @media (min-width: 768px) and (max-width: 1024px) {
-    padding: 2rem 4rem;
+    padding: 2rem 10%;
     margin-top: -12rem;
   }
 
   @media (min-width: 1024px) and (max-width: 1280px) {
-    padding: 2rem 8rem;
+    padding: 2rem 15%;
     margin-top: -10rem;
   }
 `;

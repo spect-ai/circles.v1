@@ -108,7 +108,7 @@ function Sidebar(): ReactElement {
                   setIsSidebarExpanded(!isSidebarExpanded);
                   process.env.NODE_ENV === "production" &&
                     mixpanel.track("Expand Sidebar Button", {
-                      user: connectedUser,
+                      user: currentUser?.username,
                       url: window.location.href,
                     });
                 }}
@@ -126,7 +126,7 @@ function Sidebar(): ReactElement {
                 onClick={() => {
                   process.env.NODE_ENV === "production" &&
                     mixpanel.track("Home Button", {
-                      user: connectedUser,
+                      user: currentUser?.username,
                       url: window.location.href,
                     });
                 }}

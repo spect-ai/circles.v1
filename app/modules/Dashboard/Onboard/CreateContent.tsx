@@ -11,9 +11,9 @@ import { createProject } from "@/app/services/Project";
 import { createFolder } from "@/app/services/Folders";
 import { useRouter } from "next/router";
 import { useMutation, useQuery } from "react-query";
-import { CircleType } from "@/app/types";
+import { CircleType, UserType } from "@/app/types";
 import mixpanel from "@/app/common/utils/mixpanel";
-import { useGlobal } from "@/app/context/globalContext";
+import { Hidden } from "react-grid-system";
 
 const Card = styled(Box)<{ border: boolean }>`
   max-width: 18rem;
@@ -46,7 +46,10 @@ export function CreateContent() {
   const [itemName, setItemName] = useState("");
   const [loading, setIsLoading] = useState(false);
   const [itemType, setItemType] = useState<"Sorm" | "Project">("Sorm");
-  const { connectedUser } = useGlobal();
+
+  const { data: currentUser } = useQuery<UserType>("getMyUser", {
+    enabled: false,
+  });
 
   const { data: myCircles, refetch } = useQuery<CircleType[]>(
     "myOrganizations",
@@ -89,7 +92,7 @@ export function CreateContent() {
           const res = await createFolder(payload, myCircles?.[0]?.id as string);
           process.env.NODE_ENV === "production" &&
             mixpanel.track("Onboard sorms", {
-              user: connectedUser,
+              user: currentUser?.username,
             });
           if (res) {
             void router.push(`/${res.slug}/r/${resJson.slug}`);
@@ -116,7 +119,7 @@ export function CreateContent() {
       const res = await createFolder(payload, myCircles?.[0]?.id as string);
       process.env.NODE_ENV === "production" &&
         mixpanel.track("Onboard project", {
-          user: connectedUser,
+          user: currentUser?.username,
         });
       if (res) {
         void router.push(`/${res.slug}/${data.slug}`);
@@ -184,28 +187,30 @@ export function CreateContent() {
             integrations and e-mail service for the applicants
           </Text>
         </Card>
-        <Card
-          border={itemType == "Project"}
-          onClick={() => setItemType("Project")}
-        >
-          <Stack direction={"horizontal"} align="center" space={"2"}>
-            <ProjectOutlined
-              style={{ fontSize: "1.1rem", color: "rgb(191, 90, 242, 1)" }}
-            />
-            <Text
-              size={"extraLarge"}
-              variant="extraLarge"
-              color={"textPrimary"}
-              align="center"
-            >
-              Project
+        <Hidden xs sm>
+          <Card
+            border={itemType == "Project"}
+            onClick={() => setItemType("Project")}
+          >
+            <Stack direction={"horizontal"} align="center" space={"2"}>
+              <ProjectOutlined
+                style={{ fontSize: "1.1rem", color: "rgb(191, 90, 242, 1)" }}
+              />
+              <Text
+                size={"extraLarge"}
+                variant="extraLarge"
+                color={"textPrimary"}
+                align="center"
+              >
+                Project
+              </Text>
+            </Stack>
+            <Text>
+              Project is where actual tasks, grants and bounties are managed
+              with functionality to pay out contributors on any EVM chain.
             </Text>
-          </Stack>
-          <Text>
-            Project is where actual tasks, grants and bounties are managed with
-            functionality to pay out contributors on any EVM chain.
-          </Text>
-        </Card>
+          </Card>
+        </Hidden>
       </Stack>
       <Text>Give your {itemType} a name </Text>
       <NameInput

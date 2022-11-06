@@ -1,6 +1,6 @@
 import Accordian from "@/app/common/components/Accordian";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { CircleType } from "@/app/types";
+import { CircleType, UserType } from "@/app/types";
 import { ProjectOutlined } from "@ant-design/icons";
 import {
   Box,
@@ -29,7 +29,6 @@ import CircleOptions from "./CircleOptions";
 import CollapseButton from "./CollapseButton";
 import { HeaderButton } from "./ExploreSidebar";
 import mixpanel from "@/app/common/utils/mixpanel";
-import { useGlobal } from "@/app/context/globalContext";
 
 export const Container = styled(Box)<{ subH?: string }>`
   ::-webkit-scrollbar {
@@ -54,7 +53,9 @@ function CircleSidebar() {
   const [isContributorsModalOpen, setIsContributorsModalOpen] = useState(false);
   const [isRetroModalOpen, setIsRetroModalOpen] = useState(false);
   const { mode } = useTheme();
-  const { connectedUser } = useGlobal();
+  const { data: currentUser } = useQuery<UserType>("getMyUser", {
+    enabled: false,
+  });
 
   const [showCollapseButton, setShowCollapseButton] = useState(false);
   if (isLoading) {
@@ -179,7 +180,7 @@ function CircleSidebar() {
             onClick={() => {
               process.env.NODE_ENV === "production" &&
                 mixpanel.track("Circle Dashboard Button", {
-                  user: connectedUser,
+                  user: currentUser?.username,
                   url: window.location.href,
                 });
             }}
