@@ -20,6 +20,7 @@ function Loader({ loading, text }: Props) {
         width="full"
         height="full"
         marginBottom="32"
+        gap={"5"}
       >
         <div className="icon">
           <svg

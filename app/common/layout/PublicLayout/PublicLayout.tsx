@@ -12,6 +12,7 @@ import { CircleType, UserType } from "@/app/types";
 import { toast } from "react-toastify";
 import ConnectPage from "../../../modules/Dashboard/ConnectPage";
 import Onboard from "../../../modules/Dashboard/Onboard";
+import Loader from "@/app/common/components/Loader";
 
 type PublicLayoutProps = {
   children: ReactNodeNoStrings;
@@ -44,15 +45,19 @@ function PublicLayout(props: PublicLayoutProps) {
   const { isSidebarExpanded, connectedUser, connectUser } = useGlobal();
   const { mode } = useTheme();
 
-  const { data: currentUser, refetch } = useQuery<UserType>(
-    "getMyUser",
-    getUser,
-    {
-      enabled: false,
-    }
-  );
+  const {
+    data: currentUser,
+    refetch,
+    isLoading,
+  } = useQuery<UserType>("getMyUser", getUser, {
+    enabled: false,
+  });
 
-  const { data: myCircles, refetch: refetchCircles } = useQuery<CircleType[]>(
+  const {
+    data: myCircles,
+    refetch: refetchCircles,
+    isLoading: loading,
+  } = useQuery<CircleType[]>(
     "myOrganizations",
     () =>
       fetch(`${process.env.API_HOST}/circle/myOrganizations`, {
@@ -89,30 +94,44 @@ function PublicLayout(props: PublicLayoutProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  if (isLoading || loading)
+    return (
+      <DesktopContainer
+        backgroundColor={mode === "dark" ? "background" : "backgroundSecondary"}
+        id="Load screen"
+      >
+        <Loader loading text="Launching Spect .." />
+      </DesktopContainer>
+    );
+
   return (
     <DesktopContainer
       backgroundColor={mode === "dark" ? "background" : "backgroundSecondary"}
       id="public-layout"
     >
-      {connectedUser && currentUser?.id && onboard && <Onboard />}
-      {!connectedUser && !currentUser?.id && <ConnectPage />}
-      {connectedUser && currentUser?.id && !onboard && (
-        <>
-          <Sidebar />
-          <AnimatePresence initial={false}>
-            {isSidebarExpanded && <ExtendedSidebar />}
-          </AnimatePresence>
-          <Box
-            display="flex"
-            flexDirection="column"
-            width="full"
-            overflow="hidden"
-          >
-            <Container issidebarexpanded={isSidebarExpanded}>
-              {children}
-            </Container>
-          </Box>
-        </>
+      {connectedUser && currentUser?.id ? (
+        !onboard ? (
+          <>
+            <Sidebar />
+            <AnimatePresence initial={false}>
+              {isSidebarExpanded && <ExtendedSidebar />}
+            </AnimatePresence>
+            <Box
+              display="flex"
+              flexDirection="column"
+              width="full"
+              overflow="hidden"
+            >
+              <Container issidebarexpanded={isSidebarExpanded}>
+                {children}
+              </Container>
+            </Box>
+          </>
+        ) : (
+          <Onboard />
+        )
+      ) : (
+        <ConnectPage />
       )}
     </DesktopContainer>
   );
