@@ -105,6 +105,7 @@ function Modal({
         style={{ width: "100%", display: "flex", justifyContent: "center" }}
       >
         <Container
+          position="relative"
           backgroundColor="background"
           borderRadius={{
             xs: "none",

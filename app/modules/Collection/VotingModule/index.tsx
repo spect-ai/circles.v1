@@ -45,14 +45,21 @@ export default function VotingModule() {
 
   return (
     <>
-      <Text>Allow members to vote on responses</Text>
-      <PrimaryButton
-        onClick={() => setIsOpen(true)}
-        icon={<IconUserGroup />}
-        variant={collection?.voting?.enabled ? "tertiary" : "secondary"}
+      <Text variant="label">Allow members to vote on responses</Text>
+      <Box
+        width={{
+          xs: "full",
+          md: "1/3",
+        }}
       >
-        {collection?.voting?.enabled ? "Edit" : "Enable"} Voting
-      </PrimaryButton>
+        <PrimaryButton
+          onClick={() => setIsOpen(true)}
+          icon={<IconUserGroup />}
+          variant={collection?.voting?.enabled ? "tertiary" : "secondary"}
+        >
+          {collection?.voting?.enabled ? "Edit" : "Enable"} Voting
+        </PrimaryButton>
+      </Box>
       <AnimatePresence>
         {isOpen && (
           <Modal title="Voting Module" handleClose={() => setIsOpen(false)}>

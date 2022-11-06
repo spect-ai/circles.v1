@@ -1,7 +1,6 @@
-import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { reorder } from "@/app/common/utils/utils";
 import { updateField, updateFormCollection } from "@/app/services/Collection";
-import { Box, Stack, Text, Textarea } from "degen";
+import { Box } from "degen";
 import { useCallback, useEffect, useState } from "react";
 import {
   DragDropContext,
@@ -13,11 +12,8 @@ import { toast } from "react-toastify";
 import styled from "styled-components";
 import { SkeletonLoader } from "../../Explore/SkeletonLoader";
 import { useLocalCollection } from "../Context/LocalCollectionContext";
-import SendKudos from "../SendKudos";
-import { AdditionalSettings } from "./AdditionalSettings";
 import FormBuilder from "./FormBuilder";
 import InactiveFieldsColumnComponent from "./InactiveFieldsColumn";
-import { Notifications } from "./Notifications";
 
 export function Form() {
   const {
@@ -109,14 +105,6 @@ export function Form() {
   };
 
   const DroppableContent = (provided: DroppableProvided) => {
-    const [messageOnSubmission, setMessageOnSubmission] = useState("");
-    const [currMessageOnSubmission, setCurrMessageOnSubmission] = useState("");
-
-    useEffect(() => {
-      setMessageOnSubmission(collection.messageOnSubmission);
-      setCurrMessageOnSubmission(collection.messageOnSubmission);
-    }, []);
-
     return (
       <Box {...provided.droppableProps} ref={provided.innerRef}>
         <ScrollContainer>
@@ -127,55 +115,6 @@ export function Form() {
             }}
           >
             <FormBuilder fields={propertyOrder} />
-            <Box
-              marginTop="16"
-              marginBottom="4"
-              display="flex"
-              flexDirection="column"
-            >
-              <Stack direction="vertical" space="4">
-                <Text variant="large">After the form is submitted.</Text>
-                <Text variant="label">Show the following message</Text>
-                <Textarea
-                  width="1/2"
-                  label=""
-                  value={messageOnSubmission}
-                  rows={2}
-                  onChange={(e) => {
-                    setMessageOnSubmission(e.target.value);
-                  }}
-                />
-                <Box
-                  display="flex"
-                  flexDirection="row"
-                  justifyContent="flex-start"
-                  alignItems="flex-start"
-                >
-                  <PrimaryButton
-                    disabled={currMessageOnSubmission === messageOnSubmission}
-                    onClick={async () => {
-                      const res = await updateFormCollection(collection.id, {
-                        messageOnSubmission,
-                      });
-                      console.log({ res });
-                      if (res.id) {
-                        toast.success("Saved!");
-                        setCurrMessageOnSubmission(messageOnSubmission);
-                        updateCollection(res);
-                      } else
-                        toast.error(
-                          `Request failed with error : ${res?.message}`
-                        );
-                    }}
-                  >
-                    Save
-                  </PrimaryButton>
-                </Box>
-                <SendKudos />
-                <AdditionalSettings />
-                <Notifications />
-              </Stack>
-            </Box>
           </FormContainer>
           <InactiveFieldsColumnComponent fields={propertyOrder} />
         </ScrollContainer>

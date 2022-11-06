@@ -1,8 +1,8 @@
 import { useGlobal } from "@/app/context/globalContext";
-import { useCircle } from "@/app/modules/Circle/CircleContext";
 import { updateFormCollection } from "@/app/services/Collection";
-import { Box, Stack, Tag, Text } from "degen";
+import { Box, Stack, Text } from "degen";
 import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 import styled from "styled-components";
 import { useLocalCollection } from "../../Context/LocalCollectionContext";
 
@@ -41,7 +41,7 @@ export function AdditionalSettings() {
 
   return (
     <>
-      <Text variant="label">Some Additional Stuff</Text>
+      <Text variant="label">Additional Settings</Text>
       <Stack direction="vertical" space="4">
         <Box display="flex" flexDirection="column" gap="1">
           <Box
@@ -57,10 +57,12 @@ export function AdditionalSettings() {
               onChange={async () => {
                 if (connectedUser) {
                   setMultipleResponsesAllowed(!multipleResponsesAllowed);
-
                   const res = await updateFormCollection(collection.id, {
                     multipleResponsesAllowed: !multipleResponsesAllowed,
                   });
+
+                  if (res.id) updateCollection(res);
+                  else toast.error("Something went wrong");
                 }
               }}
             />
@@ -82,6 +84,8 @@ export function AdditionalSettings() {
                   const res = await updateFormCollection(collection.id, {
                     updatingResponseAllowed: !updatingResponseAllowed,
                   });
+                  if (res.id) updateCollection(res);
+                  else toast.error("Something went wrong");
                 }
               }}
             />

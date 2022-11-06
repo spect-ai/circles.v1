@@ -85,6 +85,7 @@ export default function SybilResistance() {
             title="Sybil Resistance"
             handleClose={() => setIsOpen(false)}
             size="medium"
+            height="40rem"
           >
             <Box padding="8" width="full">
               <Box width="full">
@@ -303,10 +304,4 @@ export default function SybilResistance() {
   );
 }
 
-const ScrollContainer = styled(Box)`
-  overflow-y: auto;
-  height: calc(100vh - 25rem);
-  ::-webkit-scrollbar {
-    width: 5px;
-  }
-`;
+const ScrollContainer = styled(Box)``;
