@@ -14,7 +14,6 @@ type Props = {
 function RewardModal({ propertyName, dataId, handleClose, form }: Props) {
   const [data, setData] = useState(dataId ? form?.data[dataId] : undefined);
 
-  console.log({ data });
   return (
     <Modal
       handleClose={() => {

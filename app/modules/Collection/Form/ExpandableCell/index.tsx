@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Portal } from "@/app/common/components/Portal/portal";
 import { PropertyType } from "@/app/types";
 import { Box, IconClose, Stack, Text } from "degen";

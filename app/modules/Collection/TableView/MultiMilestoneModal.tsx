@@ -1,9 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Modal from "@/app/common/components/Modal";
 import { Milestone } from "@/app/types";
 import { Box } from "degen";
-import { memo, useEffect, useState } from "react";
+import { memo, useState } from "react";
 import MilestoneField from "../../PublicForm/MilestoneField";
-import { useLocalCollection } from "../Context/LocalCollectionContext";
 
 type Props = {
   form: any;

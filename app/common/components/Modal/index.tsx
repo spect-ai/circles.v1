@@ -38,7 +38,7 @@ export const slideUp = {
   visible: {
     y: 0,
     transition: {
-      duration: 0.4,
+      duration: 0.5,
     },
   },
   exit: {
@@ -105,6 +105,7 @@ function Modal({
         style={{ width: "100%", display: "flex", justifyContent: "center" }}
       >
         <Container
+          position="relative"
           backgroundColor="background"
           borderRadius={{
             xs: "none",

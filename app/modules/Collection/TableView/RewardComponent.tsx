@@ -19,6 +19,7 @@ const RewardComponent = ({ rowData, columnData }: CellProps) => {
         size="small"
         justifyContent="flex-start"
         onClick={() => {
+          if (columnData.property.isPartOfFormView) return;
           columnData.setPropertyName(columnData.property.name);
           columnData.setDataId(id);
           columnData.setIsRewardFieldOpen(true);

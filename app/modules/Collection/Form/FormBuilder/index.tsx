@@ -109,7 +109,7 @@ function FormBuilder({ fields }: Props) {
         </CoverImageButtonContainer>
         <CoverImage src={cover} backgroundColor="accentSecondary" />
         <Container>
-          <FormContainer backgroundColor="background">
+          <FormContainer backgroundColor="background" borderRadius="2xLarge">
             <Box width="full" marginBottom="2" padding="4">
               <Stack space="2">
                 {logo && <Avatar src={logo} label="" size="20" />}
@@ -151,27 +151,34 @@ function FormBuilder({ fields }: Props) {
                     }
                   }}
                 />
-                <Editor
-                  value={description}
-                  onSave={async (value) => {
-                    setDescription(value);
-                    console.log({ value });
-                    if (connectedUser) {
-                      const res = await updateFormCollection(collection.id, {
-                        description,
-                      });
-                      res.id && updateCollection(res);
-                    }
-                  }}
-                  placeholder={`Edit description`}
-                  isDirty={true}
-                />
+                <Box
+                  width="full"
+                  borderRadius="large"
+                  maxHeight="56"
+                  overflow="auto"
+                  id="editorContainer"
+                >
+                  <Editor
+                    value={description}
+                    onSave={async (value) => {
+                      setDescription(value);
+                      if (connectedUser) {
+                        const res = await updateFormCollection(collection.id, {
+                          description: value,
+                        });
+                        res.id && updateCollection(res);
+                      }
+                    }}
+                    placeholder={`Edit description`}
+                    isDirty={true}
+                  />
+                </Box>
               </Stack>
             </Box>
             <Droppable droppableId="activeFields" type="field">
               {FieldDraggableCallback}
             </Droppable>
-            <Box paddingX="5">
+            <Box paddingX="5" paddingBottom="4">
               <PrimaryButton
                 icon={<IconPlusSmall />}
                 onClick={() => {

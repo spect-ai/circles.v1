@@ -12,7 +12,7 @@ const colors = {
   greyMid: "#C5CCD3",
   greyDark: "#DAE1E9",
   purple: "rgb(191, 90, 242,0.7)",
-  textBlack: "rgb(20,20,20,0.8)",
+  textBlack: "rgb(20,20,20)",
 };
 
 export const base = {
@@ -20,9 +20,8 @@ export const base = {
   fontFamily: "Inter",
   fontFamilyMono:
     "'SFMono-Regular',Consolas,'Liberation Mono', Menlo, Courier,monospace",
-  fontWeight: 200,
-  fontSize: "0.9em",
-  zIndex: 100,
+  fontWeight: 400,
+  zIndex: 1,
   link: colors.primary,
   placeholder: "#B1BECC",
   textSecondary: "#4E5C6E",

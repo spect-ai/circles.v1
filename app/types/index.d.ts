@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 interface UserType {
   accounts: string[];
   createdAt: string;
@@ -708,6 +709,7 @@ export interface CollectionType {
   credentialCurationEnabled: boolean;
   dataOwner: { [key: string]: string };
   profiles: { [key: string]: UserType };
+  voting: Voting;
   isAnOpportunity: boolean;
   opportunityInfo: OpportunityInfoType;
 }
@@ -819,7 +821,7 @@ export interface FormType {
   kudosClaimedByUser: boolean;
   multipleResponsesAllowed: boolean;
   updatingResponseAllowed: boolean;
-  previousResponses: MappedItem<object>;
+  previousResponses: any[];
   sybilProtectionEnabled: boolean;
   sybilProtectionScores: GitcoinScoreType[];
   canClaimKudos: boolean;
@@ -885,4 +887,15 @@ export type Stamp = {
   stampName: string;
   stampDescription: string;
   score?: number;
+};
+
+export interface MappedItem<T> {
+  [id: string]: T;
+}
+
+export type Voting = {
+  enabled: boolean;
+  message?: string;
+  options?: Option[];
+  votes?: MappedItem<MappedItem<number>>;
 };

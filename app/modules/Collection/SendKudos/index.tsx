@@ -24,7 +24,6 @@ import { storeImage } from "@/app/common/utils/ipfs";
 import { InfoCircleOutlined } from "@ant-design/icons";
 import { Tooltip } from "react-tippy";
 import styled from "styled-components";
-import { AdditionalSettings } from "../Form/AdditionalSettings";
 
 const ScrollContainer = styled(Box)`
   overflow-x: auto;
@@ -56,7 +55,6 @@ export default function SendKudos() {
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
-  const [perm, setPerm] = useState({} as Permissions);
   const [kudos, setKudos] = useState({} as KudosType);
   const [uploading, setUploading] = useState(false);
   const [uploadedImage, setUploadedImage] = useState(kudos?.imageUrl || "");
@@ -96,7 +94,6 @@ export default function SendKudos() {
         res
           .json()
           .then((permissions: Permissions) => {
-            setPerm(permissions);
             if (permissions?.distributeCredentials) {
               getPrivateCircleCredentials(circle?.id)
                 .then((creds: GetPrivateCirclePropertiesDto | boolean) => {
@@ -151,10 +148,7 @@ export default function SendKudos() {
 
   return (
     <>
-      {!collection.mintkudosTokenId && <Text variant="label">And</Text>}
-      {collection.mintkudosTokenId && (
-        <Text variant="label">And send the following kudos</Text>
-      )}
+      <Text variant="label">Kudos</Text>
       {!loading && kudos.imageUrl && (
         <Box
           display="flex"
@@ -165,7 +159,14 @@ export default function SendKudos() {
           width="full"
           id="imagecontainer"
         >
-          <Box width="1/2" marginBottom="4" id="imagebox">
+          <Box
+            width={{
+              xs: "full",
+              md: "1/2",
+            }}
+            marginBottom="4"
+            id="imagebox"
+          >
             <Image
               src={`${kudos.imageUrl}`}
               width="100%"
@@ -214,7 +215,12 @@ export default function SendKudos() {
       )}
 
       {!collection.mintkudosTokenId && (
-        <Box width="48">
+        <Box
+          width={{
+            xs: "full",
+            md: "1/3",
+          }}
+        >
           <PrimaryButton onClick={() => setIsOpen(true)}>
             Send Kudos
           </PrimaryButton>
@@ -227,6 +233,7 @@ export default function SendKudos() {
               title="Mintkudos Integration"
               handleClose={() => setIsOpen(false)}
               size="small"
+              zIndex={2}
             >
               <Box padding="8">
                 <Credentials />
@@ -238,6 +245,7 @@ export default function SendKudos() {
               size="medium"
               title="Send Kudos 🎉"
               handleClose={() => setIsOpen(false)}
+              zIndex={2}
             >
               <Box
                 display="flex"
@@ -429,7 +437,7 @@ export default function SendKudos() {
                         if (res) {
                           setIsOpen(false);
                         }
-                      } catch (err: any) {
+                      } catch (err: unknown) {
                         setLoading(false);
                         console.log(err);
                       }

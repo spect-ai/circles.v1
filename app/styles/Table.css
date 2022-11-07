@@ -4,13 +4,13 @@
   --dsg-selection-border-radius: 2px;
   --dsg-selection-border-width: 2px;
   --dsg-selection-background-color: rgba(69, 128, 230, 0.04);
-  --dsg-selection-disabled-border-color: #9da6ab;
+  --dsg-selection-disabled-border-color: rgb(69, 128, 230);
   --dsg-selection-disabled-background-color: rgba(0, 0, 0, 0.04);
   --dsg-corner-indicator-width: 10px;
   --dsg-header-text-color: rgb(157, 166, 171);
   --dsg-header-active-text-color: rgb(255, 255, 255);
   --dsg-cell-background-color: rgb(20, 20, 20);
-  --dsg-cell-disabled-background-color: rgb(250, 250, 250);
+  --dsg-cell-disabled-background-color: rgb(250, 250, 250, 0);
   --dsg-transition-duration: 0.1s;
   --dsg-expand-rows-indicator-width: 10px;
   --dsg-scroll-shadow-width: 7px;

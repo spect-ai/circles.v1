@@ -17,13 +17,6 @@ a {
   box-sizing: border-box;
 }
 
-/* .ProseMirror {
-  border-radius: 1rem;
-  border: 2px solid rgb(255, 255, 255, 0.1);
-  background-color: rgb(20, 20, 20);
-  padding: 1rem;
-} */
-
 .ProseMirror-focused > * {
   margin-bottom: 10px !important;
 }
@@ -41,7 +34,7 @@ a {
 }
 
 .ProseMirror > p {
-  font-size: 0.9em;
+  font-size: 0.95rem;
 }
 
 .block-menu-trigger {

@@ -93,7 +93,7 @@ export default function SettingsModal({ handleClose, initialTab }: Props) {
           height: "calc(100% - 5rem)",
         }}
       >
-        <Box width="1/4" borderRightWidth="0.375" paddingY="8" paddingRight="1">
+        <Box width="1/4" paddingY="8" paddingRight="1">
           <Tabs
             selectedTab={tab}
             onTabClick={onTabClick}

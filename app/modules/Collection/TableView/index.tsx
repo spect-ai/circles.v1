@@ -20,7 +20,7 @@ import { CellWithId } from "react-datasheet-grid/dist/types";
 import { toast } from "react-toastify";
 import AddField from "../AddField";
 import { useLocalCollection } from "../Context/LocalCollectionContext";
-import DataModal from "../Form/DataModal";
+import DataModal from "../Form/DataDrawer";
 import ExpandableCell from "../Form/ExpandableCell";
 import CredentialComponent from "./CredentialComponent";
 import GutterColumnComponent from "./GutterColumnComponent";
@@ -50,7 +50,8 @@ export default function TableView() {
         return addData(row);
       }
       if (!row.id) return;
-      if (row) {
+      console.log({ cell });
+      if (row && !collection.properties[cell.colId || ""].isPartOfFormView) {
         const res = await updateCollectionDataGuarded(collection.id, row.id, {
           [cell.colId as string]: row[cell.colId as string],
         });
@@ -84,15 +85,16 @@ export default function TableView() {
 
   useEffect(() => {
     if (collection.data) {
-      // for each data property in the data, convert the date string to a date object for all the rows
-      const dataProperties = collection.propertyOrder.map((property) => {
+      // for each date property in the data, convert the date string to a date object for all the rows
+      const dateProperties = collection.propertyOrder.map((property) => {
         if (collection.properties[property]?.type === "date")
           return collection.properties[property].name;
       });
       const data = Object.keys(collection.data).map((key) => {
         const row = collection.data[key];
-        dataProperties.forEach((property) => {
-          if (row[property]) row[property] = new Date(row[property]);
+        dateProperties.forEach((property) => {
+          if (row[property as string])
+            row[property as string] = new Date(row[property as string]);
         });
         return {
           id: key,
@@ -164,8 +166,9 @@ export default function TableView() {
   };
 
   const columns: Column<any>[] =
-    collection.properties &&
-    Object.values(collection.properties).map((property) => {
+    collection.propertyOrder &&
+    collection.propertyOrder.map((propertyName: string) => {
+      const property = collection.properties[propertyName];
       if (
         ["singleSelect", "multiSelect", "longText", "user", "user[]"].includes(
           property.type
@@ -227,6 +230,7 @@ export default function TableView() {
       } else {
         return {
           ...keyColumn(property.name, getCellComponent(property.type) as any),
+          disabled: property.isPartOfFormView,
           title: (
             <HeaderComponent
               sortData={sortData}
@@ -307,6 +311,10 @@ export default function TableView() {
               dataId: string,
               propertyName: string
             ) => {
+              if (collection.properties[propertyName].isPartOfFormView) {
+                setMultipleMilestoneModalOpen(false);
+                return;
+              }
               if (data) {
                 const row = data.findIndex((row) => row.id === dataId);
                 console.log({ value });
