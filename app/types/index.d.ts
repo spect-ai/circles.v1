@@ -827,6 +827,8 @@ export interface FormType {
   canClaimKudos: boolean;
   hasRole: boolean;
   hasPassedSybilCheck: boolean;
+  isAnOpportunity: boolean;
+  opportunityInfo: OpportunityInfoType;
   createdAt: string;
   updatedAt: string;
   id: string;

@@ -47,10 +47,10 @@ export default function OpportunityMode() {
     <>
       <Stack direction="vertical">
         {collection.isAnOpportunity && (
-          <Text variant="small">{`This form is sybil protected!`}</Text>
+          <Text variant="small">{`Opportunity mode is on`}</Text>
         )}
         {!collection.isAnOpportunity && (
-          <Text variant="small">{`Protect your form against sybil attacks`}</Text>
+          <Text variant="small">{`Turn on Opportunity Mode to reach 10,000+ opportunity seekers`}</Text>
         )}
       </Stack>
       <Box

@@ -219,7 +219,7 @@ export default function FormFields({ form, setForm }: Props) {
     let res;
     if (!checkRequired(data)) return;
     if (!checkValue(data)) return;
-    if (!currentUser?.email) {
+    if (!currentUser?.email && form?.isAnOpportunity) {
       setNotificationPreferenceModalOpen(true);
       return;
     }

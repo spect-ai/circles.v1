@@ -10,7 +10,7 @@ type Props = {
   handleClose: () => void;
 };
 
-export default function MilestoneModal({ handleClose }: Props) {
+export default function NotificationPreferenceModal({ handleClose }: Props) {
   const [selectedNotificationOption, setSelectedNotificationOption] =
     useState("email");
   const [email, setEmail] = useState("");
@@ -43,8 +43,8 @@ export default function MilestoneModal({ handleClose }: Props) {
       >
         <Box>
           <Text variant="small">
-            Since this form is an opportunity, you must enable notifications for
-            further communication
+            Since this form is for an opportunity, you must enable notifications
+            for further communication
           </Text>
         </Box>
         <Box

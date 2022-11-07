@@ -7,7 +7,7 @@ export default function Curation() {
   return (
     <Stack>
       <CredentialCuration />
-      <OpportunityMode />
+      {/* <OpportunityMode /> */}
     </Stack>
   );
 }
