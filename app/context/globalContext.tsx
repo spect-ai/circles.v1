@@ -20,8 +20,6 @@ interface GlobalContextType {
   disconnectUser: () => void;
   quickProfileUser: string;
   openQuickProfile: (userId: string) => void;
-  view: number;
-  setView: React.Dispatch<React.SetStateAction<number>>;
   viewName: string;
   setViewName: React.Dispatch<React.SetStateAction<string>>;
   tab: string;
@@ -55,7 +53,6 @@ const useProviderGlobalContext = () => {
     useState<"Overview" | "Members" | "Roles">("Overview");
 
   const [viewName, setViewName] = useState("" as string);
-  const [view, setView] = useState(0);
   const [calendarView, setCalendarView] = useState<ViewMode>(ViewMode.Day);
 
   const [tab, setTab] = useState("Work");
@@ -112,8 +109,6 @@ const useProviderGlobalContext = () => {
     setIsProfilePanelExpanded,
     quickProfileUser,
     openQuickProfile,
-    view,
-    setView,
     viewName,
     setViewName,
     calendarView,

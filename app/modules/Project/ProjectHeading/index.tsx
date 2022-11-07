@@ -9,14 +9,9 @@ import { ViewBar } from "../ProjectViews";
 import { useRouter } from "next/router";
 import { useGlobal } from "@/app/context/globalContext";
 import AdvancedOptions from "./MoreOptions";
-import {
-  AlignLeftOutlined,
-  BarsOutlined,
-  AppstoreOutlined,
-  TableOutlined,
-} from "@ant-design/icons";
 import Breadcrumbs from "@/app/common/components/Breadcrumbs";
 import { useCircle } from "../../Circle/CircleContext";
+import InviteMemberModal from "@/app/modules/Circle/ContributorsModal/InviteMembersModal";
 
 export const IconButton = styled(Box)`
   cursor: pointer;
@@ -31,7 +26,7 @@ function ProjectHeading() {
   const { mode } = useTheme();
   const router = useRouter();
   const { circle: cId, project: pId, view: vId } = router.query;
-  const { setViewName, viewName, view, setView } = useGlobal();
+  const { setViewName, viewName } = useGlobal();
   const { navigationBreadcrumbs } = useCircle();
 
   const defaultView = () => {
@@ -92,85 +87,9 @@ function ProjectHeading() {
           )}
           <ViewBar />
         </Stack>
-        <Stack direction="horizontal" align="center">
-          <Box
-            display="flex"
-            flexDirection="row"
-            borderWidth="0.375"
-            borderRadius="large"
-            backgroundColor="foregroundSecondary"
-          >
-            <IconButton
-              color="textSecondary"
-              borderRightWidth="0.375"
-              paddingX="2"
-              paddingY="0.5"
-              borderLeftRadius="large"
-              backgroundColor={
-                view === 0 && viewName === ""
-                  ? "foregroundSecondary"
-                  : "background"
-              }
-              onClick={() => {
-                setView(0);
-                defaultView();
-              }}
-            >
-              <AppstoreOutlined style={{ fontSize: "1.4rem" }} />
-            </IconButton>
-            <IconButton
-              color="textSecondary"
-              borderRightWidth="0.375"
-              paddingX="2"
-              paddingY="0.5"
-              backgroundColor={
-                view === 1 && viewName === ""
-                  ? "foregroundSecondary"
-                  : "background"
-              }
-              onClick={() => {
-                setView(1);
-                defaultView();
-              }}
-            >
-              <BarsOutlined style={{ fontSize: "1.4rem" }} />
-            </IconButton>
-            <IconButton
-              color="textSecondary"
-              paddingX="2"
-              paddingY="1"
-              borderRightWidth="0.375"
-              backgroundColor={
-                view === 2 && viewName === ""
-                  ? "foregroundSecondary"
-                  : "background"
-              }
-              onClick={() => {
-                setView(2);
-                defaultView();
-              }}
-            >
-              <AlignLeftOutlined style={{ fontSize: "1.3rem" }} />
-            </IconButton>
-            <IconButton
-              color="textSecondary"
-              paddingX="2"
-              paddingY="1"
-              borderRightRadius="large"
-              backgroundColor={
-                view === 3 && viewName === ""
-                  ? "foregroundSecondary"
-                  : "background"
-              }
-              onClick={() => {
-                setView(3);
-                defaultView();
-              }}
-            >
-              <TableOutlined style={{ fontSize: "1.3rem" }} />
-            </IconButton>
-          </Box>
-        </Stack>
+        <Box width="52">
+          <InviteMemberModal />
+        </Box>
       </Box>
       <AdvancedOptions />
     </Box>

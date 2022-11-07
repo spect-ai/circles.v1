@@ -374,6 +374,7 @@ export interface ProjectType {
   archived: boolean;
   slug: string;
   private: boolean;
+  defaultView: ViewType;
   parents: CircleType[];
   discordDiscussionChannel: {
     id: string;
@@ -385,6 +386,8 @@ export interface ProjectType {
   };
   unauthorized?: boolean;
 }
+
+export type ViewType = "List" | "Board" | "Gantt" | "Table";
 
 interface ActionValidation {
   valid: boolean;
@@ -522,7 +525,7 @@ export type CardsType = {
 };
 
 export type Views = {
-  type: "List" | "Board" | "Gantt" | "Table";
+  type: ViewType;
   hidden: boolean;
   filters: Filter;
   slug?: string;
