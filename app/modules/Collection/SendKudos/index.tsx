@@ -218,7 +218,7 @@ export default function SendKudos() {
         <Box
           width={{
             xs: "full",
-            md: "1/3",
+            md: "1/2",
           }}
         >
           <PrimaryButton onClick={() => setIsOpen(true)}>

@@ -53,21 +53,28 @@ export default function OpportunityMode() {
           <Text variant="small">{`Protect your form against sybil attacks`}</Text>
         )}
       </Stack>
-      <PrimaryButton
-        variant={collection.isAnOpportunity ? "tertiary" : "secondary"}
-        onClick={() => setIsOpen(true)}
+      <Box
+        width={{
+          xs: "full",
+          md: "1/2",
+        }}
       >
-        {collection.isAnOpportunity
-          ? `Update Opportunity Mode`
-          : `Enable Opportunity Mode`}
-      </PrimaryButton>
+        <PrimaryButton
+          variant={collection.isAnOpportunity ? "tertiary" : "secondary"}
+          onClick={() => setIsOpen(true)}
+        >
+          {collection.isAnOpportunity
+            ? `Update Opportunity Mode`
+            : `Enable Opportunity Mode`}
+        </PrimaryButton>
+      </Box>
 
       <AnimatePresence>
         {isOpen && (
           <Modal
             title="Opportunity Mode"
             handleClose={() => setIsOpen(false)}
-            size="large"
+            height="30rem"
           >
             <Box padding="8" width="full">
               <ScrollContainer>
@@ -224,49 +231,52 @@ export default function OpportunityMode() {
               <Box width="full" paddingTop="8">
                 <Box
                   display="flex"
-                  flexDirection="row"
+                  flexDirection={{
+                    xs: "column",
+                    md: "row",
+                  }}
                   width="full"
                   gap="4"
                   justifyContent="flex-end"
                 >
                   {collection.isAnOpportunity && (
-                    <Button
-                      width="1/2"
-                      loading={loading}
-                      variant="tertiary"
-                      size="small"
-                      onClick={async () => {
-                        setLoading(true);
-                        const res = await (
-                          await fetch(
-                            `${process.env.API_HOST}/collection/v1/${collection.id}`,
-                            {
-                              method: "PATCH",
-                              body: JSON.stringify({
-                                isAnOpportunity: false,
-                                opportunityInfo: {
-                                  type: "",
-                                  experience: "",
-                                  skills: [],
-                                  tags: [],
+                    <Box width="full">
+                      <PrimaryButton
+                        loading={loading}
+                        variant="tertiary"
+                        onClick={async () => {
+                          setLoading(true);
+                          const res = await (
+                            await fetch(
+                              `${process.env.API_HOST}/collection/v1/${collection.id}`,
+                              {
+                                method: "PATCH",
+                                body: JSON.stringify({
+                                  isAnOpportunity: false,
+                                  opportunityInfo: {
+                                    type: "",
+                                    experience: "",
+                                    skills: [],
+                                    tags: [],
+                                  },
+                                }),
+                                headers: {
+                                  "Content-Type": "application/json",
                                 },
-                              }),
-                              headers: {
-                                "Content-Type": "application/json",
-                              },
-                              credentials: "include",
-                            }
-                          )
-                        ).json();
-                        updateCollection(res);
-                        setIsOpen(false);
-                        setLoading(false);
-                      }}
-                    >
-                      Disable Opportunity Mode
-                    </Button>
+                                credentials: "include",
+                              }
+                            )
+                          ).json();
+                          updateCollection(res);
+                          setIsOpen(false);
+                          setLoading(false);
+                        }}
+                      >
+                        Disable Opportunity Mode
+                      </PrimaryButton>
+                    </Box>
                   )}
-                  <Box width="1/2">
+                  <Box width="full">
                     <PrimaryButton
                       loading={loading}
                       onClick={async () => {

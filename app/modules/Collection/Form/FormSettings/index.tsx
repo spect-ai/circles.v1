@@ -24,7 +24,12 @@ function FormSettings() {
             title="Form Settings"
             size="large"
           >
-            <Box padding="8">
+            <Box
+              padding={{
+                xs: "2",
+                md: "8",
+              }}
+            >
               <Stack direction="horizontal">
                 <Box width="1/4" paddingY="8" paddingRight="1">
                   <Tabs
@@ -38,7 +43,7 @@ function FormSettings() {
                 <ScrollContainer
                   width="3/4"
                   paddingX={{
-                    xs: "2",
+                    xs: "0",
                     md: "4",
                     lg: "8",
                   }}

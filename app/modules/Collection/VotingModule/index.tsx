@@ -49,7 +49,7 @@ export default function VotingModule() {
       <Box
         width={{
           xs: "full",
-          md: "1/3",
+          md: "1/2",
         }}
       >
         <PrimaryButton

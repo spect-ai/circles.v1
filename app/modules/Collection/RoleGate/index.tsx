@@ -98,19 +98,26 @@ export default function RoleGate() {
           ))}
         </Stack>
       )}
-      <PrimaryButton
-        icon={<IconPlug />}
-        variant={
-          collection.formRoleGating && collection.formRoleGating.length > 0
-            ? "tertiary"
-            : "secondary"
-        }
-        onClick={() => setIsOpen(true)}
+      <Box
+        width={{
+          xs: "full",
+          md: "1/2",
+        }}
       >
-        {collection.formRoleGating && collection.formRoleGating.length > 0
-          ? `Update Roles`
-          : `Role Gate`}
-      </PrimaryButton>
+        <PrimaryButton
+          icon={<IconPlug />}
+          variant={
+            collection.formRoleGating && collection.formRoleGating.length > 0
+              ? "tertiary"
+              : "secondary"
+          }
+          onClick={() => setIsOpen(true)}
+        >
+          {collection.formRoleGating && collection.formRoleGating.length > 0
+            ? `Update Roles`
+            : `Role Gate`}
+        </PrimaryButton>
+      </Box>
       {
         <AnimatePresence>
           {isOpen && !circle.guildxyzId && (

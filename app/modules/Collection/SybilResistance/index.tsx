@@ -68,15 +68,22 @@ export default function SybilResistance() {
           <Text variant="small">{`Protect your form against sybil attacks`}</Text>
         )}
       </Stack>
-      <PrimaryButton
-        icon={<IconUserSolid />}
-        variant={collection.sybilProtectionEnabled ? "tertiary" : "secondary"}
-        onClick={() => setIsOpen(true)}
+      <Box
+        width={{
+          xs: "full",
+          md: "1/2",
+        }}
       >
-        {collection.sybilProtectionEnabled
-          ? `Update Sybil Protection`
-          : `Enable Sybil Protection`}
-      </PrimaryButton>
+        <PrimaryButton
+          icon={<IconUserSolid />}
+          variant={collection.sybilProtectionEnabled ? "tertiary" : "secondary"}
+          onClick={() => setIsOpen(true)}
+        >
+          {collection.sybilProtectionEnabled
+            ? `Update Sybil Protection`
+            : `Enable Sybil Protection`}
+        </PrimaryButton>
+      </Box>
 
       <AnimatePresence>
         {isOpen && (

@@ -113,7 +113,7 @@ const Card = ({
         </Text>
       </Stack>
       <Box paddingTop={"2"}>
-        <Text color={"textSecondary"}>
+        <Text color={"textSecondary"} ellipsis>
           {projects?.[card]?.description ||
             workstreams?.[card].description ||
             retros?.[card].description ||
