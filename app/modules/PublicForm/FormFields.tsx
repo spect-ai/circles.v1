@@ -19,6 +19,7 @@ import FormResponse from "./FormResponse";
 import PublicField from "./PublicField";
 import mixpanel from "@/app/common/utils/mixpanel";
 import NotificationPreferenceModal from "./NotificationPreferenceModal";
+import { AnimatePresence } from "framer-motion";
 
 type Props = {
   form: FormType;
@@ -320,11 +321,13 @@ export default function FormFields({ form, setForm }: Props) {
 
   return (
     <Container borderRadius="2xLarge">
-      {notificationPreferenceModalOpen && (
-        <NotificationPreferenceModal
-          handleClose={() => setNotificationPreferenceModalOpen(false)}
-        />
-      )}
+      <AnimatePresence>
+        {notificationPreferenceModalOpen && (
+          <NotificationPreferenceModal
+            handleClose={() => setNotificationPreferenceModalOpen(false)}
+          />
+        )}
+      </AnimatePresence>
       {!loading &&
         form.propertyOrder.map((propertyName) => {
           if (form.properties[propertyName].isPartOfFormView)

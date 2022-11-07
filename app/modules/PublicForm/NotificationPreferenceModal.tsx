@@ -14,8 +14,6 @@ export default function MilestoneModal({ handleClose }: Props) {
   const [selectedNotificationOption, setSelectedNotificationOption] =
     useState("email");
   const [email, setEmail] = useState("");
-  const [emailIsVerified, setEmailIsVerified] = useState(false);
-  const [emailIsEmptyWarning, setEmailIsEmptyWarning] = useState(false);
   const { updateProfile } = useProfileUpdate();
 
   return (
@@ -104,7 +102,7 @@ export default function MilestoneModal({ handleClose }: Props) {
                 inputMode="email"
                 onChange={(e) => {
                   setEmail(e.target.value);
-                  setEmailIsEmptyWarning(false);
+                  // setEmailIsEmptyWarning(false);
                 }}
                 error={email && !isEmail(email)}
               />
@@ -126,7 +124,7 @@ export default function MilestoneModal({ handleClose }: Props) {
               width="48"
               onClick={async () => {
                 if (!email) {
-                  setEmailIsEmptyWarning(true);
+                  // setEmailIsEmptyWarning(true);
                   return;
                 }
                 const res = await updateProfile({

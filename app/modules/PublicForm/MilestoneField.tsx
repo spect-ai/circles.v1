@@ -110,7 +110,7 @@ export default function MilestoneField({
                       <Editor value={milestone.description} disabled={true} />
                     )}
                   </Box>
-                  {!collection.properties[propertyName].isPartOfFormView && (
+                  {!collection?.properties[propertyName].isPartOfFormView && (
                     <Box display="flex" flexDirection="row" gap="2">
                       <Button
                         variant="tertiary"
@@ -139,7 +139,7 @@ export default function MilestoneField({
               );
             })}
         </Stack>
-        {!collection.properties[propertyName].isPartOfFormView && (
+        {!collection?.properties[propertyName].isPartOfFormView && (
           <Box width="full">
             <PrimaryButton
               variant="tertiary"
