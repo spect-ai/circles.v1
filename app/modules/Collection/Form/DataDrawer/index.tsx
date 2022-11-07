@@ -43,19 +43,13 @@ export default function DataModal() {
 
   const router = useRouter();
   const { dataId, circle: cId } = router.query;
-  const { data: memberDetails } = useQuery<MemberDetails>(
-    ["memberDetails", cId],
-    {
-      enabled: false,
-    }
-  );
 
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
   const [data, setData] = useState({} as any);
-  const [comment, setComment] = useState("");
-  const [isDirty, setIsDirty] = useState(false);
+  // const [comment, setComment] = useState("");
+  // const [isDirty, setIsDirty] = useState(false);
   const [vote, setVote] = useState(-1);
 
   useEffect(() => {
@@ -91,8 +85,6 @@ export default function DataModal() {
       }) || []
     );
   };
-
-  console.log({ collection });
 
   if (!isOpen) return null;
 
@@ -378,7 +370,7 @@ export default function DataModal() {
               borderRadius="full"
             />
             <Stack>
-              <Stack direction="horizontal">
+              {/* <Stack direction="horizontal">
                 <Avatar
                   label=""
                   placeholder={!currentUser?.avatar}
@@ -406,7 +398,7 @@ export default function DataModal() {
                     </Box>
                   )}
                 </Box>
-              </Stack>
+              </Stack> */}
             </Stack>
           </ScrollContainer>
         </motion.div>

@@ -50,7 +50,8 @@ export default function TableView() {
         return addData(row);
       }
       if (!row.id) return;
-      if (row) {
+      console.log({ cell });
+      if (row && !collection.properties[cell.colId || ""].isPartOfFormView) {
         const res = await updateCollectionDataGuarded(collection.id, row.id, {
           [cell.colId as string]: row[cell.colId as string],
         });
@@ -229,6 +230,7 @@ export default function TableView() {
       } else {
         return {
           ...keyColumn(property.name, getCellComponent(property.type) as any),
+          disabled: property.isPartOfFormView,
           title: (
             <HeaderComponent
               sortData={sortData}
@@ -309,6 +311,10 @@ export default function TableView() {
               dataId: string,
               propertyName: string
             ) => {
+              if (collection.properties[propertyName].isPartOfFormView) {
+                setMultipleMilestoneModalOpen(false);
+                return;
+              }
               if (data) {
                 const row = data.findIndex((row) => row.id === dataId);
                 console.log({ value });

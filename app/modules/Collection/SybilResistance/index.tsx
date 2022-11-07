@@ -16,7 +16,6 @@ import styled from "styled-components";
 import { getAllCredentials } from "@/app/services/Credentials/AggregatedCredentials";
 import { Stamp } from "@/app/types";
 import { PassportStampIcons, PassportStampIconsLightMode } from "@/app/assets";
-import Image from "next/image";
 import { toast } from "react-toastify";
 
 export default function SybilResistance() {

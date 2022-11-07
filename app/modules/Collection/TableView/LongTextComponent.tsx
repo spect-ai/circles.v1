@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState } from "react";
 import Editor from "@/app/common/components/Editor";
 import { Box } from "degen";
@@ -13,13 +14,10 @@ type Props = {
 };
 
 export default function LongTextComponent({
-  focus,
-  active,
   rowData,
   columnData,
   setRowData,
   stopEditing,
-  isModalOpen,
 }: Props) {
   const [dirty, setDirty] = useState(false);
 
@@ -34,6 +32,7 @@ export default function LongTextComponent({
         placeholder={``}
         isDirty={dirty}
         setIsDirty={setDirty}
+        disabled={columnData.isPartOfFormView}
       />
     </Box>
   );

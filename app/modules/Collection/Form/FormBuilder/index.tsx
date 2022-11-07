@@ -39,8 +39,6 @@ function FormBuilder({ fields }: Props) {
     enabled: false,
   });
 
-  console.log({ collection });
-
   const FieldDraggable = (provided: DroppableProvided) => (
     <Box {...provided.droppableProps} ref={provided.innerRef}>
       {fields?.map((field, idx) => {

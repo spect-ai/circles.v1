@@ -1,5 +1,5 @@
-import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
-import { MemberDetails, Option } from "@/app/types";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { MemberDetails } from "@/app/types";
 import { useTheme } from "degen";
 import { useRouter } from "next/router";
 import { useLayoutEffect, useRef } from "react";
@@ -49,9 +49,9 @@ export default function SelectComponent({
   }, [focus]);
 
   const { mode } = useTheme();
-
   return (
     <Select
+      isDisabled={columnData.isPartOfFormView}
       isMulti={
         columnData.type === "multiSelect" || columnData.type === "user[]"
       }
@@ -71,8 +71,8 @@ export default function SelectComponent({
       menuPlacement="bottom"
       menuPosition="absolute"
       onChange={(option) => {
+        if (columnData.isPartOfFormView) return;
         setRowData(option);
-        // We don't just do `stopEditing()` because it is triggered too early by react-select
         setTimeout(() => {
           stopEditing();
         }, 100);
@@ -114,7 +114,7 @@ export default function SelectComponent({
           flexDirection: "row",
           alignItems: "center",
         }),
-        valueContainer: (provided, state) => ({
+        valueContainer: (provided) => ({
           ...provided,
           whiteSpace: "nowrap",
           overflow: "hidden",

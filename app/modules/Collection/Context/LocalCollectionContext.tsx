@@ -91,7 +91,6 @@ export function useProviderLocalCollection() {
       socket.on(
         `${localCollection.slug}:dataAdded`,
         (collection: CollectionType) => {
-          console.log({ collection });
           updateCollection(collection);
         }
       );
