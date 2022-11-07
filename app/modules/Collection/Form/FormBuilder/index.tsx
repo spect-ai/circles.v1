@@ -151,20 +151,28 @@ function FormBuilder({ fields }: Props) {
                     }
                   }}
                 />
-                <Editor
-                  value={description}
-                  onSave={async (value) => {
-                    setDescription(value);
-                    if (connectedUser) {
-                      const res = await updateFormCollection(collection.id, {
-                        description,
-                      });
-                      res.id && updateCollection(res);
-                    }
-                  }}
-                  placeholder={`Edit description`}
-                  isDirty={true}
-                />
+                <Box
+                  width="full"
+                  borderRadius="large"
+                  maxHeight="56"
+                  overflow="auto"
+                  id="editorContainer"
+                >
+                  <Editor
+                    value={description}
+                    onSave={async (value) => {
+                      setDescription(value);
+                      if (connectedUser) {
+                        const res = await updateFormCollection(collection.id, {
+                          description: value,
+                        });
+                        res.id && updateCollection(res);
+                      }
+                    }}
+                    placeholder={`Edit description`}
+                    isDirty={true}
+                  />
+                </Box>
               </Stack>
             </Box>
             <Droppable droppableId="activeFields" type="field">

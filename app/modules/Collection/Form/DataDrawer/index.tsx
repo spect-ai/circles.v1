@@ -166,11 +166,11 @@ export default function DataModal() {
                           <Editor value={data[property.name]} disabled />
                         )}
                         {property?.type === "singleSelect" && (
-                          <Text>{data[property.name].label}</Text>
+                          <Text>{data[property.name]?.label}</Text>
                         )}
                         {property?.type === "multiSelect" && (
                           <Stack space="2" direction="horizontal" wrap>
-                            {data[property.name].map((option: OptionType) => (
+                            {data[property.name]?.map((option: OptionType) => (
                               <Tag key={option.value} tone="accent" hover>
                                 {option.label}
                               </Tag>
@@ -178,7 +178,7 @@ export default function DataModal() {
                           </Stack>
                         )}
                         {property?.type === "user" && (
-                          <Text>{data[property.name].label}</Text>
+                          <Text>{data[property.name]?.label}</Text>
                         )}
                         {property?.type === "user[]" && (
                           <Stack
@@ -187,7 +187,7 @@ export default function DataModal() {
                             align="baseline"
                             wrap
                           >
-                            {data[property.name].map((option: OptionType) => (
+                            {data[property.name]?.map((option: OptionType) => (
                               <Tag key={option.value} tone="accent" hover>
                                 {option.label}
                               </Tag>
@@ -195,21 +195,21 @@ export default function DataModal() {
                           </Stack>
                         )}
                         {property?.type === "date" && (
-                          <Text>{data[property.name]}</Text>
+                          <Text>{data[property.name]?.toString()}</Text>
                         )}
                         {property?.type === "number" && (
                           <Text>{data[property.name]}</Text>
                         )}
                         {property?.type === "reward" && (
                           <Text>
-                            {data[property.name].value}{" "}
-                            {data[property.name].token.label} on{" "}
-                            {data[property.name].chain.label}
+                            {data[property.name]?.value}{" "}
+                            {data[property.name]?.token.label} on{" "}
+                            {data[property.name]?.chain.label}
                           </Text>
                         )}
                         {property?.type === "milestone" && (
                           <Stack>
-                            {data[property.name].map(
+                            {data[property.name]?.map(
                               (milestone: any, index: number) => (
                                 <Stack key={milestone.id} space="2">
                                   <Stack
