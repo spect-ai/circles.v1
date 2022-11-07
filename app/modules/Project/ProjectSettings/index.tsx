@@ -3,28 +3,60 @@ import Modal from "@/app/common/components/Modal";
 import ConfirmModal from "@/app/common/components/Modal/ConfirmModal";
 import { fetchGuildChannels } from "@/app/services/Discord";
 import { archiveProject, patchProject } from "@/app/services/Project";
-import { SaveOutlined } from "@ant-design/icons";
+import {
+  AlignLeftOutlined,
+  AppstoreOutlined,
+  BarsOutlined,
+  SaveOutlined,
+  TableOutlined,
+} from "@ant-design/icons";
 import { Box, Button, IconTrash, Input, Stack, Text } from "degen";
 import { AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { useLocalProject } from "../Context/LocalProjectContext";
+import { ViewType } from "@/app/types";
 
 type Props = {
   setIsOpen: (isOpen: boolean) => void;
+};
+
+interface IconProps {
+  icon: ViewType;
+  layout: ViewType;
+  setLayout: (layout: ViewType) => void;
+}
+
+const LayoutIcons = ({ icon, layout, setLayout }: IconProps) => {
+  return (
+    <Box
+      cursor="pointer"
+      color="textSecondary"
+      paddingX="1.5"
+      paddingY="1"
+      borderRadius="large"
+      backgroundColor={layout == icon ? "accentSecondary" : "background"}
+      onClick={() => setLayout(icon)}
+    >
+      {icon == "Board" && <AppstoreOutlined style={{ fontSize: "1.1rem" }} />}
+      {icon == "List" && <BarsOutlined style={{ fontSize: "1.1rem" }} />}
+      {icon == "Gantt" && <AlignLeftOutlined style={{ fontSize: "1.1rem" }} />}
+      {icon == "Table" && <TableOutlined style={{ fontSize: "1.1rem" }} />}
+    </Box>
+  );
 };
 
 export default function ProjectSettings({ setIsOpen }: Props) {
   const handleClose = () => setIsOpen(false);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-
   const [isLoading, setIsLoading] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
 
   const { localProject: project, updateProject } = useLocalProject();
   const router = useRouter();
   const { circle: cId } = router.query;
+  const [defaultView, setDefaultView] = useState<ViewType>(project.defaultView);
 
   const [channels, setChannels] = useState<OptionType[]>();
   const [discordDiscussionChannel, setDiscordDiscussionChannel] = useState(
@@ -59,6 +91,7 @@ export default function ProjectSettings({ setIsOpen }: Props) {
       name,
       description,
       discordDiscussionChannel,
+      defaultView,
     });
     setIsLoading(false);
     if (data) {
@@ -93,7 +126,7 @@ export default function ProjectSettings({ setIsOpen }: Props) {
         )}
       </AnimatePresence>
 
-      <Modal title="Project Settings" handleClose={handleClose}>
+      <Modal title="Project Settings" handleClose={handleClose} zIndex={2}>
         <Box width="full" padding="8">
           <Stack>
             <Box>
@@ -113,6 +146,37 @@ export default function ProjectSettings({ setIsOpen }: Props) {
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
               />
+            </Box>
+            <Box
+              display="flex"
+              flexDirection="row"
+              padding="1"
+              paddingBottom="2"
+              justifyContent="space-between"
+            >
+              <Text variant="label">Default Layout</Text>
+              <Box display="flex" flexDirection="row" gap={"2"}>
+                <LayoutIcons
+                  icon="Board"
+                  layout={defaultView}
+                  setLayout={setDefaultView}
+                />
+                <LayoutIcons
+                  icon="List"
+                  layout={defaultView}
+                  setLayout={setDefaultView}
+                />
+                <LayoutIcons
+                  icon="Gantt"
+                  layout={defaultView}
+                  setLayout={setDefaultView}
+                />
+                <LayoutIcons
+                  icon="Table"
+                  layout={defaultView}
+                  setLayout={setDefaultView}
+                />
+              </Box>
             </Box>
             {project.parents[0].discordGuildId && (
               <Box>

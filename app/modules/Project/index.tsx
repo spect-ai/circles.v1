@@ -31,7 +31,7 @@ function Project() {
   } = useLocalProject();
   const { canDo } = useRoleGate();
   const { onboarded } = useProjectOnboarding();
-  const { setViewName, view } = useGlobal();
+  const { setViewName } = useGlobal();
 
   const router = useRouter();
   const { card: tId, view: vId } = router.query;
@@ -104,10 +104,10 @@ function Project() {
             }}
           />
           {!onboarded && canDo("createNewCircle") && <Onboarding />}
-          {!vId && view === 0 && <BoardView viewId={""} />}
-          {!vId && view === 1 && <ListView viewId={""} />}
-          {!vId && view === 2 && <GanttChart viewId={""} />}
-          {!vId && view === 3 && <TableView viewId="" />}
+          {!vId && project.defaultView == "Board" && <BoardView viewId={""} />}
+          {!vId && project.defaultView == "List" && <ListView viewId={""} />}
+          {!vId && project.defaultView == "Gantt" && <GanttChart viewId={""} />}
+          {!vId && project.defaultView == "Table" && <TableView viewId="" />}
           {vId && selectedView?.type == "Board" && (
             <BoardView viewId={viewId} />
           )}

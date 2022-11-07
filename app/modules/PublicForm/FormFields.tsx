@@ -18,6 +18,7 @@ import styled from "styled-components";
 import FormResponse from "./FormResponse";
 import PublicField from "./PublicField";
 import mixpanel from "@/app/common/utils/mixpanel";
+import NotificationPreferenceModal from "./NotificationPreferenceModal";
 
 type Props = {
   form: FormType;
@@ -42,6 +43,8 @@ export default function FormFields({ form, setForm }: Props) {
   const [loading, setLoading] = useState(false);
   const [claimed, setClaimed] = useState(form.kudosClaimedByUser);
   const [submitting, setSubmitting] = useState(false);
+  const [notificationPreferenceModalOpen, setNotificationPreferenceModalOpen] =
+    useState(false);
   const { data: currentUser, refetch } = useQuery<UserType>(
     "getMyUser",
     getUser,
@@ -215,6 +218,10 @@ export default function FormFields({ form, setForm }: Props) {
     let res;
     if (!checkRequired(data)) return;
     if (!checkValue(data)) return;
+    if (!currentUser?.email) {
+      setNotificationPreferenceModalOpen(true);
+      return;
+    }
     setSubmitting(true);
     if (updateResponse) {
       const lastResponse =
@@ -313,6 +320,11 @@ export default function FormFields({ form, setForm }: Props) {
 
   return (
     <Container borderRadius="2xLarge">
+      {notificationPreferenceModalOpen && (
+        <NotificationPreferenceModal
+          handleClose={() => setNotificationPreferenceModalOpen(false)}
+        />
+      )}
       {!loading &&
         form.propertyOrder.map((propertyName) => {
           if (form.properties[propertyName].isPartOfFormView)

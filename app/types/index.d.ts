@@ -375,6 +375,7 @@ export interface ProjectType {
   archived: boolean;
   slug: string;
   private: boolean;
+  defaultView: ViewType;
   parents: CircleType[];
   discordDiscussionChannel: {
     id: string;
@@ -386,6 +387,8 @@ export interface ProjectType {
   };
   unauthorized?: boolean;
 }
+
+export type ViewType = "List" | "Board" | "Gantt" | "Table";
 
 interface ActionValidation {
   valid: boolean;
@@ -523,7 +526,7 @@ export type CardsType = {
 };
 
 export type Views = {
-  type: "List" | "Board" | "Gantt" | "Table";
+  type: ViewType;
   hidden: boolean;
   filters: Filter;
   slug?: string;
@@ -668,6 +671,12 @@ export type DiscordChannel = {
   id: string;
   name: string;
 };
+export type OpportunityInfoType = {
+  type: string;
+  experience: string;
+  skills: string[];
+  tags: string[];
+};
 
 export interface CollectionType {
   cover: string;
@@ -701,6 +710,8 @@ export interface CollectionType {
   dataOwner: { [key: string]: string };
   profiles: { [key: string]: UserType };
   voting: Voting;
+  isAnOpportunity: boolean;
+  opportunityInfo: OpportunityInfoType;
 }
 
 export type Property = {
