@@ -32,7 +32,7 @@ function EditTag({
   handleClose,
 }: Props) {
   return (
-    <>
+    <Box>
       <Stack direction="horizontal">
         {label && (
           <Box width="1/3">
@@ -65,7 +65,7 @@ function EditTag({
           </Modal>
         )}
       </AnimatePresence>
-    </>
+    </Box>
   );
 }
 
