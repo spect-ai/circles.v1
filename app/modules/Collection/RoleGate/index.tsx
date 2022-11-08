@@ -84,7 +84,7 @@ export default function RoleGate() {
   }, [circle?.guildxyzId, isOpen]);
 
   return (
-    <>
+    <Box>
       <Stack direction="vertical">
         {collection.formRoleGating && collection.formRoleGating.length > 0 && (
           <Text variant="small">{`Responses to form can only be added by these roles`}</Text>
@@ -255,6 +255,6 @@ export default function RoleGate() {
           )}
         </AnimatePresence>
       }
-    </>
+    </Box>
   );
 }
