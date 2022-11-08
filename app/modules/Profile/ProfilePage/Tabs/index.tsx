@@ -7,6 +7,8 @@ import { UserType } from "@/app/types";
 import Activity from "./Activity";
 import Kudos from "./Kudos";
 import Retro from "./Retro";
+import Experience from "./Experience";
+import Education from "./Education";
 
 interface Props {
   username: string;
@@ -68,7 +70,7 @@ export const ScrollContainer = styled(Box)`
 `;
 
 const ProfileTabs = ({ username }: Props) => {
-  const [tab, setProfileTab] = useState("Credentials");
+  const [tab, setProfileTab] = useState("Experience");
   const [userData, setUserData] = useState({} as UserType);
 
   const fetchUser = async () => {
@@ -101,18 +103,18 @@ const ProfileTabs = ({ username }: Props) => {
         paddingTop="10"
         justifyContent="space-between"
       >
-        {/* <PrimaryButton
-          variant={tab === "Activity" ? "tertiary" : "transparent"}
-          onClick={() => setProfileTab("Activity")}
+        <PrimaryButton
+          variant={tab === "Experience" ? "tertiary" : "transparent"}
+          onClick={() => setProfileTab("Experience")}
         >
-          Activity
+          Experience
         </PrimaryButton>
         <PrimaryButton
-          variant={tab === "Retro" ? "tertiary" : "transparent"}
-          onClick={() => setProfileTab("Retro")}
+          variant={tab === "Education" ? "tertiary" : "transparent"}
+          onClick={() => setProfileTab("Education")}
         >
-          Retro
-        </PrimaryButton> */}
+          Education
+        </PrimaryButton>
         <PrimaryButton
           variant={tab === "Credentials" ? "tertiary" : "transparent"}
           onClick={() => setProfileTab("Credentials")}
@@ -121,8 +123,8 @@ const ProfileTabs = ({ username }: Props) => {
         </PrimaryButton>
       </Box>
       <Box width="168">
-        {/* {tab === "Activity" && <Activity userData={userData} />}
-        {tab === "Retro" && <Retro userData={userData} />} */}
+        {tab === "Experience" && <Experience userData={userData} />}
+        {tab === "Education" && <Education userData={userData} />}
         {tab === "Credentials" && <Kudos userData={userData} />}
       </Box>
     </Box>

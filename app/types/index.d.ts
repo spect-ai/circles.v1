@@ -40,6 +40,10 @@ interface UserType {
       avatar: string;
     };
   };
+  experiences: { [key: string]: Experience };
+  education: { [key: string]: Education };
+  experienceOrder: string[];
+  educationOrder: string[];
 }
 
 export interface Payment {
@@ -900,4 +904,15 @@ export type Voting = {
   message?: string;
   options?: Option[];
   votes?: MappedItem<MappedItem<number>>;
+};
+
+export type Experience = {
+  id: string;
+  role: string;
+  description: string;
+  organization: string;
+  startDate: string;
+  endDate: string;
+  isCurrent: boolean;
+  linkedCredentials?: string[];
 };
