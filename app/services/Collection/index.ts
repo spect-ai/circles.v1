@@ -260,3 +260,32 @@ export const voteCollectionData = async (
     )
   ).json();
 };
+
+export const sendFormComment = async (
+  collectionId: string,
+  dataId: string,
+  content: string,
+  ref: {
+    [id: string]: {
+      id: string;
+      refType: "circle" | "collection" | "user";
+    };
+  }
+) => {
+  return await (
+    await fetch(
+      `${process.env.API_HOST}/collection/v1/${collectionId}/addComment?dataId=${dataId}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          content,
+          ref,
+        }),
+      }
+    )
+  ).json();
+};

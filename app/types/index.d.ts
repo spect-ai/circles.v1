@@ -463,6 +463,29 @@ export interface MemberDetails {
   members: string[];
 }
 
+export interface CollectionActivity {
+  content: string;
+  ref: {
+    actor: {
+      id: string;
+      type?: string;
+      refType?: string;
+    };
+  };
+  timestamp: Date;
+  comment: boolean;
+  owner?: string;
+  imageRef?: string;
+}
+
+// export interface Ref {
+//   actor: {
+//     id: string;
+//     type?: string;
+//     refType?: string;
+//   };
+// }
+
 export interface Activity {
   content: string;
   timestamp: string;
@@ -707,11 +730,13 @@ export interface CollectionType {
   circleRolesToNotifyUponNewResponse: string[];
   numOfKudos: number;
   credentialCurationEnabled: boolean;
-  dataOwner: { [key: string]: string };
+  dataOwner: MappedItem<string>;
   profiles: { [key: string]: UserType };
   voting: Voting;
   isAnOpportunity: boolean;
   opportunityInfo: OpportunityInfoType;
+  dataActivities: MappedItem<MappedItem<CollectionActivity>>;
+  dataActivityOrder: MappedItem<string[]>;
 }
 
 export type Property = {

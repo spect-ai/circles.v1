@@ -4,9 +4,9 @@ import { OptionType } from "@/app/common/components/Dropdown";
 import Editor from "@/app/common/components/Editor";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import Tabs from "@/app/common/components/Tabs";
-import { voteCollectionData } from "@/app/services/Collection";
-import { MemberDetails, UserType } from "@/app/types";
-import { SaveOutlined } from "@ant-design/icons";
+import { sendFormComment, voteCollectionData } from "@/app/services/Collection";
+import { UserType } from "@/app/types";
+import { SendOutlined } from "@ant-design/icons";
 import { Avatar, Box, Stack, Tag, Text } from "degen";
 import { motion } from "framer-motion";
 import { useRouter } from "next/router";
@@ -26,6 +26,7 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
+import DataActivity from "./DataActivity";
 
 ChartJS.register(
   CategoryScale,
@@ -48,9 +49,11 @@ export default function DataModal() {
     enabled: false,
   });
   const [data, setData] = useState({} as any);
-  // const [comment, setComment] = useState("");
-  // const [isDirty, setIsDirty] = useState(false);
+  const [comment, setComment] = useState("");
+  const [isDirty, setIsDirty] = useState(false);
   const [vote, setVote] = useState(-1);
+
+  const [sendingComment, setSendingComment] = useState(false);
 
   useEffect(() => {
     if (dataId) {
@@ -123,7 +126,7 @@ export default function DataModal() {
                     label=""
                     size="10"
                   />
-                  <Text weight="semiBold">
+                  <Text color="accentText" weight="semiBold">
                     {
                       collection.profiles[collection.dataOwner[data.slug]]
                         .username
@@ -370,7 +373,7 @@ export default function DataModal() {
               borderRadius="full"
             />
             <Stack>
-              {/* <Stack direction="horizontal">
+              <Stack direction="horizontal">
                 <Avatar
                   label=""
                   placeholder={!currentUser?.avatar}
@@ -378,7 +381,7 @@ export default function DataModal() {
                   address={currentUser?.ethAddress}
                   size="10"
                 />
-                <Box width="full" gap="2">
+                <Box width="full" gap="2" marginBottom="4">
                   <Editor
                     placeholder="Write a reply..."
                     value={comment}
@@ -388,17 +391,43 @@ export default function DataModal() {
                     isDirty={isDirty}
                     setIsDirty={setIsDirty}
                   />
-                  {isDirty && (
+                  {isDirty && currentUser && (
                     <Box width="1/4">
                       <PrimaryButton
-                        icon={<SaveOutlined style={{ fontSize: "1.3rem" }} />}
+                        loading={sendingComment}
+                        icon={<SendOutlined style={{ fontSize: "1.3rem" }} />}
+                        onClick={async () => {
+                          setSendingComment(true);
+                          const res = await sendFormComment(
+                            collection.id,
+                            dataId as string,
+                            comment,
+                            {
+                              actor: {
+                                id: currentUser.id,
+                                refType: "user",
+                              },
+                            }
+                          );
+                          if (res.id) {
+                            console.log({ res });
+                            updateCollection(res);
+                            setComment("");
+                            setIsDirty(false);
+                          } else toast.error("Something went wrong");
+                          setSendingComment(false);
+                        }}
                       >
-                        Save
+                        Send
                       </PrimaryButton>
                     </Box>
                   )}
                 </Box>
-              </Stack> */}
+              </Stack>
+              <DataActivity
+                activities={collection.dataActivities[dataId as string]}
+                activityOrder={collection.dataActivityOrder[dataId as string]}
+              />
             </Stack>
           </ScrollContainer>
         </motion.div>
