@@ -14,9 +14,11 @@ import { useEffect, useState } from "react";
 import { useLocalCollection } from "../Context/LocalCollectionContext";
 import styled from "styled-components";
 import { getAllCredentials } from "@/app/services/Credentials/AggregatedCredentials";
-import { Stamp } from "@/app/types";
+import { Stamp, UserType } from "@/app/types";
 import { PassportStampIcons, PassportStampIconsLightMode } from "@/app/assets";
 import { toast } from "react-toastify";
+import mixpanel from "@/app/common/utils/mixpanel";
+import { useQuery } from "react-query";
 
 export default function SybilResistance() {
   const [isOpen, setIsOpen] = useState(false);
@@ -27,6 +29,10 @@ export default function SybilResistance() {
   const [allocations, setAllocations] = useState([] as number[]);
   const [minAllocationNotMet, setMinAllocationNotMet] = useState(false);
   const { mode } = useTheme();
+
+  const { data: currentUser } = useQuery<UserType>("getMyUser", {
+    enabled: false,
+  });
 
   const useDefaults = () => {
     setAllocations(stamps.map((stamp) => stamp.defaultScore * 100));
@@ -270,6 +276,11 @@ export default function SybilResistance() {
                       disabled={minAllocationNotMet}
                       onClick={async () => {
                         setLoading(true);
+                        process.env.NODE_ENV === "production" &&
+                          mixpanel.track("Form Sybil Protection", {
+                            user: currentUser?.username,
+                            form: collection.name,
+                          });
                         const sybilProtectionScores = {} as {
                           [id: string]: number;
                         };

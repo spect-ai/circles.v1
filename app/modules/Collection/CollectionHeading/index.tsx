@@ -138,7 +138,7 @@ function CollectionHeading() {
                             process.env.NODE_ENV === "production" &&
                               mixpanel.track("Share Form", {
                                 user: currentUser?.username,
-                                formId: collection?.slug,
+                                form: collection?.name,
                               });
                           }}
                         >
@@ -217,7 +217,7 @@ function CollectionHeading() {
                     process.env.NODE_ENV === "production" &&
                       mixpanel.track("Share Form", {
                         user: currentUser?.username,
-                        formId: collection?.slug,
+                        form: collection?.name,
                       });
                   }}
                 >

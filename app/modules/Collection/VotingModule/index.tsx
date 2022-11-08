@@ -86,7 +86,7 @@ export default function VotingModule() {
                     md: "horizontal",
                   }}
                 >
-                  {collection.voting.enabled && (
+                  {collection.voting?.enabled && (
                     <Box width="full">
                       <PrimaryButton
                         variant="secondary"

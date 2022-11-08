@@ -258,7 +258,7 @@ export default function DataModal() {
                       </Stack>
                     );
                   })}
-                  {collection.voting.enabled && collection.voting.options && (
+                  {collection.voting?.enabled && collection.voting.options && (
                     <Stack space="1">
                       <Text
                         weight="semiBold"
@@ -290,7 +290,7 @@ export default function DataModal() {
                         unselectedColor="transparent"
                         selectedColor="secondary"
                       />
-                      {collection.voting.enabled &&
+                      {collection.voting?.enabled &&
                         collection.voting.options &&
                         collection.voting.votes &&
                         collection.voting.votes[data.slug] &&

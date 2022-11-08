@@ -243,7 +243,7 @@ export default function FormFields({ form, setForm }: Props) {
     }
     process.env.NODE_ENV === "production" &&
       mixpanel.track("Form Submit", {
-        formId: form.slug,
+        form: form.name,
         sybilEnabled: form.sybilProtectionEnabled,
         user: currentUser?.username,
       });

@@ -3,10 +3,16 @@ import { Box, Stack, Text } from "degen";
 import React from "react";
 import { toast } from "react-toastify";
 import { useLocalCollection } from "../../Context/LocalCollectionContext";
+import mixpanel from "@/app/common/utils/mixpanel";
+import { useQuery } from "react-query";
+import { UserType } from "@/app/types";
 
 export default function CredentialCuration() {
   const { localCollection: collection, updateCollection } =
     useLocalCollection();
+  const { data: currentUser } = useQuery<UserType>("getMyUser", {
+    enabled: false,
+  });
   return (
     <Box
       width={{
@@ -28,6 +34,11 @@ export default function CredentialCuration() {
             collection.credentialCurationEnabled ? "tertiary" : "secondary"
           }
           onClick={async () => {
+            process.env.NODE_ENV === "production" &&
+              mixpanel.track("Form Credential Curation", {
+                user: currentUser?.username,
+                form: collection.name,
+              });
             const res = await (
               await fetch(
                 `${process.env.API_HOST}/collection/v1/${collection.id}`,
