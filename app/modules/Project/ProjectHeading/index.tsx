@@ -88,7 +88,7 @@ function ProjectHeading() {
           <ViewBar />
         </Stack>
         <Box width="52">
-          <InviteMemberModal />
+          {project?.name && canDo("inviteMembers") && <InviteMemberModal />}
         </Box>
       </Box>
       <AdvancedOptions />
