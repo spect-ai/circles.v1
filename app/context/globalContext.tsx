@@ -5,7 +5,7 @@ import React, {
   useState,
   useEffect,
 } from "react";
-import { Filter } from "@/app/types";
+import { Filter, UserType } from "@/app/types";
 import { ViewMode } from "gantt-task-react";
 import { useRouter } from "next/router";
 import { io, Socket } from "socket.io-client";
@@ -36,6 +36,8 @@ interface GlobalContextType {
   setGroupBy: React.Dispatch<React.SetStateAction<"Folder" | "Type">>;
   toggle: "Overview" | "Members" | "Roles";
   setToggle: (toggle: "Overview" | "Members" | "Roles") => void;
+  userData: UserType;
+  setUserData: React.Dispatch<React.SetStateAction<UserType>>;
 }
 
 const useProviderGlobalContext = () => {
@@ -61,6 +63,8 @@ const useProviderGlobalContext = () => {
   const [currentFilter, setCurrentFilter] = useState({} as Filter);
 
   const [socket, setSocket] = useState<Socket>({} as Socket);
+
+  const [userData, setUserData] = useState({} as UserType);
 
   function connectUser(userId: string) {
     setConnectedUser(userId);
@@ -125,6 +129,8 @@ const useProviderGlobalContext = () => {
     setGroupBy,
     socket,
     setSocket,
+    userData,
+    setUserData,
   };
 };
 

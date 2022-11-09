@@ -9,6 +9,7 @@ import Kudos from "./Kudos";
 import Retro from "./Retro";
 import Experience from "./Experience";
 import Education from "./Education";
+import { useGlobal } from "@/app/context/globalContext";
 
 interface Props {
   username: string;
@@ -71,7 +72,7 @@ export const ScrollContainer = styled(Box)`
 
 const ProfileTabs = ({ username }: Props) => {
   const [tab, setProfileTab] = useState("Experience");
-  const [userData, setUserData] = useState({} as UserType);
+  const { userData, setUserData } = useGlobal();
 
   const fetchUser = async () => {
     const res = await fetch(

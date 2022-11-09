@@ -8,6 +8,10 @@ import { ScrollContainer, Card, TextBox, GigInfo, Tags } from "./index";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import AddExperienceModal from "../AddExperienceModal";
 import LensImportModal from "../LensImportModal";
+import useProfileUpdate from "@/app/services/Profile/useProfileUpdate";
+import router from "next/router";
+import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
+import { IconButton } from "@/app/modules/Project/ProjectHeading";
 
 const Paginate = styled(ReactPaginate)<{ mode: string }>`
   display: flex;
@@ -60,6 +64,9 @@ const Experience = ({ userData }: { userData: UserType }) => {
   const [addFromLens, setAddFromLens] = useState(false);
   const [editExperience, setEditExperience] = useState(false);
   const [editExperienceId, setEditExperienceId] = useState("");
+  const [modalMode, setModalMode] = useState<"add" | "edit">("add");
+  const { removeExperience } = useProfileUpdate();
+  const username = router.query.user;
 
   const experienceOrder = userData.experienceOrder;
   const experiences = userData.experiences;
@@ -119,11 +126,50 @@ const Experience = ({ userData }: { userData: UserType }) => {
           .map((experienceId: string) => {
             return (
               <Card mode={mode} key={experienceId}>
-                <TextBox>
-                  <Text variant="extraLarge" wordBreak="break-word">
-                    {/* {experiences[experienceId].title} */}
-                  </Text>
-                </TextBox>
+                <Box display="flex" flexDirection="row" gap="4">
+                  <Box
+                    display="flex"
+                    flexDirection="column"
+                    width="128"
+                    marginBottom="4"
+                  >
+                    <Text variant="extraLarge" weight="semiBold">
+                      {experiences[experienceId].role}
+                    </Text>
+                    <Text variant="small" weight="light">
+                      {experiences[experienceId].organization}
+                    </Text>
+                    {experiences[experienceId].startDate &&
+                      experiences[experienceId].endDate && (
+                        <Text variant="small" weight="light">
+                          {`${experiences[experienceId].startDate} - ${experiences[experienceId].endDate}}`}
+                        </Text>
+                      )}
+                  </Box>
+                  {username === userData.username && (
+                    <Box display="flex" flexDirection="row" gap="2">
+                      <PrimaryButton
+                        variant="transparent"
+                        onClick={() => {
+                          setModalMode("edit");
+                          setEditExperienceId(experiences[experienceId].id);
+                          setAddExperience(true);
+                        }}
+                      >
+                        <EditOutlined />
+                      </PrimaryButton>
+
+                      <PrimaryButton
+                        onClick={async () => {
+                          await removeExperience(experienceId);
+                        }}
+                        variant="transparent"
+                      >
+                        <DeleteOutlined />
+                      </PrimaryButton>
+                    </Box>
+                  )}
+                </Box>
               </Card>
             );
           })}

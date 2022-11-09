@@ -86,7 +86,7 @@ const ProfilePage: NextPage = () => {
       />
       <PublicLayout>
         {isLoading && <Loader loading text="fetching" />}
-        {!user?.id && (
+        {!user?.id && !isLoading && (
           <Box
             style={{
               width: "90vw",
