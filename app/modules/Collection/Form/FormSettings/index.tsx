@@ -8,13 +8,31 @@ import styled from "styled-components";
 import Access from "./Access";
 import Curation from "./Curation";
 import General from "./General";
+import mixpanel from "@/app/common/utils/mixpanel";
+import { useQuery } from "react-query";
+import { UserType } from "@/app/types";
+import { useLocalCollection } from "../../Context/LocalCollectionContext";
 
 function FormSettings() {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedTab, setSelectedTab] = useState(0);
+  const { data: currentUser } = useQuery<UserType>("getMyUser", {
+    enabled: false,
+  });
+  const { localCollection: collection } = useLocalCollection();
   return (
     <>
-      <PrimaryButton icon={<IconCog />} onClick={() => setIsOpen(true)}>
+      <PrimaryButton
+        icon={<IconCog />}
+        onClick={() => {
+          process.env.NODE_ENV === "production" &&
+            mixpanel.track("Form Settings", {
+              user: currentUser?.username,
+              form: collection.name,
+            });
+          setIsOpen(true);
+        }}
+      >
         Form Settings
       </PrimaryButton>
       <AnimatePresence>

@@ -108,12 +108,7 @@ export function Form() {
     return (
       <Box {...provided.droppableProps} ref={provided.innerRef}>
         <ScrollContainer>
-          <FormContainer
-            paddingLeft={{
-              xs: "0",
-              lg: "8",
-            }}
-          >
+          <FormContainer>
             <FormBuilder fields={propertyOrder} />
           </FormContainer>
           <InactiveFieldsColumnComponent fields={propertyOrder} />

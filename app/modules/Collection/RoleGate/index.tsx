@@ -2,7 +2,7 @@ import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { updateCircle } from "@/app/services/UpdateCircle";
 import { updateCollection } from "@/app/services/UpdateCollection";
-import { GuildRole } from "@/app/types";
+import { GuildRole, UserType } from "@/app/types";
 import { guild } from "@guildxyz/sdk";
 import { Box, IconPlug, Input, Stack, Tag, Text } from "degen";
 import { AnimatePresence } from "framer-motion";
@@ -10,6 +10,8 @@ import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useCircle } from "../../Circle/CircleContext";
 import { useLocalCollection } from "../Context/LocalCollectionContext";
+import mixpanel from "@/app/common/utils/mixpanel";
+import { useQuery } from "react-query";
 
 export default function RoleGate() {
   const [isOpen, setIsOpen] = useState(false);
@@ -19,6 +21,9 @@ export default function RoleGate() {
   const [guildUrl, setGuildUrl] = useState("");
   const [loading, setLoading] = useState(false);
   const [selectedRoles, setSelectedRoles] = useState<boolean[]>([]);
+  const { data: currentUser } = useQuery<UserType>("getMyUser", {
+    enabled: false,
+  });
 
   const [guildRoles, setGuildRoles] =
     useState<
@@ -79,7 +84,7 @@ export default function RoleGate() {
   }, [circle?.guildxyzId, isOpen]);
 
   return (
-    <>
+    <Box>
       <Stack direction="vertical">
         {collection.formRoleGating && collection.formRoleGating.length > 0 && (
           <Text variant="small">{`Responses to form can only be added by these roles`}</Text>
@@ -144,6 +149,11 @@ export default function RoleGate() {
                     <PrimaryButton
                       loading={loading}
                       onClick={async () => {
+                        process.env.NODE_ENV === "production" &&
+                          mixpanel.track("Form Role gate", {
+                            user: currentUser?.username,
+                            form: collection.name,
+                          });
                         setLoading(true);
                         const guildId = getGuildId(guildUrl);
                         if (guildId) {
@@ -245,6 +255,6 @@ export default function RoleGate() {
           )}
         </AnimatePresence>
       }
-    </>
+    </Box>
   );
 }

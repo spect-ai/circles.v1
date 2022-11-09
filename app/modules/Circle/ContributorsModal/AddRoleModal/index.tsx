@@ -41,7 +41,7 @@ export default function AddRole({ role }: props) {
   }, [circle, role]);
 
   return (
-    <>
+    <Box>
       {!role ? (
         <PrimaryButton
           icon={<IconPlusSmall />}
@@ -218,6 +218,6 @@ export default function AddRole({ role }: props) {
           </Modal>
         )}
       </AnimatePresence>
-    </>
+    </Box>
   );
 }

@@ -9,7 +9,6 @@ import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
 import ClickableTag from "@/app/common/components/EditTag/ClickableTag";
 import { EyeInvisibleOutlined, EyeOutlined } from "@ant-design/icons";
 import { fadeVariant } from "../Utils/variants";
-import ClickableAvatar from "@/app/common/components/Avatar";
 
 export default function Activity() {
   const { activity } = useLocalCard();

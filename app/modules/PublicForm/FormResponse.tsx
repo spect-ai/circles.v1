@@ -241,7 +241,7 @@ export default function FormResponse({
                   onClick={() => {
                     process.env.NODE_ENV === "production" &&
                       mixpanel.track("Create your own form", {
-                        formId: form.slug,
+                        form: form.name,
                         sybilEnabled: form.sybilProtectionEnabled,
                         user: currentUser?.username,
                       });

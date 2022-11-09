@@ -24,6 +24,7 @@ import { storeImage } from "@/app/common/utils/ipfs";
 import { InfoCircleOutlined } from "@ant-design/icons";
 import { Tooltip } from "react-tippy";
 import styled from "styled-components";
+import mixpanel from "@/app/common/utils/mixpanel";
 
 const ScrollContainer = styled(Box)`
   overflow-x: auto;
@@ -147,7 +148,7 @@ export default function SendKudos() {
   }, [isOpen, hasMintkudosCredentialsSetup]);
 
   return (
-    <>
+    <Box>
       <Text variant="label">Kudos</Text>
       {!loading && kudos.imageUrl && (
         <Box
@@ -415,6 +416,11 @@ export default function SendKudos() {
                             asset
                           );
                         }
+                        process.env.NODE_ENV === "production" &&
+                          mixpanel.track("Form Mint Kudos", {
+                            user: currentUser?.username,
+                            form: collection.name,
+                          });
 
                         const res = await mintKudos(
                           {
@@ -451,6 +457,6 @@ export default function SendKudos() {
           )}
         </AnimatePresence>
       }
-    </>
+    </Box>
   );
 }
