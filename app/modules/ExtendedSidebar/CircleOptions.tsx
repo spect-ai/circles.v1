@@ -108,7 +108,7 @@ function CircleOptions() {
                 onClick={() => {
                   setIsOpen(false);
                   void router.push(`/${cId}`);
-                  setToggle("Overview");
+                  setToggle(0);
                 }}
               >
                 <Stack direction="horizontal" space="2">
@@ -125,7 +125,7 @@ function CircleOptions() {
                 onClick={() => {
                   setIsOpen(false);
                   void router.push(`/${cId}`);
-                  setToggle("Members");
+                  setToggle(1);
                 }}
               >
                 <Stack direction="horizontal" space="2">
@@ -137,7 +137,7 @@ function CircleOptions() {
                 onClick={() => {
                   setIsOpen(false);
                   void router.push(`/${cId}`);
-                  setToggle("Roles");
+                  setToggle(2);
                 }}
               >
                 <Stack direction="horizontal" space="2">
