@@ -1,11 +1,26 @@
 import { PriorityIcon } from "@/app/common/components/PriorityIcon";
 import { monthMap } from "@/app/common/utils/constants";
+import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { CardType, ColumnType, MemberDetails } from "@/app/types";
-import { Avatar, Box, IconEth, Stack, Tag, Text, useTheme } from "degen";
+import {
+  Avatar,
+  Box,
+  Button,
+  IconEth,
+  IconPlusSmall,
+  Stack,
+  Tag,
+  Text,
+  useTheme,
+} from "degen";
 import { useRouter } from "next/router";
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { useQuery } from "react-query";
 import styled from "styled-components";
+import { useHotkeys } from "react-hotkeys-hook";
+import { toast } from "react-toastify";
+import { AnimatePresence } from "framer-motion";
+import CreateCardModal from "../CreateCardModal";
 
 type Props = {
   cards: CardType[];
@@ -106,26 +121,71 @@ const CardList = ({ card }: { card: CardType }) => {
 };
 
 export default function ListSection({ cards, column }: Props) {
+  const { canDo } = useRoleGate();
+  const [isOpen, setIsOpen] = useState(false);
+  const [isDirty, setIsDirty] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
   return (
-    <Box width="full">
-      <Box
-        backgroundColor="foregroundSecondary"
-        width="full"
-        padding="2"
-        borderBottomWidth="0.375"
-      >
-        <Box marginLeft="3">
+    <>
+      <AnimatePresence>
+        {isOpen && (
+          <CreateCardModal
+            column={column.columnId}
+            handleClose={() => {
+              if (isDirty && !showConfirm) {
+                setShowConfirm(true);
+              } else {
+                setIsOpen(false);
+              }
+            }}
+            setIsDirty={setIsDirty}
+            showConfirm={showConfirm}
+            setShowConfirm={setShowConfirm}
+            setIsOpen={setIsOpen}
+          />
+        )}
+      </AnimatePresence>
+      <Box width="full">
+        <Box
+          backgroundColor="foregroundSecondary"
+          width="full"
+          paddingX="4"
+          paddingY={"1"}
+          borderBottomWidth="0.375"
+          display={"flex"}
+          flexDirection="row"
+          alignItems={"center"}
+          gap="2"
+        >
           <Text weight="semiBold" size="large">
             {column.name}
           </Text>
+          <Button
+            data-tour={`add-card-button`}
+            shape="circle"
+            size="small"
+            variant="transparent"
+            onClick={() => {
+              if (!canDo("createNewCard")) {
+                toast.error(
+                  "You don't have permission to add cards in this column",
+                  { theme: "dark" }
+                );
+                return;
+              }
+              setIsOpen(true);
+            }}
+          >
+            <IconPlusSmall />
+          </Button>
         </Box>
+        {cards.map((card) => {
+          if (card) {
+            return <CardList key={card.id} card={card} />;
+          }
+          return null;
+        })}
       </Box>
-      {cards.map((card) => {
-        if (card) {
-          return <CardList key={card.id} card={card} />;
-        }
-        return null;
-      })}
-    </Box>
+    </>
   );
 }
