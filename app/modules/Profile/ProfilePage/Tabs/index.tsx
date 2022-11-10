@@ -72,9 +72,11 @@ export const ScrollContainer = styled(Box)`
 
 const ProfileTabs = ({ username }: Props) => {
   const [tab, setProfileTab] = useState("Experience");
-  const { userData, setUserData } = useGlobal();
+  const { userData, setUserData, profileLoading, setProfileLoading } =
+    useGlobal();
 
   const fetchUser = async () => {
+    setProfileLoading(true);
     const res = await fetch(
       `${process.env.API_HOST}/user/username/${username}`,
       {
@@ -84,8 +86,10 @@ const ProfileTabs = ({ username }: Props) => {
     if (res.ok) {
       const data = await res.json();
       setUserData(data);
+      setProfileLoading(false);
       return data;
     } else {
+      setProfileLoading(false);
       return false;
     }
   };
@@ -120,14 +124,23 @@ const ProfileTabs = ({ username }: Props) => {
           variant={tab === "Credentials" ? "tertiary" : "transparent"}
           onClick={() => setProfileTab("Credentials")}
         >
+          Skills
+        </PrimaryButton>
+        <PrimaryButton
+          variant={tab === "Credentials" ? "tertiary" : "transparent"}
+          onClick={() => setProfileTab("Credentials")}
+        >
           Credentials
         </PrimaryButton>
       </Box>
-      <Box width="168">
-        {tab === "Experience" && <Experience userData={userData} />}
-        {tab === "Education" && <Education userData={userData} />}
-        {tab === "Credentials" && <Kudos userData={userData} />}
-      </Box>
+      {!profileLoading && (
+        <Box width="168">
+          {tab === "Experience" && <Experience userData={userData} />}
+          {tab === "Education" && <Education userData={userData} />}
+          {tab === "Skills" && <Education userData={userData} />}
+          {tab === "Credentials" && <Kudos userData={userData} />}
+        </Box>
+      )}
     </Box>
   );
 };

@@ -38,6 +38,8 @@ interface GlobalContextType {
   setToggle: (toggle: "Overview" | "Members" | "Roles") => void;
   userData: UserType;
   setUserData: React.Dispatch<React.SetStateAction<UserType>>;
+  profileLoading: boolean;
+  setProfileLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const useProviderGlobalContext = () => {
@@ -65,6 +67,7 @@ const useProviderGlobalContext = () => {
   const [socket, setSocket] = useState<Socket>({} as Socket);
 
   const [userData, setUserData] = useState({} as UserType);
+  const [profileLoading, setProfileLoading] = useState(false);
 
   function connectUser(userId: string) {
     setConnectedUser(userId);
@@ -131,6 +134,8 @@ const useProviderGlobalContext = () => {
     setSocket,
     userData,
     setUserData,
+    profileLoading,
+    setProfileLoading,
   };
 };
 

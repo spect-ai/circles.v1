@@ -11,25 +11,24 @@ import styled from "styled-components";
 type Props = {
   handleClose: () => void;
   modalMode: "create" | "edit";
-  experienceId?: number;
+  educationId?: number;
 };
 
-export default function AddExperienceModal({
+export default function AddEducationModal({
   handleClose,
   modalMode,
-  experienceId,
+  educationId,
 }: Props) {
-  const [role, setRole] = useState("");
+  const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [organization, setOrganization] = useState("");
   const [linkedCredentials, setLinkedCredentials] = useState("");
-  const { addExperience: createExperience, updateExperience } =
-    useProfileUpdate();
+  const { addEducation: createEducation, updateEducation } = useProfileUpdate();
 
   const [requiredFieldsNotSet, setRequiredFieldsNotSet] = useState({
-    role: false,
+    title: false,
     organization: false,
     startDate: false,
   });
@@ -38,8 +37,7 @@ export default function AddExperienceModal({
 
   const isEmpty = (fieldName: string, value: any) => {
     switch (fieldName) {
-      case "role":
-      case "organization":
+      case "title":
       case "startDate":
         return !value;
       default:
@@ -52,7 +50,7 @@ export default function AddExperienceModal({
       handleClose={() => {
         handleClose();
       }}
-      title={`Add Experience`}
+      title={`Add Education`}
     >
       <Box
         padding={{
@@ -72,7 +70,7 @@ export default function AddExperienceModal({
               Required
             </Tag>
           </Box>
-          {requiredFieldsNotSet["role"] && (
+          {requiredFieldsNotSet["title"] && (
             <Text color="red" variant="small">
               This is a required field and cannot be empty
             </Text>
@@ -80,41 +78,17 @@ export default function AddExperienceModal({
           <Input
             label=""
             placeholder={`Enter Role`}
-            value={role}
+            value={title}
             onChange={(e) => {
-              setRole(e.target.value);
+              setTitle(e.target.value);
               setRequiredFieldsNotSet({
                 ...requiredFieldsNotSet,
-                role: isEmpty("role", e.target.value),
+                title: isEmpty("title", e.target.value),
               });
             }}
           />
         </Box>
-        <Box>
-          <Box display="flex" flexDirection="row" alignItems="center" gap="2">
-            <Text variant="label">Organization</Text>
-            <Tag size="small" tone="accent">
-              Required
-            </Tag>
-          </Box>
-          {requiredFieldsNotSet["organization"] && (
-            <Text color="red" variant="small">
-              This is a required field and cannot be empty
-            </Text>
-          )}
-          <Input
-            label=""
-            placeholder={`Enter Organization`}
-            value={organization}
-            onChange={(e) => {
-              setOrganization(e.target.value);
-              setRequiredFieldsNotSet({
-                ...requiredFieldsNotSet,
-                organization: isEmpty("organization", e.target.value),
-              });
-            }}
-          />
-        </Box>
+
         <Box>
           <Text variant="label">Description</Text>
 
@@ -202,7 +176,7 @@ export default function AddExperienceModal({
           >
             <Text variant="small">
               Link all your on-chain and verifiable credentials to this
-              experience and showcase it with more confidence!
+              education and showcase it with more confidence!
             </Text>
             <Box marginTop="2" width="48">
               <PrimaryButton variant="tertiary" onClick={() => {}}>
@@ -228,30 +202,28 @@ export default function AddExperienceModal({
             size="small"
             width="32"
             onClick={async () => {
-              console.log({ role, organization });
-              if (!role || !organization) {
+              console.log({ title, organization });
+              if (!title || !organization) {
                 setRequiredFieldsNotSet({
                   ...requiredFieldsNotSet,
-                  role: isEmpty("role", role),
+                  title: isEmpty("title", title),
                   organization: isEmpty("organization", organization),
                 });
                 return;
               }
               if (modalMode === "create") {
-                const res = await createExperience({
-                  role,
-                  organization,
+                const res = await createEducation({
+                  title,
                   description,
                   startDate,
                   endDate,
                 });
               } else if (modalMode === "edit") {
-                if (!experienceId) {
+                if (!educationId) {
                   return;
                 }
-                const res = await updateExperience(experienceId?.toString(), {
-                  role,
-                  organization,
+                const res = await updateEducation(educationId?.toString(), {
+                  title,
                   description,
                   startDate,
                   endDate,

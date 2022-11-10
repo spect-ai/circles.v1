@@ -1,12 +1,11 @@
 import { memo, useState, useEffect } from "react";
 import { Box, Text, Tag, Avatar, useTheme, Stack } from "degen";
-import { UserType, CardDetails } from "@/app/types";
+import { UserType, CardDetails, Skill } from "@/app/types";
 import { PriorityIcon } from "@/app/common/components/PriorityIcon";
 import styled from "styled-components";
 import ReactPaginate from "react-paginate";
 import { ScrollContainer, Card, TextBox, GigInfo, Tags } from "./index";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import AddEducationModal from "../AddEducationModal";
 import router from "next/router";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import useProfileUpdate from "@/app/services/Profile/useProfileUpdate";
@@ -53,50 +52,43 @@ const Paginate = styled(ReactPaginate)<{ mode: string }>`
   }
 `;
 
-const Education = ({ userData }: { userData: UserType }) => {
+const Skills = ({ userData }: { userData: UserType }) => {
   const [pageCount, setPageCount] = useState(0);
   const [itemOffset, setItemOffset] = useState(0);
   const [endOffset, setEndOffset] = useState(0);
-  const [addEducation, setAddEducation] = useState(false);
-  const [editEducation, setEditEducation] = useState(false);
-  const [editEducationId, setEditEducationId] = useState("");
+  const [addSkill, setAddSkill] = useState(false);
+  const [editSkill, setEditSkill] = useState(false);
+  const [editSkillId, setEditSkillId] = useState("");
   const [modalMode, setModalMode] = useState<"add" | "edit">("add");
-  const { removeEducation } = useProfileUpdate();
+  //   const { removeSkill } = useProfileUpdate();
   const username = router.query.user;
   const { mode } = useTheme();
 
-  const educationOrder = userData.educationOrder;
-  const education = userData.education;
+  const skills = userData.skills;
 
   useEffect(() => {
     setEndOffset(itemOffset + 5);
-    if (userData.educationOrder?.length < 6) {
-      setPageCount(Math.floor(userData.educationOrder?.length / 5));
+    if (userData.skills?.length < 6) {
+      setPageCount(Math.floor(userData.skills?.length / 5));
     } else {
-      setPageCount(Math.ceil(userData.educationOrder?.length / 5));
+      setPageCount(Math.ceil(userData.skills?.length / 5));
     }
-  }, [educationOrder?.length, endOffset, itemOffset]);
+  }, [skills?.length, endOffset, itemOffset]);
 
   const handlePageClick = (event: { selected: number }) => {
-    const newOffset = (event.selected * 5) % educationOrder?.length;
+    const newOffset = (event.selected * 5) % skills?.length;
     setItemOffset(newOffset);
   };
 
   return (
     <Box>
-      {addEducation && (
-        <AddEducationModal
-          modalMode="create"
-          handleClose={() => setAddEducation(false)}
-        />
-      )}
       <ScrollContainer>
-        {educationOrder
+        {skills
           ?.slice(0)
           .slice(itemOffset, endOffset)
-          .map((educationId: string) => {
+          .map((skill: Skill) => {
             return (
-              <Card mode={mode} key={educationId}>
+              <Card mode={mode} key={skill.id}>
                 <Box display="flex" flexDirection="row" gap="4">
                   <Box
                     display="flex"
@@ -105,15 +97,8 @@ const Education = ({ userData }: { userData: UserType }) => {
                     marginBottom="4"
                   >
                     <Text variant="extraLarge" weight="semiBold">
-                      {education[educationId].title}
+                      {skill.name}
                     </Text>
-
-                    {education[educationId].startDate &&
-                      education[educationId].endDate && (
-                        <Text variant="small" weight="light">
-                          {`${education[educationId].startDate} - ${education[educationId].endDate}}`}
-                        </Text>
-                      )}
                   </Box>
                   {username === userData.username && (
                     <Box display="flex" flexDirection="row" gap="2">
@@ -121,36 +106,36 @@ const Education = ({ userData }: { userData: UserType }) => {
                         variant="transparent"
                         onClick={() => {
                           setModalMode("edit");
-                          setEditEducationId(education[educationId].id);
-                          setAddEducation(true);
+                          setEditSkillId(skill.id);
+                          setAddSkill(true);
                         }}
                       >
                         <EditOutlined />
                       </PrimaryButton>
 
-                      <PrimaryButton
+                      {/* <PrimaryButton
                         onClick={async () => {
-                          await removeEducation(educationId);
+                          await removeSkill(skillId);
                         }}
                         variant="transparent"
                       >
                         <DeleteOutlined />
-                      </PrimaryButton>
+                      </PrimaryButton> */}
                     </Box>
                   )}
                 </Box>
               </Card>
             );
           })}
-        {educationOrder
+        {skills
           ?.slice(0)
           .slice(itemOffset, endOffset)
-          .map((educationId: string) => {
+          .map((skill: Skill) => {
             return (
-              <Card mode={mode} key={educationId}>
+              <Card mode={mode} key={skill.id}>
                 <TextBox>
                   <Text variant="extraLarge" wordBreak="break-word">
-                    {education[educationId].title}
+                    {skill.name}
                   </Text>
                 </TextBox>
               </Card>
@@ -173,4 +158,4 @@ const Education = ({ userData }: { userData: UserType }) => {
   );
 };
 
-export default memo(Education);
+export default memo(Skills);

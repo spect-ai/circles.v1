@@ -9,7 +9,6 @@ interface UserType {
   avatar: string;
   bio: string;
   email: string;
-  skills: string[];
   discordId?: string;
   githubId?: string;
   twitterId?: string;
@@ -44,6 +43,7 @@ interface UserType {
   education: { [key: string]: Education };
   experienceOrder: string[];
   educationOrder: string[];
+  skills: Skill[];
 }
 
 export interface Payment {
@@ -940,4 +940,22 @@ export type Experience = {
   endDate: string;
   isCurrent: boolean;
   linkedCredentials?: string[];
+  lensExperienceId?: string;
+};
+
+export type Education = {
+  id: string;
+  title: string;
+  description: string;
+  startDate: string;
+  endDate: string;
+  linkedCredentials?: string[];
+  lensEducationId?: string;
+};
+
+export type Skill = {
+  id: string;
+  name: string;
+  linkedCredentials?: string[];
+  lensSkillId?: string;
 };

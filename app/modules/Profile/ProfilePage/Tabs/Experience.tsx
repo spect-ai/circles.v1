@@ -110,12 +110,6 @@ const Experience = ({ userData }: { userData: UserType }) => {
                 >
                   Add Experience
                 </PrimaryButton>
-                <PrimaryButton
-                  variant="tertiary"
-                  onClick={() => setAddFromLens(true)}
-                >
-                  Import from Lens
-                </PrimaryButton>{" "}
               </Stack>
             </Box>
           </Box>

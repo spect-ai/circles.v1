@@ -17,6 +17,7 @@ import React, { useEffect, useState } from "react";
 import ProfileModal from "../ProfileModal";
 import { AnimatePresence } from "framer-motion";
 import { smartTrim } from "@/app/common/utils/utils";
+import LensImportModal from "../LensImportModal";
 
 interface Props {
   username: string;
@@ -78,6 +79,8 @@ const ProfileCard = ({ username }: Props) => {
   const { mode } = useTheme();
   const { isSidebarExpanded } = useGlobal();
   const [isOpen, setIsOpen] = useState(false);
+  const [isLensProfileSelectModalOpen, setIsLensProfileSelectModalOpen] =
+    useState(false);
 
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
@@ -105,6 +108,11 @@ const ProfileCard = ({ username }: Props) => {
 
   return (
     <>
+      {isLensProfileSelectModalOpen && (
+        <LensImportModal
+          handleClose={() => setIsLensProfileSelectModalOpen(false)}
+        />
+      )}
       <Profile mode={mode}>
         <Box cursor="pointer">
           <Avatar
@@ -150,8 +158,8 @@ const ProfileCard = ({ username }: Props) => {
         <Text variant="label"> Skills </Text>
         <InfoBox gap="0.5" paddingTop="1">
           {user?.skills?.map((tag) => (
-            <Tag as="span" tone="accent" hover size="small" key={tag}>
-              {tag}
+            <Tag as="span" tone="accent" hover size="small" key={tag.id}>
+              {tag.name}
             </Tag>
           ))}
         </InfoBox>
@@ -167,14 +175,24 @@ const ProfileCard = ({ username }: Props) => {
         </TextInfo>
         <Footer>
           {currentUser?.id == user?.id && (
-            <Button
-              variant="secondary"
-              size="small"
-              width="full"
-              onClick={() => setIsOpen(true)}
-            >
-              Edit
-            </Button>
+            <Box display="flex" flexDirection="column">
+              <Button
+                variant="secondary"
+                size="small"
+                width="full"
+                onClick={() => setIsOpen(true)}
+              >
+                Link Lens Profile
+              </Button>
+              <Button
+                variant="secondary"
+                size="small"
+                width="full"
+                onClick={() => setIsLensProfileSelectModalOpen(true)}
+              >
+                Edit
+              </Button>
+            </Box>
           )}
         </Footer>
       </Profile>
