@@ -17,7 +17,6 @@ import { useRouter } from "next/router";
 import React, { useMemo, useState } from "react";
 import { useQuery } from "react-query";
 import styled from "styled-components";
-import { useHotkeys } from "react-hotkeys-hook";
 import { toast } from "react-toastify";
 import { AnimatePresence } from "framer-motion";
 import CreateCardModal from "../CreateCardModal";

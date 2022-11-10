@@ -30,7 +30,7 @@ export default function GuildIntegration() {
               <Stack>
                 <Input
                   label="Guild url"
-                  placeholder="test-server"
+                  placeholder="https://guild.xyz/test-server"
                   name={guildName}
                   onChange={(e) => setGuildName(e.target.value)}
                 />
@@ -39,7 +39,11 @@ export default function GuildIntegration() {
                     loading={loading}
                     onClick={async () => {
                       setLoading(true);
-                      const guildServer = await guild.get(guildName);
+                      const guildSlug = guildName.replace(
+                        /^http(s)?(:)?(\/\/)?|(\/\/)?(www\.)?guild.xyz(\/)/g,
+                        ""
+                      );
+                      const guildServer = await guild.get(guildSlug);
                       const res = await updateCircle(
                         {
                           guildxyzId: guildServer.id,
