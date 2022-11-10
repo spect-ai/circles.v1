@@ -7,7 +7,7 @@ import { useQuery } from "react-query";
 import styled from "styled-components";
 import { useGlobal } from "@/app/context/globalContext";
 import { SettingOutlined, BellOutlined } from "@ant-design/icons";
-import ProfileModal from "../../Profile/ProfilePage/ProfileModal";
+import ProfileModal from "../../Profile/ProfileSettings";
 import mixpanel from "@/app/common/utils/mixpanel";
 
 const Container = styled(Box)<{ mode: string }>`

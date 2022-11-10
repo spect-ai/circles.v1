@@ -14,7 +14,7 @@ import { UserType } from "@/app/types";
 import { useGlobal } from "@/app/context/globalContext";
 import { useQuery } from "react-query";
 import React, { useEffect, useState } from "react";
-import ProfileModal from "../ProfileModal";
+import ProfileModal from "../../ProfileSettings";
 import { AnimatePresence } from "framer-motion";
 import { smartTrim } from "@/app/common/utils/utils";
 

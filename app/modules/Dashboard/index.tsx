@@ -25,7 +25,7 @@ import YourCards from "./CardsTab";
 import { AnimatePresence } from "framer-motion";
 import Loader from "@/app/common/components/Loader";
 import useJoinCircle from "@/app/services/JoinCircle/useJoinCircle";
-import ProfileModal from "../Profile/ProfilePage/ProfileModal";
+import ProfileModal from "../Profile/ProfileSettings";
 import { Hidden, Visible } from "react-grid-system";
 import { smartTrim } from "@/app/common/utils/utils";
 import Popover from "@/app/common/components/Popover";
