@@ -1,6 +1,6 @@
 import { memo, useState, useEffect } from "react";
 import { Box, Text, Tag, Avatar, useTheme, Stack } from "degen";
-import { UserType, CardDetails } from "@/app/types";
+import { UserType, CardDetails, LensEducation } from "@/app/types";
 import { PriorityIcon } from "@/app/common/components/PriorityIcon";
 import styled from "styled-components";
 import ReactPaginate from "react-paginate";
@@ -59,26 +59,29 @@ const Education = ({ userData }: { userData: UserType }) => {
   const [endOffset, setEndOffset] = useState(0);
   const [addEducation, setAddEducation] = useState(false);
   const [editEducation, setEditEducation] = useState(false);
-  const [editEducationId, setEditEducationId] = useState("");
+  const [editEducationId, setEditEducationId] = useState<number>();
   const [modalMode, setModalMode] = useState<"add" | "edit">("add");
   const { removeEducation } = useProfileUpdate();
   const username = router.query.user;
   const { mode } = useTheme();
 
-  const educationOrder = userData.educationOrder;
   const education = userData.education;
+
+  const dateExists = (date: LensDate) => {
+    return date.day && date.month && date.year;
+  };
 
   useEffect(() => {
     setEndOffset(itemOffset + 5);
-    if (userData.educationOrder?.length < 6) {
-      setPageCount(Math.floor(userData.educationOrder?.length / 5));
+    if (userData.education?.length < 6) {
+      setPageCount(Math.floor(userData.education?.length / 5));
     } else {
-      setPageCount(Math.ceil(userData.educationOrder?.length / 5));
+      setPageCount(Math.ceil(userData.education?.length / 5));
     }
-  }, [educationOrder?.length, endOffset, itemOffset]);
+  }, [education?.length, endOffset, itemOffset]);
 
   const handlePageClick = (event: { selected: number }) => {
-    const newOffset = (event.selected * 5) % educationOrder?.length;
+    const newOffset = (event.selected * 5) % education?.length;
     setItemOffset(newOffset);
   };
 
@@ -91,71 +94,87 @@ const Education = ({ userData }: { userData: UserType }) => {
         />
       )}
       <ScrollContainer>
-        {educationOrder
-          ?.slice(0)
-          .slice(itemOffset, endOffset)
-          .map((educationId: string) => {
-            return (
-              <Card mode={mode} key={educationId}>
-                <Box display="flex" flexDirection="row" gap="4">
-                  <Box
-                    display="flex"
-                    flexDirection="column"
-                    width="128"
-                    marginBottom="4"
-                  >
-                    <Text variant="extraLarge" weight="semiBold">
-                      {education[educationId].title}
-                    </Text>
-
-                    {education[educationId].startDate &&
-                      education[educationId].endDate && (
-                        <Text variant="small" weight="light">
-                          {`${education[educationId].startDate} - ${education[educationId].endDate}}`}
+        {!education?.length && (
+          <Box style={{ margin: "35vh 15vw" }}>
+            <Text color="accent" align="center">
+              You havent added your education yet :/
+            </Text>
+            <Box marginTop="4">
+              <PrimaryButton
+                variant="tertiary"
+                onClick={() => setAddEducation(true)}
+              >
+                Add Education
+              </PrimaryButton>
+            </Box>
+          </Box>
+        )}
+        {education?.length > 0 && (
+          <>
+            <Box width="48" marginTop="4">
+              <PrimaryButton onClick={() => setAddEducation(true)}>
+                Add Education
+              </PrimaryButton>
+            </Box>
+            {education
+              ?.slice(0)
+              .slice(itemOffset, endOffset)
+              .map((edu: LensEducation, index) => {
+                return (
+                  <Card mode={mode} key={index}>
+                    <Box display="flex" flexDirection="row" gap="4">
+                      <Box
+                        display="flex"
+                        flexDirection="column"
+                        width="128"
+                        marginBottom="4"
+                      >
+                        <Text variant="extraLarge" weight="semiBold">
+                          {edu.courseDegree}
                         </Text>
-                      )}
-                  </Box>
-                  {username === userData.username && (
-                    <Box display="flex" flexDirection="row" gap="2">
-                      <PrimaryButton
-                        variant="transparent"
-                        onClick={() => {
-                          setModalMode("edit");
-                          setEditEducationId(education[educationId].id);
-                          setAddEducation(true);
-                        }}
-                      >
-                        <EditOutlined />
-                      </PrimaryButton>
 
-                      <PrimaryButton
-                        onClick={async () => {
-                          await removeEducation(educationId);
-                        }}
-                        variant="transparent"
-                      >
-                        <DeleteOutlined />
-                      </PrimaryButton>
+                        {dateExists(edu.start_date) &&
+                          dateExists(edu.end_date) &&
+                          !edu.currentlyStudying && (
+                            <Text variant="label" weight="light">
+                              {`${edu.start_date.month}/${edu.start_date.day}/${edu.start_date.year} - ${edu.end_date.month}/${edu.end_date.day}/${edu.end_date.year}`}
+                            </Text>
+                          )}
+                        {dateExists(edu.start_date) && edu.currentlyStudying && (
+                          <Text variant="label" weight="light">
+                            {`${edu.start_date.month}/${edu.start_date.day}/${edu.start_date.year} - Present`}
+                          </Text>
+                        )}
+                      </Box>
+                      {username === userData.username && (
+                        <Box display="flex" flexDirection="row" gap="2">
+                          <PrimaryButton
+                            variant="transparent"
+                            onClick={() => {
+                              setModalMode("edit");
+                              setEditEducationId(index);
+                              setAddEducation(true);
+                            }}
+                          >
+                            <EditOutlined />
+                          </PrimaryButton>
+
+                          <PrimaryButton
+                            onClick={async () => {
+                              await removeEducation(index.toString());
+                            }}
+                            variant="transparent"
+                          >
+                            <DeleteOutlined />
+                          </PrimaryButton>
+                        </Box>
+                      )}
                     </Box>
-                  )}
-                </Box>
-              </Card>
-            );
-          })}
-        {educationOrder
-          ?.slice(0)
-          .slice(itemOffset, endOffset)
-          .map((educationId: string) => {
-            return (
-              <Card mode={mode} key={educationId}>
-                <TextBox>
-                  <Text variant="extraLarge" wordBreak="break-word">
-                    {education[educationId].title}
-                  </Text>
-                </TextBox>
-              </Card>
-            );
-          })}
+                  </Card>
+                );
+              })}
+          </>
+        )}
       </ScrollContainer>
       {
         <Paginate

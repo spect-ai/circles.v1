@@ -34,6 +34,7 @@ export const Card = styled(Box)<{ mode: string }>`
   }
   position: relative;
   transition: all 0.3s ease-in-out;
+  width: 80%;
 `;
 
 export const Tags = styled(Box)`

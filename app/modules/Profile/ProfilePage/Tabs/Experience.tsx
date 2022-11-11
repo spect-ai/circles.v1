@@ -1,6 +1,6 @@
 import { memo, useState, useEffect } from "react";
-import { Box, Text, Tag, Avatar, useTheme, Stack } from "degen";
-import { UserType, CardDetails } from "@/app/types";
+import { Box, Text, Tag, Avatar, useTheme, Stack, Button } from "degen";
+import { UserType, CardDetails, LensExperience, LensDate } from "@/app/types";
 import { PriorityIcon } from "@/app/common/components/PriorityIcon";
 import styled from "styled-components";
 import ReactPaginate from "react-paginate";
@@ -63,25 +63,28 @@ const Experience = ({ userData }: { userData: UserType }) => {
   const [addExperience, setAddExperience] = useState(false);
   const [addFromLens, setAddFromLens] = useState(false);
   const [editExperience, setEditExperience] = useState(false);
-  const [editExperienceId, setEditExperienceId] = useState("");
+  const [editExperienceId, setEditExperienceId] = useState<number>();
   const [modalMode, setModalMode] = useState<"add" | "edit">("add");
   const { removeExperience } = useProfileUpdate();
   const username = router.query.user;
 
-  const experienceOrder = userData.experienceOrder;
   const experiences = userData.experiences;
+
+  const dateExists = (date: LensDate) => {
+    return date.day && date.month && date.year;
+  };
 
   useEffect(() => {
     setEndOffset(itemOffset + 5);
-    if (userData.experienceOrder?.length < 6) {
-      setPageCount(Math.floor(userData.experienceOrder?.length / 5));
+    if (experiences?.length < 6) {
+      setPageCount(Math.floor(experiences?.length / 5));
     } else {
-      setPageCount(Math.ceil(userData.experienceOrder?.length / 5));
+      setPageCount(Math.ceil(experiences?.length / 5));
     }
-  }, [experienceOrder?.length, endOffset, itemOffset]);
+  }, [experiences?.length, endOffset, itemOffset]);
 
   const handlePageClick = (event: { selected: number }) => {
-    const newOffset = (event.selected * 5) % experienceOrder?.length;
+    const newOffset = (event.selected * 5) % experiences?.length;
     setItemOffset(newOffset);
   };
 
@@ -92,81 +95,114 @@ const Experience = ({ userData }: { userData: UserType }) => {
       )}
       {addExperience && (
         <AddExperienceModal
-          modalMode="create"
+          modalMode={modalMode}
           handleClose={() => setAddExperience(false)}
         />
       )}
       <ScrollContainer>
-        {!experienceOrder?.length && (
+        {!experiences?.length && (
           <Box style={{ margin: "35vh 15vw" }}>
             <Text color="accent" align="center">
               You havent added your experience yet :/
             </Text>
             <Box marginTop="4">
-              <Stack direction="horizontal" space="4">
-                <PrimaryButton
-                  variant="tertiary"
-                  onClick={() => setAddExperience(true)}
-                >
-                  Add Experience
-                </PrimaryButton>
-              </Stack>
+              <PrimaryButton
+                variant="tertiary"
+                onClick={() => {
+                  setModalMode("add");
+                  setAddExperience(true);
+                }}
+              >
+                Add Experience
+              </PrimaryButton>
             </Box>
           </Box>
         )}
-        {experienceOrder
-          ?.slice(0)
-          .slice(itemOffset, endOffset)
-          .map((experienceId: string) => {
-            return (
-              <Card mode={mode} key={experienceId}>
-                <Box display="flex" flexDirection="row" gap="4">
-                  <Box
-                    display="flex"
-                    flexDirection="column"
-                    width="128"
-                    marginBottom="4"
-                  >
-                    <Text variant="extraLarge" weight="semiBold">
-                      {experiences[experienceId].role}
-                    </Text>
-                    <Text variant="small" weight="light">
-                      {experiences[experienceId].organization}
-                    </Text>
-                    {experiences[experienceId].startDate &&
-                      experiences[experienceId].endDate && (
-                        <Text variant="small" weight="light">
-                          {`${experiences[experienceId].startDate} - ${experiences[experienceId].endDate}}`}
+        {experiences?.length && (
+          <>
+            <Box
+              width={{
+                sm: "max",
+                md: "48",
+              }}
+              marginTop="4"
+            >
+              <PrimaryButton
+                onClick={() => {
+                  setModalMode("add");
+                  setAddExperience(true);
+                }}
+              >
+                Add Experience
+              </PrimaryButton>
+            </Box>
+            {experiences
+              ?.slice(0)
+              .slice(itemOffset, endOffset)
+              .map((experience: LensExperience, index) => {
+                return (
+                  <Card mode={mode} key={index}>
+                    <Box display="flex" flexDirection="row" gap="4">
+                      <Box
+                        display="flex"
+                        flexDirection="column"
+                        width="128"
+                        marginBottom="4"
+                      >
+                        <Text variant="extraLarge" weight="semiBold">
+                          {experience.jobTitle}
                         </Text>
-                      )}
-                  </Box>
-                  {username === userData.username && (
-                    <Box display="flex" flexDirection="row" gap="2">
-                      <PrimaryButton
-                        variant="transparent"
-                        onClick={() => {
-                          setModalMode("edit");
-                          setEditExperienceId(experiences[experienceId].id);
-                          setAddExperience(true);
-                        }}
-                      >
-                        <EditOutlined />
-                      </PrimaryButton>
+                        <Text variant="small" weight="light">
+                          {experience.company}
+                        </Text>
+                        {dateExists(experience.start_date) &&
+                          dateExists(experience.end_date) &&
+                          !experience.currentlyWorking && (
+                            <Text variant="label" weight="light">
+                              {`${experience.start_date.month}/${experience.start_date.day}/${experience.start_date.year} - ${experience.end_date.month}/${experience.end_date.day}/${experience.end_date.year}`}
+                            </Text>
+                          )}
+                        {dateExists(experience.start_date) &&
+                          experience.currentlyWorking && (
+                            <Text variant="label" weight="light">
+                              {`${experience.start_date.month}/${experience.start_date.day}/${experience.start_date.year} - Present`}
+                            </Text>
+                          )}
+                      </Box>
+                      {username === userData.username && (
+                        <Box
+                          display="flex"
+                          flexDirection="row"
+                          justifyContent="flex-end"
+                          gap="2"
+                        >
+                          <PrimaryButton
+                            variant="transparent"
+                            onClick={() => {
+                              setModalMode("edit");
+                              setEditExperienceId(index);
+                              setAddExperience(true);
+                            }}
+                          >
+                            <EditOutlined />
+                          </PrimaryButton>
 
-                      <PrimaryButton
-                        onClick={async () => {
-                          await removeExperience(experienceId);
-                        }}
-                        variant="transparent"
-                      >
-                        <DeleteOutlined />
-                      </PrimaryButton>
+                          <PrimaryButton
+                            onClick={async () => {
+                              await removeExperience(index.toString());
+                            }}
+                            variant="transparent"
+                          >
+                            <DeleteOutlined />
+                          </PrimaryButton>
+                        </Box>
+                      )}
                     </Box>
-                  )}
-                </Box>
-              </Card>
-            );
-          })}
+                  </Card>
+                );
+              })}
+          </>
+        )}
       </ScrollContainer>
       <Paginate
         breakLabel="..."

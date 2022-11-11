@@ -39,11 +39,9 @@ interface UserType {
       avatar: string;
     };
   };
-  experiences: { [key: string]: Experience };
-  education: { [key: string]: Education };
-  experienceOrder: string[];
-  educationOrder: string[];
-  skills: Skill[];
+  experiences: LensExperience[];
+  education: LensEducation[];
+  skills: LensSkills[];
 }
 
 export interface Payment {
@@ -958,4 +956,70 @@ export type Skill = {
   name: string;
   linkedCredentials?: string[];
   lensSkillId?: string;
+};
+
+export type LensSkills = {
+  title: string;
+  icon: string;
+  nfts: NFT[];
+  poaps: string[];
+  verifiableCredentials: VerifiableCredential[];
+};
+
+export type LensExperience = {
+  jobTitle: string;
+  company: number;
+  companyLogo: string;
+  description: string;
+  start_date: LensDate;
+  end_date: LensDate;
+  verifiableCredentials: VerifiableCredential[];
+  currentlyWorking: boolean;
+  nfts: NFT[];
+  poaps: string[];
+};
+
+export type LensEducation = {
+  courseDegree: string;
+  school: string;
+  schoolLogo: string;
+  description: string;
+  start_date: LensDate;
+  end_date: LensDate;
+  currentlyStudying: boolean;
+  nfts: NFT[];
+  poaps: string[];
+  verifiableCredentials: VerifiableCredential[];
+};
+
+export type NFT = {
+  contractName: string;
+  contractAddress: string;
+  tokenId: string;
+  symbol: string;
+  name: string;
+  description: string;
+  contentURI: string;
+  chainId: string;
+  collectionName: string;
+  ercType: string;
+  originalContent: {
+    uri: string;
+    metaType: string;
+  };
+};
+
+export type VerifiableCredential = {
+  id: string;
+  platform: string;
+  provider: string;
+  credentialId: string;
+  credentialType: string;
+  imageURI: string;
+};
+
+export type LensDate = {
+  day: number;
+  month: number;
+  year: number;
 };

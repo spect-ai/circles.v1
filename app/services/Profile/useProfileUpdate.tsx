@@ -1,5 +1,6 @@
 import queryClient from "@/app/common/utils/queryClient";
 import { useGlobal } from "@/app/context/globalContext";
+import { LensDate, NFT, VerifiableCredential } from "@/app/types";
 import { toast } from "react-toastify";
 
 interface UpdateProfileDTO {
@@ -13,49 +14,69 @@ interface UpdateProfileDTO {
 }
 
 interface AddExperienceDTO {
-  role: string;
-  organization: string;
-  startDate?: string;
-  endDate?: string;
+  jobTitle: string;
+  company: string;
+  companyLogo?: string;
   description?: string;
-  linkedCredentials?: string;
-  lensHandle?: string;
-  lensExperienceId?: string;
+  start_date?: LensDate | object;
+  end_date?: LensDate | object;
+  verifiableCredentials?: VerifiableCredential[];
+  currentlyWorking?: boolean;
+  nfts?: NFT[];
+  poaps?: string[];
 }
 
 interface UpdateExperienceDto {
-  role?: string;
-  organization?: string;
-  startDate?: string;
-  endDate?: string;
+  jobTitle?: string;
+  company?: string;
+  companyLogo?: string;
   description?: string;
-  linkedCredentials?: string;
-  lensHandle?: string;
-  lensExperienceId?: string;
+  start_date?: LensDate | object;
+  end_date?: LensDate | object;
+  verifiableCredentials?: VerifiableCredential[];
+  currentlyWorking?: boolean;
+  nfts?: NFT[];
+  poaps?: string[];
 }
 
 interface AddEducationDTO {
-  title: string;
+  courseDegree: string;
+  school: string;
+  schoolLogo?: string;
   description?: string;
-  startDate?: string;
-  endDate?: string;
-  linkedCredentials?: string;
-  lensHandle?: string;
-  lensEducationId?: string;
+  start_date?: LensDate | object;
+  end_date?: LensDate | object;
+  currentlyStudying?: boolean;
+  nfts?: NFT[];
+  poaps?: string[];
+  verifiableCredentials?: VerifiableCredential[];
 }
 
 interface UpdateEducationDTO {
-  title?: string;
+  courseDegree?: string;
+  school?: string;
+  schoolLogo?: string;
   description?: string;
-  startDate?: string;
-  endDate?: string;
-  linkedCredentials?: string;
-  lensHandle?: string;
-  lensEducationId?: string;
+  start_date?: LensDate | object;
+  end_date?: LensDate | object;
+  currentlyStudying?: boolean;
+  nfts?: NFT[];
+  poaps?: string[];
+  verifiableCredentials?: VerifiableCredential[];
 }
 
 export default function useProfileUpdate() {
   const { userData, setUserData } = useGlobal();
+
+  const preprocessDate = (date: string) => {
+    if (!date) return {};
+    const dateParts = date.split("-");
+    return {
+      year: parseInt(dateParts[0]),
+      month: parseInt(dateParts[1]),
+      day: parseInt(dateParts[2]),
+    };
+  };
 
   const updateProfile = async (body: UpdateProfileDTO) => {
     const res = await fetch(`${process.env.API_HOST}/user/me`, {
@@ -82,6 +103,7 @@ export default function useProfileUpdate() {
   };
 
   const addExperience = async (body: AddExperienceDTO) => {
+    console.log(body);
     const res = await fetch(`${process.env.API_HOST}/user/me/addExperience`, {
       headers: {
         Accept: "application/json",
@@ -254,5 +276,6 @@ export default function useProfileUpdate() {
     addEducation,
     updateEducation,
     removeEducation,
+    preprocessDate,
   };
 }

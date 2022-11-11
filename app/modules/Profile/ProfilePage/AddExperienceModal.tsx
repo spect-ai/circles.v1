@@ -10,7 +10,7 @@ import styled from "styled-components";
 
 type Props = {
   handleClose: () => void;
-  modalMode: "create" | "edit";
+  modalMode: "add" | "edit";
   experienceId?: number;
 };
 
@@ -25,8 +25,11 @@ export default function AddExperienceModal({
   const [endDate, setEndDate] = useState("");
   const [organization, setOrganization] = useState("");
   const [linkedCredentials, setLinkedCredentials] = useState("");
-  const { addExperience: createExperience, updateExperience } =
-    useProfileUpdate();
+  const {
+    addExperience: createExperience,
+    updateExperience,
+    preprocessDate,
+  } = useProfileUpdate();
 
   const [requiredFieldsNotSet, setRequiredFieldsNotSet] = useState({
     role: false,
@@ -181,11 +184,11 @@ export default function AddExperienceModal({
 
               <DateInput
                 placeholder={`Enter End Date`}
-                value={startDate}
+                value={endDate}
                 type="date"
                 mode={mode}
                 onChange={(e) => {
-                  setStartDate(e.target.value);
+                  setEndDate(e.target.value);
                 }}
               />
             </Box>
@@ -237,30 +240,35 @@ export default function AddExperienceModal({
                 });
                 return;
               }
-              if (modalMode === "create") {
+              if (modalMode === "add") {
+                console.log("add");
                 const res = await createExperience({
-                  role,
-                  organization,
+                  jobTitle: role,
+                  company: organization,
+                  companyLogo: "",
                   description,
-                  startDate,
-                  endDate,
+                  start_date: preprocessDate(startDate),
+                  end_date: preprocessDate(endDate),
+                  currentlyWorking: false,
                 });
               } else if (modalMode === "edit") {
                 if (!experienceId) {
                   return;
                 }
                 const res = await updateExperience(experienceId?.toString(), {
-                  role,
-                  organization,
+                  jobTitle: role,
+                  company: organization,
+                  companyLogo: "",
                   description,
-                  startDate,
-                  endDate,
+                  start_date: preprocessDate(startDate),
+                  end_date: preprocessDate(endDate),
+                  currentlyWorking: false,
                 });
               }
               handleClose();
             }}
           >
-            {modalMode === "create" ? "Add" : "Update"}
+            {modalMode === "add" ? "Add" : "Update"}
           </Button>
         </Box>
       </Box>

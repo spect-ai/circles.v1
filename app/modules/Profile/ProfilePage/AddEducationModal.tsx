@@ -25,7 +25,11 @@ export default function AddEducationModal({
   const [endDate, setEndDate] = useState("");
   const [organization, setOrganization] = useState("");
   const [linkedCredentials, setLinkedCredentials] = useState("");
-  const { addEducation: createEducation, updateEducation } = useProfileUpdate();
+  const {
+    addEducation: createEducation,
+    updateEducation,
+    preprocessDate,
+  } = useProfileUpdate();
 
   const [requiredFieldsNotSet, setRequiredFieldsNotSet] = useState({
     title: false,
@@ -38,6 +42,7 @@ export default function AddEducationModal({
   const isEmpty = (fieldName: string, value: any) => {
     switch (fieldName) {
       case "title":
+      case "organization":
       case "startDate":
         return !value;
       default:
@@ -65,7 +70,7 @@ export default function AddEducationModal({
       >
         <Box>
           <Box display="flex" flexDirection="row" alignItems="center" gap="2">
-            <Text variant="label">Role</Text>
+            <Text variant="label">Title</Text>
             <Tag size="small" tone="accent">
               Required
             </Tag>
@@ -77,13 +82,38 @@ export default function AddEducationModal({
           )}
           <Input
             label=""
-            placeholder={`Enter Role`}
+            placeholder={`Enter Title`}
             value={title}
             onChange={(e) => {
               setTitle(e.target.value);
               setRequiredFieldsNotSet({
                 ...requiredFieldsNotSet,
                 title: isEmpty("title", e.target.value),
+              });
+            }}
+          />
+        </Box>
+        <Box>
+          <Box display="flex" flexDirection="row" alignItems="center" gap="2">
+            <Text variant="label">Organization</Text>
+            <Tag size="small" tone="accent">
+              Required
+            </Tag>
+          </Box>
+          {requiredFieldsNotSet["organization"] && (
+            <Text color="red" variant="small">
+              This is a required field and cannot be empty
+            </Text>
+          )}
+          <Input
+            label=""
+            placeholder={`Enter Organization`}
+            value={organization}
+            onChange={(e) => {
+              setOrganization(e.target.value);
+              setRequiredFieldsNotSet({
+                ...requiredFieldsNotSet,
+                organization: isEmpty("organization", e.target.value),
               });
             }}
           />
@@ -155,11 +185,11 @@ export default function AddEducationModal({
 
               <DateInput
                 placeholder={`Enter End Date`}
-                value={startDate}
+                value={endDate}
                 type="date"
                 mode={mode}
                 onChange={(e) => {
-                  setStartDate(e.target.value);
+                  setEndDate(e.target.value);
                 }}
               />
             </Box>
@@ -213,20 +243,26 @@ export default function AddEducationModal({
               }
               if (modalMode === "create") {
                 const res = await createEducation({
-                  title,
+                  courseDegree: title,
+                  school: organization,
+                  schoolLogo: "",
                   description,
-                  startDate,
-                  endDate,
+                  start_date: preprocessDate(startDate),
+                  end_date: preprocessDate(endDate),
+                  currentlyStudying: false,
                 });
               } else if (modalMode === "edit") {
                 if (!educationId) {
                   return;
                 }
                 const res = await updateEducation(educationId?.toString(), {
-                  title,
+                  courseDegree: title,
+                  school: organization,
+                  schoolLogo: "",
                   description,
-                  startDate,
-                  endDate,
+                  start_date: preprocessDate(startDate),
+                  end_date: preprocessDate(endDate),
+                  currentlyStudying: false,
                 });
               }
               handleClose();
