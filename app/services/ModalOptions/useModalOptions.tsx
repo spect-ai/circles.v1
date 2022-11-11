@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { labels } from "@/app/common/utils/constants";
 import { useGlobal } from "@/app/context/globalContext";
 import { useCircle } from "@/app/modules/Circle/CircleContext";
@@ -47,15 +48,21 @@ export default function useModalOptions() {
           value: column,
         }));
       case "project":
-        return circle?.projects && Object.values(circle?.projects)?.map((p) => ({
-          name: p.name,
-          value: p.id,
-        }));
+        return (
+          circle?.projects &&
+          Object.values(circle?.projects)?.map((p) => ({
+            name: p.name,
+            value: p.id,
+          }))
+        );
       case "circle":
-        return circle?.children && Object.values(circle?.children).map((c) => ({
-          name: c.name,
-          value: c.id,
-        }));
+        return (
+          circle?.children &&
+          Object.values(circle?.children).map((c) => ({
+            name: c.name,
+            value: c.id,
+          }))
+        );
       case "assignee":
         // eslint-disable-next-line no-case-declarations
         let tempArr = memberDetails?.members?.map((member: string) => ({
@@ -108,7 +115,7 @@ export default function useModalOptions() {
     (id: string) => {
       return memberDetails?.memberDetails[id];
     },
-    [memberDetails?.memberDetails]
+    [memberDetails]
   );
 
   const getMemberAvatars = React.useCallback(

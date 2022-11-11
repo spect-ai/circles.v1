@@ -54,27 +54,6 @@ function Dashboard() {
   const router = useRouter();
 
   useEffect(() => {
-    setTimeout(() => {
-      if (localStorage.getItem("lightMode")) {
-        setMode("light");
-        document.documentElement.style.setProperty(
-          "--dsg-cell-background-color",
-          "rgb(255, 255, 255)"
-        );
-        document.documentElement.style.setProperty(
-          "--dsg-border-color",
-          "rgb(20,20,20,0.1)"
-        );
-        document.documentElement.style.setProperty(
-          "--dsg-cell-text-color",
-          "rgb(20,20,20,0.9)"
-        );
-      }
-    }, 100);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
     if (circlesArray?.memberOf?.length == 0) void refetch();
     if (circlesArray) setCircles(circlesArray?.memberOf);
   }, [circlesArray, connectedUser, refetch, panelTab, isOpen]);

@@ -54,7 +54,9 @@ function PublicLayout(props: PublicLayoutProps) {
     connectUser,
     setIsSidebarExpanded,
   } = useGlobal();
-  const { mode } = useTheme();
+
+  // eslint-disable-next-line @typescript-eslint/unbound-method
+  const { setMode } = useTheme();
 
   const { data: currentUser, refetch } = useQuery<UserType>(
     "getMyUser",
@@ -83,14 +85,32 @@ function PublicLayout(props: PublicLayoutProps) {
   }, []);
 
   useEffect(() => {
+    setTimeout(() => {
+      if (localStorage.getItem("lightMode")) {
+        setMode("light");
+        document.documentElement.style.setProperty(
+          "--dsg-cell-background-color",
+          "rgb(255, 255, 255)"
+        );
+        document.documentElement.style.setProperty(
+          "--dsg-border-color",
+          "rgb(20,20,20,0.1)"
+        );
+        document.documentElement.style.setProperty(
+          "--dsg-cell-text-color",
+          "rgb(20,20,20,0.9)"
+        );
+      }
+    }, 100);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
     setIsSidebarExpanded(false);
   }, [setIsSidebarExpanded]);
 
   return (
-    <DesktopContainer
-      backgroundColor={mode === "dark" ? "background" : "backgroundSecondary"}
-      id="public-layout"
-    >
+    <DesktopContainer backgroundColor="backgroundSecondary" id="public-layout">
       <MobileContainer>
         <Sidebar />
         <AnimatePresence initial={false}>

@@ -2,11 +2,9 @@
 import Drawer, { slideHorizontal } from "@/app/common/components/Drawer";
 import { OptionType } from "@/app/common/components/Dropdown";
 import Editor from "@/app/common/components/Editor";
-import PrimaryButton from "@/app/common/components/PrimaryButton";
 import Tabs from "@/app/common/components/Tabs";
-import { sendFormComment, voteCollectionData } from "@/app/services/Collection";
-import { UserType } from "@/app/types";
-import { SendOutlined } from "@ant-design/icons";
+import { voteCollectionData } from "@/app/services/Collection";
+import { MemberDetails, UserType } from "@/app/types";
 import { Avatar, Box, Stack, Tag, Text } from "degen";
 import { motion } from "framer-motion";
 import { useRouter } from "next/router";
@@ -56,11 +54,7 @@ export default function DataDrawer({
     enabled: false,
   });
   const [data, setData] = useState({} as any);
-  const [comment, setComment] = useState("");
-  const [isDirty, setIsDirty] = useState(false);
   const [vote, setVote] = useState(-1);
-
-  const [sendingComment, setSendingComment] = useState(false);
 
   useEffect(() => {
     if (dataId) {
@@ -94,12 +88,23 @@ export default function DataDrawer({
     );
   };
 
-  // if (!isOpen) return null;
+  const { data: memberDetails } = useQuery<MemberDetails>(
+    ["memberDetails", cId],
+    {
+      enabled: false,
+    }
+  );
 
-  // if (!dataId || !data) return null;
+  const getMemberDetails = React.useCallback(
+    (id: string) => {
+      return memberDetails?.memberDetails[id];
+    },
+    [memberDetails]
+  );
 
   return (
     <Drawer
+      title={collection.name}
       handleClose={async () => {
         setExpandedDataSlug("");
         dataSlug && (await router.push(`/${cId}/r/${collection.slug}`));
@@ -112,7 +117,7 @@ export default function DataDrawer({
           animate="visible"
           exit="exit"
         >
-          <ScrollContainer paddingX="8" paddingY="2">
+          <ScrollContainer paddingX="4" paddingY="2">
             <Stack space="5">
               <a
                 href={`/profile/${
@@ -121,14 +126,14 @@ export default function DataDrawer({
                 target="_blank"
                 rel="noreferrer"
               >
-                <Stack direction="horizontal" align="center" space="4">
+                <Stack direction="horizontal" align="center" space="2">
                   <Avatar
                     src={
                       collection.profiles[collection.dataOwner[data.slug]]
                         .avatar
                     }
                     label=""
-                    size="10"
+                    size="8"
                   />
                   <Text color="accentText" weight="semiBold">
                     {
@@ -141,7 +146,7 @@ export default function DataDrawer({
               <Box
                 marginLeft={{
                   xs: "0",
-                  md: "14",
+                  md: "10",
                 }}
                 marginTop={{
                   xs: "0",
@@ -153,11 +158,7 @@ export default function DataDrawer({
                     const property = collection.properties[propertyName];
                     return (
                       <Stack key={property.name} space="1">
-                        <Text
-                          weight="semiBold"
-                          variant="extraLarge"
-                          color="accent"
-                        >
+                        <Text weight="bold" variant="extraLarge" color="accent">
                           {property.name}
                         </Text>
                         {property?.type === "shortText" && (
@@ -267,11 +268,7 @@ export default function DataDrawer({
                   })}
                   {collection.voting?.enabled && collection.voting.options && (
                     <Stack space="1">
-                      <Text
-                        weight="semiBold"
-                        variant="extraLarge"
-                        color="accent"
-                      >
+                      <Text weight="bold" variant="extraLarge" color="accent">
                         Your Vote
                       </Text>
                       <Text>{collection.voting.message}</Text>
@@ -376,63 +373,17 @@ export default function DataDrawer({
               marginY="4"
               borderRadius="full"
             />
-            <Stack>
-              <Stack direction="horizontal">
-                <Avatar
-                  label=""
-                  placeholder={!currentUser?.avatar}
-                  src={currentUser?.avatar}
-                  address={currentUser?.ethAddress}
-                  size="10"
+            <Box paddingBottom="8">
+              <Stack>
+                <DataActivity
+                  activities={collection.dataActivities[dataId]}
+                  activityOrder={collection.dataActivityOrder[dataId]}
+                  getMemberDetails={getMemberDetails}
+                  dataId={dataId}
+                  collectionId={collection.id}
                 />
-                <Box width="full" gap="2" marginBottom="4">
-                  <Editor
-                    placeholder="Write a reply..."
-                    value={comment}
-                    onSave={(value) => {
-                      setComment(value);
-                    }}
-                    isDirty={isDirty}
-                    setIsDirty={setIsDirty}
-                  />
-                  {isDirty && currentUser && (
-                    <Box width="1/4">
-                      <PrimaryButton
-                        loading={sendingComment}
-                        icon={<SendOutlined style={{ fontSize: "1.3rem" }} />}
-                        onClick={async () => {
-                          setSendingComment(true);
-                          const res = await sendFormComment(
-                            collection.id,
-                            dataId,
-                            comment,
-                            {
-                              actor: {
-                                id: currentUser.id,
-                                refType: "user",
-                              },
-                            }
-                          );
-                          if (res.id) {
-                            console.log({ res });
-                            updateCollection(res);
-                            setComment("");
-                            setIsDirty(false);
-                          } else toast.error("Something went wrong");
-                          setSendingComment(false);
-                        }}
-                      >
-                        Send
-                      </PrimaryButton>
-                    </Box>
-                  )}
-                </Box>
               </Stack>
-              <DataActivity
-                activities={collection.dataActivities[dataId]}
-                activityOrder={collection.dataActivityOrder[dataId]}
-              />
-            </Stack>
+            </Box>
           </ScrollContainer>
         </motion.div>
       )}
@@ -441,7 +392,7 @@ export default function DataDrawer({
 }
 
 const ScrollContainer = styled(Box)`
-  height: calc(100vh - 5rem);
+  height: calc(100vh - 4rem);
   overflow-y: auto;
 
   ::-webkit-scrollbar {

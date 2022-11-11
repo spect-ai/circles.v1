@@ -47,8 +47,6 @@ export default function TableView() {
 
   const screenClass = useScreenClass();
 
-  console.log({ screenClass });
-
   const updateData = async ({ cell }: { cell: CellWithId }) => {
     if (data) {
       const row = data[cell.row];
@@ -57,7 +55,6 @@ export default function TableView() {
         return addData(row);
       }
       if (!row.id) return;
-      console.log({ cell });
       if (row && !collection.properties[cell.colId || ""].isPartOfFormView) {
         const res = await updateCollectionDataGuarded(collection.id, row.id, {
           [cell.colId as string]: row[cell.colId as string],

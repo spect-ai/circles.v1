@@ -196,7 +196,7 @@ function CollectionHeading() {
                 direction="horizontal"
                 space={{
                   xs: "2",
-                  md: "8",
+                  md: "4",
                 }}
                 align="center"
               >
