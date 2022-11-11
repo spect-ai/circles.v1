@@ -79,7 +79,7 @@ const ProfileTabs = ({ username }: Props) => {
   const fetchUser = async () => {
     setProfileLoading(true);
     const res = await fetch(
-      `${process.env.API_HOST}/user/username/${username}`,
+      `${process.env.API_HOST}/user/v1/username/${username}/profile`,
       {
         credentials: "include",
       }

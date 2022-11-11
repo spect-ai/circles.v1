@@ -53,15 +53,15 @@ const ProfilePage: NextPage = () => {
   }, []);
 
   const {
-    data: user,
-    refetch: fetchUser,
-    isLoading,
+    data: profile,
+    refetch: fetchProfile,
+    isLoading: isProfileLoading,
   } = useQuery<UserType>(
     ["user", username],
     async () =>
-      await fetch(`${process.env.API_HOST}/user/username/${username}`).then(
-        (res) => res.json()
-      ),
+      await fetch(
+        `${process.env.API_HOST}/user/v1/username/${username}/profile`
+      ).then((res) => res.json()),
     {
       enabled: false,
     }
@@ -71,11 +71,11 @@ const ProfilePage: NextPage = () => {
 
   useEffect(() => {
     if (username) {
-      void fetchUser();
+      void fetchProfile();
     }
     setIsSidebarExpanded(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user, username, fetchUser]);
+  }, [profile, username, fetchProfile]);
 
   return (
     <>
@@ -85,8 +85,8 @@ const ProfilePage: NextPage = () => {
         image="/og.jpg"
       />
       <PublicLayout>
-        {isLoading && <Loader loading text="fetching" />}
-        {!user?.id && !isLoading && (
+        {isProfileLoading && <Loader loading text="fetching" />}
+        {!profile?.id && !isProfileLoading && (
           <Box
             style={{
               width: "90vw",
@@ -101,7 +101,7 @@ const ProfilePage: NextPage = () => {
             </Text>
           </Box>
         )}
-        {user?.id && !isLoading && (
+        {profile?.id && !isProfileLoading && (
           <ScrollContainer mode={mode}>
             <Stack
               direction={{

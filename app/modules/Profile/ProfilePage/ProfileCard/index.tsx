@@ -89,9 +89,9 @@ const ProfileCard = ({ username }: Props) => {
   const { data: user, refetch: fetchUser } = useQuery<UserType>(
     ["user", username],
     async () =>
-      await fetch(`${process.env.API_HOST}/user/username/${username}`).then(
-        (res) => res.json()
-      ),
+      await fetch(
+        `${process.env.API_HOST}/user/v1/username/${username}/profile`
+      ).then((res) => res.json()),
     {
       enabled: false,
     }
@@ -157,9 +157,9 @@ const ProfileCard = ({ username }: Props) => {
         </InfoBox>
         <Text variant="label"> Skills </Text>
         <InfoBox gap="0.5" paddingTop="1">
-          {user?.skills?.map((tag) => (
-            <Tag as="span" tone="accent" hover size="small" key={tag.id}>
-              {tag.name}
+          {user?.skillsV2?.map((skill, index) => (
+            <Tag as="span" tone="accent" hover size="small" key={index}>
+              {skill.title}
             </Tag>
           ))}
         </InfoBox>

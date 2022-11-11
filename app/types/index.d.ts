@@ -41,7 +41,7 @@ interface UserType {
   };
   experiences: LensExperience[];
   education: LensEducation[];
-  skills: LensSkills[];
+  skillsV2: LensSkills[];
 }
 
 export interface Payment {
