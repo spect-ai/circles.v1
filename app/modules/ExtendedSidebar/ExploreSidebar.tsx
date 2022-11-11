@@ -43,12 +43,12 @@ export default function ExploreSidebar() {
         </HeaderButton>
 
         <Container>
-          <CollapseButton
+          {/* <CollapseButton
             show={showCollapseButton}
             setShowCollapseButton={setShowCollapseButton}
             top="0.8rem"
-            left="21rem"
-          />
+            left="2rem"
+          /> */}
           <Box marginTop="2" marginX="1">
             {currentUser?.id && (
               <Stack key="Dashboard" direction="horizontal" space="0">

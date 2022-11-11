@@ -8,6 +8,30 @@ import { useGlobal } from "@/app/context/globalContext";
 import ProfileButton from "../Sidebar/ProfileButton";
 import { Connect } from "../Sidebar/ProfileButton/ConnectButton";
 
+const slide = {
+  hidden: {
+    width: "0rem",
+    minWidth: "0rem",
+    opacity: 0,
+  },
+  visible: {
+    width: "20rem",
+    minWidth: "20rem",
+    opacity: 1,
+    transition: {
+      duration: 0.4,
+    },
+  },
+  exit: {
+    width: "0rem",
+    minWidth: "0rem",
+    opacity: 0,
+    transition: {
+      duration: 0.4,
+    },
+  },
+};
+
 function ExtendedSidebar(): ReactElement {
   const router = useRouter();
   const { circle: cId } = router.query;
@@ -16,14 +40,10 @@ function ExtendedSidebar(): ReactElement {
   return (
     <motion.div
       key="content"
-      initial="collapsed"
-      animate="open"
-      exit="collapsed"
-      variants={{
-        open: { width: "300px", opacity: 1, minWidth: "300px" },
-        collapsed: { width: 0, opacity: 0, minWidth: "0px" },
-      }}
-      transition={{ duration: 0.5 }}
+      variants={slide}
+      initial="hidden"
+      animate="visible"
+      exit="exit"
     >
       <Box
         display="flex"

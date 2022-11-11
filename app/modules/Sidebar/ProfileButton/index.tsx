@@ -51,7 +51,6 @@ export default function ProfileButton() {
   return (
     <>
       <Box
-        borderTopWidth="0.375"
         paddingTop="2"
         marginX="4"
         display="flex"

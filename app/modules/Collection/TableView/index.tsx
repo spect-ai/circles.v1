@@ -17,10 +17,11 @@ import {
   textColumn,
 } from "react-datasheet-grid";
 import { CellWithId } from "react-datasheet-grid/dist/types";
+import { useScreenClass } from "react-grid-system";
 import { toast } from "react-toastify";
 import AddField from "../AddField";
 import { useLocalCollection } from "../Context/LocalCollectionContext";
-import DataModal from "../Form/DataDrawer";
+import DataDrawer from "../Form/DataDrawer";
 import ExpandableCell from "../Form/ExpandableCell";
 import CredentialComponent from "./CredentialComponent";
 import GutterColumnComponent from "./GutterColumnComponent";
@@ -41,6 +42,12 @@ export default function TableView() {
   const [data, setData] = useState<any[]>();
   const { localCollection: collection, setLocalCollection } =
     useLocalCollection();
+
+  const [expandedDataSlug, setExpandedDataSlug] = useState("");
+
+  const screenClass = useScreenClass();
+
+  console.log({ screenClass });
 
   const updateData = async ({ cell }: { cell: CellWithId }) => {
     if (data) {
@@ -299,8 +306,6 @@ export default function TableView() {
             dataId={dataId}
           />
         )}
-      </AnimatePresence>
-      <AnimatePresence>
         {multipleMilestoneModalOpen && (
           <MultiMilestoneModal
             form={collection}
@@ -335,13 +340,30 @@ export default function TableView() {
             }}
           />
         )}
+        {expandedDataSlug && (
+          <DataDrawer
+            expandedDataSlug={expandedDataSlug}
+            setExpandedDataSlug={setExpandedDataSlug}
+          />
+        )}
       </AnimatePresence>
 
-      <DataModal />
       {collection.name && (
         <DynamicDataSheetGrid
           value={data}
-          height={550}
+          height={
+            screenClass === "xxl"
+              ? 700
+              : screenClass === "xl"
+              ? 600
+              : screenClass === "lg"
+              ? 550
+              : screenClass === "md"
+              ? 500
+              : screenClass === "sm"
+              ? 500
+              : 500
+          }
           onChange={async (newData, operations) => {
             if (operations[0].type === "DELETE") {
               const dataIds = [];
@@ -364,7 +386,10 @@ export default function TableView() {
           columns={columnsWithCredentials}
           gutterColumn={{
             component: GutterColumnComponent,
-            minWidth: 50,
+            minWidth: 90,
+            columnData: {
+              setExpandedDataSlug,
+            },
           }}
           onBlur={updateData}
           lockRows

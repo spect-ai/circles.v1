@@ -15,10 +15,9 @@ export default function DataActivity({ activities, activityOrder }: Props) {
   return (
     <Box>
       <Stack>
-        {activityOrder.map((activityId) => {
+        {activityOrder?.map((activityId) => {
           const activity = activities[activityId];
           const actor = getMemberDetails(activity.ref.actor?.id);
-          console.log({ activity, actor });
           return (
             <Box key={activityId}>
               <Stack
