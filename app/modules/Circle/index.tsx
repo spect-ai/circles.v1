@@ -8,7 +8,7 @@ import styled from "styled-components";
 import Navigation from "../Project/Navigation";
 import RetroPage from "../Retro";
 import { useCircle } from "./CircleContext";
-import CircleOverview from "./CircleOverview";
+import CircleDashboard from "./CircleOverview";
 import { useRouter } from "next/router";
 import { joinCircle } from "@/app/services/JoinCircle";
 import Roles from "./RolesTab";
@@ -101,7 +101,7 @@ export default function Circle() {
           }`,
         }}
       />
-      {page === "Overview" && <CircleOverview />}
+      {page === "Overview" && <CircleDashboard />}
       {page === "Retro" && <RetroPage />}
       <Box
         style={{

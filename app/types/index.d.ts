@@ -82,6 +82,7 @@ export interface Permissions {
   createNewCircle: boolean;
   createNewProject: boolean;
   createNewRetro: boolean;
+  createNewForm: boolean;
   endRetroManually: boolean;
   inviteMembers: boolean;
   makePayment: boolean;
@@ -91,6 +92,8 @@ export interface Permissions {
   manageProjectSettings: boolean;
   manageRoles: boolean;
   distributeCredentials: boolean;
+  manageFormSettings: boolean;
+  updateFormResponsesManually: boolean;
   manageCardProperties: {
     Task: boolean;
     Bounty: boolean;

@@ -9,7 +9,7 @@ import { useCircle } from "../../CircleContext";
 
 export default function GuildIntegration() {
   const [isOpen, setIsOpen] = useState(false);
-  const [guildName, setGuildName] = useState("");
+  const [guildUrl, setGuildUrl] = useState("");
   const { circle, setCircleData } = useCircle();
   const [loading, setLoading] = useState(false);
   return (
@@ -30,16 +30,20 @@ export default function GuildIntegration() {
               <Stack>
                 <Input
                   label="Guild url"
-                  placeholder="test-server"
-                  name={guildName}
-                  onChange={(e) => setGuildName(e.target.value)}
+                  placeholder="https://guild.xyz/test-server"
+                  name={guildUrl}
+                  onChange={(e) => setGuildUrl(e.target.value)}
                 />
                 <Box width="1/3">
                   <PrimaryButton
                     loading={loading}
                     onClick={async () => {
                       setLoading(true);
-                      const guildServer = await guild.get(guildName);
+                      const guildSlug = guildUrl.replace(
+                        /^http(s)?(:)?(\/\/)?|(\/\/)?(www\.)?guild.xyz(\/)/g,
+                        ""
+                      );
+                      const guildServer = await guild.get(guildSlug);
                       const res = await updateCircle(
                         {
                           guildxyzId: guildServer.id,

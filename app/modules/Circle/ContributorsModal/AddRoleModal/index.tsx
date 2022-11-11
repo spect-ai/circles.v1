@@ -18,7 +18,7 @@ import {
 import { AnimatePresence } from "framer-motion";
 import React, { useEffect, useState } from "react";
 import { useCircle } from "../../CircleContext";
-import { defaultPermissions } from "./contants";
+import { defaultPermissions, permissionText } from "./contants";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 
 type props = {
@@ -39,6 +39,8 @@ export default function AddRole({ role }: props) {
       setPermissions(circle.roles[role]?.permissions);
     }
   }, [circle, role]);
+
+  console.log(permissions);
 
   return (
     <Box>
@@ -125,7 +127,9 @@ export default function AddRole({ role }: props) {
                             md: "1/2",
                           }}
                         >
-                          <Text variant="label">{key}</Text>
+                          <Text variant="label">
+                            {(permissionText as any)?.[key]}
+                          </Text>
                         </Box>
                         {typeof (permissions as any)[key] === "boolean" ? (
                           <CheckBox

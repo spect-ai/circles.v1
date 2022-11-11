@@ -31,6 +31,8 @@ export default function Tabs({
       flexDirection={orientation === "horizontal" ? "row" : "column"}
       borderWidth={border ? "0.5" : "0"}
       borderRadius="3xLarge"
+      gap={"2"}
+      padding="1"
     >
       {tabs.map((tab, index) => (
         <Box width="full" marginX="0.5" key={tab}>

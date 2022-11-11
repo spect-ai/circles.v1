@@ -1,20 +1,12 @@
 import { useGlobal } from "@/app/context/globalContext";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
+import Tabs from "@/app/common/components/Tabs";
 
-import {
-  Box,
-  Button,
-  Stack,
-  useTheme,
-  Input,
-  IconSearch,
-  IconGrid,
-} from "degen";
+import { Box, Button, Stack, Input, IconSearch, IconGrid } from "degen";
 import { AnimatePresence } from "framer-motion";
 import { matchSorter } from "match-sorter";
 import { useRouter } from "next/router";
-import React, { useEffect, useState, FunctionComponent } from "react";
-import styled from "styled-components";
+import React, { useEffect, useState } from "react";
 import BatchPay from "../../Project/BatchPay";
 import RetroModal from "../../Retro/RetroModal";
 import { useCircle } from "../CircleContext";
@@ -27,74 +19,10 @@ import Roles from "../RolesTab";
 import { FolderOpenOutlined } from "@ant-design/icons";
 import { Hidden } from "react-grid-system";
 
-interface Props {
-  toggle: string;
-  setToggle: (toggle: "Overview" | "Members" | "Roles") => void;
-}
-
-const ToggleButton = styled.button<{ bgcolor: boolean }>`
-  border-radius: 2rem;
-  border: none;
-  padding: 0.4rem 1rem;
-  text-align: center;
-  cursor: pointer;
-  font-weight: 600;
-  font-family: Inter;
-  font-size: 1rem;
-  transition-duration: 0.4s;
-  color: ${(props) =>
-    props.bgcolor ? "rgb(191,90,242)" : "rgb(191,90,242,0.8)"};
-  background-color: ${(props) =>
-    props.bgcolor ? "rgb(191,90,242,0.1)" : "transparent"};
-
-  @media (max-width: 768px) {
-    font-size: 0.8rem;
-  }
-`;
-
-const Toggle: FunctionComponent<Props> = ({ toggle, setToggle }) => {
-  const { mode } = useTheme();
-
-  return (
-    <Box
-      backgroundColor={mode === "dark" ? "background" : "white"}
-      style={{
-        display: "block",
-        padding: "0.2rem",
-        borderRadius: "2rem",
-        width: "fit-content",
-        margin: "0rem auto",
-        marginBottom: "0.5rem",
-        boxShadow: `0px 1px 5px ${
-          mode == "dark" ? "rgba(0, 0, 0, 0.3)" : "rgba(0, 0, 0, 0.1)"
-        }`,
-      }}
-    >
-      <ToggleButton
-        onClick={() => setToggle("Overview")}
-        bgcolor={toggle == "Overview" ? true : false}
-      >
-        Overview
-      </ToggleButton>
-      <ToggleButton
-        onClick={() => setToggle("Members")}
-        bgcolor={toggle == "Members" ? true : false}
-      >
-        Contributors
-      </ToggleButton>
-      <ToggleButton
-        onClick={() => setToggle("Roles")}
-        bgcolor={toggle == "Roles" ? true : false}
-      >
-        Roles
-      </ToggleButton>
-    </Box>
-  );
-};
-
-export default function CircleOverview() {
+export default function CircleDashboard() {
   const { isSidebarExpanded, groupBy, setGroupBy, toggle, setToggle } =
     useGlobal();
+  const onTabClick = (id: number) => setToggle(id);
   const router = useRouter();
   const { circle: cId, retroSlug } = router.query;
   const {
@@ -158,8 +86,20 @@ export default function CircleOverview() {
           }}
           transitionDuration="500"
         >
-          <Toggle toggle={toggle} setToggle={setToggle} />
-          {toggle == "Overview" && (
+          <Tabs
+            selectedTab={toggle}
+            onTabClick={onTabClick}
+            tabs={["Overview", "Contributors", "Roles"]}
+            tabTourIds={[
+              "circle-dashboard-overview",
+              "circle-dashboard-contributor",
+              "circle-dashboard-roles",
+            ]}
+            orientation="horizontal"
+            unselectedColor="transparent"
+            selectedColor="secondary"
+          />
+          {toggle == 0 && (
             <Stack space="1">
               <Stack
                 direction={{
@@ -270,8 +210,8 @@ export default function CircleOverview() {
               )}
             </Stack>
           )}
-          {toggle == "Members" && <CircleMembers />}
-          {toggle == "Roles" && <Roles />}
+          {toggle == 1 && <CircleMembers />}
+          {toggle == 2 && <Roles />}
         </Box>
       </Stack>
     </>

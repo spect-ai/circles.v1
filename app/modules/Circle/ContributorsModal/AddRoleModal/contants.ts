@@ -13,6 +13,9 @@ export const defaultPermissions: Permissions = {
   manageRoles: false,
   manageMembers: false,
   distributeCredentials: false,
+  createNewForm: true,
+  manageFormSettings: false,
+  updateFormResponsesManually: false,
   manageCardProperties: {
     Task: true,
     Bounty: false,
@@ -33,4 +36,27 @@ export const defaultPermissions: Permissions = {
     Task: true,
     Bounty: false,
   },
+};
+
+export const permissionText = {
+  createNewCircle: "Create New Circle",
+  manageCircleSettings: "Manage Circle Settings",
+  createNewProject: "Create New Project",
+  manageProjectSettings: "Manage Project Settings",
+  createNewRetro: "Create New Retro",
+  endRetroManually: "End Retro Manually",
+  managePaymentOptions: "Manage Payment Options",
+  makePayment: "Make Payment",
+  inviteMembers: "Invite Members",
+  manageRoles: "Manage Roles",
+  manageMembers: "Manage Members",
+  distributeCredentials: "Distribute Credentials",
+  createNewForm: "Create New Form",
+  manageFormSettings: "Manage Form Settings",
+  updateFormResponsesManually: "Update Form Responses Manually",
+  manageCardProperties: "Manage Card Properties",
+  createNewCard: "Create New Card",
+  manageRewards: "Manage Rewards",
+  reviewWork: "Review Work",
+  canClaim: "Can Claim",
 };
