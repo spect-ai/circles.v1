@@ -2,6 +2,7 @@ import Dropdown from "@/app/common/components/Dropdown";
 import Editor from "@/app/common/components/Editor";
 import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
+import { useGlobal } from "@/app/context/globalContext";
 import useProfileUpdate from "@/app/services/Profile/useProfileUpdate";
 import { Milestone, Option, Registry } from "@/app/types";
 import { Box, Button, Input, Stack, Tag, Text, useTheme } from "degen";
@@ -10,7 +11,7 @@ import styled from "styled-components";
 
 type Props = {
   handleClose: () => void;
-  modalMode: "create" | "edit";
+  modalMode: "add" | "edit";
   educationId?: number;
 };
 
@@ -31,6 +32,8 @@ export default function AddEducationModal({
     preprocessDate,
   } = useProfileUpdate();
 
+  const { userData } = useGlobal();
+
   const [requiredFieldsNotSet, setRequiredFieldsNotSet] = useState({
     title: false,
     organization: false,
@@ -49,6 +52,29 @@ export default function AddEducationModal({
         return false;
     }
   };
+
+  useEffect(() => {
+    if (modalMode === "edit" && (educationId || educationId === 0)) {
+      const education = userData.education[educationId];
+      setTitle(education.courseDegree);
+      setOrganization(education.school);
+      setDescription(education.description);
+      setStartDate(
+        education.start_date?.year?.toString().padStart(2, "0") +
+          "-" +
+          education.start_date?.month?.toString().padStart(2, "0") +
+          "-" +
+          education.start_date?.day?.toString().padStart(2, "0")
+      );
+      setEndDate(
+        education.end_date?.year?.toString().padStart(2, "0") +
+          "-" +
+          education.end_date?.month?.toString().padStart(2, "0") +
+          "-" +
+          education.end_date?.day?.toString().padStart(2, "0")
+      );
+    }
+  }, []);
 
   return (
     <Modal
@@ -189,6 +215,7 @@ export default function AddEducationModal({
                 type="date"
                 mode={mode}
                 onChange={(e) => {
+                  console.log(e.target.value);
                   setEndDate(e.target.value);
                 }}
               />
@@ -241,7 +268,11 @@ export default function AddEducationModal({
                 });
                 return;
               }
-              if (modalMode === "create") {
+              console.log(modalMode);
+
+              if (modalMode === "add") {
+                console.log(educationId);
+
                 const res = await createEducation({
                   courseDegree: title,
                   school: organization,
@@ -252,9 +283,10 @@ export default function AddEducationModal({
                   currentlyStudying: false,
                 });
               } else if (modalMode === "edit") {
-                if (!educationId) {
+                if (!educationId && educationId !== 0) {
                   return;
                 }
+                console.log(educationId);
                 const res = await updateEducation(educationId?.toString(), {
                   courseDegree: title,
                   school: organization,
@@ -268,7 +300,7 @@ export default function AddEducationModal({
               handleClose();
             }}
           >
-            {modalMode === "create" ? "Add" : "Update"}
+            {modalMode === "add" ? "Add" : "Update"}
           </Button>
         </Box>
       </Box>

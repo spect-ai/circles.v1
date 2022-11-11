@@ -2,6 +2,7 @@ import Dropdown from "@/app/common/components/Dropdown";
 import Editor from "@/app/common/components/Editor";
 import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
+import { useGlobal } from "@/app/context/globalContext";
 import useProfileUpdate from "@/app/services/Profile/useProfileUpdate";
 import { Milestone, Option, Registry } from "@/app/types";
 import { Box, Button, Input, Stack, Tag, Text, useTheme } from "degen";
@@ -30,6 +31,7 @@ export default function AddExperienceModal({
     updateExperience,
     preprocessDate,
   } = useProfileUpdate();
+  const { userData } = useGlobal();
 
   const [requiredFieldsNotSet, setRequiredFieldsNotSet] = useState({
     role: false,
@@ -49,6 +51,29 @@ export default function AddExperienceModal({
         return false;
     }
   };
+
+  useEffect(() => {
+    if (modalMode === "edit" && (experienceId || experienceId === 0)) {
+      const experience = userData.experiences[experienceId];
+      setRole(experience.jobTitle);
+      setOrganization(experience.company);
+      setDescription(experience.description);
+      setStartDate(
+        experience.start_date?.year?.toString().padStart(2, "0") +
+          "-" +
+          experience.start_date?.month?.toString().padStart(2, "0") +
+          "-" +
+          experience.start_date?.day?.toString().padStart(2, "0")
+      );
+      setEndDate(
+        experience.end_date?.year?.toString().padStart(2, "0") +
+          "-" +
+          experience.end_date?.month?.toString().padStart(2, "0") +
+          "-" +
+          experience.end_date?.day?.toString().padStart(2, "0")
+      );
+    }
+  }, []);
 
   return (
     <Modal
@@ -252,7 +277,7 @@ export default function AddExperienceModal({
                   currentlyWorking: false,
                 });
               } else if (modalMode === "edit") {
-                if (!experienceId) {
+                if (!experienceId && experienceId !== 0) {
                   return;
                 }
                 const res = await updateExperience(experienceId?.toString(), {

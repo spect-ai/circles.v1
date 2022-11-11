@@ -968,7 +968,7 @@ export type LensSkills = {
 
 export type LensExperience = {
   jobTitle: string;
-  company: number;
+  company: string;
   companyLogo: string;
   description: string;
   start_date: LensDate;

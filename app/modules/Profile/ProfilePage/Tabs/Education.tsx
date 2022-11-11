@@ -1,6 +1,6 @@
 import { memo, useState, useEffect } from "react";
 import { Box, Text, Tag, Avatar, useTheme, Stack } from "degen";
-import { UserType, CardDetails, LensEducation } from "@/app/types";
+import { UserType, CardDetails, LensEducation, LensDate } from "@/app/types";
 import { PriorityIcon } from "@/app/common/components/PriorityIcon";
 import styled from "styled-components";
 import ReactPaginate from "react-paginate";
@@ -57,7 +57,7 @@ const Education = ({ userData }: { userData: UserType }) => {
   const [pageCount, setPageCount] = useState(0);
   const [itemOffset, setItemOffset] = useState(0);
   const [endOffset, setEndOffset] = useState(0);
-  const [addEducation, setAddEducation] = useState(false);
+  const [openEducationModal, setOpenEducationModal] = useState(false);
   const [editEducation, setEditEducation] = useState(false);
   const [editEducationId, setEditEducationId] = useState<number>();
   const [modalMode, setModalMode] = useState<"add" | "edit">("add");
@@ -87,10 +87,11 @@ const Education = ({ userData }: { userData: UserType }) => {
 
   return (
     <Box>
-      {addEducation && (
+      {openEducationModal && (
         <AddEducationModal
-          modalMode="create"
-          handleClose={() => setAddEducation(false)}
+          modalMode={modalMode}
+          educationId={editEducationId}
+          handleClose={() => setOpenEducationModal(false)}
         />
       )}
       <ScrollContainer>
@@ -102,7 +103,7 @@ const Education = ({ userData }: { userData: UserType }) => {
             <Box marginTop="4">
               <PrimaryButton
                 variant="tertiary"
-                onClick={() => setAddEducation(true)}
+                onClick={() => setOpenEducationModal(true)}
               >
                 Add Education
               </PrimaryButton>
@@ -112,7 +113,7 @@ const Education = ({ userData }: { userData: UserType }) => {
         {education?.length > 0 && (
           <>
             <Box width="48" marginTop="4">
-              <PrimaryButton onClick={() => setAddEducation(true)}>
+              <PrimaryButton onClick={() => setOpenEducationModal(true)}>
                 Add Education
               </PrimaryButton>
             </Box>
@@ -153,7 +154,7 @@ const Education = ({ userData }: { userData: UserType }) => {
                             onClick={() => {
                               setModalMode("edit");
                               setEditEducationId(index);
-                              setAddEducation(true);
+                              setOpenEducationModal(true);
                             }}
                           >
                             <EditOutlined />

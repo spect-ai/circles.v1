@@ -96,6 +96,7 @@ const Experience = ({ userData }: { userData: UserType }) => {
       {addExperience && (
         <AddExperienceModal
           modalMode={modalMode}
+          experienceId={editExperienceId}
           handleClose={() => setAddExperience(false)}
         />
       )}
