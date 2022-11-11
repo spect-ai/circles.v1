@@ -96,19 +96,13 @@ function PublicLayout(props: PublicLayoutProps) {
 
   if (isLoading || loading)
     return (
-      <DesktopContainer
-        backgroundColor={mode === "dark" ? "background" : "backgroundSecondary"}
-        id="Load screen"
-      >
+      <DesktopContainer backgroundColor="backgroundSecondary" id="Load screen">
         <Loader loading text="Launching Spect .." />
       </DesktopContainer>
     );
 
   return (
-    <DesktopContainer
-      backgroundColor={mode === "dark" ? "background" : "backgroundSecondary"}
-      id="public-layout"
-    >
+    <DesktopContainer backgroundColor="backgroundSecondary">
       {connectedUser && currentUser?.id ? (
         !onboard ? (
           <>
