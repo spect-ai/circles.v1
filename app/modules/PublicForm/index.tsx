@@ -354,16 +354,19 @@ export default function PublicForm() {
                 )}
               </motion.div>
             )}
-            <DataActivity
-              activities={form.activity}
-              activityOrder={form.activityOrder}
-              getMemberDetails={getMemberDetails}
-              collectionId={form.id}
-              dataId={
-                form.previousResponses[form.previousResponses?.length - 1].slug
-              }
-              setForm={setForm}
-            />
+            {form.previousResponses.length > 0 && (
+              <DataActivity
+                activities={form.activity}
+                activityOrder={form.activityOrder}
+                getMemberDetails={getMemberDetails}
+                collectionId={form.id}
+                dataId={
+                  form.previousResponses[form.previousResponses?.length - 1]
+                    ?.slug
+                }
+                setForm={setForm}
+              />
+            )}
           </FormContainer>
           <Stack align={"center"}>
             <Text variant="label">Powered By</Text>

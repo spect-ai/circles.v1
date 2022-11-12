@@ -1,6 +1,7 @@
 import queryClient from "@/app/common/utils/queryClient";
 import { useGlobal } from "@/app/context/globalContext";
 import { CollectionType, AdvancedFilters } from "@/app/types";
+import _ from "lodash";
 import { useRouter } from "next/router";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useQuery } from "react-query";
@@ -59,7 +60,7 @@ export function useProviderLocalCollection() {
   });
   const [view, setView] = useState(0);
 
-  const { socket } = useGlobal();
+  const { socket, connectedUser } = useGlobal();
 
   const updateCollection = (collection: CollectionType) => {
     queryClient.setQueryData(["collection", colId], collection);
@@ -87,16 +88,26 @@ export function useProviderLocalCollection() {
   }, [colId, fetchCollection]);
 
   useEffect(() => {
-    if (socket && socket.on && localCollection) {
+    console.log("useeffect");
+    if (socket && socket.on && localCollection.slug) {
       socket.on(
         `${localCollection.slug}:dataAdded`,
         (collection: CollectionType) => {
           updateCollection(collection);
         }
       );
+      socket.on(
+        `${localCollection.slug}:newActivity`,
+        _.debounce((event: { data: CollectionType; user: string }) => {
+          console.log("aa gya event bruh");
+          if (event.user !== connectedUser) {
+            updateCollection(event.data);
+          }
+        }, 2000)
+      );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [socket, localCollection]);
+  }, [localCollection.slug]);
 
   return {
     localCollection,

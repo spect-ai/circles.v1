@@ -146,9 +146,9 @@ const ScrollContainer = styled(Box)`
     height: calc(100vh - 4rem);
   }
   flex-direction: row;
-  padding: 2rem;
-  margin-top: 2rem;
-  height: calc(100vh - 9rem);
+  padding: 1.5rem;
+  margin-top: 1rem;
+  height: calc(100vh - 7rem);
 `;
 
 const FormContainer = styled(Box)`

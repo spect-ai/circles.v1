@@ -2,7 +2,7 @@ const colors = {
   almostBlack: "rgb(255,255,255,0)",
   lightBlack: "rgb(20,20,20)",
   almostWhite: "rgb(255, 255, 255,0.8)",
-  white: "rgb(255, 255, 255,0.6)",
+  white: "rgb(255, 255, 255,0.7)",
   white10: "rgba(255, 255, 255, 0.1)",
   black: "#000",
   black10: "rgba(0, 0, 0, 0.1)",
@@ -20,7 +20,7 @@ export const base = {
   fontFamily: "Inter",
   fontFamilyMono:
     "'SFMono-Regular',Consolas,'Liberation Mono', Menlo, Courier,monospace",
-  fontWeight: 400,
+  fontWeight: 200,
   zIndex: 1,
   link: colors.primary,
   placeholder: "#B1BECC",
