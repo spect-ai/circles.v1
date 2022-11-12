@@ -26,7 +26,6 @@ import SettingsModal from "../Circle/CircleSettingsModal";
 import ContributorsModal from "../Circle/ContributorsModal";
 import CreateRetroModal from "../Retro/CreateRetro";
 import CircleOptions from "./CircleOptions";
-import CollapseButton from "./CollapseButton";
 import { HeaderButton } from "./ExploreSidebar";
 import mixpanel from "@/app/common/utils/mixpanel";
 
@@ -57,7 +56,6 @@ function CircleSidebar() {
     enabled: false,
   });
 
-  const [showCollapseButton, setShowCollapseButton] = useState(false);
   if (isLoading) {
     return (
       <SkeletonGroup loading>
@@ -77,8 +75,8 @@ function CircleSidebar() {
         paddingY="2"
         paddingLeft="3"
         paddingRight="3"
-        onMouseEnter={() => setShowCollapseButton(true)}
-        onMouseLeave={() => setShowCollapseButton(false)}
+        // onMouseEnter={() => setShowCollapseButton(true)}
+        // onMouseLeave={() => setShowCollapseButton(false)}
       >
         <Stack space="3">
           <HeaderButton
@@ -106,8 +104,8 @@ function CircleSidebar() {
       paddingY="2"
       paddingLeft="3"
       paddingRight="3"
-      onMouseEnter={() => setShowCollapseButton(true)}
-      onMouseLeave={() => setShowCollapseButton(false)}
+      // onMouseEnter={() => setShowCollapseButton(true)}
+      // onMouseLeave={() => setShowCollapseButton(false)}
     >
       <AnimatePresence>
         {isSettingsModalOpen && (
@@ -125,12 +123,12 @@ function CircleSidebar() {
       <Stack space="3">
         <Stack direction="horizontal">
           <CircleOptions />
-          <CollapseButton
+          {/* <CollapseButton
             show={showCollapseButton}
             setShowCollapseButton={setShowCollapseButton}
             top="2.7rem"
             left="21rem"
-          />
+          /> */}
         </Stack>
         {!isLoading && circle?.toBeClaimed && (
           <PrimaryButton

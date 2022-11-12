@@ -66,7 +66,6 @@ export function Form() {
         const res = await updateField(collection.id, draggableId, {
           isPartOfFormView: true,
         });
-        console.log({ res });
         if (res.id) updateCollection(res);
         else toast.error(`Request failed with error ${res.message}`);
       } else {
@@ -77,7 +76,6 @@ export function Form() {
         const res = await updateFormCollection(collection.id, {
           propertyOrder: newPropertyOrder,
         });
-        console.log({ res });
         if (res.id) updateCollection(res);
         else toast.error(`Request failed with error ${res.message}`);
       }
@@ -97,7 +95,6 @@ export function Form() {
         const res = await updateField(collection.id, draggableId, {
           isPartOfFormView: false,
         });
-        console.log({ res });
         if (res.id) updateCollection(res);
         else toast.error(`Request failed with error ${res.message}`);
       }

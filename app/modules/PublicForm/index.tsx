@@ -24,6 +24,7 @@ import {
 import DiscordIcon from "@/app/assets/icons/discordIcon.svg";
 import Image from "next/image";
 import Editor from "@/app/common/components/Editor";
+import DataActivity from "../Collection/Form/DataDrawer/DataActivity";
 
 export default function PublicForm() {
   const router = useRouter();
@@ -39,6 +40,25 @@ export default function PublicForm() {
   const [stamps, setStamps] = useState([] as Stamp[]);
 
   const { connectedUser } = useGlobal();
+
+  const [memberDetails, setMemberDetails] = useState({} as any);
+
+  const getMemberDetails = React.useCallback(
+    (id: string) => {
+      return memberDetails?.memberDetails[id];
+    },
+    [memberDetails]
+  );
+
+  const fetchMemberDetails = async (cId: string) => {
+    const res = await (
+      await fetch(
+        `${process.env.API_HOST}/circle/${cId}/memberDetailsWithSlug?circleSlugs=${cId}`
+      )
+    ).json();
+    if (res.members) setMemberDetails(res);
+    else toast.error("Error fetching member details");
+  };
 
   const addStamps = async (form: FormType) => {
     const stamps = await getAllCredentials();
@@ -61,8 +81,9 @@ export default function PublicForm() {
     void (async () => {
       if (formId) {
         setLoading(true);
-        const res = await getForm(formId as string);
+        const res: FormType = await getForm(formId as string);
         if (res.id) {
+          await fetchMemberDetails(res.parents[0].slug);
           setForm(res);
           setCanFillForm(res.canFillForm);
           await addStamps(res);
@@ -72,20 +93,24 @@ export default function PublicForm() {
     })();
   }, [connectedUser, formId]);
 
-  if (form) {
-    return (
-      <ScrollContainer>
-        <ToastContainer
-          toastStyle={{
-            backgroundColor: `${
-              mode === "dark" ? "rgb(20,20,20)" : "rgb(240,240,240)"
-            }`,
-            color: `${
-              mode === "dark" ? "rgb(255,255,255,0.7)" : "rgb(20,20,20,0.7)"
-            }`,
-          }}
-        />
-        <CoverImage src={form.cover} backgroundColor="accentSecondary" />
+  if (loading) {
+    return <Loader loading text="Fetching form..." />;
+  }
+
+  return (
+    <ScrollContainer>
+      <ToastContainer
+        toastStyle={{
+          backgroundColor: `${
+            mode === "dark" ? "rgb(20,20,20)" : "rgb(240,240,240)"
+          }`,
+          color: `${
+            mode === "dark" ? "rgb(255,255,255,0.7)" : "rgb(20,20,20,0.7)"
+          }`,
+        }}
+      />
+      <CoverImage src={form?.cover || ""} backgroundColor="accentSecondary" />
+      {form && (
         <Container>
           <FormContainer
             backgroundColor="background"
@@ -329,9 +354,19 @@ export default function PublicForm() {
                 )}
               </motion.div>
             )}
+            <DataActivity
+              activities={form.activity}
+              activityOrder={form.activityOrder}
+              getMemberDetails={getMemberDetails}
+              collectionId={form.id}
+              dataId={
+                form.previousResponses[form.previousResponses?.length - 1].slug
+              }
+              setForm={setForm}
+            />
           </FormContainer>
           <Stack align={"center"}>
-            <Text>Powered By</Text>
+            <Text variant="label">Powered By</Text>
             <a href="/" target="_blank" rel="noopener noreferrer">
               {mode == "dark" ? (
                 <Image
@@ -395,10 +430,9 @@ export default function PublicForm() {
           </Stack>
           <Box marginBottom="8" />
         </Container>
-      </ScrollContainer>
-    );
-  }
-  return <Loader loading text="Fetching form..." />;
+      )}
+    </ScrollContainer>
+  );
 }
 
 const Container = styled(Box)`
@@ -442,7 +476,7 @@ export const NameInput = styled.input`
 
 export const CoverImage = styled(Box)<{ src: string }>`
   width: 100%;
-  height: 20rem;
+  height: 18rem;
   background-image: url(${(props) => props.src});
   background-size: cover;
   z-index: -1;

@@ -1,12 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import Drawer from "@/app/common/components/Drawer";
+import Drawer, { slideHorizontal } from "@/app/common/components/Drawer";
 import { OptionType } from "@/app/common/components/Dropdown";
 import Editor from "@/app/common/components/Editor";
-import PrimaryButton from "@/app/common/components/PrimaryButton";
 import Tabs from "@/app/common/components/Tabs";
-import { sendFormComment, voteCollectionData } from "@/app/services/Collection";
-import { UserType } from "@/app/types";
-import { SendOutlined } from "@ant-design/icons";
+import { voteCollectionData } from "@/app/services/Collection";
+import { MemberDetails, UserType } from "@/app/types";
 import { Avatar, Box, Stack, Tag, Text } from "degen";
 import { motion } from "framer-motion";
 import { useRouter } from "next/router";
@@ -37,49 +35,50 @@ ChartJS.register(
   Legend
 );
 
-export default function DataModal() {
-  const [isOpen, setIsOpen] = useState(false);
+type props = {
+  expandedDataSlug: string;
+  setExpandedDataSlug: React.Dispatch<React.SetStateAction<string>>;
+};
+
+export default function DataDrawer({
+  expandedDataSlug: dataId,
+  setExpandedDataSlug,
+}: props) {
   const { localCollection: collection, updateCollection } =
     useLocalCollection();
 
   const router = useRouter();
-  const { dataId, circle: cId } = router.query;
+  const { dataId: dataSlug, circle: cId } = router.query;
 
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
   const [data, setData] = useState({} as any);
-  const [comment, setComment] = useState("");
-  const [isDirty, setIsDirty] = useState(false);
   const [vote, setVote] = useState(-1);
-
-  const [sendingComment, setSendingComment] = useState(false);
 
   useEffect(() => {
     if (dataId) {
-      setIsOpen(true);
       setData({});
       setTimeout(() => {
-        setData(collection?.data[dataId as string]);
+        setData(collection?.data[dataId]);
       }, 0);
-    } else setIsOpen(false);
+    }
   }, [collection?.data, dataId]);
 
   useEffect(() => {
     if (
       data &&
       collection.voting.votes &&
-      collection.voting.votes[dataId as string] &&
-      collection.voting.votes[dataId as string][currentUser?.id || ""] !==
-        undefined
+      collection.voting.votes[dataId] &&
+      collection.voting.votes[dataId][currentUser?.id || ""] !== undefined
     ) {
-      setVote(collection.voting.votes[dataId as string][currentUser?.id || ""]);
+      setVote(collection.voting.votes[dataId][currentUser?.id || ""]);
     } else setVote(-1);
   }, [collection.voting, currentUser?.id, data, dataId]);
 
   const getVotes = () => {
     const dataVotes =
-      collection.voting.votes && collection.voting.votes[dataId as string];
+      collection.voting.votes && collection.voting.votes[dataId];
     // sump up all the votes for each option
     return (
       collection.voting?.options?.map((option, index) => {
@@ -89,26 +88,36 @@ export default function DataModal() {
     );
   };
 
-  if (!isOpen) return null;
+  const { data: memberDetails } = useQuery<MemberDetails>(
+    ["memberDetails", cId],
+    {
+      enabled: false,
+    }
+  );
 
-  if (!dataId || !data) return null;
+  const getMemberDetails = React.useCallback(
+    (id: string) => {
+      return memberDetails?.memberDetails[id];
+    },
+    [memberDetails]
+  );
 
   return (
     <Drawer
+      title={collection.name}
       handleClose={async () => {
-        await router.push(`/${cId}/r/${collection.slug}`);
-        setIsOpen(false);
+        setExpandedDataSlug("");
+        dataSlug && (await router.push(`/${cId}/r/${collection.slug}`));
       }}
     >
       {Object.keys(data).length !== 0 && (
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{
-            opacity: 0,
-          }}
+          variants={slideHorizontal}
+          initial="hidden"
+          animate="visible"
+          exit="exit"
         >
-          <ScrollContainer paddingX="8" paddingY="2">
+          <ScrollContainer paddingX="4" paddingY="2">
             <Stack space="5">
               <a
                 href={`/profile/${
@@ -117,14 +126,14 @@ export default function DataModal() {
                 target="_blank"
                 rel="noreferrer"
               >
-                <Stack direction="horizontal" align="center" space="4">
+                <Stack direction="horizontal" align="center" space="2">
                   <Avatar
                     src={
                       collection.profiles[collection.dataOwner[data.slug]]
                         .avatar
                     }
                     label=""
-                    size="10"
+                    size="8"
                   />
                   <Text color="accentText" weight="semiBold">
                     {
@@ -137,7 +146,7 @@ export default function DataModal() {
               <Box
                 marginLeft={{
                   xs: "0",
-                  md: "14",
+                  md: "10",
                 }}
                 marginTop={{
                   xs: "0",
@@ -149,11 +158,7 @@ export default function DataModal() {
                     const property = collection.properties[propertyName];
                     return (
                       <Stack key={property.name} space="1">
-                        <Text
-                          weight="semiBold"
-                          variant="extraLarge"
-                          color="accent"
-                        >
+                        <Text weight="bold" variant="extraLarge" color="accent">
                           {property.name}
                         </Text>
                         {property?.type === "shortText" && (
@@ -263,11 +268,7 @@ export default function DataModal() {
                   })}
                   {collection.voting?.enabled && collection.voting.options && (
                     <Stack space="1">
-                      <Text
-                        weight="semiBold"
-                        variant="extraLarge"
-                        color="accent"
-                      >
+                      <Text weight="bold" variant="extraLarge" color="accent">
                         Your Vote
                       </Text>
                       <Text>{collection.voting.message}</Text>
@@ -281,7 +282,7 @@ export default function DataModal() {
                           setVote(tab);
                           const res = await voteCollectionData(
                             collection.id,
-                            dataId as string,
+                            dataId,
                             tab
                           );
                           if (!res.id) {
@@ -372,63 +373,17 @@ export default function DataModal() {
               marginY="4"
               borderRadius="full"
             />
-            <Stack>
-              <Stack direction="horizontal">
-                <Avatar
-                  label=""
-                  placeholder={!currentUser?.avatar}
-                  src={currentUser?.avatar}
-                  address={currentUser?.ethAddress}
-                  size="10"
+            <Box paddingBottom="8">
+              <Stack>
+                <DataActivity
+                  activities={collection.dataActivities[dataId]}
+                  activityOrder={collection.dataActivityOrder[dataId]}
+                  getMemberDetails={getMemberDetails}
+                  dataId={dataId}
+                  collectionId={collection.id}
                 />
-                <Box width="full" gap="2" marginBottom="4">
-                  <Editor
-                    placeholder="Write a reply..."
-                    value={comment}
-                    onSave={(value) => {
-                      setComment(value);
-                    }}
-                    isDirty={isDirty}
-                    setIsDirty={setIsDirty}
-                  />
-                  {isDirty && currentUser && (
-                    <Box width="1/4">
-                      <PrimaryButton
-                        loading={sendingComment}
-                        icon={<SendOutlined style={{ fontSize: "1.3rem" }} />}
-                        onClick={async () => {
-                          setSendingComment(true);
-                          const res = await sendFormComment(
-                            collection.id,
-                            dataId as string,
-                            comment,
-                            {
-                              actor: {
-                                id: currentUser.id,
-                                refType: "user",
-                              },
-                            }
-                          );
-                          if (res.id) {
-                            console.log({ res });
-                            updateCollection(res);
-                            setComment("");
-                            setIsDirty(false);
-                          } else toast.error("Something went wrong");
-                          setSendingComment(false);
-                        }}
-                      >
-                        Send
-                      </PrimaryButton>
-                    </Box>
-                  )}
-                </Box>
               </Stack>
-              <DataActivity
-                activities={collection.dataActivities[dataId as string]}
-                activityOrder={collection.dataActivityOrder[dataId as string]}
-              />
-            </Stack>
+            </Box>
           </ScrollContainer>
         </motion.div>
       )}
@@ -437,7 +392,7 @@ export default function DataModal() {
 }
 
 const ScrollContainer = styled(Box)`
-  height: calc(100vh - 5rem);
+  height: calc(100vh - 4rem);
   overflow-y: auto;
 
   ::-webkit-scrollbar {

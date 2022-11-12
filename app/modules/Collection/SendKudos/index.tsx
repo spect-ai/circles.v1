@@ -148,7 +148,7 @@ export default function SendKudos() {
   }, [isOpen, hasMintkudosCredentialsSetup]);
 
   return (
-    <Box>
+    <Stack space="2">
       <Text variant="label">Kudos</Text>
       {!loading && kudos.imageUrl && (
         <Box
@@ -457,6 +457,6 @@ export default function SendKudos() {
           )}
         </AnimatePresence>
       }
-    </Box>
+    </Stack>
   );
 }

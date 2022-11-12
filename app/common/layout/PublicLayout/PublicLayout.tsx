@@ -43,7 +43,8 @@ const getUser = async () => {
 function PublicLayout(props: PublicLayoutProps) {
   const { children } = props;
   const { isSidebarExpanded, connectedUser, connectUser } = useGlobal();
-  const { mode } = useTheme();
+  // eslint-disable-next-line @typescript-eslint/unbound-method
+  const { setMode } = useTheme();
 
   const {
     data: currentUser,
@@ -94,21 +95,36 @@ function PublicLayout(props: PublicLayoutProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    setTimeout(() => {
+      if (localStorage.getItem("lightMode")) {
+        setMode("light");
+        document.documentElement.style.setProperty(
+          "--dsg-cell-background-color",
+          "rgb(255, 255, 255)"
+        );
+        document.documentElement.style.setProperty(
+          "--dsg-border-color",
+          "rgb(20,20,20,0.1)"
+        );
+        document.documentElement.style.setProperty(
+          "--dsg-cell-text-color",
+          "rgb(20,20,20,0.9)"
+        );
+      }
+    }, 100);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   if (isLoading || loading)
     return (
-      <DesktopContainer
-        backgroundColor={mode === "dark" ? "background" : "backgroundSecondary"}
-        id="Load screen"
-      >
+      <DesktopContainer backgroundColor="backgroundSecondary" id="Load screen">
         <Loader loading text="Launching Spect .." />
       </DesktopContainer>
     );
 
   return (
-    <DesktopContainer
-      backgroundColor={mode === "dark" ? "background" : "backgroundSecondary"}
-      id="public-layout"
-    >
+    <DesktopContainer backgroundColor="backgroundSecondary">
       {connectedUser && currentUser?.id ? (
         !onboard ? (
           <>

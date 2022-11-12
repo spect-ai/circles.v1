@@ -270,22 +270,42 @@ export const sendFormComment = async (
       id: string;
       refType: "circle" | "collection" | "user";
     };
-  }
+  },
+  isPublic?: boolean
 ) => {
-  return await (
-    await fetch(
-      `${process.env.API_HOST}/collection/v1/${collectionId}/addComment?dataId=${dataId}`,
-      {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify({
-          content,
-          ref,
-        }),
-      }
-    )
-  ).json();
+  if (!isPublic) {
+    return await (
+      await fetch(
+        `${process.env.API_HOST}/collection/v1/${collectionId}/addComment?dataId=${dataId}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify({
+            content,
+            ref,
+          }),
+        }
+      )
+    ).json();
+  } else {
+    return await (
+      await fetch(
+        `${process.env.API_HOST}/collection/v1/${collectionId}/addCommentPublic?dataId=${dataId}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify({
+            content,
+            ref,
+          }),
+        }
+      )
+    ).json();
+  }
 };

@@ -98,6 +98,7 @@ function ColumnComponent({ cards, id, column, index }: Props) {
       return;
     }
     setLocalProject(updatedProject);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [columnTitle]);
 
   const CardDraggable = (provided: DroppableProvided) => (
@@ -184,7 +185,6 @@ function ColumnComponent({ cards, id, column, index }: Props) {
   const DraggableContentCallback = useCallback(DraggableContent, [
     CardDraggableCallback,
     canDo,
-    column.cards.length,
     columnTitle,
     id,
     mode,

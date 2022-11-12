@@ -816,6 +816,8 @@ export type GuildRole = {
 };
 
 export interface FormType {
+  activity: MappedItem<CollectionActivity>;
+  activityOrder: string[];
   logo: string;
   cover: string;
   name: string;

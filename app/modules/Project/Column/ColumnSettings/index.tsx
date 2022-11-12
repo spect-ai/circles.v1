@@ -3,7 +3,7 @@ import ConfirmModal from "@/app/common/components/Modal/ConfirmModal";
 import { deleteColumn, updateColumnDetails } from "@/app/services/Column";
 import { ColumnType } from "@/app/types";
 import { SaveOutlined } from "@ant-design/icons";
-import { Box, Button, IconCog, IconTrash, Input, Stack } from "degen";
+import { Box, Button, IconTrash, Input, Stack } from "degen";
 import { AnimatePresence } from "framer-motion";
 import React, { useState } from "react";
 import { toast } from "react-toastify";

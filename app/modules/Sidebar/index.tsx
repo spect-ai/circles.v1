@@ -67,6 +67,7 @@ function Sidebar(): ReactElement {
   return (
     <>
       <Box
+        backgroundColor="background"
         display="flex"
         flexDirection="column"
         borderRightWidth="0.375"
@@ -99,25 +100,23 @@ function Sidebar(): ReactElement {
         </Box>
         <Box borderBottomWidth="0.375" paddingY="3">
           <Stack space="2">
-            <Visible xs sm>
-              <Button
-                shape="circle"
-                variant="transparent"
-                size="small"
-                onClick={() => {
-                  setIsSidebarExpanded(!isSidebarExpanded);
-                  process.env.NODE_ENV === "production" &&
-                    mixpanel.track("Expand Sidebar Button", {
-                      user: currentUser?.username,
-                      url: window.location.href,
-                    });
-                }}
-              >
-                <Text color="accent">
-                  <IconMenu size="5" />
-                </Text>
-              </Button>
-            </Visible>
+            <Button
+              shape="circle"
+              variant={isSidebarExpanded ? "secondary" : "transparent"}
+              size="small"
+              onClick={() => {
+                setIsSidebarExpanded(!isSidebarExpanded);
+                process.env.NODE_ENV === "production" &&
+                  mixpanel.track("Expand Sidebar Button", {
+                    user: currentUser?.username,
+                    url: window.location.href,
+                  });
+              }}
+            >
+              <Text color="accent">
+                <IconMenu size="5" />
+              </Text>
+            </Button>
             <Link href="/" passHref>
               <Button
                 shape="circle"
@@ -140,12 +139,12 @@ function Sidebar(): ReactElement {
             {connectedUser && <CreateCircle size="large" />}
           </Stack>
         </Box>
-        <CollapseButton
+        {/* <CollapseButton
           show={showCollapseButton}
           setShowCollapseButton={setShowCollapseButton}
           top="2.8rem"
           left="2.5rem"
-        />
+        /> */}
         {!isLoading && (
           <ScrollContainer borderBottomWidth={connectedUser ? "0.375" : "0"}>
             {!myCirclesLoading &&
