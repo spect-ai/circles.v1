@@ -136,7 +136,7 @@ function Sidebar(): ReactElement {
               </Button>
             </Link>
 
-            {connectedUser && <CreateCircle size="large" />}
+            {/* {connectedUser && <CreateCircle size="large" />} */}
           </Stack>
         </Box>
         {/* <CollapseButton

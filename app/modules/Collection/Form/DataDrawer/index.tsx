@@ -161,14 +161,13 @@ export default function DataDrawer({
                         <Text weight="bold" variant="extraLarge" color="accent">
                           {property.name}
                         </Text>
-                        {property?.type === "shortText" && (
-                          <Text>{data[property.name]}</Text>
-                        )}
-                        {property?.type === "ethAddress" && (
-                          <Text ellipsis>{data[property.name]}</Text>
-                        )}
-                        {property?.type === "email" && (
-                          <Text>{data[property.name]}</Text>
+                        {[
+                          "shortText",
+                          "ethAddress",
+                          "email",
+                          "number",
+                        ].includes(property.type) && (
+                          <Text size="small">{data[property.name]}</Text>
                         )}
                         {property?.type === "longText" && (
                           <Editor value={data[property.name]} disabled />
@@ -204,9 +203,6 @@ export default function DataDrawer({
                         )}
                         {property?.type === "date" && (
                           <Text>{data[property.name]?.toString()}</Text>
-                        )}
-                        {property?.type === "number" && (
-                          <Text>{data[property.name]}</Text>
                         )}
                         {property?.type === "reward" && (
                           <Text>

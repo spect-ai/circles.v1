@@ -18,11 +18,11 @@ a {
 }
 
 .ProseMirror-focused > * {
-  margin-bottom: 10px !important;
+  margin-bottom: 6px !important;
 }
 
 .ProseMirror > * {
-  margin-bottom: 10px !important;
+  margin-bottom: 6px !important;
 }
 
 .ProseMirror > h1 {
@@ -34,7 +34,8 @@ a {
 }
 
 .ProseMirror > p {
-  font-size: 0.95rem;
+  font-size: 0.89rem;
+  letter-spacing: 0px;
 }
 
 .block-menu-trigger {
