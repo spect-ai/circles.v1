@@ -81,6 +81,7 @@ const ProfileCard = ({ username }: Props) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isLensProfileSelectModalOpen, setIsLensProfileSelectModalOpen] =
     useState(false);
+  const { profileLoading } = useGlobal();
 
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
@@ -128,7 +129,12 @@ const ProfileCard = ({ username }: Props) => {
         <Box padding="0.5">
           <Heading>{smartTrim(user?.username || "", 16)}</Heading>
         </Box>
-        {user?.ethAddress && (
+        {user?.lensHandle && (
+          <Tag as="span" tone="purple" size="small">
+            {user?.lensHandle}
+          </Tag>
+        )}
+        {user?.ethAddress && !user?.lensHandle && (
           <Tag as="span" tone="purple" size="small">
             {user?.ethAddress?.substring(0, 6) +
               "..." +
@@ -175,20 +181,22 @@ const ProfileCard = ({ username }: Props) => {
         </TextInfo>
         <Footer>
           {currentUser?.id == user?.id && (
-            <Box display="flex" flexDirection="column">
+            <Box display="flex" flexDirection="column" gap="4">
+              {!user?.lensHandle && (
+                <Button
+                  variant="tertiary"
+                  size="small"
+                  width="full"
+                  onClick={() => setIsLensProfileSelectModalOpen(true)}
+                >
+                  Link Lens Profile
+                </Button>
+              )}
               <Button
                 variant="secondary"
                 size="small"
                 width="full"
                 onClick={() => setIsOpen(true)}
-              >
-                Link Lens Profile
-              </Button>
-              <Button
-                variant="secondary"
-                size="small"
-                width="full"
-                onClick={() => setIsLensProfileSelectModalOpen(true)}
               >
                 Edit
               </Button>

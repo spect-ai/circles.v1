@@ -1,9 +1,13 @@
 import Dropdown from "@/app/common/components/Dropdown";
 import Editor from "@/app/common/components/Editor";
 import Modal from "@/app/common/components/Modal";
-import { getLensProfileHandles } from "@/app/services/Lens";
+import ConfirmModal from "@/app/common/components/Modal/ConfirmModal";
+import { useGlobal } from "@/app/context/globalContext";
+import { getLensProfileHandles, updateProfileData } from "@/app/services/Lens";
+import useProfileUpdate from "@/app/services/Profile/useProfileUpdate";
 import { Milestone, Option, Registry, UserType } from "@/app/types";
 import { Box, Button, Input, Stack, Tag, Text, useTheme } from "degen";
+import router from "next/router";
 import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import styled from "styled-components";
@@ -20,22 +24,39 @@ export default function LensImportModal({ handleClose }: Props) {
     education: [],
   });
   const [loading, setLoading] = useState(false);
-
+  const [confirmOpen, setConfirmOpen] = useState(false);
   const { mode } = useTheme();
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
+  const { updateProfile } = useProfileUpdate();
+  const { setUserData, setProfileLoading } = useGlobal();
+  const username = router.query.user;
+
+  const fetchUser = async () => {
+    setProfileLoading(true);
+    const res = await fetch(
+      `${process.env.API_HOST}/user/v1/username/${username}/profile`,
+      {
+        credentials: "include",
+      }
+    );
+    if (res.ok) {
+      const data = await res.json();
+      setUserData(data);
+      setProfileLoading(false);
+      return data;
+    } else {
+      setProfileLoading(false);
+      return false;
+    }
+  };
 
   useEffect(() => {
     setLoading(true);
     getLensProfileHandles()
       .then((res) => {
         console.log(res);
-        // for (const attribute of res[0].attributes) {
-        //   console.log(attribute.key);
-        //   if (attribute.key === "experience")
-        //     console.log(JSON.parse(attribute.value));
-        // }
         setLensProfiles(res);
         setLoading(false);
       })
@@ -53,6 +74,22 @@ export default function LensImportModal({ handleClose }: Props) {
       title={`Import from Lens`}
       size="small"
     >
+      {confirmOpen && (
+        <ConfirmModal
+          handleClose={() => setConfirmOpen(false)}
+          title="Importing profile from lens will overwrite current name, avatar, bio, experience, education and skills."
+          onConfirm={async () => {
+            const res = await updateProfile({
+              lensHandle: selectedHandle,
+            });
+            if (res) {
+              void fetchUser();
+              handleClose();
+            }
+          }}
+          onCancel={() => setConfirmOpen(false)}
+        />
+      )}
       <Box
         padding={{
           xs: "4",
@@ -82,20 +119,7 @@ export default function LensImportModal({ handleClose }: Props) {
                     key={profile.handle}
                     onClick={() => {
                       setSelectedHandle(profile.handle);
-                      setAttributes({
-                        experience:
-                          JSON.parse(
-                            profile.attributes.find(
-                              (a: any) => a.key === "experience"
-                            )?.value
-                          ) || [],
-                        education:
-                          JSON.parse(
-                            profile.attributes.find(
-                              (a: any) => a.key === "education"
-                            )?.value
-                          ) || [],
-                      });
+                      setConfirmOpen(true);
                     }}
                   >
                     <Box padding="1" paddingLeft="2">

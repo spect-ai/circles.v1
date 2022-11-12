@@ -8,6 +8,7 @@ import { Milestone, Option, Registry } from "@/app/types";
 import { Box, Button, Input, Stack, Tag, Text, useTheme } from "degen";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
+import LinkCredentialsModal from "./LinkCredentialsModal";
 
 type Props = {
   handleClose: () => void;
@@ -25,7 +26,9 @@ export default function AddEducationModal({
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [organization, setOrganization] = useState("");
-  const [linkedCredentials, setLinkedCredentials] = useState("");
+  const [linkedCredentials, setLinkedCredentials] = useState<{
+    [issuer: string]: { [id: string]: boolean };
+  }>({} as { [issuer: string]: { [id: string]: boolean } });
   const {
     addEducation: createEducation,
     updateEducation,
@@ -224,23 +227,10 @@ export default function AddEducationModal({
         </Box>
         <Box>
           <Text variant="label">Credentials</Text>
-          <Box
-            width={{
-              xs: "full",
-              md: "full",
-            }}
-            marginTop="2"
-          >
-            <Text variant="small">
-              Link all your on-chain and verifiable credentials to this
-              education and showcase it with more confidence!
-            </Text>
-            <Box marginTop="2" width="48">
-              <PrimaryButton variant="tertiary" onClick={() => {}}>
-                Add Credentials
-              </PrimaryButton>
-            </Box>
-          </Box>
+          <LinkCredentialsModal
+            credentials={linkedCredentials}
+            setCredentials={setLinkedCredentials}
+          />
         </Box>
         <Box
           marginTop={{

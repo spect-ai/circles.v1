@@ -2,7 +2,7 @@ import { CardType } from "@/app/types";
 import { toast } from "react-toastify";
 
 export const getLensProfileHandles = async () => {
-  const res = await fetch(`${process.env.API_HOST}/user/lensHandles`, {
+  const res = await fetch(`${process.env.API_HOST}/user/v1/lensHandles`, {
     credentials: "include",
   });
   if (res.ok) {

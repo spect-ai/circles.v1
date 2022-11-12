@@ -4,10 +4,11 @@ import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { useGlobal } from "@/app/context/globalContext";
 import useProfileUpdate from "@/app/services/Profile/useProfileUpdate";
-import { Milestone, Option, Registry } from "@/app/types";
+import { Milestone, Option, Registry, VerifiableCredential } from "@/app/types";
 import { Box, Button, Input, Stack, Tag, Text, useTheme } from "degen";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
+import LinkCredentialsModal from "./LinkCredentialsModal";
 
 type Props = {
   handleClose: () => void;
@@ -25,7 +26,9 @@ export default function AddExperienceModal({
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [organization, setOrganization] = useState("");
-  const [linkedCredentials, setLinkedCredentials] = useState("");
+  const [linkedCredentials, setLinkedCredentials] = useState<{
+    [issuer: string]: { [id: string]: boolean };
+  }>({} as { [issuer: string]: { [id: string]: boolean } });
   const {
     addExperience: createExperience,
     updateExperience,
@@ -221,23 +224,10 @@ export default function AddExperienceModal({
         </Box>
         <Box>
           <Text variant="label">Credentials</Text>
-          <Box
-            width={{
-              xs: "full",
-              md: "full",
-            }}
-            marginTop="2"
-          >
-            <Text variant="small">
-              Link all your on-chain and verifiable credentials to this
-              experience and showcase it with more confidence!
-            </Text>
-            <Box marginTop="2" width="48">
-              <PrimaryButton variant="tertiary" onClick={() => {}}>
-                Add Credentials
-              </PrimaryButton>
-            </Box>
-          </Box>
+          <LinkCredentialsModal
+            setCredentials={setLinkedCredentials}
+            credentials={linkedCredentials}
+          />
         </Box>
         <Box
           marginTop={{
@@ -275,6 +265,7 @@ export default function AddExperienceModal({
                   start_date: preprocessDate(startDate),
                   end_date: preprocessDate(endDate),
                   currentlyWorking: false,
+                  verifiableCredentials: linkedCredentials,
                 });
               } else if (modalMode === "edit") {
                 if (!experienceId && experienceId !== 0) {
@@ -288,6 +279,7 @@ export default function AddExperienceModal({
                   start_date: preprocessDate(startDate),
                   end_date: preprocessDate(endDate),
                   currentlyWorking: false,
+                  verifiableCredentials: linkedCredentials,
                 });
               }
               handleClose();

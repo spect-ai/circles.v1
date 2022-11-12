@@ -42,6 +42,7 @@ interface UserType {
   experiences: LensExperience[];
   education: LensEducation[];
   skillsV2: LensSkills[];
+  lensHandle: string;
 }
 
 export interface Payment {
@@ -1013,16 +1014,29 @@ export type NFT = {
 };
 
 export type VerifiableCredential = {
-  id: string;
-  platform: string;
-  provider: string;
-  credentialId: string;
-  credentialType: string;
-  imageURI: string;
+  ceramicStreamId?: string;
+  providerName: string;
+};
+
+export type SoulboundCredential = {
+  contractAddress?: string;
+  tokenId?: string;
+  chainId?: string;
+  type?: "erc721" | "erc1155";
 };
 
 export type LensDate = {
   day: number;
   month: number;
   year: number;
+};
+
+export type Credential = {
+  id: string;
+  name: string;
+  description: string;
+  imageUri: string;
+  type: "vc" | "soulbound";
+  service: string;
+  metadata?: VerifiableCredential | SoulboundCredential;
 };

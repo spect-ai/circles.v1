@@ -15,3 +15,15 @@ export const getPassport = async (ethAddress: string) => {
 export const getAllCredentials = async () => {
   return await (await fetch(`${process.env.API_HOST}/credentials/v1/`)).json();
 };
+
+export const getCredentialsByAddressAndIssuer = async (
+  address: string,
+  issuer: string
+) => {
+  console.log({ address, issuer });
+  return await (
+    await fetch(
+      `${process.env.API_HOST}/credentials/v1/credentialsByAddressAndIssuer?ethAddress=${address}&issuer=${issuer}`
+    )
+  ).json();
+};
