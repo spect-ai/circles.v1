@@ -120,7 +120,7 @@ export default function PublicForm() {
               }`,
             }}
           >
-            <Box width="full" marginBottom="2" padding="4">
+            <Box width="full" padding="4">
               <Stack space="2">
                 {form.logo && <Avatar src={form.logo} label="" size="20" />}
                 <NameInput

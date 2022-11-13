@@ -17,6 +17,7 @@ type Props =
       placeholder?: string;
       portal?: boolean;
       isClearable?: boolean;
+      disabled?: boolean;
     }
   | {
       multiple: true;
@@ -26,6 +27,7 @@ type Props =
       placeholder?: string;
       portal?: boolean;
       isClearable?: boolean;
+      disabled?: boolean;
     };
 
 const Dropdown: FC<Props> = ({
@@ -36,12 +38,14 @@ const Dropdown: FC<Props> = ({
   placeholder,
   portal = true,
   isClearable = true,
+  disabled = false,
 }) => {
   const { mode } = useTheme();
 
   return (
     <Select
       placeholder={placeholder}
+      isDisabled={disabled}
       options={options}
       value={selected}
       isMulti={multiple}

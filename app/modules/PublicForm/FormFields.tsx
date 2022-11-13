@@ -37,6 +37,7 @@ export default function FormFields({ form, setForm }: Props) {
   const [data, setData] = useState<any>({});
   const [memberOptions, setMemberOptions] = useState([]);
   const [updateResponse, setUpdateResponse] = useState(false);
+  const [viewResponse, setViewResponse] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [submitAnotherResponse, setSubmitAnotherResponse] = useState(false);
   const [kudos, setKudos] = useState({} as KudosType);
@@ -260,6 +261,7 @@ export default function FormFields({ form, setForm }: Props) {
         kudos={kudos}
         claimed={claimed}
         setClaimed={setClaimed}
+        setViewResponse={setViewResponse}
       />
     );
   }
@@ -343,16 +345,17 @@ export default function FormFields({ form, setForm }: Props) {
                 updateRequiredFieldNotSet={updateRequiredFieldNotSet}
                 fieldHasInvalidType={fieldHasInvalidType}
                 updateFieldHasInvalidType={updateFieldHasInvalidType}
+                disabled={viewResponse}
               />
             );
         })}
-      <Box>
-        <Stack
-          direction={{
-            xs: "vertical",
-            md: "horizontal",
-          }}
-        >
+      <Stack
+        direction={{
+          xs: "vertical",
+          md: "horizontal",
+        }}
+      >
+        {!viewResponse && (
           <Box width="full" paddingX="5">
             {Object.keys(requiredFieldsNotSet).length > 0 && (
               <Text color="red" variant="small">
@@ -367,22 +370,22 @@ export default function FormFields({ form, setForm }: Props) {
               Submit
             </PrimaryButton>
           </Box>
-          {(submitAnotherResponse || updateResponse) && (
-            <Box width="full" paddingX="5">
-              <PrimaryButton
-                variant="tertiary"
-                onClick={() => {
-                  setSubmitAnotherResponse(false);
-                  setUpdateResponse(false);
-                  setSubmitted(true);
-                }}
-              >
-                Nevermind
-              </PrimaryButton>
-            </Box>
-          )}
-        </Stack>
-      </Box>
+        )}
+        {(submitAnotherResponse || updateResponse) && (
+          <Box width="full" paddingX="5">
+            <PrimaryButton
+              variant="tertiary"
+              onClick={() => {
+                setSubmitAnotherResponse(false);
+                setUpdateResponse(false);
+                setSubmitted(true);
+              }}
+            >
+              {viewResponse ? "Back" : "Nevermind"}
+            </PrimaryButton>
+          </Box>
+        )}
+      </Stack>
     </Container>
   );
 }
@@ -395,14 +398,11 @@ const Container = styled(Box)`
   }
 
   @media (min-width: 768px) and (max-width: 1024px) {
-    padding: 2rem;
-    margin-right: 2rem;
+    padding: 2rem 1rem;
   }
 
   @media (min-width: 1024px) and (max-width: 1280px) {
-    padding: 2rem;
-    margin-right: 2rem;
+    padding: 2rem 1rem;
   }
-  padding: 2rem;
-  margin-right: 2rem;
+  padding: 2rem 1rem;
 `;

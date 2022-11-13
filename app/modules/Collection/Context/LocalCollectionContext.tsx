@@ -99,7 +99,6 @@ export function useProviderLocalCollection() {
       socket.on(
         `${localCollection.slug}:newActivity`,
         _.debounce((event: { data: CollectionType; user: string }) => {
-          console.log("aa gya event bruh");
           if (event.user !== connectedUser) {
             updateCollection(event.data);
           }

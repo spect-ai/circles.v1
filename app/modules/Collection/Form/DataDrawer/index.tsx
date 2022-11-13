@@ -290,74 +290,6 @@ export default function DataDrawer({
                         unselectedColor="transparent"
                         selectedColor="secondary"
                       />
-                      {collection.voting?.enabled &&
-                        collection.voting.options &&
-                        collection.voting.votes &&
-                        collection.voting.votes[data.slug] &&
-                        collection.voting.votes[data.slug][
-                          currentUser?.id || ""
-                        ] !== undefined && (
-                          <Box
-                            width={{
-                              xs: "full",
-                              md: "1/2",
-                            }}
-                            height={{
-                              xs: "32",
-                              md: "48",
-                            }}
-                          >
-                            <Bar
-                              options={{
-                                indexAxis: "y",
-                                plugins: {
-                                  legend: {
-                                    display: false,
-                                  },
-                                },
-                                responsive: true,
-                                maintainAspectRatio: false,
-                                scales: {
-                                  y: {
-                                    ticks: {
-                                      color: "rgb(191,90,242,0.8)",
-                                    },
-                                    grid: {
-                                      borderColor: "rgb(191,90,242,0.2)",
-                                    },
-                                  },
-                                  x: {
-                                    beginAtZero: true,
-
-                                    grid: {
-                                      borderColor: "rgb(191,90,242,0.2)",
-                                    },
-                                    ticks: {
-                                      stepSize: 1,
-                                      color: "rgb(191,90,242,0.8)",
-                                    },
-                                  },
-                                },
-                              }}
-                              data={{
-                                labels: collection.voting.options.map(
-                                  (option) => option.label
-                                ),
-                                datasets: [
-                                  {
-                                    label: "Votes",
-                                    data: getVotes(),
-                                    backgroundColor: "rgb(191,90,242, 0.2)",
-                                    borderColor: "rgb(191,90,242)",
-                                    borderWidth: 1,
-                                    borderRadius: 5,
-                                    barPercentage: 0.5,
-                                  },
-                                ],
-                              }}
-                            />
-                          </Box>
-                        )}
                     </Stack>
                   )}
                 </Stack>
@@ -369,16 +301,81 @@ export default function DataDrawer({
               marginY="4"
               borderRadius="full"
             />
-            <Box paddingBottom="8">
-              <Stack>
-                <DataActivity
-                  activities={collection.dataActivities[dataId]}
-                  activityOrder={collection.dataActivityOrder[dataId]}
-                  getMemberDetails={getMemberDetails}
-                  dataId={dataId}
-                  collectionId={collection.id}
-                />
-              </Stack>
+            {collection.voting?.enabled &&
+              collection.voting.options &&
+              collection.voting.votes &&
+              collection.voting.votes[data.slug] &&
+              collection.voting.votes[data.slug][currentUser?.id || ""] !==
+                undefined && (
+                <Box
+                  width={{
+                    xs: "full",
+                    md: "1/2",
+                  }}
+                  height={{
+                    xs: "32",
+                    md: "48",
+                  }}
+                >
+                  <Bar
+                    options={{
+                      indexAxis: "y",
+                      plugins: {
+                        legend: {
+                          display: false,
+                        },
+                      },
+                      responsive: true,
+                      maintainAspectRatio: false,
+                      scales: {
+                        y: {
+                          ticks: {
+                            color: "rgb(191,90,242,0.8)",
+                          },
+                          grid: {
+                            borderColor: "rgb(191,90,242,0.2)",
+                          },
+                        },
+                        x: {
+                          beginAtZero: true,
+
+                          grid: {
+                            borderColor: "rgb(191,90,242,0.2)",
+                          },
+                          ticks: {
+                            stepSize: 1,
+                            color: "rgb(191,90,242,0.8)",
+                          },
+                        },
+                      },
+                    }}
+                    data={{
+                      labels: collection.voting.options.map(
+                        (option) => option.label
+                      ),
+                      datasets: [
+                        {
+                          label: "Votes",
+                          data: getVotes(),
+                          backgroundColor: "rgb(191,90,242, 0.2)",
+                          borderColor: "rgb(191,90,242)",
+                          borderWidth: 1,
+                          borderRadius: 5,
+                          barPercentage: 0.5,
+                        },
+                      ],
+                    }}
+                  />
+                </Box>
+              )}
+            <Box paddingBottom="0">
+              <DataActivity
+                activities={collection.dataActivities[dataId]}
+                activityOrder={collection.dataActivityOrder[dataId]}
+                getMemberDetails={getMemberDetails}
+                dataId={dataId}
+                collectionId={collection.id}
+              />
             </Box>
           </ScrollContainer>
         </motion.div>

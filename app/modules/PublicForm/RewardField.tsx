@@ -10,6 +10,7 @@ type Props = {
   data: any;
   updateData: (reward: Reward) => void;
   onValueKeyDown?: (e: any) => void;
+  disabled?: boolean;
 };
 
 export default function RewardField({
@@ -18,6 +19,7 @@ export default function RewardField({
   data,
   updateData,
   onValueKeyDown,
+  disabled,
 }: Props) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const rewardOptions = (form.properties[propertyName]?.rewardOptions ||
@@ -98,6 +100,7 @@ export default function RewardField({
           }}
           multiple={false}
           isClearable={false}
+          disabled={disabled}
         />
       </Box>
       <Box
@@ -120,6 +123,7 @@ export default function RewardField({
           }}
           multiple={false}
           isClearable={false}
+          disabled={disabled}
         />
       </Box>
       <Box
@@ -142,6 +146,7 @@ export default function RewardField({
           type="number"
           onKeyDown={onValueKeyDown}
           units={selectedToken.label}
+          disabled={disabled}
         />
       </Box>
     </Stack>
