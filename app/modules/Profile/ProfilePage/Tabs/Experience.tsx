@@ -67,7 +67,7 @@ const Experience = ({ userData }: { userData: UserType }) => {
 
   const [modalMode, setModalMode] = useState<"add" | "edit">("add");
   const [openExperienceView, setOpenExperienceView] = useState(false);
-
+  const username = router.query.user;
   const experiences = userData.experiences;
 
   const dateExists = (date: LensDate) => {
@@ -110,39 +110,43 @@ const Experience = ({ userData }: { userData: UserType }) => {
         {!experiences?.length && (
           <Box style={{ margin: "35vh 15vw" }}>
             <Text color="accent" align="center">
-              You havent added your experience yet :/
+              No experience yet :/
             </Text>
-            <Box marginTop="4">
-              <PrimaryButton
-                variant="tertiary"
-                onClick={() => {
-                  setModalMode("add");
-                  setAddExperience(true);
-                }}
-              >
-                Add Experience
-              </PrimaryButton>
-            </Box>
+            {username === userData.username && (
+              <Box marginTop="4">
+                <PrimaryButton
+                  variant="tertiary"
+                  onClick={() => {
+                    setModalMode("add");
+                    setAddExperience(true);
+                  }}
+                >
+                  Add Experience
+                </PrimaryButton>
+              </Box>
+            )}
           </Box>
         )}
         {experiences?.length && (
           <>
-            <Box
-              width={{
-                sm: "max",
-                md: "48",
-              }}
-              marginTop="4"
-            >
-              <PrimaryButton
-                onClick={() => {
-                  setModalMode("add");
-                  setAddExperience(true);
+            {username === userData.username && (
+              <Box
+                width={{
+                  sm: "max",
+                  md: "48",
                 }}
+                marginTop="4"
               >
-                Add Experience
-              </PrimaryButton>
-            </Box>
+                <PrimaryButton
+                  onClick={() => {
+                    setModalMode("add");
+                    setAddExperience(true);
+                  }}
+                >
+                  Add Experience
+                </PrimaryButton>
+              </Box>
+            )}
             {experiences
               ?.slice(0)
               .slice(itemOffset, endOffset)

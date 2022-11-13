@@ -10,6 +10,7 @@ import Retro from "./Retro";
 import Experience from "./Experience";
 import Education from "./Education";
 import { useGlobal } from "@/app/context/globalContext";
+import Skills from "./Skills";
 
 interface Props {
   username: string;
@@ -132,7 +133,7 @@ const ProfileTabs = ({ username }: Props) => {
         <Box width="168">
           {tab === "Experience" && <Experience userData={userData} />}
           {tab === "Education" && <Education userData={userData} />}
-          {tab === "Skills" && <Education userData={userData} />}
+          {tab === "Skills" && <Skills userData={userData} />}
         </Box>
       )}
     </Box>

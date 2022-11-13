@@ -61,6 +61,7 @@ const Education = ({ userData }: { userData: UserType }) => {
   const [openEducationModal, setOpenEducationModal] = useState(false);
   const [selectedEducationId, setSelectedEducationId] = useState<number>(0);
   const [openEducationView, setOpenEducationView] = useState(false);
+  const username = router.query.user;
 
   const { mode } = useTheme();
 
@@ -104,23 +105,27 @@ const Education = ({ userData }: { userData: UserType }) => {
             <Text color="accent" align="center">
               You havent added your education yet :/
             </Text>
-            <Box marginTop="4">
-              <PrimaryButton
-                variant="tertiary"
-                onClick={() => setOpenEducationModal(true)}
-              >
-                Add Education
-              </PrimaryButton>
-            </Box>
+            {username === userData.username && (
+              <Box marginTop="4">
+                <PrimaryButton
+                  variant="tertiary"
+                  onClick={() => setOpenEducationModal(true)}
+                >
+                  Add Education
+                </PrimaryButton>
+              </Box>
+            )}
           </Box>
         )}
         {education?.length > 0 && (
           <>
-            <Box width="48" marginTop="4">
-              <PrimaryButton onClick={() => setOpenEducationModal(true)}>
-                Add Education
-              </PrimaryButton>
-            </Box>
+            {username === userData.username && (
+              <Box width="48" marginTop="4">
+                <PrimaryButton onClick={() => setOpenEducationModal(true)}>
+                  Add Education
+                </PrimaryButton>
+              </Box>
+            )}
             {education
               ?.slice(0)
               .slice(itemOffset, endOffset)

@@ -150,10 +150,10 @@ export default function LinkCredentialsModal({
                 tabs={[
                   "Mintkudos",
                   "Gitcoin Passport",
-                  "POAP",
-                  "GitPOAP",
-                  "Sismo",
-                  "Buildspace",
+                  // "POAP",
+                  // "GitPOAP",
+                  // "Sismo",
+                  // "Buildspace",
                 ]}
                 orientation="vertical"
                 unselectedColor="transparent"

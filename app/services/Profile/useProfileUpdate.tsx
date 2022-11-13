@@ -1,6 +1,6 @@
 import queryClient from "@/app/common/utils/queryClient";
 import { useGlobal } from "@/app/context/globalContext";
-import { LensDate, NFT, VerifiableCredential } from "@/app/types";
+import { LensDate, LensSkills, NFT, VerifiableCredential } from "@/app/types";
 import { toast } from "react-toastify";
 import { Credential } from "@/app/types";
 
@@ -13,6 +13,7 @@ interface UpdateProfileDTO {
   discordId?: string;
   githubId?: string;
   lensHandle?: string;
+  skillsV2?: LensSkills[];
 }
 
 interface AddExperienceDTO {
@@ -95,6 +96,7 @@ export default function useProfileUpdate() {
     if (res.ok) {
       const data = await res.json();
       queryClient.setQueryData("getMyUser", data);
+      setUserData(data);
       return true;
     } else {
       toast.error("Error updating profile", {

@@ -1,15 +1,12 @@
-import Dropdown from "@/app/common/components/Dropdown";
 import Editor from "@/app/common/components/Editor";
 import Modal from "@/app/common/components/Modal";
-import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { useGlobal } from "@/app/context/globalContext";
 import useProfileUpdate from "@/app/services/Profile/useProfileUpdate";
-import { Milestone, Option, Registry } from "@/app/types";
-import { Box, Button, Input, Stack, Tag, Text, useTheme } from "degen";
+import { Credential } from "@/app/types";
+import { Box, Button, Input, Tag, Text, useTheme } from "degen";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import LinkCredentialsModal from "./LinkCredentialsModal";
-import { Credential } from "@/app/types";
 
 type Props = {
   handleClose: () => void;
