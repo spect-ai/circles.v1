@@ -4,7 +4,13 @@ import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { useGlobal } from "@/app/context/globalContext";
 import useProfileUpdate from "@/app/services/Profile/useProfileUpdate";
-import { Milestone, Option, Registry, VerifiableCredential } from "@/app/types";
+import {
+  Milestone,
+  Option,
+  Registry,
+  UserType,
+  VerifiableCredential,
+} from "@/app/types";
 import { Box, Button, Input, Stack, Tag, Text, useTheme } from "degen";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
@@ -15,6 +21,7 @@ import Image from "next/image";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import AddEducationModal from "./AddEducationModal";
 import router from "next/router";
+import { useQuery } from "react-query";
 
 type Props = {
   handleClose: () => void;
@@ -28,8 +35,6 @@ export default function ViewEducationModal({
   const { userData } = useGlobal();
   const username = router.query.user;
 
-  const education = userData.education[educationId];
-
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [startDate, setStartDate] = useState("");
@@ -38,7 +43,9 @@ export default function ViewEducationModal({
   const [openEducationModal, setOpenEducationModal] = useState(false);
   const [linkedCredentials, setLinkedCredentials] = useState<Credential[]>([]);
   const { removeEducation } = useProfileUpdate();
-
+  const { data: currentUser } = useQuery<UserType>("getMyUser", {
+    enabled: false,
+  });
   const { mode } = useTheme();
   console.log({ description });
   useEffect(() => {
@@ -210,7 +217,7 @@ export default function ViewEducationModal({
             </Box>
           )}
         </ScrollContainer>
-        {username === userData.username && (
+        {currentUser?.id === userData.id && (
           <Box
             padding="3"
             display="flex"

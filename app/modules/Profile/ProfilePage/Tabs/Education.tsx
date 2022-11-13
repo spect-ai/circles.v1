@@ -1,16 +1,13 @@
-import { memo, useState, useEffect } from "react";
-import { Box, Text, Tag, Avatar, useTheme, Stack } from "degen";
-import { UserType, CardDetails, LensEducation, LensDate } from "@/app/types";
-import { PriorityIcon } from "@/app/common/components/PriorityIcon";
-import styled from "styled-components";
-import ReactPaginate from "react-paginate";
-import { ScrollContainer, Card, TextBox, GigInfo, Tags } from "./index";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
+import { LensDate, LensEducation, UserType } from "@/app/types";
+import { Box, Text, useTheme } from "degen";
+import { memo, useEffect, useState } from "react";
+import ReactPaginate from "react-paginate";
+import { useQuery } from "react-query";
+import styled from "styled-components";
 import AddEducationModal from "../AddEducationModal";
-import router from "next/router";
-import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
-import useProfileUpdate from "@/app/services/Profile/useProfileUpdate";
 import ViewEducationModal from "../ViewEducationModal";
+import { Card, ScrollContainer } from "./index";
 
 const Paginate = styled(ReactPaginate)<{ mode: string }>`
   display: flex;
@@ -61,8 +58,9 @@ const Education = ({ userData }: { userData: UserType }) => {
   const [openEducationModal, setOpenEducationModal] = useState(false);
   const [selectedEducationId, setSelectedEducationId] = useState<number>(0);
   const [openEducationView, setOpenEducationView] = useState(false);
-  const username = router.query.user;
-
+  const { data: currentUser } = useQuery<UserType>("getMyUser", {
+    enabled: false,
+  });
   const { mode } = useTheme();
 
   const education = userData.education;
@@ -105,7 +103,7 @@ const Education = ({ userData }: { userData: UserType }) => {
             <Text color="accent" align="center">
               You havent added your education yet :/
             </Text>
-            {username === userData.username && (
+            {currentUser?.id === userData.id && (
               <Box marginTop="4">
                 <PrimaryButton
                   variant="tertiary"
@@ -119,7 +117,7 @@ const Education = ({ userData }: { userData: UserType }) => {
         )}
         {education?.length > 0 && (
           <>
-            {username === userData.username && (
+            {currentUser?.id === userData.id && (
               <Box width="48" marginTop="4">
                 <PrimaryButton onClick={() => setOpenEducationModal(true)}>
                   Add Education

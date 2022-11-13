@@ -52,7 +52,7 @@ function Dashboard() {
   // eslint-disable-next-line @typescript-eslint/unbound-method
   const { mode, setMode } = useTheme();
   const router = useRouter();
-
+  console.log({ circlesArray });
   useEffect(() => {
     if (circlesArray?.memberOf?.length == 0) void refetch();
     if (circlesArray) setCircles(circlesArray?.memberOf);

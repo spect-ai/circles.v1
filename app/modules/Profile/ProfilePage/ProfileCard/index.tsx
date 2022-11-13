@@ -81,17 +81,35 @@ const ProfileCard = ({ username }: Props) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isLensProfileSelectModalOpen, setIsLensProfileSelectModalOpen] =
     useState(false);
+  const [loading, setLoading] = useState(false);
   const { userData: user } = useGlobal();
 
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
+  const [userCircles, setUserCircles] = useState([]);
 
-  console.log({ user });
-  const circlesArray = user?.circles?.map((aCircle) => ({
-    label: user.circleDetails?.[aCircle].slug,
-    src: user.circleDetails?.[aCircle].avatar,
+  // console.log({ user });
+  const circlesArray = userCircles?.map((aCircle: any) => ({
+    label: aCircle?.slug,
+    src: aCircle?.avatar,
   }));
+
+  console.log({ circlesArray });
+
+  useEffect(() => {
+    if (user?.id) {
+      setLoading(true);
+      void fetch(`${process.env.API_HOST}/user/v1/${user?.id}/circles`)
+        .then((res) =>
+          res.json().then((res2) => {
+            setUserCircles(res2);
+          })
+        )
+        .catch((err) => console.log({ err }))
+        .finally(() => setLoading(false));
+    }
+  }, [user?.id]);
 
   return (
     <>
@@ -161,8 +179,8 @@ const ProfileCard = ({ username }: Props) => {
             {user?.bio}
           </Text>
           <Text variant="label"> Circles </Text>
-          {user?.circles?.length > 0 && (
-            <AvatarGroup limit={9} members={circlesArray as any} />
+          {circlesArray?.length > 0 && (
+            <AvatarGroup limit={9} members={userCircles as any} />
           )}
         </TextInfo>
         <Footer>

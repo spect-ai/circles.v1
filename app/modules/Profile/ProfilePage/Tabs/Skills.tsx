@@ -3,6 +3,7 @@ import { LensSkills, UserType } from "@/app/types";
 import { Box, Text, useTheme } from "degen";
 import router from "next/router";
 import { memo, useState } from "react";
+import { useQuery } from "react-query";
 import styled from "styled-components";
 import AddSkillModal from "../AddSkillModal";
 import ViewSkillModal from "../ViewSkillModal";
@@ -12,7 +13,9 @@ const Skills = ({ userData }: { userData: UserType }) => {
   const [openSkillModal, setOpenSkillModal] = useState(false);
   const [selectedSkillId, setSelectedSkillId] = useState<number>(0);
   const [openSkillView, setOpenSkillView] = useState(false);
-  const username = router.query.user;
+  const { data: currentUser } = useQuery<UserType>("getMyUser", {
+    enabled: false,
+  });
   const skills = userData.skillsV2;
 
   return (
@@ -35,7 +38,7 @@ const Skills = ({ userData }: { userData: UserType }) => {
           <Text color="accent" align="center">
             You havent added your education yet :/
           </Text>
-          {username === userData.username && (
+          {currentUser?.id === userData.id && (
             <Box marginTop="4">
               <PrimaryButton
                 variant="tertiary"
@@ -49,7 +52,7 @@ const Skills = ({ userData }: { userData: UserType }) => {
       )}
       {skills?.length && (
         <>
-          {username === userData.username && (
+          {currentUser?.id === userData.id && (
             <Box width="48" marginTop="4">
               <PrimaryButton onClick={() => setOpenSkillModal(true)}>
                 Add Skill

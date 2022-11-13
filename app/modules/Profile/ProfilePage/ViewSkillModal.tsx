@@ -3,12 +3,13 @@ import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { useGlobal } from "@/app/context/globalContext";
 import useProfileUpdate from "@/app/services/Profile/useProfileUpdate";
-import { Credential, VerifiableCredential } from "@/app/types";
+import { Credential, UserType, VerifiableCredential } from "@/app/types";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import { Box, Text, useTheme } from "degen";
 import Image from "next/image";
 import router from "next/router";
 import { useEffect, useState } from "react";
+import { useQuery } from "react-query";
 import styled from "styled-components";
 import AddSkillModal from "./AddSkillModal";
 
@@ -19,13 +20,13 @@ type Props = {
 
 export default function ViewSkillModal({ handleClose, skillId }: Props) {
   const { userData } = useGlobal();
-  const username = router.query.user;
-
   const [title, setTitle] = useState("");
   const [openSkillModal, setOpenSkillModal] = useState(false);
   const [linkedCredentials, setLinkedCredentials] = useState<Credential[]>([]);
   const { updateProfile } = useProfileUpdate();
-
+  const { data: currentUser } = useQuery<UserType>("getMyUser", {
+    enabled: false,
+  });
   const { mode } = useTheme();
   useEffect(() => {
     if (skillId || skillId === 0) {
@@ -153,7 +154,7 @@ export default function ViewSkillModal({ handleClose, skillId }: Props) {
             </Box>
           )}
         </ScrollContainer>
-        {username === userData.username && (
+        {currentUser?.id === userData.id && (
           <Box
             padding="3"
             display="flex"

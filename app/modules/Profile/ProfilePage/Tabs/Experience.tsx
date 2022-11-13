@@ -13,6 +13,8 @@ import router from "next/router";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import { IconButton } from "@/app/modules/Project/ProjectHeading";
 import ViewExperienceModal from "../ViewExperienceModal";
+import { useGlobal } from "@/app/context/globalContext";
+import { useQuery } from "react-query";
 
 const Paginate = styled(ReactPaginate)<{ mode: string }>`
   display: flex;
@@ -64,10 +66,11 @@ const Experience = ({ userData }: { userData: UserType }) => {
   const [addExperience, setAddExperience] = useState(false);
   const [addFromLens, setAddFromLens] = useState(false);
   const [selectedExperienceId, setSelectedExperienceId] = useState<number>(0);
-
+  const { data: currentUser } = useQuery<UserType>("getMyUser", {
+    enabled: false,
+  });
   const [modalMode, setModalMode] = useState<"add" | "edit">("add");
   const [openExperienceView, setOpenExperienceView] = useState(false);
-  const username = router.query.user;
   const experiences = userData.experiences;
 
   const dateExists = (date: LensDate) => {
@@ -112,7 +115,7 @@ const Experience = ({ userData }: { userData: UserType }) => {
             <Text color="accent" align="center">
               No experience yet :/
             </Text>
-            {username === userData.username && (
+            {currentUser?.id === userData.id && (
               <Box marginTop="4">
                 <PrimaryButton
                   variant="tertiary"
@@ -129,7 +132,7 @@ const Experience = ({ userData }: { userData: UserType }) => {
         )}
         {experiences?.length && (
           <>
-            {username === userData.username && (
+            {currentUser?.id === userData.id && (
               <Box
                 width={{
                   sm: "max",
