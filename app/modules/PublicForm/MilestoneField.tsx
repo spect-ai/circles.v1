@@ -16,6 +16,7 @@ type Props = {
   setData: (value: any) => void;
   showDescription?: boolean;
   updateRequiredFieldNotSet?: (key: string, value: any) => void;
+  disabled?: boolean;
 };
 
 export default function MilestoneField({
@@ -25,6 +26,7 @@ export default function MilestoneField({
   setData,
   showDescription,
   updateRequiredFieldNotSet,
+  disabled,
 }: Props) {
   const [isMilestoneModalOpen, setIsMilestoneModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<"create" | "edit">("create");
@@ -110,36 +112,37 @@ export default function MilestoneField({
                       <Editor value={milestone.description} disabled={true} />
                     )}
                   </Box>
-                  {!collection?.properties[propertyName].isPartOfFormView && (
-                    <Box display="flex" flexDirection="row" gap="2">
-                      <Button
-                        variant="tertiary"
-                        size="small"
-                        onClick={() => {
-                          setModalMode("edit");
-                          setMilestoneIndex(index);
-                          setIsMilestoneModalOpen(true);
-                        }}
-                      >
-                        Edit
-                      </Button>
-                      <PrimaryButton
-                        onClick={() => {
-                          const newMilestones = data[propertyName].filter(
-                            (milestone: Milestone, i: number) => i !== index
-                          );
-                          setData({ ...data, [propertyName]: newMilestones });
-                        }}
-                      >
-                        Remove
-                      </PrimaryButton>
-                    </Box>
-                  )}
+                  {!collection?.properties[propertyName].isPartOfFormView &&
+                    !disabled && (
+                      <Box display="flex" flexDirection="row" gap="2">
+                        <Button
+                          variant="tertiary"
+                          size="small"
+                          onClick={() => {
+                            setModalMode("edit");
+                            setMilestoneIndex(index);
+                            setIsMilestoneModalOpen(true);
+                          }}
+                        >
+                          Edit
+                        </Button>
+                        <PrimaryButton
+                          onClick={() => {
+                            const newMilestones = data[propertyName].filter(
+                              (milestone: Milestone, i: number) => i !== index
+                            );
+                            setData({ ...data, [propertyName]: newMilestones });
+                          }}
+                        >
+                          Remove
+                        </PrimaryButton>
+                      </Box>
+                    )}
                 </Box>
               );
             })}
         </Stack>
-        {!collection?.properties[propertyName].isPartOfFormView && (
+        {!collection?.properties[propertyName].isPartOfFormView && !disabled && (
           <Box width="full">
             <PrimaryButton
               variant="tertiary"

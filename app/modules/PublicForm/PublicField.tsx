@@ -19,6 +19,7 @@ type Props = {
   updateRequiredFieldNotSet: (key: string, value: any) => void;
   fieldHasInvalidType: { [key: string]: boolean };
   updateFieldHasInvalidType: (key: string, value: any) => void;
+  disabled: boolean;
 };
 
 export default function PublicField({
@@ -31,6 +32,7 @@ export default function PublicField({
   updateRequiredFieldNotSet,
   fieldHasInvalidType,
   updateFieldHasInvalidType,
+  disabled,
 }: Props) {
   const { mode } = useTheme();
   const [invalidNumberCharEntered, setInvalidNumberCharEntered] = useState(
@@ -38,7 +40,7 @@ export default function PublicField({
   );
 
   return (
-    <Box padding="4" margin="1" borderRadius="large">
+    <Box paddingY="4" borderRadius="large">
       <Stack direction="vertical" space="2">
         <Box
           width="full"
@@ -74,6 +76,7 @@ export default function PublicField({
             setData({ ...data, [propertyName]: e.target.value });
             updateRequiredFieldNotSet(propertyName, e.target.value);
           }}
+          disabled={disabled}
         />
       )}
       {form.properties[propertyName]?.type === "email" && (
@@ -88,6 +91,7 @@ export default function PublicField({
             updateFieldHasInvalidType(propertyName, e.target.value);
           }}
           error={data && data[propertyName] && !isEmail(data[propertyName])}
+          disabled={disabled}
         />
       )}
       {form.properties[propertyName]?.type === "number" && (
@@ -113,6 +117,7 @@ export default function PublicField({
               });
             }
           }}
+          disabled={disabled}
         />
       )}
       {form.properties[propertyName]?.type === "date" && (
@@ -125,6 +130,7 @@ export default function PublicField({
             setData({ ...data, [propertyName]: e.target.value });
             updateRequiredFieldNotSet(propertyName, e.target.value);
           }}
+          disabled={disabled}
         />
       )}
       {form.properties[propertyName]?.type === "ethAddress" && (
@@ -137,6 +143,7 @@ export default function PublicField({
             updateRequiredFieldNotSet(propertyName, e.target.value);
             updateFieldHasInvalidType(propertyName, e.target.value);
           }}
+          disabled={disabled}
         />
       )}
       {form.properties[propertyName]?.type === "longText" && (
@@ -161,6 +168,7 @@ export default function PublicField({
             }}
             placeholder={`Type here to edit ${propertyName}`}
             isDirty={true}
+            disabled={disabled}
           />
         </Box>
       )}
@@ -187,12 +195,14 @@ export default function PublicField({
               updateRequiredFieldNotSet(propertyName, value);
             }}
             portal={false}
+            disabled={disabled}
           />
         </Box>
       )}
       {form.properties[propertyName]?.type === "reward" && (
         <Box marginTop="4">
           <RewardField
+            disabled={disabled}
             form={form}
             data={data}
             propertyName={propertyName}
@@ -226,6 +236,7 @@ export default function PublicField({
           setData={setData}
           propertyName={propertyName}
           updateRequiredFieldNotSet={updateRequiredFieldNotSet}
+          disabled={disabled}
         />
       )}
 

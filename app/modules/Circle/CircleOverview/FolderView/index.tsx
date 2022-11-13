@@ -42,9 +42,9 @@ const ScrollContainer = styled(Box)`
   -ms-overflow-style: none;
   scrollbar-width: none;
   @media (max-width: 768px) {
-    height: calc(100vh - 14rem);
+    height: calc(100vh - 12rem);
   }
-  height: calc(100vh - 12rem);
+  height: calc(100vh - 10rem);
 `;
 
 export const FolderView = ({

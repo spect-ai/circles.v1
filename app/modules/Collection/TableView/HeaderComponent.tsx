@@ -46,7 +46,7 @@ export default function HeaderComponent({
         <Box>
           <Stack direction="horizontal" justify="space-between">
             <Text variant="label">{columnName}</Text>
-            <DropdownButton
+            {/* <DropdownButton
               onClick={(e) => {
                 e.stopPropagation();
                 e.preventDefault();
@@ -56,7 +56,7 @@ export default function HeaderComponent({
               <Text variant="label">
                 <IconDotsHorizontal size="5" />
               </Text>
-            </DropdownButton>
+            </DropdownButton> */}
           </Stack>
         </Box>
       }

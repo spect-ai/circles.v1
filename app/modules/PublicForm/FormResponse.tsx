@@ -21,6 +21,7 @@ type Props = {
   setUpdateResponse: (val: boolean) => void;
   claimed: boolean;
   setClaimed: (val: boolean) => void;
+  setViewResponse: (val: boolean) => void;
 };
 
 const StyledImage = styled.img`
@@ -38,6 +39,7 @@ export default function FormResponse({
   setUpdateResponse,
   claimed,
   setClaimed,
+  setViewResponse,
 }: Props) {
   const { width, height } = useWindowSize();
   const [claiming, setClaiming] = useState(false);
@@ -226,6 +228,16 @@ export default function FormResponse({
                   Update response
                 </PrimaryButton>
               )}
+              <PrimaryButton
+                variant="transparent"
+                onClick={() => {
+                  setUpdateResponse(true);
+                  setViewResponse(true);
+                  setSubmitted(false);
+                }}
+              >
+                View response
+              </PrimaryButton>
               {form?.multipleResponsesAllowed && (
                 <PrimaryButton
                   variant="transparent"

@@ -37,7 +37,7 @@ export default function DataActivity({
   const { updateCollection } = useLocalCollection();
 
   return (
-    <Box>
+    <Box padding="4">
       <Stack>
         {activityOrder?.map((activityId) => {
           const activity = activities[activityId];
@@ -76,7 +76,9 @@ export default function DataActivity({
                   {activity.comment ? (
                     <Editor value={activity.content} disabled />
                   ) : (
-                    <Text color="textSecondary">{activity.content}</Text>
+                    <Box marginTop="1">
+                      <Text variant="label">{activity.content}</Text>
+                    </Box>
                   )}
                 </Stack>
               </Stack>
@@ -93,15 +95,17 @@ export default function DataActivity({
           />
           <Box width="full" gap="2" marginBottom="4">
             {!sendingComment && (
-              <Editor
-                placeholder="Write a reply..."
-                value={comment}
-                onSave={(value) => {
-                  setComment(value);
-                }}
-                isDirty={isDirty}
-                setIsDirty={setIsDirty}
-              />
+              <Box height="40" overflow="auto">
+                <Editor
+                  placeholder="Write a reply..."
+                  value={comment}
+                  onSave={(value) => {
+                    setComment(value);
+                  }}
+                  isDirty={isDirty}
+                  setIsDirty={setIsDirty}
+                />
+              </Box>
             )}
             {isDirty && currentUser && (
               <Box width="1/4">

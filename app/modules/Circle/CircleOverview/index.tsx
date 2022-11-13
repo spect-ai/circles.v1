@@ -106,7 +106,7 @@ export default function CircleDashboard() {
                   xs: "vertical",
                   md: "horizontal",
                 }}
-                align="center"
+                align="flex-end"
               >
                 <Input
                   label=""
@@ -184,7 +184,7 @@ export default function CircleDashboard() {
                     )}
                   </Button>
                   {canDo("inviteMembers") && (
-                    <Box width="1/2" marginBottom="1">
+                    <Box width="1/2">
                       <InviteMemberModal />
                     </Box>
                   )}
