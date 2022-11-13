@@ -122,16 +122,10 @@ const ProfileTabs = ({ username }: Props) => {
           Education
         </PrimaryButton>
         <PrimaryButton
-          variant={tab === "Credentials" ? "tertiary" : "transparent"}
-          onClick={() => setProfileTab("Credentials")}
+          variant={tab === "Skills" ? "tertiary" : "transparent"}
+          onClick={() => setProfileTab("Skills")}
         >
           Skills
-        </PrimaryButton>
-        <PrimaryButton
-          variant={tab === "Credentials" ? "tertiary" : "transparent"}
-          onClick={() => setProfileTab("Credentials")}
-        >
-          Credentials
         </PrimaryButton>
       </Box>
       {!profileLoading && (
@@ -139,7 +133,6 @@ const ProfileTabs = ({ username }: Props) => {
           {tab === "Experience" && <Experience userData={userData} />}
           {tab === "Education" && <Education userData={userData} />}
           {tab === "Skills" && <Education userData={userData} />}
-          {tab === "Credentials" && <Kudos userData={userData} />}
         </Box>
       )}
     </Box>

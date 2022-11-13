@@ -12,6 +12,7 @@ import useProfileUpdate from "@/app/services/Profile/useProfileUpdate";
 import router from "next/router";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import { IconButton } from "@/app/modules/Project/ProjectHeading";
+import ViewExperienceModal from "../ViewExperienceModal";
 
 const Paginate = styled(ReactPaginate)<{ mode: string }>`
   display: flex;
@@ -62,12 +63,10 @@ const Experience = ({ userData }: { userData: UserType }) => {
   const { mode } = useTheme();
   const [addExperience, setAddExperience] = useState(false);
   const [addFromLens, setAddFromLens] = useState(false);
-  const [editExperience, setEditExperience] = useState(false);
-  const [editExperienceId, setEditExperienceId] = useState<number>();
+  const [selectedExperienceId, setSelectedExperienceId] = useState<number>(0);
+
   const [modalMode, setModalMode] = useState<"add" | "edit">("add");
   const [openExperienceView, setOpenExperienceView] = useState(false);
-  const { removeExperience } = useProfileUpdate();
-  const username = router.query.user;
 
   const experiences = userData.experiences;
 
@@ -97,8 +96,14 @@ const Experience = ({ userData }: { userData: UserType }) => {
       {addExperience && (
         <AddExperienceModal
           modalMode={modalMode}
-          experienceId={editExperienceId}
+          experienceId={selectedExperienceId}
           handleClose={() => setAddExperience(false)}
+        />
+      )}
+      {openExperienceView && (
+        <ViewExperienceModal
+          experienceId={selectedExperienceId}
+          handleClose={() => setOpenExperienceView(false)}
         />
       )}
       <ScrollContainer>
@@ -147,6 +152,7 @@ const Experience = ({ userData }: { userData: UserType }) => {
                     mode={mode}
                     key={index}
                     onClick={() => {
+                      setSelectedExperienceId(index);
                       setOpenExperienceView(true);
                     }}
                   >
@@ -177,34 +183,6 @@ const Experience = ({ userData }: { userData: UserType }) => {
                             </Text>
                           )}
                       </Box>
-                      {username === userData.username && (
-                        <Box
-                          display="flex"
-                          flexDirection="row"
-                          justifyContent="flex-end"
-                          gap="2"
-                        >
-                          <PrimaryButton
-                            variant="transparent"
-                            onClick={() => {
-                              setModalMode("edit");
-                              setEditExperienceId(index);
-                              setAddExperience(true);
-                            }}
-                          >
-                            <EditOutlined />
-                          </PrimaryButton>
-
-                          <PrimaryButton
-                            onClick={async () => {
-                              await removeExperience(index.toString());
-                            }}
-                            variant="transparent"
-                          >
-                            <DeleteOutlined />
-                          </PrimaryButton>
-                        </Box>
-                      )}
                     </Box>
                   </Card>
                 );

@@ -47,20 +47,32 @@ export default function ViewEducationModal({
       setTitle(education.courseDegree);
       setOrganization(education.school);
       setDescription(education.description);
-      setStartDate(
-        education.start_date?.year?.toString().padStart(2, "0") +
-          "-" +
-          education.start_date?.month?.toString().padStart(2, "0") +
-          "-" +
-          education.start_date?.day?.toString().padStart(2, "0")
-      );
-      setEndDate(
-        education.end_date?.year?.toString().padStart(2, "0") +
-          "-" +
-          education.end_date?.month?.toString().padStart(2, "0") +
-          "-" +
-          education.end_date?.day?.toString().padStart(2, "0")
-      );
+      if (
+        education.start_date?.year &&
+        education.start_date?.month &&
+        education.start_date?.day
+      ) {
+        setStartDate(
+          education.start_date?.year?.toString().padStart(2, "0") +
+            "-" +
+            education.start_date?.month?.toString().padStart(2, "0") +
+            "-" +
+            education.start_date?.day?.toString().padStart(2, "0")
+        );
+      }
+      if (
+        education.end_date?.year &&
+        education.end_date?.month &&
+        education.end_date?.day
+      ) {
+        setEndDate(
+          education.end_date?.year?.toString().padStart(2, "0") +
+            "-" +
+            education.end_date?.month?.toString().padStart(2, "0") +
+            "-" +
+            education.end_date?.day?.toString().padStart(2, "0")
+        );
+      }
       setLinkedCredentials(education.linkedCredentials);
     }
   }, [educationId, userData.education]);
@@ -108,88 +120,95 @@ export default function ViewEducationModal({
           <Box>
             <Editor value={description} disabled={true} />
           </Box>
-          <Box>
-            <Text variant="label">Linked Credentials</Text>
-            <Box marginTop="4">
-              {linkedCredentials?.map((credential, index) => {
-                if (credential.service === "gitcoinPassport") {
-                  return (
-                    <Box
-                      key={index}
-                      display="flex"
-                      flexDirection="row"
-                      gap="2"
-                      width="full"
-                      height="36"
-                    >
+          {linkedCredentials?.length && (
+            <Box>
+              <Text variant="label">Linked Credentials</Text>
+              <Box marginTop="4">
+                {linkedCredentials?.map((credential, index) => {
+                  if (credential.service === "gitcoinPassport") {
+                    return (
                       <Box
-                        width="1/4"
+                        key={index}
                         display="flex"
                         flexDirection="row"
-                        justifyContent="center"
-                        alignItems="center"
-                        padding="2"
+                        gap="2"
+                        width="full"
+                        height="36"
                       >
                         <Box
-                          width="12"
-                          height="12"
+                          width="1/4"
                           display="flex"
                           flexDirection="row"
                           justifyContent="center"
                           alignItems="center"
+                          padding="2"
                         >
-                          {mode === "dark"
-                            ? PassportStampIcons[
-                                (credential?.metadata as VerifiableCredential)
-                                  ?.providerName as keyof typeof PassportStampIconsLightMode
-                              ]
-                            : PassportStampIconsLightMode[
-                                (credential?.metadata as VerifiableCredential)
-                                  ?.providerName as keyof typeof PassportStampIconsLightMode
-                              ]}
+                          <Box
+                            width="12"
+                            height="12"
+                            display="flex"
+                            flexDirection="row"
+                            justifyContent="center"
+                            alignItems="center"
+                          >
+                            {mode === "dark"
+                              ? PassportStampIcons[
+                                  (credential?.metadata as VerifiableCredential)
+                                    ?.providerName as keyof typeof PassportStampIconsLightMode
+                                ]
+                              : PassportStampIconsLightMode[
+                                  (credential?.metadata as VerifiableCredential)
+                                    ?.providerName as keyof typeof PassportStampIconsLightMode
+                                ]}
+                          </Box>
+                        </Box>
+                        <Box
+                          display="flex"
+                          flexDirection="column"
+                          justifyContent="center"
+                          width="3/4"
+                        >
+                          <Text variant="large" weight="bold" align="left">
+                            {credential.name}
+                          </Text>
                         </Box>
                       </Box>
+                    );
+                  } else {
+                    return (
                       <Box
+                        key={index}
                         display="flex"
-                        flexDirection="column"
-                        justifyContent="center"
-                        width="3/4"
+                        flexDirection="row"
+                        gap="2"
                       >
-                        <Text variant="large" weight="bold" align="left">
-                          {credential.name}
-                        </Text>
+                        <Box width="1/4" padding="2">
+                          <Image
+                            src={credential.imageUri}
+                            width="100%"
+                            height="100%"
+                            objectFit="contain"
+                            layout="responsive"
+                            alt="img"
+                          />
+                        </Box>
+                        <Box
+                          display="flex"
+                          flexDirection="column"
+                          justifyContent="center"
+                          width="3/4"
+                        >
+                          <Text variant="large" weight="bold" align="left">
+                            {credential.name}
+                          </Text>
+                        </Box>
                       </Box>
-                    </Box>
-                  );
-                } else {
-                  return (
-                    <Box key={index} display="flex" flexDirection="row" gap="2">
-                      <Box width="1/4" padding="2">
-                        <Image
-                          src={credential.imageUri}
-                          width="100%"
-                          height="100%"
-                          objectFit="contain"
-                          layout="responsive"
-                          alt="img"
-                        />
-                      </Box>
-                      <Box
-                        display="flex"
-                        flexDirection="column"
-                        justifyContent="center"
-                        width="3/4"
-                      >
-                        <Text variant="large" weight="bold" align="left">
-                          {credential.name}
-                        </Text>
-                      </Box>
-                    </Box>
-                  );
-                }
-              })}
+                    );
+                  }
+                })}
+              </Box>
             </Box>
-          </Box>
+          )}
         </ScrollContainer>
         {username === userData.username && (
           <Box

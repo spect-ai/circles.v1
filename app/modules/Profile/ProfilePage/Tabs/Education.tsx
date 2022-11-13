@@ -59,13 +59,9 @@ const Education = ({ userData }: { userData: UserType }) => {
   const [itemOffset, setItemOffset] = useState(0);
   const [endOffset, setEndOffset] = useState(0);
   const [openEducationModal, setOpenEducationModal] = useState(false);
-  const [editEducation, setEditEducation] = useState(false);
   const [selectedEducationId, setSelectedEducationId] = useState<number>(0);
-  const [modalMode, setModalMode] = useState<"add" | "edit">("add");
   const [openEducationView, setOpenEducationView] = useState(false);
 
-  const { removeEducation } = useProfileUpdate();
-  const username = router.query.user;
   const { mode } = useTheme();
 
   const education = userData.education;

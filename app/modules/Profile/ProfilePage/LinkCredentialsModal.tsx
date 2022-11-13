@@ -38,10 +38,12 @@ export default function LinkCredentialsModal({
     [tab: string]: { [id: string]: boolean };
   }>({});
   const [normalizedSelectedCredentials, setNormalizedSelectedCredentials] =
-    useState<Credential[]>(credentials);
+    useState<Credential[]>(credentials ? credentials : []);
   const [loading, setLoading] = useState(false);
   const { userData } = useGlobal();
   const { mode } = useTheme();
+
+  console.log({ normalizedSelectedCredentials });
 
   const fetchCredentials = (id: number) => {
     setLoading(true);
@@ -70,7 +72,7 @@ export default function LinkCredentialsModal({
       !newSelectedCredentials[tabKeys[tab]][credential.id];
     if (newSelectedCredentials[tabKeys[tab]][credential.id]) {
       setNormalizedSelectedCredentials([
-        ...normalizedSelectedCredentials,
+        ...(normalizedSelectedCredentials || []),
         credential,
       ]);
     } else {
@@ -78,7 +80,7 @@ export default function LinkCredentialsModal({
         normalizedSelectedCredentials.filter(
           (cred) =>
             cred.id !== credential.id || cred.service !== credential.service
-        )
+        ) || []
       );
     }
 
@@ -91,7 +93,7 @@ export default function LinkCredentialsModal({
       const selectedCredentials = {} as {
         [tab: string]: { [id: string]: boolean };
       };
-      credentials.forEach((credential) => {
+      credentials?.forEach((credential) => {
         if (!selectedCredentials[credential.service])
           selectedCredentials[credential.service] = {};
         selectedCredentials[credential.service][credential.id.toString()] =

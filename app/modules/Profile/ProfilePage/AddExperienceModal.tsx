@@ -64,20 +64,32 @@ export default function AddExperienceModal({
       setRole(experience.jobTitle);
       setOrganization(experience.company);
       setDescription(experience.description);
-      setStartDate(
-        experience.start_date?.year?.toString().padStart(2, "0") +
-          "-" +
-          experience.start_date?.month?.toString().padStart(2, "0") +
-          "-" +
-          experience.start_date?.day?.toString().padStart(2, "0")
-      );
-      setEndDate(
-        experience.end_date?.year?.toString().padStart(2, "0") +
-          "-" +
-          experience.end_date?.month?.toString().padStart(2, "0") +
-          "-" +
-          experience.end_date?.day?.toString().padStart(2, "0")
-      );
+      if (
+        experience.start_date?.year &&
+        experience.start_date?.month &&
+        experience.start_date?.day
+      ) {
+        setStartDate(
+          experience.start_date?.year?.toString().padStart(2, "0") +
+            "-" +
+            experience.start_date?.month?.toString().padStart(2, "0") +
+            "-" +
+            experience.start_date?.day?.toString().padStart(2, "0")
+        );
+      }
+      if (
+        experience.end_date?.year &&
+        experience.end_date?.month &&
+        experience.end_date?.day
+      ) {
+        setEndDate(
+          experience.end_date?.year?.toString().padStart(2, "0") +
+            "-" +
+            experience.end_date?.month?.toString().padStart(2, "0") +
+            "-" +
+            experience.end_date?.day?.toString().padStart(2, "0")
+        );
+      }
       console.log({ experience });
       setLinkedCredentials(experience.linkedCredentials);
       setLoading(false);
