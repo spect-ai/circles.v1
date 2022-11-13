@@ -65,6 +65,7 @@ const Experience = ({ userData }: { userData: UserType }) => {
   const [editExperience, setEditExperience] = useState(false);
   const [editExperienceId, setEditExperienceId] = useState<number>();
   const [modalMode, setModalMode] = useState<"add" | "edit">("add");
+  const [openExperienceView, setOpenExperienceView] = useState(false);
   const { removeExperience } = useProfileUpdate();
   const username = router.query.user;
 
@@ -142,7 +143,13 @@ const Experience = ({ userData }: { userData: UserType }) => {
               .slice(itemOffset, endOffset)
               .map((experience: LensExperience, index) => {
                 return (
-                  <Card mode={mode} key={index}>
+                  <Card
+                    mode={mode}
+                    key={index}
+                    onClick={() => {
+                      setOpenExperienceView(true);
+                    }}
+                  >
                     <Box display="flex" flexDirection="row" gap="4">
                       <Box
                         display="flex"

@@ -10,6 +10,7 @@ import AddEducationModal from "../AddEducationModal";
 import router from "next/router";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import useProfileUpdate from "@/app/services/Profile/useProfileUpdate";
+import ViewEducationModal from "../ViewEducationModal";
 
 const Paginate = styled(ReactPaginate)<{ mode: string }>`
   display: flex;
@@ -59,8 +60,10 @@ const Education = ({ userData }: { userData: UserType }) => {
   const [endOffset, setEndOffset] = useState(0);
   const [openEducationModal, setOpenEducationModal] = useState(false);
   const [editEducation, setEditEducation] = useState(false);
-  const [editEducationId, setEditEducationId] = useState<number>();
+  const [selectedEducationId, setSelectedEducationId] = useState<number>(0);
   const [modalMode, setModalMode] = useState<"add" | "edit">("add");
+  const [openEducationView, setOpenEducationView] = useState(false);
+
   const { removeEducation } = useProfileUpdate();
   const username = router.query.user;
   const { mode } = useTheme();
@@ -87,10 +90,15 @@ const Education = ({ userData }: { userData: UserType }) => {
 
   return (
     <Box>
+      {openEducationView && (
+        <ViewEducationModal
+          educationId={selectedEducationId}
+          handleClose={() => setOpenEducationView(false)}
+        />
+      )}
       {openEducationModal && (
         <AddEducationModal
-          modalMode={modalMode}
-          educationId={editEducationId}
+          modalMode={"add"}
           handleClose={() => setOpenEducationModal(false)}
         />
       )}
@@ -122,7 +130,14 @@ const Education = ({ userData }: { userData: UserType }) => {
               .slice(itemOffset, endOffset)
               .map((edu: LensEducation, index) => {
                 return (
-                  <Card mode={mode} key={index}>
+                  <Card
+                    mode={mode}
+                    key={index}
+                    onClick={() => {
+                      setSelectedEducationId(index);
+                      setOpenEducationView(true);
+                    }}
+                  >
                     <Box display="flex" flexDirection="row" gap="4">
                       <Box
                         display="flex"
@@ -133,6 +148,7 @@ const Education = ({ userData }: { userData: UserType }) => {
                         <Text variant="extraLarge" weight="semiBold">
                           {edu.courseDegree}
                         </Text>
+                        <Text variant="small">{edu.school}</Text>
 
                         {dateExists(edu.start_date) &&
                           dateExists(edu.end_date) &&
@@ -147,29 +163,6 @@ const Education = ({ userData }: { userData: UserType }) => {
                           </Text>
                         )}
                       </Box>
-                      {username === userData.username && (
-                        <Box display="flex" flexDirection="row" gap="2">
-                          <PrimaryButton
-                            variant="transparent"
-                            onClick={() => {
-                              setModalMode("edit");
-                              setEditEducationId(index);
-                              setOpenEducationModal(true);
-                            }}
-                          >
-                            <EditOutlined />
-                          </PrimaryButton>
-
-                          <PrimaryButton
-                            onClick={async () => {
-                              await removeEducation(index.toString());
-                            }}
-                            variant="transparent"
-                          >
-                            <DeleteOutlined />
-                          </PrimaryButton>
-                        </Box>
-                      )}
                     </Box>
                   </Card>
                 );

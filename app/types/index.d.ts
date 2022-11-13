@@ -969,7 +969,7 @@ export type LensSkills = {
   icon: string;
   nfts: NFT[];
   poaps: string[];
-  verifiableCredentials: VerifiableCredential[];
+  linkedCredentials: Credential[];
 };
 
 export type LensExperience = {
@@ -979,7 +979,7 @@ export type LensExperience = {
   description: string;
   start_date: LensDate;
   end_date: LensDate;
-  verifiableCredentials: VerifiableCredential[];
+  linkedCredentials: Credential[];
   currentlyWorking: boolean;
   nfts: NFT[];
   poaps: string[];
@@ -995,7 +995,7 @@ export type LensEducation = {
   currentlyStudying: boolean;
   nfts: NFT[];
   poaps: string[];
-  verifiableCredentials: VerifiableCredential[];
+  linkedCredentials: Credential[];
 };
 
 export type NFT = {

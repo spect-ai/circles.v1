@@ -12,10 +12,8 @@ import { PassportStampIcons, PassportStampIconsLightMode } from "@/app/assets";
 import Image from "next/image";
 
 type Props = {
-  credentials: { [issuer: string]: { [id: string]: boolean } };
-  setCredentials: (credentials: {
-    [issuer: string]: { [id: string]: boolean };
-  }) => void;
+  credentials: Credential[];
+  setCredentials: (credentials: Credential[]) => void;
 };
 
 const tabKeys = [
@@ -36,10 +34,11 @@ export default function LinkCredentialsModal({
   const [credentialsShown, setCredentialsShown] = useState<Credential[]>([]);
   const [linkCredentialsOpen, setLinkCredentialsOpen] = useState(false);
 
-  const [selectedCredentials, setSelectedCredentials] =
-    useState<{
-      [tab: string]: { [id: string]: boolean };
-    }>(credentials);
+  const [selectedCredentials, setSelectedCredentials] = useState<{
+    [tab: string]: { [id: string]: boolean };
+  }>({});
+  const [normalizedSelectedCredentials, setNormalizedSelectedCredentials] =
+    useState<Credential[]>(credentials);
   const [loading, setLoading] = useState(false);
   const { userData } = useGlobal();
   const { mode } = useTheme();
@@ -60,9 +59,51 @@ export default function LinkCredentialsModal({
   const onTabClick = (id: number) => {
     void fetchCredentials(id);
   };
+
+  const onCredentialClick = (credential: Credential) => {
+    const newSelectedCredentials = {
+      ...selectedCredentials,
+    };
+    if (!newSelectedCredentials[tabKeys[tab]])
+      newSelectedCredentials[tabKeys[tab]] = {};
+    newSelectedCredentials[tabKeys[tab]][credential.id] =
+      !newSelectedCredentials[tabKeys[tab]][credential.id];
+    if (newSelectedCredentials[tabKeys[tab]][credential.id]) {
+      setNormalizedSelectedCredentials([
+        ...normalizedSelectedCredentials,
+        credential,
+      ]);
+    } else {
+      setNormalizedSelectedCredentials(
+        normalizedSelectedCredentials.filter(
+          (cred) =>
+            cred.id !== credential.id || cred.service !== credential.service
+        )
+      );
+    }
+
+    setSelectedCredentials(newSelectedCredentials);
+  };
+
   useEffect(() => {
-    if (linkCredentialsOpen) void fetchCredentials(0);
+    if (linkCredentialsOpen) {
+      void fetchCredentials(0);
+      const selectedCredentials = {} as {
+        [tab: string]: { [id: string]: boolean };
+      };
+      credentials.forEach((credential) => {
+        if (!selectedCredentials[credential.service])
+          selectedCredentials[credential.service] = {};
+        selectedCredentials[credential.service][credential.id.toString()] =
+          true;
+      });
+      setSelectedCredentials(selectedCredentials);
+    }
   }, [linkCredentialsOpen]);
+
+  useEffect(() => {
+    setNormalizedSelectedCredentials(credentials);
+  }, [credentials]);
 
   return (
     <>
@@ -74,17 +115,21 @@ export default function LinkCredentialsModal({
         marginTop="2"
       >
         <Text variant="small">
-          Link all your on-chain and verifiable credentials to this experience
-          and showcase it with more confidence!
+          {normalizedSelectedCredentials?.length
+            ? `${normalizedSelectedCredentials.length} credentials linked`
+            : `Link all your on-chain and verifiable credentials to this experience
+          and showcase it with more confidence!`}
         </Text>
-        <Box marginTop="2" width="48">
+        <Box marginTop="2" width="64">
           <PrimaryButton
             variant="tertiary"
             onClick={() => {
               setLinkCredentialsOpen(true);
             }}
           >
-            Link Credentials
+            {normalizedSelectedCredentials?.length
+              ? `Update Linked Credentials`
+              : `Link Credentials`}
           </PrimaryButton>
         </Box>
       </Box>
@@ -148,18 +193,7 @@ export default function LinkCredentialsModal({
                           selectedCredentials[tabKeys[tab]] &&
                           selectedCredentials[tabKeys[tab]][credential.id]
                         }
-                        onClick={() => {
-                          const newSelectedCredentials = {
-                            ...selectedCredentials,
-                          };
-                          if (!newSelectedCredentials[tabKeys[tab]])
-                            newSelectedCredentials[tabKeys[tab]] = {};
-                          newSelectedCredentials[tabKeys[tab]][credential.id] =
-                            !newSelectedCredentials[tabKeys[tab]][
-                              credential.id
-                            ];
-                          setSelectedCredentials(newSelectedCredentials);
-                        }}
+                        onClick={() => onCredentialClick(credential)}
                       >
                         <Box
                           display="flex"
@@ -201,18 +235,7 @@ export default function LinkCredentialsModal({
                         key={index}
                         mode={mode}
                         selected={selected}
-                        onClick={() => {
-                          const newSelectedCredentials = {
-                            ...selectedCredentials,
-                          };
-                          if (!newSelectedCredentials[tabKeys[tab]])
-                            newSelectedCredentials[tabKeys[tab]] = {};
-                          newSelectedCredentials[tabKeys[tab]][credential.id] =
-                            !newSelectedCredentials[tabKeys[tab]][
-                              credential.id
-                            ];
-                          setSelectedCredentials(newSelectedCredentials);
-                        }}
+                        onClick={() => onCredentialClick(credential)}
                       >
                         <Box
                           display="flex"
@@ -250,11 +273,12 @@ export default function LinkCredentialsModal({
             <PrimaryButton
               icon={<SaveFilled style={{ fontSize: "1.3rem" }} />}
               onClick={() => {
-                setCredentials(selectedCredentials);
+                console.log({ normalizedSelectedCredentials });
+                setCredentials(normalizedSelectedCredentials);
                 setLinkCredentialsOpen(false);
               }}
             >
-              Save
+              Link Credentials
             </PrimaryButton>
           </Box>
         </Modal>
@@ -265,7 +289,7 @@ export default function LinkCredentialsModal({
 
 const ScrollContainer = styled(Box)`
   ::-webkit-scrollbar {
-    width: 10px;
+    width: 5px;
   }
   height: 35rem;
   overflow-y: auto;

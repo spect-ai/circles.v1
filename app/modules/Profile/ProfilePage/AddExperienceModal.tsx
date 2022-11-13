@@ -9,6 +9,7 @@ import { Box, Button, Input, Stack, Tag, Text, useTheme } from "degen";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import LinkCredentialsModal from "./LinkCredentialsModal";
+import { Credential } from "@/app/types";
 
 type Props = {
   handleClose: () => void;
@@ -26,9 +27,8 @@ export default function AddExperienceModal({
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [organization, setOrganization] = useState("");
-  const [linkedCredentials, setLinkedCredentials] = useState<{
-    [issuer: string]: { [id: string]: boolean };
-  }>({} as { [issuer: string]: { [id: string]: boolean } });
+  const [linkedCredentials, setLinkedCredentials] = useState<Credential[]>([]);
+  const [loading, setLoading] = useState(false);
   const {
     addExperience: createExperience,
     updateExperience,
@@ -55,8 +55,11 @@ export default function AddExperienceModal({
     }
   };
 
+  console.log({ linkedCredentials });
+
   useEffect(() => {
     if (modalMode === "edit" && (experienceId || experienceId === 0)) {
+      setLoading(true);
       const experience = userData.experiences[experienceId];
       setRole(experience.jobTitle);
       setOrganization(experience.company);
@@ -75,6 +78,9 @@ export default function AddExperienceModal({
           "-" +
           experience.end_date?.day?.toString().padStart(2, "0")
       );
+      console.log({ experience });
+      setLinkedCredentials(experience.linkedCredentials);
+      setLoading(false);
     }
   }, []);
 
@@ -265,7 +271,7 @@ export default function AddExperienceModal({
                   start_date: preprocessDate(startDate),
                   end_date: preprocessDate(endDate),
                   currentlyWorking: false,
-                  verifiableCredentials: linkedCredentials,
+                  linkedCredentials: linkedCredentials,
                 });
               } else if (modalMode === "edit") {
                 if (!experienceId && experienceId !== 0) {
@@ -279,7 +285,7 @@ export default function AddExperienceModal({
                   start_date: preprocessDate(startDate),
                   end_date: preprocessDate(endDate),
                   currentlyWorking: false,
-                  verifiableCredentials: linkedCredentials,
+                  linkedCredentials: linkedCredentials,
                 });
               }
               handleClose();

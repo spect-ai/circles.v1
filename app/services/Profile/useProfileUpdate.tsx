@@ -2,6 +2,7 @@ import queryClient from "@/app/common/utils/queryClient";
 import { useGlobal } from "@/app/context/globalContext";
 import { LensDate, NFT, VerifiableCredential } from "@/app/types";
 import { toast } from "react-toastify";
+import { Credential } from "@/app/types";
 
 interface UpdateProfileDTO {
   username?: string;
@@ -21,7 +22,7 @@ interface AddExperienceDTO {
   description?: string;
   start_date?: LensDate | object;
   end_date?: LensDate | object;
-  verifiableCredentials?: { [issuer: string]: { [id: string]: boolean } };
+  linkedCredentials?: Credential[];
   currentlyWorking?: boolean;
   nfts?: NFT[];
   poaps?: string[];
@@ -34,7 +35,7 @@ interface UpdateExperienceDto {
   description?: string;
   start_date?: LensDate | object;
   end_date?: LensDate | object;
-  verifiableCredentials?: { [issuer: string]: { [id: string]: boolean } };
+  linkedCredentials?: Credential[];
   currentlyWorking?: boolean;
   nfts?: NFT[];
   poaps?: string[];
@@ -50,7 +51,7 @@ interface AddEducationDTO {
   currentlyStudying?: boolean;
   nfts?: NFT[];
   poaps?: string[];
-  verifiableCredentials?: { [issuer: string]: { [id: string]: boolean } };
+  linkedCredentials?: Credential[];
 }
 
 interface UpdateEducationDTO {
@@ -63,7 +64,7 @@ interface UpdateEducationDTO {
   currentlyStudying?: boolean;
   nfts?: NFT[];
   poaps?: string[];
-  verifiableCredentials?: { [issuer: string]: { [id: string]: boolean } };
+  linkedCredentials?: Credential[];
 }
 
 export default function useProfileUpdate() {

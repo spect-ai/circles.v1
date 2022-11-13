@@ -9,6 +9,7 @@ import { Box, Button, Input, Stack, Tag, Text, useTheme } from "degen";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import LinkCredentialsModal from "./LinkCredentialsModal";
+import { Credential } from "@/app/types";
 
 type Props = {
   handleClose: () => void;
@@ -21,21 +22,22 @@ export default function AddEducationModal({
   modalMode,
   educationId,
 }: Props) {
+  const { userData } = useGlobal();
+
   const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
+  const [description, setDescription] = useState(
+    educationId ? userData.education[educationId].description : ""
+  );
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [organization, setOrganization] = useState("");
-  const [linkedCredentials, setLinkedCredentials] = useState<{
-    [issuer: string]: { [id: string]: boolean };
-  }>({} as { [issuer: string]: { [id: string]: boolean } });
+  const [linkedCredentials, setLinkedCredentials] = useState<Credential[]>([]);
+  const [loading, setLoading] = useState(false);
   const {
     addEducation: createEducation,
     updateEducation,
     preprocessDate,
   } = useProfileUpdate();
-
-  const { userData } = useGlobal();
 
   const [requiredFieldsNotSet, setRequiredFieldsNotSet] = useState({
     title: false,
@@ -56,9 +58,13 @@ export default function AddEducationModal({
     }
   };
 
+  console.log({ description });
+
   useEffect(() => {
     if (modalMode === "edit" && (educationId || educationId === 0)) {
+      setLoading(true);
       const education = userData.education[educationId];
+      console.log({ education });
       setTitle(education.courseDegree);
       setOrganization(education.school);
       setDescription(education.description);
@@ -76,6 +82,8 @@ export default function AddEducationModal({
           "-" +
           education.end_date?.day?.toString().padStart(2, "0")
       );
+      setLinkedCredentials(education.linkedCredentials);
+      setLoading(false);
     }
   }, []);
 
@@ -84,7 +92,7 @@ export default function AddEducationModal({
       handleClose={() => {
         handleClose();
       }}
-      title={`Add Education`}
+      title={modalMode === "add" ? "Add Education" : "Edit Education"}
     >
       <Box
         padding={{
@@ -99,7 +107,7 @@ export default function AddEducationModal({
       >
         <Box>
           <Box display="flex" flexDirection="row" alignItems="center" gap="2">
-            <Text variant="label">Title</Text>
+            <Text variant="label">Degree or Name of Qualification</Text>
             <Tag size="small" tone="accent">
               Required
             </Tag>
@@ -124,7 +132,7 @@ export default function AddEducationModal({
         </Box>
         <Box>
           <Box display="flex" flexDirection="row" alignItems="center" gap="2">
-            <Text variant="label">Organization</Text>
+            <Text variant="label">School or Issuing Organization</Text>
             <Tag size="small" tone="accent">
               Required
             </Tag>
@@ -271,6 +279,7 @@ export default function AddEducationModal({
                   start_date: preprocessDate(startDate),
                   end_date: preprocessDate(endDate),
                   currentlyStudying: false,
+                  linkedCredentials,
                 });
               } else if (modalMode === "edit") {
                 if (!educationId && educationId !== 0) {
@@ -285,6 +294,7 @@ export default function AddEducationModal({
                   start_date: preprocessDate(startDate),
                   end_date: preprocessDate(endDate),
                   currentlyStudying: false,
+                  linkedCredentials,
                 });
               }
               handleClose();

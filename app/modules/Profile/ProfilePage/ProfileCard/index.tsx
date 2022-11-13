@@ -182,7 +182,7 @@ const ProfileCard = ({ username }: Props) => {
         <Footer>
           {currentUser?.id == user?.id && (
             <Box display="flex" flexDirection="column" gap="4">
-              {!user?.lensHandle && (
+              {/* {!user?.lensHandle && (
                 <Button
                   variant="tertiary"
                   size="small"
@@ -191,7 +191,7 @@ const ProfileCard = ({ username }: Props) => {
                 >
                   Link Lens Profile
                 </Button>
-              )}
+              )} */}
               <Button
                 variant="secondary"
                 size="small"
