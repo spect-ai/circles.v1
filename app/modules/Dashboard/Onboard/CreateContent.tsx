@@ -183,8 +183,8 @@ export function CreateContent() {
             </Text>
           </Stack>
           <Text>
-            Sorms are sybil-resistant Web3 enabled forms with mintkudos, poap
-            integrations and e-mail service for the applicants
+            Sorms are the first sybil-resistant, credential curated, Web3
+            enabled forms to help power grants, bounties and onboarding!
           </Text>
         </Card>
         <Hidden xs sm>
@@ -206,8 +206,8 @@ export function CreateContent() {
               </Text>
             </Stack>
             <Text>
-              Project is where actual tasks, grants and bounties are managed
-              with functionality to pay out contributors on any EVM chain.
+              Projects are used to manage tasks, grants, bounties and onboarding
+              and pay out contributors on any EVM network.
             </Text>
           </Card>
         </Hidden>
@@ -215,7 +215,9 @@ export function CreateContent() {
       <Text>Give your {itemType} a name </Text>
       <NameInput
         placeholder={
-          itemType == "Project" ? "Product Development" : "Airdrop Whitelist"
+          itemType == "Project"
+            ? "Grant Milestones"
+            : "Onboarding Interest Form"
         }
         value={itemName}
         onChange={(e) => {
