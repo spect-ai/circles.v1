@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Dropdown from "@/app/common/components/Dropdown";
 import Editor from "@/app/common/components/Editor";
 import Modal from "@/app/common/components/Modal";
@@ -35,6 +36,7 @@ export default function MilestoneModal({
       : ""
   );
   const [date, setDate] = useState("");
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const rewardOptions = (form.properties[propertyName]?.rewardOptions ||
     {}) as Registry;
   const firstChainName =
@@ -244,6 +246,7 @@ export default function MilestoneModal({
                   setValue(e.target.value);
                 }}
                 units={selectedToken.label}
+                type="number"
               />
             </Box>
           </Stack>

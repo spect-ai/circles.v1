@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useTheme } from "degen";
 import { FC } from "react";
 

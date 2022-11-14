@@ -132,6 +132,10 @@ export default function DataDrawer({
                       collection.profiles[collection.dataOwner[data.slug]]
                         .avatar
                     }
+                    address={
+                      collection.profiles[collection.dataOwner[data.slug]]
+                        .ethAddress
+                    }
                     label=""
                     size="8"
                   />
@@ -375,6 +379,7 @@ export default function DataDrawer({
                 getMemberDetails={getMemberDetails}
                 dataId={dataId}
                 collectionId={collection.id}
+                dataOwner={collection.profiles[collection.dataOwner[data.slug]]}
               />
             </Box>
           </ScrollContainer>

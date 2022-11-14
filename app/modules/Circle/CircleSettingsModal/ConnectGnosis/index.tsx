@@ -50,12 +50,14 @@ export default function ConnectGnosis() {
     const getSafes = async () => {
       const safes = await getUserSafes(chain || "137");
       console.log({ safes });
-      setSafes(
-        safes.safes.map((safe) => ({
-          label: safe,
-          value: safe,
-        }))
-      );
+      if (safes) {
+        setSafes(
+          safes.safes.map((safe) => ({
+            label: safe,
+            value: safe,
+          }))
+        );
+      }
     };
     if (isOpen) {
       void getSafes();
@@ -109,6 +111,7 @@ export default function ConnectGnosis() {
                     setselectedSafe(value);
                   }}
                   multiple={false}
+                  portal={false}
                 />
                 <PrimaryButton
                   shape="circle"

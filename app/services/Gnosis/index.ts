@@ -1,27 +1,34 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import SafeServiceClient from "@gnosis.pm/safe-service-client";
 import Safe from "@gnosis.pm/safe-core-sdk";
 import EthersAdapter from "@gnosis.pm/safe-ethers-lib";
 import { SafeTransactionDataPartial } from "@gnosis.pm/safe-core-sdk-types";
 import { ethers } from "ethers";
+import { toast } from "react-toastify";
 
 export async function getUserSafes(chainId: string) {
   const provider = new ethers.providers.Web3Provider((window as any).ethereum);
   const safeOwner = provider.getSigner(0);
   console.log(safeOwner);
   const address = await safeOwner.getAddress();
-  const ethAdapter = new EthersAdapter({
-    ethers,
-    signer: safeOwner,
-  });
+  try {
+    const ethAdapter = new EthersAdapter({
+      ethers,
+      signer: safeOwner,
+    });
 
-  const safeService = new SafeServiceClient({
-    txServiceUrl: getSafeServiceUrl(chainId),
-    ethAdapter,
-  });
-  const safes = await safeService.getSafesByOwner(
-    ethers.utils.getAddress(address)
-  );
-  return safes;
+    const safeService = new SafeServiceClient({
+      txServiceUrl: getSafeServiceUrl(chainId),
+      ethAdapter,
+    });
+    const safes = await safeService.getSafesByOwner(
+      ethers.utils.getAddress(address)
+    );
+    return safes;
+  } catch (e) {
+    console.log(e);
+    toast.error("Failed to fetch safes on the provided chain");
+  }
 }
 
 export async function gnosisPayment(

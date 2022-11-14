@@ -18,6 +18,7 @@ type Props = {
   dataId: string;
   collectionId: string;
   setForm?: (form: any) => void;
+  dataOwner: UserType;
 };
 
 export default function DataActivity({
@@ -27,6 +28,7 @@ export default function DataActivity({
   dataId,
   collectionId,
   setForm,
+  dataOwner,
 }: Props) {
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
@@ -41,7 +43,7 @@ export default function DataActivity({
       <Stack>
         {activityOrder?.map((activityId) => {
           const activity = activities[activityId];
-          const actor = getMemberDetails(activity.ref.actor?.id);
+          const actor = getMemberDetails(activity.ref.actor?.id) || dataOwner;
           return (
             <Box key={activityId}>
               <Stack direction="horizontal" align="flex-start" space="2">
