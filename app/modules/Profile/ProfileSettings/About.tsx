@@ -24,45 +24,6 @@ export function About() {
           setIsDirty(true);
         }}
       />
-      <Stack direction="horizontal" justify="space-between">
-        <Text variant="label">Skills</Text>
-        <Tag>Upto {10 - skills?.length}</Tag>
-      </Stack>
-      <Box
-        display="flex"
-        flexDirection="row"
-        gap="1.5"
-        flexWrap="wrap"
-        marginBottom="2"
-        justifyContent="center"
-      >
-        {skillsArray.map((skill) => (
-          <Box
-            onClick={() => {
-              if (skills?.includes(skill)) {
-                setSkills(skills?.filter((item) => item !== skill));
-              } else if (skills?.length < 10) {
-                setSkills([...skills, skill]);
-              }
-              setIsDirty(true);
-            }}
-            style={{
-              cursor: "pointer",
-            }}
-            key={skill}
-          >
-            <Tag
-              size="medium"
-              hover
-              tone={skills?.includes(skill) ? "accent" : "secondary"}
-            >
-              <Box display="flex" alignItems="center">
-                {skill}
-              </Box>
-            </Tag>
-          </Box>
-        ))}
-      </Box>
     </Stack>
   );
 }

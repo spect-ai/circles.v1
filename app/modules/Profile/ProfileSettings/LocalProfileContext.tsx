@@ -30,10 +30,7 @@ export const LocalProfileContext = createContext<ProfileSettingsType>(
 );
 
 export function useProviderLocalProfile() {
-  const {
-    data: currentUser,
-    isLoading,
-  } = useQuery<UserType>("getMyUser", {
+  const { data: currentUser, isLoading } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
 
@@ -80,7 +77,6 @@ export function useProviderLocalProfile() {
     setAvatar(currentUser?.avatar || "");
     setUsername(currentUser?.username || "");
     setBio(currentUser?.bio || "");
-    setSkills(currentUser?.skills || []);
     setEmail(currentUser?.email || "");
     setLoading(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps

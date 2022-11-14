@@ -36,6 +36,9 @@ export const Card = styled(Box)<{ mode: string }>`
   position: relative;
   transition: all 0.3s ease-in-out;
   width: 80%;
+  @media (max-width: 768px) {
+    width: 100%;
+  }
 `;
 
 export const Tags = styled(Box)`
@@ -63,6 +66,12 @@ export const TextBox = styled(Box)`
 `;
 
 export const ScrollContainer = styled(Box)`
+  @media (max-width: 768px) {
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    padding-right: 1.2rem;
+  }
   overflow: auto;
   width: 50vw;
   height: 80vh;
@@ -102,12 +111,24 @@ const ProfileTabs = ({ username }: Props) => {
   }, [username, tab]);
 
   return (
-    <Box width="max">
+    <Box
+      width={{
+        xs: "full",
+        md: "max",
+      }}
+    >
       <Box
         display="flex"
         flexDirection="row"
-        width="68"
-        paddingTop="10"
+        width="32"
+        paddingTop={{
+          xs: "4",
+          md: "10",
+        }}
+        paddingLeft={{
+          xs: "4",
+          md: "0",
+        }}
         justifyContent="space-between"
       >
         <PrimaryButton
@@ -130,7 +151,16 @@ const ProfileTabs = ({ username }: Props) => {
         </PrimaryButton>
       </Box>
       {!profileLoading && (
-        <Box width="168">
+        <Box
+          width={{
+            xs: "full",
+            md: "168",
+          }}
+          paddingLeft={{
+            xs: "4",
+            md: "0",
+          }}
+        >
           {tab === "Experience" && <Experience userData={userData} />}
           {tab === "Education" && <Education userData={userData} />}
           {tab === "Skills" && <Skills userData={userData} />}

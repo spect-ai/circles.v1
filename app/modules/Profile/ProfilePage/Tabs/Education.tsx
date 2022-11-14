@@ -2,54 +2,10 @@ import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { LensDate, LensEducation, UserType } from "@/app/types";
 import { Box, Text, useTheme } from "degen";
 import { memo, useEffect, useState } from "react";
-import ReactPaginate from "react-paginate";
 import { useQuery } from "react-query";
-import styled from "styled-components";
 import AddEducationModal from "../AddEducationModal";
 import ViewEducationModal from "../ViewEducationModal";
 import { Card, ScrollContainer } from "./index";
-
-const Paginate = styled(ReactPaginate)<{ mode: string }>`
-  display: flex;
-  flex-direction: row;
-  width: 30rem;
-  margin: 1rem auto;
-  justify-content: space-between;
-  list-style-type: none;
-  li a {
-    border-radius: 7px;
-    padding: 0.1rem 0.5rem;
-    border: ${(props) =>
-        props.mode === "dark"
-          ? "rgb(255, 255, 255, 0.02)"
-          : "rgb(20, 20, 20, 0.2)"}
-      1px solid;
-    cursor: pointer;
-    color: ${({ mode }) =>
-      mode === "dark" ? "rgba(255, 255, 255, 0.5)" : "rgba(20, 20, 20, 0.5)"};
-  }
-  li.selected a {
-    color: rgb(191, 90, 242, 1);
-    border-color: rgb(191, 90, 242, 0.2);
-  }
-  li.previous a,
-  li.next a,
-  li.break a {
-    border-color: transparent;
-  }
-  li.active a {
-    border-color: transparent;
-    color: rgb(191, 90, 242, 1);
-    min-width: 32px;
-  }
-  li.disabled a {
-    color: grey;
-  }
-  li.disable,
-  li.disabled a {
-    cursor: default;
-  }
-`;
 
 const Education = ({ userData }: { userData: UserType }) => {
   const [pageCount, setPageCount] = useState(0);
@@ -137,18 +93,57 @@ const Education = ({ userData }: { userData: UserType }) => {
                       setOpenEducationView(true);
                     }}
                   >
-                    <Box display="flex" flexDirection="row" gap="4">
+                    <Box
+                      display="flex"
+                      flexDirection={{
+                        xs: "column",
+                        md: "row",
+                      }}
+                      gap="4"
+                    >
                       <Box
                         display="flex"
                         flexDirection="column"
-                        width="128"
-                        marginBottom="4"
+                        width={{
+                          xs: "full",
+                          md: "1/2",
+                        }}
+                        marginBottom={{
+                          xs: "0",
+                          md: "2",
+                        }}
                       >
                         <Text variant="extraLarge" weight="semiBold">
                           {edu.courseDegree}
                         </Text>
                         <Text variant="small">{edu.school}</Text>
 
+                        {edu.linkedCredentials?.length > 0 && (
+                          <Text variant="label">
+                            {edu.linkedCredentials?.length} Credentials Linked
+                          </Text>
+                        )}
+                      </Box>
+                      <Box
+                        display="flex"
+                        flexDirection="column"
+                        width={{
+                          xs: "full",
+                          md: "1/2",
+                        }}
+                        alignItems={{
+                          xs: "flex-start",
+                          md: "flex-end",
+                        }}
+                        marginTop={{
+                          xs: "0",
+                          md: "1",
+                        }}
+                        marginBottom={{
+                          xs: "2",
+                          md: "0",
+                        }}
+                      >
                         {dateExists(edu.start_date) &&
                           dateExists(edu.end_date) &&
                           !edu.currentlyStudying && (
@@ -169,18 +164,6 @@ const Education = ({ userData }: { userData: UserType }) => {
           </>
         )}
       </ScrollContainer>
-      {
-        <Paginate
-          breakLabel="..."
-          nextLabel="Next"
-          onPageChange={handlePageClick}
-          pageRangeDisplayed={2}
-          pageCount={pageCount}
-          previousLabel="Previous"
-          renderOnZeroPageCount={() => null}
-          mode={mode}
-        />
-      }
     </Box>
   );
 };

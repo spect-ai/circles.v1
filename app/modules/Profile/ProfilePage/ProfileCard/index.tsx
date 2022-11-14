@@ -27,7 +27,10 @@ const Profile = styled(Box)<{ mode: string }>`
   @media (max-width: 768px) {
     width: 100%;
     padding: 0;
-    margin: 1rem;
+    margin: 0;
+    height: 55vh;
+    margin-top: 0.5rem;
+    align-items: center;
   }
 
   width: 23vw;

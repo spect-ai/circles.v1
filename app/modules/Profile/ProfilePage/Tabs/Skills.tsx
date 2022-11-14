@@ -79,7 +79,7 @@ const Skills = ({ userData }: { userData: UserType }) => {
                     <Text variant="extraLarge" weight="semiBold">
                       {skill.title}
                     </Text>
-                    {skill.linkedCredentials?.length && (
+                    {skill.linkedCredentials?.length > 0 && (
                       <Text variant="label">
                         {skill.linkedCredentials?.length} Credentials Linked
                       </Text>
@@ -121,6 +121,5 @@ const InfoBox = styled(Box)`
   flex-wrap: wrap;
   gap: 0.5rem;
   padding-top: 1rem;
-  padding-left: 1rem;
   justify-content: flex-start;
 `;

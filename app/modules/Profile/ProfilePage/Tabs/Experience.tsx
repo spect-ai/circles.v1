@@ -1,62 +1,12 @@
-import { memo, useState, useEffect } from "react";
-import { Box, Text, Tag, Avatar, useTheme, Stack, Button } from "degen";
-import { UserType, CardDetails, LensExperience, LensDate } from "@/app/types";
-import { PriorityIcon } from "@/app/common/components/PriorityIcon";
-import styled from "styled-components";
-import ReactPaginate from "react-paginate";
-import { ScrollContainer, Card, TextBox, GigInfo, Tags } from "./index";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
+import { LensDate, LensExperience, UserType } from "@/app/types";
+import { Box, Text, useTheme } from "degen";
+import { memo, useEffect, useState } from "react";
+import { useQuery } from "react-query";
 import AddExperienceModal from "../AddExperienceModal";
 import LensImportModal from "../LensImportModal";
-import useProfileUpdate from "@/app/services/Profile/useProfileUpdate";
-import router from "next/router";
-import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
-import { IconButton } from "@/app/modules/Project/ProjectHeading";
 import ViewExperienceModal from "../ViewExperienceModal";
-import { useGlobal } from "@/app/context/globalContext";
-import { useQuery } from "react-query";
-
-const Paginate = styled(ReactPaginate)<{ mode: string }>`
-  display: flex;
-  flex-direction: row;
-  width: 30rem;
-  margin: 1rem auto;
-  justify-content: space-between;
-  list-style-type: none;
-  li a {
-    border-radius: 7px;
-    padding: 0.1rem 0.5rem;
-    border: ${(props) =>
-        props.mode === "dark"
-          ? "rgb(255, 255, 255, 0.02)"
-          : "rgb(20, 20, 20, 0.2)"}
-      1px solid;
-    cursor: pointer;
-    color: ${({ mode }) =>
-      mode === "dark" ? "rgba(255, 255, 255, 0.5)" : "rgba(20, 20, 20, 0.5)"};
-  }
-  li.selected a {
-    color: rgb(191, 90, 242, 1);
-    border-color: rgb(191, 90, 242, 0.2);
-  }
-  li.previous a,
-  li.next a,
-  li.break a {
-    border-color: transparent;
-  }
-  li.active a {
-    border-color: transparent;
-    color: rgb(191, 90, 242, 1);
-    min-width: 32px;
-  }
-  li.disabled a {
-    color: grey;
-  }
-  li.disable,
-  li.disabled a {
-    cursor: default;
-  }
-`;
+import { Card, ScrollContainer } from "./index";
 
 const Experience = ({ userData }: { userData: UserType }) => {
   const [pageCount, setPageCount] = useState(0);
@@ -135,7 +85,7 @@ const Experience = ({ userData }: { userData: UserType }) => {
             {currentUser?.id === userData.id && (
               <Box
                 width={{
-                  sm: "max",
+                  xs: "max",
                   md: "48",
                 }}
                 marginTop="4"
@@ -163,12 +113,25 @@ const Experience = ({ userData }: { userData: UserType }) => {
                       setOpenExperienceView(true);
                     }}
                   >
-                    <Box display="flex" flexDirection="row" gap="4">
+                    <Box
+                      display="flex"
+                      flexDirection={{
+                        xs: "column",
+                        md: "row",
+                      }}
+                      gap="4"
+                    >
                       <Box
                         display="flex"
                         flexDirection="column"
-                        width="128"
-                        marginBottom="4"
+                        width={{
+                          xs: "full",
+                          md: "1/2",
+                        }}
+                        marginBottom={{
+                          xs: "0",
+                          md: "2",
+                        }}
                       >
                         <Text variant="extraLarge" weight="semiBold">
                           {experience.jobTitle}
@@ -176,6 +139,33 @@ const Experience = ({ userData }: { userData: UserType }) => {
                         <Text variant="small" weight="light">
                           {experience.company}
                         </Text>
+                        {experience.linkedCredentials?.length > 0 && (
+                          <Text variant="label">
+                            {experience.linkedCredentials?.length} Credentials
+                            Linked
+                          </Text>
+                        )}
+                      </Box>
+                      <Box
+                        display="flex"
+                        flexDirection="column"
+                        width={{
+                          xs: "full",
+                          md: "1/2",
+                        }}
+                        alignItems={{
+                          xs: "flex-start",
+                          md: "flex-end",
+                        }}
+                        marginTop={{
+                          xs: "0",
+                          md: "1",
+                        }}
+                        marginBottom={{
+                          xs: "2",
+                          md: "0",
+                        }}
+                      >
                         {dateExists(experience.start_date) &&
                           dateExists(experience.end_date) &&
                           !experience.currentlyWorking && (
@@ -197,16 +187,6 @@ const Experience = ({ userData }: { userData: UserType }) => {
           </>
         )}
       </ScrollContainer>
-      <Paginate
-        breakLabel="..."
-        nextLabel="Next"
-        onPageChange={handlePageClick}
-        pageRangeDisplayed={2}
-        pageCount={pageCount}
-        previousLabel="Previous"
-        renderOnZeroPageCount={() => null}
-        mode={mode}
-      />
     </Box>
   );
 };
