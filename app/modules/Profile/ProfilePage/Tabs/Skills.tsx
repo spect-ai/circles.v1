@@ -13,6 +13,7 @@ const Skills = ({ userData }: { userData: UserType }) => {
   const [openSkillModal, setOpenSkillModal] = useState(false);
   const [selectedSkillId, setSelectedSkillId] = useState<number>(0);
   const [openSkillView, setOpenSkillView] = useState(false);
+  const [modalMode, setModalMode] = useState<"add" | "edit">("add");
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
@@ -24,13 +25,20 @@ const Skills = ({ userData }: { userData: UserType }) => {
         <ViewSkillModal
           skillId={selectedSkillId}
           handleClose={() => setOpenSkillView(false)}
+          setEditSkill={(value) => {
+            if (value) {
+              setModalMode("edit");
+              setOpenSkillModal(value);
+            }
+          }}
         />
       )}
       {openSkillModal && (
         <AddSkillModal
-          modalMode={"add"}
+          modalMode={modalMode}
           skills={skills}
           handleClose={() => setOpenSkillModal(false)}
+          skillId={selectedSkillId}
         />
       )}
       {!skills?.length && (

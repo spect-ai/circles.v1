@@ -26,78 +26,61 @@ import { useQuery } from "react-query";
 type Props = {
   handleClose: () => void;
   educationId: number;
+  setEditEducation: (value: boolean) => void;
 };
 
 export default function ViewEducationModal({
   handleClose,
   educationId,
+  setEditEducation,
 }: Props) {
   const { userData } = useGlobal();
-  const username = router.query.user;
 
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  const [organization, setOrganization] = useState("");
-  const [openEducationModal, setOpenEducationModal] = useState(false);
-  const [linkedCredentials, setLinkedCredentials] = useState<Credential[]>([]);
   const { removeEducation } = useProfileUpdate();
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
   const { mode } = useTheme();
-  console.log({ description });
+  const education = userData.education[educationId];
+
   useEffect(() => {
-    if (educationId || educationId === 0) {
-      const education = userData.education[educationId];
-      setTitle(education.courseDegree);
-      setOrganization(education.school);
-      setDescription(education.description);
-      if (
-        education.start_date?.year &&
-        education.start_date?.month &&
-        education.start_date?.day
-      ) {
-        setStartDate(
-          education.start_date?.year?.toString().padStart(2, "0") +
-            "-" +
-            education.start_date?.month?.toString().padStart(2, "0") +
-            "-" +
-            education.start_date?.day?.toString().padStart(2, "0")
-        );
-      }
-      if (
-        education.end_date?.year &&
-        education.end_date?.month &&
-        education.end_date?.day
-      ) {
-        setEndDate(
-          education.end_date?.year?.toString().padStart(2, "0") +
-            "-" +
-            education.end_date?.month?.toString().padStart(2, "0") +
-            "-" +
-            education.end_date?.day?.toString().padStart(2, "0")
-        );
-      }
-      setLinkedCredentials(education.linkedCredentials);
+    if (
+      education.start_date?.year &&
+      education.start_date?.month &&
+      education.start_date?.day
+    ) {
+      setStartDate(
+        education.start_date?.year?.toString().padStart(2, "0") +
+          "-" +
+          education.start_date?.month?.toString().padStart(2, "0") +
+          "-" +
+          education.start_date?.day?.toString().padStart(2, "0")
+      );
     }
-  }, [educationId, userData.education]);
+    if (
+      education.end_date?.year &&
+      education.end_date?.month &&
+      education.end_date?.day
+    ) {
+      setEndDate(
+        education.end_date?.year?.toString().padStart(2, "0") +
+          "-" +
+          education.end_date?.month?.toString().padStart(2, "0") +
+          "-" +
+          education.end_date?.day?.toString().padStart(2, "0")
+      );
+    }
+  }, []);
 
   return (
     <Modal
       handleClose={() => {
         handleClose();
       }}
-      title={title}
+      title={education.courseDegree}
     >
-      {openEducationModal && (
-        <AddEducationModal
-          modalMode={"edit"}
-          educationId={educationId}
-          handleClose={() => setOpenEducationModal(false)}
-        />
-      )}
       <Box
         padding={{
           xs: "4",
@@ -111,7 +94,7 @@ export default function ViewEducationModal({
         gap="4"
       >
         <Box>
-          <Text variant="large">{organization}</Text>
+          <Text variant="large">{education.school}</Text>
 
           <Box marginTop="2">
             {startDate && endDate ? (
@@ -125,13 +108,13 @@ export default function ViewEducationModal({
         </Box>
         <ScrollContainer>
           <Box>
-            <Editor value={description} disabled={true} />
+            <Editor value={education.description} disabled={true} />
           </Box>
-          {linkedCredentials?.length && (
+          {education.linkedCredentials?.length > 0 && (
             <Box>
               <Text variant="label">Linked Credentials</Text>
               <Box marginTop="4">
-                {linkedCredentials?.map((credential, index) => {
+                {education.linkedCredentials?.map((credential, index) => {
                   if (credential.service === "gitcoinPassport") {
                     return (
                       <Box
@@ -237,7 +220,10 @@ export default function ViewEducationModal({
               <PrimaryButton
                 icon={<EditOutlined style={{ fontSize: "1.3rem" }} />}
                 variant="tertiary"
-                onClick={() => setOpenEducationModal(true)}
+                onClick={() => {
+                  handleClose();
+                  setEditEducation(true);
+                }}
               >
                 Edit Education
               </PrimaryButton>

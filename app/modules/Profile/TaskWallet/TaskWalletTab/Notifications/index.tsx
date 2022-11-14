@@ -73,6 +73,8 @@ const Notifications = ({ notifIds }: NotifProps) => {
     void update();
   }
 
+  console.log({ userDataInNotif: userData });
+
   useEffect(() => {
     setEndOffset(itemOffset + 8);
     if ((userData?.notifications?.length as number) < 9) {

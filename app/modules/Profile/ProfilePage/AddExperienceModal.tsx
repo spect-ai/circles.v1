@@ -22,8 +22,14 @@ export default function AddExperienceModal({
   modalMode,
   experienceId,
 }: Props) {
+  const { userData } = useGlobal();
+
   const [role, setRole] = useState("");
-  const [description, setDescription] = useState("");
+  const [description, setDescription] = useState(
+    experienceId || experienceId === 0
+      ? userData.experiences[experienceId].description
+      : ""
+  );
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [organization, setOrganization] = useState("");
@@ -34,7 +40,6 @@ export default function AddExperienceModal({
     updateExperience,
     preprocessDate,
   } = useProfileUpdate();
-  const { userData } = useGlobal();
 
   const [requiredFieldsNotSet, setRequiredFieldsNotSet] = useState({
     role: false,
@@ -63,7 +68,6 @@ export default function AddExperienceModal({
       const experience = userData.experiences[experienceId];
       setRole(experience.jobTitle);
       setOrganization(experience.company);
-      setDescription(experience.description);
       if (
         experience.start_date?.year &&
         experience.start_date?.month &&
@@ -101,11 +105,11 @@ export default function AddExperienceModal({
       handleClose={() => {
         handleClose();
       }}
-      title={`Add Experience`}
+      title={modalMode === "add" ? "Add Experience" : "Edit Experience"}
     >
       <Box
         padding={{
-          xs: "2",
+          xs: "4",
           md: "8",
         }}
         width="full"

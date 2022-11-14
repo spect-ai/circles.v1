@@ -8,15 +8,14 @@ import ViewEducationModal from "../ViewEducationModal";
 import { Card, ScrollContainer } from "./index";
 
 const Education = ({ userData }: { userData: UserType }) => {
-  const [pageCount, setPageCount] = useState(0);
-  const [itemOffset, setItemOffset] = useState(0);
-  const [endOffset, setEndOffset] = useState(0);
   const [openEducationModal, setOpenEducationModal] = useState(false);
   const [selectedEducationId, setSelectedEducationId] = useState<number>(0);
   const [openEducationView, setOpenEducationView] = useState(false);
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
+  const [modalMode, setModalMode] = useState<"add" | "edit">("add");
+
   const { mode } = useTheme();
 
   const education = userData.education;
@@ -25,32 +24,25 @@ const Education = ({ userData }: { userData: UserType }) => {
     return date.day && date.month && date.year;
   };
 
-  useEffect(() => {
-    setEndOffset(itemOffset + 5);
-    if (userData.education?.length < 6) {
-      setPageCount(Math.floor(userData.education?.length / 5));
-    } else {
-      setPageCount(Math.ceil(userData.education?.length / 5));
-    }
-  }, [education?.length, endOffset, itemOffset]);
-
-  const handlePageClick = (event: { selected: number }) => {
-    const newOffset = (event.selected * 5) % education?.length;
-    setItemOffset(newOffset);
-  };
-
   return (
     <Box>
       {openEducationView && (
         <ViewEducationModal
           educationId={selectedEducationId}
           handleClose={() => setOpenEducationView(false)}
+          setEditEducation={(value) => {
+            if (value) {
+              setModalMode("edit");
+              setOpenEducationModal(true);
+            }
+          }}
         />
       )}
       {openEducationModal && (
         <AddEducationModal
-          modalMode={"add"}
+          modalMode={modalMode}
           handleClose={() => setOpenEducationModal(false)}
+          educationId={selectedEducationId}
         />
       )}
       <ScrollContainer>
@@ -80,87 +72,84 @@ const Education = ({ userData }: { userData: UserType }) => {
                 </PrimaryButton>
               </Box>
             )}
-            {education
-              ?.slice(0)
-              .slice(itemOffset, endOffset)
-              .map((edu: LensEducation, index) => {
-                return (
-                  <Card
-                    mode={mode}
-                    key={index}
-                    onClick={() => {
-                      setSelectedEducationId(index);
-                      setOpenEducationView(true);
+            {education.map((edu: LensEducation, index) => {
+              return (
+                <Card
+                  mode={mode}
+                  key={index}
+                  onClick={() => {
+                    setSelectedEducationId(index);
+                    setOpenEducationView(true);
+                  }}
+                >
+                  <Box
+                    display="flex"
+                    flexDirection={{
+                      xs: "column",
+                      md: "row",
                     }}
+                    gap="4"
                   >
                     <Box
                       display="flex"
-                      flexDirection={{
-                        xs: "column",
-                        md: "row",
+                      flexDirection="column"
+                      width={{
+                        xs: "full",
+                        md: "1/2",
                       }}
-                      gap="4"
+                      marginBottom={{
+                        xs: "0",
+                        md: "2",
+                      }}
                     >
-                      <Box
-                        display="flex"
-                        flexDirection="column"
-                        width={{
-                          xs: "full",
-                          md: "1/2",
-                        }}
-                        marginBottom={{
-                          xs: "0",
-                          md: "2",
-                        }}
-                      >
-                        <Text variant="extraLarge" weight="semiBold">
-                          {edu.courseDegree}
-                        </Text>
-                        <Text variant="small">{edu.school}</Text>
+                      <Text variant="extraLarge" weight="semiBold">
+                        {edu.courseDegree}
+                      </Text>
+                      <Text variant="small">{edu.school}</Text>
 
-                        {edu.linkedCredentials?.length > 0 && (
-                          <Text variant="label">
-                            {edu.linkedCredentials?.length} Credentials Linked
-                          </Text>
-                        )}
-                      </Box>
-                      <Box
-                        display="flex"
-                        flexDirection="column"
-                        width={{
-                          xs: "full",
-                          md: "1/2",
-                        }}
-                        alignItems={{
-                          xs: "flex-start",
-                          md: "flex-end",
-                        }}
-                        marginTop={{
-                          xs: "0",
-                          md: "1",
-                        }}
-                        marginBottom={{
-                          xs: "2",
-                          md: "0",
-                        }}
-                      >
-                        {dateExists(edu.start_date) &&
-                          dateExists(edu.end_date) &&
-                          !edu.currentlyStudying && (
-                            <Text variant="label" weight="light">
-                              {`${edu.start_date.month}/${edu.start_date.day}/${edu.start_date.year} - ${edu.end_date.month}/${edu.end_date.day}/${edu.end_date.year}`}
-                            </Text>
-                          )}
-                        {dateExists(edu.start_date) && edu.currentlyStudying && (
-                          <Text variant="label" weight="light">
-                            {`${edu.start_date.month}/${edu.start_date.day}/${edu.start_date.year} - Present`}
-                          </Text>
-                        )}
-                      </Box>
+                      {edu.linkedCredentials?.length > 0 && (
+                        <Text variant="label">
+                          {edu.linkedCredentials?.length} Credentials Linked
+                        </Text>
+                      )}
                     </Box>
-                  </Card>
-                );
-              })}
+                    <Box
+                      display="flex"
+                      flexDirection="column"
+                      width={{
+                        xs: "full",
+                        md: "1/2",
+                      }}
+                      alignItems={{
+                        xs: "flex-start",
+                        md: "flex-end",
+                      }}
+                      marginTop={{
+                        xs: "0",
+                        md: "1",
+                      }}
+                      marginBottom={{
+                        xs: "2",
+                        md: "0",
+                      }}
+                    >
+                      {dateExists(edu.start_date) &&
+                        dateExists(edu.end_date) &&
+                        !edu.currentlyStudying && (
+                          <Text variant="label" weight="light">
+                            {`${edu.start_date.month}/${edu.start_date.day}/${edu.start_date.year} - ${edu.end_date.month}/${edu.end_date.day}/${edu.end_date.year}`}
+                          </Text>
+                        )}
+                      {dateExists(edu.start_date) && edu.currentlyStudying && (
+                        <Text variant="label" weight="light">
+                          {`${edu.start_date.month}/${edu.start_date.day}/${edu.start_date.year} - Present`}
+                        </Text>
+                      )}
+                    </Box>
+                  </Box>
+                </Card>
+              );
+            })}
           </>
         )}
       </ScrollContainer>

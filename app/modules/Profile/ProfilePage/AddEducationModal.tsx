@@ -55,8 +55,6 @@ export default function AddEducationModal({
     }
   };
 
-  console.log({ description });
-
   useEffect(() => {
     if (modalMode === "edit" && (educationId || educationId === 0)) {
       setLoading(true);
@@ -93,7 +91,7 @@ export default function AddEducationModal({
     >
       <Box
         padding={{
-          xs: "2",
+          xs: "4",
           md: "8",
         }}
         width="full"

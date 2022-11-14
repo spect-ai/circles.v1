@@ -181,10 +181,10 @@ const ProfileCard = ({ username }: Props) => {
           <Text variant="small" align="center" as="div">
             {user?.bio}
           </Text>
-          <Text variant="label"> Circles </Text>
+          {/* <Text variant="label"> Circles </Text>
           {circlesArray?.length > 0 && (
-            <AvatarGroup limit={9} members={userCircles as any} />
-          )}
+            <AvatarGroup limit={9} members={circlesArray as any} />
+          )} */}
         </TextInfo>
         <Footer>
           {currentUser?.id == user?.id && (

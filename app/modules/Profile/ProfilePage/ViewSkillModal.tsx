@@ -16,9 +16,14 @@ import AddSkillModal from "./AddSkillModal";
 type Props = {
   handleClose: () => void;
   skillId: number;
+  setEditSkill: (value: boolean) => void;
 };
 
-export default function ViewSkillModal({ handleClose, skillId }: Props) {
+export default function ViewSkillModal({
+  handleClose,
+  skillId,
+  setEditSkill,
+}: Props) {
   const { userData } = useGlobal();
   const [title, setTitle] = useState("");
   const [openSkillModal, setOpenSkillModal] = useState(false);
@@ -43,14 +48,6 @@ export default function ViewSkillModal({ handleClose, skillId }: Props) {
       }}
       title={title}
     >
-      {openSkillModal && (
-        <AddSkillModal
-          modalMode={"edit"}
-          skillId={skillId}
-          skills={userData.skillsV2}
-          handleClose={() => setOpenSkillModal(false)}
-        />
-      )}
       <Box
         padding={{
           xs: "4",
@@ -64,7 +61,7 @@ export default function ViewSkillModal({ handleClose, skillId }: Props) {
         gap="4"
       >
         <ScrollContainer>
-          {linkedCredentials?.length && (
+          {linkedCredentials?.length > 0 && (
             <Box>
               <Text variant="label">Linked Credentials</Text>
               <Box marginTop="4">
@@ -174,7 +171,10 @@ export default function ViewSkillModal({ handleClose, skillId }: Props) {
               <PrimaryButton
                 icon={<EditOutlined style={{ fontSize: "1.3rem" }} />}
                 variant="tertiary"
-                onClick={() => setOpenSkillModal(true)}
+                onClick={() => {
+                  handleClose();
+                  setEditSkill(true);
+                }}
               >
                 Edit Skill
               </PrimaryButton>
