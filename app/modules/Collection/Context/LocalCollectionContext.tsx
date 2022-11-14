@@ -88,18 +88,19 @@ export function useProviderLocalCollection() {
   }, [colId, fetchCollection]);
 
   useEffect(() => {
-    console.log("useeffect");
     if (socket && socket.on && localCollection.slug) {
       socket.on(
         `${localCollection.slug}:dataAdded`,
         (collection: CollectionType) => {
+          console.log("data added event");
           updateCollection(collection);
         }
       );
       socket.on(
-        `${localCollection.slug}:newActivity`,
+        `${localCollection.slug}:newActivityPrivate`,
         _.debounce((event: { data: CollectionType; user: string }) => {
           if (event.user !== connectedUser) {
+            console.log("update event");
             updateCollection(event.data);
           }
         }, 2000)

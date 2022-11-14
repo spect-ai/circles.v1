@@ -25,6 +25,7 @@ import DiscordIcon from "@/app/assets/icons/discordIcon.svg";
 import Image from "next/image";
 import Editor from "@/app/common/components/Editor";
 import DataActivity from "../Collection/Form/DataDrawer/DataActivity";
+import _ from "lodash";
 
 export default function PublicForm() {
   const router = useRouter();
@@ -39,7 +40,7 @@ export default function PublicForm() {
   const [canFillForm, setCanFillForm] = useState(form?.canFillForm || false);
   const [stamps, setStamps] = useState([] as Stamp[]);
 
-  const { connectedUser } = useGlobal();
+  const { connectedUser, socket } = useGlobal();
 
   const [memberDetails, setMemberDetails] = useState({} as any);
 
@@ -92,6 +93,21 @@ export default function PublicForm() {
       }
     })();
   }, [connectedUser, formId]);
+
+  useEffect(() => {
+    if (socket && socket.on && formId) {
+      socket.on(
+        `${formId}:newActivityPublic`,
+        _.debounce(async (event: { user: string }) => {
+          console.log({ event, connectedUser });
+          if (event.user !== connectedUser) {
+            const res: FormType = await getForm(formId as string);
+            setForm(res);
+          }
+        }, 2000)
+      );
+    }
+  }, [connectedUser, formId, socket]);
 
   if (loading) {
     return <Loader loading text="Fetching form..." />;
@@ -365,6 +381,7 @@ export default function PublicForm() {
                     ?.slug
                 }
                 setForm={setForm}
+                dataOwner={currentUser as UserType}
               />
             )}
           </FormContainer>
