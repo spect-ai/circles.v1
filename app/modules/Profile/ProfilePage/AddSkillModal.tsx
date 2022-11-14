@@ -55,7 +55,7 @@ export default function AddSkillModal({
       handleClose={() => {
         handleClose();
       }}
-      title={modalMode === "add" ? "Add Education" : "Edit Education"}
+      title={modalMode === "add" ? "Add Skill" : "Edit Skill"}
     >
       <Box
         padding={{

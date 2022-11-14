@@ -44,7 +44,7 @@ const Skills = ({ userData }: { userData: UserType }) => {
       {!skills?.length && (
         <Box style={{ margin: "35vh 15vw" }}>
           <Text color="accent" align="center">
-            You havent added your education yet :/
+            You havent added your skills yet :/
           </Text>
           {currentUser?.id === userData.id && (
             <Box marginTop="4">
