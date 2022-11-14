@@ -9,7 +9,7 @@ import { Card, ScrollContainer } from "./index";
 
 const Education = ({ userData }: { userData: UserType }) => {
   const [openEducationModal, setOpenEducationModal] = useState(false);
-  const [selectedEducationId, setSelectedEducationId] = useState<number>(0);
+  const [selectedEducationId, setSelectedEducationId] = useState<number>();
   const [openEducationView, setOpenEducationView] = useState(false);
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
@@ -55,7 +55,10 @@ const Education = ({ userData }: { userData: UserType }) => {
               <Box marginTop="4">
                 <PrimaryButton
                   variant="tertiary"
-                  onClick={() => setOpenEducationModal(true)}
+                  onClick={() => {
+                    setModalMode("add");
+                    setOpenEducationModal(true);
+                  }}
                 >
                   Add Education
                 </PrimaryButton>
@@ -67,7 +70,12 @@ const Education = ({ userData }: { userData: UserType }) => {
           <>
             {currentUser?.id === userData.id && (
               <Box width="48" marginTop="4">
-                <PrimaryButton onClick={() => setOpenEducationModal(true)}>
+                <PrimaryButton
+                  onClick={() => {
+                    setModalMode("add");
+                    setOpenEducationModal(true);
+                  }}
+                >
                   Add Education
                 </PrimaryButton>
               </Box>

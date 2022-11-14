@@ -23,11 +23,10 @@ export default function AddExperienceModal({
   experienceId,
 }: Props) {
   const { userData } = useGlobal();
-
   const [role, setRole] = useState("");
   const [description, setDescription] = useState(
     experienceId || experienceId === 0
-      ? userData.experiences[experienceId].description
+      ? userData.experiences[experienceId]?.description
       : ""
   );
   const [startDate, setStartDate] = useState("");

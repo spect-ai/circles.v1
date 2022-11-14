@@ -11,7 +11,7 @@ import ViewSkillModal from "../ViewSkillModal";
 const Skills = ({ userData }: { userData: UserType }) => {
   const { mode } = useTheme();
   const [openSkillModal, setOpenSkillModal] = useState(false);
-  const [selectedSkillId, setSelectedSkillId] = useState<number>(0);
+  const [selectedSkillId, setSelectedSkillId] = useState<number>();
   const [openSkillView, setOpenSkillView] = useState(false);
   const [modalMode, setModalMode] = useState<"add" | "edit">("add");
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
@@ -50,7 +50,10 @@ const Skills = ({ userData }: { userData: UserType }) => {
             <Box marginTop="4">
               <PrimaryButton
                 variant="tertiary"
-                onClick={() => setOpenSkillModal(true)}
+                onClick={() => {
+                  setModalMode("add");
+                  setOpenSkillModal(true);
+                }}
               >
                 Add Skill
               </PrimaryButton>
@@ -62,7 +65,12 @@ const Skills = ({ userData }: { userData: UserType }) => {
         <>
           {currentUser?.id === userData.id && (
             <Box width="48" marginTop="4">
-              <PrimaryButton onClick={() => setOpenSkillModal(true)}>
+              <PrimaryButton
+                onClick={() => {
+                  setModalMode("add");
+                  setOpenSkillModal(true);
+                }}
+              >
                 Add Skill
               </PrimaryButton>
             </Box>

@@ -25,7 +25,7 @@ import { useQuery } from "react-query";
 
 type Props = {
   handleClose: () => void;
-  educationId: number;
+  educationId?: number;
   setEditEducation: (value: boolean) => void;
 };
 
@@ -43,9 +43,11 @@ export default function ViewEducationModal({
     enabled: false,
   });
   const { mode } = useTheme();
-  const education = userData.education[educationId];
+  const education =
+    educationId || educationId === 0 ? userData.education[educationId] : null;
 
   useEffect(() => {
+    if (!education) return;
     if (
       education.start_date?.year &&
       education.start_date?.month &&
@@ -75,180 +77,188 @@ export default function ViewEducationModal({
   }, []);
 
   return (
-    <Modal
-      handleClose={() => {
-        handleClose();
-      }}
-      title={education.courseDegree}
-    >
-      <Box
-        padding={{
-          xs: "4",
-          md: "8",
-        }}
-        paddingTop="0"
-        width="full"
-        display="flex"
-        flexDirection="column"
-        justifyContent="flex-start"
-        gap="4"
-      >
-        <Box>
-          <Text variant="large">{education.school}</Text>
-
-          <Box marginTop="2">
-            {startDate && endDate ? (
-              <Text variant="label">
-                {startDate} - {endDate}
-              </Text>
-            ) : startDate ? (
-              <Text variant="label">{startDate} - Present</Text>
-            ) : null}
-          </Box>
-        </Box>
-        <ScrollContainer>
-          <Box>
-            <Editor value={education.description} disabled={true} />
-          </Box>
-          {education.linkedCredentials?.length > 0 && (
+    <>
+      {education && (educationId || educationId === 0) && (
+        <Modal
+          handleClose={() => {
+            handleClose();
+          }}
+          title={education.courseDegree}
+        >
+          <Box
+            padding={{
+              xs: "4",
+              md: "8",
+            }}
+            paddingTop="0"
+            width="full"
+            display="flex"
+            flexDirection="column"
+            justifyContent="flex-start"
+            gap="4"
+          >
             <Box>
-              <Text variant="label">Linked Credentials</Text>
-              <Box marginTop="4">
-                {education.linkedCredentials?.map((credential, index) => {
-                  if (credential.service === "gitcoinPassport") {
-                    return (
-                      <Box
-                        key={index}
-                        display="flex"
-                        flexDirection="row"
-                        gap="2"
-                        width="full"
-                        height="36"
-                      >
-                        <Box
-                          width="1/4"
-                          display="flex"
-                          flexDirection="row"
-                          justifyContent="center"
-                          alignItems="center"
-                          padding="2"
-                        >
-                          <Box
-                            width="12"
-                            height="12"
-                            display="flex"
-                            flexDirection="row"
-                            justifyContent="center"
-                            alignItems="center"
-                          >
-                            {mode === "dark"
-                              ? PassportStampIcons[
-                                  (credential?.metadata as VerifiableCredential)
-                                    ?.providerName as keyof typeof PassportStampIconsLightMode
-                                ]
-                              : PassportStampIconsLightMode[
-                                  (credential?.metadata as VerifiableCredential)
-                                    ?.providerName as keyof typeof PassportStampIconsLightMode
-                                ]}
-                          </Box>
-                        </Box>
-                        <Box
-                          display="flex"
-                          flexDirection="column"
-                          justifyContent="center"
-                          width="3/4"
-                        >
-                          <Text variant="large" weight="bold" align="left">
-                            {credential.name}
-                          </Text>
-                        </Box>
-                      </Box>
-                    );
-                  } else {
-                    return (
-                      <Box
-                        key={index}
-                        display="flex"
-                        flexDirection="row"
-                        gap="2"
-                      >
-                        <Box width="1/4" padding="2">
-                          <Image
-                            src={credential.imageUri}
-                            width="100%"
-                            height="100%"
-                            objectFit="contain"
-                            layout="responsive"
-                            alt="img"
-                          />
-                        </Box>
-                        <Box
-                          display="flex"
-                          flexDirection="column"
-                          justifyContent="center"
-                          width="3/4"
-                        >
-                          <Text variant="large" weight="bold" align="left">
-                            {credential.name}
-                          </Text>
-                        </Box>
-                      </Box>
-                    );
-                  }
-                })}
+              <Text variant="large">{education.school}</Text>
+
+              <Box marginTop="2">
+                {startDate && endDate ? (
+                  <Text variant="label">
+                    {startDate} - {endDate}
+                  </Text>
+                ) : startDate ? (
+                  <Text variant="label">{startDate} - Present</Text>
+                ) : null}
               </Box>
             </Box>
-          )}
-        </ScrollContainer>
-        {currentUser?.id === userData.id && (
-          <Box
-            padding="3"
-            display="flex"
-            flexDirection={{
-              xs: "column",
-              md: "row",
-            }}
-            gap="4"
-            justifyContent="flex-end"
-          >
-            <Box
-              width={{
-                xs: "full",
-                md: "1/2",
-              }}
-            >
-              <PrimaryButton
-                icon={<EditOutlined style={{ fontSize: "1.3rem" }} />}
-                variant="tertiary"
-                onClick={() => {
-                  handleClose();
-                  setEditEducation(true);
+            <ScrollContainer>
+              <Box>
+                <Editor value={education.description} disabled={true} />
+              </Box>
+              {education.linkedCredentials?.length > 0 && (
+                <Box>
+                  <Text variant="label">Linked Credentials</Text>
+                  <Box marginTop="4">
+                    {education.linkedCredentials?.map((credential, index) => {
+                      if (credential.service === "gitcoinPassport") {
+                        return (
+                          <Box
+                            key={index}
+                            display="flex"
+                            flexDirection="row"
+                            gap="2"
+                            width="full"
+                            height="36"
+                          >
+                            <Box
+                              width="1/4"
+                              display="flex"
+                              flexDirection="row"
+                              justifyContent="center"
+                              alignItems="center"
+                              padding="2"
+                            >
+                              <Box
+                                width="12"
+                                height="12"
+                                display="flex"
+                                flexDirection="row"
+                                justifyContent="center"
+                                alignItems="center"
+                              >
+                                {mode === "dark"
+                                  ? PassportStampIcons[
+                                      (
+                                        credential?.metadata as VerifiableCredential
+                                      )
+                                        ?.providerName as keyof typeof PassportStampIconsLightMode
+                                    ]
+                                  : PassportStampIconsLightMode[
+                                      (
+                                        credential?.metadata as VerifiableCredential
+                                      )
+                                        ?.providerName as keyof typeof PassportStampIconsLightMode
+                                    ]}
+                              </Box>
+                            </Box>
+                            <Box
+                              display="flex"
+                              flexDirection="column"
+                              justifyContent="center"
+                              width="3/4"
+                            >
+                              <Text variant="large" weight="bold" align="left">
+                                {credential.name}
+                              </Text>
+                            </Box>
+                          </Box>
+                        );
+                      } else {
+                        return (
+                          <Box
+                            key={index}
+                            display="flex"
+                            flexDirection="row"
+                            gap="2"
+                          >
+                            <Box width="1/4" padding="2">
+                              <Image
+                                src={credential.imageUri}
+                                width="100%"
+                                height="100%"
+                                objectFit="contain"
+                                layout="responsive"
+                                alt="img"
+                              />
+                            </Box>
+                            <Box
+                              display="flex"
+                              flexDirection="column"
+                              justifyContent="center"
+                              width="3/4"
+                            >
+                              <Text variant="large" weight="bold" align="left">
+                                {credential.name}
+                              </Text>
+                            </Box>
+                          </Box>
+                        );
+                      }
+                    })}
+                  </Box>
+                </Box>
+              )}
+            </ScrollContainer>
+            {currentUser?.id === userData.id && (
+              <Box
+                padding="3"
+                display="flex"
+                flexDirection={{
+                  xs: "column",
+                  md: "row",
                 }}
+                gap="4"
+                justifyContent="flex-end"
               >
-                Edit Education
-              </PrimaryButton>
-            </Box>
-            <Box
-              width={{
-                xs: "full",
-                md: "1/2",
-              }}
-            >
-              <PrimaryButton
-                icon={<DeleteOutlined style={{ fontSize: "1.3rem" }} />}
-                onClick={async () => {
-                  handleClose();
+                <Box
+                  width={{
+                    xs: "full",
+                    md: "1/2",
+                  }}
+                >
+                  <PrimaryButton
+                    icon={<EditOutlined style={{ fontSize: "1.3rem" }} />}
+                    variant="tertiary"
+                    onClick={() => {
+                      handleClose();
+                      setEditEducation(true);
+                    }}
+                  >
+                    Edit Education
+                  </PrimaryButton>
+                </Box>
+                <Box
+                  width={{
+                    xs: "full",
+                    md: "1/2",
+                  }}
+                >
+                  <PrimaryButton
+                    icon={<DeleteOutlined style={{ fontSize: "1.3rem" }} />}
+                    onClick={async () => {
+                      handleClose();
 
-                  await removeEducation(educationId.toString());
-                }}
-              >
-                Delete Education
-              </PrimaryButton>
-            </Box>
+                      await removeEducation(educationId.toString());
+                    }}
+                  >
+                    Delete Education
+                  </PrimaryButton>
+                </Box>
+              </Box>
+            )}
           </Box>
-        )}
-      </Box>
-    </Modal>
+        </Modal>
+      )}
+    </>
   );
 }
 export const DateInput = styled.input<{ mode: string }>`

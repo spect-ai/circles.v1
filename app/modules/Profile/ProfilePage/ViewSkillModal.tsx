@@ -15,7 +15,7 @@ import AddSkillModal from "./AddSkillModal";
 
 type Props = {
   handleClose: () => void;
-  skillId: number;
+  skillId?: number;
   setEditSkill: (value: boolean) => void;
 };
 
@@ -26,7 +26,6 @@ export default function ViewSkillModal({
 }: Props) {
   const { userData } = useGlobal();
   const [title, setTitle] = useState("");
-  const [openSkillModal, setOpenSkillModal] = useState(false);
   const [linkedCredentials, setLinkedCredentials] = useState<Credential[]>([]);
   const { updateProfile } = useProfileUpdate();
   const { data: currentUser } = useQuery<UserType>("getMyUser", {

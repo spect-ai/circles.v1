@@ -12,7 +12,7 @@ const Experience = ({ userData }: { userData: UserType }) => {
   const { mode } = useTheme();
   const [addExperience, setAddExperience] = useState(false);
   const [addFromLens, setAddFromLens] = useState(false);
-  const [selectedExperienceId, setSelectedExperienceId] = useState<number>(0);
+  const [selectedExperienceId, setSelectedExperienceId] = useState<number>();
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });

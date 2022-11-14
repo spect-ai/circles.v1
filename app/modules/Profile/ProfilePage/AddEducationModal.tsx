@@ -23,7 +23,7 @@ export default function AddEducationModal({
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState(
-    educationId ? userData.education[educationId].description : ""
+    educationId ? userData.education[educationId]?.description : ""
   );
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");

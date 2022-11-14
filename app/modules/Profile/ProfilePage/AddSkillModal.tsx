@@ -44,8 +44,8 @@ export default function AddSkillModal({
     if (modalMode === "edit" && (skillId || skillId === 0)) {
       setLoading(true);
       const skill = userData.skillsV2[skillId];
-      setTitle(skill.title);
-      setLinkedCredentials(skill.linkedCredentials);
+      setTitle(skill?.title);
+      setLinkedCredentials(skill?.linkedCredentials);
       setLoading(false);
     }
   }, []);
