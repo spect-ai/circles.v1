@@ -49,7 +49,7 @@ const Education = ({ userData }: { userData: UserType }) => {
         {!education?.length && (
           <Box style={{ margin: "35vh 15vw" }}>
             <Text color="accent" align="center">
-              You havent added your education yet :/
+              No education added yet :/
             </Text>
             {currentUser?.id === userData.id && (
               <Box marginTop="4">

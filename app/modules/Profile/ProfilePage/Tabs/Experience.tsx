@@ -69,7 +69,7 @@ const Experience = ({ userData }: { userData: UserType }) => {
             )}
           </Box>
         )}
-        {experiences?.length && (
+        {experiences?.length > 0 && (
           <>
             {currentUser?.id === userData.id && (
               <Box

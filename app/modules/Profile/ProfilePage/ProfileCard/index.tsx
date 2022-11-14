@@ -175,12 +175,17 @@ const ProfileCard = ({ username }: Props) => {
               {skill.title}
             </Tag>
           ))}
+          {!user?.skillsV2?.length && (
+            <Text variant="small"> No skills added </Text>
+          )}
         </InfoBox>
         <TextInfo>
           <Text variant="label"> Bio </Text>
           <Text variant="small" align="center" as="div">
             {user?.bio}
           </Text>
+          {!user?.bio && <Text variant="small"> No bio added </Text>}
+
           {/* <Text variant="label"> Circles </Text>
           {circlesArray?.length > 0 && (
             <AvatarGroup limit={9} members={circlesArray as any} />
