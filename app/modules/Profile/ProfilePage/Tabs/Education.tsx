@@ -21,7 +21,7 @@ const Education = ({ userData }: { userData: UserType }) => {
   const education = userData.education;
 
   const dateExists = (date: LensDate) => {
-    return date.day && date.month && date.year;
+    return date?.day && date?.month && date?.year;
   };
 
   return (
@@ -49,7 +49,7 @@ const Education = ({ userData }: { userData: UserType }) => {
         {!education?.length && (
           <Box style={{ margin: "35vh 15vw" }}>
             <Text color="accent" align="center">
-              No education added yet :/
+              No education added yet
             </Text>
             {currentUser?.id === userData.id && (
               <Box marginTop="4">
@@ -141,14 +141,14 @@ const Education = ({ userData }: { userData: UserType }) => {
                         md: "0",
                       }}
                     >
-                      {dateExists(edu.start_date) &&
-                        dateExists(edu.end_date) &&
-                        !edu.currentlyStudying && (
+                      {dateExists(edu?.start_date) &&
+                        dateExists(edu?.end_date) &&
+                        !edu?.currentlyStudying && (
                           <Text variant="label" weight="light">
                             {`${edu.start_date.month}/${edu.start_date.day}/${edu.start_date.year} - ${edu.end_date.month}/${edu.end_date.day}/${edu.end_date.year}`}
                           </Text>
                         )}
-                      {dateExists(edu.start_date) && edu.currentlyStudying && (
+                      {dateExists(edu?.start_date) && edu?.currentlyStudying && (
                         <Text variant="label" weight="light">
                           {`${edu.start_date.month}/${edu.start_date.day}/${edu.start_date.year} - Present`}
                         </Text>

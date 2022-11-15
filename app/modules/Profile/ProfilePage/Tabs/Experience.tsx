@@ -52,7 +52,7 @@ const Experience = ({ userData }: { userData: UserType }) => {
         {!experiences?.length && (
           <Box style={{ margin: "35vh 15vw" }}>
             <Text color="accent" align="center">
-              No experience yet :/
+              No experience added yet
             </Text>
             {currentUser?.id === userData.id && (
               <Box marginTop="4">
