@@ -52,7 +52,7 @@ function Dashboard() {
   // eslint-disable-next-line @typescript-eslint/unbound-method
   const { mode, setMode } = useTheme();
   const router = useRouter();
-  console.log({ circlesArray });
+
   useEffect(() => {
     if (circlesArray?.memberOf?.length == 0) void refetch();
     if (circlesArray) setCircles(circlesArray?.memberOf);
@@ -252,14 +252,14 @@ function Dashboard() {
           >
             Projects
           </Button>
-          <Button
+          {/* <Button
             size="small"
             prefix={<IconCollection size={"5"} />}
             variant={panelTab === "Card" ? "tertiary" : "transparent"}
             onClick={() => setPanelTab("Card")}
           >
             Cards
-          </Button>
+          </Button> */}
         </Stack>
         <Box>
           {panelTab == "Circle" && (
@@ -268,13 +268,13 @@ function Dashboard() {
           {panelTab == "Project" && (
             <YourProjects circles={circles} isLoading={isLoading} />
           )}
-          {panelTab == "Card" && (
+          {/* {panelTab == "Card" && (
             <YourCards
               circles={circles}
               isLoading={isLoading}
               currentUser={currentUser}
             />
-          )}
+          )} */}
         </Box>
       </Box>
       <AnimatePresence>

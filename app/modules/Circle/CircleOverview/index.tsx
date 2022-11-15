@@ -2,7 +2,7 @@ import { useGlobal } from "@/app/context/globalContext";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import Tabs from "@/app/common/components/Tabs";
 
-import { Box, Button, Stack, Input, IconSearch, IconGrid } from "degen";
+import { Box, Button, Stack, Input, IconSearch, IconGrid, useTheme } from "degen";
 import { AnimatePresence } from "framer-motion";
 import { matchSorter } from "match-sorter";
 import { useRouter } from "next/router";
@@ -18,6 +18,63 @@ import Breadcrumbs from "@/app/common/components/Breadcrumbs";
 import Roles from "../RolesTab";
 import { FolderOpenOutlined } from "@ant-design/icons";
 import { Hidden } from "react-grid-system";
+import styled from "styled-components";
+
+interface Props {
+  toggle: number;
+  setToggle: (toggle: number) => void;
+}
+
+const ToggleButton = styled.button<{ bgcolor: boolean }>`
+  border-radius: 2rem;
+  border: none;
+  padding: 0.4rem 1rem;
+  text-align: center;
+  cursor: pointer;
+  font-weight: 600;
+  font-family: Inter;
+  transition-duration: 0.4s;
+  color: ${(props) =>
+    props.bgcolor ? "rgb(191,90,242)" : "rgb(191,90,242,0.8)"};
+  background-color: ${(props) =>
+    props.bgcolor ? "rgb(191,90,242,0.1)" : "transparent"};
+`;
+
+export const Toggle = ({ toggle, setToggle } : Props) => {
+  const { mode } = useTheme();
+
+  return (
+    <Box
+      backgroundColor={mode === "dark" ? "background" : "white"}
+      style={{
+        padding: "0.2rem",
+        borderRadius: "2rem",
+        boxShadow: "0px 1px 3px rgba(0, 0, 0, 0.2)",
+        width: "fit-content",
+        margin: "0 auto",
+      }}
+    >
+      <ToggleButton
+        onClick={() => setToggle(0)}
+        bgcolor={toggle == 0 ? true : false}
+      >
+        Overview
+      </ToggleButton>
+      <ToggleButton
+        onClick={() => setToggle(1)}
+        bgcolor={toggle == 1 ? true : false}
+      >
+        Contributors
+      </ToggleButton>
+      <ToggleButton
+        onClick={() => setToggle(2)}
+        bgcolor={toggle == 2 ? true : false}
+      >
+        Roles
+      </ToggleButton>
+    </Box>
+  );
+};
 
 export default function CircleDashboard() {
   const { isSidebarExpanded, groupBy, setGroupBy, toggle, setToggle } =
@@ -86,19 +143,23 @@ export default function CircleDashboard() {
           }}
           transitionDuration="500"
         >
-          <Tabs
-            selectedTab={toggle}
-            onTabClick={onTabClick}
-            tabs={["Overview", "Contributors", "Roles"]}
-            tabTourIds={[
-              "circle-dashboard-overview",
-              "circle-dashboard-contributor",
-              "circle-dashboard-roles",
-            ]}
-            orientation="horizontal"
-            unselectedColor="transparent"
-            selectedColor="secondary"
-          />
+          {/* <Box width={{ lg: "112"}} marginX="auto">
+            <Tabs
+              selectedTab={toggle}
+              onTabClick={onTabClick}
+              tabs={["Overview", "Contributors", "Roles"]}
+              tabTourIds={[
+                "circle-dashboard-overview",
+                "circle-dashboard-contributor",
+                "circle-dashboard-roles",
+              ]}
+              orientation="horizontal"
+              unselectedColor="transparent"
+              selectedColor="secondary"
+            />
+          </Box> */}
+          <Toggle toggle={toggle} setToggle={setToggle} />
+
           {toggle == 0 && (
             <Stack space="1">
               <Stack

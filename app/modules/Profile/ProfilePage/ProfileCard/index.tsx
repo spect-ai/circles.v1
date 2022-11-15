@@ -98,8 +98,6 @@ const ProfileCard = ({ username }: Props) => {
     src: aCircle?.avatar,
   }));
 
-  console.log({ circlesArray });
-
   useEffect(() => {
     if (user?.id) {
       setLoading(true);

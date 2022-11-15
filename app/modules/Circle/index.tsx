@@ -83,7 +83,6 @@ export default function Circle() {
               variant="secondary"
               onClick={async () => {
                 const data = await joinCircle(circle.id);
-                console.log(data);
                 if (data) {
                   toast("You have joined circle successfully", {
                     theme: "dark",
