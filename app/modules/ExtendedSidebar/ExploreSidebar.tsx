@@ -152,16 +152,6 @@ export default function ExploreSidebar() {
           </Box>
           <Box display={"flex"} flexDirection="column" gap="2" paddingX={"2"}>
             <PrimaryButton
-              onClick={() => {
-                window.open(
-                  "https://calendly.com/adityachakra16/outreach",
-                  "_blank"
-                );
-              }}
-            >
-              Book a Demo
-            </PrimaryButton>
-            <PrimaryButton
               variant="transparent"
               onClick={() => {
                 window.open(
@@ -171,6 +161,16 @@ export default function ExploreSidebar() {
               }}
             >
               FAQ
+            </PrimaryButton>
+            <PrimaryButton
+              onClick={() => {
+                window.open(
+                  "https://calendly.com/adityachakra16/outreach",
+                  "_blank"
+                );
+              }}
+            >
+              Book a Demo
             </PrimaryButton>
           </Box>
         </Container>

@@ -180,6 +180,7 @@ export interface RetroType {
       feedbackGiven: {
         [userId: string]: string;
       };
+      voted?: boolean;
     };
   };
   feedbackGiven: {

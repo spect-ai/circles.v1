@@ -4,7 +4,6 @@ import { Avatar, Box, Input, Stack, Text } from "degen";
 import React from "react";
 import { useCircle } from "../../Circle/CircleContext";
 import Feedback from "./Feedback";
-import ClickableAvatar from "@/app/common/components/Avatar";
 
 type Props = {
   retroId: string;

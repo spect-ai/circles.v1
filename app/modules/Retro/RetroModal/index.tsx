@@ -6,7 +6,7 @@ import { addVotes, endRetro } from "@/app/services/Retro";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { RetroType } from "@/app/types";
 import { SaveOutlined } from "@ant-design/icons";
-import { Box, Heading, IconClose, Stack, Text } from "degen";
+import { Box, Heading, IconClose, Stack, Tag, Text } from "degen";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { useQuery } from "react-query";
@@ -53,6 +53,7 @@ export default function RetroModal({ handleClose }: Props) {
 
   const [votesGiven, setVotesGiven] = useState({} as any);
   const [votesRemaining, setVotesRemaining] = useState(0);
+  const [filterOn, setFilterOn] = useState(false);
 
   useEffect(() => {
     if (retroSlug) {
@@ -124,9 +125,18 @@ export default function RetroModal({ handleClose }: Props) {
           }}
         >
           <Stack>
-            <Text weight="semiBold" size="large">
-              {retro.description}
-            </Text>
+            <Stack direction={"horizontal"} justify="space-between">
+              <Text weight="semiBold" size="large">
+                {retro.description}
+              </Text>
+              <Box onClick={() => setFilterOn(!filterOn)} cursor="pointer">
+                {!retro.status.active && (
+                  <Tag tone={filterOn ? "accent" : "secondary"} hover>
+                    Filter non voters
+                  </Tag>
+                )}
+              </Box>
+            </Stack>
             <Box>
               <Stack
                 direction="horizontal"
@@ -151,7 +161,9 @@ export default function RetroModal({ handleClose }: Props) {
                 (retro.status.active &&
                   retro.stats[member]?.canReceive &&
                   connectedUser !== member) ||
-                (!retro.status.active && connectedUser !== member)
+                (!retro.status.active &&
+                  connectedUser !== member &&
+                  (!filterOn || (filterOn && retro.stats?.[member].voted)))
               ) {
                 return (
                   <MemberRow
