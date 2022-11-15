@@ -90,15 +90,9 @@ export const joinCircle = async (circleId: string) => {
   );
   if (res.ok) {
     const data = await res.json();
-    toast("You have joined circle successfully", {
-      theme: "dark",
-    });
     console.log({ data });
     return data;
   } else {
-    toast("Sorry, you dont meet the requirements to join this circle", {
-      theme: "dark",
-    });
     console.log("Error joining circle");
     return null;
   }

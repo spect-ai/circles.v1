@@ -40,8 +40,6 @@ export default function AddRole({ role }: props) {
     }
   }, [circle, role]);
 
-  console.log(permissions);
-
   return (
     <Box>
       {!role ? (

@@ -2,8 +2,8 @@ import Loader from "@/app/common/components/Loader";
 import { ApartmentOutlined } from "@ant-design/icons";
 import { Box, Button, useTheme, Text, IconLockClosed, Stack } from "degen";
 import { AnimatePresence } from "framer-motion";
-import { useState } from "react";
-import { ToastContainer } from "react-toastify";
+import { useEffect, useState } from "react";
+import { toast, ToastContainer } from "react-toastify";
 import styled from "styled-components";
 import Navigation from "../Project/Navigation";
 import RetroPage from "../Retro";
@@ -12,6 +12,7 @@ import CircleDashboard from "./CircleOverview";
 import { useRouter } from "next/router";
 import { joinCircle } from "@/app/services/JoinCircle";
 import Roles from "./RolesTab";
+import { useGlobal } from "@/app/context/globalContext";
 
 const BoxContainer = styled(Box)`
   width: calc(100vw - 3.5rem);
@@ -29,6 +30,12 @@ export default function Circle() {
   const { mode } = useTheme();
   const [graphOpen, setGraphOpen] = useState(false);
   const router = useRouter();
+  const { connectedUser } = useGlobal();
+
+  useEffect(() => {
+    void fetchCircle();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [connectedUser]);
 
   if (isLoading || !circle || !memberDetails) {
     return <Loader text="...." loading />;
@@ -37,6 +44,16 @@ export default function Circle() {
   if (circle?.unauthorized && !isLoading && circle?.id)
     return (
       <Box marginX="6">
+        <ToastContainer
+          toastStyle={{
+            backgroundColor: `${
+              mode === "dark" ? "rgb(20,20,20)" : "rgb(240,240,240)"
+            }`,
+            color: `${
+              mode === "dark" ? "rgb(255,255,255,0.7)" : "rgb(20,20,20,0.7)"
+            }`,
+          }}
+        />
         <Box
           style={{
             margin: "1rem auto",
@@ -66,10 +83,21 @@ export default function Circle() {
               variant="secondary"
               onClick={async () => {
                 const data = await joinCircle(circle.id);
+                console.log(data);
                 if (data) {
+                  toast("You have joined circle successfully", {
+                    theme: "dark",
+                  });
                   fetchCircle();
                   fetchMemberDetails();
+                  return;
                 }
+                toast(
+                  "Sorry, you dont meet the requirements to join this circle",
+                  {
+                    theme: "dark",
+                  }
+                );
               }}
             >
               <Text size="base" color={"accent"}>
