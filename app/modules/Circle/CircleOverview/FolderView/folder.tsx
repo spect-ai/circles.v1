@@ -230,7 +230,8 @@ const Folder = ({
           />
           {(canDo("createNewCircle") ||
             canDo("createNewProject") ||
-            canDo("createNewRetro")) && (
+            canDo("createNewRetro") ||
+            canDo("createNewForm")) && (
             <CreateFolderItem
               setProjectModal={setProjectModal}
               setWorkstreamModal={setWorkstreamModal}

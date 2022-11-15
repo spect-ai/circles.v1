@@ -49,8 +49,14 @@ export default function CreateFolderItem({
               variant="transparent"
               shape="circle"
               onClick={(e) => {
-                e.stopPropagation();
-                setCollectionModal(true);
+                if (canDo("createNewForm")) {
+                  e.stopPropagation();
+                  setCollectionModal(true);
+                } else {
+                  toast.error(
+                    "You don't have the permission to create a new Form"
+                  );
+                }
               }}
             >
               <IconCollection size="4" color="accent" />

@@ -17,6 +17,7 @@ import { createFolder } from "@/app/services/Folders";
 import Folder from "./folder";
 import useDragFolder from "./useDragHook";
 import styled from "styled-components";
+import { FolderOpenOutlined } from "@ant-design/icons";
 
 interface Props {
   filteredProjects: {
@@ -161,10 +162,23 @@ export const FolderView = ({
       </Box>
       {(circle?.folderOrder?.length == 0 ||
         circle?.folderOrder?.length === undefined) && (
-        <Box>
-          <Text variant="label">
-            Create Folders to classify and view Projects, Workstreams, Forms &
-            Retro
+        <Box
+          style={{
+            margin: "12% 20%",
+            display: "flex",
+            flexDirection: "column",
+            gap: "1rem",
+            alignItems: "center",
+          }}
+        >
+          <FolderOpenOutlined
+            style={{ fontSize: "5rem", color: "rgb(191, 90, 242, 0.7)" }}
+          />
+          <Text variant="large" color={"textTertiary"} align="center">
+            {canDo("manageCircleSettings")
+              ? `Create Sections to classify and view Projects, Workstreams, Forms &
+            Retro`
+              : `Ouch ! This Circle doesnot have sections. And You do not have permission to create new sections.`}
           </Text>
         </Box>
       )}

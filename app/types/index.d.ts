@@ -121,6 +121,7 @@ export type NonCardPermissions =
   | "createNewCircle"
   | "createNewProject"
   | "createNewRetro"
+  | "createNewForm"
   | "endRetroManually"
   | "inviteMembers"
   | "makePayment"

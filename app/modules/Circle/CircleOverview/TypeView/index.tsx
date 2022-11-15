@@ -155,9 +155,9 @@ export const TypeView = ({
                   </Card>
                 </Col>
               ))}
-            {filteredProjects && Object.values(filteredProjects)?.length == 0 && (
+            {filteredCollections && Object.values(filteredProjects)?.length == 0 && (
               <Box margin="4">
-                <Text variant="label">No Projects created yet</Text>
+                <Text variant="label">No Forms created yet</Text>
               </Box>
             )}
           </Row>
@@ -166,9 +166,9 @@ export const TypeView = ({
           <Text size="headingTwo" weight="semiBold" ellipsis>
             Projects
           </Text>
-          {canDo("createNewProject") && (
+          {canDo("createNewForm") && (
             <Button
-              data-tour="circle-create-project-button"
+              data-tour="circle-create-form-button"
               size="small"
               variant="transparent"
               shape="circle"
