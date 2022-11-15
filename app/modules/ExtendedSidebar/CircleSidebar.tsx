@@ -28,6 +28,7 @@ import CreateRetroModal from "../Retro/CreateRetro";
 import CircleOptions from "./CircleOptions";
 import { HeaderButton } from "./ExploreSidebar";
 import mixpanel from "@/app/common/utils/mixpanel";
+import { smartTrim } from "@/app/common/utils/utils";
 
 export const Container = styled(Box)<{ subH?: string }>`
   ::-webkit-scrollbar {
@@ -210,7 +211,7 @@ function CircleSidebar() {
                                   }
                                   icon={<IconUserGroup size={"5"} />}
                                 >
-                                  {circle?.children?.[content].name}
+                                  {smartTrim(circle?.children?.[content].name, 22)}
                                 </PrimaryButton>
                               </Link>
                             )}
@@ -230,7 +231,7 @@ function CircleSidebar() {
                                     />
                                   }
                                 >
-                                  {circle?.projects?.[content].name}
+                                  {smartTrim(circle?.projects?.[content].name, 22)}
                                 </PrimaryButton>
                               </Link>
                             )}
@@ -246,7 +247,7 @@ function CircleSidebar() {
                                   }
                                   icon={<IconLightningBolt size={"5"} />}
                                 >
-                                  {circle?.retro?.[content].title}
+                                  {smartTrim(circle?.retro?.[content].title, 22)}
                                 </PrimaryButton>
                               </Link>
                             )}
@@ -263,7 +264,7 @@ function CircleSidebar() {
                                   }
                                   icon={<IconCollection size={"5"} />}
                                 >
-                                  {circle?.collections?.[content].name}
+                                  {smartTrim(circle?.collections?.[content].name, 22)}
                                 </PrimaryButton>
                               </Link>
                             )}
