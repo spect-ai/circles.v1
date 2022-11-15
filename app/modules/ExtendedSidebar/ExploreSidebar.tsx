@@ -1,5 +1,5 @@
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { Box, Heading, Stack, useTheme } from "degen";
+import { Box, Heading, Stack, useTheme, Text, IconDotsHorizontal } from "degen";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState } from "react";
@@ -9,6 +9,55 @@ import CollapseButton from "./CollapseButton";
 import { useQuery } from "react-query";
 import { UserType } from "@/app/types";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
+import Popover from "@/app/common/components/Popover";
+
+const PopoverScrollContainer = styled(Box)`
+  ::-webkit-scrollbar {
+    display: none;
+  }
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  max-height: 14rem;
+  overflow-y: auto;
+`;
+
+const PopoverOptionContainer = styled(Box)<{ mode: string }>`
+  &:hover {
+    // background-color: rgba(255, 255, 255, 0.1);
+    background-color: ${({ mode }) =>
+      mode === "dark" ? "rgba(255, 255, 255, 0.1)" : "rgba(20, 20, 20, 0.1)"};
+  }
+`;
+
+type PopoverOptionProps = {
+  onClick: (e?: React.MouseEvent<HTMLElement>) => void;
+  children: React.ReactNode;
+  tourId?: string;
+};
+
+export const PopoverOption = ({
+  children,
+  onClick,
+  tourId,
+}: PopoverOptionProps) => {
+  const { mode } = useTheme();
+
+  return (
+    <PopoverOptionContainer
+      padding="4"
+      overflow="hidden"
+      cursor="pointer"
+      onClick={onClick}
+      borderRadius="2xLarge"
+      data-tour={tourId}
+      mode={mode}
+    >
+      <Text variant="small" weight="semiBold" ellipsis color="textSecondary">
+        {children}
+      </Text>
+    </PopoverOptionContainer>
+  );
+};
 
 export const HeaderButton = styled(Box)<{ mode: string }>`
   cursor: pointer;
@@ -23,6 +72,7 @@ export default function ExploreSidebar() {
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [showCollapseButton, setShowCollapseButton] = useState(false);
   const { mode } = useTheme();
   const router = useRouter();
@@ -42,7 +92,12 @@ export default function ExploreSidebar() {
           </Stack>
         </HeaderButton>
 
-        <Container>
+        <Container
+          justifyContent={"space-between"}
+          subH="9.2rem"
+          display={"flex"}
+          flexDirection="column"
+        >
           {/* <CollapseButton
             show={showCollapseButton}
             setShowCollapseButton={setShowCollapseButton}
@@ -94,6 +149,29 @@ export default function ExploreSidebar() {
                 Connect Wallet
               </PrimaryButton>
             )}
+          </Box>
+          <Box display={"flex"} flexDirection="column" gap="2" paddingX={"2"}>
+            <PrimaryButton
+              onClick={() => {
+                window.open(
+                  "https://calendly.com/adityachakra16/outreach",
+                  "_blank"
+                );
+              }}
+            >
+              Book a Demo
+            </PrimaryButton>
+            <PrimaryButton
+              variant="transparent"
+              onClick={() => {
+                window.open(
+                  "https://docs.spect.network/spect-docs/faq",
+                  "_blank"
+                );
+              }}
+            >
+              FAQ
+            </PrimaryButton>
           </Box>
         </Container>
       </Stack>
