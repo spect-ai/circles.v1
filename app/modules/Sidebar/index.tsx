@@ -1,18 +1,15 @@
 import Link from "next/link";
-import React, { ReactElement, useEffect, useState } from "react";
+import React, { ReactElement, useEffect } from "react";
 import { AnimatePresence } from "framer-motion";
 import { Avatar, Box, Button, Stack, Text, IconMenu } from "degen";
 import { useRouter } from "next/router";
-import CreateCircle from "./CreateCircleModal";
 import Logo from "@/app/common/components/Logo";
 import { HomeOutlined } from "@ant-design/icons";
 import { useQuery } from "react-query";
 import { CircleType, UserType } from "@/app/types";
 import { useGlobal } from "@/app/context/globalContext";
-import CollapseButton from "../ExtendedSidebar/CollapseButton";
 import styled from "styled-components";
 import TaskWallet from "@/app/modules/Profile/TaskWallet";
-import { Visible } from "react-grid-system";
 import mixpanel from "@/app/common/utils/mixpanel";
 
 export const ScrollContainer = styled(Box)`
@@ -40,25 +37,20 @@ function Sidebar(): ReactElement {
     tab,
     setIsSidebarExpanded,
   } = useGlobal();
-  const [showCollapseButton, setShowCollapseButton] = useState(false);
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
 
   const {
-    data: myCircles,
+    data: circles,
     isLoading: myCirclesLoading,
     refetch,
-  } = useQuery<CircleType[]>(
-    "myOrganizations",
-    () =>
-      fetch(`${process.env.API_HOST}/circle/myOrganizations`, {
-        credentials: "include",
-      }).then((res) => res.json()),
-    {
-      enabled: false,
-    }
-  );
+  } = useQuery<CircleType[]>("dashboardCircles", {
+    enabled: false,
+  });
+
+  const myCircles =
+    circles?.filter && circles.filter((c) => c.parents?.length === 0);
 
   useEffect(() => {
     void refetch();
@@ -74,12 +66,6 @@ function Sidebar(): ReactElement {
         paddingX={{
           xs: "1",
           md: "2",
-        }}
-        onMouseEnter={() => {
-          !isSidebarExpanded && setShowCollapseButton(true);
-        }}
-        onMouseLeave={() => {
-          setShowCollapseButton(false);
         }}
         transitionDuration="500"
       >

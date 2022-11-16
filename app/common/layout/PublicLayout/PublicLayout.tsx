@@ -47,27 +47,27 @@ function PublicLayout(props: PublicLayoutProps) {
   const { setMode } = useTheme();
 
   const {
-    data: currentUser,
-    refetch,
-    isLoading,
-  } = useQuery<UserType>("getMyUser", getUser, {
-    enabled: false,
-  });
-
-  const {
     data: myCircles,
     refetch: refetchCircles,
     isLoading: loading,
   } = useQuery<CircleType[]>(
-    "myOrganizations",
+    "dashboardCircles",
     () =>
-      fetch(`${process.env.API_HOST}/circle/myOrganizations`, {
+      fetch(`${process.env.API_HOST}/user/v1/${connectedUser}/circles`, {
         credentials: "include",
       }).then((res) => res.json()),
     {
       enabled: false,
     }
   );
+
+  const {
+    data: currentUser,
+    refetch,
+    isLoading,
+  } = useQuery<UserType>("getMyUser", getUser, {
+    enabled: false,
+  });
 
   const onboard =
     myCircles?.length == 0 ||
@@ -82,7 +82,6 @@ function PublicLayout(props: PublicLayoutProps) {
   }, [currentUser, connectedUser]);
 
   useEffect(() => {
-    void refetchCircles();
     refetch()
       .then((res) => {
         const data = res.data;
@@ -94,6 +93,11 @@ function PublicLayout(props: PublicLayoutProps) {
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    connectedUser && void refetchCircles();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [connectedUser]);
 
   useEffect(() => {
     setTimeout(() => {

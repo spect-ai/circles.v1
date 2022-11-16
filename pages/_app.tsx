@@ -178,9 +178,7 @@ function MyApp({ Component, pageProps }: AppProps) {
                     initial={false}
                     onExitComplete={() => window.scrollTo(0, 0)}
                   >
-                    <ErrorBoundary
-                      FallbackComponent={ErrorFallBack}
-                    >
+                    <ErrorBoundary FallbackComponent={ErrorFallBack}>
                       <Component {...pageProps} canonical={url} key={url} />
                     </ErrorBoundary>
                   </AnimatePresence>

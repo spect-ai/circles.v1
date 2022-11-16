@@ -12,7 +12,6 @@ const ScrollContainer = styled(Box)`
   }
   -ms-overflow-style: none;
   scrollbar-width: none;
-  padding-top: 1rem;
   overflow-y: auto;
 
   @media (max-width: 768px) {
@@ -30,7 +29,7 @@ function YourCircles({
   isLoading: boolean;
 }) {
   return (
-    <ScrollContainer>
+    <ScrollContainer marginTop="4">
       <Row>
         {!isLoading &&
           circles?.map &&
