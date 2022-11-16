@@ -43,6 +43,8 @@ interface UserType {
   education: LensEducation[];
   skillsV2: LensSkills[];
   lensHandle: string;
+  collections: CollectionType;
+  collectionsSubmittedTo: CollectionType[];
 }
 
 export interface Payment {
