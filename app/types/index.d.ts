@@ -718,6 +718,7 @@ export interface CollectionType {
   name: string;
   description: string;
   slug: string;
+  creator: string;
   properties: { [id: string]: Property };
   propertyOrder: string[];
   createdAt: string;
@@ -756,6 +757,12 @@ export type FormPermissions = {
   viewResponses: string[];
   addComments: string[];
 };
+
+export type CollectionPermissions =
+  | "manageSettings"
+  | "updateResponsesManually"
+  | "viewResponses"
+  | "addComments";
 
 export type Property = {
   name: string;
