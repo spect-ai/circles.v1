@@ -51,6 +51,7 @@ export default function AddField({ propertyName, handleClose }: Props) {
 
   const [defaultValue, setDefaultValue] = useState("");
   const [showNameCollissionError, setShowNameCollissionError] = useState(false);
+  const [showSlugNameError, setShowSlugNameError] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [showConfirmOnDelete, setShowConfirmOnDelete] = useState(false);
 
@@ -197,11 +198,19 @@ export default function AddField({ propertyName, handleClose }: Props) {
                 ) {
                   setShowNameCollissionError(true);
                 } else setShowNameCollissionError(false);
+                if (e.target.value === "slug") {
+                  setShowSlugNameError(true);
+                } else setShowSlugNameError(false);
               }}
             />
             {showNameCollissionError && (
               <Text color="red" size="small">
                 Field name already exists
+              </Text>
+            )}
+            {showSlugNameError && (
+              <Text color="red" size="small">
+                Field name cannot be slug
               </Text>
             )}
             <Dropdown
