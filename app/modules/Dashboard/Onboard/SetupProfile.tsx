@@ -126,7 +126,7 @@ export function SetUpProfile() {
                   onClick={() => {
                     if (skill.includes(s)) {
                       setSkill(skill.filter((item) => item !== s));
-                    } else if (skill.length < 10) {
+                    } else {
                       setSkill([...skill, s]);
                     }
                   }}
