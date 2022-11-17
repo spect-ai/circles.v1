@@ -1,32 +1,39 @@
-import { Heading, Stack, Text, Box, Input } from "degen";
-import styled from "styled-components";
+import { Heading, Stack, Text, Box, Input, Tag } from "degen";
 import { useState } from "react";
 import { RocketOutlined } from "@ant-design/icons";
 import { useRouter } from "next/router";
 import { useQuery } from "react-query";
 import { LensSkills, UserType } from "@/app/types";
 import { isEmail } from "@/app/common/utils/utils";
-import AddSkillModal from "@/app/modules/Profile/ProfilePage/AddSkillModal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import useProfileUpdate from "@/app/services/Profile/useProfileUpdate";
+import { skills as skillsArray } from "@/app/common/utils/constants";
 
 export function SetUpProfile() {
   const router = useRouter();
-  const [openSkillModal, setOpenSkillModal] = useState(false);
-  const [loading, setIsLoading] = useState(false);
-  const [email, setEmail] = useState("");
-  const { updateProfile } = useProfileUpdate();
-
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
+
+  const [skill, setSkill] = useState<string[]>([]);
+  const [loading, setIsLoading] = useState(false);
+  const [email, setEmail] = useState(currentUser?.email);
+  const { updateProfile } = useProfileUpdate();
 
   const skills = currentUser?.skillsV2;
 
   const onSaveProfile = async () => {
     setIsLoading(true);
+    const newSkills = skill.map((s) => ({
+      title: s,
+      linkedCredentials: [],
+      nfts: [],
+      poaps: [],
+      icon: "",
+    }));
     const res = await updateProfile({
       email,
+      skillsV2: [...(skills as LensSkills[]), ...(newSkills as LensSkills[])],
     });
     console.log(res);
     setIsLoading(false);
@@ -54,7 +61,7 @@ export function SetUpProfile() {
       flexDirection="column"
       gap={"5"}
       alignItems="center"
-      marginTop={"48"}
+      marginTop={"24"}
     >
       <Stack
         direction={{ xs: "vertical", md: "horizontal", lg: "horizontal" }}
@@ -66,8 +73,18 @@ export function SetUpProfile() {
         />
         <Heading align={"center"}>All set ! This is the final step</Heading>
       </Stack>
-      {currentUser?.email?.length == 0 && (
-        <>
+      {(currentUser?.email?.length == 0 || !currentUser?.email) && (
+        <Box
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "1rem",
+            alignItems: "center",
+          }}
+          width={{
+            lg: "1/2",
+          }}
+        >
           <Text>What is your primary email ?</Text>
           <Input
             label
@@ -84,42 +101,63 @@ export function SetUpProfile() {
               if (currentUser?.skillsV2.length != 0) void onSaveProfile();
             }}
           />
-        </>
+        </Box>
       )}
 
       {currentUser?.skillsV2?.length == 0 && (
         <>
-          <Text>Add atleast one skill</Text>
-          <PrimaryButton
-            variant="tertiary"
-            onClick={() => {
-              setOpenSkillModal(true);
+          <Text>Select your Skills</Text>
+          <Box
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              flexWrap: "wrap",
+              gap: "0.5rem",
+              justifyContent: "center",
             }}
-            disabled={currentUser?.skillsV2?.length != 0}
+            width={{
+              lg: "1/2",
+            }}
           >
-            Add Skill
-          </PrimaryButton>
+            {skillsArray?.map((s) => {
+              return (
+                <Box
+                  key={s}
+                  onClick={() => {
+                    if (skill.includes(s)) {
+                      setSkill(skill.filter((item) => item !== s));
+                    } else if (skill.length < 10) {
+                      setSkill([...skill, s]);
+                    }
+                  }}
+                  style={{
+                    cursor: "pointer",
+                  }}
+                >
+                  <Tag
+                    as="span"
+                    tone={skill.includes(s) ? "accent" : "secondary"}
+                    hover
+                    size="medium"
+                  >
+                    {s}
+                  </Tag>
+                </Box>
+              );
+            })}
+          </Box>
         </>
       )}
 
-      {openSkillModal && (
-        <AddSkillModal
-          modalMode={"add"}
-          skills={skills as LensSkills[]}
-          handleClose={() => setOpenSkillModal(false)}
-          skillId={0}
-          onboarding={email.length != 0 || !!isEmail(email)}
-        />
-      )}
       <PrimaryButton
         onClick={() => {
           void onSaveProfile();
           void router.push(`/profile/${currentUser?.username}`);
         }}
         disabled={
-          currentUser?.skillsV2?.length == 0 ||
-          email.length == 0 ||
-          !isEmail(email)
+          (skill.length == 0 && skills?.length == 0) ||
+          email?.length == 0 ||
+          !isEmail(email || "")
         }
       >
         View Profile

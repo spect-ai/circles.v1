@@ -70,7 +70,7 @@ function PublicLayout(props: PublicLayoutProps) {
   });
 
   const onboard =
-    (currentUser?.skillsV2.length == 0 || currentUser?.email?.length == 0) &&
+    (currentUser?.skillsV2?.length == 0 || currentUser?.email?.length == 0) &&
     (myCircles?.length == 0 ||
       (myCircles?.[0]?.projects &&
         Object.values(myCircles?.[0]?.projects)?.length == 0 &&
