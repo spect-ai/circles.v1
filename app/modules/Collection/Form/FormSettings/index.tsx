@@ -12,6 +12,8 @@ import mixpanel from "@/app/common/utils/mixpanel";
 import { useQuery } from "react-query";
 import { UserType } from "@/app/types";
 import { useLocalCollection } from "../../Context/LocalCollectionContext";
+import useRoleGate from "@/app/services/RoleGate/useRoleGate";
+import { toast } from "react-toastify";
 
 function FormSettings() {
   const [isOpen, setIsOpen] = useState(false);
@@ -19,6 +21,7 @@ function FormSettings() {
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
+  const { formActions } = useRoleGate();
   const { localCollection: collection } = useLocalCollection();
   return (
     <>
@@ -30,7 +33,13 @@ function FormSettings() {
               user: currentUser?.username,
               form: collection.name,
             });
-          setIsOpen(true);
+          if (formActions("manageSettings")) {
+            setIsOpen(true);
+          } else {
+            toast.error(
+              "You donot have the permission to access this form's settings"
+            );
+          }
         }}
       >
         Form Settings

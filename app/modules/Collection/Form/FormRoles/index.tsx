@@ -5,7 +5,6 @@ import { useCircle } from "@/app/modules/Circle/CircleContext";
 import { useLocalCollection } from "../../Context/LocalCollectionContext";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { toast } from "react-toastify";
-import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 
 interface Props {
   permissions: string[];
@@ -80,11 +79,6 @@ export default function FormRoles() {
     collection?.permissions?.addComments || []
   );
   const [isDirty, setIsDirty] = useState(false);
-
-  const { circle, memberDetails } = useCircle();
-
-  const { formActions } = useRoleGate();
-  console.log(formActions("addComments"));
 
   return (
     <>
