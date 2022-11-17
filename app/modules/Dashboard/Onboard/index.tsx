@@ -7,9 +7,10 @@ import { CircleType, UserType } from "@/app/types";
 import { useState, useEffect } from "react";
 import { CreateCircle } from "./CreateCircle";
 import { CreateContent } from "./CreateContent";
+import { SetUpProfile } from "./SetupProfile";
 
 const Onboard = () => {
-  const [step, setStep] = useState(0);
+  const [step, setStep] = useState(1);
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
@@ -28,13 +29,17 @@ const Onboard = () => {
       setStep(0);
     } else if (currentUser && myCircles?.length == 0) {
       setStep(1);
+    } else if (step == 3) {
+      setStep(3);
     } else if (
-      currentUser && myCircles &&
+      currentUser &&
+      myCircles &&
       myCircles?.length > 0 &&
       myCircles?.[0].id
     ) {
       setStep(2);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentUser, currentUser?.circles, myCircles]);
   return (
     <Box position={"relative"} display="flex" width={"full"} gap="11">
@@ -58,10 +63,9 @@ const Onboard = () => {
         }}
       >
         {step == 0 && <BasicProfile setStep={setStep} />}
-        {step == 1 && <CreateCircle setStep={setStep}/>}
-        {step == 2 && (
-          <CreateContent />
-        )}
+        {step == 1 && <CreateCircle setStep={setStep} />}
+        {step == 2 && <CreateContent />}
+        {step == 3 && <SetUpProfile />}
       </Box>
     </Box>
   );

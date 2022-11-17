@@ -7,6 +7,7 @@ import { generateColorHEX } from "@/app/common/utils/utils";
 import { useGlobal } from "@/app/context/globalContext";
 import mixpanel from "@/app/common/utils/mixpanel";
 import { UserType } from "@/app/types";
+import PrimaryButton from "@/app/common/components/PrimaryButton";
 
 type CreateCircleDto = {
   name: string;
@@ -44,7 +45,7 @@ export function CreateCircle({ setStep }: Props) {
       flexDirection="column"
       gap={"5"}
       alignItems="center"
-      marginTop={"60"}
+      marginTop={"48"}
     >
       <Stack direction={"horizontal"} align="center">
         <IconTokens color={"accent"} size="8" />
@@ -103,6 +104,14 @@ export function CreateCircle({ setStep }: Props) {
       >
         LFG
       </Button>
+      <Text>Not here to manage your DAO? Set up your profile instead</Text>
+      <PrimaryButton
+        onClick={() => {
+          setStep(3);
+        }}
+      >
+        Set up Profile
+      </PrimaryButton>
     </Box>
   );
 }

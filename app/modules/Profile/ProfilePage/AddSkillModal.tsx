@@ -6,12 +6,14 @@ import { Box, Button, Input, Tag, Text } from "degen";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import LinkCredentialsModal from "./LinkCredentialsModal";
+import { useRouter } from "next/router";
 
 type Props = {
   handleClose: () => void;
   modalMode: "add" | "edit";
   skills: LensSkills[];
   skillId?: number;
+  onboarding?: boolean;
 };
 
 export default function AddSkillModal({
@@ -19,8 +21,10 @@ export default function AddSkillModal({
   modalMode,
   skills,
   skillId,
+  onboarding,
 }: Props) {
   const { userData } = useGlobal();
+  const router = useRouter();
 
   const [title, setTitle] = useState("");
   const [linkedCredentials, setLinkedCredentials] = useState<Credential[]>([]);
@@ -157,6 +161,7 @@ export default function AddSkillModal({
               const res = await updateProfile({
                 skillsV2: newSkills,
               });
+              if (onboarding && res) void router.push(`/profile/${userData.username}`);
               handleClose();
             }}
           >
