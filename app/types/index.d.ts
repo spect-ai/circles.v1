@@ -718,6 +718,7 @@ export interface CollectionType {
   name: string;
   description: string;
   slug: string;
+  creator: string;
   properties: { [id: string]: Property };
   propertyOrder: string[];
   createdAt: string;
@@ -739,6 +740,7 @@ export interface CollectionType {
   circleRolesToNotifyUponUpdatedResponse: string[];
   circleRolesToNotifyUponNewResponse: string[];
   numOfKudos: number;
+  permissions: FormPermissions;
   credentialCurationEnabled: boolean;
   dataOwner: MappedItem<string>;
   profiles: { [key: string]: UserType };
@@ -748,6 +750,19 @@ export interface CollectionType {
   dataActivities: MappedItem<MappedItem<CollectionActivity>>;
   dataActivityOrder: MappedItem<string[]>;
 }
+
+export type FormPermissions = {
+  manageSettings: string[];
+  updateResponsesManually: string[];
+  viewResponses: string[];
+  addComments: string[];
+};
+
+export type CollectionPermissions =
+  | "manageSettings"
+  | "updateResponsesManually"
+  | "viewResponses"
+  | "addComments";
 
 export type Property = {
   name: string;
