@@ -114,14 +114,15 @@ export const prevPropertyTypeToNewPropertyTypeThatDoesntRequiresClarance = {
 };
 
 export const opportunityType = [
-  "Circle Membership",
-  "Full Time Role",
-  "Part Time Role",
   "Grant",
-  "Bounty",
+  "Circle Membership",
+  "Full Time",
+  "Part Time",
+  "Contractual",
 ];
 
 export const skills = [
+  "None",
   "Design",
   "Development",
   "Marketing",
@@ -136,7 +137,7 @@ export const skills = [
 ];
 
 export const experienceLevel = [
-  "No Experience is Required",
+  "No Experience is fine",
   "Some Experience is Required",
   "High Level of Expertise is Required",
 ];

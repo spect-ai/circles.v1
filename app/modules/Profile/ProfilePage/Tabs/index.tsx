@@ -12,10 +12,6 @@ import Education from "./Education";
 import { useGlobal } from "@/app/context/globalContext";
 import Skills from "./Skills";
 
-interface Props {
-  username: string;
-}
-
 export const Card = styled(Box)<{ mode: string }>`
   display: flex;
   flex-direction: column;
@@ -81,34 +77,9 @@ export const ScrollContainer = styled(Box)`
   }
 `;
 
-const ProfileTabs = ({ username }: Props) => {
+const ProfileTabs = () => {
   const [tab, setProfileTab] = useState("Experience");
-  const { userData, setUserData, profileLoading, setProfileLoading } =
-    useGlobal();
-
-  const fetchUser = async () => {
-    setProfileLoading(true);
-    const res = await fetch(
-      `${process.env.API_HOST}/user/v1/username/${username}/profile`,
-      {
-        credentials: "include",
-      }
-    );
-    if (res.ok) {
-      const data = await res.json();
-      setUserData(data);
-      setProfileLoading(false);
-      return data;
-    } else {
-      setProfileLoading(false);
-      return false;
-    }
-  };
-
-  useEffect(() => {
-    void fetchUser();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [username, tab]);
+  const { userData, profileLoading } = useGlobal();
 
   return (
     <Box

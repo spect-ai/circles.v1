@@ -3,6 +3,7 @@ import { memo, useCallback } from "react";
 import { Droppable, DroppableProvided } from "react-beautiful-dnd";
 import styled from "styled-components";
 import { useLocalCollection } from "../../Context/LocalCollectionContext";
+import OpportunityMode from "../../OpportunityMode";
 import FormSettings from "../FormSettings";
 import InactiveFieldComponent from "../InactiveField";
 
@@ -63,6 +64,7 @@ function InactiveFieldsColumnComponent({ fields }: Props) {
           {FieldDraggableCallback}
         </Droppable>
         <FormSettings />
+        <OpportunityMode />
       </Stack>
     </Container>
   );

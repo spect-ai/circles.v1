@@ -13,6 +13,7 @@ import { toast } from "react-toastify";
 import Loader from "@/app/common/components/Loader";
 import { PublicLayout } from "@/app/common/layout";
 import styled from "styled-components";
+import NotifCard from "@/app/modules/Profile/ProfilePage/Notif";
 
 const getUser = async () => {
   const res = await fetch(`${process.env.API_HOST}/user/me`, {
@@ -26,31 +27,18 @@ const ProfilePage: NextPage = () => {
   const username = router.query.user;
   const {
     isProfilePanelExpanded,
-    connectUser,
     setIsSidebarExpanded,
     connectedUser,
     tab,
+    setUserData,
+    userData,
   } = useGlobal();
 
-  const { refetch } = useQuery<UserType>("getMyUser", getUser, {
+  const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
 
   const { mode } = useTheme();
-
-  useEffect(() => {
-    refetch()
-      .then((res) => {
-        const data = res.data;
-        console.log("in user page", data);
-        if (data?.id) connectUser(data.id);
-      })
-      .catch((err) => {
-        console.log(err);
-        toast.error("Could not fetch user data");
-      });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const {
     data: profile,
@@ -60,8 +48,16 @@ const ProfilePage: NextPage = () => {
     ["user", username],
     async () =>
       await fetch(
-        `${process.env.API_HOST}/user/v1/username/${username}/profile`
-      ).then((res) => res.json()),
+        `${process.env.API_HOST}/user/v1/username/${username}/profile`,
+        {
+          credentials: "include",
+        }
+      ).then((res) =>
+        res.json().then((data) => {
+          setUserData(data);
+          return data;
+        })
+      ),
     {
       enabled: false,
     }
@@ -109,8 +105,10 @@ const ProfilePage: NextPage = () => {
                 md: "horizontal",
               }}
             >
-              <ProfileCard username={username as string} />
-              <ProfileTabs username={username as string} />
+              <ProfileCard />
+              <ProfileTabs />
+              {!userData?.email &&
+                profile?.username === currentUser?.username && <NotifCard />}
             </Stack>
           </ScrollContainer>
         )}

@@ -69,7 +69,7 @@ interface UpdateEducationDTO {
 }
 
 export default function useProfileUpdate() {
-  const { userData, setUserData } = useGlobal();
+  const { setProfileLoading, setUserData } = useGlobal();
 
   const preprocessDate = (date: string) => {
     if (!date) return {};
@@ -97,6 +97,7 @@ export default function useProfileUpdate() {
       const data = await res.json();
       queryClient.setQueryData("getMyUser", data);
       setUserData(data);
+
       return true;
     } else {
       toast.error("Error updating profile", {

@@ -17,12 +17,10 @@ export function BasicInfo() {
     setIsDirty,
     setAvatar,
     setUsername,
-    setEmail,
     loading,
     avatar,
     uploading,
     username,
-    email,
     uploadFile,
   } = useProfile();
 
@@ -67,20 +65,6 @@ export function BasicInfo() {
         placeholder={currentUser?.ethAddress}
         value={""}
         disabled
-      />
-      <Text variant="label">Email</Text>
-      <Input
-        label
-        hideLabel
-        placeholder="Email"
-        inputMode="email"
-        type="email"
-        error={email && !isEmail(email)}
-        value={email}
-        onChange={(e) => {
-          setEmail(e.target.value);
-          setIsDirty(true);
-        }}
       />
       <Stack
         direction={{

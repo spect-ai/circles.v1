@@ -1,21 +1,16 @@
 import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { Avatar, Box, Button, Input, Stack, Tag, Text, useTheme } from "degen";
-import { AnimatePresence } from "framer-motion";
-import { useEffect, useState } from "react";
-import { useLocalCollection } from "../Context/LocalCollectionContext";
-import Logo from "@/app/common/components/Logo";
-import styled from "styled-components";
-import { getAllCredentials } from "@/app/services/Credentials/AggregatedCredentials";
-import { Option, Stamp } from "@/app/types";
-import { PassportStampIcons, PassportStampIconsLightMode } from "@/app/assets";
-import Image from "next/image";
 import {
   experienceLevel,
   opportunityType,
   skills,
   tags,
 } from "@/app/common/utils/constants";
+import { Box, IconTrendingUp, Stack, Tag, Text } from "degen";
+import { AnimatePresence } from "framer-motion";
+import { useEffect, useState } from "react";
+import styled from "styled-components";
+import { useLocalCollection } from "../Context/LocalCollectionContext";
 
 export default function OpportunityMode() {
   const [isOpen, setIsOpen] = useState(false);
@@ -46,151 +41,166 @@ export default function OpportunityMode() {
   return (
     <>
       <Stack direction="vertical">
-        {collection.isAnOpportunity && (
-          <Text variant="small">{`Opportunity mode is on`}</Text>
-        )}
         {!collection.isAnOpportunity && (
-          <Text variant="small">{`Turn on Opportunity Mode to reach 10,000+ opportunity seekers`}</Text>
+          <Text variant="small">{`Reach 1000+ opportunity seekers`}</Text>
         )}
       </Stack>
       <Box
         width={{
           xs: "full",
-          md: "1/2",
+          md: "full",
         }}
       >
         <PrimaryButton
           variant={collection.isAnOpportunity ? "tertiary" : "secondary"}
           onClick={() => setIsOpen(true)}
+          icon={<IconTrendingUp />}
         >
-          {collection.isAnOpportunity
-            ? `Update Opportunity Mode`
-            : `Enable Opportunity Mode`}
+          {collection.isAnOpportunity ? `Boosting Form` : `Boost Form`}
         </PrimaryButton>
       </Box>
 
       <AnimatePresence>
         {isOpen && (
-          <Modal
-            title="Opportunity Mode"
-            handleClose={() => setIsOpen(false)}
-            height="30rem"
-          >
-            <Box padding="8" width="full">
-              <ScrollContainer>
-                <Box width="full" marginBottom="4">
-                  <Box
-                    display="flex"
-                    flexDirection="row"
-                    alignItems="center"
-                    marginBottom="4"
-                  >
-                    <Text variant="label">{`Opportunity Type`} </Text>
-                  </Box>
-                  <Stack direction="horizontal" wrap>
-                    {opportunityType.map((type) => (
-                      <Box
+          <Modal title="Boost Mode" handleClose={() => setIsOpen(false)}>
+            <Box
+              paddingLeft={{
+                xs: "4",
+                md: "8",
+              }}
+              paddingRight={{
+                xs: "4",
+                md: "8",
+              }}
+              width="full"
+            >
+              <Text variant="small">
+                {`Boosting form helps you get opportunities in front of opportunity seekers! Fill up the following fields to get it in front of the right people.`}{" "}
+              </Text>
+            </Box>
+            <Box
+              padding={{
+                xs: "4",
+                md: "8",
+              }}
+              width="full"
+            >
+              <Box width="full" marginBottom="4">
+                <Box
+                  display="flex"
+                  flexDirection="row"
+                  alignItems="center"
+                  marginBottom="4"
+                >
+                  <Text variant="label">What is the opportunity?</Text>
+                </Box>
+                <Stack direction="horizontal" wrap>
+                  {opportunityType.map((type) => (
+                    <Box
+                      key={type}
+                      onClick={() => {
+                        if (selectedOpportunityType === type) {
+                          setSelectedOpportunityType("");
+                        } else {
+                          setSelectedOpportunityType(type);
+                        }
+                      }}
+                      cursor="pointer"
+                    >
+                      <Tag
                         key={type}
-                        onClick={() => {
-                          if (selectedOpportunityType === type) {
-                            setSelectedOpportunityType("");
-                          } else {
-                            setSelectedOpportunityType(type);
-                          }
-                        }}
-                        cursor="pointer"
+                        tone={
+                          selectedOpportunityType === type
+                            ? "accent"
+                            : "secondary"
+                        }
                       >
-                        <Tag
-                          key={type}
-                          tone={
-                            selectedOpportunityType === type
-                              ? "accent"
-                              : "secondary"
-                          }
-                        >
-                          {type}
-                        </Tag>
-                      </Box>
-                    ))}
-                  </Stack>
-                </Box>
-                <Box width="full" marginBottom="4">
-                  <Box
-                    display="flex"
-                    flexDirection="row"
-                    alignItems="center"
-                    marginBottom="4"
-                  >
-                    <Text variant="label">{`Experience Level`} </Text>
-                  </Box>
-                  <Stack direction="horizontal" wrap>
-                    {experienceLevel.map((level) => (
-                      <Box
-                        key={level}
-                        onClick={() => {
-                          if (selectedExperienceLevel === level) {
-                            setSelectedExperienceLevel("");
-                          } else {
-                            setSelectedExperienceLevel(level);
-                          }
-                        }}
-                        cursor="pointer"
-                      >
-                        <Tag
-                          key={level}
-                          tone={
-                            selectedExperienceLevel === level
-                              ? "accent"
-                              : "secondary"
-                          }
-                        >
-                          {level}
-                        </Tag>
-                      </Box>
-                    ))}
-                  </Stack>
-                </Box>
-                <Box width="full" marginBottom="4">
-                  <Box
-                    display="flex"
-                    flexDirection="row"
-                    alignItems="center"
-                    marginBottom="4"
-                  >
-                    <Text variant="label">{`Pick Skills`} </Text>
-                  </Box>
-                  <Stack direction="horizontal" wrap>
-                    {skills.map((skill) => (
-                      <Box
-                        key={skill}
-                        onClick={() => {
-                          if (selectedSkills.includes(skill)) {
-                            setSelectedSkills(
-                              selectedSkills.filter((s) => s !== skill)
-                            );
-                          } else {
-                            setSelectedSkills([...selectedSkills, skill]);
-                          }
-                        }}
-                        cursor="pointer"
-                      >
-                        <Tag
-                          tone={
-                            selectedSkills.includes(skill)
-                              ? "accent"
-                              : "secondary"
-                          }
-                          key={skill}
-                          hover
-                        >
-                          <Box paddingX="2">{skill}</Box>
-                        </Tag>
-                      </Box>
-                    ))}
-                  </Stack>
-                </Box>
+                        {type}
+                      </Tag>
+                    </Box>
+                  ))}
+                </Stack>
+              </Box>
 
-                <Box width="full" marginBottom="4">
+              <Box width="full" marginBottom="4">
+                <Box
+                  display="flex"
+                  flexDirection="row"
+                  alignItems="center"
+                  marginBottom="4"
+                >
+                  <Text variant="label">Any specific skills?</Text>
+                </Box>
+                <Stack direction="horizontal" wrap>
+                  {skills.map((skill) => (
+                    <Box
+                      key={skill}
+                      onClick={() => {
+                        if (selectedSkills.includes(skill)) {
+                          setSelectedSkills(
+                            selectedSkills.filter((s) => s !== skill)
+                          );
+                        } else {
+                          setSelectedSkills([...selectedSkills, skill]);
+                        }
+                      }}
+                      cursor="pointer"
+                    >
+                      <Tag
+                        tone={
+                          selectedSkills.includes(skill)
+                            ? "accent"
+                            : "secondary"
+                        }
+                        key={skill}
+                        hover
+                      >
+                        <Box paddingX="2">{skill}</Box>
+                      </Tag>
+                    </Box>
+                  ))}
+                </Stack>
+              </Box>
+              <Box width="full" marginBottom="4">
+                <Box
+                  display="flex"
+                  flexDirection="row"
+                  alignItems="center"
+                  marginBottom="4"
+                >
+                  <Text variant="label">
+                    What level of experience are you looking for?
+                  </Text>
+                </Box>
+                <Stack direction="horizontal" wrap>
+                  {experienceLevel.map((level) => (
+                    <Box
+                      key={level}
+                      onClick={() => {
+                        if (selectedExperienceLevel === level) {
+                          setSelectedExperienceLevel("");
+                        } else {
+                          setSelectedExperienceLevel(level);
+                        }
+                      }}
+                      cursor="pointer"
+                    >
+                      <Tag
+                        key={level}
+                        tone={
+                          selectedExperienceLevel === level
+                            ? "accent"
+                            : "secondary"
+                        }
+                      >
+                        {level}
+                      </Tag>
+                    </Box>
+                  ))}
+                </Stack>
+              </Box>
+
+              {/* <Box width="full" marginBottom="4">
                   <Box
                     display="flex"
                     flexDirection="row"
@@ -225,8 +235,7 @@ export default function OpportunityMode() {
                       </Box>
                     ))}
                   </Stack>
-                </Box>
-              </ScrollContainer>
+                </Box> */}
 
               <Box width="full" paddingTop="8">
                 <Box

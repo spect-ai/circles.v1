@@ -8,6 +8,8 @@ import styled from "styled-components";
 import { BasicInfo } from "./Basic";
 import { About } from "./About";
 import { useProfile } from "./LocalProfileContext";
+import { Notification } from "./Notificaton";
+import { Socials } from "./Socials";
 
 const ScrollContainer = styled(Box)`
   ::-webkit-scrollbar {
@@ -19,10 +21,11 @@ const ScrollContainer = styled(Box)`
 
 interface Props {
   setIsOpen: (isOpen: boolean) => void;
+  openTab?: number;
 }
 
-export default function ProfileSettings({ setIsOpen }: Props) {
-  const [tab, setTab] = useState(0);
+export default function ProfileSettings({ setIsOpen, openTab }: Props) {
+  const [tab, setTab] = useState(openTab || 0);
   const onTabClick = (id: number) => setTab(id);
 
   const { loading, username, isDirty, uploading, setIsDirty, onSaveProfile } =
@@ -44,7 +47,7 @@ export default function ProfileSettings({ setIsOpen }: Props) {
           <Tabs
             selectedTab={tab}
             onTabClick={onTabClick}
-            tabs={["Basic", "About"]}
+            tabs={["Basic", "About", "Notification", "Socials"]}
             tabTourIds={["profile-settings-basic", "profile-settings-about"]}
             orientation="vertical"
             unselectedColor="transparent"
@@ -61,6 +64,8 @@ export default function ProfileSettings({ setIsOpen }: Props) {
         >
           {tab == 0 && <BasicInfo />}
           {tab == 1 && <About />}
+          {tab == 2 && <Notification />}
+          {tab == 3 && <Socials />}
         </ScrollContainer>
       </Box>
       <Box padding="3">

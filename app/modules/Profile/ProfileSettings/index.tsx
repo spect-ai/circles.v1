@@ -7,14 +7,15 @@ import ProfileSettings from "./ProfileSettings";
 
 interface Props {
   setIsOpen: (isOpen: boolean) => void;
+  openTab?: number;
 }
 
-export default function ProfileModal({ setIsOpen }: Props) {
+export default function ProfileModal({ setIsOpen, openTab }: Props) {
   const context = useProviderLocalProfile();
 
   return (
     <LocalProfileContext.Provider value={context}>
-      <ProfileSettings setIsOpen={setIsOpen} />
+      <ProfileSettings setIsOpen={setIsOpen} openTab={openTab} />
     </LocalProfileContext.Provider>
   );
 }

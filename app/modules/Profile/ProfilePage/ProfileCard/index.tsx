@@ -19,10 +19,6 @@ import { AnimatePresence } from "framer-motion";
 import { smartTrim } from "@/app/common/utils/utils";
 import LensImportModal from "../LensImportModal";
 
-interface Props {
-  username: string;
-}
-
 const Profile = styled(Box)<{ mode: string }>`
   @media (max-width: 768px) {
     width: 100%;
@@ -78,7 +74,7 @@ const Footer = styled(Box)`
   width: 90%;
 `;
 
-const ProfileCard = ({ username }: Props) => {
+const ProfileCard = () => {
   const { mode } = useTheme();
   const { isSidebarExpanded } = useGlobal();
   const [isOpen, setIsOpen] = useState(false);
@@ -202,6 +198,7 @@ const ProfileCard = ({ username }: Props) => {
                   Link Lens Profile
                 </Button>
               )} */}
+
               <Button
                 variant="secondary"
                 size="small"

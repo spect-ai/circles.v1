@@ -11,6 +11,10 @@ type ProfileSettingsType = {
   setAvatar: React.Dispatch<React.SetStateAction<string>>;
   setUsername: React.Dispatch<React.SetStateAction<string>>;
   setEmail: React.Dispatch<React.SetStateAction<string>>;
+  setTwitter: React.Dispatch<React.SetStateAction<string>>;
+  setGithub: React.Dispatch<React.SetStateAction<string>>;
+  setBehance: React.Dispatch<React.SetStateAction<string>>;
+  setWebsite: React.Dispatch<React.SetStateAction<string>>;
   setBio: React.Dispatch<React.SetStateAction<string>>;
   setSkills: React.Dispatch<React.SetStateAction<string[]>>;
   email: string;
@@ -23,6 +27,10 @@ type ProfileSettingsType = {
   isDirty: boolean;
   uploadFile: (file: File) => void;
   onSaveProfile: () => void;
+  twitter: string;
+  github: string;
+  behance: string;
+  website: string;
 };
 
 export const LocalProfileContext = createContext<ProfileSettingsType>(
@@ -40,6 +48,10 @@ export function useProviderLocalProfile() {
   const [bio, setBio] = useState("");
   const [email, setEmail] = useState("");
   const [skills, setSkills] = useState([] as string[]);
+  const [twitter, setTwitter] = useState("");
+  const [github, setGithub] = useState("");
+  const [behance, setBehance] = useState("");
+  const [website, setWebsite] = useState("");
 
   const [isDirty, setIsDirty] = useState(false);
 
@@ -95,6 +107,14 @@ export function useProviderLocalProfile() {
     setBio,
     skills,
     setSkills,
+    twitter,
+    setTwitter,
+    github,
+    setGithub,
+    behance,
+    setBehance,
+    website,
+    setWebsite,
     loading,
     setLoading,
     isDirty,
