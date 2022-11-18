@@ -458,24 +458,24 @@ export default function PublicForm() {
 const Container = styled(Box)`
   @media (max-width: 768px) {
     padding: 0rem 1rem;
-    margin-top: -16rem;
+    margin-top: -7rem;
   }
 
   @media (min-width: 768px) and (max-width: 1024px) {
     padding: 2rem 4rem;
-    margin-top: -12rem;
+    margin-top: -8rem;
   }
 
   @media (min-width: 1024px) and (max-width: 1280px) {
     padding: 2rem 14rem;
-    margin-top: -10rem;
+    margin-top: -8rem;
   }
 
   &::-webkit-scrollbar {
     width: 0.5rem;
   }
   z-index: 999;
-  margin-top: -10rem;
+  margin-top: -8rem;
   padding: 2rem 14rem;
 `;
 
