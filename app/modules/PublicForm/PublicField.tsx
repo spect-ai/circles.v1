@@ -4,6 +4,7 @@ import Editor from "@/app/common/components/Editor";
 import { isEmail } from "@/app/common/utils/utils";
 import { FormType, Option, Reward } from "@/app/types";
 import { Box, Input, Stack, Tag, Text, useTheme } from "degen";
+import { ethers } from "ethers";
 import { useState } from "react";
 import { DateInput } from "../Collection/Form/Field";
 import MilestoneField from "./MilestoneField";
@@ -90,7 +91,11 @@ export default function PublicField({
             updateRequiredFieldNotSet(propertyName, e.target.value);
             updateFieldHasInvalidType(propertyName, e.target.value);
           }}
-          error={data && data[propertyName] && !isEmail(data[propertyName])}
+          error={
+            data && data[propertyName] && !isEmail(data[propertyName])
+              ? "Invalid email"
+              : undefined
+          }
           disabled={disabled}
         />
       )}
@@ -144,6 +149,13 @@ export default function PublicField({
             updateFieldHasInvalidType(propertyName, e.target.value);
           }}
           disabled={disabled}
+          error={
+            data &&
+            data[propertyName] &&
+            !ethers.utils.isAddress(data[propertyName])
+              ? "Invalid address"
+              : undefined
+          }
         />
       )}
       {form.properties[propertyName]?.type === "longText" && (
@@ -155,6 +167,7 @@ export default function PublicField({
           paddingTop="2"
           paddingBottom="1"
           borderRadius="large"
+          minHeight="32"
           maxHeight="64"
           overflow="auto"
           id="editorContainer"

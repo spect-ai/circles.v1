@@ -1,5 +1,4 @@
-import { Box, Avatar, Tag, Text, Button } from "degen";
-import { useDisconnect } from "wagmi";
+import { Box, Avatar, Tag, Text, Button, Stack } from "degen";
 import { useGlobal } from "@/app/context/globalContext";
 import { UserType } from "@/app/types";
 import Link from "next/link";
@@ -7,52 +6,33 @@ import { useQuery } from "react-query";
 import React, { memo } from "react";
 import Logout from "@/app/common/components/LogoutButton";
 import { smartTrim } from "@/app/common/utils/utils";
-import { useAtom } from "jotai";
-import { authStatusAtom } from "@/pages/_app";
 
-const TaskWalletHeader = ({ userData }: { userData: UserType }) => {
-  const { setIsProfilePanelExpanded, disconnectUser } = useGlobal();
+const TaskWalletHeader = () => {
+  const { setIsProfilePanelExpanded } = useGlobal();
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
-  const { disconnect } = useDisconnect();
-  const [authenticationStatus, setAuthenticationStatus] =
-    useAtom(authStatusAtom);
 
   return (
-    <Box
-      paddingBottom="4"
-      style={{
-        display: "flex",
-        flexDirection: "row",
-        gap: "1rem",
-        position: "relative",
-        alignItems: "center",
-        width: "650px",
-        borderBottom: "1px solid rgba(255, 255, 255, .1)",
-      }}
-    >
-      <Avatar
-        label="profile-pic"
-        src={userData?.avatar}
-        size="16"
-        address={userData?.ethAddress}
-      />
-      <Box style={{ gap: "1.5rem" }}>
-        <Text variant="extraLarge" weight="semiBold">
-          {smartTrim(userData?.username, 16)}
-        </Text>
-        <Tag tone="purple" size="small">
-          {smartTrim(userData?.ethAddress, 12)}
-        </Tag>
-      </Box>
-      <Box
-        style={{ position: "absolute", right: "1rem" }}
-        display="flex"
-        flexDirection="row"
-        gap="1.5"
-      >
-        <Link href={`/profile/${userData?.username}`}>
+    <Stack direction="horizontal" justify="space-between">
+      <Stack direction="horizontal" space="2">
+        <Avatar
+          label="profile-pic"
+          src={currentUser?.avatar}
+          size="16"
+          address={currentUser?.ethAddress}
+        />
+        <Stack space="1">
+          <Text variant="extraLarge" weight="semiBold">
+            {smartTrim(currentUser?.username || "", 16)}
+          </Text>
+          <Tag tone="purple" size="small">
+            {smartTrim(currentUser?.ethAddress || "", 12)}
+          </Tag>
+        </Stack>
+      </Stack>
+      <Stack direction="horizontal">
+        <Link href={`/profile/${currentUser?.username}`}>
           <Button
             size="small"
             variant="secondary"
@@ -63,11 +43,9 @@ const TaskWalletHeader = ({ userData }: { userData: UserType }) => {
             View Profile
           </Button>
         </Link>
-        {currentUser?.id == userData?.id && (
-          <Logout />
-        )}
-      </Box>
-    </Box>
+        {currentUser?.id == currentUser?.id && <Logout />}
+      </Stack>
+    </Stack>
   );
 };
 

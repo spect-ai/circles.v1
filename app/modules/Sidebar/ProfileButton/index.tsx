@@ -39,7 +39,7 @@ export default function ProfileButton() {
   useEffect(() => {
     if ((currentUser as UserType)?.notifications?.length > 0) {
       currentUser?.notifications?.map((notif) => {
-        if (notif.read == false) setNotifIds([...notifIds, notif.id]);
+        if (notif.read == false) setNotifIds([...notifIds, notif.timestamp]);
       });
       setTimeout(() => {
         if (notifIds.length > 0) setNotifSeen(false);

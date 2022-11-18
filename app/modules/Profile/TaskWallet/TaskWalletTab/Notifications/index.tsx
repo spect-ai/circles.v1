@@ -1,4 +1,4 @@
-import { Box, Avatar, Text, useTheme } from "degen";
+import { Box, Text, useTheme } from "degen";
 import { useState, useEffect } from "react";
 import { UserType } from "@/app/types";
 import Link from "next/link";
@@ -115,19 +115,19 @@ const Notifications = ({ notifIds }: NotifProps) => {
           .reverse()
           .slice(itemOffset, endOffset)
           .map((notif) => {
-            let link = "";
-            if (notif.type == "circle") {
-              link = `/${notif?.linkPath?.[0]}`;
-            } else if (notif.type == "project") {
-              link = `/${notif?.linkPath?.[0]}/${notif?.linkPath?.[1]}`;
-            } else if (notif.type == "card") {
-              const card = userData?.cardDetails?.[notif?.entityId as string];
-              link = `/${card?.circle?.slug}/${card?.project?.slug}/${card?.slug}`;
-            } else if (notif.type == "retro") {
-              link = `/${notif?.linkPath?.[0]}?retroSlug=${notif?.linkPath?.[1]}`;
-            }
+            // let link = "";
+            // if (notif.type == "circle") {
+            //   link = `/${notif?.linkPath?.[0]}`;
+            // } else if (notif.type == "project") {
+            //   link = `/${notif?.linkPath?.[0]}/${notif?.linkPath?.[1]}`;
+            // } else if (notif.type == "card") {
+            //   const card = userData?.cardDetails?.[notif?.entityId as string];
+            //   link = `/${card?.circle?.slug}/${card?.project?.slug}/${card?.slug}`;
+            // } else if (notif.type == "retro") {
+            //   link = `/${notif?.linkPath?.[0]}?retroSlug=${notif?.linkPath?.[1]}`;
+            // }
             return (
-              <Link href={link} key={notif?.id}>
+              <Link href={"/"} key={notif?.timestamp}>
                 <Box
                   style={{
                     display: "flex",
@@ -144,14 +144,14 @@ const Notifications = ({ notifIds }: NotifProps) => {
                     notif?.read == false ? "accentTertiary" : "transparent"
                   }
                 >
-                  {notif?.actor && userData?.userDetails?.[notif?.actor] && (
+                  {/* {notif?.actor && userData?.userDetails?.[notif?.actor] && (
                     <Avatar
                       label="profile-pic"
                       src={userData?.userDetails[notif?.actor]?.avatar}
                       address={userData?.userDetails[notif?.actor]?.ethAddress}
                       size="5"
                     />
-                  )}
+                  )} */}
                   <Text>{notif?.content}</Text>
                   <Text variant="label">
                     {new Date(notif?.timestamp).toLocaleDateString() ==

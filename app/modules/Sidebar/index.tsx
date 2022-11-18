@@ -9,8 +9,8 @@ import { useQuery } from "react-query";
 import { CircleType, UserType } from "@/app/types";
 import { useGlobal } from "@/app/context/globalContext";
 import styled from "styled-components";
-import TaskWallet from "@/app/modules/Profile/TaskWallet";
 import mixpanel from "@/app/common/utils/mixpanel";
+import NotificationPanel from "../Profile/NotificationPanel";
 
 export const ScrollContainer = styled(Box)`
   ::-webkit-scrollbar {
@@ -173,7 +173,7 @@ function Sidebar(): ReactElement {
         </Box>
       </Box>
       <AnimatePresence>
-        {isProfilePanelExpanded && <TaskWallet tab={tab} />}
+        {isProfilePanelExpanded && <NotificationPanel />}
       </AnimatePresence>
     </>
   );

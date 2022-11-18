@@ -60,13 +60,13 @@ function CircleOptions() {
   }, [circle?.id]);
 
   return (
-    <>
+    <Box width="full">
       <AnimatePresence>
         {settingsModalOpen && (
           <SettingsModal handleClose={() => setSettingsModalOpen(false)} />
         )}
       </AnimatePresence>
-      <Box display="flex" flexDirection="row" alignItems="center" width="64">
+      <Box display="flex" flexDirection="row" alignItems="center" width="full">
         <Box width="3/4">
           <Popover
             data-tour="circle-options-popover"
@@ -179,7 +179,7 @@ function CircleOptions() {
           )}
         </Box>
       </Box>
-    </>
+    </Box>
   );
 }
 

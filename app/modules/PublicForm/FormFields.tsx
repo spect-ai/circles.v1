@@ -27,7 +27,7 @@ type Props = {
 };
 
 const getUser = async () => {
-  const res = await fetch(`${process.env.API_HOST}/user/me`, {
+  const res = await fetch(`${process.env.API_HOST}/user/v1/me`, {
     credentials: "include",
   });
   return await res.json();
@@ -398,11 +398,14 @@ const Container = styled(Box)`
   }
 
   @media (min-width: 768px) and (max-width: 1024px) {
-    padding: 2rem 1rem;
+    padding: 0rem 1rem;
+    margin-bottom: 0.5rem;
   }
 
   @media (min-width: 1024px) and (max-width: 1280px) {
-    padding: 2rem 1rem;
+    padding: 0rem 1rem;
+    margin-bottom: 0.5rem;
   }
-  padding: 2rem 1rem;
+  padding: 0rem 1rem;
+  padding-bottom: 1rem;
 `;

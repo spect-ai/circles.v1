@@ -1,25 +1,12 @@
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { Box, Heading, Stack, useTheme, Text, IconDotsHorizontal } from "degen";
+import { Box, Heading, Stack, useTheme, Text } from "degen";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useState } from "react";
 import styled from "styled-components";
 import { Container } from "./CircleSidebar";
-import CollapseButton from "./CollapseButton";
 import { useQuery } from "react-query";
 import { UserType } from "@/app/types";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
-import Popover from "@/app/common/components/Popover";
-
-const PopoverScrollContainer = styled(Box)`
-  ::-webkit-scrollbar {
-    display: none;
-  }
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-  max-height: 14rem;
-  overflow-y: auto;
-`;
 
 const PopoverOptionContainer = styled(Box)<{ mode: string }>`
   &:hover {
@@ -72,19 +59,12 @@ export default function ExploreSidebar() {
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
-  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
-  const [showCollapseButton, setShowCollapseButton] = useState(false);
   const { mode } = useTheme();
   const router = useRouter();
   const { openConnectModal } = useConnectModal();
 
   return (
-    <Box
-      padding="2"
-      onMouseEnter={() => setShowCollapseButton(true)}
-      onMouseLeave={() => setShowCollapseButton(false)}
-      marginBottom="0.5"
-    >
+    <Box padding="2" marginBottom="0.5">
       <Stack>
         <HeaderButton padding="1" borderRadius="large" width="full" mode={mode}>
           <Stack direction="horizontal" align="center">

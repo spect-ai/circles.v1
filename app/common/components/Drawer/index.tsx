@@ -23,47 +23,74 @@ export const slideHorizontal = {
 
 type props = {
   children: React.ReactNode;
-  title?: string;
   handleClose: (...args: any[]) => void;
+  header?: React.ReactNode;
+  width?: string;
+  closeOnOutsideClick?: boolean;
 };
 
-function Drawer({ handleClose, title, children }: props) {
+function Drawer({
+  handleClose,
+  children,
+  header,
+  width = "70%",
+  closeOnOutsideClick,
+}: props) {
   return (
-    <MotionContainer
-      variants={slideHorizontal}
-      initial="hidden"
-      animate="visible"
-      exit="exit"
+    <Box
+      style={{
+        position: "fixed",
+        top: 0,
+        right: 0,
+        width: `${closeOnOutsideClick ? "100%" : width}`,
+        height: "100%",
+        backgroundColor: "transparent",
+        alignItems: "flex-end",
+        zIndex: 2,
+      }}
+      onClick={() => {
+        closeOnOutsideClick && handleClose();
+      }}
     >
-      <Container backgroundColor="background" borderLeftWidth="0.375">
-        <Box
-          paddingX={{
-            xs: "4",
-            md: "8",
-          }}
-        >
-          <Stack direction="horizontal" justify="space-between">
-            <Heading>{title}</Heading>
-            <Button
-              shape="circle"
-              size="small"
-              variant="transparent"
-              onClick={() => handleClose()}
-            >
-              <IconClose />
-            </Button>
-          </Stack>
-        </Box>
-        {children}
-      </Container>
-    </MotionContainer>
+      <MotionContainer
+        variants={slideHorizontal}
+        initial="hidden"
+        animate="visible"
+        exit="exit"
+        width={width}
+      >
+        <Container backgroundColor="background">
+          <Box
+            paddingX={{
+              xs: "4",
+              md: "8",
+            }}
+          >
+            {header ? (
+              header
+            ) : (
+              <Stack direction="horizontal" justify="space-between">
+                <Button
+                  shape="circle"
+                  size="small"
+                  variant="transparent"
+                  onClick={() => handleClose()}
+                >
+                  <IconClose />
+                </Button>
+              </Stack>
+            )}
+          </Box>
+          {children}
+        </Container>
+      </MotionContainer>
+    </Box>
   );
 }
 
 const Container = styled(Box)`
   height: 100%;
   padding-top: 10px;
-  box-shadow: 0 0 16px 0 rgba(0, 0, 0, 0.5);
   // @media (max-width: 768px) {
   //   width: 100%;
   // }
@@ -72,9 +99,9 @@ const Container = styled(Box)`
   // }
 `;
 
-export const MotionContainer = styled(motion.div)`
+export const MotionContainer = styled(motion.div)<{ width?: string }>`
   height: 100%;
-  width: 70%;
+  width: ${({ width }) => width || "70%"};
   position: fixed;
   z-index: 2;
   top: 0;
@@ -83,6 +110,11 @@ export const MotionContainer = styled(motion.div)`
   overflow-y: hidden;
   display: flex;
   flex-direction: column;
+  box-shadow: 0 0 18px 0 rgba(0, 0, 0, 0.75);
+
+  @media (max-width: 768px) {
+    width: 100%;
+  }
 `;
 
 export default Drawer;

@@ -104,7 +104,6 @@ export default function DataDrawer({
 
   return (
     <Drawer
-      title={collection.name}
       handleClose={async () => {
         setExpandedDataSlug("");
         dataSlug && (await router.push(`/${cId}/r/${collection.slug}`));

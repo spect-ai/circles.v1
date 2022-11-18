@@ -1,8 +1,6 @@
 import { useGlobal } from "@/app/context/globalContext";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
-import Tabs from "@/app/common/components/Tabs";
-
-import { Box, Button, Stack, Input, IconSearch, IconGrid, useTheme } from "degen";
+import { Box, Button, Stack, Input, IconSearch, IconGrid } from "degen";
 import { AnimatePresence } from "framer-motion";
 import { matchSorter } from "match-sorter";
 import { useRouter } from "next/router";
@@ -40,14 +38,11 @@ const ToggleButton = styled.button<{ bgcolor: boolean }>`
     props.bgcolor ? "rgb(191,90,242,0.1)" : "transparent"};
 `;
 
-export const Toggle = ({ toggle, setToggle } : Props) => {
-  const { mode } = useTheme();
-
+export const Toggle = ({ toggle, setToggle }: Props) => {
   return (
     <Box
-      backgroundColor={mode === "dark" ? "background" : "white"}
+      backgroundColor="backgroundSecondary"
       style={{
-        padding: "0.2rem",
         borderRadius: "2rem",
         boxShadow: "0px 1px 3px rgba(0, 0, 0, 0.2)",
         width: "fit-content",
@@ -79,7 +74,6 @@ export const Toggle = ({ toggle, setToggle } : Props) => {
 export default function CircleDashboard() {
   const { isSidebarExpanded, groupBy, setGroupBy, toggle, setToggle } =
     useGlobal();
-  const onTabClick = (id: number) => setToggle(id);
   const router = useRouter();
   const { circle: cId, retroSlug } = router.query;
   const {

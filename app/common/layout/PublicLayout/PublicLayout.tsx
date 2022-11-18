@@ -1,5 +1,4 @@
 import React, { memo, useEffect } from "react";
-
 import { ReactNodeNoStrings } from "degen/dist/types/types";
 import { Box, useTheme } from "degen";
 import { AnimatePresence } from "framer-motion";
@@ -8,7 +7,7 @@ import Sidebar from "@/app/modules/Sidebar";
 import styled from "styled-components";
 import { useGlobal } from "@/app/context/globalContext";
 import { useQuery } from "react-query";
-import { CircleType, UserType } from "@/app/types";
+import { CircleType, Notification, UserType } from "@/app/types";
 import { toast } from "react-toastify";
 import ConnectPage from "../../../modules/Dashboard/ConnectPage";
 import Onboard from "../../../modules/Dashboard/Onboard";
@@ -34,7 +33,7 @@ const DesktopContainer = styled(Box)`
 `;
 
 const getUser = async () => {
-  const res = await fetch(`${process.env.API_HOST}/user/me`, {
+  const res = await fetch(`${process.env.API_HOST}/user/v1/me`, {
     credentials: "include",
   });
   return await res.json();
@@ -48,12 +47,23 @@ function PublicLayout(props: PublicLayoutProps) {
 
   const {
     data: myCircles,
-    refetch: refetchCircles,
+    refetch: fetchCircles,
     isLoading: loading,
   } = useQuery<CircleType[]>(
     "dashboardCircles",
     () =>
-      fetch(`${process.env.API_HOST}/user/v1/${connectedUser}/circles`, {
+      fetch(`${process.env.API_HOST}/user/v1/circles`, {
+        credentials: "include",
+      }).then((res) => res.json()),
+    {
+      enabled: false,
+    }
+  );
+
+  const { refetch: fetchNotifications } = useQuery<Notification[]>(
+    "notifications",
+    () =>
+      fetch(`${process.env.API_HOST}/user/v1/notifications`, {
         credentials: "include",
       }).then((res) => res.json()),
     {
@@ -96,9 +106,10 @@ function PublicLayout(props: PublicLayoutProps) {
   }, []);
 
   useEffect(() => {
-    connectedUser && void refetchCircles();
+    void fetchCircles();
+    void fetchNotifications();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [connectedUser]);
+  }, []);
 
   useEffect(() => {
     setTimeout(() => {
