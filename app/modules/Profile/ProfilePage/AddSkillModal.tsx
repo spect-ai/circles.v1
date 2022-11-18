@@ -1,11 +1,13 @@
+import Dropdown from "@/app/common/components/Dropdown";
 import Modal from "@/app/common/components/Modal";
 import { useGlobal } from "@/app/context/globalContext";
 import useProfileUpdate from "@/app/services/Profile/useProfileUpdate";
-import { Credential, LensSkills } from "@/app/types";
+import { Credential, LensSkills, Option } from "@/app/types";
 import { Box, Button, Input, Tag, Text } from "degen";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import LinkCredentialsModal from "./LinkCredentialsModal";
+import { skills as skillsList } from "@/app/common/utils/constants";
 
 type Props = {
   handleClose: () => void;
@@ -23,32 +25,54 @@ export default function AddSkillModal({
   const { userData } = useGlobal();
 
   const [title, setTitle] = useState("");
+  const [category, setCategory] = useState({} as Option);
+  const [categoryOptions, setCategoryOptions] = useState([] as Option[]);
+
   const [linkedCredentials, setLinkedCredentials] = useState<Credential[]>([]);
   const [loading, setLoading] = useState(false);
   const { updateProfile } = useProfileUpdate();
 
   const [requiredFieldsNotSet, setRequiredFieldsNotSet] = useState({
     title: false,
+    category: false,
   });
 
   const isEmpty = (fieldName: string, value: any) => {
     switch (fieldName) {
       case "title":
         return !value;
+      case "category":
+        return !value?.value;
       default:
         return false;
     }
   };
 
   useEffect(() => {
+    setCategoryOptions(
+      skillsList
+        .filter((skill) => skill !== "None")
+        .map((skill) => {
+          return {
+            label: skill,
+            value: skill,
+          };
+        })
+    );
     if (modalMode === "edit" && (skillId || skillId === 0)) {
       setLoading(true);
       const skill = userData.skillsV2[skillId];
       setTitle(skill?.title);
       setLinkedCredentials(skill?.linkedCredentials);
+      setCategory({
+        label: skill?.category,
+        value: skill?.category,
+      });
       setLoading(false);
     }
   }, []);
+
+  useEffect(() => {}, []);
 
   return (
     <Modal
@@ -82,7 +106,7 @@ export default function AddSkillModal({
           )}
           <Input
             label=""
-            placeholder={`Enter Title`}
+            placeholder={`Enter Skill`}
             value={title}
             onChange={(e) => {
               setTitle(e.target.value);
@@ -91,6 +115,33 @@ export default function AddSkillModal({
                 title: isEmpty("title", e.target.value),
               });
             }}
+          />
+        </Box>
+        <Box>
+          <Box display="flex" flexDirection="row" alignItems="center" gap="2">
+            <Text variant="label">Skill Category</Text>
+            <Tag size="small" tone="accent">
+              Required
+            </Tag>
+          </Box>
+          {requiredFieldsNotSet["category"] && (
+            <Text color="red" variant="small">
+              This is a required field and cannot be empty
+            </Text>
+          )}
+          <Dropdown
+            placeholder={`Select Skill Category`}
+            options={categoryOptions}
+            multiple={false}
+            selected={category}
+            onChange={(value: any) => {
+              setCategory(value);
+              setRequiredFieldsNotSet({
+                ...requiredFieldsNotSet,
+                category: isEmpty("category", value),
+              });
+            }}
+            portal={false}
           />
         </Box>
         <Box>
@@ -117,10 +168,11 @@ export default function AddSkillModal({
             size="small"
             width="32"
             onClick={async () => {
-              if (!title) {
+              if (!title || !category?.value) {
                 setRequiredFieldsNotSet({
                   ...requiredFieldsNotSet,
                   title: isEmpty("title", title),
+                  category: isEmpty("category", category),
                 });
                 return;
               }
@@ -131,6 +183,7 @@ export default function AddSkillModal({
                   ...skills,
                   {
                     title,
+                    category: category?.value,
                     linkedCredentials,
                     nfts: [],
                     poaps: [],
@@ -145,6 +198,7 @@ export default function AddSkillModal({
                   if (index === skillId) {
                     return {
                       title,
+                      category: category?.value,
                       linkedCredentials,
                       nfts: [],
                       poaps: [],

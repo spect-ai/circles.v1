@@ -985,6 +985,7 @@ export type Skill = {
 
 export type LensSkills = {
   title: string;
+  category: string;
   icon: string;
   nfts: NFT[];
   poaps: string[];

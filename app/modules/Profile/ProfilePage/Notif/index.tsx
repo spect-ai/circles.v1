@@ -15,7 +15,7 @@ const Notif = styled(Box)<{ mode: string }>`
   }
 
   width: 18vw;
-  height: 90vh;
+  height: 22vh;
   margin: 2rem;
   padding: 2rem;
   border-radius: 1rem;
