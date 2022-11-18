@@ -87,14 +87,11 @@ function CircleSidebar() {
             marginBottom="1"
             borderRadius="large"
             width="full"
-            onClick={() => {}}
             mode={mode}
           >
-            <Stack direction="horizontal" align="center">
-              <Text size="headingTwo" weight="semiBold" ellipsis>
-                {circle?.name}
-              </Text>
-            </Stack>
+            <Text size="headingTwo" weight="semiBold" ellipsis>
+              {circle?.name}
+            </Text>
           </HeaderButton>
         </Stack>
       </Box>
@@ -211,7 +208,10 @@ function CircleSidebar() {
                                   }
                                   icon={<IconUserGroup size={"5"} />}
                                 >
-                                  {smartTrim(circle?.children?.[content].name, 22)}
+                                  {smartTrim(
+                                    circle?.children?.[content].name,
+                                    22
+                                  )}
                                 </PrimaryButton>
                               </Link>
                             )}
@@ -231,7 +231,10 @@ function CircleSidebar() {
                                     />
                                   }
                                 >
-                                  {smartTrim(circle?.projects?.[content].name, 22)}
+                                  {smartTrim(
+                                    circle?.projects?.[content].name,
+                                    22
+                                  )}
                                 </PrimaryButton>
                               </Link>
                             )}
@@ -247,7 +250,10 @@ function CircleSidebar() {
                                   }
                                   icon={<IconLightningBolt size={"5"} />}
                                 >
-                                  {smartTrim(circle?.retro?.[content].title, 22)}
+                                  {smartTrim(
+                                    circle?.retro?.[content].title,
+                                    22
+                                  )}
                                 </PrimaryButton>
                               </Link>
                             )}
@@ -264,7 +270,10 @@ function CircleSidebar() {
                                   }
                                   icon={<IconCollection size={"5"} />}
                                 >
-                                  {smartTrim(circle?.collections?.[content].name, 22)}
+                                  {smartTrim(
+                                    circle?.collections?.[content].name,
+                                    22
+                                  )}
                                 </PrimaryButton>
                               </Link>
                             )}

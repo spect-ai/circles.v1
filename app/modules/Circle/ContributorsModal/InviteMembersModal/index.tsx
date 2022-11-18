@@ -71,7 +71,6 @@ function InviteMemberModal() {
               display="flex"
               flexDirection="column"
               alignItems="center"
-              width="full"
             >
               <Stack>
                 <Text align="center">Role</Text>

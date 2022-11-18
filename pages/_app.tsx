@@ -140,7 +140,7 @@ function MyApp({ Component, pageProps }: AppProps) {
     void (async () => {
       try {
         const user: UserType = await (
-          await fetch(`${process.env.API_HOST}/user/me`)
+          await fetch(`${process.env.API_HOST}/user/v1/me`)
         ).json();
         setAuthenticationStatus(
           user.ethAddress ? "authenticated" : "unauthenticated"

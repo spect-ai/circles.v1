@@ -34,7 +34,7 @@ const DesktopContainer = styled(Box)`
 `;
 
 const getUser = async () => {
-  const res = await fetch(`${process.env.API_HOST}/user/me`, {
+  const res = await fetch(`${process.env.API_HOST}/user/v1/me`, {
     credentials: "include",
   });
   return await res.json();

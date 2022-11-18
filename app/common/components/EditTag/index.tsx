@@ -33,7 +33,12 @@ function EditTag({
 }: Props) {
   return (
     <Box>
-      <Stack direction="horizontal">
+      <Stack
+        direction={{
+          sm: "vertical",
+          md: "horizontal",
+        }}
+      >
         {label && (
           <Box width="1/3">
             <Text variant="label">{label}</Text>
