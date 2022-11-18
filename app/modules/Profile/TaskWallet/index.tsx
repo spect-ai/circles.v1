@@ -83,7 +83,7 @@ const TaskWallet = ({ tab }: { tab: string }) => {
           )}
           {!isLoading && (
             <>
-              <TaskWalletHeader userData={userData as UserType} />
+              <TaskWalletHeader />
               <TaskWalletTabs userData={userData as UserType} tab={tab} />
             </>
           )}

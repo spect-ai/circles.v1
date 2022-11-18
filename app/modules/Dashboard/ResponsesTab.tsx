@@ -1,4 +1,3 @@
-import { useGlobal } from "@/app/context/globalContext";
 import { CollectionType } from "@/app/types";
 import { Avatar, Box, IconCollection, Stack, Text, useTheme } from "degen";
 import Link from "next/link";
@@ -8,12 +7,10 @@ import { useQuery } from "react-query";
 import styled from "styled-components";
 
 function ResponsesTab() {
-  const { connectedUser } = useGlobal();
-
   const { data: responses, refetch } = useQuery<Partial<CollectionType>[]>(
     "dashboardResponses",
     () =>
-      fetch(`${process.env.API_HOST}/user/v1/${connectedUser}/responses`, {
+      fetch(`${process.env.API_HOST}/user/v1/responses`, {
         credentials: "include",
       }).then((res) => res.json()),
     {

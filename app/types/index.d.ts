@@ -573,19 +573,10 @@ export type Status = {
 };
 
 export type Notification = {
-  id: string;
   content: string;
-  type: "card" | "project" | "circle" | "retro";
-  linkPath: string[];
-  actor: string;
-  timestamp: Date;
-  entityId?: string;
-  ref: {
-    cards?: ContentPlaceholder;
-    users?: ContentPlaceholder;
-    circles?: ContentPlaceholder;
-    projects?: ContentPlaceholder;
-  };
+  avatar: string;
+  redirect: string;
+  timestamp: string;
   read: boolean;
 };
 

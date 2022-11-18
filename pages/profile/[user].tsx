@@ -4,7 +4,6 @@ import MetaHead from "@/app/common/seo/MetaHead/MetaHead";
 import type { NextPage } from "next";
 import ProfileCard from "@/app/modules/Profile/ProfilePage/ProfileCard";
 import ProfileTabs from "@/app/modules/Profile/ProfilePage/Tabs";
-import TaskWallet from "@/app/modules/Profile/TaskWallet";
 import { useGlobal } from "@/app/context/globalContext";
 import { useRouter } from "next/router";
 import { UserType } from "@/app/types";
@@ -13,6 +12,7 @@ import { toast } from "react-toastify";
 import Loader from "@/app/common/components/Loader";
 import { PublicLayout } from "@/app/common/layout";
 import styled from "styled-components";
+import NotificationPanel from "@/app/modules/Profile/NotificationPanel";
 
 const getUser = async () => {
   const res = await fetch(`${process.env.API_HOST}/user/v1/me`, {
@@ -115,7 +115,7 @@ const ProfilePage: NextPage = () => {
           </ScrollContainer>
         )}
       </PublicLayout>
-      {isProfilePanelExpanded && <TaskWallet tab={tab} />}
+      {isProfilePanelExpanded && <NotificationPanel />}
     </>
   );
 };

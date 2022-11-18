@@ -1,15 +1,10 @@
 import { useState, useEffect } from "react";
 import { Box, Button } from "degen";
-import {
-  ProjectOutlined,
-  StarOutlined,
-  FieldTimeOutlined,
-} from "@ant-design/icons";
+import { ProjectOutlined, FieldTimeOutlined } from "@ant-design/icons";
 import styled from "styled-components";
 import { UserType } from "@/app/types";
 import { useQuery } from "react-query";
 import WorkCards, { Toggle } from "./Work";
-import BookMarks from "./Bookmarks";
 import Notifications from "./Notifications";
 
 interface UserProps {
@@ -71,7 +66,7 @@ const TaskWalletTabs = ({ userData, tab }: UserProps) => {
   useEffect(() => {
     if (userData?.notifications?.length > 0) {
       userData?.notifications?.map((notif) => {
-        if (notif.read == false) setNotifIds([...notifIds, notif.id]);
+        if (notif.read == false) setNotifIds([...notifIds, notif.timestamp]);
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

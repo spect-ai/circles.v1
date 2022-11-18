@@ -98,13 +98,7 @@ function CircleSidebar() {
     );
 
   return (
-    <Box
-      paddingY="2"
-      paddingLeft="3"
-      paddingRight="3"
-      // onMouseEnter={() => setShowCollapseButton(true)}
-      // onMouseLeave={() => setShowCollapseButton(false)}
-    >
+    <Box paddingY="2" paddingLeft="3" paddingRight="3">
       <AnimatePresence>
         {isSettingsModalOpen && (
           <SettingsModal handleClose={() => setIsSettingsModalOpen(false)} />
@@ -121,12 +115,6 @@ function CircleSidebar() {
       <Stack space="3">
         <Stack direction="horizontal">
           <CircleOptions />
-          {/* <CollapseButton
-            show={showCollapseButton}
-            setShowCollapseButton={setShowCollapseButton}
-            top="2.7rem"
-            left="21rem"
-          /> */}
         </Stack>
         {!isLoading && circle?.toBeClaimed && (
           <PrimaryButton
