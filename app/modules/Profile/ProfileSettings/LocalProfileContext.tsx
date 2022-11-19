@@ -78,6 +78,10 @@ export function useProviderLocalProfile() {
       bio,
       skills,
       email,
+      twitter,
+      github,
+      behance,
+      website,
     });
     console.log(res);
     setLoading(false);

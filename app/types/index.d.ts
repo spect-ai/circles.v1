@@ -45,6 +45,10 @@ interface UserType {
   lensHandle: string;
   collections: CollectionType;
   collectionsSubmittedTo: CollectionType[];
+  github: string;
+  twitter: string;
+  behance: string;
+  website: string;
 }
 
 export interface Payment {

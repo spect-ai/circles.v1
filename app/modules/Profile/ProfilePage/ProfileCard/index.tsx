@@ -9,7 +9,12 @@ import {
   useTheme,
 } from "degen";
 import styled from "styled-components";
-import { GithubOutlined, TwitterOutlined } from "@ant-design/icons";
+import {
+  BehanceOutlined,
+  GithubOutlined,
+  LinkOutlined,
+  TwitterOutlined,
+} from "@ant-design/icons";
 import { UserType } from "@/app/types";
 import { useGlobal } from "@/app/context/globalContext";
 import { useQuery } from "react-query";
@@ -142,8 +147,8 @@ const ProfileCard = () => {
               user?.ethAddress?.substring(user?.ethAddress?.length - 6)}
           </Tag>
         )}
-        <InfoBox gap="1">
-          {user?.githubId && (
+        <InfoBox gap="1" marginTop="2">
+          {user?.githubId && !user?.github && (
             <a
               href={`https://github.com/${user?.githubId}`}
               target="_blank"
@@ -152,13 +157,49 @@ const ProfileCard = () => {
               <GithubOutlined style={{ color: "grey", fontSize: "1.2rem" }} />
             </a>
           )}
-          {user?.twitterId && (
+          {user?.github && (
+            <a
+              href={`${user.github}`}
+              target="_blank"
+              rel="noreferrer noopener"
+            >
+              <GithubOutlined style={{ color: "grey", fontSize: "1.2rem" }} />
+            </a>
+          )}
+          {user?.twitterId && !user?.twitter && (
             <a
               href={`https://twitter.com/${user?.twitterId}`}
               target="_blank"
               rel="noreferrer noopener"
             >
               <TwitterOutlined style={{ color: "grey", fontSize: "1.2rem" }} />
+            </a>
+          )}
+          {user?.twitter && (
+            <a
+              href={`${user.twitter}`}
+              target="_blank"
+              rel="noreferrer noopener"
+            >
+              <TwitterOutlined style={{ color: "grey", fontSize: "1.2rem" }} />
+            </a>
+          )}
+          {user?.behance && (
+            <a
+              href={`${user.behance}`}
+              target="_blank"
+              rel="noreferrer noopener"
+            >
+              <BehanceOutlined style={{ color: "grey", fontSize: "1.2rem" }} />
+            </a>
+          )}
+          {user?.website && (
+            <a
+              href={`${user.website}`}
+              target="_blank"
+              rel="noreferrer noopener"
+            >
+              <LinkOutlined style={{ color: "grey", fontSize: "1.2rem" }} />
             </a>
           )}
         </InfoBox>

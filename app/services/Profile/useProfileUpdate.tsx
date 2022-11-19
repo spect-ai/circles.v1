@@ -14,6 +14,10 @@ interface UpdateProfileDTO {
   githubId?: string;
   lensHandle?: string;
   skillsV2?: LensSkills[];
+  twitter?: string;
+  github?: string;
+  behance?: string;
+  website?: string;
 }
 
 interface AddExperienceDTO {
