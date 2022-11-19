@@ -1,10 +1,11 @@
 import Drawer from "@/app/common/components/Drawer";
 import { useGlobal } from "@/app/context/globalContext";
+import { getNotifications } from "@/app/services/Notification";
 import { Notification } from "@/app/types";
-import { Avatar, Box, Stack, Text } from "degen";
+import { Avatar, Box, Heading, Stack, Text } from "degen";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
-import { useQuery } from "react-query";
+import InfiniteScroll from "react-infinite-scroll-component";
 import styled from "styled-components";
 import TaskWalletHeader from "../TaskWallet/TaskWalletHeader";
 
@@ -12,25 +13,18 @@ export default function NotificationPanel() {
   const { setIsProfilePanelExpanded } = useGlobal();
   const handleClose = () => setIsProfilePanelExpanded(false);
   const [tab, setTab] = useState(0);
-
-  const { refetch } = useQuery<Notification[]>("notifications", {
-    enabled: false,
-  });
-
   const [notifications, setnotifications] = useState<Notification[]>([]);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
 
   useEffect(() => {
-    void refetch().then((res) => {
-      // reverse the array so the latest notifications are at the top
-      if (res.data) {
-        console.log({ data: res.data });
-        setnotifications(res.data.reverse());
-      }
-    });
+    (async () => {
+      const res = await getNotifications(15, page);
+      console.log({ res });
+      setnotifications(res);
+    })().catch((err) => console.log(err));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  console.log({ notifications });
 
   return (
     <Drawer
@@ -43,7 +37,7 @@ export default function NotificationPanel() {
       }
       closeOnOutsideClick
     >
-      <Box paddingX="8" paddingY="4">
+      <ScrollContainer paddingX="8" paddingY="4">
         <Stack>
           <Box
             backgroundColor="backgroundSecondary"
@@ -61,11 +55,39 @@ export default function NotificationPanel() {
               Notifications
             </ToggleButton>
           </Box>
-          {notifications?.reverse().map((notif) => (
-            <NotificationItem key={notif.timestamp} notif={notif} />
-          ))}
+          <InfiniteScroll
+            style={{
+              overflowY: "scroll",
+              overflowX: "hidden",
+            }}
+            height="calc(100vh - 200px)"
+            dataLength={notifications.length}
+            next={() => {
+              console.log("next");
+              setPage(page + 1);
+              (async () => {
+                const res = await getNotifications(10, page);
+                console.log({ res });
+                if (res.length == 0) {
+                  setHasMore(false);
+                }
+                setnotifications([...notifications, ...res]);
+              })().catch((err) => console.log(err));
+            }}
+            hasMore={hasMore}
+            loader={<Heading>Loading..</Heading>}
+            endMessage={
+              <Stack align="center">
+                <Text variant="label">Yay! You have seen it all</Text>
+              </Stack>
+            }
+          >
+            {notifications?.reverse().map((notif) => (
+              <NotificationItem key={notif.timestamp} notif={notif} />
+            ))}
+          </InfiniteScroll>
         </Stack>
-      </Box>
+      </ScrollContainer>
     </Drawer>
   );
 }
@@ -115,4 +137,15 @@ const ToggleButton = styled.button<{ bgcolor: boolean }>`
     props.bgcolor ? "rgb(191,90,242)" : "rgb(191,90,242,0.8)"};
   background-color: ${(props) =>
     props.bgcolor ? "rgb(191,90,242,0.1)" : "transparent"};
+`;
+
+const ScrollContainer = styled(Box)`
+  overflow-y: scroll;
+  height: calc(100vh - 8rem);
+
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 `;
