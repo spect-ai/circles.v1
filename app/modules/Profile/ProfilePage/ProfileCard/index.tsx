@@ -88,11 +88,11 @@ const ProfileCard = () => {
   });
   const [userCircles, setUserCircles] = useState([]);
 
-  // console.log({ user });
-  const circlesArray = userCircles?.map((aCircle: any) => ({
-    label: aCircle?.slug,
-    src: aCircle?.avatar,
-  }));
+  // // console.log({ user });
+  // const circlesArray = userCircles?.map((aCircle: any) => ({
+  //   label: aCircle?.slug,
+  //   src: aCircle?.avatar,
+  // }));
 
   useEffect(() => {
     if (user?.id) {

@@ -1,5 +1,6 @@
 import Editor from "@/app/common/components/Editor";
 import Modal from "@/app/common/components/Modal";
+import CheckBox from "@/app/common/components/Table/Checkbox";
 import { useGlobal } from "@/app/context/globalContext";
 import useProfileUpdate from "@/app/services/Profile/useProfileUpdate";
 import { Credential } from "@/app/types";
@@ -29,6 +30,7 @@ export default function AddEducationModal({
   const [endDate, setEndDate] = useState("");
   const [organization, setOrganization] = useState("");
   const [linkedCredentials, setLinkedCredentials] = useState<Credential[]>([]);
+  const [currentlyStudying, setCurrentlyStudying] = useState(false);
   const [loading, setLoading] = useState(false);
   const {
     addEducation: createEducation,
@@ -41,6 +43,7 @@ export default function AddEducationModal({
     organization: false,
     startDate: false,
   });
+  const [dateError, setDateError] = useState(false);
 
   const { mode } = useTheme();
 
@@ -55,6 +58,15 @@ export default function AddEducationModal({
     }
   };
 
+  const dateIsInvalidValid = (startDate: string, endDate: string) => {
+    if (startDate && endDate) {
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+      return start > end;
+    }
+    return false;
+  };
+
   useEffect(() => {
     if (modalMode === "edit" && (educationId || educationId === 0)) {
       setLoading(true);
@@ -63,6 +75,8 @@ export default function AddEducationModal({
       setTitle(education.courseDegree);
       setOrganization(education.school);
       setDescription(education.description);
+      setCurrentlyStudying(education.currentlyStudying);
+
       setStartDate(
         education.start_date?.year?.toString().padStart(2, "0") +
           "-" +
@@ -188,7 +202,7 @@ export default function AddEducationModal({
             <Box
               width={{
                 xs: "full",
-                md: "72",
+                md: "96",
               }}
             >
               <Text variant="label">Start Date</Text>
@@ -200,13 +214,14 @@ export default function AddEducationModal({
                 mode={mode}
                 onChange={(e) => {
                   setStartDate(e.target.value);
+                  setDateError(dateIsInvalidValid(e.target.value, endDate));
                 }}
               />
             </Box>
             <Box
               width={{
                 xs: "full",
-                md: "72",
+                md: "96",
               }}
               marginTop={{
                 xs: "2",
@@ -221,11 +236,45 @@ export default function AddEducationModal({
                 type="date"
                 mode={mode}
                 onChange={(e) => {
-                  console.log(e.target.value);
                   setEndDate(e.target.value);
+                  setCurrentlyStudying(false);
+                  setDateError(dateIsInvalidValid(startDate, e.target.value));
                 }}
               />
             </Box>
+          </Box>
+          {dateError && (
+            <Box
+              display="flex"
+              flexDirection="row"
+              alignItems="center"
+              gap="2"
+              marginTop="1"
+            >
+              <Text color="red">
+                Please make sure start date is before end date
+              </Text>
+            </Box>
+          )}
+          <Box
+            width="full"
+            marginTop="2"
+            display="flex"
+            flexDirection="row"
+            alignItems="center"
+            gap="2"
+            justifyContent="flex-end"
+          >
+            <Text variant="label">Currently actively learning</Text>
+
+            <CheckBox
+              isChecked={currentlyStudying}
+              onClick={() => {
+                setCurrentlyStudying(!currentlyStudying);
+                setEndDate("");
+                setDateError(false);
+              }}
+            />
           </Box>
         </Box>
         <Box>
@@ -261,11 +310,12 @@ export default function AddEducationModal({
                 });
                 return;
               }
-              console.log(modalMode);
-
+              const dateIsInvalid = dateIsInvalidValid(startDate, endDate);
+              if (dateIsInvalid) {
+                setDateError(true);
+                return;
+              }
               if (modalMode === "add") {
-                console.log(educationId);
-
                 const res = await createEducation({
                   courseDegree: title,
                   school: organization,
@@ -273,14 +323,13 @@ export default function AddEducationModal({
                   description,
                   start_date: preprocessDate(startDate),
                   end_date: preprocessDate(endDate),
-                  currentlyStudying: false,
+                  currentlyStudying,
                   linkedCredentials,
                 });
               } else if (modalMode === "edit") {
                 if (!educationId && educationId !== 0) {
                   return;
                 }
-                console.log(educationId);
                 const res = await updateEducation(educationId?.toString(), {
                   courseDegree: title,
                   school: organization,
@@ -288,7 +337,7 @@ export default function AddEducationModal({
                   description,
                   start_date: preprocessDate(startDate),
                   end_date: preprocessDate(endDate),
-                  currentlyStudying: false,
+                  currentlyStudying,
                   linkedCredentials,
                 });
               }

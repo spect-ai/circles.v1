@@ -78,6 +78,8 @@ export default function ViewExperienceModal({
     }
   }, [experience]);
 
+  console.log({ experience });
+
   return (
     <>
       {experience && (experienceId || experienceId === 0) && (
@@ -108,8 +110,8 @@ export default function ViewExperienceModal({
                     {startDate} - {endDate}
                   </Text>
                 )}{" "}
-                {experience.start_date && experience.currentlyWorking && (
-                  <Text variant="label">{experience.start_date} - Present</Text>
+                {startDate && experience.currentlyWorking && (
+                  <Text variant="label">{startDate} - Present</Text>
                 )}
               </Box>
             </Box>

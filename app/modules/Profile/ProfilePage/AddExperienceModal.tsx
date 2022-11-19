@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import styled from "styled-components";
 import LinkCredentialsModal from "./LinkCredentialsModal";
 import { Credential } from "@/app/types";
+import CheckBox from "@/app/common/components/Table/Checkbox";
 
 type Props = {
   handleClose: () => void;
@@ -33,6 +34,7 @@ export default function AddExperienceModal({
   const [endDate, setEndDate] = useState("");
   const [organization, setOrganization] = useState("");
   const [linkedCredentials, setLinkedCredentials] = useState<Credential[]>([]);
+  const [currentlyWorking, setCurrentlyWorking] = useState(false);
   const [loading, setLoading] = useState(false);
   const {
     addExperience: createExperience,
@@ -45,6 +47,7 @@ export default function AddExperienceModal({
     organization: false,
     startDate: false,
   });
+  const [dateError, setDateError] = useState(false);
 
   const { mode } = useTheme();
 
@@ -59,7 +62,14 @@ export default function AddExperienceModal({
     }
   };
 
-  console.log({ linkedCredentials });
+  const dateIsInvalidValid = (startDate: string, endDate: string) => {
+    if (startDate && endDate) {
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+      return start > end;
+    }
+    return false;
+  };
 
   useEffect(() => {
     if (modalMode === "edit" && (experienceId || experienceId === 0)) {
@@ -67,6 +77,7 @@ export default function AddExperienceModal({
       const experience = userData.experiences[experienceId];
       setRole(experience.jobTitle);
       setOrganization(experience.company);
+      setCurrentlyWorking(experience.currentlyWorking);
       if (
         experience.start_date?.year &&
         experience.start_date?.month &&
@@ -204,7 +215,7 @@ export default function AddExperienceModal({
             <Box
               width={{
                 xs: "full",
-                md: "72",
+                md: "96",
               }}
             >
               <Text variant="label">Start Date</Text>
@@ -216,13 +227,14 @@ export default function AddExperienceModal({
                 mode={mode}
                 onChange={(e) => {
                   setStartDate(e.target.value);
+                  setDateError(dateIsInvalidValid(e.target.value, endDate));
                 }}
               />
             </Box>
             <Box
               width={{
                 xs: "full",
-                md: "72",
+                md: "96",
               }}
               marginTop={{
                 xs: "2",
@@ -238,9 +250,44 @@ export default function AddExperienceModal({
                 mode={mode}
                 onChange={(e) => {
                   setEndDate(e.target.value);
+                  setCurrentlyWorking(false);
+                  setDateError(dateIsInvalidValid(startDate, e.target.value));
                 }}
               />
             </Box>
+          </Box>
+          {dateError && (
+            <Box
+              display="flex"
+              flexDirection="row"
+              alignItems="center"
+              gap="2"
+              marginTop="1"
+            >
+              <Text color="red">
+                Please make sure start date is before end date
+              </Text>
+            </Box>
+          )}
+          <Box
+            width="full"
+            marginTop="2"
+            display="flex"
+            flexDirection="row"
+            alignItems="center"
+            gap="2"
+            justifyContent="flex-end"
+          >
+            <Text variant="label">Currently working here</Text>
+
+            <CheckBox
+              isChecked={currentlyWorking}
+              onClick={() => {
+                setCurrentlyWorking(!currentlyWorking);
+                setEndDate("");
+                setDateError(false);
+              }}
+            />
           </Box>
         </Box>
         <Box>
@@ -266,6 +313,7 @@ export default function AddExperienceModal({
             variant="secondary"
             size="small"
             width="32"
+            disabled={dateError}
             onClick={async () => {
               console.log({ role, organization });
               if (!role || !organization) {
@@ -274,6 +322,11 @@ export default function AddExperienceModal({
                   role: isEmpty("role", role),
                   organization: isEmpty("organization", organization),
                 });
+                return;
+              }
+              const dateIsInvalid = dateIsInvalidValid(startDate, endDate);
+              if (dateIsInvalid) {
+                setDateError(true);
                 return;
               }
               if (modalMode === "add") {
@@ -285,7 +338,7 @@ export default function AddExperienceModal({
                   description,
                   start_date: preprocessDate(startDate),
                   end_date: preprocessDate(endDate),
-                  currentlyWorking: false,
+                  currentlyWorking,
                   linkedCredentials: linkedCredentials,
                 });
               } else if (modalMode === "edit") {
@@ -299,7 +352,7 @@ export default function AddExperienceModal({
                   description,
                   start_date: preprocessDate(startDate),
                   end_date: preprocessDate(endDate),
-                  currentlyWorking: false,
+                  currentlyWorking,
                   linkedCredentials: linkedCredentials,
                 });
               }

@@ -101,11 +101,11 @@ export default function ViewEducationModal({
               <Text variant="large">{education.school}</Text>
 
               <Box marginTop="2">
-                {startDate && endDate ? (
+                {startDate && endDate && !education.currentlyStudying ? (
                   <Text variant="label">
                     {startDate} - {endDate}
                   </Text>
-                ) : startDate ? (
+                ) : startDate && education.currentlyStudying ? (
                   <Text variant="label">{startDate} - Present</Text>
                 ) : null}
               </Box>
