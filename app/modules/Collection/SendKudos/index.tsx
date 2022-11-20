@@ -12,7 +12,16 @@ import {
   Permissions,
   UserType,
 } from "@/app/types";
-import { Box, Button, Input, MediaPicker, Stack, Text, Textarea } from "degen";
+import {
+  Box,
+  Button,
+  IconSparkles,
+  Input,
+  MediaPicker,
+  Stack,
+  Text,
+  Textarea,
+} from "degen";
 import { AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
@@ -149,7 +158,7 @@ export default function SendKudos() {
 
   return (
     <Stack space="2">
-      <Text variant="label">Kudos</Text>
+      <Text variant="label">Distribute Soulbound tokens to responders</Text>
       {!loading && kudos.imageUrl && (
         <Box
           display="flex"
@@ -222,7 +231,10 @@ export default function SendKudos() {
             md: "1/2",
           }}
         >
-          <PrimaryButton onClick={() => setIsOpen(true)}>
+          <PrimaryButton
+            onClick={() => setIsOpen(true)}
+            icon={<IconSparkles />}
+          >
             Send Kudos
           </PrimaryButton>
         </Box>

@@ -1,3 +1,4 @@
+import CheckBox from "@/app/common/components/Table/Checkbox";
 import { useGlobal } from "@/app/context/globalContext";
 import { updateFormCollection } from "@/app/services/Collection";
 import { Box, Stack, Text } from "degen";
@@ -29,6 +30,7 @@ export function AdditionalSettings() {
   const [multipleResponsesAllowed, setMultipleResponsesAllowed] =
     useState(false);
   const [updatingResponseAllowed, setUpdatingResponseAllowed] = useState(false);
+  const [active, setActive] = useState(false);
 
   const { localCollection: collection, updateCollection } =
     useLocalCollection();
@@ -37,6 +39,7 @@ export function AdditionalSettings() {
   useEffect(() => {
     setMultipleResponsesAllowed(collection.multipleResponsesAllowed);
     setUpdatingResponseAllowed(collection.updatingResponseAllowed);
+    setActive(collection.active);
   }, [collection]);
 
   return (
@@ -51,10 +54,9 @@ export function AdditionalSettings() {
             justifyContent="flex-start"
             alignItems="center"
           >
-            <Input
-              type="checkbox"
-              checked={multipleResponsesAllowed}
-              onChange={async () => {
+            <CheckBox
+              isChecked={multipleResponsesAllowed}
+              onClick={async () => {
                 if (connectedUser) {
                   setMultipleResponsesAllowed(!multipleResponsesAllowed);
                   const res = await updateFormCollection(collection.id, {
@@ -66,7 +68,7 @@ export function AdditionalSettings() {
                 }
               }}
             />
-            <Text variant="small">Allow multiple responses</Text>
+            <Text variant="base">Allow multiple responses</Text>
           </Box>
           <Box
             display="flex"
@@ -75,10 +77,9 @@ export function AdditionalSettings() {
             justifyContent="flex-start"
             alignItems="center"
           >
-            <Input
-              type="checkbox"
-              checked={updatingResponseAllowed}
-              onChange={async (e) => {
+            <CheckBox
+              isChecked={updatingResponseAllowed}
+              onClick={async () => {
                 if (connectedUser) {
                   setUpdatingResponseAllowed(!updatingResponseAllowed);
                   const res = await updateFormCollection(collection.id, {
@@ -89,9 +90,33 @@ export function AdditionalSettings() {
                 }
               }}
             />
-            <Text variant="small">
+            <Text variant="base">
               Allow changing responses after submission
             </Text>
+          </Box>
+          <Box
+            display="flex"
+            flexDirection="row"
+            gap="2"
+            justifyContent="flex-start"
+            alignItems="center"
+          >
+            <CheckBox
+              // Necessary for backward compatibility
+              isChecked={active === false}
+              onClick={async () => {
+                if (connectedUser) {
+                  const a = !active;
+                  setActive(a);
+                  const res = await updateFormCollection(collection.id, {
+                    active: a,
+                  });
+                  if (res.id) updateCollection(res);
+                  else toast.error("Something went wrong");
+                }
+              }}
+            />
+            <Text variant="base">Stop accepting responses on this form</Text>
           </Box>
         </Box>
       </Stack>

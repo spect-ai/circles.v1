@@ -90,6 +90,7 @@ export const updateFormCollection = async (
     messageOnSubmission?: string;
     multipleResponsesAllowed?: boolean;
     updatingResponseAllowed?: boolean;
+    active?: boolean;
     circleRolesToNotifyUponNewResponse?: string[];
     circleRolesToNotifyUponUpdatedResponse?: string[];
     logo?: string;

@@ -26,6 +26,7 @@ export function SetUpProfile() {
     setIsLoading(true);
     const newSkills = skill.map((s) => ({
       title: s,
+      category: s,
       linkedCredentials: [],
       nfts: [],
       poaps: [],
@@ -33,7 +34,7 @@ export function SetUpProfile() {
     }));
     const res = await updateProfile({
       email,
-      skillsV2: [...(skills as LensSkills[]), ...(newSkills as LensSkills[])],
+      skillsV2: [...(skills as LensSkills[]), ...newSkills],
     });
     console.log(res);
     setIsLoading(false);

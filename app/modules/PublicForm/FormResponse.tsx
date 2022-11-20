@@ -217,7 +217,7 @@ export default function FormResponse({
             justifyContent="flex-start"
           >
             <Stack>
-              {form?.updatingResponseAllowed && (
+              {form?.updatingResponseAllowed && form?.active && (
                 <PrimaryButton
                   variant="transparent"
                   onClick={() => {
@@ -238,7 +238,7 @@ export default function FormResponse({
               >
                 View response
               </PrimaryButton>
-              {form?.multipleResponsesAllowed && (
+              {form?.multipleResponsesAllowed && form?.active && (
                 <PrimaryButton
                   variant="transparent"
                   onClick={() => {

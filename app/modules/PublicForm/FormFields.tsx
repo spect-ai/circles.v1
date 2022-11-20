@@ -218,6 +218,11 @@ export default function FormFields({ form, setForm }: Props) {
 
   const onSubmit = async () => {
     let res;
+    if (!form.active) {
+      toast.error("This form is not accepting responses");
+      return;
+    }
+
     if (!checkRequired(data)) return;
     if (!checkValue(data)) return;
     if (!currentUser?.email && form?.isAnOpportunity) {
@@ -320,6 +325,10 @@ export default function FormFields({ form, setForm }: Props) {
       });
     }
   };
+
+  if (!form.active) {
+    return <></>;
+  }
 
   return (
     <Container borderRadius="2xLarge">

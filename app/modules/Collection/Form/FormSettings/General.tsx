@@ -44,10 +44,8 @@ export default function General() {
           }}
         />
       </Stack>
-      <SendKudos />
       <AdditionalSettings />
       <Notifications />
-      <VotingModule />
     </Stack>
   );
 }

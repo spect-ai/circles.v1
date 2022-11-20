@@ -150,6 +150,11 @@ export default function PublicForm() {
                 )}
               </Stack>
             </Box>
+            {!form.active && (
+              <Box width="full" padding="4">
+                <Text variant="large">This form is not active</Text>
+              </Box>
+            )}
             {canFillForm && currentUser?.id && (
               <motion.div
                 className="box"

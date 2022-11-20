@@ -744,6 +744,7 @@ export interface CollectionType {
   opportunityInfo: OpportunityInfoType;
   dataActivities: MappedItem<MappedItem<CollectionActivity>>;
   dataActivityOrder: MappedItem<string[]>;
+  active: boolean;
 }
 
 export type FormPermissions = {
@@ -876,6 +877,7 @@ export interface FormType {
   hasPassedSybilCheck: boolean;
   isAnOpportunity: boolean;
   opportunityInfo: OpportunityInfoType;
+  active: boolean;
   createdAt: string;
   updatedAt: string;
   id: string;

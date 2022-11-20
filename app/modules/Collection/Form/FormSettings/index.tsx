@@ -62,7 +62,7 @@ function FormSettings() {
                   <Tabs
                     selectedTab={selectedTab}
                     onTabClick={(tab) => setSelectedTab(tab)}
-                    tabs={["General", "Access", "Curation"]}
+                    tabs={["General", "Access", "Plugins"]}
                     orientation="vertical"
                     unselectedColor="transparent"
                   />
