@@ -7,7 +7,7 @@ import Sidebar from "@/app/modules/Sidebar";
 import styled from "styled-components";
 import { useGlobal } from "@/app/context/globalContext";
 import { useQuery } from "react-query";
-import { CircleType, Notification, UserType } from "@/app/types";
+import { CircleType, UserType } from "@/app/types";
 import { toast } from "react-toastify";
 import ConnectPage from "../../../modules/Dashboard/ConnectPage";
 import Onboard from "../../../modules/Dashboard/Onboard";
@@ -59,18 +59,6 @@ function PublicLayout(props: PublicLayoutProps) {
       enabled: false,
     }
   );
-
-  const { refetch: fetchNotifications } = useQuery<Notification[]>(
-    "notifications",
-    () =>
-      fetch(`${process.env.API_HOST}/user/v1/notifications`, {
-        credentials: "include",
-      }).then((res) => res.json()),
-    {
-      enabled: false,
-    }
-  );
-
   const {
     data: currentUser,
     refetch,
@@ -107,7 +95,7 @@ function PublicLayout(props: PublicLayoutProps) {
 
   useEffect(() => {
     void fetchCircles();
-    void fetchNotifications();
+    // void fetchNotifications();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
