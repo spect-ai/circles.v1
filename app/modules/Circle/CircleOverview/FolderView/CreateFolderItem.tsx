@@ -79,7 +79,7 @@ export default function CreateFolderItem({
               }}
             >
               <ProjectOutlined
-                style={{ fontSize: "1.1rem", color: "rgb(191, 90, 242, 1)" }}
+                style={{ fontSize: "1rem", color: "rgb(191, 90, 242, 1)" }}
               />
             </Button>
           </Tooltip>

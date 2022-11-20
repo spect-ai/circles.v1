@@ -34,7 +34,7 @@ function CollectionHeading() {
   } = useLocalCollection();
   const { mode } = useTheme();
   const router = useRouter();
-  const { responses } = router.query;
+  const { dataId } = router.query;
   const [isAddFieldOpen, setIsAddFieldOpen] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const { navigationBreadcrumbs } = useCircle();
@@ -46,10 +46,14 @@ function CollectionHeading() {
   });
 
   useEffect(() => {
-    if (typeof responses === "string") {
-      setView(1);
+    console.log("hi");
+    if (dataId) {
+      console.log("dataId", dataId);
+      setTimeout(() => {
+        setView(1);
+      }, 500);
     }
-  }, [responses, setView]);
+  }, [dataId, setView]);
 
   return (
     <Box

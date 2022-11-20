@@ -1,4 +1,5 @@
 import Drawer from "@/app/common/components/Drawer";
+import { timeSince } from "@/app/common/utils/utils";
 import { useGlobal } from "@/app/context/globalContext";
 import { getNotifications } from "@/app/services/Notification";
 import { Notification } from "@/app/types";
@@ -63,10 +64,9 @@ export default function NotificationPanel() {
             height="calc(100vh - 200px)"
             dataLength={notifications.length}
             next={() => {
-              console.log("next");
               setPage(page + 1);
               (async () => {
-                const res = await getNotifications(10, page);
+                const res = await getNotifications(15, page + 1);
                 console.log({ res });
                 if (res.length == 0) {
                   setHasMore(false);
@@ -113,12 +113,7 @@ const NotificationItem = ({ notif }: { notif: Notification }) => {
       >
         <Avatar label="profile-pic" src={notif.avatar} size="5" />
         <Text>{notif?.content}</Text>
-        <Text variant="label">
-          {new Date(notif?.timestamp).toLocaleDateString() ==
-          new Date().toLocaleDateString()
-            ? new Date(notif?.timestamp).toLocaleTimeString()
-            : new Date(notif?.timestamp).toLocaleDateString()}
-        </Text>
+        <Text variant="label">{timeSince(new Date(notif.timestamp))} ago</Text>
       </Box>
     </Link>
   );

@@ -57,7 +57,7 @@ export default function DataDrawer({
   const [vote, setVote] = useState(-1);
 
   useEffect(() => {
-    if (dataId) {
+    if (dataId && collection.data) {
       setData({});
       setTimeout(() => {
         setData(collection?.data[dataId]);
@@ -68,7 +68,7 @@ export default function DataDrawer({
   useEffect(() => {
     if (
       data &&
-      collection.voting.votes &&
+      collection.voting?.votes &&
       collection.voting.votes[dataId] &&
       collection.voting.votes[dataId][currentUser?.id || ""] !== undefined
     ) {
