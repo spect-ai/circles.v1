@@ -39,7 +39,7 @@ export default function NotificationPanel() {
       closeOnOutsideClick
     >
       <ScrollContainer paddingX="8" paddingY="4">
-        <Stack>
+        <Stack space="1">
           <Box
             backgroundColor="backgroundSecondary"
             style={{
@@ -101,11 +101,10 @@ const NotificationItem = ({ notif }: { notif: Notification }) => {
           flexDirection: "row",
           flexWrap: "wrap",
           gap: "0.4rem",
-          alignItems: "center",
+          alignItems: "flex-end",
           cursor: "pointer",
-          padding: "1rem",
-          width: "39rem",
-          borderRadius: "0.5rem",
+          padding: "0.8rem",
+          borderRadius: "1rem",
         }}
         backgroundColor={
           notif?.read == false ? "accentTertiary" : "transparent"

@@ -46,9 +46,7 @@ function CollectionHeading() {
   });
 
   useEffect(() => {
-    console.log("hi");
     if (dataId) {
-      console.log("dataId", dataId);
       setTimeout(() => {
         setView(1);
       }, 500);

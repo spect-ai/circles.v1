@@ -6,7 +6,7 @@ import React, { useState, useEffect } from "react";
 import { useQuery } from "react-query";
 import styled from "styled-components";
 import { useGlobal } from "@/app/context/globalContext";
-import { SettingOutlined, BellOutlined } from "@ant-design/icons";
+import { SettingOutlined } from "@ant-design/icons";
 import ProfileModal from "../../Profile/ProfileSettings";
 import mixpanel from "@/app/common/utils/mixpanel";
 
@@ -95,7 +95,7 @@ export default function ProfileButton() {
             style={{ color: "rgb(191, 90, 242, 0.8)", fontSize: "1.2rem" }}
           />
         </Button>
-        <Button
+        {/* <Button
           shape="circle"
           size="small"
           variant="transparent"
@@ -123,7 +123,7 @@ export default function ProfileButton() {
               style={{ color: "rgb(191, 90, 242, 0.8)", fontSize: "1.2rem" }}
             />
           </Box>
-        </Button>
+        </Button> */}
       </Box>
       <AnimatePresence>
         {isOpen && <ProfileModal setIsOpen={setIsOpen} />}
