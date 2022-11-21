@@ -5,6 +5,7 @@ import { useCircle } from "@/app/modules/Circle/CircleContext";
 import { useLocalCollection } from "../../Context/LocalCollectionContext";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { toast } from "react-toastify";
+import { AnimatePresence } from "framer-motion";
 
 interface Props {
   permissions: string[];
@@ -80,6 +81,8 @@ export default function FormRoles() {
   );
   const [isDirty, setIsDirty] = useState(false);
 
+  const [loading, setLoading] = useState(false);
+
   return (
     <>
       <Box
@@ -96,66 +99,74 @@ export default function FormRoles() {
           Configure access
         </PrimaryButton>
       </Box>
-      {roleModal && (
-        <Modal title="Granular Access" handleClose={() => setRoleModal(false)}>
-          <Box padding="6" display={"flex"} flexDirection="column" gap={"4"}>
-            <RoleChunks
-              permissionText="Manage Settings"
-              permissions={manageSettings}
-              setPermissions={setManageSettings}
-              setIsDirty={setIsDirty}
-            />
-            <RoleChunks
-              permissionText="Update Responses Manually"
-              permissions={updateResponses}
-              setPermissions={setUpdateResponses}
-              setIsDirty={setIsDirty}
-            />
-            <RoleChunks
-              permissionText="View Responses"
-              permissions={viewResponses}
-              setPermissions={setViewResponses}
-              setIsDirty={setIsDirty}
-            />
-            <RoleChunks
-              permissionText="Add Comments"
-              permissions={addComments}
-              setPermissions={setAddComments}
-              setIsDirty={setIsDirty}
-            />
-            <PrimaryButton
-              onClick={async () => {
-                const res = await (
-                  await fetch(
-                    `${process.env.API_HOST}/collection/v1/${collection.id}`,
-                    {
-                      method: "PATCH",
-                      body: JSON.stringify({
-                        permissions: {
-                          manageSettings: manageSettings,
-                          updateResponsesManually: updateResponses,
-                          viewResponses: viewResponses,
-                          addComments: addComments,
+      <AnimatePresence>
+        {roleModal && (
+          <Modal
+            title="Granular Access"
+            handleClose={() => setRoleModal(false)}
+          >
+            <Box padding="6" display={"flex"} flexDirection="column" gap={"4"}>
+              <RoleChunks
+                permissionText="Manage Settings"
+                permissions={manageSettings}
+                setPermissions={setManageSettings}
+                setIsDirty={setIsDirty}
+              />
+              <RoleChunks
+                permissionText="Update Responses Manually"
+                permissions={updateResponses}
+                setPermissions={setUpdateResponses}
+                setIsDirty={setIsDirty}
+              />
+              <RoleChunks
+                permissionText="View Responses"
+                permissions={viewResponses}
+                setPermissions={setViewResponses}
+                setIsDirty={setIsDirty}
+              />
+              <RoleChunks
+                permissionText="Add Comments"
+                permissions={addComments}
+                setPermissions={setAddComments}
+                setIsDirty={setIsDirty}
+              />
+              <PrimaryButton
+                loading={loading}
+                onClick={async () => {
+                  setLoading(true);
+                  const res = await (
+                    await fetch(
+                      `${process.env.API_HOST}/collection/v1/${collection.id}`,
+                      {
+                        method: "PATCH",
+                        body: JSON.stringify({
+                          permissions: {
+                            manageSettings: manageSettings,
+                            updateResponsesManually: updateResponses,
+                            viewResponses: viewResponses,
+                            addComments: addComments,
+                          },
+                        }),
+                        headers: {
+                          "Content-Type": "application/json",
                         },
-                      }),
-                      headers: {
-                        "Content-Type": "application/json",
-                      },
-                      credentials: "include",
-                    }
-                  )
-                ).json();
-                if (res.id) updateCollection(res);
-                else toast.error("Something went wrong");
-                setRoleModal(false);
-              }}
-              disabled={!isDirty}
-            >
-              Save Permissions
-            </PrimaryButton>
-          </Box>
-        </Modal>
-      )}
+                        credentials: "include",
+                      }
+                    )
+                  ).json();
+                  if (res.id) updateCollection(res);
+                  else toast.error("Something went wrong");
+                  setLoading(false);
+                  setRoleModal(false);
+                }}
+                disabled={!isDirty}
+              >
+                Save Permissions
+              </PrimaryButton>
+            </Box>
+          </Modal>
+        )}
+      </AnimatePresence>
     </>
   );
 }
