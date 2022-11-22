@@ -8,7 +8,7 @@ import PublicForm from "@/app/modules/PublicForm";
 import useConnectDiscordServer from "@/app/services/Discord/useConnectDiscordServer";
 import { NextPage } from "next";
 
-const CirclePage: NextPage = () => {
+const FormPage: NextPage = () => {
   useConnectDiscordServer();
   const context = useProviderCircleContext();
 
@@ -28,4 +28,4 @@ const CirclePage: NextPage = () => {
   );
 };
 
-export default CirclePage;
+export default FormPage;
