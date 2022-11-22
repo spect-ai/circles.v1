@@ -137,7 +137,7 @@ export default function PublicForm() {
         <Container embed={route === "embed"}>
           <FormContainer
             borderRadius={route === "embed" ? "none" : "2xLarge"}
-            backgroundColor="background"
+            backgroundColor={route === "embed" ? "transparent" : "background"}
             style={{
               boxShadow: `0rem 0.2rem 0.5rem ${
                 mode === "dark" ? "rgba(0, 0, 0, 0.25)" : "rgba(0, 0, 0, 0.1)"
