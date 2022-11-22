@@ -3,6 +3,7 @@ import Editor from "@/app/common/components/Editor";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { timeSince } from "@/app/common/utils/utils";
 import { sendFormComment } from "@/app/services/Collection";
+import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { CollectionActivity, MappedItem, UserType } from "@/app/types";
 import { SendOutlined } from "@ant-design/icons";
 import { Avatar, Box, Stack, Text } from "degen";
@@ -37,6 +38,8 @@ export default function DataActivity({
   const [isDirty, setIsDirty] = useState(false);
   const [sendingComment, setSendingComment] = useState(false);
   const { updateCollection } = useLocalCollection();
+
+  const { formActions } = useRoleGate();
 
   return (
     <Box padding="4">
@@ -115,6 +118,17 @@ export default function DataActivity({
                   loading={sendingComment}
                   icon={<SendOutlined style={{ fontSize: "1.3rem" }} />}
                   onClick={async () => {
+                    if (
+                      !(
+                        formActions("addComments") ||
+                        currentUser.id == dataOwner.id
+                      )
+                    ) {
+                      toast.error(
+                        "Your role(s) doesn't have permission to add comments on this form"
+                      );
+                      return;
+                    }
                     setSendingComment(true);
                     const res = await sendFormComment(
                       collectionId,

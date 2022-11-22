@@ -105,6 +105,12 @@ const useProviderGlobalContext = () => {
     };
   }, []);
 
+  useEffect(() => {
+    if (socket.connected && connectedUser) {
+      socket.emit("join", connectedUser);
+    }
+  }, [connectedUser, socket]);
+
   return {
     isSidebarExpanded,
     setIsSidebarExpanded,

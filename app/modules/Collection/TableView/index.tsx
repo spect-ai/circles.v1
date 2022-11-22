@@ -7,6 +7,7 @@ import {
 import { Milestone, PropertyType, Reward } from "@/app/types";
 import { Box } from "degen";
 import { AnimatePresence } from "framer-motion";
+import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import {
   Column,
@@ -46,6 +47,15 @@ export default function TableView() {
   const [expandedDataSlug, setExpandedDataSlug] = useState("");
 
   const screenClass = useScreenClass();
+
+  const router = useRouter();
+  const { dataId: dataSlug } = router.query;
+
+  useEffect(() => {
+    if (dataSlug) {
+      setExpandedDataSlug(dataSlug as string);
+    }
+  }, [dataSlug, setExpandedDataSlug]);
 
   const updateData = async ({ cell }: { cell: CellWithId }) => {
     if (data) {

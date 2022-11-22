@@ -3,8 +3,6 @@ import { Stack, Text, Textarea } from "degen";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useLocalCollection } from "../../Context/LocalCollectionContext";
-import SendKudos from "../../SendKudos";
-import VotingModule from "../../VotingModule";
 import { AdditionalSettings } from "../AdditionalSettings";
 import { Notifications } from "../Notifications";
 

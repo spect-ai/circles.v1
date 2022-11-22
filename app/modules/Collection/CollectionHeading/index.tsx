@@ -17,6 +17,7 @@ import { useLocalCollection } from "../Context/LocalCollectionContext";
 import mixpanel from "@/app/common/utils/mixpanel";
 import { useQuery } from "react-query";
 import { UserType } from "@/app/types";
+import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 
 export const IconButton = styled(Box)`
   cursor: pointer;
@@ -34,10 +35,11 @@ function CollectionHeading() {
   } = useLocalCollection();
   const { mode } = useTheme();
   const router = useRouter();
-  const { responses } = router.query;
+  const { dataId } = router.query;
   const [isAddFieldOpen, setIsAddFieldOpen] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const { navigationBreadcrumbs } = useCircle();
+  const { formActions } = useRoleGate();
 
   const location = useLocation();
 
@@ -46,10 +48,12 @@ function CollectionHeading() {
   });
 
   useEffect(() => {
-    if (typeof responses === "string") {
-      setView(1);
+    if (dataId) {
+      setTimeout(() => {
+        setView(1);
+      }, 500);
     }
-  }, [responses, setView]);
+  }, [dataId, setView]);
 
   return (
     <Box
@@ -98,7 +102,15 @@ function CollectionHeading() {
                 </PrimaryButton>
                 <PrimaryButton
                   variant={view === 1 ? "tertiary" : "transparent"}
-                  onClick={() => setView(1)}
+                  onClick={() => {
+                    if (!formActions("viewResponses")) {
+                      toast.error(
+                        "Your role(s) doesn't have permissions to view responses of this form"
+                      );
+                      return;
+                    }
+                    setView(1);
+                  }}
                 >
                   Responses
                 </PrimaryButton>

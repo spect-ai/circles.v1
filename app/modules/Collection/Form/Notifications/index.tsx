@@ -1,48 +1,21 @@
 import CheckBox from "@/app/common/components/Table/Checkbox";
-import { useGlobal } from "@/app/context/globalContext";
 import { useCircle } from "@/app/modules/Circle/CircleContext";
 import { updateFormCollection } from "@/app/services/Collection";
 import { Box, Stack, Tag, Text } from "degen";
 import { useEffect, useState } from "react";
-import styled from "styled-components";
 import { useLocalCollection } from "../../Context/LocalCollectionContext";
-
-const Input = styled.input`
-  background-color: transparent;
-  border: none;
-  margin: 0.4rem;
-  padding: 0.4rem;
-  display: flex;
-  border-style: none;
-  border-color: transparent;
-  border-radius: 0.4rem;
-  outline: none;
-  outline-offset: 0;
-  box-shadow: none;
-  font-size: 1rem;
-  caret-color: rgb(191, 90, 242);
-  color: rgb(191, 90, 242);
-  font-weight: 400;
-  opacity: "40%";
-`;
 
 export function Notifications() {
   const { circle } = useCircle();
   const [notifOnNewResponses, setNotifOnNewResponses] = useState(false);
-  const [notifOnUpdatedResponses, setNotifOnUpdatedResponses] = useState(false);
   const [circleRoles, setCircleRoles] = useState([] as string[]);
   const [
     circleRolesToNotifyUponNewResponse,
     setCircleRolesToNotifyUponNewResponse,
   ] = useState([] as boolean[]);
-  const [
-    circleRolesToNotifyUponUpdatedResponse,
-    setCircleRolesToNotifyUponUpdatedResponse,
-  ] = useState([] as boolean[]);
 
   const { localCollection: collection, updateCollection } =
     useLocalCollection();
-  const { connectedUser } = useGlobal();
 
   useEffect(() => {
     const newResponseRolesToEmail = new Set(
@@ -63,16 +36,10 @@ export function Notifications() {
     }
 
     setCircleRolesToNotifyUponNewResponse(circleRolesToNotifyUponNewResponse);
-    setCircleRolesToNotifyUponUpdatedResponse(
-      circleRolesToNotifyUponUpdatedResponse
-    );
     setNotifOnNewResponses(
       collection.circleRolesToNotifyUponNewResponse?.length > 0
     );
-    setNotifOnUpdatedResponses(
-      collection.circleRolesToNotifyUponUpdatedResponse?.length > 0
-    );
-  }, [collection]);
+  }, [circleRoles, collection]);
 
   useEffect(() => {
     if (circle && circle.roles) setCircleRoles(Object.keys(circle.roles));

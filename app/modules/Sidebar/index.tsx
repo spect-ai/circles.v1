@@ -1,5 +1,5 @@
 import Link from "next/link";
-import React, { ReactElement, useEffect } from "react";
+import React, { ReactElement, useEffect, useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import { Avatar, Box, Button, Stack, Text, IconMenu } from "degen";
 import { useRouter } from "next/router";
@@ -11,6 +11,11 @@ import { useGlobal } from "@/app/context/globalContext";
 import styled from "styled-components";
 import mixpanel from "@/app/common/utils/mixpanel";
 import NotificationPanel from "../Profile/NotificationPanel";
+import {
+  getUnreadNotifications,
+  patchUnreadNotifications,
+} from "@/app/services/Notification";
+import { toast } from "react-toastify";
 
 export const ScrollContainer = styled(Box)`
   ::-webkit-scrollbar {
@@ -32,9 +37,7 @@ function Sidebar(): ReactElement {
     connectedUser,
     isSidebarExpanded,
     openQuickProfile,
-    setTab,
     isProfilePanelExpanded,
-    tab,
     setIsSidebarExpanded,
   } = useGlobal();
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
@@ -49,12 +52,32 @@ function Sidebar(): ReactElement {
     enabled: false,
   });
 
+  const { socket } = useGlobal();
+
+  const [unreadNotifications, setUnreadNotifications] = useState(0);
+
   const myCircles =
     circles?.filter && circles.filter((c) => c.parents?.length === 0);
 
   useEffect(() => {
     void refetch();
   }, [refetch, connectedUser]);
+
+  useEffect(() => {
+    (async () => {
+      const res = await getUnreadNotifications();
+      console.log({ res });
+      typeof res === "number" && setUnreadNotifications(res);
+    })().catch((err) => console.log(err));
+  }, [isSidebarExpanded]);
+
+  useEffect(() => {
+    socket.connected &&
+      socket?.on("notification", (data) => {
+        console.log({ data });
+        setUnreadNotifications(data.unreadNotifications);
+      });
+  }, [socket]);
 
   return (
     <>
@@ -121,16 +144,8 @@ function Sidebar(): ReactElement {
                 </Text>
               </Button>
             </Link>
-
-            {/* {connectedUser && <CreateCircle size="large" />} */}
           </Stack>
         </Box>
-        {/* <CollapseButton
-          show={showCollapseButton}
-          setShowCollapseButton={setShowCollapseButton}
-          top="2.8rem"
-          left="2.5rem"
-        /> */}
         {!isLoading && (
           <ScrollContainer borderBottomWidth={connectedUser ? "0.375" : "0"}>
             {!myCirclesLoading &&
@@ -148,15 +163,27 @@ function Sidebar(): ReactElement {
               ))}
           </ScrollContainer>
         )}
-        <Box paddingY="3">
+        <Box paddingY="3" position="relative">
           {currentUser?.id && (
             <Button
               size="small"
               shape="circle"
               variant="transparent"
               onClick={() => {
-                setTab("Work");
                 openQuickProfile(currentUser.id);
+                (async () => {
+                  if (unreadNotifications > 0) {
+                    const res = await patchUnreadNotifications();
+                    if (typeof res === "boolean" && true) {
+                      setUnreadNotifications(0);
+                    }
+                  }
+                })().catch((err) => {
+                  console.error(err);
+                  toast.error(
+                    "Something went wrong while updating unread notifications"
+                  );
+                });
               }}
             >
               <Avatar
@@ -168,6 +195,16 @@ function Sidebar(): ReactElement {
                   md: "10",
                 }}
               />
+              {unreadNotifications > 0 && (
+                <NotifAlert
+                  backgroundColor="accent"
+                  borderRadius="2xLarge"
+                  width="4"
+                  height="4"
+                >
+                  <p>{unreadNotifications}</p>
+                </NotifAlert>
+              )}
             </Button>
           )}
         </Box>
@@ -178,5 +215,32 @@ function Sidebar(): ReactElement {
     </>
   );
 }
+
+const NotifAlert = styled(Box)`
+  position: absolute;
+  top: 8px;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  p {
+    font-size: 0.6rem;
+    color: white;
+  }
+
+  animation: pulse 2s infinite;
+  @keyframes pulse {
+    0% {
+      box-shadow: 0 0 0 0 rgba(191, 90, 242, 0.8);
+    }
+    90% {
+      box-shadow: 0 0 0 10px rgba(191, 90, 242, 0);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgba(191, 90, 242, 0);
+    }
+  }
+`;
 
 export default Sidebar;

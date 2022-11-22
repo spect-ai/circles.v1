@@ -37,7 +37,7 @@ function FormSettings() {
             setIsOpen(true);
           } else {
             toast.error(
-              "You donot have the permission to access this form's settings"
+              "Your role(s) doesn't have the permission to access this form's settings"
             );
           }
         }}
