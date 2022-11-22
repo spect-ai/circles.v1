@@ -358,7 +358,7 @@ function Card() {
                 {cardType === "Task" && canTakeAction("assignToMe") && (
                   <AssignToMe />
                 )}
-                <Discuss />
+                {/* <Discuss /> */}
                 {!card?.kudosMinted && <MintKudos />}
                 <ViewKudos />
               </Stack>
