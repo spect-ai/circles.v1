@@ -2,7 +2,7 @@ import { toast } from "react-toastify";
 
 export const getGuildRoles = async (guildId: string) => {
   const res = await fetch(
-    `${process.env.BOT_HOST}api/guildRoles?guildId=${guildId}`,
+    `${process.env.BOT_HOST}/api/guildRoles?guildId=${guildId}`,
     {
       method: "GET",
     }
