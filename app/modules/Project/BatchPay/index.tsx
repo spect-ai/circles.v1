@@ -31,7 +31,7 @@ export default function BatchPay({ retro, setIsOpen }: Props) {
   // };
 
   useEffect(() => {
-    // set token card and stuff and skip the step dependig on the card reward token address
+    // set token card and stuff and skip the step depending on the card reward token address
     if (retro) {
       if (retro.reward.token.address === "0x0") {
         setBatchPayInfo({
