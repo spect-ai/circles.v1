@@ -69,7 +69,7 @@ export default function MintKudos() {
           .then((permissions: Permissions) => {
             setPerm(permissions);
             if (permissions?.distributeCredentials) {
-              getPrivateCircleCredentials(circle?.id as string)
+              getPrivateCircleCredentials(circle?.id)
                 .then((creds: GetPrivateCirclePropertiesDto | boolean) => {
                   const credentials = creds as GetPrivateCirclePropertiesDto;
                   if (
@@ -113,7 +113,7 @@ export default function MintKudos() {
             }
           }}
         >
-          Mint Kudos 🎉
+          Send Kudos 🎉
         </PrimaryButton>
       )}
       {isSettingsModalOpen && (
@@ -128,7 +128,7 @@ export default function MintKudos() {
         {isOpen && (
           <Modal
             size="small"
-            title="Mint Kudos 🎉"
+            title="Send Kudos 🎉"
             handleClose={() => setIsOpen(false)}
           >
             <Box

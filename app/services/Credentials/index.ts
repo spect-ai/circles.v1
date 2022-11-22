@@ -60,7 +60,7 @@ export default function useCredentials() {
           kudosTypes,
           value
         );
-        const body = JSON.stringify({
+        const params = {
           creator: kudos.creator,
           headline: value.headline,
           description: value.description,
@@ -73,10 +73,11 @@ export default function useCredentials() {
           communityId: communityId,
           nftTypeId: nftTypeId || "defaultOrangeRed",
           contributors: kudos.contributors,
-          totalClaimCount: value.totalClaimCount,
           signature: signature,
-        });
-        console.log(body);
+        } as KudosRequestType;
+        if (kudos.totalClaimCount)
+          params.totalClaimCount = value.totalClaimCount;
+        const body = JSON.stringify(params);
         toast(
           "Minting Kudos takes a few seconds. You'll be notified once its successful.",
           {
