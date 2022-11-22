@@ -14,8 +14,6 @@ export const defaultPermissions: Permissions = {
   manageMembers: false,
   distributeCredentials: false,
   createNewForm: true,
-  manageFormSettings: false,
-  updateFormResponsesManually: false,
   manageCardProperties: {
     Task: true,
     Bounty: false,

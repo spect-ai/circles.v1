@@ -2,7 +2,7 @@ import { Box, IconSearch, IconUserSolid, Input, Stack, Text } from "degen";
 import { matchSorter } from "match-sorter";
 import AddRole from "../ContributorsModal/AddRoleModal";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useCircle } from "../CircleContext";
 import GuildRoleMapping from "../CircleSettingsModal/GuildIntegration/GuildRoleMapping";
 import DiscordRoleMapping from "../CircleSettingsModal/DiscordRoleMapping";
@@ -10,6 +10,10 @@ import DiscordRoleMapping from "../CircleSettingsModal/DiscordRoleMapping";
 export default function Roles() {
   const { circle } = useCircle();
   const [roles, setRoles] = useState(Object.keys(circle?.roles || {}) || []);
+
+  useEffect(() => {
+    setRoles(Object.keys(circle?.roles || {}) || []);
+  }, [circle?.roles]);
 
   return (
     <Box padding="8">

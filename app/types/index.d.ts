@@ -99,8 +99,6 @@ export interface Permissions {
   manageProjectSettings: boolean;
   manageRoles: boolean;
   distributeCredentials: boolean;
-  manageFormSettings: boolean;
-  updateFormResponsesManually: boolean;
   manageCardProperties: {
     Task: boolean;
     Bounty: boolean;
