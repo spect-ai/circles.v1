@@ -73,6 +73,7 @@ type BatchPayInfo = {
     values: number[];
   };
   chainId: string;
+  retro?: RetroType;
 };
 
 export interface ColumnType {

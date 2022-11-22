@@ -6,10 +6,16 @@ import { updatePaymentInfo } from "@/app/services/Payment";
 import useERC20 from "@/app/services/Payment/useERC20";
 import usePaymentGateway from "@/app/services/Payment/usePayment";
 import { updateRetro } from "@/app/services/Retro";
-import { BatchPayInfo, CircleType, ProjectType, Registry } from "@/app/types";
+import {
+  BatchPayInfo,
+  CircleType,
+  ProjectType,
+  Registry,
+  RetroType,
+} from "@/app/types";
 import { Avatar, Box, Stack, Text, useTheme } from "degen";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { toast } from "react-toastify";
 import { useAccount, useNetwork, useSwitchNetwork } from "wagmi";
@@ -28,9 +34,17 @@ export default function OneClickPayment() {
   const [loading, setLoading] = useState(false);
   const [gnosisLoading, setGnosisLoading] = useState(false);
   const [personalWalletLoading, setPersonalWalletLoading] = useState(false);
+  const [removeNonVoters, setRemoveNonVoters] = useState(false);
 
-  const { batchPayInfo, setStep, currencyCards, tokenCards, setIsOpen } =
-    useBatchPayContext();
+  const {
+    batchPayInfo,
+    setStep,
+    currencyCards,
+    tokenCards,
+    setIsOpen,
+    setBatchPayInfo,
+  } = useBatchPayContext();
+
   const { chain } = useNetwork();
   const { switchNetworkAsync } = useSwitchNetwork();
   const router = useRouter();
@@ -235,8 +249,78 @@ export default function OneClickPayment() {
   };
 
   const getCircleDetails = (circleId: string) => {
-    return circle?.children && Object.values(circle?.children).find((child) => child.id === circleId);
+    return (
+      circle?.children &&
+      Object.values(circle?.children).find((child) => child.id === circleId)
+    );
   };
+
+  useEffect(() => {
+    console.log(removeNonVoters);
+    if (removeNonVoters) {
+      const userIds = batchPayInfo?.retro?.members.filter(
+        (mem) =>
+          batchPayInfo.retro?.stats?.[mem].voted &&
+          batchPayInfo.retro?.distribution[mem] *
+            batchPayInfo.retro?.reward.value !==
+            0
+      ) as string[];
+      const values = batchPayInfo?.currency.values.filter(
+        (val, i) =>
+          val != 0 &&
+          batchPayInfo.retro?.stats?.[batchPayInfo.retro?.members[i]]?.voted
+      ) as number[];
+      if ((batchPayInfo?.retro as RetroType).reward.token.address === "0x0") {
+        setBatchPayInfo({
+          ...batchPayInfo,
+          currency: {
+            userIds: userIds,
+            values: values,
+          },
+        } as BatchPayInfo);
+      } else {
+        setBatchPayInfo({
+          ...batchPayInfo,
+          tokens: {
+            tokenAddresses: userIds.map(
+              () => (batchPayInfo?.retro as RetroType).reward.token.address
+            ),
+            userIds: userIds,
+            values: values,
+          },
+        } as BatchPayInfo);
+      }
+      console.log(batchPayInfo);
+    } else {
+      const userIds = batchPayInfo?.retro?.members;
+      const values = batchPayInfo?.retro?.members.map(
+        (member) =>
+          (batchPayInfo?.retro?.distribution[member] as number) *
+          (batchPayInfo?.retro as RetroType)?.reward?.value
+      ) as number[];
+      if ((batchPayInfo?.retro as RetroType).reward.token.address === "0x0") {
+        setBatchPayInfo({
+          ...batchPayInfo,
+          currency: {
+            userIds: userIds as string[],
+            values: values,
+          },
+        } as BatchPayInfo);
+      } else {
+        setBatchPayInfo({
+          ...batchPayInfo,
+          tokens: {
+            tokenAddresses: userIds?.map(
+              () => (batchPayInfo?.retro as RetroType).reward.token.address
+            ),
+            userIds: userIds,
+            values: values,
+          },
+        } as BatchPayInfo);
+      }
+      console.log(batchPayInfo);
+    }
+  }, [removeNonVoters]);
   return (
     <Box>
       <ScrollContainer paddingX="8" paddingY="4">
@@ -245,7 +329,23 @@ export default function OneClickPayment() {
           rows={formatRows()}
         />
       </ScrollContainer>
-      <Box borderTopWidth="0.375" paddingX="8" paddingY="4">
+      {batchPayInfo?.retroId && (
+        <Stack direction={"horizontal"} align="center" justify={"space-around"}>
+          <Text>
+            Enabling this option removes users who were a part of this retro but
+            didn&apos;t cast their vote
+          </Text>
+          <PrimaryButton
+            onClick={() => {
+              setRemoveNonVoters(!removeNonVoters);
+            }}
+            variant={removeNonVoters ? "tertiary" : "secondary"}
+          >
+            {removeNonVoters ? "Include" : "Remove"} Non Voters
+          </PrimaryButton>
+        </Stack>
+      )}
+      <Box borderTopWidth="0.375" paddingX="8" paddingY="4" marginTop={"2"}>
         <Stack direction="horizontal">
           <Box width="1/2">
             {!batchPayInfo?.retroId && (

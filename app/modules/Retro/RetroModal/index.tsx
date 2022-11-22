@@ -115,6 +115,8 @@ export default function RetroModal({ handleClose }: Props) {
     return <Loader loading text="" />;
   }
 
+  console.log({ retro });
+
   return (
     <Modal handleClose={handleClose} title={retro.title} size="large">
       {retro.members?.includes(connectedUser) ? (

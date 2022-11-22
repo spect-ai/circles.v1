@@ -53,6 +53,7 @@ export default function BatchPay({ retro, setIsOpen }: Props) {
             userIds: [],
           },
           chainId: retro.reward.chain.chainId,
+          retro: retro,
         });
         setStep(1);
       } else {
@@ -74,6 +75,7 @@ export default function BatchPay({ retro, setIsOpen }: Props) {
             values: retro.members.map((member) => retro.distribution[member]),
           },
           chainId: retro.reward.chain.chainId,
+          retro: retro,
         });
         setStep(1);
       }
