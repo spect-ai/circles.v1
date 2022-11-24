@@ -727,6 +727,7 @@ export interface CollectionType {
   voting: Voting;
   dataActivities: MappedItem<MappedItem<CollectionActivity>>;
   dataActivityOrder: MappedItem<string[]>;
+  collectionType: 0 | 1;
   formMetadata: FormMetadata;
 }
 

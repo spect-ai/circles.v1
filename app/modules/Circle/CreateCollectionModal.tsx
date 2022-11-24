@@ -13,14 +13,20 @@ type CreateCollectionDto = {
   private: boolean;
   circleId: string;
   defaultView?: "form" | "table" | "kanban" | "list" | "gantt";
+  collectionType?: 0 | 1;
 };
 
 interface Props {
   folderId?: string;
   setCollectionModal: (value: boolean) => void;
+  collectionType: 0 | 1;
 }
 
-function CreateCollectionModal({ folderId, setCollectionModal }: Props) {
+function CreateCollectionModal({
+  folderId,
+  setCollectionModal,
+  collectionType,
+}: Props) {
   const close = () => setCollectionModal(false);
 
   const [name, setName] = useState("");
@@ -29,14 +35,14 @@ function CreateCollectionModal({ folderId, setCollectionModal }: Props) {
   const { circle, fetchCircle } = useCircle();
 
   const { mutateAsync, isLoading } = useMutation(
-    (circle: CreateCollectionDto) => {
+    (createDto: CreateCollectionDto) => {
       return fetch(`${process.env.API_HOST}/collection/v1`, {
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
         },
         method: "POST",
-        body: JSON.stringify(circle),
+        body: JSON.stringify(createDto),
         credentials: "include",
       });
     }
@@ -47,7 +53,8 @@ function CreateCollectionModal({ folderId, setCollectionModal }: Props) {
       name,
       private: false,
       circleId: circle?.id,
-      defaultView: "form",
+      defaultView: collectionType === 0 ? "form" : "table",
+      collectionType,
     })
       .then(async (res) => {
         const resJson = await res.json();
@@ -84,8 +91,13 @@ function CreateCollectionModal({ folderId, setCollectionModal }: Props) {
 
   return (
     <>
-      <Loader loading={isLoading} text="Creating your form..." />
-      <Modal handleClose={close} title="Create Form">
+      <Loader loading={isLoading} text="On it......" />
+      <Modal
+        handleClose={close}
+        title={
+          collectionType === 0 ? "Create a new form" : "Create a new project"
+        }
+      >
         <Box width="full" padding="8">
           <Stack>
             <Input
@@ -96,7 +108,7 @@ function CreateCollectionModal({ folderId, setCollectionModal }: Props) {
             />
             <Box width="full" marginTop="4">
               <PrimaryButton onClick={onSubmit} disabled={name.length === 0}>
-                Create Form
+                {collectionType === 0 ? "Create form" : "Create project"}
               </PrimaryButton>
             </Box>
           </Stack>

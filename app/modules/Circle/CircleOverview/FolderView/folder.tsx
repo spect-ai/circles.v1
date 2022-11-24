@@ -275,7 +275,11 @@ const Folder = ({
       </Draggable>
       {projectModal && (
         <AnimatePresence>
-          <CreateProjectModal folderId={id} setModalOpen={setProjectModal} />
+          <CreateCollectionModal
+            folderId={id}
+            setCollectionModal={setProjectModal}
+            collectionType={1}
+          />
         </AnimatePresence>
       )}
       {workstreamModal && (
@@ -299,6 +303,7 @@ const Folder = ({
           <CreateCollectionModal
             folderId={id}
             setCollectionModal={setCollectionModal}
+            collectionType={0}
           />
         </AnimatePresence>
       )}

@@ -46,7 +46,7 @@ export default function OpportunityMode() {
   return (
     <>
       <Stack direction="vertical">
-        {!collection.formMetadata.isAnOpportunity && (
+        {!collection.formMetadata?.isAnOpportunity && (
           <Text variant="small">{`Reach 1000+ opportunity seekers`}</Text>
         )}
       </Stack>
@@ -58,12 +58,12 @@ export default function OpportunityMode() {
       >
         <PrimaryButton
           variant={
-            collection.formMetadata.isAnOpportunity ? "tertiary" : "secondary"
+            collection.formMetadata?.isAnOpportunity ? "tertiary" : "secondary"
           }
           onClick={() => setIsOpen(true)}
           icon={<IconTrendingUp />}
         >
-          {collection.formMetadata.isAnOpportunity
+          {collection.formMetadata?.isAnOpportunity
             ? `Boosting Form`
             : `Boost Form`}
         </PrimaryButton>

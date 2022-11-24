@@ -1,12 +1,15 @@
-import { useTheme } from "degen";
+import { Box, useTheme } from "degen";
 import { useEffect } from "react";
 import { ToastContainer } from "react-toastify";
+import ProjectHeading from "../CollectionProject/Heading";
+import ProjectTableView from "../CollectionProject/TableView";
+import CollectionHeading from "./CollectionHeading";
 import { useLocalCollection } from "./Context/LocalCollectionContext";
 import { Form } from "./Form";
 import TableView from "./TableView";
 
 export function Collection() {
-  const { view, setView } = useLocalCollection();
+  const { view, setView, localCollection: collection } = useLocalCollection();
   const { mode } = useTheme();
 
   useEffect(() => {
@@ -25,8 +28,19 @@ export function Collection() {
           }`,
         }}
       />
-      {view === 0 && <Form />}
-      {view === 1 && <TableView />}
+      {collection.collectionType === 0 && (
+        <Box>
+          <CollectionHeading />
+          {view === 0 && <Form />}
+          {view === 1 && <TableView />}
+        </Box>
+      )}
+      {collection.collectionType === 1 && (
+        <Box>
+          <ProjectHeading />
+          <ProjectTableView />
+        </Box>
+      )}
     </>
   );
 }

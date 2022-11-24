@@ -81,14 +81,7 @@ const CollectionPage: NextPage = () => {
       <CircleContext.Provider value={circlecontext}>
         <LocalCollectionContext.Provider value={context}>
           <PublicLayout>
-            <CollectionHeading />
-            <AnimatePresence
-              exitBeforeEnter
-              initial={false}
-              onExitComplete={() => window.scrollTo(0, 0)}
-            >
-              <Collection key={colId as string} />
-            </AnimatePresence>
+            <Collection key={colId as string} />
           </PublicLayout>
         </LocalCollectionContext.Provider>
       </CircleContext.Provider>
