@@ -67,14 +67,6 @@ function PublicLayout(props: PublicLayoutProps) {
     enabled: false,
   });
 
-  const onboard =
-    (currentUser?.skillsV2?.length == 0 || currentUser?.email?.length == 0) &&
-    (myCircles?.length == 0 ||
-      (myCircles?.[0]?.projects &&
-        Object.values(myCircles?.[0]?.projects)?.length == 0 &&
-        myCircles?.[0]?.collections &&
-        Object.values(myCircles?.[0]?.collections)?.length == 0));
-
   useEffect(() => {
     if (!connectedUser && currentUser?.id) connectUser(currentUser.id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -93,11 +85,15 @@ function PublicLayout(props: PublicLayoutProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const onboard =
+    (currentUser?.skillsV2?.length == 0 || currentUser?.email?.length == 0) &&
+    myCircles?.length == 0;
+  
   useEffect(() => {
     void fetchCircles();
     // void fetchNotifications();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [currentUser, connectedUser]);
 
   useEffect(() => {
     setTimeout(() => {
