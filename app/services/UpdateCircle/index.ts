@@ -140,3 +140,90 @@ export const removeSafe = async (safeDto: SafeDto, circleId: string) => {
     return false;
   }
 };
+
+export const addAutomation = async (automation: string, circleId: string) => {
+  const res = await fetch(
+    `${process.env.API_HOST}/circle/v1/${circleId}/addAutomation`,
+    {
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      method: "PATCH",
+      body: JSON.stringify({ automation }),
+      credentials: "include",
+    }
+  );
+  if (res.ok) {
+    const data = await res.json();
+    toast("Automation added successfully", {
+      theme: "dark",
+    });
+    return data;
+  } else {
+    toast("Error updating automation", {
+      theme: "dark",
+    });
+    return false;
+  }
+};
+
+export const updateAutomation = async (
+  automationId: string,
+  automation: string,
+  circleId: string
+) => {
+  const res = await fetch(
+    `${process.env.API_HOST}/circle/v1/${circleId}/updateAutomation?automationId=${automationId}`,
+    {
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      method: "PATCH",
+      body: JSON.stringify({ automation }),
+      credentials: "include",
+    }
+  );
+  if (res.ok) {
+    const data = await res.json();
+    toast("Automation updated successfully", {
+      theme: "dark",
+    });
+    return data;
+  } else {
+    toast("Error updating automation", {
+      theme: "dark",
+    });
+    return false;
+  }
+};
+
+export const removeAutomation = async (
+  automationId: string,
+  circleId: string
+) => {
+  const res = await fetch(
+    `${process.env.API_HOST}/circle/v1/${circleId}/removeAutomation?automationId=${automationId}`,
+    {
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      method: "PATCH",
+      credentials: "include",
+    }
+  );
+  if (res.ok) {
+    const data = await res.json();
+    toast("Automation updated successfully", {
+      theme: "dark",
+    });
+    return data;
+  } else {
+    toast("Error removing automation", {
+      theme: "dark",
+    });
+    return false;
+  }
+};

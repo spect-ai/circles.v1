@@ -1057,3 +1057,11 @@ export type Credential = {
   service: string;
   metadata?: VerifiableCredential | SoulboundCredential;
 };
+
+export type Action = {
+  id: string;
+  type: string;
+  name: string;
+  service: string;
+  data: any;
+};
