@@ -5,7 +5,7 @@ import Editor from "@/app/common/components/Editor";
 import Tabs from "@/app/common/components/Tabs";
 import { voteCollectionData } from "@/app/services/Collection";
 import { MemberDetails, UserType } from "@/app/types";
-import { Avatar, Box, Stack, Tag, Text } from "degen";
+import { Avatar, Box, Input, Stack, Tag, Text } from "degen";
 import { motion } from "framer-motion";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
@@ -25,6 +25,7 @@ import {
   Legend,
 } from "chart.js";
 import DataActivity from "./DataActivity";
+import Link from "next/link";
 
 ChartJS.register(
   CategoryScale,
@@ -167,6 +168,7 @@ export default function DataDrawer({
                         {[
                           "shortText",
                           "ethAddress",
+                          "singleURL",
                           "email",
                           "number",
                         ].includes(property.type) && (
@@ -174,6 +176,19 @@ export default function DataDrawer({
                         )}
                         {property?.type === "longText" && (
                           <Editor value={data[property.name]} disabled />
+                        )}
+                        {property?.type == "multiURL" && (
+                          <Stack direction={"vertical"}>
+                            {data[property.name]?.map((url: string) => (
+                              <Box
+                                key={url}
+                                onClick={() => window.open(url, "_blank")}
+                                cursor="pointer"
+                              >
+                                <Text>{url}</Text>
+                              </Box>
+                            ))}
+                          </Stack>
                         )}
                         {property?.type === "singleSelect" && (
                           <Text>{data[property.name]?.label}</Text>

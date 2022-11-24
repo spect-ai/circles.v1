@@ -785,7 +785,9 @@ export type PropertyType =
   | "singleSelect"
   | "multiSelect"
   | "ethAddress"
-  | "milestone";
+  | "milestone"
+  | "singleURL"
+  | "multiURL";
 
 export type Option = {
   label: string;

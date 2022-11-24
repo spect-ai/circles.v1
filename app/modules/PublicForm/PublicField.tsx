@@ -1,13 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import Dropdown from "@/app/common/components/Dropdown";
 import Editor from "@/app/common/components/Editor";
-import { isEmail } from "@/app/common/utils/utils";
+import { isEmail, isURL } from "@/app/common/utils/utils";
 import { FormType, Option, Reward } from "@/app/types";
 import { Box, Input, Stack, Tag, Text, useTheme } from "degen";
 import { ethers } from "ethers";
 import { useState } from "react";
 import { DateInput } from "../Collection/Form/Field";
 import MilestoneField from "./MilestoneField";
+import MultiURLField from "./MultiURLField";
 import RewardField from "./RewardField";
 
 type Props = {
@@ -97,6 +98,37 @@ export default function PublicField({
               : undefined
           }
           disabled={disabled}
+        />
+      )}
+      {form.properties[propertyName]?.type === "singleURL" && (
+        <Input
+          label=""
+          placeholder={`Enter ${form.properties[propertyName]?.name}`}
+          value={data && data[propertyName]}
+          inputMode="text"
+          onChange={(e) => {
+            setData({ ...data, [propertyName]: e.target.value });
+            updateRequiredFieldNotSet(propertyName, e.target.value);
+            updateFieldHasInvalidType(propertyName, e.target.value);
+          }}
+          error={
+            data && data[propertyName] && !isURL(data[propertyName])
+              ? "Invalid URL"
+              : undefined
+          }
+          disabled={disabled}
+        />
+      )}
+      {form.properties[propertyName]?.type === "multiURL" && (
+        <MultiURLField
+          placeholder={`Enter ${form.properties[propertyName]?.name}`}
+          value={data && data[propertyName]}
+          disabled={disabled}
+          updateFieldHasInvalidType={updateFieldHasInvalidType}
+          updateRequiredFieldNotSet={updateRequiredFieldNotSet}
+          data={data}
+          setData={setData}
+          propertyName={propertyName}
         />
       )}
       {form.properties[propertyName]?.type === "number" && (
