@@ -87,16 +87,18 @@ export const updateFormCollection = async (
   update: {
     name?: string;
     description?: string;
-    messageOnSubmission?: string;
-    multipleResponsesAllowed?: boolean;
-    updatingResponseAllowed?: boolean;
-    active?: boolean;
-    circleRolesToNotifyUponNewResponse?: string[];
-    circleRolesToNotifyUponUpdatedResponse?: string[];
-    logo?: string;
-    cover?: string;
     propertyOrder?: string[];
     voting?: Voting;
+    formMetadata?: {
+      messageOnSubmission?: string;
+      multipleResponsesAllowed?: boolean;
+      updatingResponseAllowed?: boolean;
+      circleRolesToNotifyUponNewResponse?: string[];
+      circleRolesToNotifyUponUpdatedResponse?: string[];
+      logo?: string;
+      cover?: string;
+      active?: boolean;
+    };
   }
 ) => {
   return await (

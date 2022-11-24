@@ -21,17 +21,19 @@ export default function CredentialCuration() {
       }}
     >
       <Stack direction="vertical">
-        {collection.isAnOpportunity && (
+        {collection.formMetadata.isAnOpportunity && (
           <Text variant="small">{`Credential curation is enabled`}</Text>
         )}
-        {!collection.isAnOpportunity && (
+        {!collection.formMetadata.isAnOpportunity && (
           <Text variant="small">{`Receive responders previous work, education and credentials with the form response`}</Text>
         )}
       </Stack>
       <Box marginTop="4">
         <PrimaryButton
           variant={
-            collection.credentialCurationEnabled ? "tertiary" : "secondary"
+            collection.formMetadata.credentialCurationEnabled
+              ? "tertiary"
+              : "secondary"
           }
           onClick={async () => {
             process.env.NODE_ENV === "production" &&
@@ -46,7 +48,7 @@ export default function CredentialCuration() {
                   method: "PATCH",
                   body: JSON.stringify({
                     credentialCurationEnabled:
-                      !collection.credentialCurationEnabled,
+                      !collection.formMetadata.credentialCurationEnabled,
                   }),
                   headers: {
                     "Content-Type": "application/json",
@@ -59,7 +61,7 @@ export default function CredentialCuration() {
             else toast.error("Something went wrong");
           }}
         >
-          {collection.credentialCurationEnabled
+          {collection.formMetadata.credentialCurationEnabled
             ? `Disable Credential Curation`
             : `Enable Credential Curation`}
         </PrimaryButton>

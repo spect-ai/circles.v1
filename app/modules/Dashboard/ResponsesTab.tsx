@@ -38,8 +38,12 @@ function ResponsesTab() {
                   mode={mode}
                 >
                   <Stack direction="horizontal" align="center">
-                    {collection?.logo ? (
-                      <Avatar src={collection?.logo} label="" size="6" />
+                    {collection?.formMetadata?.logo ? (
+                      <Avatar
+                        src={collection?.formMetadata.logo}
+                        label=""
+                        size="6"
+                      />
                     ) : (
                       <IconCollection />
                     )}

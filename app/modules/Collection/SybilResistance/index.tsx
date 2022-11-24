@@ -45,9 +45,9 @@ export default function SybilResistance() {
           setStamps(res);
           const allocs = [];
           for (const stamp of res) {
-            if (collection.sybilProtectionScores)
+            if (collection.formMetadata.sybilProtectionScores)
               allocs.push(
-                collection.sybilProtectionScores[stamp.id] ||
+                collection.formMetadata.sybilProtectionScores[stamp.id] ||
                   stamp.defaultScore * 100
               );
             else allocs.push(stamp.defaultScore * 100);
@@ -67,10 +67,10 @@ export default function SybilResistance() {
   return (
     <>
       <Stack direction="vertical">
-        {collection.sybilProtectionEnabled && (
+        {collection.formMetadata.sybilProtectionEnabled && (
           <Text variant="small">{`This form is sybil protected!`}</Text>
         )}
-        {!collection.sybilProtectionEnabled && (
+        {!collection.formMetadata.sybilProtectionEnabled && (
           <Text variant="small">{`Protect your form against sybil attacks`}</Text>
         )}
       </Stack>
@@ -82,10 +82,14 @@ export default function SybilResistance() {
       >
         <PrimaryButton
           icon={<IconUserSolid />}
-          variant={collection.sybilProtectionEnabled ? "tertiary" : "secondary"}
+          variant={
+            collection.formMetadata.sybilProtectionEnabled
+              ? "tertiary"
+              : "secondary"
+          }
           onClick={() => setIsOpen(true)}
         >
-          {collection.sybilProtectionEnabled
+          {collection.formMetadata.sybilProtectionEnabled
             ? `Update Sybil Protection`
             : `Enable Sybil Protection`}
         </PrimaryButton>
@@ -236,7 +240,7 @@ export default function SybilResistance() {
                   gap="4"
                   justifyContent="flex-end"
                 >
-                  {collection.sybilProtectionEnabled && (
+                  {collection.formMetadata.sybilProtectionEnabled && (
                     <Button
                       width="1/2"
                       loading={loading}

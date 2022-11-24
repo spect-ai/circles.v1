@@ -32,8 +32,8 @@ export default function useRoleGate() {
         if (
           circle.roles[role].permissions[roleAction as NonCardPermissions] ===
             true ||
-          circle.roles[role].permissions[roleAction as CardPermissions].Task ===
-            true
+          circle.roles[role].permissions[roleAction as CardPermissions]
+            ?.Task === true
         ) {
           return true;
         }

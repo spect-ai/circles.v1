@@ -19,10 +19,10 @@ export function Notifications() {
 
   useEffect(() => {
     const newResponseRolesToEmail = new Set(
-      collection.circleRolesToNotifyUponNewResponse || []
+      collection.formMetadata.circleRolesToNotifyUponNewResponse || []
     );
     const updatedResponseRolesToEmail = new Set(
-      collection.circleRolesToNotifyUponUpdatedResponse || []
+      collection.formMetadata.circleRolesToNotifyUponUpdatedResponse || []
     );
     const circleRolesToNotifyUponNewResponse = [] as boolean[];
     const circleRolesToNotifyUponUpdatedResponse = [] as boolean[];
@@ -37,7 +37,7 @@ export function Notifications() {
 
     setCircleRolesToNotifyUponNewResponse(circleRolesToNotifyUponNewResponse);
     setNotifOnNewResponses(
-      collection.circleRolesToNotifyUponNewResponse?.length > 0
+      collection.formMetadata.circleRolesToNotifyUponNewResponse?.length > 0
     );
   }, [circleRoles, collection]);
 
@@ -83,7 +83,8 @@ export function Notifications() {
                         ...circleRolesToNotifyUponNewResponse,
                       ]);
                       const roleSet = new Set(
-                        collection.circleRolesToNotifyUponNewResponse || []
+                        collection.formMetadata
+                          .circleRolesToNotifyUponNewResponse || []
                       );
                       if (circleRolesToNotifyUponNewResponse[index]) {
                         roleSet.add(role);

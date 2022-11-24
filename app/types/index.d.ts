@@ -706,8 +706,6 @@ export type OpportunityInfoType = {
 };
 
 export interface CollectionType {
-  cover: string;
-  logo: string;
   id: string;
   name: string;
   description: string;
@@ -717,34 +715,40 @@ export interface CollectionType {
   propertyOrder: string[];
   createdAt: string;
   updatedAt: string;
-  purpose: string;
   private: boolean;
   parents: CircleType[];
   data: MappedItem<any>;
   indexes: MappedItem<string[]>;
   defaultView: DefaultViewType;
-  formRoleGating: GuildRole[];
-  sybilProtectionEnabled: boolean;
-  sybilProtectionScores: MappedItem<GitcoinScoreType>;
-  mintkudosTokenId: number;
-  messageOnSubmission: string;
   unauthorized?: boolean;
-  multipleResponsesAllowed: boolean;
-  updatingResponseAllowed: boolean;
-  circleRolesToNotifyUponUpdatedResponse: string[];
-  circleRolesToNotifyUponNewResponse: string[];
-  numOfKudos: number;
   permissions: FormPermissions;
-  credentialCurationEnabled: boolean;
   dataOwner: MappedItem<string>;
   profiles: { [key: string]: UserType };
   voting: Voting;
-  isAnOpportunity: boolean;
-  opportunityInfo: OpportunityInfoType;
   dataActivities: MappedItem<MappedItem<CollectionActivity>>;
   dataActivityOrder: MappedItem<string[]>;
-  active: boolean;
+  formMetadata: FormMetadata;
 }
+
+export type FormMetadata = {
+  cover?: string;
+  logo: string;
+  purpose?: string;
+  formRoleGating?: GuildRole[];
+  sybilProtectionEnabled?: boolean;
+  sybilProtectionScores?: MappedItem<GitcoinScoreType>;
+  mintkudosTokenId?: number;
+  messageOnSubmission: string;
+  multipleResponsesAllowed: boolean;
+  updatingResponseAllowed: boolean;
+  circleRolesToNotifyUponUpdatedResponse?: string[];
+  circleRolesToNotifyUponNewResponse?: string[];
+  numOfKudos?: number;
+  credentialCurationEnabled?: boolean;
+  isAnOpportunity?: boolean;
+  opportunityInfo?: OpportunityInfoType;
+  active: boolean;
+};
 
 export type FormPermissions = {
   manageSettings: string[];

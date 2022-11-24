@@ -258,7 +258,8 @@ export default function TableView() {
       }
     });
 
-  const columnsWithCredentials = collection.credentialCurationEnabled
+  const columnsWithCredentials = collection.formMetadata
+    .credentialCurationEnabled
     ? [
         {
           component: CredentialComponent,

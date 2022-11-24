@@ -31,8 +31,8 @@ function FormBuilder({ fields }: Props) {
   const [propertyName, setPropertyName] = useState("");
   const [isAddFieldOpen, setIsAddFieldOpen] = useState(false);
 
-  const [cover, setCover] = useState(collection.cover || "");
-  const [logo, setLogo] = useState(collection.logo || "");
+  const [cover, setCover] = useState(collection.formMetadata?.cover || "");
+  const [logo, setLogo] = useState(collection.formMetadata?.logo || "");
 
   const { connectedUser } = useGlobal();
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
@@ -92,7 +92,10 @@ function FormBuilder({ fields }: Props) {
                 const newCollection = await updateFormCollection(
                   collection.id,
                   {
-                    cover: res.imageGatewayURL,
+                    formMetadata: {
+                      ...collection.formMetadata,
+                      cover: res.imageGatewayURL,
+                    },
                   }
                 );
                 newCollection.id && updateCollection(newCollection);
@@ -121,7 +124,10 @@ function FormBuilder({ fields }: Props) {
                       const newCollection = await updateFormCollection(
                         collection.id,
                         {
-                          logo: res.imageGatewayURL,
+                          formMetadata: {
+                            ...collection.formMetadata,
+                            logo: res.imageGatewayURL,
+                          },
                         }
                       );
                       newCollection.id && updateCollection(newCollection);
