@@ -1,12 +1,8 @@
-import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { useGlobal } from "@/app/context/globalContext";
-import {
-  joinCircleFromDiscord,
-  joinCircleFromGuildxyz,
-} from "@/app/services/JoinCircle";
+import { joinCircle } from "@/app/services/JoinCircle";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { UserType } from "@/app/types";
-import { Box, IconSearch, Input, Stack, useTheme } from "degen";
+import { Box, IconSearch, Input, Stack, useTheme, Button } from "degen";
 import { matchSorter } from "match-sorter";
 import React, { useEffect, useState } from "react";
 import { useQuery } from "react-query";
@@ -78,48 +74,28 @@ function CircleMembers() {
           circle.discordGuildId &&
           currentUser?.discordId && (
             <Tooltip
-              title="You can join circle if you have an eligible discord role"
+              title="You can join circle if you have an eligible discord or guild role"
               theme={mode}
               position="top"
             >
-              <PrimaryButton
+              <Button
                 loading={loading}
                 onClick={async () => {
                   setLoading(true);
-                  const data = await joinCircleFromDiscord(circle.id);
+                  const data = await joinCircle(circle.id);
                   if (data) {
                     setCircleData(data);
                     fetchMemberDetails();
                   }
                   setLoading(false);
                 }}
+                variant="secondary"
+                size="small"
               >
                 Join Circle
-              </PrimaryButton>
+              </Button>
             </Tooltip>
           )}
-        {!circle.members.includes(connectedUser) && circle.guildxyzId && (
-          <Tooltip
-            title="You can join circle if you have an eligible guildxyz role"
-            theme={mode}
-            position="top"
-          >
-            <PrimaryButton
-              loading={loading}
-              onClick={async () => {
-                setLoading(true);
-                const data = await joinCircleFromGuildxyz(circle.id);
-                if (data) {
-                  setCircleData(data);
-                  fetchMemberDetails();
-                }
-                setLoading(false);
-              }}
-            >
-              Join Circle
-            </PrimaryButton>
-          </Tooltip>
-        )}
         {canDo("inviteMembers") && (
           <Box
             width={{

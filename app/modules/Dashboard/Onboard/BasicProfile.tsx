@@ -99,32 +99,31 @@ export function BasicProfile({ setStep }: { setStep: (step: number) => void }) {
               opportunities via Spect. We bet, you wouldn&apos;t want to miss
               those !
             </Text>
-
-            <Link
-              href={`https://discord.com/api/oauth2/authorize?client_id=942494607239958609&redirect_uri=${
-                process.env.NODE_ENV === "development"
-                  ? "http%3A%2F%2Flocalhost%3A3000%2FlinkDiscord"
-                  : "https%3A%2F%2Fcircles.spect.network%2FlinkDiscord"
-              }&response_type=code&scope=identify`}
+            <Button
+              data-tour="connect-discord-button"
+              width="full"
+              size="small"
+              variant="secondary"
+              prefix={
+                <Box marginTop="1">
+                  <DiscordIcon />
+                </Box>
+              }
+              onClick={() => {
+                window.open(
+                  `https://discord.com/api/oauth2/authorize?client_id=942494607239958609&redirect_uri=${
+                    process.env.NODE_ENV === "development"
+                      ? "http%3A%2F%2Flocalhost%3A3000%2FlinkDiscord"
+                      : "https%3A%2F%2Fcircles.spect.network%2FlinkDiscord"
+                  }&response_type=code&scope=identify`,
+                  "_blank"
+                );
+                setPart(1);
+              }}
             >
-              <Button
-                data-tour="connect-discord-button"
-                width="full"
-                size="small"
-                variant="secondary"
-                prefix={
-                  <Box marginTop="1">
-                    <DiscordIcon />
-                  </Box>
-                }
-              >
-                Connect Discord
-              </Button>
-            </Link>
-            <Box
-              onClick={() => setPart(1)}
-              cursor="pointer"
-            >
+              Connect Discord
+            </Button>
+            <Box onClick={() => setPart(1)} cursor="pointer">
               <Text color={"textTertiary"}>Nah bro, skip this</Text>
             </Box>
           </>
