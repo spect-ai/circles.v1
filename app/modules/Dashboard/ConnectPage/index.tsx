@@ -1,4 +1,4 @@
-import { Box, Button, Stack, Text, IconSparkles, Heading } from "degen";
+import { Box, Button, Stack, IconSparkles, Heading } from "degen";
 import { Connect } from "@/app/modules/Sidebar/ProfileButton/ConnectButton";
 import styled from "styled-components";
 import DiscordIcon from "@/app/assets/icons/discordIcon.svg";

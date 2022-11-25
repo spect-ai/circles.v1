@@ -8,9 +8,11 @@ import { useState, useEffect } from "react";
 import { CreateCircle } from "./CreateCircle";
 import { CreateContent } from "./CreateContent";
 import { SetUpProfile } from "./SetupProfile";
+import { useGlobal } from "@/app/context/globalContext";
 
 const Onboard = () => {
   const [step, setStep] = useState(1);
+  const { connectedUser } = useGlobal();
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
@@ -39,8 +41,7 @@ const Onboard = () => {
     ) {
       setStep(2);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentUser, currentUser?.circles, myCircles]);
+  }, [currentUser, myCircles, step, connectedUser]);
   return (
     <Box position={"relative"} display="flex" width={"full"} gap="11">
       <VioletBlur style={{ top: "0px", left: "0rem" }} />

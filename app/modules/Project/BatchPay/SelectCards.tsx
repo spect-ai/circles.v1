@@ -18,7 +18,7 @@ export const ScrollContainer = styled(Box)`
   }
   -ms-overflow-style: none;
   scrollbar-width: none;
-  height: 30rem;
+  height: 29rem;
   overflow-y: auto;
 `;
 

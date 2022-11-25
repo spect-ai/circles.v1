@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { getForm } from "@/app/services/Collection";
@@ -26,6 +27,7 @@ import Image from "next/image";
 import Editor from "@/app/common/components/Editor";
 import DataActivity from "../Collection/Form/DataDrawer/DataActivity";
 import _ from "lodash";
+import { useLocation } from "react-use";
 
 export default function PublicForm() {
   const router = useRouter();
@@ -43,6 +45,9 @@ export default function PublicForm() {
   const { connectedUser, socket } = useGlobal();
 
   const [memberDetails, setMemberDetails] = useState({} as any);
+
+  const { pathname } = useLocation();
+  const route = pathname?.split("/")[3];
 
   const getMemberDetails = React.useCallback(
     (id: string) => {
@@ -125,11 +130,14 @@ export default function PublicForm() {
           }`,
         }}
       />
-      <CoverImage src={form?.cover || ""} backgroundColor="accentSecondary" />
+      {route !== "embed" && (
+        <CoverImage src={form?.cover || ""} backgroundColor="accentSecondary" />
+      )}
       {form && (
-        <Container>
+        <Container embed={route === "embed"}>
           <FormContainer
-            backgroundColor="background"
+            borderRadius={route === "embed" ? "none" : "2xLarge"}
+            backgroundColor={route === "embed" ? "transparent" : "background"}
             style={{
               boxShadow: `0rem 0.2rem 0.5rem ${
                 mode === "dark" ? "rgba(0, 0, 0, 0.25)" : "rgba(0, 0, 0, 0.1)"
@@ -139,12 +147,7 @@ export default function PublicForm() {
             <Box width="full" padding="4">
               <Stack space="2">
                 {form.logo && <Avatar src={form.logo} label="" size="20" />}
-                <NameInput
-                  placeholder="Enter name"
-                  autoFocus
-                  value={form.name}
-                  disabled
-                />
+                <NameInput autoFocus value={form.name} disabled />
                 {form.description && (
                   <Editor value={form.description} isDirty={true} disabled />
                 )}
@@ -460,28 +463,27 @@ export default function PublicForm() {
   );
 }
 
-const Container = styled(Box)`
+const Container = styled(Box)<{ embed: boolean }>`
   @media (max-width: 768px) {
-    padding: 0rem 1rem;
-    margin-top: -7rem;
+    padding: 0rem ${(props) => (props.embed ? "0rem" : "1rem")};
   }
 
   @media (min-width: 768px) and (max-width: 1024px) {
-    padding: 2rem 4rem;
-    margin-top: -8rem;
+    padding: ${(props) => (props.embed ? "0rem" : "2rem")}
+      ${(props) => (props.embed ? "0rem" : "4rem")};
   }
 
   @media (min-width: 1024px) and (max-width: 1280px) {
-    padding: 2rem 14rem;
-    margin-top: -8rem;
+    padding: ${(props) => (props.embed ? "0rem" : "2rem")}
+      ${(props) => (props.embed ? "0rem" : "14rem")};
   }
 
   &::-webkit-scrollbar {
     width: 0.5rem;
   }
   z-index: 999;
-  margin-top: -8rem;
-  padding: 2rem 14rem;
+  margin-top: ${(props) => (props.embed ? "0rem" : "-8rem")};
+  padding: 0rem ${(props) => (props.embed ? "0rem" : "14rem")};
 `;
 
 export const NameInput = styled.input`
@@ -508,7 +510,6 @@ export const CoverImage = styled(Box)<{ src: string }>`
 `;
 
 const FormContainer = styled(Box)`
-  border-radius: 1rem;
   padding: 0.5rem;
   margin-bottom: 2rem;
 `;

@@ -31,7 +31,7 @@ export default function BatchPay({ retro, setIsOpen }: Props) {
   // };
 
   useEffect(() => {
-    // set token card and stuff and skip the step dependig on the card reward token address
+    // set token card and stuff and skip the step depending on the card reward token address.
     if (retro) {
       if (retro.reward.token.address === "0x0") {
         setBatchPayInfo({
@@ -53,6 +53,7 @@ export default function BatchPay({ retro, setIsOpen }: Props) {
             userIds: [],
           },
           chainId: retro.reward.chain.chainId,
+          retro: retro,
         });
         setStep(1);
       } else {
@@ -74,6 +75,7 @@ export default function BatchPay({ retro, setIsOpen }: Props) {
             values: retro.members.map((member) => retro.distribution[member]),
           },
           chainId: retro.reward.chain.chainId,
+          retro: retro,
         });
         setStep(1);
       }

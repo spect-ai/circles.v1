@@ -1,8 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { addColumn } from "@/app/services/Column";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { Box, IconPlusSmall, Stack } from "degen";
-import React, { memo, useCallback, useEffect, useState, useMemo } from "react";
+import React, { memo, useCallback, useEffect, useState } from "react";
 import {
   DragDropContext,
   Droppable,
@@ -30,7 +31,7 @@ interface Props {
 
 const Container = styled.div`
   display: inline-flex;
-  height: calc(100vh - 7.5rem);
+  height: calc(100vh - 9rem);
   @media only screen and (min-width: 0px) {
     max-width: calc(100vw - 5rem);
     padding: 0 0.1rem;
