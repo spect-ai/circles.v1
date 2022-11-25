@@ -280,6 +280,10 @@ export interface CircleType {
   grantApplicantProject?: string;
   paymentAddress: string;
   grantNotificationChannel?: DiscordChannel;
+  automations: AutomationType;
+  automationsIndexedByCollection: AutomationsIndexedByCollectionSlugType;
+  rootAutomations: RootAutomationsType;
+  automationCount: number;
 }
 
 // interface ProjectType {
@@ -1065,3 +1069,30 @@ export type Action = {
   service: string;
   data: any;
 };
+
+export type Trigger = {
+  id: string;
+  type: string;
+  name: string;
+  service: string;
+  data: any;
+};
+
+export type Automation = {
+  id: string;
+  name: string;
+  description: string;
+  trigger: Trigger;
+  actions: Action[];
+  triggerCategory: "collection" | "root";
+};
+
+export type AutomationType = {
+  [id: string]: Automation;
+};
+
+export type AutomationsIndexedByCollectionSlugType = {
+  [id: string]: string[];
+};
+
+export type RootAutomationsType = string[];

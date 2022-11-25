@@ -7,6 +7,7 @@ import Select from "react-select";
 export type OptionType = {
   label: string;
   value: string;
+  data?: any;
 };
 
 type Props =

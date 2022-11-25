@@ -30,6 +30,7 @@ export default function GiveRole({ setAction, actionMode, action }: Props) {
         setAction({
           ...action,
           data: {
+            ...action.data,
             roles: selectedRoles,
           },
         });
