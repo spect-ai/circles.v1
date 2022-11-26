@@ -78,10 +78,12 @@ export default function CardDrawer({ handleClose }: Props) {
     provided,
     snapshot,
     property,
+    value,
   }: {
     provided: DraggableProvided;
     snapshot: DraggableStateSnapshot;
     property: string;
+    value: any;
   }) => {
     const [hover, setHover] = useState(false);
     const usePortal = snapshot.isDragging;
@@ -122,7 +124,7 @@ export default function CardDrawer({ handleClose }: Props) {
     return usePortal ? ReactDOM.createPortal(child, document.body) : child;
   };
 
-  const PropertyDraggableCallback = useCallback(PropertyDraggable, [value]);
+  const PropertyDraggableCallback = useCallback(PropertyDraggable, []);
 
   const PropertyList = (provided: DroppableProvided) => (
     <Box ref={provided.innerRef} {...provided.droppableProps}>
@@ -136,6 +138,7 @@ export default function CardDrawer({ handleClose }: Props) {
                     provided={provided}
                     property={property}
                     snapshot={snapshot}
+                    value={value}
                   />
                 );
               }}
@@ -150,6 +153,7 @@ export default function CardDrawer({ handleClose }: Props) {
   const ProperyListCallback = useCallback(PropertyList, [
     PropertyDraggableCallback,
     propertyOrder,
+    value,
   ]);
 
   return (
