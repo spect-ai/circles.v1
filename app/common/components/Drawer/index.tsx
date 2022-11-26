@@ -40,7 +40,6 @@ function Drawer({
   return (
     <Box
       style={{
-        position: "fixed",
         top: 0,
         right: 0,
         width: `${closeOnOutsideClick ? "100%" : width}`,

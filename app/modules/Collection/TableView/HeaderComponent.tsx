@@ -1,4 +1,5 @@
 import Popover from "@/app/common/components/Popover";
+import { PropertyType } from "@/app/types";
 import {
   Box,
   IconDotsHorizontal,
@@ -9,12 +10,14 @@ import {
 } from "degen";
 import React, { useState } from "react";
 import styled from "styled-components";
+import { getPropertyIcon } from "../../CollectionProject/EditProperty/Utils";
 
 type Props = {
   sortData: (columnName: string, asc: boolean) => void;
   columnName: string;
   setPropertyName: (name: string) => void;
   setIsEditFieldOpen: (value: boolean) => void;
+  propertyType: PropertyType;
 };
 
 type PopoverOptionProps = {
@@ -38,13 +41,15 @@ export default function HeaderComponent({
   columnName,
   setIsEditFieldOpen,
   setPropertyName,
+  propertyType,
 }: Props) {
   const [isOpen, setIsOpen] = useState(false);
   return (
     <Popover
       butttonComponent={
         <Box>
-          <Stack direction="horizontal" justify="space-between">
+          <Stack direction="horizontal">
+            <Text variant="label">{getPropertyIcon(propertyType)}</Text>
             <Text variant="label">{columnName}</Text>
             {/* <DropdownButton
               onClick={(e) => {

@@ -25,7 +25,7 @@ export const getPropertyIcon = (type: PropertyType) => {
     case "number":
       return <Hash size={18} />;
     case "singleSelect":
-      return <ArrowDownCircle size={18} />;
+      return <Aperture size={18} />;
     case "multiSelect":
       return <Tag size={18} />;
     case "url":

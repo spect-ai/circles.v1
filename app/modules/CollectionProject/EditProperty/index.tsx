@@ -21,7 +21,7 @@ function EditProperty({ propertyName }: Props) {
   const [isEditFieldOpen, setIsEditFieldOpen] = useState(false);
 
   return (
-    <Box width="3/4">
+    <Box width="3/4" marginLeft="1">
       <AnimatePresence>
         {isEditFieldOpen && (
           <AddField

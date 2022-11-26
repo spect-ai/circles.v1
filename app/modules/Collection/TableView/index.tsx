@@ -199,6 +199,7 @@ export default function TableView() {
               columnName={property.name}
               setIsEditFieldOpen={setIsEditFieldOpen}
               setPropertyName={setPropertyName}
+              propertyType={property.type}
             />
           ),
           minWidth: 200,
@@ -218,6 +219,7 @@ export default function TableView() {
               columnName={property.name}
               setIsEditFieldOpen={setIsEditFieldOpen}
               setPropertyName={setPropertyName}
+              propertyType={property.type}
             />
           ),
           minWidth: 200,
@@ -237,6 +239,7 @@ export default function TableView() {
               columnName={property.name}
               setIsEditFieldOpen={setIsEditFieldOpen}
               setPropertyName={setPropertyName}
+              propertyType={property.type}
             />
           ),
           minWidth: 200,
@@ -252,6 +255,7 @@ export default function TableView() {
               columnName={property.name}
               setIsEditFieldOpen={setIsEditFieldOpen}
               setPropertyName={setPropertyName}
+              propertyType={property.type}
             />
           ),
           minWidth: 200,
@@ -271,6 +275,7 @@ export default function TableView() {
               columnName={"Responder"}
               setIsEditFieldOpen={setIsEditFieldOpen}
               setPropertyName={setPropertyName}
+              propertyType={"user"}
             />
           ),
           minWidth: 150,
