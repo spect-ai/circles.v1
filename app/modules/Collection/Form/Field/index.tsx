@@ -192,7 +192,7 @@ function FieldComponent({
             onChange={(value: any) => {
               console.log({ value });
             }}
-            portal={false}
+            portal
           />
         </Box>
       )}

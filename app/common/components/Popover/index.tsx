@@ -3,6 +3,7 @@ import { FC, ReactNode, useEffect, useRef, useState } from "react";
 import { Box } from "degen";
 import { Portal } from "../Portal/portal";
 import { usePopper } from "react-popper";
+import { AnimatePresence } from "framer-motion";
 
 interface Props {
   isOpen: boolean;
@@ -73,27 +74,22 @@ const Popover: FC<Props> = ({
 
   return (
     <Box width={width as any} data-tour={tourId}>
-      {/* <Box
-        cursor="pointer"
-        onClick={() => setIsOpen(!isOpen)}
-        color="foreground"
-      >
-        {icon}
-      </Box> */}
       <div ref={setAnchorElement}>{butttonComponent}</div>
-      {isOpen && (
-        <Portal>
-          <Box
-            position="absolute"
-            zIndex="10"
-            ref={setPopperElement}
-            style={styles.popper}
-            {...attributes.popper}
-          >
-            <div ref={wrapperRef}>{children}</div>
-          </Box>
-        </Portal>
-      )}
+      <AnimatePresence>
+        {isOpen && (
+          <Portal>
+            <Box
+              position="absolute"
+              zIndex="10"
+              ref={setPopperElement}
+              style={styles.popper}
+              {...attributes.popper}
+            >
+              <div ref={wrapperRef}>{children}</div>
+            </Box>
+          </Portal>
+        )}
+      </AnimatePresence>
     </Box>
   );
 };

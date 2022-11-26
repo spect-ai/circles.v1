@@ -54,6 +54,7 @@ const Dropdown: FC<Props> = ({
       menuPortalTarget={portal ? document.body : undefined}
       isClearable={isClearable}
       styles={{
+        menuPortal: (base) => ({ ...base, zIndex: 9999 }),
         container: (provided) => ({
           ...provided,
           flex: 1,

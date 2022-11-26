@@ -111,7 +111,7 @@ export default function ConnectGnosis() {
                     setselectedSafe(value);
                   }}
                   multiple={false}
-                  portal={false}
+                  portal
                 />
                 <PrimaryButton
                   shape="circle"

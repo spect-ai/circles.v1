@@ -1,4 +1,5 @@
-import { Box, Button, Heading, IconClose, Stack } from "degen";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { Box, Button, IconChevronRight, Stack } from "degen";
 import React from "react";
 import styled from "styled-components";
 import { motion } from "framer-motion";
@@ -69,16 +70,21 @@ function Drawer({
             {header ? (
               header
             ) : (
-              <Stack direction="horizontal" justify="space-between">
+              <Box marginLeft="-4">
                 <Button
                   shape="circle"
                   size="small"
                   variant="transparent"
                   onClick={() => handleClose()}
                 >
-                  <IconClose />
+                  <Stack direction="horizontal" align="center" space="0">
+                    <IconChevronRight />
+                    <Box marginLeft="-4">
+                      <IconChevronRight />
+                    </Box>
+                  </Stack>
                 </Button>
-              </Stack>
+              </Box>
             )}
           </Box>
           {children}

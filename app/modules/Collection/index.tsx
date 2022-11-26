@@ -1,8 +1,7 @@
 import { Box, useTheme } from "degen";
 import { useEffect } from "react";
 import { ToastContainer } from "react-toastify";
-import ProjectHeading from "../CollectionProject/Heading";
-import ProjectTableView from "../CollectionProject/TableView";
+import CollectionProject from "../CollectionProject";
 import CollectionHeading from "./CollectionHeading";
 import { useLocalCollection } from "./Context/LocalCollectionContext";
 import { Form } from "./Form";
@@ -35,12 +34,7 @@ export function Collection() {
           {view === 1 && <TableView />}
         </Box>
       )}
-      {collection.collectionType === 1 && (
-        <Box>
-          <ProjectHeading />
-          <ProjectTableView />
-        </Box>
-      )}
+      {collection.collectionType === 1 && <CollectionProject />}
     </>
   );
 }

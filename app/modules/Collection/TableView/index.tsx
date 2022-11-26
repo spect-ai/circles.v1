@@ -244,7 +244,8 @@ export default function TableView() {
       } else {
         return {
           ...keyColumn(property.name, getCellComponent(property.type) as any),
-          disabled: property.isPartOfFormView,
+          disabled:
+            collection.collectionType === 0 ? property.isPartOfFormView : false,
           title: (
             <HeaderComponent
               sortData={sortData}
@@ -279,7 +280,7 @@ export default function TableView() {
     : columns;
 
   return (
-    <Box padding="8">
+    <Box>
       <AnimatePresence>
         {isEditFieldOpen && (
           <AddField
@@ -373,6 +374,7 @@ export default function TableView() {
               : 500
           }
           onChange={async (newData, operations) => {
+            console.log({ operations });
             if (operations[0].type === "DELETE") {
               const dataIds = [];
               for (

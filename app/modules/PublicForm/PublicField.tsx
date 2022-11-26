@@ -207,7 +207,7 @@ export default function PublicField({
               setData({ ...data, [propertyName]: value });
               updateRequiredFieldNotSet(propertyName, value);
             }}
-            portal={false}
+            portal
             disabled={disabled}
           />
         </Box>
