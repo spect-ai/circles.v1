@@ -54,7 +54,7 @@ const Container = styled(Box)<{ isDragging: boolean; mode: string }>`
       props.mode === "dark" ? "rgb(255, 255, 255, 0.1)" : "rgb(20,20,20,0.1)"};
   }
   color: rgb(191, 90, 242, 0.7);
-  width: 100%;
+  min-width: 20rem;
   height: 100%;
   overflow-x: hidden;
 `;
