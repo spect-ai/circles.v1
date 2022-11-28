@@ -26,7 +26,7 @@ type Props = {
 };
 
 export default function AddField({ propertyName, handleClose }: Props) {
-  const { localCollection: collection, setLocalCollection } =
+  const { localCollection: collection, updateCollection } =
     useLocalCollection();
   const { registry } = useCircle();
   const [networks, setNetworks] = useState(registry);
@@ -100,7 +100,7 @@ export default function AddField({ propertyName, handleClose }: Props) {
     setLoading(false);
     if (res.id) {
       handleClose();
-      setLocalCollection(res);
+      updateCollection(res);
     } else {
       toast.error(res.message.toString());
     }
@@ -169,7 +169,7 @@ export default function AddField({ propertyName, handleClose }: Props) {
               console.log({ res });
               if (res.id) {
                 handleClose();
-                setLocalCollection(res);
+                updateCollection(res);
               } else {
                 toast.error(res.message);
               }

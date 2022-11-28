@@ -10,10 +10,10 @@ export default function CollectionProject() {
   return (
     <Box>
       <ProjectHeading />
-      {collection.projectMetadata.views[projectViewId].type === "grid" && (
+      {collection.projectMetadata.views[projectViewId]?.type === "grid" && (
         <ProjectTableView />
       )}
-      {collection.projectMetadata.views[projectViewId].type === "kanban" && (
+      {collection.projectMetadata.views[projectViewId]?.type === "kanban" && (
         <KanbanView />
       )}
     </Box>

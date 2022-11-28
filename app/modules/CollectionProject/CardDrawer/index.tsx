@@ -5,18 +5,24 @@ import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { reorder } from "@/app/common/utils/utils";
 import {
   addCollectionData,
+  updateCollectionData,
+  updateCollectionDataGuarded,
   updateFormCollection,
 } from "@/app/services/Collection";
 import {
   Box,
+  Button,
+  IconCheck,
+  IconChevronRight,
   IconDotsVertical,
   IconPlusSmall,
+  Spinner,
   Stack,
   Text,
   useTheme,
 } from "degen";
 import { AnimatePresence } from "framer-motion";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   DragDropContext,
   Draggable,
@@ -27,6 +33,7 @@ import {
   DropResult,
 } from "react-beautiful-dnd";
 import ReactDOM from "react-dom";
+import { Save } from "react-feather";
 import { toast } from "react-toastify";
 import styled from "styled-components";
 import AddField from "../../Collection/AddField";
@@ -36,18 +43,24 @@ import EditValue from "../EditValue";
 
 type Props = {
   handleClose: () => void;
+  defaultValue?: any;
 };
 
-export default function CardDrawer({ handleClose }: Props) {
+export default function CardDrawer({ handleClose, defaultValue }: Props) {
   const { mode } = useTheme();
   const { localCollection: collection, updateCollection } =
     useLocalCollection();
-  const [value, setValue] = useState<any>({});
+  const [value, setValue] = useState<any>(defaultValue || {});
 
   const [isAddFieldOpen, setIsAddFieldOpen] = useState(false);
   const [isDirty, setIsDirty] = useState(false);
 
   const [propertyOrder, setPropertyOrder] = useState(collection.propertyOrder);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    setPropertyOrder(collection.propertyOrder);
+  }, [collection.propertyOrder]);
 
   const handleDragEnd = async (result: DropResult) => {
     const { destination, source } = result;
@@ -160,20 +173,74 @@ export default function CardDrawer({ handleClose }: Props) {
     <Box>
       <Drawer
         width="50%"
-        handleClose={async () => {
-          if (Object.keys(value).length > 0) {
-            const res = await addCollectionData(collection.id, value);
-            if (res.id) handleClose();
-            else toast.error("Error adding card");
-          } else handleClose();
+        handleClose={() => {
+          handleClose();
         }}
+        header={
+          <Box marginLeft="-4">
+            <Stack
+              direction="horizontal"
+              align="center"
+              justify="space-between"
+            >
+              <Button
+                shape="circle"
+                size="small"
+                variant="transparent"
+                onClick={() => handleClose()}
+              >
+                <Stack direction="horizontal" align="center" space="0">
+                  <IconChevronRight />
+                  <Box marginLeft="-4">
+                    <IconChevronRight />
+                  </Box>
+                </Stack>
+              </Button>
+              <Box width="56">
+                <PrimaryButton
+                  loading={loading}
+                  icon={<Save size="24" />}
+                  onClick={async () => {
+                    console.log(value.slug);
+                    if (value.slug) {
+                      setLoading(true);
+                      console.log({ value });
+                      const res = await updateCollectionDataGuarded(
+                        collection.id,
+                        value.slug,
+                        value
+                      );
+                      setLoading(false);
+                      if (res.id) {
+                        updateCollection(res);
+                        handleClose();
+                      } else toast.error("Error updating card");
+                      return;
+                    }
+                    if (Object.keys(value).length > 0) {
+                      setLoading(true);
+                      const res = await addCollectionData(collection.id, value);
+                      setLoading(false);
+                      if (res.id) {
+                        updateCollection(res);
+                        handleClose();
+                      } else toast.error("Error adding card");
+                    } else handleClose();
+                  }}
+                >
+                  Save and Exit
+                </PrimaryButton>
+              </Box>
+            </Stack>
+          </Box>
+        }
       >
         <AnimatePresence>
           {isAddFieldOpen && (
             <AddField handleClose={() => setIsAddFieldOpen(false)} />
           )}
         </AnimatePresence>
-        <Box paddingX="8" paddingY="4">
+        <Container paddingX="8" paddingY="4" overflow="auto">
           <Stack space="1">
             <NameInput
               mode={mode}
@@ -208,7 +275,7 @@ export default function CardDrawer({ handleClose }: Props) {
               />
             </Box>
           </Stack>
-        </Box>
+        </Container>
       </Drawer>
     </Box>
   );
@@ -235,4 +302,14 @@ const NameInput = styled.input<{ mode: string }>`
         : "rgb(20, 20, 20, 0.5)"};
   }
   letter-spacing: 0.05rem;
+`;
+
+const Container = styled(Box)`
+  ::-webkit-scrollbar {
+    display: none;
+  }
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+
+  height: calc(100vh - 4rem);
 `;

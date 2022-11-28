@@ -1,0 +1,247 @@
+import { updateField } from "@/app/services/Collection";
+import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
+import { Option } from "@/app/types";
+import {
+  Avatar,
+  Box,
+  Button,
+  IconPlusSmall,
+  Stack,
+  Tag,
+  Text,
+  useTheme,
+} from "degen";
+import React, { useCallback, useState } from "react";
+import {
+  DragDropContext,
+  Draggable,
+  Droppable,
+  DroppableProvided,
+  DropResult,
+} from "react-beautiful-dnd";
+import { toast } from "react-toastify";
+import styled from "styled-components";
+import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
+
+type Props = {
+  column: Option;
+  groupByColumn: string;
+  setDefaultValue: (value: any) => void;
+  setIsCardDrawerOpen: (value: boolean) => void;
+};
+
+export default function Column({
+  column,
+  groupByColumn,
+  setDefaultValue,
+  setIsCardDrawerOpen,
+}: Props) {
+  const handleDragEnd = (result: DropResult) => {
+    console.log({ result });
+  };
+
+  const { localCollection: collection, updateCollection } =
+    useLocalCollection();
+  const { getMemberDetails } = useModalOptions();
+
+  const [columnName, setColumnName] = useState(column.label);
+  const { mode } = useTheme();
+  const columns = collection.properties[groupByColumn].options as Option[];
+
+  const ColumnList = (provided: DroppableProvided) => (
+    <Container padding="4" ref={provided.innerRef} {...provided.droppableProps}>
+      <Stack>
+        <Stack direction="horizontal" align="center" justify="space-between">
+          <NameInput
+            value={columnName}
+            onChange={(e) => setColumnName(e.target.value)}
+            mode={mode}
+            onBlur={async () => {
+              const res = await updateField(collection.id, groupByColumn, {
+                options: columns.map((c) =>
+                  c.value === column.value ? { ...c, label: columnName } : c
+                ),
+              });
+              if (res.id) updateCollection(res);
+              else toast.error("Error renaming column");
+            }}
+          />
+          <Button
+            shape="circle"
+            variant="transparent"
+            size="small"
+            onClick={() => {
+              setDefaultValue({
+                [groupByColumn]: column,
+              });
+              setIsCardDrawerOpen(true);
+            }}
+          >
+            <IconPlusSmall />
+          </Button>
+        </Stack>
+        <ScrollContainer>
+          <Stack space="2">
+            {Object.values(collection.data)
+              .filter((data) => data[groupByColumn]?.value === column.value)
+              .map((data, index) => (
+                <Draggable
+                  key={data.slug}
+                  draggableId={data.slug}
+                  index={index}
+                >
+                  {(provided, snapshot) => (
+                    <Box
+                      key={data.slug}
+                      padding="4"
+                      borderWidth="0.375"
+                      borderColor={snapshot.isDragging ? "accent" : undefined}
+                      borderRadius="medium"
+                      onClick={() => {
+                        setDefaultValue(data);
+                        setIsCardDrawerOpen(true);
+                      }}
+                      cursor="pointer"
+                      ref={provided.innerRef}
+                      {...provided.draggableProps}
+                      {...provided.dragHandleProps}
+                    >
+                      <Stack space="2">
+                        {collection.propertyOrder.map((propertyId) => {
+                          const property = collection.properties[propertyId];
+                          const value = data[propertyId];
+                          if (!value || groupByColumn === propertyId)
+                            return null;
+                          if (property.type === "shortText") {
+                            return (
+                              <Box key={propertyId}>
+                                {/* <Text weight="semiBold">{property.name}</Text> */}
+                                <Text>{value}</Text>
+                              </Box>
+                            );
+                          }
+                          if (property.type === "singleSelect") {
+                            return (
+                              <Box key={propertyId}>
+                                {/* <Text weight="semiBold">{property.name}</Text> */}
+                                <Text>{value.label}</Text>
+                              </Box>
+                            );
+                          }
+                          if (property.type === "multiSelect") {
+                            return (
+                              <Box key={propertyId}>
+                                {/* <Text weight="semiBold">{property.name}</Text> */}
+                                <Stack direction="horizontal">
+                                  {value.map((value: Option) => (
+                                    <Tag key={value.value} tone="accent">
+                                      {value.label}
+                                    </Tag>
+                                  ))}
+                                </Stack>
+                              </Box>
+                            );
+                          }
+                          if (property.type === "user") {
+                            return (
+                              <Box key={propertyId}>
+                                {/* <Text weight="semiBold">{property.name}</Text> */}
+                                <Tag>
+                                  <Stack
+                                    direction="horizontal"
+                                    space="1"
+                                    align="center"
+                                  >
+                                    <Avatar
+                                      src={
+                                        getMemberDetails(value.value || "")
+                                          ?.avatar
+                                      }
+                                      label=""
+                                      size="6"
+                                    />
+                                    <Text weight="semiBold">
+                                      {
+                                        getMemberDetails(value.value || "")
+                                          ?.username
+                                      }
+                                    </Text>
+                                  </Stack>
+                                </Tag>
+                              </Box>
+                            );
+                          }
+                        })}
+                      </Stack>
+                    </Box>
+                  )}
+                </Draggable>
+              ))}
+          </Stack>
+        </ScrollContainer>
+      </Stack>
+    </Container>
+  );
+
+  const ListCallback = useCallback(ColumnList, [
+    collection.data,
+    collection.id,
+    collection.properties,
+    collection.propertyOrder,
+    column,
+    columnName,
+    columns,
+    getMemberDetails,
+    groupByColumn,
+    mode,
+    setDefaultValue,
+    setIsCardDrawerOpen,
+    updateCollection,
+  ]);
+
+  return (
+    <DragDropContext onDragEnd={handleDragEnd}>
+      <Droppable droppableId="droppableColumn" type="PROPERTY">
+        {ListCallback}
+      </Droppable>
+    </DragDropContext>
+  );
+}
+
+const Container = styled(Box)`
+  ::-webkit-scrollbar {
+    display: none;
+  }
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  overflow-y: none;
+  height: calc(100vh - 9.5rem);
+  width: 22rem;
+`;
+
+const ScrollContainer = styled(Box)`
+  ::-webkit-scrollbar {
+    width: 0px;
+  }
+  height: calc(100vh - 13rem);
+  border-radius: 0.5rem;
+  overflow-y: auto;
+`;
+
+const NameInput = styled.input<{ mode: string }>`
+  width: auto;
+  background: transparent;
+  border: 0;
+  border-style: none;
+  border-color: transparent;
+  outline: none;
+  outline-offset: 0;
+  box-shadow: none;
+  font-size: 1.1rem;
+  caret-color: ${(props) =>
+    props.mode === "dark" ? "rgb(255, 255, 255, 0.7)" : "rgb(20, 20, 20, 0.7)"};
+  color: ${(props) =>
+    props.mode === "dark" ? "rgb(255, 255, 255, 0.7)" : "rgb(20, 20, 20, 0.7)"};
+  font-weight: 400;
+  margin-left: 0.1rem;
+`;
