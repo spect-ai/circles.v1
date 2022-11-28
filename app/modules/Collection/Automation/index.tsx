@@ -29,7 +29,9 @@ export default function Automation() {
     setAutomationId(automationOrder[id]);
     setTab(id);
   };
-  const [tabs, setTabs] = useState([] as string[]);
+  const [tabs, setTabs] = useState([
+    `𝘕𝘦𝘸: Automation ${circle.automationCount || 0 + 1}`,
+  ] as string[]);
   const [automationMode, setAutomationMode] = useState("create");
   const [automations, setAutomations] = useState(circle.automations || {});
   const [automationOrder, setAutomationOrder] = useState(
@@ -56,6 +58,7 @@ export default function Automation() {
   };
 
   const initNew = () => {
+    console.log("asas");
     setTabs(["Automation 1"]);
     setAutomationOrder(["automation-1"]);
     setAutomationId("automation-1");
@@ -70,6 +73,7 @@ export default function Automation() {
       },
     });
     setAutomationMode("create");
+    setTab(0);
   };
 
   const onSave = async (
@@ -107,7 +111,7 @@ export default function Automation() {
     if (
       !circle.automationsIndexedByCollection ||
       !colId ||
-      !circle.automationsIndexedByCollection[colId as string]
+      !circle.automationsIndexedByCollection[colId as string]?.length
     ) {
       initNew();
     } else {
@@ -127,11 +131,11 @@ export default function Automation() {
         }}
       >
         <PrimaryButton
-          variant={automationOrder?.length > 1 ? "tertiary" : "secondary"}
+          variant={automationOrder?.length > 0 ? "tertiary" : "secondary"}
           onClick={() => setIsOpen(true)}
           icon={<GatewayOutlined />}
         >
-          {automationOrder?.length > 1 ? `Edit Automations` : `Add Automations`}
+          {automationOrder?.length > 0 ? `Edit Automations` : `Add Automations`}
         </PrimaryButton>
       </Box>
       <AnimatePresence>

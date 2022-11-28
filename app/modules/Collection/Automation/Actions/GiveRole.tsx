@@ -36,6 +36,7 @@ export default function GiveRole({ setAction, actionMode, action }: Props) {
           data: {
             ...action.data,
             roles: selectedRoles,
+            circleId: circle.id,
           },
         });
       }}

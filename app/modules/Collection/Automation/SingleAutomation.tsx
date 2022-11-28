@@ -5,7 +5,13 @@ import {
   removeAutomation,
   updateAutomation,
 } from "@/app/services/UpdateCircle";
-import { Action, Automation, AutomationType, Option, Trigger } from "@/app/types";
+import {
+  Action,
+  Automation,
+  AutomationType,
+  Option,
+  Trigger,
+} from "@/app/types";
 import { Box, Text, useTheme } from "degen";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
@@ -19,17 +25,23 @@ type Props = {
   automationMode: string;
   setAutomationMode: (automationMode: string) => void;
   onDelete: (automationId: string) => void;
-  onSave: (name: string, description: string, trigger: Trigger, action: Action[]) => void;
+  onSave: (
+    name: string,
+    description: string,
+    trigger: Trigger,
+    action: Action[]
+  ) => void;
 };
 
 export default function SingleAutomation({
   automation,
   automationMode,
   setAutomationMode,
-  onDelete,onSave
+  onDelete,
+  onSave,
 }: Props) {
   const { mode } = useTheme();
-  const {localCollection: collection} = useLocalCollection();
+  const { localCollection: collection } = useLocalCollection();
   const { setCircleData, circle } = useCircle();
   const [whenOptions, setWhenOptions] = useState<Option[]>([]);
   const [thenOptions, setThenOptions] = useState<Option[]>([]);
@@ -72,8 +84,6 @@ export default function SingleAutomation({
       data: {},
     },
   } as { [id: string]: Action });
-
-
 
   useEffect(() => {
     const whenOptions = Object.entries(collection.properties)
@@ -153,11 +163,14 @@ export default function SingleAutomation({
             }}
           />
         </Box>
-        <PrimaryButton variant="secondary" onClick={() => {
-          onSave(name, description, trigger, actions);
-          setIsDirty(false);
-
-        }} disabled={!isDirty}>
+        <PrimaryButton
+          variant="secondary"
+          onClick={() => {
+            onSave(name, description, trigger, actions);
+            setIsDirty(false);
+          }}
+          disabled={!isDirty}
+        >
           Save
         </PrimaryButton>
         {automationMode === "edit" && (
@@ -189,9 +202,14 @@ export default function SingleAutomation({
                   options={whenOptions}
                   selected={selectedWhenOption}
                   onChange={(value) => {
+                    let subType;
+                    if (value.value === "dataChange") {
+                      subType = value.data.fieldType;
+                    }
                     setTrigger({
                       id: value.value,
                       type: value.value,
+                      subType,
                       name: value.label,
                       data: value.data,
                       service: "collection",
