@@ -23,6 +23,10 @@ export default function GiveRole({ setAction, actionMode, action }: Props) {
     });
   };
 
+  useEffect(() => {
+    setSelectedRoles(action.data?.roles || {});
+  }, [action]);
+
   return (
     <Box
       marginTop="4"

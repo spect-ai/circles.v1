@@ -1,24 +1,36 @@
 import Dropdown from "@/app/common/components/Dropdown";
-import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { Action, Option, Trigger } from "@/app/types";
-import { DeleteOutlined } from "@ant-design/icons";
+import {
+  addAutomation,
+  removeAutomation,
+  updateAutomation,
+} from "@/app/services/UpdateCircle";
+import { Action, Automation, AutomationType, Option, Trigger } from "@/app/types";
 import { Box, Text, useTheme } from "degen";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
+import { useCircle } from "../../Circle/CircleContext";
 import { useLocalCollection } from "../Context/LocalCollectionContext";
 import SingleAction from "./Actions";
 import SingleTrigger from "./Triggers";
-import DataChange from "./Triggers/DataChange";
 
 type Props = {
   automation: any;
+  automationMode: string;
+  setAutomationMode: (automationMode: string) => void;
+  onDelete: (automationId: string) => void;
+  onSave: (name: string, description: string, trigger: Trigger, action: Action[]) => void;
 };
 
-export default function SingleAutomation({ automation }: Props) {
+export default function SingleAutomation({
+  automation,
+  automationMode,
+  setAutomationMode,
+  onDelete,onSave
+}: Props) {
   const { mode } = useTheme();
-
-  const { localCollection: collection } = useLocalCollection();
+  const {localCollection: collection} = useLocalCollection();
+  const { setCircleData, circle } = useCircle();
   const [whenOptions, setWhenOptions] = useState<Option[]>([]);
   const [thenOptions, setThenOptions] = useState<Option[]>([]);
   const [selectedWhenOption, setSelectedWhenOption] = useState({} as Option);
@@ -27,6 +39,9 @@ export default function SingleAutomation({ automation }: Props) {
   );
   const [trigger, setTrigger] = useState({} as Trigger);
   const [actions, setActions] = useState([] as Action[]);
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [isDirty, setIsDirty] = useState(false);
   const [allPossibleActions, setAllPossibleActions] = useState({
     createCard: {
       id: "createCard",
@@ -58,6 +73,8 @@ export default function SingleAutomation({ automation }: Props) {
     },
   } as { [id: string]: Action });
 
+
+
   useEffect(() => {
     const whenOptions = Object.entries(collection.properties)
       .filter((p) => p[1].type === "singleSelect")
@@ -76,125 +93,218 @@ export default function SingleAutomation({ automation }: Props) {
       value: a[0],
     }));
     setThenOptions(thenOptions);
-  }, []);
-
-  console.log({ trigger });
-  console.log({ actions });
+    if (automation) {
+      setName(automation.name);
+      setDescription(automation.description);
+      const selectedWhenOption = whenOptions.find(
+        (o) => o.data.fieldName === automation.trigger?.data?.fieldName
+      ) as Option;
+      setSelectedWhenOption(
+        selectedWhenOption || {
+          label: "Select a trigger",
+          value: "select",
+        }
+      );
+      setSelectedThenOptions(
+        automation.actions.map((a: Action) => ({
+          label: a.name,
+          value: a.id,
+        }))
+      );
+      setTrigger(automation.trigger);
+      setActions(automation.actions);
+    }
+  }, [automation]);
 
   return (
-    <Box>
-      <Box marginTop="4">
-        <Text variant="large" weight="semiBold">
-          When
-        </Text>
-        <AutomationCard mode={mode}>
-          <Box width="full">
-            <Dropdown
-              options={whenOptions}
-              selected={selectedWhenOption}
-              onChange={(value) => {
-                setTrigger({
-                  id: value.value,
-                  type: value.value,
-                  name: value.label,
-                  data: value.data,
-                  service: "collection",
-                });
-                setSelectedWhenOption(value);
-              }}
-              multiple={false}
-              isClearable={false}
-            />
-          </Box>
-          {selectedWhenOption && (
-            <SingleTrigger
-              triggerMode="edit"
-              triggerType={selectedWhenOption.value}
-              trigger={trigger}
-              setTrigger={(trig) => setTrigger(trig)}
-            />
-          )}{" "}
-        </AutomationCard>
+    <>
+      <Box
+        display="flex"
+        flexDirection="row"
+        marginTop="8"
+        width="full"
+        gap="2"
+      >
+        <Box
+          display="flex"
+          flexDirection="column"
+          gap="1"
+          justifyContent="flex-start"
+          alignItems="flex-start"
+          style={{ width: "80%" }}
+        >
+          <NameInput
+            placeholder="Enter name"
+            autoFocus
+            value={name}
+            onChange={(e) => {
+              setName(e.target.value);
+              setIsDirty(true);
+            }}
+          />
+          <DescriptionInput
+            placeholder="Enter Description"
+            mode={mode}
+            autoFocus
+            value={description}
+            onChange={(e) => {
+              setDescription(e.target.value);
+              setIsDirty(true);
+            }}
+          />
+        </Box>
+        <PrimaryButton variant="secondary" onClick={() => {
+          onSave(name, description, trigger, actions);
+          setIsDirty(false);
+
+        }} disabled={!isDirty}>
+          Save
+        </PrimaryButton>
+        {automationMode === "edit" && (
+          <PrimaryButton
+            variant="tertiary"
+            onClick={() => onDelete(automation.id)}
+          >
+            Delete
+          </PrimaryButton>
+        )}
       </Box>
-      <Box marginTop="4">
-        <Text variant="large" weight="semiBold">
-          Then
-        </Text>
-        {actions.map((action, index) => (
-          <AutomationCard mode={mode} key={index} onClick={() => {}}>
-            <Box width="full">
-              <Dropdown
-                options={thenOptions}
-                selected={selectedThenOptions[index]}
-                onChange={(value) => {
-                  const newActions = [...actions];
-                  newActions[index] = allPossibleActions[value.value];
-                  setActions(newActions);
-                  const newSelectedThenOptions = [...selectedThenOptions];
-                  newSelectedThenOptions[index] = value;
-                  setSelectedThenOptions(newSelectedThenOptions);
-                }}
-                multiple={false}
-                isClearable={false}
-                placeholder={`Add action`}
-              />
-              )
-            </Box>
-            <SingleAction
-              actionType={selectedThenOptions[index].value}
-              action={action}
-              setAction={(action) => {
-                const newActions = [...actions];
-                newActions[index] = action;
-                setActions(newActions);
-                console.log({ actions });
-              }}
-              actionMode="edit"
-            />
+      <ScrollContainer
+        width="full"
+        paddingX={{
+          xs: "2",
+          md: "4",
+          lg: "8",
+        }}
+        paddingY="4"
+      >
+        <Box>
+          <Box marginTop="4">
+            <Text variant="large" weight="semiBold">
+              When
+            </Text>
+            <AutomationCard mode={mode}>
+              <Box width="full">
+                <Dropdown
+                  options={whenOptions}
+                  selected={selectedWhenOption}
+                  onChange={(value) => {
+                    setTrigger({
+                      id: value.value,
+                      type: value.value,
+                      name: value.label,
+                      data: value.data,
+                      service: "collection",
+                    });
+                    setSelectedWhenOption(value);
+                    setIsDirty(true);
+                  }}
+                  multiple={false}
+                  isClearable={false}
+                />
+              </Box>
+              {selectedWhenOption && (
+                <SingleTrigger
+                  triggerMode="edit"
+                  triggerType={selectedWhenOption.value}
+                  trigger={trigger}
+                  setTrigger={(trig) => {
+                    setTrigger(trig);
+                    setIsDirty(true);
+                  }}
+                />
+              )}{" "}
+            </AutomationCard>
+          </Box>
+          <Box marginTop="4">
+            <Text variant="large" weight="semiBold">
+              Then
+            </Text>
+            {actions.map((action, index) => (
+              <AutomationCard mode={mode} key={index}>
+                <Box width="full">
+                  <Dropdown
+                    options={thenOptions}
+                    selected={selectedThenOptions[index]}
+                    onChange={(value) => {
+                      const newActions = [...actions];
+                      newActions[index] = allPossibleActions[value.value];
+                      setActions(newActions);
+                      const newSelectedThenOptions = [...selectedThenOptions];
+                      newSelectedThenOptions[index] = value;
+                      setSelectedThenOptions(newSelectedThenOptions);
+                      setIsDirty(true);
+                    }}
+                    multiple={false}
+                    isClearable={false}
+                    placeholder={`Add action`}
+                  />
+                  )
+                </Box>
+                <SingleAction
+                  actionType={selectedThenOptions[index].value}
+                  action={action}
+                  setAction={(action) => {
+                    const newActions = [...actions];
+                    newActions[index] = action;
+                    setActions(newActions);
+                    console.log({ actions });
+                    setIsDirty(true);
+                  }}
+                  actionMode="edit"
+                />
+                <Box
+                  width="full"
+                  marginTop="4"
+                  display="flex"
+                  flexDirection="row"
+                  justifyContent="flex-end"
+                >
+                  <PrimaryButton
+                    variant="tertiary"
+                    onClick={() => {
+                      const newActions = [...actions];
+                      newActions.splice(index, 1);
+                      setActions(newActions);
+                      const newSelectedThenOptions = [...selectedThenOptions];
+                      newSelectedThenOptions.splice(index, 1);
+                      setSelectedThenOptions(newSelectedThenOptions);
+
+                      setIsDirty(true);
+                    }}
+                  >
+                    Remove
+                  </PrimaryButton>
+                </Box>
+              </AutomationCard>
+            ))}
             <Box
-              width="full"
+              style={{
+                width: "80%",
+              }}
               marginTop="4"
-              display="flex"
-              flexDirection="row"
-              justifyContent="flex-end"
             >
               <PrimaryButton
                 variant="tertiary"
                 onClick={() => {
-                  const newActions = [...actions];
-                  newActions.splice(index, 1);
-                  setActions(newActions);
-                  const newSelectedThenOptions = [...selectedThenOptions];
-                  newSelectedThenOptions.splice(index, 1);
-                  setSelectedThenOptions(newSelectedThenOptions);
+                  setActions([
+                    ...actions,
+                    allPossibleActions[thenOptions[0].value],
+                  ]);
+                  setSelectedThenOptions([
+                    ...selectedThenOptions,
+                    thenOptions[0],
+                  ]);
+                  setIsDirty(true);
                 }}
               >
-                Remove
+                Add Action
               </PrimaryButton>
             </Box>
-          </AutomationCard>
-        ))}
-        <Box
-          style={{
-            width: "80%",
-          }}
-          marginTop="4"
-        >
-          <PrimaryButton
-            variant="tertiary"
-            onClick={() => {
-              setActions([
-                ...actions,
-                allPossibleActions[thenOptions[0].value],
-              ]);
-              setSelectedThenOptions([...selectedThenOptions, thenOptions[0]]);
-            }}
-          >
-            Add Action
-          </PrimaryButton>
+          </Box>
         </Box>
-      </Box>
-    </Box>
+      </ScrollContainer>
+    </>
   );
 }
 
@@ -231,5 +341,43 @@ const AutomationCard = styled(Box)<{
   align-items: flex-start;
   position: relative;
   transition: all 0.5s ease-in-out;
-  cursor: pointer;
+`;
+
+const ScrollContainer = styled(Box)`
+  ::-webkit-scrollbar {
+    width: 5px;
+  }
+  height: 35rem;
+  overflow-y: auto;
+`;
+
+export const NameInput = styled.input`
+  width: 100%;
+  background: transparent;
+  border: 0;
+  border-style: none;
+  border-color: transparent;
+  outline: none;
+  outline-offset: 0;
+  box-shadow: none;
+  font-size: 1.8rem;
+  caret-color: rgb(191, 90, 242);
+  color: rgb(191, 90, 242);
+  font-weight: 600;
+`;
+
+export const DescriptionInput = styled.input<{ mode: string }>`
+  width: 100%;
+  background: transparent;
+  border: 0;
+  border-style: none;
+  border-color: transparent;
+  outline: none;
+  outline-offset: 0;
+  box-shadow: none;
+  font-size: 1.2rem;
+  caret-color: ${(props) =>
+    props.mode === "dark" ? "rgb(255, 255, 255, 0.7)" : "rgb(20, 20, 20, 0.7)"};
+  color: ${(props) =>
+    props.mode === "dark" ? "rgb(255, 255, 255, 0.7)" : "rgb(20, 20, 20, 0.7)"};
 `;

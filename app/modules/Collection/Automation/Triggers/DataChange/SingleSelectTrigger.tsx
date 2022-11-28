@@ -20,12 +20,27 @@ export default function SingleSelectTrigger({
   const [options, setOptions] = useState([] as Option[]);
 
   const { localCollection: collection } = useLocalCollection();
-
   useEffect(() => {
     if (collection.properties[trigger?.data?.fieldName]) {
       setOptions(collection.properties[trigger?.data?.fieldName].options || []);
     }
-  }, []);
+    setSelectedFromOption(
+      trigger?.data?.from?.map((fromOption: string) => {
+        return {
+          label: fromOption,
+          value: fromOption,
+        };
+      })
+    );
+    setSelectedToOption(
+      trigger?.data?.to?.map((toOption: string) => {
+        return {
+          label: toOption,
+          value: toOption,
+        };
+      })
+    );
+  }, [trigger]);
 
   return (
     <Box
@@ -35,8 +50,8 @@ export default function SingleSelectTrigger({
           ...trigger,
           data: {
             ...trigger.data,
-            from: selectedFromOption.map((option) => option.value),
-            to: selectedToOption.map((option) => option.value),
+            from: selectedFromOption?.map((option) => option.value),
+            to: selectedToOption?.map((option) => option.value),
           },
         });
       }}

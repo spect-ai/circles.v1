@@ -1,9 +1,11 @@
 import {
+  Action,
   DiscordChannel,
   DiscordRoleMappingType,
   GuildxyzToCircleRoles,
   Payment,
   SafeAddresses,
+  Trigger,
 } from "@/app/types";
 import { toast } from "react-toastify";
 
@@ -27,6 +29,22 @@ type CircleUpdateDTO = {
   grantMilestoneProject: string;
   grantApplicantProject: string;
   grantNotificationChannel: DiscordChannel;
+};
+
+type AddAutomationDto = {
+  name: string;
+  description: string;
+  trigger: Trigger;
+  actions: Action[];
+  triggerCategory: "collection" | "root";
+  triggerCollectionSlug?: string;
+};
+
+type UpdateAutomationDto = {
+  name: string;
+  description: string;
+  trigger: Trigger;
+  actions: Action[];
 };
 
 export const updateCircle = async (
@@ -141,7 +159,11 @@ export const removeSafe = async (safeDto: SafeDto, circleId: string) => {
   }
 };
 
-export const addAutomation = async (automation: string, circleId: string) => {
+export const addAutomation = async (
+  circleId: string,
+  automation: AddAutomationDto
+) => {
+  console.log({ automation });
   const res = await fetch(
     `${process.env.API_HOST}/circle/v1/${circleId}/addAutomation`,
     {
@@ -150,7 +172,7 @@ export const addAutomation = async (automation: string, circleId: string) => {
         "Content-Type": "application/json",
       },
       method: "PATCH",
-      body: JSON.stringify({ automation }),
+      body: JSON.stringify(automation),
       credentials: "include",
     }
   );
@@ -169,9 +191,9 @@ export const addAutomation = async (automation: string, circleId: string) => {
 };
 
 export const updateAutomation = async (
+  circleId: string,
   automationId: string,
-  automation: string,
-  circleId: string
+  automation: UpdateAutomationDto
 ) => {
   const res = await fetch(
     `${process.env.API_HOST}/circle/v1/${circleId}/updateAutomation?automationId=${automationId}`,
@@ -181,7 +203,7 @@ export const updateAutomation = async (
         "Content-Type": "application/json",
       },
       method: "PATCH",
-      body: JSON.stringify({ automation }),
+      body: JSON.stringify(automation),
       credentials: "include",
     }
   );
