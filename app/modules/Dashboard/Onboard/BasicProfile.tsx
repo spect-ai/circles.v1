@@ -124,7 +124,7 @@ export function BasicProfile({ setStep }: { setStep: (step: number) => void }) {
               Connect Discord
             </Button>
             <Box onClick={() => setPart(1)} cursor="pointer">
-              <Text color={"textTertiary"}>Nah bro, skip this</Text>
+              <Text color={"textTertiary"}>Let&apos;s skip this</Text>
             </Box>
           </>
         )}

@@ -168,7 +168,7 @@ export function CreateCircle({ setStep, setOnboardType }: Props) {
             </PrimaryButton>
           </Box>
           <Box onClick={() => setStep(2)} cursor="pointer">
-            <Text color={"textTertiary"}>Nah bro, skip this</Text>
+            <Text color={"textTertiary"}>Let&apos;s skip this</Text>
           </Box>
         </>
       )}
