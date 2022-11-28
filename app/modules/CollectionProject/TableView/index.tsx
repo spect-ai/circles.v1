@@ -26,7 +26,7 @@ export default function ProjectTableView() {
           <CardDrawer handleClose={() => setIsCardDrawerOpen(false)} />
         )}
       </AnimatePresence>
-      <Box padding="8" overflow="scroll">
+      <Box overflow="scroll" paddingY="2" marginRight="4" marginLeft="8">
         <Stack direction="horizontal" space="0">
           <TableView />
           <Box>

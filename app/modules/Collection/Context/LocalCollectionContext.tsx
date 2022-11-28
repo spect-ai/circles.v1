@@ -20,6 +20,8 @@ type LocalCollectionContextType = {
   setAdvFilters: React.Dispatch<React.SetStateAction<AdvancedFilters>>;
   view: number;
   setView: React.Dispatch<React.SetStateAction<number>>;
+  projectViewId: string;
+  setProjectViewId: React.Dispatch<React.SetStateAction<string>>;
 };
 
 export const LocalCollectionContext = createContext<LocalCollectionContextType>(
@@ -59,8 +61,9 @@ export function useProviderLocalCollection() {
     },
   });
   const [view, setView] = useState(0);
-
   const { socket, connectedUser } = useGlobal();
+
+  const [projectViewId, setProjectViewId] = useState("");
 
   const updateCollection = (collection: CollectionType) => {
     queryClient.setQueryData(["collection", colId], collection);
@@ -74,6 +77,9 @@ export function useProviderLocalCollection() {
         .then((res) => {
           if (res.data) {
             setLocalCollection(res.data);
+            if (res.data.collectionType === 1) {
+              setProjectViewId(res.data.projectMetadata.viewOrder[0]);
+            }
           }
           setLoading(false);
         })
@@ -122,6 +128,8 @@ export function useProviderLocalCollection() {
     setAdvFilters,
     view,
     setView,
+    projectViewId,
+    setProjectViewId,
   };
 }
 

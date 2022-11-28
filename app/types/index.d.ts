@@ -729,6 +729,7 @@ export interface CollectionType {
   dataActivityOrder: MappedItem<string[]>;
   collectionType: 0 | 1;
   formMetadata: FormMetadata;
+  projectMetadata: ProjectMetadata;
 }
 
 export type FormMetadata = {
@@ -749,6 +750,19 @@ export type FormMetadata = {
   isAnOpportunity?: boolean;
   opportunityInfo?: OpportunityInfoType;
   active: boolean;
+};
+
+export type ProjectMetadata = {
+  viewOrder: string[];
+  views: {
+    [key: string]: {
+      name: string;
+      type: "grid" | "kanban" | "gantt" | "list";
+      filters: any;
+      sort: any;
+      groupByColumn: string;
+    };
+  };
 };
 
 export type FormPermissions = {

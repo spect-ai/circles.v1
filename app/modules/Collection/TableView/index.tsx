@@ -264,7 +264,7 @@ export default function TableView() {
     });
 
   const columnsWithCredentials = collection.formMetadata
-    .credentialCurationEnabled
+    ?.credentialCurationEnabled
     ? [
         {
           component: CredentialComponent,

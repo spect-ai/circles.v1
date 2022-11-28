@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { FormUserType, Registry, Voting } from "@/app/types";
+import { FormUserType, ProjectMetadata, Registry, Voting } from "@/app/types";
 
 export const addField = async (
   collectionId: string,
@@ -99,6 +99,7 @@ export const updateFormCollection = async (
       cover?: string;
       active?: boolean;
     };
+    projectMetadata?: Partial<ProjectMetadata>;
   }
 ) => {
   return await (
