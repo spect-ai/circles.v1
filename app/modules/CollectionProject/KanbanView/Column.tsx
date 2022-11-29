@@ -36,10 +36,6 @@ export default function Column({
   setDefaultValue,
   setIsCardDrawerOpen,
 }: Props) {
-  const handleDragEnd = (result: DropResult) => {
-    console.log({ result });
-  };
-
   const { localCollection: collection, updateCollection } =
     useLocalCollection();
   const { getMemberDetails } = useModalOptions();
@@ -180,6 +176,7 @@ export default function Column({
           </Stack>
         </ScrollContainer>
       </Stack>
+      {provided.placeholder}
     </Container>
   );
 
@@ -200,11 +197,9 @@ export default function Column({
   ]);
 
   return (
-    <DragDropContext onDragEnd={handleDragEnd}>
-      <Droppable droppableId="droppableColumn" type="PROPERTY">
-        {ListCallback}
-      </Droppable>
-    </DragDropContext>
+    <Droppable droppableId={column.value} type="PROPERTY">
+      {ListCallback}
+    </Droppable>
   );
 }
 
@@ -215,7 +210,6 @@ const Container = styled(Box)`
   -ms-overflow-style: none;
   scrollbar-width: none;
   overflow-y: none;
-  height: calc(100vh - 9.5rem);
   width: 22rem;
 `;
 

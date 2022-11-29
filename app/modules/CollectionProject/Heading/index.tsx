@@ -34,7 +34,7 @@ export default function ProjectHeading() {
         <ViewTabsContainer backgroundColor="background" paddingX="4">
           {collection.projectMetadata.viewOrder.map((viewId) => (
             <ViewTab
-              width="40"
+              paddingX="4"
               backgroundColor={
                 viewId === projectViewId ? "backgroundSecondary" : "background"
               }
@@ -199,6 +199,7 @@ export const ViewTabsContainer = styled(Box)`
 `;
 
 export const ViewTab = styled(Box)`
+  width: 15%;
   display: flex;
   align-items: center;
   justify-content: center;
