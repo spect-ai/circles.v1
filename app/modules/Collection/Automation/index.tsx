@@ -7,7 +7,12 @@ import {
   removeAutomation,
   updateAutomation,
 } from "@/app/services/UpdateCircle";
-import { Action, AutomationType, Trigger } from "@/app/types";
+import {
+  Action,
+  Automation as SingleAutomationType,
+  AutomationType,
+  Trigger,
+} from "@/app/types";
 import { GatewayOutlined } from "@ant-design/icons";
 import { Box, Stack, Text, useTheme } from "degen";
 import { AnimatePresence } from "framer-motion";
@@ -25,7 +30,8 @@ export default function Automation() {
   const [isOpen, setIsOpen] = useState(false);
   const [tab, setTab] = useState(0);
   const onTabClick = (id: number) => {
-    setAutomationMode("edit");
+    if (automationOrder[id] in automationInCreate) setAutomationMode("create");
+    else setAutomationMode("edit");
     setAutomationId(automationOrder[id]);
     setTab(id);
   };
@@ -38,15 +44,50 @@ export default function Automation() {
     circle.automationsIndexedByCollection[colId as string] || []
   );
   const [automationId, setAutomationId] = useState(automationOrder[tab]);
+  const [automationInCreate, setAutomationInCreate] = useState(
+    {} as AutomationType
+  );
+  const [automationInEdit, setAutomationInEdit] = useState(
+    {} as AutomationType
+  );
 
-  const init = () => {
-    console.log({ automationId });
+  const saveDraftLocal = (
+    automation: SingleAutomationType,
+    isDirty: boolean
+  ) => {
+    if (automationMode === "create") {
+      setAutomationInCreate({
+        [automationId]: automation,
+      });
+    }
+    // } else {
+    //   if (isDirty) {
+    //     setAutomationInEdit({
+    //       [automationId]: automation,
+    //     });
+    //     // const newTabs = automationOrder.map((aId, index) => {
+    //     //   if (aId === automationId) {
+    //     //     return `𝘜𝘱𝘥𝘢𝘵𝘪𝘯𝘨: ${automations[automationId].name}`;
+    //     //   }
+    //     //   return tabs[index];
+    //     // });
+    //     // setTabs(newTabs);
+    //   }
+    // }
+  };
+
+  const init = (initTab?: number) => {
     setAutomationOrder(circle.automationsIndexedByCollection[colId as string]);
     setAutomations(circle.automations);
-    setAutomationId(
-      circle.automationsIndexedByCollection[colId as string][tab]
-    );
-
+    if (initTab || initTab === 0) {
+      setAutomationId(
+        circle.automationsIndexedByCollection[colId as string][initTab]
+      );
+      setTab(initTab);
+    } else
+      setAutomationId(
+        circle.automationsIndexedByCollection[colId as string][tab]
+      );
     const tabs = circle.automationsIndexedByCollection[colId as string].map(
       (automationId) => {
         return circle.automations[automationId].name;
@@ -58,8 +99,7 @@ export default function Automation() {
   };
 
   const initNew = () => {
-    console.log("asas");
-    setTabs(["Automation 1"]);
+    setTabs(["𝘕𝘦𝘸: Automation 1"]);
     setAutomationOrder(["automation-1"]);
     setAutomationId("automation-1");
     setAutomations({
@@ -74,6 +114,16 @@ export default function Automation() {
     });
     setAutomationMode("create");
     setTab(0);
+    setAutomationInCreate({
+      "automation-1": {
+        id: "automation-1",
+        name: "Automation 1",
+        description: "",
+        trigger: {} as Trigger,
+        actions: [] as Action[],
+        triggerCategory: "collection",
+      },
+    });
   };
 
   const onSave = async (
@@ -104,6 +154,11 @@ export default function Automation() {
       if (res) setCircleData(res);
     }
     setAutomationMode("edit");
+    if (automationId in automationInCreate) {
+      setAutomationInCreate({});
+    } else if (automationId in automationInEdit) {
+      delete automationInEdit[automationId];
+    }
   };
 
   useEffect(() => {
@@ -117,7 +172,22 @@ export default function Automation() {
     } else {
       init();
     }
-  }, [isOpen, circle.automationsIndexedByCollection, circle.automations]);
+  }, [circle.automationsIndexedByCollection, circle.automations]);
+
+  useEffect(() => {
+    setAutomationInCreate({});
+    setAutomationMode("edit");
+
+    if (
+      !circle.automationsIndexedByCollection ||
+      !colId ||
+      !circle.automationsIndexedByCollection[colId as string]?.length
+    ) {
+      initNew();
+    } else {
+      init(0);
+    }
+  }, [isOpen]);
 
   return (
     <>
@@ -165,9 +235,14 @@ export default function Automation() {
                 justifyContent="flex-start"
               >
                 <SingleAutomation
-                  automation={automations[automationId]}
+                  automation={
+                    automationMode === "create"
+                      ? automationInCreate[automationId] ||
+                        automations[automationId]
+                      : automationInEdit[automationId] ||
+                        automations[automationId]
+                  }
                   automationMode={automationMode}
-                  setAutomationMode={setAutomationMode}
                   onDelete={async () => {
                     const res = await removeAutomation(automationId, circle.id);
                     if (res) {
@@ -181,13 +256,32 @@ export default function Automation() {
                     }
                   }}
                   onSave={onSave}
+                  onMouseLeave={(
+                    name,
+                    description,
+                    trigger,
+                    actions,
+                    isDirty
+                  ) => {
+                    saveDraftLocal(
+                      {
+                        id: automationId,
+                        name,
+                        description,
+                        trigger,
+                        actions,
+                        triggerCategory: "collection",
+                      },
+                      isDirty
+                    );
+                  }}
                 />
               </Box>
             </Box>
             <Box width="1/4" paddingBottom="4" padding="2">
               <PrimaryButton
                 variant="secondary"
-                disabled={automationMode === "create"}
+                disabled={Object.keys(automationInCreate).length > 0}
                 onClick={() => {
                   setTabs([
                     ...tabs,
@@ -212,6 +306,16 @@ export default function Automation() {
                   });
                   setAutomationMode("create");
                   setTab(tabs.length);
+                  setAutomationInCreate({
+                    [`automation-${circle.automationCount + 1}`]: {
+                      id: `automation-${circle.automationCount + 1}`,
+                      name: `Automation ${circle.automationCount + 1}`,
+                      description: "",
+                      trigger: {} as Trigger,
+                      actions: [] as Action[],
+                      triggerCategory: "collection",
+                    },
+                  });
                 }}
               >
                 + New Automation

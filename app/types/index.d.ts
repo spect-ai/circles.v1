@@ -796,6 +796,7 @@ export type PropertyType =
 export type Option = {
   label: string;
   value: string;
+  data?: any;
 };
 
 export type Conditions = Condition[];

@@ -1,29 +1,18 @@
 import Dropdown from "@/app/common/components/Dropdown";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import {
-  addAutomation,
-  removeAutomation,
-  updateAutomation,
-} from "@/app/services/UpdateCircle";
-import {
-  Action,
-  Automation,
-  AutomationType,
-  Option,
-  Trigger,
-} from "@/app/types";
+import { Action, Option, Trigger } from "@/app/types";
 import { Box, Text, useTheme } from "degen";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
-import { useCircle } from "../../Circle/CircleContext";
 import { useLocalCollection } from "../Context/LocalCollectionContext";
 import SingleAction from "./Actions";
 import SingleTrigger from "./Triggers";
+import { validateActions } from "./Validation/ActionValidations";
+import { validateTrigger } from "./Validation/TriggerValidations";
 
 type Props = {
   automation: any;
   automationMode: string;
-  setAutomationMode: (automationMode: string) => void;
   onDelete: (automationId: string) => void;
   onSave: (
     name: string,
@@ -31,18 +20,24 @@ type Props = {
     trigger: Trigger,
     action: Action[]
   ) => void;
+  onMouseLeave: (
+    name: string,
+    description: string,
+    trigger: Trigger,
+    action: Action[],
+    isDirty: boolean
+  ) => void;
 };
 
 export default function SingleAutomation({
   automation,
   automationMode,
-  setAutomationMode,
   onDelete,
   onSave,
+  onMouseLeave,
 }: Props) {
   const { mode } = useTheme();
   const { localCollection: collection } = useLocalCollection();
-  const { setCircleData, circle } = useCircle();
   const [whenOptions, setWhenOptions] = useState<Option[]>([]);
   const [thenOptions, setThenOptions] = useState<Option[]>([]);
   const [selectedWhenOption, setSelectedWhenOption] = useState({} as Option);
@@ -84,6 +79,7 @@ export default function SingleAutomation({
       data: {},
     },
   } as { [id: string]: Action });
+  const [canSave, setCanSave] = useState(false);
 
   useEffect(() => {
     const whenOptions = Object.entries(collection.properties)
@@ -126,8 +122,18 @@ export default function SingleAutomation({
     }
   }, [automation]);
 
+  useEffect(() => {
+    setCanSave(
+      validateActions(actions) && validateTrigger(trigger) && name !== ""
+    );
+  }, [actions, trigger, name]);
+
   return (
-    <>
+    <Box
+      onMouseLeave={() =>
+        onMouseLeave(name, description, trigger, actions, isDirty)
+      }
+    >
       <Box
         display="flex"
         flexDirection="row"
@@ -169,7 +175,7 @@ export default function SingleAutomation({
             onSave(name, description, trigger, actions);
             setIsDirty(false);
           }}
-          disabled={!isDirty}
+          disabled={!canSave || !isDirty}
         >
           Save
         </PrimaryButton>
@@ -322,7 +328,7 @@ export default function SingleAutomation({
           </Box>
         </Box>
       </ScrollContainer>
-    </>
+    </Box>
   );
 }
 
