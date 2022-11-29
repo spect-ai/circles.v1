@@ -82,7 +82,10 @@ export const TypeView = ({
     <>
       <AnimatePresence>
         {collectionModal && (
-          <CreateCollectionModal setCollectionModal={setCollectionModal} />
+          <CreateCollectionModal
+            setCollectionModal={setCollectionModal}
+            collectionType={0}
+          />
         )}
         {retroOpen && (
           <CreateRetroModal handleClose={() => setRetroOpen(false)} />
@@ -90,7 +93,12 @@ export const TypeView = ({
         {workstreamModal && (
           <CreateSpaceModal setWorkstreamModal={setWorkstreamModal} />
         )}
-        {projectModal && <CreateProjectModal setModalOpen={setProjectModal} />}
+        {projectModal && (
+          <CreateCollectionModal
+            setCollectionModal={setCollectionModal}
+            collectionType={1}
+          />
+        )}
       </AnimatePresence>
       <BoxContainer>
         <Stack direction="horizontal">
@@ -155,11 +163,12 @@ export const TypeView = ({
                   </Card>
                 </Col>
               ))}
-            {filteredCollections && Object.values(filteredProjects)?.length == 0 && (
-              <Box margin="4">
-                <Text variant="label">No Forms created yet</Text>
-              </Box>
-            )}
+            {filteredCollections &&
+              Object.values(filteredProjects)?.length == 0 && (
+                <Box margin="4">
+                  <Text variant="label">No Forms created yet</Text>
+                </Box>
+              )}
           </Row>
         </Container>
         <Stack direction="horizontal">
