@@ -54,8 +54,8 @@ const Container = styled(Box)<{ isDragging: boolean; mode: string }>`
       props.mode === "dark" ? "rgb(255, 255, 255, 0.1)" : "rgb(20,20,20,0.1)"};
   }
   color: rgb(191, 90, 242, 0.7);
-  min-width: 20rem;
-  height: 100%;
+  width: 20rem;
+  height: 6rem;
   overflow-x: hidden;
 `;
 
@@ -98,13 +98,16 @@ const Card = ({
         }
       }}
     >
-      <Stack direction={"horizontal"} align="center">
-        {projects?.[card]?.id && (
-          <ProjectOutlined style={{ fontSize: "1.1rem" }} />
-        )}
-        {workstreams?.[card].id && <IconUserGroup size={"5"} />}
-        {retros?.[card]?.id && <IconLightningBolt size={"5"} />}
-        {collections?.[card]?.id && <IconCollection size={"5"} />}
+      <Stack direction={"horizontal"} align="center" justify={"flex-start"}>
+        <Box display={"block"}>
+          {projects?.[card]?.id && (
+            <ProjectOutlined style={{ fontSize: "1.1rem" }} />
+          )}
+          {workstreams?.[card]?.id && <IconUserGroup size={"5"} />}
+          {retros?.[card]?.id && <IconLightningBolt size={"5"} />}
+          {collections?.[card]?.id && <IconCollection size={"5"} />}
+        </Box>
+
         <Text ellipsis variant="base" weight={"semiBold"}>
           {projects?.[card]?.name ||
             workstreams?.[card].name ||
@@ -116,7 +119,7 @@ const Card = ({
         <Text color={"textSecondary"} ellipsis>
           {projects?.[card]?.description ||
             workstreams?.[card].description ||
-            retros?.[card].description ||
+            retros?.[card]?.description ||
             collections?.[card].description}
         </Text>
       </Box>

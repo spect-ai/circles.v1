@@ -90,7 +90,7 @@ function PublicLayout(props: PublicLayoutProps) {
     (myCircles?.length == 0 ||
       (myCircles &&
         myCircles?.length == 1 &&
-        myCircles?.[0]?.memberRoles[connectedUser].includes("steward") &&
+        myCircles?.[0]?.memberRoles[connectedUser]?.includes("steward") &&
         Object.entries(myCircles?.[0]?.projects)?.length == 0 &&
         Object.entries(myCircles?.[0]?.collections)?.length == 0));
 
