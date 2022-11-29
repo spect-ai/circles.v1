@@ -26,7 +26,7 @@ import SocialMedia from "@/app/common/components/SocialMedia";
 
 export default function PublicForm() {
   const router = useRouter();
-  const { formId } = router.query;
+  const { formId, bgcolor } = router.query;
   const [form, setForm] = useState<FormType>();
   const { mode } = useTheme();
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
@@ -114,7 +114,19 @@ export default function PublicForm() {
   }
 
   return (
-    <ScrollContainer>
+    <ScrollContainer
+      style={{
+        backgroundColor: `${
+          route === "embed"
+            ? bgcolor
+              ? bgcolor
+              : "transparent"
+            : mode === "dark"
+            ? "rgb(0,0,0)"
+            : "rgb(255,255,255)"
+        }`,
+      }}
+    >
       <ToastContainer
         toastStyle={{
           backgroundColor: `${
@@ -132,10 +144,18 @@ export default function PublicForm() {
         <Container embed={route === "embed"}>
           <FormContainer
             borderRadius={route === "embed" ? "none" : "2xLarge"}
-            backgroundColor={route === "embed" ? "transparent" : "background"}
             style={{
               boxShadow: `0rem 0.2rem 0.5rem ${
                 mode === "dark" ? "rgba(0, 0, 0, 0.25)" : "rgba(0, 0, 0, 0.1)"
+              }`,
+              backgroundColor: `${
+                route === "embed"
+                  ? bgcolor
+                    ? bgcolor
+                    : "transparent"
+                  : mode === "dark"
+                  ? "rgb(20,20,20)"
+                  : "rgb(255,255,255)"
               }`,
             }}
           >
