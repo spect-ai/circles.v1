@@ -1,6 +1,7 @@
 import Editor from "@/app/common/components/Editor";
+import { useCircle } from "@/app/modules/Circle/CircleContext";
 import { Action } from "@/app/types";
-import { Box, Text } from "degen";
+import { Box, Input, Text, Textarea } from "degen";
 import { useEffect, useState } from "react";
 
 type Props = {
@@ -11,6 +12,7 @@ type Props = {
 
 export default function SendEmail({ setAction, actionMode, action }: Props) {
   const [message, setMessage] = useState(action.data?.message || "");
+  const { circle } = useCircle();
 
   useEffect(() => {
     setMessage(action.data?.message || "");
@@ -18,25 +20,37 @@ export default function SendEmail({ setAction, actionMode, action }: Props) {
 
   return (
     <Box
-      marginTop="4"
+      marginTop="2"
+      width="full"
       onBlur={() => {
-        console.log({ message });
         setAction({
           ...action,
           data: {
             message: message,
+            circleId: circle.id,
           },
         });
       }}
     >
       {" "}
-      <Box marginBottom="4">
-        <Editor
+      <Box
+        marginBottom="4"
+        width="full"
+        display="flex"
+        flexDirection="column"
+        gap="2"
+      >
+        <Text variant="label">Message to responder</Text>
+        <Textarea
+          label
+          hideLabel
+          maxLength={500}
+          rows={3}
+          placeholder="Message to send in email"
           value={message}
-          onChange={(value) => {
-            setMessage(value);
+          onChange={(e) => {
+            setMessage(e.target.value);
           }}
-          placeholder={"Set email message..."}
         />
       </Box>
     </Box>

@@ -178,12 +178,10 @@ export const addAutomation = async (
   );
   if (res.ok) {
     const data = await res.json();
-    toast("Automation added successfully", {
-      theme: "dark",
-    });
+
     return data;
   } else {
-    toast("Error updating automation", {
+    toast.error("Error adding automation", {
       theme: "dark",
     });
     return false;
@@ -209,12 +207,10 @@ export const updateAutomation = async (
   );
   if (res.ok) {
     const data = await res.json();
-    toast("Automation updated successfully", {
-      theme: "dark",
-    });
+
     return data;
   } else {
-    toast("Error updating automation", {
+    toast.error("Error updating automation", {
       theme: "dark",
     });
     return false;
@@ -238,12 +234,10 @@ export const removeAutomation = async (
   );
   if (res.ok) {
     const data = await res.json();
-    toast("Automation updated successfully", {
-      theme: "dark",
-    });
+
     return data;
   } else {
-    toast("Error removing automation", {
+    toast.error("Error removing automation", {
       theme: "dark",
     });
     return false;

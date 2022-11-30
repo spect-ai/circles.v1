@@ -20,10 +20,14 @@ export default function SingleSelectTrigger({
   const [options, setOptions] = useState([] as Option[]);
 
   const { localCollection: collection } = useLocalCollection();
+
   useEffect(() => {
     if (collection.properties[trigger?.data?.fieldName]) {
       setOptions(collection.properties[trigger?.data?.fieldName].options || []);
     }
+  }, [trigger]);
+
+  useEffect(() => {
     setSelectedFromOption(
       trigger?.data?.from?.map((fromOption: string) => {
         return {
@@ -32,6 +36,9 @@ export default function SingleSelectTrigger({
         };
       })
     );
+  }, [trigger?.data?.from]);
+
+  useEffect(() => {
     setSelectedToOption(
       trigger?.data?.to?.map((toOption: string) => {
         return {
@@ -40,7 +47,7 @@ export default function SingleSelectTrigger({
         };
       })
     );
-  }, [trigger]);
+  }, [trigger?.data?.to]);
 
   return (
     <Box
