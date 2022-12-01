@@ -11,6 +11,7 @@ import {
   IconSun,
   useTheme,
   IconDotsHorizontal,
+  IconSparkles,
 } from "degen";
 import { useGlobal } from "@/app/context/globalContext";
 import { UserType, CircleType } from "@/app/types";
@@ -30,11 +31,13 @@ import Popover from "@/app/common/components/Popover";
 import { PopoverOption } from "../Card/OptionPopover";
 import { useRouter } from "next/router";
 import ResponsesTab from "./ResponsesTab";
+import FAQModal from "./FAQModal";
 
 function Dashboard() {
   const { setIsProfilePanelExpanded } = useGlobal();
   useJoinCircle();
   const [isOpen, setIsOpen] = useState(false);
+  const [faqOpen, setFaqOpen] = useState(false);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
@@ -292,6 +295,25 @@ function Dashboard() {
           )} */}
           </Box>
         </Box>
+        <Box
+          style={{
+            position: "absolute",
+            right: "2rem",
+            bottom: "1rem",
+            zIndex: "2",
+          }}
+        >
+          <Button
+            variant="secondary"
+            onClick={() => setFaqOpen(true)}
+            shape="circle"
+          >
+            <IconSparkles size={"6"} />
+          </Button>
+        </Box>
+        <AnimatePresence>
+          {faqOpen && <FAQModal handleClose={() => setFaqOpen(false)} />}
+        </AnimatePresence>
         <AnimatePresence>
           {isOpen && <ProfileModal setIsOpen={setIsOpen} />}
         </AnimatePresence>

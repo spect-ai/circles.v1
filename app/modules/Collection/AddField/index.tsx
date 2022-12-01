@@ -6,7 +6,7 @@ import Tabs from "@/app/common/components/Tabs";
 import { addField, deleteField, updateField } from "@/app/services/Collection";
 import { FormUserType, Option, Registry } from "@/app/types";
 import { SaveFilled } from "@ant-design/icons";
-import { Box, IconTrash, Input, Stack, Text } from "degen";
+import { Box, IconTrash, Input, Stack, Text, Textarea } from "degen";
 import React, { useEffect, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import { useCircle } from "../../Circle/CircleContext";
@@ -32,6 +32,7 @@ export default function AddField({ propertyName, handleClose }: Props) {
   const [networks, setNetworks] = useState(registry);
   const [initialName, setInitialName] = useState("");
   const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
   const [type, setType] = useState({ label: "Short Text", value: "shortText" });
   const [required, setRequired] = useState(0);
   const onRequiredTabClick = (id: number) => setRequired(id);
@@ -72,6 +73,7 @@ export default function AddField({ propertyName, handleClose }: Props) {
         type: type.value,
         options: fieldOptions,
         rewardOptions,
+        description,
         userType,
         default: defaultValue,
         onUpdateNotifyUserTypes: notifyUserType?.map(
@@ -86,6 +88,7 @@ export default function AddField({ propertyName, handleClose }: Props) {
         name,
         type: type.value,
         isPartOfFormView: false,
+        description,
         options: fieldOptions,
         rewardOptions,
         userType: userType,
@@ -120,6 +123,7 @@ export default function AddField({ propertyName, handleClose }: Props) {
       //   )
       // );
       const property = collection.properties[propertyName];
+      setDescription(property?.description || "");
       setRequired(property?.required ? 1 : 0);
 
       setType({
@@ -188,6 +192,7 @@ export default function AddField({ propertyName, handleClose }: Props) {
             <Input
               label=""
               placeholder="Field Name"
+              maxLength={30}
               value={name}
               onChange={(e) => {
                 setName(e.target.value);
@@ -201,6 +206,16 @@ export default function AddField({ propertyName, handleClose }: Props) {
                 if (e.target.value === "slug") {
                   setShowSlugNameError(true);
                 } else setShowSlugNameError(false);
+              }}
+            />
+            <Textarea
+              label
+              hideLabel
+              placeholder="Description"
+              rows={2}
+              value={description}
+              onChange={(e) => {
+                setDescription(e.target.value);
               }}
             />
             {showNameCollissionError && (

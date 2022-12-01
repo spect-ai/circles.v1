@@ -66,6 +66,11 @@ const ScrollContainer = styled(Box)<{ mode: string }>`
   margin-top: 0.3rem;
   padding: 0.5rem;
   min-height: 7rem;
+  display: flex;
+  flex-direction: row;
+  overflow-x: hidden;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 `;
 
 const Folder = ({
@@ -122,80 +127,24 @@ const Folder = ({
       mode={mode}
       id="scroll-container"
     >
-      <Row id="row">
-        {content?.map((card, i) => {
-          if (projects?.[card] && card) {
-            return (
-              <Col
-                sm={6}
-                md={4}
-                lg={3}
-                key={card}
-                style={{
-                  margin: "0.2rem 0",
-                }}
-              >
-                <Card card={card} index={i} projects={projects} />
-              </Col>
-            );
-          }
-          if (workstreams?.[card] && card) {
-            return (
-              <Col
-                sm={6}
-                md={4}
-                lg={3}
-                key={card}
-                style={{
-                  margin: "0.2rem 0",
-                }}
-              >
-                <Card
-                  card={card}
-                  index={i}
-                  key={card}
-                  workstreams={workstreams}
-                />
-              </Col>
-            );
-          }
-          if (retros?.[card] && card) {
-            return (
-              <Col
-                sm={6}
-                md={4}
-                lg={3}
-                key={card}
-                style={{
-                  margin: "0.2rem 0",
-                }}
-              >
-                <Card card={card} index={i} key={card} retros={retros} />
-              </Col>
-            );
-          }
-          if (collections?.[card] && card) {
-            return (
-              <Col
-                sm={6}
-                md={4}
-                lg={3}
-                key={card}
-                style={{
-                  margin: "0.2rem 0",
-                }}
-              >
-                <Card
-                  card={card}
-                  index={i}
-                  key={card}
-                  collections={collections}
-                />
-              </Col>
-            );
-          }
-        })}
-      </Row>
+      {content?.map((card, i) => {
+        if (projects?.[card] && card) {
+          return <Card card={card} index={i} projects={projects} />;
+        }
+        if (workstreams?.[card] && card) {
+          return (
+            <Card card={card} index={i} key={card} workstreams={workstreams} />
+          );
+        }
+        if (retros?.[card] && card) {
+          return <Card card={card} index={i} key={card} retros={retros} />;
+        }
+        if (collections?.[card] && card) {
+          return (
+            <Card card={card} index={i} key={card} collections={collections} />
+          );
+        }
+      })}
       {provided.placeholder}
     </ScrollContainer>
   );
@@ -253,7 +202,7 @@ const Folder = ({
               </Button>
             )}
         </Stack>
-        <Droppable droppableId={id} type="content">
+        <Droppable droppableId={id} type="content" direction="horizontal">
           {CardDraggableCallback}
         </Droppable>
       </Box>

@@ -45,7 +45,7 @@ export function CreateContent() {
   const router = useRouter();
   const [itemName, setItemName] = useState("");
   const [loading, setIsLoading] = useState(false);
-  const [itemType, setItemType] = useState<"Sorm" | "Project">("Sorm");
+  const [itemType, setItemType] = useState<"Form" | "Project">("Form");
 
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
@@ -168,7 +168,7 @@ export function CreateContent() {
       </Stack>
       <Text>What would you like to create ?</Text>
       <Stack direction={{ xs: "vertical", md: "horizontal", lg: "horizontal" }}>
-        <Card border={itemType == "Sorm"} onClick={() => setItemType("Sorm")}>
+        <Card border={itemType == "Form"} onClick={() => setItemType("Form")}>
           <Stack direction={"horizontal"} align="center" space={"2"}>
             <ProfileOutlined
               style={{ fontSize: "1.1rem", color: "rgb(191, 90, 242, 1)" }}
@@ -179,11 +179,11 @@ export function CreateContent() {
               color={"textPrimary"}
               align="center"
             >
-              Sorm
+              Spect Form
             </Text>
           </Stack>
           <Text>
-            Sorms are the first sybil-resistant, credential curated, Web3
+            Spect Forms are the first sybil-resistant, credential curated, Web3
             enabled forms to help power grants, bounties and onboarding!
           </Text>
         </Card>
@@ -228,7 +228,7 @@ export function CreateContent() {
         onClick={() => {
           setIsLoading(true);
           void refetch();
-          if (itemType == "Sorm") {
+          if (itemType == "Form") {
             createSorm();
             return;
           }

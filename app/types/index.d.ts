@@ -850,6 +850,7 @@ export interface FormType {
     [key: string]: {
       type: string;
       name: string;
+      description?: string;
       default: string;
       isPartOfFormView: boolean;
       options?: {

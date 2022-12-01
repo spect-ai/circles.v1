@@ -68,6 +68,9 @@ export default function PublicField({
             {`This field is of type ${form.properties[propertyName].type}`}
           </Text>
         )}
+        <Text variant="small">
+          {form.properties[propertyName]?.description}
+        </Text>
       </Stack>
       {form.properties[propertyName]?.type === "shortText" && (
         <Input

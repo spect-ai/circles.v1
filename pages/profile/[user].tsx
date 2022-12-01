@@ -1,5 +1,5 @@
-import React, { useEffect } from "react";
-import { Box, Stack, Text, useTheme } from "degen";
+import React, { useEffect, useState } from "react";
+import { Box, Button, IconSparkles, Stack, Text, useTheme } from "degen";
 import MetaHead from "@/app/common/seo/MetaHead/MetaHead";
 import type { NextPage } from "next";
 import ProfileCard from "@/app/modules/Profile/ProfilePage/ProfileCard";
@@ -14,16 +14,12 @@ import { PublicLayout } from "@/app/common/layout";
 import styled from "styled-components";
 import NotifCard from "@/app/modules/Profile/ProfilePage/Notif";
 import NotificationPanel from "@/app/modules/Profile/NotificationPanel";
-
-const getUser = async () => {
-  const res = await fetch(`${process.env.API_HOST}/user/v1/me`, {
-    credentials: "include",
-  });
-  return await res.json();
-};
+import { AnimatePresence } from "framer-motion";
+import FAQModal from "@/app/modules/Dashboard/FAQModal";
 
 const ProfilePage: NextPage = () => {
   const router = useRouter();
+  const [faqOpen, setFaqOpen] = useState(false);
   const username = router.query.user;
   const {
     isProfilePanelExpanded,
@@ -112,6 +108,25 @@ const ProfilePage: NextPage = () => {
             </Stack>
           </ScrollContainer>
         )}
+        <Box
+          style={{
+            position: "absolute",
+            right: "2rem",
+            bottom: "1rem",
+            zIndex: "2",
+          }}
+        >
+          <Button
+            variant="secondary"
+            onClick={() => setFaqOpen(true)}
+            shape="circle"
+          >
+            <IconSparkles size={"6"} />
+          </Button>
+        </Box>
+        <AnimatePresence>
+          {faqOpen && <FAQModal handleClose={() => setFaqOpen(false)} />}
+        </AnimatePresence>
       </PublicLayout>
       {isProfilePanelExpanded && <NotificationPanel />}
     </>

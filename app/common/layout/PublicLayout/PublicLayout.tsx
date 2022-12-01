@@ -87,8 +87,13 @@ function PublicLayout(props: PublicLayoutProps) {
 
   const onboard =
     (currentUser?.skillsV2?.length == 0 || currentUser?.email?.length == 0) &&
-    myCircles?.length == 0;
-  
+    (myCircles?.length == 0 ||
+      (myCircles &&
+        myCircles?.length == 1 &&
+        myCircles?.[0]?.memberRoles[connectedUser]?.includes("steward") &&
+        Object.entries(myCircles?.[0]?.projects)?.length == 0 &&
+        Object.entries(myCircles?.[0]?.collections)?.length == 0));
+
   useEffect(() => {
     void fetchCircles();
     // void fetchNotifications();

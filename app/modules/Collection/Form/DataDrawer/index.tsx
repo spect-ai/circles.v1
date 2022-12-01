@@ -165,6 +165,9 @@ export default function DataDrawer({
                         <Text weight="bold" variant="extraLarge" color="accent">
                           {property.name}
                         </Text>
+                        <Text weight="medium" variant="small">
+                          {property.description}
+                        </Text>
                         {[
                           "shortText",
                           "ethAddress",

@@ -18,6 +18,7 @@ import mixpanel from "@/app/common/utils/mixpanel";
 import { useQuery } from "react-query";
 import { UserType } from "@/app/types";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
+import { Embed } from "../Embed";
 
 export const IconButton = styled(Box)`
   cursor: pointer;
@@ -165,6 +166,7 @@ function CollectionHeading() {
                       >
                         Add Field
                       </PopoverOption>
+                      {/* <Embed /> */}
                       {view === 1 && (
                         <PopoverOption
                           onClick={() => {
@@ -212,6 +214,7 @@ function CollectionHeading() {
                 }}
                 align="center"
               >
+                <Embed />
                 <a
                   href={`/r/${collection?.slug}`}
                   target="_blank"
