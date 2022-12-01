@@ -57,18 +57,26 @@ export default function SingleAutomation({
       type: "createCard",
       data: {},
     },
+
+    giveRole: {
+      id: "giveRole",
+      name: "Give Circle Role",
+      service: "circle",
+      type: "giveRole",
+      data: {},
+    },
+    giveDiscordRole: {
+      id: "giveDiscordRole",
+      name: "Give Discord Role",
+      service: "circle",
+      type: "giveRole",
+      data: {},
+    },
     createDiscordChannel: {
       id: "createDiscordChannel",
       name: "Create Discord Channel",
       service: "discord",
       type: "createDiscordChannel",
-      data: {},
-    },
-    giveRole: {
-      id: "giveRole",
-      name: "Give Role",
-      service: "circle",
-      type: "giveRole",
       data: {},
     },
     sendEmail: {

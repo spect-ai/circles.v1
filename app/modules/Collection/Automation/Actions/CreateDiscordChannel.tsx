@@ -1,7 +1,7 @@
 import Modal from "@/app/common/components/Modal";
 import { useCircle } from "@/app/modules/Circle/CircleContext";
 import { Action } from "@/app/types";
-import { Box, Stack, Tag, Text } from "degen";
+import { Box, Input, Stack, Tag, Text } from "degen";
 import { useEffect, useState } from "react";
 
 type Props = {
@@ -15,11 +15,9 @@ export default function CreateDiscordChannel({
   actionMode,
   action,
 }: Props) {
-  const [channelName, setSelectedRoles] = useState(
+  const [channelName, setChannelName] = useState(
     action?.data?.channelName || ""
   );
-
-  const { circle } = useCircle();
 
   return (
     <Box
@@ -32,13 +30,16 @@ export default function CreateDiscordChannel({
           },
         });
       }}
+      width="full"
     >
-      <Box marginBottom="4">
+      <Box>
         <Text variant="label">Channel Name</Text>
       </Box>
-      <Box marginBottom="4">
-        <Text variant="label">Channel Type</Text>
-      </Box>
+      <Input
+        label=""
+        value={channelName}
+        onChange={(e) => setChannelName(e.target.value)}
+      />
     </Box>
   );
 }

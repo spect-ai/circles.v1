@@ -1,4 +1,7 @@
 import { Action } from "@/app/types";
+import CreateCard from "./CreateCard";
+import CreateDiscordChannel from "./CreateDiscordChannel";
+import GiveDiscordRole from "./GiveDiscordRole";
 import GiveRole from "./GiveRole";
 import SendEmail from "./SendEmail";
 
@@ -26,6 +29,27 @@ export default function SingleAction({
       )}
       {actionType === "sendEmail" && (
         <SendEmail
+          action={action}
+          actionMode={actionMode}
+          setAction={setAction}
+        />
+      )}
+      {actionType === "createDiscordChannel" && (
+        <CreateDiscordChannel
+          action={action}
+          actionMode={actionMode}
+          setAction={setAction}
+        />
+      )}
+      {actionType === "giveDiscordRole" && (
+        <GiveDiscordRole
+          action={action}
+          actionMode={actionMode}
+          setAction={setAction}
+        />
+      )}
+      {actionType === "createCard" && (
+        <CreateCard
           action={action}
           actionMode={actionMode}
           setAction={setAction}

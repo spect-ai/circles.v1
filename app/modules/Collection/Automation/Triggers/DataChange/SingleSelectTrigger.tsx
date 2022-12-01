@@ -15,8 +15,6 @@ export default function SingleSelectTrigger({
   triggerMode,
   trigger,
 }: Props) {
-  const [selectedFromOption, setSelectedFromOption] = useState([] as Option[]);
-  const [selectedToOption, setSelectedToOption] = useState([] as Option[]);
   const [options, setOptions] = useState([] as Option[]);
 
   const { localCollection: collection } = useLocalCollection();
@@ -27,42 +25,8 @@ export default function SingleSelectTrigger({
     }
   }, [trigger]);
 
-  useEffect(() => {
-    setSelectedFromOption(
-      trigger?.data?.from?.map((fromOption: string) => {
-        return {
-          label: fromOption,
-          value: fromOption,
-        };
-      })
-    );
-  }, [trigger?.data?.from]);
-
-  useEffect(() => {
-    setSelectedToOption(
-      trigger?.data?.to?.map((toOption: string) => {
-        return {
-          label: toOption,
-          value: toOption,
-        };
-      })
-    );
-  }, [trigger?.data?.to]);
-
   return (
-    <Box
-      width="full"
-      onMouseLeave={() => {
-        setTrigger({
-          ...trigger,
-          data: {
-            ...trigger.data,
-            from: selectedFromOption?.map((option) => option.value),
-            to: selectedToOption?.map((option) => option.value),
-          },
-        });
-      }}
-    >
+    <Box width="full">
       <Box
         display="flex"
         flexDirection="row"
@@ -77,9 +41,15 @@ export default function SingleSelectTrigger({
         </Box>
         <Dropdown
           options={options}
-          selected={selectedFromOption}
+          selected={trigger.data.from || []}
           onChange={(value) => {
-            setSelectedFromOption(value);
+            setTrigger({
+              ...trigger,
+              data: {
+                ...trigger.data,
+                from: value,
+              },
+            });
           }}
           multiple={true}
         />
@@ -96,9 +66,15 @@ export default function SingleSelectTrigger({
         </Box>{" "}
         <Dropdown
           options={options}
-          selected={selectedToOption}
+          selected={trigger.data.to || []}
           onChange={(value) => {
-            setSelectedToOption(value);
+            setTrigger({
+              ...trigger,
+              data: {
+                ...trigger.data,
+                to: value,
+              },
+            });
           }}
           multiple={true}
         />{" "}

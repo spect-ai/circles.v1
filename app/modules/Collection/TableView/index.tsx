@@ -99,6 +99,7 @@ export default function TableView() {
 
   useEffect(() => {
     if (collection.data) {
+      console.log({ collection });
       // for each date property in the data, convert the date string to a date object for all the rows
       const dateProperties = collection.propertyOrder.map((property) => {
         if (collection.properties[property]?.type === "date")
