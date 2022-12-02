@@ -15,9 +15,12 @@ export const getGuildRoles = async (guildId: string) => {
   return null;
 };
 
-export const fetchGuildChannels = async (guildId: string) => {
+export const fetchGuildChannels = async (
+  guildId: string,
+  channelType?: string
+) => {
   const res = await fetch(
-    `${process.env.BOT_HOST}/api/guildChannels?guildId=${guildId}`
+    `${process.env.BOT_HOST}/api/guildChannels?guildId=${guildId}&channelType=${channelType}`
   );
   if (res.ok) {
     const data = await res.json();
