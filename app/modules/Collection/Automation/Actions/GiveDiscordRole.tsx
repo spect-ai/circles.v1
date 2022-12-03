@@ -6,6 +6,7 @@ import { Box, Stack, Tag, Text } from "degen";
 import { useEffect, useState } from "react";
 import DiscordIcon from "@/app/assets/icons/discordIcon.svg";
 import { getGuildRoles } from "@/app/services/Discord";
+import Editor from "@/app/common/components/Editor";
 
 type Props = {
   actionMode: "edit" | "create";
@@ -21,7 +22,6 @@ export default function GiveDiscordRole({
   const [selectedRoles, setSelectedRoles] = useState(
     (action.data?.roles || {}) as { [roleId: string]: boolean }
   );
-
   const { circle } = useCircle();
   const toggleSelectedRole = (roleId: string) => {
     setSelectedRoles({
@@ -42,8 +42,6 @@ export default function GiveDiscordRole({
         }[]
       | undefined
     >();
-
-  console.log({ discordRoles });
 
   useEffect(() => {
     const fetchGuildRoles = async () => {
@@ -88,7 +86,7 @@ export default function GiveDiscordRole({
 
   return (
     <Box
-      marginTop="4"
+      marginTop="2"
       onMouseLeave={() => {
         setAction({
           ...action,
@@ -124,6 +122,14 @@ export default function GiveDiscordRole({
           );
         })}{" "}
       </Stack>
+      <Box marginTop="4" marginBottom="-4">
+        <Editor
+          value={
+            ":::tip\nIf this action is picked, form responders will be asked to connect Discord Account before filling up form."
+          }
+          disabled={true}
+        />
+      </Box>
     </Box>
   );
 }

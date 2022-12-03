@@ -22,7 +22,7 @@ export default function CreateDiscordChannel({
   );
   const [categoreyOptions, setCategoryOptions] = useState<Option[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<Option>(
-    action?.data?.selectedCategory || {}
+    action?.data?.channelCategory || {}
   );
 
   const { circle } = useCircle();
@@ -44,7 +44,7 @@ export default function CreateDiscordChannel({
 
   return (
     <Box
-      marginTop="4"
+      marginTop="2"
       onMouseLeave={() => {
         setAction({
           ...action,

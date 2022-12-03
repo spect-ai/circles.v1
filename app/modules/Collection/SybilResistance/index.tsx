@@ -19,6 +19,7 @@ import { PassportStampIcons, PassportStampIconsLightMode } from "@/app/assets";
 import { toast } from "react-toastify";
 import mixpanel from "@/app/common/utils/mixpanel";
 import { useQuery } from "react-query";
+import Editor from "@/app/common/components/Editor";
 
 export default function SybilResistance() {
   const [isOpen, setIsOpen] = useState(false);
@@ -101,10 +102,18 @@ export default function SybilResistance() {
           >
             <Box padding="8" width="full">
               <Box width="full">
-                <Box display="flex" flexDirection="row" alignItems="center">
+                {/* <Box display="flex" flexDirection="row" alignItems="center">
                   <Text>
                     {`Add scores to the following stamps. A responder to this form would require a total score of 100% to fill out the form.`}{" "}
                   </Text>
+                </Box> */}
+                <Box marginTop="-4" marginBottom="-4">
+                  <Editor
+                    value={
+                      ":::tip\nAdd scores to the following stamps. A responder to this form would require a total score of 100% to fill out the form"
+                    }
+                    disabled={true}
+                  />
                 </Box>
                 <Box
                   display="flex"

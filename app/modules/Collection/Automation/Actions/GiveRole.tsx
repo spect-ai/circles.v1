@@ -29,7 +29,7 @@ export default function GiveRole({ setAction, actionMode, action }: Props) {
 
   return (
     <Box
-      marginTop="4"
+      marginTop="2"
       onMouseLeave={() => {
         setAction({
           ...action,

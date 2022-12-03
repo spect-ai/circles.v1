@@ -305,7 +305,7 @@ export default function SingleAutomation({
                       setIsDirty(true);
                     }}
                   >
-                    Remove
+                    Remove Action
                   </PrimaryButton>
                 </Box>
               </AutomationCard>
