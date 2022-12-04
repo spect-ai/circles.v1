@@ -4,7 +4,7 @@ import PrimaryButton from "@/app/common/components/PrimaryButton";
 import Select from "@/app/common/components/Select";
 import Tabs from "@/app/common/components/Tabs";
 import { addField, deleteField, updateField } from "@/app/services/Collection";
-import { FormUserType, Option, Registry } from "@/app/types";
+import { Condition, FormUserType, Option, Registry } from "@/app/types";
 import { SaveFilled } from "@ant-design/icons";
 import { Box, IconTrash, Input, Stack, Text, Textarea } from "degen";
 import React, { useEffect, useState } from "react";
@@ -19,6 +19,8 @@ import uuid from "react-uuid";
 import { prevPropertyTypeToNewPropertyTypeThatDoesntRequiresClarance } from "@/app/common/utils/constants";
 import { AnimatePresence } from "framer-motion";
 import ConfirmModal from "@/app/common/components/Modal/ConfirmModal";
+import Accordian from "@/app/common/components/Accordian";
+import AddConditions from "./AddConditions";
 
 type Props = {
   propertyName?: string;
@@ -55,6 +57,9 @@ export default function AddField({ propertyName, handleClose }: Props) {
   const [showSlugNameError, setShowSlugNameError] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [showConfirmOnDelete, setShowConfirmOnDelete] = useState(false);
+  const [viewConditions, setViewConditions] = useState<Condition[]>([]);
+  const [modalSize, setModalSize] =
+    useState<"small" | "medium" | "large">("small");
 
   const onSave = async () => {
     setLoading(true);
@@ -82,6 +87,7 @@ export default function AddField({ propertyName, handleClose }: Props) {
         isPartOfFormView: true,
         required: required === 1,
         milestoneFields,
+        viewConditions,
       });
     } else {
       res = await addField(collection.id, {
@@ -98,6 +104,7 @@ export default function AddField({ propertyName, handleClose }: Props) {
         ) as FormUserType[],
         required: required === 1,
         milestoneFields,
+        viewConditions,
       });
     }
     setLoading(false);
@@ -185,7 +192,7 @@ export default function AddField({ propertyName, handleClose }: Props) {
       <Modal
         title={propertyName ? "Edit Field" : "Add Field"}
         handleClose={handleClose}
-        size="small"
+        size={modalSize}
       >
         <Box padding="8">
           <Stack>
@@ -208,16 +215,7 @@ export default function AddField({ propertyName, handleClose }: Props) {
                 } else setShowSlugNameError(false);
               }}
             />
-            <Textarea
-              label
-              hideLabel
-              placeholder="Description"
-              rows={2}
-              value={description}
-              onChange={(e) => {
-                setDescription(e.target.value);
-              }}
-            />
+
             {showNameCollissionError && (
               <Text color="red" size="small">
                 Field name already exists
@@ -228,6 +226,23 @@ export default function AddField({ propertyName, handleClose }: Props) {
                 Field name cannot be slug
               </Text>
             )}
+            <Textarea
+              label
+              hideLabel
+              placeholder="Description"
+              rows={2}
+              value={description}
+              onChange={(e) => {
+                setDescription(e.target.value);
+              }}
+            />
+            <Tabs
+              selectedTab={required}
+              onTabClick={onRequiredTabClick}
+              tabs={["Optional", "Required"]}
+              orientation="horizontal"
+              unselectedColor="transparent"
+            />
             <Dropdown
               options={fields}
               selected={type}
@@ -237,13 +252,7 @@ export default function AddField({ propertyName, handleClose }: Props) {
               multiple={false}
               isClearable={false}
             />
-            <Tabs
-              selectedTab={required}
-              onTabClick={onRequiredTabClick}
-              tabs={["Optional", "Required"]}
-              orientation="horizontal"
-              unselectedColor="transparent"
-            />
+
             {type.value === "singleSelect" || type.value === "multiSelect" ? (
               <AddOptions
                 fieldOptions={fieldOptions}
@@ -277,60 +286,65 @@ export default function AddField({ propertyName, handleClose }: Props) {
             {type.value === "milestone" ? (
               <MilestoneOptions networks={networks} setNetworks={setNetworks} />
             ) : null}
-            {/* <Accordian name="Advanced Settings" defaultOpen={false}>
-            <Stack space="2">
-              {["shortText", "longText", "ethAddress"].includes(type.value) && (
-                <Input label="" placeholder="Default Value" />
-              )}
-
-              <Text>Notify User Type on Changes</Text>
-              <Dropdown
-                placeholder="Select User Types"
-                options={[
-                  { label: "Assignee", value: "assignee" },
-                  { label: "Reviewer", value: "reviewer" },
-                  { label: "Grantee", value: "grantee" },
-                  { label: "Applicant", value: "applicant" },
-                ]}
-                selected={notifyUserType}
-                onChange={(type: Option[]) => {
-                  setNotifyUserType(type);
-                }}
-                multiple={true}
+            <Accordian name="Advanced" defaultOpen={false}>
+              <AddConditions
+                viewConditions={viewConditions}
+                setViewConditions={setViewConditions}
+                setModalSize={setModalSize}
               />
-            </Stack>
-          </Accordian> */}
+              {/* {["shortText", "longText", "ethAddress"].includes(
+                  type.value
+                ) && <Input label="" placeholder="Default Value" />}
 
-            <PrimaryButton
-              icon={<SaveFilled style={{ fontSize: "1.3rem" }} />}
-              loading={loading}
-              disabled={showNameCollissionError || !name}
-              onClick={async () => {
-                if (
-                  propertyName &&
-                  !prevPropertyTypeToNewPropertyTypeThatDoesntRequiresClarance[
-                    collection.properties[propertyName].type
-                  ].includes(type.value)
-                ) {
-                  setShowConfirm(true);
-                } else {
-                  await onSave();
-                }
-              }}
-            >
-              Save
-            </PrimaryButton>
-            {propertyName && (
+                <Text>Notify User Type on Changes</Text>
+                <Dropdown
+                  placeholder="Select User Types"
+                  options={[
+                    { label: "Assignee", value: "assignee" },
+                    { label: "Reviewer", value: "reviewer" },
+                    { label: "Grantee", value: "grantee" },
+                    { label: "Applicant", value: "applicant" },
+                  ]}
+                  selected={notifyUserType}
+                  onChange={(type: Option[]) => {
+                    setNotifyUserType(type);
+                  }}
+                  multiple={true}
+                /> */}
+            </Accordian>
+
+            <Box marginTop="8" display="flex" flexDirection="column" gap="2">
               <PrimaryButton
-                tone="red"
-                icon={<IconTrash />}
-                onClick={() => {
-                  setShowConfirmOnDelete(true);
+                icon={<SaveFilled style={{ fontSize: "1.3rem" }} />}
+                loading={loading}
+                disabled={showNameCollissionError || !name}
+                onClick={async () => {
+                  if (
+                    propertyName &&
+                    !prevPropertyTypeToNewPropertyTypeThatDoesntRequiresClarance[
+                      collection.properties[propertyName].type
+                    ].includes(type.value)
+                  ) {
+                    setShowConfirm(true);
+                  } else {
+                    await onSave();
+                  }
                 }}
               >
-                Delete
+                Save
               </PrimaryButton>
-            )}
+              {propertyName && (
+                <PrimaryButton
+                  tone="red"
+                  icon={<IconTrash />}
+                  onClick={() => {
+                    setShowConfirmOnDelete(true);
+                  }}
+                >
+                  Delete
+                </PrimaryButton>
+              )}
+            </Box>
           </Stack>
         </Box>
       </Modal>

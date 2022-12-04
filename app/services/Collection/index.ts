@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { FormUserType, Registry, Voting } from "@/app/types";
+import { Condition, FormUserType, Registry, Voting } from "@/app/types";
 
 export const addField = async (
   collectionId: string,
@@ -15,6 +15,7 @@ export const addField = async (
     required?: boolean;
     description?: string;
     milestoneFields?: string[];
+    viewConditions?: Condition[];
   }
 ) => {
   return await (
@@ -47,6 +48,7 @@ export const updateField = async (
     required?: boolean;
     description?: string;
     milestoneFields?: string[];
+    viewConditions?: Condition[];
   }
 ) => {
   return await (

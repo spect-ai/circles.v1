@@ -775,6 +775,10 @@ export type Property = {
   onUpdateNotifyUserTypes?: FormUserType[];
   required?: boolean;
   description?: string;
+  conditions: {
+    view?: Condition[];
+    value?: Condition[];
+  };
 };
 
 export type PropertyType =
@@ -798,18 +802,6 @@ export type Option = {
   value: string;
   data?: any;
 };
-
-export type Conditions = Condition[];
-
-export type Condition = DateConditions;
-
-export type DateConditions = {
-  propertyId: string;
-  condition: ComparisonCondition;
-  feedback: string;
-};
-
-export type ComparisonCondition = "greaterThanOrEqualTo" | "lessThanOrEqualTo";
 
 export type FormUserType = "assignee" | "reviewer" | "grantee" | "applicant";
 
@@ -1085,11 +1077,19 @@ export type Trigger = {
   data: any;
 };
 
+export type Condition = {
+  id: string;
+  type: string;
+  service: string;
+  data: any;
+};
+
 export type Automation = {
   id: string;
   name: string;
   description: string;
   trigger: Trigger;
+  conditions?: Condition[];
   actions: Action[];
   triggerCategory: "collection" | "root";
 };
