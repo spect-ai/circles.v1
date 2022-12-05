@@ -364,6 +364,7 @@ export default function TableView() {
 
       {collection.name && (
         <DynamicDataSheetGrid
+          rowHeight={41}
           value={data}
           height={
             screenClass === "xxl"

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Dropdown from "@/app/common/components/Dropdown";
 import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
@@ -58,8 +59,8 @@ export default function AddView({ viewType, handleClose }: Props) {
               selected={groupByColumn}
               multiple={false}
               onChange={(option) => setGroupByColumn(option as Option)}
-              placeholder="Group by column"
-              label="Group by column"
+              placeholder="Group by field"
+              label="Group by field"
             />
           )}
           <PrimaryButton

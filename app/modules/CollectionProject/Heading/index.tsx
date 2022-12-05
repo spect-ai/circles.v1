@@ -210,9 +210,6 @@ export const ViewTab = styled(Box)`
 `;
 
 const AddViewButton = styled(Box)`
-  &:hover {
-    background: rgb(191, 90, 242);
-  }
   cursor: pointer;
   transition: background 0.4s ease;
   border-top-left-radius: 4px;

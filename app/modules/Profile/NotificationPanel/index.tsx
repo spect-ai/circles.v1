@@ -28,67 +28,69 @@ export default function NotificationPanel() {
   }, []);
 
   return (
-    <Drawer
-      handleClose={handleClose}
-      width="700px"
-      header={
-        <Box paddingY="4">
-          <TaskWalletHeader />
-        </Box>
-      }
-      closeOnOutsideClick
-    >
-      <ScrollContainer paddingX="8" paddingY="4">
-        <Stack space="1">
-          <Box
-            backgroundColor="backgroundSecondary"
-            style={{
-              borderRadius: "2rem",
-              boxShadow: "0px 1px 5px rgba(0, 0, 0, 0.5)",
-              width: "fit-content",
-              margin: "0 auto",
-            }}
-          >
-            <ToggleButton
-              onClick={() => setTab(0)}
-              bgcolor={tab == 0 ? true : false}
-            >
-              Notifications
-            </ToggleButton>
+    <Box>
+      <Drawer
+        handleClose={handleClose}
+        width="700px"
+        header={
+          <Box paddingY="4">
+            <TaskWalletHeader />
           </Box>
-          <InfiniteScroll
-            style={{
-              overflowY: "scroll",
-              overflowX: "hidden",
-            }}
-            height="calc(100vh - 200px)"
-            dataLength={notifications.length}
-            next={() => {
-              setPage(page + 1);
-              (async () => {
-                const res = await getNotifications(15, page + 1);
-                console.log({ res });
-                if (res.length == 0) {
-                  setHasMore(false);
-                }
-                setnotifications([...notifications, ...res]);
-              })().catch((err) => console.log(err));
-            }}
-            hasMore={hasMore}
-            loader={<Heading>Loading..</Heading>}
-            endMessage={
-              <Stack align="center">
-                <Text variant="label">Yay! You have seen it all</Text>
-              </Stack>
-            }
-          >
-            {notifications?.reverse().map((notif) => (
-              <NotificationItem key={notif.timestamp} notif={notif} />
-            ))}
-          </InfiniteScroll>
-        </Stack>
-      </ScrollContainer>
-    </Drawer>
+        }
+        closeOnOutsideClick
+      >
+        <ScrollContainer paddingX="8" paddingY="4">
+          <Stack space="1">
+            <Box
+              backgroundColor="backgroundSecondary"
+              style={{
+                borderRadius: "2rem",
+                boxShadow: "0px 1px 5px rgba(0, 0, 0, 0.5)",
+                width: "fit-content",
+                margin: "0 auto",
+              }}
+            >
+              <ToggleButton
+                onClick={() => setTab(0)}
+                bgcolor={tab == 0 ? true : false}
+              >
+                Notifications
+              </ToggleButton>
+            </Box>
+            <InfiniteScroll
+              style={{
+                overflowY: "scroll",
+                overflowX: "hidden",
+              }}
+              height="calc(100vh - 200px)"
+              dataLength={notifications.length}
+              next={() => {
+                setPage(page + 1);
+                (async () => {
+                  const res = await getNotifications(15, page + 1);
+                  console.log({ res });
+                  if (res.length == 0) {
+                    setHasMore(false);
+                  }
+                  setnotifications([...notifications, ...res]);
+                })().catch((err) => console.log(err));
+              }}
+              hasMore={hasMore}
+              loader={<Heading>Loading..</Heading>}
+              endMessage={
+                <Stack align="center">
+                  <Text variant="label">Yay! You have seen it all</Text>
+                </Stack>
+              }
+            >
+              {notifications?.reverse().map((notif) => (
+                <NotificationItem key={notif.timestamp} notif={notif} />
+              ))}
+            </InfiniteScroll>
+          </Stack>
+        </ScrollContainer>
+      </Drawer>
+    </Box>
   );
 }
 

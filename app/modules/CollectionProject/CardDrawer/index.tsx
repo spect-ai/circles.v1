@@ -5,18 +5,15 @@ import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { reorder } from "@/app/common/utils/utils";
 import {
   addCollectionData,
-  updateCollectionData,
   updateCollectionDataGuarded,
   updateFormCollection,
 } from "@/app/services/Collection";
 import {
   Box,
   Button,
-  IconCheck,
   IconChevronRight,
   IconDotsVertical,
   IconPlusSmall,
-  Spinner,
   Stack,
   Text,
   useTheme,

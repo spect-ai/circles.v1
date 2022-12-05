@@ -44,7 +44,7 @@ function Drawer({
         right: 0,
         width: `${closeOnOutsideClick ? "100%" : width}`,
         height: "100%",
-        backgroundColor: "transparent",
+        position: "fixed",
         alignItems: "flex-end",
         zIndex: 2,
       }}
@@ -58,6 +58,9 @@ function Drawer({
         animate="visible"
         exit="exit"
         width={width}
+        onClick={(e) => {
+          e.stopPropagation();
+        }}
       >
         <Container backgroundColor="background">
           <Box

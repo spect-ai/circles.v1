@@ -92,6 +92,9 @@ function Sidebar(): ReactElement {
         }}
         transitionDuration="500"
       >
+        <AnimatePresence>
+          {isProfilePanelExpanded && <NotificationPanel />}
+        </AnimatePresence>
         <Box borderBottomWidth="0.375" paddingY="3">
           {cId && circle ? (
             <Logo
@@ -209,9 +212,6 @@ function Sidebar(): ReactElement {
           )}
         </Box>
       </Box>
-      <AnimatePresence>
-        {isProfilePanelExpanded && <NotificationPanel />}
-      </AnimatePresence>
     </>
   );
 }

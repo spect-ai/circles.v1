@@ -26,7 +26,7 @@ export default function ProjectTableView() {
           <CardDrawer handleClose={() => setIsCardDrawerOpen(false)} />
         )}
       </AnimatePresence>
-      <Box overflow="scroll" paddingY="2" marginRight="4" marginLeft="8">
+      <Box overflow="auto" paddingY="2" marginRight="8" marginLeft="8">
         <Stack direction="horizontal" space="0">
           <TableView />
           <Box>
@@ -81,7 +81,7 @@ const AddFieldButton = styled.div`
   }
   transition: background 0.2s ease;
   width: 120px;
-  height: 41px;
+  height: 42px;
 `;
 
 const AddRowButton = styled.div`
