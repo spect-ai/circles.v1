@@ -946,7 +946,15 @@ export type Voting = {
   enabled: boolean;
   message?: string;
   options?: Option[];
+  votingType?: Option;
+  votesArePublic?: boolean;
   votes?: MappedItem<MappedItem<number>>;
+  votesAreWeightedByTokens?: boolean;
+  tokensWeightedWith?: {
+    chain: Option;
+    token: Option;
+    weight: number;
+  }[];
 };
 
 export type Experience = {

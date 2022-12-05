@@ -11,11 +11,13 @@ import { useLocalCollection } from "../Context/LocalCollectionContext";
 type Props = {
   viewConditions: Condition[];
   setViewConditions: (viewConditions: Condition[]) => void;
+  firstRowMessage?: string;
 };
 
 export default function AddConditions({
   viewConditions,
   setViewConditions,
+  firstRowMessage,
 }: Props) {
   const { localCollection: collection } = useLocalCollection();
 
@@ -63,7 +65,9 @@ export default function AddConditions({
                   <DeleteOutlined />
                 </PrimaryButton>
                 <Text size="small">
-                  {index === 0 ? "Show field when" : "and"}
+                  {index === 0
+                    ? `${firstRowMessage || "Show field when"}`
+                    : "and"}
                 </Text>
               </Box>
             </Box>

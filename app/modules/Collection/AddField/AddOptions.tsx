@@ -50,7 +50,7 @@ export default function AddOptions({
         {!fieldOptions.length && (
           <Text variant="label">No options added yet</Text>
         )}
-        <Box padding="1">
+        <Box padding="1" width="1/2">
           <PrimaryButton
             variant="tertiary"
             onClick={() => {

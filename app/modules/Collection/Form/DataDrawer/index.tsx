@@ -148,6 +148,11 @@ export default function DataDrawer({
                 </Stack>
               </a>
               <Box
+                display="flex"
+                flexDirection={{
+                  xs: "column",
+                  md: "row",
+                }}
                 marginLeft={{
                   xs: "0",
                   md: "10",
@@ -156,13 +161,30 @@ export default function DataDrawer({
                   xs: "0",
                   md: "-4",
                 }}
+                gap={{
+                  xs: "8",
+                  md: "0",
+                }}
               >
-                <Stack>
+                <Box display="flex" flexDirection="column" width="3/4" gap="4">
                   {collection.propertyOrder.map((propertyName: string) => {
                     const property = collection.properties[propertyName];
+                    if (!data[property.name])
+                      return (
+                        <Stack key={property.name} space="1">
+                          <Text
+                            weight="semiBold"
+                            variant="large"
+                            color="accent"
+                          >
+                            {property.name}
+                          </Text>{" "}
+                          <Text variant="label">No value added</Text>
+                        </Stack>
+                      );
                     return (
                       <Stack key={property.name} space="1">
-                        <Text weight="bold" variant="extraLarge" color="accent">
+                        <Text weight="semiBold" variant="large" color="accent">
                           {property.name}
                         </Text>
                         <Text weight="medium" variant="small">
@@ -250,7 +272,10 @@ export default function DataDrawer({
                                     </Text>
                                   </Stack>
                                   <Editor
-                                    value={milestone.description}
+                                    value={
+                                      milestone.description ||
+                                      "No description added"
+                                    }
                                     disabled
                                   />
                                   <Stack
@@ -260,9 +285,11 @@ export default function DataDrawer({
                                   >
                                     <Text variant="label">Reward</Text>
                                     <Text weight="semiBold" color="textPrimary">
-                                      {milestone.reward?.value}{" "}
-                                      {milestone.reward?.token.label} on{" "}
-                                      {milestone.reward?.chain.label}
+                                      {milestone.reward?.value &&
+                                      milestone.reward?.token.label &&
+                                      milestone.reward?.chain.label
+                                        ? `${milestone.reward?.value} ${milestone.reward?.token.label} on ${milestone.reward?.chain.label}`
+                                        : "No reward added"}
                                     </Text>
                                   </Stack>
                                   <Stack
@@ -272,7 +299,7 @@ export default function DataDrawer({
                                   >
                                     <Text variant="label">Due date</Text>
                                     <Text weight="semiBold" color="textPrimary">
-                                      {milestone.dueDate}
+                                      {milestone.dueDate || "No due date added"}
                                     </Text>
                                   </Stack>
                                 </Stack>
@@ -283,37 +310,162 @@ export default function DataDrawer({
                       </Stack>
                     );
                   })}
+                </Box>
+                <Box display="flex" flexDirection="column" gap="2">
                   {collection.voting?.enabled && collection.voting.options && (
                     <Stack space="1">
-                      <Text weight="bold" variant="extraLarge" color="accent">
-                        Your Vote
-                      </Text>
-                      <Text>{collection.voting.message}</Text>
-                      <Tabs
-                        tabs={collection.voting.options.map(
-                          (option) => option.label
-                        )}
-                        selectedTab={vote}
-                        onTabClick={async (tab) => {
-                          const tempTab = tab;
-                          setVote(tab);
-                          const res = await voteCollectionData(
-                            collection.id,
-                            dataId,
-                            tab
-                          );
-                          if (!res.id) {
-                            toast.error("Something went wrong");
-                            setVote(tempTab);
-                          } else updateCollection(res);
-                        }}
-                        orientation="horizontal"
-                        unselectedColor="transparent"
-                        selectedColor="secondary"
-                      />
+                      <Box
+                        borderColor="foregroundSecondary"
+                        borderWidth="0.375"
+                        padding="2"
+                        borderRadius="medium"
+                      >
+                        <Text weight="semiBold" variant="large" color="accent">
+                          Your Vote
+                        </Text>
+                        <Text>{collection.voting.message}</Text>
+                        <Box marginTop="4">
+                          <Tabs
+                            tabs={collection.voting.options.map(
+                              (option) => option.label
+                            )}
+                            selectedTab={vote}
+                            onTabClick={async (tab) => {
+                              const tempTab = tab;
+                              setVote(tab);
+                              const res = await voteCollectionData(
+                                collection.id,
+                                dataId,
+                                tab
+                              );
+                              if (!res.id) {
+                                toast.error("Something went wrong");
+                                setVote(tempTab);
+                              } else updateCollection(res);
+                            }}
+                            orientation="horizontal"
+                            unselectedColor="transparent"
+                            selectedColor="secondary"
+                          />
+                        </Box>
+                      </Box>
                     </Stack>
                   )}
-                </Stack>
+
+                  {collection.voting?.enabled &&
+                    collection.voting.options &&
+                    collection.voting.votes &&
+                    collection.voting.votes[data.slug] &&
+                    collection.voting.votes[data.slug][
+                      currentUser?.id || ""
+                    ] !== undefined && (
+                      <Box
+                        width={{
+                          xs: "full",
+                          md: "full",
+                        }}
+                        height={{
+                          xs: "32",
+                          md: "48",
+                        }}
+                        borderColor="foregroundSecondary"
+                        borderWidth="0.375"
+                        padding="2"
+                        borderRadius="medium"
+                      >
+                        <Text weight="semiBold" variant="large" color="accent">
+                          Results
+                        </Text>
+                        <Bar
+                          options={{
+                            indexAxis: "y",
+                            plugins: {
+                              legend: {
+                                display: false,
+                              },
+                            },
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: {
+                              y: {
+                                ticks: {
+                                  color: "rgb(191,90,242,0.8)",
+                                },
+                                grid: {
+                                  borderColor: "rgb(191,90,242,0.2)",
+                                },
+                              },
+                              x: {
+                                beginAtZero: true,
+
+                                grid: {
+                                  borderColor: "rgb(191,90,242,0.2)",
+                                },
+                                ticks: {
+                                  stepSize: 1,
+                                  color: "rgb(191,90,242,0.8)",
+                                },
+                              },
+                            },
+                          }}
+                          data={{
+                            labels: collection.voting.options.map(
+                              (option) => option.label
+                            ),
+                            datasets: [
+                              {
+                                label: "Votes",
+                                data: getVotes(),
+                                backgroundColor: "rgb(191,90,242, 0.2)",
+                                borderColor: "rgb(191,90,242)",
+                                borderWidth: 1,
+                                borderRadius: 5,
+                                barPercentage: 0.5,
+                              },
+                            ],
+                          }}
+                        />
+                      </Box>
+                    )}
+                  {collection.voting?.votes &&
+                    collection.voting.votes[data.slug] &&
+                    collection.voting?.votesArePublic && (
+                      <Box
+                        borderColor="foregroundSecondary"
+                        borderWidth="0.375"
+                        padding="2"
+                        borderRadius="medium"
+                        marginTop="8"
+                      >
+                        <Text weight="semiBold" variant="large" color="accent">
+                          Votes
+                        </Text>
+
+                        {collection.voting?.votes &&
+                          collection.voting.votes[data.slug] &&
+                          Object.entries(
+                            collection.voting?.votes[data.slug]
+                          ).map(([slug, vote]) => {
+                            return (
+                              <Box
+                                display="flex"
+                                flexDirection="row"
+                                key={slug}
+                                marginTop="4"
+                                gap="4"
+                              >
+                                <Text variant="small">{slug}</Text>
+                                <Text variant="small">
+                                  {collection?.voting?.options
+                                    ? collection?.voting?.options[vote]?.label
+                                    : "No vote"}
+                                </Text>
+                              </Box>
+                            );
+                          })}
+                      </Box>
+                    )}
+                </Box>
               </Box>
             </Stack>
             <Box
@@ -322,73 +474,6 @@ export default function DataDrawer({
               marginY="4"
               borderRadius="full"
             />
-            {collection.voting?.enabled &&
-              collection.voting.options &&
-              collection.voting.votes &&
-              collection.voting.votes[data.slug] &&
-              collection.voting.votes[data.slug][currentUser?.id || ""] !==
-                undefined && (
-                <Box
-                  width={{
-                    xs: "full",
-                    md: "1/2",
-                  }}
-                  height={{
-                    xs: "32",
-                    md: "48",
-                  }}
-                >
-                  <Bar
-                    options={{
-                      indexAxis: "y",
-                      plugins: {
-                        legend: {
-                          display: false,
-                        },
-                      },
-                      responsive: true,
-                      maintainAspectRatio: false,
-                      scales: {
-                        y: {
-                          ticks: {
-                            color: "rgb(191,90,242,0.8)",
-                          },
-                          grid: {
-                            borderColor: "rgb(191,90,242,0.2)",
-                          },
-                        },
-                        x: {
-                          beginAtZero: true,
-
-                          grid: {
-                            borderColor: "rgb(191,90,242,0.2)",
-                          },
-                          ticks: {
-                            stepSize: 1,
-                            color: "rgb(191,90,242,0.8)",
-                          },
-                        },
-                      },
-                    }}
-                    data={{
-                      labels: collection.voting.options.map(
-                        (option) => option.label
-                      ),
-                      datasets: [
-                        {
-                          label: "Votes",
-                          data: getVotes(),
-                          backgroundColor: "rgb(191,90,242, 0.2)",
-                          borderColor: "rgb(191,90,242)",
-                          borderWidth: 1,
-                          borderRadius: 5,
-                          barPercentage: 0.5,
-                        },
-                      ],
-                    }}
-                  />
-                </Box>
-              )}
             <Box paddingBottom="0">
               <DataActivity
                 activities={collection.dataActivities[dataId]}

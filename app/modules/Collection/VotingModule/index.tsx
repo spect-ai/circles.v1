@@ -1,6 +1,9 @@
+import Dropdown from "@/app/common/components/Dropdown";
 import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
+import CheckBox from "@/app/common/components/Table/Checkbox";
 import { updateFormCollection } from "@/app/services/Collection";
+import { Option } from "@/app/types";
 import { Box, IconUserGroup, Input, Stack, Text } from "degen";
 import { AnimatePresence } from "framer-motion";
 import React, { useEffect, useState } from "react";
@@ -8,9 +11,29 @@ import { toast } from "react-toastify";
 import uuid from "react-uuid";
 import AddOptions from "../AddField/AddOptions";
 import { useLocalCollection } from "../Context/LocalCollectionContext";
+import MultiChoiceVotingOnMultipleResponses from "./MultiChoiceVotingOnMultipleResponses";
+import SingleChoiceVotingOnSingleResponse from "./SingleChoiceVotingOnSingleResponse";
 
 export default function VotingModule() {
+  const { localCollection: collection, setLocalCollection } =
+    useLocalCollection();
+
   const [isOpen, setIsOpen] = useState(false);
+  const [votingType, setVotingType] = useState({
+    label: "Single Choice",
+    value: "singleChoice",
+  });
+  const [votesArePublic, setVotesArePublic] = useState(false);
+  const [votesAreWeightedByTokens, setVotesAreWeightedByTokens] =
+    useState(false);
+  const [tokenWeightedWith, setTokenWeightedWith] = useState(
+    [] as {
+      chain: Option;
+      token: Option;
+      weight: number;
+    }[]
+  );
+
   const [votingOptions, setVotingOptions] = useState([
     {
       label: "For",
@@ -25,11 +48,8 @@ export default function VotingModule() {
       value: `option-${uuid()}`,
     },
   ]);
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState("Please vote");
   const [loading, setLoading] = useState(false);
-
-  const { localCollection: collection, setLocalCollection } =
-    useLocalCollection();
 
   useEffect(() => {
     if (
@@ -39,6 +59,17 @@ export default function VotingModule() {
     ) {
       setVotingOptions(collection.voting.options);
       setMessage(collection.voting.message || "");
+      setVotesArePublic(collection.voting.votesArePublic || false);
+      setVotingType(
+        collection.voting.votingType || {
+          label: "Single Choice",
+          value: "singleChoice",
+        }
+      );
+      setVotesAreWeightedByTokens(
+        collection.voting.votesAreWeightedByTokens || false
+      );
+      setTokenWeightedWith(collection.voting.tokensWeightedWith || []);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [collection]);
@@ -64,8 +95,31 @@ export default function VotingModule() {
         {isOpen && (
           <Modal title="Voting Module" handleClose={() => setIsOpen(false)}>
             <Box padding="8">
-              <Stack>
-                <Stack space="1">
+              <Stack space="4">
+                {" "}
+                <Stack space="2">
+                  <Text variant="label">Voting Type</Text>
+                  <Dropdown
+                    options={[
+                      {
+                        label: "Single Choice Voting",
+                        value: "singleChoice",
+                      },
+                      {
+                        label: "Ranked Choice Voting",
+                        value: "rankedChoice",
+                      },
+                      {
+                        label: "Quadratic Voting",
+                        value: "quadratic",
+                      },
+                    ]}
+                    selected={votingType}
+                    onChange={setVotingType}
+                    multiple={false}
+                  />{" "}
+                </Stack>
+                <Stack space="0">
                   <Text variant="label">Message</Text>
                   <Input
                     label=""
@@ -73,56 +127,93 @@ export default function VotingModule() {
                     onChange={(e) => setMessage(e.target.value)}
                   />
                 </Stack>
-                <Stack space="1">
-                  <AddOptions
-                    fieldOptions={votingOptions}
-                    setFieldOptions={setVotingOptions}
-                    label="Voting Options"
-                  />
-                </Stack>
-                <Stack
-                  direction={{
-                    xs: "vertical",
-                    md: "horizontal",
-                  }}
+                <Box
+                  display="flex"
+                  flexDirection="row"
+                  gap="2"
+                  justifyContent="flex-start"
+                  alignItems="center"
                 >
-                  {collection.voting?.enabled && (
-                    <Box width="full">
-                      <PrimaryButton
-                        variant="secondary"
-                        tone="red"
-                        loading={loading}
-                        onClick={async () => {
-                          setLoading(true);
-                          const res = await updateFormCollection(
-                            collection.id,
-                            {
-                              voting: {
-                                enabled: false,
-                              },
-                            }
-                          );
-                          setLoading(false);
-                          if (res.id) {
-                            setIsOpen(false);
-                            setLocalCollection(res);
-                          } else toast.error("Something went wrong");
-                        }}
-                      >
-                        Disable Voting
-                      </PrimaryButton>
-                    </Box>
+                  <CheckBox
+                    isChecked={votesArePublic}
+                    onClick={() => {
+                      setVotesArePublic(!votesArePublic);
+                    }}
+                  />
+                  <Text variant="small">
+                    Votes are visible by other members
+                  </Text>
+                </Box>
+                <Box display="flex" flexDirection="column" gap="2">
+                  <Box
+                    display="flex"
+                    flexDirection="row"
+                    gap="2"
+                    justifyContent="flex-start"
+                    alignItems="center"
+                  >
+                    <CheckBox
+                      isChecked={votesAreWeightedByTokens}
+                      onClick={() => {
+                        setVotesAreWeightedByTokens(!votesAreWeightedByTokens);
+                      }}
+                    />
+                    <Text variant="small">
+                      Votes are weighted by token holdings
+                    </Text>
+                  </Box>
+                  {votesAreWeightedByTokens && (
+                    <Text variant="label">Pick Token</Text>
                   )}
+                </Box>
+                {["rankedChoice", "quadratic"].includes(votingType.value) && (
+                  <MultiChoiceVotingOnMultipleResponses />
+                )}
+                {votingType.value === "singleChoice" && (
+                  <SingleChoiceVotingOnSingleResponse
+                    options={votingOptions}
+                    setOptions={setVotingOptions}
+                    message={message}
+                    setMessage={setMessage}
+                  />
+                )}
+                <Box width="full" marginTop="8">
+                  <PrimaryButton
+                    loading={loading}
+                    onClick={async () => {
+                      setLoading(true);
+                      const res = await updateFormCollection(collection.id, {
+                        voting: {
+                          enabled: true,
+                          options: votingOptions,
+                          message,
+                          votingType,
+                          votesArePublic,
+                          votesAreWeightedByTokens,
+                          tokensWeightedWith: tokenWeightedWith,
+                        },
+                      });
+                      setLoading(false);
+                      if (res.id) {
+                        setIsOpen(false);
+                        setLocalCollection(res);
+                      } else toast.error("Something went wrong");
+                    }}
+                  >
+                    {collection?.voting?.enabled ? "Update" : "Enable"} Voting
+                  </PrimaryButton>
+                </Box>
+                {collection.voting?.enabled && (
                   <Box width="full">
                     <PrimaryButton
+                      variant="secondary"
+                      tone="red"
                       loading={loading}
                       onClick={async () => {
                         setLoading(true);
                         const res = await updateFormCollection(collection.id, {
                           voting: {
-                            enabled: true,
-                            options: votingOptions,
-                            message,
+                            enabled: false,
                           },
                         });
                         setLoading(false);
@@ -132,10 +223,10 @@ export default function VotingModule() {
                         } else toast.error("Something went wrong");
                       }}
                     >
-                      {collection?.voting?.enabled ? "Update" : "Enable"} Voting
+                      Disable Voting
                     </PrimaryButton>
                   </Box>
-                </Stack>
+                )}
               </Stack>
             </Box>
           </Modal>
