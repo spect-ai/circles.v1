@@ -775,10 +775,7 @@ export type Property = {
   onUpdateNotifyUserTypes?: FormUserType[];
   required?: boolean;
   description?: string;
-  conditions: {
-    view?: Condition[];
-    value?: Condition[];
-  };
+  viewConditions?: Condition[];
 };
 
 export type PropertyType =
@@ -851,6 +848,7 @@ export interface FormType {
       }[];
       rewardOptions?: Registry;
       required: boolean;
+      viewConditions?: Condition[];
     };
   };
   propertyOrder: string[];
@@ -877,6 +875,7 @@ export interface FormType {
   isAnOpportunity: boolean;
   opportunityInfo: OpportunityInfoType;
   active: boolean;
+  viewConditions: Condition[];
   createdAt: string;
   updatedAt: string;
   id: string;

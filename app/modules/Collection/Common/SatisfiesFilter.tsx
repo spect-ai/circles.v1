@@ -1,65 +1,97 @@
-import { CollectionType, Condition, Option } from "@/app/types";
+import { Property } from "@/app/types";
 
 export function satisfiesConditions(
-  collection: CollectionType,
-  conditions: Condition[]
-) {
+  data: any,
+  properties: { [propertyId: string]: Property },
+  currentPropertyId: string
+): boolean {
+  const conditions = properties[currentPropertyId].viewConditions || [];
   return conditions.every((condition) => {
-    const { propertyId, comparatorValue, value } = condition.data;
-    const property = collection.properties[propertyId];
-    const data = collection.data[propertyId];
+    const { field, comparator, value } = condition.data;
+    const propertyId = field?.value;
+    const comparatorValue = comparator?.value;
+    const property = properties[propertyId];
+    console.log({ condition });
+    console.log({ value });
+    console.log({ d: data[propertyId] });
+    console.log({ property });
+
     switch (property.type) {
       case "shortText":
       case "longText":
-      case "ethAddress":
       case "email":
+      case "singleURL":
         switch (comparatorValue) {
           case "is":
-            return data === value;
+            return data[propertyId] === value;
           case "is not":
-            return data !== value;
+            return data[propertyId] !== value;
           case "contains":
-            return data.includes(value);
+            return data[propertyId]?.includes(value);
           case "does not contain":
-            return !data.includes(value);
+            return !data[propertyId]?.includes(value);
           case "starts with":
-            return data.startsWith(value);
+            return data[propertyId]?.startsWith(value);
           case "ends with":
-            return data.endsWith(value);
+            return data[propertyId]?.endsWith(value);
           default:
             return false;
         }
+      case "ethAddress":
+        switch (comparatorValue) {
+          case "is":
+            return data[propertyId]?.toLowerCase() === value?.toLowerCase();
+          case "is not":
+            return data[propertyId]?.toLowerCase() !== value?.toLowerCase();
+          default:
+            return false;
+        }
+
       case "number":
         switch (comparatorValue) {
           case "is":
-            return data === value;
+            return parseFloat(data[propertyId]) === parseFloat(value);
           case "is not":
-            return data !== value;
+            return parseFloat(data[propertyId]) !== parseFloat(value);
           case "is greater than":
-            return data > value;
+            return parseFloat(data[propertyId]) > parseFloat(value);
           case "is less than":
-            return data < value;
+            return parseFloat(data[propertyId]) < parseFloat(value);
           default:
             return false;
         }
       case "singleSelect":
+      case "user":
         switch (comparatorValue) {
           case "is":
-            return data.value === value.value;
+            return data[propertyId]?.value === value?.value;
+          case "is not":
+            return data[propertyId]?.value !== value?.value;
+          case "is one of":
+            // eslint-disable-next-line no-case-declarations
+            const values = value?.map((v: any) => v.value);
+            return values.includes(data[propertyId]?.value);
           default:
             return false;
         }
       case "multiSelect":
+      case "user[]":
+        // eslint-disable-next-line no-case-declarations
+        const values = data[propertyId]?.map((d: { value: any }) => d?.value);
         switch (comparatorValue) {
+          case "does not include":
+            return !value?.some((v: { value: any }) =>
+              values?.includes(v.value)
+            );
           case "includes one of":
             // eslint-disable-next-line no-case-declarations
-            const values = data.map((d: { value: any }) => d.value);
-            return value.some((v: { value: any }) => values.includes(v.value));
+
+            return value?.some((v: { value: any }) =>
+              values?.includes(v.value)
+            );
           case "includes all of":
-            // eslint-disable-next-line no-case-declarations
-            const values2 = data.map((d: { value: any }) => d.value);
             return value.every((v: { value: any }) =>
-              values2.includes(v.value)
+              values?.includes(v?.value)
             );
           default:
             return false;
@@ -67,23 +99,68 @@ export function satisfiesConditions(
       case "date":
         switch (comparatorValue) {
           case "is":
-            return data === value;
+            return data[propertyId] === value;
           case "is not":
-            return data !== value;
+            return data[propertyId] !== value;
           case "is before":
-            return new Date(data) < new Date(value);
+            return (
+              data[propertyId] &&
+              value &&
+              new Date(data[propertyId]) < new Date(value)
+            );
           case "is after":
-            return new Date(data) > new Date(value);
+            return (
+              data[propertyId] &&
+              value &&
+              new Date(data[propertyId]) > new Date(value)
+            );
           default:
             return false;
         }
       case "reward":
+        // eslint-disable-next-line no-case-declarations
+        let chainId, tokenAddress;
         switch (comparatorValue) {
-          case "is":
-            return false;
+          case "value is":
+            return parseFloat(data[propertyId]?.value) === parseFloat(value);
+          case "value is greater than":
+            return parseFloat(data[propertyId]?.value) > parseFloat(value);
+          case "value is less than":
+            return parseFloat(data[propertyId]?.value) < parseFloat(value);
+          case "token is":
+            if (!value || typeof value !== "object") return false;
+            // eslint-disable-next-line no-case-declarations
+            const v = value?.value.split(":");
+            if (!v || v.length !== 2) return false;
+            return (
+              data[propertyId]?.chain?.value === v[0] &&
+              data[propertyId]?.token?.value === v[1]
+            );
+          case "token is one of":
+            if (!value || !Array.isArray(value)) return false;
+            // eslint-disable-next-line no-case-declarations
+            const tokens = value.map((v: any) => v?.value.split(":"));
+            if (!tokens || tokens.length === 0) return false;
+            return tokens.some(
+              (t: any) =>
+                data[propertyId]?.chain?.value === t[0] &&
+                data[propertyId]?.token?.value === t[1]
+            );
+
           default:
             return false;
         }
+      case "milestone":
+        switch (comparatorValue) {
+          case "count is greater than":
+            return data[propertyId]?.length > value;
+          case "count is less than":
+            return data[propertyId]?.length < value;
+          default:
+            return false;
+        }
+      default:
+        return false;
     }
   });
 }

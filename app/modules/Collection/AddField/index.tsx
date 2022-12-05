@@ -20,7 +20,7 @@ import { prevPropertyTypeToNewPropertyTypeThatDoesntRequiresClarance } from "@/a
 import { AnimatePresence } from "framer-motion";
 import ConfirmModal from "@/app/common/components/Modal/ConfirmModal";
 import Accordian from "@/app/common/components/Accordian";
-import AddConditions from "./AddConditions";
+import AddConditions from "../Common/AddConditions";
 
 type Props = {
   propertyName?: string;
@@ -57,9 +57,15 @@ export default function AddField({ propertyName, handleClose }: Props) {
   const [showSlugNameError, setShowSlugNameError] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [showConfirmOnDelete, setShowConfirmOnDelete] = useState(false);
-  const [viewConditions, setViewConditions] = useState<Condition[]>([]);
-  const [modalSize, setModalSize] =
-    useState<"small" | "medium" | "large">("small");
+  const [viewConditions, setViewConditions] = useState<Condition[]>(
+    (propertyName && collection.properties[propertyName]?.viewConditions) || []
+  );
+  const [modalSize, setModalSize] = useState<"small" | "medium" | "large">(
+    viewConditions?.length > 0 ? "large" : "small"
+  );
+  const [advancedDefaultOpen, setAdvancedDefaultOpen] = useState(
+    viewConditions?.length > 0 ? true : false
+  );
 
   const onSave = async () => {
     setLoading(true);
@@ -152,6 +158,11 @@ export default function AddField({ propertyName, handleClose }: Props) {
       }
     }
   }, [collection.properties, propertyName]);
+
+  useEffect(() => {
+    setModalSize(viewConditions?.length > 0 ? "large" : "small");
+    setAdvancedDefaultOpen(viewConditions?.length > 0 ? true : false);
+  }, [viewConditions]);
 
   return (
     <>
@@ -286,11 +297,10 @@ export default function AddField({ propertyName, handleClose }: Props) {
             {type.value === "milestone" ? (
               <MilestoneOptions networks={networks} setNetworks={setNetworks} />
             ) : null}
-            <Accordian name="Advanced" defaultOpen={false}>
+            <Accordian name="Advanced" defaultOpen={advancedDefaultOpen}>
               <AddConditions
                 viewConditions={viewConditions}
                 setViewConditions={setViewConditions}
-                setModalSize={setModalSize}
               />
               {/* {["shortText", "longText", "ethAddress"].includes(
                   type.value

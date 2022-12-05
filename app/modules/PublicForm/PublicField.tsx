@@ -2,10 +2,11 @@
 import Dropdown from "@/app/common/components/Dropdown";
 import Editor from "@/app/common/components/Editor";
 import { isEmail, isURL } from "@/app/common/utils/utils";
-import { FormType, Option, Reward } from "@/app/types";
+import { FormType, Option, Property, Reward } from "@/app/types";
 import { Box, Input, Stack, Tag, Text, useTheme } from "degen";
 import { ethers } from "ethers";
 import { useState } from "react";
+import { satisfiesConditions } from "../Collection/Common/SatisfiesFilter";
 import { DateInput } from "../Collection/Form/Field";
 import MilestoneField from "./MilestoneField";
 import MultiURLField from "./MultiURLField";
@@ -40,6 +41,17 @@ export default function PublicField({
   const [invalidNumberCharEntered, setInvalidNumberCharEntered] = useState(
     {} as { [key: string]: boolean }
   );
+
+  console.log({ data, propertyName });
+
+  if (
+    !satisfiesConditions(
+      data,
+      form.properties as { [propertyId: string]: Property },
+      propertyName
+    )
+  )
+    return null;
 
   return (
     <Box paddingY="4" borderRadius="large">
@@ -145,7 +157,11 @@ export default function PublicField({
             updateRequiredFieldNotSet(propertyName, e.target.value);
           }}
           onKeyDown={(e) => {
-            if (isNaN(e.key as any)) {
+            if (
+              isNaN(e.key as any) &&
+              data[propertyName] &&
+              isNaN(data[propertyName])
+            ) {
               setInvalidNumberCharEntered({
                 ...invalidNumberCharEntered,
                 [propertyName]: true,

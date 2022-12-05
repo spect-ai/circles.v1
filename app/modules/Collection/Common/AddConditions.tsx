@@ -4,63 +4,29 @@ import { Condition, Option } from "@/app/types";
 import { DeleteOutlined } from "@ant-design/icons";
 import { Box, Text } from "degen";
 import { useEffect, useState } from "react";
-import FilterField from "../Common/FilterField";
+import { getComparators } from "./Comparator";
+import FilterValueField from "./FilterValueField";
 import { useLocalCollection } from "../Context/LocalCollectionContext";
 
 type Props = {
   viewConditions: Condition[];
   setViewConditions: (viewConditions: Condition[]) => void;
-  setModalSize: (size: "small" | "medium" | "large") => void;
 };
-
-export function getComparators(propertyType: string): Option[] {
-  switch (propertyType) {
-    case "shortText":
-    case "longText":
-    case "ethAddress":
-    case "email":
-      return [{ label: "is", value: "is" }];
-    case "number":
-      return [
-        { label: "is", value: "is" },
-        { label: "is greater than", value: "is greater than" },
-        { label: "is less than", value: "is less than" },
-      ];
-    case "singleSelect":
-      return [{ label: "is", value: "is" }];
-    case "multiSelect":
-      return [{ label: "includes", value: "includes" }];
-    case "date":
-      return [
-        { label: "is", value: "is" },
-        { label: "is after", value: "is after" },
-        { label: "is before", value: "is before" },
-      ];
-    case "user":
-      return [{ label: "is", value: "is" }];
-    case "user[]":
-      return [{ label: "includes", value: "includes" }];
-
-    default:
-      return [];
-  }
-}
 
 export default function AddConditions({
   viewConditions,
   setViewConditions,
-  setModalSize,
 }: Props) {
   const { localCollection: collection } = useLocalCollection();
 
   const [fieldOptions, setFieldOptions] = useState<Option[]>(
-    Object.entries(collection.properties).map((field) => ({
-      label: field[0],
-      value: field[0],
-    }))
+    Object.entries(collection.properties)
+      .filter((field) => !["multiURL"].includes(field[1].type))
+      .map((field) => ({
+        label: field[0],
+        value: field[0],
+      }))
   );
-
-  console.log({ viewConditions });
   return (
     <>
       {viewConditions?.map((condition, index) => (
@@ -75,17 +41,36 @@ export default function AddConditions({
             alignItems="center"
           >
             <Box
-              style={{
-                width: "15%",
+              width={{
+                xs: "full",
+                md: "48",
               }}
             >
-              <Text size="small">
-                {index === 0 ? "Show field when" : "and"}
-              </Text>
+              <Box
+                display="flex"
+                flexDirection="row"
+                alignItems="center"
+                gap="2"
+              >
+                <PrimaryButton
+                  variant="transparent"
+                  onClick={() => {
+                    const newConditions = [...viewConditions];
+                    newConditions.splice(index, 1);
+                    setViewConditions(newConditions);
+                  }}
+                >
+                  <DeleteOutlined />
+                </PrimaryButton>
+                <Text size="small">
+                  {index === 0 ? "Show field when" : "and"}
+                </Text>
+              </Box>
             </Box>
             <Box
-              style={{
-                width: "25%",
+              width={{
+                xs: "full",
+                md: "1/4",
               }}
             >
               <Dropdown
@@ -104,8 +89,9 @@ export default function AddConditions({
               />
             </Box>
             <Box
-              style={{
-                width: "25%",
+              width={{
+                xs: "full",
+                md: "1/4",
               }}
             >
               <Dropdown
@@ -122,8 +108,9 @@ export default function AddConditions({
               />
             </Box>
             <Box
-              style={{
-                width: "30%",
+              width={{
+                xs: "full",
+                md: "1/4",
               }}
               marginTop={
                 [
@@ -140,7 +127,7 @@ export default function AddConditions({
                   : "0"
               }
             >
-              <FilterField
+              <FilterValueField
                 value={condition?.data?.value}
                 onChange={(value) => {
                   const newConditions = [...viewConditions];
@@ -152,22 +139,6 @@ export default function AddConditions({
                 comparatorValue={condition?.data?.comparator?.value}
               />
             </Box>
-            <Box
-              style={{
-                width: "5%",
-              }}
-            >
-              <PrimaryButton
-                variant="transparent"
-                onClick={() => {
-                  const newConditions = [...viewConditions];
-                  newConditions.splice(index, 1);
-                  setViewConditions(newConditions);
-                }}
-              >
-                <DeleteOutlined />
-              </PrimaryButton>
-            </Box>
           </Box>
         </Box>
       ))}
@@ -175,7 +146,6 @@ export default function AddConditions({
         <PrimaryButton
           variant="tertiary"
           onClick={() => {
-            setModalSize("large");
             const newCondition: Condition = {
               id: Math.random().toString(36).substring(7),
               type: "data",
