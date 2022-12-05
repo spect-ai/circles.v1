@@ -68,6 +68,7 @@ export default function RewardField({
         xs: "vertical",
         md: "horizontal",
       }}
+      align="center"
     >
       <Box
         width={{
@@ -131,6 +132,7 @@ export default function RewardField({
           xs: "full",
           md: "72",
         }}
+        marginTop="2"
       >
         <Input
           label=""

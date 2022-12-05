@@ -126,6 +126,7 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
             setValue={(val) => {
               setValue({ ...value, [property]: val });
             }}
+            dataId={value.slug}
           />
         </Stack>
       </Box>

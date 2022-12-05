@@ -98,6 +98,6 @@ const AddRowButton = styled.div`
     background: rgb(40, 40, 40);
   }
   transition: background 0.2s ease;
-  width: 291px;
+  width: 251px;
   height: 41px;
 `;

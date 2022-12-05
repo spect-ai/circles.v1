@@ -1,24 +1,23 @@
-import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { Box } from "degen";
+import { Box, Button, Text } from "degen";
 import { CellProps } from "react-datasheet-grid";
+import { Maximize2 } from "react-feather";
 
 export default function GutterColumnComponent({
   rowData,
   columnData,
 }: CellProps) {
   return (
-    <Box
-      cursor="pointer"
-      width="full"
-      onClick={() => columnData.setExpandedDataSlug(rowData.id)}
-    >
-      {/* <Stack align="center" direction="horizontal" justify="center">
-        <Text variant="label">{rowIndex + 1}</Text>
+    <Box cursor="pointer" width="full">
+      <Button
+        shape="circle"
+        size="small"
+        variant="transparent"
+        onClick={() => columnData.setExpandedDataSlug(rowData.id)}
+      >
         <Text color="accent">
-          <ExpandAltOutlined style={{ fontSize: "1.4rem" }} />
+          <Maximize2 size={19} />
         </Text>
-      </Stack> */}
-      <PrimaryButton variant="transparent">Open</PrimaryButton>
+      </Button>
     </Box>
   );
 }

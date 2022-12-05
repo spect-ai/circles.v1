@@ -20,6 +20,7 @@ import {
 import { CellWithId } from "react-datasheet-grid/dist/types";
 import { useScreenClass } from "react-grid-system";
 import { toast } from "react-toastify";
+import CardDrawer from "../../CollectionProject/CardDrawer";
 import AddField from "../AddField";
 import { useLocalCollection } from "../Context/LocalCollectionContext";
 import DataDrawer from "../Form/DataDrawer";
@@ -64,16 +65,25 @@ export default function TableView() {
       if (!row.id && Object.keys(row).length > 0) {
         return addData(row);
       }
-      if (!row.id) return;
-      if (row && !collection.properties[cell.colId || ""].isPartOfFormView) {
+      if (!row.id || !cell.colId) return;
+      const property = collection.properties[cell.colId];
+      if (
+        (row &&
+          collection.collectionType === 0 &&
+          !property.isPartOfFormView) ||
+        collection.collectionType === 1
+      ) {
+        console.log("update in");
         const res = await updateCollectionDataGuarded(collection.id, row.id, {
-          [cell.colId as string]: row[cell.colId as string],
+          [cell.colId]: row[cell.colId],
         });
         if (!res.id) {
           toast.error("Error updating data");
         }
         console.log({ res });
         return res;
+      } else {
+        toast.error("Cannot update data");
       }
     }
   };
@@ -330,7 +340,11 @@ export default function TableView() {
               dataId: string,
               propertyName: string
             ) => {
-              if (collection.properties[propertyName].isPartOfFormView) {
+              if (
+                collection.collectionType === 0
+                  ? collection.properties[propertyName].isPartOfFormView
+                  : false
+              ) {
                 setMultipleMilestoneModalOpen(false);
                 return;
               }
@@ -354,10 +368,16 @@ export default function TableView() {
             }}
           />
         )}
-        {expandedDataSlug && (
+        {collection.collectionType === 0 && expandedDataSlug && (
           <DataDrawer
             expandedDataSlug={expandedDataSlug}
             setExpandedDataSlug={setExpandedDataSlug}
+          />
+        )}
+        {collection.collectionType === 1 && expandedDataSlug && (
+          <CardDrawer
+            handleClose={() => setExpandedDataSlug("")}
+            defaultValue={collection.data[expandedDataSlug]}
           />
         )}
       </AnimatePresence>
@@ -380,7 +400,6 @@ export default function TableView() {
               : 500
           }
           onChange={async (newData, operations) => {
-            console.log({ operations });
             if (operations[0].type === "DELETE") {
               const dataIds = [];
               for (
@@ -402,7 +421,7 @@ export default function TableView() {
           columns={columnsWithCredentials}
           gutterColumn={{
             component: GutterColumnComponent,
-            minWidth: 90,
+            minWidth: 50,
             columnData: {
               setExpandedDataSlug,
             },

@@ -1,19 +1,21 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import Popover from "@/app/common/components/Popover";
 import { Box, IconClose, Stack, Tag, Text } from "degen";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { matchSorter } from "match-sorter";
 import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
+import RewardModal from "../../Collection/TableView/RewardModal";
 
 type Props = {
   value: any;
   setValue: (value: any) => void;
   propertyName: string;
+  dataId: string;
 };
 
-function EditValue({ value, setValue, propertyName }: Props) {
+function EditValue({ value, setValue, propertyName, dataId }: Props) {
   const [isEditing, setIsEditing] = useState(false);
   const fieldInput = useRef<any>();
   const { localCollection: collection } = useLocalCollection();
@@ -186,7 +188,13 @@ function EditValue({ value, setValue, propertyName }: Props) {
               <FieldInput
                 autoFocus
                 ref={fieldInput}
-                defaultValue={value}
+                defaultValue={
+                  property.type === "date"
+                    ? value
+                      ? new Date(value).toISOString().split("T")[0]
+                      : ""
+                    : value
+                }
                 onChange={(e) => {
                   if (property.type === "number") {
                     setValue(Number(e.target.value));
@@ -208,9 +216,43 @@ function EditValue({ value, setValue, propertyName }: Props) {
             </FieldInputContainer>
           ) : (
             <FieldButton onClick={() => setIsEditing(true)}>
-              {value ? <Text>{value}</Text> : "Empty"}
+              {value ? (
+                <Text>
+                  {property.type === "date"
+                    ? new Date(value).toDateString()
+                    : value}
+                </Text>
+              ) : (
+                "Empty"
+              )}
             </FieldButton>
           )}
+        </Box>
+      )}
+      {["reward"].includes(property.type) && (
+        <Box>
+          <AnimatePresence>
+            {isEditing ? (
+              <RewardModal
+                form={collection}
+                propertyName={propertyName}
+                handleClose={(reward) => {
+                  console.log(reward);
+                  setValue(reward);
+                  setIsEditing(false);
+                }}
+                dataId={dataId}
+              />
+            ) : (
+              <FieldButton onClick={() => setIsEditing(true)}>
+                {value ? (
+                  <Text>{`${value.value} ${value.token.label} on ${value.chain.label} network`}</Text>
+                ) : (
+                  "Empty"
+                )}
+              </FieldButton>
+            )}
+          </AnimatePresence>
         </Box>
       )}
     </Box>

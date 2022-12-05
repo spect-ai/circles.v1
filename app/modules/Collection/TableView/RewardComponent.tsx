@@ -1,10 +1,13 @@
 import { Box, Button, Text } from "degen";
 import React from "react";
 import { CellProps } from "react-datasheet-grid";
+import { useLocalCollection } from "../Context/LocalCollectionContext";
 
 const RewardComponent = ({ rowData, columnData }: CellProps) => {
   const reward = rowData[columnData.property.name];
   const id = rowData.id;
+
+  const { localCollection: collection } = useLocalCollection();
   return (
     <Box
       marginLeft="1"
@@ -19,7 +22,12 @@ const RewardComponent = ({ rowData, columnData }: CellProps) => {
         size="small"
         justifyContent="flex-start"
         onClick={() => {
-          if (columnData.property.isPartOfFormView) return;
+          if (
+            collection.collectionType === 0
+              ? columnData.isPartOfFormView
+              : false
+          )
+            return;
           columnData.setPropertyName(columnData.property.name);
           columnData.setDataId(id);
           columnData.setIsRewardFieldOpen(true);

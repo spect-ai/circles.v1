@@ -5,6 +5,7 @@ import { useRouter } from "next/router";
 import { useLayoutEffect, useRef } from "react";
 import { useQuery } from "react-query";
 import Select from "react-select";
+import { useLocalCollection } from "../Context/LocalCollectionContext";
 
 type Props = {
   focus: boolean;
@@ -25,6 +26,8 @@ export default function SelectComponent({
   stopEditing,
   isModalOpen,
 }: Props) {
+  const { localCollection: collection } = useLocalCollection();
+
   const ref: any = useRef<Select>(null);
   const router = useRouter();
   const { circle: cId } = router.query;
@@ -51,7 +54,9 @@ export default function SelectComponent({
   const { mode } = useTheme();
   return (
     <Select
-      isDisabled={columnData.isPartOfFormView}
+      isDisabled={
+        collection.collectionType === 0 ? columnData.isPartOfFormView : false
+      }
       isMulti={
         columnData.type === "multiSelect" || columnData.type === "user[]"
       }
@@ -71,7 +76,10 @@ export default function SelectComponent({
       menuPlacement="bottom"
       menuPosition="absolute"
       onChange={(option) => {
-        if (columnData.isPartOfFormView) return;
+        if (
+          collection.collectionType === 0 ? columnData.isPartOfFormView : false
+        )
+          return;
         setRowData(option);
         setTimeout(() => {
           stopEditing();
