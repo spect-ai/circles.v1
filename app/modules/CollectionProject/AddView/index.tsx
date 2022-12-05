@@ -68,6 +68,21 @@ export default function AddView({ viewType, handleClose }: Props) {
             icon={<IconPlusSmall />}
             onClick={async () => {
               setLoading(true);
+              const cardColumnOrder: string[][] = columnOptions.map(() => []);
+              if (viewType === "kanban" && groupByColumn.value) {
+                // filter collection data based on group by column options and add it to a 2 dimensional array
+                Object.keys(collection.data).forEach((key) => {
+                  const data = collection.data[key];
+                  const columnValue = data[groupByColumn.value];
+                  console.log({ columnValue });
+                  const columnIndex = collection.properties[
+                    groupByColumn.value
+                  ].options?.findIndex(
+                    (option) => option.value === columnValue.value
+                  );
+                  cardColumnOrder[columnIndex as number].push(data.slug);
+                });
+              }
               const viewId = uuid();
               const res = await updateFormCollection(collection.id, {
                 projectMetadata: {
@@ -79,6 +94,7 @@ export default function AddView({ viewType, handleClose }: Props) {
                       groupByColumn: groupByColumn.value,
                       filters: [],
                       sort: {},
+                      cardColumnOrder,
                     },
                   },
                   viewOrder: [...collection.projectMetadata.viewOrder, viewId],

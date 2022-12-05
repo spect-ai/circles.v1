@@ -60,7 +60,6 @@ const PrimaryButton: FC<Props> = ({
   type = "button",
   suffix,
   tourId,
-  shape = "square",
 }) => {
   return (
     <motion.div
@@ -79,12 +78,10 @@ const PrimaryButton: FC<Props> = ({
         size="small"
         variant={variant}
         prefix={icon}
-        center
         onClick={onClick}
         tone={tone as any}
         type={type}
         suffix={suffix}
-        // shape={shape}
       >
         {children}
       </Button>

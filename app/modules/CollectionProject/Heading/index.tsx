@@ -1,5 +1,5 @@
 import Popover from "@/app/common/components/Popover";
-import { Box, Heading, IconPlus, IconPlusSmall, Stack, Text } from "degen";
+import { Box, Heading, IconPlusSmall, Stack, Text } from "degen";
 import { AnimatePresence, motion } from "framer-motion";
 import React, { useState } from "react";
 import { Clock, Grid, List, Trello } from "react-feather";
@@ -47,7 +47,9 @@ export default function ProjectHeading() {
               <Text color="accent">
                 {getViewIcon(collection.projectMetadata.views[viewId].type)}
               </Text>
-              <Text>{collection.projectMetadata.views[viewId].name}</Text>
+              <Text ellipsis>
+                {collection.projectMetadata.views[viewId].name}
+              </Text>
             </ViewTab>
           ))}
 
@@ -199,7 +201,7 @@ export const ViewTabsContainer = styled(Box)`
 `;
 
 export const ViewTab = styled(Box)`
-  width: 15%;
+  max-width: 200px;
   display: flex;
   align-items: center;
   justify-content: center;

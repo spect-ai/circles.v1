@@ -1,10 +1,13 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import PrimaryButton from "@/app/common/components/PrimaryButton";
+import { reorder } from "@/app/common/utils/utils";
 import {
   updateCollectionDataGuarded,
   updateField,
+  updateFormCollection,
 } from "@/app/services/Collection";
 import { MemberDetails, Option } from "@/app/types";
-import { Box, IconPlusSmall, Stack } from "degen";
+import { Box, Stack } from "degen";
 import { AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
@@ -56,18 +59,81 @@ export default function KanbanView() {
   }, [memberDetails, property.options, property.type]);
 
   // console.log({ collection });
-  const handleDragEnd = async (result: DropResult) => {
+  const handleDragEnd = (result: DropResult) => {
     const { source, destination, draggableId } = result;
-    if (!destination) return;
+    if (!destination || !view.cardColumnOrder) return;
     if (
       source.droppableId === destination.droppableId &&
       source.index === destination.index
     )
       return;
 
+    if (source.droppableId === destination.droppableId) {
+      const columnIndex = columns.findIndex(
+        (column) => column.value === source.droppableId
+      );
+      const oldColumnOrder = view.cardColumnOrder[columnIndex];
+      const newColumnOrder = reorder(
+        oldColumnOrder,
+        source.index,
+        destination.index
+      );
+      updateCollection({
+        ...collection,
+        projectMetadata: {
+          ...collection.projectMetadata,
+          views: {
+            ...collection.projectMetadata.views,
+            [projectViewId]: {
+              ...view,
+              cardColumnOrder: view.cardColumnOrder.map((column, index) =>
+                index === columnIndex ? newColumnOrder : column
+              ),
+            },
+          },
+        },
+      });
+      void updateFormCollection(collection.id, {
+        projectMetadata: {
+          ...collection.projectMetadata,
+          views: {
+            ...collection.projectMetadata.views,
+            [projectViewId]: {
+              ...view,
+              cardColumnOrder: view.cardColumnOrder.map((column, index) =>
+                index === columnIndex ? newColumnOrder : column
+              ),
+            },
+          },
+        },
+      });
+      return;
+    }
+
     const destColumn = columns.find(
       (c) => c.value === destination.droppableId
     ) as Option;
+
+    const sourceColumnIndex = columns.findIndex(
+      (column) => column.value === source.droppableId
+    );
+    const destColumnIndex = columns.findIndex(
+      (column) => column.value === destination.droppableId
+    );
+
+    const newSourceColumnOrder = Array.from(
+      view.cardColumnOrder[sourceColumnIndex]
+    );
+
+    newSourceColumnOrder.splice(source.index, 1);
+    const newDestColumnOrder = Array.from(
+      view.cardColumnOrder[destColumnIndex]
+    );
+    newDestColumnOrder.splice(destination.index, 0, draggableId);
+
+    const newCardColumnOrder = Array.from(view.cardColumnOrder);
+    newCardColumnOrder[sourceColumnIndex] = newSourceColumnOrder;
+    newCardColumnOrder[destColumnIndex] = newDestColumnOrder;
 
     updateCollection({
       ...collection,
@@ -78,16 +144,34 @@ export default function KanbanView() {
           [view.groupByColumn]: destColumn,
         },
       },
+      projectMetadata: {
+        ...collection.projectMetadata,
+        views: {
+          ...collection.projectMetadata.views,
+          [projectViewId]: {
+            ...view,
+            cardColumnOrder: newCardColumnOrder,
+          },
+        },
+      },
     });
 
-    const res = await updateCollectionDataGuarded(collection.id, draggableId, {
+    void updateCollectionDataGuarded(collection.id, draggableId, {
       [view.groupByColumn]: destColumn,
     });
-    if (res.id) {
-      updateCollection(res);
-    } else {
-      toast.error("Something went wrong");
-    }
+
+    void updateFormCollection(collection.id, {
+      projectMetadata: {
+        ...collection.projectMetadata,
+        views: {
+          ...collection.projectMetadata.views,
+          [projectViewId]: {
+            ...view,
+            cardColumnOrder: newCardColumnOrder,
+          },
+        },
+      },
+    });
   };
 
   return (
@@ -97,6 +181,7 @@ export default function KanbanView() {
       style={{
         height: "calc(100vh - 7rem)",
         overflowX: "auto",
+        overflowY: "hidden",
       }}
     >
       <AnimatePresence>
@@ -109,13 +194,19 @@ export default function KanbanView() {
       </AnimatePresence>
       <DragDropContext onDragEnd={handleDragEnd}>
         <Stack direction="horizontal" align="flex-start">
-          {columns?.map((column) => (
+          {columns?.map((column, index) => (
             <Column
               key={column.value}
               column={column}
               groupByColumn={view.groupByColumn}
               setDefaultValue={setDefaultValue}
               setIsCardDrawerOpen={setIsCardDrawerOpen}
+              cardIds={
+                (
+                  collection.projectMetadata.views[projectViewId]
+                    .cardColumnOrder as any
+                )[index]
+              }
             />
           ))}
           <Box marginTop="4" width="64">

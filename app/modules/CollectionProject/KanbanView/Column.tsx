@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { updateField } from "@/app/services/Collection";
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
 import { Option } from "@/app/types";
@@ -12,13 +13,7 @@ import {
   useTheme,
 } from "degen";
 import React, { useCallback, useState } from "react";
-import {
-  DragDropContext,
-  Draggable,
-  Droppable,
-  DroppableProvided,
-  DropResult,
-} from "react-beautiful-dnd";
+import { Draggable, Droppable, DroppableProvided } from "react-beautiful-dnd";
 import { toast } from "react-toastify";
 import styled from "styled-components";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
@@ -28,6 +23,7 @@ type Props = {
   groupByColumn: string;
   setDefaultValue: (value: any) => void;
   setIsCardDrawerOpen: (value: boolean) => void;
+  cardIds: string[];
 };
 
 export default function Column({
@@ -35,6 +31,7 @@ export default function Column({
   groupByColumn,
   setDefaultValue,
   setIsCardDrawerOpen,
+  cardIds,
 }: Props) {
   const { localCollection: collection, updateCollection } =
     useLocalCollection();
@@ -78,76 +75,97 @@ export default function Column({
         </Stack>
         <ScrollContainer>
           <Stack space="2">
-            {Object.values(collection.data)
-              .filter((data) => data[groupByColumn]?.value === column.value)
-              .map((data, index) => (
-                <Draggable
-                  key={data.slug}
-                  draggableId={data.slug}
-                  index={index}
-                >
-                  {(provided, snapshot) => (
-                    <Box
-                      key={data.slug}
-                      padding="4"
-                      borderWidth="0.375"
-                      borderColor={snapshot.isDragging ? "accent" : undefined}
-                      borderRadius="medium"
-                      onClick={() => {
-                        setDefaultValue(data);
-                        setIsCardDrawerOpen(true);
-                      }}
-                      cursor="pointer"
-                      ref={provided.innerRef}
-                      {...provided.draggableProps}
-                      {...provided.dragHandleProps}
-                    >
-                      <Stack space="2">
-                        {collection.propertyOrder.map((propertyId) => {
-                          const property = collection.properties[propertyId];
-                          const value = data[propertyId];
-                          if (!value || groupByColumn === propertyId)
-                            return null;
-                          if (property.type === "shortText") {
-                            return (
-                              <Box key={propertyId}>
-                                {/* <Text weight="semiBold">{property.name}</Text> */}
-                                <Text>{value}</Text>
-                              </Box>
-                            );
-                          }
-                          if (property.type === "singleSelect") {
-                            return (
-                              <Box key={propertyId}>
-                                {/* <Text weight="semiBold">{property.name}</Text> */}
-                                <Text>{value.label}</Text>
-                              </Box>
-                            );
-                          }
-                          if (property.type === "multiSelect") {
-                            return (
-                              <Box key={propertyId}>
-                                {/* <Text weight="semiBold">{property.name}</Text> */}
-                                <Stack direction="horizontal">
-                                  {value.map((value: Option) => (
-                                    <Tag key={value.value} tone="accent">
-                                      {value.label}
-                                    </Tag>
-                                  ))}
+            {cardIds.map((slug, index) => (
+              <Draggable key={slug} draggableId={slug} index={index}>
+                {(provided, snapshot) => (
+                  <Box
+                    key={slug}
+                    padding="4"
+                    borderWidth="0.375"
+                    borderColor={snapshot.isDragging ? "accent" : undefined}
+                    borderRadius="medium"
+                    onClick={() => {
+                      setDefaultValue(collection.data[slug]);
+                      setIsCardDrawerOpen(true);
+                    }}
+                    cursor="pointer"
+                    ref={provided.innerRef}
+                    {...provided.draggableProps}
+                    {...provided.dragHandleProps}
+                  >
+                    <Stack space="3">
+                      {collection.propertyOrder.map((propertyId) => {
+                        const property = collection.properties[propertyId];
+                        const value = collection.data[slug][propertyId];
+                        if (!value || groupByColumn === propertyId) return null;
+                        if (property.type === "shortText") {
+                          return (
+                            <Box key={propertyId}>
+                              {/* <Text weight="semiBold">{property.name}</Text> */}
+                              <Text weight="semiBold" color="accentText">
+                                {value}
+                              </Text>
+                            </Box>
+                          );
+                        }
+                        if (property.type === "singleSelect") {
+                          return (
+                            <Box key={propertyId}>
+                              {/* <Text weight="semiBold">{property.name}</Text> */}
+                              <Text variant="label">{value.label}</Text>
+                            </Box>
+                          );
+                        }
+                        if (property.type === "multiSelect") {
+                          return (
+                            <Box key={propertyId}>
+                              {/* <Text weight="semiBold">{property.name}</Text> */}
+                              <Stack direction="horizontal" wrap space="1">
+                                {value.map((value: Option) => (
+                                  <Tag key={value.value} tone="accent">
+                                    {value.label}
+                                  </Tag>
+                                ))}
+                              </Stack>
+                            </Box>
+                          );
+                        }
+                        if (property.type === "user") {
+                          return (
+                            <Box key={propertyId}>
+                              {/* <Text weight="semiBold">{property.name}</Text> */}
+                              <Tag>
+                                <Stack
+                                  direction="horizontal"
+                                  space="1"
+                                  align="center"
+                                >
+                                  <Avatar
+                                    src={
+                                      getMemberDetails(value.value || "")
+                                        ?.avatar
+                                    }
+                                    label=""
+                                    size="6"
+                                  />
+                                  <Text weight="semiBold">
+                                    {
+                                      getMemberDetails(value.value || "")
+                                        ?.username
+                                    }
+                                  </Text>
                                 </Stack>
-                              </Box>
-                            );
-                          }
-                          if (property.type === "user") {
-                            return (
-                              <Box key={propertyId}>
-                                {/* <Text weight="semiBold">{property.name}</Text> */}
-                                <Tag>
-                                  <Stack
-                                    direction="horizontal"
-                                    space="1"
-                                    align="center"
-                                  >
+                              </Tag>
+                            </Box>
+                          );
+                        }
+                        if (property.type === "user[]") {
+                          return (
+                            <Box key={propertyId}>
+                              {/* <Text weight="semiBold">{property.name}</Text> */}
+                              <Stack direction="horizontal" wrap space="1">
+                                {value.map((value: Option) => (
+                                  <Box key={value.value}>
                                     <Avatar
                                       src={
                                         getMemberDetails(value.value || "")
@@ -156,23 +174,18 @@ export default function Column({
                                       label=""
                                       size="6"
                                     />
-                                    <Text weight="semiBold">
-                                      {
-                                        getMemberDetails(value.value || "")
-                                          ?.username
-                                      }
-                                    </Text>
-                                  </Stack>
-                                </Tag>
-                              </Box>
-                            );
-                          }
-                        })}
-                      </Stack>
-                    </Box>
-                  )}
-                </Draggable>
-              ))}
+                                  </Box>
+                                ))}
+                              </Stack>
+                            </Box>
+                          );
+                        }
+                      })}
+                    </Stack>
+                  </Box>
+                )}
+              </Draggable>
+            ))}
           </Stack>
         </ScrollContainer>
       </Stack>
@@ -181,6 +194,7 @@ export default function Column({
   );
 
   const ListCallback = useCallback(ColumnList, [
+    cardIds,
     collection.data,
     collection.id,
     collection.properties,
@@ -217,7 +231,7 @@ const ScrollContainer = styled(Box)`
   ::-webkit-scrollbar {
     width: 0px;
   }
-  height: calc(100vh - 13rem);
+  height: calc(100vh - 14rem);
   border-radius: 0.5rem;
   overflow-y: auto;
 `;
