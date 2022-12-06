@@ -139,6 +139,7 @@ function FormBuilder({ fields }: Props) {
                   placeholder="Enter name"
                   autoFocus
                   value={name}
+                  rows={Math.floor(name.length / 60) + 1}
                   onChange={(e) => {
                     setName(e.target.value);
                   }}

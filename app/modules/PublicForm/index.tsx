@@ -146,7 +146,12 @@ export default function PublicForm() {
             <Box width="full" padding="4">
               <Stack space="2">
                 {form.logo && <Avatar src={form.logo} label="" size="20" />}
-                <NameInput autoFocus value={form.name} disabled />
+                <NameInput
+                  autoFocus
+                  value={form.name}
+                  disabled
+                  rows={Math.floor(form.name.length / 60) + 1}
+                />
                 {form.description && (
                   <Editor value={form.description} isDirty={true} disabled />
                 )}
@@ -443,8 +448,8 @@ const Container = styled(Box)<{ embed: boolean }>`
   padding: 0rem ${(props) => (props.embed ? "0rem" : "14rem")};
 `;
 
-export const NameInput = styled.input`
-  width: 100%;
+export const NameInput = styled.textarea`
+  resize: none;
   background: transparent;
   border: 0;
   border-style: none;
@@ -453,9 +458,11 @@ export const NameInput = styled.input`
   outline-offset: 0;
   box-shadow: none;
   font-size: 1.8rem;
+  font-family: Inter;
   caret-color: rgb(191, 90, 242);
   color: rgb(191, 90, 242);
   font-weight: 600;
+  overflow: hidden;
 `;
 
 export const CoverImage = styled(Box)<{ src: string }>`
