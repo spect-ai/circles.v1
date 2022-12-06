@@ -50,8 +50,6 @@ export const permissionText = {
   manageMembers: "Manage Members",
   distributeCredentials: "Distribute Credentials",
   createNewForm: "Create New Form",
-  manageFormSettings: "Manage Form Settings",
-  updateFormResponsesManually: "Update Form Responses Manually",
   manageCardProperties: "Manage Card Properties",
   createNewCard: "Create New Card",
   manageRewards: "Manage Rewards",

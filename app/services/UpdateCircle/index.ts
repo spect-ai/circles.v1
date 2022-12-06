@@ -1,9 +1,11 @@
 import {
+  Action,
   DiscordChannel,
   DiscordRoleMappingType,
   GuildxyzToCircleRoles,
   Payment,
   SafeAddresses,
+  Trigger,
 } from "@/app/types";
 import { toast } from "react-toastify";
 
@@ -27,6 +29,22 @@ type CircleUpdateDTO = {
   grantMilestoneProject: string;
   grantApplicantProject: string;
   grantNotificationChannel: DiscordChannel;
+};
+
+type AddAutomationDto = {
+  name: string;
+  description: string;
+  trigger: Trigger;
+  actions: Action[];
+  triggerCategory: "collection" | "root";
+  triggerCollectionSlug?: string;
+};
+
+type UpdateAutomationDto = {
+  name: string;
+  description: string;
+  trigger: Trigger;
+  actions: Action[];
 };
 
 export const updateCircle = async (
@@ -135,6 +153,91 @@ export const removeSafe = async (safeDto: SafeDto, circleId: string) => {
     return data;
   } else {
     toast("Error updating circle", {
+      theme: "dark",
+    });
+    return false;
+  }
+};
+
+export const addAutomation = async (
+  circleId: string,
+  automation: AddAutomationDto
+) => {
+  console.log({ automation });
+  const res = await fetch(
+    `${process.env.API_HOST}/circle/v1/${circleId}/addAutomation`,
+    {
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      method: "PATCH",
+      body: JSON.stringify(automation),
+      credentials: "include",
+    }
+  );
+  if (res.ok) {
+    const data = await res.json();
+
+    return data;
+  } else {
+    toast.error("Error adding automation", {
+      theme: "dark",
+    });
+    return false;
+  }
+};
+
+export const updateAutomation = async (
+  circleId: string,
+  automationId: string,
+  automation: UpdateAutomationDto
+) => {
+  const res = await fetch(
+    `${process.env.API_HOST}/circle/v1/${circleId}/updateAutomation?automationId=${automationId}`,
+    {
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      method: "PATCH",
+      body: JSON.stringify(automation),
+      credentials: "include",
+    }
+  );
+  if (res.ok) {
+    const data = await res.json();
+
+    return data;
+  } else {
+    toast.error("Error updating automation", {
+      theme: "dark",
+    });
+    return false;
+  }
+};
+
+export const removeAutomation = async (
+  automationId: string,
+  circleId: string
+) => {
+  const res = await fetch(
+    `${process.env.API_HOST}/circle/v1/${circleId}/removeAutomation?automationId=${automationId}`,
+    {
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      method: "PATCH",
+      credentials: "include",
+    }
+  );
+  if (res.ok) {
+    const data = await res.json();
+
+    return data;
+  } else {
+    toast.error("Error removing automation", {
       theme: "dark",
     });
     return false;

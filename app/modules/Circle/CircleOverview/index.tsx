@@ -224,7 +224,7 @@ export default function CircleDashboard() {
                   justifyContent={{ xs: "center", md: "flex-start" }}
                   gap="4"
                 >
-                  <Button
+                  {/* <Button
                     size="small"
                     variant="secondary"
                     shape="circle"
@@ -237,7 +237,7 @@ export default function CircleDashboard() {
                     ) : (
                       <FolderOpenOutlined style={{ fontSize: "1.1rem" }} />
                     )}
-                  </Button>
+                  </Button> */}
                   {canDo("inviteMembers") && (
                     <Box width="1/2">
                       <InviteMemberModal />

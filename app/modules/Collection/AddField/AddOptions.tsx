@@ -10,12 +10,14 @@ type Props = {
     React.SetStateAction<{ label: string; value: string }[]>
   >;
   label?: string;
+  disabled?: boolean;
 };
 
 export default function AddOptions({
   fieldOptions,
   setFieldOptions,
   label = "Options",
+  disabled,
 }: Props) {
   const { mode } = useTheme();
   return (
@@ -34,37 +36,41 @@ export default function AddOptions({
                 }}
                 mode={mode}
               />
-              <Box
-                cursor="pointer"
-                onClick={() => {
-                  const newOptions = [...fieldOptions];
-                  newOptions.splice(index, 1);
-                  setFieldOptions(newOptions);
-                }}
-              >
-                <IconClose color="accent" size="4" />
-              </Box>
+              {!disabled && (
+                <Box
+                  cursor="pointer"
+                  onClick={() => {
+                    const newOptions = [...fieldOptions];
+                    newOptions.splice(index, 1);
+                    setFieldOptions(newOptions);
+                  }}
+                >
+                  <IconClose color="accent" size="4" />
+                </Box>
+              )}
             </Stack>
           </Box>
         ))}
         {!fieldOptions.length && (
           <Text variant="label">No options added yet</Text>
         )}
-        <Box padding="1">
-          <PrimaryButton
-            variant="tertiary"
-            onClick={() => {
-              const newOptions = [...fieldOptions];
-              newOptions.push({
-                label: `Option ${fieldOptions.length + 1}`,
-                value: `option-${uuid()}`,
-              });
-              setFieldOptions(newOptions);
-            }}
-          >
-            Add Option
-          </PrimaryButton>
-        </Box>
+        {!disabled && (
+          <Box padding="1" width="1/2">
+            <PrimaryButton
+              variant="tertiary"
+              onClick={() => {
+                const newOptions = [...fieldOptions];
+                newOptions.push({
+                  label: `Option ${fieldOptions.length + 1}`,
+                  value: `option-${uuid()}`,
+                });
+                setFieldOptions(newOptions);
+              }}
+            >
+              Add Option
+            </PrimaryButton>
+          </Box>
+        )}
       </Stack>
     </Box>
   );

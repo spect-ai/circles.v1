@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { isEmail } from "@/app/common/utils/utils";
+import { isEmail, isURL } from "@/app/common/utils/utils";
 import { useGlobal } from "@/app/context/globalContext";
 import {
   addData,
@@ -148,6 +148,7 @@ export default function FormFields({ form, setForm }: Props) {
               "user",
               "date",
               "number",
+              "singleURL",
               "email",
             ].includes(form.properties[propertyId].type)
           ) {
@@ -158,7 +159,7 @@ export default function FormFields({ form, setForm }: Props) {
               // @ts-ignore
               {};
           } else if (
-            ["multiSelect", "user[]", "milestone"].includes(
+            ["multiSelect", "user[]", "milestone", "multiURL"].includes(
               form.properties[propertyId].type
             )
           ) {
@@ -272,12 +273,15 @@ export default function FormFields({ form, setForm }: Props) {
   }
 
   const isIncorrectType = (propertyName: string, value: any) => {
-    switch (form.properties[propertyName].type) {
+    switch (form.properties[propertyName]?.type) {
       case "ethAddress":
         return value && !isAddress(value);
 
       case "email":
         return value && !isEmail(value);
+
+      case "singleURL":
+        return value && !isURL(value);
 
       default:
         return false;
@@ -291,10 +295,12 @@ export default function FormFields({ form, setForm }: Props) {
       case "ethAddress":
       case "user":
       case "date":
+      case "singleURL":
       case "email":
         return !value;
       case "singleSelect":
         return !value || !value.value || !value.label;
+      case "multiURL":
       case "multiSelect":
       case "milestone":
       case "user[]":

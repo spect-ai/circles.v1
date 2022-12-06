@@ -4,6 +4,8 @@ export const fields = [
   { label: "Number", value: "number" },
   { label: "Ethereum Address", value: "ethAddress" },
   { label: "Email", value: "email" },
+  { label: "URL", value: "singleURL" },
+  { label: "Multiple URL", value: "multiURL" },
   { label: "Reward", value: "reward" },
   { label: "Milestone", value: "milestone" },
   { label: "Date", value: "date" },

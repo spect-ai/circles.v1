@@ -211,7 +211,7 @@ export default function RoleGate() {
                   <Text>{`Pick guild.xyz roles that can submit a response to this form`}</Text>
                 </Box>
 
-                <Stack direction="horizontal">
+                <Stack direction="horizontal" wrap>
                   {guildRoles?.map((option, index) => (
                     <Box
                       key={option.id}

@@ -4,6 +4,7 @@ import styled from "styled-components";
 type Props = {
   isChecked: boolean;
   onClick?: () => void;
+  disabled?: boolean;
 };
 
 const Container = styled(Box)`
@@ -15,7 +16,7 @@ const Container = styled(Box)`
   }
 `;
 
-export default function CheckBox({ isChecked, onClick }: Props) {
+export default function CheckBox({ isChecked, onClick, disabled }: Props) {
   return (
     <Container
       backgroundColor={isChecked ? "accentSecondary" : "transparent"}
@@ -29,7 +30,7 @@ export default function CheckBox({ isChecked, onClick }: Props) {
       alignItems="center"
       width="fit"
       transitionDuration="300"
-      onClick={onClick}
+      onClick={disabled ? undefined : onClick}
     >
       <IconCheck size="4" color={isChecked ? "accent" : "transparent"} />
     </Container>

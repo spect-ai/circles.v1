@@ -281,6 +281,10 @@ export interface CircleType {
   grantApplicantProject?: string;
   paymentAddress: string;
   grantNotificationChannel?: DiscordChannel;
+  automations: AutomationType;
+  automationsIndexedByCollection: AutomationsIndexedByCollectionSlugType;
+  rootAutomations: RootAutomationsType;
+  automationCount: number;
 }
 
 // interface ProjectType {
@@ -601,6 +605,12 @@ export type AdvancedFilters = {
   };
 };
 
+export type KudosAttribute = {
+  fieldName: string;
+  value: string;
+  type: string;
+};
+
 export type KudosRequestType = {
   creator: string;
   headline: string;
@@ -614,6 +624,7 @@ export type KudosRequestType = {
   totalClaimCount?: number;
   expirationTimestamp?: number;
   contributors?: string[];
+  customAttributes?: KudosAttribute[];
 };
 
 export type KudosType = {
@@ -791,6 +802,7 @@ export type Property = {
   onUpdateNotifyUserTypes?: FormUserType[];
   required?: boolean;
   description?: string;
+  viewConditions?: Condition[];
 };
 
 export type PropertyType =
@@ -805,24 +817,15 @@ export type PropertyType =
   | "singleSelect"
   | "multiSelect"
   | "ethAddress"
-  | "milestone";
+  | "milestone"
+  | "singleURL"
+  | "multiURL";
 
 export type Option = {
   label: string;
   value: string;
+  data?: any;
 };
-
-export type Conditions = Condition[];
-
-export type Condition = DateConditions;
-
-export type DateConditions = {
-  propertyId: string;
-  condition: ComparisonCondition;
-  feedback: string;
-};
-
-export type ComparisonCondition = "greaterThanOrEqualTo" | "lessThanOrEqualTo";
 
 export type FormUserType = "assignee" | "reviewer" | "grantee" | "applicant";
 
@@ -863,6 +866,7 @@ export interface FormType {
     [key: string]: {
       type: string;
       name: string;
+      description?: string;
       default: string;
       isPartOfFormView: boolean;
       options?: {
@@ -871,6 +875,7 @@ export interface FormType {
       }[];
       rewardOptions?: Registry;
       required: boolean;
+      viewConditions?: Condition[];
     };
   };
   propertyOrder: string[];
@@ -897,6 +902,7 @@ export interface FormType {
   isAnOpportunity: boolean;
   opportunityInfo: OpportunityInfoType;
   active: boolean;
+  viewConditions: Condition[];
   createdAt: string;
   updatedAt: string;
   id: string;
@@ -967,7 +973,15 @@ export type Voting = {
   enabled: boolean;
   message?: string;
   options?: Option[];
+  votingType?: Option;
+  votesArePublic?: boolean;
   votes?: MappedItem<MappedItem<number>>;
+  votesAreWeightedByTokens?: boolean;
+  tokensWeightedWith?: {
+    chain: Option;
+    token: Option;
+    weight: number;
+  }[];
 };
 
 export type Experience = {
@@ -1078,3 +1092,48 @@ export type Credential = {
   service: string;
   metadata?: VerifiableCredential | SoulboundCredential;
 };
+
+export type Action = {
+  id: string;
+  type: string;
+  subType?: string;
+  name: string;
+  service: string;
+  data: any;
+};
+
+export type Trigger = {
+  id: string;
+  type: string;
+  subType?: string;
+  name: string;
+  service: string;
+  data: any;
+};
+
+export type Condition = {
+  id: string;
+  type: string;
+  service: string;
+  data: any;
+};
+
+export type Automation = {
+  id: string;
+  name: string;
+  description: string;
+  trigger: Trigger;
+  conditions?: Condition[];
+  actions: Action[];
+  triggerCategory: "collection" | "root";
+};
+
+export type AutomationType = {
+  [id: string]: Automation;
+};
+
+export type AutomationsIndexedByCollectionSlugType = {
+  [id: string]: string[];
+};
+
+export type RootAutomationsType = string[];

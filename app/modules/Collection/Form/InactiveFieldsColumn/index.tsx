@@ -2,6 +2,7 @@ import { Box, Stack, Text } from "degen";
 import { memo, useCallback } from "react";
 import { Droppable, DroppableProvided } from "react-beautiful-dnd";
 import styled from "styled-components";
+import Automation from "../../Automation";
 import { useLocalCollection } from "../../Context/LocalCollectionContext";
 import OpportunityMode from "../../OpportunityMode";
 import FormSettings from "../FormSettings";
@@ -56,15 +57,17 @@ function InactiveFieldsColumnComponent({ fields }: Props) {
   return (
     <Container>
       <Stack space="4">
+        <FormSettings />
+        <OpportunityMode />
+        <Automation />
+
         <Text size="headingTwo" weight="semiBold" ellipsis>
-          Inactive Fields
+          Internal Fields
         </Text>
 
         <Droppable droppableId="inactiveFields" type="field">
           {FieldDraggableCallback}
         </Droppable>
-        <FormSettings />
-        <OpportunityMode />
       </Stack>
     </Container>
   );

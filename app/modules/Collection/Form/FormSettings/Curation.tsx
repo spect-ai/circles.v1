@@ -7,8 +7,9 @@ export default function Curation() {
   return (
     <Stack>
       {/* <CredentialCuration /> */}
-      <SendKudos />
       <VotingModule />
+
+      <SendKudos />
 
       {/* <OpportunityMode /> */}
     </Stack>

@@ -104,11 +104,13 @@ export const prevPropertyTypeToNewPropertyTypeThatDoesntRequiresClarance = {
   number: ["number", "shortText", "longText"],
   ethAddress: ["ethAddress", "shortText", "longText"],
   email: ["email", "shortText", "longText"],
+  singleURL: ["singleURL", "shortText", "longText"],
   date: ["date", "shortText", "longText"],
   singleSelect: ["singleSelect", "multiSelect"],
   multiSelect: ["multiSelect"],
   user: ["user", "user[]"],
   "user[]": ["user[]"],
+  multiURL: ["multiURL"],
   reward: ["reward"],
   milestone: ["milestone"],
 };

@@ -1,14 +1,17 @@
-import { Box, useTheme } from "degen";
-import { useEffect } from "react";
+import { Box, Button, useTheme, IconSparkles } from "degen";
+import { AnimatePresence } from "framer-motion";
+import { useEffect, useState } from "react";
 import { ToastContainer } from "react-toastify";
 import CollectionProject from "../CollectionProject";
 import CollectionHeading from "./CollectionHeading";
 import { useLocalCollection } from "./Context/LocalCollectionContext";
 import { Form } from "./Form";
 import TableView from "./TableView";
+import FAQModal from "../Dashboard/FAQModal";
 
 export function Collection() {
   const { view, setView, localCollection: collection } = useLocalCollection();
+  const [faqOpen, setFaqOpen] = useState(false);
   const { mode } = useTheme();
 
   useEffect(() => {
@@ -32,6 +35,25 @@ export function Collection() {
           <CollectionHeading />
           {view === 0 && <Form />}
           {view === 1 && <TableView />}
+          <Box
+            style={{
+              position: "absolute",
+              right: "2rem",
+              bottom: "1rem",
+              zIndex: "2",
+            }}
+          >
+            <Button
+              variant="secondary"
+              onClick={() => setFaqOpen(true)}
+              shape="circle"
+            >
+              <IconSparkles size={"6"} />
+            </Button>
+          </Box>
+          <AnimatePresence>
+            {faqOpen && <FAQModal handleClose={() => setFaqOpen(false)} />}
+          </AnimatePresence>
         </Box>
       )}
       {collection.collectionType === 1 && <CollectionProject />}

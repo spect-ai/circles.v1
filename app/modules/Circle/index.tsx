@@ -1,6 +1,14 @@
 import Loader from "@/app/common/components/Loader";
 import { ApartmentOutlined } from "@ant-design/icons";
-import { Box, Button, useTheme, Text, IconLockClosed, Stack } from "degen";
+import {
+  Box,
+  Button,
+  useTheme,
+  Text,
+  IconLockClosed,
+  Stack,
+  IconSparkles,
+} from "degen";
 import { AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
@@ -13,6 +21,7 @@ import { useRouter } from "next/router";
 import { joinCircle } from "@/app/services/JoinCircle";
 import Roles from "./RolesTab";
 import { useGlobal } from "@/app/context/globalContext";
+import FAQModal from "../Dashboard/FAQModal";
 
 const BoxContainer = styled(Box)`
   width: calc(100vw - 3.5rem);
@@ -28,7 +37,7 @@ export default function Circle() {
     fetchMemberDetails,
   } = useCircle();
   const { mode } = useTheme();
-  const [graphOpen, setGraphOpen] = useState(false);
+  const [faqOpen, setFaqOpen] = useState(false);
   const router = useRouter();
   const { connectedUser } = useGlobal();
 
@@ -140,19 +149,14 @@ export default function Circle() {
       >
         <Button
           variant="secondary"
-          onClick={() => setGraphOpen(true)}
+          onClick={() => setFaqOpen(true)}
           shape="circle"
-          size="small"
         >
-          <ApartmentOutlined
-            style={{
-              fontSize: "1.3rem",
-            }}
-          />
+          <IconSparkles size={"6"} />
         </Button>
       </Box>
       <AnimatePresence>
-        {graphOpen && <Navigation handleClose={() => setGraphOpen(false)} />}
+        {faqOpen && <FAQModal handleClose={() => setFaqOpen(false)} />}
       </AnimatePresence>
     </BoxContainer>
   );

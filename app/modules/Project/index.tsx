@@ -1,5 +1,5 @@
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
-import { Box, Button, Text, useTheme } from "degen";
+import { Box, Button, Text, useTheme, IconSparkles } from "degen";
 import React, { memo, useState } from "react";
 import { useLocalProject } from "./Context/LocalProjectContext";
 import { useGlobal } from "@/app/context/globalContext";
@@ -18,9 +18,11 @@ import { ApartmentOutlined } from "@ant-design/icons";
 import Navigation from "./Navigation";
 import GanttChart from "./GanttChart";
 import TableView from "./TableView";
+import FAQModal from "../Dashboard/FAQModal";
 
 function Project() {
   const [graphOpen, setGraphOpen] = useState(false);
+  const [faqOpen, setFaqOpen] = useState(false);
   const {
     localProject: project,
     selectedCard,
@@ -128,20 +130,16 @@ function Project() {
           >
             <Button
               variant="secondary"
-              onClick={() => setGraphOpen(true)}
+              onClick={() => setFaqOpen(true)}
               shape="circle"
             >
-              <ApartmentOutlined
-                style={{
-                  fontSize: "1.5rem",
-                }}
-              />
+              <IconSparkles size={"6"} />
             </Button>
           </Box>
         </Box>
       </motion.main>
       <AnimatePresence>
-        {graphOpen && <Navigation handleClose={() => setGraphOpen(false)} />}
+        {faqOpen && <FAQModal handleClose={() => setFaqOpen(false)} />}
       </AnimatePresence>
     </>
   );

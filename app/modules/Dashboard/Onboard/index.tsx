@@ -8,16 +8,22 @@ import { useState, useEffect } from "react";
 import { CreateCircle } from "./CreateCircle";
 import { CreateContent } from "./CreateContent";
 import { SetUpProfile } from "./SetupProfile";
+import { useGlobal } from "@/app/context/globalContext";
+import useConnectDiscord from "@/app/services/Discord/useConnectDiscord";
 
 const Onboard = () => {
+  useConnectDiscord();
+  const [onboardType, setOnboardType] =
+    useState<"circle" | "profile">("circle");
   const [step, setStep] = useState(1);
+  const { connectedUser } = useGlobal();
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
-  const { data: myCircles } = useQuery<CircleType[]>(
-    "myOrganizations",
+  const { data: myCircles, refetch } = useQuery<CircleType[]>(
+    "dashboardCircles",
     () =>
-      fetch(`${process.env.API_HOST}/circle/myOrganizations`, {
+      fetch(`${process.env.API_HOST}/user/v1/circles`, {
         credentials: "include",
       }).then((res) => res.json()),
     {
@@ -25,22 +31,18 @@ const Onboard = () => {
     }
   );
   useEffect(() => {
-    if (currentUser && currentUser.username.startsWith("fren")) {
-      setStep(0);
-    } else if (currentUser && myCircles?.length == 0) {
-      setStep(1);
-    } else if (step == 3) {
-      setStep(3);
-    } else if (
-      currentUser &&
-      myCircles &&
-      myCircles?.length > 0 &&
-      myCircles?.[0].id
-    ) {
-      setStep(2);
+    if (onboardType == "circle") {
+      if (currentUser && currentUser.username.startsWith("fren")) {
+        setStep(0);
+      } else if (currentUser && myCircles?.length == 0) {
+        setStep(1);
+      } else {
+        setStep(2);
+      } 
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentUser, currentUser?.circles, myCircles]);
+    void refetch();
+  }, [currentUser, step, connectedUser, onboardType, refetch, myCircles?.length]);
+
   return (
     <Box position={"relative"} display="flex" width={"full"} gap="11">
       <VioletBlur style={{ top: "0px", left: "0rem" }} />
@@ -62,10 +64,14 @@ const Onboard = () => {
           zIndex: "1",
         }}
       >
-        {step == 0 && <BasicProfile setStep={setStep} />}
-        {step == 1 && <CreateCircle setStep={setStep} />}
-        {step == 2 && <CreateContent />}
-        {step == 3 && <SetUpProfile />}
+        {onboardType == "circle" && step == 0 && (
+          <BasicProfile setStep={setStep} />
+        )}
+        {onboardType == "circle" && step == 1 && (
+          <CreateCircle setStep={setStep} setOnboardType={setOnboardType} />
+        )}
+        {onboardType == "circle" && step == 2 && <CreateContent />}
+        {onboardType == "profile" && <SetUpProfile />}
       </Box>
     </Box>
   );

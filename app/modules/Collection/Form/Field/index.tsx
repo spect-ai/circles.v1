@@ -124,6 +124,24 @@ function FieldComponent({
           // onChange={(e) => setLabel(e.target.value)}
         />
       )}
+      {collection.properties[id]?.type === "singleURL" && (
+        <Input
+          label=""
+          placeholder={`Enter ${collection.properties[id]?.name}`}
+          value={collection.data && collection.data[id]}
+          inputMode="text"
+          // onChange={(e) => setLabel(e.target.value)}
+        />
+      )}
+      {collection.properties[id]?.type === "multiURL" && (
+        <Input
+          label=""
+          placeholder={`Enter ${collection.properties[id]?.name}`}
+          value={collection.data && collection.data[id]?.[0]}
+          inputMode="text"
+          // onChange={(e) => setLabel(e.target.value)}
+        />
+      )}
       {collection.properties[id]?.type === "number" && (
         <Input
           label=""
