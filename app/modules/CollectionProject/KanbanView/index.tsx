@@ -59,6 +59,10 @@ export default function KanbanView() {
         label: memberDetails.memberDetails[member]?.username,
         value: member,
       }));
+      memberOptions?.unshift({
+        label: "Unassigned",
+        value: "__unassigned__",
+      });
       setColumns(memberOptions as Option[]);
     }
   }, [memberDetails, property.options, property.type]);
@@ -221,19 +225,30 @@ export default function KanbanView() {
                 loading={loading}
                 onClick={async () => {
                   setLoading(true);
-                  const res = await updateField(
-                    collection.id,
-                    view.groupByColumn,
-                    {
-                      options: [
-                        ...columns,
-                        {
-                          label: "New Column",
-                          value: uuid(),
+                  await updateField(collection.id, view.groupByColumn, {
+                    options: [
+                      ...(property.options as Option[]),
+                      {
+                        label: "New Column",
+                        value: uuid(),
+                      },
+                    ],
+                  });
+                  const res = await updateFormCollection(collection.id, {
+                    projectMetadata: {
+                      ...collection.projectMetadata,
+                      views: {
+                        ...collection.projectMetadata.views,
+                        [projectViewId]: {
+                          ...view,
+                          cardColumnOrder: [
+                            ...(view.cardColumnOrder as string[][]),
+                            [],
+                          ],
                         },
-                      ],
-                    }
-                  );
+                      },
+                    },
+                  });
                   setLoading(false);
                   if (res.id) updateCollection(res);
                   else toast.error("Error adding column");

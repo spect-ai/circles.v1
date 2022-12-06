@@ -27,10 +27,7 @@ export default function AddView({ viewType, handleClose }: Props) {
   useEffect(() => {
     if (viewType === "kanban") {
       const options = Object.keys(collection.properties).map((key) => {
-        if (
-          collection.properties[key].type === "singleSelect" ||
-          collection.properties[key].type === "user"
-        ) {
+        if (collection.properties[key].type === "singleSelect") {
           return {
             label: collection.properties[key].name,
             value: key,

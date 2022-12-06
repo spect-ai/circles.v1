@@ -20,71 +20,73 @@ function EditProperty({ propertyName }: Props) {
   const property = collection.properties[propertyName];
   const [isEditFieldOpen, setIsEditFieldOpen] = useState(false);
 
-  return (
-    <Box width="3/4" marginLeft="1">
-      <AnimatePresence>
-        {isEditFieldOpen && (
-          <AddField
-            handleClose={() => setIsEditFieldOpen(false)}
-            propertyName={propertyName}
-          />
-        )}
-      </AnimatePresence>
-      <Popover
-        isOpen={isMenuOpen}
-        setIsOpen={setIsMenuOpen}
-        dependentRef={fieldInput}
-        butttonComponent={
-          <Box width="full">
-            <PropertyButton onClick={() => setIsMenuOpen(true)}>
-              {getPropertyIcon(property.type)}
-              {property.name}
-              {property.required && <Box color="accent">*</Box>}
-            </PropertyButton>
-          </Box>
-        }
-      >
-        <motion.div
-          initial={{ height: 0 }}
-          animate={{ height: "auto", transition: { duration: 0.2 } }}
-          exit={{ height: 0 }}
-          style={{
-            overflow: "hidden",
-            borderRadius: "0.25rem",
-          }}
+  if (property) {
+    return (
+      <Box width="3/4" marginLeft="1">
+        <AnimatePresence>
+          {isEditFieldOpen && (
+            <AddField
+              handleClose={() => setIsEditFieldOpen(false)}
+              propertyName={propertyName}
+            />
+          )}
+        </AnimatePresence>
+        <Popover
+          isOpen={isMenuOpen}
+          setIsOpen={setIsMenuOpen}
+          dependentRef={fieldInput}
+          butttonComponent={
+            <Box width="full">
+              <PropertyButton onClick={() => setIsMenuOpen(true)}>
+                {getPropertyIcon(property.type)}
+                {property.name}
+                {property.required && <Box color="accent">*</Box>}
+              </PropertyButton>
+            </Box>
+          }
         >
-          <Box backgroundColor="background">
-            <MenuContainer>
-              <Stack space="0">
-                <MenuItem
-                  padding="2"
-                  onClick={() => {
-                    setIsMenuOpen(false);
-                    setIsEditFieldOpen(true);
-                  }}
-                >
-                  <Stack direction="horizontal" align="center">
-                    <Text align="center">
-                      <Edit size={16} />
-                    </Text>
-                    <Text align="center">Edit property</Text>
-                  </Stack>
-                </MenuItem>
-                <MenuItem padding="2">
-                  <Stack direction="horizontal" align="center">
-                    <Text align="center">
-                      <Delete size={16} />
-                    </Text>
-                    <Text align="center">Delete property</Text>
-                  </Stack>
-                </MenuItem>
-              </Stack>
-            </MenuContainer>
-          </Box>
-        </motion.div>
-      </Popover>
-    </Box>
-  );
+          <motion.div
+            initial={{ height: 0 }}
+            animate={{ height: "auto", transition: { duration: 0.2 } }}
+            exit={{ height: 0 }}
+            style={{
+              overflow: "hidden",
+              borderRadius: "0.25rem",
+            }}
+          >
+            <Box backgroundColor="background">
+              <MenuContainer>
+                <Stack space="0">
+                  <MenuItem
+                    padding="2"
+                    onClick={() => {
+                      setIsMenuOpen(false);
+                      setIsEditFieldOpen(true);
+                    }}
+                  >
+                    <Stack direction="horizontal" align="center">
+                      <Text align="center">
+                        <Edit size={16} />
+                      </Text>
+                      <Text align="center">Edit property</Text>
+                    </Stack>
+                  </MenuItem>
+                  <MenuItem padding="2">
+                    <Stack direction="horizontal" align="center">
+                      <Text align="center">
+                        <Delete size={16} />
+                      </Text>
+                      <Text align="center">Delete property</Text>
+                    </Stack>
+                  </MenuItem>
+                </Stack>
+              </MenuContainer>
+            </Box>
+          </motion.div>
+        </Popover>
+      </Box>
+    );
+  } else return null;
 }
 
 export default EditProperty;

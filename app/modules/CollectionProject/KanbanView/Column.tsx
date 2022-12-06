@@ -65,7 +65,8 @@ export default function Column({
             size="small"
             onClick={() => {
               setDefaultValue({
-                [groupByColumn]: column,
+                [groupByColumn]:
+                  column.value === "__unassigned__" ? undefined : column,
               });
               setIsCardDrawerOpen(true);
             }}
