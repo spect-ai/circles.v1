@@ -3,6 +3,7 @@ import React from "react";
 import { useLocalCollection } from "../Collection/Context/LocalCollectionContext";
 import ProjectHeading from "./Heading";
 import KanbanView from "./KanbanView";
+import ListView from "./ListView";
 import ProjectTableView from "./TableView";
 
 export default function CollectionProject() {
@@ -15,6 +16,9 @@ export default function CollectionProject() {
       )}
       {collection.projectMetadata.views[projectViewId]?.type === "kanban" && (
         <KanbanView />
+      )}
+      {collection.projectMetadata.views[projectViewId]?.type === "list" && (
+        <ListView />
       )}
     </Box>
   );

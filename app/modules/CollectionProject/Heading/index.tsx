@@ -112,8 +112,9 @@ export default function ProjectHeading() {
                 <MenuItem
                   padding="2"
                   onClick={() => {
-                    toast.warning("Coming soon!");
                     setIsAddViewPopupOpen(false);
+                    setViewType("list");
+                    setIsAddViewModalOpen(true);
                   }}
                 >
                   <Text color="accent">

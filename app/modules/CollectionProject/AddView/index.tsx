@@ -25,7 +25,7 @@ export default function AddView({ viewType, handleClose }: Props) {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (viewType === "kanban") {
+    if (["kanban", "list"].includes(viewType)) {
       const options = Object.keys(collection.properties).map((key) => {
         if (collection.properties[key].type === "singleSelect") {
           return {
@@ -50,7 +50,7 @@ export default function AddView({ viewType, handleClose }: Props) {
             value={viewName}
             onChange={(e) => setViewName(e.target.value)}
           />
-          {viewType === "kanban" && (
+          {["kanban", "list"].includes(viewType) && (
             <Dropdown
               options={columnOptions}
               selected={groupByColumn}
@@ -73,7 +73,10 @@ export default function AddView({ viewType, handleClose }: Props) {
                 },
                 () => []
               );
-              if (viewType === "kanban" && groupByColumn.value) {
+              if (
+                ["kanban", "list"].includes(viewType) &&
+                groupByColumn.value
+              ) {
                 // filter collection data based on group by column options and add it to a 2 dimensional array
                 Object.keys(collection.data).forEach((key) => {
                   const data = collection.data[key];
