@@ -96,6 +96,8 @@ export default function DataDrawer({
     }
   );
 
+  console.log({ memberDetails });
+
   const getMemberDetails = React.useCallback(
     (id: string) => {
       return memberDetails?.memberDetails[id];
@@ -445,21 +447,75 @@ export default function DataDrawer({
                           collection.voting.votes[data.slug] &&
                           Object.entries(
                             collection.voting?.votes[data.slug]
-                          ).map(([slug, vote]) => {
+                          ).map(([voterId, vote]) => {
                             return (
                               <Box
                                 display="flex"
                                 flexDirection="row"
-                                key={slug}
+                                key={voterId}
                                 marginTop="4"
                                 gap="4"
                               >
-                                <Text variant="small">{slug}</Text>
-                                <Text variant="small">
-                                  {collection?.voting?.options
-                                    ? collection?.voting?.options[vote]?.label
-                                    : "No vote"}
-                                </Text>
+                                <Box
+                                  display="flex"
+                                  flexDirection="row"
+                                  width="1/3"
+                                  alignItems="center"
+                                >
+                                  <a
+                                    href={`/profile/${
+                                      getMemberDetails(voterId)?.username
+                                    }`}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                  >
+                                    <Stack
+                                      direction="horizontal"
+                                      align="center"
+                                      space="2"
+                                    >
+                                      <Avatar
+                                        src={getMemberDetails(voterId)?.avatar}
+                                        address={
+                                          getMemberDetails(voterId)?.ethAddress
+                                        }
+                                        label=""
+                                        size="8"
+                                      />
+                                      <Text
+                                        color="accentText"
+                                        weight="semiBold"
+                                      >
+                                        {getMemberDetails(voterId)?.username}
+                                      </Text>
+                                    </Stack>
+                                  </a>
+                                </Box>
+                                <Box
+                                  display="flex"
+                                  flexDirection="row"
+                                  width="1/3"
+                                  alignItems="center"
+                                >
+                                  <Text variant="base" weight="semiBold">
+                                    {collection?.voting?.options
+                                      ? collection?.voting?.options[vote]?.label
+                                      : "No vote"}
+                                  </Text>
+                                </Box>
+                                <Box
+                                  display="flex"
+                                  flexDirection="row"
+                                  width="1/3"
+                                  alignItems="center"
+                                >
+                                  <Text variant="base" weight="semiBold">
+                                    {collection?.voting
+                                      ?.votesAreWeightedByTokens
+                                      ? `${1} votes`
+                                      : `1 vote`}
+                                  </Text>
+                                </Box>
                               </Box>
                             );
                           })}
