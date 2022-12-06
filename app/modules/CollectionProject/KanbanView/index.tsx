@@ -48,7 +48,12 @@ export default function KanbanView() {
 
   useEffect(() => {
     if (property.type === "singleSelect") {
-      setColumns(property.options as Option[]);
+      const options = Array.from(property.options as Option[]);
+      options.unshift({
+        label: "Unassigned",
+        value: "__unassigned__",
+      });
+      setColumns(options);
     } else if (property.type === "user" && memberDetails) {
       const memberOptions = memberDetails.members?.map((member: string) => ({
         label: memberDetails.memberDetails[member]?.username,
@@ -141,7 +146,8 @@ export default function KanbanView() {
         ...collection.data,
         [draggableId]: {
           ...collection.data[draggableId],
-          [view.groupByColumn]: destColumn,
+          [view.groupByColumn]:
+            destColumn.value === "__unassigned__" ? undefined : destColumn,
         },
       },
       projectMetadata: {

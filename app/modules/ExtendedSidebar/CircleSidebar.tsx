@@ -231,6 +231,7 @@ function CircleSidebar() {
                                 href={`/${cId}?retroSlug=${circle?.retro?.[content].slug}`}
                               >
                                 <PrimaryButton
+                                  center
                                   variant={
                                     pId === circle?.retro?.[content].slug
                                       ? "tertiary"
@@ -250,13 +251,25 @@ function CircleSidebar() {
                                 href={`/${cId}/r/${circle?.collections?.[content].slug}`}
                               >
                                 <PrimaryButton
+                                  center
                                   variant={
                                     cSlug ===
                                     circle?.collections?.[content].slug
                                       ? "tertiary"
                                       : "transparent"
                                   }
-                                  icon={<IconCollection size={"5"} />}
+                                  icon={
+                                    <Text
+                                      color={
+                                        cSlug ===
+                                        circle?.collections?.[content].slug
+                                          ? "accent"
+                                          : "inherit"
+                                      }
+                                    >
+                                      <IconCollection size={"5"} />
+                                    </Text>
+                                  }
                                 >
                                   {smartTrim(
                                     circle?.collections?.[content].name,

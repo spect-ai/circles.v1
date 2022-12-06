@@ -67,7 +67,7 @@ function CircleOptions() {
         )}
       </AnimatePresence>
       <Box display="flex" flexDirection="row" alignItems="center" width="full">
-        <Box width="3/4">
+        <Box width="full">
           <Popover
             data-tour="circle-options-popover"
             butttonComponent={

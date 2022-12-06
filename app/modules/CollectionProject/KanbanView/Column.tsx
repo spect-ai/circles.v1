@@ -75,7 +75,7 @@ export default function Column({
         </Stack>
         <ScrollContainer>
           <Stack space="2">
-            {cardIds.map((slug, index) => (
+            {cardIds?.map((slug, index) => (
               <Draggable key={slug} draggableId={slug} index={index}>
                 {(provided, snapshot) => (
                   <Box
@@ -231,7 +231,7 @@ const ScrollContainer = styled(Box)`
   ::-webkit-scrollbar {
     width: 0px;
   }
-  height: calc(100vh - 14rem);
+  height: calc(100vh - 12.5rem);
   border-radius: 0.5rem;
   overflow-y: auto;
 `;
