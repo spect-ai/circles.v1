@@ -41,8 +41,14 @@ export default function useCredentials() {
       isAllowlistRequired: kudos.isAllowlistRequired,
       links: kudos.links || [],
       totalClaimCount: kudos.totalClaimCount || 0,
+      customAttributes: [
+        {
+          fieldName: "Issuing Community",
+          type: "string",
+          value: `${circle?.name}`,
+        },
+      ],
     };
-
     if (registry) {
       try {
         if (chain?.id.toString() !== chainId) {
@@ -53,7 +59,6 @@ export default function useCredentials() {
         );
 
         const signer = provider.getSigner();
-        console.log(value);
         // Obtain signature
         const signature: string = await signer._signTypedData(
           domainInfo,
@@ -73,10 +78,12 @@ export default function useCredentials() {
           communityId: communityId,
           nftTypeId: nftTypeId || "defaultOrangeRed",
           contributors: kudos.contributors,
+          customAttributes: value.customAttributes,
           signature: signature,
         } as KudosRequestType;
         if (kudos.totalClaimCount)
           params.totalClaimCount = value.totalClaimCount;
+
         const body = JSON.stringify(params);
         toast(
           "Minting Kudos takes a few seconds. You'll be notified once its successful.",
@@ -118,13 +125,10 @@ export default function useCredentials() {
     let time = 1000;
     const intervalPromise = setInterval(() => {
       time += 1000;
-      console.log(time);
       fetch(`${process.env.MINTKUDOS_HOST}${operationId}`)
         .then(async (res) => {
           if (res.ok) {
             const data = await res.json();
-            console.log(data);
-
             if (data.status === "success") {
               clearInterval(intervalPromise);
               const kudosForUsers = kudosFor || "assignee";
@@ -176,7 +180,6 @@ export default function useCredentials() {
           if (res.ok) {
             const data = await res.json();
             console.log(data);
-
             if (data.status === "success") {
               clearInterval(intervalPromise);
               fetch(`${process.env.API_HOST}/collection/v1/${collection.id}`, {
@@ -218,9 +221,7 @@ export default function useCredentials() {
 
   const viewKudos = async (): Promise<KudosType[]> => {
     const kudos = [];
-    console.log("view");
     for (const [role, tokenId] of Object.entries(kudosMinted)) {
-      console.log(kudosMinted);
       const res = await fetch(
         `${process.env.MINTKUDOS_HOST}/v1/tokens/${tokenId}`
       );
@@ -245,7 +246,6 @@ export default function useCredentials() {
         );
 
         const signer = provider.getSigner();
-        console.log(value);
         // Obtain signature
         const signature: string = await signer._signTypedData(
           domainInfo,
@@ -295,7 +295,6 @@ export default function useCredentials() {
           if (res.ok) {
             const data = await res.json();
             console.log(data);
-
             if (data.status === "success") {
               clearInterval(intervalPromise);
               fetch(

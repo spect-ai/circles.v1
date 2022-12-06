@@ -41,7 +41,9 @@ export default function Automation() {
   const [automationMode, setAutomationMode] = useState("create");
   const [automations, setAutomations] = useState(circle.automations || {});
   const [automationOrder, setAutomationOrder] = useState(
-    circle.automationsIndexedByCollection[colId as string] || []
+    (circle.automationsIndexedByCollection &&
+      circle.automationsIndexedByCollection[colId as string]) ||
+      []
   );
   const [automationId, setAutomationId] = useState(automationOrder[tab]);
   const [automationInCreate, setAutomationInCreate] = useState(
@@ -201,11 +203,19 @@ export default function Automation() {
         }}
       >
         <PrimaryButton
-          variant={automationOrder?.length > 0 ? "tertiary" : "secondary"}
+          variant={
+            automationOrder?.length > 1 ||
+            !automationId?.startsWith("automation")
+              ? "tertiary"
+              : "secondary"
+          }
           onClick={() => setIsOpen(true)}
           icon={<GatewayOutlined />}
         >
-          {automationOrder?.length > 0 ? `Edit Automations` : `Add Automations`}
+          {automationOrder?.length > 1 ||
+          !automationId?.startsWith("automation")
+            ? `Edit Automations`
+            : `Add Automations`}
         </PrimaryButton>
       </Box>
       <AnimatePresence>

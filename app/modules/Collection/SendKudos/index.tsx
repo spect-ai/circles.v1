@@ -86,7 +86,6 @@ export default function SendKudos() {
     if (file) {
       setUploading(true);
       const { imageGatewayURL } = await storeImage(file);
-      console.log({ imageGatewayURL });
       setUploadedImage(imageGatewayURL);
       setUploading(false);
       setAssetUrl(imageGatewayURL);
@@ -145,7 +144,7 @@ export default function SendKudos() {
   }, [collection]);
 
   useEffect(() => {
-    if (isOpen && hasMintkudosCredentialsSetup)
+    if (isOpen)
       getCommunityKudosDesigns()
         .then((res) => {
           setCommunityKudosDesigns(res);
@@ -241,7 +240,7 @@ export default function SendKudos() {
       )}
       {
         <AnimatePresence>
-          {isOpen && !hasMintkudosCredentialsSetup && (
+          {/* {isOpen && !hasMintkudosCredentialsSetup && (
             <Modal
               title="Mintkudos Integration"
               handleClose={() => setIsOpen(false)}
@@ -252,8 +251,8 @@ export default function SendKudos() {
                 <Credentials />
               </Box>
             </Modal>
-          )}
-          {isOpen && hasMintkudosCredentialsSetup && (
+          )} */}
+          {isOpen && (
             <Modal
               size="medium"
               title="Send Kudos 🎉"
@@ -355,7 +354,7 @@ export default function SendKudos() {
                           type: "image/png",
                           url: uploadedImage,
                         }}
-                        label="Choose or drag and drop custom kudos image"
+                        label="Choose or drag and drop custom design"
                         uploaded={!!uploadedImage}
                         onChange={async (f) => {
                           if (f.name?.length > 20) {
@@ -433,7 +432,6 @@ export default function SendKudos() {
                             user: currentUser?.username,
                             form: collection.name,
                           });
-
                         const res = await mintKudos(
                           {
                             headline: headlineContent,
@@ -442,7 +440,9 @@ export default function SendKudos() {
                             isSignatureRequired: false,
                             isAllowlistRequired: false,
                           } as KudosRequestType,
-                          mintkudosCommunityId,
+                          mintkudosCommunityId?.length > 0
+                            ? mintkudosCommunityId
+                            : "c6c9a5ff-9d3c-4858-ade1-354e1ecd0cb0",
                           communityAsset?.nftTypeId || assetToUse
                         );
                         if (res) {

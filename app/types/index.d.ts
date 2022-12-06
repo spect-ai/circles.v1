@@ -605,6 +605,12 @@ export type AdvancedFilters = {
   };
 };
 
+export type KudosAttribute = {
+  fieldName: string;
+  value: string;
+  type: string;
+};
+
 export type KudosRequestType = {
   creator: string;
   headline: string;
@@ -618,6 +624,7 @@ export type KudosRequestType = {
   totalClaimCount?: number;
   expirationTimestamp?: number;
   contributors?: string[];
+  customAttributes?: KudosAttribute[];
 };
 
 export type KudosType = {
