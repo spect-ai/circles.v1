@@ -8,13 +8,13 @@ import { useLocalCollection } from "../Context/LocalCollectionContext";
 type Props = {
   options: Option[];
   setOptions: (options: SetStateAction<Option[]>) => void;
-  message: string;
-  setMessage: (message: string) => void;
+  disabled?: boolean;
 };
 
 export default function SingleChoiceVotingOnSingleResponse({
   options,
   setOptions,
+  disabled,
 }: Props) {
   return (
     <>
@@ -25,6 +25,7 @@ export default function SingleChoiceVotingOnSingleResponse({
               fieldOptions={options}
               setFieldOptions={setOptions}
               label="Voting Options"
+              disabled={disabled}
             />
           </Stack>
         </Stack>

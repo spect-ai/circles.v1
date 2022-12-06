@@ -1,5 +1,6 @@
 import Dropdown from "@/app/common/components/Dropdown";
 import Modal from "@/app/common/components/Modal";
+import ConfirmModal from "@/app/common/components/Modal/ConfirmModal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import CheckBox from "@/app/common/components/Table/Checkbox";
 import { updateFormCollection } from "@/app/services/Collection";
@@ -50,6 +51,7 @@ export default function VotingModule() {
   ]);
   const [message, setMessage] = useState("Please vote");
   const [loading, setLoading] = useState(false);
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
 
   useEffect(() => {
     if (
@@ -76,6 +78,35 @@ export default function VotingModule() {
 
   return (
     <>
+      {isConfirmModalOpen && (
+        <ConfirmModal
+          title={
+            "Voting settings cannot be updated once voting is enabled. It has to be disabled and enabled again which would start the voting process anew for responses that have an active voting periods."
+          }
+          handleClose={() => setIsConfirmModalOpen(false)}
+          onConfirm={async () => {
+            setLoading(true);
+            setIsConfirmModalOpen(false);
+            const res = await updateFormCollection(collection.id, {
+              voting: {
+                enabled: true,
+                options: votingOptions,
+                message,
+                votingType,
+                votesArePublic,
+                votesAreWeightedByTokens,
+                tokensWeightedWith: tokenWeightedWith,
+              },
+            });
+            setLoading(false);
+            if (res.id) {
+              setIsOpen(false);
+              setLocalCollection(res);
+            } else toast.error("Something went wrong");
+          }}
+          onCancel={() => setIsConfirmModalOpen(false)}
+        />
+      )}
       <Text variant="label">Allow members to vote on responses</Text>
       <Box
         width={{
@@ -88,7 +119,8 @@ export default function VotingModule() {
           icon={<IconUserGroup />}
           variant={collection?.voting?.enabled ? "tertiary" : "secondary"}
         >
-          {collection?.voting?.enabled ? "Edit" : "Enable"} Voting
+          {collection?.voting?.enabled ? "View" : "Enable"} Voting{" "}
+          {collection?.voting?.enabled ? "Settings" : ""}
         </PrimaryButton>
       </Box>
       <AnimatePresence>
@@ -117,6 +149,7 @@ export default function VotingModule() {
                     selected={votingType}
                     onChange={setVotingType}
                     multiple={false}
+                    disabled={collection?.voting?.enabled}
                   />{" "}
                 </Stack>
                 <Stack space="0">
@@ -125,6 +158,7 @@ export default function VotingModule() {
                     label=""
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
+                    disabled={collection?.voting?.enabled}
                   />
                 </Stack>
                 <Box
@@ -139,6 +173,7 @@ export default function VotingModule() {
                     onClick={() => {
                       setVotesArePublic(!votesArePublic);
                     }}
+                    disabled={collection?.voting?.enabled}
                   />
                   <Text variant="small">
                     Votes are visible by other members
@@ -157,6 +192,7 @@ export default function VotingModule() {
                       onClick={() => {
                         setVotesAreWeightedByTokens(!votesAreWeightedByTokens);
                       }}
+                      disabled={collection?.voting?.enabled}
                     />
                     <Text variant="small">
                       Votes are weighted by token holdings
@@ -173,36 +209,21 @@ export default function VotingModule() {
                   <SingleChoiceVotingOnSingleResponse
                     options={votingOptions}
                     setOptions={setVotingOptions}
-                    message={message}
-                    setMessage={setMessage}
+                    disabled={collection?.voting?.enabled}
                   />
                 )}
-                <Box width="full" marginTop="8">
-                  <PrimaryButton
-                    loading={loading}
-                    onClick={async () => {
-                      setLoading(true);
-                      const res = await updateFormCollection(collection.id, {
-                        voting: {
-                          enabled: true,
-                          options: votingOptions,
-                          message,
-                          votingType,
-                          votesArePublic,
-                          votesAreWeightedByTokens,
-                          tokensWeightedWith: tokenWeightedWith,
-                        },
-                      });
-                      setLoading(false);
-                      if (res.id) {
-                        setIsOpen(false);
-                        setLocalCollection(res);
-                      } else toast.error("Something went wrong");
-                    }}
-                  >
-                    {collection?.voting?.enabled ? "Update" : "Enable"} Voting
-                  </PrimaryButton>
-                </Box>
+                {!collection.voting?.enabled && (
+                  <Box width="full" marginTop="8">
+                    <PrimaryButton
+                      loading={loading}
+                      onClick={() => {
+                        setIsConfirmModalOpen(true);
+                      }}
+                    >
+                      Enable Voting
+                    </PrimaryButton>
+                  </Box>
+                )}
                 {collection.voting?.enabled && (
                   <Box width="full">
                     <PrimaryButton
