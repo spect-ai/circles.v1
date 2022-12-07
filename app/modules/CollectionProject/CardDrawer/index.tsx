@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import Drawer from "@/app/common/components/Drawer";
 import Editor from "@/app/common/components/Editor";
@@ -18,7 +19,8 @@ import {
   Text,
   useTheme,
 } from "degen";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
+import { useRouter } from "next/router";
 import React, { useCallback, useEffect, useState } from "react";
 import {
   DragDropContext,
@@ -47,6 +49,7 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
   const { mode } = useTheme();
   const { localCollection: collection, updateCollection } =
     useLocalCollection();
+
   const [value, setValue] = useState<any>(defaultValue || {});
 
   const [isAddFieldOpen, setIsAddFieldOpen] = useState(false);
@@ -54,10 +57,54 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
 
   const [propertyOrder, setPropertyOrder] = useState(collection.propertyOrder);
   const [loading, setLoading] = useState(false);
+  const { push, pathname, query } = useRouter();
+  const { cardSlug, newCard } = query;
 
   useEffect(() => {
     setPropertyOrder(collection.propertyOrder);
   }, [collection.propertyOrder]);
+
+  useEffect(() => {
+    if (cardSlug) {
+      if (isDirty) {
+        void onChange(
+          {
+            Description: value.Description,
+            Title: value.Title,
+          },
+          value.slug
+        );
+      }
+      setValue({});
+      setTimeout(() => {
+        setValue(collection.data[cardSlug as string]);
+      }, 100);
+    }
+  }, [defaultValue, cardSlug]);
+
+  const onChange = async (update: any, slug: string) => {
+    if (slug) {
+      const res = await updateCollectionDataGuarded(
+        collection.id,
+        slug,
+        update
+      );
+      if (res.id) {
+        updateCollection(res);
+      } else toast.error("Error updating card");
+    }
+  };
+
+  const closeCard = () => {
+    void push({
+      pathname,
+      query: {
+        circle: query.circle,
+        collection: query.collection,
+      },
+    });
+    handleClose();
+  };
 
   const handleDragEnd = async (result: DropResult) => {
     const { destination, source } = result;
@@ -74,7 +121,6 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
       source.index,
       destination.index
     );
-    console.log({ newPropertyOrder });
     setPropertyOrder(newPropertyOrder);
 
     const res = await updateFormCollection(collection.id, {
@@ -125,6 +171,7 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
             value={value[property]}
             setValue={(val) => {
               setValue({ ...value, [property]: val });
+              void onChange({ [property]: val }, value.slug);
             }}
             dataId={value.slug}
           />
@@ -185,7 +232,9 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
                 shape="circle"
                 size="small"
                 variant="transparent"
-                onClick={() => handleClose()}
+                onClick={() => {
+                  closeCard();
+                }}
               >
                 <Stack direction="horizontal" align="center" space="0">
                   <IconChevronRight />
@@ -195,27 +244,12 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
                 </Stack>
               </Button>
               <Box width="56">
-                <PrimaryButton
-                  loading={loading}
-                  icon={<Save size="24" />}
-                  onClick={async () => {
-                    console.log(value.slug);
-                    if (value.slug) {
-                      setLoading(true);
-                      console.log({ value });
-                      const res = await updateCollectionDataGuarded(
-                        collection.id,
-                        value.slug,
-                        value
-                      );
-                      setLoading(false);
-                      if (res.id) {
-                        updateCollection(res);
-                        handleClose();
-                      } else toast.error("Error updating card");
-                      return;
-                    }
-                    if (Object.keys(value).length > 0) {
+                {newCard && (
+                  <PrimaryButton
+                    loading={loading}
+                    icon={<Save size="22" />}
+                    disabled={Object.keys(value).length === 0}
+                    onClick={async () => {
                       setLoading(true);
                       const res = await addCollectionData(collection.id, value);
                       setLoading(false);
@@ -223,11 +257,11 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
                         updateCollection(res);
                         handleClose();
                       } else toast.error("Error adding card");
-                    } else handleClose();
-                  }}
-                >
-                  Save and Exit
-                </PrimaryButton>
+                    }}
+                  >
+                    Create Card
+                  </PrimaryButton>
+                )}
               </Box>
             </Stack>
           </Box>
@@ -238,42 +272,56 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
             <AddField handleClose={() => setIsAddFieldOpen(false)} />
           )}
         </AnimatePresence>
-        <Container paddingX="8" paddingY="4" overflow="auto">
-          <Stack space="1">
-            <NameInput
-              mode={mode}
-              placeholder="Untitled"
-              value={value.Title}
-              onChange={(e) => setValue({ ...value, Title: e.target.value })}
-            />
-            <DragDropContext onDragEnd={handleDragEnd}>
-              <Droppable droppableId="droppable" type="PROPERTY">
-                {ProperyListCallback}
-              </Droppable>
-            </DragDropContext>
-            <Box width="1/4">
-              <PrimaryButton
-                variant="tertiary"
-                icon={<IconPlusSmall />}
-                onClick={() => setIsAddFieldOpen(true)}
-              >
-                Add Field
-              </PrimaryButton>
-            </Box>
-            <Box padding="2" borderTopWidth="0.375" marginTop="4">
-              <Editor
-                placeholder="Describe your card here...."
-                value={value.Description}
-                onSave={(val) => {
-                  console.log({ val });
-                  setValue({ ...value, Description: val });
-                }}
-                isDirty={isDirty}
-                setIsDirty={setIsDirty}
-              />
-            </Box>
-          </Stack>
-        </Container>
+        {(value.slug || newCard) && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <Container paddingX="8" paddingY="4" overflow="auto">
+              <Stack space="1">
+                <NameInput
+                  mode={mode}
+                  placeholder="Untitled"
+                  value={value.Title}
+                  onChange={(e) => {
+                    setIsDirty(true);
+                    setValue({ ...value, Title: e.target.value });
+                  }}
+                />
+                <DragDropContext onDragEnd={handleDragEnd}>
+                  <Droppable droppableId="droppable" type="PROPERTY">
+                    {ProperyListCallback}
+                  </Droppable>
+                </DragDropContext>
+                <Box width="1/4">
+                  <PrimaryButton
+                    variant="tertiary"
+                    icon={<IconPlusSmall />}
+                    onClick={() => setIsAddFieldOpen(true)}
+                  >
+                    Add Field
+                  </PrimaryButton>
+                </Box>
+                <Box padding="2" borderTopWidth="0.375" marginTop="4">
+                  <Editor
+                    placeholder="Describe your card here...."
+                    value={value.Description}
+                    onSave={(val) => {
+                      void onChange({ Description: val }, value.slug);
+                    }}
+                    onChange={(val) => {
+                      setIsDirty(true);
+                      setValue({ ...value, Description: val });
+                    }}
+                    isDirty={isDirty}
+                    setIsDirty={setIsDirty}
+                  />
+                </Box>
+              </Stack>
+            </Container>
+          </motion.div>
+        )}
       </Drawer>
     </Box>
   );

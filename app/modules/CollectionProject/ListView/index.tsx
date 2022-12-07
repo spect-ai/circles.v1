@@ -64,12 +64,11 @@ export default function ListView() {
               }
             />
           ))}
-          <Box marginLeft="4" width="64" marginBottom="4">
+          <Box marginLeft="4" width="48" marginBottom="4">
             {property.type === "singleSelect" && (
               <PrimaryButton
                 icon={<IconPlusSmall />}
                 center
-                loading={loading}
                 onClick={async () => {
                   setLoading(true);
                   await updateField(collection.id, view.groupByColumn, {

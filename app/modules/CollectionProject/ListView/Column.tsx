@@ -12,6 +12,7 @@ import {
   Text,
   useTheme,
 } from "degen";
+import { useRouter } from "next/router";
 import React, { useCallback, useState } from "react";
 import { Draggable, Droppable, DroppableProvided } from "react-beautiful-dnd";
 import { toast } from "react-toastify";
@@ -41,6 +42,8 @@ export default function Column({
   const { mode } = useTheme();
   const columns = collection.properties[groupByColumn].options as Option[];
 
+  const router = useRouter();
+
   const ColumnList = (provided: DroppableProvided) => (
     <Container padding="4" ref={provided.innerRef} {...provided.droppableProps}>
       <Stack>
@@ -68,7 +71,14 @@ export default function Column({
                 [groupByColumn]:
                   column.value === "__unassigned__" ? undefined : column,
               });
-              setIsCardDrawerOpen(true);
+              void router.push({
+                pathname: router.pathname,
+                query: {
+                  circle: router.query.circle,
+                  collection: router.query.collection,
+                  newCard: true,
+                },
+              });
             }}
           >
             <IconPlusSmall />
@@ -86,8 +96,14 @@ export default function Column({
                     borderColor={snapshot.isDragging ? "accent" : undefined}
                     borderRadius="medium"
                     onClick={() => {
-                      setDefaultValue(collection.data[slug]);
-                      setIsCardDrawerOpen(true);
+                      void router.push({
+                        pathname: router.pathname,
+                        query: {
+                          circle: router.query.circle,
+                          collection: router.query.collection,
+                          cardSlug: slug,
+                        },
+                      });
                     }}
                     cursor="pointer"
                     ref={provided.innerRef}
@@ -217,6 +233,7 @@ export default function Column({
     getMemberDetails,
     groupByColumn,
     mode,
+    router,
     setDefaultValue,
     setIsCardDrawerOpen,
     updateCollection,

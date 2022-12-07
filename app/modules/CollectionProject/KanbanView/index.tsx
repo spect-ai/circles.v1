@@ -2,7 +2,7 @@
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { updateField, updateFormCollection } from "@/app/services/Collection";
 import { Option } from "@/app/types";
-import { Box, Stack } from "degen";
+import { Box, IconPlusSmall, Stack } from "degen";
 import { AnimatePresence } from "framer-motion";
 import { DragDropContext } from "react-beautiful-dnd";
 import { toast } from "react-toastify";
@@ -55,7 +55,6 @@ export default function KanbanView() {
               column={column}
               groupByColumn={view.groupByColumn}
               setDefaultValue={setDefaultValue}
-              setIsCardDrawerOpen={setIsCardDrawerOpen}
               cardIds={
                 (
                   collection.projectMetadata.views[projectViewId]
@@ -64,10 +63,10 @@ export default function KanbanView() {
               }
             />
           ))}
-          <Box marginTop="4" width="64">
-            {property.type === "singleSelect" && (
+          <Box marginTop="4" width="48">
+            {property.type === "singleSelect" && !loading && (
               <PrimaryButton
-                loading={loading}
+                icon={<IconPlusSmall />}
                 onClick={async () => {
                   setLoading(true);
                   await updateField(collection.id, view.groupByColumn, {

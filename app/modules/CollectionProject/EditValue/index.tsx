@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import Popover from "@/app/common/components/Popover";
+import { updateCollectionDataGuarded } from "@/app/services/Collection";
 import { Box, IconClose, Stack, Tag, Text } from "degen";
 import { AnimatePresence, motion } from "framer-motion";
 import { matchSorter } from "match-sorter";
@@ -82,11 +83,10 @@ function EditValue({ value, setValue, propertyName, dataId }: Props) {
                             <Box
                               cursor="pointer"
                               onClick={() => {
-                                setValue(
-                                  value.filter(
-                                    (v: any) => v.value !== val.value
-                                  )
+                                const change = value.filter(
+                                  (v: any) => v.value !== val.value
                                 );
+                                setValue(change);
                               }}
                             >
                               <IconClose size="4" color="red" />

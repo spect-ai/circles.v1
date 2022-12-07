@@ -5,7 +5,7 @@ import {
 } from "@/app/services/Collection";
 import { MemberDetails, Option } from "@/app/types";
 import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { DropResult } from "react-beautiful-dnd";
 import { useQuery } from "react-query";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
@@ -21,13 +21,13 @@ export default function useViewCommon() {
   const property = collection.properties[view.groupByColumn];
 
   const [isCardDrawerOpen, setIsCardDrawerOpen] = useState(false);
-  const [defaultValue, setDefaultValue] = useState({} as Option);
+  const [defaultValue, setDefaultValue] = useState({} as any);
 
   const [loading, setLoading] = useState(false);
   const [columns, setColumns] = useState<Option[]>([]);
 
   const router = useRouter();
-  const { circle: cId } = router.query;
+  const { circle: cId, cardSlug, newCard } = router.query;
   const { data: memberDetails } = useQuery<MemberDetails>(
     ["memberDetails", cId],
     {
@@ -55,6 +55,15 @@ export default function useViewCommon() {
       setColumns(memberOptions as Option[]);
     }
   }, [memberDetails, property.options, property.type]);
+
+  useEffect(() => {
+    if (cardSlug || newCard) {
+      setIsCardDrawerOpen(true);
+    } else {
+      setIsCardDrawerOpen(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cardSlug, newCard]);
 
   const handleDragEnd = (result: DropResult) => {
     const { source, destination, draggableId } = result;
@@ -186,5 +195,7 @@ export default function useViewCommon() {
     collection,
     projectViewId,
     updateCollection,
+    cardSlug,
+    newCard,
   };
 }
