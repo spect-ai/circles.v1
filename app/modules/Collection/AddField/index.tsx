@@ -4,7 +4,7 @@ import PrimaryButton from "@/app/common/components/PrimaryButton";
 import Select from "@/app/common/components/Select";
 import Tabs from "@/app/common/components/Tabs";
 import { addField, deleteField, updateField } from "@/app/services/Collection";
-import { FormUserType, Option, Registry } from "@/app/types";
+import { FormUserType, Option, PayWallOptions, Registry } from "@/app/types";
 import { SaveFilled } from "@ant-design/icons";
 import { Box, IconTrash, Input, Stack, Text, Textarea } from "degen";
 import React, { useEffect, useState } from "react";
@@ -19,6 +19,7 @@ import uuid from "react-uuid";
 import { prevPropertyTypeToNewPropertyTypeThatDoesntRequiresClarance } from "@/app/common/utils/constants";
 import { AnimatePresence } from "framer-motion";
 import ConfirmModal from "@/app/common/components/Modal/ConfirmModal";
+import PayWall from "./PayWallOptions";
 
 type Props = {
   propertyName?: string;
@@ -30,6 +31,11 @@ export default function AddField({ propertyName, handleClose }: Props) {
     useLocalCollection();
   const { registry } = useCircle();
   const [networks, setNetworks] = useState(registry);
+  const [payWallOption, setPayWallOption] = useState({
+    network: registry as Registry,
+    value: 0,
+    receiver: "",
+  });
   const [initialName, setInitialName] = useState("");
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -60,12 +66,16 @@ export default function AddField({ propertyName, handleClose }: Props) {
     setLoading(true);
     let res;
     let rewardOptions = {} as Registry | undefined;
+    let payWallOptions = {} as PayWallOptions;
     if (type.value === "reward" || type.value === "milestone") {
       rewardOptions = networks;
     }
     let milestoneFields = [] as string[];
     if (type.value === "milestone") {
       milestoneFields = ["name", "description", "dueDate", "reward"];
+    }
+    if (type.value === "payWall") {
+      payWallOptions = payWallOption;
     }
     if (propertyName) {
       res = await updateField(collection.id, propertyName, {
@@ -82,6 +92,7 @@ export default function AddField({ propertyName, handleClose }: Props) {
         isPartOfFormView: true,
         required: required === 1,
         milestoneFields,
+        payWallOptions,
       });
     } else {
       res = await addField(collection.id, {
@@ -98,6 +109,7 @@ export default function AddField({ propertyName, handleClose }: Props) {
         ) as FormUserType[],
         required: required === 1,
         milestoneFields,
+        payWallOptions,
       });
     }
     setLoading(false);
@@ -142,6 +154,9 @@ export default function AddField({ propertyName, handleClose }: Props) {
       }
       if (property.type === "reward") {
         setNetworks(property.rewardOptions);
+      }
+      if (property.type === "payWall") {
+        setPayWallOption(property.payWallOptions as PayWallOptions);
       }
     }
   }, [collection.properties, propertyName]);
@@ -276,6 +291,12 @@ export default function AddField({ propertyName, handleClose }: Props) {
             ) : null}
             {type.value === "milestone" ? (
               <MilestoneOptions networks={networks} setNetworks={setNetworks} />
+            ) : null}
+            {type.value === "payWall" ? (
+              <PayWall
+                payWallOption={payWallOption}
+                setPayWallOption={setPayWallOption}
+              />
             ) : null}
             {/* <Accordian name="Advanced Settings" defaultOpen={false}>
             <Stack space="2">

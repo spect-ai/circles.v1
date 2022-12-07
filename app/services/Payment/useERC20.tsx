@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { Registry } from "@/app/types";
-import { ethers } from "ethers";
+import { ethers, Signer } from "ethers";
 import { useRouter } from "next/router";
 import { useQuery } from "react-query";
 import { toast } from "react-toastify";
 import { erc20ABI } from "wagmi";
 import { gnosisPayment } from "../Gnosis";
+import { useSigner, useProvider } from "wagmi";
 
 export default function useERC20() {
   const router = useRouter();
@@ -34,11 +35,12 @@ export default function useERC20() {
   async function approve(
     chainId: string,
     erc20Address: string,
+    circleRegistry?: Registry,
     safeAddress?: string,
     nonce?: number
   ) {
     const contract = getERC20Contract(erc20Address);
-    if (!registry) return false;
+    if (!registry && !circleRegistry) return false;
     try {
       if (safeAddress) {
         const overrides: any = {
@@ -46,7 +48,9 @@ export default function useERC20() {
           nonce,
         };
         const data = await contract.populateTransaction.approve(
-          registry[chainId].distributorAddress,
+          circleRegistry
+            ? circleRegistry[chainId].distributorAddress
+            : registry && registry[chainId].distributorAddress,
           ethers.constants.MaxInt256,
           overrides
         );
@@ -60,7 +64,9 @@ export default function useERC20() {
       }
 
       const tx = await contract.approve(
-        registry[chainId].distributorAddress,
+        circleRegistry
+          ? circleRegistry[chainId].distributorAddress
+          : registry && registry[chainId].distributorAddress,
         ethers.constants.MaxInt256
       );
       await tx.wait();
@@ -86,7 +92,7 @@ export default function useERC20() {
     }
     if (approveOnSafe) {
       for (const erc20Address of erc20Addresses) {
-        approve(chainId, erc20Address, safeAddress)
+        approve(chainId, erc20Address, {}, safeAddress)
           .then((res: any) => {
             console.log(res);
           })

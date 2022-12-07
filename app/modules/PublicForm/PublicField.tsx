@@ -2,13 +2,14 @@
 import Dropdown from "@/app/common/components/Dropdown";
 import Editor from "@/app/common/components/Editor";
 import { isEmail, isURL } from "@/app/common/utils/utils";
-import { FormType, Option, Reward } from "@/app/types";
+import { FormType, Option, PayWallOptions, Reward } from "@/app/types";
 import { Box, Input, Stack, Tag, Text, useTheme } from "degen";
 import { ethers } from "ethers";
 import { useState } from "react";
 import { DateInput } from "../Collection/Form/Field";
 import MilestoneField from "./MilestoneField";
 import MultiURLField from "./MultiURLField";
+import PaywallField from "./PaywallField";
 import RewardField from "./RewardField";
 
 type Props = {
@@ -285,6 +286,20 @@ export default function PublicField({
           propertyName={propertyName}
           updateRequiredFieldNotSet={updateRequiredFieldNotSet}
           disabled={disabled}
+        />
+      )}
+      {form.properties[propertyName]?.type === "payWall" && (
+        <PaywallField
+          form={form}
+          data={data}
+          setData={(reward: PayWallOptions) => {
+            setData({
+              ...data,
+              [propertyName]: reward,
+            });
+          }}
+          propertyName={propertyName}
+          disabled
         />
       )}
 

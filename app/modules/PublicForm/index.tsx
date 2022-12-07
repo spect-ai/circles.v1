@@ -150,7 +150,7 @@ export default function PublicForm() {
                   autoFocus
                   value={form.name}
                   disabled
-                  rows={Math.floor(form.name.length / 60) + 1}
+                  rows={Math.floor(form.name?.length / 60) + 1}
                 />
                 {form.description && (
                   <Editor value={form.description} isDirty={true} disabled />

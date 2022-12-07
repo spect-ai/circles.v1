@@ -1,4 +1,4 @@
-import { ethers } from "ethers";
+import { ethers, Signer } from "ethers";
 import useERC20 from "./useERC20";
 import DistributorABI from "@/app/common/contracts/mumbai/distributor.json";
 import { useRouter } from "next/router";
@@ -9,6 +9,7 @@ import {
   Registry,
 } from "@/app/types";
 import { AbiCoder } from "ethers/lib/utils";
+import { useSigner } from "wagmi";
 
 export default function useDistributor() {
   const { isCurrency, decimals } = useERC20();
@@ -18,13 +19,17 @@ export default function useDistributor() {
     enabled: false,
   });
 
-  function getDistributorContract(chainId: string) {
-    if (!registry) return null;
-    const provider = new ethers.providers.Web3Provider(window.ethereum as any);
+  const { data: signer } = useSigner();
+
+  function getDistributorContract(chainId: string, circleRegistry?: Registry) {
+    if (!registry && !circleRegistry) return null;
+    const addr = circleRegistry
+      ? circleRegistry[chainId].distributorAddress
+      : registry && registry[chainId].distributorAddress;
     return new ethers.Contract(
-      registry[chainId].distributorAddress as string,
+      addr as string,
       DistributorABI,
-      provider.getSigner()
+      signer as Signer
     );
   }
 
@@ -53,9 +58,10 @@ export default function useDistributor() {
     paymentMethod,
     callerId,
     nonce,
+    circleRegistry,
   }: DistributeEtherParams) {
     console.log({ contributors });
-    const contract = getDistributorContract(chainId);
+    const contract = getDistributorContract(chainId, circleRegistry);
     const valuesInWei = [];
     const contributorsWithPositiveAllocation: any[] = [];
     let totalValue = 0;
@@ -145,6 +151,7 @@ export default function useDistributor() {
     circleId,
     type,
     nonce,
+    circleRegistry,
   }: DistributeTokenParams) {
     const { filteredTokenAddresses, filteredRecipients, filteredValues } =
       filterInvalidValues(tokenAddresses, contributors, values);
@@ -161,7 +168,7 @@ export default function useDistributor() {
           )
         );
     });
-    const contract = getDistributorContract(chainId);
+    const contract = getDistributorContract(chainId, circleRegistry);
 
     const overrides: any = {
       gasLimit: 10000000,

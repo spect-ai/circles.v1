@@ -99,7 +99,7 @@ export default function OneClickPayment() {
         </Text>,
       ]);
     });
-    batchPayInfo?.tokens?.userIds.forEach((userId, index) => {
+    batchPayInfo?.tokens?.userIds?.forEach((userId, index) => {
       return rows.push([
         <Stack key={index} direction="horizontal" align="center">
           <Avatar
@@ -256,70 +256,73 @@ export default function OneClickPayment() {
   };
 
   useEffect(() => {
-    console.log(removeNonVoters);
-    if (removeNonVoters) {
-      const userIds = batchPayInfo?.retro?.members.filter(
-        (mem) =>
-          batchPayInfo.retro?.stats?.[mem].voted &&
-          batchPayInfo.retro?.distribution[mem] *
-            batchPayInfo.retro?.reward.value !==
-            0
-      ) as string[];
-      const values = batchPayInfo?.currency.values.filter(
-        (val, i) =>
-          val != 0 &&
-          batchPayInfo.retro?.stats?.[batchPayInfo.retro?.members[i]]?.voted
-      ) as number[];
-      if ((batchPayInfo?.retro as RetroType).reward.token.address === "0x0") {
-        setBatchPayInfo({
-          ...batchPayInfo,
-          currency: {
-            userIds: userIds,
-            values: values,
-          },
-        } as BatchPayInfo);
+    console.log({ removeNonVoters });
+    if (batchPayInfo?.retroId)
+      if (removeNonVoters) {
+        const userIds = batchPayInfo?.retro?.members.filter(
+          (mem) =>
+            batchPayInfo.retro?.stats?.[mem].voted &&
+            batchPayInfo.retro?.distribution[mem] *
+              batchPayInfo.retro?.reward.value !==
+              0
+        ) as string[];
+        const values = batchPayInfo?.currency.values.filter(
+          (val, i) =>
+            val != 0 &&
+            batchPayInfo.retro?.stats?.[batchPayInfo.retro?.members[i]]?.voted
+        );
+        if ((batchPayInfo?.retro as RetroType).reward.token.address === "0x0") {
+          setBatchPayInfo({
+            ...batchPayInfo,
+            currency: {
+              userIds: userIds,
+              values: values,
+            },
+          } as BatchPayInfo);
+        } else {
+          setBatchPayInfo({
+            ...batchPayInfo,
+            tokens: {
+              tokenAddresses: userIds.map(
+                () => (batchPayInfo?.retro as RetroType).reward.token.address
+              ),
+              userIds: userIds,
+              values: values,
+            },
+          } as BatchPayInfo);
+        }
+        console.log(batchPayInfo);
       } else {
-        setBatchPayInfo({
-          ...batchPayInfo,
-          tokens: {
-            tokenAddresses: userIds.map(
-              () => (batchPayInfo?.retro as RetroType).reward.token.address
-            ),
-            userIds: userIds,
-            values: values,
-          },
-        } as BatchPayInfo);
+        const userIds = batchPayInfo?.retro?.members;
+        const values = batchPayInfo?.retro?.members.map(
+          (member) =>
+            (batchPayInfo?.retro?.distribution[member] as number) *
+            (batchPayInfo?.retro as RetroType)?.reward?.value
+        ) as number[];
+        if (
+          (batchPayInfo?.retro as RetroType)?.reward.token.address === "0x0"
+        ) {
+          setBatchPayInfo({
+            ...batchPayInfo,
+            currency: {
+              userIds: userIds as string[],
+              values: values,
+            },
+          } as BatchPayInfo);
+        } else {
+          setBatchPayInfo({
+            ...batchPayInfo,
+            tokens: {
+              tokenAddresses: userIds?.map(
+                () => (batchPayInfo?.retro as RetroType).reward.token.address
+              ),
+              userIds: userIds,
+              values: values,
+            },
+          } as BatchPayInfo);
+        }
+        console.log(batchPayInfo);
       }
-      console.log(batchPayInfo);
-    } else {
-      const userIds = batchPayInfo?.retro?.members;
-      const values = batchPayInfo?.retro?.members.map(
-        (member) =>
-          (batchPayInfo?.retro?.distribution[member] as number) *
-          (batchPayInfo?.retro as RetroType)?.reward?.value
-      ) as number[];
-      if ((batchPayInfo?.retro as RetroType).reward.token.address === "0x0") {
-        setBatchPayInfo({
-          ...batchPayInfo,
-          currency: {
-            userIds: userIds as string[],
-            values: values,
-          },
-        } as BatchPayInfo);
-      } else {
-        setBatchPayInfo({
-          ...batchPayInfo,
-          tokens: {
-            tokenAddresses: userIds?.map(
-              () => (batchPayInfo?.retro as RetroType).reward.token.address
-            ),
-            userIds: userIds,
-            values: values,
-          },
-        } as BatchPayInfo);
-      }
-      console.log(batchPayInfo);
-    }
   }, [removeNonVoters]);
   return (
     <Box>
@@ -366,26 +369,26 @@ export default function OneClickPayment() {
                 disabled={gnosisLoading}
                 onClick={async () => {
                   setPersonalWalletLoading(true);
+                  // If native currency of the chain is used
+                  const options = {
+                    chainId: batchPayInfo?.chainId || "",
+                    paymentType: "currency",
+                    batchPayType: batchPayInfo?.retroId ? "retro" : "card",
+                    userAddresses: getEthAddress(
+                      batchPayInfo?.currency.userIds,
+                      batchPayInfo.payCircle
+                    ) as string[],
+                    amounts: batchPayInfo?.currency.values,
+                    tokenAddresses: [""],
+                    cardIds: batchPayInfo?.retroId
+                      ? [batchPayInfo.retroId]
+                      : (currencyCards as string[]),
+                    circleId: circle?.id || "",
+                  };
                   if (batchPayInfo?.currency.values?.length > 0) {
                     const currencyTxnHash = await toast
                       .promise(
-                        batchPay({
-                          chainId: batchPayInfo?.chainId || "",
-                          paymentType: "currency",
-                          batchPayType: batchPayInfo?.retroId
-                            ? "retro"
-                            : "card",
-                          userAddresses: getEthAddress(
-                            batchPayInfo?.currency.userIds,
-                            batchPayInfo.payCircle
-                          ) as string[],
-                          amounts: batchPayInfo?.currency.values,
-                          tokenAddresses: [""],
-                          cardIds: batchPayInfo?.retroId
-                            ? [batchPayInfo.retroId]
-                            : (currencyCards as string[]),
-                          circleId: circle?.id || "",
-                        }),
+                        batchPay(options),
                         {
                           pending: `Distributing ${
                             (registry &&
@@ -407,6 +410,7 @@ export default function OneClickPayment() {
                         currencyCards as string[]
                       );
                   }
+                  // If ERC-20 token is used
                   if (batchPayInfo?.tokens.values?.length > 0) {
                     for (const [erc20Address, status] of Object.entries(
                       tokenStatus
@@ -458,6 +462,7 @@ export default function OneClickPayment() {
                       return;
                     }
                     setPersonalWalletLoading(true);
+                    // If network is Polygon mainnet or mumbai testnet --> Pay gasless using Bico
                     if (
                       (batchPayInfo.chainId === "137" ||
                         batchPayInfo.chainId === "80001") &&
@@ -581,6 +586,7 @@ export default function OneClickPayment() {
                             approve(
                               batchPayInfo?.chainId,
                               erc20Address,
+                              {},
                               circleSafe,
                               nonce
                             )
