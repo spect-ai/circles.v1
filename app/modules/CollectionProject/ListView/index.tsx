@@ -24,9 +24,7 @@ export default function ListView() {
     view,
     collection,
     property,
-    loading,
     setLoading,
-    projectViewId,
     updateCollection,
   } = useViewCommon();
 
@@ -57,10 +55,7 @@ export default function ListView() {
               setDefaultValue={setDefaultValue}
               setIsCardDrawerOpen={setIsCardDrawerOpen}
               cardIds={
-                (
-                  collection.projectMetadata.views[projectViewId]
-                    .cardColumnOrder as any
-                )[index]
+                collection.projectMetadata.cardOrders[view.groupByColumn][index]
               }
             />
           ))}
@@ -83,15 +78,14 @@ export default function ListView() {
                   const res = await updateFormCollection(collection.id, {
                     projectMetadata: {
                       ...collection.projectMetadata,
-                      views: {
-                        ...collection.projectMetadata.views,
-                        [projectViewId]: {
-                          ...view,
-                          cardColumnOrder: [
-                            ...(view.cardColumnOrder as string[][]),
-                            [],
+                      cardOrders: {
+                        ...collection.projectMetadata.cardOrders,
+                        [view.groupByColumn]: [
+                          ...collection.projectMetadata.cardOrders[
+                            view.groupByColumn
                           ],
-                        },
+                          [],
+                        ],
                       },
                     },
                   });
