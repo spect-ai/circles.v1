@@ -3,7 +3,11 @@ import Drawer, { slideHorizontal } from "@/app/common/components/Drawer";
 import { OptionType } from "@/app/common/components/Dropdown";
 import Editor from "@/app/common/components/Editor";
 import Tabs from "@/app/common/components/Tabs";
-import { voteCollectionData } from "@/app/services/Collection";
+import {
+  endVotingPeriod,
+  startVotingPeriod,
+  voteCollectionData,
+} from "@/app/services/Collection";
 import { MemberDetails, UserType } from "@/app/types";
 import { Avatar, Box, Input, Stack, Tag, Text } from "degen";
 import { motion } from "framer-motion";
@@ -26,6 +30,7 @@ import {
 } from "chart.js";
 import DataActivity from "./DataActivity";
 import Link from "next/link";
+import PrimaryButton from "@/app/common/components/PrimaryButton";
 
 ChartJS.register(
   CategoryScale,
@@ -69,20 +74,25 @@ export default function DataDrawer({
   useEffect(() => {
     if (
       data &&
-      collection.voting?.votes &&
-      collection.voting.votes[dataId] &&
-      collection.voting.votes[dataId][currentUser?.id || ""] !== undefined
+      collection.voting?.periods &&
+      collection.voting.periods[dataId] &&
+      collection.voting.periods[dataId]?.votes?.[currentUser?.id || ""] !==
+        undefined
     ) {
-      setVote(collection.voting.votes[dataId][currentUser?.id || ""]);
+      setVote(
+        collection.voting.periods[dataId].votes?.[
+          currentUser?.id || ""
+        ] as number
+      );
     } else setVote(-1);
   }, [collection.voting, currentUser?.id, data, dataId]);
 
   const getVotes = () => {
     const dataVotes =
-      collection.voting.votes && collection.voting.votes[dataId];
+      collection.voting.periods && collection.voting.periods[dataId].votes;
     // sump up all the votes for each option
     return (
-      collection.voting?.options?.map((option, index) => {
+      collection.voting?.periods?.[dataId]?.options?.map((option, index) => {
         return Object.values(dataVotes || {}).filter((vote) => vote === index)
           .length;
       }) || []
@@ -95,8 +105,6 @@ export default function DataDrawer({
       enabled: false,
     }
   );
-
-  console.log({ memberDetails });
 
   const getMemberDetails = React.useCallback(
     (id: string) => {
@@ -112,6 +120,62 @@ export default function DataDrawer({
         dataSlug && (await router.push(`/${cId}/r/${collection.slug}`));
       }}
     >
+      {!collection.voting.periods?.[dataId]?.active && (
+        <Box
+          display="flex"
+          flexDirection="row"
+          width="full"
+          justifyContent="flex-end"
+          paddingRight="8"
+        >
+          <Box display="flex" flexDirection="column" gap="2">
+            {collection.voting.periods?.[dataId]?.votes &&
+              Object.keys(collection.voting.periods[dataId]?.votes || {})
+                ?.length > 0 && <Text variant="base"> Voting has ended</Text>}
+            {collection.voting.enabled &&
+              Object.keys(collection.voting.periods?.[dataId]?.votes || {})
+                ?.length === 0 && (
+                <PrimaryButton
+                  variant="secondary"
+                  onClick={async () => {
+                    const res = await startVotingPeriod(collection.id, dataId);
+                    if (!res.id) {
+                      toast.error("Something went wrong");
+                    } else updateCollection(res);
+                  }}
+                >
+                  Start Voting Period
+                </PrimaryButton>
+              )}
+          </Box>
+        </Box>
+      )}
+      {collection.voting.enabled &&
+        collection.voting.periods &&
+        collection.voting.periods[dataId]?.active && (
+          <Box
+            display="flex"
+            flexDirection="row"
+            width="full"
+            justifyContent="flex-end"
+            paddingRight="8"
+          >
+            <Box display="flex" flexDirection="column" gap="2">
+              <Text variant="base"> Voting is active</Text>
+              <PrimaryButton
+                variant="tertiary"
+                onClick={async () => {
+                  const res = await endVotingPeriod(collection.id, dataId);
+                  if (!res.id) {
+                    toast.error("Something went wrong");
+                  } else updateCollection(res);
+                }}
+              >
+                End Voting Period
+              </PrimaryButton>
+            </Box>
+          </Box>
+        )}
       {Object.keys(data).length !== 0 && (
         <motion.div
           variants={slideHorizontal}
@@ -314,51 +378,68 @@ export default function DataDrawer({
                   })}
                 </Box>
                 <Box display="flex" flexDirection="column" gap="2">
-                  {collection.voting?.enabled && collection.voting.options && (
-                    <Stack space="1">
-                      <Box
-                        borderColor="foregroundSecondary"
-                        borderWidth="0.375"
-                        padding="2"
-                        borderRadius="medium"
-                      >
-                        <Text weight="semiBold" variant="large" color="accent">
-                          Your Vote
-                        </Text>
-                        <Text>{collection.voting.message}</Text>
-                        <Box marginTop="4">
-                          <Tabs
-                            tabs={collection.voting.options.map(
-                              (option) => option.label
-                            )}
-                            selectedTab={vote}
-                            onTabClick={async (tab) => {
-                              const tempTab = tab;
-                              setVote(tab);
-                              const res = await voteCollectionData(
-                                collection.id,
-                                dataId,
-                                tab
-                              );
-                              if (!res.id) {
-                                toast.error("Something went wrong");
-                                setVote(tempTab);
-                              } else updateCollection(res);
-                            }}
-                            orientation="horizontal"
-                            unselectedColor="transparent"
-                            selectedColor="secondary"
-                          />
+                  {collection.voting.periods &&
+                    collection.voting.periods[data.slug] &&
+                    (collection.voting.periods[data.slug].active ||
+                      Object.keys(
+                        collection.voting.periods[dataId]?.votes || {}
+                      )?.length > 0) &&
+                    collection.voting.periods[data.slug].options && (
+                      <Stack space="1">
+                        <Box
+                          borderColor="foregroundSecondary"
+                          borderWidth="0.375"
+                          padding="2"
+                          borderRadius="medium"
+                        >
+                          <Text
+                            weight="semiBold"
+                            variant="large"
+                            color="accent"
+                          >
+                            Your Vote
+                          </Text>
+                          <Text>{collection.voting.message}</Text>
+                          <Box marginTop="4">
+                            <Tabs
+                              tabs={
+                                collection.voting.periods[
+                                  data.slug
+                                ].options?.map((option) => option.label) || []
+                              }
+                              selectedTab={vote}
+                              onTabClick={async (tab) => {
+                                if (
+                                  !collection?.voting?.periods?.[data.slug]
+                                    ?.active
+                                )
+                                  return;
+                                const tempTab = tab;
+                                setVote(tab);
+                                const res = await voteCollectionData(
+                                  collection.id,
+                                  dataId,
+                                  tab
+                                );
+                                if (!res.id) {
+                                  toast.error("Something went wrong");
+                                  setVote(tempTab);
+                                } else updateCollection(res);
+                              }}
+                              orientation="horizontal"
+                              unselectedColor="transparent"
+                              selectedColor="secondary"
+                            />
+                          </Box>
                         </Box>
-                      </Box>
-                    </Stack>
-                  )}
+                      </Stack>
+                    )}
 
-                  {collection.voting?.enabled &&
-                    collection.voting.options &&
-                    collection.voting.votes &&
-                    collection.voting.votes[data.slug] &&
-                    collection.voting.votes[data.slug][
+                  {collection.voting.periods &&
+                    collection.voting.periods[data.slug] &&
+                    collection.voting.periods[data.slug].options &&
+                    collection.voting.periods[data.slug].votes &&
+                    collection.voting.periods[data.slug].votes?.[
                       currentUser?.id || ""
                     ] !== undefined && (
                       <Box
@@ -411,9 +492,9 @@ export default function DataDrawer({
                             },
                           }}
                           data={{
-                            labels: collection.voting.options.map(
-                              (option) => option.label
-                            ),
+                            labels: collection.voting.periods[
+                              data.slug
+                            ]?.options?.map((option) => option.label),
                             datasets: [
                               {
                                 label: "Votes",
@@ -429,9 +510,11 @@ export default function DataDrawer({
                         />
                       </Box>
                     )}
-                  {collection.voting?.votes &&
-                    collection.voting.votes[data.slug] &&
-                    collection.voting?.votesArePublic && (
+                  {collection.voting?.periods &&
+                    Object.keys(
+                      collection.voting.periods[data.slug]?.votes || {}
+                    ).length > 0 &&
+                    collection.voting?.periods[data.slug]?.votesArePublic && (
                       <Box
                         borderColor="foregroundSecondary"
                         borderWidth="0.375"
@@ -443,10 +526,10 @@ export default function DataDrawer({
                           Votes
                         </Text>
 
-                        {collection.voting?.votes &&
-                          collection.voting.votes[data.slug] &&
+                        {collection.voting?.periods &&
+                          collection.voting.periods[data.slug] &&
                           Object.entries(
-                            collection.voting?.votes[data.slug]
+                            collection.voting?.periods[data.slug]?.votes || {}
                           ).map(([voterId, vote]) => {
                             return (
                               <Box
@@ -498,8 +581,10 @@ export default function DataDrawer({
                                   alignItems="center"
                                 >
                                   <Text variant="base" weight="semiBold">
-                                    {collection?.voting?.options
-                                      ? collection?.voting?.options[vote]?.label
+                                    {collection?.voting?.periods &&
+                                    collection?.voting?.periods[data.slug]
+                                      ? collection?.voting?.periods[data.slug]
+                                          ?.options?.[vote]?.label
                                       : "No vote"}
                                   </Text>
                                 </Box>
@@ -529,6 +614,7 @@ export default function DataDrawer({
               borderTopWidth="0.375"
               marginY="4"
               borderRadius="full"
+              marginTop="8"
             />
             <Box paddingBottom="0">
               <DataActivity
