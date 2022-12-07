@@ -1,14 +1,19 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Dropdown from "@/app/common/components/Dropdown";
 import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import Select from "@/app/common/components/Select";
 import Tabs from "@/app/common/components/Tabs";
-import { addField, deleteField, updateField } from "@/app/services/Collection";
-import { Condition, FormUserType, Option, Registry } from "@/app/types";
+import {
+  addField,
+  deleteField,
+  updateField,
+  updateFormCollection,
+} from "@/app/services/Collection";
+import { Condition, FormUserType, Registry } from "@/app/types";
 import { SaveFilled } from "@ant-design/icons";
 import { Box, IconTrash, Input, Stack, Text, Textarea } from "degen";
 import React, { useEffect, useState } from "react";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import { useCircle } from "../../Circle/CircleContext";
 import { fields } from "../Constants";
 import { useLocalCollection } from "../Context/LocalCollectionContext";
@@ -48,11 +53,6 @@ export default function AddField({ propertyName, handleClose }: Props) {
   ]);
 
   const [userType, setUserType] = useState<FormUserType>();
-  const [notifyUserType, setNotifyUserType] = useState<Option[] | undefined>(
-    []
-  );
-
-  const [defaultValue, setDefaultValue] = useState("");
   const [showNameCollissionError, setShowNameCollissionError] = useState(false);
   const [showSlugNameError, setShowSlugNameError] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -67,6 +67,8 @@ export default function AddField({ propertyName, handleClose }: Props) {
     viewConditions?.length > 0 ? true : false
   );
 
+  const [cardOrder, setCardOrder] = useState<any>();
+
   const onSave = async () => {
     setLoading(true);
     let res;
@@ -79,21 +81,30 @@ export default function AddField({ propertyName, handleClose }: Props) {
       milestoneFields = ["name", "description", "dueDate", "reward"];
     }
     if (propertyName) {
-      res = await updateField(collection.id, propertyName, {
+      await updateField(collection.id, propertyName, {
         name,
         type: type.value,
         options: fieldOptions,
         rewardOptions,
         description,
         userType,
-        default: defaultValue,
-        onUpdateNotifyUserTypes: notifyUserType?.map(
-          (type) => type.value
-        ) as FormUserType[],
+        // default: defaultValue,
+        // onUpdateNotifyUserTypes: notifyUserType?.map(
+        //   (type) => type.value
+        // ) as FormUserType[],
         isPartOfFormView: true,
         required: required === 1,
         milestoneFields,
         viewConditions,
+      });
+      res = await updateFormCollection(collection.id, {
+        projectMetadata: {
+          ...collection.projectMetadata,
+          cardOrders: {
+            ...collection.projectMetadata.cardOrders,
+            [propertyName]: cardOrder,
+          },
+        },
       });
     } else {
       res = await addField(collection.id, {
@@ -104,10 +115,10 @@ export default function AddField({ propertyName, handleClose }: Props) {
         options: fieldOptions,
         rewardOptions,
         userType: userType,
-        default: defaultValue,
-        onUpdateNotifyUserTypes: notifyUserType?.map(
-          (type) => type.value
-        ) as FormUserType[],
+        // default: defaultValue,
+        // onUpdateNotifyUserTypes: notifyUserType?.map(
+        //   (type) => type.value
+        // ) as FormUserType[],
         required: required === 1,
         milestoneFields,
         viewConditions,
@@ -163,6 +174,12 @@ export default function AddField({ propertyName, handleClose }: Props) {
     setModalSize(viewConditions?.length > 0 ? "large" : "small");
     setAdvancedDefaultOpen(viewConditions?.length > 0 ? true : false);
   }, [viewConditions]);
+
+  useEffect(() => {
+    if (propertyName) {
+      setCardOrder(collection.projectMetadata.cardOrders[propertyName]);
+    }
+  }, [collection.projectMetadata.cardOrders, propertyName]);
 
   return (
     <>
@@ -268,6 +285,8 @@ export default function AddField({ propertyName, handleClose }: Props) {
               <AddOptions
                 fieldOptions={fieldOptions}
                 setFieldOptions={setFieldOptions}
+                setCardOrder={setCardOrder}
+                cardOrder={cardOrder}
               />
             ) : null}
             {type.value === "user" || type.value === "user[]" ? (
