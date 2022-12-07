@@ -949,19 +949,39 @@ export interface MappedItem<T> {
   [id: string]: T;
 }
 
+export type VotingPeriod = {
+  votingType: Option;
+  active: boolean;
+  message?: string;
+  options?: Option[];
+  votesArePublic?: boolean;
+  votesAreWeightedByTokens?: boolean;
+  endsOn?: Date;
+  startedOn?: Date;
+  snapshot?: SnapshotVoting;
+  votes?: MappedItem<number>;
+};
+
+export type SnapshotVoting = {
+  onSnapshot?: boolean;
+  space?: string;
+  proposalId?: string;
+};
+
 export type Voting = {
   enabled: boolean;
   message?: string;
   options?: Option[];
   votingType?: Option;
   votesArePublic?: boolean;
-  votes?: MappedItem<MappedItem<number>>;
   votesAreWeightedByTokens?: boolean;
   tokensWeightedWith?: {
     chain: Option;
     token: Option;
     weight: number;
   }[];
+  periods?: MappedItem<VotingPeriod>;
+  periodsOnCollection?: MappedItem<VotingPeriod>;
 };
 
 export type Experience = {

@@ -78,35 +78,6 @@ export default function VotingModule() {
 
   return (
     <>
-      {isConfirmModalOpen && (
-        <ConfirmModal
-          title={
-            "Voting settings cannot be updated once voting is enabled. It has to be disabled and enabled again which would start the voting process anew for responses that have an active voting periods."
-          }
-          handleClose={() => setIsConfirmModalOpen(false)}
-          onConfirm={async () => {
-            setLoading(true);
-            setIsConfirmModalOpen(false);
-            const res = await updateFormCollection(collection.id, {
-              voting: {
-                enabled: true,
-                options: votingOptions,
-                message,
-                votingType,
-                votesArePublic,
-                votesAreWeightedByTokens,
-                tokensWeightedWith: tokenWeightedWith,
-              },
-            });
-            setLoading(false);
-            if (res.id) {
-              setIsOpen(false);
-              setLocalCollection(res);
-            } else toast.error("Something went wrong");
-          }}
-          onCancel={() => setIsConfirmModalOpen(false)}
-        />
-      )}
       <Text variant="label">Allow members to vote on responses</Text>
       <Box
         width={{
@@ -136,14 +107,6 @@ export default function VotingModule() {
                       {
                         label: "Single Choice Voting",
                         value: "singleChoice",
-                      },
-                      {
-                        label: "Ranked Choice Voting",
-                        value: "rankedChoice",
-                      },
-                      {
-                        label: "Quadratic Voting",
-                        value: "quadratic",
                       },
                     ]}
                     selected={votingType}
@@ -179,7 +142,7 @@ export default function VotingModule() {
                     Votes are visible by other members
                   </Text>
                 </Box>
-                <Box display="flex" flexDirection="column" gap="2">
+                {/* <Box display="flex" flexDirection="column" gap="2">
                   <Box
                     display="flex"
                     flexDirection="row"
@@ -201,7 +164,7 @@ export default function VotingModule() {
                   {votesAreWeightedByTokens && (
                     <Text variant="label">Pick Token</Text>
                   )}
-                </Box>
+                </Box> */}
                 {["rankedChoice", "quadratic"].includes(votingType.value) && (
                   <MultiChoiceVotingOnMultipleResponses />
                 )}
@@ -216,8 +179,26 @@ export default function VotingModule() {
                   <Box width="full" marginTop="8">
                     <PrimaryButton
                       loading={loading}
-                      onClick={() => {
-                        setIsConfirmModalOpen(true);
+                      onClick={async () => {
+                        setLoading(true);
+                        setIsConfirmModalOpen(false);
+                        const res = await updateFormCollection(collection.id, {
+                          voting: {
+                            ...collection.voting,
+                            enabled: true,
+                            options: votingOptions,
+                            message,
+                            votingType,
+                            votesArePublic,
+                            votesAreWeightedByTokens,
+                            tokensWeightedWith: tokenWeightedWith,
+                          },
+                        });
+                        setLoading(false);
+                        if (res.id) {
+                          setIsOpen(false);
+                          setLocalCollection(res);
+                        } else toast.error("Something went wrong");
                       }}
                     >
                       Enable Voting
@@ -234,6 +215,7 @@ export default function VotingModule() {
                         setLoading(true);
                         const res = await updateFormCollection(collection.id, {
                           voting: {
+                            ...collection.voting,
                             enabled: false,
                           },
                         });
