@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { reorder } from "@/app/common/utils/utils";
 import {
   updateCollectionDataGuarded,
@@ -67,7 +68,9 @@ export default function useViewCommon() {
 
   const handleDragEnd = (result: DropResult) => {
     const { source, destination, draggableId } = result;
-    if (!destination || !view.cardColumnOrder) return;
+    const cardColumnOrder =
+      collection.projectMetadata.cardOrders[view.groupByColumn];
+    if (!destination || !cardColumnOrder) return;
     if (
       source.droppableId === destination.droppableId &&
       source.index === destination.index
@@ -78,7 +81,7 @@ export default function useViewCommon() {
       const columnIndex = columns.findIndex(
         (column) => column.value === source.droppableId
       );
-      const oldColumnOrder = view.cardColumnOrder[columnIndex];
+      const oldColumnOrder = cardColumnOrder[columnIndex];
       const newColumnOrder = reorder(
         oldColumnOrder,
         source.index,
@@ -88,13 +91,11 @@ export default function useViewCommon() {
         ...collection,
         projectMetadata: {
           ...collection.projectMetadata,
-          views: {
-            ...collection.projectMetadata.views,
-            [projectViewId]: {
-              ...view,
-              cardColumnOrder: view.cardColumnOrder.map((column, index) =>
-                index === columnIndex ? newColumnOrder : column
-              ),
+          cardOrders: {
+            ...collection.projectMetadata.cardOrders,
+            [view.groupByColumn]: {
+              ...collection.projectMetadata.cardOrders[view.groupByColumn],
+              [columnIndex]: newColumnOrder,
             },
           },
         },
@@ -102,13 +103,11 @@ export default function useViewCommon() {
       void updateFormCollection(collection.id, {
         projectMetadata: {
           ...collection.projectMetadata,
-          views: {
-            ...collection.projectMetadata.views,
-            [projectViewId]: {
-              ...view,
-              cardColumnOrder: view.cardColumnOrder.map((column, index) =>
-                index === columnIndex ? newColumnOrder : column
-              ),
+          cardOrders: {
+            ...collection.projectMetadata.cardOrders,
+            [view.groupByColumn]: {
+              ...collection.projectMetadata.cardOrders[view.groupByColumn],
+              [columnIndex]: newColumnOrder,
             },
           },
         },
@@ -127,17 +126,13 @@ export default function useViewCommon() {
       (column) => column.value === destination.droppableId
     );
 
-    const newSourceColumnOrder = Array.from(
-      view.cardColumnOrder[sourceColumnIndex]
-    );
+    const newSourceColumnOrder = Array.from(cardColumnOrder[sourceColumnIndex]);
 
     newSourceColumnOrder.splice(source.index, 1);
-    const newDestColumnOrder = Array.from(
-      view.cardColumnOrder[destColumnIndex]
-    );
+    const newDestColumnOrder = Array.from(cardColumnOrder[destColumnIndex]);
     newDestColumnOrder.splice(destination.index, 0, draggableId);
 
-    const newCardColumnOrder = Array.from(view.cardColumnOrder);
+    const newCardColumnOrder = Array.from(cardColumnOrder);
     newCardColumnOrder[sourceColumnIndex] = newSourceColumnOrder;
     newCardColumnOrder[destColumnIndex] = newDestColumnOrder;
 
@@ -153,29 +148,24 @@ export default function useViewCommon() {
       },
       projectMetadata: {
         ...collection.projectMetadata,
-        views: {
-          ...collection.projectMetadata.views,
-          [projectViewId]: {
-            ...view,
-            cardColumnOrder: newCardColumnOrder,
-          },
+        cardOrders: {
+          ...collection.projectMetadata.cardOrders,
+          [view.groupByColumn]: newCardColumnOrder,
         },
       },
     });
 
     void updateCollectionDataGuarded(collection.id, draggableId, {
-      [view.groupByColumn]: destColumn,
+      [view.groupByColumn]:
+        destColumn.value === "__unassigned__" ? undefined : destColumn,
     });
 
     void updateFormCollection(collection.id, {
       projectMetadata: {
         ...collection.projectMetadata,
-        views: {
-          ...collection.projectMetadata.views,
-          [projectViewId]: {
-            ...view,
-            cardColumnOrder: newCardColumnOrder,
-          },
+        cardOrders: {
+          ...collection.projectMetadata.cardOrders,
+          [view.groupByColumn]: newCardColumnOrder,
         },
       },
     });

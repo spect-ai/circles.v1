@@ -8,6 +8,7 @@ import AddField from "../../Collection/AddField";
 import { AnimatePresence } from "framer-motion";
 import styled from "styled-components";
 import CardDrawer from "../CardDrawer";
+import { useRouter } from "next/router";
 
 export default function ProjectTableView() {
   const [isAddFieldOpen, setIsAddFieldOpen] = useState(false);
@@ -15,6 +16,7 @@ export default function ProjectTableView() {
     enabled: false,
   });
   const [isCardDrawerOpen, setIsCardDrawerOpen] = useState(false);
+  const router = useRouter();
 
   return (
     <Box>
@@ -48,6 +50,14 @@ export default function ProjectTableView() {
         <AddRowButton
           onClick={() => {
             setIsCardDrawerOpen(true);
+            void router.push({
+              pathname: router.pathname,
+              query: {
+                circle: router.query.circle,
+                collection: router.query.collection,
+                newCard: true,
+              },
+            });
             process.env.NODE_ENV === "production" &&
               mixpanel.track("Add Row Button", {
                 user: currentUser?.username,

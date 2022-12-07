@@ -73,22 +73,24 @@ export default function AddView({ viewType, handleClose }: Props) {
                 },
                 () => []
               );
+              const cardOrders = collection.projectMetadata.cardOrders;
               if (
                 ["kanban", "list"].includes(viewType) &&
-                groupByColumn.value
+                groupByColumn.value &&
+                !collection.projectMetadata.cardOrders[groupByColumn.value]
               ) {
                 // filter collection data based on group by column options and add it to a 2 dimensional array
                 Object.keys(collection.data).forEach((key) => {
                   const data = collection.data[key];
                   const columnValue = data[groupByColumn.value];
-                  const columnIndex =
-                    collection.properties[
-                      groupByColumn.value
-                    ].options?.findIndex(
-                      (option) => option.value === columnValue?.value
-                    ) || -1;
+                  const columnIndex = collection.properties[
+                    groupByColumn.value
+                  ].options?.findIndex(
+                    (option) => option.value === columnValue?.value
+                  ) as number;
                   cardColumnOrder[columnIndex + 1].push(data.slug);
                 });
+                cardOrders[groupByColumn.value] = cardColumnOrder;
               }
               const viewId = uuid();
               const res = await updateFormCollection(collection.id, {
@@ -101,10 +103,10 @@ export default function AddView({ viewType, handleClose }: Props) {
                       groupByColumn: groupByColumn.value,
                       filters: [],
                       sort: {},
-                      cardColumnOrder,
                     },
                   },
                   viewOrder: [...collection.projectMetadata.viewOrder, viewId],
+                  cardOrders,
                 },
               });
               console.log({ res });

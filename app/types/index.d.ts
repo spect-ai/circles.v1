@@ -772,8 +772,10 @@ export type ProjectMetadata = {
       filters: any;
       sort: any;
       groupByColumn: string;
-      cardColumnOrder?: string[][];
     };
+  };
+  cardOrders: {
+    [groupByColumn: string]: string[][];
   };
 };
 

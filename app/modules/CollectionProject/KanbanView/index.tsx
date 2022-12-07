@@ -25,7 +25,6 @@ export default function KanbanView() {
     property,
     loading,
     setLoading,
-    projectViewId,
     updateCollection,
   } = useViewCommon();
 
@@ -56,10 +55,7 @@ export default function KanbanView() {
               groupByColumn={view.groupByColumn}
               setDefaultValue={setDefaultValue}
               cardIds={
-                (
-                  collection.projectMetadata.views[projectViewId]
-                    .cardColumnOrder as any
-                )[index]
+                collection.projectMetadata.cardOrders[view.groupByColumn][index]
               }
             />
           ))}
@@ -81,15 +77,14 @@ export default function KanbanView() {
                   const res = await updateFormCollection(collection.id, {
                     projectMetadata: {
                       ...collection.projectMetadata,
-                      views: {
-                        ...collection.projectMetadata.views,
-                        [projectViewId]: {
-                          ...view,
-                          cardColumnOrder: [
-                            ...(view.cardColumnOrder as string[][]),
-                            [],
+                      cardOrders: {
+                        ...collection.projectMetadata.cardOrders,
+                        [view.groupByColumn]: [
+                          ...collection.projectMetadata.cardOrders[
+                            view.groupByColumn
                           ],
-                        },
+                          [],
+                        ],
                       },
                     },
                   });

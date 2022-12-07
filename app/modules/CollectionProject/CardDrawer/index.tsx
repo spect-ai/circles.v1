@@ -255,7 +255,7 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
                       setLoading(false);
                       if (res.id) {
                         updateCollection(res);
-                        handleClose();
+                        closeCard();
                       } else toast.error("Error adding card");
                     }}
                   >
