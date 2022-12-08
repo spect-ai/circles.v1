@@ -67,7 +67,7 @@ export default function Column({
             onClick={() => {
               setDefaultValue({
                 [groupByColumn]:
-                  column.value === "__unassigned__" ? undefined : column,
+                  column.value === "__unassigned__" ? null : column,
               });
               void router.push({
                 pathname: router.pathname,

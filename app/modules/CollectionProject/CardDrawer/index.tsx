@@ -9,6 +9,7 @@ import {
   updateCollectionDataGuarded,
   updateFormCollection,
 } from "@/app/services/Collection";
+import { Option } from "@/app/types";
 import {
   Box,
   Button,
@@ -84,11 +85,49 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
 
   const onChange = async (update: any, slug: string) => {
     if (slug) {
-      const res = await updateCollectionDataGuarded(
-        collection.id,
-        slug,
-        update
-      );
+      let res;
+      res = await updateCollectionDataGuarded(collection.id, slug, update);
+      const propertyName = Object.keys(update)[0];
+      if (
+        collection.projectMetadata.cardOrders &&
+        collection.projectMetadata.cardOrders[propertyName]
+      ) {
+        const columns = collection.properties[propertyName].options as Option[];
+        const cardColumnOrder =
+          collection.projectMetadata.cardOrders[propertyName];
+        const sourceColumnIndex =
+          columns.findIndex(
+            (column) =>
+              column.value === collection.data[slug][propertyName]?.value
+          ) + 1;
+        const destColumnIndex =
+          columns.findIndex(
+            (column) => column.value === update[propertyName]?.value
+          ) + 1;
+
+        const newSourceColumnOrder = Array.from(
+          cardColumnOrder[sourceColumnIndex]
+        );
+
+        newSourceColumnOrder.splice(newSourceColumnOrder.indexOf(slug), 1);
+        const newDestColumnOrder = Array.from(cardColumnOrder[destColumnIndex]);
+        newDestColumnOrder.splice(0, 0, slug);
+
+        const newCardColumnOrder = Array.from(cardColumnOrder);
+        newCardColumnOrder[sourceColumnIndex] = newSourceColumnOrder;
+        newCardColumnOrder[destColumnIndex] = newDestColumnOrder;
+        res = await updateFormCollection(collection.id, {
+          projectMetadata: {
+            ...collection.projectMetadata,
+            cardOrders: {
+              ...collection.projectMetadata.cardOrders,
+              [propertyName]: newCardColumnOrder,
+            },
+          },
+        });
+        if (res.id) updateCollection(res);
+        else toast.error("Something went wrong while updating property order");
+      }
       if (res.id) {
         updateCollection(res);
       } else toast.error("Error updating card");

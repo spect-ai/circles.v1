@@ -143,7 +143,7 @@ export default function useViewCommon() {
         [draggableId]: {
           ...collection.data[draggableId],
           [view.groupByColumn]:
-            destColumn.value === "__unassigned__" ? undefined : destColumn,
+            destColumn.value === "__unassigned__" ? null : destColumn,
         },
       },
       projectMetadata: {
@@ -157,7 +157,7 @@ export default function useViewCommon() {
 
     void updateCollectionDataGuarded(collection.id, draggableId, {
       [view.groupByColumn]:
-        destColumn.value === "__unassigned__" ? undefined : destColumn,
+        destColumn.value === "__unassigned__" ? null : destColumn,
     });
 
     void updateFormCollection(collection.id, {
