@@ -9,7 +9,7 @@ import {
   updateCollectionDataGuarded,
   updateFormCollection,
 } from "@/app/services/Collection";
-import { Option } from "@/app/types";
+import { MemberDetails, Option } from "@/app/types";
 import {
   Box,
   Button,
@@ -34,10 +34,12 @@ import {
 } from "react-beautiful-dnd";
 import ReactDOM from "react-dom";
 import { Save } from "react-feather";
+import { useQuery } from "react-query";
 import { toast } from "react-toastify";
 import styled from "styled-components";
 import AddField from "../../Collection/AddField";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
+import CardActivity from "../CardActivity";
 import EditProperty from "../EditProperty";
 import EditValue from "../EditValue";
 
@@ -59,7 +61,21 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
   const [propertyOrder, setPropertyOrder] = useState(collection.propertyOrder);
   const [loading, setLoading] = useState(false);
   const { push, pathname, query } = useRouter();
-  const { cardSlug, newCard } = query;
+  const { cardSlug, newCard, circle: cId } = query;
+
+  const { data: memberDetails } = useQuery<MemberDetails>(
+    ["memberDetails", cId],
+    {
+      enabled: false,
+    }
+  );
+
+  const getMemberDetails = React.useCallback(
+    (id: string) => {
+      return memberDetails?.memberDetails[id];
+    },
+    [memberDetails]
+  );
 
   useEffect(() => {
     setPropertyOrder(collection.propertyOrder);
@@ -342,7 +358,7 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
                     Add Field
                   </PrimaryButton>
                 </Box>
-                <Box padding="2" borderTopWidth="0.375" marginTop="4">
+                <Box padding="2" borderBottomWidth="0.375" marginTop="4">
                   <Editor
                     placeholder="Describe your card here...."
                     value={value.Description}
@@ -357,6 +373,16 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
                     setIsDirty={setIsDirty}
                   />
                 </Box>
+                <CardActivity
+                  activities={collection.dataActivities[value.slug]}
+                  activityOrder={collection.dataActivityOrder[value.slug]}
+                  dataId={value.slug}
+                  collectionId={collection.id}
+                  dataOwner={
+                    collection.profiles[collection.dataOwner[value.slug]]
+                  }
+                  getMemberDetails={getMemberDetails}
+                />
               </Stack>
             </Container>
           </motion.div>
