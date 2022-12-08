@@ -250,6 +250,46 @@ export const addData = async (collectionId: string, data: any) => {
   ).json();
 };
 
+export const startVotingPeriod = async (
+  collectionId: string,
+  dataId: string,
+  startVotingPeriodDto?: {
+    endsOn?: string;
+    postOnSnapshot?: boolean;
+  }
+) => {
+  return await (
+    await fetch(
+      `${process.env.API_HOST}/collection/v1/${collectionId}/startVotingPeriod?dataId=${dataId}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          startVotingPeriodDto,
+        }),
+      }
+    )
+  ).json();
+};
+
+export const endVotingPeriod = async (collectionId: string, dataId: string) => {
+  return await (
+    await fetch(
+      `${process.env.API_HOST}/collection/v1/${collectionId}/endVotingPeriod?dataId=${dataId}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      }
+    )
+  ).json();
+};
+
 export const voteCollectionData = async (
   collectionId: string,
   dataId: string,

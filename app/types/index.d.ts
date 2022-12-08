@@ -605,6 +605,12 @@ export type AdvancedFilters = {
   };
 };
 
+export type KudosAttribute = {
+  fieldName: string;
+  value: string;
+  type: string;
+};
+
 export type KudosRequestType = {
   creator: string;
   headline: string;
@@ -618,6 +624,7 @@ export type KudosRequestType = {
   totalClaimCount?: number;
   expirationTimestamp?: number;
   contributors?: string[];
+  customAttributes?: KudosAttribute[];
 };
 
 export type KudosType = {
@@ -886,6 +893,7 @@ export interface FormType {
   opportunityInfo: OpportunityInfoType;
   active: boolean;
   viewConditions: Condition[];
+  requireDiscordConnection: boolean;
   createdAt: string;
   updatedAt: string;
   id: string;
@@ -952,11 +960,39 @@ export interface MappedItem<T> {
   [id: string]: T;
 }
 
+export type VotingPeriod = {
+  votingType: Option;
+  active: boolean;
+  message?: string;
+  options?: Option[];
+  votesArePublic?: boolean;
+  votesAreWeightedByTokens?: boolean;
+  endsOn?: Date;
+  startedOn?: Date;
+  snapshot?: SnapshotVoting;
+  votes?: MappedItem<number>;
+};
+
+export type SnapshotVoting = {
+  onSnapshot?: boolean;
+  space?: string;
+  proposalId?: string;
+};
+
 export type Voting = {
   enabled: boolean;
   message?: string;
   options?: Option[];
-  votes?: MappedItem<MappedItem<number>>;
+  votingType?: Option;
+  votesArePublic?: boolean;
+  votesAreWeightedByTokens?: boolean;
+  tokensWeightedWith?: {
+    chain: Option;
+    token: Option;
+    weight: number;
+  }[];
+  periods?: MappedItem<VotingPeriod>;
+  periodsOnCollection?: MappedItem<VotingPeriod>;
 };
 
 export type Experience = {

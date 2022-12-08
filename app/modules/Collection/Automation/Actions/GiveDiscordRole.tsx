@@ -57,7 +57,7 @@ export default function GiveDiscordRole({
       <Box
         width={{
           xs: "full",
-          md: "1/3",
+          md: "1/2",
         }}
         onClick={() => {
           window.open(

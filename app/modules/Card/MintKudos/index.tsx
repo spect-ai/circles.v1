@@ -172,7 +172,8 @@ export default function MintKudos() {
                       isSignatureRequired: true,
                       isAllowlistRequired: true,
                     } as KudosRequestType,
-                    mintkudosCommunityId
+                    mintkudosCommunityId ||
+                      (process.env.MINTKUDOS_DEFAULT_COMMUNITY_ID as string)
                   );
                   if (res) {
                     recordTokenId(res.operationId);

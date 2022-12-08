@@ -57,6 +57,8 @@ export default function TableView() {
     }
   }, [dataSlug, setExpandedDataSlug]);
 
+  console.log({ collection });
+
   const updateData = async ({ cell }: { cell: CellWithId }) => {
     if (data) {
       const row = data[cell.row];
@@ -69,10 +71,10 @@ export default function TableView() {
         const res = await updateCollectionDataGuarded(collection.id, row.id, {
           [cell.colId as string]: row[cell.colId as string],
         });
+        console.log({ res });
         if (!res.id) {
           toast.error("Error updating data");
         }
-        console.log({ res });
         return res;
       }
     }

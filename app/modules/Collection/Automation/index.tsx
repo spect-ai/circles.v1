@@ -11,6 +11,7 @@ import {
   Action,
   Automation as SingleAutomationType,
   AutomationType,
+  Condition,
   Trigger,
 } from "@/app/types";
 import { GatewayOutlined } from "@ant-design/icons";
@@ -41,7 +42,9 @@ export default function Automation() {
   const [automationMode, setAutomationMode] = useState("create");
   const [automations, setAutomations] = useState(circle.automations || {});
   const [automationOrder, setAutomationOrder] = useState(
-    circle.automationsIndexedByCollection[colId as string] || []
+    (circle.automationsIndexedByCollection &&
+      circle.automationsIndexedByCollection[colId as string]) ||
+      []
   );
   const [automationId, setAutomationId] = useState(automationOrder[tab]);
   const [automationInCreate, setAutomationInCreate] = useState(
@@ -56,26 +59,12 @@ export default function Automation() {
     isDirty: boolean
   ) => {
     if (automationMode === "create") {
+      console.log("autoInCreate");
       setAutomationInCreate({
         [automationId]: automation,
       });
     }
-    // } else {
-    //   if (isDirty) {
-    //     setAutomationInEdit({
-    //       [automationId]: automation,
-    //     });
-    //     // const newTabs = automationOrder.map((aId, index) => {
-    //     //   if (aId === automationId) {
-    //     //     return `𝘜𝘱𝘥𝘢𝘵𝘪𝘯𝘨: ${automations[automationId].name}`;
-    //     //   }
-    //     //   return tabs[index];
-    //     // });
-    //     // setTabs(newTabs);
-    //   }
-    // }
   };
-
   const init = (initTab?: number) => {
     setAutomationOrder(circle.automationsIndexedByCollection[colId as string]);
     setAutomations(circle.automations);
@@ -109,6 +98,7 @@ export default function Automation() {
         description: "",
         trigger: {} as Trigger,
         actions: [] as Action[],
+        conditions: [] as Condition[],
         triggerCategory: "collection",
       },
     });
@@ -121,6 +111,7 @@ export default function Automation() {
         description: "",
         trigger: {} as Trigger,
         actions: [] as Action[],
+        conditions: [] as Condition[],
         triggerCategory: "collection",
       },
     });
@@ -130,13 +121,15 @@ export default function Automation() {
     name: string,
     description: string,
     trigger: Trigger,
-    actions: Action[]
+    actions: Action[],
+    conditions: Condition[]
   ) => {
     const newAutomation = {
       name,
       description,
       trigger,
       actions,
+      conditions,
     };
     if (automationMode === "create") {
       const res = await addAutomation(circle?.id, {
@@ -201,11 +194,19 @@ export default function Automation() {
         }}
       >
         <PrimaryButton
-          variant={automationOrder?.length > 0 ? "tertiary" : "secondary"}
+          variant={
+            automationOrder?.length > 1 ||
+            !automationId?.startsWith("automation")
+              ? "tertiary"
+              : "secondary"
+          }
           onClick={() => setIsOpen(true)}
           icon={<GatewayOutlined />}
         >
-          {automationOrder?.length > 0 ? `Edit Automations` : `Add Automations`}
+          {automationOrder?.length > 1 ||
+          !automationId?.startsWith("automation")
+            ? `Edit Automations`
+            : `Add Automations`}
         </PrimaryButton>
       </Box>
       <AnimatePresence>
@@ -261,6 +262,7 @@ export default function Automation() {
                     description,
                     trigger,
                     actions,
+                    conditions,
                     isDirty
                   ) => {
                     saveDraftLocal(
@@ -270,6 +272,7 @@ export default function Automation() {
                         description,
                         trigger,
                         actions,
+                        conditions,
                         triggerCategory: "collection",
                       },
                       isDirty
@@ -301,6 +304,7 @@ export default function Automation() {
                       description: "",
                       trigger: {} as Trigger,
                       actions: [] as Action[],
+                      conditions: [] as Condition[],
                       triggerCategory: "collection",
                     },
                   });
@@ -313,6 +317,7 @@ export default function Automation() {
                       description: "",
                       trigger: {} as Trigger,
                       actions: [] as Action[],
+                      conditions: [] as Condition[],
                       triggerCategory: "collection",
                     },
                   });
