@@ -3,23 +3,14 @@ import Accordian from "@/app/common/components/Accordian";
 import Dropdown, { OptionType } from "@/app/common/components/Dropdown";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import useERC20 from "@/app/services/Payment/useERC20";
-import { Registry } from "@/app/types";
-import {
-  Box,
-  Button,
-  IconClose,
-  Input,
-  Stack,
-  Tag,
-  Text,
-  useTheme,
-} from "degen";
+import { Box, Button, IconClose, Input, Stack, Text } from "degen";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import styled from "styled-components";
 import { useCircle } from "../../Circle/CircleContext";
 import Loader from "@/app/common/components/Loader";
-import { getFlattenedCurrencies } from "@/app/common/utils/registry";
+import { ethers } from "ethers";
+import { isAddress } from "ethers/lib/utils";
 
 interface Props {
   payWallOption: PayWallOptions;
@@ -59,29 +50,13 @@ export default function PayWall({ payWallOption, setPayWallOption }: Props) {
     value: "137",
   } as OptionType);
 
-  const tokenOptions = getFlattenedCurrencies(
-    registry as Registry,
-    selectedOption.value
-  )?.map((token) => {
-    return {
-      label: token.name,
-      value: token.address,
-    };
-  });
-
   useEffect(() => {
     setPayWallOption({
       network: networks,
       value: value,
       receiver: receiver,
     });
-  }, [
-    address,
-    networks,
-    receiver,
-    setPayWallOption,
-    value,
-  ]);
+  }, [address, networks, receiver, setPayWallOption, value]);
 
   return (
     <>
@@ -154,9 +129,11 @@ export default function PayWall({ payWallOption, setPayWallOption }: Props) {
                       size="small"
                       variant="tertiary"
                       onClick={() => {
-                        const newNetworks = { ...networks };
-                        delete newNetworks[chainId];
-                        setNetworks(newNetworks);
+                        if (Object.entries(networks).length > 1) {
+                          const newNetworks = { ...networks };
+                          delete newNetworks[chainId];
+                          setNetworks(newNetworks);
+                        }
                       }}
                     >
                       Remove Network
@@ -287,6 +264,7 @@ export default function PayWall({ payWallOption, setPayWallOption }: Props) {
             label=""
             placeholder="Receiver's Address"
             value={payWallOption?.receiver}
+            error={!isAddress(receiver)}
             onChange={(e) => {
               setReceiver(e.target.value);
             }}

@@ -24,8 +24,6 @@ const PaywallField = ({
   disabled,
   setData,
 }: Props) => {
-  console.log(data);
-
   const payWallNetwork = (form.properties[propertyName]?.payWallOptions
     .network || {}) as Registry;
 
@@ -52,6 +50,7 @@ const PaywallField = ({
   const { address: userAddress } = useAccount();
 
   const [tokenOptions, setTokenOptions] = useState<OptionType[]>([]);
+  const [loading, setLoading] = useState(false);
 
   const firstChainName =
     Object.values(payWallNetwork).length > 0
@@ -75,6 +74,7 @@ const PaywallField = ({
     label: firstTokenSymbol,
     value: firstTokenAddress,
   });
+  const [payValue, setPayValue] = useState(0);
 
   const [tokenStatus, setTokenStatus] = useState(false);
 
@@ -94,55 +94,38 @@ const PaywallField = ({
     }
   }, [form.properties, propertyName, payWallOptions, selectedChain]);
 
-  // 1. Checks if you are on the right network
-  // 2. Checks if you have sufficient ERC20 Allowance
-  const preCheck = () => {
-    const approval = async () => {
-      const approvalStatus = await isApproved(
-        selectedToken.value,
-        circleRegistry?.[selectedChain.value].distributorAddress as string,
-        payWallOptions.value > 0 ? payWallOptions.value : payWallData?.value,
-        userAddress || ""
-      );
-      setTokenStatus(approvalStatus);
-      console.log({ approvalStatus });
-    };
-    if (chain?.id.toString() == selectedChain.value) {
-      void approval();
-    } else {
-      try {
-        switchNetworkAsync &&
-          void switchNetworkAsync(parseInt(selectedChain.value)).catch(
-            (err: any) => {
-              toast.error(err.message);
-            }
-          );
-        void approval();
-      } catch (err: any) {
-        toast.error(err.message);
-      }
-    }
+  const approval = async () => {
+    const approvalStatus = await isApproved(
+      selectedToken.value,
+      circleRegistry?.[selectedChain.value].distributorAddress as string,
+      payWallOptions.value > 0 ? payWallOptions.value : payValue,
+      userAddress || ""
+    );
+    setTokenStatus(approvalStatus);
+    console.log({ approvalStatus });
   };
 
   // Record payment
   const recordPayment = (txnHash: string) => {
-    setData({
-      chain: selectedChain,
-      token: selectedToken,
-      value:
-        payWallOptions.value > 0 ? payWallOptions?.value : payWallData?.value,
-      paid: true,
-      txnHash,
-    });
+    if (txnHash)
+      setData({
+        chain: selectedChain,
+        token: selectedToken,
+        value: payWallOptions.value > 0 ? payWallOptions?.value : payValue,
+        paid: true,
+        txnHash,
+      });
   };
 
   return (
-    <Box>
+    <Box display={"flex"} flexDirection="column" gap={"2"}>
       <Stack
         direction={{
           xs: "vertical",
           md: "horizontal",
         }}
+        align="center"
+        justify="center"
       >
         <Box
           width={{
@@ -167,14 +150,6 @@ const PaywallField = ({
             selected={selectedChain}
             onChange={(option) => {
               setSelectedChain(option);
-              setData({
-                chain: option,
-                token: selectedToken,
-                value:
-                  payWallOptions.value > 0
-                    ? payWallOptions?.value
-                    : payWallData?.value,
-              });
             }}
             multiple={false}
             isClearable={false}
@@ -193,14 +168,6 @@ const PaywallField = ({
             selected={selectedToken}
             onChange={(option) => {
               setSelectedToken(option);
-              setData({
-                chain: selectedChain,
-                token: option,
-                value:
-                  payWallOptions.value > 0
-                    ? payWallOptions?.value
-                    : payWallData?.value,
-              });
             }}
             multiple={false}
             isClearable={false}
@@ -216,20 +183,13 @@ const PaywallField = ({
           <Input
             label=""
             placeholder={`Enter Reward Amount`}
-            value={
-              payWallOptions.value > 0
-                ? payWallOptions?.value
-                : payWallData?.value
-            }
+            value={payWallOptions.value > 0 ? payWallOptions?.value : payValue}
             onChange={(e) => {
-              setData({
-                chain: selectedChain,
-                token: selectedToken,
-                value: parseFloat(e.target.value),
-              });
+              setPayValue(parseFloat(e.target.value));
             }}
             type="number"
             units={selectedToken.label}
+            min={0}
             disabled={
               !!payWallOptions.value || (payWallData && payWallData?.paid)
             }
@@ -237,17 +197,33 @@ const PaywallField = ({
         </Box>
       </Stack>
       <PrimaryButton
+        loading={loading}
         onClick={async () => {
-          // Pre Check
-          preCheck();
+          // 1. Check if the receiver & sender are the same
+          if (userAddress === payWallOptions.receiver) {
+            toast.error(`You cannot fund yourself`);
+            return;
+          }
 
-          // Check if wallet has enough tokens
+          // 2. Checks if you are on the right network
+          if (!(chain?.id.toString() == selectedChain.value)) {
+            try {
+              switchNetworkAsync &&
+                void switchNetworkAsync(parseInt(selectedChain.value)).catch(
+                  (err: any) => {
+                    toast.error(err.message);
+                  }
+                );
+            } catch (err: any) {
+              toast.error(err.message);
+            }
+          }
+
+          // 3. Check if wallet has enough tokens
           if (
             !(await hasBalance(
               selectedToken.value,
-              payWallOptions.value > 0
-                ? payWallOptions.value
-                : payWallData?.value,
+              payWallOptions.value > 0 ? payWallOptions.value : payValue,
               userAddress as string
             ))
           ) {
@@ -257,12 +233,16 @@ const PaywallField = ({
             return;
           }
 
+          // 4. Check if you have sufficient ERC20 Allowance
+          void approval();
+
           // Paying via Native Currency
           if (
             circleRegistry &&
             selectedToken.label ==
               circleRegistry[selectedChain.value]?.nativeCurrency
           ) {
+            setLoading(true);
             const options = {
               chainId: selectedChain.value || "",
               paymentType: "currency",
@@ -270,9 +250,7 @@ const PaywallField = ({
                 form.properties[propertyName]?.payWallOptions.receiver,
               ],
               amounts: [
-                payWallOptions.value > 0
-                  ? payWallOptions.value
-                  : payWallData?.value,
+                payWallOptions.value > 0 ? payWallOptions.value : payValue,
               ],
               tokenAddresses: [""],
               batchPayType: "form",
@@ -301,6 +279,7 @@ const PaywallField = ({
               .catch((err) => console.log(err));
 
             recordPayment(currencyTxnHash);
+            setLoading(false);
             return;
           }
 
@@ -311,6 +290,7 @@ const PaywallField = ({
               circleRegistry[selectedChain.value]?.nativeCurrency
           ) {
             // Approval for ERC20 token
+            setLoading(true);
             if (!tokenStatus) {
               await toast.promise(
                 approve(
@@ -353,9 +333,7 @@ const PaywallField = ({
                 batchPayType: "form",
                 userAddresses: [payWallOptions.receiver],
                 amounts: [
-                  payWallOptions.value > 0
-                    ? payWallOptions.value
-                    : payWallData?.value,
+                  payWallOptions.value > 0 ? payWallOptions.value : payValue,
                 ],
                 tokenAddresses: [selectedToken.value],
                 cardIds: [""],
@@ -363,6 +341,7 @@ const PaywallField = ({
                 circleRegistry: circleRegistry,
               });
               recordPayment("gasless");
+              setLoading(false);
               return;
             }
 
@@ -375,9 +354,7 @@ const PaywallField = ({
                   batchPayType: "form",
                   userAddresses: [payWallOptions.receiver],
                   amounts: [
-                    payWallOptions.value > 0
-                      ? payWallOptions.value
-                      : payWallData?.value,
+                    payWallOptions.value > 0 ? payWallOptions.value : payValue,
                   ],
                   tokenAddresses: [selectedToken.value],
                   cardIds: [""],
@@ -396,11 +373,16 @@ const PaywallField = ({
               )
               .catch((err) => console.log(err));
             recordPayment(tokenTxnHash);
+            setLoading(false);
           }
         }}
-        disabled={payWallData && payWallData?.paid}
+        disabled={
+          (payWallData && payWallData?.paid) ||
+          (payWallOptions.value <= 0 && payValue <= 0)
+        }
       >
-        Pay
+        Pay {payWallOptions.value > 0 ? payWallOptions.value : payValue}
+        {" " + selectedToken.label}
       </PrimaryButton>
     </Box>
   );

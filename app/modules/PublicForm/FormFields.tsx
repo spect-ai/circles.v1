@@ -164,7 +164,9 @@ export default function FormFields({ form, setForm }: Props) {
             )
           ) {
             tempData[propertyId] = lastResponse[propertyId] || [];
-          } else if (["reward"].includes(form.properties[propertyId].type)) {
+          } else if (
+            ["reward", "payWall"].includes(form.properties[propertyId].type)
+          ) {
             tempData[propertyId] = lastResponse[propertyId];
           }
         });
@@ -307,6 +309,8 @@ export default function FormFields({ form, setForm }: Props) {
         return !value || value.length === 0;
       case "reward":
         return !value?.value;
+      case "payWall":
+        return !value?.txnHash;
       default:
         return false;
     }

@@ -292,11 +292,12 @@ export default function PublicField({
         <PaywallField
           form={form}
           data={data}
-          setData={(reward: PayWallOptions) => {
+          setData={(paywall: PayWallOptions) => {
             setData({
               ...data,
-              [propertyName]: reward,
+              [propertyName]: paywall,
             });
+            updateRequiredFieldNotSet(propertyName, paywall);
           }}
           propertyName={propertyName}
           disabled

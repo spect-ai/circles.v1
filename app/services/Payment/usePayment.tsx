@@ -141,16 +141,16 @@ export default function usePaymentGateway(
       toast(
         <Stack direction="horizontal">
           Transaction Successful
-          <PrimaryButton>
-            <Link
-              href={`${registry && registry[chainId].blockExplorer}/tx/${
-                tx.transactionHash
-              }`}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              View Transaction
-            </Link>
+          <PrimaryButton
+            onClick={() => {
+              registry &&
+                window.open(
+                  `${registry[chainId].blockExplorer}/tx/${tx.transactionHash}`,
+                  "_blank"
+                );
+            }}
+          >
+            View Transaction
           </PrimaryButton>
         </Stack>,
         {
