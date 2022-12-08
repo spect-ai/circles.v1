@@ -51,17 +51,13 @@ export default function usePaymentGateway(
     tokenAddresses: Array<string>,
     tokenValues: Array<number>
   ) {
-    const accounts = await window.ethereum?.request({
-      method: "eth_accounts",
-    });
-    if (accounts?.length === 0) {
+    if (!address) {
       return;
     }
-    if (window.ethereum?.networkVersion !== expectedNetwork)
-      console.log("Wrong Network");
+    if (chain?.id.toString() !== expectedNetwork) console.log("Wrong Network");
     else {
       const [sufficientBalance, insufficientBalanceTokenAddress] =
-        await hasBalances(tokenAddresses, tokenValues, address as string);
+        await hasBalances(tokenAddresses, tokenValues, address);
     }
   }
 
@@ -143,11 +139,13 @@ export default function usePaymentGateway(
           Transaction Successful
           <PrimaryButton
             onClick={() => {
-              registry &&
-                window.open(
-                  `${registry[chainId].blockExplorer}/tx/${tx.transactionHash}`,
-                  "_blank"
-                );
+              const url = circleRegistry
+                ? `${circleRegistry[chainId].blockExplorer}tx/${tx.transactionHash}`
+                : registry &&
+                  `${registry[chainId].blockExplorer}tx/${tx.transactionHash}`;
+              console.log(url);
+
+              window.open(url, "_blank");
             }}
           >
             View Transaction

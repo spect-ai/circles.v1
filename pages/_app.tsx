@@ -43,11 +43,17 @@ import { publicProvider } from "wagmi/providers/public";
 import { SiweMessage } from "siwe";
 import { UserType } from "@/app/types";
 import { atom, useAtom } from "jotai";
-
 const isProd = process.env.NODE_ENV === "production";
 
 const { chains, provider } = configureChains(
-  [chain.mainnet, chain.polygon, chain.optimism, chain.arbitrum],
+  [
+    chain.mainnet,
+    chain.polygon,
+    chain.optimism,
+    chain.arbitrum,
+    chain.goerli,
+    chain.polygonMumbai,
+  ],
   [alchemyProvider({ apiKey: process.env.ALCHEMY_KEY }), publicProvider()]
 );
 
