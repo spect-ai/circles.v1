@@ -12,6 +12,7 @@ import {
   useTheme,
   IconDotsHorizontal,
   IconSparkles,
+  IconExclamationCircle,
 } from "degen";
 import { useGlobal } from "@/app/context/globalContext";
 import { UserType, CircleType } from "@/app/types";
@@ -300,7 +301,7 @@ function Dashboard() {
             position: "absolute",
             right: "2rem",
             bottom: "1rem",
-            zIndex: "2",
+            zIndex: "1",
           }}
         >
           <Button
@@ -308,7 +309,7 @@ function Dashboard() {
             onClick={() => setFaqOpen(true)}
             shape="circle"
           >
-            <IconSparkles size={"6"} />
+            <IconExclamationCircle size={"6"} />
           </Button>
         </Box>
         <AnimatePresence>

@@ -1,5 +1,4 @@
 import Loader from "@/app/common/components/Loader";
-import { ApartmentOutlined } from "@ant-design/icons";
 import {
   Box,
   Button,
@@ -7,13 +6,12 @@ import {
   Text,
   IconLockClosed,
   Stack,
-  IconSparkles,
+  IconExclamationCircle,
 } from "degen";
 import { AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import styled from "styled-components";
-import Navigation from "../Project/Navigation";
 import RetroPage from "../Retro";
 import { useCircle } from "./CircleContext";
 import CircleDashboard from "./CircleOverview";
@@ -144,7 +142,7 @@ export default function Circle() {
           position: "absolute",
           right: "2rem",
           bottom: "1rem",
-          zIndex: "2",
+          zIndex: "1",
         }}
       >
         <Button
@@ -152,7 +150,7 @@ export default function Circle() {
           onClick={() => setFaqOpen(true)}
           shape="circle"
         >
-          <IconSparkles size={"6"} />
+          <IconExclamationCircle size={"6"} />
         </Button>
       </Box>
       <AnimatePresence>

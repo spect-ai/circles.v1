@@ -1,4 +1,4 @@
-import { Box, Button, useTheme, IconSparkles } from "degen";
+import { Box, Button, useTheme, IconExclamationCircle } from "degen";
 import { AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import { ToastContainer } from "react-toastify";
@@ -35,7 +35,7 @@ export function Collection() {
           position: "absolute",
           right: "2rem",
           bottom: "1rem",
-          zIndex: "2",
+          zIndex: "1",
         }}
       >
         <Button
@@ -43,7 +43,7 @@ export function Collection() {
           onClick={() => setFaqOpen(true)}
           shape="circle"
         >
-          <IconSparkles size={"6"} />
+          <IconExclamationCircle size={"6"} />
         </Button>
       </Box>
       <AnimatePresence>

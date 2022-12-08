@@ -1,5 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { Box, Button, IconSparkles, Stack, Text, useTheme } from "degen";
+import {
+  Box,
+  Button,
+  IconExclamationCircle,
+  IconSparkles,
+  Stack,
+  Text,
+  useTheme,
+} from "degen";
 import MetaHead from "@/app/common/seo/MetaHead/MetaHead";
 import type { NextPage } from "next";
 import ProfileCard from "@/app/modules/Profile/ProfilePage/ProfileCard";
@@ -113,15 +121,16 @@ const ProfilePage: NextPage = () => {
             position: "absolute",
             right: "2rem",
             bottom: "1rem",
-            zIndex: "2",
+            zIndex: "1",
           }}
         >
           <Button
             variant="secondary"
             onClick={() => setFaqOpen(true)}
             shape="circle"
+            justifyContent="center"
           >
-            <IconSparkles size={"6"} />
+            <IconExclamationCircle size={"6"} />
           </Button>
         </Box>
         <AnimatePresence>
