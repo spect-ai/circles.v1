@@ -174,7 +174,10 @@ export default function SingleAutomation({
       <Box
         display="flex"
         flexDirection="row"
-        marginTop="8"
+        marginTop={{
+          xs: "2",
+          md: "8",
+        }}
         width="full"
         gap="2"
       >
@@ -235,7 +238,12 @@ export default function SingleAutomation({
         paddingY="4"
       >
         <Box>
-          <Box marginTop="4">
+          <Box
+            marginTop={{
+              xs: "2",
+              md: "4",
+            }}
+          >
             <Text variant="large" weight="semiBold" color="accent">
               When
             </Text>
@@ -278,7 +286,12 @@ export default function SingleAutomation({
             </AutomationCard>
           </Box>
 
-          <Box marginTop="4">
+          <Box
+            marginTop={{
+              xs: "2",
+              md: "4",
+            }}
+          >
             <Text variant="large" weight="semiBold" color="accent">
               Then
             </Text>
@@ -344,7 +357,10 @@ export default function SingleAutomation({
               style={{
                 width: "80%",
               }}
-              marginTop="4"
+              marginTop={{
+                xs: "0",
+                md: "4",
+              }}
             >
               <PrimaryButton
                 variant="tertiary"
@@ -364,7 +380,12 @@ export default function SingleAutomation({
               </PrimaryButton>
             </Box>
           </Box>
-          <Box marginTop="16">
+          <Box
+            marginTop={{
+              xs: "4",
+              md: "8",
+            }}
+          >
             <Text variant="large" weight="semiBold" color="accent">
               Only If
             </Text>
@@ -390,9 +411,9 @@ const AutomationCard = styled(Box)<{
 }>`
   @media (max-width: 768px) {
     width: 100%;
-    padding: 0;
+    padding: 0.5rem;
     margin: 0;
-    height: 55vh;
+    height: auto;
     margin-top: 0.5rem;
     align-items: flex-start;
   }
@@ -421,6 +442,9 @@ const AutomationCard = styled(Box)<{
 const ScrollContainer = styled(Box)`
   ::-webkit-scrollbar {
     width: 5px;
+  }
+  @media (max-width: 768px) {
+    height: 25rem;
   }
   height: 35rem;
   overflow-y: auto;

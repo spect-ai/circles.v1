@@ -216,8 +216,27 @@ export default function Automation() {
             size="large"
             handleClose={() => setIsOpen(false)}
           >
-            <Box display="flex">
-              <Box width="1/4" paddingY="8" paddingRight="1">
+            <Box
+              display="flex"
+              flexDirection={{
+                xs: "column",
+                md: "row",
+              }}
+              width={{
+                xs: "full",
+              }}
+            >
+              <Box
+                width={{
+                  xs: "full",
+                  md: "1/4",
+                }}
+                paddingY="8"
+                paddingRight={{
+                  xs: "1",
+                  md: "1",
+                }}
+              >
                 <Tabs
                   selectedTab={tab}
                   onTabClick={onTabClick}
@@ -230,7 +249,10 @@ export default function Automation() {
               <Box
                 display="flex"
                 flexDirection="column"
-                width="3/4"
+                width={{
+                  xs: "full",
+                  md: "3/4",
+                }}
                 paddingRight="8"
                 paddingLeft="2"
                 justifyContent="flex-start"
@@ -258,12 +280,12 @@ export default function Automation() {
                   }}
                   onSave={onSave}
                   onMouseLeave={(
-                    name,
-                    description,
-                    trigger,
-                    actions,
-                    conditions,
-                    isDirty
+                    name: string,
+                    description: string,
+                    trigger: Trigger,
+                    actions: Action[],
+                    conditions: Condition[],
+                    isDirty: boolean
                   ) => {
                     saveDraftLocal(
                       {
@@ -281,7 +303,18 @@ export default function Automation() {
                 />
               </Box>
             </Box>
-            <Box width="1/4" paddingBottom="4" padding="2">
+            <Box
+              width={{
+                xs: "full",
+                md: "1/4",
+              }}
+              paddingBottom="4"
+              padding={{
+                xs: "1",
+                md: "1",
+              }}
+              marginLeft="1"
+            >
               <PrimaryButton
                 variant="secondary"
                 disabled={Object.keys(automationInCreate).length > 0}
