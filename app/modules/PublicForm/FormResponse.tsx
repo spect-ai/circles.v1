@@ -49,8 +49,6 @@ export default function FormResponse({
     enabled: false,
   });
 
-  console.log({ claimed });
-
   return (
     <Box
       padding={{
@@ -67,8 +65,8 @@ export default function FormResponse({
           numberOfPieces={600}
         />
       )}
-      <Stack align="center">
-        <Heading align="center">{`${
+      <Stack align="flex-start">
+        <Heading align="left">{`${
           form?.messageOnSubmission || "Your response has been submitted!"
         }`}</Heading>
         <Box
@@ -85,7 +83,9 @@ export default function FormResponse({
           )}
           {claimed ? (
             <Stack>
-              <Heading>You have claimed this Kudos 🎉</Heading>
+              <Text variant="extraLarge" weight="bold">
+                You have claimed this Kudos 🎉
+              </Text>
               <Box>
                 <Stack direction="vertical">
                   <TwitterShareButton
