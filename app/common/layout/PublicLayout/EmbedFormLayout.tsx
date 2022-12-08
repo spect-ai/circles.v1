@@ -6,6 +6,7 @@ import { useGlobal } from "@/app/context/globalContext";
 import { useQuery } from "react-query";
 import { UserType } from "@/app/types";
 import { toast } from "react-toastify";
+import { useRouter } from "next/router";
 
 type PublicLayoutProps = {
   children: ReactNodeNoStrings;
@@ -39,6 +40,9 @@ function EmbedLayout(props: PublicLayoutProps) {
   // eslint-disable-next-line @typescript-eslint/unbound-method
   const { setMode } = useTheme();
 
+  const router = useRouter();
+  const { mode } = router.query;
+
   const { data: currentUser, refetch } = useQuery<UserType>(
     "getMyUser",
     getUser,
@@ -67,7 +71,7 @@ function EmbedLayout(props: PublicLayoutProps) {
 
   useEffect(() => {
     setTimeout(() => {
-      if (localStorage.getItem("lightMode")) {
+      if (mode === "light") {
         setMode("light");
         document.documentElement.style.setProperty(
           "--dsg-cell-background-color",
@@ -84,7 +88,7 @@ function EmbedLayout(props: PublicLayoutProps) {
       }
     }, 100);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [mode]);
 
   useEffect(() => {
     setIsSidebarExpanded(false);

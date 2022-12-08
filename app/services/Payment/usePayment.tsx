@@ -16,13 +16,14 @@ declare let window: any;
 
 interface BatchPayParams {
   paymentType: string;
-  batchPayType: "card" | "retro";
+  batchPayType: string;
   chainId: string;
   userAddresses: string[];
   amounts: number[];
   tokenAddresses: string[];
   cardIds: string[];
   circleId: string;
+  circleRegistry?: Registry;
 }
 
 interface PayUsingGnosisParams extends BatchPayParams {
@@ -50,17 +51,13 @@ export default function usePaymentGateway(
     tokenAddresses: Array<string>,
     tokenValues: Array<number>
   ) {
-    const accounts = await window.ethereum?.request({
-      method: "eth_accounts",
-    });
-    if (accounts?.length === 0) {
+    if (!address) {
       return;
     }
-    if (window.ethereum?.networkVersion !== expectedNetwork)
-      console.log("Wrong Network");
+    if (chain?.id.toString() !== expectedNetwork) console.log("Wrong Network");
     else {
       const [sufficientBalance, insufficientBalanceTokenAddress] =
-        await hasBalances(tokenAddresses, tokenValues, address as string);
+        await hasBalances(tokenAddresses, tokenValues, address);
     }
   }
 
@@ -73,6 +70,7 @@ export default function usePaymentGateway(
     cardIds,
     circleId,
     batchPayType,
+    circleRegistry,
   }: BatchPayParams) {
     let tx;
     if (paymentType === "tokens") {
@@ -86,6 +84,7 @@ export default function usePaymentGateway(
         type: batchPayType,
         cardIds,
         circleId,
+        circleRegistry,
       });
     } else if (paymentType === "currency") {
       console.log({ userAddresses });
@@ -98,6 +97,7 @@ export default function usePaymentGateway(
         type: batchPayType,
         cardIds,
         circleId,
+        circleRegistry,
       });
     }
     return tx;
@@ -112,6 +112,7 @@ export default function usePaymentGateway(
     cardIds,
     circleId,
     batchPayType,
+    circleRegistry,
   }: BatchPayParams) {
     try {
       console.log({ userAddresses, amounts });
@@ -127,6 +128,7 @@ export default function usePaymentGateway(
         cardIds,
         circleId,
         batchPayType,
+        circleRegistry,
       });
       if (handleStatusUpdate) {
         await handleStatusUpdate(cardIds, tx.transactionHash);
@@ -135,16 +137,18 @@ export default function usePaymentGateway(
       toast(
         <Stack direction="horizontal">
           Transaction Successful
-          <PrimaryButton>
-            <Link
-              href={`${registry && registry[chainId].blockExplorer}/tx/${
-                tx.transactionHash
-              }`}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              View Transaction
-            </Link>
+          <PrimaryButton
+            onClick={() => {
+              const url = circleRegistry
+                ? `${circleRegistry[chainId].blockExplorer}tx/${tx.transactionHash}`
+                : registry &&
+                  `${registry[chainId].blockExplorer}tx/${tx.transactionHash}`;
+              console.log(url);
+
+              window.open(url, "_blank");
+            }}
+          >
+            View Transaction
           </PrimaryButton>
         </Stack>,
         {
@@ -223,8 +227,9 @@ export default function usePaymentGateway(
     tokenAddresses,
     cardIds,
     circleId,
+    circleRegistry,
   }: BatchPayParams): Promise<boolean> {
-    if (paymentType === "tokens" && registry) {
+    if (paymentType === "tokens" && (registry || circleRegistry)) {
       const {
         filteredTokenAddresses,
         filteredRecipients,
@@ -242,17 +247,16 @@ export default function usePaymentGateway(
         callerId: connectedUser,
         tokenAddresses,
       });
-      await biconomyPayment(
-        address || "",
-        registry[chainId].distributorAddress as string,
-        {
-          filteredTokenAddresses,
-          filteredRecipients,
-          valuesInWei,
-          id,
-          overrides,
-        }
-      );
+      const addr = circleRegistry
+        ? circleRegistry[chainId].distributorAddress
+        : registry && registry[chainId].distributorAddress;
+      await biconomyPayment(address || "", addr as string, {
+        filteredTokenAddresses,
+        filteredRecipients,
+        valuesInWei,
+        id,
+        overrides,
+      });
       toast.success("Transaction sent");
     }
     return false;

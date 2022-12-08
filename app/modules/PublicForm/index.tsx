@@ -26,7 +26,7 @@ import SocialMedia from "@/app/common/components/SocialMedia";
 
 export default function PublicForm() {
   const router = useRouter();
-  const { formId, bgcolor } = router.query;
+  const { formId } = router.query;
   const [form, setForm] = useState<FormType>();
   const { mode } = useTheme();
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
@@ -115,17 +115,9 @@ export default function PublicForm() {
 
   return (
     <ScrollContainer
-      style={{
-        backgroundColor: `${
-          route === "embed"
-            ? bgcolor
-              ? bgcolor
-              : "transparent"
-            : mode === "dark"
-            ? "rgb(0,0,0)"
-            : "rgb(255,255,255)"
-        }`,
-      }}
+      backgroundColor={
+        route === "embed" ? "transparent" : "backgroundSecondary"
+      }
     >
       <ToastContainer
         toastStyle={{
@@ -143,26 +135,23 @@ export default function PublicForm() {
       {form && (
         <Container embed={route === "embed"}>
           <FormContainer
+            backgroundColor={route === "embed" ? "transparent" : "background"}
             borderRadius={route === "embed" ? "none" : "2xLarge"}
             style={{
               boxShadow: `0rem 0.2rem 0.5rem ${
                 mode === "dark" ? "rgba(0, 0, 0, 0.25)" : "rgba(0, 0, 0, 0.1)"
-              }`,
-              backgroundColor: `${
-                route === "embed"
-                  ? bgcolor
-                    ? bgcolor
-                    : "transparent"
-                  : mode === "dark"
-                  ? "rgb(20,20,20)"
-                  : "rgb(255,255,255)"
               }`,
             }}
           >
             <Box width="full" padding="4">
               <Stack space="2">
                 {form.logo && <Avatar src={form.logo} label="" size="20" />}
-                <NameInput autoFocus value={form.name} disabled />
+                <NameInput
+                  autoFocus
+                  value={form.name}
+                  disabled
+                  rows={Math.floor(form.name?.length / 60) + 1}
+                />
                 {form.description && (
                   <Editor value={form.description} isDirty={true} disabled />
                 )}
@@ -459,8 +448,8 @@ const Container = styled(Box)<{ embed: boolean }>`
   padding: 0rem ${(props) => (props.embed ? "0rem" : "14rem")};
 `;
 
-export const NameInput = styled.input`
-  width: 100%;
+export const NameInput = styled.textarea`
+  resize: none;
   background: transparent;
   border: 0;
   border-style: none;
@@ -469,9 +458,11 @@ export const NameInput = styled.input`
   outline-offset: 0;
   box-shadow: none;
   font-size: 1.8rem;
+  font-family: Inter;
   caret-color: rgb(191, 90, 242);
   color: rgb(191, 90, 242);
   font-weight: 600;
+  overflow: hidden;
 `;
 
 export const CoverImage = styled(Box)<{ src: string }>`

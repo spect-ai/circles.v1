@@ -672,10 +672,11 @@ export interface DistributeEtherParams {
   chainId: string;
   cardIds: string[];
   circleId: string;
-  type: "card" | "retro";
+  type: string;
   callerId: string;
   nonce?: number;
   paymentMethod: "wallet" | "gnosis" | "gasless";
+  circleRegistry?: Registry;
 }
 
 export interface DistributeTokenParams extends DistributeEtherParams {
@@ -763,6 +764,13 @@ export type CollectionPermissions =
   | "viewResponses"
   | "addComments";
 
+export type PayWallOptions = {
+  network: Registry;
+  value: number;
+  receiver: string;
+  paid?: boolean;
+};
+
 export type Property = {
   name: string;
   type: PropertyType;
@@ -776,6 +784,7 @@ export type Property = {
   required?: boolean;
   description?: string;
   viewConditions?: Condition[];
+  payWallOptions?: PayWallOptions;
 };
 
 export type PropertyType =
@@ -792,7 +801,8 @@ export type PropertyType =
   | "ethAddress"
   | "milestone"
   | "singleURL"
-  | "multiURL";
+  | "multiURL"
+  | "payWall";
 
 export type Option = {
   label: string;

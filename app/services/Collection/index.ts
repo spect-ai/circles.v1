@@ -1,5 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Condition, FormUserType, Registry, Voting } from "@/app/types";
+import {
+  Condition,
+  FormUserType,
+  PayWallOptions,
+  Registry,
+  Voting,
+} from "@/app/types";
 
 export const addField = async (
   collectionId: string,
@@ -16,6 +22,7 @@ export const addField = async (
     description?: string;
     milestoneFields?: string[];
     viewConditions?: Condition[];
+    payWallOptions?: PayWallOptions;
   }
 ) => {
   return await (
@@ -49,6 +56,7 @@ export const updateField = async (
     description?: string;
     milestoneFields?: string[];
     viewConditions?: Condition[];
+    payWallOptions?: PayWallOptions;
   }
 ) => {
   return await (
