@@ -1,12 +1,18 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { Registry } from "@/app/types";
-import { ethers, Signer } from "ethers";
+import { BigNumber, BigNumberish, ethers, Signer } from "ethers";
 import { useRouter } from "next/router";
 import { useQuery } from "react-query";
 import { toast } from "react-toastify";
 import { erc20ABI } from "wagmi";
 import { gnosisPayment } from "../Gnosis";
-import { useSigner, useProvider } from "wagmi";
+import {
+  useSigner,
+  useBalance,
+  useNetwork,
+  useAccount,
+  useProvider,
+} from "wagmi";
 
 export default function useERC20() {
   const router = useRouter();
@@ -14,14 +20,21 @@ export default function useERC20() {
   const { data: registry } = useQuery<Registry>(["registry", cId], {
     enabled: false,
   });
+  const { data: signer } = useSigner();
+  const { chain } = useNetwork();
+  const { address } = useAccount();
+  const { data: balance } = useBalance({
+    addressOrName: address,
+    chainId: chain?.id,
+  });
 
   function isCurrency(address: string) {
     return address === "0x0";
   }
 
   function getERC20Contract(address: string) {
-    const provider = new ethers.providers.Web3Provider(window.ethereum as any);
-    return new ethers.Contract(address, erc20ABI, provider.getSigner());
+    // const provider = new ethers.providers.Web3Provider(window.ethereum as any);
+    return new ethers.Contract(address, erc20ABI, signer as Signer);
   }
 
   function getERC20ContractWithCustomProvider(
@@ -192,13 +205,11 @@ export default function useERC20() {
     ethAddress: string
   ) {
     if (isCurrency(erc20Address)) {
-      const balance = await window.ethereum?.request({
-        // @ts-ignore
-        method: "eth_getBalance",
-        // @ts-ignore
-        params: [ethAddress],
-      });
-      return parseFloat(ethers.utils.formatEther(balance as any)) >= value;
+      return (
+        parseFloat(
+          ethers.utils.formatEther(balance?.value?._hex as BigNumberish)
+        ) >= value
+      );
       // eslint-disable-next-line no-else-return
     } else {
       const contract = getERC20Contract(erc20Address);
