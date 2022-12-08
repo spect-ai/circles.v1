@@ -1,13 +1,15 @@
 import Dropdown from "@/app/common/components/Dropdown";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { Action, Option, Trigger } from "@/app/types";
+import { Action, Condition, Option, Trigger } from "@/app/types";
 import { Box, Text, useTheme } from "degen";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
+import AddConditions from "../Common/AddConditions";
 import { useLocalCollection } from "../Context/LocalCollectionContext";
 import SingleAction from "./Actions";
 import SingleTrigger from "./Triggers";
 import { validateActions } from "./Validation/ActionValidations";
+import { validateConditions } from "./Validation/ConditionValidations";
 import { validateTrigger } from "./Validation/TriggerValidations";
 
 type Props = {
@@ -18,13 +20,15 @@ type Props = {
     name: string,
     description: string,
     trigger: Trigger,
-    action: Action[]
+    action: Action[],
+    conditions: Condition[]
   ) => void;
   onMouseLeave: (
     name: string,
     description: string,
     trigger: Trigger,
     action: Action[],
+    conditions: Condition[],
     isDirty: boolean
   ) => void;
 };
@@ -46,17 +50,18 @@ export default function SingleAutomation({
   );
   const [trigger, setTrigger] = useState({} as Trigger);
   const [actions, setActions] = useState([] as Action[]);
+  const [conditions, setConditions] = useState([] as Condition[]);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [isDirty, setIsDirty] = useState(false);
   const [allPossibleActions, setAllPossibleActions] = useState({
-    createCard: {
-      id: "createCard",
-      name: "Create Card",
-      service: "project",
-      type: "createCard",
-      data: {},
-    },
+    // createCard: {
+    //   id: "createCard",
+    //   name: "Create Card",
+    //   service: "collection",
+    //   type: "createCard",
+    //   data: {},
+    // },
 
     giveRole: {
       id: "giveRole",
@@ -69,7 +74,7 @@ export default function SingleAutomation({
       id: "giveDiscordRole",
       name: "Give Discord Role",
       service: "circle",
-      type: "giveRole",
+      type: "giveDiscordRole",
       data: {},
     },
     createDiscordChannel: {
@@ -86,8 +91,17 @@ export default function SingleAutomation({
       type: "sendEmail",
       data: {},
     },
+    startVotingPeriod: {
+      id: "startVotingPeriod",
+      name: "Start Voting Period",
+      service: "collection",
+      type: "startVotingPeriod",
+      data: {},
+    },
   } as { [id: string]: Action });
   const [canSave, setCanSave] = useState(false);
+
+  console.log({ trigger, actions, conditions });
 
   useEffect(() => {
     const whenOptions = Object.entries(collection.properties)
@@ -100,12 +114,25 @@ export default function SingleAutomation({
           fieldType: p[1].type,
         },
       }));
-    setWhenOptions(whenOptions);
+    setWhenOptions([
+      ...whenOptions,
+      {
+        label:
+          collection.defaultView === "form"
+            ? "New Response is added"
+            : "New Data is added",
+        value: "newData",
+      },
+    ]);
 
-    const thenOptions = Object.entries(allPossibleActions).map((a) => ({
-      label: a[1].name,
-      value: a[0],
-    }));
+    const thenOptions = Object.entries(allPossibleActions)
+      .filter((a) =>
+        collection?.voting?.enabled ? true : a[0] !== "startVotingPeriod"
+      )
+      .map((a) => ({
+        label: a[1].name,
+        value: a[0],
+      }));
     setThenOptions(thenOptions);
     if (automation) {
       setName(automation.name);
@@ -115,8 +142,8 @@ export default function SingleAutomation({
       ) as Option;
       setSelectedWhenOption(
         selectedWhenOption || {
-          label: "Select a trigger",
-          value: "select",
+          label: automation.trigger?.name || "Select trigger",
+          value: automation.trigger?.type || "selectTrigger",
         }
       );
       setSelectedThenOptions(
@@ -127,21 +154,23 @@ export default function SingleAutomation({
       );
       setTrigger(automation.trigger);
       setActions(automation.actions);
+      setConditions(automation.conditions || []);
     }
   }, [automation]);
 
   useEffect(() => {
     setCanSave(
-      validateActions(actions) && validateTrigger(trigger) && name !== ""
+      validateActions(actions) &&
+        validateTrigger(trigger) &&
+        validateConditions(conditions) &&
+        name !== ""
     );
-  }, [actions, trigger, name]);
+    console.log({ canSave });
+    onMouseLeave(name, description, trigger, actions, conditions, isDirty);
+  }, [actions, trigger, conditions, name]);
 
   return (
-    <Box
-      onMouseLeave={() =>
-        onMouseLeave(name, description, trigger, actions, isDirty)
-      }
-    >
+    <Box>
       <Box
         display="flex"
         flexDirection="row"
@@ -180,7 +209,7 @@ export default function SingleAutomation({
         <PrimaryButton
           variant="secondary"
           onClick={() => {
-            onSave(name, description, trigger, actions);
+            onSave(name, description, trigger, actions, conditions);
             setIsDirty(false);
           }}
           disabled={!canSave || !isDirty}
@@ -207,7 +236,7 @@ export default function SingleAutomation({
       >
         <Box>
           <Box marginTop="4">
-            <Text variant="large" weight="semiBold">
+            <Text variant="large" weight="semiBold" color="accent">
               When
             </Text>
             <AutomationCard mode={mode}>
@@ -248,8 +277,9 @@ export default function SingleAutomation({
               )}{" "}
             </AutomationCard>
           </Box>
+
           <Box marginTop="4">
-            <Text variant="large" weight="semiBold">
+            <Text variant="large" weight="semiBold" color="accent">
               Then
             </Text>
             {actions.map((action, index) => (
@@ -333,6 +363,19 @@ export default function SingleAutomation({
                 Add Action
               </PrimaryButton>
             </Box>
+          </Box>
+          <Box marginTop="16">
+            <Text variant="large" weight="semiBold" color="accent">
+              Only If
+            </Text>
+            <AddConditions
+              viewConditions={conditions}
+              setViewConditions={(conditions) => {
+                setConditions(conditions);
+                setIsDirty(true);
+              }}
+              firstRowMessage="It is true that"
+            />
           </Box>
         </Box>
       </ScrollContainer>

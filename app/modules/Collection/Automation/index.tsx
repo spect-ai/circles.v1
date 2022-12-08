@@ -11,6 +11,7 @@ import {
   Action,
   Automation as SingleAutomationType,
   AutomationType,
+  Condition,
   Trigger,
 } from "@/app/types";
 import { GatewayOutlined } from "@ant-design/icons";
@@ -58,29 +59,17 @@ export default function Automation() {
     isDirty: boolean
   ) => {
     if (automationMode === "create") {
+      console.log("autoInCreate");
       setAutomationInCreate({
         [automationId]: automation,
       });
     }
-    // } else {
-    //   if (isDirty) {
-    //     setAutomationInEdit({
-    //       [automationId]: automation,
-    //     });
-    //     // const newTabs = automationOrder.map((aId, index) => {
-    //     //   if (aId === automationId) {
-    //     //     return `𝘜𝘱𝘥𝘢𝘵𝘪𝘯𝘨: ${automations[automationId].name}`;
-    //     //   }
-    //     //   return tabs[index];
-    //     // });
-    //     // setTabs(newTabs);
-    //   }
-    // }
   };
-
+  console.log({ auto123: circle.automations });
   const init = (initTab?: number) => {
     setAutomationOrder(circle.automationsIndexedByCollection[colId as string]);
     setAutomations(circle.automations);
+    console.log({ auto: circle.automations });
     if (initTab || initTab === 0) {
       setAutomationId(
         circle.automationsIndexedByCollection[colId as string][initTab]
@@ -111,6 +100,7 @@ export default function Automation() {
         description: "",
         trigger: {} as Trigger,
         actions: [] as Action[],
+        conditions: [] as Condition[],
         triggerCategory: "collection",
       },
     });
@@ -123,6 +113,7 @@ export default function Automation() {
         description: "",
         trigger: {} as Trigger,
         actions: [] as Action[],
+        conditions: [] as Condition[],
         triggerCategory: "collection",
       },
     });
@@ -132,13 +123,15 @@ export default function Automation() {
     name: string,
     description: string,
     trigger: Trigger,
-    actions: Action[]
+    actions: Action[],
+    conditions: Condition[]
   ) => {
     const newAutomation = {
       name,
       description,
       trigger,
       actions,
+      conditions,
     };
     if (automationMode === "create") {
       const res = await addAutomation(circle?.id, {
@@ -271,6 +264,7 @@ export default function Automation() {
                     description,
                     trigger,
                     actions,
+                    conditions,
                     isDirty
                   ) => {
                     saveDraftLocal(
@@ -280,6 +274,7 @@ export default function Automation() {
                         description,
                         trigger,
                         actions,
+                        conditions,
                         triggerCategory: "collection",
                       },
                       isDirty
@@ -311,6 +306,7 @@ export default function Automation() {
                       description: "",
                       trigger: {} as Trigger,
                       actions: [] as Action[],
+                      conditions: [] as Condition[],
                       triggerCategory: "collection",
                     },
                   });
@@ -323,6 +319,7 @@ export default function Automation() {
                       description: "",
                       trigger: {} as Trigger,
                       actions: [] as Action[],
+                      conditions: [] as Condition[],
                       triggerCategory: "collection",
                     },
                   });

@@ -49,6 +49,8 @@ export default function FormResponse({
     enabled: false,
   });
 
+  console.log({ claimed });
+
   return (
     <Box
       padding={{

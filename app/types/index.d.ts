@@ -883,6 +883,7 @@ export interface FormType {
   opportunityInfo: OpportunityInfoType;
   active: boolean;
   viewConditions: Condition[];
+  requireDiscordConnection: boolean;
   createdAt: string;
   updatedAt: string;
   id: string;
