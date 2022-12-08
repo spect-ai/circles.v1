@@ -248,7 +248,7 @@ export default function FormResponse({
                   Submit another response
                 </PrimaryButton>
               )}
-              <Link href="/">
+              <a href="/" target="_blank">
                 <PrimaryButton
                   onClick={() => {
                     process.env.NODE_ENV === "production" &&
@@ -261,7 +261,7 @@ export default function FormResponse({
                 >
                   Create your own form
                 </PrimaryButton>
-              </Link>
+              </a>
             </Stack>
           </Box>
         </Box>
