@@ -32,7 +32,7 @@ const PaywallField = ({
 
   const payWallData = data[propertyName];
 
-  const { data: circleRegistry } = useQuery<Registry>(
+  const { data: circleRegistry, refetch } = useQuery<Registry>(
     ["registry", form.parents?.[0].slug],
     () =>
       fetch(
@@ -107,6 +107,7 @@ const PaywallField = ({
 
   // Record payment
   const recordPayment = (txnHash: string) => {
+    console.log(txnHash);
     if (txnHash)
       setData({
         chain: selectedChain,
@@ -116,6 +117,47 @@ const PaywallField = ({
         txnHash,
       });
   };
+
+  // eslint-disable-next-line @typescript-eslint/require-await
+  const checkReceiver = async () => {
+    if (userAddress === payWallOptions.receiver) {
+      toast.error(`You cannot fund yourself`);
+      return;
+    }
+  };
+
+  const checkNetwork = async () => {
+    if (!(chain?.id.toString() == selectedChain.value)) {
+      try {
+        switchNetworkAsync &&
+          (await switchNetworkAsync(parseInt(selectedChain.value)).catch(
+            (err: any) => {
+              console.log(err.message);
+            }
+          ));
+      } catch (err: any) {
+        console.log(err.message);
+      }
+    }
+  };
+
+  const checkBalance = async () => {
+    if (
+      !(await hasBalance(
+        selectedToken.value,
+        payWallOptions.value > 0 ? payWallOptions.value : payValue,
+        userAddress as string
+      ))
+    ) {
+      toast.error(`You don't have sufficient ` + `${selectedToken.label}`);
+      return;
+    }
+  };
+
+  useEffect(() => {
+    void refetch();
+    void approval();
+  }, [selectedToken]);
 
   return (
     <Box display={"flex"} flexDirection="column" gap={"2"}>
@@ -200,47 +242,27 @@ const PaywallField = ({
         loading={loading}
         onClick={async () => {
           // 1. Check if the receiver & sender are the same
-          if (userAddress === payWallOptions.receiver) {
-            toast.error(`You cannot fund yourself`);
-            return;
-          }
+          await checkReceiver();
 
           // 2. Checks if you are on the right network
-          if (!(chain?.id.toString() == selectedChain.value)) {
-            try {
-              switchNetworkAsync &&
-                void switchNetworkAsync(parseInt(selectedChain.value)).catch(
-                  (err: any) => {
-                    toast.error(err.message);
-                  }
-                );
-            } catch (err: any) {
-              toast.error(err.message);
-            }
-          }
+          await checkNetwork();
 
           // 3. Check if wallet has enough tokens
-          if (
-            !(await hasBalance(
-              selectedToken.value,
-              payWallOptions.value > 0 ? payWallOptions.value : payValue,
-              userAddress as string
-            ))
-          ) {
-            toast.error(
-              `You don't have sufficient ` + `${selectedToken.label}`
-            );
-            return;
-          }
+          await checkBalance();
 
           // 4. Check if you have sufficient ERC20 Allowance
-          void approval();
+          await approval();
 
           // Paying via Native Currency
           if (
             circleRegistry &&
             selectedToken.label ==
-              circleRegistry[selectedChain.value]?.nativeCurrency
+              circleRegistry[selectedChain.value]?.nativeCurrency &&
+            (await hasBalance(
+              selectedToken.value,
+              payWallOptions.value > 0 ? payWallOptions.value : payValue,
+              userAddress as string
+            ))
           ) {
             setLoading(true);
             const options = {
@@ -283,12 +305,13 @@ const PaywallField = ({
             return;
           }
 
-          // Paying via ERC20 Token
           if (
             circleRegistry &&
             selectedToken.label !==
-              circleRegistry[selectedChain.value]?.nativeCurrency
+              circleRegistry[selectedChain.value]?.nativeCurrency &&
+            !tokenStatus
           ) {
+            await approval();
             // Approval for ERC20 token
             setLoading(true);
             if (!tokenStatus) {
@@ -303,13 +326,7 @@ const PaywallField = ({
                   }
                 }),
                 {
-                  pending: `Approving ${
-                    (circleRegistry &&
-                      circleRegistry[selectedChain.value]?.tokenDetails[
-                        selectedToken.value
-                      ]?.name) ||
-                    "Token"
-                  }`,
+                  pending: `Approving ${selectedToken.label} Token`,
                   error: {
                     render: ({ data }) => data,
                   },
@@ -319,8 +336,18 @@ const PaywallField = ({
                 }
               );
             }
+            setLoading(false);
+          }
 
+          // Paying via ERC20 Token
+          if (
+            circleRegistry &&
+            selectedToken.label !==
+              circleRegistry[selectedChain.value]?.nativeCurrency &&
+            tokenStatus
+          ) {
             // Paying on Mumbai or Polygon Mainnet --> Gasless transactions via BICO
+            setLoading(true);
             if (
               (selectedChain.value === "137" ||
                 selectedChain.value === "80001") &&
@@ -346,21 +373,23 @@ const PaywallField = ({
             }
 
             // Paying on all other networks
+            const options = {
+              chainId: selectedChain.value || "",
+              paymentType: "tokens",
+              batchPayType: "form",
+              userAddresses: [payWallOptions.receiver],
+              amounts: [
+                payWallOptions.value > 0 ? payWallOptions.value : payValue,
+              ],
+              tokenAddresses: [selectedToken.value],
+              cardIds: [""],
+              circleId: form.parents?.[0].id,
+              circleRegistry: circleRegistry,
+            };
+            console.log(options);
             const tokenTxnHash = await toast
               .promise(
-                batchPay({
-                  chainId: selectedChain.value || "",
-                  paymentType: "tokens",
-                  batchPayType: "form",
-                  userAddresses: [payWallOptions.receiver],
-                  amounts: [
-                    payWallOptions.value > 0 ? payWallOptions.value : payValue,
-                  ],
-                  tokenAddresses: [selectedToken.value],
-                  cardIds: [""],
-                  circleId: form.parents?.[0].id,
-                  circleRegistry: circleRegistry,
-                }),
+                batchPay(options),
                 {
                   pending: `Distributing Approved Tokens`,
                   error: {
