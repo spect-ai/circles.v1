@@ -1,10 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { OptionType } from "@/app/common/components/Dropdown";
 import {
   addCollectionData,
   deleteCollectionData,
   updateCollectionDataGuarded,
 } from "@/app/services/Collection";
-import { Milestone, PropertyType, Reward } from "@/app/types";
+import { Milestone, PaymentData, PropertyType, Reward } from "@/app/types";
 import { Box } from "degen";
 import { AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
@@ -29,6 +30,8 @@ import GutterColumnComponent from "./GutterColumnComponent";
 import HeaderComponent from "./HeaderComponent";
 import MilestoneComponent from "./MilestoneComponent";
 import MultiMilestoneModal from "./MultiMilestoneModal";
+import PaymentComponent from "./PaymentComponent";
+import PaymentModal from "./PaymentModal";
 import RewardComponent from "./RewardComponent";
 import RewardModal from "./RewardModal";
 import SelectComponent from "./SelectComponent";
@@ -36,6 +39,7 @@ import SelectComponent from "./SelectComponent";
 export default function TableView() {
   const [isEditFieldOpen, setIsEditFieldOpen] = useState(false);
   const [isRewardFieldOpen, setIsRewardFieldOpen] = useState(false);
+  const [isPaymentFieldOpen, setIsPaymentFieldOpen] = useState(false);
   const [propertyName, setPropertyName] = useState("");
   const [dataId, setDataId] = useState<string>("");
   const [multipleMilestoneModalOpen, setMultipleMilestoneModalOpen] =
@@ -65,7 +69,7 @@ export default function TableView() {
         return addData(row);
       }
       if (!row.id) return;
-      if (row && !collection.properties[cell.colId || ""].isPartOfFormView) {
+      if (row && !collection.properties[cell.colId || ""]?.isPartOfFormView) {
         const res = await updateCollectionDataGuarded(collection.id, row.id, {
           [cell.colId as string]: row[cell.colId as string],
         });
@@ -150,11 +154,15 @@ export default function TableView() {
     }
   };
 
+  console.log(data);
+
   const getCellComponent = (type: PropertyType) => {
     switch (type) {
       case "shortText":
         return textColumn;
       case "ethAddress":
+        return textColumn;
+      case "singleURL":
         return textColumn;
       case "longText":
         return ExpandableCell;
@@ -168,9 +176,13 @@ export default function TableView() {
         return SelectComponent;
       case "reward":
         return RewardComponent;
+      case "payWall":
+        return PaymentComponent;
       case "user[]":
         return ExpandableCell;
       case "multiSelect":
+        return ExpandableCell;
+      case "multiURL":
         return ExpandableCell;
       case "milestone":
         return MilestoneComponent;
@@ -184,9 +196,14 @@ export default function TableView() {
     collection.propertyOrder.map((propertyName: string) => {
       const property = collection.properties[propertyName];
       if (
-        ["singleSelect", "multiSelect", "longText", "user", "user[]"].includes(
-          property.type
-        )
+        [
+          "singleSelect",
+          "multiSelect",
+          "longText",
+          "user",
+          "user[]",
+          "singleURL",
+        ].includes(property.type)
       ) {
         return {
           ...keyColumn(property.name, {
@@ -228,6 +245,25 @@ export default function TableView() {
           columnData: {
             property,
             setMultipleMilestoneModalOpen,
+            setPropertyName,
+            setDataId,
+          },
+          title: (
+            <HeaderComponent
+              sortData={sortData}
+              columnName={property.name}
+              setIsEditFieldOpen={setIsEditFieldOpen}
+              setPropertyName={setPropertyName}
+            />
+          ),
+          minWidth: 200,
+        };
+      } else if (["payWall"].includes(property.type)) {
+        return {
+          component: getCellComponent(property.type) as any,
+          columnData: {
+            property,
+            setIsPaymentFieldOpen,
             setPropertyName,
             setDataId,
           },
@@ -308,6 +344,33 @@ export default function TableView() {
                   });
                 }
                 setIsRewardFieldOpen(false);
+              }
+            }}
+            dataId={dataId}
+          />
+        )}
+        {isPaymentFieldOpen && (
+          <PaymentModal
+            form={collection}
+            propertyName={propertyName}
+            handleClose={async (
+              payment: PaymentData,
+              dataId: string,
+              propertyName: string
+            ) => {
+              if (data) {
+                const row = data.findIndex((row) => row.id === dataId);
+
+                if (row === 0 || row) {
+                  const tempData = [...data];
+                  tempData[row][propertyName] = payment;
+                  setData(tempData);
+                  setIsPaymentFieldOpen(false);
+                  await updateData({
+                    cell: { row, col: 0, colId: propertyName },
+                  });
+                }
+                setIsPaymentFieldOpen(false);
               }
             }}
             dataId={dataId}

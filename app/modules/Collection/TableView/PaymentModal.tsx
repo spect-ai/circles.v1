@@ -1,17 +1,22 @@
 import Modal from "@/app/common/components/Modal";
-import { Reward } from "@/app/types";
+import { PaymentData, Reward } from "@/app/types";
 import { Box } from "degen";
 import React, { memo, useState } from "react";
+import PaywallField from "../../PublicForm/PaywallField";
 import RewardField from "../../PublicForm/RewardField";
 
 type Props = {
   form: any;
   dataId?: string;
   propertyName: string;
-  handleClose: (reward: Reward, dataId: string, propertyName: string) => void;
+  handleClose: (
+    payment: PaymentData,
+    dataId: string,
+    propertyName: string
+  ) => void;
 };
 
-function RewardModal({ propertyName, dataId, handleClose, form }: Props) {
+function PaymentModal({ propertyName, dataId, handleClose, form }: Props) {
   const [data, setData] = useState(dataId ? form?.data[dataId] : undefined);
 
   return (
@@ -22,6 +27,7 @@ function RewardModal({ propertyName, dataId, handleClose, form }: Props) {
             chain: data[propertyName]?.chain,
             token: data[propertyName]?.token,
             value: parseFloat(data[propertyName]?.value),
+            txnHash: data[propertyName]?.txnHash,
           },
           dataId || "",
           propertyName
@@ -30,14 +36,14 @@ function RewardModal({ propertyName, dataId, handleClose, form }: Props) {
       title="Reward"
     >
       <Box padding="8">
-        <RewardField
+        <PaywallField
           form={form}
           propertyName={propertyName}
           data={data}
-          updateData={(reward: Reward) => {
+          setData={(payment: PaymentData) => {
             setData({
               ...data,
-              [propertyName]: reward,
+              [propertyName]: payment,
             });
           }}
         />
@@ -132,4 +138,4 @@ function RewardModal({ propertyName, dataId, handleClose, form }: Props) {
   );
 }
 
-export default memo(RewardModal);
+export default memo(PaymentModal);
