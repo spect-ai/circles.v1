@@ -206,7 +206,7 @@ export default function PublicForm() {
                 )}
                 {form.mintkudosTokenId && (
                   <Text weight="semiBold" variant="large" color="textPrimary">
-                    This form distributes Kudos to responders
+                    This form distributes soulbound tokens to responders
                   </Text>
                 )}
                 {form.sybilProtectionEnabled && (
@@ -235,29 +235,46 @@ export default function PublicForm() {
                 </Box>
               </Box>
             )}
-            {form.requireDiscordConnection && !currentUser?.discordId && (
-              <Link
-                href={`https://discord.com/api/oauth2/authorize?client_id=942494607239958609&redirect_uri=${
-                  process.env.NODE_ENV === "development"
-                    ? "http%3A%2F%2Flocalhost%3A3000%2FlinkDiscord"
-                    : "https%3A%2F%2Fcircles.spect.network%2FlinkDiscord"
-                }&response_type=code&scope=identify`}
-              >
-                <Button
-                  data-tour="connect-discord-button"
-                  width="full"
-                  size="small"
-                  variant="secondary"
-                  prefix={
-                    <Box marginTop="1">
-                      <DiscordIcon />
-                    </Box>
-                  }
-                >
-                  Connect Discord
-                </Button>
-              </Link>
-            )}
+            {form.requireDiscordConnection &&
+              !currentUser?.discordId &&
+              currentUser?.id && (
+                <Box paddingLeft="4">
+                  <Text weight="semiBold" variant="large" color="textPrimary">
+                    This form requires Discord connection so it can
+                    automatically assign roles
+                  </Text>
+                  <Box
+                    width={{
+                      xs: "full",
+                      sm: "full",
+                      md: "1/4",
+                    }}
+                    marginTop="4"
+                  >
+                    <Link
+                      href={`https://discord.com/api/oauth2/authorize?client_id=942494607239958609&redirect_uri=${
+                        process.env.NODE_ENV === "development"
+                          ? `http%3A%2F%2Flocalhost%3A3000%2FlinkDiscord`
+                          : "https%3A%2F%2Fcircles.spect.network%2FlinkDiscord"
+                      }&response_type=code&scope=identify`}
+                    >
+                      <Button
+                        data-tour="connect-discord-button"
+                        width="full"
+                        size="small"
+                        variant="secondary"
+                        prefix={
+                          <Box marginTop="1">
+                            <DiscordIcon />
+                          </Box>
+                        }
+                      >
+                        Connect Discord
+                      </Button>
+                    </Link>
+                  </Box>
+                </Box>
+              )}
             {!canFillForm && currentUser?.id && !loading && (
               <motion.div
                 className="box"

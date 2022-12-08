@@ -65,11 +65,9 @@ export default function Automation() {
       });
     }
   };
-  console.log({ auto123: circle.automations });
   const init = (initTab?: number) => {
     setAutomationOrder(circle.automationsIndexedByCollection[colId as string]);
     setAutomations(circle.automations);
-    console.log({ auto: circle.automations });
     if (initTab || initTab === 0) {
       setAutomationId(
         circle.automationsIndexedByCollection[colId as string][initTab]

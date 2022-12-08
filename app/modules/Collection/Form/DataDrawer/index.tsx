@@ -62,6 +62,8 @@ export default function DataDrawer({
   const [data, setData] = useState({} as any);
   const [vote, setVote] = useState(-1);
 
+  console.log({ collection });
+
   useEffect(() => {
     if (dataId && collection.data) {
       setData({});
