@@ -13,6 +13,7 @@ import {
   useAccount,
   useProvider,
 } from "wagmi";
+import { useGlobal } from "@/app/context/globalContext";
 
 export default function useERC20() {
   const router = useRouter();
@@ -20,7 +21,7 @@ export default function useERC20() {
   const { data: registry } = useQuery<Registry>(["registry", cId], {
     enabled: false,
   });
-  const { data: signer } = useSigner();
+  const { signer } = useGlobal()
   const { chain } = useNetwork();
   const { address } = useAccount();
   const { data: balance } = useBalance({
@@ -34,7 +35,7 @@ export default function useERC20() {
 
   function getERC20Contract(address: string) {
     // const provider = new ethers.providers.Web3Provider(window.ethereum as any);
-    return new ethers.Contract(address, erc20ABI, signer as Signer);
+    return new ethers.Contract(address, erc20ABI, signer);
   }
 
   function getERC20ContractWithCustomProvider(
@@ -57,7 +58,7 @@ export default function useERC20() {
     try {
       if (safeAddress) {
         const overrides: any = {
-          gasLimit: 10000000,
+          gasLimit: chainId == '1' ? 21000 : 10000000,
           nonce,
         };
         const data = await contract.populateTransaction.approve(

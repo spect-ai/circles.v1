@@ -9,7 +9,7 @@ import {
   Registry,
 } from "@/app/types";
 import { AbiCoder } from "ethers/lib/utils";
-import { useSigner } from "wagmi";
+import { useGlobal } from "@/app/context/globalContext";
 
 export default function useDistributor() {
   const { isCurrency, decimals } = useERC20();
@@ -19,7 +19,7 @@ export default function useDistributor() {
     enabled: false,
   });
 
-  const { data: signer } = useSigner();
+  const { signer } = useGlobal()
 
   function getDistributorContract(chainId: string, circleRegistry?: Registry) {
     if (!registry && !circleRegistry) return null;
@@ -29,7 +29,7 @@ export default function useDistributor() {
     return new ethers.Contract(
       addr as string,
       DistributorABI,
-      signer as Signer
+      signer
     );
   }
 
@@ -77,7 +77,7 @@ export default function useDistributor() {
     const overrides = {
       value: ethers.utils.parseEther(totalValue.toString()),
       nonce,
-      gasLimit: 10000000,
+      gasLimit: chainId === '1' ? 21000 : 10000000,
     };
     const encoder = new AbiCoder();
     const id = encoder.encode(
@@ -171,7 +171,7 @@ export default function useDistributor() {
     const contract = getDistributorContract(chainId, circleRegistry);
 
     const overrides: any = {
-      gasLimit: 10000000,
+      gasLimit: chainId == '1' ? 21000 : 10000000,
       nonce,
     };
     const encoder = new AbiCoder();
