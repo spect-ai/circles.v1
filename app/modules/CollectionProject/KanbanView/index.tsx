@@ -26,6 +26,7 @@ export default function KanbanView() {
     loading,
     setLoading,
     updateCollection,
+    cardOrders,
   } = useViewCommon();
 
   return (
@@ -54,9 +55,7 @@ export default function KanbanView() {
               column={column}
               groupByColumn={view.groupByColumn}
               setDefaultValue={setDefaultValue}
-              cardIds={
-                collection.projectMetadata.cardOrders[view.groupByColumn][index]
-              }
+              cardIds={cardOrders[index]}
             />
           ))}
           <Box marginTop="4" width="48">

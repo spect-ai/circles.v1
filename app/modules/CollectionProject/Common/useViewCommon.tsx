@@ -5,6 +5,7 @@ import {
   updateFormCollection,
 } from "@/app/services/Collection";
 import { MemberDetails, Option } from "@/app/types";
+import { matchSorter } from "match-sorter";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { DropResult } from "react-beautiful-dnd";
@@ -16,6 +17,7 @@ export default function useViewCommon() {
     localCollection: collection,
     projectViewId,
     updateCollection,
+    searchFilter,
   } = useLocalCollection();
 
   const view = collection.projectMetadata.views[projectViewId];
@@ -27,6 +29,10 @@ export default function useViewCommon() {
   const [loading, setLoading] = useState(false);
   const [columns, setColumns] = useState<Option[]>([]);
 
+  const [cardOrders, setCardOrders] = useState(
+    collection.projectMetadata.cardOrders[view.groupByColumn]
+  );
+
   const router = useRouter();
   const { circle: cId, cardSlug, newCard } = router.query;
   const { data: memberDetails } = useQuery<MemberDetails>(
@@ -35,6 +41,46 @@ export default function useViewCommon() {
       enabled: false,
     }
   );
+
+  useEffect(() => {
+    const newCardOrder = collection.projectMetadata.cardOrders[
+      view.groupByColumn
+    ].map((group) =>
+      matchSorter(group, searchFilter, {
+        keys: collection.propertyOrder.map((property) => {
+          if (collection.properties[property].type === "user") {
+            return (item: string) => {
+              const member = collection.data[item][property]?.value;
+              return memberDetails?.memberDetails[member]?.username;
+            };
+          }
+          if (collection.properties[property].type === "multiSelect") {
+            return (item: string) => {
+              return collection.data[item][property]?.map(
+                (option: Option) => option.label
+              );
+            };
+          }
+
+          return (item: string) => {
+            return (
+              collection.data[item][property]?.label ||
+              collection.data[item][property]
+            );
+          };
+        }),
+      })
+    );
+    setCardOrders(newCardOrder);
+  }, [
+    collection.data,
+    collection.projectMetadata.cardOrders,
+    searchFilter,
+    view.groupByColumn,
+    collection.propertyOrder,
+    collection.properties,
+    memberDetails?.memberDetails,
+  ]);
 
   useEffect(() => {
     if (property.type === "singleSelect") {
@@ -187,5 +233,6 @@ export default function useViewCommon() {
     updateCollection,
     cardSlug,
     newCard,
+    cardOrders,
   };
 }

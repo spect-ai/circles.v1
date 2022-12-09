@@ -14,6 +14,7 @@ import { toast } from "react-toastify";
 import styled from "styled-components";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
 import AddView from "../AddView";
+import Filtering from "../Filtering";
 
 export default function ProjectHeading() {
   const {
@@ -68,12 +69,16 @@ export default function ProjectHeading() {
           />
         )}
       </AnimatePresence>
-      <Stack>
+      <Stack space="0">
         <Stack direction="horizontal">
           <Heading>{collection.name}</Heading>
         </Stack>
         <DragDropContext onDragEnd={handleDragEnd}>
-          <ViewTabsContainer backgroundColor="background" paddingX="4">
+          <ViewTabsContainer
+            backgroundColor="background"
+            paddingX="4"
+            borderTopRadius="large"
+          >
             <Droppable droppableId="Views" direction="horizontal">
               {(provided) => (
                 <Box
@@ -213,6 +218,7 @@ export default function ProjectHeading() {
             </Popover>
           </ViewTabsContainer>
         </DragDropContext>
+        <Filtering />
       </Stack>
     </Box>
   );
@@ -271,8 +277,6 @@ const getViewIcon = (viewType: string) => {
 export const ViewTabsContainer = styled(Box)`
   display: flex;
   flex-direction: row;
-  border-top-left-radius: 4px;
-  border-top-right-radius: 4px;
 `;
 
 export const ViewTab = styled(Box)`

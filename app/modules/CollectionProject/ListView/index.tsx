@@ -26,6 +26,7 @@ export default function ListView() {
     property,
     setLoading,
     updateCollection,
+    cardOrders,
   } = useViewCommon();
 
   return (
@@ -54,9 +55,7 @@ export default function ListView() {
               groupByColumn={view.groupByColumn}
               setDefaultValue={setDefaultValue}
               setIsCardDrawerOpen={setIsCardDrawerOpen}
-              cardIds={
-                collection.projectMetadata.cardOrders[view.groupByColumn][index]
-              }
+              cardIds={cardOrders[index]}
             />
           ))}
           <Box marginLeft="4" width="48" marginBottom="4">

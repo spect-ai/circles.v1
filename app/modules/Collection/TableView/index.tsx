@@ -4,9 +4,10 @@ import {
   deleteCollectionData,
   updateCollectionDataGuarded,
 } from "@/app/services/Collection";
-import { Milestone, PropertyType, Reward } from "@/app/types";
+import { Milestone, Option, PropertyType, Reward } from "@/app/types";
 import { Box } from "degen";
 import { AnimatePresence } from "framer-motion";
+import { matchSorter } from "match-sorter";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import {
@@ -42,8 +43,11 @@ export default function TableView() {
   const [multipleMilestoneModalOpen, setMultipleMilestoneModalOpen] =
     useState(false);
   const [data, setData] = useState<any[]>();
-  const { localCollection: collection, setLocalCollection } =
-    useLocalCollection();
+  const {
+    localCollection: collection,
+    setLocalCollection,
+    searchFilter,
+  } = useLocalCollection();
 
   const [expandedDataSlug, setExpandedDataSlug] = useState("");
 
@@ -125,9 +129,31 @@ export default function TableView() {
           ...row,
         };
       });
-      setData(data);
+
+      // filter the data based on the search filter
+      const filteredData = matchSorter(Object.values(data), searchFilter, {
+        keys: Object.keys(data[0]).map((key) => {
+          return (item: any) => {
+            if (key === "id") return item.id;
+            if (collection.properties[key]?.type === "date") {
+              return item[key].toISOString();
+            }
+            if (collection.properties[key]?.type === "multiSelect") {
+              return item[key]?.map((option: Option) => option.label);
+            }
+            return item[key]?.label || item[key];
+          };
+        }),
+      });
+
+      setData(filteredData);
     }
-  }, [collection.data, collection.properties, collection.propertyOrder]);
+  }, [
+    collection.data,
+    collection.properties,
+    collection.propertyOrder,
+    searchFilter,
+  ]);
 
   const sortData = (columnName: string, asc: boolean) => {
     if (data) {
