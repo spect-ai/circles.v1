@@ -45,6 +45,72 @@ import { UserType } from "@/app/types";
 import { atom, useAtom } from "jotai";
 const isProd = process.env.NODE_ENV === "production";
 
+const chainsObj = {
+  avalanche: {
+    id: 43114,
+    name: "Avalanche",
+    network: "avalanche",
+    nativeCurrency: {
+      decimals: 18,
+      name: "Avalanche",
+      symbol: "AVAX",
+    },
+    rpcUrls: {
+      default: "https://api.avax.network/ext/bc/C/rpc",
+    },
+    blockExplorers: {
+      etherscan: { name: "SnowTrace", url: "https://snowtrace.io" },
+      default: { name: "SnowTrace", url: "https://snowtrace.io" },
+    },
+    contracts: {
+      multicall3: {
+        address: "0xca11bde05977b3631167028862be2a173976ca11",
+        blockCreated: 11907934,
+      },
+    },
+  },
+  bsc: {
+    id: 56,
+    name: "Binance Smart Chain",
+    network: "bsc",
+    nativeCurrency: {
+      decimals: 18,
+      name: "BNB",
+      symbol: "BNB",
+    },
+    rpcUrls: {
+      default: "https://rpc.ankr.com/bsc",
+    },
+    blockExplorers: {
+      etherscan: { name: "BscScan", url: "https://bscscan.com" },
+      default: { name: "BscScan", url: "https://bscscan.com" },
+    },
+    contracts: {
+      multicall3: {
+        address: "0xca11bde05977b3631167028862be2a173976ca11",
+        blockCreated: 15921452,
+      },
+    },
+  },
+  gnosis: {
+    id: 100,
+    name: "Gnosis",
+    network: "Gnosis",
+    nativeCurrency: {
+      decimals: 18,
+      name: "xDAI",
+      symbol: "xDAI",
+    },
+    rpcUrls: {
+      default: "https://rpc.gnosischain.com",
+    },
+    blockExplorers: {
+      etherscan: { name: "Gnosis Scan", url: "https://gnosisscan.io/" },
+      default: { name: "Gnosis Scan", url: "https://gnosisscan.io/" },
+    },
+  },
+};
+
 const { chains, provider } = configureChains(
   [
     chain.mainnet,
@@ -53,6 +119,9 @@ const { chains, provider } = configureChains(
     chain.arbitrum,
     chain.goerli,
     chain.polygonMumbai,
+    chainsObj.avalanche,
+    chainsObj.bsc,
+    chainsObj.gnosis,
   ],
   [alchemyProvider({ apiKey: process.env.ALCHEMY_KEY }), publicProvider()]
 );
