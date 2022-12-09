@@ -2,16 +2,17 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { ExternalProvider } from "@/app/types";
 import { Biconomy } from "@biconomy/mexa";
-import { ethers } from "ethers";
+import { ethers, Signer } from "ethers";
 import DistributorABI from "@/app/common/contracts/mumbai/distributor.json";
 import { toast } from "react-toastify";
 
-export async function biconomyPayment(
+export const biconomyPayment = async(
   userAddress: string,
   contractAddress: string,
-  txnData: any
-) {
-  const biconomy = new Biconomy(window.ethereum as ExternalProvider, {
+  txnData: any,
+  signer: Signer
+) => {
+  const biconomy = new Biconomy(signer.provider as ExternalProvider, {
     apiKey: process.env.BICONOMY_API_KEY || "",
     debug: true,
     contractAddresses: [contractAddress], // list of contract address you want to enable gasless on
@@ -56,6 +57,7 @@ export async function biconomyPayment(
     (data: { msg: string; id: string; hash: string; receipt: string }) => {
       console.log(data);
       toast.success("Transaction Successful");
+      return data;
     }
   );
 }

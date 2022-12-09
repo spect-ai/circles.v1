@@ -39,7 +39,7 @@ export default function usePaymentGateway(
   const { address } = useAccount();
   const { chain } = useNetwork();
   const { switchNetworkAsync } = useSwitchNetwork();
-  const { connectedUser } = useGlobal();
+  const { connectedUser, signer } = useGlobal();
   const router = useRouter();
   const { circle: cId } = router.query;
   const { data: registry } = useQuery<Registry>(["registry", cId], {
@@ -250,14 +250,15 @@ export default function usePaymentGateway(
       const addr = circleRegistry
         ? circleRegistry[chainId].distributorAddress
         : registry && registry[chainId].distributorAddress;
-      await biconomyPayment(address || "", addr as string, {
+      const res = await biconomyPayment(address || "", addr as string, {
         filteredTokenAddresses,
         filteredRecipients,
         valuesInWei,
         id,
         overrides,
-      });
+      }, signer);
       toast.success("Transaction sent");
+      console.log(res);
     }
     return false;
   }
