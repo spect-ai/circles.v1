@@ -20,7 +20,7 @@ import Link from "next/link";
 import { useQuery } from "react-query";
 import React, { memo, useEffect, useState } from "react";
 import Logout from "@/app/common/components/LogoutButton";
-import { SettingOutlined } from "@ant-design/icons";
+import { QuestionCircleOutlined, SettingOutlined } from "@ant-design/icons";
 import YourCircles from "./CirclesTab";
 import { AnimatePresence } from "framer-motion";
 import Loader from "@/app/common/components/Loader";
@@ -309,7 +309,7 @@ function Dashboard() {
             onClick={() => setFaqOpen(true)}
             shape="circle"
           >
-            <IconExclamationCircle size={"6"} />
+            <QuestionCircleOutlined style={{ fontSize: "1.5rem" }} />
           </Button>
         </Box>
         <AnimatePresence>

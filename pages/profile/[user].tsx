@@ -2,8 +2,6 @@ import React, { useEffect, useState } from "react";
 import {
   Box,
   Button,
-  IconExclamationCircle,
-  IconSparkles,
   Stack,
   Text,
   useTheme,
@@ -16,7 +14,6 @@ import { useGlobal } from "@/app/context/globalContext";
 import { useRouter } from "next/router";
 import { UserType } from "@/app/types";
 import { useQuery } from "react-query";
-import { toast } from "react-toastify";
 import Loader from "@/app/common/components/Loader";
 import { PublicLayout } from "@/app/common/layout";
 import styled from "styled-components";
@@ -24,6 +21,7 @@ import NotifCard from "@/app/modules/Profile/ProfilePage/Notif";
 import NotificationPanel from "@/app/modules/Profile/NotificationPanel";
 import { AnimatePresence } from "framer-motion";
 import FAQModal from "@/app/modules/Dashboard/FAQModal";
+import { QuestionCircleOutlined } from "@ant-design/icons";
 
 const ProfilePage: NextPage = () => {
   const router = useRouter();
@@ -130,7 +128,7 @@ const ProfilePage: NextPage = () => {
             shape="circle"
             justifyContent="center"
           >
-            <IconExclamationCircle size={"6"} />
+            <QuestionCircleOutlined style={{ fontSize: "1.5rem" }} />
           </Button>
         </Box>
         <AnimatePresence>

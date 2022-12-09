@@ -207,7 +207,6 @@ export default function AddField({ propertyName, handleClose }: Props) {
             <Input
               label=""
               placeholder="Field Name"
-              maxLength={30}
               value={name}
               onChange={(e) => {
                 setName(e.target.value);
