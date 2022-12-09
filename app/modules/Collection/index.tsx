@@ -1,4 +1,4 @@
-import { Box, Button, useTheme, IconExclamationCircle } from "degen";
+import { Box, Button, useTheme } from "degen";
 import { AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import { ToastContainer } from "react-toastify";
@@ -6,6 +6,7 @@ import { useLocalCollection } from "./Context/LocalCollectionContext";
 import { Form } from "./Form";
 import TableView from "./TableView";
 import FAQModal from "../Dashboard/FAQModal";
+import { QuestionCircleOutlined } from "@ant-design/icons";
 
 export function Collection() {
   const { view, setView } = useLocalCollection();
@@ -43,7 +44,7 @@ export function Collection() {
           onClick={() => setFaqOpen(true)}
           shape="circle"
         >
-          <IconExclamationCircle size={"6"} />
+          <QuestionCircleOutlined style={{ fontSize: "1.5rem" }} />
         </Button>
       </Box>
       <AnimatePresence>
