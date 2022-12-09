@@ -245,7 +245,9 @@ export default function PublicForm() {
                         process.env.NODE_ENV === "development"
                           ? `http%3A%2F%2Flocalhost%3A3000%2FlinkDiscord`
                           : "https%3A%2F%2Fcircles.spect.network%2FlinkDiscord"
-                      }&response_type=code&scope=identify`}
+                      }&response_type=code&scope=identify&type=publicForm&state=/r/${
+                        form.slug
+                      }`}
                     >
                       <Button
                         data-tour="connect-discord-button"

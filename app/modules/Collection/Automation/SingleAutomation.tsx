@@ -166,11 +166,14 @@ export default function SingleAutomation({
         name !== ""
     );
     console.log({ canSave });
-    onMouseLeave(name, description, trigger, actions, conditions, isDirty);
   }, [actions, trigger, conditions, name]);
 
   return (
-    <Box>
+    <Box
+      onMouseLeave={() =>
+        onMouseLeave(name, description, trigger, actions, conditions, isDirty)
+      }
+    >
       <Box
         display="flex"
         flexDirection="row"

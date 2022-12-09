@@ -114,7 +114,16 @@ export function CreateCircle({ setStep, setOnboardType }: Props) {
           >
             LFG
           </Button>
-          <Text>Not here to manage your DAO? Set up your profile instead</Text>
+          <Box
+            width={"3/4"}
+            style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
+          >
+            <Text align={"center"}>
+              Not here to manage your DAO? Set up your profile instead to
+              receive notifications about new opportunities being created on
+              Spect.
+            </Text>
+          </Box>
           <PrimaryButton
             onClick={() => {
               setStep(3);

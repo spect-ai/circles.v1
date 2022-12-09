@@ -1,10 +1,13 @@
 import Dropdown from "@/app/common/components/Dropdown";
 import Modal from "@/app/common/components/Modal";
+import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { useCircle } from "@/app/modules/Circle/CircleContext";
 import { fetchGuildChannels } from "@/app/services/Discord";
 import { Action, Option } from "@/app/types";
 import { Box, Input, Stack, Tag, Text } from "degen";
 import { useEffect, useState } from "react";
+import { useLocalCollection } from "../../Context/LocalCollectionContext";
+import DiscordIcon from "@/app/assets/icons/discordIcon.svg";
 
 type Props = {
   actionMode: "edit" | "create";
@@ -26,6 +29,7 @@ export default function CreateDiscordChannel({
   );
 
   const { circle } = useCircle();
+  const { localCollection: collection } = useLocalCollection();
 
   useEffect(() => {
     const getGuildChannels = async () => {
@@ -41,6 +45,38 @@ export default function CreateDiscordChannel({
     };
     void getGuildChannels();
   }, [circle?.discordGuildId]);
+
+  if (!circle.discordGuildId)
+    return (
+      <Box
+        width={{
+          xs: "full",
+          md: "1/2",
+        }}
+        onClick={() => {
+          window.open(
+            `https://discord.com/oauth2/authorize?client_id=942494607239958609&permissions=17448306704&redirect_uri=${
+              process.env.NODE_ENV !== "production"
+                ? "http://localhost:3000/"
+                : "https://circles.spect.network/"
+            }api/connectDiscord&response_type=code&scope=bot&state=${
+              circle.slug
+            }/r/${collection.slug}`,
+            "_blank"
+          );
+        }}
+      >
+        <PrimaryButton
+          icon={
+            <Box marginTop="1">
+              <DiscordIcon />
+            </Box>
+          }
+        >
+          Connect Discord
+        </PrimaryButton>
+      </Box>
+    );
 
   return (
     <Box

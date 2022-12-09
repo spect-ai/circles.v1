@@ -7,6 +7,7 @@ import { useQuery } from "react-query";
 import DiscordIcon from "@/app/assets/icons/discordIcon.svg";
 import { isEmail } from "@/app/common/utils/utils";
 import { useProfile } from "./LocalProfileContext";
+import router from "next/router";
 
 export function BasicInfo() {
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
@@ -78,7 +79,7 @@ export function BasicInfo() {
               process.env.NODE_ENV === "development"
                 ? "http%3A%2F%2Flocalhost%3A3000%2FlinkDiscord"
                 : "https%3A%2F%2Fcircles.spect.network%2FlinkDiscord"
-            }&response_type=code&scope=identify`}
+            }&response_type=code&scope=identify&state=${router.asPath}`}
           >
             <Button
               data-tour="connect-discord-button"

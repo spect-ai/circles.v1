@@ -260,7 +260,7 @@ function Dashboard() {
                 setPanelTab("responses");
               }}
             >
-              Responses
+              Form Responses
             </Button>
             {/* <Button
               size="small"

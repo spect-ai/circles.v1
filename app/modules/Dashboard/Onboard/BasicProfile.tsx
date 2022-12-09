@@ -95,9 +95,8 @@ export function BasicProfile({ setStep }: { setStep: (step: number) => void }) {
               <Heading responsive>Connect your Discord</Heading>
             </Stack>
             <Text align={"center"}>
-              Connecting your Discord account gives access to a plethora of
-              opportunities via Spect. We bet, you wouldn&apos;t want to miss
-              those !
+              Connecting your Discord automatically lets you claim roles in all
+              your circles that have setup Discord roles.
             </Text>
             <Button
               data-tour="connect-discord-button"
