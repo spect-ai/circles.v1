@@ -189,7 +189,8 @@ export default function DataDrawer({
             <Stack space="5">
               <a
                 href={`/profile/${
-                  collection.profiles[collection.dataOwner[data.slug]].username
+                  collection?.profiles?.[collection?.dataOwner[data?.slug]]
+                    ?.username
                 }`}
                 target="_blank"
                 rel="noreferrer"
@@ -252,12 +253,29 @@ export default function DataDrawer({
                       );
                     return (
                       <Stack key={property.name} space="1">
-                        <Text weight="semiBold" variant="large" color="accent">
-                          {property.name}
-                        </Text>
-                        <Text weight="medium" variant="small">
-                          {property.description}
-                        </Text>
+                        <Stack
+                          space={"2"}
+                          direction="horizontal"
+                          wrap
+                          align={"center"}
+                        >
+                          <Text
+                            weight="bold"
+                            variant="extraLarge"
+                            color="accent"
+                          >
+                            {property.name}
+                          </Text>
+                          {property.description && (
+                            <Text
+                              weight="medium"
+                              variant="small"
+                              color={"textTertiary"}
+                            >
+                              ({property.description})
+                            </Text>
+                          )}
+                        </Stack>
                         {[
                           "shortText",
                           "ethAddress",
