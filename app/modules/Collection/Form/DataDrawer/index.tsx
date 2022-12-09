@@ -121,7 +121,7 @@ export default function DataDrawer({
             <Stack space="5">
               <a
                 href={`/profile/${
-                  collection.profiles[collection.dataOwner[data.slug]].username
+                  collection?.profiles?.[collection?.dataOwner[data?.slug]]?.username
                 }`}
                 target="_blank"
                 rel="noreferrer"
