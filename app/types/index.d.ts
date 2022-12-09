@@ -778,6 +778,13 @@ export type PayWallOptions = {
   paid?: boolean;
 };
 
+export type PaymentData = {
+  chain: OptionType;
+  token: OptionType;
+  value: number;
+  txnHash: string;
+}
+
 export type Property = {
   name: string;
   type: PropertyType;

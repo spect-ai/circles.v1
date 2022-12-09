@@ -195,6 +195,7 @@ function CircleSidebar() {
                                       : "transparent"
                                   }
                                   icon={<IconUserGroup size={"5"} />}
+                                  justifyContent="flex-start"
                                 >
                                   {smartTrim(
                                     circle?.children?.[content].name,
@@ -218,6 +219,7 @@ function CircleSidebar() {
                                       style={{ fontSize: "1.1rem" }}
                                     />
                                   }
+                                  justifyContent="flex-start"
                                 >
                                   {smartTrim(
                                     circle?.projects?.[content].name,
@@ -237,6 +239,7 @@ function CircleSidebar() {
                                       : "transparent"
                                   }
                                   icon={<IconLightningBolt size={"5"} />}
+                                  justifyContent="flex-start"
                                 >
                                   {smartTrim(
                                     circle?.retro?.[content].title,
@@ -257,6 +260,7 @@ function CircleSidebar() {
                                       : "transparent"
                                   }
                                   icon={<IconCollection size={"5"} />}
+                                  justifyContent="flex-start"
                                 >
                                   {smartTrim(
                                     circle?.collections?.[content].name,

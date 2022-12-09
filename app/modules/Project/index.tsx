@@ -1,5 +1,5 @@
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
-import { Box, Button, Text, useTheme, IconSparkles } from "degen";
+import { Box, Button, Text, useTheme, IconSparkles, IconExclamationCircle } from "degen";
 import React, { memo, useState } from "react";
 import { useLocalProject } from "./Context/LocalProjectContext";
 import { useGlobal } from "@/app/context/globalContext";
@@ -125,7 +125,7 @@ function Project() {
               position: "absolute",
               right: "2rem",
               bottom: "1rem",
-              zIndex: "2",
+              zIndex: "1",
             }}
           >
             <Button
@@ -133,7 +133,7 @@ function Project() {
               onClick={() => setFaqOpen(true)}
               shape="circle"
             >
-              <IconSparkles size={"6"} />
+              <IconExclamationCircle size={"6"} />
             </Button>
           </Box>
         </Box>

@@ -318,8 +318,17 @@ export default function DataDrawer({
                         {property?.type === "reward" && (
                           <Text>
                             {data[property.name]?.value}{" "}
-                            {data[property.name]?.token.label} on{" "}
-                            {data[property.name]?.chain.label}
+                            {data[property.name]?.token?.label} on{" "}
+                            {data[property.name]?.chain?.label}
+                          </Text>
+                        )}
+                        {property?.type === "payWall" && (
+                          <Text>
+                            {data[property.name]?.txnHash
+                              ? `${data[property.name]?.value}
+                              ${data[property.name]?.token?.label} on 
+                              ${data[property.name]?.chain?.label}`
+                              : "Not Paid"}
                           </Text>
                         )}
                         {property?.type === "milestone" && (
