@@ -256,7 +256,7 @@ export default function usePaymentGateway(
         valuesInWei,
         id,
         overrides,
-      }, signer);
+      });
       toast.success("Transaction sent");
       console.log(res);
     }

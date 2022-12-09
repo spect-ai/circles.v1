@@ -10,9 +10,8 @@ export const biconomyPayment = async(
   userAddress: string,
   contractAddress: string,
   txnData: any,
-  signer: Signer
 ) => {
-  const biconomy = new Biconomy(signer.provider as ExternalProvider, {
+  const biconomy = new Biconomy(window.ethereum as ExternalProvider, {
     apiKey: process.env.BICONOMY_API_KEY || "",
     debug: true,
     contractAddresses: [contractAddress], // list of contract address you want to enable gasless on
