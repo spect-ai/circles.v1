@@ -769,8 +769,8 @@ export type ProjectMetadata = {
     [key: string]: {
       name: string;
       type: "grid" | "kanban" | "gantt" | "list";
-      filters: any;
-      sort: any;
+      filters?: Condition[];
+      sort?: any;
       groupByColumn: string;
     };
   };

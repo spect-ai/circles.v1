@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Dropdown from "@/app/common/components/Dropdown";
 import { CollectionType, Option } from "@/app/types";
 import { Input, useTheme } from "degen";
@@ -52,7 +53,7 @@ export default function FilterValueField({
       });
       setRewardTokenOptions(tokenOptions.flat());
     }
-  }, [propertyId]);
+  }, [circle.id, collection?.properties, propertyId]);
 
   switch (type) {
     case "shortText":
@@ -89,6 +90,7 @@ export default function FilterValueField({
                 onChange(option);
               }}
               multiple={false}
+              isClearable={false}
             />
           );
         case "is not":
@@ -100,6 +102,7 @@ export default function FilterValueField({
                 onChange(option);
               }}
               multiple={false}
+              isClearable={false}
             />
           );
         case "is one of":
@@ -111,6 +114,7 @@ export default function FilterValueField({
                 onChange(option);
               }}
               multiple={true}
+              isClearable={false}
             />
           );
         default:
@@ -127,6 +131,7 @@ export default function FilterValueField({
                 onChange(option);
               }}
               multiple={true}
+              isClearable={false}
             />
           );
 
@@ -139,6 +144,7 @@ export default function FilterValueField({
                 onChange(option);
               }}
               multiple={true}
+              isClearable={false}
             />
           );
         case "includes one of":
@@ -150,6 +156,7 @@ export default function FilterValueField({
                 onChange(option);
               }}
               multiple={true}
+              isClearable={false}
             />
           );
         default:
@@ -166,6 +173,7 @@ export default function FilterValueField({
                 onChange(option);
               }}
               multiple={false}
+              isClearable={false}
             />
           );
         case "is not":
@@ -177,6 +185,7 @@ export default function FilterValueField({
                 onChange(option);
               }}
               multiple={false}
+              isClearable={false}
             />
           );
         case "is one of":
@@ -188,6 +197,7 @@ export default function FilterValueField({
                 onChange(option);
               }}
               multiple={true}
+              isClearable={false}
             />
           );
         default:
@@ -204,6 +214,7 @@ export default function FilterValueField({
                 onChange(option);
               }}
               multiple={true}
+              isClearable={false}
             />
           );
 
@@ -216,6 +227,7 @@ export default function FilterValueField({
                 onChange(option);
               }}
               multiple={true}
+              isClearable={false}
             />
           );
         case "includes one of":
@@ -227,6 +239,7 @@ export default function FilterValueField({
                 onChange(option);
               }}
               multiple={true}
+              isClearable={false}
             />
           );
         default:
@@ -265,6 +278,7 @@ export default function FilterValueField({
                 onChange(option);
               }}
               multiple={false}
+              isClearable={false}
             />
           );
         case "token is one of":
@@ -276,6 +290,7 @@ export default function FilterValueField({
                 onChange(option);
               }}
               multiple={true}
+              isClearable={false}
             />
           );
         default:

@@ -49,15 +49,18 @@ export default function KanbanView() {
       </AnimatePresence>
       <DragDropContext onDragEnd={handleDragEnd}>
         <Stack direction="horizontal" align="flex-start">
-          {columns?.map((column, index) => (
-            <Column
-              key={column.value}
-              column={column}
-              groupByColumn={view.groupByColumn}
-              setDefaultValue={setDefaultValue}
-              cardIds={cardOrders[index]}
-            />
-          ))}
+          {columns?.map((column, index) => {
+            if (cardOrders[index].length === 0 && index === 0) return null;
+            return (
+              <Column
+                key={column.value}
+                column={column}
+                groupByColumn={view.groupByColumn}
+                setDefaultValue={setDefaultValue}
+                cardIds={cardOrders[index]}
+              />
+            );
+          })}
           <Box marginTop="4" width="48">
             {property.type === "singleSelect" && !loading && (
               <PrimaryButton

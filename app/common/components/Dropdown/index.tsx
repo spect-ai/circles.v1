@@ -85,7 +85,7 @@ const Dropdown: FC<Props> = ({
                 ? "1px solid rgb(255, 255, 255, 0.1) !important"
                 : "1px solid rgb(20, 20, 20, 0.1) !important",
             borderRadius: "8px",
-            padding: "6px",
+            padding: "5px",
           }),
           input: (provided) => ({
             ...provided,

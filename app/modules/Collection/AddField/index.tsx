@@ -176,10 +176,10 @@ export default function AddField({ propertyName, handleClose }: Props) {
   }, [viewConditions]);
 
   useEffect(() => {
-    if (propertyName) {
+    if (propertyName && collection.projectMetadata?.cardOrders) {
       setCardOrder(collection.projectMetadata.cardOrders[propertyName]);
     }
-  }, [collection.projectMetadata.cardOrders, propertyName]);
+  }, [collection.projectMetadata?.cardOrders, propertyName]);
 
   return (
     <>
@@ -320,6 +320,7 @@ export default function AddField({ propertyName, handleClose }: Props) {
               <AddConditions
                 viewConditions={viewConditions}
                 setViewConditions={setViewConditions}
+                buttonText="Add View Condition"
               />
               {/* {["shortText", "longText", "ethAddress"].includes(
                   type.value

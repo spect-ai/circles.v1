@@ -10,6 +10,7 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { DropResult } from "react-beautiful-dnd";
 import { useQuery } from "react-query";
+import { satisfiesConditions } from "../../Collection/Common/SatisfiesFilter";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
 
 export default function useViewCommon() {
@@ -43,34 +44,50 @@ export default function useViewCommon() {
   );
 
   useEffect(() => {
-    const newCardOrder = collection.projectMetadata.cardOrders[
-      view.groupByColumn
-    ].map((group) =>
-      matchSorter(group, searchFilter, {
-        keys: collection.propertyOrder.map((property) => {
-          if (collection.properties[property].type === "user") {
+    let newCardOrder =
+      collection.projectMetadata.cardOrders[view.groupByColumn];
+    if (searchFilter) {
+      newCardOrder = collection.projectMetadata.cardOrders[
+        view.groupByColumn
+      ].map((group) =>
+        matchSorter(group, searchFilter, {
+          keys: collection.propertyOrder.map((property) => {
+            if (collection.properties[property].type === "user") {
+              return (item: string) => {
+                const member = collection.data[item][property]?.value;
+                return memberDetails?.memberDetails[member]?.username;
+              };
+            }
+            if (collection.properties[property].type === "multiSelect") {
+              return (item: string) => {
+                return collection.data[item][property]?.map(
+                  (option: Option) => option.label
+                );
+              };
+            }
+
             return (item: string) => {
-              const member = collection.data[item][property]?.value;
-              return memberDetails?.memberDetails[member]?.username;
-            };
-          }
-          if (collection.properties[property].type === "multiSelect") {
-            return (item: string) => {
-              return collection.data[item][property]?.map(
-                (option: Option) => option.label
+              return (
+                collection.data[item][property]?.label ||
+                collection.data[item][property]
               );
             };
-          }
+          }),
+        })
+      );
+    }
+    if (view.filters?.length) {
+      newCardOrder = newCardOrder.map((group) => {
+        return group.filter((cardId) => {
+          return satisfiesConditions(
+            collection.data[cardId],
+            collection.properties,
+            view.filters || []
+          );
+        });
+      });
+    }
 
-          return (item: string) => {
-            return (
-              collection.data[item][property]?.label ||
-              collection.data[item][property]
-            );
-          };
-        }),
-      })
-    );
     setCardOrders(newCardOrder);
   }, [
     collection.data,
@@ -80,6 +97,7 @@ export default function useViewCommon() {
     collection.propertyOrder,
     collection.properties,
     memberDetails?.memberDetails,
+    view.filters,
   ]);
 
   useEffect(() => {

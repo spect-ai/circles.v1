@@ -23,6 +23,7 @@ import { useScreenClass } from "react-grid-system";
 import { toast } from "react-toastify";
 import CardDrawer from "../../CollectionProject/CardDrawer";
 import AddField from "../AddField";
+import { satisfiesConditions } from "../Common/SatisfiesFilter";
 import { useLocalCollection } from "../Context/LocalCollectionContext";
 import DataDrawer from "../Form/DataDrawer";
 import ExpandableCell from "../Form/ExpandableCell";
@@ -47,6 +48,7 @@ export default function TableView() {
     localCollection: collection,
     setLocalCollection,
     searchFilter,
+    projectViewId,
   } = useLocalCollection();
 
   const [expandedDataSlug, setExpandedDataSlug] = useState("");
@@ -131,7 +133,7 @@ export default function TableView() {
       });
 
       // filter the data based on the search filter
-      const filteredData = matchSorter(Object.values(data), searchFilter, {
+      let filteredData = matchSorter(Object.values(data), searchFilter, {
         keys: Object.keys(data[0]).map((key) => {
           return (item: any) => {
             if (key === "id") return item.id;
@@ -146,12 +148,24 @@ export default function TableView() {
         }),
       });
 
+      if (collection.projectMetadata.views[projectViewId].filters) {
+        filteredData = filteredData.filter((row) => {
+          return satisfiesConditions(
+            collection.data[row.id],
+            collection.properties,
+            collection.projectMetadata.views[projectViewId].filters || []
+          );
+        });
+      }
+
       setData(filteredData);
     }
   }, [
     collection.data,
+    collection.projectMetadata.views,
     collection.properties,
     collection.propertyOrder,
+    projectViewId,
     searchFilter,
   ]);
 

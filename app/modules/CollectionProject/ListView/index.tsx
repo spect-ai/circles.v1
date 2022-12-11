@@ -48,16 +48,19 @@ export default function ListView() {
       </AnimatePresence>
       <DragDropContext onDragEnd={handleDragEnd}>
         <Stack>
-          {columns?.map((column, index) => (
-            <Column
-              key={column.value}
-              column={column}
-              groupByColumn={view.groupByColumn}
-              setDefaultValue={setDefaultValue}
-              setIsCardDrawerOpen={setIsCardDrawerOpen}
-              cardIds={cardOrders[index]}
-            />
-          ))}
+          {columns?.map((column, index) => {
+            if (cardOrders[index].length === 0 && index === 0) return null;
+            return (
+              <Column
+                key={column.value}
+                column={column}
+                groupByColumn={view.groupByColumn}
+                setDefaultValue={setDefaultValue}
+                setIsCardDrawerOpen={setIsCardDrawerOpen}
+                cardIds={cardOrders[index]}
+              />
+            );
+          })}
           <Box marginLeft="4" width="48" marginBottom="4">
             {property.type === "singleSelect" && (
               <PrimaryButton

@@ -48,7 +48,7 @@ export default function PublicField({
     !satisfiesConditions(
       data,
       form.properties as { [propertyId: string]: Property },
-      propertyName
+      form.properties[propertyName].viewConditions || []
     )
   )
     return null;
