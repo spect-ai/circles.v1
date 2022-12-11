@@ -102,7 +102,10 @@ export default function AddView({ viewType, handleClose }: Props) {
                       type: viewType as any,
                       groupByColumn: groupByColumn.value,
                       filters: [],
-                      sort: {},
+                      sort: {
+                        property: "",
+                        direction: "asc",
+                      },
                     },
                   },
                   viewOrder: [...collection.projectMetadata.viewOrder, viewId],
