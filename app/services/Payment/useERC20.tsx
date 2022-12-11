@@ -65,13 +65,18 @@ export default function useERC20() {
     const contract = getERC20Contract(erc20Address);
     if (!registry && !circleRegistry) return false;
     try {
+      const gasEstimate = await contract.estimateGas.approve(
+        circleRegistry && circleRegistry[chainId]
+          ? circleRegistry[chainId].distributorAddress
+          : registry && registry[chainId].distributorAddress,
+        ethers.constants.MaxInt256
+      );
+      if (!gasEstimate) {
+        console.error("gas estimation failed");
+        return;
+      }
       const overrides: any = {
-        gasLimit: await contract.estimateGas.approve(
-          circleRegistry && circleRegistry[chainId]
-            ? circleRegistry[chainId].distributorAddress
-            : registry && registry[chainId].distributorAddress,
-          ethers.constants.MaxInt256
-        ),
+        gasLimit: Math.ceil(gasEstimate.toNumber() * 1.2),
         nonce,
       };
       if (safeAddress) {
@@ -79,8 +84,7 @@ export default function useERC20() {
           circleRegistry && circleRegistry[chainId]
             ? circleRegistry[chainId].distributorAddress
             : registry && registry[chainId].distributorAddress,
-          ethers.constants.MaxInt256,
-          overrides
+          ethers.constants.MaxInt256
         );
         const res = await gnosisPayment(safeAddress, data, chainId);
         if (res)
