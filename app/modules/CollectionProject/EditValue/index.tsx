@@ -315,6 +315,10 @@ export const MenuContainer = styled(Box)<{ cWidth?: string }>`
   ::-webkit-scrollbar {
     width: 0.5rem;
   }
+
+  @media (max-width: 768px) {
+    width: 100%;
+  }
 `;
 
 export const MenuItem = styled(Box)`

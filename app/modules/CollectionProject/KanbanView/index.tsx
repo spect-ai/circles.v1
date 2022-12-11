@@ -34,7 +34,7 @@ export default function KanbanView() {
       marginX="8"
       paddingY="0"
       style={{
-        height: "calc(100vh - 7rem)",
+        height: "calc(100vh - 9rem)",
         overflowX: "auto",
         overflowY: "hidden",
       }}

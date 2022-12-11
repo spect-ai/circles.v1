@@ -61,6 +61,7 @@ export default function AddView({ viewType, handleClose }: Props) {
             />
           )}
           <PrimaryButton
+            disabled={!groupByColumn.value}
             loading={loading}
             icon={<IconPlusSmall />}
             onClick={async () => {

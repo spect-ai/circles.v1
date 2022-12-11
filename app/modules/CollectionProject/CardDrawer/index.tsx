@@ -360,7 +360,12 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
                     {ProperyListCallback}
                   </Droppable>
                 </DragDropContext>
-                <Box width="1/4">
+                <Box
+                  width={{
+                    xs: "full",
+                    md: "1/4",
+                  }}
+                >
                   <PrimaryButton
                     variant="tertiary"
                     icon={<IconPlusSmall />}

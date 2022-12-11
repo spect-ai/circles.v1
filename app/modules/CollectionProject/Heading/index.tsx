@@ -10,6 +10,7 @@ import {
   DropResult,
 } from "react-beautiful-dnd";
 import { Clock, Grid, List, Trello } from "react-feather";
+import { Hidden } from "react-grid-system";
 import { toast } from "react-toastify";
 import styled from "styled-components";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
@@ -81,164 +82,177 @@ export default function ProjectHeading() {
           <Settings />
         </Stack>
         <Box marginBottom="1" />
-
-        <DragDropContext onDragEnd={handleDragEnd}>
-          <ViewTabsContainer
-            backgroundColor="background"
-            paddingX="4"
-            borderTopRadius="large"
-          >
-            <Droppable droppableId="Views" direction="horizontal">
-              {(provided) => (
-                <Box
-                  ref={provided.innerRef}
-                  {...provided.droppableProps}
-                  display="flex"
-                >
-                  {collection.projectMetadata.viewOrder.map((viewId, index) => (
-                    <Draggable key={viewId} draggableId={viewId} index={index}>
-                      {(provided) => (
-                        <div
-                          ref={provided.innerRef}
-                          {...provided.draggableProps}
-                          {...provided.dragHandleProps}
-                        >
-                          <ViewTab
-                            paddingX="4"
-                            backgroundColor={
-                              viewId === projectViewId
-                                ? "backgroundSecondary"
-                                : "background"
-                            }
-                            borderTopWidth={
-                              viewId === projectViewId ? "0.375" : "0"
-                            }
-                            borderRightWidth={
-                              viewId === projectViewId ? "0.375" : "0"
-                            }
-                            borderLeftWidth={
-                              viewId === projectViewId ? "0.375" : "0"
-                            }
-                            key={viewId}
-                            onClick={() => setProjectViewId(viewId)}
-                          >
-                            <Text color="accent">
-                              {getViewIcon(
-                                collection.projectMetadata.views[viewId]?.type
-                              )}
-                            </Text>
-                            <Text ellipsis>
-                              {collection.projectMetadata.views[viewId]?.name}
-                            </Text>
-                            {viewId === projectViewId && (
-                              <Box
-                                cursor="pointer"
-                                marginLeft="2"
-                                onClick={() => setIsViewSettingsOpen(true)}
-                              >
-                                <Text variant="label">
-                                  <IconCog />
-                                </Text>
-                              </Box>
-                            )}
-                          </ViewTab>
-                        </div>
-                      )}
-                    </Draggable>
-                  ))}
-                  {provided.placeholder}
-                </Box>
-              )}
-            </Droppable>
-
-            <Popover
-              isOpen={isAddViewPopupOpen}
-              setIsOpen={setIsAddViewPopupOpen}
-              butttonComponent={
-                <AddViewButton
-                  width="fit"
-                  paddingX="8"
-                  onClick={() => setIsAddViewPopupOpen(true)}
-                >
-                  <Text>
-                    <IconPlusSmall />
-                  </Text>
-                </AddViewButton>
-              }
+        <Hidden xs sm>
+          <DragDropContext onDragEnd={handleDragEnd}>
+            <ViewTabsContainer
+              backgroundColor="background"
+              paddingX="4"
+              borderTopRadius="large"
+              display="flex"
+              flexDirection="row"
             >
-              <motion.div
-                initial={{ height: 0 }}
-                animate={{ height: "auto", transition: { duration: 0.2 } }}
-                exit={{ height: 0 }}
-                style={{
-                  overflow: "hidden",
-                  borderRadius: "0.25rem",
-                }}
+              <Droppable droppableId="Views" direction="horizontal">
+                {(provided) => (
+                  <Box
+                    ref={provided.innerRef}
+                    {...provided.droppableProps}
+                    display="flex"
+                  >
+                    {collection.projectMetadata.viewOrder.map(
+                      (viewId, index) => (
+                        <Draggable
+                          key={viewId}
+                          draggableId={viewId}
+                          index={index}
+                        >
+                          {(provided) => (
+                            <div
+                              ref={provided.innerRef}
+                              {...provided.draggableProps}
+                              {...provided.dragHandleProps}
+                            >
+                              <ViewTab
+                                paddingX="4"
+                                backgroundColor={
+                                  viewId === projectViewId
+                                    ? "backgroundSecondary"
+                                    : "background"
+                                }
+                                borderTopWidth={
+                                  viewId === projectViewId ? "0.375" : "0"
+                                }
+                                borderRightWidth={
+                                  viewId === projectViewId ? "0.375" : "0"
+                                }
+                                borderLeftWidth={
+                                  viewId === projectViewId ? "0.375" : "0"
+                                }
+                                key={viewId}
+                                onClick={() => setProjectViewId(viewId)}
+                              >
+                                <Text color="accent">
+                                  {getViewIcon(
+                                    collection.projectMetadata.views[viewId]
+                                      ?.type
+                                  )}
+                                </Text>
+                                <Text ellipsis>
+                                  {
+                                    collection.projectMetadata.views[viewId]
+                                      ?.name
+                                  }
+                                </Text>
+                                {viewId === projectViewId && (
+                                  <Box
+                                    cursor="pointer"
+                                    marginLeft="2"
+                                    onClick={() => setIsViewSettingsOpen(true)}
+                                  >
+                                    <Text variant="label">
+                                      <IconCog />
+                                    </Text>
+                                  </Box>
+                                )}
+                              </ViewTab>
+                            </div>
+                          )}
+                        </Draggable>
+                      )
+                    )}
+                    {provided.placeholder}
+                  </Box>
+                )}
+              </Droppable>
+
+              <Popover
+                isOpen={isAddViewPopupOpen}
+                setIsOpen={setIsAddViewPopupOpen}
+                butttonComponent={
+                  <AddViewButton
+                    width="fit"
+                    paddingX="8"
+                    onClick={() => setIsAddViewPopupOpen(true)}
+                  >
+                    <Text>
+                      <IconPlusSmall />
+                    </Text>
+                  </AddViewButton>
+                }
               >
-                <Box
-                  backgroundColor="background"
-                  borderWidth="0.375"
-                  borderRadius="2xLarge"
+                <motion.div
+                  initial={{ height: 0 }}
+                  animate={{ height: "auto", transition: { duration: 0.2 } }}
+                  exit={{ height: 0 }}
+                  style={{
+                    overflow: "hidden",
+                    borderRadius: "0.25rem",
+                  }}
                 >
-                  <MenuItem
-                    padding="2"
-                    borderTopRadius="2xLarge"
-                    onClick={() => {
-                      setIsAddViewPopupOpen(false);
-                      setViewType("grid");
-                      setIsAddViewModalOpen(true);
-                    }}
+                  <Box
+                    backgroundColor="background"
+                    borderWidth="0.375"
+                    borderRadius="2xLarge"
                   >
-                    <Text color="accent">
-                      <Grid />
-                    </Text>
-                    <Text weight="semiBold">Grid View</Text>
-                  </MenuItem>
-                  <MenuItem
-                    padding="2"
-                    onClick={() => {
-                      setIsAddViewPopupOpen(false);
-                      setViewType("kanban");
-                      setIsAddViewModalOpen(true);
-                    }}
-                  >
-                    <Text color="accent">
-                      <Trello />
-                    </Text>
-                    <Text weight="semiBold">Kanban View</Text>
-                  </MenuItem>
-                  <MenuItem
-                    padding="2"
-                    onClick={() => {
-                      setIsAddViewPopupOpen(false);
-                      setViewType("list");
-                      setIsAddViewModalOpen(true);
-                    }}
-                  >
-                    <Text color="accent">
-                      <List />
-                    </Text>
-                    <Text weight="semiBold">List View</Text>
-                  </MenuItem>
-                  <MenuItem
-                    padding="2"
-                    borderBottomRadius="2xLarge"
-                    onClick={() => {
-                      toast.warning("Coming soon!");
-                      setIsAddViewPopupOpen(false);
-                    }}
-                  >
-                    <Text color="accent">
-                      <Clock />
-                    </Text>
-                    <Text weight="semiBold">Gantt View</Text>
-                  </MenuItem>
-                </Box>
-              </motion.div>
-            </Popover>
-          </ViewTabsContainer>
-        </DragDropContext>
-        <Filtering />
+                    <MenuItem
+                      padding="2"
+                      borderTopRadius="2xLarge"
+                      onClick={() => {
+                        setIsAddViewPopupOpen(false);
+                        setViewType("grid");
+                        setIsAddViewModalOpen(true);
+                      }}
+                    >
+                      <Text color="accent">
+                        <Grid />
+                      </Text>
+                      <Text weight="semiBold">Grid View</Text>
+                    </MenuItem>
+                    <MenuItem
+                      padding="2"
+                      onClick={() => {
+                        setIsAddViewPopupOpen(false);
+                        setViewType("kanban");
+                        setIsAddViewModalOpen(true);
+                      }}
+                    >
+                      <Text color="accent">
+                        <Trello />
+                      </Text>
+                      <Text weight="semiBold">Kanban View</Text>
+                    </MenuItem>
+                    <MenuItem
+                      padding="2"
+                      onClick={() => {
+                        setIsAddViewPopupOpen(false);
+                        setViewType("list");
+                        setIsAddViewModalOpen(true);
+                      }}
+                    >
+                      <Text color="accent">
+                        <List />
+                      </Text>
+                      <Text weight="semiBold">List View</Text>
+                    </MenuItem>
+                    <MenuItem
+                      padding="2"
+                      borderBottomRadius="2xLarge"
+                      onClick={() => {
+                        toast.warning("Coming soon!");
+                        setIsAddViewPopupOpen(false);
+                      }}
+                    >
+                      <Text color="accent">
+                        <Clock />
+                      </Text>
+                      <Text weight="semiBold">Gantt View</Text>
+                    </MenuItem>
+                  </Box>
+                </motion.div>
+              </Popover>
+            </ViewTabsContainer>
+          </DragDropContext>
+          <Filtering />
+        </Hidden>
       </Stack>
     </Box>
   );
@@ -294,10 +308,7 @@ const getViewIcon = (viewType: string) => {
   }
 };
 
-export const ViewTabsContainer = styled(Box)`
-  display: flex;
-  flex-direction: row;
-`;
+export const ViewTabsContainer = styled(Box)``;
 
 export const ViewTab = styled(Box)`
   max-width: 200px;
