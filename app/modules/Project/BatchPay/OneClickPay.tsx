@@ -182,6 +182,7 @@ export default function OneClickPayment() {
     }
     return filteredBatchPayInfo;
   };
+  console.log({ tokenStatus });
 
   useEffect(() => {
     // initialize tokenStatus
@@ -189,11 +190,7 @@ export default function OneClickPayment() {
     setLoading(true);
 
     if (circle && registry) {
-      if (
-        circle &&
-        chain?.id.toString() === batchPayInfo?.chainId &&
-        registry
-      ) {
+      if (chain?.id.toString() === batchPayInfo?.chainId) {
         const tokenStatus: any = {};
         let index = 0;
         batchPayInfo?.approval.tokenAddresses.forEach(
@@ -370,7 +367,7 @@ export default function OneClickPayment() {
             <Box width="1/2">
               <PrimaryButton
                 loading={personalWalletLoading}
-                disabled={gnosisLoading}
+                disabled={loading || gnosisLoading}
                 onClick={async () => {
                   setPersonalWalletLoading(true);
                   // If native currency of the chain is used
@@ -540,7 +537,7 @@ export default function OneClickPayment() {
               <Box width="1/2">
                 <PrimaryButton
                   loading={gnosisLoading}
-                  disabled={personalWalletLoading}
+                  disabled={personalWalletLoading || loading}
                   onClick={async () => {
                     setGnosisLoading(true);
                     let nonce = await getNonce(circleSafe);

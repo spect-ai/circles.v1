@@ -14,6 +14,7 @@ import {
   useProvider,
 } from "wagmi";
 import { fetchSigner } from "@wagmi/core";
+import { useGlobal } from "@/app/context/globalContext";
 
 export default function useERC20() {
   const router = useRouter();
@@ -21,7 +22,7 @@ export default function useERC20() {
   const { data: registry } = useQuery<Registry>(["registry", cId], {
     enabled: false,
   });
-  const { data: signer } = useSigner();
+  const { signer } = useGlobal();
   const { chain } = useNetwork();
   const { address } = useAccount();
   const { data: balance } = useBalance({
@@ -35,7 +36,7 @@ export default function useERC20() {
 
   function getERC20Contract(address: string) {
     // const provider = new ethers.providers.Web3Provider(window.ethereum as any);
-    return new ethers.Contract(address, erc20ABI, signer as Signer);
+    return new ethers.Contract(address, erc20ABI, signer);
   }
 
   function getERC20ContractWithCustomProvider(
@@ -60,51 +61,48 @@ export default function useERC20() {
   ) {
     const contract = getERC20Contract(erc20Address);
     if (!registry && !circleRegistry) return false;
-    if (chainId == chain?.id.toString())
-      try {
-        const gasEstimation = await contract?.estimateGas.approve(
+    try {
+      const overrides: any = {
+        gasLimit: await contract.estimateGas.approve(
           circleRegistry && circleRegistry[chainId]
             ? circleRegistry[chainId].distributorAddress
             : registry && registry[chainId].distributorAddress,
           ethers.constants.MaxInt256
-        );
-        if (safeAddress) {
-          const overrides: any = {
-            gasLimit: Math.ceil(gasEstimation.toNumber() * 1.2),
-            nonce,
-          };
-
-          const data = await contract.populateTransaction.approve(
-            circleRegistry && circleRegistry[chainId]
-              ? circleRegistry[chainId].distributorAddress
-              : registry && registry[chainId].distributorAddress,
-            ethers.constants.MaxInt256
-            //overrides
-          );
-          const res = await gnosisPayment(safeAddress, data, chainId);
-          if (res)
-            toast.success("Transaction sent to your safe", { theme: "dark" });
-          else
-            toast.error("Error Occurred while sending your transation to safe");
-
-          return;
-        }
-
-        const tx = await contract.approve(
-          circleRegistry
+        ),
+        nonce,
+      };
+      if (safeAddress) {
+        const data = await contract.populateTransaction.approve(
+          circleRegistry && circleRegistry[chainId]
             ? circleRegistry[chainId].distributorAddress
             : registry && registry[chainId].distributorAddress,
-          ethers.constants.MaxInt256
+          ethers.constants.MaxInt256,
+          overrides
         );
-        await tx.wait();
-        return true;
-      } catch (err: any) {
-        console.error(err);
-        toast.error(err.message, {
-          theme: "dark",
-        });
-        return false;
+        const res = await gnosisPayment(safeAddress, data, chainId);
+        if (res)
+          toast.success("Transaction sent to your safe", { theme: "dark" });
+        else
+          toast.error("Error Occurred while sending your transation to safe");
+
+        return;
       }
+
+      const tx = await contract.approve(
+        circleRegistry
+          ? circleRegistry[chainId].distributorAddress
+          : registry && registry[chainId].distributorAddress,
+        ethers.constants.MaxInt256
+      );
+      await tx.wait();
+      return true;
+    } catch (err: any) {
+      console.error(err);
+      toast.error(err.message, {
+        theme: "dark",
+      });
+      return false;
+    }
   }
 
   // eslint-disable-next-line @typescript-eslint/require-await
@@ -275,6 +273,8 @@ export default function useERC20() {
     networkVersion: string | undefined
   ) {
     if (!networkVersion || !registry) return null;
+    if (isCurrency(erc20Address)) return null;
+
     try {
       const contract = getERC20ContractWithCustomProvider(
         erc20Address,
@@ -293,6 +293,7 @@ export default function useERC20() {
     networkVersion: string | undefined
   ) {
     if (!networkVersion || !registry) return null;
+    if (isCurrency(erc20Address)) return null;
     try {
       const contract = getERC20ContractWithCustomProvider(
         erc20Address,

@@ -9,7 +9,7 @@ import {
   Registry,
 } from "@/app/types";
 import { AbiCoder } from "ethers/lib/utils";
-import { useSigner } from "wagmi";
+import { useGlobal } from "@/app/context/globalContext";
 
 export default function useDistributor() {
   const { isCurrency, decimals } = useERC20();
@@ -19,18 +19,14 @@ export default function useDistributor() {
     enabled: false,
   });
 
-  const { data: signer } = useSigner();
+  const { signer } = useGlobal();
 
   function getDistributorContract(chainId: string, circleRegistry?: Registry) {
     if (!registry && !circleRegistry) return null;
     const addr = circleRegistry
       ? circleRegistry[chainId].distributorAddress
       : registry && registry[chainId].distributorAddress;
-    return new ethers.Contract(
-      addr as string,
-      DistributorABI,
-      signer as Signer
-    );
+    return new ethers.Contract(addr as string, DistributorABI, signer);
   }
 
   function getPendingApprovals(
@@ -74,25 +70,31 @@ export default function useDistributor() {
         totalValue += values[i];
       }
     }
-    const overrides = {
-      value: ethers.utils.parseEther(totalValue.toString()),
-      nonce,
-      gasLimit: 10000000,
-    };
+
     const encoder = new AbiCoder();
     const id = encoder.encode(
       ["string", "string", "string", "string[]"],
       [callerId, circleId, type, cardIds]
     );
+
     if (paymentMethod === "gnosis") {
+      console.log("gnosis");
       const data = await contract?.populateTransaction.distributeEther(
         contributorsWithPositiveAllocation,
         valuesInWei,
-        id,
-        overrides
+        id
       );
       return data;
     } else if (paymentMethod === "gasless") {
+      const overrides = {
+        value: ethers.utils.parseEther(totalValue.toString()),
+        nonce,
+        gasLimit: await contract?.estimateGas.distributeEther(
+          contributorsWithPositiveAllocation,
+          valuesInWei,
+          id
+        ),
+      };
       return {
         contributorsWithPositiveAllocation,
         valuesInWei,
@@ -100,6 +102,15 @@ export default function useDistributor() {
         overrides,
       };
     }
+    const overrides = {
+      value: ethers.utils.parseEther(totalValue.toString()),
+      nonce,
+      gasLimit: await contract?.estimateGas.distributeEther(
+        contributorsWithPositiveAllocation,
+        valuesInWei,
+        id
+      ),
+    };
     console.log({ contributorsWithPositiveAllocation, valuesInWei });
     const tx = await contract?.distributeEther(
       contributorsWithPositiveAllocation,
@@ -170,26 +181,30 @@ export default function useDistributor() {
     });
     const contract = getDistributorContract(chainId, circleRegistry);
 
-    const overrides: any = {
-      gasLimit: 10000000,
-      nonce,
-    };
     const encoder = new AbiCoder();
     const id = encoder.encode(
       ["string", "string", "string", "string[]"],
       [callerId, circleId, type, cardIds]
     );
+
     if (paymentMethod === "gnosis") {
-      console.log(overrides.gasLimit);
       const data = await contract?.populateTransaction.distributeTokens(
         filteredTokenAddresses,
         filteredRecipients,
         valuesInWei,
-        id,
-        overrides
+        id
       );
       return data;
     } else if (paymentMethod === "gasless") {
+      const overrides: any = {
+        gasLimit: await contract?.estimateGas.distributeTokens(
+          filteredTokenAddresses,
+          filteredRecipients,
+          valuesInWei,
+          id
+        ),
+        nonce,
+      };
       return {
         filteredTokenAddresses,
         filteredRecipients,
@@ -198,7 +213,15 @@ export default function useDistributor() {
         overrides,
       };
     }
-
+    const overrides: any = {
+      gasLimit: await contract?.estimateGas.distributeTokens(
+        filteredTokenAddresses,
+        filteredRecipients,
+        valuesInWei,
+        id
+      ),
+      nonce,
+    };
     const tx = await contract?.distributeTokens(
       filteredTokenAddresses,
       filteredRecipients,
