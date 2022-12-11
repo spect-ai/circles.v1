@@ -373,16 +373,18 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
                     setIsDirty={setIsDirty}
                   />
                 </Box>
-                <CardActivity
-                  activities={collection.dataActivities[value.slug]}
-                  activityOrder={collection.dataActivityOrder[value.slug]}
-                  dataId={value.slug}
-                  collectionId={collection.id}
-                  dataOwner={
-                    collection.profiles[collection.dataOwner[value.slug]]
-                  }
-                  getMemberDetails={getMemberDetails}
-                />
+                {!newCard && (
+                  <CardActivity
+                    activities={collection.dataActivities[value.slug]}
+                    activityOrder={collection.dataActivityOrder[value.slug]}
+                    dataId={value.slug}
+                    collectionId={collection.id}
+                    dataOwner={
+                      collection.profiles[collection.dataOwner[value.slug]]
+                    }
+                    getMemberDetails={getMemberDetails}
+                  />
+                )}
               </Stack>
             </Container>
           </motion.div>

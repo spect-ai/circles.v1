@@ -49,7 +49,8 @@ export default function ListView() {
       <DragDropContext onDragEnd={handleDragEnd}>
         <Stack>
           {columns?.map((column, index) => {
-            if (cardOrders[index].length === 0 && index === 0) return null;
+            if (index === 0 && (!cardOrders[0] || cardOrders[0]?.length === 0))
+              return null;
             return (
               <Column
                 key={column.value}

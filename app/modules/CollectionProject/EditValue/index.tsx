@@ -315,7 +315,7 @@ const MenuContainer = styled(Box)`
   }
 `;
 
-const MenuItem = styled(Box)`
+export const MenuItem = styled(Box)`
   width: 100%;
   &:hover {
     cursor: pointer;

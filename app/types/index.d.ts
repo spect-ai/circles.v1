@@ -770,7 +770,10 @@ export type ProjectMetadata = {
       name: string;
       type: "grid" | "kanban" | "gantt" | "list";
       filters?: Condition[];
-      sort?: any;
+      sort?: {
+        property: string;
+        direction: "asc" | "desc";
+      };
       groupByColumn: string;
     };
   };

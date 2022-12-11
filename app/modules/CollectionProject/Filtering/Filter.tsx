@@ -65,7 +65,6 @@ function Filter() {
             title="Add Filters"
             handleClose={() => {
               setIsOpen(false);
-              if (viewCondtions.length === 0) return;
               updateFormCollection(collection.id, {
                 projectMetadata: {
                   ...collection.projectMetadata,

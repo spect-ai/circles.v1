@@ -138,7 +138,7 @@ export default function TableView() {
           return (item: any) => {
             if (key === "id") return item.id;
             if (collection.properties[key]?.type === "date") {
-              return item[key].toISOString();
+              return item[key]?.toISOString();
             }
             if (collection.properties[key]?.type === "multiSelect") {
               return item[key]?.map((option: Option) => option.label);
@@ -155,6 +155,81 @@ export default function TableView() {
             collection.properties,
             collection.projectMetadata.views[projectViewId].filters || []
           );
+        });
+      }
+
+      if (collection.projectMetadata.views[projectViewId].sort?.property) {
+        const property =
+          collection.properties[
+            collection.projectMetadata.views[projectViewId].sort?.property || ""
+          ];
+        const propertyType = property.type;
+        const propertyOptions = property.options as Option[];
+        const direction =
+          collection.projectMetadata.views[projectViewId].sort?.direction ||
+          "asc";
+        const propertyName = property.name;
+        filteredData = filteredData.sort((a: any, b: any) => {
+          if (propertyType === "singleSelect") {
+            const aIndex = propertyOptions.findIndex(
+              (option) => option.value === a[propertyName]?.value
+            );
+            const bIndex = propertyOptions.findIndex(
+              (option) => option.value === b[propertyName]?.value
+            );
+            if (direction === "asc") {
+              return aIndex - bIndex;
+            }
+            return bIndex - aIndex;
+          }
+          if (propertyType === "user") {
+            if (direction === "asc") {
+              return a[propertyName]?.label?.localeCompare(
+                b[propertyName]?.label
+              );
+            }
+            return b[propertyName]?.label?.localeCompare(
+              a[propertyName]?.label
+            );
+          }
+          if (propertyType === "date") {
+            const aDate = new Date(a[propertyName]);
+            const bDate = new Date(b[propertyName]);
+            if (direction === "asc") {
+              return aDate.getTime() - bDate.getTime();
+            }
+            return bDate.getTime() - aDate.getTime();
+          }
+          if (propertyType === "reward") {
+            // property has chain, token and value, need to sort it based on chain first, then token and then value
+            const aChain = a[propertyName]?.chain.label;
+            const bChain = b[propertyName]?.chain.label;
+            if (aChain !== bChain) {
+              if (direction === "asc") {
+                return aChain?.localeCompare(bChain);
+              }
+              return bChain?.localeCompare(aChain);
+            }
+            const aToken = a[propertyName]?.token.label;
+            const bToken = b[propertyName]?.token.label;
+            if (aToken !== bToken) {
+              if (direction === "asc") {
+                return aToken.localeCompare(bToken);
+              }
+              return bToken.localeCompare(aToken);
+            }
+            const aValue = a[propertyName]?.value;
+            const bValue = b[propertyName]?.value;
+            if (direction === "asc") {
+              return aValue - bValue;
+            }
+            return bValue - aValue;
+          }
+
+          if (direction === "asc") {
+            return a[propertyName]?.localeCompare(b[propertyName]);
+          }
+          return b[propertyName]?.localeCompare(a[propertyName]);
         });
       }
 

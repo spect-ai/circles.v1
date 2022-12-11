@@ -1,6 +1,7 @@
 import { Box } from "degen";
 import Filter from "./Filter";
 import { SearchCard } from "./Search";
+import Sort from "./Sort";
 
 export default function Filtering() {
   return (
@@ -13,21 +14,20 @@ export default function Filtering() {
       alignItems="center"
       backgroundColor="background"
       borderBottomRadius="large"
+      style={{
+        boxShadow: "0px 14px 8px rgba(0, 0, 0, 0.9)",
+      }}
     >
       <SearchCard />
       <Box
         display="flex"
         flexDirection="row"
-        //   width={hide ? "76" : advFilters.sortBy == "none" ? "1/2" : "168"}
-        //   gap={project.defaultView == "Gantt" ? "4" : "10"}
+        gap="10"
         alignItems="center"
         width="1/2"
       >
         <Filter />
-        {/* <Filter />
-          <SortBy />
-          {show && <GroupBy />}
-          {show && <Show />} */}
+        <Sort />
       </Box>
     </Box>
   );

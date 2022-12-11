@@ -50,7 +50,8 @@ export default function KanbanView() {
       <DragDropContext onDragEnd={handleDragEnd}>
         <Stack direction="horizontal" align="flex-start">
           {columns?.map((column, index) => {
-            if (cardOrders[index].length === 0 && index === 0) return null;
+            if (index === 0 && (!cardOrders[0] || cardOrders[0]?.length === 0))
+              return null;
             return (
               <Column
                 key={column.value}

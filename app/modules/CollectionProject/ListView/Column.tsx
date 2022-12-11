@@ -15,6 +15,7 @@ import {
 import { useRouter } from "next/router";
 import React, { useCallback, useState } from "react";
 import { Draggable, Droppable, DroppableProvided } from "react-beautiful-dnd";
+import { Calendar, DollarSign } from "react-feather";
 import { toast } from "react-toastify";
 import styled from "styled-components";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
@@ -31,7 +32,6 @@ export default function Column({
   column,
   groupByColumn,
   setDefaultValue,
-  setIsCardDrawerOpen,
   cardIds,
 }: Props) {
   const { localCollection: collection, updateCollection } =
@@ -205,6 +205,56 @@ export default function Column({
                                   </Box>
                                 ))}
                               </Stack>
+                            </Box>
+                          );
+                        }
+                        if (property.type === "date") {
+                          return (
+                            <Box key={propertyId}>
+                              <Tag>
+                                <Stack
+                                  direction="horizontal"
+                                  space="1"
+                                  align="center"
+                                >
+                                  <Text>
+                                    <Calendar
+                                      size={16}
+                                      style={{
+                                        marginTop: 2,
+                                      }}
+                                    />
+                                  </Text>
+                                  <Text variant="label">
+                                    {new Date(value).toDateString()}
+                                  </Text>
+                                </Stack>
+                              </Tag>
+                            </Box>
+                          );
+                        }
+                        if (property.type === "reward") {
+                          return (
+                            <Box key={propertyId}>
+                              <Tag>
+                                <Stack
+                                  direction="horizontal"
+                                  space="0"
+                                  align="center"
+                                >
+                                  <Text color="accent">
+                                    <DollarSign
+                                      size={16}
+                                      style={{
+                                        marginTop: 2,
+                                      }}
+                                    />
+                                  </Text>
+                                  <Text variant="label">
+                                    {`${value.value} ${value.token.label} `}
+                                  </Text>
+                                </Stack>
+                              </Tag>
                             </Box>
                           );
                         }

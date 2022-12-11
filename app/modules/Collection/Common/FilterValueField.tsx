@@ -173,7 +173,6 @@ export default function FilterValueField({
                 onChange(option);
               }}
               multiple={false}
-              isClearable={false}
             />
           );
         case "is not":
@@ -185,7 +184,6 @@ export default function FilterValueField({
                 onChange(option);
               }}
               multiple={false}
-              isClearable={false}
             />
           );
         case "is one of":
@@ -214,7 +212,6 @@ export default function FilterValueField({
                 onChange(option);
               }}
               multiple={true}
-              isClearable={false}
             />
           );
 

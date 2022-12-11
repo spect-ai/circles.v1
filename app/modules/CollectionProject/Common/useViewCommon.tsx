@@ -87,7 +87,80 @@ export default function useViewCommon() {
         });
       });
     }
+    if (view.sort?.property) {
+      const { property, direction } = view.sort;
+      const propertyType = collection.properties[property].type;
+      const propertyOptions = collection.properties[property]
+        .options as Option[];
+      newCardOrder = newCardOrder.map((group) => {
+        return group?.sort((a, b) => {
+          if (propertyType === "singleSelect") {
+            const aIndex = propertyOptions.findIndex(
+              (option) => option.value === collection.data[a][property]?.value
+            );
+            const bIndex = propertyOptions.findIndex(
+              (option) => option.value === collection.data[b][property]?.value
+            );
+            if (direction === "asc") {
+              return aIndex - bIndex;
+            }
+            return bIndex - aIndex;
+          }
+          if (propertyType === "user") {
+            if (direction === "asc") {
+              return collection.data[a][property]?.label?.localeCompare(
+                collection.data[b][property]?.label
+              );
+            }
+            return collection.data[b][property]?.label?.localeCompare(
+              collection.data[a][property]?.label
+            );
+          }
+          if (propertyType === "date") {
+            const aDate = new Date(collection.data[a][property]);
+            const bDate = new Date(collection.data[b][property]);
+            if (direction === "asc") {
+              return aDate.getTime() - bDate.getTime();
+            }
+            return bDate.getTime() - aDate.getTime();
+          }
+          if (propertyType === "reward") {
+            // property has chain, token and value, need to sort it based on chain first, then token and then value
+            const aChain = collection.data[a][property]?.chain.label;
+            const bChain = collection.data[b][property]?.chain.label;
+            if (aChain !== bChain) {
+              if (direction === "asc") {
+                return aChain?.localeCompare(bChain);
+              }
+              return bChain?.localeCompare(aChain);
+            }
+            const aToken = collection.data[a][property]?.token.label;
+            const bToken = collection.data[b][property]?.token.label;
+            if (aToken !== bToken) {
+              if (direction === "asc") {
+                return aToken.localeCompare(bToken);
+              }
+              return bToken.localeCompare(aToken);
+            }
+            const aValue = collection.data[a][property]?.value;
+            const bValue = collection.data[b][property]?.value;
+            if (direction === "asc") {
+              return aValue - bValue;
+            }
+            return bValue - aValue;
+          }
 
+          if (direction === "asc") {
+            return collection.data[a][property]?.localeCompare(
+              collection.data[b][property]
+            );
+          }
+          return collection.data[b][property]?.localeCompare(
+            collection.data[a][property]
+          );
+        });
+      });
+    }
     setCardOrders(newCardOrder);
   }, [
     collection.data,
@@ -98,6 +171,8 @@ export default function useViewCommon() {
     collection.properties,
     memberDetails?.memberDetails,
     view.filters,
+    view.sort,
+    memberDetails?.members,
   ]);
 
   useEffect(() => {
@@ -157,10 +232,11 @@ export default function useViewCommon() {
           ...collection.projectMetadata,
           cardOrders: {
             ...collection.projectMetadata.cardOrders,
-            [view.groupByColumn]: {
-              ...collection.projectMetadata.cardOrders[view.groupByColumn],
-              [columnIndex]: newColumnOrder,
-            },
+            [view.groupByColumn]: [
+              ...cardColumnOrder.slice(0, columnIndex),
+              newColumnOrder,
+              ...cardColumnOrder.slice(columnIndex + 1),
+            ],
           },
         },
       });
@@ -169,10 +245,11 @@ export default function useViewCommon() {
           ...collection.projectMetadata,
           cardOrders: {
             ...collection.projectMetadata.cardOrders,
-            [view.groupByColumn]: {
-              ...collection.projectMetadata.cardOrders[view.groupByColumn],
-              [columnIndex]: newColumnOrder,
-            },
+            [view.groupByColumn]: [
+              ...cardColumnOrder.slice(0, columnIndex),
+              newColumnOrder,
+              ...cardColumnOrder.slice(columnIndex + 1),
+            ],
           },
         },
       });
