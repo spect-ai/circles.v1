@@ -10,6 +10,7 @@ import {
 } from "@/app/types";
 import { AbiCoder } from "ethers/lib/utils";
 import { useGlobal } from "@/app/context/globalContext";
+import { fetchSigner } from "@wagmi/core";
 
 export default function useDistributor() {
   const { isCurrency, decimals } = useERC20();
@@ -19,9 +20,12 @@ export default function useDistributor() {
     enabled: false,
   });
 
-  const { signer } = useGlobal();
-
-  function getDistributorContract(chainId: string, circleRegistry?: Registry) {
+  async function getDistributorContract(
+    chainId: string,
+    circleRegistry?: Registry
+  ) {
+    const signer = await fetchSigner();
+    if (!signer) return null;
     if (!registry && !circleRegistry) return null;
     const addr = circleRegistry
       ? circleRegistry[chainId].distributorAddress
@@ -29,7 +33,7 @@ export default function useDistributor() {
     return new ethers.Contract(addr as string, DistributorABI, signer);
   }
 
-  function getPendingApprovals(
+  async function getPendingApprovals(
     addresses: string[],
     values: number[],
     chainId: string
@@ -37,7 +41,7 @@ export default function useDistributor() {
     if (isCurrency(addresses[0])) {
       return true;
     }
-    const contract = getDistributorContract(chainId);
+    const contract = await getDistributorContract(chainId);
     const valuesInWei = values.map((v) =>
       ethers.utils.parseEther(v.toString())
     );
@@ -57,7 +61,7 @@ export default function useDistributor() {
     circleRegistry,
   }: DistributeEtherParams) {
     console.log({ contributors });
-    const contract = getDistributorContract(chainId, circleRegistry);
+    const contract = await getDistributorContract(chainId, circleRegistry);
     const valuesInWei = [];
     const contributorsWithPositiveAllocation: any[] = [];
     let totalValue = 0;
@@ -86,14 +90,19 @@ export default function useDistributor() {
       );
       return data;
     } else if (paymentMethod === "gasless") {
+      const gasEstimate = await contract?.estimateGas.distributeEther(
+        contributorsWithPositiveAllocation,
+        valuesInWei,
+        id
+      );
+      if (!gasEstimate) {
+        console.error("gas estimation failed");
+        return;
+      }
       const overrides = {
         value: ethers.utils.parseEther(totalValue.toString()),
         nonce,
-        gasLimit: await contract?.estimateGas.distributeEther(
-          contributorsWithPositiveAllocation,
-          valuesInWei,
-          id
-        ),
+        gasLimit: Math.ceil(gasEstimate.toNumber() * 1.2),
       };
       return {
         contributorsWithPositiveAllocation,
@@ -102,14 +111,19 @@ export default function useDistributor() {
         overrides,
       };
     }
+    const gasEstimate = await contract?.estimateGas.distributeEther(
+      contributorsWithPositiveAllocation,
+      valuesInWei,
+      id
+    );
+    if (!gasEstimate) {
+      console.error("gas estimation failed");
+      return;
+    }
     const overrides = {
       value: ethers.utils.parseEther(totalValue.toString()),
       nonce,
-      gasLimit: await contract?.estimateGas.distributeEther(
-        contributorsWithPositiveAllocation,
-        valuesInWei,
-        id
-      ),
+      gasLimit: Math.ceil(gasEstimate.toNumber() * 1.2),
     };
     console.log({ contributorsWithPositiveAllocation, valuesInWei });
     const tx = await contract?.distributeEther(
@@ -179,7 +193,7 @@ export default function useDistributor() {
           )
         );
     });
-    const contract = getDistributorContract(chainId, circleRegistry);
+    const contract = await getDistributorContract(chainId, circleRegistry);
 
     const encoder = new AbiCoder();
     const id = encoder.encode(
@@ -196,13 +210,18 @@ export default function useDistributor() {
       );
       return data;
     } else if (paymentMethod === "gasless") {
+      const gasEstimate = await contract?.estimateGas.distributeTokens(
+        filteredTokenAddresses,
+        filteredRecipients,
+        valuesInWei,
+        id
+      );
+      if (!gasEstimate) {
+        console.error("gas estimation failed");
+        return;
+      }
       const overrides: any = {
-        gasLimit: await contract?.estimateGas.distributeTokens(
-          filteredTokenAddresses,
-          filteredRecipients,
-          valuesInWei,
-          id
-        ),
+        gasLimit: Math.ceil(gasEstimate.toNumber() * 1.2),
         nonce,
       };
       return {
@@ -213,13 +232,18 @@ export default function useDistributor() {
         overrides,
       };
     }
+    const gasEstimate = await contract?.estimateGas.distributeTokens(
+      filteredTokenAddresses,
+      filteredRecipients,
+      valuesInWei,
+      id
+    );
+    if (!gasEstimate) {
+      console.error("gas estimation failed");
+      return;
+    }
     const overrides: any = {
-      gasLimit: await contract?.estimateGas.distributeTokens(
-        filteredTokenAddresses,
-        filteredRecipients,
-        valuesInWei,
-        id
-      ),
+      gasLimit: Math.ceil(gasEstimate.toNumber() * 1.2),
       nonce,
     };
     const tx = await contract?.distributeTokens(

@@ -43,7 +43,10 @@ export default function useERC20() {
     address: string,
     web3providerUrl: string
   ) {
-    const provider = new ethers.providers.JsonRpcProvider(web3providerUrl);
+    const provider = new ethers.providers.JsonRpcProvider(
+      web3providerUrl,
+      "any"
+    );
     return new ethers.Contract(address, erc20ABI, provider);
   }
 
@@ -159,14 +162,17 @@ export default function useERC20() {
     erc20Address: string,
     spenderAddress: string,
     value: number,
-    ethAddress: string
+    ethAddress: string,
+    rpcNode?: string
   ) {
     if (isCurrency(erc20Address)) {
       return true;
     }
-    const contract = await getERC20ContractDynamicSigner(erc20Address);
+    let contract;
+    if (rpcNode) {
+      contract = getERC20ContractWithCustomProvider(erc20Address, rpcNode);
+    } else contract = await getERC20ContractDynamicSigner(erc20Address);
     const numDecimals = await contract.decimals();
-    console.log({ ethAddress, spenderAddress, erc20Address });
     const allowance = await contract.allowance(ethAddress, spenderAddress);
     if (!value) return false;
     const ceilVal = Math.ceil(value).toFixed();
@@ -213,7 +219,8 @@ export default function useERC20() {
   async function hasBalance(
     erc20Address: string,
     value: number,
-    ethAddress: string
+    ethAddress: string,
+    rpcNode?: string
   ) {
     if (isCurrency(erc20Address)) {
       return (
@@ -223,9 +230,12 @@ export default function useERC20() {
       );
       // eslint-disable-next-line no-else-return
     } else {
-      const contract = getERC20Contract(erc20Address);
-      const numDecimals = await contract.decimals();
+      let contract;
+      if (rpcNode) {
+        contract = getERC20ContractWithCustomProvider(erc20Address, rpcNode);
+      } else contract = await getERC20ContractDynamicSigner(erc20Address);
 
+      const numDecimals = await contract.decimals();
       const balance = await contract.balanceOf(ethAddress);
       if (!value) return false;
       const ceilVal = Math.ceil(value).toFixed();
@@ -259,11 +269,15 @@ export default function useERC20() {
     return [true, null];
   }
 
-  async function decimals(erc20Address: string) {
+  async function decimals(erc20Address: string, rpcNode?: string) {
     if (isCurrency(erc20Address)) {
       return 18;
     }
-    const contract = getERC20Contract(erc20Address);
+    console.log({ erc20Address });
+    let contract;
+    if (rpcNode) {
+      contract = getERC20ContractWithCustomProvider(erc20Address, rpcNode);
+    } else contract = await getERC20ContractDynamicSigner(erc20Address);
     // eslint-disable-next-line no-return-await
     return await contract.decimals();
   }

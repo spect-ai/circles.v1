@@ -115,7 +115,6 @@ export default function usePaymentGateway(
     circleRegistry,
   }: BatchPayParams) {
     try {
-      console.log({ userAddresses, amounts });
       if (chain?.id.toString() !== chainId) {
         switchNetworkAsync && (await switchNetworkAsync(parseInt(chainId)));
       }
@@ -130,6 +129,7 @@ export default function usePaymentGateway(
         batchPayType,
         circleRegistry,
       });
+
       if (handleStatusUpdate) {
         await handleStatusUpdate(cardIds, tx.transactionHash);
       }

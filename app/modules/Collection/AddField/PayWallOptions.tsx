@@ -3,7 +3,16 @@ import Accordian from "@/app/common/components/Accordian";
 import Dropdown, { OptionType } from "@/app/common/components/Dropdown";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import useERC20 from "@/app/services/Payment/useERC20";
-import { Box, Button, IconClose, Input, Stack, Text } from "degen";
+import {
+  Box,
+  Button,
+  IconClose,
+  Input,
+  Stack,
+  Tag,
+  Text,
+  useTheme,
+} from "degen";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import styled from "styled-components";
@@ -11,6 +20,7 @@ import { useCircle } from "../../Circle/CircleContext";
 import Loader from "@/app/common/components/Loader";
 import { ethers } from "ethers";
 import { isAddress } from "ethers/lib/utils";
+import { Tooltip } from "react-tippy";
 
 interface Props {
   payWallOption: PayWallOptions;
@@ -44,6 +54,7 @@ export default function PayWall({ payWallOption, setPayWallOption }: Props) {
         })
       : ([] as OptionType[])
   );
+  const { mode } = useTheme();
 
   const [selectedOption, setSelectedOption] = useState({
     label: "polygon",
@@ -62,8 +73,53 @@ export default function PayWall({ payWallOption, setPayWallOption }: Props) {
     <>
       <ScrollContainer maxHeight="72" overflow="auto">
         {tokenLoading && <Loader loading text="Fetching" />}
-        <Stack>
-          <Text variant="label">Paywall Options</Text>
+        <Stack space="4">
+          <Stack direction="vertical" space="0">
+            <Stack direction="horizontal" space="2" align="center">
+              <Text variant="label">{`Receiver's Address`}</Text>
+              <Tag size="small" tone="accent">
+                Required
+              </Tag>
+            </Stack>
+            <Input
+              label=""
+              placeholder="Receiver's Address"
+              value={payWallOption?.receiver}
+              error={receiver && !isAddress(receiver)}
+              onChange={(e) => {
+                setReceiver(e.target.value);
+              }}
+            />
+          </Stack>
+          <Tooltip
+            html={
+              <Text>
+                This is optional. It is recommended to leave it empty where you
+                would like the payer to decide the amount, eg, donations.
+                Alternatively, you can fix the amount to use this as a paywall,
+                collect payments for services etc.
+              </Text>
+            }
+            theme={mode}
+          >
+            {" "}
+            <Stack direction="vertical" space="0">
+              <Text variant="label">Receiving Amount</Text>
+              <Input
+                min={0}
+                label=""
+                placeholder="Token Value eg. 10"
+                value={payWallOption?.value}
+                type="number"
+                onChange={(e) => {
+                  setValue(parseFloat(e.target.value));
+                }}
+              />
+            </Stack>
+          </Tooltip>
+          <Text variant="label">
+            Pick the networks and tokens that the payer can pay with
+          </Text>
           {networks &&
             Object.entries(networks).map(([chainId, network]) => {
               return (
@@ -259,27 +315,6 @@ export default function PayWall({ payWallOption, setPayWallOption }: Props) {
               </Box>
             </Box>
           )}
-          <Text variant="label">Receiver&apos;s Address</Text>
-          <Input
-            label=""
-            placeholder="Receiver's Address"
-            value={payWallOption?.receiver}
-            error={!isAddress(receiver)}
-            onChange={(e) => {
-              setReceiver(e.target.value);
-            }}
-          />
-          <Text variant="label">Token Value</Text>
-          <Input
-            min={0}
-            label=""
-            placeholder="Token Value eg. 10"
-            value={payWallOption?.value}
-            type="number"
-            onChange={(e) => {
-              setValue(parseFloat(e.target.value));
-            }}
-          />
         </Stack>
       </ScrollContainer>
     </>
