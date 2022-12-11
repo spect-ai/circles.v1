@@ -42,6 +42,7 @@ import { useLocalCollection } from "../../Collection/Context/LocalCollectionCont
 import CardActivity from "../CardActivity";
 import EditProperty from "../EditProperty";
 import EditValue from "../EditValue";
+import CardOptions from "./CardOptions";
 
 type Props = {
   handleClose: () => void;
@@ -335,15 +336,25 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
           >
             <Container paddingX="8" paddingY="4" overflow="auto">
               <Stack space="1">
-                <NameInput
-                  mode={mode}
-                  placeholder="Untitled"
-                  value={value.Title}
-                  onChange={(e) => {
-                    setIsDirty(true);
-                    setValue({ ...value, Title: e.target.value });
-                  }}
-                />
+                <Stack
+                  direction="horizontal"
+                  justify="space-between"
+                  align="center"
+                >
+                  <NameInput
+                    mode={mode}
+                    placeholder="Untitled"
+                    value={value.Title}
+                    onChange={(e) => {
+                      setIsDirty(true);
+                      setValue({ ...value, Title: e.target.value });
+                    }}
+                  />
+                  <CardOptions
+                    handleDrawerClose={closeCard}
+                    cardSlug={value.slug}
+                  />
+                </Stack>
                 <DragDropContext onDragEnd={handleDragEnd}>
                   <Droppable droppableId="droppable" type="PROPERTY">
                     {ProperyListCallback}

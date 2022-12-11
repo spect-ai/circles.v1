@@ -5,9 +5,8 @@ import { Box, Stack, Tag, Text } from "degen";
 import { motion } from "framer-motion";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import styled from "styled-components";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
-import { MenuItem } from "../EditValue";
+import { MenuContainer, MenuItem } from "../EditValue";
 
 export default function Sort() {
   const {
@@ -47,6 +46,7 @@ export default function Sort() {
     setSortProperty(
       collection.projectMetadata.views[projectViewId]?.sort?.property || ""
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [projectViewId]);
 
   return (
@@ -73,7 +73,7 @@ export default function Sort() {
             }}
           >
             <Box backgroundColor="background">
-              <MenuContainer borderRadius="2xLarge">
+              <MenuContainer borderRadius="2xLarge" cWidth="10rem">
                 <Stack space="0">
                   {sortOptions.map((option) => (
                     <MenuItem
@@ -164,18 +164,3 @@ export default function Sort() {
     </Box>
   );
 }
-
-const MenuContainer = styled(Box)`
-  width: 30rem;
-  border-bottom-left-radius: 0.25rem;
-  border-bottom-right-radius: 0.25rem;
-  background: rgb(191, 90, 242, 0.05);
-  transition: all 0.15s ease-out;
-
-  max-height: 20rem;
-  overflow-y: auto;
-
-  ::-webkit-scrollbar {
-    width: 0.5rem;
-  }
-`;

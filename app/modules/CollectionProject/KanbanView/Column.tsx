@@ -112,7 +112,9 @@ export default function Column({
                     <Stack space="3">
                       {collection.propertyOrder.map((propertyId) => {
                         const property = collection.properties[propertyId];
-                        const value = collection.data[slug][propertyId];
+                        const value =
+                          collection.data[slug] &&
+                          collection.data[slug][propertyId];
                         if (!value || groupByColumn === propertyId) return null;
                         if (property.type === "shortText") {
                           return (

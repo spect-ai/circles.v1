@@ -729,6 +729,7 @@ export interface CollectionType {
   private: boolean;
   parents: CircleType[];
   data: MappedItem<any>;
+  archivedData: MappedItem<any>;
   indexes: MappedItem<string[]>;
   defaultView: DefaultViewType;
   unauthorized?: boolean;

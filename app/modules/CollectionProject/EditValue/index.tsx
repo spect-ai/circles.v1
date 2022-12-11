@@ -300,8 +300,8 @@ const FieldInput = styled.input`
   width: 100%;
 `;
 
-const MenuContainer = styled(Box)`
-  width: 30rem;
+export const MenuContainer = styled(Box)<{ cWidth?: string }>`
+  width: ${(props) => props.cWidth || "30rem"};
   border-bottom-left-radius: 0.25rem;
   border-bottom-right-radius: 0.25rem;
   background: rgb(191, 90, 242, 0.05);
