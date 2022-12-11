@@ -4,7 +4,7 @@ import { BigNumber, BigNumberish, ethers, Signer } from "ethers";
 import { useRouter } from "next/router";
 import { useQuery } from "react-query";
 import { toast } from "react-toastify";
-import { erc20ABI } from "wagmi";
+import { erc20ABI, useSwitchNetwork } from "wagmi";
 import { gnosisPayment } from "../Gnosis";
 import {
   useSigner,
@@ -13,6 +13,7 @@ import {
   useAccount,
   useProvider,
 } from "wagmi";
+import { fetchSigner } from "@wagmi/core";
 
 export default function useERC20() {
   const router = useRouter();
@@ -45,6 +46,11 @@ export default function useERC20() {
     return new ethers.Contract(address, erc20ABI, provider);
   }
 
+  async function getERC20ContractDynamicSigner(address: string) {
+    const signer = await fetchSigner();
+    return new ethers.Contract(address, erc20ABI, signer as unknown as Signer);
+  }
+
   async function approve(
     chainId: string,
     erc20Address: string,
@@ -54,43 +60,51 @@ export default function useERC20() {
   ) {
     const contract = getERC20Contract(erc20Address);
     if (!registry && !circleRegistry) return false;
-    try {
-      if (safeAddress) {
-        const overrides: any = {
-          gasLimit: 10000000,
-          nonce,
-        };
-        const data = await contract.populateTransaction.approve(
+    if (chainId == chain?.id.toString())
+      try {
+        const gasEstimation = await contract?.estimateGas.approve(
+          circleRegistry && circleRegistry[chainId]
+            ? circleRegistry[chainId].distributorAddress
+            : registry && registry[chainId].distributorAddress,
+          ethers.constants.MaxInt256
+        );
+        if (safeAddress) {
+          const overrides: any = {
+            gasLimit: Math.ceil(gasEstimation.toNumber() * 1.2),
+            nonce,
+          };
+
+          const data = await contract.populateTransaction.approve(
+            circleRegistry && circleRegistry[chainId]
+              ? circleRegistry[chainId].distributorAddress
+              : registry && registry[chainId].distributorAddress,
+            ethers.constants.MaxInt256
+            //overrides
+          );
+          const res = await gnosisPayment(safeAddress, data, chainId);
+          if (res)
+            toast.success("Transaction sent to your safe", { theme: "dark" });
+          else
+            toast.error("Error Occurred while sending your transation to safe");
+
+          return;
+        }
+
+        const tx = await contract.approve(
           circleRegistry
             ? circleRegistry[chainId].distributorAddress
             : registry && registry[chainId].distributorAddress,
-          ethers.constants.MaxInt256,
-          overrides
+          ethers.constants.MaxInt256
         );
-        const res = await gnosisPayment(safeAddress, data, chainId);
-        if (res)
-          toast.success("Transaction sent to your safe", { theme: "dark" });
-        else
-          toast.error("Error Occurred while sending your transation to safe");
-
-        return;
+        await tx.wait();
+        return true;
+      } catch (err: any) {
+        console.error(err);
+        toast.error(err.message, {
+          theme: "dark",
+        });
+        return false;
       }
-
-      const tx = await contract.approve(
-        circleRegistry
-          ? circleRegistry[chainId].distributorAddress
-          : registry && registry[chainId].distributorAddress,
-        ethers.constants.MaxInt256
-      );
-      await tx.wait();
-      return true;
-    } catch (err: any) {
-      console.error(err);
-      toast.error(err.message, {
-        theme: "dark",
-      });
-      return false;
-    }
   }
 
   // eslint-disable-next-line @typescript-eslint/require-await
@@ -152,8 +166,7 @@ export default function useERC20() {
     if (isCurrency(erc20Address)) {
       return true;
     }
-    const contract = getERC20Contract(erc20Address);
-
+    const contract = await getERC20ContractDynamicSigner(erc20Address);
     const numDecimals = await contract.decimals();
     console.log({ ethAddress, spenderAddress, erc20Address });
     const allowance = await contract.allowance(ethAddress, spenderAddress);

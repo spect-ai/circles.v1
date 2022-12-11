@@ -18,7 +18,7 @@ import { useRouter } from "next/router";
 import { useCallback, useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { toast } from "react-toastify";
-import { useAccount, useNetwork, useSwitchNetwork } from "wagmi";
+import { useAccount, useNetwork, useSigner, useSwitchNetwork } from "wagmi";
 import { useCircle } from "../../Circle/CircleContext";
 import { useLocalProject } from "../Context/LocalProjectContext";
 import { useLocalCard } from "../CreateCardModal/hooks/LocalCardContext";
@@ -35,6 +35,7 @@ export default function OneClickPayment() {
   const [gnosisLoading, setGnosisLoading] = useState(false);
   const [personalWalletLoading, setPersonalWalletLoading] = useState(false);
   const [removeNonVoters, setRemoveNonVoters] = useState(false);
+  const { isLoading: isSignerLoading } = useSigner();
 
   const {
     batchPayInfo,
@@ -173,7 +174,6 @@ export default function OneClickPayment() {
       }
     });
     if (type === "card") {
-      console.log({ tokenStatus });
       tokenCards?.forEach((cardId) => {
         if (tokenStatus[project.cards[cardId].reward.token.address]?.approved) {
           filteredBatchPayInfo.cardIds.push(cardId);
@@ -185,61 +185,68 @@ export default function OneClickPayment() {
 
   useEffect(() => {
     // initialize tokenStatus
+    if (isSignerLoading) return;
     setLoading(true);
-    if (circle && chain?.id.toString() === batchPayInfo?.chainId && registry) {
-      const tokenStatus: any = {};
-      let index = 0;
-      batchPayInfo?.approval.tokenAddresses.forEach(async (address: string) => {
-        let safeApprovalStatus, approvalStatus;
-        if (circleSafe)
-          safeApprovalStatus = await isApproved(
-            address,
-            registry[batchPayInfo?.chainId].distributorAddress as string,
-            batchPayInfo.approval.values[index],
-            circleSafe
-          );
 
-        if (address) {
-          approvalStatus = await isApproved(
-            address,
-            registry[batchPayInfo?.chainId].distributorAddress as string,
-            batchPayInfo.approval.values[index],
-            userAddress || ""
-          );
-          console.log({ approvalStatus });
-        }
-        tokenStatus[address] = {
-          loading: false,
-          approved: approvalStatus,
-          safeApproved: safeApprovalStatus,
-          error: "",
-        };
-        if (index === batchPayInfo.approval.tokenAddresses.length - 1) {
-          setTokenStatus(tokenStatus);
-        }
-        setLoading(false);
-        index++;
-      });
-    } else {
-      try {
-        switchNetworkAsync &&
-          void switchNetworkAsync(
-            parseInt(batchPayInfo?.chainId as string)
-          ).catch((err: any) => {
-            toast.error(err.message);
-            setIsOpen(false);
+    if (circle && registry) {
+      if (
+        circle &&
+        chain?.id.toString() === batchPayInfo?.chainId &&
+        registry
+      ) {
+        const tokenStatus: any = {};
+        let index = 0;
+        batchPayInfo?.approval.tokenAddresses.forEach(
+          async (address: string) => {
+            let safeApprovalStatus, approvalStatus;
+            if (circleSafe)
+              safeApprovalStatus = await isApproved(
+                address,
+                registry[batchPayInfo?.chainId].distributorAddress as string,
+                batchPayInfo.approval.values[index],
+                circleSafe
+              );
+
+            if (address) {
+              approvalStatus = await isApproved(
+                address,
+                registry[batchPayInfo?.chainId].distributorAddress as string,
+                batchPayInfo.approval.values[index],
+                userAddress || ""
+              );
+            }
+            tokenStatus[address] = {
+              loading: false,
+              approved: approvalStatus,
+              safeApproved: safeApprovalStatus,
+              error: "",
+            };
+            if (index === batchPayInfo.approval.tokenAddresses.length - 1) {
+              setTokenStatus(tokenStatus);
+            }
             setLoading(false);
-          });
-        setLoading(false);
-      } catch (err: any) {
-        toast.error(err.message);
-        setIsOpen(false);
-        setLoading(false);
+            index++;
+          }
+        );
+      } else {
+        try {
+          switchNetworkAsync &&
+            void switchNetworkAsync(
+              parseInt(batchPayInfo?.chainId as string)
+            ).catch((err: any) => {
+              toast.error(err.message);
+              setIsOpen(false);
+              setLoading(false);
+            });
+          setLoading(false);
+        } catch (err: any) {
+          toast.error(err.message);
+          setIsOpen(false);
+          setLoading(false);
+        }
       }
     }
-    // set to final step if all tokens approved
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [batchPayInfo, chain]);
+  }, [batchPayInfo, chain, isSignerLoading]);
 
   const getEthAddress = (specificUserIds: string[], payCircle: boolean) => {
     return specificUserIds.map((userId) => {
@@ -256,7 +263,6 @@ export default function OneClickPayment() {
   };
 
   useEffect(() => {
-    console.log({ removeNonVoters });
     if (batchPayInfo?.retroId)
       if (removeNonVoters) {
         const userIds = batchPayInfo?.retro?.members.filter(
@@ -291,7 +297,6 @@ export default function OneClickPayment() {
             },
           } as BatchPayInfo);
         }
-        console.log(batchPayInfo);
       } else {
         const userIds = batchPayInfo?.retro?.members;
         const values = batchPayInfo?.retro?.members.map(
@@ -321,7 +326,6 @@ export default function OneClickPayment() {
             },
           } as BatchPayInfo);
         }
-        console.log(batchPayInfo);
       }
   }, [removeNonVoters]);
   return (
@@ -410,6 +414,7 @@ export default function OneClickPayment() {
                         currencyCards as string[]
                       );
                   }
+
                   // If ERC-20 token is used
                   if (batchPayInfo?.tokens.values?.length > 0) {
                     for (const [erc20Address, status] of Object.entries(

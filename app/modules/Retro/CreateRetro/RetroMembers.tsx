@@ -121,7 +121,7 @@ export default function RetroMembers({
                 Back
               </PrimaryButton>
             </Box>
-            <Box width="full">
+            {/* <Box width="full">
               <PrimaryButton
                 loading={loading}
                 onClick={async () => {
@@ -179,7 +179,7 @@ export default function RetroMembers({
               >
                 Create Retro
               </PrimaryButton>
-            </Box>
+            </Box> */}
           </Stack>
         </Box>
       </Box>

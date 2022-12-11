@@ -103,7 +103,7 @@ export default function CreateFolderItem({
               <IconUserGroup size={"4"} color="accent" />
             </Button>
           </Tooltip>
-          <Tooltip html={<Text>Create Retro</Text>} theme={mode}>
+          {/* <Tooltip html={<Text>Create Retro</Text>} theme={mode}>
             <Button
               size="small"
               variant="transparent"
@@ -121,7 +121,7 @@ export default function CreateFolderItem({
             >
               <IconLightningBolt size={"4"} color="accent" />
             </Button>
-          </Tooltip>
+          </Tooltip> */}
         </Box>
       </Stack>
     </Box>

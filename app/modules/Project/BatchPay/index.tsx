@@ -57,7 +57,6 @@ export default function BatchPay({ retro, setIsOpen }: Props) {
         });
         setStep(1);
       } else {
-        console.log(retro.reward);
         setBatchPayInfo({
           payCircle: false,
           retroId: retro.id,
