@@ -4,7 +4,7 @@ import { BigNumber, BigNumberish, ethers, Signer } from "ethers";
 import { useRouter } from "next/router";
 import { useQuery } from "react-query";
 import { toast } from "react-toastify";
-import { erc20ABI } from "wagmi";
+import { erc20ABI, useSwitchNetwork } from "wagmi";
 import { gnosisPayment } from "../Gnosis";
 import {
   useSigner,
@@ -13,6 +13,7 @@ import {
   useAccount,
   useProvider,
 } from "wagmi";
+import { fetchSigner } from "@wagmi/core";
 import { useGlobal } from "@/app/context/globalContext";
 
 export default function useERC20() {
@@ -21,7 +22,7 @@ export default function useERC20() {
   const { data: registry } = useQuery<Registry>(["registry", cId], {
     enabled: false,
   });
-  const { signer } = useGlobal()
+  const { signer } = useGlobal();
   const { chain } = useNetwork();
   const { address } = useAccount();
   const { data: balance } = useBalance({
@@ -42,8 +43,16 @@ export default function useERC20() {
     address: string,
     web3providerUrl: string
   ) {
-    const provider = new ethers.providers.JsonRpcProvider(web3providerUrl);
+    const provider = new ethers.providers.JsonRpcProvider(
+      web3providerUrl,
+      "any"
+    );
     return new ethers.Contract(address, erc20ABI, provider);
+  }
+
+  async function getERC20ContractDynamicSigner(address: string) {
+    const signer = await fetchSigner();
+    return new ethers.Contract(address, erc20ABI, signer as unknown as Signer);
   }
 
   async function approve(
@@ -56,13 +65,18 @@ export default function useERC20() {
     const contract = getERC20Contract(erc20Address);
     if (!registry && !circleRegistry) return false;
     try {
+      const overrides: any = {
+        gasLimit: await contract.estimateGas.approve(
+          circleRegistry && circleRegistry[chainId]
+            ? circleRegistry[chainId].distributorAddress
+            : registry && registry[chainId].distributorAddress,
+          ethers.constants.MaxInt256
+        ),
+        nonce,
+      };
       if (safeAddress) {
-        const overrides: any = {
-          gasLimit: chainId == '1' ? 21000 : 10000000,
-          nonce,
-        };
         const data = await contract.populateTransaction.approve(
-          circleRegistry
+          circleRegistry && circleRegistry[chainId]
             ? circleRegistry[chainId].distributorAddress
             : registry && registry[chainId].distributorAddress,
           ethers.constants.MaxInt256,
@@ -148,15 +162,17 @@ export default function useERC20() {
     erc20Address: string,
     spenderAddress: string,
     value: number,
-    ethAddress: string
+    ethAddress: string,
+    rpcNode?: string
   ) {
     if (isCurrency(erc20Address)) {
       return true;
     }
-    const contract = getERC20Contract(erc20Address);
-
+    let contract;
+    if (rpcNode) {
+      contract = getERC20ContractWithCustomProvider(erc20Address, rpcNode);
+    } else contract = await getERC20ContractDynamicSigner(erc20Address);
     const numDecimals = await contract.decimals();
-    console.log({ ethAddress, spenderAddress, erc20Address });
     const allowance = await contract.allowance(ethAddress, spenderAddress);
     if (!value) return false;
     const ceilVal = Math.ceil(value).toFixed();
@@ -203,7 +219,8 @@ export default function useERC20() {
   async function hasBalance(
     erc20Address: string,
     value: number,
-    ethAddress: string
+    ethAddress: string,
+    rpcNode?: string
   ) {
     if (isCurrency(erc20Address)) {
       return (
@@ -213,9 +230,12 @@ export default function useERC20() {
       );
       // eslint-disable-next-line no-else-return
     } else {
-      const contract = getERC20Contract(erc20Address);
-      const numDecimals = await contract.decimals();
+      let contract;
+      if (rpcNode) {
+        contract = getERC20ContractWithCustomProvider(erc20Address, rpcNode);
+      } else contract = await getERC20ContractDynamicSigner(erc20Address);
 
+      const numDecimals = await contract.decimals();
       const balance = await contract.balanceOf(ethAddress);
       if (!value) return false;
       const ceilVal = Math.ceil(value).toFixed();
@@ -249,11 +269,15 @@ export default function useERC20() {
     return [true, null];
   }
 
-  async function decimals(erc20Address: string) {
+  async function decimals(erc20Address: string, rpcNode?: string) {
     if (isCurrency(erc20Address)) {
       return 18;
     }
-    const contract = getERC20Contract(erc20Address);
+    console.log({ erc20Address });
+    let contract;
+    if (rpcNode) {
+      contract = getERC20ContractWithCustomProvider(erc20Address, rpcNode);
+    } else contract = await getERC20ContractDynamicSigner(erc20Address);
     // eslint-disable-next-line no-return-await
     return await contract.decimals();
   }
@@ -263,6 +287,8 @@ export default function useERC20() {
     networkVersion: string | undefined
   ) {
     if (!networkVersion || !registry) return null;
+    if (isCurrency(erc20Address)) return null;
+
     try {
       const contract = getERC20ContractWithCustomProvider(
         erc20Address,
@@ -281,6 +307,7 @@ export default function useERC20() {
     networkVersion: string | undefined
   ) {
     if (!networkVersion || !registry) return null;
+    if (isCurrency(erc20Address)) return null;
     try {
       const contract = getERC20ContractWithCustomProvider(
         erc20Address,

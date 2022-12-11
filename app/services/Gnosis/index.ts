@@ -92,12 +92,12 @@ export async function gnosisPayment(
 
     console.log({ baseTxn });
 
-    const { safeTxGas } = await safeService.estimateSafeTransaction(
-      safeAddress,
-      baseTxn
-    );
-    console.log({ safeTxGas });
-    console.log({ safeTransaction });
+    // const { safeTxGas } = await safeService.estimateSafeTransaction(
+    //   safeAddress,
+    //   baseTxn
+    // );
+    // console.log({ safeTxGas });
+    // console.log({ safeTransaction });
 
     // (safeTransaction.data as any).safeTxGas = safeTxGas;
 
