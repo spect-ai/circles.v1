@@ -115,11 +115,11 @@ export default function ProjectHeading() {
                           >
                             <Text color="accent">
                               {getViewIcon(
-                                collection.projectMetadata.views[viewId].type
+                                collection.projectMetadata.views[viewId]?.type
                               )}
                             </Text>
                             <Text ellipsis>
-                              {collection.projectMetadata.views[viewId].name}
+                              {collection.projectMetadata.views[viewId]?.name}
                             </Text>
                           </ViewTab>
                         </div>

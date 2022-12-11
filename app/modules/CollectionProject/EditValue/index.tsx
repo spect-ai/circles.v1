@@ -50,10 +50,12 @@ function EditValue({ value, setValue, propertyName, dataId }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [propertyName]);
 
+  if (!property) return null;
+
   return (
     <Box width="3/4">
       {["singleSelect", "multiSelect", "user", "user[]"].includes(
-        property.type
+        property?.type
       ) && (
         <Popover
           isOpen={isEditing}
@@ -180,7 +182,7 @@ function EditValue({ value, setValue, propertyName, dataId }: Props) {
         </Popover>
       )}
       {["shortText", "number", "ethAddress", "email", "date"].includes(
-        property.type
+        property?.type
       ) && (
         <Box>
           {isEditing ? (

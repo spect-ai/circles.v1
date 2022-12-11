@@ -9,7 +9,7 @@ import {
   updateField,
   updateFormCollection,
 } from "@/app/services/Collection";
-import { Condition, FormUserType, Registry } from "@/app/types";
+import { CollectionType, Condition, FormUserType, Registry } from "@/app/types";
 import { SaveFilled } from "@ant-design/icons";
 import { Box, IconTrash, Input, Stack, Text, Textarea } from "degen";
 import React, { useEffect, useState } from "react";
@@ -33,8 +33,11 @@ type Props = {
 };
 
 export default function AddField({ propertyName, handleClose }: Props) {
-  const { localCollection: collection, updateCollection } =
-    useLocalCollection();
+  const {
+    localCollection: collection,
+    updateCollection,
+    setProjectViewId,
+  } = useLocalCollection();
   const { registry } = useCircle();
   const [networks, setNetworks] = useState(registry);
   const [initialName, setInitialName] = useState("");
@@ -201,16 +204,17 @@ export default function AddField({ propertyName, handleClose }: Props) {
             handleClose={() => setShowConfirm(false)}
             onConfirm={async () => {
               setShowConfirm(false);
-              const res = await deleteField(
+              const res: CollectionType = await deleteField(
                 collection.id,
                 propertyName as string
               );
-              console.log({ res });
               if (res.id) {
+                res.projectMetadata &&
+                  setProjectViewId(res.projectMetadata.viewOrder[0]);
                 handleClose();
                 updateCollection(res);
               } else {
-                toast.error(res.message);
+                toast.error("Error deleting field");
               }
             }}
             onCancel={() => setShowConfirm(false)}
