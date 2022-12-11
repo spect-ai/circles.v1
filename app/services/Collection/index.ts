@@ -124,6 +124,18 @@ export const updateFormCollection = async (
   ).json();
 };
 
+export const deleteCollection = async (collectionId: string) => {
+  return await (
+    await fetch(`${process.env.API_HOST}/collection/v1/${collectionId}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+    })
+  ).json();
+};
+
 export const addCollectionData = async (collectionId: string, data: object) => {
   return await (
     await fetch(

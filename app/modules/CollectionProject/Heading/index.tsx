@@ -1,6 +1,6 @@
 import Popover from "@/app/common/components/Popover";
 import { updateFormCollection } from "@/app/services/Collection";
-import { Box, Heading, IconPlusSmall, Stack, Text } from "degen";
+import { Box, Heading, IconCog, IconPlusSmall, Stack, Text } from "degen";
 import { AnimatePresence, motion } from "framer-motion";
 import React, { useState } from "react";
 import {
@@ -15,6 +15,8 @@ import styled from "styled-components";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
 import AddView from "../AddView";
 import Filtering from "../Filtering";
+import Settings from "../Settings";
+import ViewSettings from "../ViewSettings";
 
 export default function ProjectHeading() {
   const {
@@ -26,6 +28,7 @@ export default function ProjectHeading() {
   const [isAddViewPopupOpen, setIsAddViewPopupOpen] = useState(false);
   const [isAddViewModalOpen, setIsAddViewModalOpen] = useState(false);
   const [viewType, setViewType] = useState("");
+  const [isViewSettingsOpen, setIsViewSettingsOpen] = useState(false);
 
   const handleDragEnd = async (result: DropResult) => {
     const { destination, source, draggableId } = result;
@@ -68,11 +71,17 @@ export default function ProjectHeading() {
             handleClose={() => setIsAddViewModalOpen(false)}
           />
         )}
+        {isViewSettingsOpen && (
+          <ViewSettings handleClose={() => setIsViewSettingsOpen(false)} />
+        )}
       </AnimatePresence>
       <Stack space="0">
         <Stack direction="horizontal">
           <Heading>{collection.name}</Heading>
+          <Settings />
         </Stack>
+        <Box marginBottom="1" />
+
         <DragDropContext onDragEnd={handleDragEnd}>
           <ViewTabsContainer
             backgroundColor="background"
@@ -121,6 +130,17 @@ export default function ProjectHeading() {
                             <Text ellipsis>
                               {collection.projectMetadata.views[viewId]?.name}
                             </Text>
+                            {viewId === projectViewId && (
+                              <Box
+                                cursor="pointer"
+                                marginLeft="2"
+                                onClick={() => setIsViewSettingsOpen(true)}
+                              >
+                                <Text variant="label">
+                                  <IconCog />
+                                </Text>
+                              </Box>
+                            )}
                           </ViewTab>
                         </div>
                       )}

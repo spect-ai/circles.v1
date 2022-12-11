@@ -1,0 +1,93 @@
+import Modal from "@/app/common/components/Modal";
+import PrimaryButton from "@/app/common/components/PrimaryButton";
+import {
+  deleteCollection,
+  updateFormCollection,
+} from "@/app/services/Collection";
+import { Box, Button, IconCog, Input, Stack, Text } from "degen";
+import { AnimatePresence } from "framer-motion";
+import { useRouter } from "next/router";
+import React, { useState } from "react";
+import { Archive } from "react-feather";
+import { toast } from "react-toastify";
+import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
+
+export default function Settings() {
+  const { localCollection: collection, updateCollection } =
+    useLocalCollection();
+  const [isOpen, setIsOpen] = useState(false);
+  const [name, setName] = useState(collection.name);
+
+  const router = useRouter();
+
+  return (
+    <Box>
+      <Button
+        shape="circle"
+        onClick={() => setIsOpen(!isOpen)}
+        size="small"
+        variant="transparent"
+      >
+        <Text variant="label">
+          <IconCog />
+        </Text>
+      </Button>
+      <AnimatePresence>
+        {isOpen && (
+          <Modal
+            title="Settings"
+            handleClose={() => {
+              setIsOpen(false);
+              updateFormCollection(collection.id, { name })
+                .then((res) => {
+                  if (res.id) updateCollection(res);
+                  else toast.error("Error updating collection name");
+                })
+                .catch(() => {
+                  toast.error("Error updating collection name");
+                });
+            }}
+          >
+            <Box padding="8">
+              <Stack>
+                <Input
+                  label=""
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                />
+                <Text variant="label">Danger</Text>
+                <Stack direction="horizontal">
+                  <Box width="1/2">
+                    <PrimaryButton
+                      icon={<Archive size={16} style={{ marginTop: 2 }} />}
+                      tone="red"
+                      onClick={() => {
+                        if (
+                          !confirm(
+                            "Are you sure you want to delete this collection? This action cannot be undone."
+                          )
+                        )
+                          return;
+                        void deleteCollection(collection.id).then((res) => {
+                          console.log({ res });
+                          if (res.ok) {
+                            toast.success("Collection deleted");
+                            void router.push(`/${router.query.circle}`);
+                          } else {
+                            toast.error("Error deleting collection");
+                          }
+                        });
+                      }}
+                    >
+                      Delete
+                    </PrimaryButton>
+                  </Box>
+                </Stack>
+              </Stack>
+            </Box>
+          </Modal>
+        )}
+      </AnimatePresence>
+    </Box>
+  );
+}
