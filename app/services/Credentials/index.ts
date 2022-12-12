@@ -86,7 +86,7 @@ export default function useCredentials() {
 
         const body = JSON.stringify(params);
         toast(
-          "Minting Kudos takes a few seconds. You'll be notified once its successful.",
+          "Creating Kudos takes a few seconds. You'll be notified once its successful.",
           {
             theme: mode,
           }

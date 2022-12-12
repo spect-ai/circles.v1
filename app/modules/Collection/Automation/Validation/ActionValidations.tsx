@@ -19,7 +19,7 @@ export function validateAction(action: Action): boolean {
 }
 
 export function validateSendEmailAction(action: Action): boolean {
-  if (!action?.data?.message) {
+  if (!action?.data?.message || action?.data?.toEmailProperties?.length === 0) {
     return false;
   }
   return true;

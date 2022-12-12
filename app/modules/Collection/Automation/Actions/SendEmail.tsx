@@ -13,17 +13,10 @@ type Props = {
 };
 
 export default function SendEmail({ setAction, actionMode, action }: Props) {
-  const [message, setMessage] = useState(action.data?.message || "");
   const [propertyOptions, setPropertyOptions] = useState([] as Option[]);
-  const [toEmailProperties, setToEmailProperties] = useState(
-    action.data?.toEmailProperties || []
-  );
+
   const { circle } = useCircle();
   const { localCollection: collection } = useLocalCollection();
-
-  useEffect(() => {
-    setMessage(action.data?.message || "");
-  }, [action]);
 
   useEffect(() => {
     setPropertyOptions(
@@ -39,22 +32,7 @@ export default function SendEmail({ setAction, actionMode, action }: Props) {
   }, []);
 
   return (
-    <Box
-      marginTop="2"
-      width="full"
-      onBlur={() => {
-        setAction({
-          ...action,
-          data: {
-            message: message,
-            circleId: circle.id,
-            toEmailProperties: toEmailProperties.map(
-              (property: any) => property.value
-            ),
-          },
-        });
-      }}
-    >
+    <Box marginTop="2" width="full" onBlur={() => {}}>
       {" "}
       <Box
         marginBottom="2"
@@ -69,9 +47,20 @@ export default function SendEmail({ setAction, actionMode, action }: Props) {
 
         <Dropdown
           options={propertyOptions}
-          selected={toEmailProperties}
+          selected={
+            action.data?.toEmailProperties?.map(
+              (propertyId: string) =>
+                ({ value: propertyId, label: propertyId } as Option)
+            ) || []
+          }
           onChange={(value) => {
-            setToEmailProperties(value);
+            setAction({
+              ...action,
+              data: {
+                ...action.data,
+                toEmailProperties: value.map((property: any) => property.value),
+              },
+            });
           }}
           multiple={true}
         />
@@ -82,9 +71,16 @@ export default function SendEmail({ setAction, actionMode, action }: Props) {
           maxLength={500}
           rows={3}
           placeholder="Message to send in email"
-          value={message}
+          value={action.data?.message}
           onChange={(e) => {
-            setMessage(e.target.value);
+            // setMessage(e.target.value);
+            setAction({
+              ...action,
+              data: {
+                ...action.data,
+                message: e.target.value,
+              },
+            });
           }}
         />
       </Box>

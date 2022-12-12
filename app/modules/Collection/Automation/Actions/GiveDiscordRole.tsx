@@ -51,7 +51,7 @@ export default function GiveDiscordRole({
       data && setDiscordRoles(data.roles);
       console.log({ data });
     };
-    void fetchGuildRoles();
+    if (circle?.discordGuildId) void fetchGuildRoles();
   }, [circle?.discordGuildId]);
 
   if (!circle.discordGuildId)

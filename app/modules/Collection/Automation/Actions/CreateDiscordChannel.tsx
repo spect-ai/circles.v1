@@ -43,7 +43,7 @@ export default function CreateDiscordChannel({
       }));
       setCategoryOptions(categoryOptions);
     };
-    void getGuildChannels();
+    if (circle?.discordGuildId) void getGuildChannels();
   }, [circle?.discordGuildId]);
 
   if (!circle.discordGuildId)
