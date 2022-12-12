@@ -762,6 +762,10 @@ export type FormMetadata = {
   isAnOpportunity?: boolean;
   opportunityInfo?: OpportunityInfoType;
   active: boolean;
+  canFillForm: boolean;
+  hasPassedSybilCheck: boolean;
+  previousResponses: any[];
+  kudosClaimedByUser: boolean;
 };
 
 export type ProjectMetadata = {
@@ -861,8 +865,6 @@ export type GuildRole = {
 export interface FormType {
   activity: MappedItem<CollectionActivity>;
   activityOrder: string[];
-  logo: string;
-  cover: string;
   name: string;
   circleId: string;
   slug: string;
@@ -892,26 +894,15 @@ export interface FormType {
     slug: string;
   }[];
   defaultView: string;
-  formRoleGating: GuildRole[];
-  canFillForm: boolean;
-  mintkudosTokenId: number;
-  messageOnSubmission: string;
-  kudosClaimedByUser: boolean;
-  multipleResponsesAllowed: boolean;
-  updatingResponseAllowed: boolean;
-  previousResponses: any[];
-  sybilProtectionEnabled: boolean;
-  sybilProtectionScores: GitcoinScoreType[];
   canClaimKudos: boolean;
   hasRole: boolean;
-  hasPassedSybilCheck: boolean;
   isAnOpportunity: boolean;
   opportunityInfo: OpportunityInfoType;
-  active: boolean;
   viewConditions: Condition[];
   createdAt: string;
   updatedAt: string;
   id: string;
+  formMetadata: FormMetadata;
 }
 
 export type KudosType = {

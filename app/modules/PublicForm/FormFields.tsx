@@ -43,7 +43,7 @@ export default function FormFields({ form, setForm }: Props) {
   const [kudos, setKudos] = useState({} as KudosType);
   const { connectedUser, connectUser } = useGlobal();
   const [loading, setLoading] = useState(false);
-  const [claimed, setClaimed] = useState(form.kudosClaimedByUser);
+  const [claimed, setClaimed] = useState(form.formMetadata.kudosClaimedByUser);
   const [submitting, setSubmitting] = useState(false);
   const [notificationPreferenceModalOpen, setNotificationPreferenceModalOpen] =
     useState(false);
@@ -98,13 +98,13 @@ export default function FormFields({ form, setForm }: Props) {
   useEffect(() => {
     void fetchRegistry();
     // setClaimed(form.kudosClaimedByUser);
-    setSubmitted(form.previousResponses?.length > 0);
+    setSubmitted(form.formMetadata.previousResponses?.length > 0);
 
-    if (form.mintkudosTokenId) {
+    if (form.formMetadata.mintkudosTokenId) {
       void (async () => {
         const kudo = await (
           await fetch(
-            `${process.env.MINTKUDOS_HOST}/v1/tokens/${form.mintkudosTokenId}`
+            `${process.env.MINTKUDOS_HOST}/v1/tokens/${form.formMetadata.mintkudosTokenId}`
           )
         ).json();
         setKudos(kudo);
@@ -136,9 +136,11 @@ export default function FormFields({ form, setForm }: Props) {
       setLoading(true);
       const tempData: any = {};
 
-      if (updateResponse && form?.previousResponses?.length > 0) {
+      if (updateResponse && form?.formMetadata.previousResponses?.length > 0) {
         const lastResponse =
-          form.previousResponses[form.previousResponses.length - 1];
+          form.formMetadata.previousResponses[
+            form.formMetadata.previousResponses.length - 1
+          ];
         form.propertyOrder.forEach((propertyId) => {
           if (
             [
@@ -219,7 +221,7 @@ export default function FormFields({ form, setForm }: Props) {
 
   const onSubmit = async () => {
     let res;
-    if (!form.active) {
+    if (!form.formMetadata.active) {
       toast.error("This form is not accepting responses");
       return;
     }
@@ -233,7 +235,9 @@ export default function FormFields({ form, setForm }: Props) {
     setSubmitting(true);
     if (updateResponse) {
       const lastResponse =
-        form.previousResponses[form.previousResponses.length - 1];
+        form.formMetadata.previousResponses[
+          form.formMetadata.previousResponses.length - 1
+        ];
       res = await updateCollectionData(form.id || "", lastResponse.slug, data);
     } else {
       res = await addData(form.id || "", data);
@@ -251,7 +255,7 @@ export default function FormFields({ form, setForm }: Props) {
     process.env.NODE_ENV === "production" &&
       mixpanel.track("Form Submit", {
         form: form.name,
-        sybilEnabled: form.sybilProtectionEnabled,
+        sybilEnabled: form.formMetadata.sybilProtectionEnabled,
         user: currentUser?.username,
       });
     setSubmitting(false);
@@ -332,7 +336,7 @@ export default function FormFields({ form, setForm }: Props) {
     }
   };
 
-  if (!form.active) {
+  if (!form.formMetadata.active) {
     return <></>;
   }
 

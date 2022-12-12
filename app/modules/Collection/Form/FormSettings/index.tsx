@@ -24,7 +24,7 @@ function FormSettings() {
   const { formActions } = useRoleGate();
   const { localCollection: collection } = useLocalCollection();
   return (
-    <>
+    <Box>
       <PrimaryButton
         icon={<IconCog />}
         onClick={() => {
@@ -85,7 +85,7 @@ function FormSettings() {
           </Modal>
         )}
       </AnimatePresence>
-    </>
+    </Box>
   );
 }
 

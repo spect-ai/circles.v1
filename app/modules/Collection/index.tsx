@@ -34,7 +34,19 @@ export function Collection() {
         <Box>
           <CollectionHeading />
           {view === 0 && <Form />}
-          {view === 1 && <TableView />}
+          <Box
+            marginLeft={{
+              xs: "2",
+              md: "8",
+            }}
+            marginRight={{
+              xs: "2",
+              md: "8",
+            }}
+            marginTop="4"
+          >
+            {view === 1 && <TableView />}
+          </Box>
           <Box
             style={{
               position: "absolute",

@@ -148,7 +148,10 @@ export default function TableView() {
         }),
       });
 
-      if (collection.projectMetadata.views[projectViewId].filters) {
+      if (
+        collection.collectionType === 1 &&
+        collection.projectMetadata.views[projectViewId].filters
+      ) {
         filteredData = filteredData.filter((row) => {
           return satisfiesConditions(
             collection.data[row.id],
@@ -158,7 +161,10 @@ export default function TableView() {
         });
       }
 
-      if (collection.projectMetadata.views[projectViewId].sort?.property) {
+      if (
+        collection.collectionType === 1 &&
+        collection.projectMetadata.views[projectViewId].sort?.property
+      ) {
         const property =
           collection.properties[
             collection.projectMetadata.views[projectViewId].sort?.property || ""
@@ -236,6 +242,7 @@ export default function TableView() {
       setData(filteredData);
     }
   }, [
+    collection.collectionType,
     collection.data,
     collection.projectMetadata.views,
     collection.properties,

@@ -42,8 +42,6 @@ export default function PublicField({
     {} as { [key: string]: boolean }
   );
 
-  console.log({ data, propertyName });
-
   if (
     !satisfiesConditions(
       data,
