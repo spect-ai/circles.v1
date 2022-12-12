@@ -53,7 +53,7 @@ export default function Sort() {
     <Box width="1/4">
       <Stack direction="horizontal" align="center" space="1">
         <Box width="1/2">
-          <Text variant="label">Sort By</Text>
+          <Text variant="label">Sort</Text>
         </Box>
         <Popover
           butttonComponent={

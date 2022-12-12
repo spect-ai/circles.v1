@@ -5,6 +5,7 @@ import { Box, Button, Stack, Text } from "degen";
 import { AnimatePresence } from "framer-motion";
 import React, { useEffect, useState } from "react";
 import { Filter as FilterIcon } from "react-feather";
+import { Hidden } from "react-grid-system";
 import { toast } from "react-toastify";
 import AddConditions from "../../Collection/Common/AddConditions";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
@@ -29,7 +30,9 @@ function Filter() {
   return (
     <Box>
       <Stack direction="horizontal" align="center" space="1">
-        <Text variant="label">Filter By</Text>
+        <Hidden xs sm>
+          <Text variant="label">Filter By</Text>
+        </Hidden>
         <Button
           shape="circle"
           size="small"

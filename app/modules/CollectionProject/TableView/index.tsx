@@ -28,7 +28,18 @@ export default function ProjectTableView() {
           <CardDrawer handleClose={() => setIsCardDrawerOpen(false)} />
         )}
       </AnimatePresence>
-      <Box overflow="auto" paddingY="2" marginRight="8" marginLeft="8">
+      <Box
+        overflow="auto"
+        paddingY="2"
+        marginRight={{
+          xs: "2",
+          md: "8",
+        }}
+        marginLeft={{
+          xs: "2",
+          md: "8",
+        }}
+      >
         <Stack direction="horizontal" space="0">
           <TableView />
           <Box>

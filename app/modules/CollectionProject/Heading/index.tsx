@@ -1,4 +1,5 @@
 import Popover from "@/app/common/components/Popover";
+import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { updateFormCollection } from "@/app/services/Collection";
 import { Box, Heading, IconCog, IconPlusSmall, Stack, Text } from "degen";
 import { AnimatePresence, motion } from "framer-motion";
@@ -10,12 +11,14 @@ import {
   DropResult,
 } from "react-beautiful-dnd";
 import { Clock, Grid, List, Trello } from "react-feather";
-import { Hidden } from "react-grid-system";
+import { Hidden, Visible } from "react-grid-system";
 import { toast } from "react-toastify";
 import styled from "styled-components";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
 import AddView from "../AddView";
 import Filtering from "../Filtering";
+import Filter from "../Filtering/Filter";
+import Sort from "../Filtering/Sort";
 import Settings from "../Settings";
 import ViewSettings from "../ViewSettings";
 
@@ -30,6 +33,7 @@ export default function ProjectHeading() {
   const [isAddViewModalOpen, setIsAddViewModalOpen] = useState(false);
   const [viewType, setViewType] = useState("");
   const [isViewSettingsOpen, setIsViewSettingsOpen] = useState(false);
+  const [isViewPopoverOpen, setIsViewPopoverOpen] = useState(false);
 
   const handleDragEnd = async (result: DropResult) => {
     const { destination, source, draggableId } = result;
@@ -64,7 +68,13 @@ export default function ProjectHeading() {
   };
 
   return (
-    <Box paddingX="8" paddingTop="4">
+    <Box
+      paddingX={{
+        xs: "2",
+        md: "8",
+      }}
+      paddingTop="4"
+    >
       <AnimatePresence>
         {isAddViewModalOpen && (
           <AddView
@@ -253,6 +263,83 @@ export default function ProjectHeading() {
           </DragDropContext>
           <Filtering />
         </Hidden>
+        <Visible xs sm>
+          <Stack direction="horizontal">
+            <Popover
+              width="1/2"
+              butttonComponent={
+                <PrimaryButton
+                  onClick={() => setIsViewPopoverOpen(!isViewPopoverOpen)}
+                  variant="tertiary"
+                  icon={
+                    <Text color="accent">
+                      {getViewIcon(
+                        collection.projectMetadata.views[projectViewId]?.type
+                      )}
+                    </Text>
+                  }
+                >
+                  <Text ellipsis>
+                    {collection.projectMetadata.views[projectViewId]?.name}
+                  </Text>
+                </PrimaryButton>
+              }
+              isOpen={isViewPopoverOpen}
+              setIsOpen={setIsViewPopoverOpen}
+            >
+              <motion.div
+                initial={{ height: 0 }}
+                animate={{ height: "auto", transition: { duration: 0.2 } }}
+                exit={{ height: 0 }}
+                style={{
+                  overflow: "hidden",
+                  borderRadius: "0.25rem",
+                }}
+              >
+                <Box
+                  backgroundColor="background"
+                  borderWidth="0.375"
+                  borderRadius="2xLarge"
+                >
+                  {collection.projectMetadata.viewOrder.map((viewId) => (
+                    <MenuItem
+                      padding="2"
+                      borderTopRadius="2xLarge"
+                      borderBottomRadius="2xLarge"
+                      key={viewId}
+                      onClick={() => {
+                        setProjectViewId(viewId);
+                        setIsViewPopoverOpen(false);
+                      }}
+                    >
+                      <Text color="accent">
+                        {getViewIcon(
+                          collection.projectMetadata.views[viewId]?.type
+                        )}
+                      </Text>
+                      <Text ellipsis>
+                        {collection.projectMetadata.views[viewId]?.name}
+                      </Text>
+                      {viewId === projectViewId && (
+                        <Box
+                          cursor="pointer"
+                          marginLeft="2"
+                          onClick={() => setIsViewSettingsOpen(true)}
+                        >
+                          <Text variant="label">
+                            <IconCog />
+                          </Text>
+                        </Box>
+                      )}
+                    </MenuItem>
+                  ))}
+                </Box>
+              </motion.div>
+            </Popover>
+            <Filter />
+            <Sort />
+          </Stack>
+        </Visible>
       </Stack>
     </Box>
   );
