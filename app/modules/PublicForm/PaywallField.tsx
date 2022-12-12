@@ -198,6 +198,7 @@ const PaywallField = ({
             multiple={false}
             isClearable={false}
             disabled={!cId && payWallData && payWallData?.paid}
+            portal={false}
           />
         </Box>
         <Box
@@ -216,6 +217,7 @@ const PaywallField = ({
             multiple={false}
             isClearable={false}
             disabled={!cId && payWallData && payWallData?.paid}
+            portal={false}
           />
         </Box>
         <Box

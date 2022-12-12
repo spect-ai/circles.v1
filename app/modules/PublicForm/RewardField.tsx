@@ -101,6 +101,7 @@ export default function RewardField({
           multiple={false}
           isClearable={false}
           disabled={disabled}
+          portal={false}
         />
       </Box>
       <Box
@@ -124,6 +125,7 @@ export default function RewardField({
           multiple={false}
           isClearable={false}
           disabled={disabled}
+          portal={false}
         />
       </Box>
       <Box
