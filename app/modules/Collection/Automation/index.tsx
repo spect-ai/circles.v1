@@ -183,32 +183,33 @@ export default function Automation() {
   }, [isOpen]);
 
   return (
-    <>
-      <Stack direction="vertical">
+    <Box>
+      <Stack direction="vertical" space="1">
         <Text variant="small">{`Reduce recurring chores`}</Text>
-      </Stack>
-      <Box
-        width={{
-          xs: "full",
-          md: "full",
-        }}
-      >
-        <PrimaryButton
-          variant={
-            automationOrder?.length > 1 ||
-            !automationId?.startsWith("automation")
-              ? "tertiary"
-              : "secondary"
-          }
-          onClick={() => setIsOpen(true)}
-          icon={<GatewayOutlined />}
+        <Box
+          width={{
+            xs: "full",
+            md: "full",
+          }}
         >
-          {automationOrder?.length > 1 ||
-          !automationId?.startsWith("automation")
-            ? `Edit Automations`
-            : `Add Automations`}
-        </PrimaryButton>
-      </Box>
+          <PrimaryButton
+            variant={
+              automationOrder?.length > 1 ||
+              !automationId?.startsWith("automation")
+                ? "tertiary"
+                : "secondary"
+            }
+            onClick={() => setIsOpen(true)}
+            icon={<GatewayOutlined />}
+          >
+            {automationOrder?.length > 1 ||
+            !automationId?.startsWith("automation")
+              ? `Edit Automations`
+              : `Add Automations`}
+          </PrimaryButton>
+        </Box>
+      </Stack>
+
       <AnimatePresence>
         {isOpen && (
           <Modal
@@ -362,6 +363,6 @@ export default function Automation() {
           </Modal>
         )}
       </AnimatePresence>
-    </>
+    </Box>
   );
 }
