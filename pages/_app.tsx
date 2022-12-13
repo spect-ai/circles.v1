@@ -3,6 +3,7 @@ import "degen/styles";
 import type { AppProps } from "next/app";
 import { Hydrate, QueryClientProvider } from "react-query";
 import mixpanel from "@/app/common/utils/mixpanel";
+import { Analytics } from "@vercel/analytics/react";
 
 import "@fontsource/inter/300.css";
 import "@fontsource/inter/400.css";
@@ -255,6 +256,7 @@ function MyApp({ Component, pageProps }: AppProps) {
                   >
                     <ErrorBoundary FallbackComponent={ErrorFallBack}>
                       <Component {...pageProps} canonical={url} key={url} />
+                      <Analytics />
                     </ErrorBoundary>
                   </AnimatePresence>
                 </Hydrate>
