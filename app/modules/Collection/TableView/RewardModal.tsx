@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Modal from "@/app/common/components/Modal";
 import { Reward } from "@/app/types";
 import { Box } from "degen";

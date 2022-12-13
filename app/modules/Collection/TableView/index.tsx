@@ -6,7 +6,7 @@ import {
 } from "@/app/services/Collection";
 import { Milestone, Option, PropertyType, Reward } from "@/app/types";
 import { Box } from "degen";
-import { AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { matchSorter } from "match-sorter";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
@@ -49,20 +49,25 @@ export default function TableView() {
     setLocalCollection,
     searchFilter,
     projectViewId,
+    updateCollection,
   } = useLocalCollection();
 
   const [expandedDataSlug, setExpandedDataSlug] = useState("");
+  const [dataLoading, setDataLoading] = useState(false);
 
   const screenClass = useScreenClass();
 
   const router = useRouter();
-  const { dataId: dataSlug } = router.query;
+  const { dataId: dataSlug, cardSlug } = router.query;
 
   useEffect(() => {
     if (dataSlug) {
       setExpandedDataSlug(dataSlug as string);
     }
-  }, [dataSlug, setExpandedDataSlug]);
+    if (cardSlug) {
+      setExpandedDataSlug(cardSlug as string);
+    }
+  }, [dataSlug, setExpandedDataSlug, cardSlug]);
 
   const updateData = async ({ cell }: { cell: CellWithId }) => {
     if (data) {
@@ -83,7 +88,9 @@ export default function TableView() {
         const res = await updateCollectionDataGuarded(collection.id, row.id, {
           [cell.colId]: row[cell.colId],
         });
-        if (!res.id) {
+        if (res.id) {
+          updateCollection(res);
+        } else {
           toast.error("Error updating data");
         }
         console.log({ res });
@@ -131,6 +138,8 @@ export default function TableView() {
           ...row,
         };
       });
+
+      setDataLoading(true);
 
       // filter the data based on the search filter
       let filteredData = matchSorter(Object.values(data), searchFilter, {
@@ -238,7 +247,9 @@ export default function TableView() {
           return b[propertyName]?.localeCompare(a[propertyName]);
         });
       }
-
+      setTimeout(() => {
+        setDataLoading(false);
+      }, 400);
       setData(filteredData);
     }
   }, [
@@ -436,15 +447,16 @@ export default function TableView() {
             ) => {
               if (data) {
                 const row = data.findIndex((row) => row.id === dataId);
-
                 if (row === 0 || row) {
                   const tempData = [...data];
                   tempData[row][propertyName] = reward;
+                  console.log({ tempdata: tempData[row][propertyName] });
                   setData(tempData);
                   setIsRewardFieldOpen(false);
                   await updateData({
                     cell: { row, col: 0, colId: propertyName },
                   });
+                  console.log({ updatedData: data[row][propertyName] });
                 }
                 setIsRewardFieldOpen(false);
               }
@@ -503,56 +515,63 @@ export default function TableView() {
           />
         )}
       </AnimatePresence>
-
-      {collection.name && (
-        <DynamicDataSheetGrid
-          rowHeight={41}
-          value={data}
-          height={
-            screenClass === "xxl"
-              ? 700
-              : screenClass === "xl"
-              ? 600
-              : screenClass === "lg"
-              ? 550
-              : screenClass === "md"
-              ? 500
-              : screenClass === "sm"
-              ? 500
-              : 500
-          }
-          onChange={async (newData, operations) => {
-            if (operations[0].type === "DELETE") {
-              const dataIds = [];
-              for (
-                let i = operations[0].fromRowIndex;
-                i < operations[0].toRowIndex;
-                i++
-              ) {
-                data && dataIds.push(data[i].id);
+      <AnimatePresence>
+        {collection.name && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1, transition: { duration: 0.1 } }}
+            exit={{ opacity: 0, transition: { duration: 0.1 } }}
+          >
+            <DynamicDataSheetGrid
+              rowHeight={41}
+              value={data}
+              height={
+                screenClass === "xxl"
+                  ? 700
+                  : screenClass === "xl"
+                  ? 600
+                  : screenClass === "lg"
+                  ? 550
+                  : screenClass === "md"
+                  ? 500
+                  : screenClass === "sm"
+                  ? 500
+                  : 500
               }
-              setData(newData);
-              const res = await deleteCollectionData(collection.id, dataIds);
-              if (res.id) {
-                setLocalCollection(res);
-              } else toast.error("Error deleting data");
-              return;
-            }
-            setData(newData);
-          }}
-          columns={columnsWithCredentials}
-          gutterColumn={{
-            component: GutterColumnComponent,
-            minWidth: 50,
-            columnData: {
-              setExpandedDataSlug,
-            },
-          }}
-          onBlur={updateData}
-          lockRows
-          disableExpandSelection
-        />
-      )}
+              onChange={async (newData, operations) => {
+                if (operations[0].type === "DELETE") {
+                  const dataIds = [];
+                  for (
+                    let i = operations[0].fromRowIndex;
+                    i < operations[0].toRowIndex;
+                    i++
+                  ) {
+                    data && dataIds.push(data[i].id);
+                  }
+                  setData(newData);
+                  const res = await deleteCollectionData(
+                    collection.id,
+                    dataIds
+                  );
+                  if (res.id) {
+                    setLocalCollection(res);
+                  } else toast.error("Error deleting data");
+                  return;
+                }
+                setData(newData);
+              }}
+              columns={columnsWithCredentials}
+              gutterColumn={{
+                component: GutterColumnComponent,
+                minWidth: 50,
+              }}
+              onBlur={updateData}
+              lockRows
+              disableExpandSelection
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </Box>
   );
 }

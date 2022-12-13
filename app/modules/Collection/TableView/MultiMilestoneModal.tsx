@@ -25,8 +25,6 @@ function MultiMilestoneModal({
   console;
   const [value, setValue] = useState(form.data[dataId]);
 
-  console.log({ dataId });
-
   return (
     <Modal
       handleClose={() => {

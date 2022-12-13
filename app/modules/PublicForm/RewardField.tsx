@@ -43,8 +43,8 @@ export default function RewardField({
     value: (data && data[propertyName]?.chain?.value) || firstChainId,
   });
   const [selectedToken, setSelectedToken] = useState<Option>({
-    label: firstTokenSymbol,
-    value: firstTokenAddress,
+    label: (data && data[propertyName]?.token?.label) || firstTokenSymbol,
+    value: (data && data[propertyName]?.token?.value) || firstTokenAddress,
   });
 
   useEffect(() => {
@@ -57,10 +57,10 @@ export default function RewardField({
           value: address,
         };
       });
-      setSelectedToken(tokens[0]);
+      setSelectedToken(data[propertyName]?.token || tokens[0]);
       setTokenOptions(tokens);
     }
-  }, [form.properties, propertyName, rewardOptions, selectedChain]);
+  }, [data, form.properties, propertyName, rewardOptions, selectedChain]);
 
   return (
     <Stack

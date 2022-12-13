@@ -112,7 +112,9 @@ export default function MilestoneField({
                       <Editor value={milestone.description} disabled={true} />
                     )}
                   </Box>
-                  {!collection?.properties[propertyName].isPartOfFormView &&
+                  {((collection.collectionType === 0 &&
+                    !collection?.properties[propertyName].isPartOfFormView) ||
+                    collection.collectionType === 1) &&
                     !disabled && (
                       <Box display="flex" flexDirection="row" gap="2">
                         <Button
@@ -142,17 +144,20 @@ export default function MilestoneField({
               );
             })}
         </Stack>
-        {!collection?.properties[propertyName].isPartOfFormView && !disabled && (
-          <Box width="full">
-            <PrimaryButton
-              variant="tertiary"
-              icon={<IconPlusSmall />}
-              onClick={() => setIsMilestoneModalOpen(true)}
-            >
-              Add new milestone
-            </PrimaryButton>
-          </Box>
-        )}
+        {((collection.collectionType === 0 &&
+          !collection?.properties[propertyName].isPartOfFormView) ||
+          collection.collectionType === 1) &&
+          !disabled && (
+            <Box width="full">
+              <PrimaryButton
+                variant="tertiary"
+                icon={<IconPlusSmall />}
+                onClick={() => setIsMilestoneModalOpen(true)}
+              >
+                Add new milestone
+              </PrimaryButton>
+            </Box>
+          )}
       </Box>
     </>
   );
