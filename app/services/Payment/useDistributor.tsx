@@ -89,20 +89,20 @@ export default function useDistributor() {
       );
       return data;
     } else if (paymentMethod === "gasless") {
-      const gasEstimate = await contract?.estimateGas.distributeEther(
-        contributorsWithPositiveAllocation,
-        valuesInWei,
-        id
-      );
-      if (!gasEstimate) {
-        console.error("gas estimation failed");
-        return;
-      }
       const overrides = {
         value: ethers.utils.parseEther(totalValue.toString()),
         nonce,
-        gasLimit: Math.ceil(gasEstimate.toNumber() * 1.2),
+        gasLimit: chainId === "1" ? 21000 : 1000000,
       };
+      const gasEstimate = await contract?.estimateGas.distributeEther(
+        contributorsWithPositiveAllocation,
+        valuesInWei,
+        id,
+        overrides
+      );
+      if (gasEstimate) {
+        overrides.gasLimit = Math.ceil(gasEstimate.toNumber() * 1.2);
+      }
       return {
         contributorsWithPositiveAllocation,
         valuesInWei,
@@ -110,20 +110,21 @@ export default function useDistributor() {
         overrides,
       };
     }
-    const gasEstimate = await contract?.estimateGas.distributeEther(
-      contributorsWithPositiveAllocation,
-      valuesInWei,
-      id
-    );
-    if (!gasEstimate) {
-      console.error("gas estimation failed");
-      return;
-    }
+
     const overrides = {
       value: ethers.utils.parseEther(totalValue.toString()),
       nonce,
-      gasLimit: Math.ceil(gasEstimate.toNumber() * 1.2),
+      gasLimit: chainId === "1" ? 21000 : 1000000,
     };
+    const gasEstimate = await contract?.estimateGas.distributeEther(
+      contributorsWithPositiveAllocation,
+      valuesInWei,
+      id,
+      overrides
+    );
+    if (gasEstimate) {
+      overrides.gasLimit = Math.ceil(gasEstimate.toNumber() * 1.2);
+    }
     console.log({ contributorsWithPositiveAllocation, valuesInWei });
     const tx = await contract?.distributeEther(
       contributorsWithPositiveAllocation,
@@ -215,14 +216,12 @@ export default function useDistributor() {
         valuesInWei,
         id
       );
-      if (!gasEstimate) {
-        console.error("gas estimation failed");
-        return;
-      }
+
       const overrides: any = {
-        gasLimit: Math.ceil(gasEstimate.toNumber() * 1.2),
+        gasLimit: 1000000,
         nonce,
       };
+      console.log({ filteredTokenAddresses });
       return {
         filteredTokenAddresses,
         filteredRecipients,
