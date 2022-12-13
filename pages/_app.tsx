@@ -247,7 +247,7 @@ function MyApp({ Component, pageProps }: AppProps) {
           <GlobalContextProvider>
             <ThemeProvider defaultAccent="purple" defaultMode="dark">
               <QueryClientProvider client={queryClient}>
-                <Hydrate state={pageProps.dehydratedState}>
+                <Hydrate state={pageProps}>
                   <AnimatePresence
                     exitBeforeEnter
                     initial={false}
