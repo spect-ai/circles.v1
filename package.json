@@ -29,6 +29,7 @@
     "@svgr/webpack": "^6.2.1",
     "@table-library/react-table-library": "^4.0.18",
     "@types/mixpanel-browser": "^2.38.0",
+    "@vercel/analytics": "^0.1.6",
     "chart.js": "^3.9.1",
     "d3": "^7.7.0",
     "degen": "^0.0.118",
