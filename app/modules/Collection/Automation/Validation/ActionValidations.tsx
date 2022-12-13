@@ -38,12 +38,7 @@ export function validateGiveRoleAction(action: Action): boolean {
 }
 
 export function validateCreateDiscordChannel(action: Action): boolean {
-  if (
-    !action.data?.channelCategory ||
-    Object.keys(action.data?.channelName)?.length === 0
-  )
-    return false;
-  if (!action.data?.channelName) return false;
+  if (!action.data?.channelCategory || !action.data?.channelName) return false;
   return true;
 }
 

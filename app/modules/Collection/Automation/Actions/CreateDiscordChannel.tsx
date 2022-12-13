@@ -8,6 +8,8 @@ import { Box, Input, Stack, Tag, Text } from "degen";
 import { useEffect, useState } from "react";
 import { useLocalCollection } from "../../Context/LocalCollectionContext";
 import DiscordIcon from "@/app/assets/icons/discordIcon.svg";
+import CheckBox from "@/app/common/components/Table/Checkbox";
+import CreatableDropdown from "@/app/common/components/CreatableDropdown";
 
 type Props = {
   actionMode: "edit" | "create";
@@ -27,6 +29,9 @@ export default function CreateDiscordChannel({
   const [selectedCategory, setSelectedCategory] = useState<Option>(
     action?.data?.channelCategory || {}
   );
+  const [channelNameType, setChannelNameType] =
+    useState<"mapping" | "value">("value");
+  const [isPrivate, setIsPrivate] = useState(action?.data?.isPrivate || false);
 
   const { circle } = useCircle();
   const { localCollection: collection } = useLocalCollection();
@@ -87,6 +92,8 @@ export default function CreateDiscordChannel({
           data: {
             channelName,
             channelCategory: selectedCategory,
+            channelNameType,
+            isPrivate: isPrivate,
             circleId: circle.id,
           },
         });
@@ -104,14 +111,42 @@ export default function CreateDiscordChannel({
         }}
         multiple={false}
       />
-      <Box marginTop="2">
+      <Box marginTop="2" marginBottom="2">
         <Text variant="label">Channel Name</Text>
       </Box>
-      <Input
-        label=""
-        value={channelName}
-        onChange={(e) => setChannelName(e.target.value)}
+      <CreatableDropdown
+        options={
+          Object.entries(collection.properties)
+            .filter(([propertyId, property]) => property.type === "shortText")
+            .map(([propertyId, property]) => ({
+              label: `Map from value in "${property.name}"`,
+              value: property.name,
+            })) || []
+        }
+        selected={channelName}
+        onChange={(value) => {
+          if (collection.properties[value.value]) setChannelNameType("mapping");
+          else setChannelNameType("value");
+          setChannelName(value);
+        }}
+        multiple={false}
       />
+      <Box
+        display="flex"
+        flexDirection="row"
+        gap="2"
+        justifyContent="flex-start"
+        alignItems="center"
+        marginTop="2"
+      >
+        <CheckBox
+          isChecked={isPrivate}
+          onClick={() => {
+            setIsPrivate(!isPrivate);
+          }}
+        />
+        <Text variant="base">Private Channel</Text>
+      </Box>
     </Box>
   );
 }
