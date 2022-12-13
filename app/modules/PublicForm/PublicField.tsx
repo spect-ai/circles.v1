@@ -49,16 +49,15 @@ export default function PublicField({
     {} as { [key: string]: boolean }
   );
 
-  console.log({ data, propertyName });
-
   if (
     !satisfiesConditions(
       data,
       form.properties as { [propertyId: string]: Property },
       propertyName
     )
-  )
+  ) {
     return null;
+  }
 
   return (
     <Box paddingY="4" borderRadius="large">

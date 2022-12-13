@@ -783,7 +783,7 @@ export type PaymentData = {
   token: OptionType;
   value: number;
   txnHash: string;
-}
+};
 
 export type Property = {
   name: string;
@@ -860,20 +860,7 @@ export interface FormType {
   private: boolean;
   description: string;
   properties: {
-    [key: string]: {
-      type: string;
-      name: string;
-      description?: string;
-      default: string;
-      isPartOfFormView: boolean;
-      options?: {
-        label: string;
-        value: string;
-      }[];
-      rewardOptions?: Registry;
-      required: boolean;
-      viewConditions?: Condition[];
-    };
+    [key: string]: Property;
   };
   propertyOrder: string[];
   creator: string;
