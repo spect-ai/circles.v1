@@ -1,7 +1,7 @@
 import Dropdown from "@/app/common/components/Dropdown";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { Action, Condition, Option, Trigger } from "@/app/types";
-import { Box, Text, useTheme } from "degen";
+import { Box, Stack, Text, useTheme } from "degen";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import AddConditions from "../Common/AddConditions";
@@ -100,8 +100,6 @@ export default function SingleAutomation({
     },
   } as { [id: string]: Action });
   const [canSave, setCanSave] = useState(false);
-
-  console.log({ trigger, actions, conditions });
 
   useEffect(() => {
     const whenOptions = Object.entries(collection.properties)
@@ -233,7 +231,7 @@ export default function SingleAutomation({
       </Box>
       <ScrollContainer
         width="full"
-        paddingX={{
+        paddingRight={{
           xs: "2",
           md: "4",
           lg: "8",
@@ -250,7 +248,7 @@ export default function SingleAutomation({
             <Text variant="large" weight="semiBold" color="accent">
               When
             </Text>
-            <AutomationCard mode={mode}>
+            <AutomationCard mode={mode} backgroundColor="foregroundTertiary">
               <Box width="full">
                 <Dropdown
                   options={whenOptions}
@@ -298,64 +296,69 @@ export default function SingleAutomation({
             <Text variant="large" weight="semiBold" color="accent">
               Then
             </Text>
-            {actions.map((action, index) => (
-              <AutomationCard mode={mode} key={index}>
-                <Box width="full">
-                  <Dropdown
-                    options={thenOptions}
-                    selected={selectedThenOptions[index]}
-                    onChange={(value) => {
-                      const newActions = [...actions];
-                      newActions[index] = allPossibleActions[value.value];
-                      setActions(newActions);
-                      const newSelectedThenOptions = [...selectedThenOptions];
-                      newSelectedThenOptions[index] = value;
-                      setSelectedThenOptions(newSelectedThenOptions);
-                      setIsDirty(true);
-                    }}
-                    multiple={false}
-                    isClearable={false}
-                    placeholder={`Add action`}
-                  />
-                  )
-                </Box>
-                <SingleAction
-                  actionType={selectedThenOptions[index].value}
-                  action={action}
-                  setAction={(action) => {
-                    const newActions = [...actions];
-                    newActions[index] = action;
-                    setActions(newActions);
-                    console.log({ actions });
-                    setIsDirty(true);
-                  }}
-                  actionMode="edit"
-                />
-                <Box
-                  width="full"
-                  marginTop="4"
-                  display="flex"
-                  flexDirection="row"
-                  justifyContent="flex-end"
+            <Stack>
+              {actions.map((action, index) => (
+                <AutomationCard
+                  mode={mode}
+                  key={index}
+                  backgroundColor="foregroundTertiary"
                 >
-                  <PrimaryButton
-                    variant="tertiary"
-                    onClick={() => {
+                  <Box width="full">
+                    <Dropdown
+                      options={thenOptions}
+                      selected={selectedThenOptions[index]}
+                      onChange={(value) => {
+                        const newActions = [...actions];
+                        newActions[index] = allPossibleActions[value.value];
+                        setActions(newActions);
+                        const newSelectedThenOptions = [...selectedThenOptions];
+                        newSelectedThenOptions[index] = value;
+                        setSelectedThenOptions(newSelectedThenOptions);
+                        setIsDirty(true);
+                      }}
+                      multiple={false}
+                      isClearable={false}
+                      placeholder={`Add action`}
+                    />
+                  </Box>
+                  <SingleAction
+                    actionType={selectedThenOptions[index].value}
+                    action={action}
+                    setAction={(action) => {
                       const newActions = [...actions];
-                      newActions.splice(index, 1);
+                      newActions[index] = action;
                       setActions(newActions);
-                      const newSelectedThenOptions = [...selectedThenOptions];
-                      newSelectedThenOptions.splice(index, 1);
-                      setSelectedThenOptions(newSelectedThenOptions);
-
+                      console.log({ actions });
                       setIsDirty(true);
                     }}
+                    actionMode="edit"
+                  />
+                  <Box
+                    width="full"
+                    marginTop="4"
+                    display="flex"
+                    flexDirection="row"
+                    justifyContent="flex-end"
                   >
-                    Remove Action
-                  </PrimaryButton>
-                </Box>
-              </AutomationCard>
-            ))}
+                    <PrimaryButton
+                      variant="tertiary"
+                      onClick={() => {
+                        const newActions = [...actions];
+                        newActions.splice(index, 1);
+                        setActions(newActions);
+                        const newSelectedThenOptions = [...selectedThenOptions];
+                        newSelectedThenOptions.splice(index, 1);
+                        setSelectedThenOptions(newSelectedThenOptions);
+
+                        setIsDirty(true);
+                      }}
+                    >
+                      Remove Action
+                    </PrimaryButton>
+                  </Box>
+                </AutomationCard>
+              ))}
+            </Stack>
             <Box
               style={{
                 width: "80%",
@@ -449,7 +452,7 @@ const ScrollContainer = styled(Box)`
   @media (max-width: 768px) {
     height: 25rem;
   }
-  height: 35rem;
+  height: 28.5rem;
   overflow-y: auto;
 `;
 
