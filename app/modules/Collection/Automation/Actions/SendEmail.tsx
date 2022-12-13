@@ -59,6 +59,7 @@ export default function SendEmail({ setAction, actionMode, action }: Props) {
               data: {
                 ...action.data,
                 toEmailProperties: value.map((property: any) => property.value),
+                circleId: circle.id,
               },
             });
           }}
@@ -79,6 +80,7 @@ export default function SendEmail({ setAction, actionMode, action }: Props) {
               data: {
                 ...action.data,
                 message: e.target.value,
+                circleId: circle.id,
               },
             });
           }}
