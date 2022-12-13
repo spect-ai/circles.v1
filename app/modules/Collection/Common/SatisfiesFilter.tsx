@@ -11,10 +11,6 @@ export function satisfiesConditions(
     const propertyId = field?.value;
     const comparatorValue = comparator?.value;
     const property = properties[propertyId];
-    console.log({ condition });
-    console.log({ value });
-    console.log({ d: data[propertyId] });
-    console.log({ property });
 
     switch (property.type) {
       case "shortText":

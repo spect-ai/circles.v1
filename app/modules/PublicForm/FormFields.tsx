@@ -216,8 +216,6 @@ export default function FormFields({ form, setForm }: Props) {
     }
   }, [form, updateResponse]);
 
-  console.log({ form });
-
   useEffect(() => {
     if (!connectedUser && currentUser?.id) connectUser(currentUser.id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
