@@ -320,13 +320,14 @@ export default function AddField({ propertyName, handleClose }: Props) {
             {type.value === "milestone" ? (
               <MilestoneOptions networks={networks} setNetworks={setNetworks} />
             ) : null}
-            <Accordian name="Advanced" defaultOpen={advancedDefaultOpen}>
-              <AddConditions
-                viewConditions={viewConditions}
-                setViewConditions={setViewConditions}
-                buttonText="Add View Condition"
-              />
-              {/* {["shortText", "longText", "ethAddress"].includes(
+            {collection.collectionType === 0 && (
+              <Accordian name="Advanced" defaultOpen={advancedDefaultOpen}>
+                <AddConditions
+                  viewConditions={viewConditions}
+                  setViewConditions={setViewConditions}
+                  buttonText="Add View Condition"
+                />
+                {/* {["shortText", "longText", "ethAddress"].includes(
                   type.value
                 ) && <Input label="" placeholder="Default Value" />}
 
@@ -345,7 +346,8 @@ export default function AddField({ propertyName, handleClose }: Props) {
                   }}
                   multiple={true}
                 /> */}
-            </Accordian>
+              </Accordian>
+            )}
 
             <Box marginTop="8" display="flex" flexDirection="column" gap="2">
               <PrimaryButton

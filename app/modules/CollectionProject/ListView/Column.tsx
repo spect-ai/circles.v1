@@ -244,15 +244,7 @@ export default function Column({
                                   space="0"
                                   align="center"
                                 >
-                                  <Text color="accent">
-                                    <DollarSign
-                                      size={16}
-                                      style={{
-                                        marginTop: 2,
-                                      }}
-                                    />
-                                  </Text>
-                                  <Text variant="label">
+                                  <Text color="accent" weight="semiBold">
                                     {`${value.value} ${value.token.label} `}
                                   </Text>
                                 </Stack>
