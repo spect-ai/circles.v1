@@ -45,7 +45,7 @@ export default function HeaderComponent({
       butttonComponent={
         <Box>
           <Stack direction="horizontal" justify="space-between">
-            <Text variant="label">{columnName}</Text>
+            <Text variant="label" ellipsis>{columnName}</Text>
             {/* <DropdownButton
               onClick={(e) => {
                 e.stopPropagation();
