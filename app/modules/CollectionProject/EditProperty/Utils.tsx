@@ -3,7 +3,6 @@ import { IconEth } from "degen";
 import {
   AlignCenter,
   Aperture,
-  ArrowDownCircle,
   AtSign,
   Calendar,
   DollarSign,
@@ -28,9 +27,9 @@ export const getPropertyIcon = (type: PropertyType) => {
       return <Aperture size={18} />;
     case "multiSelect":
       return <Tag size={18} />;
-    // case "url":
-    // case "multiUrl":
-    //   return <Link size={18} />;
+    case "singleURL":
+    case "multiURL":
+      return <Link size={18} />;
     case "user":
       return <User size={18} />;
     case "user[]":

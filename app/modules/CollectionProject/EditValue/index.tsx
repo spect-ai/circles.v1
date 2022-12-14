@@ -1,13 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import Popover from "@/app/common/components/Popover";
-import { updateCollectionDataGuarded } from "@/app/services/Collection";
+import { Milestone } from "@/app/types";
 import { Box, IconClose, Stack, Tag, Text } from "degen";
 import { AnimatePresence, motion } from "framer-motion";
 import { matchSorter } from "match-sorter";
 import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
+import MultiMilestoneModal from "../../Collection/TableView/MultiMilestoneModal";
 import RewardModal from "../../Collection/TableView/RewardModal";
+import LongTextModal from "./LongTextModal";
 
 type Props = {
   value: any;
@@ -23,6 +25,7 @@ function EditValue({ value, setValue, propertyName, dataId }: Props) {
   const property = collection.properties[propertyName];
   const [options, setOptions] = useState<any>([]);
   const [filteredOptions, setFilteredOptions] = useState<any>([]);
+  const [tempValue, setTempValue] = useState<any>();
 
   useEffect(() => {
     if (property.type === "singleSelect" || property.type === "multiSelect") {
@@ -181,9 +184,14 @@ function EditValue({ value, setValue, propertyName, dataId }: Props) {
           </motion.div>
         </Popover>
       )}
-      {["shortText", "number", "ethAddress", "email", "date"].includes(
-        property?.type
-      ) && (
+      {[
+        "shortText",
+        "number",
+        "ethAddress",
+        "email",
+        "date",
+        "singleURL",
+      ].includes(property?.type) && (
         <Box>
           {isEditing ? (
             <FieldInputContainer>
@@ -199,12 +207,15 @@ function EditValue({ value, setValue, propertyName, dataId }: Props) {
                 }
                 onChange={(e) => {
                   if (property.type === "number") {
-                    setValue(Number(e.target.value));
+                    setTempValue(Number(e.target.value));
                   } else {
-                    setValue(e.target.value);
+                    setTempValue(e.target.value);
                   }
                 }}
-                onBlur={() => setIsEditing(false)}
+                onBlur={() => {
+                  setValue(tempValue);
+                  setIsEditing(false);
+                }}
                 type={
                   property.type === "number"
                     ? "number"
@@ -234,7 +245,7 @@ function EditValue({ value, setValue, propertyName, dataId }: Props) {
       {["reward"].includes(property.type) && (
         <Box>
           <AnimatePresence>
-            {isEditing ? (
+            {isEditing && (
               <RewardModal
                 form={collection}
                 propertyName={propertyName}
@@ -245,16 +256,55 @@ function EditValue({ value, setValue, propertyName, dataId }: Props) {
                 }}
                 dataId={dataId}
               />
-            ) : (
-              <FieldButton onClick={() => setIsEditing(true)}>
-                {value ? (
-                  <Text>{`${value.value} ${value.token.label} on ${value.chain.label} network`}</Text>
-                ) : (
-                  "Empty"
-                )}
-              </FieldButton>
             )}
           </AnimatePresence>
+          <FieldButton onClick={() => setIsEditing(true)}>
+            {value ? (
+              <Text>{`${value.value} ${value.token.label} on ${value.chain.label} network`}</Text>
+            ) : (
+              "Empty"
+            )}
+          </FieldButton>
+        </Box>
+      )}
+      {["milestone"].includes(property.type) && (
+        <Box>
+          <AnimatePresence>
+            {isEditing && (
+              <MultiMilestoneModal
+                form={collection}
+                propertyName={propertyName}
+                dataId={dataId}
+                handleClose={async (value: Milestone[]) => {
+                  console.log({ value });
+                  setValue(value);
+                  setIsEditing(false);
+                }}
+              />
+            )}
+          </AnimatePresence>
+          <FieldButton onClick={() => setIsEditing(true)}>
+            {value ? <Text>{`${value.length} Milestones`}</Text> : "Empty"}
+          </FieldButton>
+        </Box>
+      )}
+      {["longText"].includes(property.type) && (
+        <Box>
+          <AnimatePresence>
+            {isEditing && (
+              <LongTextModal
+                propertyName={propertyName}
+                handleClose={(value: string) => {
+                  setValue(value);
+                  setIsEditing(false);
+                }}
+                value={value}
+              />
+            )}
+          </AnimatePresence>
+          <FieldButton onClick={() => setIsEditing(true)}>
+            {value ? <Text ellipsis>{value}</Text> : "Empty"}
+          </FieldButton>
         </Box>
       )}
     </Box>
