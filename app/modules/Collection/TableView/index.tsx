@@ -39,7 +39,6 @@ import MultiMilestoneModal from "./MultiMilestoneModal";
 import MultiURLComponent from "./MultiURLComponent";
 import MultiURLModal from "./MultiURLModal";
 import PaymentComponent from "./PaymentComponent";
-import PaymentModal from "./PaymentModal";
 import RewardComponent from "./RewardComponent";
 import RewardModal from "./RewardModal";
 import SelectComponent from "./SelectComponent";
@@ -47,7 +46,6 @@ import SelectComponent from "./SelectComponent";
 export default function TableView() {
   const [isEditFieldOpen, setIsEditFieldOpen] = useState(false);
   const [isRewardFieldOpen, setIsRewardFieldOpen] = useState(false);
-  const [isPaymentFieldOpen, setIsPaymentFieldOpen] = useState(false);
   const [isURLFieldOpen, setIsURLFieldOpen] = useState(false);
   const [propertyName, setPropertyName] = useState("");
   const [dataId, setDataId] = useState<string>("");
@@ -273,7 +271,6 @@ export default function TableView() {
           component: getCellComponent(property.type) as any,
           columnData: {
             property,
-            setIsPaymentFieldOpen,
             setPropertyName,
             setDataId,
           },
@@ -373,33 +370,6 @@ export default function TableView() {
                   });
                 }
                 setIsRewardFieldOpen(false);
-              }
-            }}
-            dataId={dataId}
-          />
-        )}
-        {isPaymentFieldOpen && (
-          <PaymentModal
-            form={collection}
-            propertyName={propertyName}
-            handleClose={async (
-              payment: PaymentData,
-              dataId: string,
-              propertyName: string
-            ) => {
-              if (data) {
-                const row = data.findIndex((row) => row.id === dataId);
-
-                if (row === 0 || row) {
-                  const tempData = [...data];
-                  tempData[row][propertyName] = payment;
-                  setData(tempData);
-                  setIsPaymentFieldOpen(false);
-                  await updateData({
-                    cell: { row, col: 0, colId: propertyName },
-                  });
-                }
-                setIsPaymentFieldOpen(false);
               }
             }}
             dataId={dataId}

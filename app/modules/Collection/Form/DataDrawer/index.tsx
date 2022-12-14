@@ -356,13 +356,24 @@ export default function DataDrawer({
                           </Text>
                         )}
                         {property?.type === "payWall" && (
-                          <Text>
-                            Paid {data[property.name]?.txnHash
-                              ? `${data[property.name]?.value}
-                              ${data[property.name]?.token?.label} on 
-                              ${data[property.name]?.chain?.label}`
-                              : "Unpaid"}
-                          </Text>
+                          <Stack>
+                            {data[property.name]?.map(
+                              (payment: {
+                                token: OptionType;
+                                chain: OptionType;
+                                value: number;
+                              }) => {
+                                return (
+                                  <Text>
+                                    Paid {payment.value} {payment.token.label}{" "}
+                                    on {payment.chain.label}
+                                  </Text>
+                                );
+                              }
+                            )}
+                            {console.log(data[property.name])}
+                            {data[propertyName].length == 0 && "Unpaid"}
+                          </Stack>
                         )}
                         {property?.type === "milestone" && (
                           <Stack>

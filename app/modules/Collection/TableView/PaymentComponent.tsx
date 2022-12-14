@@ -22,13 +22,10 @@ const PaymentComponent = ({ rowData, columnData }: CellProps) => {
           if (columnData.property.isPartOfFormView) return;
           columnData.setPropertyName(columnData.property.name);
           columnData.setDataId(id);
-          columnData.setIsPaymentFieldOpen(true);
         }}
       >
-        {payment?.txnHash ? (
-          <Text variant="small">Paid {`${payment?.value}
-            ${payment?.token?.label} on 
-            ${payment?.chain?.label}`}</Text>
+        {payment?.length > 0 ? (
+          <Text variant="small">Paid </Text>
         ) : (
           <Text variant="small">{"Unpaid"}</Text>
         )}
