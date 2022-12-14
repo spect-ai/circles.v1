@@ -272,7 +272,7 @@ export default function DataDrawer({
                               variant="small"
                               color={"textTertiary"}
                             >
-                              ({property.description})
+                              {property.description}
                             </Text>
                           )}
                         </Stack>
@@ -298,15 +298,21 @@ export default function DataDrawer({
                           </Box>
                         )}
                         {property?.type == "multiURL" && (
-                          <Stack direction={"vertical"}>
+                          <Stack direction="vertical">
                             {data[property.name]?.map((url: OptionType) => (
-                              <Box
-                                key={url.value}
-                                onClick={() => window.open(url.value, "_blank")}
-                                cursor="pointer"
-                              >
-                                <Text underline>{url.value}</Text>
-                              </Box>
+                              <Stack direction={"horizontal"}>
+                                <Text>{url.label}</Text>
+                                <Text>-</Text>
+                                <Box
+                                  key={url.value}
+                                  onClick={() =>
+                                    window.open(url.value, "_blank")
+                                  }
+                                  cursor="pointer"
+                                >
+                                  <Text underline>{url.value}</Text>
+                                </Box>
+                              </Stack>
                             ))}
                           </Stack>
                         )}
