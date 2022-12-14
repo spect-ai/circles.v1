@@ -28,6 +28,7 @@ import DiscordIcon from "@/app/assets/icons/discordIcon.svg";
 
 export default function PublicForm() {
   const router = useRouter();
+  const { isReady } = router;
   const { formId } = router.query;
   const [form, setForm] = useState<FormType>();
   const { mode } = useTheme();
@@ -81,20 +82,23 @@ export default function PublicForm() {
   };
 
   useEffect(() => {
-    void (async () => {
-      if (formId) {
-        setLoading(true);
-        const res: FormType = await getForm(formId as string);
-        if (res.id) {
-          await fetchMemberDetails(res.parents[0].slug);
-          setForm(res);
-          setCanFillForm(res.canFillForm);
-          await addStamps(res);
-        } else toast.error("Error fetching form");
-        setLoading(false);
-      }
-    })();
-  }, [connectedUser, formId]);
+    console.log({ isReady, formId });
+    if (isReady && formId && formId[0] !== "[") {
+      void (async () => {
+        if (formId) {
+          setLoading(true);
+          const res: FormType = await getForm(formId as string);
+          if (res.id) {
+            await fetchMemberDetails(res.parents[0].slug);
+            setForm(res);
+            setCanFillForm(res.canFillForm);
+            await addStamps(res);
+          } else toast.error("Error fetching form");
+          setLoading(false);
+        }
+      })();
+    }
+  }, [connectedUser, formId, isReady]);
 
   useEffect(() => {
     if (socket && socket.on && formId) {

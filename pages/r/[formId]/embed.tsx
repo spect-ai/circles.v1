@@ -12,27 +12,20 @@ import { useRouter } from "next/router";
 const EmbedPage: NextPage = () => {
   useConnectDiscordServer();
   const context = useProviderCircleContext();
-
-  const router = useRouter();
-
-  if (router.isReady) {
-    return (
-      <>
-        <MetaHead
-          title={"Circle"}
-          description={"Circle Description"}
-          image={"Circle Avatar"}
-        />
-        <CircleContext.Provider value={context}>
-          <EmbedFormLayout>
-            <PublicForm />
-          </EmbedFormLayout>
-        </CircleContext.Provider>
-      </>
-    );
-  }
-
-  return <></>;
+  return (
+    <>
+      <MetaHead
+        title={"Circle"}
+        description={"Circle Description"}
+        image={"Circle Avatar"}
+      />
+      <CircleContext.Provider value={context}>
+        <EmbedFormLayout>
+          <PublicForm />
+        </EmbedFormLayout>
+      </CircleContext.Provider>
+    </>
+  );
 };
 
 export function getServerSideProps() {
