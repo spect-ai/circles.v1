@@ -96,7 +96,7 @@ export default function AddField({ propertyName, handleClose }: Props) {
     }
     if (propertyName) {
       res = await updateField(collection.id, propertyName, {
-        name,
+        name: name.trim(),
         type: type.value,
         options: fieldOptions,
         rewardOptions,
@@ -114,7 +114,7 @@ export default function AddField({ propertyName, handleClose }: Props) {
       });
     } else {
       res = await addField(collection.id, {
-        name,
+        name: name.trim(),
         type: type.value,
         isPartOfFormView: false,
         description,
@@ -207,7 +207,7 @@ export default function AddField({ propertyName, handleClose }: Props) {
               setShowConfirm(false);
               const res = await deleteField(
                 collection.id,
-                propertyName as string
+                (propertyName as string).trim()
               );
               console.log({ res });
               if (res.id) {
