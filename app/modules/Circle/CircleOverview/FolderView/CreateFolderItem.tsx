@@ -9,16 +9,18 @@ import {
   IconCollection,
   Stack,
 } from "degen";
-import { useState } from "react";
 import { ProjectOutlined } from "@ant-design/icons";
 import { Tooltip } from "react-tippy";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { toast } from "react-toastify";
+import { Flags } from "react-feature-flags";
+import { Trello } from "react-feather";
 interface Props {
   setProjectModal: (a: boolean) => void;
   setWorkstreamModal: (a: boolean) => void;
   setRetroOpen: (a: boolean) => void;
   setCollectionModal: (a: boolean) => void;
+  setCollectionProjectModal: (a: boolean) => void;
 }
 
 export default function CreateFolderItem({
@@ -26,6 +28,7 @@ export default function CreateFolderItem({
   setWorkstreamModal,
   setRetroOpen,
   setCollectionModal,
+  setCollectionProjectModal,
 }: Props) {
   const { mode } = useTheme();
   const { canDo } = useRoleGate();
@@ -62,27 +65,57 @@ export default function CreateFolderItem({
               <IconCollection size="4" color="accent" />
             </Button>
           </Tooltip>
-          <Tooltip html={<Text>Create Project</Text>} theme={mode}>
-            <Button
-              size="small"
-              variant="transparent"
-              shape="circle"
-              onClick={(e) => {
-                if (canDo("createNewProject")) {
-                  e.stopPropagation();
-                  setProjectModal(true);
-                } else {
-                  toast.error(
-                    "You don't have the permission to create a new Project"
-                  );
-                }
-              }}
-            >
-              <ProjectOutlined
-                style={{ fontSize: "1rem", color: "rgb(191, 90, 242, 1)" }}
-              />
-            </Button>
-          </Tooltip>
+          <Flags authorizedFlags={["ProjectV1"]}>
+            <Tooltip html={<Text>Create Project</Text>} theme={mode}>
+              <Button
+                size="small"
+                variant="transparent"
+                shape="circle"
+                onClick={(e) => {
+                  if (canDo("createNewProject")) {
+                    e.stopPropagation();
+                    setProjectModal(true);
+                  } else {
+                    toast.error(
+                      "You don't have the permission to create a new Project"
+                    );
+                  }
+                }}
+              >
+                <ProjectOutlined
+                  style={{ fontSize: "1rem", color: "rgb(191, 90, 242, 1)" }}
+                />
+              </Button>
+            </Tooltip>
+          </Flags>
+          <Flags authorizedFlags={["ProjectV2"]}>
+            <Tooltip html={<Text>Create Collection Project</Text>} theme={mode}>
+              <Button
+                size="small"
+                variant="transparent"
+                shape="circle"
+                onClick={(e) => {
+                  if (canDo("createNewProject")) {
+                    e.stopPropagation();
+                    setCollectionProjectModal(true);
+                  } else {
+                    toast.error(
+                      "You don't have the permission to create a new Project"
+                    );
+                  }
+                }}
+              >
+                <Text color="accent">
+                  <Trello
+                    size={18}
+                    style={{
+                      marginTop: 4,
+                    }}
+                  />
+                </Text>
+              </Button>
+            </Tooltip>
+          </Flags>
           <Tooltip html={<Text>Create Workstream</Text>} theme={mode}>
             <Button
               data-tour="folder-create-workstream-button"

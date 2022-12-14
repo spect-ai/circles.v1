@@ -136,6 +136,25 @@ export const deleteCollection = async (collectionId: string) => {
   ).json();
 };
 
+export const migrateToCollection = async (
+  projectId: string,
+  circleId: string
+) => {
+  return await (
+    await fetch(`${process.env.API_HOST}/collection/v1/migrateFromProject`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify({
+        projectId,
+        circleId,
+      }),
+    })
+  ).json();
+};
+
 export const addCollectionData = async (collectionId: string, data: object) => {
   return await (
     await fetch(

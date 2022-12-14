@@ -79,6 +79,7 @@ export default function useViewCommon() {
     if (view.filters?.length) {
       newCardOrder = newCardOrder.map((group) => {
         return group.filter((cardId) => {
+          console.log({ collection: collection.data, cardId });
           return satisfiesConditions(
             collection.data[cardId],
             collection.properties,

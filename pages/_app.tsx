@@ -3,6 +3,7 @@ import "degen/styles";
 import type { AppProps } from "next/app";
 import { Hydrate, QueryClientProvider } from "react-query";
 import mixpanel from "@/app/common/utils/mixpanel";
+import { FlagsProvider } from "react-feature-flags";
 
 import "@fontsource/inter/300.css";
 import "@fontsource/inter/400.css";
@@ -43,6 +44,7 @@ import { publicProvider } from "wagmi/providers/public";
 import { SiweMessage } from "siwe";
 import { UserType } from "@/app/types";
 import { atom, useAtom } from "jotai";
+import { flags } from "@/app/common/utils/featureFlags";
 
 const isProd = process.env.NODE_ENV === "production";
 
@@ -169,23 +171,25 @@ function MyApp({ Component, pageProps }: AppProps) {
           theme={darkTheme()}
           modalSize={"compact"}
         >
-          <GlobalContextProvider>
-            <ThemeProvider defaultAccent="purple" defaultMode="dark">
-              <QueryClientProvider client={queryClient}>
-                <Hydrate state={pageProps}>
-                  <AnimatePresence
-                    exitBeforeEnter
-                    initial={false}
-                    onExitComplete={() => window.scrollTo(0, 0)}
-                  >
-                    <ErrorBoundary FallbackComponent={ErrorFallBack}>
-                      <Component {...pageProps} canonical={url} key={url} />
-                    </ErrorBoundary>
-                  </AnimatePresence>
-                </Hydrate>
-              </QueryClientProvider>
-            </ThemeProvider>
-          </GlobalContextProvider>
+          <FlagsProvider value={flags}>
+            <GlobalContextProvider>
+              <ThemeProvider defaultAccent="purple" defaultMode="dark">
+                <QueryClientProvider client={queryClient}>
+                  <Hydrate state={pageProps}>
+                    <AnimatePresence
+                      exitBeforeEnter
+                      initial={false}
+                      onExitComplete={() => window.scrollTo(0, 0)}
+                    >
+                      <ErrorBoundary FallbackComponent={ErrorFallBack}>
+                        <Component {...pageProps} canonical={url} key={url} />
+                      </ErrorBoundary>
+                    </AnimatePresence>
+                  </Hydrate>
+                </QueryClientProvider>
+              </ThemeProvider>
+            </GlobalContextProvider>
+          </FlagsProvider>
         </RainbowKitProvider>
       </RainbowKitAuthenticationProvider>
     </WagmiConfig>

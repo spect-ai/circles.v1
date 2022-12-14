@@ -8,6 +8,7 @@ import ProjectTableView from "./TableView";
 
 export default function CollectionProject() {
   const { projectViewId, localCollection: collection } = useLocalCollection();
+  console.log({ collection });
   return (
     <Box>
       <ProjectHeading />

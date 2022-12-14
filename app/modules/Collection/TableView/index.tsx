@@ -147,7 +147,11 @@ export default function TableView() {
           return (item: any) => {
             if (key === "id") return item.id;
             if (collection.properties[key]?.type === "date") {
-              return item[key]?.toISOString();
+              console.log({ item: item[key], key });
+              if (typeof item[key] === "string") {
+                return new Date(item[key]).toLocaleDateString();
+              }
+              return item[key]?.toLocaleDateString();
             }
             if (collection.properties[key]?.type === "multiSelect") {
               return item[key]?.map((option: Option) => option.label);

@@ -14170,6 +14170,11 @@ react-feather@^2.0.10:
   dependencies:
     prop-types "^15.7.2"
 
+react-feature-flags@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/react-feature-flags/-/react-feature-flags-1.0.0.tgz#9ebef632876d1ef8fcc29f429a4d24f9cd7c8147"
+  integrity sha512-KBFUkXjF7ifGWEQr2Ida4LdAtKGDOwFdTRlXipWxGP9a43vUBxP6IscpYQofGjlzlBcgmFKuzubcVheB6NliEg==
+
 react-focus-lock@2.5.2:
   version "2.5.2"
   resolved "https://registry.yarnpkg.com/react-focus-lock/-/react-focus-lock-2.5.2.tgz#f1e4db5e25cd8789351f2bd5ebe91e9dcb9c2922"

@@ -66,7 +66,6 @@ function Sidebar(): ReactElement {
   useEffect(() => {
     (async () => {
       const res = await getUnreadNotifications();
-      console.log({ res });
       typeof res === "number" && setUnreadNotifications(res);
     })().catch((err) => console.log(err));
   }, [isSidebarExpanded]);
