@@ -9,7 +9,6 @@ import { useAccount, useNetwork, useSwitchNetwork } from "wagmi";
 import useERC20 from "@/app/services/Payment/useERC20";
 import Dropdown, { OptionType } from "@/app/common/components/Dropdown";
 import { useRouter } from "next/router";
-import { register } from "mixpanel-browser";
 
 type Props = {
   form: any;
@@ -74,17 +73,21 @@ const PaywallField = ({
     payWallNetwork[firstChainId]?.tokenDetails
   )[0];
   const [selectedChain, setSelectedChain] = useState<OptionType>({
-    label: (data && data[propertyName]?.chain?.label) || firstChainName,
-    value: (data && data[propertyName]?.chain?.value) || firstChainId,
+    label:
+      (payWallData && payWallData?.[payWallData?.length - 1]?.chain?.label) ||
+      firstChainName,
+    value:
+      (payWallData && payWallData?.[payWallData?.length - 1]?.chain?.value) ||
+      firstChainId,
   });
   const [selectedToken, setSelectedToken] = useState<OptionType>({
     label: firstTokenSymbol,
     value: firstTokenAddress,
   });
-  const [payValue, setPayValue] = useState(0);
-
-  const [tokenStatus, setTokenStatus] = useState(false);
-
+  const [payValue, setPayValue] = useState(
+    payWallData?.[payWallData?.length - 1]?.value || 0
+  );
+  
   // Setting Token Options as per the network
   useEffect(() => {
     if (payWallOptions && selectedChain) {
@@ -97,32 +100,57 @@ const PaywallField = ({
           value: address,
         };
       });
-      setSelectedToken(tokens[0]);
+      if (
+        selectedChain.label ==
+        payWallData?.[payWallData.length - 1]?.chain.label
+      ) {
+        setSelectedToken({
+          label: payWallData?.[payWallData.length - 1]?.token.label,
+          value: payWallData?.[payWallData.length - 1]?.token.value,
+        });
+      } else {
+        setSelectedToken(tokens[0]);
+      }
       setTokenOptions(tokens);
     }
-  }, [form.properties, propertyName, payWallOptions, selectedChain]);
+  }, [selectedChain]);
 
-  const approval = async () => {
-    const approvalStatus = await isApproved(
-      selectedToken.value,
-      circleRegistry?.[selectedChain.value].distributorAddress as string,
-      payWallOptions.value > 0 ? payWallOptions.value : payValue,
-      userAddress || "",
-      circleRegistry?.[selectedChain.value].provider || ""
-    );
-    setTokenStatus(approvalStatus);
+  const approval = async ( ) => {
+    setLoading(true);
+    const approvalStatus = await toast
+      .promise(
+        isApproved(
+          selectedToken.value,
+          circleRegistry?.[selectedChain.value].distributorAddress as string,
+          payWallOptions.value > 0 ? payWallOptions.value : payValue,
+          userAddress || "",
+          circleRegistry?.[selectedChain.value].provider || ""
+        ),
+        {
+          pending: "Checking token approval",
+          error: "Ouch ! Something went wrong",
+        },
+        {
+          position: "top-center",
+        }
+      )
+      .catch((err) => console.log(err));
+    console.log({ approvalStatus });
+
+    setLoading(false);
+    return approvalStatus;
   };
 
   // Record payment
   const recordPayment = (txnHash: string) => {
-    if (txnHash)
-      setData({
-        chain: selectedChain,
-        token: selectedToken,
-        value: payWallOptions.value > 0 ? payWallOptions?.value : payValue,
-        paid: true,
-        txnHash,
-      });
+    const data = {
+      chain: selectedChain,
+      token: selectedToken,
+      value: payWallOptions.value > 0 ? payWallOptions?.value : payValue,
+      paid: true,
+      txnHash,
+    };
+    if (txnHash) setData(payWallData ? [...payWallData, data] : [data]);
   };
 
   const checkNetwork = async () => {
@@ -142,23 +170,128 @@ const PaywallField = ({
   };
 
   const checkBalance = async () => {
-    if (
-      !(await hasBalance(
-        selectedToken.value,
-        payWallOptions.value > 0 ? payWallOptions.value : payValue,
-        userAddress as string,
-        circleRegistry?.[selectedChain.value].provider || ""
-      ))
-    ) {
+    setLoading(true);
+    const balance = await toast
+      .promise(
+        hasBalance(
+          selectedToken.value,
+          payWallOptions.value > 0 ? payWallOptions.value : payValue,
+          userAddress as string,
+          circleRegistry?.[selectedChain.value].provider || ""
+        ),
+        {
+          pending: "Checking Balance",
+          error: "Something went wrong",
+        },
+        {
+          position: "top-center",
+        }
+      )
+      .catch((err) => console.log(err));
+
+    if (!balance) {
       toast.error(`You don't have sufficient ` + `${selectedToken.label}`);
+      setLoading(false);
       return false;
     }
+    setLoading(false);
     return true;
+  };
+
+  const currencyPayment = async () => {
+    // Check if wallet has enough tokens
+    const hasSufficientBalance = await checkBalance();
+    if (!hasSufficientBalance) return;
+
+    setLoading(true);
+    const options = {
+      chainId: selectedChain.value || "",
+      paymentType: "currency",
+      userAddresses: [form.properties[propertyName]?.payWallOptions.receiver],
+      amounts: [payWallOptions.value > 0 ? payWallOptions.value : payValue],
+      tokenAddresses: [""],
+      batchPayType: "form",
+      cardIds: [""],
+      circleId: form.parents?.[0].id,
+      circleRegistry: circleRegistry,
+    };
+    const currencyTxnHash = await toast
+      .promise(
+        batchPay(options),
+        {
+          pending: `Distributing ${
+            (circleRegistry &&
+              circleRegistry[selectedChain.value]?.nativeCurrency) ||
+            "Network Gas Token"
+          }`,
+          error: {
+            render: ({ data }) => data,
+          },
+        },
+        {
+          position: "top-center",
+        }
+      )
+      .catch((err) => console.log(err));
+
+    recordPayment(currencyTxnHash);
+    setLoading(false);
+    return;
+  };
+
+  const tokenPayment = async () => {
+    // Paying on Mumbai or Polygon Mainnet --> Gasless transactions via BICO
+    if (
+      circleRegistry &&
+      (selectedChain.value === "137" || selectedChain.value === "80001")
+    ) {
+      await payGasless({
+        chainId: selectedChain.value || "",
+        paymentType: "tokens",
+        batchPayType: "form",
+        userAddresses: [payWallOptions.receiver],
+        amounts: [payWallOptions.value > 0 ? payWallOptions.value : payValue],
+        tokenAddresses: [selectedToken.value],
+        cardIds: [""],
+        circleId: form.parents?.[0].id,
+        circleRegistry: circleRegistry,
+      });
+      recordPayment("gasless");
+      setLoading(false);
+      return;
+    }
+
+    // Paying on all other networks
+    const options = {
+      chainId: selectedChain.value || "",
+      paymentType: "tokens",
+      batchPayType: "form",
+      userAddresses: [payWallOptions.receiver],
+      amounts: [payWallOptions.value > 0 ? payWallOptions.value : payValue],
+      tokenAddresses: [selectedToken.value],
+      cardIds: [""],
+      circleId: form.parents?.[0].id,
+      circleRegistry: circleRegistry,
+    };
+    const tokenTxnHash = await toast
+      .promise(
+        batchPay(options),
+        {
+          pending: `Distributing Approved Tokens`,
+          error: {
+            render: ({ data }) => data,
+          },
+        },
+        {
+          position: "top-center",
+        }
+      )
+      .catch((err) => console.log(err));
+    recordPayment(tokenTxnHash);
   };
 
   useEffect(() => {
     void refetch();
-    void approval();
   }, [selectedToken]);
 
   return (
@@ -197,7 +330,7 @@ const PaywallField = ({
             }}
             multiple={false}
             isClearable={false}
-            disabled={!cId && payWallData && payWallData?.paid}
+            disabled={disabled}
             portal={false}
           />
         </Box>
@@ -216,7 +349,7 @@ const PaywallField = ({
             }}
             multiple={false}
             isClearable={false}
-            disabled={!cId && payWallData && payWallData?.paid}
+            disabled={disabled}
             portal={false}
           />
         </Box>
@@ -236,9 +369,7 @@ const PaywallField = ({
             type="number"
             units={selectedToken.label}
             min={0}
-            disabled={
-              payWallOptions.value || (!cId && payWallData && payWallData?.paid)
-            }
+            disabled={!!payWallOptions.value || disabled}
           />
         </Box>
       </Stack>
@@ -250,190 +381,79 @@ const PaywallField = ({
               md: "64",
             }}
           >
-            <PrimaryButton
-              loading={loading}
-              onClick={async () => {
-                // 1. Check if the receiver & sender are the same
-                // await checkReceiver();
+            {chain?.id.toString() == selectedChain.value ? (
+              <PrimaryButton
+                loading={loading}
+                onClick={async () => {
+                  // Checks if you are on the right network
+                  await checkNetwork();
 
-                // 2. Checks if you are on the right network
-                await checkNetwork();
-                console.log("as");
-
-                // 3. Check if wallet has enough tokens
-                const hasSufficientBalance = await checkBalance();
-                if (!hasSufficientBalance) return;
-                console.log("qw");
-
-                // 4. Check if you have sufficient ERC20 Allowance
-                await approval();
-
-                // Paying via Native Currency
-                if (
-                  circleRegistry &&
-                  selectedToken.label ==
-                    circleRegistry[selectedChain.value]?.nativeCurrency &&
-                  (await hasBalance(
-                    selectedToken.value,
-                    payWallOptions.value > 0 ? payWallOptions.value : payValue,
-                    userAddress as string
-                  ))
-                ) {
-                  setLoading(true);
-                  const options = {
-                    chainId: selectedChain.value || "",
-                    paymentType: "currency",
-                    userAddresses: [
-                      form.properties[propertyName]?.payWallOptions.receiver,
-                    ],
-                    amounts: [
-                      payWallOptions.value > 0
-                        ? payWallOptions.value
-                        : payValue,
-                    ],
-                    tokenAddresses: [""],
-                    batchPayType: "form",
-                    cardIds: [""],
-                    circleId: form.parents?.[0].id,
-                    circleRegistry: circleRegistry,
-                  };
-                  const currencyTxnHash = await toast
-                    .promise(
-                      batchPay(options),
-                      {
-                        pending: `Distributing ${
-                          (circleRegistry &&
-                            circleRegistry[selectedChain.value]
-                              ?.nativeCurrency) ||
-                          "Network Gas Token"
-                        }`,
-                        error: {
-                          render: ({ data }) => data,
-                        },
-                      },
-                      {
-                        position: "top-center",
-                      }
-                    )
-                    .catch((err) => console.log(err));
-
-                  recordPayment(currencyTxnHash);
-                  setLoading(false);
-                  return;
-                }
-
-                if (
-                  circleRegistry &&
-                  selectedToken.label !==
-                    circleRegistry[selectedChain.value]?.nativeCurrency &&
-                  !tokenStatus
-                ) {
-                  await approval();
-                  // Approval for ERC20 token
-                  setLoading(true);
-                  if (!tokenStatus) {
-                    await toast.promise(
-                      approve(
-                        selectedChain.value,
-                        selectedToken.value,
-                        circleRegistry
-                      ).then((res: any) => {
-                        if (res) {
-                          setTokenStatus(true);
-                        }
-                      }),
-                      {
-                        pending: `Approving ${selectedToken.label} Token`,
-                        error: {
-                          render: ({ data }) => data,
-                        },
-                      },
-                      {
-                        position: "top-center",
-                      }
-                    );
-                  }
-                  setLoading(false);
-                }
-
-                // Paying via ERC20 Token
-                if (
-                  circleRegistry &&
-                  selectedToken.label !==
-                    circleRegistry[selectedChain.value]?.nativeCurrency &&
-                  tokenStatus
-                ) {
-                  // Paying on Mumbai or Polygon Mainnet --> Gasless transactions via BICO
-                  setLoading(true);
+                  // Paying via Native Currency
                   if (
-                    (selectedChain.value === "137" ||
-                      selectedChain.value === "80001") &&
+                    circleRegistry &&
+                    selectedToken.label ==
+                      circleRegistry[selectedChain.value]?.nativeCurrency
+                  ) {
+                    await currencyPayment();
+                  }
+
+                  // Paying via ERC20 Token
+                  if (
+                    circleRegistry &&
                     selectedToken.label !==
                       circleRegistry[selectedChain.value]?.nativeCurrency
                   ) {
-                    await payGasless({
-                      chainId: selectedChain.value || "",
-                      paymentType: "tokens",
-                      batchPayType: "form",
-                      userAddresses: [payWallOptions.receiver],
-                      amounts: [
-                        payWallOptions.value > 0
-                          ? payWallOptions.value
-                          : payValue,
-                      ],
-                      tokenAddresses: [selectedToken.value],
-                      cardIds: [""],
-                      circleId: form.parents?.[0].id,
-                      circleRegistry: circleRegistry,
-                    });
-                    recordPayment("gasless");
-                    setLoading(false);
-                    return;
-                  }
+                    // Check if you have sufficient ERC20 Allowance
+                    const approvalStatus = await approval();
 
-                  // Paying on all other networks
-                  const options = {
-                    chainId: selectedChain.value || "",
-                    paymentType: "tokens",
-                    batchPayType: "form",
-                    userAddresses: [payWallOptions.receiver],
-                    amounts: [
-                      payWallOptions.value > 0
-                        ? payWallOptions.value
-                        : payValue,
-                    ],
-                    tokenAddresses: [selectedToken.value],
-                    cardIds: [""],
-                    circleId: form.parents?.[0].id,
-                    circleRegistry: circleRegistry,
-                  };
-                  const tokenTxnHash = await toast
-                    .promise(
-                      batchPay(options),
-                      {
-                        pending: `Distributing Approved Tokens`,
-                        error: {
-                          render: ({ data }) => data,
+                    // Approval for ERC20 token
+                    setLoading(true);
+                    if (!approvalStatus) {
+
+                      await toast.promise(
+                        approve(
+                          selectedChain.value,
+                          selectedToken.value,
+                          circleRegistry
+                        ).then((res: any) => {
+                          if (res) {
+                            async () => {
+                              await tokenPayment();
+                            };
+                          }
+                        }),
+                        {
+                          pending: `Approving ${selectedToken.label} Token`,
+                          error: {
+                            render: ({ data }) => data,
+                          },
                         },
-                      },
-                      {
-                        position: "top-center",
-                      }
-                    )
-                    .catch((err) => console.log(err));
-                  recordPayment(tokenTxnHash);
-                  setLoading(false);
-                }
-              }}
-              disabled={
-                (payWallData && payWallData?.paid) ||
-                !payValue ||
-                (payWallOptions.value <= 0 && payValue <= 0)
-              }
-            >
-              Pay {payWallOptions.value > 0 ? payWallOptions.value : ""}
-              {" " + selectedToken.label}
-            </PrimaryButton>
+                        {
+                          position: "top-center",
+                        }
+                      );
+                    } else {
+                      await tokenPayment();
+                    }
+
+                    setLoading(false);
+                  }
+                }}
+                disabled={disabled || !payValue}
+              >
+                Pay {payWallOptions.value > 0 ? payWallOptions.value : ""}
+                {" " + selectedToken.label}
+              </PrimaryButton>
+            ) : (
+              <PrimaryButton
+                onClick={async () => {
+                  // Switches to the right network
+                  await checkNetwork();
+                }}
+              >
+                Switch Network
+              </PrimaryButton>
+            )}
           </Box>
         </Box>
       )}

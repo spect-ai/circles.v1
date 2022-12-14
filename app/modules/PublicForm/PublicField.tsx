@@ -321,7 +321,7 @@ export default function PublicField({
             updateRequiredFieldNotSet(propertyName, paywall);
           }}
           propertyName={propertyName}
-          disabled
+          disabled={disabled}
         />
       )}
 

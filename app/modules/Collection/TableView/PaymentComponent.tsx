@@ -26,9 +26,11 @@ const PaymentComponent = ({ rowData, columnData }: CellProps) => {
         }}
       >
         {payment?.txnHash ? (
-          <Text variant="small">{`${payment.txnHash}`}</Text>
+          <Text variant="small">Paid {`${payment?.value}
+            ${payment?.token?.label} on 
+            ${payment?.chain?.label}`}</Text>
         ) : (
-          <Text variant="small">{"Not Paid"}</Text>
+          <Text variant="small">{"Unpaid"}</Text>
         )}
       </Button>
     </Box>

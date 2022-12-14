@@ -227,11 +227,10 @@ export default function useERC20() {
     rpcNode?: string
   ) {
     if (isCurrency(erc20Address)) {
-      return (
-        parseFloat(
-          ethers.utils.formatEther(balance?.value?._hex as BigNumberish)
-        ) >= value
+      const formattedBalance = parseFloat(
+        ethers.utils.formatEther(balance?.value?._hex as BigNumberish)
       );
+      return formattedBalance >= value;
       // eslint-disable-next-line no-else-return
     } else {
       let contract;

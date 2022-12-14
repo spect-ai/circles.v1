@@ -357,11 +357,11 @@ export default function DataDrawer({
                         )}
                         {property?.type === "payWall" && (
                           <Text>
-                            {data[property.name]?.txnHash
+                            Paid {data[property.name]?.txnHash
                               ? `${data[property.name]?.value}
                               ${data[property.name]?.token?.label} on 
                               ${data[property.name]?.chain?.label}`
-                              : "Not Paid"}
+                              : "Unpaid"}
                           </Text>
                         )}
                         {property?.type === "milestone" && (
