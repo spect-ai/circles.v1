@@ -1,5 +1,4 @@
 import Loader from "@/app/common/components/Loader";
-import { ApartmentOutlined } from "@ant-design/icons";
 import {
   Box,
   Button,
@@ -13,7 +12,6 @@ import { AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import styled from "styled-components";
-import Navigation from "../Project/Navigation";
 import RetroPage from "../Retro";
 import { useCircle } from "./CircleContext";
 import CircleDashboard from "./CircleOverview";
