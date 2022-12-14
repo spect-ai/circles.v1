@@ -142,12 +142,13 @@ function CardReviewer() {
                   justifyContent: "center",
                 }}
               >
+                {console.log({item})}
                 <Avatar
                   size="6"
                   src={item.avatar}
                   label="avatar"
                   placeholder={!item.avatar}
-                  address={item.ethAddress}
+                  // address={item.ethAddress}
                 />
                 <Box marginRight="2" />
                 <Text
