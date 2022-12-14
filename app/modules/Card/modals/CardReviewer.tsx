@@ -142,7 +142,6 @@ function CardReviewer() {
                   justifyContent: "center",
                 }}
               >
-                {console.log({item})}
                 <Avatar
                   size="6"
                   src={item.avatar}

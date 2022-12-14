@@ -86,7 +86,7 @@ export const AssigneeModal = ({
               width: "100%",
               justifyContent: "center",
             }}
-          >{console.log({item})}
+          >
             <Avatar
               size="6"
               src={item.avatar}
