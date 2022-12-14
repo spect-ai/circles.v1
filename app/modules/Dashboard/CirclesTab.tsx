@@ -1,10 +1,11 @@
-import { CircleType } from "@/app/types";
+import { CircleType, Option } from "@/app/types";
 import { Box } from "degen";
 import CircleCard from "@/app/modules/Explore/CircleCard/index";
 import CreateCircleCard from "@/app/modules/Explore/CircleCard/CreateCircleCard";
 import styled from "styled-components";
 import { Col, Row } from "react-grid-system";
-import { memo } from "react";
+import { memo, useEffect, useState } from "react";
+import Dropdown from "@/app/common/components/Dropdown";
 
 const ScrollContainer = styled(Box)`
   ::-webkit-scrollbar {
@@ -28,12 +29,50 @@ function YourCircles({
   circles: CircleType[];
   isLoading: boolean;
 }) {
+  const [circlesToShow, setCirclesToShow] = useState<CircleType[]>(circles);
+  const [selectedFilter, setSelectedFilter] = useState<Option>({
+    label: "Only show organizations",
+    value: "onlyParents",
+  });
+  const options = [
+    { label: "Show Organizations and Workstreams", value: "all" },
+    { label: "Only show organizations", value: "onlyParents" },
+  ];
+
+  useEffect(() => {
+    if (selectedFilter.value === "all") {
+      setCirclesToShow(circles);
+    } else {
+      setCirclesToShow(
+        circles.filter(
+          (circle) => !circle.parents || circle.parents?.length === 0
+        )
+      );
+    }
+  }, [selectedFilter, circles]);
+
   return (
     <ScrollContainer marginTop="4">
+      <Box
+        display="flex"
+        flexDirection="row"
+        justifyContent="flex-end"
+        marginBottom="4"
+      >
+        <Box width="96">
+          <Dropdown
+            options={options}
+            selected={selectedFilter}
+            onChange={setSelectedFilter}
+            multiple={false}
+            isClearable={false}
+          />
+        </Box>
+      </Box>
       <Row>
         {!isLoading &&
-          circles?.map &&
-          circles?.map((circle: CircleType) => (
+          circlesToShow?.map &&
+          circlesToShow?.map((circle: CircleType) => (
             <Col key={circle.id} xs={12} sm={6} md={3}>
               <CircleCard
                 href={`/${circle.slug}`}

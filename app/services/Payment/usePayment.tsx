@@ -230,6 +230,7 @@ export default function usePaymentGateway(
     circleRegistry,
   }: BatchPayParams): Promise<boolean> {
     if (paymentType === "tokens" && (registry || circleRegistry)) {
+      console.log({ tokenAddresses });
       const {
         filteredTokenAddresses,
         filteredRecipients,
@@ -247,6 +248,7 @@ export default function usePaymentGateway(
         callerId: connectedUser,
         tokenAddresses,
       });
+      console.log({ filteredTokenAddresses });
       const addr = circleRegistry
         ? circleRegistry[chainId].distributorAddress
         : registry && registry[chainId].distributorAddress;

@@ -2,7 +2,7 @@ import Dropdown from "@/app/common/components/Dropdown";
 import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { useCircle } from "@/app/modules/Circle/CircleContext";
-import { fetchGuildChannels } from "@/app/services/Discord";
+import { fetchGuildChannels, getGuildRoles } from "@/app/services/Discord";
 import { Action, Option } from "@/app/types";
 import { Box, Input, Stack, Tag, Text } from "degen";
 import { useEffect, useState } from "react";
@@ -10,6 +10,7 @@ import { useLocalCollection } from "../../Context/LocalCollectionContext";
 import DiscordIcon from "@/app/assets/icons/discordIcon.svg";
 import CheckBox from "@/app/common/components/Table/Checkbox";
 import CreatableDropdown from "@/app/common/components/CreatableDropdown";
+import Editor from "@/app/common/components/Editor";
 
 type Props = {
   actionMode: "edit" | "create";
@@ -29,12 +30,33 @@ export default function CreateDiscordChannel({
   const [selectedCategory, setSelectedCategory] = useState<Option>(
     action?.data?.channelCategory || {}
   );
-  const [channelNameType, setChannelNameType] =
-    useState<"mapping" | "value">("value");
+  const [channelNameType, setChannelNameType] = useState<"mapping" | "value">(
+    action?.data?.channelNameType || "value"
+  );
   const [isPrivate, setIsPrivate] = useState(action?.data?.isPrivate || false);
+  const [addResponder, setAddResponder] = useState(
+    action?.data?.addResponder || false
+  );
+  const [selectedRoles, setSelectedRoles] = useState(
+    (action.data?.rolesToAdd || {}) as { [roleId: string]: boolean }
+  );
+  const [discordRoles, setDiscordRoles] =
+    useState<
+      | {
+          id: string;
+          name: string;
+        }[]
+      | undefined
+    >();
 
   const { circle } = useCircle();
   const { localCollection: collection } = useLocalCollection();
+  const toggleSelectedRole = (roleId: string) => {
+    setSelectedRoles({
+      ...selectedRoles,
+      [roleId]: !selectedRoles[roleId],
+    });
+  };
 
   useEffect(() => {
     const getGuildChannels = async () => {
@@ -49,6 +71,13 @@ export default function CreateDiscordChannel({
       setCategoryOptions(categoryOptions);
     };
     if (circle?.discordGuildId) void getGuildChannels();
+
+    const fetchGuildRoles = async () => {
+      const data = await getGuildRoles(circle?.discordGuildId);
+      data && setDiscordRoles(data.roles);
+      console.log({ data });
+    };
+    if (circle?.discordGuildId) void fetchGuildRoles();
   }, [circle?.discordGuildId]);
 
   if (!circle.discordGuildId)
@@ -94,6 +123,8 @@ export default function CreateDiscordChannel({
             channelCategory: selectedCategory,
             channelNameType,
             isPrivate: isPrivate,
+            addResponder: addResponder,
+            rolesToAdd: selectedRoles,
             circleId: circle.id,
           },
         });
@@ -147,6 +178,61 @@ export default function CreateDiscordChannel({
         />
         <Text variant="base">Private Channel</Text>
       </Box>
+      {isPrivate && (
+        <>
+          <Box marginTop="4" marginBottom="2">
+            <Text variant="label">Pick who to add to private channel</Text>
+          </Box>
+          <Stack direction="horizontal" wrap>
+            {discordRoles?.map((role) => {
+              return (
+                <Box
+                  key={role.id}
+                  cursor="pointer"
+                  onClick={() => toggleSelectedRole(role.id)}
+                >
+                  {selectedRoles[role.id] ? (
+                    <Tag tone={"accent"} hover>
+                      <Box paddingX="2">{role.name}</Box>
+                    </Tag>
+                  ) : (
+                    <Tag hover>
+                      <Box paddingX="2">{role.name}</Box>
+                    </Tag>
+                  )}
+                </Box>
+              );
+            })}{" "}
+          </Stack>
+          <Box
+            display="flex"
+            flexDirection="row"
+            gap="2"
+            justifyContent="flex-start"
+            alignItems="center"
+            marginTop="4"
+          >
+            <CheckBox
+              isChecked={addResponder}
+              onClick={() => {
+                setAddResponder(!addResponder);
+              }}
+            />
+            <Text variant="small">Add Responder</Text>
+          </Box>
+
+          {addResponder && (
+            <Box marginTop="4" marginBottom="-4">
+              <Editor
+                value={
+                  ":::tip\nForm responder will be asked to connect Discord Account before filling up form."
+                }
+                disabled={true}
+              />
+            </Box>
+          )}
+        </>
+      )}
     </Box>
   );
 }
