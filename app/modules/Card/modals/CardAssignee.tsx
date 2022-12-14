@@ -92,7 +92,7 @@ export const AssigneeModal = ({
               src={item.avatar}
               label="avatar"
               placeholder={!item.avatar}
-              address={item.ethAddress}
+              // address={item.ethAddress}
             />
             <Box marginRight="2" />
             <Text
