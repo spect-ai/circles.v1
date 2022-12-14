@@ -7,7 +7,6 @@ import {
 import PublicForm from "@/app/modules/PublicForm";
 import useConnectDiscordServer from "@/app/services/Discord/useConnectDiscordServer";
 import { NextPage } from "next";
-import { useRouter } from "next/router";
 
 const EmbedPage: NextPage = () => {
   useConnectDiscordServer();
@@ -27,11 +26,5 @@ const EmbedPage: NextPage = () => {
     </>
   );
 };
-
-export function getServerSideProps() {
-  return {
-    props: {},
-  };
-}
 
 export default EmbedPage;
