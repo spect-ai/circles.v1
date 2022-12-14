@@ -5,7 +5,13 @@ import {
   deleteCollectionData,
   updateCollectionDataGuarded,
 } from "@/app/services/Collection";
-import { Milestone, PaymentData, PropertyType, Reward } from "@/app/types";
+import {
+  Milestone,
+  Option,
+  PaymentData,
+  PropertyType,
+  Reward,
+} from "@/app/types";
 import { Box } from "degen";
 import { AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
@@ -30,6 +36,8 @@ import GutterColumnComponent from "./GutterColumnComponent";
 import HeaderComponent from "./HeaderComponent";
 import MilestoneComponent from "./MilestoneComponent";
 import MultiMilestoneModal from "./MultiMilestoneModal";
+import MultiURLComponent from "./MultiURLComponent";
+import MultiURLModal from "./MultiURLModal";
 import PaymentComponent from "./PaymentComponent";
 import PaymentModal from "./PaymentModal";
 import RewardComponent from "./RewardComponent";
@@ -40,6 +48,7 @@ export default function TableView() {
   const [isEditFieldOpen, setIsEditFieldOpen] = useState(false);
   const [isRewardFieldOpen, setIsRewardFieldOpen] = useState(false);
   const [isPaymentFieldOpen, setIsPaymentFieldOpen] = useState(false);
+  const [isURLFieldOpen, setIsURLFieldOpen] = useState(false);
   const [propertyName, setPropertyName] = useState("");
   const [dataId, setDataId] = useState<string>("");
   const [multipleMilestoneModalOpen, setMultipleMilestoneModalOpen] =
@@ -157,8 +166,6 @@ export default function TableView() {
     }
   };
 
-  console.log(data);
-
   const getCellComponent = (type: PropertyType) => {
     switch (type) {
       case "shortText":
@@ -186,7 +193,7 @@ export default function TableView() {
       case "multiSelect":
         return ExpandableCell;
       case "multiURL":
-        return ExpandableCell;
+        return MultiURLComponent;
       case "milestone":
         return MilestoneComponent;
       default:
@@ -267,6 +274,25 @@ export default function TableView() {
           columnData: {
             property,
             setIsPaymentFieldOpen,
+            setPropertyName,
+            setDataId,
+          },
+          title: (
+            <HeaderComponent
+              sortData={sortData}
+              columnName={property.name}
+              setIsEditFieldOpen={setIsEditFieldOpen}
+              setPropertyName={setPropertyName}
+            />
+          ),
+          minWidth: 200,
+        };
+      } else if (["multiURL"].includes(property.type)) {
+        return {
+          component: getCellComponent(property.type) as any,
+          columnData: {
+            property,
+            setIsURLFieldOpen,
             setPropertyName,
             setDataId,
           },
@@ -374,6 +400,33 @@ export default function TableView() {
                   });
                 }
                 setIsPaymentFieldOpen(false);
+              }
+            }}
+            dataId={dataId}
+          />
+        )}
+        {isURLFieldOpen && (
+          <MultiURLModal
+            form={collection}
+            propertyName={propertyName}
+            handleClose={async (
+              payment: Option[],
+              dataId: string,
+              propertyName: string
+            ) => {
+              if (data) {
+                const row = data.findIndex((row) => row.id === dataId);
+
+                if (row === 0 || row) {
+                  const tempData = [...data];
+                  tempData[row][propertyName] = payment;
+                  setData(tempData);
+                  setIsURLFieldOpen(false);
+                  await updateData({
+                    cell: { row, col: 0, colId: propertyName },
+                  });
+                }
+                setIsURLFieldOpen(false);
               }
             }}
             dataId={dataId}

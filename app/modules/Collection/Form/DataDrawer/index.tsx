@@ -279,7 +279,6 @@ export default function DataDrawer({
                         {[
                           "shortText",
                           "ethAddress",
-                          "singleURL",
                           "email",
                           "number",
                         ].includes(property.type) && (
@@ -288,15 +287,25 @@ export default function DataDrawer({
                         {property?.type === "longText" && (
                           <Editor value={data[property.name]} disabled />
                         )}
+                        {property?.type == "singleURL" && (
+                          <Box
+                            onClick={() =>
+                              window.open(data[property.name], "_blank")
+                            }
+                            cursor="pointer"
+                          >
+                            <Text underline>{data[property.name]}</Text>
+                          </Box>
+                        )}
                         {property?.type == "multiURL" && (
                           <Stack direction={"vertical"}>
-                            {data[property.name]?.map((url: string) => (
+                            {data[property.name]?.map((url: OptionType) => (
                               <Box
-                                key={url}
-                                onClick={() => window.open(url, "_blank")}
+                                key={url.value}
+                                onClick={() => window.open(url.value, "_blank")}
                                 cursor="pointer"
                               >
-                                <Text>{url}</Text>
+                                <Text underline>{url.value}</Text>
                               </Box>
                             ))}
                           </Stack>
