@@ -402,6 +402,7 @@ export default function SingleAutomation({
                 setIsDirty(true);
               }}
               firstRowMessage="It is true that"
+              buttonText="Add Condition"
             />
           </Box>
         </Box>

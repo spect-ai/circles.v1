@@ -8,7 +8,13 @@ import {
   getForm,
   updateCollectionData,
 } from "@/app/services/Collection";
-import { FormType, KudosType, Property, Registry, UserType } from "@/app/types";
+import {
+  Condition,
+  FormType,
+  KudosType,
+  Registry,
+  UserType,
+} from "@/app/types";
 import { Box, Stack, Text } from "degen";
 import { isAddress } from "ethers/lib/utils";
 import React, { useEffect, useState } from "react";
@@ -73,16 +79,6 @@ export default function FormFields({ form, setForm }: Props) {
     }
   );
 
-  const isHidden = (propertyId: string, data: any) => {
-    form.propertyOrder.forEach((propertyId) => {
-      const property = form.properties[propertyId];
-
-      return true;
-    });
-
-    return false;
-  };
-
   const checkRequired = (data: any) => {
     const requiredFieldsNotSet = {} as { [key: string]: boolean };
     form.propertyOrder.forEach((propertyId) => {
@@ -90,7 +86,11 @@ export default function FormFields({ form, setForm }: Props) {
       if (
         property.required &&
         isEmpty(propertyId, data[propertyId]) &&
-        satisfiesConditions(data, form.properties, propertyId)
+        satisfiesConditions(
+          data,
+          form.properties,
+          form.properties[propertyId].viewConditions as Condition[]
+        )
       ) {
         requiredFieldsNotSet[propertyId] = true;
       }

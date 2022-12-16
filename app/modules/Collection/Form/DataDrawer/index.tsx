@@ -9,7 +9,7 @@ import {
   voteCollectionData,
 } from "@/app/services/Collection";
 import { MemberDetails, UserType } from "@/app/types";
-import { Avatar, Box, Input, Stack, Tag, Text } from "degen";
+import { Avatar, Box, Stack, Tag, Text } from "degen";
 import { motion } from "framer-motion";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
@@ -294,25 +294,27 @@ export default function DataDrawer({
                             }
                             cursor="pointer"
                           >
-                            <Text underline>{data[property.name]}</Text>
+                            <Text>{data[property.name]}</Text>
                           </Box>
                         )}
                         {property?.type == "multiURL" && (
                           <Stack direction="vertical">
                             {data[property.name]?.map((url: OptionType) => (
-                              <Stack direction={"horizontal"}>
-                                <Text>{url.label}</Text>
-                                <Text>-</Text>
-                                <Box
-                                  key={url.value}
-                                  onClick={() =>
-                                    window.open(url.value, "_blank")
-                                  }
-                                  cursor="pointer"
-                                >
-                                  <Text underline>{url.value}</Text>
-                                </Box>
-                              </Stack>
+                              <Box key={url.value}>
+                                <Stack direction={"horizontal"}>
+                                  <Text>{url.label}</Text>
+                                  <Text>-</Text>
+                                  <Box
+                                    key={url.value}
+                                    onClick={() =>
+                                      window.open(url.value, "_blank")
+                                    }
+                                    cursor="pointer"
+                                  >
+                                    <Text>{url.value}</Text>
+                                  </Box>
+                                </Stack>
+                              </Box>
                             ))}
                           </Stack>
                         )}
@@ -364,7 +366,7 @@ export default function DataDrawer({
                                 value: number;
                               }) => {
                                 return (
-                                  <Text>
+                                  <Text key={payment.token.label}>
                                     Paid {payment.value} {payment.token.label}{" "}
                                     on {payment.chain.label}
                                   </Text>

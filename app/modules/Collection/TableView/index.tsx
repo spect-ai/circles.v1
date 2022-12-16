@@ -1,17 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { OptionType } from "@/app/common/components/Dropdown";
 import {
   addCollectionData,
   deleteCollectionData,
   updateCollectionDataGuarded,
 } from "@/app/services/Collection";
-import {
-  Milestone,
-  Option,
-  PropertyType,
-  Reward,
-  PaymentData,
-} from "@/app/types";
+import { Milestone, Option, PropertyType, Reward } from "@/app/types";
 import { Box } from "degen";
 import { motion, AnimatePresence } from "framer-motion";
 import { matchSorter } from "match-sorter";
@@ -428,6 +421,7 @@ export default function TableView() {
               columnName={property.name}
               setIsEditFieldOpen={setIsEditFieldOpen}
               setPropertyName={setPropertyName}
+              propertyType={property.type}
             />
           ),
           minWidth: 200,
@@ -447,6 +441,7 @@ export default function TableView() {
               columnName={property.name}
               setIsEditFieldOpen={setIsEditFieldOpen}
               setPropertyName={setPropertyName}
+              propertyType={property.type}
             />
           ),
           minWidth: 200,

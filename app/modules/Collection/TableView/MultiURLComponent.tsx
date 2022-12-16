@@ -23,13 +23,14 @@ const MultiURLComponent = ({ rowData, columnData }: CellProps) => {
           columnData.setPropertyName(columnData.property.name);
           columnData.setDataId(id);
           columnData.setIsURLFieldOpen(true);
-          
         }}
       >
         {urls?.length ? (
           <Stack direction={"horizontal"}>
-            <Text variant="small" ellipsis>{urls?.[0].label} -</Text>
-            <Text variant="small" underline ellipsis>
+            <Text variant="small" ellipsis>
+              {urls?.[0].label} -
+            </Text>
+            <Text variant="small" ellipsis>
               {urls?.[0].value}
             </Text>
           </Stack>
