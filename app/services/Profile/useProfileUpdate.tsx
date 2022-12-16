@@ -18,6 +18,7 @@ interface UpdateProfileDTO {
   github?: string;
   behance?: string;
   website?: string;
+  discordUsername?: string;
 }
 
 interface AddExperienceDTO {

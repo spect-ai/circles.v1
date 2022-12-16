@@ -10,6 +10,7 @@ interface UserType {
   bio: string;
   email: string;
   discordId?: string;
+  discordUsername?: string;
   githubId?: string;
   twitterId?: string;
   _id: string;

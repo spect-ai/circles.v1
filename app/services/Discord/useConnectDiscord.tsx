@@ -16,8 +16,11 @@ export default function useConnectDiscord() {
     );
     if (res.ok) {
       const data = await res.json();
+      console.log({ data });
       const profileRes = await updateProfile({
         discordId: data.userData.id,
+        discordUsername:
+          data.userData.username + "#" + data.userData.discriminator,
       });
       if (profileRes) {
         toast("Successfully linked your Discord account", {

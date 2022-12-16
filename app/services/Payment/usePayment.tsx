@@ -252,7 +252,7 @@ export default function usePaymentGateway(
       const addr = circleRegistry
         ? circleRegistry[chainId].distributorAddress
         : registry && registry[chainId].distributorAddress;
-      const res = await biconomyPayment(address || "", addr as string, {
+      await biconomyPayment(address || "", addr as string, {
         filteredTokenAddresses,
         filteredRecipients,
         valuesInWei,
@@ -260,7 +260,6 @@ export default function usePaymentGateway(
         overrides,
       });
       toast.success("Transaction sent");
-      console.log(res);
     }
     return false;
   }
