@@ -2,7 +2,7 @@
 import Dropdown from "@/app/common/components/Dropdown";
 import Editor from "@/app/common/components/Editor";
 import { isEmail, isURL } from "@/app/common/utils/utils";
-import { FormType, Option, Property, Reward } from "@/app/types";
+import { FormType, Option, Property, Registry, Reward } from "@/app/types";
 import { Box, Input, Stack, Tag, Text, useTheme } from "degen";
 import { ethers } from "ethers";
 import { useState } from "react";
@@ -265,7 +265,9 @@ export default function PublicField({
         <Box marginTop="4">
           <RewardField
             disabled={disabled}
-            form={form}
+            rewardOptions={
+              form.properties[propertyName]?.rewardOptions as Registry
+            }
             data={data}
             propertyName={propertyName}
             updateData={(reward: Reward) => {

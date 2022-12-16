@@ -2,7 +2,7 @@ import Dropdown from "@/app/common/components/Dropdown";
 import Editor from "@/app/common/components/Editor";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import RewardField from "@/app/modules/PublicForm/RewardField";
-import { CollectionType, MemberDetails } from "@/app/types";
+import { CollectionType, MemberDetails, Registry } from "@/app/types";
 import { Box, IconPlusSmall, Input, useTheme } from "degen";
 import { useRouter } from "next/router";
 import { useQuery } from "react-query";
@@ -136,7 +136,9 @@ export function Field({ collection, propertyId, type, data, setData }: Props) {
       {type === "reward" && (
         <Box>
           <RewardField
-            form={collection}
+            rewardOptions={
+              collection.properties[propertyId]?.rewardOptions as Registry
+            }
             propertyName={collection.properties[propertyId]?.name}
             data={{}}
             updateData={(reward) => {
