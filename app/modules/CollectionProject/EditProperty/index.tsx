@@ -1,9 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import ConfirmModal from "@/app/common/components/Modal/ConfirmModal";
 import Popover from "@/app/common/components/Popover";
+import { deleteField } from "@/app/services/Collection";
+import { CollectionType } from "@/app/types";
 import { Box, Stack, Text } from "degen";
 import { AnimatePresence, motion } from "framer-motion";
 import React, { useRef, useState } from "react";
 import { Delete, Edit } from "react-feather";
+import { toast } from "react-toastify";
 import styled from "styled-components";
 import AddField from "../../Collection/AddField";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
@@ -16,9 +20,14 @@ type Props = {
 function EditProperty({ propertyName }: Props) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const fieldInput = useRef<any>();
-  const { localCollection: collection } = useLocalCollection();
+  const {
+    localCollection: collection,
+    updateCollection,
+    setProjectViewId,
+  } = useLocalCollection();
   const property = collection.properties[propertyName];
   const [isEditFieldOpen, setIsEditFieldOpen] = useState(false);
+  const [showConfirmOnDelete, setshowConfirmOnDelete] = useState(false);
 
   if (property) {
     return (
@@ -28,6 +37,27 @@ function EditProperty({ propertyName }: Props) {
             <AddField
               handleClose={() => setIsEditFieldOpen(false)}
               propertyName={propertyName}
+            />
+          )}
+          {showConfirmOnDelete && (
+            <ConfirmModal
+              title="This will remove existing data associated with this field, if you're looking to avoid this please set the field as inactive. Are you sure you want to delete this field?"
+              handleClose={() => setshowConfirmOnDelete(false)}
+              onConfirm={async () => {
+                const res: CollectionType = await deleteField(
+                  collection.id,
+                  propertyName
+                );
+                if (res.id) {
+                  setshowConfirmOnDelete(false);
+                  res.projectMetadata &&
+                    setProjectViewId(res.projectMetadata.viewOrder[0]);
+                  updateCollection(res);
+                } else {
+                  toast.error("Error deleting field");
+                }
+              }}
+              onCancel={() => setshowConfirmOnDelete(false)}
             />
           )}
         </AnimatePresence>
@@ -71,7 +101,13 @@ function EditProperty({ propertyName }: Props) {
                       <Text align="center">Edit property</Text>
                     </Stack>
                   </MenuItem>
-                  <MenuItem padding="2">
+                  <MenuItem
+                    padding="2"
+                    onClick={() => {
+                      setshowConfirmOnDelete(true);
+                      setIsMenuOpen(false);
+                    }}
+                  >
                     <Stack direction="horizontal" align="center">
                       <Text align="center">
                         <Delete size={16} />

@@ -201,9 +201,9 @@ export default function AddField({ propertyName, handleClose }: Props) {
         {showConfirmOnDelete && (
           <ConfirmModal
             title="This will remove existing data associated with this field, if you're looking to avoid this please set the field as inactive. Are you sure you want to delete this field?"
-            handleClose={() => setShowConfirm(false)}
+            handleClose={() => setShowConfirmOnDelete(false)}
             onConfirm={async () => {
-              setShowConfirm(false);
+              setShowConfirmOnDelete(false);
               const res: CollectionType = await deleteField(
                 collection.id,
                 propertyName as string
@@ -217,7 +217,7 @@ export default function AddField({ propertyName, handleClose }: Props) {
                 toast.error("Error deleting field");
               }
             }}
-            onCancel={() => setShowConfirm(false)}
+            onCancel={() => setShowConfirmOnDelete(false)}
           />
         )}
       </AnimatePresence>

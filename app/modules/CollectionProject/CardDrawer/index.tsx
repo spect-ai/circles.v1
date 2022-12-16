@@ -98,7 +98,7 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
         setValue(collection.data[cardSlug as string]);
       }, 100);
     }
-  }, [defaultValue, cardSlug]);
+  }, [defaultValue?.id, cardSlug]);
 
   const onChange = async (update: any, slug: string) => {
     if (slug) {
@@ -144,6 +144,7 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
         });
         if (res.id) updateCollection(res);
         else toast.error("Something went wrong while updating property order");
+        return;
       }
       if (res.id) {
         updateCollection(res);
@@ -348,6 +349,12 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
                     onChange={(e) => {
                       setIsDirty(true);
                       setValue({ ...value, Title: e.target.value });
+                    }}
+                    onBlur={async () => {
+                      if (isDirty) {
+                        await onChange({ Title: value.Title }, value.slug);
+                        setIsDirty(false);
+                      }
                     }}
                   />
                   <CardOptions

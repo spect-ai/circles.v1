@@ -84,12 +84,13 @@ export default function TableView() {
           !property.isPartOfFormView) ||
         collection.collectionType === 1
       ) {
-        console.log("update in");
+        console.log("UPDATING DATA");
         const res = await updateCollectionDataGuarded(collection.id, row.id, {
           [cell.colId]: row[cell.colId],
         });
         if (res.id) {
-          updateCollection(res);
+          console.log({ res });
+          // updateCollection(res); causing infinite renders
         } else {
           toast.error("Error updating data");
         }
@@ -442,6 +443,7 @@ export default function TableView() {
         )}
         {isRewardFieldOpen && (
           <RewardModal
+            collectionData={data}
             form={collection}
             propertyName={propertyName}
             handleClose={async (
@@ -515,7 +517,7 @@ export default function TableView() {
         {collection.collectionType === 1 && expandedDataSlug && (
           <CardDrawer
             handleClose={() => setExpandedDataSlug("")}
-            defaultValue={collection.data[expandedDataSlug]}
+            defaultValue={data?.find((d) => d.slug === expandedDataSlug)}
           />
         )}
       </AnimatePresence>

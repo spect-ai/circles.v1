@@ -5,7 +5,7 @@ import { Box, Input, Stack } from "degen";
 import { useEffect, useState } from "react";
 
 type Props = {
-  form: any;
+  rewardOptions: Registry;
   propertyName: string;
   data: any;
   updateData: (reward: Reward) => void;
@@ -14,7 +14,7 @@ type Props = {
 };
 
 export default function RewardField({
-  form,
+  rewardOptions,
   propertyName,
   data,
   updateData,
@@ -22,8 +22,6 @@ export default function RewardField({
   disabled,
 }: Props) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const rewardOptions = (form.properties[propertyName]?.rewardOptions ||
-    {}) as Registry;
   const firstChainName =
     Object.values(rewardOptions).length > 0
       ? Object.values(rewardOptions)[0].name
@@ -48,7 +46,7 @@ export default function RewardField({
   });
 
   useEffect(() => {
-    if (form.properties[propertyName]?.rewardOptions && selectedChain) {
+    if (rewardOptions && selectedChain) {
       const tokens = Object.entries(
         rewardOptions[selectedChain.value].tokenDetails
       ).map(([address, token]) => {
@@ -60,7 +58,7 @@ export default function RewardField({
       setSelectedToken(data[propertyName]?.token || tokens[0]);
       setTokenOptions(tokens);
     }
-  }, [data, form.properties, propertyName, rewardOptions, selectedChain]);
+  }, [data, propertyName, rewardOptions, selectedChain]);
 
   return (
     <Stack
@@ -79,10 +77,8 @@ export default function RewardField({
       >
         <Dropdown
           options={
-            form.properties[propertyName]?.rewardOptions
-              ? Object.entries(
-                  form.properties[propertyName].rewardOptions as Registry
-                ).map(([chainId, network]) => {
+            rewardOptions
+              ? Object.entries(rewardOptions).map(([chainId, network]) => {
                   return {
                     label: network.name,
                     value: chainId,
