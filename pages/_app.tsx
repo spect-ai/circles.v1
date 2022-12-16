@@ -119,11 +119,14 @@ function MyApp({ Component, pageProps }: AppProps) {
       return Boolean(verifyRes.ok);
     },
     signOut: async () => {
-      await fetch(`${process.env.API_HOST}/auth/disconnect`, {
-        method: "POST",
-        credentials: "include",
-      });
-      setAuthenticationStatus("unauthenticated");
+      console.log("rainbow trynna disconnect, f it");
+      // await 0.1s
+      await new Promise((resolve) => setTimeout(resolve, 1));
+      // await fetch(`${process.env.API_HOST}/auth/disconnect`, {
+      //   method: "POST",
+      //   credentials: "include",
+      // });
+      // setAuthenticationStatus("unauthenticated");
     },
   });
 
@@ -153,7 +156,7 @@ function MyApp({ Component, pageProps }: AppProps) {
           connectUser && connectUser(user.id);
         }
       } catch (e) {
-        console.error(e);
+        console.log({ e });
         setAuthenticationStatus("unauthenticated");
       }
     })();
