@@ -1,7 +1,7 @@
 import Accordian from "@/app/common/components/Accordian";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { CircleType, UserType } from "@/app/types";
-import { ProjectOutlined } from "@ant-design/icons";
+import { DollarOutlined, ProjectOutlined } from "@ant-design/icons";
 import {
   Box,
   IconCollection,
@@ -43,12 +43,16 @@ export const Container = styled(Box)<{ subH?: string }>`
 
 function CircleSidebar() {
   const router = useRouter();
-  const { circle: cId, project: pId, collection: cSlug } = router.query;
+  const {
+    circle: cId,
+    project: pId,
+    collection: cSlug,
+    payment,
+  } = router.query;
   const { data: circle, isLoading } = useQuery<CircleType>(["circle", cId], {
     enabled: false,
   });
   const { setCircleData, setMemberDetailsData } = useCircle();
-
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [isContributorsModalOpen, setIsContributorsModalOpen] = useState(false);
   const [isRetroModalOpen, setIsRetroModalOpen] = useState(false);
@@ -56,7 +60,6 @@ function CircleSidebar() {
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
-
   if (isLoading) {
     return (
       <SkeletonGroup loading>
@@ -159,7 +162,11 @@ function CircleSidebar() {
         )}
         <Link href={`/${cId}`}>
           <PrimaryButton
-            variant={pId || cSlug ? "transparent" : "tertiary"}
+            variant={
+              cId && router.query?.tab !== "payment" && !cSlug && !pId
+                ? "tertiary"
+                : "transparent"
+            }
             icon={<IconSparkles size="5" />}
             onClick={() => {
               process.env.NODE_ENV === "production" &&
@@ -170,6 +177,25 @@ function CircleSidebar() {
             }}
           >
             Circle Dashboard
+          </PrimaryButton>
+        </Link>
+        <Link href={`/${cId}?tab=payment`}>
+          <PrimaryButton
+            variant={
+              cId && router.query?.tab === "payment" && !cSlug && !pId
+                ? "tertiary"
+                : "transparent"
+            }
+            icon={<DollarOutlined size={5} />}
+            onClick={() => {
+              process.env.NODE_ENV === "production" &&
+                mixpanel.track("Payment Center Button", {
+                  user: currentUser?.username,
+                  url: window.location.href,
+                });
+            }}
+          >
+            Payment Center
           </PrimaryButton>
         </Link>
 

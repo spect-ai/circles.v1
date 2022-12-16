@@ -20,6 +20,7 @@ import { joinCircle } from "@/app/services/JoinCircle";
 import Roles from "./RolesTab";
 import { useGlobal } from "@/app/context/globalContext";
 import FAQModal from "../Dashboard/FAQModal";
+import Payment from "./Payment";
 
 const BoxContainer = styled(Box)`
   width: calc(100vw - 3.5rem);
@@ -46,6 +47,10 @@ export default function Circle() {
 
   if (isLoading || !circle || !memberDetails) {
     return <Loader text="...." loading />;
+  }
+
+  if (router.query?.tab === "payment") {
+    return <Payment />;
   }
 
   if (circle?.unauthorized && !isLoading && circle?.id)

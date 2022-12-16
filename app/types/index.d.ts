@@ -285,6 +285,9 @@ export interface CircleType {
   automationsIndexedByCollection: AutomationsIndexedByCollectionSlugType;
   rootAutomations: RootAutomationsType;
   automationCount: number;
+  pendingPayments: string[];
+  completedPayments: string[];
+  paymentDetails: { [key: string]: PaymentDetails };
 }
 
 // interface ProjectType {
@@ -1154,3 +1157,16 @@ export type AutomationsIndexedByCollectionSlugType = {
 };
 
 export type RootAutomationsType = string[];
+
+export type PaymentDetails = {
+  id: string;
+  chain: Chain;
+  token: Token;
+  value: number;
+  paidToUserId: string;
+  paidToAddress: string;
+  type?: string;
+  notes?: string;
+  dataRef?: string;
+  collectionRef?: string;
+};
