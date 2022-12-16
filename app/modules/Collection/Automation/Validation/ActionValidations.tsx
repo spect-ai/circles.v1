@@ -8,14 +8,18 @@ export function validateActions(actions: Action[]): boolean {
 export function validateAction(action: Action): boolean {
   if (action.type === "sendEmail") {
     return validateSendEmailAction(action);
-  } else if (action.type === "giveRole") {
+  } else if (action.type === "giveRole" || action.type === "giveDiscordRole") {
     return validateGiveRoleAction(action);
+  } else if (action.type === "createDiscordChannel") {
+    return validateCreateDiscordChannel(action);
+  } else if (action.type === "createCard") {
+    return validateCreateCard(action);
   }
   return true;
 }
 
 export function validateSendEmailAction(action: Action): boolean {
-  if (!action?.data?.message) {
+  if (!action?.data?.message || action?.data?.toEmailProperties?.length === 0) {
     return false;
   }
   return true;
@@ -31,4 +35,19 @@ export function validateGiveRoleAction(action: Action): boolean {
     }
   }
   return satisfied;
+}
+
+export function validateCreateDiscordChannel(action: Action): boolean {
+  if (!action.data?.channelCategory || !action.data?.channelName) return false;
+  return true;
+}
+
+export function validateCreateCard(action: Action): boolean {
+  if (
+    !action.data?.selectedCollection ||
+    Object.keys(action.data?.selectedCollection)?.length === 0
+  )
+    return false;
+  if (action.data?.values?.length === 0) return false;
+  return true;
 }

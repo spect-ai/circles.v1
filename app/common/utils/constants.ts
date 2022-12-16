@@ -112,6 +112,7 @@ export const prevPropertyTypeToNewPropertyTypeThatDoesntRequiresClarance = {
   "user[]": ["user[]"],
   multiURL: ["multiURL"],
   reward: ["reward"],
+  payWall: ["payWall"],
   milestone: ["milestone"],
 };
 

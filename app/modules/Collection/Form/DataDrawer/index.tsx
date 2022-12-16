@@ -62,6 +62,8 @@ export default function DataDrawer({
   const [data, setData] = useState({} as any);
   const [vote, setVote] = useState(-1);
 
+  console.log({ collection });
+
   useEffect(() => {
     if (dataId && collection.data) {
       setData({});
@@ -187,7 +189,8 @@ export default function DataDrawer({
             <Stack space="5">
               <a
                 href={`/profile/${
-                  collection.profiles[collection.dataOwner[data.slug]].username
+                  collection?.profiles?.[collection?.dataOwner[data?.slug]]
+                    ?.username
                 }`}
                 target="_blank"
                 rel="noreferrer"
@@ -250,16 +253,32 @@ export default function DataDrawer({
                       );
                     return (
                       <Stack key={property.name} space="1">
-                        <Text weight="semiBold" variant="large" color="accent">
-                          {property.name}
-                        </Text>
-                        <Text weight="medium" variant="small">
-                          {property.description}
-                        </Text>
+                        <Stack
+                          space={"2"}
+                          direction="horizontal"
+                          wrap
+                          align={"center"}
+                        >
+                          <Text
+                            weight="bold"
+                            variant="extraLarge"
+                            color="accent"
+                          >
+                            {property.name}
+                          </Text>
+                          {property.description && (
+                            <Text
+                              weight="medium"
+                              variant="small"
+                              color={"textTertiary"}
+                            >
+                              {property.description}
+                            </Text>
+                          )}
+                        </Stack>
                         {[
                           "shortText",
                           "ethAddress",
-                          "singleURL",
                           "email",
                           "number",
                         ].includes(property.type) && (
@@ -268,16 +287,32 @@ export default function DataDrawer({
                         {property?.type === "longText" && (
                           <Editor value={data[property.name]} disabled />
                         )}
+                        {property?.type == "singleURL" && (
+                          <Box
+                            onClick={() =>
+                              window.open(data[property.name], "_blank")
+                            }
+                            cursor="pointer"
+                          >
+                            <Text underline>{data[property.name]}</Text>
+                          </Box>
+                        )}
                         {property?.type == "multiURL" && (
-                          <Stack direction={"vertical"}>
-                            {data[property.name]?.map((url: string) => (
-                              <Box
-                                key={url}
-                                onClick={() => window.open(url, "_blank")}
-                                cursor="pointer"
-                              >
-                                <Text>{url}</Text>
-                              </Box>
+                          <Stack direction="vertical">
+                            {data[property.name]?.map((url: OptionType) => (
+                              <Stack direction={"horizontal"}>
+                                <Text>{url.label}</Text>
+                                <Text>-</Text>
+                                <Box
+                                  key={url.value}
+                                  onClick={() =>
+                                    window.open(url.value, "_blank")
+                                  }
+                                  cursor="pointer"
+                                >
+                                  <Text underline>{url.value}</Text>
+                                </Box>
+                              </Stack>
                             ))}
                           </Stack>
                         )}
@@ -316,9 +351,29 @@ export default function DataDrawer({
                         {property?.type === "reward" && (
                           <Text>
                             {data[property.name]?.value}{" "}
-                            {data[property.name]?.token.label} on{" "}
-                            {data[property.name]?.chain.label}
+                            {data[property.name]?.token?.label} on{" "}
+                            {data[property.name]?.chain?.label}
                           </Text>
+                        )}
+                        {property?.type === "payWall" && (
+                          <Stack>
+                            {data[property.name]?.map(
+                              (payment: {
+                                token: OptionType;
+                                chain: OptionType;
+                                value: number;
+                              }) => {
+                                return (
+                                  <Text>
+                                    Paid {payment.value} {payment.token.label}{" "}
+                                    on {payment.chain.label}
+                                  </Text>
+                                );
+                              }
+                            )}
+                            {console.log(data[property.name])}
+                            {data[propertyName].length == 0 && "Unpaid"}
+                          </Stack>
                         )}
                         {property?.type === "milestone" && (
                           <Stack>

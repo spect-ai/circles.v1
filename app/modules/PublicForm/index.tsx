@@ -23,10 +23,12 @@ import DataActivity from "../Collection/Form/DataDrawer/DataActivity";
 import _ from "lodash";
 import { useLocation } from "react-use";
 import SocialMedia from "@/app/common/components/SocialMedia";
+import Link from "next/link";
+import DiscordIcon from "@/app/assets/icons/discordIcon.svg";
 
 export default function PublicForm() {
   const router = useRouter();
-  const { formId, bgcolor } = router.query;
+  const { formId } = router.query;
   const [form, setForm] = useState<FormType>();
   const { mode } = useTheme();
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
@@ -121,17 +123,9 @@ export default function PublicForm() {
 
   return (
     <ScrollContainer
-      style={{
-        backgroundColor: `${
-          route === "embed"
-            ? bgcolor
-              ? bgcolor
-              : "transparent"
-            : mode === "dark"
-            ? "rgb(0,0,0)"
-            : "rgb(255,255,255)"
-        }`,
-      }}
+      backgroundColor={
+        route === "embed" ? "transparent" : "backgroundSecondary"
+      }
     >
       <ToastContainer
         toastStyle={{
@@ -152,19 +146,11 @@ export default function PublicForm() {
       {form && (
         <Container embed={route === "embed"}>
           <FormContainer
+            backgroundColor={route === "embed" ? "transparent" : "background"}
             borderRadius={route === "embed" ? "none" : "2xLarge"}
             style={{
               boxShadow: `0rem 0.2rem 0.5rem ${
                 mode === "dark" ? "rgba(0, 0, 0, 0.25)" : "rgba(0, 0, 0, 0.1)"
-              }`,
-              backgroundColor: `${
-                route === "embed"
-                  ? bgcolor
-                    ? bgcolor
-                    : "transparent"
-                  : mode === "dark"
-                  ? "rgb(20,20,20)"
-                  : "rgb(255,255,255)"
               }`,
             }}
           >
@@ -173,7 +159,12 @@ export default function PublicForm() {
                 {form.formMetadata.logo && (
                   <Avatar src={form.formMetadata.logo} label="" size="20" />
                 )}
-                <NameInput autoFocus value={form.name} disabled />
+                <NameInput
+                  autoFocus
+                  value={form.name}
+                  disabled
+                  rows={Math.floor(form.name?.length / 60) + 1}
+                />
                 {form.description && (
                   <Editor value={form.description} isDirty={true} disabled />
                 )}
@@ -215,7 +206,7 @@ export default function PublicForm() {
                   )}
                 {form.formMetadata.mintkudosTokenId && (
                   <Text weight="semiBold" variant="large" color="textPrimary">
-                    This form distributes Kudos to responders
+                    This form distributes soulbound tokens to responders
                   </Text>
                 )}
                 {form.formMetadata.sybilProtectionEnabled && (
@@ -244,6 +235,48 @@ export default function PublicForm() {
                 </Box>
               </Box>
             )}
+            {form.requireDiscordConnection &&
+              !currentUser?.discordUsername &&
+              currentUser?.id && (
+                <Box paddingLeft="4">
+                  <Text weight="semiBold" variant="large" color="textPrimary">
+                    This form requires Discord connection so it can
+                    automatically assign roles
+                  </Text>
+                  <Box
+                    width={{
+                      xs: "full",
+                      sm: "full",
+                      md: "1/4",
+                    }}
+                    marginTop="4"
+                  >
+                    <Link
+                      href={`https://discord.com/api/oauth2/authorize?client_id=942494607239958609&redirect_uri=${
+                        process.env.NODE_ENV === "development"
+                          ? `http%3A%2F%2Flocalhost%3A3000%2FlinkDiscord`
+                          : "https%3A%2F%2Fcircles.spect.network%2FlinkDiscord"
+                      }&response_type=code&scope=identify&type=publicForm&state=/r/${
+                        form.slug
+                      }`}
+                    >
+                      <Button
+                        data-tour="connect-discord-button"
+                        width="full"
+                        size="small"
+                        variant="secondary"
+                        prefix={
+                          <Box marginTop="1">
+                            <DiscordIcon />
+                          </Box>
+                        }
+                      >
+                        Connect Discord
+                      </Button>
+                    </Link>
+                  </Box>
+                </Box>
+              )}
             {!canFillForm && currentUser?.id && !loading && (
               <motion.div
                 className="box"
@@ -477,8 +510,8 @@ const Container = styled(Box)<{ embed: boolean }>`
   padding: 0rem ${(props) => (props.embed ? "0rem" : "14rem")};
 `;
 
-export const NameInput = styled.input`
-  width: 100%;
+export const NameInput = styled.textarea`
+  resize: none;
   background: transparent;
   border: 0;
   border-style: none;
@@ -487,9 +520,11 @@ export const NameInput = styled.input`
   outline-offset: 0;
   box-shadow: none;
   font-size: 1.8rem;
+  font-family: Inter;
   caret-color: rgb(191, 90, 242);
   color: rgb(191, 90, 242);
   font-weight: 600;
+  overflow: hidden;
 `;
 
 export const CoverImage = styled(Box)<{ src: string }>`

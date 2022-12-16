@@ -10,6 +10,7 @@ import {
   LocalCollectionContext,
   useProviderLocalCollection,
 } from "@/app/modules/Collection/Context/LocalCollectionContext";
+import useConnectDiscordServer from "@/app/services/Discord/useConnectDiscordServer";
 import { CircleType, MemberDetails, Registry } from "@/app/types";
 import { AnimatePresence } from "framer-motion";
 import type { NextPage } from "next";
@@ -20,6 +21,7 @@ import { useQuery } from "react-query";
 const CollectionPage: NextPage = () => {
   const router = useRouter();
   const { circle: cId, collection: colId } = router.query;
+  useConnectDiscordServer();
   const circlecontext = useProviderCircleContext();
   const context = useProviderLocalCollection();
 

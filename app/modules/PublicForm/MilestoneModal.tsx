@@ -217,6 +217,7 @@ export default function MilestoneModal({
                 }}
                 multiple={false}
                 isClearable={false}
+                portal={false}
               />
             </Box>
             <Box
@@ -234,6 +235,7 @@ export default function MilestoneModal({
                 }}
                 multiple={false}
                 isClearable={false}
+                portal={false}
               />
             </Box>
             <Box

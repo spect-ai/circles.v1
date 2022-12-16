@@ -9,7 +9,6 @@ import { TwitterShareButton } from "react-share";
 import { toast } from "react-toastify";
 import { useWindowSize } from "react-use";
 import styled from "styled-components";
-import Link from "next/link";
 import mixpanel from "@/app/common/utils/mixpanel";
 import { useQuery } from "react-query";
 
@@ -84,7 +83,9 @@ export default function FormResponse({
           )}
           {claimed ? (
             <Stack>
-              <Heading>You have claimed this Kudos 🎉</Heading>
+              <Text variant="extraLarge" weight="bold">
+                You have claimed this Kudos 🎉
+              </Text>
               <Box>
                 <Stack direction="vertical">
                   <TwitterShareButton
@@ -251,7 +252,7 @@ export default function FormResponse({
                     Submit another response
                   </PrimaryButton>
                 )}
-              <Link href="/">
+              <a href="/" target="_blank">
                 <PrimaryButton
                   onClick={() => {
                     process.env.NODE_ENV === "production" &&
@@ -264,7 +265,7 @@ export default function FormResponse({
                 >
                   Create your own form
                 </PrimaryButton>
-              </Link>
+              </a>
             </Stack>
           </Box>
         </Box>

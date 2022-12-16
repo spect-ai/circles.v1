@@ -145,7 +145,7 @@ export default function SelectCards() {
           <Select
             options={[
               { label: "Pay Assignee", value: "assignees" },
-              { label: "Pay Circle", value: "circles" },
+              // { label: "Pay Circle", value: "circles" },
             ]}
             value={payOption}
             onChange={setPayOption}

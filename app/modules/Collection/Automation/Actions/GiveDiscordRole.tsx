@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import DiscordIcon from "@/app/assets/icons/discordIcon.svg";
 import { getGuildRoles } from "@/app/services/Discord";
 import Editor from "@/app/common/components/Editor";
+import { useLocalCollection } from "../../Context/LocalCollectionContext";
 
 type Props = {
   actionMode: "edit" | "create";
@@ -23,6 +24,7 @@ export default function GiveDiscordRole({
     (action.data?.roles || {}) as { [roleId: string]: boolean }
   );
   const { circle } = useCircle();
+  const { localCollection: collection } = useLocalCollection();
   const toggleSelectedRole = (roleId: string) => {
     setSelectedRoles({
       ...selectedRoles,
@@ -49,7 +51,7 @@ export default function GiveDiscordRole({
       data && setDiscordRoles(data.roles);
       console.log({ data });
     };
-    void fetchGuildRoles();
+    if (circle?.discordGuildId) void fetchGuildRoles();
   }, [circle?.discordGuildId]);
 
   if (!circle.discordGuildId)
@@ -57,7 +59,7 @@ export default function GiveDiscordRole({
       <Box
         width={{
           xs: "full",
-          md: "1/3",
+          md: "1/2",
         }}
         onClick={() => {
           window.open(
@@ -67,7 +69,7 @@ export default function GiveDiscordRole({
                 : "https://circles.spect.network/"
             }api/connectDiscord&response_type=code&scope=bot&state=${
               circle.slug
-            }`,
+            }/r/${collection.slug}`,
             "_blank"
           );
         }}

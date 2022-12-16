@@ -69,7 +69,7 @@ export default function ApproveToken() {
                 <Stack direction="horizontal">
                   {getFlattenedCurrencies(
                     circle?.localRegistry,
-                    chain?.chainId as string
+                    chain?.chainId 
                   )?.map((aToken) => (
                     <Box
                       cursor="pointer"

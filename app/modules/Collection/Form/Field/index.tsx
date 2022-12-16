@@ -133,6 +133,11 @@ function FieldComponent({
           // onChange={(e) => setLabel(e.target.value)}
         />
       )}
+      {collection.properties[id]?.type === "payWall" && (
+        <PrimaryButton>
+          Pay
+        </PrimaryButton>
+      )}
       {collection.properties[id]?.type === "multiURL" && (
         <Input
           label=""

@@ -9,6 +9,8 @@ import { Filter, UserType } from "@/app/types";
 import { ViewMode } from "gantt-task-react";
 import { useRouter } from "next/router";
 import { io, Socket } from "socket.io-client";
+import { useSigner } from "wagmi";
+import { Signer } from "ethers";
 
 interface GlobalContextType {
   isSidebarExpanded: boolean;
@@ -40,11 +42,15 @@ interface GlobalContextType {
   setProfileLoading: React.Dispatch<React.SetStateAction<boolean>>;
   toggle: number;
   setToggle: (toggle: number) => void;
+  signer: Signer;
 }
 
 const useProviderGlobalContext = () => {
   const router = useRouter();
+  const { data: contractSigner, isLoading: signerLoading } = useSigner();
   const { project: pId } = router.query;
+
+  const [signer, setSigner] = useState<Signer>(contractSigner as Signer);
 
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
   const [connectedUser, setConnectedUser] = useState("");
@@ -106,6 +112,10 @@ const useProviderGlobalContext = () => {
   }, []);
 
   useEffect(() => {
+    if (!signerLoading) setSigner(contractSigner as Signer);
+  }, [connectedUser, contractSigner, signerLoading]);
+
+  useEffect(() => {
     if (socket.connected && connectedUser) {
       socket.emit("join", connectedUser);
     }
@@ -141,6 +151,7 @@ const useProviderGlobalContext = () => {
     setUserData,
     profileLoading,
     setProfileLoading,
+    signer
   };
 };
 

@@ -77,6 +77,32 @@ export const joinCircleFromGuildxyz = async (circleId: string) => {
   }
 };
 
+export const joinCirclesFromGuildxyz = async (ethAddress: string) => {
+  const res = await fetch(
+    `${process.env.API_HOST}/circle/v1/${ethAddress}/joinMultipleCirclesUsingGuildxyz`,
+    {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+    }
+  );
+  if (res.ok) {
+    const data = await res.json();
+    toast("You have joined circles successfully", {
+      theme: "dark",
+    });
+    console.log({ data });
+    return data;
+  } else {
+    toast.error(
+      "Something went wrong, please ensure you have the required role"
+    );
+    return null;
+  }
+};
+
 export const joinCircle = async (circleId: string) => {
   const res = await fetch(
     `${process.env.API_HOST}/circle/v1/${circleId}/join`,

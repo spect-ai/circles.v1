@@ -7,6 +7,7 @@ import { useQuery } from "react-query";
 import DiscordIcon from "@/app/assets/icons/discordIcon.svg";
 import { isEmail } from "@/app/common/utils/utils";
 import { useProfile } from "./LocalProfileContext";
+import router from "next/router";
 
 export function BasicInfo() {
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
@@ -72,13 +73,13 @@ export function BasicInfo() {
           md: "horizontal",
         }}
       >
-        {!currentUser?.discordId && (
+        {!currentUser?.discordUsername && (
           <Link
             href={`https://discord.com/api/oauth2/authorize?client_id=942494607239958609&redirect_uri=${
               process.env.NODE_ENV === "development"
                 ? "http%3A%2F%2Flocalhost%3A3000%2FlinkDiscord"
                 : "https%3A%2F%2Fcircles.spect.network%2FlinkDiscord"
-            }&response_type=code&scope=identify`}
+            }&response_type=code&scope=identify&state=${router.asPath}`}
           >
             <Button
               data-tour="connect-discord-button"
@@ -95,7 +96,7 @@ export function BasicInfo() {
             </Button>
           </Link>
         )}
-        {currentUser?.discordId && (
+        {currentUser?.discordUsername && (
           <Button
             disabled
             width="full"

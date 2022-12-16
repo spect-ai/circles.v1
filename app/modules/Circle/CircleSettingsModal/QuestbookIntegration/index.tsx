@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Dropdown, { OptionType } from "@/app/common/components/Dropdown";
 import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
@@ -12,7 +13,7 @@ import { useCircle } from "../../CircleContext";
 
 export default function ConnectQuestbook() {
   const [isOpen, setIsOpen] = useState(false);
-  const { circle, registry, setCircleData } = useCircle();
+  const { circle, setCircleData } = useCircle();
 
   const [workspaceUrl, setWorkspaceUrl] = useState("");
   const [milestoneProject, setMilestoneProject] = useState({} as OptionType);
@@ -140,6 +141,7 @@ export default function ConnectQuestbook() {
                       setApplicantProject(value);
                     }}
                     multiple={false}
+                    portal={false}
                   />
                 </Box>
 
@@ -154,6 +156,7 @@ export default function ConnectQuestbook() {
                       setMilestoneProject(value);
                     }}
                     multiple={false}
+                    portal={false}
                   />{" "}
                 </Box>
 
@@ -176,6 +179,7 @@ export default function ConnectQuestbook() {
                       })
                     }
                     multiple={false}
+                    portal={false}
                   />
                 </Box>
 

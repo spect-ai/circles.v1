@@ -6,7 +6,6 @@ import {
   Text,
   IconLockClosed,
   Stack,
-  IconSparkles,
 } from "degen";
 import { AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
@@ -20,6 +19,7 @@ import { joinCircle } from "@/app/services/JoinCircle";
 import Roles from "./RolesTab";
 import { useGlobal } from "@/app/context/globalContext";
 import FAQModal from "../Dashboard/FAQModal";
+import { QuestionCircleOutlined } from "@ant-design/icons";
 
 const BoxContainer = styled(Box)`
   width: calc(100vw - 3.5rem);
@@ -142,7 +142,7 @@ export default function Circle() {
           position: "absolute",
           right: "2rem",
           bottom: "1rem",
-          zIndex: "2",
+          zIndex: "1",
         }}
       >
         <Button
@@ -150,7 +150,7 @@ export default function Circle() {
           onClick={() => setFaqOpen(true)}
           shape="circle"
         >
-          <IconSparkles size={"6"} />
+          <QuestionCircleOutlined style={{ fontSize: "1.5rem" }} />
         </Button>
       </Box>
       <AnimatePresence>

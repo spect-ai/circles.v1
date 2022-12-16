@@ -1,10 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { OptionType } from "@/app/common/components/Dropdown";
 import {
   addCollectionData,
   deleteCollectionData,
   updateCollectionDataGuarded,
 } from "@/app/services/Collection";
-import { Milestone, Option, PropertyType, Reward } from "@/app/types";
+import {
+  Milestone,
+  Option,
+  PropertyType,
+  Reward,
+  PaymentData,
+} from "@/app/types";
 import { Box } from "degen";
 import { motion, AnimatePresence } from "framer-motion";
 import { matchSorter } from "match-sorter";
@@ -32,6 +39,9 @@ import GutterColumnComponent from "./GutterColumnComponent";
 import HeaderComponent from "./HeaderComponent";
 import MilestoneComponent from "./MilestoneComponent";
 import MultiMilestoneModal from "./MultiMilestoneModal";
+import MultiURLComponent from "./MultiURLComponent";
+import MultiURLModal from "./MultiURLModal";
+import PaymentComponent from "./PaymentComponent";
 import RewardComponent from "./RewardComponent";
 import RewardModal from "./RewardModal";
 import SelectComponent from "./SelectComponent";
@@ -39,6 +49,7 @@ import SelectComponent from "./SelectComponent";
 export default function TableView() {
   const [isEditFieldOpen, setIsEditFieldOpen] = useState(false);
   const [isRewardFieldOpen, setIsRewardFieldOpen] = useState(false);
+  const [isURLFieldOpen, setIsURLFieldOpen] = useState(false);
   const [propertyName, setPropertyName] = useState("");
   const [dataId, setDataId] = useState<string>("");
   const [multipleMilestoneModalOpen, setMultipleMilestoneModalOpen] =
@@ -49,7 +60,6 @@ export default function TableView() {
     setLocalCollection,
     searchFilter,
     projectViewId,
-    updateCollection,
   } = useLocalCollection();
 
   const [expandedDataSlug, setExpandedDataSlug] = useState("");
@@ -68,6 +78,8 @@ export default function TableView() {
       setExpandedDataSlug(cardSlug as string);
     }
   }, [dataSlug, setExpandedDataSlug, cardSlug]);
+
+  console.log({ collection });
 
   const updateData = async ({ cell }: { cell: CellWithId }) => {
     if (data) {
@@ -94,7 +106,6 @@ export default function TableView() {
         } else {
           toast.error("Error updating data");
         }
-        console.log({ res });
         return res;
       } else {
         toast.error("Cannot update data");
@@ -304,6 +315,8 @@ export default function TableView() {
         return textColumn;
       case "ethAddress":
         return textColumn;
+      case "singleURL":
+        return textColumn;
       case "longText":
         return ExpandableCell;
       case "number":
@@ -316,10 +329,14 @@ export default function TableView() {
         return SelectComponent;
       case "reward":
         return RewardComponent;
+      case "payWall":
+        return PaymentComponent;
       case "user[]":
         return ExpandableCell;
       case "multiSelect":
         return ExpandableCell;
+      case "multiURL":
+        return MultiURLComponent;
       case "milestone":
         return MilestoneComponent;
       default:
@@ -332,9 +349,14 @@ export default function TableView() {
     collection.propertyOrder.map((propertyName: string) => {
       const property = collection.properties[propertyName];
       if (
-        ["singleSelect", "multiSelect", "longText", "user", "user[]"].includes(
-          property.type
-        )
+        [
+          "singleSelect",
+          "multiSelect",
+          "longText",
+          "user",
+          "user[]",
+          "singleURL",
+        ].includes(property.type)
       ) {
         return {
           ...keyColumn(property.name, {
@@ -388,6 +410,43 @@ export default function TableView() {
               setIsEditFieldOpen={setIsEditFieldOpen}
               setPropertyName={setPropertyName}
               propertyType={property.type}
+            />
+          ),
+          minWidth: 200,
+        };
+      } else if (["payWall"].includes(property.type)) {
+        return {
+          component: getCellComponent(property.type) as any,
+          columnData: {
+            property,
+            setPropertyName,
+            setDataId,
+          },
+          title: (
+            <HeaderComponent
+              sortData={sortData}
+              columnName={property.name}
+              setIsEditFieldOpen={setIsEditFieldOpen}
+              setPropertyName={setPropertyName}
+            />
+          ),
+          minWidth: 200,
+        };
+      } else if (["multiURL"].includes(property.type)) {
+        return {
+          component: getCellComponent(property.type) as any,
+          columnData: {
+            property,
+            setIsURLFieldOpen,
+            setPropertyName,
+            setDataId,
+          },
+          title: (
+            <HeaderComponent
+              sortData={sortData}
+              columnName={property.name}
+              setIsEditFieldOpen={setIsEditFieldOpen}
+              setPropertyName={setPropertyName}
             />
           ),
           minWidth: 200,
@@ -465,6 +524,33 @@ export default function TableView() {
                   console.log({ updatedData: data[row][propertyName] });
                 }
                 setIsRewardFieldOpen(false);
+              }
+            }}
+            dataId={dataId}
+          />
+        )}
+        {isURLFieldOpen && (
+          <MultiURLModal
+            form={collection}
+            propertyName={propertyName}
+            handleClose={async (
+              payment: Option[],
+              dataId: string,
+              propertyName: string
+            ) => {
+              if (data) {
+                const row = data.findIndex((row) => row.id === dataId);
+
+                if (row === 0 || row) {
+                  const tempData = [...data];
+                  tempData[row][propertyName] = payment;
+                  setData(tempData);
+                  setIsURLFieldOpen(false);
+                  await updateData({
+                    cell: { row, col: 0, colId: propertyName },
+                  });
+                }
+                setIsURLFieldOpen(false);
               }
             }}
             dataId={dataId}

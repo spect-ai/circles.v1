@@ -37,13 +37,12 @@ export default function DefaultPayment() {
 
   const onSubmit = async () => {
     // validate if circle address is a valid ethereum address
-    if (!circleAddress.match(/^0x[a-fA-F0-9]{40}$/)) {
+    if (circleAddress && !circleAddress.match(/^0x[a-fA-F0-9]{40}$/)) {
       toast.error("Invalid Payment Address");
       return;
     }
 
     setIsLoading(true);
-
     const res = await updateCircle(
       {
         defaultPayment: {
@@ -66,7 +65,9 @@ export default function DefaultPayment() {
       <Stack space="4">
         <Box>
           <Heading>Default Payment</Heading>
-          <Text>Set the default way that contributors get paid</Text>
+          <Text>
+            Pick the default method of payment from your whitelisted tokens
+          </Text>
         </Box>
         <Stack>
           <Text size="extraLarge">Chain</Text>
@@ -130,7 +131,7 @@ export default function DefaultPayment() {
           </Stack>
         </Stack>
         <Box marginTop="4" />
-        <Box>
+        {/* <Box>
           <Heading>Circle Address</Heading>
           <Text>
             Set ethereum address where circle should receieve the payments.
@@ -152,7 +153,7 @@ export default function DefaultPayment() {
               setCircleAddress(e.target.value);
             }}
           />
-        </Stack>
+        </Stack> */}
         <Box width="1/3" marginTop="2" paddingLeft="1">
           {isDirty && (
             <PrimaryButton

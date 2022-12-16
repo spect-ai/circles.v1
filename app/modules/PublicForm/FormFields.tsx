@@ -8,7 +8,7 @@ import {
   getForm,
   updateCollectionData,
 } from "@/app/services/Collection";
-import { FormType, KudosType, Registry, UserType } from "@/app/types";
+import { FormType, KudosType, Property, Registry, UserType } from "@/app/types";
 import { Box, Stack, Text } from "degen";
 import { isAddress } from "ethers/lib/utils";
 import React, { useEffect, useState } from "react";
@@ -20,6 +20,7 @@ import PublicField from "./PublicField";
 import mixpanel from "@/app/common/utils/mixpanel";
 import NotificationPreferenceModal from "./NotificationPreferenceModal";
 import { AnimatePresence } from "framer-motion";
+import { satisfiesConditions } from "../Collection/Common/SatisfiesFilter";
 
 type Props = {
   form: FormType;
@@ -72,11 +73,25 @@ export default function FormFields({ form, setForm }: Props) {
     }
   );
 
+  const isHidden = (propertyId: string, data: any) => {
+    form.propertyOrder.forEach((propertyId) => {
+      const property = form.properties[propertyId];
+
+      return true;
+    });
+
+    return false;
+  };
+
   const checkRequired = (data: any) => {
     const requiredFieldsNotSet = {} as { [key: string]: boolean };
     form.propertyOrder.forEach((propertyId) => {
       const property = form.properties[propertyId];
-      if (property.required && isEmpty(propertyId, data[propertyId])) {
+      if (
+        property.required &&
+        isEmpty(propertyId, data[propertyId]) &&
+        satisfiesConditions(data, form.properties, propertyId)
+      ) {
         requiredFieldsNotSet[propertyId] = true;
       }
     });
@@ -166,7 +181,9 @@ export default function FormFields({ form, setForm }: Props) {
             )
           ) {
             tempData[propertyId] = lastResponse[propertyId] || [];
-          } else if (["reward"].includes(form.properties[propertyId].type)) {
+          } else if (
+            ["reward", "payWall"].includes(form.properties[propertyId].type)
+          ) {
             tempData[propertyId] = lastResponse[propertyId];
           }
         });
@@ -311,6 +328,8 @@ export default function FormFields({ form, setForm }: Props) {
         return !value || value.length === 0;
       case "reward":
         return !value?.value;
+      case "payWall":
+        return !value?.txnHash;
       default:
         return false;
     }
