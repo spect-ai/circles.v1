@@ -1,6 +1,6 @@
 import { Heading, Stack, Text, Button, IconSparkles, Box } from "degen";
 import styled from "styled-components";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import useProfileUpdate from "@/app/services/Profile/useProfileUpdate";
 import { RocketOutlined } from "@ant-design/icons";
 import mixpanel from "@/app/common/utils/mixpanel";
@@ -44,6 +44,10 @@ export function BasicProfile({ setStep }: { setStep: (step: number) => void }) {
         user: currentUser?.username,
       });
   };
+
+  useEffect(() => {
+    if (currentUser?.discordUsername) setPart(1);
+  }, []);
   return (
     <Box
       display={"flex"}
@@ -83,7 +87,7 @@ export function BasicProfile({ setStep }: { setStep: (step: number) => void }) {
           </Button>
         </>
       )}
-      {!currentUser?.discordId &&
+      {!currentUser?.discordUsername &&
         currentUser?.username.startsWith("fren") &&
         part == 0 && (
           <>

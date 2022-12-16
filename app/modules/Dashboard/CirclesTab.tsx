@@ -44,9 +44,10 @@ function YourCircles({
       setCirclesToShow(circles);
     } else {
       setCirclesToShow(
-        circles.filter(
-          (circle) => !circle.parents || circle.parents?.length === 0
-        )
+        circles.filter &&
+          circles.filter(
+            (circle) => !circle.parents || circle.parents?.length === 0
+          )
       );
     }
   }, [selectedFilter, circles]);

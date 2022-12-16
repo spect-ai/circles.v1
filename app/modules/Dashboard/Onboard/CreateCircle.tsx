@@ -10,6 +10,7 @@ import { UserType } from "@/app/types";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import Link from "next/link";
 import DiscordIcon from "@/app/assets/icons/discordIcon.svg";
+import { joinCirclesFromGuildxyz } from "@/app/services/JoinCircle";
 
 type CreateCircleDto = {
   name: string;
@@ -79,7 +80,7 @@ export function CreateCircle({ setStep, setOnboardType }: Props) {
             }}
           />
           <Button
-            onClick={() => {
+            onClick={async () => {
               const color1 = generateColorHEX();
               const color2 = generateColorHEX();
               const color3 = generateColorHEX();
@@ -104,6 +105,7 @@ export function CreateCircle({ setStep, setOnboardType }: Props) {
                     });
                 })
                 .catch((err) => console.log({ err }));
+              await joinCirclesFromGuildxyz(currentUser?.ethAddress as string);
             }}
             prefix={
               <RocketOutlined style={{ fontSize: "1.2rem" }} rotate={30} />
@@ -125,9 +127,10 @@ export function CreateCircle({ setStep, setOnboardType }: Props) {
             </Text>
           </Box>
           <PrimaryButton
-            onClick={() => {
+            onClick={async() => {
               setStep(3);
               setOnboardType("profile");
+              await joinCirclesFromGuildxyz(currentUser?.ethAddress as string);
             }}
           >
             Set up Profile

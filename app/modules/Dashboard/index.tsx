@@ -33,6 +33,8 @@ import { PopoverOption } from "../Card/OptionPopover";
 import { useRouter } from "next/router";
 import ResponsesTab from "./ResponsesTab";
 import FAQModal from "./FAQModal";
+import { joinCirclesFromGuildxyz } from "@/app/services/JoinCircle";
+import { toast, ToastContainer } from "react-toastify";
 
 function Dashboard() {
   const { setIsProfilePanelExpanded } = useGlobal();
@@ -123,6 +125,16 @@ function Dashboard() {
     return (
       <>
         <Box padding="4">
+          <ToastContainer
+            toastStyle={{
+              backgroundColor: `${
+                mode === "dark" ? "rgb(20,20,20)" : "rgb(240,240,240)"
+              }`,
+              color: `${
+                mode === "dark" ? "rgb(255,255,255,0.7)" : "rgb(20,20,20,0.7)"
+              }`,
+            }}
+          />
           <Stack
             direction={{
               xs: "vertical",

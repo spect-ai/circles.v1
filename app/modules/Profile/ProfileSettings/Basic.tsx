@@ -73,7 +73,7 @@ export function BasicInfo() {
           md: "horizontal",
         }}
       >
-        {!currentUser?.discordId && (
+        {!currentUser?.discordUsername && (
           <Link
             href={`https://discord.com/api/oauth2/authorize?client_id=942494607239958609&redirect_uri=${
               process.env.NODE_ENV === "development"
@@ -96,7 +96,7 @@ export function BasicInfo() {
             </Button>
           </Link>
         )}
-        {currentUser?.discordId && (
+        {currentUser?.discordUsername && (
           <Button
             disabled
             width="full"

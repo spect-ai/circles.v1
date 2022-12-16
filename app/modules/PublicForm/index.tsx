@@ -225,7 +225,7 @@ export default function PublicForm() {
               </Box>
             )}
             {form.requireDiscordConnection &&
-              !currentUser?.discordId &&
+              !currentUser?.discordUsername &&
               currentUser?.id && (
                 <Box paddingLeft="4">
                   <Text weight="semiBold" variant="large" color="textPrimary">
