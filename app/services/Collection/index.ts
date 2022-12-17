@@ -3,6 +3,7 @@ import {
   Condition,
   FormUserType,
   ProjectMetadata,
+  PayWallOptions,
   Registry,
   Voting,
 } from "@/app/types";
@@ -22,6 +23,7 @@ export const addField = async (
     description?: string;
     milestoneFields?: string[];
     viewConditions?: Condition[];
+    payWallOptions?: PayWallOptions;
   }
 ) => {
   return await (
@@ -55,6 +57,7 @@ export const updateField = async (
     description?: string;
     milestoneFields?: string[];
     viewConditions?: Condition[];
+    payWallOptions?: PayWallOptions;
   }
 ) => {
   return await (

@@ -1,13 +1,6 @@
 import Popover from "@/app/common/components/Popover";
 import { PropertyType } from "@/app/types";
-import {
-  Box,
-  IconDotsHorizontal,
-  IconPencil,
-  Stack,
-  Text,
-  useTheme,
-} from "degen";
+import { Box, IconPencil, Stack, Text, useTheme } from "degen";
 import React, { useState } from "react";
 import styled from "styled-components";
 import { getPropertyIcon } from "../../CollectionProject/EditProperty/Utils";
@@ -37,7 +30,6 @@ const ScrollContainer = styled(Box)`
 `;
 
 export default function HeaderComponent({
-  sortData,
   columnName,
   setIsEditFieldOpen,
   setPropertyName,
@@ -159,8 +151,4 @@ const PopoverOptionContainer = styled(Box)<{ mode: string }>`
     background-color: ${({ mode }) =>
       mode === "dark" ? "rgba(255, 255, 255, 0.1)" : "rgba(20, 20, 20, 0.1)"};
   }
-`;
-
-const DropdownButton = styled(Box)`
-  cursor: pointer !important;
 `;

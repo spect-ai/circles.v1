@@ -2,7 +2,7 @@
 import Dropdown from "@/app/common/components/Dropdown";
 import Editor from "@/app/common/components/Editor";
 import { isEmail, isURL } from "@/app/common/utils/utils";
-import { FormType, Option, Property, Reward } from "@/app/types";
+import { FormType, Option, Property, Registry, Reward,PayWallOptions } from "@/app/types";
 import { Box, Input, Stack, Tag, Text, useTheme } from "degen";
 import { ethers } from "ethers";
 import { useState } from "react";
@@ -10,6 +10,7 @@ import { satisfiesConditions } from "../Collection/Common/SatisfiesFilter";
 import { DateInput } from "../Collection/Form/Field";
 import MilestoneField from "./MilestoneField";
 import MultiURLField from "./MultiURLField";
+import PaywallField from "./PaywallField";
 import RewardField from "./RewardField";
 
 type Props = {
@@ -48,8 +49,9 @@ export default function PublicField({
       form.properties as { [propertyId: string]: Property },
       form.properties[propertyName].viewConditions || []
     )
-  )
+  ) {
     return null;
+  }
 
   return (
     <Box paddingY="4" borderRadius="large">
@@ -265,7 +267,9 @@ export default function PublicField({
         <Box marginTop="4">
           <RewardField
             disabled={disabled}
-            form={form}
+            rewardOptions={
+              form.properties[propertyName]?.rewardOptions as Registry
+            }
             data={data}
             propertyName={propertyName}
             updateData={(reward: Reward) => {
@@ -298,6 +302,21 @@ export default function PublicField({
           setData={setData}
           propertyName={propertyName}
           updateRequiredFieldNotSet={updateRequiredFieldNotSet}
+          disabled={disabled}
+        />
+      )}
+      {form.properties[propertyName]?.type === "payWall" && (
+        <PaywallField
+          form={form}
+          data={data}
+          setData={(paywall: PayWallOptions) => {
+            setData({
+              ...data,
+              [propertyName]: paywall,
+            });
+            updateRequiredFieldNotSet(propertyName, paywall);
+          }}
+          propertyName={propertyName}
           disabled={disabled}
         />
       )}

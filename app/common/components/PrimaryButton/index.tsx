@@ -81,6 +81,7 @@ const PrimaryButton: FC<Props> = ({
         variant={variant}
         prefix={icon}
         onClick={onClick}
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         tone={tone as any}
         type={type}
         suffix={suffix}

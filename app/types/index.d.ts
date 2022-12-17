@@ -10,6 +10,7 @@ interface UserType {
   bio: string;
   email: string;
   discordId?: string;
+  discordUsername?: string;
   githubId?: string;
   twitterId?: string;
   _id: string;
@@ -682,10 +683,11 @@ export interface DistributeEtherParams {
   chainId: string;
   cardIds: string[];
   circleId: string;
-  type: "card" | "retro";
+  type: string;
   callerId: string;
   nonce?: number;
   paymentMethod: "wallet" | "gnosis" | "gasless";
+  circleRegistry?: Registry;
 }
 
 export interface DistributeTokenParams extends DistributeEtherParams {
@@ -803,6 +805,20 @@ export type CollectionPermissions =
   | "viewResponses"
   | "addComments";
 
+export type PayWallOptions = {
+  network: Registry;
+  value: number;
+  receiver: string;
+  paid?: boolean;
+};
+
+export type PaymentData = {
+  chain: OptionType;
+  token: OptionType;
+  value: number;
+  txnHash: string;
+};
+
 export type Property = {
   name: string;
   type: PropertyType;
@@ -816,6 +832,7 @@ export type Property = {
   required?: boolean;
   description?: string;
   viewConditions?: Condition[];
+  payWallOptions?: PayWallOptions;
 };
 
 export type PropertyType =
@@ -832,7 +849,8 @@ export type PropertyType =
   | "ethAddress"
   | "milestone"
   | "singleURL"
-  | "multiURL";
+  | "multiURL"
+  | "payWall";
 
 export type Option = {
   label: string;
@@ -874,20 +892,7 @@ export interface FormType {
   private: boolean;
   description: string;
   properties: {
-    [key: string]: {
-      type: string;
-      name: string;
-      description?: string;
-      default: string;
-      isPartOfFormView: boolean;
-      options?: {
-        label: string;
-        value: string;
-      }[];
-      rewardOptions?: Registry;
-      required: boolean;
-      viewConditions?: Condition[];
-    };
+    [key: string]: Property;
   };
   propertyOrder: string[];
   creator: string;
@@ -902,6 +907,7 @@ export interface FormType {
   isAnOpportunity: boolean;
   opportunityInfo: OpportunityInfoType;
   viewConditions: Condition[];
+  requireDiscordConnection: boolean;
   createdAt: string;
   updatedAt: string;
   id: string;

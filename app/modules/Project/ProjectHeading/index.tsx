@@ -99,6 +99,7 @@ function ProjectHeading() {
                   project.parents[0].id
                 );
                 console.log({ res });
+                res.id && router.push(`/${cId}/r/${res.slug}`);
               }}
             >
               Migrate to V2

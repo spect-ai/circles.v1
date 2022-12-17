@@ -1,4 +1,5 @@
 import { isURL } from "@/app/common/utils/utils";
+import { Option } from "@/app/types";
 import {
   Button,
   Input,
@@ -14,7 +15,7 @@ interface Props {
   disabled: boolean;
   updateFieldHasInvalidType: (key: string, value: any) => void;
   placeholder: string;
-  value: string[];
+  value: Option[];
   data: any;
   setData: (value: any) => void;
   updateRequiredFieldNotSet: (key: string, value: any) => void;
@@ -25,8 +26,8 @@ interface InputProps {
   disabled: boolean;
   updateFieldHasInvalidType: (key: string, value: any) => void;
   placeholder: string;
-  val: string;
-  updateData: (i: number, val: string) => void;
+  val: Option;
+  updateData: (i: number, lab: string, val: string) => void;
   propertyName: string;
   i: number;
 }
@@ -39,26 +40,37 @@ function URLInput({
   updateData,
   i,
 }: InputProps) {
-  console.log(val);
-  const [temp, setTemp] = useState("");
+  const [tempLabel, setTempLabel] = useState("");
+  const [tempValue, setTempValue] = useState("");
 
   useEffect(() => {
-    setTemp(val);
+    setTempValue(val.value);
+    setTempLabel(val.label);
   }, [val]);
   return (
     <Stack direction={"horizontal"} align="center">
       <Input
         label=""
-        key={val}
-        placeholder={placeholder}
-        value={temp}
+        placeholder="Enter URL Label"
+        value={tempLabel}
         inputMode="text"
         onChange={(e) => {
-          setTemp(e.target.value);
+          setTempLabel(e.target.value);
+        }}
+        onBlur={() => updateData(i, tempLabel, tempValue)}
+        disabled={disabled}
+      />
+      <Input
+        label=""
+        placeholder={placeholder}
+        value={tempValue}
+        inputMode="text"
+        onChange={(e) => {
+          setTempValue(e.target.value);
           updateFieldHasInvalidType("singleURL", e.target.value);
         }}
-        onBlur={() => updateData(i, temp)}
-        error={val && !isURL(val) ? "Invalid URL" : undefined}
+        onBlur={() => updateData(i, tempLabel, tempValue)}
+        error={tempValue && !isURL(tempValue) ? "Invalid URL" : undefined}
         disabled={disabled}
       />
       <Button
@@ -66,7 +78,7 @@ function URLInput({
         size="small"
         variant="transparent"
         onClick={() => {
-          updateData(i, "");
+          updateData(i, "", "");
         }}
       >
         <IconClose size={"4"} color="accent" />
@@ -84,17 +96,16 @@ export default function MultiURLField({
   propertyName,
   setData,
 }: Props) {
-  const [urlArray, setUrlArray] = useState<string[]>(value);
+  const [urlArray, setUrlArray] = useState<Option[]>(value);
 
-  const updateData = (index: number, value: string) => {
+  const updateData = (index: number, label: string, value: string) => {
     let urls = Array.from(urlArray);
-    urls[index] = value;
-    urls = urls.filter((i) => i != "");
+    urls[index].label = label;
+    urls[index].value = value;
+    urls = urls.filter((i) => i.value != "" || i.label != "");
     setUrlArray(urls);
     setData({ ...data, [propertyName]: urls });
   };
-
-  console.log(urlArray);
   return (
     <Stack direction={"vertical"}>
       {urlArray &&
@@ -115,8 +126,13 @@ export default function MultiURLField({
       <Tag tone="accent" size="medium" hover>
         <Box
           onClick={() => {
-            if (urlArray && urlArray.length > 0) setUrlArray([...urlArray, ""]);
-            else setUrlArray([""]);
+            if (urlArray && urlArray.length > 0) {
+              const urls = Array.from(urlArray);
+              urls.push({ label: "", value: "" });
+              setUrlArray(urls);
+            } else {
+              setUrlArray([{ label: "", value: "" }]);
+            }
           }}
           display="flex"
           flexDirection={"row"}

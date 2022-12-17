@@ -1,6 +1,6 @@
 import { useGlobal } from "@/app/context/globalContext";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
-import { Box, Button, Stack, Input, IconSearch, IconGrid } from "degen";
+import { Box, Stack, Input, IconSearch } from "degen";
 import { AnimatePresence } from "framer-motion";
 import { matchSorter } from "match-sorter";
 import { useRouter } from "next/router";
@@ -10,11 +10,9 @@ import RetroModal from "../../Retro/RetroModal";
 import { useCircle } from "../CircleContext";
 import CircleMembers from "../CircleMembers";
 import InviteMemberModal from "../ContributorsModal/InviteMembersModal";
-import { TypeView } from "./TypeView";
 import { FolderView } from "./FolderView";
 import Breadcrumbs from "@/app/common/components/Breadcrumbs";
 import Roles from "../RolesTab";
-import { FolderOpenOutlined } from "@ant-design/icons";
 import { Hidden } from "react-grid-system";
 import styled from "styled-components";
 
@@ -72,7 +70,7 @@ export const Toggle = ({ toggle, setToggle }: Props) => {
 };
 
 export default function CircleDashboard() {
-  const { isSidebarExpanded, groupBy, setGroupBy, toggle, setToggle } =
+  const { isSidebarExpanded, toggle, setToggle } =
     useGlobal();
   const router = useRouter();
   const { circle: cId, retroSlug } = router.query;
@@ -245,16 +243,6 @@ export default function CircleDashboard() {
                   )}
                 </Box>
               </Stack>
-              {groupBy == "Type" && (
-                <TypeView
-                  filteredCollections={filteredCollections}
-                  filteredRetro={filteredRetro}
-                  filteredProjects={filteredProjects}
-                  filteredWorkstreams={filteredWorkstreams}
-                  setIsRetroOpen={setIsRetroOpen}
-                />
-              )}
-              {groupBy == "Folder" && (
                 <FolderView
                   filteredCollections={filteredCollections}
                   filteredRetro={filteredRetro}
@@ -262,7 +250,6 @@ export default function CircleDashboard() {
                   filteredWorkstreams={filteredWorkstreams}
                   setIsRetroOpen={setIsRetroOpen}
                 />
-              )}
             </Stack>
           )}
           {toggle == 1 && <CircleMembers />}

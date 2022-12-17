@@ -1,13 +1,5 @@
 import Loader from "@/app/common/components/Loader";
-import {
-  Box,
-  Button,
-  useTheme,
-  Text,
-  IconLockClosed,
-  Stack,
-  IconSparkles,
-} from "degen";
+import { Box, Button, useTheme, Text, IconLockClosed, Stack } from "degen";
 import { AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
@@ -21,6 +13,7 @@ import Roles from "./RolesTab";
 import { useGlobal } from "@/app/context/globalContext";
 import FAQModal from "../Dashboard/FAQModal";
 import Payment from "./Payment";
+import { QuestionCircleOutlined } from "@ant-design/icons";
 
 const BoxContainer = styled(Box)`
   width: calc(100vw - 3.5rem);
@@ -147,7 +140,7 @@ export default function Circle() {
           position: "absolute",
           right: "2rem",
           bottom: "1rem",
-          zIndex: "2",
+          zIndex: "1",
         }}
       >
         <Button
@@ -155,7 +148,7 @@ export default function Circle() {
           onClick={() => setFaqOpen(true)}
           shape="circle"
         >
-          <IconSparkles size={"6"} />
+          <QuestionCircleOutlined style={{ fontSize: "1.5rem" }} />
         </Button>
       </Box>
       <AnimatePresence>

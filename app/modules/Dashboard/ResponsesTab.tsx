@@ -24,7 +24,7 @@ function ResponsesTab() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  if (responses) {
+  if (responses && responses.length > 0) {
     return (
       <Box marginTop="4">
         <Row gutterWidth={10}>
@@ -56,6 +56,14 @@ function ResponsesTab() {
             </Col>
           ))}
         </Row>
+      </Box>
+    );
+  } else {
+    return (
+      <Box style={{ margin: "35vh 15vw" }}>
+        <Text color="accent" align="center">
+          No form responses submitted yet
+        </Text>
       </Box>
     );
   }

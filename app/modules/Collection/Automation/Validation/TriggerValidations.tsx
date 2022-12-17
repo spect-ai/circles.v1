@@ -10,6 +10,7 @@ export function validateTrigger(trigger: Trigger): boolean {
       return validateSelectTrigger(trigger);
     }
   }
+
   return true;
 }
 

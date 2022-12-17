@@ -12,6 +12,7 @@ import {
   useTheme,
   IconDotsHorizontal,
   IconSparkles,
+  IconExclamationCircle,
 } from "degen";
 import { useGlobal } from "@/app/context/globalContext";
 import { UserType, CircleType } from "@/app/types";
@@ -19,7 +20,7 @@ import Link from "next/link";
 import { useQuery } from "react-query";
 import React, { memo, useEffect, useState } from "react";
 import Logout from "@/app/common/components/LogoutButton";
-import { SettingOutlined } from "@ant-design/icons";
+import { QuestionCircleOutlined, SettingOutlined } from "@ant-design/icons";
 import YourCircles from "./CirclesTab";
 import { AnimatePresence } from "framer-motion";
 import Loader from "@/app/common/components/Loader";
@@ -32,6 +33,8 @@ import { PopoverOption } from "../Card/OptionPopover";
 import { useRouter } from "next/router";
 import ResponsesTab from "./ResponsesTab";
 import FAQModal from "./FAQModal";
+import { joinCirclesFromGuildxyz } from "@/app/services/JoinCircle";
+import { toast, ToastContainer } from "react-toastify";
 
 function Dashboard() {
   const { setIsProfilePanelExpanded } = useGlobal();
@@ -122,6 +125,16 @@ function Dashboard() {
     return (
       <>
         <Box padding="4">
+          <ToastContainer
+            toastStyle={{
+              backgroundColor: `${
+                mode === "dark" ? "rgb(20,20,20)" : "rgb(240,240,240)"
+              }`,
+              color: `${
+                mode === "dark" ? "rgb(255,255,255,0.7)" : "rgb(20,20,20,0.7)"
+              }`,
+            }}
+          />
           <Stack
             direction={{
               xs: "vertical",
@@ -259,7 +272,7 @@ function Dashboard() {
                 setPanelTab("responses");
               }}
             >
-              Responses
+              Form Responses
             </Button>
             {/* <Button
               size="small"
@@ -300,7 +313,7 @@ function Dashboard() {
             position: "absolute",
             right: "2rem",
             bottom: "1rem",
-            zIndex: "2",
+            zIndex: "1",
           }}
         >
           <Button
@@ -308,7 +321,7 @@ function Dashboard() {
             onClick={() => setFaqOpen(true)}
             shape="circle"
           >
-            <IconSparkles size={"6"} />
+            <QuestionCircleOutlined style={{ fontSize: "1.5rem" }} />
           </Button>
         </Box>
         <AnimatePresence>

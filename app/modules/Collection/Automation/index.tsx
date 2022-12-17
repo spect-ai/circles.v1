@@ -11,6 +11,7 @@ import {
   Action,
   Automation as SingleAutomationType,
   AutomationType,
+  Condition,
   Trigger,
 } from "@/app/types";
 import { GatewayOutlined } from "@ant-design/icons";
@@ -58,26 +59,12 @@ export default function Automation() {
     isDirty: boolean
   ) => {
     if (automationMode === "create") {
+      console.log("autoInCreate");
       setAutomationInCreate({
         [automationId]: automation,
       });
     }
-    // } else {
-    //   if (isDirty) {
-    //     setAutomationInEdit({
-    //       [automationId]: automation,
-    //     });
-    //     // const newTabs = automationOrder.map((aId, index) => {
-    //     //   if (aId === automationId) {
-    //     //     return `𝘜𝘱𝘥𝘢𝘵𝘪𝘯𝘨: ${automations[automationId].name}`;
-    //     //   }
-    //     //   return tabs[index];
-    //     // });
-    //     // setTabs(newTabs);
-    //   }
-    // }
   };
-
   const init = (initTab?: number) => {
     setAutomationOrder(circle.automationsIndexedByCollection[colId as string]);
     setAutomations(circle.automations);
@@ -111,6 +98,7 @@ export default function Automation() {
         description: "",
         trigger: {} as Trigger,
         actions: [] as Action[],
+        conditions: [] as Condition[],
         triggerCategory: "collection",
       },
     });
@@ -123,6 +111,7 @@ export default function Automation() {
         description: "",
         trigger: {} as Trigger,
         actions: [] as Action[],
+        conditions: [] as Condition[],
         triggerCategory: "collection",
       },
     });
@@ -132,13 +121,15 @@ export default function Automation() {
     name: string,
     description: string,
     trigger: Trigger,
-    actions: Action[]
+    actions: Action[],
+    conditions: Condition[]
   ) => {
     const newAutomation = {
       name,
       description,
       trigger,
       actions,
+      conditions,
     };
     if (automationMode === "create") {
       const res = await addAutomation(circle?.id, {
@@ -192,32 +183,33 @@ export default function Automation() {
   }, [isOpen]);
 
   return (
-    <>
-      <Stack direction="vertical">
+    <Box>
+      <Stack direction="vertical" space="1">
         <Text variant="small">{`Reduce recurring chores`}</Text>
-      </Stack>
-      <Box
-        width={{
-          xs: "full",
-          md: "full",
-        }}
-      >
-        <PrimaryButton
-          variant={
-            automationOrder?.length > 1 ||
-            !automationId?.startsWith("automation")
-              ? "tertiary"
-              : "secondary"
-          }
-          onClick={() => setIsOpen(true)}
-          icon={<GatewayOutlined />}
+        <Box
+          width={{
+            xs: "full",
+            md: "full",
+          }}
         >
-          {automationOrder?.length > 1 ||
-          !automationId?.startsWith("automation")
-            ? `Edit Automations`
-            : `Add Automations`}
-        </PrimaryButton>
-      </Box>
+          <PrimaryButton
+            variant={
+              automationOrder?.length > 1 ||
+              !automationId?.startsWith("automation")
+                ? "tertiary"
+                : "secondary"
+            }
+            onClick={() => setIsOpen(true)}
+            icon={<GatewayOutlined />}
+          >
+            {automationOrder?.length > 1 ||
+            !automationId?.startsWith("automation")
+              ? `Edit Automations`
+              : `Add Automations`}
+          </PrimaryButton>
+        </Box>
+      </Stack>
+
       <AnimatePresence>
         {isOpen && (
           <Modal
@@ -225,8 +217,27 @@ export default function Automation() {
             size="large"
             handleClose={() => setIsOpen(false)}
           >
-            <Box display="flex">
-              <Box width="1/4" paddingY="8" paddingRight="1">
+            <Box
+              display="flex"
+              flexDirection={{
+                xs: "column",
+                md: "row",
+              }}
+              width={{
+                xs: "full",
+              }}
+            >
+              <Box
+                width={{
+                  xs: "full",
+                  md: "1/4",
+                }}
+                paddingY="8"
+                paddingRight={{
+                  xs: "1",
+                  md: "1",
+                }}
+              >
                 <Tabs
                   selectedTab={tab}
                   onTabClick={onTabClick}
@@ -239,7 +250,10 @@ export default function Automation() {
               <Box
                 display="flex"
                 flexDirection="column"
-                width="3/4"
+                width={{
+                  xs: "full",
+                  md: "3/4",
+                }}
                 paddingRight="8"
                 paddingLeft="2"
                 justifyContent="flex-start"
@@ -267,11 +281,12 @@ export default function Automation() {
                   }}
                   onSave={onSave}
                   onMouseLeave={(
-                    name,
-                    description,
-                    trigger,
-                    actions,
-                    isDirty
+                    name: string,
+                    description: string,
+                    trigger: Trigger,
+                    actions: Action[],
+                    conditions: Condition[],
+                    isDirty: boolean
                   ) => {
                     saveDraftLocal(
                       {
@@ -280,6 +295,7 @@ export default function Automation() {
                         description,
                         trigger,
                         actions,
+                        conditions,
                         triggerCategory: "collection",
                       },
                       isDirty
@@ -288,7 +304,18 @@ export default function Automation() {
                 />
               </Box>
             </Box>
-            <Box width="1/4" paddingBottom="4" padding="2">
+            <Box
+              width={{
+                xs: "full",
+                md: "1/4",
+              }}
+              paddingBottom="4"
+              padding={{
+                xs: "1",
+                md: "1",
+              }}
+              marginLeft="1"
+            >
               <PrimaryButton
                 variant="secondary"
                 disabled={Object.keys(automationInCreate).length > 0}
@@ -311,6 +338,7 @@ export default function Automation() {
                       description: "",
                       trigger: {} as Trigger,
                       actions: [] as Action[],
+                      conditions: [] as Condition[],
                       triggerCategory: "collection",
                     },
                   });
@@ -323,6 +351,7 @@ export default function Automation() {
                       description: "",
                       trigger: {} as Trigger,
                       actions: [] as Action[],
+                      conditions: [] as Condition[],
                       triggerCategory: "collection",
                     },
                   });
@@ -334,6 +363,6 @@ export default function Automation() {
           </Modal>
         )}
       </AnimatePresence>
-    </>
+    </Box>
   );
 }

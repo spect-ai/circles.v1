@@ -1,5 +1,5 @@
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
-import { Box, Button, Text, useTheme, IconSparkles } from "degen";
+import { Box, Button, Text, useTheme } from "degen";
 import React, { memo, useState } from "react";
 import { useLocalProject } from "./Context/LocalProjectContext";
 import { useGlobal } from "@/app/context/globalContext";
@@ -14,8 +14,7 @@ import { ToastContainer } from "react-toastify";
 import Onboarding from "./ProjectOnboarding";
 import ListView from "./ListView";
 import Apply from "../Card/Apply";
-import { ApartmentOutlined } from "@ant-design/icons";
-import Navigation from "./Navigation";
+import { QuestionCircleOutlined } from "@ant-design/icons";
 import GanttChart from "./GanttChart";
 import TableView from "./TableView";
 import FAQModal from "../Dashboard/FAQModal";
@@ -127,7 +126,7 @@ function Project() {
               position: "absolute",
               right: "2rem",
               bottom: "1rem",
-              zIndex: "2",
+              zIndex: "1",
             }}
           >
             <Button
@@ -135,7 +134,7 @@ function Project() {
               onClick={() => setFaqOpen(true)}
               shape="circle"
             >
-              <IconSparkles size={"6"} />
+              <QuestionCircleOutlined style={{ fontSize: "1.5rem" }} />
             </Button>
           </Box>
         </Box>

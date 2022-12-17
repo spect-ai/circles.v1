@@ -9,7 +9,7 @@ import {
   voteCollectionData,
 } from "@/app/services/Collection";
 import { MemberDetails, UserType } from "@/app/types";
-import { Avatar, Box, Input, Stack, Tag, Text } from "degen";
+import { Avatar, Box, Stack, Tag, Text } from "degen";
 import { motion } from "framer-motion";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
@@ -61,6 +61,8 @@ export default function DataDrawer({
   });
   const [data, setData] = useState({} as any);
   const [vote, setVote] = useState(-1);
+
+  console.log({ collection });
 
   useEffect(() => {
     if (dataId && collection.data) {
@@ -187,7 +189,8 @@ export default function DataDrawer({
             <Stack space="5">
               <a
                 href={`/profile/${
-                  collection.profiles[collection.dataOwner[data.slug]].username
+                  collection?.profiles?.[collection?.dataOwner[data?.slug]]
+                    ?.username
                 }`}
                 target="_blank"
                 rel="noreferrer"
@@ -250,16 +253,32 @@ export default function DataDrawer({
                       );
                     return (
                       <Stack key={property.name} space="1">
-                        <Text weight="semiBold" variant="large" color="accent">
-                          {property.name}
-                        </Text>
-                        <Text weight="medium" variant="small">
-                          {property.description}
-                        </Text>
+                        <Stack
+                          space={"2"}
+                          direction="horizontal"
+                          wrap
+                          align={"center"}
+                        >
+                          <Text
+                            weight="bold"
+                            variant="extraLarge"
+                            color="accent"
+                          >
+                            {property.name}
+                          </Text>
+                          {property.description && (
+                            <Text
+                              weight="medium"
+                              variant="small"
+                              color={"textTertiary"}
+                            >
+                              {property.description}
+                            </Text>
+                          )}
+                        </Stack>
                         {[
                           "shortText",
                           "ethAddress",
-                          "singleURL",
                           "email",
                           "number",
                         ].includes(property.type) && (
@@ -268,15 +287,33 @@ export default function DataDrawer({
                         {property?.type === "longText" && (
                           <Editor value={data[property.name]} disabled />
                         )}
+                        {property?.type == "singleURL" && (
+                          <Box
+                            onClick={() =>
+                              window.open(data[property.name], "_blank")
+                            }
+                            cursor="pointer"
+                          >
+                            <Text>{data[property.name]}</Text>
+                          </Box>
+                        )}
                         {property?.type == "multiURL" && (
-                          <Stack direction={"vertical"}>
-                            {data[property.name]?.map((url: string) => (
-                              <Box
-                                key={url}
-                                onClick={() => window.open(url, "_blank")}
-                                cursor="pointer"
-                              >
-                                <Text>{url}</Text>
+                          <Stack direction="vertical">
+                            {data[property.name]?.map((url: OptionType) => (
+                              <Box key={url.value}>
+                                <Stack direction={"horizontal"}>
+                                  <Text>{url.label}</Text>
+                                  <Text>-</Text>
+                                  <Box
+                                    key={url.value}
+                                    onClick={() =>
+                                      window.open(url.value, "_blank")
+                                    }
+                                    cursor="pointer"
+                                  >
+                                    <Text>{url.value}</Text>
+                                  </Box>
+                                </Stack>
                               </Box>
                             ))}
                           </Stack>
@@ -316,9 +353,29 @@ export default function DataDrawer({
                         {property?.type === "reward" && (
                           <Text>
                             {data[property.name]?.value}{" "}
-                            {data[property.name]?.token.label} on{" "}
-                            {data[property.name]?.chain.label}
+                            {data[property.name]?.token?.label} on{" "}
+                            {data[property.name]?.chain?.label}
                           </Text>
+                        )}
+                        {property?.type === "payWall" && (
+                          <Stack>
+                            {data[property.name]?.map(
+                              (payment: {
+                                token: OptionType;
+                                chain: OptionType;
+                                value: number;
+                              }) => {
+                                return (
+                                  <Text key={payment.token.label}>
+                                    Paid {payment.value} {payment.token.label}{" "}
+                                    on {payment.chain.label}
+                                  </Text>
+                                );
+                              }
+                            )}
+                            {console.log(data[property.name])}
+                            {data[propertyName].length == 0 && "Unpaid"}
+                          </Stack>
                         )}
                         {property?.type === "milestone" && (
                           <Stack>

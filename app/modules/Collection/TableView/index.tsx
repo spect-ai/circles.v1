@@ -32,6 +32,9 @@ import GutterColumnComponent from "./GutterColumnComponent";
 import HeaderComponent from "./HeaderComponent";
 import MilestoneComponent from "./MilestoneComponent";
 import MultiMilestoneModal from "./MultiMilestoneModal";
+import MultiURLComponent from "./MultiURLComponent";
+import MultiURLModal from "./MultiURLModal";
+import PaymentComponent from "./PaymentComponent";
 import RewardComponent from "./RewardComponent";
 import RewardModal from "./RewardModal";
 import SelectComponent from "./SelectComponent";
@@ -39,6 +42,7 @@ import SelectComponent from "./SelectComponent";
 export default function TableView() {
   const [isEditFieldOpen, setIsEditFieldOpen] = useState(false);
   const [isRewardFieldOpen, setIsRewardFieldOpen] = useState(false);
+  const [isURLFieldOpen, setIsURLFieldOpen] = useState(false);
   const [propertyName, setPropertyName] = useState("");
   const [dataId, setDataId] = useState<string>("");
   const [multipleMilestoneModalOpen, setMultipleMilestoneModalOpen] =
@@ -49,7 +53,6 @@ export default function TableView() {
     setLocalCollection,
     searchFilter,
     projectViewId,
-    updateCollection,
   } = useLocalCollection();
 
   const [expandedDataSlug, setExpandedDataSlug] = useState("");
@@ -69,6 +72,8 @@ export default function TableView() {
     }
   }, [dataSlug, setExpandedDataSlug, cardSlug]);
 
+  console.log({ collection });
+
   const updateData = async ({ cell }: { cell: CellWithId }) => {
     if (data) {
       const row = data[cell.row];
@@ -84,16 +89,16 @@ export default function TableView() {
           !property.isPartOfFormView) ||
         collection.collectionType === 1
       ) {
-        console.log("update in");
+        console.log("UPDATING DATA");
         const res = await updateCollectionDataGuarded(collection.id, row.id, {
           [cell.colId]: row[cell.colId],
         });
         if (res.id) {
-          updateCollection(res);
+          console.log({ res });
+          // updateCollection(res); causing infinite renders
         } else {
           toast.error("Error updating data");
         }
-        console.log({ res });
         return res;
       } else {
         toast.error("Cannot update data");
@@ -303,6 +308,8 @@ export default function TableView() {
         return textColumn;
       case "ethAddress":
         return textColumn;
+      case "singleURL":
+        return textColumn;
       case "longText":
         return ExpandableCell;
       case "number":
@@ -315,10 +322,14 @@ export default function TableView() {
         return SelectComponent;
       case "reward":
         return RewardComponent;
+      case "payWall":
+        return PaymentComponent;
       case "user[]":
         return ExpandableCell;
       case "multiSelect":
         return ExpandableCell;
+      case "multiURL":
+        return MultiURLComponent;
       case "milestone":
         return MilestoneComponent;
       default:
@@ -331,9 +342,14 @@ export default function TableView() {
     collection.propertyOrder.map((propertyName: string) => {
       const property = collection.properties[propertyName];
       if (
-        ["singleSelect", "multiSelect", "longText", "user", "user[]"].includes(
-          property.type
-        )
+        [
+          "singleSelect",
+          "multiSelect",
+          "longText",
+          "user",
+          "user[]",
+          "singleURL",
+        ].includes(property.type)
       ) {
         return {
           ...keyColumn(property.name, {
@@ -377,6 +393,45 @@ export default function TableView() {
           columnData: {
             property,
             setMultipleMilestoneModalOpen,
+            setPropertyName,
+            setDataId,
+          },
+          title: (
+            <HeaderComponent
+              sortData={sortData}
+              columnName={property.name}
+              setIsEditFieldOpen={setIsEditFieldOpen}
+              setPropertyName={setPropertyName}
+              propertyType={property.type}
+            />
+          ),
+          minWidth: 200,
+        };
+      } else if (["payWall"].includes(property.type)) {
+        return {
+          component: getCellComponent(property.type) as any,
+          columnData: {
+            property,
+            setPropertyName,
+            setDataId,
+          },
+          title: (
+            <HeaderComponent
+              sortData={sortData}
+              columnName={property.name}
+              setIsEditFieldOpen={setIsEditFieldOpen}
+              setPropertyName={setPropertyName}
+              propertyType={property.type}
+            />
+          ),
+          minWidth: 200,
+        };
+      } else if (["multiURL"].includes(property.type)) {
+        return {
+          component: getCellComponent(property.type) as any,
+          columnData: {
+            property,
+            setIsURLFieldOpen,
             setPropertyName,
             setDataId,
           },
@@ -442,6 +497,7 @@ export default function TableView() {
         )}
         {isRewardFieldOpen && (
           <RewardModal
+            collectionData={data}
             form={collection}
             propertyName={propertyName}
             handleClose={async (
@@ -463,6 +519,33 @@ export default function TableView() {
                   console.log({ updatedData: data[row][propertyName] });
                 }
                 setIsRewardFieldOpen(false);
+              }
+            }}
+            dataId={dataId}
+          />
+        )}
+        {isURLFieldOpen && (
+          <MultiURLModal
+            form={collection}
+            propertyName={propertyName}
+            handleClose={async (
+              payment: Option[],
+              dataId: string,
+              propertyName: string
+            ) => {
+              if (data) {
+                const row = data.findIndex((row) => row.id === dataId);
+
+                if (row === 0 || row) {
+                  const tempData = [...data];
+                  tempData[row][propertyName] = payment;
+                  setData(tempData);
+                  setIsURLFieldOpen(false);
+                  await updateData({
+                    cell: { row, col: 0, colId: propertyName },
+                  });
+                }
+                setIsURLFieldOpen(false);
               }
             }}
             dataId={dataId}
@@ -515,7 +598,7 @@ export default function TableView() {
         {collection.collectionType === 1 && expandedDataSlug && (
           <CardDrawer
             handleClose={() => setExpandedDataSlug("")}
-            defaultValue={collection.data[expandedDataSlug]}
+            defaultValue={data?.find((d) => d.slug === expandedDataSlug)}
           />
         )}
       </AnimatePresence>

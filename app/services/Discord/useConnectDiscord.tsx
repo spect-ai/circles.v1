@@ -5,7 +5,7 @@ import useProfileUpdate from "../Profile/useProfileUpdate";
 
 export default function useConnectDiscord() {
   const router = useRouter();
-  const { code } = router.query;
+  const { code, state } = router.query;
 
   const { updateProfile } = useProfileUpdate();
 
@@ -16,15 +16,21 @@ export default function useConnectDiscord() {
     );
     if (res.ok) {
       const data = await res.json();
+      console.log({ data });
       const profileRes = await updateProfile({
         discordId: data.userData.id,
+        discordUsername:
+          data.userData.username + "#" + data.userData.discriminator,
       });
-      console.log({ profileRes });
       if (profileRes) {
-        void router.push("/");
         toast("Successfully linked your Discord account", {
           theme: "dark",
         });
+        if (state) {
+          void router.push(state as string);
+        } else {
+          void router.push("/");
+        }
       }
     } else {
       toast.error(

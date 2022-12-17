@@ -3,8 +3,8 @@ import Dropdown, { OptionType } from "@/app/common/components/Dropdown";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import useERC20 from "@/app/services/Payment/useERC20";
 import { Registry } from "@/app/types";
-import { Box, Button, IconClose, Input, Stack, Text, useTheme } from "degen";
-import React, { useEffect, useState } from "react";
+import { Box, Button, IconClose, Input, Stack, Text } from "degen";
+import React, { useState } from "react";
 import { toast } from "react-toastify";
 import styled from "styled-components";
 import { useCircle } from "../../Circle/CircleContext";
@@ -15,13 +15,13 @@ type Props = {
 };
 
 export default function RewardOptions({ networks, setNetworks }: Props) {
-  const { mode } = useTheme();
+
   const { registry } = useCircle();
   const [settingCustom, setSettingCustom] = useState(false);
   const [address, setAddress] = useState("");
   const [tokenSymbol, setTokenSymbol] = useState("");
   const [tokenName, setTokenName] = useState("");
-  const [loading, setLoading] = useState(false);
+
   const [tokenLoading, setTokenLoading] = useState(false);
   const { symbol, name } = useERC20();
   const [options, setOptions] = useState(
@@ -98,7 +98,6 @@ export default function RewardOptions({ networks, setNetworks }: Props) {
                 flexDirection="row"
                 justifyContent="flex-end"
               >
-                {" "}
                 <Text variant="small">{`Adding ${tokenSymbol} (${tokenName})`}</Text>
               </Box>
             )}
@@ -170,7 +169,6 @@ export default function RewardOptions({ networks, setNetworks }: Props) {
                     justify="flex-start"
                     wrap
                   >
-                    {" "}
                     {Object.entries(network.tokenDetails).map(
                       ([address, token]) => {
                         return (

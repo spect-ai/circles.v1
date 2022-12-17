@@ -248,6 +248,7 @@ function EditValue({ value, setValue, propertyName, dataId }: Props) {
             {isEditing && (
               <RewardModal
                 form={collection}
+                collectionData={Object.values(collection.data)}
                 propertyName={propertyName}
                 handleClose={(reward) => {
                   console.log(reward);
@@ -275,7 +276,7 @@ function EditValue({ value, setValue, propertyName, dataId }: Props) {
                 form={collection}
                 propertyName={propertyName}
                 dataId={dataId}
-                handleClose={async (value: Milestone[]) => {
+                handleClose={(value: Milestone[]) => {
                   console.log({ value });
                   setValue(value);
                   setIsEditing(false);

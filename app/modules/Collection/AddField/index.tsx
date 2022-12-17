@@ -9,7 +9,14 @@ import {
   updateField,
   updateFormCollection,
 } from "@/app/services/Collection";
-import { CollectionType, Condition, FormUserType, Registry } from "@/app/types";
+import {
+  CollectionType,
+  Condition,
+  FormUserType,
+  Registry,
+  Option,
+  PayWallOptions,
+} from "@/app/types";
 import { SaveFilled } from "@ant-design/icons";
 import { Box, IconTrash, Input, Stack, Text, Textarea } from "degen";
 import React, { useEffect, useState } from "react";
@@ -26,6 +33,7 @@ import { AnimatePresence } from "framer-motion";
 import ConfirmModal from "@/app/common/components/Modal/ConfirmModal";
 import Accordian from "@/app/common/components/Accordian";
 import AddConditions from "../Common/AddConditions";
+import PayWall from "./PayWallOptions";
 
 type Props = {
   propertyName?: string;
@@ -40,6 +48,11 @@ export default function AddField({ propertyName, handleClose }: Props) {
   } = useLocalCollection();
   const { registry } = useCircle();
   const [networks, setNetworks] = useState(registry);
+  const [payWallOption, setPayWallOption] = useState({
+    network: registry as Registry,
+    value: 0,
+    receiver: "",
+  });
   const [initialName, setInitialName] = useState("");
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -76,6 +89,7 @@ export default function AddField({ propertyName, handleClose }: Props) {
     setLoading(true);
     let res;
     let rewardOptions = {} as Registry | undefined;
+    let payWallOptions = {} as PayWallOptions;
     if (type.value === "reward" || type.value === "milestone") {
       rewardOptions = networks;
     }
@@ -83,9 +97,12 @@ export default function AddField({ propertyName, handleClose }: Props) {
     if (type.value === "milestone") {
       milestoneFields = ["name", "description", "dueDate", "reward"];
     }
+    if (type.value === "payWall") {
+      payWallOptions = payWallOption;
+    }
     if (propertyName) {
       await updateField(collection.id, propertyName, {
-        name,
+        name: name.trim(),
         type: type.value,
         options: fieldOptions,
         rewardOptions,
@@ -99,6 +116,7 @@ export default function AddField({ propertyName, handleClose }: Props) {
         required: required === 1,
         milestoneFields,
         viewConditions,
+        payWallOptions,
       });
       res = await updateFormCollection(collection.id, {
         projectMetadata: {
@@ -111,7 +129,7 @@ export default function AddField({ propertyName, handleClose }: Props) {
       });
     } else {
       res = await addField(collection.id, {
-        name,
+        name: name.trim(),
         type: type.value,
         isPartOfFormView: false,
         description,
@@ -125,6 +143,7 @@ export default function AddField({ propertyName, handleClose }: Props) {
         required: required === 1,
         milestoneFields,
         viewConditions,
+        payWallOptions,
       });
     }
     setLoading(false);
@@ -170,6 +189,9 @@ export default function AddField({ propertyName, handleClose }: Props) {
       if (property.type === "reward") {
         setNetworks(property.rewardOptions);
       }
+      if (property.type === "payWall") {
+        setPayWallOption(property.payWallOptions as PayWallOptions);
+      }
     }
   }, [collection.properties, propertyName]);
 
@@ -201,12 +223,12 @@ export default function AddField({ propertyName, handleClose }: Props) {
         {showConfirmOnDelete && (
           <ConfirmModal
             title="This will remove existing data associated with this field, if you're looking to avoid this please set the field as inactive. Are you sure you want to delete this field?"
-            handleClose={() => setShowConfirm(false)}
+            handleClose={() => setShowConfirmOnDelete(false)}
             onConfirm={async () => {
-              setShowConfirm(false);
+              setShowConfirmOnDelete(false);
               const res: CollectionType = await deleteField(
                 collection.id,
-                propertyName as string
+                (propertyName as string).trim()
               );
               if (res.id) {
                 res.projectMetadata &&
@@ -217,7 +239,7 @@ export default function AddField({ propertyName, handleClose }: Props) {
                 toast.error("Error deleting field");
               }
             }}
-            onCancel={() => setShowConfirm(false)}
+            onCancel={() => setShowConfirmOnDelete(false)}
           />
         )}
       </AnimatePresence>
@@ -231,7 +253,6 @@ export default function AddField({ propertyName, handleClose }: Props) {
             <Input
               label=""
               placeholder="Field Name"
-              maxLength={30}
               value={name}
               onChange={(e) => {
                 setName(e.target.value);

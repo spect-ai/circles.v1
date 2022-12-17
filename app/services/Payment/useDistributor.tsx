@@ -1,4 +1,4 @@
-import { ethers } from "ethers";
+import { ethers, Signer } from "ethers";
 import useERC20 from "./useERC20";
 import DistributorABI from "@/app/common/contracts/mumbai/distributor.json";
 import { useRouter } from "next/router";
@@ -9,6 +9,8 @@ import {
   Registry,
 } from "@/app/types";
 import { AbiCoder } from "ethers/lib/utils";
+import { useGlobal } from "@/app/context/globalContext";
+import { fetchSigner } from "@wagmi/core";
 
 export default function useDistributor() {
   const { isCurrency, decimals } = useERC20();
@@ -18,17 +20,20 @@ export default function useDistributor() {
     enabled: false,
   });
 
-  function getDistributorContract(chainId: string) {
-    if (!registry) return null;
-    const provider = new ethers.providers.Web3Provider(window.ethereum as any);
-    return new ethers.Contract(
-      registry[chainId].distributorAddress as string,
-      DistributorABI,
-      provider.getSigner()
-    );
+  async function getDistributorContract(
+    chainId: string,
+    circleRegistry?: Registry
+  ) {
+    const signer = await fetchSigner();
+    if (!signer) return null;
+    if (!registry && !circleRegistry) return null;
+    const addr = circleRegistry
+      ? circleRegistry[chainId].distributorAddress
+      : registry && registry[chainId].distributorAddress;
+    return new ethers.Contract(addr as string, DistributorABI, signer);
   }
 
-  function getPendingApprovals(
+  async function getPendingApprovals(
     addresses: string[],
     values: number[],
     chainId: string
@@ -36,7 +41,7 @@ export default function useDistributor() {
     if (isCurrency(addresses[0])) {
       return true;
     }
-    const contract = getDistributorContract(chainId);
+    const contract = await getDistributorContract(chainId);
     const valuesInWei = values.map((v) =>
       ethers.utils.parseEther(v.toString())
     );
@@ -53,9 +58,10 @@ export default function useDistributor() {
     paymentMethod,
     callerId,
     nonce,
+    circleRegistry,
   }: DistributeEtherParams) {
     console.log({ contributors });
-    const contract = getDistributorContract(chainId);
+    const contract = await getDistributorContract(chainId, circleRegistry);
     const valuesInWei = [];
     const contributorsWithPositiveAllocation: any[] = [];
     let totalValue = 0;
@@ -68,31 +74,56 @@ export default function useDistributor() {
         totalValue += values[i];
       }
     }
-    const overrides = {
-      value: ethers.utils.parseEther(totalValue.toString()),
-      nonce,
-      gasLimit: 10000000,
-    };
     const encoder = new AbiCoder();
     const id = encoder.encode(
       ["string", "string", "string", "string[]"],
       [callerId, circleId, type, cardIds]
     );
+
     if (paymentMethod === "gnosis") {
+      console.log("gnosis");
       const data = await contract?.populateTransaction.distributeEther(
+        contributorsWithPositiveAllocation,
+        valuesInWei,
+        id
+      );
+      return data;
+    } else if (paymentMethod === "gasless") {
+      const overrides = {
+        value: ethers.utils.parseEther(totalValue.toString()),
+        nonce,
+        gasLimit: chainId === "1" ? 21000 : 1000000,
+      };
+      const gasEstimate = await contract?.estimateGas.distributeEther(
         contributorsWithPositiveAllocation,
         valuesInWei,
         id,
         overrides
       );
-      return data;
-    } else if (paymentMethod === "gasless") {
+      if (gasEstimate) {
+        overrides.gasLimit = Math.ceil(gasEstimate.toNumber() * 1.2);
+      }
       return {
         contributorsWithPositiveAllocation,
         valuesInWei,
         id,
         overrides,
       };
+    }
+
+    const overrides = {
+      value: ethers.utils.parseEther(totalValue.toString()),
+      nonce,
+      gasLimit: chainId === "1" ? 21000 : 1000000,
+    };
+    const gasEstimate = await contract?.estimateGas.distributeEther(
+      contributorsWithPositiveAllocation,
+      valuesInWei,
+      id,
+      overrides
+    );
+    if (gasEstimate) {
+      overrides.gasLimit = Math.ceil(gasEstimate.toNumber() * 1.2);
     }
     console.log({ contributorsWithPositiveAllocation, valuesInWei });
     const tx = await contract?.distributeEther(
@@ -145,6 +176,7 @@ export default function useDistributor() {
     circleId,
     type,
     nonce,
+    circleRegistry,
   }: DistributeTokenParams) {
     const { filteredTokenAddresses, filteredRecipients, filteredValues } =
       filterInvalidValues(tokenAddresses, contributors, values);
@@ -161,28 +193,35 @@ export default function useDistributor() {
           )
         );
     });
-    const contract = getDistributorContract(chainId);
+    const contract = await getDistributorContract(chainId, circleRegistry);
 
-    const overrides: any = {
-      gasLimit: 10000000,
-      nonce,
-    };
     const encoder = new AbiCoder();
     const id = encoder.encode(
       ["string", "string", "string", "string[]"],
       [callerId, circleId, type, cardIds]
     );
+
     if (paymentMethod === "gnosis") {
-      console.log(overrides.gasLimit);
       const data = await contract?.populateTransaction.distributeTokens(
         filteredTokenAddresses,
         filteredRecipients,
         valuesInWei,
-        id,
-        overrides
+        id
       );
       return data;
     } else if (paymentMethod === "gasless") {
+      const gasEstimate = await contract?.estimateGas.distributeTokens(
+        filteredTokenAddresses,
+        filteredRecipients,
+        valuesInWei,
+        id
+      );
+
+      const overrides: any = {
+        gasLimit: 1000000,
+        nonce,
+      };
+      console.log({ filteredTokenAddresses });
       return {
         filteredTokenAddresses,
         filteredRecipients,
@@ -191,7 +230,20 @@ export default function useDistributor() {
         overrides,
       };
     }
-
+    const gasEstimate = await contract?.estimateGas.distributeTokens(
+      filteredTokenAddresses,
+      filteredRecipients,
+      valuesInWei,
+      id
+    );
+    if (!gasEstimate) {
+      console.error("gas estimation failed");
+      return;
+    }
+    const overrides: any = {
+      gasLimit: Math.ceil(gasEstimate.toNumber() * 1.2),
+      nonce,
+    };
     const tx = await contract?.distributeTokens(
       filteredTokenAddresses,
       filteredRecipients,
