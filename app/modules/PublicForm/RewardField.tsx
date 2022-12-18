@@ -45,6 +45,8 @@ export default function RewardField({
     value: (data && data[propertyName]?.token?.value) || firstTokenAddress,
   });
 
+  console.log({ data, selectedChain, selectedToken });
+
   useEffect(() => {
     if (rewardOptions && selectedChain) {
       const tokens = Object.entries(
@@ -55,10 +57,15 @@ export default function RewardField({
           value: address,
         };
       });
-      setSelectedToken(data[propertyName]?.token || tokens[0]);
+      setSelectedToken(tokens[0]);
+      updateData({
+        chain: selectedChain,
+        token: tokens[0],
+        value: data[propertyName]?.value,
+      });
       setTokenOptions(tokens);
     }
-  }, [data, propertyName, rewardOptions, selectedChain]);
+  }, [selectedChain]);
 
   return (
     <Stack
