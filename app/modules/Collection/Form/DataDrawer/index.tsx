@@ -77,12 +77,12 @@ export default function DataDrawer({
     if (
       data &&
       collection.voting?.periods &&
-      collection.voting.periods[dataId] &&
-      collection.voting.periods[dataId]?.votes?.[currentUser?.id || ""] !==
+      collection.voting?.periods[dataId] &&
+      collection.voting?.periods[dataId]?.votes?.[currentUser?.id || ""] !==
         undefined
     ) {
       setVote(
-        collection.voting.periods[dataId].votes?.[
+        collection.voting?.periods[dataId].votes?.[
           currentUser?.id || ""
         ] as number
       );
@@ -91,7 +91,7 @@ export default function DataDrawer({
 
   const getVotes = () => {
     const dataVotes =
-      collection.voting.periods && collection.voting.periods[dataId].votes;
+      collection.voting?.periods && collection.voting?.periods[dataId].votes;
     // sump up all the votes for each option
     return (
       collection.voting?.periods?.[dataId]?.options?.map((option, index) => {
@@ -122,7 +122,7 @@ export default function DataDrawer({
         dataSlug && (await router.push(`/${cId}/r/${collection.slug}`));
       }}
     >
-      {!collection.voting.periods?.[dataId]?.active && (
+      {!collection.voting?.periods?.[dataId]?.active && (
         <Box
           display="flex"
           flexDirection="row"
@@ -131,11 +131,11 @@ export default function DataDrawer({
           paddingRight="8"
         >
           <Box display="flex" flexDirection="column" gap="2">
-            {collection.voting.periods?.[dataId]?.votes &&
-              Object.keys(collection.voting.periods[dataId]?.votes || {})
+            {collection.voting?.periods?.[dataId]?.votes &&
+              Object.keys(collection.voting?.periods[dataId]?.votes || {})
                 ?.length > 0 && <Text variant="base"> Voting has ended</Text>}
-            {collection.voting.enabled &&
-              Object.keys(collection.voting.periods?.[dataId]?.votes || {})
+            {collection.voting?.enabled &&
+              Object.keys(collection.voting?.periods?.[dataId]?.votes || {})
                 ?.length === 0 && (
                 <PrimaryButton
                   variant="secondary"
@@ -152,9 +152,9 @@ export default function DataDrawer({
           </Box>
         </Box>
       )}
-      {collection.voting.enabled &&
-        collection.voting.periods &&
-        collection.voting.periods[dataId]?.active && (
+      {collection.voting?.enabled &&
+        collection.voting?.periods &&
+        collection.voting?.periods[dataId]?.active && (
           <Box
             display="flex"
             flexDirection="row"
@@ -435,13 +435,13 @@ export default function DataDrawer({
                   })}
                 </Box>
                 <Box display="flex" flexDirection="column" gap="2">
-                  {collection.voting.periods &&
-                    collection.voting.periods[data.slug] &&
-                    (collection.voting.periods[data.slug].active ||
+                  {collection.voting?.periods &&
+                    collection.voting?.periods[data.slug] &&
+                    (collection.voting?.periods[data.slug].active ||
                       Object.keys(
-                        collection.voting.periods[dataId]?.votes || {}
+                        collection.voting?.periods[dataId]?.votes || {}
                       )?.length > 0) &&
-                    collection.voting.periods[data.slug].options && (
+                    collection.voting?.periods[data.slug].options && (
                       <Stack space="1">
                         <Box
                           borderColor="foregroundSecondary"
@@ -456,11 +456,11 @@ export default function DataDrawer({
                           >
                             Your Vote
                           </Text>
-                          <Text>{collection.voting.message}</Text>
+                          <Text>{collection.voting?.message}</Text>
                           <Box marginTop="4">
                             <Tabs
                               tabs={
-                                collection.voting.periods[
+                                collection.voting?.periods[
                                   data.slug
                                 ].options?.map((option) => option.label) || []
                               }
@@ -492,11 +492,11 @@ export default function DataDrawer({
                       </Stack>
                     )}
 
-                  {collection.voting.periods &&
-                    collection.voting.periods[data.slug] &&
-                    collection.voting.periods[data.slug].options &&
-                    collection.voting.periods[data.slug].votes &&
-                    collection.voting.periods[data.slug].votes?.[
+                  {collection.voting?.periods &&
+                    collection.voting?.periods[data.slug] &&
+                    collection.voting?.periods[data.slug].options &&
+                    collection.voting?.periods[data.slug].votes &&
+                    collection.voting?.periods[data.slug].votes?.[
                       currentUser?.id || ""
                     ] !== undefined && (
                       <Box
@@ -549,7 +549,7 @@ export default function DataDrawer({
                             },
                           }}
                           data={{
-                            labels: collection.voting.periods[
+                            labels: collection.voting?.periods[
                               data.slug
                             ]?.options?.map((option) => option.label),
                             datasets: [
@@ -569,7 +569,7 @@ export default function DataDrawer({
                     )}
                   {collection.voting?.periods &&
                     Object.keys(
-                      collection.voting.periods[data.slug]?.votes || {}
+                      collection.voting?.periods[data.slug]?.votes || {}
                     ).length > 0 &&
                     collection.voting?.periods[data.slug]?.votesArePublic && (
                       <Box
@@ -584,7 +584,7 @@ export default function DataDrawer({
                         </Text>
 
                         {collection.voting?.periods &&
-                          collection.voting.periods[data.slug] &&
+                          collection.voting?.periods[data.slug] &&
                           Object.entries(
                             collection.voting?.periods[data.slug]?.votes || {}
                           ).map(([voterId, vote]) => {

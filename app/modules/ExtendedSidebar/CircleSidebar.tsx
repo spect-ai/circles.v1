@@ -208,6 +208,7 @@ function CircleSidebar() {
                                 href={`/${cId}/${circle?.projects?.[content].slug}`}
                               >
                                 <PrimaryButton
+                                  center
                                   variant={
                                     pId === circle?.projects?.[content].slug
                                       ? "tertiary"

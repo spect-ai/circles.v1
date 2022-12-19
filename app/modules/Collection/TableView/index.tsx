@@ -262,7 +262,7 @@ export default function TableView() {
   }, [
     collection.collectionType,
     collection.data,
-    collection.projectMetadata.views,
+    collection.projectMetadata?.views,
     collection.properties,
     collection.propertyOrder,
     projectViewId,
