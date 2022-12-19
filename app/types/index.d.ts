@@ -744,6 +744,7 @@ export interface CollectionType {
   collectionType: 0 | 1;
   formMetadata: FormMetadata;
   projectMetadata: ProjectMetadata;
+  archived: boolean;
 }
 
 export type FormMetadata = {

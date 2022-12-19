@@ -14,6 +14,7 @@ import { Clock, Grid, List, Trello } from "react-feather";
 import { Hidden, Visible } from "react-grid-system";
 import { toast } from "react-toastify";
 import styled from "styled-components";
+import InviteMemberModal from "../../Circle/ContributorsModal/InviteMembersModal";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
 import AddView from "../AddView";
 import Filtering from "../Filtering";
@@ -87,9 +88,14 @@ export default function ProjectHeading() {
         )}
       </AnimatePresence>
       <Stack space="0">
-        <Stack direction="horizontal">
-          <Heading>{collection.name}</Heading>
-          <Settings />
+        <Stack direction="horizontal" space="2" justify="space-between">
+          <Stack direction="horizontal">
+            <Heading>{collection.name}</Heading>
+            <Settings />
+          </Stack>
+          <Box width="32">
+            <InviteMemberModal />
+          </Box>
         </Stack>
         <Box marginBottom="1" />
         <Hidden xs sm>

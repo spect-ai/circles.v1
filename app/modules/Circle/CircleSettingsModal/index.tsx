@@ -85,7 +85,7 @@ export default function SettingsModal({ handleClose, initialTab }: Props) {
       handleClose={handleClose}
       height="40rem"
       size="large"
-      zIndex={2}
+      zIndex={3}
     >
       <Box
         display="flex"

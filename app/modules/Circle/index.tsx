@@ -1,12 +1,5 @@
 import Loader from "@/app/common/components/Loader";
-import {
-  Box,
-  Button,
-  useTheme,
-  Text,
-  IconLockClosed,
-  Stack,
-} from "degen";
+import { Box, Button, useTheme, Text, IconLockClosed, Stack } from "degen";
 import { AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";

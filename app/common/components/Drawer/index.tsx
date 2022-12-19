@@ -118,7 +118,7 @@ export const MotionContainer = styled(motion.div)<{ width?: string }>`
   overflow-y: hidden;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 0 18px 0 rgba(0, 0, 0, 0.75);
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.4);
 
   @media (max-width: 768px) {
     width: 100%;

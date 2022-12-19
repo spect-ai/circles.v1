@@ -140,7 +140,11 @@ const Folder = ({
         if (retros?.[card] && card) {
           return <Card card={card} index={i} key={card} retros={retros} />;
         }
-        if (collections?.[card] && card) {
+        if (
+          card &&
+          collections?.[card] &&
+          collections?.[card].archived !== true
+        ) {
           return (
             <Card card={card} index={i} key={card} collections={collections} />
           );

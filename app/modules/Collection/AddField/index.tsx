@@ -207,7 +207,7 @@ export default function AddField({ propertyName, handleClose }: Props) {
   }, [collection.projectMetadata?.cardOrders, propertyName]);
 
   return (
-    <>
+    <Box>
       <AnimatePresence>
         {showConfirm && (
           <ConfirmModal
@@ -405,6 +405,6 @@ export default function AddField({ propertyName, handleClose }: Props) {
           </Stack>
         </Box>
       </Modal>
-    </>
+    </Box>
   );
 }

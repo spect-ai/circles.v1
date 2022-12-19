@@ -7,7 +7,7 @@ import RewardField from "../../PublicForm/RewardField";
 
 type Props = {
   form: any;
-  collectionData: any[] | undefined;
+  value: any | undefined;
   dataId?: string;
   propertyName: string;
   handleClose: (reward: Reward, dataId: string, propertyName: string) => void;
@@ -18,20 +18,18 @@ function RewardModal({
   dataId,
   handleClose,
   form,
-  collectionData,
+  value,
 }: Props) {
-  const [data, setData] = useState(
-    dataId ? collectionData?.find((data) => data.id === dataId) : undefined
-  );
+  const [data, setData] = useState(value);
 
   return (
     <Modal
       handleClose={() => {
         handleClose(
           {
-            chain: data[propertyName]?.chain,
-            token: data[propertyName]?.token,
-            value: parseFloat(data[propertyName]?.value),
+            chain: data?.chain,
+            token: data?.token,
+            value: data?.value,
           },
           dataId || "",
           propertyName
@@ -42,13 +40,9 @@ function RewardModal({
       <Box padding="8">
         <RewardField
           rewardOptions={form.properties[propertyName].rewardOptions}
-          propertyName={propertyName}
-          data={data}
+          value={data}
           updateData={(reward: Reward) => {
-            setData({
-              ...data,
-              [propertyName]: reward,
-            });
+            setData(reward);
           }}
         />
       </Box>

@@ -72,8 +72,6 @@ export default function TableView() {
     }
   }, [dataSlug, setExpandedDataSlug, cardSlug]);
 
-  console.log({ collection });
-
   const updateData = async ({ cell }: { cell: CellWithId }) => {
     if (data) {
       const row = data[cell.row];
@@ -497,7 +495,7 @@ export default function TableView() {
         )}
         {isRewardFieldOpen && (
           <RewardModal
-            collectionData={data}
+            value={data?.find((row) => row.id === dataId)?.[propertyName]}
             form={collection}
             propertyName={propertyName}
             handleClose={async (

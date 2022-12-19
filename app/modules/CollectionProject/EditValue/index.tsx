@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import Popover from "@/app/common/components/Popover";
 import { Milestone } from "@/app/types";
-import { Box, IconClose, Stack, Tag, Text } from "degen";
+import { Box, IconClose, Stack, Tag, Text, useTheme } from "degen";
 import { AnimatePresence, motion } from "framer-motion";
 import { matchSorter } from "match-sorter";
 import React, { useEffect, useRef, useState } from "react";
@@ -26,6 +26,8 @@ function EditValue({ value, setValue, propertyName, dataId }: Props) {
   const [options, setOptions] = useState<any>([]);
   const [filteredOptions, setFilteredOptions] = useState<any>([]);
   const [tempValue, setTempValue] = useState<any>();
+
+  const { mode } = useTheme();
 
   useEffect(() => {
     if (property.type === "singleSelect" || property.type === "multiSelect") {
@@ -100,6 +102,7 @@ function EditValue({ value, setValue, propertyName, dataId }: Props) {
                         </Tag>
                       ))}
                     <FieldInput
+                      mode={mode}
                       autoFocus
                       defaultValue={value?.label}
                       onChange={(e) => {
@@ -113,7 +116,7 @@ function EditValue({ value, setValue, propertyName, dataId }: Props) {
                   </Stack>
                 </FieldInputContainer>
               ) : (
-                <FieldButton onClick={() => setIsEditing(true)}>
+                <FieldButton onClick={() => setIsEditing(true)} mode={mode}>
                   {["multiSelect", "user[]"].includes(property.type) ? (
                     value?.length ? (
                       value?.map((val: any) => (
@@ -196,6 +199,7 @@ function EditValue({ value, setValue, propertyName, dataId }: Props) {
           {isEditing ? (
             <FieldInputContainer>
               <FieldInput
+                mode={mode}
                 autoFocus
                 ref={fieldInput}
                 defaultValue={
@@ -228,7 +232,7 @@ function EditValue({ value, setValue, propertyName, dataId }: Props) {
               />
             </FieldInputContainer>
           ) : (
-            <FieldButton onClick={() => setIsEditing(true)}>
+            <FieldButton onClick={() => setIsEditing(true)} mode={mode}>
               {value ? (
                 <Text>
                   {property.type === "date"
@@ -248,10 +252,10 @@ function EditValue({ value, setValue, propertyName, dataId }: Props) {
             {isEditing && (
               <RewardModal
                 form={collection}
-                collectionData={Object.values(collection.data)}
+                value={value}
                 propertyName={propertyName}
                 handleClose={(reward) => {
-                  console.log(reward);
+                  console.log({ reward });
                   setValue(reward);
                   setIsEditing(false);
                 }}
@@ -259,8 +263,8 @@ function EditValue({ value, setValue, propertyName, dataId }: Props) {
               />
             )}
           </AnimatePresence>
-          <FieldButton onClick={() => setIsEditing(true)}>
-            {value ? (
+          <FieldButton onClick={() => setIsEditing(true)} mode={mode}>
+            {value?.value ? (
               <Text>{`${value.value} ${value.token.label} on ${value.chain.label} network`}</Text>
             ) : (
               "Empty"
@@ -284,7 +288,7 @@ function EditValue({ value, setValue, propertyName, dataId }: Props) {
               />
             )}
           </AnimatePresence>
-          <FieldButton onClick={() => setIsEditing(true)}>
+          <FieldButton onClick={() => setIsEditing(true)} mode={mode}>
             {value ? <Text>{`${value.length} Milestones`}</Text> : "Empty"}
           </FieldButton>
         </Box>
@@ -303,7 +307,7 @@ function EditValue({ value, setValue, propertyName, dataId }: Props) {
               />
             )}
           </AnimatePresence>
-          <FieldButton onClick={() => setIsEditing(true)}>
+          <FieldButton onClick={() => setIsEditing(true)} mode={mode}>
             {value ? <Text ellipsis>{value}</Text> : "Empty"}
           </FieldButton>
         </Box>
@@ -314,9 +318,10 @@ function EditValue({ value, setValue, propertyName, dataId }: Props) {
 
 export default EditValue;
 
-const FieldButton = styled.div`
+const FieldButton = styled.div<{ mode: string }>`
   width: 30rem;
-  color: rgb(255, 255, 255, 0.25);
+  color: ${({ mode }) =>
+    mode === "dark" ? "rgb(255, 255, 255, 0.25)" : "rgb(0, 0, 0, 0.25)"};
   padding: 0.5rem 0.5rem;
   border-radius: 0.25rem;
   display: flex;
@@ -340,7 +345,7 @@ const FieldInputContainer = styled(Box)`
   background: rgb(191, 90, 242, 0.1);
 `;
 
-const FieldInput = styled.input`
+const FieldInput = styled.input<{ mode: string }>`
   outline: none;
   border-color: transparent;
   padding: 0.45rem 0.3rem;
@@ -348,7 +353,8 @@ const FieldInput = styled.input`
   border-top-right-radius: 0.25rem;
   font-size: 0.95rem;
   background: transparent;
-  color: rgb(255, 255, 255, 0.7);
+  color: ${({ mode }) =>
+    mode === "dark" ? "rgb(255, 255, 255, 0.65)" : "rgb(0, 0, 0, 0.65)"};
   font-family: "Inter", sans-serif;
   width: 100%;
 `;

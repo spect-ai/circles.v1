@@ -120,7 +120,7 @@ export default function Column({
                           return (
                             <Box key={propertyId}>
                               {/* <Text weight="semiBold">{property.name}</Text> */}
-                              <Text weight="semiBold" color="accentText">
+                              <Text weight="semiBold" color="text" size="large">
                                 {value}
                               </Text>
                             </Box>
@@ -226,13 +226,13 @@ export default function Column({
                         if (property.type === "reward") {
                           return (
                             <Box key={propertyId}>
-                              <Tag>
+                              <Tag tone="green">
                                 <Stack
                                   direction="horizontal"
                                   space="0"
                                   align="center"
                                 >
-                                  <Text color="accent" weight="semiBold">
+                                  <Text color="green" weight="semiBold">
                                     {`${value.value} ${value.token.label} `}
                                   </Text>
                                 </Stack>
