@@ -1166,13 +1166,22 @@ export type RootAutomationsType = string[];
 
 export type PaymentDetails = {
   id: string;
-  chain: Chain;
-  token: Token;
+  chain: Option;
+  token: Option;
   value: number;
-  paidToUserId: string;
-  paidToAddress: string;
+  paidTo: {
+    propertyType: string;
+    value: any;
+    reward: {
+      chain: Option;
+      token: Option;
+      value: number;
+    };
+  }[];
   type?: string;
   notes?: string;
   dataRef?: string;
   collectionRef?: string;
+  title?: string;
+  description?: string;
 };

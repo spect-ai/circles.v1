@@ -1,8 +1,9 @@
 import Breadcrumbs from "@/app/common/components/Breadcrumbs";
+import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { UserType } from "@/app/types";
-import { Box, Heading, Stack, useTheme } from "degen";
+import { Box, Heading, Stack, useTheme, Text } from "degen";
 import { useRouter } from "next/router";
-import { memo } from "react";
+import { memo, useState } from "react";
 import { Hidden } from "react-grid-system";
 import Skeleton from "react-loading-skeleton";
 import { useQuery } from "react-query";
@@ -16,7 +17,12 @@ export const IconButton = styled(Box)`
   }
 `;
 
-function PaymentCenterHeading() {
+type Props = {
+  paymentViewId: string;
+  setPaymentViewId: (id: "Pending" | "Completed" | "Cancelled") => void;
+};
+
+function PaymentCenterHeading({ paymentViewId, setPaymentViewId }: Props) {
   const { mode } = useTheme();
   const router = useRouter();
   const { navigationBreadcrumbs } = useCircle();
@@ -40,13 +46,15 @@ function PaymentCenterHeading() {
           )}
         </Box>
       </Hidden>
-      <Box paddingTop="2">
-        <Stack
-          direction={{
-            xs: "vertical",
-            md: "horizontal",
+      <Box paddingTop="2" display="flex" flexDirection="row" width="full">
+        <Box
+          display="flex"
+          flexDirection={{
+            xs: "column",
+            md: "row",
           }}
-          justify="space-between"
+          justifyContent="space-between"
+          width="full"
         >
           <Stack direction="horizontal" align="center">
             <Box
@@ -59,10 +67,83 @@ function PaymentCenterHeading() {
               <Heading>Payment Center</Heading>
             </Box>
           </Stack>
-        </Stack>
+        </Box>
+        <Box display="flex" flexDirection="column" justifyContent="flex-end">
+          <PrimaryButton variant="tertiary" onClick={() => {}}>
+            Connect Gnossis Safe{" "}
+          </PrimaryButton>
+        </Box>
       </Box>
+      <ViewTabsContainer
+        backgroundColor="background"
+        paddingX="4"
+        borderTopRadius="large"
+        display="flex"
+        flexDirection="row"
+      >
+        <ViewTab
+          paddingX="4"
+          backgroundColor={
+            paymentViewId === "Pending" ? "backgroundSecondary" : "background"
+          }
+          borderTopWidth={paymentViewId === "Pending" ? "0.375" : "0"}
+          borderRightWidth={paymentViewId === "Pending" ? "0.375" : "0"}
+          borderLeftWidth={paymentViewId === "Pending" ? "0.375" : "0"}
+          key={"pending"}
+          onClick={() => setPaymentViewId("Pending")}
+        >
+          <Text variant="small" weight="semiBold">
+            Pending
+          </Text>
+        </ViewTab>
+        <ViewTab
+          paddingX="4"
+          backgroundColor={
+            paymentViewId === "Completed" ? "backgroundSecondary" : "background"
+          }
+          borderTopWidth={paymentViewId === "Completed" ? "0.375" : "0"}
+          borderRightWidth={paymentViewId === "Completed" ? "0.375" : "0"}
+          borderLeftWidth={paymentViewId === "Completed" ? "0.375" : "0"}
+          key={"completed"}
+          onClick={() => setPaymentViewId("Completed")}
+        >
+          <Text variant="small" weight="semiBold">
+            Completed
+          </Text>
+        </ViewTab>
+        <ViewTab
+          paddingX="4"
+          backgroundColor={
+            paymentViewId === "Cancelled" ? "backgroundSecondary" : "background"
+          }
+          borderTopWidth={paymentViewId === "Cancelled" ? "0.375" : "0"}
+          borderRightWidth={paymentViewId === "Cancelled" ? "0.375" : "0"}
+          borderLeftWidth={paymentViewId === "Cancelled" ? "0.375" : "0"}
+          key={"cancelled"}
+          onClick={() => setPaymentViewId("Cancelled")}
+        >
+          <Text variant="small" weight="semiBold">
+            Cancelled
+          </Text>
+        </ViewTab>
+      </ViewTabsContainer>
     </Box>
   );
 }
 
 export default memo(PaymentCenterHeading);
+
+export const ViewTabsContainer = styled(Box)`
+  margin-top: 16px;
+`;
+
+export const ViewTab = styled(Box)`
+  max-width: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  cursor: pointer;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+`;

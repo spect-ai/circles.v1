@@ -160,45 +160,46 @@ function CircleSidebar() {
             Claim
           </PrimaryButton>
         )}
-        <Link href={`/${cId}`}>
-          <PrimaryButton
-            variant={
-              cId && router.query?.tab !== "payment" && !cSlug && !pId
-                ? "tertiary"
-                : "transparent"
-            }
-            icon={<IconSparkles size="5" />}
-            onClick={() => {
-              process.env.NODE_ENV === "production" &&
-                mixpanel.track("Circle Dashboard Button", {
-                  user: currentUser?.username,
-                  url: window.location.href,
-                });
-            }}
-          >
-            Circle Dashboard
-          </PrimaryButton>
-        </Link>
-        <Link href={`/${cId}?tab=payment`}>
-          <PrimaryButton
-            variant={
-              cId && router.query?.tab === "payment" && !cSlug && !pId
-                ? "tertiary"
-                : "transparent"
-            }
-            icon={<DollarOutlined size={5} />}
-            onClick={() => {
-              process.env.NODE_ENV === "production" &&
-                mixpanel.track("Payment Center Button", {
-                  user: currentUser?.username,
-                  url: window.location.href,
-                });
-            }}
-          >
-            Payment Center
-          </PrimaryButton>
-        </Link>
-
+        <Stack direction="vertical" space="2">
+          <Link href={`/${cId}`}>
+            <PrimaryButton
+              variant={
+                cId && router.query?.tab !== "payment" && !cSlug && !pId
+                  ? "tertiary"
+                  : "transparent"
+              }
+              icon={<IconSparkles size="5" />}
+              onClick={() => {
+                process.env.NODE_ENV === "production" &&
+                  mixpanel.track("Circle Dashboard Button", {
+                    user: currentUser?.username,
+                    url: window.location.href,
+                  });
+              }}
+            >
+              Circle Dashboard
+            </PrimaryButton>
+          </Link>
+          <Link href={`/${cId}?tab=payment`}>
+            <PrimaryButton
+              variant={
+                cId && router.query?.tab === "payment" && !cSlug && !pId
+                  ? "tertiary"
+                  : "transparent"
+              }
+              icon={<DollarOutlined size={10} />}
+              onClick={() => {
+                process.env.NODE_ENV === "production" &&
+                  mixpanel.track("Payment Center Button", {
+                    user: currentUser?.username,
+                    url: window.location.href,
+                  });
+              }}
+            >
+              Payment Center
+            </PrimaryButton>
+          </Link>
+        </Stack>
         <Container subH="12.1rem">
           <Stack>
             {!isLoading &&

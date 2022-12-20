@@ -53,6 +53,8 @@ export default function AddField({ propertyName, handleClose }: Props) {
     value: 0,
     receiver: "",
   });
+  console.log({ registry });
+  console.log({ networks });
   const [initialName, setInitialName] = useState("");
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");

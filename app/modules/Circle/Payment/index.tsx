@@ -6,24 +6,21 @@ import CardDrawer from "../../CollectionProject/CardDrawer";
 import { useCircle } from "../CircleContext";
 import PaymentCard from "./PaymentCard";
 import PaymentCenterHeading from "./PaymentCenterHeading";
+import PendingPayments from "./PendingPayments";
 
 export default function Payment() {
-  const [isCardDrawerOpen, setIsCardDrawerOpen] = useState(false);
-  const [selectedPaymentId, setSelectedPaymentId] = useState("");
+  const [paymentViewId, setPaymentViewId] =
+    useState<"Pending" | "Completed" | "Cancelled">("Pending");
 
   const { circle } = useCircle();
-
+  console.log({ dets: circle.paymentDetails });
   return (
     <>
-      <PaymentCenterHeading />
-      <Container
-        marginX="8"
-        paddingY="0"
-        style={{
-          height: "calc(100vh - 7rem)",
-          overflowY: "auto",
-        }}
-      >
+      <PaymentCenterHeading
+        paymentViewId={paymentViewId}
+        setPaymentViewId={setPaymentViewId}
+      />
+      <Container marginX="8" paddingY="0">
         {/* 
 <AnimatePresence>
         {isCardDrawerOpen && (
@@ -33,21 +30,7 @@ export default function Payment() {
           />
         )}
       </AnimatePresence> */}
-        <Stack>
-          {circle.pendingPayments?.map((paymentId, index) => {
-            return (
-              <PaymentCard
-                key={index}
-                index={index}
-                paymentDetails={circle.paymentDetails[paymentId]}
-                handleClick={() => {
-                  setSelectedPaymentId(paymentId);
-                  setIsCardDrawerOpen(true);
-                }}
-              />
-            );
-          })}
-        </Stack>
+        {paymentViewId === "Pending" && <PendingPayments />}
       </Container>
     </>
   );
