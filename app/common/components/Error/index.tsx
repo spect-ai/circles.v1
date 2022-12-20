@@ -24,7 +24,7 @@ export default function ErrorFallBack({ error }: Props) {
   const href =
     process.env.NODE_ENV === "production"
       ? "https://circles.spect.network"
-      : "https://dev.spect.network";
+      : "http://localhost:3000/";
   console.log(error.message);
   return (
     <DesktopContainer

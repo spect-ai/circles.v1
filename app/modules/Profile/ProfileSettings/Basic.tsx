@@ -79,7 +79,7 @@ export function BasicInfo() {
               process.env.NODE_ENV === "development"
                 ? "http%3A%2F%2Flocalhost%3A3000%2FlinkDiscord"
                 : "https%3A%2F%2Fcircles.spect.network%2FlinkDiscord"
-            }&response_type=code&scope=identify&state=${router.asPath}`}
+            }&response_type=code&scope=guilds%20identify&state=${router.asPath}`}
           >
             <Button
               data-tour="connect-discord-button"

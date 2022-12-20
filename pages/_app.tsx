@@ -195,9 +195,6 @@ function MyApp({ Component, pageProps }: AppProps) {
       return Boolean(verifyRes.ok);
     },
     signOut: async () => {
-      console.log("rainbow trynna disconnect, f it");
-      // await 0.1s
-      await new Promise((resolve) => setTimeout(resolve, 1));
       // await fetch(`${process.env.API_HOST}/auth/disconnect`, {
       //   method: "POST",
       //   credentials: "include",
