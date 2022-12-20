@@ -1,10 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import Popover from "@/app/common/components/Popover";
+import { updateField, updateFormCollection } from "@/app/services/Collection";
 import { Milestone } from "@/app/types";
 import { Box, IconClose, Stack, Tag, Text, useTheme } from "degen";
 import { AnimatePresence, motion } from "framer-motion";
 import { matchSorter } from "match-sorter";
 import React, { useEffect, useRef, useState } from "react";
+import { toast } from "react-toastify";
+import uuid from "react-uuid";
 import styled from "styled-components";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
 import MultiMilestoneModal from "../../Collection/TableView/MultiMilestoneModal";
@@ -21,7 +24,8 @@ type Props = {
 function EditValue({ value, setValue, propertyName, dataId }: Props) {
   const [isEditing, setIsEditing] = useState(false);
   const fieldInput = useRef<any>();
-  const { localCollection: collection } = useLocalCollection();
+  const { localCollection: collection, updateCollection } =
+    useLocalCollection();
   const property = collection.properties[propertyName];
   const [options, setOptions] = useState<any>([]);
   const [filteredOptions, setFilteredOptions] = useState<any>([]);
@@ -104,8 +108,9 @@ function EditValue({ value, setValue, propertyName, dataId }: Props) {
                     <FieldInput
                       mode={mode}
                       autoFocus
-                      defaultValue={value?.label}
+                      value={tempValue}
                       onChange={(e) => {
+                        setTempValue(e.target.value);
                         setFilteredOptions(
                           matchSorter(options, e.target.value, {
                             keys: ["value", "label"],
@@ -176,9 +181,75 @@ function EditValue({ value, setValue, propertyName, dataId }: Props) {
                       <Text>{option.label}</Text>
                     </MenuItem>
                   ))}
-                  {!filteredOptions?.length && (
-                    <MenuItem padding="2">
-                      <Text variant="label">No options found</Text>
+                  {tempValue && property.type === "multiSelect" && (
+                    <MenuItem
+                      padding="2"
+                      onClick={async () => {
+                        let res;
+                        res = await updateField(collection.id, propertyName, {
+                          options: [
+                            ...options,
+                            { label: tempValue, value: uuid() },
+                          ],
+                        });
+                        if (!res.id) {
+                          toast.error("Failed to update field");
+                          return;
+                        }
+                        if (
+                          collection.projectMetadata.cardOrders[propertyName]
+                        ) {
+                          res = await updateFormCollection(collection.id, {
+                            projectMetadata: {
+                              ...collection.projectMetadata,
+                              cardOrders: {
+                                ...collection.projectMetadata.cardOrders,
+                                [propertyName]: [
+                                  ...collection.projectMetadata.cardOrders[
+                                    propertyName
+                                  ],
+                                  [],
+                                ],
+                              },
+                            },
+                          });
+                        }
+                        if (!res.id) {
+                          toast.error("Failed to update collection");
+                          return;
+                        }
+                        updateCollection(res);
+
+                        setOptions([
+                          ...options,
+                          { label: tempValue, value: uuid() },
+                        ]);
+                        setFilteredOptions([
+                          ...options,
+                          { label: tempValue, value: uuid() },
+                        ]);
+                        if (
+                          property.type === "multiSelect" ||
+                          property.type === "user[]"
+                        ) {
+                          if (!value) {
+                            setValue([{ label: tempValue, value: uuid() }]);
+                          } else {
+                            if (
+                              !value.find((val: any) => val.value === tempValue)
+                            )
+                              setValue([
+                                ...value,
+                                { label: tempValue, value: uuid() },
+                              ]);
+                          }
+                        } else {
+                          setValue({ label: tempValue, value: uuid() });
+                          setIsEditing(false);
+                        }
+                      }}
+                    >
+                      <Text variant="label">{`Add "${tempValue}" option`}</Text>
                     </MenuItem>
                   )}
                 </Stack>
