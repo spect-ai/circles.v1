@@ -193,11 +193,11 @@ function MyApp({ Component, pageProps }: AppProps) {
       return Boolean(verifyRes.ok);
     },
     signOut: async () => {
-      await fetch(`${process.env.API_HOST}/auth/disconnect`, {
-        method: "POST",
-        credentials: "include",
-      });
-      setAuthenticationStatus("unauthenticated");
+      // await fetch(`${process.env.API_HOST}/auth/disconnect`, {
+      //   method: "POST",
+      //   credentials: "include",
+      // });
+      // setAuthenticationStatus("unauthenticated");
     },
   });
 
