@@ -3,7 +3,7 @@ import ConfirmModal from "@/app/common/components/Modal/ConfirmModal";
 import Popover from "@/app/common/components/Popover";
 import { deleteField } from "@/app/services/Collection";
 import { CollectionType } from "@/app/types";
-import { Box, Stack, Text } from "degen";
+import { Box, Stack, Text, useTheme } from "degen";
 import { AnimatePresence, motion } from "framer-motion";
 import React, { useRef, useState } from "react";
 import { Delete, Edit } from "react-feather";
@@ -28,6 +28,8 @@ function EditProperty({ propertyName }: Props) {
   const property = collection.properties[propertyName];
   const [isEditFieldOpen, setIsEditFieldOpen] = useState(false);
   const [showConfirmOnDelete, setshowConfirmOnDelete] = useState(false);
+
+  const { mode } = useTheme();
 
   if (property) {
     return (
@@ -67,7 +69,7 @@ function EditProperty({ propertyName }: Props) {
           dependentRef={fieldInput}
           butttonComponent={
             <Box width="full">
-              <PropertyButton onClick={() => setIsMenuOpen(true)}>
+              <PropertyButton onClick={() => setIsMenuOpen(true)} mode={mode}>
                 {getPropertyIcon(property.type)}
                 {property.name}
                 {property.required && <Box color="accent">*</Box>}
@@ -127,8 +129,9 @@ function EditProperty({ propertyName }: Props) {
 
 export default EditProperty;
 
-const PropertyButton = styled.div`
-  color: rgb(255, 255, 255, 0.65);
+const PropertyButton = styled.div<{ mode: string }>`
+  color: ${({ mode }) =>
+    mode === "dark" ? "rgb(255, 255, 255, 0.65)" : "rgb(0, 0, 0, 0.65)"};
   padding: 0.5rem 0.5rem;
   border-radius: 0.25rem;
   display: flex;

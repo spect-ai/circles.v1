@@ -134,9 +134,7 @@ function FieldComponent({
         />
       )}
       {collection.properties[id]?.type === "payWall" && (
-        <PrimaryButton>
-          Pay
-        </PrimaryButton>
+        <PrimaryButton>Pay</PrimaryButton>
       )}
       {collection.properties[id]?.type === "multiURL" && (
         <Input
@@ -223,9 +221,8 @@ function FieldComponent({
         <Box marginTop="4">
           <RewardField
             rewardOptions={collection.properties[id]?.rewardOptions as Registry}
-            propertyName={collection.properties[id]?.name}
-            data={{}}
             updateData={() => {}}
+            value={{} as any}
           />
         </Box>
       )}

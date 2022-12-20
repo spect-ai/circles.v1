@@ -33,7 +33,6 @@ import { PopoverOption } from "../Card/OptionPopover";
 import { useRouter } from "next/router";
 import ResponsesTab from "./ResponsesTab";
 import FAQModal from "./FAQModal";
-import { joinCirclesFromGuildxyz } from "@/app/services/JoinCircle";
 import { toast, ToastContainer } from "react-toastify";
 
 function Dashboard() {

@@ -113,6 +113,7 @@ export const updateFormCollection = async (
     projectMetadata?: Partial<ProjectMetadata>;
     data?: any;
     archivedData?: any;
+    archived?: boolean;
   }
 ) => {
   return await (

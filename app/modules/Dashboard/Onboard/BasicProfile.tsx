@@ -118,7 +118,7 @@ export function BasicProfile({ setStep }: { setStep: (step: number) => void }) {
                     process.env.NODE_ENV === "development"
                       ? "http%3A%2F%2Flocalhost%3A3000%2FlinkDiscord"
                       : "https%3A%2F%2Fcircles.spect.network%2FlinkDiscord"
-                  }&response_type=code&scope=identify`,
+                  }&response_type=code&scope=guilds%20identify`,
                   "_blank"
                 );
                 setPart(1);

@@ -64,22 +64,24 @@ export default function Settings() {
                       onClick={() => {
                         if (
                           !confirm(
-                            "Are you sure you want to delete this collection? This action cannot be undone."
+                            "Are you sure you want to archive this collection?"
                           )
                         )
                           return;
-                        void deleteCollection(collection.id).then((res) => {
+                        void updateFormCollection(collection.id, {
+                          archived: true,
+                        }).then((res) => {
                           console.log({ res });
-                          if (res.ok) {
-                            toast.success("Collection deleted");
+                          if (res.id) {
+                            toast.success("Collection archived");
                             void router.push(`/${router.query.circle}`);
                           } else {
-                            toast.error("Error deleting collection");
+                            toast.error("Error archiving collection");
                           }
                         });
                       }}
                     >
-                      Delete
+                      Archive
                     </PrimaryButton>
                   </Box>
                 </Stack>

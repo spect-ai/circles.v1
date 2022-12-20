@@ -14,9 +14,6 @@ export default function Filtering() {
       alignItems="center"
       backgroundColor="background"
       borderBottomRadius="large"
-      style={{
-        boxShadow: "0px 14px 8px rgba(0, 0, 0, 0.9)",
-      }}
     >
       <SearchCard />
       <Box

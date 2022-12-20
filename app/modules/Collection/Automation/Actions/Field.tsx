@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Dropdown from "@/app/common/components/Dropdown";
 import Editor from "@/app/common/components/Editor";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
@@ -139,8 +140,7 @@ export function Field({ collection, propertyId, type, data, setData }: Props) {
             rewardOptions={
               collection.properties[propertyId]?.rewardOptions as Registry
             }
-            propertyName={collection.properties[propertyId]?.name}
-            data={{}}
+            value={data}
             updateData={(reward) => {
               setData(reward);
             }}

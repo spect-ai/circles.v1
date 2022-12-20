@@ -235,6 +235,7 @@ function CircleSidebar() {
                                 href={`/${cId}/${circle?.projects?.[content].slug}`}
                               >
                                 <PrimaryButton
+                                  center
                                   variant={
                                     pId === circle?.projects?.[content].slug
                                       ? "tertiary"
@@ -273,38 +274,41 @@ function CircleSidebar() {
                                 </PrimaryButton>
                               </Link>
                             )}
-                            {circle?.collections?.[content] && content && (
-                              <Link
-                                href={`/${cId}/r/${circle?.collections?.[content].slug}`}
-                              >
-                                <PrimaryButton
-                                  center
-                                  variant={
-                                    cSlug ===
-                                    circle?.collections?.[content].slug
-                                      ? "tertiary"
-                                      : "transparent"
-                                  }
-                                  icon={
-                                    <Text
-                                      color={
-                                        cSlug ===
-                                        circle?.collections?.[content].slug
-                                          ? "accent"
-                                          : "inherit"
-                                      }
-                                    >
-                                      <IconCollection size={"5"} />
-                                    </Text>
-                                  }
+                            {content &&
+                              circle?.collections?.[content] &&
+                              circle?.collections?.[content].archived !==
+                                true && (
+                                <Link
+                                  href={`/${cId}/r/${circle?.collections?.[content].slug}`}
                                 >
-                                  {smartTrim(
-                                    circle?.collections?.[content].name,
-                                    22
-                                  )}
-                                </PrimaryButton>
-                              </Link>
-                            )}
+                                  <PrimaryButton
+                                    center
+                                    variant={
+                                      cSlug ===
+                                      circle?.collections?.[content].slug
+                                        ? "tertiary"
+                                        : "transparent"
+                                    }
+                                    icon={
+                                      <Text
+                                        color={
+                                          cSlug ===
+                                          circle?.collections?.[content].slug
+                                            ? "accent"
+                                            : "inherit"
+                                        }
+                                      >
+                                        <IconCollection size={"5"} />
+                                      </Text>
+                                    }
+                                  >
+                                    {smartTrim(
+                                      circle?.collections?.[content].name,
+                                      22
+                                    )}
+                                  </PrimaryButton>
+                                </Link>
+                              )}
                           </Box>
                         </Stack>
                       );

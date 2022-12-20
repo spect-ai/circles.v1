@@ -1,4 +1,4 @@
-import { Box, IconPlusSmall, Stack, Text } from "degen";
+import { Box, IconPlusSmall, Stack, Text, useTheme } from "degen";
 import React, { useState } from "react";
 import TableView from "../../Collection/TableView";
 import mixpanel from "@/app/common/utils/mixpanel";
@@ -17,6 +17,8 @@ export default function ProjectTableView() {
   });
   const [isCardDrawerOpen, setIsCardDrawerOpen] = useState(false);
   const router = useRouter();
+
+  const { mode } = useTheme();
 
   return (
     <Box>
@@ -44,6 +46,7 @@ export default function ProjectTableView() {
           <TableView />
           <Box>
             <AddFieldButton
+              mode={mode}
               onClick={() => {
                 setIsAddFieldOpen(true);
                 process.env.NODE_ENV === "production" &&
@@ -59,6 +62,7 @@ export default function ProjectTableView() {
           </Box>
         </Stack>
         <AddRowButton
+          mode={mode}
           onClick={() => {
             setIsCardDrawerOpen(true);
             void router.push({
@@ -87,36 +91,57 @@ export default function ProjectTableView() {
   );
 }
 
-const AddFieldButton = styled.div`
-  background: rgb(20, 20, 20);
-  border-right: 1px solid rgb(40, 40, 40);
-  border-top: 1px solid rgb(40, 40, 40);
-  border-bottom: 1px solid rgb(40, 40, 40);
+const AddFieldButton = styled.div<{ mode: string }>`
+  background: ${(props) =>
+    props.mode === "dark" ? "rgb(20, 20, 20)" : "rgb(255, 255, 255)"};
+  border-right: 1px solid
+    ${(props) =>
+      props.mode === "dark" ? "rgb(40, 40, 40)" : "rgb(240, 240, 240)"};
+
+  border-top: 1px solid
+    ${(props) =>
+      props.mode === "dark" ? "rgb(40, 40, 40)" : "rgb(240, 240, 240)"};
+
+  border-bottom: 1px solid
+    ${(props) =>
+      props.mode === "dark" ? "rgb(40, 40, 40)" : "rgb(240, 240, 240)"};
+
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 0 8px;
   cursor: pointer;
   &:hover {
-    background: rgb(40, 40, 40);
+    background: ${(props) =>
+      props.mode === "dark" ? "rgb(40, 40, 40)" : "rgb(240, 240, 240)"};
   }
   transition: background 0.2s ease;
   width: 120px;
   height: 42px;
 `;
 
-const AddRowButton = styled.div`
-  background: rgb(20, 20, 20);
-  border-right: 1px solid rgb(40, 40, 40);
-  border-left: 1px solid rgb(40, 40, 40);
-  border-bottom: 1px solid rgb(40, 40, 40);
+const AddRowButton = styled.div<{ mode: string }>`
+  background: ${(props) =>
+    props.mode === "dark" ? "rgb(20, 20, 20)" : "rgb(255, 255, 255)"};
+  border-right: 1px solid
+    ${(props) =>
+      props.mode === "dark" ? "rgb(40, 40, 40)" : "rgb(240, 240, 240)"};
+
+  border-top: 1px solid
+    ${(props) =>
+      props.mode === "dark" ? "rgb(40, 40, 40)" : "rgb(240, 240, 240)"};
+
+  border-bottom: 1px solid
+    ${(props) =>
+      props.mode === "dark" ? "rgb(40, 40, 40)" : "rgb(240, 240, 240)"};
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 0 8px;
   cursor: pointer;
   &:hover {
-    background: rgb(40, 40, 40);
+    background: ${(props) =>
+      props.mode === "dark" ? "rgb(40, 40, 40)" : "rgb(240, 240, 240)"};
   }
   transition: background 0.2s ease;
   width: 251px;

@@ -6,8 +6,7 @@ import { useEffect, useState } from "react";
 
 type Props = {
   rewardOptions: Registry;
-  propertyName: string;
-  data: any;
+  value: Reward;
   updateData: (reward: Reward) => void;
   onValueKeyDown?: (e: any) => void;
   disabled?: boolean;
@@ -15,8 +14,7 @@ type Props = {
 
 export default function RewardField({
   rewardOptions,
-  propertyName,
-  data,
+  value,
   updateData,
   onValueKeyDown,
   disabled,
@@ -37,15 +35,13 @@ export default function RewardField({
 
   const [tokenOptions, setTokenOptions] = useState<Option[]>([]);
   const [selectedChain, setSelectedChain] = useState<Option>({
-    label: (data && data[propertyName]?.chain?.label) || firstChainName,
-    value: (data && data[propertyName]?.chain?.value) || firstChainId,
+    label: value?.chain?.label || firstChainName,
+    value: value?.chain?.value || firstChainId,
   });
   const [selectedToken, setSelectedToken] = useState<Option>({
-    label: (data && data[propertyName]?.token?.label) || firstTokenSymbol,
-    value: (data && data[propertyName]?.token?.value) || firstTokenAddress,
+    label: value?.token?.label || firstTokenSymbol,
+    value: value?.token?.value || firstTokenAddress,
   });
-
-  console.log({ data, selectedChain, selectedToken });
 
   useEffect(() => {
     if (rewardOptions && selectedChain) {
@@ -61,7 +57,7 @@ export default function RewardField({
       updateData({
         chain: selectedChain,
         token: tokens[0],
-        value: data[propertyName]?.value,
+        value: value?.value,
       });
       setTokenOptions(tokens);
     }
@@ -99,13 +95,12 @@ export default function RewardField({
             updateData({
               chain: option,
               token: selectedToken,
-              value: data[propertyName]?.value,
+              value: value?.value,
             });
           }}
           multiple={false}
           isClearable={false}
           disabled={disabled}
-          portal={false}
         />
       </Box>
       <Box
@@ -123,13 +118,12 @@ export default function RewardField({
             updateData({
               chain: selectedChain,
               token: option,
-              value: data[propertyName]?.value,
+              value: value?.value,
             });
           }}
           multiple={false}
           isClearable={false}
           disabled={disabled}
-          portal={false}
         />
       </Box>
       <Box
@@ -142,7 +136,7 @@ export default function RewardField({
         <Input
           label=""
           placeholder={`Enter Reward Amount`}
-          value={data && data[propertyName]?.value}
+          value={value?.value}
           onChange={(e) => {
             updateData({
               chain: selectedChain,

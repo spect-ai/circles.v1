@@ -40,7 +40,7 @@ export default function CardActivity({
   const { formActions } = useRoleGate();
 
   return (
-    <Box padding="4">
+    <Box paddingY="2">
       <Stack>
         {activityOrder?.map((activityId) => {
           const activity = activities[activityId];
@@ -60,7 +60,7 @@ export default function CardActivity({
                   space="2"
                 >
                   <Stack direction="horizontal">
-                    <Text color="accentText" weight="semiBold">
+                    <Text color="text" weight="semiBold">
                       <a
                         href={`/profile/${actor?.username}`}
                         target="_blank"
