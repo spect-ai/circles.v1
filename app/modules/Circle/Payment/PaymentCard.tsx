@@ -58,7 +58,7 @@ export default function PaymentCard({
           >
             <Box width="1/2">
               <Text variant="extraLarge" weight="semiBold">
-                Sloeoeorcco dsd cverererer
+                {paymentDetails.title}
               </Text>
             </Box>
             <Box

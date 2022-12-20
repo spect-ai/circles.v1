@@ -49,6 +49,29 @@ import { flags } from "@/app/common/utils/featureFlags";
 const isProd = process.env.NODE_ENV === "production";
 
 const chainsObj = {
+  fuji: {
+    id: 43113,
+    name: "Fuji",
+    network: "fuji",
+    nativeCurrency: {
+      decimals: 18,
+      name: "Avalanche",
+      symbol: "AVAX",
+    },
+    rpcUrls: {
+      default: "https://api.avax-test.network/ext/bc/C/rpc",
+    },
+    blockExplorers: {
+      etherscan: { name: "SnowTrace", url: "https://testnet.snowtrace.io/" },
+      default: { name: "SnowTrace", url: "https://testnet.snowtrace.io/" },
+    },
+    contracts: {
+      multicall3: {
+        address: "0xca11bde05977b3631167028862be2a173976ca11",
+        blockCreated: 11907934,
+      },
+    },
+  },
   avalanche: {
     id: 43114,
     name: "Avalanche",
@@ -125,6 +148,7 @@ const { chains, provider } = configureChains(
     chainsObj.avalanche,
     chainsObj.bsc,
     chainsObj.gnosis,
+    chainsObj.fuji,
   ],
   [alchemyProvider({ apiKey: process.env.ALCHEMY_KEY }), publicProvider()]
 );

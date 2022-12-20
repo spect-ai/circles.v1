@@ -200,7 +200,7 @@ function CircleSidebar() {
             </PrimaryButton>
           </Link>
         </Stack>
-        <Container subH="12.1rem">
+        <Container subH="15.1rem">
           <Stack>
             {!isLoading &&
               circle?.folderOrder?.map((fol) => {

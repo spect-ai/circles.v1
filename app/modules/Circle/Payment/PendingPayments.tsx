@@ -3,6 +3,7 @@ import {
   approveUsingEOA,
   filterTokensByAllowanceOrBalance,
   findAggregatedAmountForEachToken,
+  findAndUpdatePaymentIds,
   findPendingPaymentsByNetwork,
   flattenAmountByEachUniqueTokenAndUser,
   getUniqueNetworks,
@@ -20,15 +21,13 @@ import { toast } from "react-toastify";
 import { useCircle } from "../CircleContext";
 import PaymentCard from "./PaymentCard";
 
-type Props = {};
-
-export default function PendingPayments({}: Props) {
+export default function PendingPayments() {
   const [isCardDrawerOpen, setIsCardDrawerOpen] = useState(false);
   const [selectedPaymentId, setSelectedPaymentId] = useState("");
   const [selectedPaymentIds, setSelectedPaymentIds] = useState<string[]>([]);
   const router = useRouter();
 
-  const { circle } = useCircle();
+  const { circle, setCircleData } = useCircle();
   const { circle: cId } = router.query;
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
@@ -52,10 +51,14 @@ export default function PendingPayments({}: Props) {
         justifyContent="center"
         marginTop="48"
       >
-        <Box width="72" display="flex" flexDirection="column" gap="4">
-          <Text variant="small">
-            You have no pending payments. Add a pending payment to get started.
-          </Text>
+        <Box
+          width="72"
+          display="flex"
+          flexDirection="column"
+          alignItems="center"
+          gap="4"
+        >
+          <Text variant="small">You have no pending payments.</Text>
           <PrimaryButton
             variant="tertiary"
             onClick={() => setIsCardDrawerOpen(true)}
@@ -92,14 +95,14 @@ export default function PendingPayments({}: Props) {
         )}
         <Box width="36">
           <PrimaryButton
-            onClick={() => {
-              try {
-                const uniqueNetworks = getUniqueNetworks(
-                  circle.pendingPayments,
-                  circle.paymentDetails
-                );
-                console.log({ uniqueNetworks });
-                uniqueNetworks.forEach(async (chainId) => {
+            onClick={async () => {
+              const uniqueNetworks = getUniqueNetworks(
+                circle.pendingPayments,
+                circle.paymentDetails
+              );
+              console.log({ uniqueNetworks });
+              for (const chainId of uniqueNetworks) {
+                try {
                   const pendingPayments = findPendingPaymentsByNetwork(
                     chainId,
                     circle.pendingPayments,
@@ -116,7 +119,7 @@ export default function PendingPayments({}: Props) {
                   const aggregatedAmounts =
                     findAggregatedAmountForEachToken(amounts);
                   console.log({ aggregatedAmounts });
-                  const hasRequiredBalances = hasBalances(
+                  const hasRequiredBalances = await hasBalances(
                     chainId,
                     currentUser?.ethAddress as string,
                     aggregatedAmounts
@@ -162,7 +165,18 @@ export default function PendingPayments({}: Props) {
                   );
 
                   console.log({ chainId });
-                  await switchNetwork(chainId);
+                  await toast.promise(
+                    switchNetwork(chainId),
+                    {
+                      pending: `Please switch to ${registry?.[chainId].name} network`,
+                      error: {
+                        render: ({ data }) => data,
+                      },
+                    },
+                    {
+                      position: "top-center",
+                    }
+                  );
 
                   const tokensWithInsufficientAllowance =
                     filterTokensByAllowanceOrBalance(
@@ -173,7 +187,7 @@ export default function PendingPayments({}: Props) {
                     );
 
                   console.log("Approving ...");
-                  await approveUsingEOA(
+                  const tokensApproved = await approveUsingEOA(
                     chainId,
                     tokensWithInsufficientAllowance.map(
                       (token) => token.tokenAddress
@@ -182,22 +196,32 @@ export default function PendingPayments({}: Props) {
                   );
 
                   console.log("Distributing ...");
-                  await payUsingEOA(
+                  const tokensApprvoedSet = new Set(tokensApproved);
+                  const tokensDistributed = await payUsingEOA(
                     chainId,
                     amounts,
-                    tokensWithInsufficientAllowance.map(
-                      (token) => token.tokenAddress
-                    ),
+                    tokensWithInsufficientAllowance
+                      .filter(
+                        (token) => !tokensApprvoedSet.has(token.tokenAddress)
+                      )
+                      .map((token) => token.tokenAddress),
                     tokensWithInsufficientBalance.map(
                       (token) => token.tokenAddress
                     ),
                     registry as Registry
                   );
-                });
-              } catch (e: any) {
-                console.log(e);
-                if (e.code === "ACTION_REJECTED") {
-                  toast.error("You've rejected the request.");
+
+                  const res = await findAndUpdatePaymentIds(
+                    circle.id,
+                    chainId,
+                    tokensDistributed,
+                    circle.pendingPayments,
+                    circle.paymentDetails
+                  );
+                  setCircleData(res);
+                } catch (e: any) {
+                  console.log(e);
+                  toast.error(e.message);
                 }
               }
             }}
