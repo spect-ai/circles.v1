@@ -1,4 +1,5 @@
-import { Box, Button, Heading, IconClose, Stack } from "degen";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { Box, Button, IconChevronRight, Stack } from "degen";
 import React from "react";
 import styled from "styled-components";
 import { motion } from "framer-motion";
@@ -39,12 +40,11 @@ function Drawer({
   return (
     <Box
       style={{
-        position: "fixed",
         top: 0,
         right: 0,
         width: `${closeOnOutsideClick ? "100%" : width}`,
         height: "100%",
-        backgroundColor: "transparent",
+        position: "fixed",
         alignItems: "flex-end",
         zIndex: 2,
       }}
@@ -58,6 +58,9 @@ function Drawer({
         animate="visible"
         exit="exit"
         width={width}
+        onClick={(e) => {
+          e.stopPropagation();
+        }}
       >
         <Container backgroundColor="background">
           <Box
@@ -69,16 +72,21 @@ function Drawer({
             {header ? (
               header
             ) : (
-              <Stack direction="horizontal" justify="space-between">
+              <Box marginLeft="-4">
                 <Button
                   shape="circle"
                   size="small"
                   variant="transparent"
                   onClick={() => handleClose()}
                 >
-                  <IconClose />
+                  <Stack direction="horizontal" align="center" space="0">
+                    <IconChevronRight />
+                    <Box marginLeft="-4">
+                      <IconChevronRight />
+                    </Box>
+                  </Stack>
                 </Button>
-              </Stack>
+              </Box>
             )}
           </Box>
           {children}
@@ -110,7 +118,7 @@ export const MotionContainer = styled(motion.div)<{ width?: string }>`
   overflow-y: hidden;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 0 18px 0 rgba(0, 0, 0, 0.75);
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.4);
 
   @media (max-width: 768px) {
     width: 100%;

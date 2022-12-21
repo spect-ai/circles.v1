@@ -1,12 +1,5 @@
 import Loader from "@/app/common/components/Loader";
-import {
-  Box,
-  Button,
-  useTheme,
-  Text,
-  IconLockClosed,
-  Stack,
-} from "degen";
+import { Box, Button, useTheme, Text, IconLockClosed, Stack } from "degen";
 import { AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
@@ -19,6 +12,7 @@ import { joinCircle } from "@/app/services/JoinCircle";
 import Roles from "./RolesTab";
 import { useGlobal } from "@/app/context/globalContext";
 import FAQModal from "../Dashboard/FAQModal";
+import Payment from "./Payment";
 import { QuestionCircleOutlined } from "@ant-design/icons";
 
 const BoxContainer = styled(Box)`
@@ -46,6 +40,10 @@ export default function Circle() {
 
   if (isLoading || !circle || !memberDetails) {
     return <Loader text="...." loading />;
+  }
+
+  if (router.query?.tab === "payment") {
+    return <Payment />;
   }
 
   if (circle?.unauthorized && !isLoading && circle?.id)

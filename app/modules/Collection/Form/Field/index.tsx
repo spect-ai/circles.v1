@@ -2,7 +2,7 @@
 import Dropdown from "@/app/common/components/Dropdown";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import RewardField from "@/app/modules/PublicForm/RewardField";
-import { MemberDetails, UserType } from "@/app/types";
+import { MemberDetails, Registry, UserType } from "@/app/types";
 import {
   Box,
   IconPencil,
@@ -134,9 +134,7 @@ function FieldComponent({
         />
       )}
       {collection.properties[id]?.type === "payWall" && (
-        <PrimaryButton>
-          Pay
-        </PrimaryButton>
+        <PrimaryButton>Pay</PrimaryButton>
       )}
       {collection.properties[id]?.type === "multiURL" && (
         <Input
@@ -215,17 +213,16 @@ function FieldComponent({
             onChange={(value: any) => {
               console.log({ value });
             }}
-            portal={false}
+            portal
           />
         </Box>
       )}
       {collection.properties[id]?.type === "reward" && (
         <Box marginTop="4">
           <RewardField
-            form={collection}
-            propertyName={collection.properties[id]?.name}
-            data={{}}
+            rewardOptions={collection.properties[id]?.rewardOptions as Registry}
             updateData={() => {}}
+            value={{} as any}
           />
         </Box>
       )}

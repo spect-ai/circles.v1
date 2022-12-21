@@ -17,13 +17,7 @@ interface Props {
   type?: "button" | "submit" | "reset";
   tourId?: string;
   suffix?: ReactNodeNoStrings;
-  justifyContent?:
-    | "center"
-    | "flex-end"
-    | "flex-start"
-    | "stretch"
-    | "space-around"
-    | "space-between";
+  center?: boolean;
 }
 
 export const slide = {
@@ -67,7 +61,7 @@ const PrimaryButton: FC<Props> = ({
   type = "button",
   suffix,
   tourId,
-  justifyContent,
+  center = false,
 }) => {
   return (
     <motion.div
@@ -87,10 +81,11 @@ const PrimaryButton: FC<Props> = ({
         variant={variant}
         prefix={icon}
         onClick={onClick}
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         tone={tone as any}
         type={type}
         suffix={suffix}
-        justifyContent={justifyContent}
+        center={center}
       >
         {children}
       </Button>

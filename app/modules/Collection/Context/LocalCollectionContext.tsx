@@ -1,6 +1,6 @@
 import queryClient from "@/app/common/utils/queryClient";
 import { useGlobal } from "@/app/context/globalContext";
-import { CollectionType, AdvancedFilters } from "@/app/types";
+import { CollectionType } from "@/app/types";
 import _ from "lodash";
 import { useRouter } from "next/router";
 import React, { createContext, useContext, useEffect, useState } from "react";
@@ -16,10 +16,12 @@ type LocalCollectionContextType = {
   updateCollection: (collection: CollectionType) => void;
   updating: boolean;
   setUpdating: React.Dispatch<React.SetStateAction<boolean>>;
-  advFilters: AdvancedFilters;
-  setAdvFilters: React.Dispatch<React.SetStateAction<AdvancedFilters>>;
   view: number;
   setView: React.Dispatch<React.SetStateAction<number>>;
+  projectViewId: string;
+  setProjectViewId: React.Dispatch<React.SetStateAction<string>>;
+  searchFilter: string;
+  setSearchFilter: React.Dispatch<React.SetStateAction<string>>;
 };
 
 export const LocalCollectionContext = createContext<LocalCollectionContextType>(
@@ -48,19 +50,11 @@ export function useProviderLocalCollection() {
 
   const [localCollection, setLocalCollection] = useState({} as CollectionType);
   const [error, setError] = useState(false);
-
-  const [advFilters, setAdvFilters] = useState<AdvancedFilters>({
-    inputTitle: "",
-    groupBy: "Status",
-    sortBy: "none",
-    order: "des",
-    show: {
-      subTasks: false,
-    },
-  });
   const [view, setView] = useState(0);
-
   const { socket, connectedUser } = useGlobal();
+  const [projectViewId, setProjectViewId] = useState("");
+
+  const [searchFilter, setSearchFilter] = useState("");
 
   const updateCollection = (collection: CollectionType) => {
     queryClient.setQueryData(["collection", colId], collection);
@@ -74,6 +68,9 @@ export function useProviderLocalCollection() {
         .then((res) => {
           if (res.data) {
             setLocalCollection(res.data);
+            if (res.data.collectionType === 1) {
+              setProjectViewId(res.data.projectMetadata.viewOrder[0]);
+            }
           }
           setLoading(false);
         })
@@ -118,10 +115,12 @@ export function useProviderLocalCollection() {
     updateCollection,
     updating,
     setUpdating,
-    advFilters,
-    setAdvFilters,
     view,
     setView,
+    projectViewId,
+    setProjectViewId,
+    searchFilter,
+    setSearchFilter,
   };
 }
 

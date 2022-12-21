@@ -1,19 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { OptionType } from "@/app/common/components/Dropdown";
 import {
   addCollectionData,
   deleteCollectionData,
   updateCollectionDataGuarded,
 } from "@/app/services/Collection";
-import {
-  Milestone,
-  Option,
-  PaymentData,
-  PropertyType,
-  Reward,
-} from "@/app/types";
+import { Milestone, Option, PropertyType, Reward } from "@/app/types";
 import { Box } from "degen";
-import { AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import { matchSorter } from "match-sorter";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import {
@@ -27,7 +21,9 @@ import {
 import { CellWithId } from "react-datasheet-grid/dist/types";
 import { useScreenClass } from "react-grid-system";
 import { toast } from "react-toastify";
+import CardDrawer from "../../CollectionProject/CardDrawer";
 import AddField from "../AddField";
+import { satisfiesConditions } from "../Common/SatisfiesFilter";
 import { useLocalCollection } from "../Context/LocalCollectionContext";
 import DataDrawer from "../Form/DataDrawer";
 import ExpandableCell from "../Form/ExpandableCell";
@@ -52,23 +48,29 @@ export default function TableView() {
   const [multipleMilestoneModalOpen, setMultipleMilestoneModalOpen] =
     useState(false);
   const [data, setData] = useState<any[]>();
-  const { localCollection: collection, setLocalCollection } =
-    useLocalCollection();
+  const {
+    localCollection: collection,
+    setLocalCollection,
+    searchFilter,
+    projectViewId,
+  } = useLocalCollection();
 
   const [expandedDataSlug, setExpandedDataSlug] = useState("");
+  const [dataLoading, setDataLoading] = useState(false);
 
   const screenClass = useScreenClass();
 
   const router = useRouter();
-  const { dataId: dataSlug } = router.query;
+  const { dataId: dataSlug, cardSlug } = router.query;
 
   useEffect(() => {
     if (dataSlug) {
       setExpandedDataSlug(dataSlug as string);
     }
-  }, [dataSlug, setExpandedDataSlug]);
-
-  console.log({ collection });
+    if (cardSlug) {
+      setExpandedDataSlug(cardSlug as string);
+    }
+  }, [dataSlug, setExpandedDataSlug, cardSlug]);
 
   const updateData = async ({ cell }: { cell: CellWithId }) => {
     if (data) {
@@ -77,16 +79,27 @@ export default function TableView() {
       if (!row.id && Object.keys(row).length > 0) {
         return addData(row);
       }
-      if (!row.id) return;
-      if (row && !collection.properties[cell.colId || ""]?.isPartOfFormView) {
+      if (!row.id || !cell.colId) return;
+      const property = collection.properties[cell.colId];
+      if (
+        (row &&
+          collection.collectionType === 0 &&
+          !property.isPartOfFormView) ||
+        collection.collectionType === 1
+      ) {
+        console.log("UPDATING DATA");
         const res = await updateCollectionDataGuarded(collection.id, row.id, {
-          [cell.colId as string]: row[cell.colId as string],
+          [cell.colId]: row[cell.colId],
         });
-        console.log({ res });
-        if (!res.id) {
+        if (res.id) {
+          console.log({ res });
+          // updateCollection(res); causing infinite renders
+        } else {
           toast.error("Error updating data");
         }
         return res;
+      } else {
+        toast.error("Cannot update data");
       }
     }
   };
@@ -112,7 +125,6 @@ export default function TableView() {
 
   useEffect(() => {
     if (collection.data) {
-      console.log({ collection });
       // for each date property in the data, convert the date string to a date object for all the rows
       const dateProperties = collection.propertyOrder.map((property) => {
         if (collection.properties[property]?.type === "date")
@@ -129,9 +141,133 @@ export default function TableView() {
           ...row,
         };
       });
-      setData(data);
+
+      setDataLoading(true);
+
+      // filter the data based on the search filter
+      let filteredData = matchSorter(Object.values(data), searchFilter, {
+        keys: Object.keys(data[0]).map((key) => {
+          return (item: any) => {
+            if (key === "id") return item.id;
+            if (collection.properties[key]?.type === "date") {
+              console.log({ item: item[key], key });
+              if (typeof item[key] === "string") {
+                return new Date(item[key]).toLocaleDateString();
+              }
+              return item[key]?.toLocaleDateString();
+            }
+            if (collection.properties[key]?.type === "multiSelect") {
+              return item[key]?.map((option: Option) => option.label);
+            }
+            return item[key]?.label || item[key];
+          };
+        }),
+      });
+
+      if (
+        collection.collectionType === 1 &&
+        collection.projectMetadata.views[projectViewId].filters
+      ) {
+        filteredData = filteredData.filter((row) => {
+          return satisfiesConditions(
+            collection.data[row.id],
+            collection.properties,
+            collection.projectMetadata.views[projectViewId].filters || []
+          );
+        });
+      }
+
+      if (
+        collection.collectionType === 1 &&
+        collection.projectMetadata.views[projectViewId].sort?.property
+      ) {
+        const property =
+          collection.properties[
+            collection.projectMetadata.views[projectViewId].sort?.property || ""
+          ];
+        const propertyType = property.type;
+        const propertyOptions = property.options as Option[];
+        const direction =
+          collection.projectMetadata.views[projectViewId].sort?.direction ||
+          "asc";
+        const propertyName = property.name;
+        filteredData = filteredData.sort((a: any, b: any) => {
+          if (propertyType === "singleSelect") {
+            const aIndex = propertyOptions.findIndex(
+              (option) => option.value === a[propertyName]?.value
+            );
+            const bIndex = propertyOptions.findIndex(
+              (option) => option.value === b[propertyName]?.value
+            );
+            if (direction === "asc") {
+              return aIndex - bIndex;
+            }
+            return bIndex - aIndex;
+          }
+          if (propertyType === "user") {
+            if (direction === "asc") {
+              return a[propertyName]?.label?.localeCompare(
+                b[propertyName]?.label
+              );
+            }
+            return b[propertyName]?.label?.localeCompare(
+              a[propertyName]?.label
+            );
+          }
+          if (propertyType === "date") {
+            const aDate = new Date(a[propertyName]);
+            const bDate = new Date(b[propertyName]);
+            if (direction === "asc") {
+              return aDate.getTime() - bDate.getTime();
+            }
+            return bDate.getTime() - aDate.getTime();
+          }
+          if (propertyType === "reward") {
+            // property has chain, token and value, need to sort it based on chain first, then token and then value
+            const aChain = a[propertyName]?.chain.label;
+            const bChain = b[propertyName]?.chain.label;
+            if (aChain !== bChain) {
+              if (direction === "asc") {
+                return aChain?.localeCompare(bChain);
+              }
+              return bChain?.localeCompare(aChain);
+            }
+            const aToken = a[propertyName]?.token.label;
+            const bToken = b[propertyName]?.token.label;
+            if (aToken !== bToken) {
+              if (direction === "asc") {
+                return aToken.localeCompare(bToken);
+              }
+              return bToken.localeCompare(aToken);
+            }
+            const aValue = a[propertyName]?.value;
+            const bValue = b[propertyName]?.value;
+            if (direction === "asc") {
+              return aValue - bValue;
+            }
+            return bValue - aValue;
+          }
+
+          if (direction === "asc") {
+            return a[propertyName]?.localeCompare(b[propertyName]);
+          }
+          return b[propertyName]?.localeCompare(a[propertyName]);
+        });
+      }
+      setTimeout(() => {
+        setDataLoading(false);
+      }, 400);
+      setData(filteredData);
     }
-  }, [collection.data, collection.properties, collection.propertyOrder]);
+  }, [
+    collection.collectionType,
+    collection.data,
+    collection.projectMetadata?.views,
+    collection.properties,
+    collection.propertyOrder,
+    projectViewId,
+    searchFilter,
+  ]);
 
   const sortData = (columnName: string, asc: boolean) => {
     if (data) {
@@ -224,6 +360,7 @@ export default function TableView() {
               columnName={property.name}
               setIsEditFieldOpen={setIsEditFieldOpen}
               setPropertyName={setPropertyName}
+              propertyType={property.type}
             />
           ),
           minWidth: 200,
@@ -243,6 +380,7 @@ export default function TableView() {
               columnName={property.name}
               setIsEditFieldOpen={setIsEditFieldOpen}
               setPropertyName={setPropertyName}
+              propertyType={property.type}
             />
           ),
           minWidth: 200,
@@ -262,6 +400,7 @@ export default function TableView() {
               columnName={property.name}
               setIsEditFieldOpen={setIsEditFieldOpen}
               setPropertyName={setPropertyName}
+              propertyType={property.type}
             />
           ),
           minWidth: 200,
@@ -280,6 +419,7 @@ export default function TableView() {
               columnName={property.name}
               setIsEditFieldOpen={setIsEditFieldOpen}
               setPropertyName={setPropertyName}
+              propertyType={property.type}
             />
           ),
           minWidth: 200,
@@ -299,6 +439,7 @@ export default function TableView() {
               columnName={property.name}
               setIsEditFieldOpen={setIsEditFieldOpen}
               setPropertyName={setPropertyName}
+              propertyType={property.type}
             />
           ),
           minWidth: 200,
@@ -306,13 +447,15 @@ export default function TableView() {
       } else {
         return {
           ...keyColumn(property.name, getCellComponent(property.type) as any),
-          disabled: property.isPartOfFormView,
+          disabled:
+            collection.collectionType === 0 ? property.isPartOfFormView : false,
           title: (
             <HeaderComponent
               sortData={sortData}
               columnName={property.name}
               setIsEditFieldOpen={setIsEditFieldOpen}
               setPropertyName={setPropertyName}
+              propertyType={property.type}
             />
           ),
           minWidth: 200,
@@ -320,7 +463,8 @@ export default function TableView() {
       }
     });
 
-  const columnsWithCredentials = collection.credentialCurationEnabled
+  const columnsWithCredentials = collection.formMetadata
+    ?.credentialCurationEnabled
     ? [
         {
           component: CredentialComponent,
@@ -331,6 +475,7 @@ export default function TableView() {
               columnName={"Responder"}
               setIsEditFieldOpen={setIsEditFieldOpen}
               setPropertyName={setPropertyName}
+              propertyType={"user"}
             />
           ),
           minWidth: 150,
@@ -340,7 +485,7 @@ export default function TableView() {
     : columns;
 
   return (
-    <Box padding="8">
+    <Box>
       <AnimatePresence>
         {isEditFieldOpen && (
           <AddField
@@ -350,6 +495,7 @@ export default function TableView() {
         )}
         {isRewardFieldOpen && (
           <RewardModal
+            value={data?.find((row) => row.id === dataId)?.[propertyName]}
             form={collection}
             propertyName={propertyName}
             handleClose={async (
@@ -359,15 +505,16 @@ export default function TableView() {
             ) => {
               if (data) {
                 const row = data.findIndex((row) => row.id === dataId);
-
                 if (row === 0 || row) {
                   const tempData = [...data];
                   tempData[row][propertyName] = reward;
+                  console.log({ tempdata: tempData[row][propertyName] });
                   setData(tempData);
                   setIsRewardFieldOpen(false);
                   await updateData({
                     cell: { row, col: 0, colId: propertyName },
                   });
+                  console.log({ updatedData: data[row][propertyName] });
                 }
                 setIsRewardFieldOpen(false);
               }
@@ -412,7 +559,11 @@ export default function TableView() {
               dataId: string,
               propertyName: string
             ) => {
-              if (collection.properties[propertyName].isPartOfFormView) {
+              if (
+                collection.collectionType === 0
+                  ? collection.properties[propertyName].isPartOfFormView
+                  : false
+              ) {
                 setMultipleMilestoneModalOpen(false);
                 return;
               }
@@ -436,62 +587,76 @@ export default function TableView() {
             }}
           />
         )}
-        {expandedDataSlug && (
+        {collection.collectionType === 0 && expandedDataSlug && (
           <DataDrawer
             expandedDataSlug={expandedDataSlug}
             setExpandedDataSlug={setExpandedDataSlug}
           />
         )}
+        {collection.collectionType === 1 && expandedDataSlug && (
+          <CardDrawer
+            handleClose={() => setExpandedDataSlug("")}
+            defaultValue={data?.find((d) => d.slug === expandedDataSlug)}
+          />
+        )}
       </AnimatePresence>
-
-      {collection.name && (
-        <DynamicDataSheetGrid
-          value={data}
-          height={
-            screenClass === "xxl"
-              ? 700
-              : screenClass === "xl"
-              ? 600
-              : screenClass === "lg"
-              ? 550
-              : screenClass === "md"
-              ? 500
-              : screenClass === "sm"
-              ? 500
-              : 500
-          }
-          onChange={async (newData, operations) => {
-            if (operations[0].type === "DELETE") {
-              const dataIds = [];
-              for (
-                let i = operations[0].fromRowIndex;
-                i < operations[0].toRowIndex;
-                i++
-              ) {
-                data && dataIds.push(data[i].id);
+      <AnimatePresence>
+        {collection.name && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1, transition: { duration: 0.1 } }}
+            exit={{ opacity: 0, transition: { duration: 0.1 } }}
+          >
+            <DynamicDataSheetGrid
+              rowHeight={41}
+              value={data}
+              height={
+                screenClass === "xxl"
+                  ? 700
+                  : screenClass === "xl"
+                  ? 600
+                  : screenClass === "lg"
+                  ? 550
+                  : screenClass === "md"
+                  ? 500
+                  : screenClass === "sm"
+                  ? 500
+                  : 500
               }
-              setData(newData);
-              const res = await deleteCollectionData(collection.id, dataIds);
-              if (res.id) {
-                setLocalCollection(res);
-              } else toast.error("Error deleting data");
-              return;
-            }
-            setData(newData);
-          }}
-          columns={columnsWithCredentials}
-          gutterColumn={{
-            component: GutterColumnComponent,
-            minWidth: 90,
-            columnData: {
-              setExpandedDataSlug,
-            },
-          }}
-          onBlur={updateData}
-          lockRows
-          disableExpandSelection
-        />
-      )}
+              onChange={async (newData, operations) => {
+                if (operations[0].type === "DELETE") {
+                  const dataIds = [];
+                  for (
+                    let i = operations[0].fromRowIndex;
+                    i < operations[0].toRowIndex;
+                    i++
+                  ) {
+                    data && dataIds.push(data[i].id);
+                  }
+                  setData(newData);
+                  const res = await deleteCollectionData(
+                    collection.id,
+                    dataIds
+                  );
+                  if (res.id) {
+                    setLocalCollection(res);
+                  } else toast.error("Error deleting data");
+                  return;
+                }
+                setData(newData);
+              }}
+              columns={columnsWithCredentials}
+              gutterColumn={{
+                component: GutterColumnComponent,
+                minWidth: 50,
+              }}
+              onBlur={updateData}
+              lockRows
+              disableExpandSelection
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </Box>
   );
 }

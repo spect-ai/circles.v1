@@ -103,6 +103,8 @@ function Card() {
   const [isApplyModalOpen, setIsApplyModalOpen] = useState(false);
   const { mode } = useTheme();
 
+  console.log({ card });
+
   useEffect(() => {
     if (isDirty) {
       void onCardUpdate();

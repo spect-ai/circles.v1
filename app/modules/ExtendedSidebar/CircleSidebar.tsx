@@ -1,7 +1,7 @@
 import Accordian from "@/app/common/components/Accordian";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { CircleType, UserType } from "@/app/types";
-import { ProjectOutlined } from "@ant-design/icons";
+import { DollarOutlined, ProjectOutlined } from "@ant-design/icons";
 import {
   Box,
   IconCollection,
@@ -43,12 +43,16 @@ export const Container = styled(Box)<{ subH?: string }>`
 
 function CircleSidebar() {
   const router = useRouter();
-  const { circle: cId, project: pId, collection: cSlug } = router.query;
+  const {
+    circle: cId,
+    project: pId,
+    collection: cSlug,
+    payment,
+  } = router.query;
   const { data: circle, isLoading } = useQuery<CircleType>(["circle", cId], {
     enabled: false,
   });
   const { setCircleData, setMemberDetailsData } = useCircle();
-
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [isContributorsModalOpen, setIsContributorsModalOpen] = useState(false);
   const [isRetroModalOpen, setIsRetroModalOpen] = useState(false);
@@ -56,7 +60,6 @@ function CircleSidebar() {
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
-
   if (isLoading) {
     return (
       <SkeletonGroup loading>
@@ -157,23 +160,47 @@ function CircleSidebar() {
             Claim
           </PrimaryButton>
         )}
-        <Link href={`/${cId}`}>
-          <PrimaryButton
-            variant={pId || cSlug ? "transparent" : "tertiary"}
-            icon={<IconSparkles size="5" />}
-            onClick={() => {
-              process.env.NODE_ENV === "production" &&
-                mixpanel.track("Circle Dashboard Button", {
-                  user: currentUser?.username,
-                  url: window.location.href,
-                });
-            }}
-          >
-            Circle Dashboard
-          </PrimaryButton>
-        </Link>
-
-        <Container subH="12.1rem">
+        <Stack direction="vertical" space="2">
+          <Link href={`/${cId}`}>
+            <PrimaryButton
+              variant={
+                cId && router.query?.tab !== "payment" && !cSlug && !pId
+                  ? "tertiary"
+                  : "transparent"
+              }
+              icon={<IconSparkles size="5" />}
+              onClick={() => {
+                process.env.NODE_ENV === "production" &&
+                  mixpanel.track("Circle Dashboard Button", {
+                    user: currentUser?.username,
+                    url: window.location.href,
+                  });
+              }}
+            >
+              Circle Dashboard
+            </PrimaryButton>
+          </Link>
+          <Link href={`/${cId}?tab=payment`}>
+            <PrimaryButton
+              variant={
+                cId && router.query?.tab === "payment" && !cSlug && !pId
+                  ? "tertiary"
+                  : "transparent"
+              }
+              icon={<DollarOutlined size={10} />}
+              onClick={() => {
+                process.env.NODE_ENV === "production" &&
+                  mixpanel.track("Payment Center Button", {
+                    user: currentUser?.username,
+                    url: window.location.href,
+                  });
+              }}
+            >
+              Payment Center
+            </PrimaryButton>
+          </Link>
+        </Stack>
+        <Container subH="15.1rem">
           <Stack>
             {!isLoading &&
               circle?.folderOrder?.map((fol) => {
@@ -195,7 +222,6 @@ function CircleSidebar() {
                                       : "transparent"
                                   }
                                   icon={<IconUserGroup size={"5"} />}
-                                  justifyContent="flex-start"
                                 >
                                   {smartTrim(
                                     circle?.children?.[content].name,
@@ -209,6 +235,7 @@ function CircleSidebar() {
                                 href={`/${cId}/${circle?.projects?.[content].slug}`}
                               >
                                 <PrimaryButton
+                                  center
                                   variant={
                                     pId === circle?.projects?.[content].slug
                                       ? "tertiary"
@@ -219,7 +246,6 @@ function CircleSidebar() {
                                       style={{ fontSize: "1.1rem" }}
                                     />
                                   }
-                                  justifyContent="flex-start"
                                 >
                                   {smartTrim(
                                     circle?.projects?.[content].name,
@@ -233,13 +259,13 @@ function CircleSidebar() {
                                 href={`/${cId}?retroSlug=${circle?.retro?.[content].slug}`}
                               >
                                 <PrimaryButton
+                                  center
                                   variant={
                                     pId === circle?.retro?.[content].slug
                                       ? "tertiary"
                                       : "transparent"
                                   }
                                   icon={<IconLightningBolt size={"5"} />}
-                                  justifyContent="flex-start"
                                 >
                                   {smartTrim(
                                     circle?.retro?.[content].title,
@@ -248,27 +274,41 @@ function CircleSidebar() {
                                 </PrimaryButton>
                               </Link>
                             )}
-                            {circle?.collections?.[content] && content && (
-                              <Link
-                                href={`/${cId}/r/${circle?.collections?.[content].slug}`}
-                              >
-                                <PrimaryButton
-                                  variant={
-                                    cSlug ===
-                                    circle?.collections?.[content].slug
-                                      ? "tertiary"
-                                      : "transparent"
-                                  }
-                                  icon={<IconCollection size={"5"} />}
-                                  justifyContent="flex-start"
+                            {content &&
+                              circle?.collections?.[content] &&
+                              circle?.collections?.[content].archived !==
+                                true && (
+                                <Link
+                                  href={`/${cId}/r/${circle?.collections?.[content].slug}`}
                                 >
-                                  {smartTrim(
-                                    circle?.collections?.[content].name,
-                                    22
-                                  )}
-                                </PrimaryButton>
-                              </Link>
-                            )}
+                                  <PrimaryButton
+                                    center
+                                    variant={
+                                      cSlug ===
+                                      circle?.collections?.[content].slug
+                                        ? "tertiary"
+                                        : "transparent"
+                                    }
+                                    icon={
+                                      <Text
+                                        color={
+                                          cSlug ===
+                                          circle?.collections?.[content].slug
+                                            ? "accent"
+                                            : "inherit"
+                                        }
+                                      >
+                                        <IconCollection size={"5"} />
+                                      </Text>
+                                    }
+                                  >
+                                    {smartTrim(
+                                      circle?.collections?.[content].name,
+                                      22
+                                    )}
+                                  </PrimaryButton>
+                                </Link>
+                              )}
                           </Box>
                         </Stack>
                       );

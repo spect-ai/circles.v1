@@ -1,20 +1,26 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Dropdown from "@/app/common/components/Dropdown";
 import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import Select from "@/app/common/components/Select";
 import Tabs from "@/app/common/components/Tabs";
-import { addField, deleteField, updateField } from "@/app/services/Collection";
 import {
+  addField,
+  deleteField,
+  updateField,
+  updateFormCollection,
+} from "@/app/services/Collection";
+import {
+  CollectionType,
   Condition,
   FormUserType,
+  Registry,
   Option,
   PayWallOptions,
-  Registry,
 } from "@/app/types";
 import { SaveFilled } from "@ant-design/icons";
 import { Box, IconTrash, Input, Stack, Text, Textarea } from "degen";
 import React, { useEffect, useState } from "react";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import { useCircle } from "../../Circle/CircleContext";
 import { fields } from "../Constants";
 import { useLocalCollection } from "../Context/LocalCollectionContext";
@@ -35,8 +41,11 @@ type Props = {
 };
 
 export default function AddField({ propertyName, handleClose }: Props) {
-  const { localCollection: collection, setLocalCollection } =
-    useLocalCollection();
+  const {
+    localCollection: collection,
+    updateCollection,
+    setProjectViewId,
+  } = useLocalCollection();
   const { registry } = useCircle();
   const [networks, setNetworks] = useState(registry);
   const [payWallOption, setPayWallOption] = useState({
@@ -44,6 +53,8 @@ export default function AddField({ propertyName, handleClose }: Props) {
     value: 0,
     receiver: "",
   });
+  console.log({ registry });
+  console.log({ networks });
   const [initialName, setInitialName] = useState("");
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -60,11 +71,6 @@ export default function AddField({ propertyName, handleClose }: Props) {
   ]);
 
   const [userType, setUserType] = useState<FormUserType>();
-  const [notifyUserType, setNotifyUserType] = useState<Option[] | undefined>(
-    []
-  );
-
-  const [defaultValue, setDefaultValue] = useState("");
   const [showNameCollissionError, setShowNameCollissionError] = useState(false);
   const [showSlugNameError, setShowSlugNameError] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -78,6 +84,8 @@ export default function AddField({ propertyName, handleClose }: Props) {
   const [advancedDefaultOpen, setAdvancedDefaultOpen] = useState(
     viewConditions?.length > 0 ? true : false
   );
+
+  const [cardOrder, setCardOrder] = useState<any>();
 
   const onSave = async () => {
     setLoading(true);
@@ -95,22 +103,31 @@ export default function AddField({ propertyName, handleClose }: Props) {
       payWallOptions = payWallOption;
     }
     if (propertyName) {
-      res = await updateField(collection.id, propertyName, {
+      await updateField(collection.id, propertyName, {
         name: name.trim(),
         type: type.value,
         options: fieldOptions,
         rewardOptions,
         description,
         userType,
-        default: defaultValue,
-        onUpdateNotifyUserTypes: notifyUserType?.map(
-          (type) => type.value
-        ) as FormUserType[],
+        // default: defaultValue,
+        // onUpdateNotifyUserTypes: notifyUserType?.map(
+        //   (type) => type.value
+        // ) as FormUserType[],
         isPartOfFormView: true,
         required: required === 1,
         milestoneFields,
         viewConditions,
         payWallOptions,
+      });
+      res = await updateFormCollection(collection.id, {
+        projectMetadata: {
+          ...collection.projectMetadata,
+          cardOrders: {
+            ...collection.projectMetadata.cardOrders,
+            [propertyName]: cardOrder,
+          },
+        },
       });
     } else {
       res = await addField(collection.id, {
@@ -121,10 +138,10 @@ export default function AddField({ propertyName, handleClose }: Props) {
         options: fieldOptions,
         rewardOptions,
         userType: userType,
-        default: defaultValue,
-        onUpdateNotifyUserTypes: notifyUserType?.map(
-          (type) => type.value
-        ) as FormUserType[],
+        // default: defaultValue,
+        // onUpdateNotifyUserTypes: notifyUserType?.map(
+        //   (type) => type.value
+        // ) as FormUserType[],
         required: required === 1,
         milestoneFields,
         viewConditions,
@@ -134,7 +151,7 @@ export default function AddField({ propertyName, handleClose }: Props) {
     setLoading(false);
     if (res.id) {
       handleClose();
-      setLocalCollection(res);
+      updateCollection(res);
     } else {
       toast.error(res.message.toString());
     }
@@ -185,8 +202,14 @@ export default function AddField({ propertyName, handleClose }: Props) {
     setAdvancedDefaultOpen(viewConditions?.length > 0 ? true : false);
   }, [viewConditions]);
 
+  useEffect(() => {
+    if (propertyName && collection.projectMetadata?.cardOrders) {
+      setCardOrder(collection.projectMetadata.cardOrders[propertyName]);
+    }
+  }, [collection.projectMetadata?.cardOrders, propertyName]);
+
   return (
-    <>
+    <Box>
       <AnimatePresence>
         {showConfirm && (
           <ConfirmModal
@@ -202,22 +225,23 @@ export default function AddField({ propertyName, handleClose }: Props) {
         {showConfirmOnDelete && (
           <ConfirmModal
             title="This will remove existing data associated with this field, if you're looking to avoid this please set the field as inactive. Are you sure you want to delete this field?"
-            handleClose={() => setShowConfirm(false)}
+            handleClose={() => setShowConfirmOnDelete(false)}
             onConfirm={async () => {
-              setShowConfirm(false);
-              const res = await deleteField(
+              setShowConfirmOnDelete(false);
+              const res: CollectionType = await deleteField(
                 collection.id,
                 (propertyName as string).trim()
               );
-              console.log({ res });
               if (res.id) {
+                res.projectMetadata &&
+                  setProjectViewId(res.projectMetadata.viewOrder[0]);
                 handleClose();
-                setLocalCollection(res);
+                updateCollection(res);
               } else {
-                toast.error(res.message);
+                toast.error("Error deleting field");
               }
             }}
-            onCancel={() => setShowConfirm(false)}
+            onCancel={() => setShowConfirmOnDelete(false)}
           />
         )}
       </AnimatePresence>
@@ -288,6 +312,8 @@ export default function AddField({ propertyName, handleClose }: Props) {
               <AddOptions
                 fieldOptions={fieldOptions}
                 setFieldOptions={setFieldOptions}
+                setCardOrder={setCardOrder}
+                cardOrder={cardOrder}
               />
             ) : null}
             {type.value === "user" || type.value === "user[]" ? (
@@ -317,41 +343,14 @@ export default function AddField({ propertyName, handleClose }: Props) {
             {type.value === "milestone" ? (
               <MilestoneOptions networks={networks} setNetworks={setNetworks} />
             ) : null}
-            <Accordian name="Advanced" defaultOpen={advancedDefaultOpen}>
-              <AddConditions
-                viewConditions={viewConditions}
-                setViewConditions={setViewConditions}
-              />
-            </Accordian>
-
-            {type.value === "payWall" ? (
-              <PayWall
-                payWallOption={payWallOption}
-                setPayWallOption={setPayWallOption}
-              />
-            ) : null}
-            {/* <Accordian name="Advanced Settings" defaultOpen={false}>
-            <Stack space="2">
-              {["shortText", "longText", "ethAddress"].includes(type.value) && (
-                <Input label="" placeholder="Default Value" />
-              )}
-
-              <Text>Notify User Type on Changes</Text>
-              <Dropdown
-                placeholder="Select User Types"
-                options={[
-                  { label: "Assignee", value: "assignee" },
-                  { label: "Reviewer", value: "reviewer" },
-                  { label: "Grantee", value: "grantee" },
-                  { label: "Applicant", value: "applicant" },
-                ]}
-                selected={notifyUserType}
-                onChange={(type: Option[]) => {
-                  setNotifyUserType(type);
-                }}
-                multiple={true}
-              />
-              {/* {["shortText", "longText", "ethAddress"].includes(
+            {collection.collectionType === 0 && (
+              <Accordian name="Advanced" defaultOpen={advancedDefaultOpen}>
+                <AddConditions
+                  viewConditions={viewConditions}
+                  setViewConditions={setViewConditions}
+                  buttonText="Add View Condition"
+                />
+                {/* {["shortText", "longText", "ethAddress"].includes(
                   type.value
                 ) && <Input label="" placeholder="Default Value" />}
 
@@ -370,6 +369,8 @@ export default function AddField({ propertyName, handleClose }: Props) {
                   }}
                   multiple={true}
                 /> */}
+              </Accordian>
+            )}
 
             <Box marginTop="8" display="flex" flexDirection="column" gap="2">
               <PrimaryButton
@@ -406,6 +407,6 @@ export default function AddField({ propertyName, handleClose }: Props) {
           </Stack>
         </Box>
       </Modal>
-    </>
+    </Box>
   );
 }

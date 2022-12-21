@@ -9,7 +9,7 @@ import {
   voteCollectionData,
 } from "@/app/services/Collection";
 import { MemberDetails, UserType } from "@/app/types";
-import { Avatar, Box, Input, Stack, Tag, Text } from "degen";
+import { Avatar, Box, Stack, Tag, Text } from "degen";
 import { motion } from "framer-motion";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
@@ -77,12 +77,12 @@ export default function DataDrawer({
     if (
       data &&
       collection.voting?.periods &&
-      collection.voting.periods[dataId] &&
-      collection.voting.periods[dataId]?.votes?.[currentUser?.id || ""] !==
+      collection.voting?.periods[dataId] &&
+      collection.voting?.periods[dataId]?.votes?.[currentUser?.id || ""] !==
         undefined
     ) {
       setVote(
-        collection.voting.periods[dataId].votes?.[
+        collection.voting?.periods[dataId].votes?.[
           currentUser?.id || ""
         ] as number
       );
@@ -91,7 +91,7 @@ export default function DataDrawer({
 
   const getVotes = () => {
     const dataVotes =
-      collection.voting.periods && collection.voting.periods[dataId].votes;
+      collection.voting?.periods && collection.voting?.periods[dataId].votes;
     // sump up all the votes for each option
     return (
       collection.voting?.periods?.[dataId]?.options?.map((option, index) => {
@@ -122,7 +122,7 @@ export default function DataDrawer({
         dataSlug && (await router.push(`/${cId}/r/${collection.slug}`));
       }}
     >
-      {!collection.voting.periods?.[dataId]?.active && (
+      {!collection.voting?.periods?.[dataId]?.active && (
         <Box
           display="flex"
           flexDirection="row"
@@ -131,11 +131,11 @@ export default function DataDrawer({
           paddingRight="8"
         >
           <Box display="flex" flexDirection="column" gap="2">
-            {collection.voting.periods?.[dataId]?.votes &&
-              Object.keys(collection.voting.periods[dataId]?.votes || {})
+            {collection.voting?.periods?.[dataId]?.votes &&
+              Object.keys(collection.voting?.periods[dataId]?.votes || {})
                 ?.length > 0 && <Text variant="base"> Voting has ended</Text>}
-            {collection.voting.enabled &&
-              Object.keys(collection.voting.periods?.[dataId]?.votes || {})
+            {collection.voting?.enabled &&
+              Object.keys(collection.voting?.periods?.[dataId]?.votes || {})
                 ?.length === 0 && (
                 <PrimaryButton
                   variant="secondary"
@@ -152,9 +152,9 @@ export default function DataDrawer({
           </Box>
         </Box>
       )}
-      {collection.voting.enabled &&
-        collection.voting.periods &&
-        collection.voting.periods[dataId]?.active && (
+      {collection.voting?.enabled &&
+        collection.voting?.periods &&
+        collection.voting?.periods[dataId]?.active && (
           <Box
             display="flex"
             flexDirection="row"
@@ -294,25 +294,27 @@ export default function DataDrawer({
                             }
                             cursor="pointer"
                           >
-                            <Text underline>{data[property.name]}</Text>
+                            <Text>{data[property.name]}</Text>
                           </Box>
                         )}
                         {property?.type == "multiURL" && (
                           <Stack direction="vertical">
                             {data[property.name]?.map((url: OptionType) => (
-                              <Stack direction={"horizontal"} key={url.value}>
-                                <Text>{url.label}</Text>
-                                <Text>-</Text>
-                                <Box
-                                  key={url.value}
-                                  onClick={() =>
-                                    window.open(url.value, "_blank")
-                                  }
-                                  cursor="pointer"
-                                >
-                                  <Text underline>{url.value}</Text>
-                                </Box>
-                              </Stack>
+                              <Box key={url.value}>
+                                <Stack direction={"horizontal"}>
+                                  <Text>{url.label}</Text>
+                                  <Text>-</Text>
+                                  <Box
+                                    key={url.value}
+                                    onClick={() =>
+                                      window.open(url.value, "_blank")
+                                    }
+                                    cursor="pointer"
+                                  >
+                                    <Text>{url.value}</Text>
+                                  </Box>
+                                </Stack>
+                              </Box>
                             ))}
                           </Stack>
                         )}
@@ -364,7 +366,7 @@ export default function DataDrawer({
                                 value: number;
                               }) => {
                                 return (
-                                  <Text>
+                                  <Text key={payment.token.label}>
                                     Paid {payment.value} {payment.token.label}{" "}
                                     on {payment.chain.label}
                                   </Text>
@@ -433,13 +435,13 @@ export default function DataDrawer({
                   })}
                 </Box>
                 <Box display="flex" flexDirection="column" gap="2">
-                  {collection.voting.periods &&
-                    collection.voting.periods[data.slug] &&
-                    (collection.voting.periods[data.slug].active ||
+                  {collection.voting?.periods &&
+                    collection.voting?.periods[data.slug] &&
+                    (collection.voting?.periods[data.slug].active ||
                       Object.keys(
-                        collection.voting.periods[dataId]?.votes || {}
+                        collection.voting?.periods[dataId]?.votes || {}
                       )?.length > 0) &&
-                    collection.voting.periods[data.slug].options && (
+                    collection.voting?.periods[data.slug].options && (
                       <Stack space="1">
                         <Box
                           borderColor="foregroundSecondary"
@@ -454,11 +456,11 @@ export default function DataDrawer({
                           >
                             Your Vote
                           </Text>
-                          <Text>{collection.voting.message}</Text>
+                          <Text>{collection.voting?.message}</Text>
                           <Box marginTop="4">
                             <Tabs
                               tabs={
-                                collection.voting.periods[
+                                collection.voting?.periods[
                                   data.slug
                                 ].options?.map((option) => option.label) || []
                               }
@@ -490,11 +492,11 @@ export default function DataDrawer({
                       </Stack>
                     )}
 
-                  {collection.voting.periods &&
-                    collection.voting.periods[data.slug] &&
-                    collection.voting.periods[data.slug].options &&
-                    collection.voting.periods[data.slug].votes &&
-                    collection.voting.periods[data.slug].votes?.[
+                  {collection.voting?.periods &&
+                    collection.voting?.periods[data.slug] &&
+                    collection.voting?.periods[data.slug].options &&
+                    collection.voting?.periods[data.slug].votes &&
+                    collection.voting?.periods[data.slug].votes?.[
                       currentUser?.id || ""
                     ] !== undefined && (
                       <Box
@@ -547,7 +549,7 @@ export default function DataDrawer({
                             },
                           }}
                           data={{
-                            labels: collection.voting.periods[
+                            labels: collection.voting?.periods[
                               data.slug
                             ]?.options?.map((option) => option.label),
                             datasets: [
@@ -567,7 +569,7 @@ export default function DataDrawer({
                     )}
                   {collection.voting?.periods &&
                     Object.keys(
-                      collection.voting.periods[data.slug]?.votes || {}
+                      collection.voting?.periods[data.slug]?.votes || {}
                     ).length > 0 &&
                     collection.voting?.periods[data.slug]?.votesArePublic && (
                       <Box
@@ -582,7 +584,7 @@ export default function DataDrawer({
                         </Text>
 
                         {collection.voting?.periods &&
-                          collection.voting.periods[data.slug] &&
+                          collection.voting?.periods[data.slug] &&
                           Object.entries(
                             collection.voting?.periods[data.slug]?.votes || {}
                           ).map(([voterId, vote]) => {

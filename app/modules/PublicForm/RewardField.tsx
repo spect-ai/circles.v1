@@ -5,25 +5,21 @@ import { Box, Input, Stack } from "degen";
 import { useEffect, useState } from "react";
 
 type Props = {
-  form: any;
-  propertyName: string;
-  data: any;
+  rewardOptions: Registry;
+  value: Reward;
   updateData: (reward: Reward) => void;
   onValueKeyDown?: (e: any) => void;
   disabled?: boolean;
 };
 
 export default function RewardField({
-  form,
-  propertyName,
-  data,
+  rewardOptions,
+  value,
   updateData,
   onValueKeyDown,
   disabled,
 }: Props) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const rewardOptions = (form.properties[propertyName]?.rewardOptions ||
-    {}) as Registry;
   const firstChainName =
     Object.values(rewardOptions).length > 0
       ? Object.values(rewardOptions)[0].name
@@ -39,16 +35,16 @@ export default function RewardField({
 
   const [tokenOptions, setTokenOptions] = useState<Option[]>([]);
   const [selectedChain, setSelectedChain] = useState<Option>({
-    label: (data && data[propertyName]?.chain?.label) || firstChainName,
-    value: (data && data[propertyName]?.chain?.value) || firstChainId,
+    label: value?.chain?.label || firstChainName,
+    value: value?.chain?.value || firstChainId,
   });
   const [selectedToken, setSelectedToken] = useState<Option>({
-    label: firstTokenSymbol,
-    value: firstTokenAddress,
+    label: value?.token?.label || firstTokenSymbol,
+    value: value?.token?.value || firstTokenAddress,
   });
 
   useEffect(() => {
-    if (form.properties[propertyName]?.rewardOptions && selectedChain) {
+    if (rewardOptions && selectedChain) {
       const tokens = Object.entries(
         rewardOptions[selectedChain.value].tokenDetails
       ).map(([address, token]) => {
@@ -58,9 +54,14 @@ export default function RewardField({
         };
       });
       setSelectedToken(tokens[0]);
+      updateData({
+        chain: selectedChain,
+        token: tokens[0],
+        value: value?.value,
+      });
       setTokenOptions(tokens);
     }
-  }, [form.properties, propertyName, rewardOptions, selectedChain]);
+  }, [selectedChain]);
 
   return (
     <Stack
@@ -68,6 +69,7 @@ export default function RewardField({
         xs: "vertical",
         md: "horizontal",
       }}
+      align="center"
     >
       <Box
         width={{
@@ -78,10 +80,8 @@ export default function RewardField({
       >
         <Dropdown
           options={
-            form.properties[propertyName]?.rewardOptions
-              ? Object.entries(
-                  form.properties[propertyName].rewardOptions as Registry
-                ).map(([chainId, network]) => {
+            rewardOptions
+              ? Object.entries(rewardOptions).map(([chainId, network]) => {
                   return {
                     label: network.name,
                     value: chainId,
@@ -95,13 +95,12 @@ export default function RewardField({
             updateData({
               chain: option,
               token: selectedToken,
-              value: data[propertyName]?.value,
+              value: value?.value,
             });
           }}
           multiple={false}
           isClearable={false}
           disabled={disabled}
-          portal={false}
         />
       </Box>
       <Box
@@ -119,13 +118,12 @@ export default function RewardField({
             updateData({
               chain: selectedChain,
               token: option,
-              value: data[propertyName]?.value,
+              value: value?.value,
             });
           }}
           multiple={false}
           isClearable={false}
           disabled={disabled}
-          portal={false}
         />
       </Box>
       <Box
@@ -133,11 +131,12 @@ export default function RewardField({
           xs: "full",
           md: "72",
         }}
+        marginTop="2"
       >
         <Input
           label=""
           placeholder={`Enter Reward Amount`}
-          value={data && data[propertyName]?.value}
+          value={value?.value}
           onChange={(e) => {
             updateData({
               chain: selectedChain,

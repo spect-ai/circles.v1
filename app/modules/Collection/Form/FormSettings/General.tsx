@@ -13,8 +13,8 @@ export default function General() {
   const [messageOnSubmission, setMessageOnSubmission] = useState("");
 
   useEffect(() => {
-    setMessageOnSubmission(collection.messageOnSubmission);
-  }, [collection.messageOnSubmission]);
+    setMessageOnSubmission(collection.formMetadata.messageOnSubmission);
+  }, [collection.formMetadata.messageOnSubmission]);
 
   return (
     <Stack>
@@ -35,7 +35,10 @@ export default function General() {
           }}
           onBlur={async () => {
             const res = await updateFormCollection(collection.id, {
-              messageOnSubmission,
+              formMetadata: {
+                ...collection.formMetadata,
+                messageOnSubmission,
+              },
             });
             if (res.id) updateCollection(res);
             else toast.error("Something went wrong");

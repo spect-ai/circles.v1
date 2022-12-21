@@ -7,7 +7,6 @@ import {
   ProjectOutlined,
 } from "@ant-design/icons";
 import { NameInput } from "./BasicProfile";
-import { createProject } from "@/app/services/Project";
 import { createFolder } from "@/app/services/Folders";
 import { useRouter } from "next/router";
 import { useMutation, useQuery } from "react-query";
@@ -39,6 +38,7 @@ type CreateCollectionDto = {
   private: boolean;
   circleId: string;
   defaultView?: "form" | "table" | "kanban" | "list" | "gantt";
+  collectionType: 0 | 1;
 };
 
 export function CreateContent() {
@@ -74,12 +74,13 @@ export function CreateContent() {
     });
   });
 
-  const createSorm = () => {
+  const createSorm = (type: 0 | 1) => {
     mutateAsync({
       name: itemName,
       private: false,
       circleId: myCircles?.[0]?.id as string,
-      defaultView: "form",
+      defaultView: type === 0 ? "form" : "table",
+      collectionType: type,
     })
       .then(async (res) => {
         const resJson = await res.json();
@@ -100,31 +101,6 @@ export function CreateContent() {
         }
       })
       .catch((err) => console.log({ err }));
-  };
-
-  const createProj = async () => {
-    const data = await createProject({
-      name: itemName,
-      circleId: myCircles?.[0]?.id as string,
-      description: "",
-      fromTemplateId: "6316cfe0013982438514cc7a",
-    });
-
-    if (data) {
-      const payload = {
-        name: "Section 1",
-        avatar: "All",
-        contentIds: [data.id],
-      };
-      const res = await createFolder(payload, myCircles?.[0]?.id as string);
-      process.env.NODE_ENV === "production" &&
-        mixpanel.track("Onboard project", {
-          user: currentUser?.username,
-        });
-      if (res) {
-        void router.push(`/${res.slug}/${data.slug}`);
-      }
-    }
   };
 
   useEffect(() => {
@@ -229,11 +205,11 @@ export function CreateContent() {
           setIsLoading(true);
           void refetch();
           if (itemType == "Form") {
-            createSorm();
+            createSorm(0);
             return;
           }
           if (itemType == "Project" && myCircles?.[0]?.id) {
-            void createProj();
+            createSorm(1);
             return;
           }
         }}

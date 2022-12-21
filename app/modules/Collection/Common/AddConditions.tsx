@@ -1,9 +1,8 @@
 import Dropdown from "@/app/common/components/Dropdown";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { Condition, Option } from "@/app/types";
+import { Condition } from "@/app/types";
 import { DeleteOutlined } from "@ant-design/icons";
-import { Box, Text } from "degen";
-import { useEffect, useState } from "react";
+import { Box, Button, IconPlusSmall, Stack, Text } from "degen";
 import { getComparators } from "./Comparator";
 import FilterValueField from "./FilterValueField";
 import { useLocalCollection } from "../Context/LocalCollectionContext";
@@ -11,6 +10,7 @@ import { useLocalCollection } from "../Context/LocalCollectionContext";
 type Props = {
   viewConditions: Condition[];
   setViewConditions: (viewConditions: Condition[]) => void;
+  buttonText: string;
   firstRowMessage?: string;
 };
 
@@ -18,43 +18,31 @@ export default function AddConditions({
   viewConditions,
   setViewConditions,
   firstRowMessage,
+  buttonText,
 }: Props) {
   const { localCollection: collection } = useLocalCollection();
 
-  const [fieldOptions, setFieldOptions] = useState<Option[]>(
-    Object.entries(collection.properties)
-      .filter((field) => !["multiURL"].includes(field[1].type))
-      .map((field) => ({
-        label: field[0],
-        value: field[0],
-      }))
-  );
+  const fieldOptions = Object.entries(collection.properties)
+    .filter((field) => !["multiURL"].includes(field[1].type))
+    .map((field) => ({
+      label: field[0],
+      value: field[0],
+    }));
   return (
-    <>
+    <Box>
       {viewConditions?.map((condition, index) => (
         <Box key={index} marginBottom="2">
-          <Box
-            display="flex"
-            flexDirection={{
-              xs: "column",
-              md: "row",
-            }}
-            gap="2"
-            alignItems="center"
-          >
+          <Stack direction="horizontal">
             <Box
               width={{
                 xs: "full",
-                md: "48",
+                md: "1/4",
               }}
             >
-              <Box
-                display="flex"
-                flexDirection="row"
-                alignItems="center"
-                gap="2"
-              >
-                <PrimaryButton
+              <Stack direction="horizontal" align="center" space="1">
+                <Button
+                  shape="circle"
+                  size="small"
                   variant="transparent"
                   onClick={() => {
                     const newConditions = [...viewConditions];
@@ -63,91 +51,96 @@ export default function AddConditions({
                   }}
                 >
                   <DeleteOutlined />
-                </PrimaryButton>
+                </Button>
                 <Text size="small">
                   {index === 0
                     ? `${firstRowMessage || "Show field when"}`
                     : "and"}
                 </Text>
+              </Stack>
+            </Box>
+            <Box width="full" display="flex" gap="2" alignItems="baseline">
+              <Box
+                width={{
+                  xs: "full",
+                  md: "1/3",
+                }}
+              >
+                <Dropdown
+                  options={fieldOptions}
+                  selected={condition?.data?.field || {}}
+                  onChange={(option) => {
+                    const newConditions = [...viewConditions];
+                    newConditions[index].data.field = option;
+                    newConditions[index].data.comparator = getComparators(
+                      collection.properties[option.value]?.type
+                    )[0];
+                    newConditions[index].data.value = "";
+                    setViewConditions(newConditions);
+                  }}
+                  multiple={false}
+                  isClearable={false}
+                />
+              </Box>
+              <Box
+                width={{
+                  xs: "full",
+                  md: "1/3",
+                }}
+              >
+                <Dropdown
+                  options={getComparators(
+                    collection.properties[condition?.data?.field?.value]?.type
+                  )}
+                  selected={condition?.data?.comparator || {}}
+                  onChange={(option) => {
+                    const newConditions = [...viewConditions];
+                    newConditions[index].data.comparator = option;
+                    setViewConditions(newConditions);
+                  }}
+                  multiple={false}
+                  isClearable={false}
+                />
+              </Box>
+              <Box
+                width={{
+                  xs: "full",
+                  md: "1/3",
+                }}
+                marginTop={
+                  [
+                    "shortText",
+                    "longText",
+                    "number",
+                    "date",
+                    "ethAddress",
+                    "email",
+                  ].includes(
+                    collection.properties[condition?.data?.field?.value]?.type
+                  )
+                    ? "-2"
+                    : "0"
+                }
+              >
+                <FilterValueField
+                  value={condition?.data?.value}
+                  onChange={(value) => {
+                    const newConditions = [...viewConditions];
+                    newConditions[index].data.value = value;
+                    setViewConditions(newConditions);
+                  }}
+                  collection={collection}
+                  propertyId={condition?.data?.field?.value}
+                  comparatorValue={condition?.data?.comparator?.value}
+                />
               </Box>
             </Box>
-            <Box
-              width={{
-                xs: "full",
-                md: "1/4",
-              }}
-            >
-              <Dropdown
-                options={fieldOptions}
-                selected={condition?.data?.field || {}}
-                onChange={(option) => {
-                  const newConditions = [...viewConditions];
-                  newConditions[index].data.field = option;
-                  newConditions[index].data.comparator = getComparators(
-                    collection.properties[option.value]?.type
-                  )[0];
-                  newConditions[index].data.value = "";
-                  setViewConditions(newConditions);
-                }}
-                multiple={false}
-              />
-            </Box>
-            <Box
-              width={{
-                xs: "full",
-                md: "1/4",
-              }}
-            >
-              <Dropdown
-                options={getComparators(
-                  collection.properties[condition?.data?.field?.value]?.type
-                )}
-                selected={condition?.data?.comparator || {}}
-                onChange={(option) => {
-                  const newConditions = [...viewConditions];
-                  newConditions[index].data.comparator = option;
-                  setViewConditions(newConditions);
-                }}
-                multiple={false}
-              />
-            </Box>
-            <Box
-              width={{
-                xs: "full",
-                md: "1/4",
-              }}
-              marginTop={
-                [
-                  "shortText",
-                  "longText",
-                  "number",
-                  "date",
-                  "ethAddress",
-                  "email",
-                ].includes(
-                  collection.properties[condition?.data?.field?.value]?.type
-                )
-                  ? "-2"
-                  : "0"
-              }
-            >
-              <FilterValueField
-                value={condition?.data?.value}
-                onChange={(value) => {
-                  const newConditions = [...viewConditions];
-                  newConditions[index].data.value = value;
-                  setViewConditions(newConditions);
-                }}
-                collection={collection}
-                propertyId={condition?.data?.field?.value}
-                comparatorValue={condition?.data?.comparator?.value}
-              />
-            </Box>
-          </Box>
+          </Stack>
         </Box>
       ))}
       <Box width="1/2" marginTop="4">
         <PrimaryButton
+          icon={<IconPlusSmall />}
           variant="tertiary"
           onClick={() => {
             const newCondition: Condition = {
@@ -164,9 +157,9 @@ export default function AddConditions({
             setViewConditions([...viewConditions, newCondition]);
           }}
         >
-          Add Conditions
+          {buttonText}
         </PrimaryButton>
       </Box>
-    </>
+    </Box>
   );
 }

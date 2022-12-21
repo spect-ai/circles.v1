@@ -9,7 +9,6 @@ import {
 import { Box, IconTrendingUp, Stack, Tag, Text } from "degen";
 import { AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
-import styled from "styled-components";
 import { useLocalCollection } from "../Context/LocalCollectionContext";
 
 export default function OpportunityMode() {
@@ -32,16 +31,22 @@ export default function OpportunityMode() {
   }, [selectedSkills]);
 
   useEffect(() => {
-    setSelectedExperienceLevel(collection.opportunityInfo?.experience || "");
-    setSelectedOpportunityType(collection.opportunityInfo?.type || "");
-    setSelectedSkills(collection.opportunityInfo?.skills || []);
-    setSelectedTags(collection.opportunityInfo?.tags || []);
-  }, [collection.opportunityInfo]);
+    if (collection.formMetadata) {
+      setSelectedExperienceLevel(
+        collection.formMetadata.opportunityInfo?.experience || ""
+      );
+      setSelectedOpportunityType(
+        collection.formMetadata.opportunityInfo?.type || ""
+      );
+      setSelectedSkills(collection.formMetadata.opportunityInfo?.skills || []);
+      setSelectedTags(collection.formMetadata.opportunityInfo?.tags || []);
+    }
+  }, [collection.formMetadata, collection.formMetadata?.opportunityInfo]);
 
   return (
     <>
-      {/* <Stack direction="vertical">
-        {!collection.isAnOpportunity && (
+      <Stack direction="vertical">
+        {!collection.formMetadata?.isAnOpportunity && (
           <Text variant="small">{`Reach 1000+ opportunity seekers`}</Text>
         )}
       </Stack>
@@ -52,13 +57,17 @@ export default function OpportunityMode() {
         }}
       >
         <PrimaryButton
-          variant={collection.isAnOpportunity ? "tertiary" : "secondary"}
+          variant={
+            collection.formMetadata?.isAnOpportunity ? "tertiary" : "secondary"
+          }
           onClick={() => setIsOpen(true)}
           icon={<IconTrendingUp />}
         >
-          {collection.isAnOpportunity ? `Boosting Form` : `Boost Form`}
+          {collection.formMetadata?.isAnOpportunity
+            ? `Boosting Form`
+            : `Boost Form`}
         </PrimaryButton>
-      </Box> */}
+      </Box>
 
       <AnimatePresence>
         {isOpen && (
@@ -248,7 +257,7 @@ export default function OpportunityMode() {
                   gap="4"
                   justifyContent="flex-end"
                 >
-                  {collection.isAnOpportunity && (
+                  {collection.formMetadata.isAnOpportunity && (
                     <Box width="full">
                       <PrimaryButton
                         loading={loading}
@@ -329,11 +338,3 @@ export default function OpportunityMode() {
     </>
   );
 }
-
-const ScrollContainer = styled(Box)`
-  overflow-y: auto;
-  height: calc(100vh - 25rem);
-  ::-webkit-scrollbar {
-    width: 5px;
-  }
-`;

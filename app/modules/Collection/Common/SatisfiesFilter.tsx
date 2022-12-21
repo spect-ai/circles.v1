@@ -1,11 +1,11 @@
-import { Property } from "@/app/types";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { Condition, Property } from "@/app/types";
 
 export function satisfiesConditions(
   data: any,
   properties: { [propertyId: string]: Property },
-  currentPropertyId: string
+  conditions: Condition[]
 ): boolean {
-  const conditions = properties[currentPropertyId].viewConditions || [];
   return conditions.every((condition) => {
     const { field, comparator, value } = condition.data;
     const propertyId = field?.value;
@@ -72,6 +72,7 @@ export function satisfiesConditions(
         }
       case "multiSelect":
       case "user[]":
+        console.log({ data, propertyId });
         // eslint-disable-next-line no-case-declarations
         const values = data[propertyId]?.map((d: { value: any }) => d?.value);
         switch (comparatorValue) {
@@ -114,8 +115,6 @@ export function satisfiesConditions(
             return false;
         }
       case "reward":
-        // eslint-disable-next-line no-case-declarations
-        let chainId, tokenAddress;
         switch (comparatorValue) {
           case "value is":
             return parseFloat(data[propertyId]?.value) === parseFloat(value);

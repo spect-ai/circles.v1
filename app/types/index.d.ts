@@ -286,6 +286,10 @@ export interface CircleType {
   automationsIndexedByCollection: AutomationsIndexedByCollectionSlugType;
   rootAutomations: RootAutomationsType;
   automationCount: number;
+  pendingPayments: string[];
+  completedPayments: string[];
+  cancelledPayments: string[];
+  paymentDetails: { [key: string]: PaymentDetails };
 }
 
 // interface ProjectType {
@@ -719,8 +723,6 @@ export type OpportunityInfoType = {
 };
 
 export interface CollectionType {
-  cover: string;
-  logo: string;
   id: string;
   name: string;
   description: string;
@@ -730,34 +732,67 @@ export interface CollectionType {
   propertyOrder: string[];
   createdAt: string;
   updatedAt: string;
-  purpose: string;
   private: boolean;
   parents: CircleType[];
   data: MappedItem<any>;
+  archivedData: MappedItem<any>;
   indexes: MappedItem<string[]>;
   defaultView: DefaultViewType;
-  formRoleGating: GuildRole[];
-  sybilProtectionEnabled: boolean;
-  sybilProtectionScores: MappedItem<GitcoinScoreType>;
-  mintkudosTokenId: number;
-  messageOnSubmission: string;
   unauthorized?: boolean;
-  multipleResponsesAllowed: boolean;
-  updatingResponseAllowed: boolean;
-  circleRolesToNotifyUponUpdatedResponse: string[];
-  circleRolesToNotifyUponNewResponse: string[];
-  numOfKudos: number;
   permissions: FormPermissions;
-  credentialCurationEnabled: boolean;
   dataOwner: MappedItem<string>;
   profiles: { [key: string]: UserType };
   voting: Voting;
-  isAnOpportunity: boolean;
-  opportunityInfo: OpportunityInfoType;
   dataActivities: MappedItem<MappedItem<CollectionActivity>>;
   dataActivityOrder: MappedItem<string[]>;
-  active: boolean;
+  collectionType: 0 | 1;
+  formMetadata: FormMetadata;
+  projectMetadata: ProjectMetadata;
+  archived: boolean;
 }
+
+export type FormMetadata = {
+  cover?: string;
+  logo: string;
+  purpose?: string;
+  formRoleGating?: GuildRole[];
+  sybilProtectionEnabled?: boolean;
+  sybilProtectionScores?: MappedItem<GitcoinScoreType>;
+  mintkudosTokenId?: number;
+  messageOnSubmission: string;
+  multipleResponsesAllowed: boolean;
+  updatingResponseAllowed: boolean;
+  circleRolesToNotifyUponUpdatedResponse?: string[];
+  circleRolesToNotifyUponNewResponse?: string[];
+  numOfKudos?: number;
+  credentialCurationEnabled?: boolean;
+  isAnOpportunity?: boolean;
+  opportunityInfo?: OpportunityInfoType;
+  active: boolean;
+  canFillForm: boolean;
+  hasPassedSybilCheck: boolean;
+  previousResponses: any[];
+  kudosClaimedByUser: boolean;
+};
+
+export type ProjectMetadata = {
+  viewOrder: string[];
+  views: {
+    [key: string]: {
+      name: string;
+      type: "grid" | "kanban" | "gantt" | "list";
+      filters?: Condition[];
+      sort?: {
+        property: string;
+        direction: "asc" | "desc";
+      };
+      groupByColumn: string;
+    };
+  };
+  cardOrders: {
+    [groupByColumn: string]: string[][];
+  };
+};
 
 export type FormPermissions = {
   manageSettings: string[];
@@ -853,8 +888,6 @@ export type GuildRole = {
 export interface FormType {
   activity: MappedItem<CollectionActivity>;
   activityOrder: string[];
-  logo: string;
-  cover: string;
   name: string;
   circleId: string;
   slug: string;
@@ -871,27 +904,16 @@ export interface FormType {
     slug: string;
   }[];
   defaultView: string;
-  formRoleGating: GuildRole[];
-  canFillForm: boolean;
-  mintkudosTokenId: number;
-  messageOnSubmission: string;
-  kudosClaimedByUser: boolean;
-  multipleResponsesAllowed: boolean;
-  updatingResponseAllowed: boolean;
-  previousResponses: any[];
-  sybilProtectionEnabled: boolean;
-  sybilProtectionScores: GitcoinScoreType[];
   canClaimKudos: boolean;
   hasRole: boolean;
-  hasPassedSybilCheck: boolean;
   isAnOpportunity: boolean;
   opportunityInfo: OpportunityInfoType;
-  active: boolean;
   viewConditions: Condition[];
   requireDiscordConnection: boolean;
   createdAt: string;
   updatedAt: string;
   id: string;
+  formMetadata: FormMetadata;
 }
 
 export type KudosType = {
@@ -1143,3 +1165,25 @@ export type AutomationsIndexedByCollectionSlugType = {
 };
 
 export type RootAutomationsType = string[];
+
+export type PaymentDetails = {
+  id: string;
+  chain: Option;
+  token: Option;
+  value: number;
+  paidTo: {
+    propertyType: string;
+    value: any;
+    reward: {
+      chain: Option;
+      token: Option;
+      value: number;
+    };
+  }[];
+  type?: string;
+  notes?: string;
+  dataRef?: string;
+  collectionRef?: string;
+  title?: string;
+  description?: string;
+};

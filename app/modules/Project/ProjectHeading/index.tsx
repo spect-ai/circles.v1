@@ -12,6 +12,8 @@ import AdvancedOptions from "./MoreOptions";
 import Breadcrumbs from "@/app/common/components/Breadcrumbs";
 import { useCircle } from "../../Circle/CircleContext";
 import InviteMemberModal from "@/app/modules/Circle/ContributorsModal/InviteMembersModal";
+import PrimaryButton from "@/app/common/components/PrimaryButton";
+import { migrateToCollection } from "@/app/services/Collection";
 
 export const IconButton = styled(Box)`
   cursor: pointer;
@@ -87,13 +89,42 @@ function ProjectHeading() {
           )}
           <ViewBar />
         </Stack>
-        <Box width="52">
-          {project?.name && canDo("inviteMembers") && <InviteMemberModal />}
+        <Box width="1/4">
+          {/* {project?.name && canDo("inviteMembers") && <InviteMemberModal />} */}
+          <Pulse borderRadius="large">
+            <PrimaryButton
+              onClick={async () => {
+                const res = await migrateToCollection(
+                  project?.id,
+                  project.parents[0].id
+                );
+                console.log({ res });
+                res.id && router.push(`/${cId}/r/${res.slug}`);
+              }}
+            >
+              Migrate to V2
+            </PrimaryButton>
+          </Pulse>
         </Box>
       </Box>
       <AdvancedOptions />
     </Box>
   );
 }
+
+const Pulse = styled(Box)`
+  animation: pulse 2s infinite;
+  @keyframes pulse {
+    0% {
+      box-shadow: 0 0 0 0 rgba(191, 90, 242, 0.2);
+    }
+    90% {
+      box-shadow: 0 0 0 10px rgba(191, 90, 242, 0);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgba(191, 90, 242, 0);
+    }
+  }
+`;
 
 export default memo(ProjectHeading);

@@ -18,27 +18,32 @@ export function Notifications() {
     useLocalCollection();
 
   useEffect(() => {
-    const newResponseRolesToEmail = new Set(
-      collection.circleRolesToNotifyUponNewResponse || []
-    );
-    const updatedResponseRolesToEmail = new Set(
-      collection.circleRolesToNotifyUponUpdatedResponse || []
-    );
-    const circleRolesToNotifyUponNewResponse = [] as boolean[];
-    const circleRolesToNotifyUponUpdatedResponse = [] as boolean[];
-    for (const role of circleRoles) {
-      circleRolesToNotifyUponNewResponse.push(
-        newResponseRolesToEmail.has(role)
+    if (collection.formMetadata) {
+      const newResponseRolesToEmail = new Set(
+        collection.formMetadata.circleRolesToNotifyUponNewResponse || []
       );
-      circleRolesToNotifyUponUpdatedResponse.push(
-        updatedResponseRolesToEmail.has(role)
+      const updatedResponseRolesToEmail = new Set(
+        collection.formMetadata.circleRolesToNotifyUponUpdatedResponse || []
       );
-    }
+      const circleRolesToNotifyUponNewResponse = [] as boolean[];
+      const circleRolesToNotifyUponUpdatedResponse = [] as boolean[];
+      for (const role of circleRoles) {
+        circleRolesToNotifyUponNewResponse.push(
+          newResponseRolesToEmail.has(role)
+        );
+        circleRolesToNotifyUponUpdatedResponse.push(
+          updatedResponseRolesToEmail.has(role)
+        );
+      }
 
-    setCircleRolesToNotifyUponNewResponse(circleRolesToNotifyUponNewResponse);
-    setNotifOnNewResponses(
-      collection.circleRolesToNotifyUponNewResponse?.length > 0
-    );
+      setCircleRolesToNotifyUponNewResponse(circleRolesToNotifyUponNewResponse);
+      if (collection.formMetadata.circleRolesToNotifyUponNewResponse) {
+        setNotifOnNewResponses(
+          collection.formMetadata?.circleRolesToNotifyUponNewResponse?.length >
+            0
+        );
+      }
+    }
   }, [circleRoles, collection]);
 
   useEffect(() => {
@@ -83,7 +88,8 @@ export function Notifications() {
                         ...circleRolesToNotifyUponNewResponse,
                       ]);
                       const roleSet = new Set(
-                        collection.circleRolesToNotifyUponNewResponse || []
+                        collection.formMetadata
+                          .circleRolesToNotifyUponNewResponse || []
                       );
                       if (circleRolesToNotifyUponNewResponse[index]) {
                         roleSet.add(role);

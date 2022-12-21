@@ -37,9 +37,11 @@ export function AdditionalSettings() {
   const { connectedUser } = useGlobal();
 
   useEffect(() => {
-    setMultipleResponsesAllowed(collection.multipleResponsesAllowed);
-    setUpdatingResponseAllowed(collection.updatingResponseAllowed);
-    setActive(collection.active);
+    setMultipleResponsesAllowed(
+      collection.formMetadata.multipleResponsesAllowed
+    );
+    setUpdatingResponseAllowed(collection.formMetadata.updatingResponseAllowed);
+    setActive(collection.formMetadata.active);
   }, [collection]);
 
   return (
@@ -60,7 +62,10 @@ export function AdditionalSettings() {
                 if (connectedUser) {
                   setMultipleResponsesAllowed(!multipleResponsesAllowed);
                   const res = await updateFormCollection(collection.id, {
-                    multipleResponsesAllowed: !multipleResponsesAllowed,
+                    formMetadata: {
+                      ...collection.formMetadata,
+                      multipleResponsesAllowed: !multipleResponsesAllowed,
+                    },
                   });
 
                   if (res.id) updateCollection(res);
@@ -83,7 +88,10 @@ export function AdditionalSettings() {
                 if (connectedUser) {
                   setUpdatingResponseAllowed(!updatingResponseAllowed);
                   const res = await updateFormCollection(collection.id, {
-                    updatingResponseAllowed: !updatingResponseAllowed,
+                    formMetadata: {
+                      ...collection.formMetadata,
+                      updatingResponseAllowed: !updatingResponseAllowed,
+                    },
                   });
                   if (res.id) updateCollection(res);
                   else toast.error("Something went wrong");
@@ -109,7 +117,10 @@ export function AdditionalSettings() {
                   const a = !active;
                   setActive(a);
                   const res = await updateFormCollection(collection.id, {
-                    active: a,
+                    formMetadata: {
+                      ...collection.formMetadata,
+                      active: a,
+                    },
                   });
                   if (res.id) updateCollection(res);
                   else toast.error("Something went wrong");

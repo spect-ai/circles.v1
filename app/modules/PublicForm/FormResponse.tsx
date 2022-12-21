@@ -9,7 +9,6 @@ import { TwitterShareButton } from "react-share";
 import { toast } from "react-toastify";
 import { useWindowSize } from "react-use";
 import styled from "styled-components";
-import Link from "next/link";
 import mixpanel from "@/app/common/utils/mixpanel";
 import { useQuery } from "react-query";
 
@@ -66,8 +65,9 @@ export default function FormResponse({
         />
       )}
       <Stack align="center">
-        <Heading>{`${
-          form?.messageOnSubmission || "Your response has been submitted!"
+        <Heading align="center">{`${
+          form?.formMetadata.messageOnSubmission ||
+          "Your response has been submitted!"
         }`}</Heading>
         <Box
           display="flex"
@@ -219,17 +219,18 @@ export default function FormResponse({
             justifyContent="flex-start"
           >
             <Stack>
-              {form?.updatingResponseAllowed && form?.active && (
-                <PrimaryButton
-                  variant="transparent"
-                  onClick={() => {
-                    setUpdateResponse(true);
-                    setSubmitted(false);
-                  }}
-                >
-                  Update response
-                </PrimaryButton>
-              )}
+              {form?.formMetadata.updatingResponseAllowed &&
+                form?.formMetadata.active && (
+                  <PrimaryButton
+                    variant="transparent"
+                    onClick={() => {
+                      setUpdateResponse(true);
+                      setSubmitted(false);
+                    }}
+                  >
+                    Update response
+                  </PrimaryButton>
+                )}
               <PrimaryButton
                 variant="transparent"
                 onClick={() => {
@@ -240,23 +241,24 @@ export default function FormResponse({
               >
                 View response
               </PrimaryButton>
-              {form?.multipleResponsesAllowed && form?.active && (
-                <PrimaryButton
-                  variant="transparent"
-                  onClick={() => {
-                    setSubmitAnotherResponse(true);
-                  }}
-                >
-                  Submit another response
-                </PrimaryButton>
-              )}
+              {form?.formMetadata.multipleResponsesAllowed &&
+                form?.formMetadata.active && (
+                  <PrimaryButton
+                    variant="transparent"
+                    onClick={() => {
+                      setSubmitAnotherResponse(true);
+                    }}
+                  >
+                    Submit another response
+                  </PrimaryButton>
+                )}
               <a href="/" target="_blank">
                 <PrimaryButton
                   onClick={() => {
                     process.env.NODE_ENV === "production" &&
                       mixpanel.track("Create your own form", {
                         form: form.name,
-                        sybilEnabled: form.sybilProtectionEnabled,
+                        sybilEnabled: form.formMetadata.sybilProtectionEnabled,
                         user: currentUser?.username,
                       });
                   }}

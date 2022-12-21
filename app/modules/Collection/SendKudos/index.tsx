@@ -71,7 +71,7 @@ export default function SendKudos() {
   const [asset, setAsset] = useState({} as File);
   const [assetToUse, setAssetToUse] = useState("defaultOrangeRed");
   const [numberOfKudosToMint, setNumberOfKudosToMint] = useState(
-    collection.numOfKudos || 1000
+    collection.formMetadata.numOfKudos || 1000
   );
   const [assetUrl, setAssetUrl] = useState(
     "https://spect.infura-ipfs.io/ipfs/QmU2pYbqiVnNc7WKQ9yBkEmUvxWg6Ha1LAzpHdCSABwct7"
@@ -126,9 +126,9 @@ export default function SendKudos() {
   }, [circle?.id]);
 
   useEffect(() => {
-    if (collection.mintkudosTokenId) {
+    if (collection.formMetadata.mintkudosTokenId) {
       setLoading(true);
-      getKudos(collection.mintkudosTokenId)
+      getKudos(collection.formMetadata.mintkudosTokenId)
         .then((res) => {
           setKudos(res);
           setLoading(false);
@@ -223,7 +223,7 @@ export default function SendKudos() {
         </Box>
       )}
 
-      {!collection.mintkudosTokenId && (
+      {!collection.formMetadata.mintkudosTokenId && (
         <Box
           width={{
             xs: "full",

@@ -5,9 +5,10 @@ import { isEmail, isURL } from "@/app/common/utils/utils";
 import {
   FormType,
   Option,
-  PayWallOptions,
   Property,
+  Registry,
   Reward,
+  PayWallOptions,
 } from "@/app/types";
 import { Box, Input, Stack, Tag, Text, useTheme } from "degen";
 import { ethers } from "ethers";
@@ -53,7 +54,7 @@ export default function PublicField({
     !satisfiesConditions(
       data,
       form.properties as { [propertyId: string]: Property },
-      propertyName
+      form.properties[propertyName].viewConditions || []
     )
   ) {
     return null;
@@ -264,7 +265,7 @@ export default function PublicField({
               setData({ ...data, [propertyName]: value });
               updateRequiredFieldNotSet(propertyName, value);
             }}
-            portal={false}
+            portal
             disabled={disabled}
           />
         </Box>
@@ -273,9 +274,10 @@ export default function PublicField({
         <Box marginTop="4">
           <RewardField
             disabled={disabled}
-            form={form}
-            data={data}
-            propertyName={propertyName}
+            rewardOptions={
+              form.properties[propertyName]?.rewardOptions as Registry
+            }
+            value={data && data[propertyName]}
             updateData={(reward: Reward) => {
               setData({
                 ...data,

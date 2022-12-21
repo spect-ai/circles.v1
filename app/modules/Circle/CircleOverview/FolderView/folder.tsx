@@ -92,6 +92,7 @@ const Folder = ({
   const [workstreamModal, setWorkstreamModal] = useState(false);
   const [retroOpen, setRetroOpen] = useState(false);
   const [collectionModal, setCollectionModal] = useState(false);
+  const [collectionProjectModal, setCollectionProjectModal] = useState(false);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const ondeleteFolder = async () => {
@@ -139,7 +140,11 @@ const Folder = ({
         if (retros?.[card] && card) {
           return <Card card={card} index={i} key={card} retros={retros} />;
         }
-        if (collections?.[card] && card) {
+        if (
+          card &&
+          collections?.[card] &&
+          collections?.[card].archived !== true
+        ) {
           return (
             <Card card={card} index={i} key={card} collections={collections} />
           );
@@ -186,6 +191,7 @@ const Folder = ({
               setWorkstreamModal={setWorkstreamModal}
               setRetroOpen={setRetroOpen}
               setCollectionModal={setCollectionModal}
+              setCollectionProjectModal={setCollectionProjectModal}
             />
           )}
           {avatar !== "All" &&
@@ -222,35 +228,37 @@ const Folder = ({
       <Draggable draggableId={id} index={index}>
         {DraggableContentCallback}
       </Draggable>
-      {projectModal && (
-        <AnimatePresence>
+      <AnimatePresence>
+        {projectModal && (
           <CreateProjectModal folderId={id} setModalOpen={setProjectModal} />
-        </AnimatePresence>
-      )}
-      {workstreamModal && (
-        <AnimatePresence>
+        )}
+        {workstreamModal && (
           <CreateSpaceModal
             folderId={id}
             setWorkstreamModal={setWorkstreamModal}
           />
-        </AnimatePresence>
-      )}
-      {retroOpen && (
-        <AnimatePresence>
+        )}
+        {retroOpen && (
           <CreateRetroModal
             folderId={id}
             handleClose={() => setRetroOpen(false)}
           />
-        </AnimatePresence>
-      )}
-      {collectionModal && (
-        <AnimatePresence>
+        )}
+        {collectionModal && (
           <CreateCollectionModal
             folderId={id}
             setCollectionModal={setCollectionModal}
+            collectionType={0}
           />
-        </AnimatePresence>
-      )}
+        )}
+        {collectionProjectModal && (
+          <CreateCollectionModal
+            folderId={id}
+            setCollectionModal={setCollectionProjectModal}
+            collectionType={1}
+          />
+        )}
+      </AnimatePresence>
     </>
   );
 };

@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import Editor from "@/app/common/components/Editor";
 import { Box } from "degen";
+import { useLocalCollection } from "../Context/LocalCollectionContext";
 
 type Props = {
   focus: boolean;
@@ -19,6 +20,7 @@ export default function LongTextComponent({
   setRowData,
   stopEditing,
 }: Props) {
+  const { localCollection: collection } = useLocalCollection();
   const [dirty, setDirty] = useState(false);
 
   return (
@@ -32,7 +34,9 @@ export default function LongTextComponent({
         placeholder={``}
         isDirty={dirty}
         setIsDirty={setDirty}
-        disabled={columnData.isPartOfFormView}
+        disabled={
+          collection.collectionType === 0 ? columnData.isPartOfFormView : false
+        }
       />
     </Box>
   );

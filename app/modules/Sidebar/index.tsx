@@ -66,7 +66,6 @@ function Sidebar(): ReactElement {
   useEffect(() => {
     (async () => {
       const res = await getUnreadNotifications();
-      console.log({ res });
       typeof res === "number" && setUnreadNotifications(res);
     })().catch((err) => console.log(err));
   }, [isSidebarExpanded]);
@@ -92,6 +91,9 @@ function Sidebar(): ReactElement {
         }}
         transitionDuration="500"
       >
+        <AnimatePresence>
+          {isProfilePanelExpanded && <NotificationPanel />}
+        </AnimatePresence>
         <Box borderBottomWidth="0.375" paddingY="3">
           {cId && circle ? (
             <Logo
@@ -209,9 +211,6 @@ function Sidebar(): ReactElement {
           )}
         </Box>
       </Box>
-      <AnimatePresence>
-        {isProfilePanelExpanded && <NotificationPanel />}
-      </AnimatePresence>
     </>
   );
 }

@@ -64,7 +64,7 @@ export default function RoleGate() {
           guildServer.roles.map((role) => ({ id: role.id, name: role.name }))
         );
         const currentlySelectedRoles = new Set([
-          ...(collection.formRoleGating?.map((r) => r.id) || []),
+          ...(collection.formMetadata.formRoleGating?.map((r) => r.id) || []),
         ]);
         const initSelectedRoles = Array(guildRoles?.length).fill(false);
 
@@ -86,23 +86,25 @@ export default function RoleGate() {
   return (
     <Stack>
       <Stack direction="vertical">
-        {collection.formRoleGating && collection.formRoleGating.length > 0 && (
-          <Text variant="small">{`Responses to form can only be added by these roles`}</Text>
-        )}
-        {!collection.formRoleGating ||
-          (collection.formRoleGating.length === 0 && (
+        {collection.formMetadata.formRoleGating &&
+          collection.formMetadata.formRoleGating.length > 0 && (
+            <Text variant="small">{`Responses to form can only be added by these roles`}</Text>
+          )}
+        {!collection.formMetadata.formRoleGating ||
+          (collection.formMetadata.formRoleGating.length === 0 && (
             <Text variant="small">{`Only allow holders of specific roles to submit response`}</Text>
           ))}
       </Stack>
-      {collection.formRoleGating && collection.formRoleGating.length > 0 && (
-        <Stack direction="horizontal" space="4">
-          {collection.formRoleGating.map((role: GuildRole) => (
-            <Tag tone="accent" key={role.id}>
-              {role.name}
-            </Tag>
-          ))}
-        </Stack>
-      )}
+      {collection.formMetadata.formRoleGating &&
+        collection.formMetadata.formRoleGating.length > 0 && (
+          <Stack direction="horizontal" space="4">
+            {collection.formMetadata.formRoleGating.map((role: GuildRole) => (
+              <Tag tone="accent" key={role.id}>
+                {role.name}
+              </Tag>
+            ))}
+          </Stack>
+        )}
       <Box
         width={{
           xs: "full",
@@ -112,13 +114,15 @@ export default function RoleGate() {
         <PrimaryButton
           icon={<IconPlug />}
           variant={
-            collection.formRoleGating && collection.formRoleGating.length > 0
+            collection.formMetadata.formRoleGating &&
+            collection.formMetadata.formRoleGating.length > 0
               ? "tertiary"
               : "secondary"
           }
           onClick={() => setIsOpen(true)}
         >
-          {collection.formRoleGating && collection.formRoleGating.length > 0
+          {collection.formMetadata.formRoleGating &&
+          collection.formMetadata.formRoleGating.length > 0
             ? `Update Roles`
             : `Role Gate`}
         </PrimaryButton>

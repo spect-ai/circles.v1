@@ -1,24 +1,31 @@
-import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { Box } from "degen";
+import { Box, Button, Text } from "degen";
+import { useRouter } from "next/router";
 import { CellProps } from "react-datasheet-grid";
+import { Maximize2 } from "react-feather";
 
-export default function GutterColumnComponent({
-  rowData,
-  columnData,
-}: CellProps) {
+export default function GutterColumnComponent({ rowData }: CellProps) {
+  const router = useRouter();
   return (
-    <Box
-      cursor="pointer"
-      width="full"
-      onClick={() => columnData.setExpandedDataSlug(rowData.id)}
-    >
-      {/* <Stack align="center" direction="horizontal" justify="center">
-        <Text variant="label">{rowIndex + 1}</Text>
+    <Box cursor="pointer" width="full">
+      <Button
+        shape="circle"
+        size="small"
+        variant="transparent"
+        onClick={() => {
+          void router.push({
+            pathname: router.pathname,
+            query: {
+              circle: router.query.circle,
+              collection: router.query.collection,
+              cardSlug: rowData.id,
+            },
+          });
+        }}
+      >
         <Text color="accent">
-          <ExpandAltOutlined style={{ fontSize: "1.4rem" }} />
+          <Maximize2 size={19} />
         </Text>
-      </Stack> */}
-      <PrimaryButton variant="transparent">Open</PrimaryButton>
+      </Button>
     </Box>
   );
 }

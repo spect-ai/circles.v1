@@ -106,8 +106,12 @@ export default function MilestoneModal({
         setTitle(milestone.title);
         setDescription(milestone.description);
         setDate(milestone.dueDate);
-        setSelectedChain(milestone.reward?.chain || selectedChain);
-        setSelectedToken(milestone.reward?.token || selectedToken);
+        setSelectedChain(
+          milestone.reward?.chain ? milestone.reward.chain : selectedChain
+        );
+        setSelectedToken(
+          milestone.reward?.token ? milestone.reward.token : selectedToken
+        );
         setValue(milestone.reward?.value || "");
       }
     }

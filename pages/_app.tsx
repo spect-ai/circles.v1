@@ -3,7 +3,7 @@ import "degen/styles";
 import type { AppProps } from "next/app";
 import { Hydrate, QueryClientProvider } from "react-query";
 import mixpanel from "@/app/common/utils/mixpanel";
-import { Analytics } from "@vercel/analytics/react";
+import { FlagsProvider } from "react-feature-flags";
 
 import "@fontsource/inter/300.css";
 import "@fontsource/inter/400.css";
@@ -44,9 +44,34 @@ import { publicProvider } from "wagmi/providers/public";
 import { SiweMessage } from "siwe";
 import { UserType } from "@/app/types";
 import { atom, useAtom } from "jotai";
+import { flags } from "@/app/common/utils/featureFlags";
+
 const isProd = process.env.NODE_ENV === "production";
 
 const chainsObj = {
+  fuji: {
+    id: 43113,
+    name: "Fuji",
+    network: "fuji",
+    nativeCurrency: {
+      decimals: 18,
+      name: "Avalanche",
+      symbol: "AVAX",
+    },
+    rpcUrls: {
+      default: "https://api.avax-test.network/ext/bc/C/rpc",
+    },
+    blockExplorers: {
+      etherscan: { name: "SnowTrace", url: "https://testnet.snowtrace.io/" },
+      default: { name: "SnowTrace", url: "https://testnet.snowtrace.io/" },
+    },
+    contracts: {
+      multicall3: {
+        address: "0xca11bde05977b3631167028862be2a173976ca11",
+        blockCreated: 11907934,
+      },
+    },
+  },
   avalanche: {
     id: 43114,
     name: "Avalanche",
@@ -123,6 +148,7 @@ const { chains, provider } = configureChains(
     chainsObj.avalanche,
     chainsObj.bsc,
     chainsObj.gnosis,
+    chainsObj.fuji,
   ],
   [alchemyProvider({ apiKey: process.env.ALCHEMY_KEY }), publicProvider()]
 );
@@ -227,7 +253,7 @@ function MyApp({ Component, pageProps }: AppProps) {
           connectUser && connectUser(user.id);
         }
       } catch (e) {
-        console.error(e);
+        console.log({ e });
         setAuthenticationStatus("unauthenticated");
       }
     })();
@@ -245,23 +271,25 @@ function MyApp({ Component, pageProps }: AppProps) {
           theme={darkTheme()}
           modalSize={"compact"}
         >
-          <GlobalContextProvider>
-            <ThemeProvider defaultAccent="purple" defaultMode="dark">
-              <QueryClientProvider client={queryClient}>
-                <Hydrate state={pageProps}>
-                  <AnimatePresence
-                    exitBeforeEnter
-                    initial={false}
-                    onExitComplete={() => window.scrollTo(0, 0)}
-                  >
-                    <ErrorBoundary FallbackComponent={ErrorFallBack}>
-                      <Component {...pageProps} canonical={url} key={url} />
-                    </ErrorBoundary>
-                  </AnimatePresence>
-                </Hydrate>
-              </QueryClientProvider>
-            </ThemeProvider>
-          </GlobalContextProvider>
+          <FlagsProvider value={flags}>
+            <GlobalContextProvider>
+              <ThemeProvider defaultAccent="purple" defaultMode="dark">
+                <QueryClientProvider client={queryClient}>
+                  <Hydrate state={pageProps}>
+                    <AnimatePresence
+                      exitBeforeEnter
+                      initial={false}
+                      onExitComplete={() => window.scrollTo(0, 0)}
+                    >
+                      <ErrorBoundary FallbackComponent={ErrorFallBack}>
+                        <Component {...pageProps} canonical={url} key={url} />
+                      </ErrorBoundary>
+                    </AnimatePresence>
+                  </Hydrate>
+                </QueryClientProvider>
+              </ThemeProvider>
+            </GlobalContextProvider>
+          </FlagsProvider>
         </RainbowKitProvider>
       </RainbowKitAuthenticationProvider>
     </WagmiConfig>

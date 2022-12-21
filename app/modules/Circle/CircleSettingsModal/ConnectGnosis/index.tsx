@@ -3,7 +3,7 @@ import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { getFlattenedNetworks } from "@/app/common/utils/registry";
 import { getUserSafes } from "@/app/services/Gnosis";
-import { addSafe, updateCircle } from "@/app/services/UpdateCircle";
+import { addSafe } from "@/app/services/UpdateCircle";
 import { Registry } from "@/app/types";
 import { Box, Stack, Tag, Text } from "degen";
 import { AnimatePresence } from "framer-motion";
@@ -111,7 +111,7 @@ export default function ConnectGnosis() {
                     setselectedSafe(value);
                   }}
                   multiple={false}
-                  portal={false}
+                  portal
                 />
                 <PrimaryButton
                   shape="circle"

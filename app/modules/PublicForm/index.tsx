@@ -37,7 +37,9 @@ export default function PublicForm() {
   });
   const { openConnectModal } = useConnectModal();
   const [loading, setLoading] = useState(false);
-  const [canFillForm, setCanFillForm] = useState(form?.canFillForm || false);
+  const [canFillForm, setCanFillForm] = useState(
+    form?.formMetadata.canFillForm || false
+  );
   const [stamps, setStamps] = useState([] as Stamp[]);
 
   const { connectedUser, socket } = useGlobal();
@@ -67,12 +69,15 @@ export default function PublicForm() {
   const addStamps = async (form: FormType) => {
     const stamps = await getAllCredentials();
     const stampsWithScore = [];
-    if (form.sybilProtectionEnabled) {
+    if (
+      form.formMetadata.sybilProtectionEnabled &&
+      form.formMetadata.sybilProtectionScores
+    ) {
       for (const stamp of stamps) {
-        if (form.sybilProtectionScores[stamp.id]) {
+        if (form.formMetadata.sybilProtectionScores[stamp.id]) {
           const stampWithScore = {
             ...stamp,
-            score: form.sybilProtectionScores[stamp.id],
+            score: form.formMetadata.sybilProtectionScores[stamp.id],
           };
           stampsWithScore.push(stampWithScore);
         }
@@ -89,7 +94,8 @@ export default function PublicForm() {
         if (res.id) {
           await fetchMemberDetails(res.parents[0].slug);
           setForm(res);
-          setCanFillForm(res.canFillForm);
+          console.log(res.formMetadata.canFillForm);
+          setCanFillForm(res.formMetadata.canFillForm);
           await addStamps(res);
         } else toast.error("Error fetching form");
         setLoading(false);
@@ -133,7 +139,10 @@ export default function PublicForm() {
         }}
       />
       {route !== "embed" && (
-        <CoverImage src={form?.cover || ""} backgroundColor="accentSecondary" />
+        <CoverImage
+          src={form?.formMetadata.cover || ""}
+          backgroundColor="accentSecondary"
+        />
       )}
       {form && (
         <Container embed={route === "embed"}>
@@ -148,7 +157,9 @@ export default function PublicForm() {
           >
             <Box width="full" padding="4">
               <Stack space="2">
-                {form.logo && <Avatar src={form.logo} label="" size="20" />}
+                {form.formMetadata.logo && (
+                  <Avatar src={form.formMetadata.logo} label="" size="20" />
+                )}
                 <NameInput
                   autoFocus
                   value={form.name}
@@ -160,7 +171,7 @@ export default function PublicForm() {
                 )}
               </Stack>
             </Box>
-            {!form.active && (
+            {!form.formMetadata.active && (
               <Box width="full" padding="4">
                 <Text variant="large">This form is not active</Text>
               </Box>
@@ -176,7 +187,6 @@ export default function PublicForm() {
                   ease: [0, 0.71, 0.2, 1.01],
                 }}
               >
-                {" "}
                 <FormFields form={form} setForm={setForm} />
               </motion.div>
             )}
@@ -189,17 +199,18 @@ export default function PublicForm() {
                 gap="4"
               >
                 {" "}
-                {form.formRoleGating && form.formRoleGating.length > 0 && (
-                  <Text weight="semiBold" variant="large" color="textPrimary">
-                    This form is role gated
-                  </Text>
-                )}
-                {form.mintkudosTokenId && (
+                {form.formMetadata.formRoleGating &&
+                  form.formMetadata.formRoleGating.length > 0 && (
+                    <Text weight="semiBold" variant="large" color="textPrimary">
+                      This form is role gated
+                    </Text>
+                  )}
+                {form.formMetadata.mintkudosTokenId && (
                   <Text weight="semiBold" variant="large" color="textPrimary">
                     This form distributes soulbound tokens to responders
                   </Text>
                 )}
-                {form.sybilProtectionEnabled && (
+                {form.formMetadata.sybilProtectionEnabled && (
                   <Text weight="semiBold" variant="large" color="textPrimary">
                     This form is Sybil protected
                   </Text>
@@ -291,11 +302,13 @@ export default function PublicForm() {
                       You require one of the following roles to fill this form
                     </Text>
                     <Stack space="2">
-                      {form.formRoleGating.map((role: GuildRole) => (
-                        <Tag tone="accent" key={role.id}>
-                          {role.name}
-                        </Tag>
-                      ))}
+                      {form.formMetadata.formRoleGating?.map(
+                        (role: GuildRole) => (
+                          <Tag tone="accent" key={role.id}>
+                            {role.name}
+                          </Tag>
+                        )
+                      )}
                     </Stack>
                     <Text variant="label">
                       You do not have the correct roles to access this form
@@ -340,102 +353,107 @@ export default function PublicForm() {
                     </Box>
                   </Box>
                 )}
-                {!form.hasPassedSybilCheck && (
-                  <Box
-                    display="flex"
-                    flexDirection="column"
-                    padding="4"
-                    marginTop="4"
-                    gap="4"
-                  >
-                    {" "}
-                    <Text weight="bold">
-                      This form is sybil protected. You must have a minimum
-                      score of 100% to fill this form. Please check the assigned
-                      scores below.
-                    </Text>
-                    <StampScrollContainer>
-                      {stamps.map((stamp: Stamp, index: number) => {
-                        return (
-                          <Box
-                            display="flex"
-                            flexDirection="row"
-                            alignItems="center"
-                            padding="4"
-                            width="full"
-                            key={index}
-                          >
+                {form.formMetadata.sybilProtectionEnabled &&
+                  !form.formMetadata.hasPassedSybilCheck && (
+                    <Box
+                      display="flex"
+                      flexDirection="column"
+                      padding="4"
+                      marginTop="4"
+                      gap="4"
+                    >
+                      {" "}
+                      <Text weight="bold">
+                        This form is sybil protected. You must have a minimum
+                        score of 100% to fill this form. Please check the
+                        assigned scores below.
+                      </Text>
+                      <StampScrollContainer>
+                        {stamps.map((stamp: Stamp, index: number) => {
+                          return (
                             <Box
                               display="flex"
                               flexDirection="row"
-                              width="full"
                               alignItems="center"
+                              padding="4"
+                              width="full"
+                              key={index}
                             >
                               <Box
                                 display="flex"
                                 flexDirection="row"
-                                alignItems="center"
                                 width="full"
-                                paddingRight="4"
+                                alignItems="center"
                               >
                                 <Box
-                                  width="8"
-                                  height="8"
+                                  display="flex"
                                   flexDirection="row"
-                                  justifyContent="flex-start"
                                   alignItems="center"
-                                  marginRight="4"
+                                  width="full"
+                                  paddingRight="4"
                                 >
-                                  {mode === "dark"
-                                    ? PassportStampIcons[stamp.providerName]
-                                    : PassportStampIconsLightMode[
-                                        stamp.providerName
-                                      ]}
+                                  <Box
+                                    width="8"
+                                    height="8"
+                                    flexDirection="row"
+                                    justifyContent="flex-start"
+                                    alignItems="center"
+                                    marginRight="4"
+                                  >
+                                    {mode === "dark"
+                                      ? PassportStampIcons[stamp.providerName]
+                                      : PassportStampIconsLightMode[
+                                          stamp.providerName
+                                        ]}
+                                  </Box>
+                                  <Box>
+                                    <Text as="h1">{stamp.stampName}</Text>
+                                    <Text variant="small">
+                                      {stamp.stampDescription}
+                                    </Text>
+                                  </Box>
                                 </Box>
-                                <Box>
-                                  <Text as="h1">{stamp.stampName}</Text>
-                                  <Text variant="small">
-                                    {stamp.stampDescription}
-                                  </Text>
-                                </Box>
+                                <Text variant="small">{stamp.score}%</Text>
                               </Box>
-                              <Text variant="small">{stamp.score}%</Text>
                             </Box>
-                          </Box>
-                        );
-                      })}
-                    </StampScrollContainer>
-                    <Box display="flex" flexDirection="row" gap="4">
-                      <Button
-                        variant="tertiary"
-                        size="small"
-                        onClick={() =>
-                          window.open("https://passport.gitcoin.co/", "_blank")
-                        }
-                      >
-                        Get Stamps
-                      </Button>
-                      <Button
-                        variant="tertiary"
-                        size="small"
-                        onClick={() => router.push("/")}
-                      >
-                        No worries, go to dashboard
-                      </Button>
+                          );
+                        })}
+                      </StampScrollContainer>
+                      <Box display="flex" flexDirection="row" gap="4">
+                        <Button
+                          variant="tertiary"
+                          size="small"
+                          onClick={() =>
+                            window.open(
+                              "https://passport.gitcoin.co/",
+                              "_blank"
+                            )
+                          }
+                        >
+                          Get Stamps
+                        </Button>
+                        <Button
+                          variant="tertiary"
+                          size="small"
+                          onClick={() => router.push("/")}
+                        >
+                          No worries, go to dashboard
+                        </Button>
+                      </Box>
                     </Box>
-                  </Box>
-                )}
+                  )}
               </motion.div>
             )}
-            {form.previousResponses.length > 0 && (
+            {form.formMetadata.previousResponses?.length > 0 && (
               <DataActivity
                 activities={form.activity}
                 activityOrder={form.activityOrder}
                 getMemberDetails={getMemberDetails}
                 collectionId={form.id}
                 dataId={
-                  form.previousResponses[form.previousResponses?.length - 1]
-                    ?.slug
+                  form.formMetadata.previousResponses[
+                    form.formMetadata.previousResponses?.length - 1
+                  ]?.slug
                 }
                 setForm={setForm}
                 dataOwner={currentUser as UserType}

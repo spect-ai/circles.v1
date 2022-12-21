@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { addColumn } from "@/app/services/Column";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";

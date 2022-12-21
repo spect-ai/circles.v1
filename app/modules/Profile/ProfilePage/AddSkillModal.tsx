@@ -141,7 +141,7 @@ export default function AddSkillModal({
                 category: isEmpty("category", value),
               });
             }}
-            portal={false}
+            portal
           />
         </Box>
         <Box>

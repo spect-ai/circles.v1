@@ -2,6 +2,7 @@
 import {
   Condition,
   FormUserType,
+  ProjectMetadata,
   PayWallOptions,
   Registry,
   Voting,
@@ -97,16 +98,22 @@ export const updateFormCollection = async (
   update: {
     name?: string;
     description?: string;
-    messageOnSubmission?: string;
-    multipleResponsesAllowed?: boolean;
-    updatingResponseAllowed?: boolean;
-    active?: boolean;
-    circleRolesToNotifyUponNewResponse?: string[];
-    circleRolesToNotifyUponUpdatedResponse?: string[];
-    logo?: string;
-    cover?: string;
     propertyOrder?: string[];
     voting?: Voting;
+    circleRolesToNotifyUponNewResponse?: string[];
+    circleRolesToNotifyUponUpdatedResponse?: string[];
+    formMetadata?: {
+      messageOnSubmission?: string;
+      multipleResponsesAllowed?: boolean;
+      updatingResponseAllowed?: boolean;
+      logo?: string;
+      cover?: string;
+      active?: boolean;
+    };
+    projectMetadata?: Partial<ProjectMetadata>;
+    data?: any;
+    archivedData?: any;
+    archived?: boolean;
   }
 ) => {
   return await (
@@ -117,6 +124,37 @@ export const updateFormCollection = async (
       },
       credentials: "include",
       body: JSON.stringify(update),
+    })
+  ).json();
+};
+
+export const deleteCollection = async (collectionId: string) => {
+  return await (
+    await fetch(`${process.env.API_HOST}/collection/v1/${collectionId}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+    })
+  ).json();
+};
+
+export const migrateToCollection = async (
+  projectId: string,
+  circleId: string
+) => {
+  return await (
+    await fetch(`${process.env.API_HOST}/collection/v1/migrateFromProject`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify({
+        projectId,
+        circleId,
+      }),
     })
   ).json();
 };

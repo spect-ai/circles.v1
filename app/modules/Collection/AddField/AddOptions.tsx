@@ -11,6 +11,8 @@ type Props = {
   >;
   label?: string;
   disabled?: boolean;
+  setCardOrder?: (cardOrder: string[][]) => void;
+  cardOrder?: string[][];
 };
 
 export default function AddOptions({
@@ -18,6 +20,8 @@ export default function AddOptions({
   setFieldOptions,
   label = "Options",
   disabled,
+  setCardOrder,
+  cardOrder,
 }: Props) {
   const { mode } = useTheme();
   return (
@@ -40,6 +44,17 @@ export default function AddOptions({
                 <Box
                   cursor="pointer"
                   onClick={() => {
+                    if (cardOrder && setCardOrder) {
+                      const newCardOrder = [...cardOrder];
+                      // apend all the elements from the array index to the 0th index
+                      newCardOrder[0] = [
+                        ...newCardOrder[0],
+                        ...newCardOrder[index],
+                      ];
+                      // delete the array index
+                      newCardOrder.splice(index + 1, 1);
+                      setCardOrder(newCardOrder);
+                    }
                     const newOptions = [...fieldOptions];
                     newOptions.splice(index, 1);
                     setFieldOptions(newOptions);
