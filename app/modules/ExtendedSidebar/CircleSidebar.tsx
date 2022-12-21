@@ -216,6 +216,7 @@ function CircleSidebar() {
                                 href={`/${circle?.children?.[content].slug}`}
                               >
                                 <PrimaryButton
+                                  center
                                   variant={
                                     pId === circle?.children?.[content].slug
                                       ? "tertiary"
