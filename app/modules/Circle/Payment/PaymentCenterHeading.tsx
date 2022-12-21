@@ -9,6 +9,7 @@ import Skeleton from "react-loading-skeleton";
 import { useQuery } from "react-query";
 import styled from "styled-components";
 import { useCircle } from "../../Circle/CircleContext";
+import ConnectGnosis from "../CircleSettingsModal/ConnectGnosis";
 
 export const IconButton = styled(Box)`
   cursor: pointer;
@@ -69,9 +70,7 @@ function PaymentCenterHeading({ paymentViewId, setPaymentViewId }: Props) {
           </Stack>
         </Box>
         <Box display="flex" flexDirection="column" justifyContent="flex-end">
-          <PrimaryButton variant="tertiary" onClick={() => {}}>
-            Connect Gnossis Safe{" "}
-          </PrimaryButton>
+          <ConnectGnosis />
         </Box>
       </Box>
       <ViewTabsContainer
