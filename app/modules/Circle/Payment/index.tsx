@@ -4,6 +4,8 @@ import { useState } from "react";
 import styled from "styled-components";
 import CardDrawer from "../../CollectionProject/CardDrawer";
 import { useCircle } from "../CircleContext";
+import CancelledPayments from "./CancelledPayments";
+import CompletedPayments from "./CompletedPayments";
 import PaymentCard from "./PaymentCard";
 import PaymentCenterHeading from "./PaymentCenterHeading";
 import PendingPayments from "./PendingPayments";
@@ -31,6 +33,8 @@ export default function Payment() {
         )}
       </AnimatePresence> */}
         {paymentViewId === "Pending" && <PendingPayments />}
+        {paymentViewId === "Completed" && <CompletedPayments />}
+        {paymentViewId === "Cancelled" && <CancelledPayments />}
       </Container>
     </>
   );

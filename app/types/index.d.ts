@@ -288,6 +288,7 @@ export interface CircleType {
   automationCount: number;
   pendingPayments: string[];
   completedPayments: string[];
+  cancelledPayments: string[];
   paymentDetails: { [key: string]: PaymentDetails };
 }
 
