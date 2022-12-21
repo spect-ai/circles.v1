@@ -49,9 +49,7 @@ export const biconomyPayment = async(
   };
 
   // @ts-ignore
-  const txn = await provider.send("eth_sendTransaction", [txParams]);
-  console.log({ txn });
-  return txn;
+  await provider.send("eth_sendTransaction", [txParams]);
 
   biconomy.on(
     "txMined",

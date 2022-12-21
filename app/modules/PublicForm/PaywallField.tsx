@@ -245,6 +245,7 @@ const PaywallField = ({
       circleRegistry &&
       (selectedChain.value === "137" || selectedChain.value === "80001")
     ) {
+      setLoading(true);
       await payGasless({
         chainId: selectedChain.value || "",
         paymentType: "tokens",
@@ -273,6 +274,7 @@ const PaywallField = ({
       circleId: form.parents?.[0].id,
       circleRegistry: circleRegistry,
     };
+    setLoading(true);
     const tokenTxnHash = await toast
       .promise(
         batchPay(options),
@@ -288,6 +290,7 @@ const PaywallField = ({
       )
       .catch((err) => console.log(err));
     recordPayment(tokenTxnHash);
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -417,9 +420,10 @@ const PaywallField = ({
                           circleRegistry
                         ).then((res: any) => {
                           if (res) {
-                            async () => {
+                            const pay = async () => {
                               await tokenPayment();
                             };
+                            pay();
                           }
                         }),
                         {
@@ -441,7 +445,7 @@ const PaywallField = ({
                 }}
                 disabled={disabled || !payValue}
               >
-                Pay {payWallOptions.value > 0 ? payWallOptions.value : ""}
+                Pay {payWallOptions.value > 0 ? payWallOptions.value : payValue}
                 {" " + selectedToken.label}
               </PrimaryButton>
             ) : (
