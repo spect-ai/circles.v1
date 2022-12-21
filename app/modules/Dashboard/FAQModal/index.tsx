@@ -23,7 +23,7 @@ export default function FAQModal({ handleClose }: Props) {
           variant="transparent"
           onClick={() => {
             window.open(
-              "https://calendly.com/adityachakra16/outreach",
+              "https://docs.spect.network/spect-docs/introduction/what-is-spect",
               "_blank"
             );
           }}

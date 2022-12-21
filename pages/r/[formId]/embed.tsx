@@ -11,7 +11,6 @@ import { NextPage } from "next";
 const EmbedPage: NextPage = () => {
   useConnectDiscordServer();
   const context = useProviderCircleContext();
-
   return (
     <>
       <MetaHead

@@ -78,7 +78,7 @@ export const Embed = () => {
                   onClick={async () => {
                     const colorMode = selectedMode === 0 ? "dark" : "light";
                     await navigator.clipboard.writeText(
-                      `https://circles.spect.network/r/${collection?.slug}/embed?mode=${colorMode}`
+                      `https://circles-v1-production.vercel.app/r/${collection?.slug}/embed?mode=${colorMode}`
                     );
                     toast.success(
                       "Copied to clipboard, paste it on any website which supports embed"
