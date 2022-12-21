@@ -87,7 +87,7 @@ const PaywallField = ({
   const [payValue, setPayValue] = useState(
     payWallData?.[payWallData?.length - 1]?.value || 0
   );
-  
+
   // Setting Token Options as per the network
   useEffect(() => {
     if (payWallOptions && selectedChain) {
@@ -115,7 +115,7 @@ const PaywallField = ({
     }
   }, [selectedChain]);
 
-  const approval = async ( ) => {
+  const approval = async () => {
     setLoading(true);
     const approvalStatus = await toast
       .promise(
@@ -240,6 +240,7 @@ const PaywallField = ({
   };
 
   const tokenPayment = async () => {
+    setLoading(true);
     // Paying on Mumbai or Polygon Mainnet --> Gasless transactions via BICO
     if (
       circleRegistry &&
@@ -288,6 +289,7 @@ const PaywallField = ({
       )
       .catch((err) => console.log(err));
     recordPayment(tokenTxnHash);
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -409,7 +411,6 @@ const PaywallField = ({
                     // Approval for ERC20 token
                     setLoading(true);
                     if (!approvalStatus) {
-
                       await toast.promise(
                         approve(
                           selectedChain.value,
@@ -417,9 +418,10 @@ const PaywallField = ({
                           circleRegistry
                         ).then((res: any) => {
                           if (res) {
-                            async () => {
+                            const pay = async () => {
                               await tokenPayment();
                             };
+                            pay();
                           }
                         }),
                         {
