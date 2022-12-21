@@ -300,7 +300,7 @@ export default function DataDrawer({
                         {property?.type == "multiURL" && (
                           <Stack direction="vertical">
                             {data[property.name]?.map((url: OptionType) => (
-                              <Stack direction={"horizontal"}>
+                              <Stack direction={"horizontal"} key={url.value}>
                                 <Text>{url.label}</Text>
                                 <Text>-</Text>
                                 <Box

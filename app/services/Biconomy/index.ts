@@ -6,10 +6,10 @@ import { ethers, Signer } from "ethers";
 import DistributorABI from "@/app/common/contracts/mumbai/distributor.json";
 import { toast } from "react-toastify";
 
-export const biconomyPayment = async(
+export const biconomyPayment = async (
   userAddress: string,
   contractAddress: string,
-  txnData: any,
+  txnData: any
 ) => {
   const biconomy = new Biconomy(window.ethereum as ExternalProvider, {
     apiKey: process.env.BICONOMY_API_KEY || "",
@@ -59,4 +59,4 @@ export const biconomyPayment = async(
       return data;
     }
   );
-}
+};

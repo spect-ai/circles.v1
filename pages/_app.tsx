@@ -256,7 +256,6 @@ function MyApp({ Component, pageProps }: AppProps) {
                   >
                     <ErrorBoundary FallbackComponent={ErrorFallBack}>
                       <Component {...pageProps} canonical={url} key={url} />
-                      <Analytics />
                     </ErrorBoundary>
                   </AnimatePresence>
                 </Hydrate>

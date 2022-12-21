@@ -28,10 +28,4 @@ const FormPage: NextPage = () => {
   );
 };
 
-export function getServerSideProps() {
-  return {
-    props: {},
-  };
-}
-
 export default FormPage;

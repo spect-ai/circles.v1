@@ -28,6 +28,7 @@ import DiscordIcon from "@/app/assets/icons/discordIcon.svg";
 
 export default function PublicForm() {
   const router = useRouter();
+  const { isReady } = router;
   const { formId } = router.query;
   const [form, setForm] = useState<FormType>();
   const { mode } = useTheme();
