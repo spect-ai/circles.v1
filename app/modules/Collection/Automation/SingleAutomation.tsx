@@ -55,14 +55,13 @@ export default function SingleAutomation({
   const [description, setDescription] = useState("");
   const [isDirty, setIsDirty] = useState(false);
   const [allPossibleActions, setAllPossibleActions] = useState({
-    // createCard: {
-    //   id: "createCard",
-    //   name: "Create Card",
-    //   service: "collection",
-    //   type: "createCard",
-    //   data: {},
-    // },
-
+    createCard: {
+      id: "createCard",
+      name: "Create Card",
+      service: "collection",
+      type: "createCard",
+      data: {},
+    },
     giveRole: {
       id: "giveRole",
       name: "Give Circle Role",

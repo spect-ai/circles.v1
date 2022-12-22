@@ -59,11 +59,13 @@ export default function CreateCard({ setAction, actionMode, action }: Props) {
           )
         ).json();
         setCollectionOptions(
-          data.map((collection) => ({
-            label: collection.name,
-            value: collection.id,
-            data: collection,
-          }))
+          data
+            .filter((collection) => collection.collectionType === 1)
+            .map((collection) => ({
+              label: collection.name,
+              value: collection.id,
+              data: collection,
+            }))
         );
       } catch (e) {
         console.log(e);
@@ -271,7 +273,6 @@ export default function CreateCard({ setAction, actionMode, action }: Props) {
                               type: "default",
                               default: {
                                 field: v,
-                                value: newValues[index].default?.value,
                               },
                             };
                             setValues(newValues);

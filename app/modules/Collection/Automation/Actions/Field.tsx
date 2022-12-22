@@ -110,6 +110,7 @@ export function Field({ collection, propertyId, type, data, setData }: Props) {
             placeholder={`Enter text`}
             isDirty={true}
             onChange={(v) => setData(v)}
+            value={data}
           />
         </Box>
       )}
