@@ -1,9 +1,13 @@
 import { Box } from "degen";
+import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
 import Filter from "./Filter";
 import { SearchCard } from "./Search";
 import Sort from "./Sort";
 
 export default function Filtering() {
+  const {
+    localCollection: collection,
+  } = useLocalCollection();
   return (
     <Box
       width="full"
@@ -14,6 +18,8 @@ export default function Filtering() {
       alignItems="center"
       backgroundColor="background"
       borderBottomRadius="large"
+      borderTopRadius={collection?.collectionType === 1 ? "none" : "large"}
+      marginBottom={collection?.collectionType === 1 ? "none" : "2"}
     >
       <SearchCard />
       <Box

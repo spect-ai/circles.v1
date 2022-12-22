@@ -124,7 +124,7 @@ export default function AddField({ propertyName, handleClose }: Props) {
         projectMetadata: {
           ...collection.projectMetadata,
           cardOrders: {
-            ...collection.projectMetadata.cardOrders,
+            ...collection?.projectMetadata?.cardOrders,
             [propertyName]: cardOrder,
           },
         },
@@ -342,6 +342,9 @@ export default function AddField({ propertyName, handleClose }: Props) {
             ) : null}
             {type.value === "milestone" ? (
               <MilestoneOptions networks={networks} setNetworks={setNetworks} />
+            ) : null}
+            {type.value === "payWall" ? (
+              <PayWall payWallOption={payWallOption} setPayWallOption={setPayWallOption} />
             ) : null}
             {collection.collectionType === 0 && (
               <Accordian name="Advanced" defaultOpen={advancedDefaultOpen}>

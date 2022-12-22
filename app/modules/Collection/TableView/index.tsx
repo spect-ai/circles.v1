@@ -165,31 +165,40 @@ export default function TableView() {
       });
 
       if (
-        collection.collectionType === 1 &&
-        collection.projectMetadata.views[projectViewId].filters
+        (collection.collectionType === 0 &&
+          collection.projectMetadata.views?.[0].filters) ||
+        (collection.collectionType === 1 &&
+          collection.projectMetadata.views[projectViewId].filters)
       ) {
         filteredData = filteredData.filter((row) => {
           return satisfiesConditions(
             collection.data[row.id],
             collection.properties,
-            collection.projectMetadata.views[projectViewId].filters || []
+            collection.projectMetadata.views[
+              collection.collectionType === 0 ? 0 : projectViewId
+            ].filters || []
           );
         });
       }
 
       if (
-        collection.collectionType === 1 &&
-        collection.projectMetadata.views[projectViewId].sort?.property
+        (collection.collectionType === 1 &&
+          collection.projectMetadata.views[projectViewId].sort?.property) ||
+        (collection.collectionType === 0 &&
+          collection.projectMetadata.views?.[0].sort?.property)
       ) {
         const property =
           collection.properties[
-            collection.projectMetadata.views[projectViewId].sort?.property || ""
+            collection.projectMetadata.views[
+              collection.collectionType === 0 ? 0 : projectViewId
+            ].sort?.property || ""
           ];
         const propertyType = property.type;
         const propertyOptions = property.options as Option[];
         const direction =
-          collection.projectMetadata.views[projectViewId].sort?.direction ||
-          "asc";
+          collection.projectMetadata.views[
+            collection.collectionType === 0 ? 0 : projectViewId
+          ].sort?.direction || "asc";
         const propertyName = property.name;
         filteredData = filteredData.sort((a: any, b: any) => {
           if (propertyType === "singleSelect") {
@@ -248,6 +257,13 @@ export default function TableView() {
             return bValue - aValue;
           }
 
+          if (
+            propertyType === "multiSelect" ||
+            propertyType === "user[]" ||
+            propertyType === "payWall"
+          )
+            return;
+
           if (direction === "asc") {
             return a[propertyName]?.localeCompare(b[propertyName]);
           }
@@ -273,7 +289,7 @@ export default function TableView() {
     if (data) {
       const sortedData = [...data].sort((a: any, b: any) => {
         if (
-          ["longText", "shortText", "date"].includes(
+          ["longText", "shortText", "date", "singleURL"].includes(
             collection.properties[columnName].type
           )
         ) {
@@ -299,6 +315,8 @@ export default function TableView() {
       setData(sortedData);
     }
   };
+
+  console.log(collection);
 
   const getCellComponent = (type: PropertyType) => {
     switch (type) {

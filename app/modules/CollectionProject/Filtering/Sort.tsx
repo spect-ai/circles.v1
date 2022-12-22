@@ -11,40 +11,52 @@ import { MenuContainer, MenuItem } from "../EditValue";
 export default function Sort() {
   const {
     localCollection: collection,
-    projectViewId,
+    projectViewId: viewId,
     updateCollection,
   } = useLocalCollection();
 
+  const projectViewId = collection?.collectionType === 1 ? viewId : "0";
+
   const [isOpen, setIsOpen] = useState(false);
   const [isAsc, setIsAsc] = useState<boolean>(
-    collection.projectMetadata.views[projectViewId]?.sort?.direction ===
+    collection?.projectMetadata?.views?.[projectViewId]?.sort?.direction ===
       "asc" || true
   );
   const [sortProperty, setSortProperty] = useState(
-    collection.projectMetadata.views[projectViewId]?.sort?.property || ""
+    collection?.projectMetadata?.views?.[projectViewId]?.sort?.property || ""
   );
 
   const [sortOptions, setSortOptions] = useState<Option[]>([]);
+
+  const unSortableProperties = ["user[]", "multiSelect", "payWall"];
 
   useEffect(() => {
     const noneOption = {
       label: "None (default)",
       value: "",
     };
-    const options = collection.propertyOrder.map((property) => ({
-      label: property,
-      value: property,
-    }));
-    setSortOptions([noneOption, ...options]);
+    let options = collection.propertyOrder.map((property) => {
+      if (
+        !unSortableProperties.includes(collection.properties[property].type)
+      ) {
+        return {
+          label: property,
+          value: property,
+        };
+      }
+    });
+    options = options.filter((option) => option !== undefined);
+    console.log(options);
+    setSortOptions([noneOption, ...options as Option[]]);
   }, [collection.propertyOrder, isOpen]);
 
   useEffect(() => {
     setIsAsc(
-      collection.projectMetadata.views[projectViewId]?.sort?.direction ===
+      collection?.projectMetadata?.views?.[projectViewId]?.sort?.direction ===
         "asc" || true
     );
     setSortProperty(
-      collection.projectMetadata.views[projectViewId]?.sort?.property || ""
+      collection?.projectMetadata?.views?.[projectViewId]?.sort?.property || ""
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [projectViewId]);

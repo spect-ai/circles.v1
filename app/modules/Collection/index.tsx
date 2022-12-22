@@ -9,6 +9,7 @@ import { Form } from "./Form";
 import TableView from "./TableView";
 import FAQModal from "../Dashboard/FAQModal";
 import { QuestionCircleOutlined } from "@ant-design/icons";
+import Filtering from "../CollectionProject/Filtering"
 
 export function Collection() {
   const { view, setView, localCollection: collection } = useLocalCollection();
@@ -46,7 +47,12 @@ export function Collection() {
             }}
             marginTop="4"
           >
-            {view === 1 && <TableView />}
+            {view === 1 && (
+              <>
+                <Filtering />
+                <TableView />
+              </>
+            )}
           </Box>
           <Box
             style={{
