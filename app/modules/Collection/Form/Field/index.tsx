@@ -134,7 +134,9 @@ function FieldComponent({
         />
       )}
       {collection.properties[id]?.type === "payWall" && (
-        <PrimaryButton>Pay</PrimaryButton>
+        <Box marginTop="2">
+          <PrimaryButton>Pay</PrimaryButton>
+        </Box>
       )}
       {collection.properties[id]?.type === "multiURL" && (
         <Input

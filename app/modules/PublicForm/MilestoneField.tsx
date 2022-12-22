@@ -32,8 +32,6 @@ export default function MilestoneField({
   const [modalMode, setModalMode] = useState<"create" | "edit">("create");
   const [milestoneIndex, setMilestoneIndex] = useState<number>(0);
 
-  const { localCollection: collection } = useLocalCollection();
-
   return (
     <>
       <AnimatePresence>
@@ -112,9 +110,9 @@ export default function MilestoneField({
                       <Editor value={milestone.description} disabled={true} />
                     )}
                   </Box>
-                  {((collection.collectionType === 0 &&
-                    !collection?.properties[propertyName].isPartOfFormView) ||
-                    collection.collectionType === 1) &&
+                  {((form.collectionType === 0 &&
+                    !form?.properties[propertyName].isPartOfFormView) ||
+                    form.collectionType === 1) &&
                     !disabled && (
                       <Box display="flex" flexDirection="row" gap="2">
                         <Button
@@ -144,9 +142,9 @@ export default function MilestoneField({
               );
             })}
         </Stack>
-        {((collection.collectionType === 0 &&
-          !collection?.properties[propertyName].isPartOfFormView) ||
-          collection.collectionType === 1) &&
+        {((form.collectionType === 0 &&
+          !form?.properties[propertyName].isPartOfFormView) ||
+          form.collectionType === 1) &&
           !disabled && (
             <Box width="full">
               <PrimaryButton

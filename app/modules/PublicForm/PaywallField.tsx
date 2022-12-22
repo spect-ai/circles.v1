@@ -306,7 +306,6 @@ const PaywallField = ({
           md: "horizontal",
         }}
         align="center"
-        justify="flex-start"
       >
         <Box
           width={{
@@ -362,6 +361,7 @@ const PaywallField = ({
             xs: "full",
             md: "72",
           }}
+          marginTop="2"
         >
           <Input
             label=""
