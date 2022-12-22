@@ -29,6 +29,8 @@ import CircleOptions from "./CircleOptions";
 import { HeaderButton } from "./ExploreSidebar";
 import mixpanel from "@/app/common/utils/mixpanel";
 import { smartTrim } from "@/app/common/utils/utils";
+import { getViewIcon } from "../CollectionProject/Heading";
+import { Table } from "react-feather";
 
 export const Container = styled(Box)<{ subH?: string }>`
   ::-webkit-scrollbar {
@@ -299,7 +301,18 @@ function CircleSidebar() {
                                             : "inherit"
                                         }
                                       >
-                                        <IconCollection size={"5"} />
+                                        {circle?.collections?.[content]
+                                          .viewType ? (
+                                          getViewIcon(
+                                            circle?.collections?.[content]
+                                              .viewType || ""
+                                          )
+                                        ) : (
+                                          <Table
+                                            size={18}
+                                            style={{ marginTop: 4 }}
+                                          />
+                                        )}
                                       </Text>
                                     }
                                   >

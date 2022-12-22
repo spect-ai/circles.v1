@@ -14,7 +14,7 @@ import { Tooltip } from "react-tippy";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { toast } from "react-toastify";
 import { Flags } from "react-feature-flags";
-import { Trello } from "react-feather";
+import { Table } from "react-feather";
 interface Props {
   setProjectModal: (a: boolean) => void;
   setWorkstreamModal: (a: boolean) => void;
@@ -62,7 +62,9 @@ export default function CreateFolderItem({
                 }
               }}
             >
-              <IconCollection size="4" color="accent" />
+              <Text color="accent">
+                <Table size={18} style={{ marginTop: 4 }} />
+              </Text>
             </Button>
           </Tooltip>
           <Flags authorizedFlags={["ProjectV1"]}>
@@ -89,7 +91,7 @@ export default function CreateFolderItem({
             </Tooltip>
           </Flags>
           <Flags authorizedFlags={["ProjectV2"]}>
-            <Tooltip html={<Text>Create Collection Project</Text>} theme={mode}>
+            <Tooltip html={<Text>Create Collection</Text>} theme={mode}>
               <Button
                 size="small"
                 variant="transparent"
@@ -106,12 +108,7 @@ export default function CreateFolderItem({
                 }}
               >
                 <Text color="accent">
-                  <Trello
-                    size={18}
-                    style={{
-                      marginTop: 4,
-                    }}
-                  />
+                  <IconCollection size={"5"} />
                 </Text>
               </Button>
             </Tooltip>
@@ -133,7 +130,7 @@ export default function CreateFolderItem({
                 }
               }}
             >
-              <IconUserGroup size={"4"} color="accent" />
+              <IconUserGroup size={"5"} color="accent" />
             </Button>
           </Tooltip>
           {/* <Tooltip html={<Text>Create Retro</Text>} theme={mode}>

@@ -22,6 +22,8 @@ import {
 import styled from "styled-components";
 import { ProjectOutlined } from "@ant-design/icons";
 import { useRouter } from "next/router";
+import { getViewIcon } from "@/app/modules/CollectionProject/Heading";
+import { Table } from "react-feather";
 
 interface Props {
   card: string;
@@ -36,7 +38,14 @@ interface Props {
     [key: string]: RetroType;
   };
   collections?: {
-    [key: string]: CollectionType;
+    [key: string]: {
+      id: string;
+      name: string;
+      slug: string;
+      viewType?: string;
+      collectionType: 0 | 1;
+      archived: boolean;
+    };
   };
 }
 
@@ -105,7 +114,12 @@ const Card = ({
           )}
           {workstreams?.[card]?.id && <IconUserGroup size={"5"} />}
           {retros?.[card]?.id && <IconLightningBolt size={"5"} />}
-          {collections?.[card]?.id && <IconCollection size={"5"} />}
+          {collections?.[card]?.id &&
+            (collections?.[card].viewType ? (
+              getViewIcon(collections?.[card].viewType || "")
+            ) : (
+              <Table size={18} style={{ marginTop: 4 }} />
+            ))}
         </Box>
 
         <Text ellipsis variant="base" weight={"semiBold"}>
@@ -119,8 +133,7 @@ const Card = ({
         <Text color={"textSecondary"} ellipsis>
           {projects?.[card]?.description ||
             workstreams?.[card].description ||
-            retros?.[card]?.description ||
-            collections?.[card].description}
+            retros?.[card]?.description}
         </Text>
       </Box>
     </Container>

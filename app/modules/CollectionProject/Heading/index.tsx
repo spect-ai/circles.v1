@@ -1,7 +1,15 @@
 import Popover from "@/app/common/components/Popover";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { updateFormCollection } from "@/app/services/Collection";
-import { Box, Heading, IconCog, IconPlusSmall, Stack, Text } from "degen";
+import {
+  Box,
+  Heading,
+  IconCog,
+  IconCollection,
+  IconPlusSmall,
+  Stack,
+  Text,
+} from "degen";
 import { AnimatePresence, motion } from "framer-motion";
 import React, { useState } from "react";
 import {
@@ -351,17 +359,10 @@ export default function ProjectHeading() {
   );
 }
 
-const getViewIcon = (viewType: string) => {
+export const getViewIcon = (viewType: string) => {
   switch (viewType) {
     case "grid":
-      return (
-        <Grid
-          size={18}
-          style={{
-            marginTop: "4px",
-          }}
-        />
-      );
+      return <IconCollection size="5" />;
     case "kanban":
       return (
         <Trello
@@ -390,14 +391,7 @@ const getViewIcon = (viewType: string) => {
         />
       );
     default:
-      return (
-        <Grid
-          size={18}
-          style={{
-            marginTop: "4px",
-          }}
-        />
-      );
+      return <IconCollection size="5" />;
   }
 };
 
