@@ -15,7 +15,7 @@ export default function Sort() {
     updateCollection,
   } = useLocalCollection();
 
-  const projectViewId = collection?.collectionType === 1 ? viewId : "0";
+  const projectViewId = collection?.collectionType === 1 ? viewId : "0x0";
 
   const [isOpen, setIsOpen] = useState(false);
   const [isAsc, setIsAsc] = useState<boolean>(

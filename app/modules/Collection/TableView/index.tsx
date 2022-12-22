@@ -166,7 +166,7 @@ export default function TableView() {
 
       if (
         (collection.collectionType === 0 &&
-          collection.projectMetadata.views?.[0].filters) ||
+          collection.projectMetadata.views?.['0x0'].filters) ||
         (collection.collectionType === 1 &&
           collection.projectMetadata.views[projectViewId].filters)
       ) {
@@ -175,7 +175,7 @@ export default function TableView() {
             collection.data[row.id],
             collection.properties,
             collection.projectMetadata.views[
-              collection.collectionType === 0 ? 0 : projectViewId
+              collection.collectionType === 0 ? '0x0' : projectViewId
             ].filters || []
           );
         });
@@ -185,19 +185,19 @@ export default function TableView() {
         (collection.collectionType === 1 &&
           collection.projectMetadata.views[projectViewId].sort?.property) ||
         (collection.collectionType === 0 &&
-          collection.projectMetadata.views?.[0].sort?.property)
+          collection.projectMetadata.views?.['0x0'].sort?.property)
       ) {
         const property =
           collection.properties[
             collection.projectMetadata.views[
-              collection.collectionType === 0 ? 0 : projectViewId
+              collection.collectionType === 0 ? '0x0' : projectViewId
             ].sort?.property || ""
           ];
         const propertyType = property.type;
         const propertyOptions = property.options as Option[];
         const direction =
           collection.projectMetadata.views[
-            collection.collectionType === 0 ? 0 : projectViewId
+            collection.collectionType === 0 ? '0x0' : projectViewId
           ].sort?.direction || "asc";
         const propertyName = property.name;
         filteredData = filteredData.sort((a: any, b: any) => {
@@ -316,7 +316,7 @@ export default function TableView() {
     }
   };
 
-  console.log(collection);
+  console.log(collection.data);
 
   const getCellComponent = (type: PropertyType) => {
     switch (type) {
@@ -364,7 +364,6 @@ export default function TableView() {
           "longText",
           "user",
           "user[]",
-          "singleURL",
         ].includes(property.type)
       ) {
         return {
