@@ -5,6 +5,7 @@ import EthersAdapter from "@gnosis.pm/safe-ethers-lib";
 import { SafeTransactionDataPartial } from "@gnosis.pm/safe-core-sdk-types";
 import { ethers } from "ethers";
 import { toast } from "react-toastify";
+import { fetchSigner } from "@wagmi/core";
 
 export async function getUserSafes(chainId: string) {
   const provider = new ethers.providers.Web3Provider((window as any).ethereum);

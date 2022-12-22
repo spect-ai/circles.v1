@@ -12,6 +12,7 @@ import { erc20ABI } from "wagmi";
 import DistributorABI from "@/app/common/contracts/mumbai/distributor.json";
 import { toast } from "react-toastify";
 import { makePayments } from ".";
+import { gnosisPayment } from "../Gnosis";
 
 type WagmiBalanceObject = {
   decimals: number;
@@ -191,6 +192,7 @@ export const hasBalances = async (
       balanceObj = await fetchBalance({
         addressOrName: callerAddress,
         chainId: parseInt(chainId),
+        formatUnits: "ether",
       });
     } else {
       console.log({ tokenAddress, callerAddress, chainId });
@@ -198,11 +200,13 @@ export const hasBalances = async (
         addressOrName: callerAddress,
         token: tokenAddress,
         chainId: parseInt(chainId),
+        formatUnits: "ether",
       });
     }
-    hasBalance[tokenAddress] = ethers.BigNumber.from(Math.ceil(amount))
-      .mul(ethers.BigNumber.from(10).pow(balanceObj.decimals))
-      .lte(balanceObj.value);
+    let balance = parseFloat(balanceObj.formatted);
+    if (balanceObj.decimals !== 18)
+      balance = balance * 10 ** (18 - balanceObj.decimals);
+    hasBalance[tokenAddress] = balance >= amount;
   }
 
   return hasBalance;
@@ -343,23 +347,162 @@ export const approveUsingEOA = async (
   return tokensApproved;
 };
 
+export const approveOneUsingGnosis = async (
+  chainId: string,
+  tokenAddress: string,
+  registry: Registry,
+  nonce: number,
+  gnosisSafeAddress: string
+) => {
+  const overrides: any = {
+    nonce,
+  };
+  const tokenContract = await getContract(tokenAddress, erc20ABI);
+  console.log({ tokenContract });
+  const data = await tokenContract.populateTransaction.approve(
+    registry[chainId].distributorAddress,
+    ethers.constants.MaxInt256,
+    overrides
+  );
+  console.log({ data });
+  const res = await gnosisPayment(gnosisSafeAddress, data, chainId);
+  if (res) toast.success("Transaction sent to your safe", { theme: "dark" });
+  else toast.error("Error Occurred while sending your transation to safe");
+};
+
 export const approveUsingGnosis = async (
   chainId: string,
-  callerAddress: string
-) => {};
+  tokenAddresses: string[],
+  registry: Registry,
+  startNonce: number,
+  gnosisSafeAddress: string
+) => {
+  const tokensApproved = [] as string[];
+  let nonce = startNonce;
+  for (const tokenAddress of tokenAddresses) {
+    if (tokenAddress !== "0x0") {
+      console.log({ nonce });
+      await toast.promise(
+        approveOneUsingGnosis(
+          chainId,
+          tokenAddress,
+          registry,
+          nonce,
+          gnosisSafeAddress
+        ).then(() => {
+          tokensApproved.push(tokenAddress);
+          nonce++;
+        }),
+        {
+          pending: `Approving ${
+            (registry && registry[chainId]?.tokenDetails[tokenAddress]?.name) ||
+            "Token"
+          }`,
+          error: {
+            render: ({ data }) => data,
+          },
+        },
+        {
+          position: "top-center",
+        }
+      );
+    }
+  }
+  return tokensApproved;
+};
 
 export const payUsingGnosis = async (
   chainId: string,
-  callerAddress: string,
-  aggregatedAmounts: { [tokenAddress: string]: number }
-) => {};
+  amounts: {
+    ethAddress: string;
+    token: string;
+    amount: number;
+  }[],
+  tokensWithoutAllowance: string[],
+  tokensWithoutBalance: string[],
+  registry: Registry,
+  startNonce: number,
+  gnosisSafeAddress: string
+) => {
+  const valuesInWei = await covertToWei(amounts);
+
+  const tokenAmounts = valuesInWei.filter(
+    (a) =>
+      a.token !== "0x0" &&
+      !tokensWithoutAllowance.includes(a.token) &&
+      !tokensWithoutBalance.includes(a.token)
+  );
+
+  console.log({ tokenAmounts });
+  let tokensDistributed = [] as string[];
+  let nonce = startNonce;
+  // Distribute tokens
+  if (tokenAmounts.length > 0) {
+    await toast.promise(
+      distributeTokensUsingGnosis(
+        chainId,
+        tokenAmounts,
+        registry,
+        gnosisSafeAddress,
+        nonce
+      ).then(() => {
+        tokensDistributed = [
+          ...tokensDistributed,
+          ...tokenAmounts.map((a) => a.token),
+        ];
+        nonce++;
+      }),
+      {
+        pending: `Distributing ${
+          registry[chainId]?.tokenDetails[tokenAmounts[0].token]?.name
+        }`,
+        error: {
+          render: ({ data }) => data,
+        },
+      },
+      {
+        position: "top-center",
+      }
+    );
+  }
+
+  const currencyAmounts = valuesInWei.filter(
+    (a) => a.token === "0x0" && !tokensWithoutBalance.includes(a.token)
+  );
+  console.log({ currencyAmounts });
+  if (currencyAmounts.length > 0) {
+    await toast.promise(
+      distributeCurrencyUsingGnosis(
+        chainId,
+        currencyAmounts,
+        registry,
+        gnosisSafeAddress,
+        nonce
+      ).then(() => {
+        tokensDistributed = [...tokensDistributed, "0x0"];
+        nonce++;
+      }),
+      {
+        pending: `Distributing ${registry[chainId]?.nativeCurrency}}`,
+        error: {
+          render: ({ data }) => data,
+        },
+      },
+      {
+        position: "top-center",
+      }
+    );
+  }
+  return tokensDistributed;
+};
 
 export const covertToWei = async (
   amounts: { ethAddress: string; token: string; amount: number }[]
 ) => {
   const valuesInWei = [] as ethers.BigNumber[];
   for (const amt of amounts) {
-    const numDecimals = await getDecimals(amt.token);
+    console.log({ amt });
+    const numDecimals = amt.token === "0x0" ? 18 : await getDecimals(amt.token);
 
     valuesInWei.push(
       ethers.BigNumber.from(amt?.amount.toFixed())
@@ -398,23 +541,98 @@ export const distributeCurrencyUsingEOA = async (
   );
   const ethAddressesArr = valuesInWei.map((v) => v.ethAddress);
   const valuesInWeiArr = valuesInWei.map((v) => v.valueInWei);
-  const gasEstimate = await distributorContract.estimateGas.distributeCurrency(
-    ethAddressesArr,
-    valuesInWeiArr
+  const totalValue = valuesInWei.reduce(
+    (acc, v) => acc.add(v.valueInWei),
+    ethers.BigNumber.from(0)
   );
-  const tx = await distributorContract.distributeCurrency(
+  console.log({ totalValue });
+  const gasEstimate = await distributorContract.estimateGas.distributeEther(
     ethAddressesArr,
     valuesInWeiArr,
+    "",
+    {
+      value: totalValue,
+    }
+  );
+  const tx = await distributorContract.distributeEther(
+    ethAddressesArr,
+    valuesInWeiArr,
+    "",
     {
       gasLimit: Math.ceil(gasEstimate.toNumber() * 1.2),
+      value: totalValue,
     }
   );
   return await tx.wait();
 };
 
-export const distributeCurrencyUsingGnosis = async () => {};
+export const distributeCurrencyUsingGnosis = async (
+  chainId: string,
+  valuesInWei: {
+    ethAddress: string;
+    token: string;
+    valueInWei: ethers.BigNumber;
+  }[],
+  registry: Registry,
+  safeAddress: string,
+  nonce: number
+) => {
+  const distributorContract = await getContract(
+    registry[chainId].distributorAddress as string,
+    DistributorABI
+  );
+  const ethAddressesArr = valuesInWei.map((v) => v.ethAddress);
+  const valuesInWeiArr = valuesInWei.map((v) => v.valueInWei);
+  const totalValue = valuesInWei.reduce(
+    (acc, v) => acc.add(v.valueInWei),
+    ethers.BigNumber.from(0)
+  );
+  const data = await distributorContract?.populateTransaction.distributeEther(
+    ethAddressesArr,
+    valuesInWeiArr,
+    "",
+    {
+      value: totalValue,
+      nonce: nonce,
+    }
+  );
+  const res = await gnosisPayment(safeAddress, data, chainId);
 
-export const distributeTokensUsingGnosis = async () => {};
+  return res;
+};
+
+export const distributeTokensUsingGnosis = async (
+  chainId: string,
+  valuesInWei: {
+    ethAddress: string;
+    token: string;
+    valueInWei: ethers.BigNumber;
+  }[],
+  registry: Registry,
+  safeAddress: string,
+  nonce: number
+) => {
+  const distributorContract = await getContract(
+    registry[chainId].distributorAddress as string,
+    DistributorABI
+  );
+  const tokenAddressesArr = valuesInWei.map((v) => v.token);
+
+  const ethAddressesArr = valuesInWei.map((v) => v.ethAddress);
+  const valuesInWeiArr = valuesInWei.map((v) => v.valueInWei);
+
+  const data = await distributorContract?.populateTransaction.distributeTokens(
+    tokenAddressesArr,
+    ethAddressesArr,
+    valuesInWeiArr,
+    "",
+    {
+      nonce: nonce,
+    }
+  );
+  const res = await gnosisPayment(safeAddress, data, chainId);
+  return res;
+};
 
 export const distributeTokensUsingEOA = async (
   chainId: string,
