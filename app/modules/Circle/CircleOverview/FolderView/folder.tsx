@@ -37,7 +37,14 @@ interface Props {
     [key: string]: RetroType;
   };
   collections: {
-    [key: string]: CollectionType;
+    [key: string]: {
+      id: string;
+      name: string;
+      slug: string;
+      viewType?: string;
+      collectionType: 0 | 1;
+      archived: boolean;
+    };
   };
 }
 

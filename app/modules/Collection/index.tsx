@@ -10,6 +10,8 @@ import TableView from "./TableView";
 import FAQModal from "../Dashboard/FAQModal";
 import { QuestionCircleOutlined } from "@ant-design/icons";
 import Filtering from "../CollectionProject/Filtering"
+import PrimaryButton from "@/app/common/components/PrimaryButton";
+import { migrateAllCOllections } from "@/app/services/Collection";
 
 export function Collection() {
   const { view, setView, localCollection: collection } = useLocalCollection();
@@ -32,6 +34,13 @@ export function Collection() {
           }`,
         }}
       />
+      {/* <PrimaryButton
+        onClick={() => {
+          void migrateAllCOllections();
+        }}
+      >
+        Migrate
+      </PrimaryButton> */}
       {collection.collectionType === 0 && (
         <Box>
           <CollectionHeading />

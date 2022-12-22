@@ -53,8 +53,6 @@ export default function AddField({ propertyName, handleClose }: Props) {
     value: 0,
     receiver: "",
   });
-  console.log({ registry });
-  console.log({ networks });
   const [initialName, setInitialName] = useState("");
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -103,7 +101,7 @@ export default function AddField({ propertyName, handleClose }: Props) {
       payWallOptions = payWallOption;
     }
     if (propertyName) {
-      await updateField(collection.id, propertyName, {
+      res = await updateField(collection.id, propertyName, {
         name: name.trim(),
         type: type.value,
         options: fieldOptions,
@@ -120,15 +118,17 @@ export default function AddField({ propertyName, handleClose }: Props) {
         viewConditions,
         payWallOptions,
       });
-      res = await updateFormCollection(collection.id, {
-        projectMetadata: {
-          ...collection.projectMetadata,
-          cardOrders: {
-            ...collection?.projectMetadata?.cardOrders,
-            [propertyName]: cardOrder,
+      if (collection.collectionType === 1) {
+        res = await updateFormCollection(collection.id, {
+          projectMetadata: {
+            ...collection.projectMetadata,
+            cardOrders: {
+              ...collection.projectMetadata.cardOrders,
+              [propertyName]: cardOrder,
+            },
           },
-        },
-      });
+        });
+      }
     } else {
       res = await addField(collection.id, {
         name: name.trim(),
@@ -233,7 +233,7 @@ export default function AddField({ propertyName, handleClose }: Props) {
                 (propertyName as string).trim()
               );
               if (res.id) {
-                res.projectMetadata &&
+                res.collectionType === 1 &&
                   setProjectViewId(res.projectMetadata.viewOrder[0]);
                 handleClose();
                 updateCollection(res);
@@ -344,7 +344,10 @@ export default function AddField({ propertyName, handleClose }: Props) {
               <MilestoneOptions networks={networks} setNetworks={setNetworks} />
             ) : null}
             {type.value === "payWall" ? (
-              <PayWall payWallOption={payWallOption} setPayWallOption={setPayWallOption} />
+              <PayWall
+                payWallOption={payWallOption}
+                setPayWallOption={setPayWallOption}
+              />
             ) : null}
             {collection.collectionType === 0 && (
               <Accordian name="Advanced" defaultOpen={advancedDefaultOpen}>

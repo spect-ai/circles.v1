@@ -159,6 +159,18 @@ export const migrateToCollection = async (
   ).json();
 };
 
+export const migrateAllCOllections = async () => {
+  return await (
+    await fetch(`${process.env.API_HOST}/collection/v1/migrateAllCollections`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+    })
+  ).json();
+};
+
 export const addCollectionData = async (collectionId: string, data: object) => {
   return await (
     await fetch(
