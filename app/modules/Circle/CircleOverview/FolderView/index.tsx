@@ -30,7 +30,14 @@ interface Props {
     [key: string]: CircleType;
   };
   filteredCollections: {
-    [key: string]: CollectionType;
+    [key: string]: {
+      id: string;
+      name: string;
+      slug: string;
+      viewType?: string;
+      collectionType: 0 | 1;
+      archived: boolean;
+    };
   };
   setIsRetroOpen: (isRetroOpen: boolean) => void;
 }
