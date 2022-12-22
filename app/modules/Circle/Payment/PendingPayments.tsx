@@ -34,7 +34,7 @@ export default function PendingPayments() {
   const router = useRouter();
   const { mode } = useTheme();
 
-  const { circle, setCircleData } = useCircle();
+  const { circle, setCircleData, fetchCircle } = useCircle();
   const { circle: cId } = router.query;
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
@@ -188,6 +188,16 @@ export default function PendingPayments() {
           nonce,
           safeAddress
         );
+        const res = await findAndUpdatePaymentIds(
+          circle.id,
+          chainId,
+          tokensDistributed,
+          circle.pendingPayments,
+          circle.paymentDetails
+        );
+        if (res) {
+          fetchCircle();
+        }
       } else {
         console.log("EOA payment");
         console.log("Approving ...");
@@ -216,7 +226,9 @@ export default function PendingPayments() {
           circle.pendingPayments,
           circle.paymentDetails
         );
-        setCircleData(res);
+        if (res) {
+          fetchCircle();
+        }
       }
     } catch (e: any) {
       console.log(e);

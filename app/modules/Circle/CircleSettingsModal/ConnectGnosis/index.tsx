@@ -130,7 +130,10 @@ export default function ConnectGnosis() {
                         size="small"
                         variant="transparent"
                         onClick={async () => {
-                          await onDelete(aChain, selectedSafe.value);
+                          await onDelete(
+                            aChain,
+                            circle?.safeAddresses[aChain][0]
+                          );
                         }}
                       >
                         <DeleteOutlined />
