@@ -1,9 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {
-  addCollectionData,
-  deleteCollectionData,
-  updateCollectionDataGuarded,
-} from "@/app/services/Collection";
+import { updateCollectionDataGuarded } from "@/app/services/Collection";
 import { Milestone, Option, PropertyType, Reward } from "@/app/types";
 import { Box } from "degen";
 import { motion, AnimatePresence } from "framer-motion";
@@ -14,7 +10,6 @@ import {
   Column,
   DataSheetGrid,
   dateColumn,
-  DynamicDataSheetGrid,
   floatColumn,
   keyColumn,
   textColumn,
@@ -487,9 +482,9 @@ export default function TableView() {
                   console.log({ tempdata: tempData[row][propertyName] });
                   setData(tempData);
                   setIsRewardFieldOpen(false);
-                  // await updateData({
-                  //   cell: { row, col: 0, colId: propertyName },
-                  // });
+                  await updateData({
+                    row: tempData[row],
+                  });
                   console.log({ updatedData: data[row][propertyName] });
                 }
                 setIsRewardFieldOpen(false);
@@ -509,15 +504,14 @@ export default function TableView() {
             ) => {
               if (data) {
                 const row = data.findIndex((row) => row.id === dataId);
-
                 if (row === 0 || row) {
                   const tempData = [...data];
                   tempData[row][propertyName] = payment;
                   setData(tempData);
                   setIsURLFieldOpen(false);
-                  // await updateData({
-                  //   cell: { row, col: 0, colId: propertyName },
-                  // });
+                  await updateData({
+                    row: tempData[row],
+                  });
                 }
                 setIsURLFieldOpen(false);
               }
@@ -552,10 +546,9 @@ export default function TableView() {
                   setData(tempData);
                   setMultipleMilestoneModalOpen(false);
                   console.log({ tempData });
-                  // const res = await updateData({
-                  //   cell: { row, col: 0, colId: propertyName },
-                  // });
-                  // if (res.id) updateCollection(res);
+                  await updateData({
+                    row: tempData[row],
+                  });
                 }
                 setMultipleMilestoneModalOpen(false);
               }
