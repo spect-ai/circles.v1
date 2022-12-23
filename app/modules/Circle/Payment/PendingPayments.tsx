@@ -270,7 +270,8 @@ export default function PendingPayments() {
               );
               console.log({ uniqueNetworks });
               for (const chainId of uniqueNetworks) {
-                if (!circle.safeAddresses[chainId]?.length) await pay(chainId);
+                if (!circle.safeAddresses?.[chainId]?.length)
+                  await pay(chainId);
                 else {
                   await pay(chainId, payUsingGnosisSafe);
                 }
