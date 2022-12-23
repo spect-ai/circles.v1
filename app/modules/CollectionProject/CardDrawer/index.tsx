@@ -104,48 +104,6 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
     if (slug) {
       let res;
       res = await updateCollectionDataGuarded(collection.id, slug, update);
-      const propertyName = Object.keys(update)[0];
-      if (
-        collection.projectMetadata.cardOrders &&
-        collection.projectMetadata.cardOrders[propertyName]
-      ) {
-        const columns = collection.properties[propertyName].options as Option[];
-        const cardColumnOrder =
-          collection.projectMetadata.cardOrders[propertyName];
-        const sourceColumnIndex =
-          columns.findIndex(
-            (column) =>
-              column.value === collection.data[slug][propertyName]?.value
-          ) + 1;
-        const destColumnIndex =
-          columns.findIndex(
-            (column) => column.value === update[propertyName]?.value
-          ) + 1;
-
-        const newSourceColumnOrder = Array.from(
-          cardColumnOrder[sourceColumnIndex]
-        );
-
-        newSourceColumnOrder.splice(newSourceColumnOrder.indexOf(slug), 1);
-        const newDestColumnOrder = Array.from(cardColumnOrder[destColumnIndex]);
-        newDestColumnOrder.splice(0, 0, slug);
-
-        const newCardColumnOrder = Array.from(cardColumnOrder);
-        newCardColumnOrder[sourceColumnIndex] = newSourceColumnOrder;
-        newCardColumnOrder[destColumnIndex] = newDestColumnOrder;
-        res = await updateFormCollection(collection.id, {
-          projectMetadata: {
-            ...collection.projectMetadata,
-            cardOrders: {
-              ...collection.projectMetadata.cardOrders,
-              [propertyName]: newCardColumnOrder,
-            },
-          },
-        });
-        if (res.id) updateCollection(res);
-        else toast.error("Something went wrong while updating property order");
-        return;
-      }
       if (res.id) {
         updateCollection(res);
       } else toast.error("Error updating card");
@@ -357,10 +315,12 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
                       }
                     }}
                   />
-                  <CardOptions
-                    handleDrawerClose={closeCard}
-                    cardSlug={value.slug}
-                  />
+                  {value.slug && (
+                    <CardOptions
+                      handleDrawerClose={closeCard}
+                      cardSlug={value.slug}
+                    />
+                  )}
                 </Stack>
                 <DragDropContext onDragEnd={handleDragEnd}>
                   <Droppable droppableId="droppable" type="PROPERTY">
@@ -370,12 +330,12 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
                 <Box
                   width={{
                     xs: "full",
-                    md: "1/4",
+                    md: "1/3",
                   }}
                 >
                   <PrimaryButton
                     variant="tertiary"
-                    icon={<IconPlusSmall />}
+                    icon={<IconPlusSmall size={"5"} />}
                     onClick={() => setIsAddFieldOpen(true)}
                   >
                     Add Field

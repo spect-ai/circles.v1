@@ -14,7 +14,7 @@ import { Tooltip } from "react-tippy";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { toast } from "react-toastify";
 import { Flags } from "react-feature-flags";
-import { Table } from "react-feather";
+import { Grid, Table } from "react-feather";
 interface Props {
   setProjectModal: (a: boolean) => void;
   setWorkstreamModal: (a: boolean) => void;
@@ -108,7 +108,12 @@ export default function CreateFolderItem({
                 }}
               >
                 <Text color="accent">
-                  <IconCollection size={"5"} />
+                  <Grid
+                    size={18}
+                    style={{
+                      marginTop: 4,
+                    }}
+                  />
                 </Text>
               </Button>
             </Tooltip>
