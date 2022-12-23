@@ -238,6 +238,25 @@ export default function PendingPayments() {
 
   return (
     <Stack>
+      {!circle.pendingPayments?.length && (
+        <Box
+          width="full"
+          display="flex"
+          flexDirection="row"
+          justifyContent="center"
+          marginTop="48"
+        >
+          <Box
+            width="72"
+            display="flex"
+            flexDirection="column"
+            alignItems="center"
+            gap="4"
+          >
+            <Text variant="small">You have no pending payments.</Text>
+          </Box>
+        </Box>
+      )}
       <Box
         style={{
           width: "80%",
@@ -261,49 +280,51 @@ export default function PendingPayments() {
           </Box>
         )}
 
-        <Box width="48">
-          <PrimaryButton
-            onClick={async () => {
-              const uniqueNetworks = getUniqueNetworks(
-                circle.pendingPayments,
-                circle.paymentDetails
-              );
-              console.log({ uniqueNetworks });
-              for (const chainId of uniqueNetworks) {
-                if (!circle.safeAddresses?.[chainId]?.length)
-                  await pay(chainId);
-                else {
-                  await pay(chainId, payUsingGnosisSafe);
+        {circle.pendingPayments?.length > 0 && (
+          <Box width="48">
+            <PrimaryButton
+              onClick={async () => {
+                const uniqueNetworks = getUniqueNetworks(
+                  circle.pendingPayments,
+                  circle.paymentDetails
+                );
+                console.log({ uniqueNetworks });
+                for (const chainId of uniqueNetworks) {
+                  if (!circle.safeAddresses?.[chainId]?.length)
+                    await pay(chainId);
+                  else {
+                    await pay(chainId, payUsingGnosisSafe);
+                  }
                 }
-              }
-            }}
-          >
-            Batch Pay
-          </PrimaryButton>
-          <Tooltip
-            title="Gnosis safe will be used to pay on networks which have a connected safe"
-            theme={mode}
-            position="top"
-          >
-            {" "}
-            <Box
-              display="flex"
-              flexDirection="row"
-              gap="2"
-              justifyContent="flex-start"
-              alignItems="center"
-              marginTop="2"
+              }}
             >
-              <CheckBox
-                isChecked={payUsingGnosisSafe}
-                onClick={() => {
-                  setPayUsingGnosisSafe(!payUsingGnosisSafe);
-                }}
-              />
-              <Text variant="base">Pay Using Gnosis</Text>
-            </Box>
-          </Tooltip>
-        </Box>
+              Batch Pay
+            </PrimaryButton>
+            <Tooltip
+              title="Gnosis safe will be used to pay on networks which have a connected safe"
+              theme={mode}
+              position="top"
+            >
+              {" "}
+              <Box
+                display="flex"
+                flexDirection="row"
+                gap="2"
+                justifyContent="flex-start"
+                alignItems="center"
+                marginTop="2"
+              >
+                <CheckBox
+                  isChecked={payUsingGnosisSafe}
+                  onClick={() => {
+                    setPayUsingGnosisSafe(!payUsingGnosisSafe);
+                  }}
+                />
+                <Text variant="base">Pay Using Gnosis</Text>
+              </Box>
+            </Tooltip>
+          </Box>
+        )}
       </Box>
       {circle.pendingPayments?.map((paymentId, index) => {
         return (

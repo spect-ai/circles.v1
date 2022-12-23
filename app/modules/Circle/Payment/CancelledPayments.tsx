@@ -12,7 +12,7 @@ export default function CompletedPayments() {
   return (
     <Stack>
       <Box marginTop="4">
-        {circle.cancelledPayments && circle.cancelledPayments?.length === 0 && (
+        {!circle.cancelledPayments?.length && (
           <Box
             width="full"
             display="flex"

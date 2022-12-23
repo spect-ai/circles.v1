@@ -32,7 +32,7 @@ export default function CompletedPayments() {
           </Box>
         )}
       </Box>
-      {circle.completedPayments && circle.completedPayments?.length === 0 && (
+      {!circle.completedPayments?.length && (
         <Box
           width="full"
           display="flex"
