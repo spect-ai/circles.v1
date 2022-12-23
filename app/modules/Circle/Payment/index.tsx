@@ -1,6 +1,7 @@
-import { Box, Stack, Text } from "degen";
+import { Box, Stack, Text, useTheme } from "degen";
 import { AnimatePresence } from "framer-motion";
 import { useState } from "react";
+import { ToastContainer } from "react-toastify";
 import styled from "styled-components";
 import CardDrawer from "../../CollectionProject/CardDrawer";
 import { useCircle } from "../CircleContext";
@@ -15,9 +16,19 @@ export default function Payment() {
     useState<"Pending" | "Completed" | "Cancelled">("Pending");
 
   const { circle } = useCircle();
-  console.log({ dets: circle.paymentDetails });
+  const { mode } = useTheme();
   return (
     <>
+      <ToastContainer
+        toastStyle={{
+          backgroundColor: `${
+            mode === "dark" ? "rgb(20,20,20)" : "rgb(240,240,240)"
+          }`,
+          color: `${
+            mode === "dark" ? "rgb(255,255,255,0.7)" : "rgb(20,20,20,0.7)"
+          }`,
+        }}
+      />
       <PaymentCenterHeading
         paymentViewId={paymentViewId}
         setPaymentViewId={setPaymentViewId}
