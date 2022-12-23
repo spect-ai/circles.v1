@@ -218,6 +218,7 @@ export const updateCollectionDataGuarded = async (
   update: any
 ) => {
   delete update.slug;
+  delete update.id;
   try {
     return await (
       await fetch(
