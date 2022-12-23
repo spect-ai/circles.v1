@@ -71,6 +71,7 @@ export function satisfiesConditions(
             return false;
         }
       case "multiSelect":
+      case "multiURL":
       case "user[]":
         console.log({ data, propertyId });
         // eslint-disable-next-line no-case-declarations
@@ -96,9 +97,9 @@ export function satisfiesConditions(
       case "date":
         switch (comparatorValue) {
           case "is":
-            return data[propertyId] === value;
+            return data[propertyId] == new Date(value);
           case "is not":
-            return data[propertyId] !== value;
+            return data[propertyId] != new Date(value);
           case "is before":
             return (
               data[propertyId] &&
@@ -153,6 +154,25 @@ export function satisfiesConditions(
             return data[propertyId]?.length < value;
           default:
             return false;
+        }
+      case "payWall":
+        switch (comparatorValue) {
+          case "is paid":
+            if (!data[propertyId]) return false;
+            for (const pay of data?.[propertyId]) {
+              if (pay.paid) {
+                return true;
+              }
+            }
+            return false;
+          case "is unpaid":
+            if (!data[propertyId]) return true;
+            for (const pay of data?.[propertyId]) {
+              if (pay.paid) {
+                return false;
+              }
+            }
+            return true;
         }
       default:
         return false;

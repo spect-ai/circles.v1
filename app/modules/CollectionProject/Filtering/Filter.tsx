@@ -13,19 +13,21 @@ import { useLocalCollection } from "../../Collection/Context/LocalCollectionCont
 function Filter() {
   const {
     localCollection: collection,
-    projectViewId,
+    projectViewId : viewId,
     updateCollection,
   } = useLocalCollection();
   const [isOpen, setIsOpen] = useState(false);
   const [viewCondtions, setViewCondtions] = useState<Condition[]>([]);
 
+  const projectViewId = collection?.collectionType === 1 ? viewId : '0x0';
+
   useEffect(() => {
-    if (collection.projectMetadata.views[projectViewId]?.filters) {
+    if (collection?.projectMetadata?.views?.[projectViewId]?.filters) {
       setViewCondtions(
         collection.projectMetadata.views[projectViewId].filters as Condition[]
       );
     }
-  }, [collection.projectMetadata.views, projectViewId]);
+  }, [collection.projectMetadata?.views, projectViewId]);
 
   return (
     <Box>
@@ -70,11 +72,11 @@ function Filter() {
               setIsOpen(false);
               updateFormCollection(collection.id, {
                 projectMetadata: {
-                  ...collection.projectMetadata,
+                  ...collection?.projectMetadata,
                   views: {
-                    ...collection.projectMetadata.views,
+                    ...collection?.projectMetadata?.views,
                     [projectViewId]: {
-                      ...collection.projectMetadata.views[projectViewId],
+                      ...collection.projectMetadata.views?.[projectViewId],
                       filters: viewCondtions,
                     },
                   },

@@ -62,6 +62,11 @@ export function getComparators(propertyType: string): Option[] {
         { label: "count is greater than", value: "count is greater than" },
         { label: "count is less than", value: "count is less than" },
       ];
+    case "payWall":
+      return [
+        { label: "is paid", value: "is paid" },
+        { label: "is unpaid", value: "is unpaid" },
+      ];
 
     default:
       return [];

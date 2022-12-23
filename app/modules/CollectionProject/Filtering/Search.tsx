@@ -3,7 +3,11 @@ import styled from "styled-components";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
 
 export function SearchCard() {
-  const { searchFilter, setSearchFilter } = useLocalCollection();
+  const {
+    searchFilter,
+    setSearchFilter,
+    localCollection: collection,
+  } = useLocalCollection();
   return (
     <Box
       display="flex"
@@ -14,7 +18,9 @@ export function SearchCard() {
     >
       <IconSearch size="4" color="foreground" />
       <Input
-        placeholder="Search Card"
+        placeholder={
+          collection?.collectionType == 1 ? "Search Card" : "Search Response"
+        }
         value={searchFilter}
         onChange={(e) => {
           setSearchFilter(e.target.value);
