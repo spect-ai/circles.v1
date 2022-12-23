@@ -15,7 +15,9 @@ export default function ConnectGnosis() {
   const [isOpen, setIsOpen] = useState(false);
   const { circle, registry, fetchCircle } = useCircle();
   const [chain, setChain] = useState(
-    Object.keys(circle?.safeAddresses || {})[0]
+    Object.keys(circle?.safeAddresses || {})[0] ||
+      (registry && Object.keys(registry)[0]) ||
+      "1"
   );
   const [safes, setSafes] = useState<OptionType[]>([]);
   const [selectedSafe, setselectedSafe] = useState({
@@ -32,6 +34,7 @@ export default function ConnectGnosis() {
 
   const onSubmit = async () => {
     setIsLoading(true);
+    console.log({ chain, selectedSafe });
     const res = await addSafe(
       {
         chainId: chain,
@@ -211,8 +214,9 @@ export default function ConnectGnosis() {
                   onClick={onSubmit}
                   loading={isLoading}
                   disabled={
-                    circle.safeAddresses[chain]?.includes(selectedSafe.value) ||
-                    !selectedSafe.value
+                    circle.safeAddresses?.[chain]?.includes(
+                      selectedSafe.value
+                    ) || !selectedSafe.value
                   }
                 >
                   Save

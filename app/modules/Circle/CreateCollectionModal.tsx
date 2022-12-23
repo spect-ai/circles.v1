@@ -95,7 +95,7 @@ function CreateCollectionModal({
       <Modal
         handleClose={close}
         title={
-          collectionType === 0 ? "Create a new form" : "Create a new project"
+          collectionType === 0 ? "Create a new form" : "Create a new collection"
         }
       >
         <Box width="full" padding="8">
@@ -108,7 +108,7 @@ function CreateCollectionModal({
             />
             <Box width="full" marginTop="4">
               <PrimaryButton onClick={onSubmit} disabled={name.length === 0}>
-                {collectionType === 0 ? "Create form" : "Create project"}
+                {collectionType === 0 ? "Create form" : "Create collection"}
               </PrimaryButton>
             </Box>
           </Stack>

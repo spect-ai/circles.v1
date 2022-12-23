@@ -196,24 +196,6 @@ function EditValue({ value, setValue, propertyName, dataId }: Props) {
                           toast.error("Failed to update field");
                           return;
                         }
-                        if (
-                          collection.projectMetadata.cardOrders[propertyName]
-                        ) {
-                          res = await updateFormCollection(collection.id, {
-                            projectMetadata: {
-                              ...collection.projectMetadata,
-                              cardOrders: {
-                                ...collection.projectMetadata.cardOrders,
-                                [propertyName]: [
-                                  ...collection.projectMetadata.cardOrders[
-                                    propertyName
-                                  ],
-                                  [],
-                                ],
-                              },
-                            },
-                          });
-                        }
                         if (!res.id) {
                           toast.error("Failed to update collection");
                           return;
@@ -434,7 +416,7 @@ export const MenuContainer = styled(Box)<{ cWidth?: string }>`
   width: ${(props) => props.cWidth || "30rem"};
   border-bottom-left-radius: 0.25rem;
   border-bottom-right-radius: 0.25rem;
-  background: rgb(191, 90, 242, 0.05);
+  background: rgb(28, 25, 31);
   transition: all 0.15s ease-out;
 
   max-height: 20rem;

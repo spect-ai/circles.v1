@@ -34,6 +34,7 @@ import { useRouter } from "next/router";
 import ResponsesTab from "./ResponsesTab";
 import FAQModal from "./FAQModal";
 import { toast, ToastContainer } from "react-toastify";
+import { Grid } from "react-feather";
 
 function Dashboard() {
   const { setIsProfilePanelExpanded } = useGlobal();
@@ -264,7 +265,14 @@ function Dashboard() {
             </Button>
             <Button
               size="small"
-              prefix={<IconCollection />}
+              prefix={
+                <Grid
+                  size={18}
+                  style={{
+                    marginTop: 4,
+                  }}
+                />
+              }
               variant={panelTab === "responses" ? "tertiary" : "transparent"}
               onClick={() => {
                 void router.push("?tab=responses");

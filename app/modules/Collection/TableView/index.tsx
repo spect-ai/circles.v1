@@ -1,9 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {
-  addCollectionData,
-  deleteCollectionData,
-  updateCollectionDataGuarded,
-} from "@/app/services/Collection";
+import { updateCollectionDataGuarded } from "@/app/services/Collection";
 import { Milestone, Option, PropertyType, Reward } from "@/app/types";
 import { Box } from "degen";
 import { motion, AnimatePresence } from "framer-motion";
@@ -12,8 +8,8 @@ import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import {
   Column,
+  DataSheetGrid,
   dateColumn,
-  DynamicDataSheetGrid,
   floatColumn,
   keyColumn,
   textColumn,
@@ -50,7 +46,7 @@ export default function TableView() {
   const [data, setData] = useState<any[]>();
   const {
     localCollection: collection,
-    setLocalCollection,
+    updateCollection,
     searchFilter,
     projectViewId,
   } = useLocalCollection();
@@ -72,55 +68,20 @@ export default function TableView() {
     }
   }, [dataSlug, setExpandedDataSlug, cardSlug]);
 
-  const updateData = async ({ cell }: { cell: CellWithId }) => {
-    if (data) {
-      const row = data[cell.row];
-      if (!row) return;
-      if (!row.id && Object.keys(row).length > 0) {
-        return addData(row);
-      }
-      if (!row.id || !cell.colId) return;
-      const property = collection.properties[cell.colId];
-      if (
-        (row &&
-          collection.collectionType === 0 &&
-          !property.isPartOfFormView) ||
-        collection.collectionType === 1
-      ) {
-        console.log("UPDATING DATA");
-        const res = await updateCollectionDataGuarded(collection.id, row.id, {
-          [cell.colId]: row[cell.colId],
-        });
-        if (res.id) {
-          console.log({ res });
-          // updateCollection(res); causing infinite renders
-        } else {
-          toast.error("Error updating data");
-        }
-        return res;
-      } else {
-        toast.error("Cannot update data");
-      }
+  const updateData = async ({ row }: { row: any }) => {
+    if (!row) return;
+    console.log("UPDATING DATA");
+    console.log({ row }, row.id);
+    const res = await updateCollectionDataGuarded(collection.id, row.id, row);
+    console.log({ row });
+    if (!res) return;
+    if (res.id) {
+      console.log({ res });
+      updateCollection(res);
+    } else {
+      toast.error("Error updating data");
     }
-  };
-
-  const addData = async (newData: any) => {
-    if (data) {
-      const res = await addCollectionData(collection.id, newData);
-      if (res.id) {
-        setData(
-          Object.keys(res.data).map((key) => {
-            return {
-              id: key,
-              ...res.data[key],
-            };
-          })
-        );
-      } else {
-        console.error({ res });
-        toast.error("Error adding data");
-      }
-    }
+    return res;
   };
 
   useEffect(() => {
@@ -166,7 +127,7 @@ export default function TableView() {
 
       if (
         (collection.collectionType === 0 &&
-          collection.projectMetadata.views?.['0x0'].filters) ||
+          collection.projectMetadata.views?.["0x0"].filters) ||
         (collection.collectionType === 1 &&
           collection.projectMetadata.views[projectViewId].filters)
       ) {
@@ -175,7 +136,7 @@ export default function TableView() {
             collection.data[row.id],
             collection.properties,
             collection.projectMetadata.views[
-              collection.collectionType === 0 ? '0x0' : projectViewId
+              collection.collectionType === 0 ? "0x0" : projectViewId
             ].filters || []
           );
         });
@@ -185,19 +146,19 @@ export default function TableView() {
         (collection.collectionType === 1 &&
           collection.projectMetadata.views[projectViewId].sort?.property) ||
         (collection.collectionType === 0 &&
-          collection.projectMetadata.views?.['0x0'].sort?.property)
+          collection.projectMetadata.views?.["0x0"].sort?.property)
       ) {
         const property =
           collection.properties[
             collection.projectMetadata.views[
-              collection.collectionType === 0 ? '0x0' : projectViewId
+              collection.collectionType === 0 ? "0x0" : projectViewId
             ].sort?.property || ""
           ];
         const propertyType = property.type;
         const propertyOptions = property.options as Option[];
         const direction =
           collection.projectMetadata.views[
-            collection.collectionType === 0 ? '0x0' : projectViewId
+            collection.collectionType === 0 ? "0x0" : projectViewId
           ].sort?.direction || "asc";
         const propertyName = property.name;
         filteredData = filteredData.sort((a: any, b: any) => {
@@ -315,9 +276,6 @@ export default function TableView() {
       setData(sortedData);
     }
   };
-
-  console.log(collection.data);
-
   const getCellComponent = (type: PropertyType) => {
     switch (type) {
       case "shortText":
@@ -358,13 +316,9 @@ export default function TableView() {
     collection.propertyOrder.map((propertyName: string) => {
       const property = collection.properties[propertyName];
       if (
-        [
-          "singleSelect",
-          "multiSelect",
-          "longText",
-          "user",
-          "user[]",
-        ].includes(property.type)
+        ["singleSelect", "multiSelect", "longText", "user", "user[]"].includes(
+          property.type
+        )
       ) {
         return {
           ...keyColumn(property.name, {
@@ -529,7 +483,7 @@ export default function TableView() {
                   setData(tempData);
                   setIsRewardFieldOpen(false);
                   await updateData({
-                    cell: { row, col: 0, colId: propertyName },
+                    row: tempData[row],
                   });
                   console.log({ updatedData: data[row][propertyName] });
                 }
@@ -550,14 +504,13 @@ export default function TableView() {
             ) => {
               if (data) {
                 const row = data.findIndex((row) => row.id === dataId);
-
                 if (row === 0 || row) {
                   const tempData = [...data];
                   tempData[row][propertyName] = payment;
                   setData(tempData);
                   setIsURLFieldOpen(false);
                   await updateData({
-                    cell: { row, col: 0, colId: propertyName },
+                    row: tempData[row],
                   });
                 }
                 setIsURLFieldOpen(false);
@@ -590,14 +543,12 @@ export default function TableView() {
                 if (row === 0 || row) {
                   const tempData = [...data];
                   tempData[row][propertyName] = value;
-                  console.log({ tempData });
                   setData(tempData);
                   setMultipleMilestoneModalOpen(false);
                   console.log({ tempData });
-                  const res = await updateData({
-                    cell: { row, col: 0, colId: propertyName },
+                  await updateData({
+                    row: tempData[row],
                   });
-                  if (res.id) setLocalCollection(res);
                 }
                 setMultipleMilestoneModalOpen(false);
               }
@@ -624,7 +575,7 @@ export default function TableView() {
             animate={{ opacity: 1, transition: { duration: 0.1 } }}
             exit={{ opacity: 0, transition: { duration: 0.1 } }}
           >
-            <DynamicDataSheetGrid
+            <DataSheetGrid
               rowHeight={41}
               value={data}
               height={
@@ -641,33 +592,19 @@ export default function TableView() {
                   : 500
               }
               onChange={async (newData, operations) => {
-                if (operations[0].type === "DELETE") {
-                  const dataIds = [];
-                  for (
-                    let i = operations[0].fromRowIndex;
-                    i < operations[0].toRowIndex;
-                    i++
-                  ) {
-                    data && dataIds.push(data[i].id);
-                  }
-                  setData(newData);
-                  const res = await deleteCollectionData(
-                    collection.id,
-                    dataIds
-                  );
-                  if (res.id) {
-                    setLocalCollection(res);
-                  } else toast.error("Error deleting data");
-                  return;
-                }
                 setData(newData);
+                console.log({ operations });
+                const row = newData.slice(
+                  operations[0].fromRowIndex,
+                  operations[0].toRowIndex
+                )[0];
+                updateData({ row });
               }}
               columns={columnsWithCredentials}
               gutterColumn={{
                 component: GutterColumnComponent,
                 minWidth: 50,
               }}
-              onBlur={updateData}
               lockRows
               disableExpandSelection
             />

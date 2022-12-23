@@ -287,6 +287,7 @@ export const hasAllowance = async (
 
 export const switchNetwork = async (chainId: string) => {
   const network = getNetwork();
+  console.log({ network });
   console.log({ id: network.chain?.id, chainId });
   if (parseInt(chainId) !== network.chain?.id)
     await switchNet({
@@ -334,9 +335,6 @@ export const approveUsingEOA = async (
             (registry && registry[chainId]?.tokenDetails[tokenAddress]?.name) ||
             "Token"
           }`,
-          error: {
-            render: ({ data }) => data,
-          },
         },
         {
           position: "top-center",
@@ -398,9 +396,6 @@ export const approveUsingGnosis = async (
             (registry && registry[chainId]?.tokenDetails[tokenAddress]?.name) ||
             "Token"
           }`,
-          error: {
-            render: ({ data }) => data,
-          },
         },
         {
           position: "top-center",
@@ -456,9 +451,6 @@ export const payUsingGnosis = async (
         pending: `Distributing ${
           registry[chainId]?.tokenDetails[tokenAmounts[0].token]?.name
         }`,
-        error: {
-          render: ({ data }) => data,
-        },
       },
       {
         position: "top-center",
@@ -484,9 +476,6 @@ export const payUsingGnosis = async (
       }),
       {
         pending: `Distributing ${registry[chainId]?.nativeCurrency}}`,
-        error: {
-          render: ({ data }) => data,
-        },
       },
       {
         position: "top-center",
@@ -707,9 +696,6 @@ export const payUsingEOA = async (
         pending: `Distributing ${
           registry[chainId]?.tokenDetails[tokenAmounts[0].token]?.name
         }`,
-        error: {
-          render: ({ data }) => data,
-        },
       },
       {
         position: "top-center",
@@ -728,9 +714,6 @@ export const payUsingEOA = async (
       ),
       {
         pending: `Distributing ${registry[chainId]?.nativeCurrency}}`,
-        error: {
-          render: ({ data }) => data,
-        },
       },
       {
         position: "top-center",

@@ -1193,4 +1193,5 @@ export type PaymentDetails = {
   collectionRef?: string;
   title?: string;
   description?: string;
+  paidOn?: Date;
 };

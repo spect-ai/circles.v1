@@ -49,32 +49,32 @@ export default function PendingPayments() {
     enabled: false,
   });
 
-  if (circle.pendingPayments && circle.pendingPayments?.length === 0)
-    return (
-      <Box
-        width="full"
-        display="flex"
-        flexDirection="row"
-        justifyContent="center"
-        marginTop="48"
-      >
-        <Box
-          width="72"
-          display="flex"
-          flexDirection="column"
-          alignItems="center"
-          gap="4"
-        >
-          <Text variant="small">You have no pending payments.</Text>
-          <PrimaryButton
-            variant="tertiary"
-            onClick={() => setIsCardDrawerOpen(true)}
-          >
-            Add a Pending Payment
-          </PrimaryButton>
-        </Box>
-      </Box>
-    );
+  // if (!circle.pendingPayments?.length)
+  //   return (
+  //     <Box
+  //       width="full"
+  //       display="flex"
+  //       flexDirection="row"
+  //       justifyContent="center"
+  //       marginTop="48"
+  //     >
+  //       <Box
+  //         width="72"
+  //         display="flex"
+  //         flexDirection="column"
+  //         alignItems="center"
+  //         gap="4"
+  //       >
+  //         <Text variant="small">You have no pending payments.</Text>
+  //         <PrimaryButton
+  //           variant="tertiary"
+  //           onClick={() => setIsCardDrawerOpen(true)}
+  //         >
+  //           Add a Pending Payment
+  //         </PrimaryButton>
+  //       </Box>
+  //     </Box>
+  //   );
 
   const pay = async (chainId: string, gnosisPayment = false) => {
     try {
@@ -136,17 +136,17 @@ export default function PendingPayments() {
       );
       console.log({ tokensWithSufficientBalance });
       if (tokensWithSufficientBalance.length === 0) return;
-      toast.info(
-        `Lets distribute the tokens where you have sufficient balance...`
-      );
 
-      console.log({ chainId });
       await toast.promise(
         switchNetwork(chainId),
         {
           pending: `Please switch to ${registry?.[chainId].name} network`,
           error: {
-            render: ({ data }) => data,
+            render: ({ data }: any) => {
+              if (data?.code === 4001) {
+                return "You rejected the request to switch network";
+              }
+            },
           },
         },
         {
@@ -231,13 +231,33 @@ export default function PendingPayments() {
         }
       }
     } catch (e: any) {
-      console.log(e);
-      toast.error(e.message);
+      console.log({ e });
+      if (e.code === "ACTION_REJECTED")
+        toast.error("You rejected requested action");
     }
   };
 
   return (
     <Stack>
+      {!circle.pendingPayments?.length && (
+        <Box
+          width="full"
+          display="flex"
+          flexDirection="row"
+          justifyContent="center"
+          marginTop="48"
+        >
+          <Box
+            width="72"
+            display="flex"
+            flexDirection="column"
+            alignItems="center"
+            gap="4"
+          >
+            <Text variant="small">You have no pending payments.</Text>
+          </Box>
+        </Box>
+      )}
       <Box
         style={{
           width: "80%",
@@ -261,48 +281,51 @@ export default function PendingPayments() {
           </Box>
         )}
 
-        <Box width="48">
-          <PrimaryButton
-            onClick={async () => {
-              const uniqueNetworks = getUniqueNetworks(
-                circle.pendingPayments,
-                circle.paymentDetails
-              );
-              console.log({ uniqueNetworks });
-              for (const chainId of uniqueNetworks) {
-                if (!circle.safeAddresses[chainId]?.length) await pay(chainId);
-                else {
-                  await pay(chainId, payUsingGnosisSafe);
+        {circle.pendingPayments?.length > 0 && (
+          <Box width="48">
+            <PrimaryButton
+              onClick={async () => {
+                const uniqueNetworks = getUniqueNetworks(
+                  circle.pendingPayments,
+                  circle.paymentDetails
+                );
+                console.log({ uniqueNetworks });
+                for (const chainId of uniqueNetworks) {
+                  if (!circle.safeAddresses?.[chainId]?.length)
+                    await pay(chainId);
+                  else {
+                    await pay(chainId, payUsingGnosisSafe);
+                  }
                 }
-              }
-            }}
-          >
-            Batch Pay
-          </PrimaryButton>
-          <Tooltip
-            title="Gnosis safe will be used to pay on networks which have a connected safe"
-            theme={mode}
-            position="top"
-          >
-            {" "}
-            <Box
-              display="flex"
-              flexDirection="row"
-              gap="2"
-              justifyContent="flex-start"
-              alignItems="center"
-              marginTop="2"
+              }}
             >
-              <CheckBox
-                isChecked={payUsingGnosisSafe}
-                onClick={() => {
-                  setPayUsingGnosisSafe(!payUsingGnosisSafe);
-                }}
-              />
-              <Text variant="base">Pay Using Gnosis</Text>
-            </Box>
-          </Tooltip>
-        </Box>
+              Batch Pay
+            </PrimaryButton>
+            <Tooltip
+              title="Gnosis safe will be used to pay on networks which have a connected safe"
+              theme={mode}
+              position="top"
+            >
+              {" "}
+              <Box
+                display="flex"
+                flexDirection="row"
+                gap="2"
+                justifyContent="flex-start"
+                alignItems="center"
+                marginTop="2"
+              >
+                <CheckBox
+                  isChecked={payUsingGnosisSafe}
+                  onClick={() => {
+                    setPayUsingGnosisSafe(!payUsingGnosisSafe);
+                  }}
+                />
+                <Text variant="base">Pay Using Gnosis</Text>
+              </Box>
+            </Tooltip>
+          </Box>
+        )}
       </Box>
       {circle.pendingPayments?.map((paymentId, index) => {
         return (

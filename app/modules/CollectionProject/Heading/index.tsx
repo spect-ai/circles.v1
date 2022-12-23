@@ -173,7 +173,7 @@ export default function ProjectHeading() {
                                     onClick={() => setIsViewSettingsOpen(true)}
                                   >
                                     <Text variant="label">
-                                      <IconCog />
+                                      <IconCog size="5" />
                                     </Text>
                                   </Box>
                                 )}
@@ -198,7 +198,7 @@ export default function ProjectHeading() {
                     onClick={() => setIsAddViewPopupOpen(true)}
                   >
                     <Text>
-                      <IconPlusSmall />
+                      <IconPlusSmall size="5" />
                     </Text>
                   </AddViewButton>
                 }
@@ -227,7 +227,12 @@ export default function ProjectHeading() {
                       }}
                     >
                       <Text color="accent">
-                        <Grid />
+                        <Grid
+                          size={18}
+                          style={{
+                            marginTop: 4,
+                          }}
+                        />
                       </Text>
                       <Text weight="semiBold">Grid View</Text>
                     </MenuItem>
@@ -362,7 +367,14 @@ export default function ProjectHeading() {
 export const getViewIcon = (viewType: string) => {
   switch (viewType) {
     case "grid":
-      return <IconCollection size="5" />;
+      return (
+        <Grid
+          size={18}
+          style={{
+            marginTop: 4,
+          }}
+        />
+      );
     case "kanban":
       return (
         <Trello
@@ -413,6 +425,7 @@ const AddViewButton = styled(Box)`
   transition: background 0.4s ease;
   border-top-left-radius: 4px;
   border-top-right-radius: 4px;
+  margin-top: 4px;
 `;
 
 const MenuItem = styled(Box)`
