@@ -34,6 +34,7 @@
     "d3": "^7.7.0",
     "degen": "^0.0.118",
     "ethers": "^5.7.1",
+    "export-to-csv": "^0.2.1",
     "framer-motion": "^6.3.11",
     "gantt-task-react": "^0.3.9",
     "ipfs-http-client": "^57.0.3",

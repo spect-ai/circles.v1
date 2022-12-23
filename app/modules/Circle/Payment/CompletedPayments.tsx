@@ -1,6 +1,10 @@
 import PrimaryButton from "@/app/common/components/PrimaryButton";
+import { exportToCsv } from "@/app/services/CsvExport";
+import { MemberDetails } from "@/app/types";
 import { Box, Stack, Text } from "degen";
+import { useRouter } from "next/router";
 import { useState } from "react";
+import { useQuery } from "react-query";
 import { useCircle } from "../CircleContext";
 import PaymentCard from "./PaymentCard";
 
@@ -8,6 +12,16 @@ export default function CompletedPayments() {
   const [isCardDrawerOpen, setIsCardDrawerOpen] = useState(false);
   const [selectedPaymentId, setSelectedPaymentId] = useState("");
   const { circle, setCircleData } = useCircle();
+  const router = useRouter();
+
+  const { circle: cId } = router.query;
+
+  const { data: memberDetails } = useQuery<MemberDetails>(
+    ["memberDetails", cId],
+    {
+      enabled: false,
+    }
+  );
 
   return (
     <Stack>
@@ -25,7 +39,40 @@ export default function CompletedPayments() {
           <Box width="36">
             <PrimaryButton
               variant="tertiary"
-              onClick={() => setIsCardDrawerOpen(true)}
+              onClick={() => {
+                const data = [] as any[];
+                circle.completedPayments?.forEach((paymentId) => {
+                  const paymentDetails = circle.paymentDetails[paymentId];
+                  const paidTo = paymentDetails.paidTo.map((paidTo) => {
+                    if (paidTo.propertyType === "user")
+                      return {
+                        username:
+                          memberDetails?.memberDetails[paidTo.value as string]
+                            .username,
+                        ethAddress:
+                          memberDetails?.memberDetails[paidTo.value as string]
+                            .ethAddress,
+                        reward: paidTo.reward,
+                      };
+                    else if (paidTo.propertyType === "ethAddress")
+                      return {
+                        ethAddress: paidTo.value,
+                        reward: paidTo.reward,
+                      };
+                  });
+
+                  data.push({
+                    "Payment ID": paymentId,
+                    "Total Payment Amount": paymentDetails.value,
+                    "Paid on Network": paymentDetails.chain?.label,
+                    "Paid with Token": paymentDetails.token?.label,
+                    "Paid to": JSON.stringify(paidTo),
+                    "Payment Status": "Completed",
+                    "Paid on": paymentDetails.paidOn,
+                  });
+                });
+                exportToCsv(data, `completed-payments-${new Date().getDate()}`);
+              }}
             >
               Export to CSV
             </PrimaryButton>
