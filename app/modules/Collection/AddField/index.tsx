@@ -112,7 +112,7 @@ export default function AddField({ propertyName, handleClose }: Props) {
         // onUpdateNotifyUserTypes: notifyUserType?.map(
         //   (type) => type.value
         // ) as FormUserType[],
-        isPartOfFormView: true,
+        isPartOfFormView: collection.properties[propertyName]?.isPartOfFormView,
         required: required === 1,
         milestoneFields,
         viewConditions,

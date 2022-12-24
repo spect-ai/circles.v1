@@ -10,6 +10,8 @@ import { Box, Button, Stack, Tag, Text } from "degen";
 import { AnimatePresence } from "framer-motion";
 import React, { useEffect, useState } from "react";
 import { useCircle } from "../../CircleContext";
+import { getAccount } from "@wagmi/core";
+import { useConnectModal } from "@rainbow-me/rainbowkit";
 
 export default function ConnectGnosis() {
   const [isOpen, setIsOpen] = useState(false);
@@ -31,6 +33,7 @@ export default function ConnectGnosis() {
       : "",
   });
   const [isLoading, setIsLoading] = useState(false);
+  const { openConnectModal } = useConnectModal();
 
   const onSubmit = async () => {
     setIsLoading(true);
@@ -96,7 +99,15 @@ export default function ConnectGnosis() {
             ? "tertiary"
             : "secondary"
         }
-        onClick={() => setIsOpen(true)}
+        onClick={() => {
+          setIsOpen(true);
+          try {
+            const account = getAccount();
+            if (!account?.isConnected) openConnectModal && openConnectModal();
+          } catch (e) {
+            console.log(e);
+          }
+        }}
       >
         {circle?.safeAddresses
           ? circle?.safeAddresses[Object.keys(circle?.safeAddresses || {})[0]]

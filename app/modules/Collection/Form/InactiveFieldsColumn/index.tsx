@@ -1,7 +1,9 @@
 import { Box, Stack, Text } from "degen";
-import { memo, useCallback } from "react";
+import { AnimatePresence } from "framer-motion";
+import { memo, useCallback, useState } from "react";
 import { Droppable, DroppableProvided } from "react-beautiful-dnd";
 import styled from "styled-components";
+import AddField from "../../AddField";
 import Automation from "../../Automation";
 import { useLocalCollection } from "../../Context/LocalCollectionContext";
 import OpportunityMode from "../../OpportunityMode";
@@ -22,13 +24,21 @@ type Props = {
 
 function InactiveFieldsColumnComponent({ fields }: Props) {
   const { localCollection: collection } = useLocalCollection();
+  const [isEditFieldOpen, setIsEditFieldOpen] = useState(false);
+  const [propertyName, setPropertyName] = useState("");
   const FieldDraggable = (provided: DroppableProvided) => (
     <Box {...provided.droppableProps} ref={provided.innerRef}>
       <Stack space="1">
         {fields?.map((field, idx) => {
           if (!collection.properties[field]?.isPartOfFormView) {
             return (
-              <InactiveFieldComponent id={field} index={idx} key={field} />
+              <InactiveFieldComponent
+                id={field}
+                index={idx}
+                key={field}
+                setIsEditFieldOpen={setIsEditFieldOpen}
+                setPropertyName={setPropertyName}
+              />
             );
           }
         })}
@@ -55,21 +65,31 @@ function InactiveFieldsColumnComponent({ fields }: Props) {
   ]);
 
   return (
-    <Container>
-      <Stack space="4">
-        <FormSettings />
-        <OpportunityMode />
-        <Automation />
+    <>
+      <AnimatePresence>
+        {isEditFieldOpen && (
+          <AddField
+            propertyName={propertyName}
+            handleClose={() => setIsEditFieldOpen(false)}
+          />
+        )}
+      </AnimatePresence>
+      <Container>
+        <Stack space="4">
+          <FormSettings />
+          <OpportunityMode />
+          <Automation />
 
-        <Text size="headingTwo" weight="semiBold" ellipsis>
-          Internal Fields
-        </Text>
+          <Text size="headingTwo" weight="semiBold" ellipsis>
+            Internal Fields
+          </Text>
 
-        <Droppable droppableId="inactiveFields" type="field">
-          {FieldDraggableCallback}
-        </Droppable>
-      </Stack>
-    </Container>
+          <Droppable droppableId="inactiveFields" type="field">
+            {FieldDraggableCallback}
+          </Droppable>
+        </Stack>
+      </Container>
+    </>
   );
 }
 

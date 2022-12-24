@@ -170,7 +170,32 @@ export default function PaymentCard({
                     </Box>
                   );
                 } else {
-                  return <Text variant="small">{p.value}</Text>;
+                  return (
+                    <Box
+                      display="flex"
+                      flexDirection="row"
+                      gap="2"
+                      width="full"
+                      alignItems="center"
+                    >
+                      {" "}
+                      <Box width="3/4">
+                        <Text variant="small">{p.value}</Text>
+                      </Box>
+                      <Box
+                        display="flex"
+                        flexDirection="column"
+                        gap="2"
+                        justifyContent="flex-end"
+                      >
+                        <Text variant="small">
+                          {p.reward?.value
+                            ? `${p.reward.value} ${p.reward.token.label}`
+                            : "None"}
+                        </Text>
+                      </Box>
+                    </Box>
+                  );
                 }
               })}
           </Box>

@@ -17,6 +17,8 @@ import {
   switchNetwork,
 } from "@/app/services/Paymentv2/utils";
 import { MemberDetails, Registry, UserType } from "@/app/types";
+import { useConnectModal } from "@rainbow-me/rainbowkit";
+import { getAccount } from "@wagmi/core";
 import { Box, Stack, Text, useTheme } from "degen";
 import { useRouter } from "next/router";
 import { useState } from "react";
@@ -48,6 +50,7 @@ export default function PendingPayments() {
   const { data: registry } = useQuery<Registry>(["registry", cId], {
     enabled: false,
   });
+  const { openConnectModal } = useConnectModal();
 
   // if (!circle.pendingPayments?.length)
   //   return (
@@ -122,9 +125,9 @@ export default function PendingPayments() {
 
       if (tokensWithInsufficientBalance.length > 0) {
         toast.error(
-          `You do not have sufficient balance for ${tokensWithInsufficientBalance.join(
-            ", "
-          )}`
+          `You do not have sufficient balance for ${tokensWithInsufficientBalance
+            ?.map((t) => t.symbol)
+            .join(", ")}`
         );
       }
 
@@ -141,13 +144,6 @@ export default function PendingPayments() {
         switchNetwork(chainId),
         {
           pending: `Please switch to ${registry?.[chainId].name} network`,
-          error: {
-            render: ({ data }: any) => {
-              if (data?.code === 4001) {
-                return "You rejected the request to switch network";
-              }
-            },
-          },
         },
         {
           position: "top-center",
@@ -234,6 +230,10 @@ export default function PendingPayments() {
       console.log({ e });
       if (e.code === "ACTION_REJECTED")
         toast.error("You rejected requested action");
+      else if (e.name === "ConnectorNotFoundError") {
+        openConnectModal && openConnectModal();
+        toast.error("Please login to your wallet and connect it to Spect");
+      } else toast.error("Something went wrong");
     }
   };
 

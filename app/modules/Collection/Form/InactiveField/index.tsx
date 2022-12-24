@@ -1,4 +1,4 @@
-import { Box, Text, useTheme } from "degen";
+import { Box, IconPencil, Text, useTheme } from "degen";
 import React, { memo, useCallback } from "react";
 import {
   Draggable,
@@ -6,10 +6,16 @@ import {
   DraggableStateSnapshot,
 } from "react-beautiful-dnd";
 import styled from "styled-components";
+import mixpanel from "@/app/common/utils/mixpanel";
+import { useQuery } from "react-query";
+import { UserType } from "@/app/types";
+import { useLocalCollection } from "../../Context/LocalCollectionContext";
 
 type Props = {
   id: string;
   index: number;
+  setIsEditFieldOpen: (value: boolean) => void;
+  setPropertyName: (value: string) => void;
 };
 
 const Container = styled(Box)<{ isDragging: boolean; mode: string }>`
@@ -28,8 +34,17 @@ const Container = styled(Box)<{ isDragging: boolean; mode: string }>`
   }
 `;
 
-function InactiveFieldComponent({ id, index }: Props) {
+function InactiveFieldComponent({
+  id,
+  index,
+  setIsEditFieldOpen,
+  setPropertyName,
+}: Props) {
   const { mode } = useTheme();
+  const { data: currentUser } = useQuery<UserType>("getMyUser", {
+    enabled: false,
+  });
+  const { localCollection: collection } = useLocalCollection();
 
   const DraggableContent = (
     provided: DraggableProvided,
@@ -46,7 +61,27 @@ function InactiveFieldComponent({ id, index }: Props) {
       display="flex"
       justifyContent="center"
     >
-      <Text weight="semiBold">{id}</Text>
+      <Box display="flex" flexDirection="row" alignItems="center" gap="4">
+        <Text weight="semiBold">{id}</Text>
+        <Box
+          cursor="pointer"
+          backgroundColor="accentSecondary"
+          borderRadius="full"
+          paddingY="1"
+          paddingX="2"
+          onClick={() => {
+            setPropertyName(id);
+            setIsEditFieldOpen(true);
+            process.env.NODE_ENV === "production" &&
+              mixpanel.track("Edit Field Button", {
+                user: currentUser?.username,
+                field: collection.properties[id]?.name,
+              });
+          }}
+        >
+          <IconPencil color="accent" size="4" />
+        </Box>
+      </Box>
     </Container>
   );
 

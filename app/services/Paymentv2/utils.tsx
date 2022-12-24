@@ -99,7 +99,7 @@ export const findAggregatedAmountForEachUserByToken = (
       let ethAddress = "";
       if (p.propertyType === "user") {
         ethAddress = memberDetails.memberDetails[p.value].ethAddress;
-      } else if (p.propertyType === "address") {
+      } else if (p.propertyType === "ethAddress") {
         ethAddress = p.value;
       }
       if (p.reward?.value)

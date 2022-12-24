@@ -143,7 +143,7 @@ export default function MilestoneField({
             })}
         </Stack>
         {((form.collectionType === 0 &&
-          !form?.properties[propertyName].isPartOfFormView) ||
+          form?.properties[propertyName].isPartOfFormView) ||
           form.collectionType === 1) &&
           !disabled && (
             <Box width="full">
