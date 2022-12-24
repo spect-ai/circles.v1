@@ -443,7 +443,7 @@ const PaywallField = ({
                     setLoading(false);
                   }
                 }}
-                disabled={disabled || !payValue}
+                disabled={disabled || (payWallOptions.value < 0 && !payValue)}
               >
                 Pay {payWallOptions.value > 0 ? payWallOptions.value : payValue}
                 {" " + selectedToken.label}

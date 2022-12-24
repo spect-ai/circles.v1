@@ -2,6 +2,7 @@ import { CollectionType } from "@/app/types";
 import { Avatar, Box, IconCollection, Stack, Text, useTheme } from "degen";
 import Link from "next/link";
 import React, { useEffect } from "react";
+import { Table } from "react-feather";
 import { Col, Row } from "react-grid-system";
 import { useQuery } from "react-query";
 import styled from "styled-components";
@@ -45,7 +46,7 @@ function ResponsesTab() {
                         size="6"
                       />
                     ) : (
-                      <IconCollection />
+                      <Table size={18} style={{ marginTop: 4 }} />
                     )}
                     <Text ellipsis variant="base" weight="semiBold">
                       {collection?.name}

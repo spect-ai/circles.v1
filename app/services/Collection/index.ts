@@ -218,21 +218,26 @@ export const updateCollectionDataGuarded = async (
   update: any
 ) => {
   delete update.slug;
-  return await (
-    await fetch(
-      `${process.env.API_HOST}/collection/v1/${collectionId}/updateDataGuarded?dataId=${dataId}`,
-      {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify({
-          data: update,
-        }),
-      }
-    )
-  ).json();
+  delete update.id;
+  try {
+    return await (
+      await fetch(
+        `${process.env.API_HOST}/collection/v1/${collectionId}/updateDataGuarded?dataId=${dataId}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify({
+            data: update,
+          }),
+        }
+      )
+    ).json();
+  } catch (e) {
+    console.error(e);
+  }
 };
 
 export const deleteCollectionData = async (

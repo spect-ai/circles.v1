@@ -118,6 +118,7 @@ const AddFieldButton = styled.div<{ mode: string }>`
   transition: background 0.2s ease;
   width: 120px;
   height: 42px;
+  margin-right: 2px;
 `;
 
 const AddRowButton = styled.div<{ mode: string }>`
@@ -127,7 +128,7 @@ const AddRowButton = styled.div<{ mode: string }>`
     ${(props) =>
       props.mode === "dark" ? "rgb(40, 40, 40)" : "rgb(240, 240, 240)"};
 
-  border-top: 1px solid
+  border-left: 1px solid
     ${(props) =>
       props.mode === "dark" ? "rgb(40, 40, 40)" : "rgb(240, 240, 240)"};
 
