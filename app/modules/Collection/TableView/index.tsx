@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { updateCollectionDataGuarded } from "@/app/services/Collection";
 import { Milestone, Option, PropertyType, Reward } from "@/app/types";
-import { Box } from "degen";
+import { Box, Spinner, Stack } from "degen";
 import { motion, AnimatePresence } from "framer-motion";
 import { matchSorter } from "match-sorter";
 import { useRouter } from "next/router";
@@ -52,7 +52,7 @@ export default function TableView() {
   } = useLocalCollection();
 
   const [expandedDataSlug, setExpandedDataSlug] = useState("");
-  const [dataLoading, setDataLoading] = useState(false);
+  const [refreshTable, setRefreshTable] = useState(false);
 
   const screenClass = useScreenClass();
 
@@ -71,12 +71,9 @@ export default function TableView() {
   const updateData = async ({ row }: { row: any }) => {
     if (!row) return;
     console.log("UPDATING DATA");
-    console.log({ row }, row.id);
     const res = await updateCollectionDataGuarded(collection.id, row.id, row);
-    console.log({ row });
     if (!res) return;
     if (res.id) {
-      console.log({ res });
       updateCollection(res);
     } else {
       toast.error("Error updating data");
@@ -102,8 +99,6 @@ export default function TableView() {
           ...row,
         };
       });
-
-      setDataLoading(true);
 
       // filter the data based on the search filter
       let filteredData = matchSorter(Object.values(data), searchFilter, {
@@ -231,9 +226,6 @@ export default function TableView() {
           return b[propertyName]?.localeCompare(a[propertyName]);
         });
       }
-      setTimeout(() => {
-        setDataLoading(false);
-      }, 400);
       setData(filteredData);
     }
   }, [
@@ -245,6 +237,14 @@ export default function TableView() {
     projectViewId,
     searchFilter,
   ]);
+
+  // refresh table if new property is added
+  useEffect(() => {
+    setRefreshTable(true);
+    setTimeout(() => {
+      setRefreshTable(false);
+    }, 300);
+  }, [JSON.stringify(collection.propertyOrder)]);
 
   const sortData = (columnName: string, asc: boolean) => {
     if (data) {
@@ -569,7 +569,7 @@ export default function TableView() {
         )}
       </AnimatePresence>
       <AnimatePresence>
-        {collection.name && (
+        {collection.name && !refreshTable && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1, transition: { duration: 0.1 } }}
@@ -610,6 +610,7 @@ export default function TableView() {
             />
           </motion.div>
         )}
+        {refreshTable && <Spinner color="accent" />}
       </AnimatePresence>
     </Box>
   );

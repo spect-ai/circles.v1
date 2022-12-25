@@ -1,5 +1,5 @@
 import { Box, IconPlusSmall, Stack, Text, useTheme } from "degen";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import TableView from "../../Collection/TableView";
 import mixpanel from "@/app/common/utils/mixpanel";
 import { useQuery } from "react-query";
@@ -9,6 +9,7 @@ import { AnimatePresence } from "framer-motion";
 import styled from "styled-components";
 import CardDrawer from "../CardDrawer";
 import { useRouter } from "next/router";
+import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
 
 export default function ProjectTableView() {
   const [isAddFieldOpen, setIsAddFieldOpen] = useState(false);
@@ -19,6 +20,16 @@ export default function ProjectTableView() {
   const router = useRouter();
 
   const { mode } = useTheme();
+
+  const { localCollection: collection } = useLocalCollection();
+
+  const [refreshTable, setRefreshTable] = useState(false);
+  useEffect(() => {
+    setRefreshTable(true);
+    setTimeout(() => {
+      setRefreshTable(false);
+    }, 300);
+  }, [JSON.stringify(collection.propertyOrder)]);
 
   return (
     <Box>
@@ -31,7 +42,7 @@ export default function ProjectTableView() {
         )}
       </AnimatePresence>
       <Box
-        overflow="auto"
+        overflow={!refreshTable ? "auto" : "hidden"}
         paddingY="2"
         marginRight={{
           xs: "2",
@@ -44,48 +55,52 @@ export default function ProjectTableView() {
       >
         <Stack direction="horizontal" space="0">
           <TableView />
-          <Box>
-            <AddFieldButton
-              mode={mode}
-              onClick={() => {
-                setIsAddFieldOpen(true);
-                process.env.NODE_ENV === "production" &&
-                  mixpanel.track("Add Field Button", {
-                    user: currentUser?.username,
-                  });
-              }}
-            >
+          {!refreshTable && (
+            <Box>
+              <AddFieldButton
+                mode={mode}
+                onClick={() => {
+                  setIsAddFieldOpen(true);
+                  process.env.NODE_ENV === "production" &&
+                    mixpanel.track("Add Field Button", {
+                      user: currentUser?.username,
+                    });
+                }}
+              >
+                <Text color="accent">
+                  <IconPlusSmall />
+                </Text>
+              </AddFieldButton>
+            </Box>
+          )}
+        </Stack>
+        {!refreshTable && (
+          <AddRowButton
+            mode={mode}
+            onClick={() => {
+              setIsCardDrawerOpen(true);
+              void router.push({
+                pathname: router.pathname,
+                query: {
+                  circle: router.query.circle,
+                  collection: router.query.collection,
+                  newCard: true,
+                },
+              });
+              process.env.NODE_ENV === "production" &&
+                mixpanel.track("Add Row Button", {
+                  user: currentUser?.username,
+                });
+            }}
+          >
+            <Stack direction="horizontal">
               <Text color="accent">
                 <IconPlusSmall />
               </Text>
-            </AddFieldButton>
-          </Box>
-        </Stack>
-        <AddRowButton
-          mode={mode}
-          onClick={() => {
-            setIsCardDrawerOpen(true);
-            void router.push({
-              pathname: router.pathname,
-              query: {
-                circle: router.query.circle,
-                collection: router.query.collection,
-                newCard: true,
-              },
-            });
-            process.env.NODE_ENV === "production" &&
-              mixpanel.track("Add Row Button", {
-                user: currentUser?.username,
-              });
-          }}
-        >
-          <Stack direction="horizontal">
-            <Text color="accent">
-              <IconPlusSmall />
-            </Text>
-            <Text>Add Row</Text>
-          </Stack>
-        </AddRowButton>
+              <Text>Add Row</Text>
+            </Stack>
+          </AddRowButton>
+        )}
       </Box>
     </Box>
   );
