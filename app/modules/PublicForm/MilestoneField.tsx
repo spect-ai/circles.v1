@@ -110,34 +110,31 @@ export default function MilestoneField({
                       <Editor value={milestone.description} disabled={true} />
                     )}
                   </Box>
-                  {((form.collectionType === 0 &&
-                    !form?.properties[propertyName].isPartOfFormView) ||
-                    form.collectionType === 1) &&
-                    !disabled && (
-                      <Box display="flex" flexDirection="row" gap="2">
-                        <Button
-                          variant="tertiary"
-                          size="small"
-                          onClick={() => {
-                            setModalMode("edit");
-                            setMilestoneIndex(index);
-                            setIsMilestoneModalOpen(true);
-                          }}
-                        >
-                          Edit
-                        </Button>
-                        <PrimaryButton
-                          onClick={() => {
-                            const newMilestones = data[propertyName].filter(
-                              (milestone: Milestone, i: number) => i !== index
-                            );
-                            setData({ ...data, [propertyName]: newMilestones });
-                          }}
-                        >
-                          Remove
-                        </PrimaryButton>
-                      </Box>
-                    )}
+                  {!disabled && (
+                    <Box display="flex" flexDirection="row" gap="2">
+                      <Button
+                        variant="tertiary"
+                        size="small"
+                        onClick={() => {
+                          setModalMode("edit");
+                          setMilestoneIndex(index);
+                          setIsMilestoneModalOpen(true);
+                        }}
+                      >
+                        Edit
+                      </Button>
+                      <PrimaryButton
+                        onClick={() => {
+                          const newMilestones = data[propertyName].filter(
+                            (milestone: Milestone, i: number) => i !== index
+                          );
+                          setData({ ...data, [propertyName]: newMilestones });
+                        }}
+                      >
+                        Remove
+                      </PrimaryButton>
+                    </Box>
+                  )}
                 </Box>
               );
             })}

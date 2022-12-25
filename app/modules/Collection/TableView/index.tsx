@@ -524,6 +524,11 @@ export default function TableView() {
             form={collection}
             propertyName={propertyName}
             dataId={dataId}
+            disabled={
+              collection.collectionType === 0
+                ? collection.properties[propertyName].isPartOfFormView
+                : false
+            }
             handleClose={async (
               value: Milestone[],
               dataId: string,
