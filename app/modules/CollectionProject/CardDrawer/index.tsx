@@ -233,9 +233,7 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
     <Box>
       <Drawer
         width="50%"
-        handleClose={() => {
-          handleClose();
-        }}
+        handleClose={handleClose}
         header={
           <Box marginLeft="-4">
             <Stack
