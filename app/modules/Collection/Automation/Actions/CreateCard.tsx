@@ -25,7 +25,7 @@ type Default = {
 };
 
 type Value = {
-  type: "mapping" | "default";
+  type: "mapping" | "default" | "responder";
   default?: Default;
   mapping?: Mapping;
 };
@@ -44,7 +44,8 @@ export default function CreateCard({ setAction, actionMode, action }: Props) {
   const [selectedFromPropertyOptionType, setSelectedFromPropertyOptionType] =
     useState("");
   const [values, setValues] = useState<Value[]>(action?.data.values || []);
-  const [fieldType, setFieldType] = useState<"mapping" | "default">("default");
+  const [fieldType, setFieldType] =
+    useState<"mapping" | "default" | "responder">("default");
   const [usedProperty, setUsedProperty] = useState<UsedProperty>({});
 
   const { circle } = useCircle();
@@ -81,32 +82,57 @@ export default function CreateCard({ setAction, actionMode, action }: Props) {
   }, []);
 
   useEffect(() => {
-    if (selectedCollection.data?.properties)
-      if (fieldType === "mapping") {
-        setToPropertyOptions(
-          Object.entries(selectedCollection.data?.properties)
-            .filter(
-              ([propertyId, property]) =>
-                (property as Property).type ===
-                  selectedFromPropertyOptionType && !usedProperty[propertyId]
-            )
-            .map(([propertyId, property]) => ({
-              label: (property as Property).name,
-              value: propertyId,
-            }))
-        );
-      } else if (fieldType === "default") {
-        setToPropertyOptions(
-          Object.entries(selectedCollection.data?.properties)
-            .filter(([propertyId, property]) => !usedProperty[propertyId])
-            .map(([propertyId, property]) => ({
-              label: (property as Property).name,
-              value: propertyId,
-            }))
-        );
+    const fetchCollection = async () => {
+      try {
+        const data: CollectionType = await (
+          await fetch(
+            `${process.env.API_HOST}/collection/v1/slug/${
+              selectedCollection?.data?.slug as string
+            }`,
+            {
+              credentials: "include",
+            }
+          )
+        ).json();
+        console.log({ data });
+        if (data?.properties)
+          if (fieldType === "mapping") {
+            setToPropertyOptions(
+              Object.entries(data?.properties)
+                .filter(
+                  ([propertyId, property]) =>
+                    (property as Property).type ===
+                      selectedFromPropertyOptionType &&
+                    !usedProperty[propertyId]
+                )
+                .map(([propertyId, property]) => ({
+                  label: (property as Property).name,
+                  value: propertyId,
+                  data: {
+                    type: (property as Property).type,
+                  },
+                }))
+            );
+          } else if (fieldType === "default") {
+            setToPropertyOptions(
+              Object.entries(data?.properties)
+                .filter(([propertyId, property]) => !usedProperty[propertyId])
+                .map(([propertyId, property]) => ({
+                  label: (property as Property).name,
+                  value: propertyId,
+                  data: {
+                    type: (property as Property).type,
+                  },
+                }))
+            );
+          }
+      } catch (e) {
+        console.log(e);
       }
+    };
+    void fetchCollection();
   }, [selectedCollection, selectedFromPropertyOptionType, values]);
-
+  console.log({ toPropertyOptions });
   return (
     <Box
       marginTop="2"
@@ -172,6 +198,39 @@ export default function CreateCard({ setAction, actionMode, action }: Props) {
                   <IconClose />
                 </Button>
               </Box>
+              {value.type === "responder" && (
+                <Box
+                  display="flex"
+                  flexDirection="row"
+                  gap="2"
+                  width="full"
+                  alignItems="center"
+                  marginBottom="2"
+                >
+                  <Box width="1/4">
+                    <Text variant="label">To Form Field</Text>
+                  </Box>
+                  <Dropdown
+                    options={toPropertyOptions.filter((a) =>
+                      ["user", "user[]", "ethAddress"].includes(a.data?.type)
+                    )}
+                    selected={value.mapping?.to}
+                    onChange={(value) => {
+                      const newValues = [...values];
+                      newValues[index] = {
+                        type: "responder",
+                        mapping: {
+                          to: value,
+                        },
+                      };
+                      setValues(newValues);
+                      console.log({ newValues });
+                      console.log({ value });
+                    }}
+                    multiple={false}
+                  />
+                </Box>
+              )}
               {value.type === "mapping" && (
                 <>
                   <Box
@@ -188,19 +247,24 @@ export default function CreateCard({ setAction, actionMode, action }: Props) {
                     <Dropdown
                       options={fromPropertyOptions}
                       selected={value.mapping?.from}
-                      onChange={(value) => {
+                      onChange={(v) => {
                         const newValues = [...values];
-                        newValues[index] = {
-                          type: "mapping",
-                          mapping: {
-                            from: value,
-                            to: newValues[index].mapping?.to,
-                          },
-                        };
-                        setValues(newValues);
-                        setSelectedFromPropertyOptionType(
-                          collection.properties[value.value].type
-                        );
+                        if (v.value !== value.mapping?.from?.value) {
+                          newValues[index] = {
+                            type: "mapping",
+                            mapping: {
+                              from: v,
+                              to: {
+                                label: "",
+                                value: "",
+                              },
+                            },
+                          };
+                          setValues(newValues);
+                          setSelectedFromPropertyOptionType(
+                            collection.properties[v.value].type
+                          );
+                        }
                       }}
                       multiple={false}
                     />
@@ -369,6 +433,26 @@ export default function CreateCard({ setAction, actionMode, action }: Props) {
               }}
             >
               + Default Value
+            </PrimaryButton>
+            <PrimaryButton
+              variant="tertiary"
+              onClick={() => {
+                setFieldType("responder");
+                setValues([
+                  ...values,
+                  {
+                    type: "responder",
+                    mapping: {
+                      to: {
+                        label: "",
+                        value: "",
+                      },
+                    },
+                  },
+                ]);
+              }}
+            >
+              + Map Responder
             </PrimaryButton>
           </Box>
         </Box>
