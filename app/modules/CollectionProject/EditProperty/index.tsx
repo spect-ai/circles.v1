@@ -33,7 +33,7 @@ function EditProperty({ propertyName }: Props) {
 
   if (property) {
     return (
-      <Box width="3/4" marginLeft="1">
+      <Box width="1/4" marginLeft="1">
         <AnimatePresence>
           {isEditFieldOpen && (
             <AddField

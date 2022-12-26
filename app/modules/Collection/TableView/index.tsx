@@ -70,31 +70,32 @@ export default function TableView() {
   }, [dataSlug, setExpandedDataSlug, cardSlug]);
 
   const updateData = useCallback(async ({ row }: { row: any }) => {
-    if (!row) return;
-    console.log("updating data");
+    if (!row) return false;
     const res = await updateCollectionDataGuarded(collection.id, row.id, row);
-    if (!res) return;
+    if (!res) return false;
     if (res.id) {
+      console.log("update success!!");
       updateCollection(res);
+      return true;
     } else {
-      toast.error("Error updating data");
+      toast.error(res.error || "Error updating data");
+      return false;
     }
-    return res;
   }, []);
 
   const debouncedOnChange = _.debounce(async (newData, operations) => {
     // throttle the update to avoid spamming the server
-    if (operations[0].type === "UPDATE") {
+    if (operations[0].type === "UPDATE" && data) {
+      const tempData = [...data];
       setData(newData);
       const row = newData.slice(
         operations[0].fromRowIndex,
         operations[0].toRowIndex
       )[0];
-      await updateData({ row });
+      const res = await updateData({ row });
+      !res && setData(tempData);
     }
-  }, 500);
-
-  const onTableChange = useCallback(debouncedOnChange, []);
+  }, 300);
 
   useEffect(() => {
     if (collection.data) {
@@ -121,7 +122,6 @@ export default function TableView() {
           return (item: any) => {
             if (key === "id") return item.id;
             if (collection.properties[key]?.type === "date") {
-              console.log({ item: item[key], key });
               if (typeof item[key] === "string") {
                 return new Date(item[key]).toLocaleDateString();
               }
@@ -611,7 +611,7 @@ export default function TableView() {
                   ? 500
                   : 500
               }
-              onChange={onTableChange}
+              onChange={debouncedOnChange}
               columns={columnsWithCredentials}
               gutterColumn={{
                 component: GutterColumnComponent,
