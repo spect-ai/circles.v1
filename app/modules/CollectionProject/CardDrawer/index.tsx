@@ -104,7 +104,8 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
     if (slug) {
       let res;
       res = await updateCollectionDataGuarded(collection.id, slug, update);
-      if (res?.id) {
+      if (!res) return;
+      if (res.id) {
         updateCollection(res);
       } else toast.error("Error updating card");
     }
