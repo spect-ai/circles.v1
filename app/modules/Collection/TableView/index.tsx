@@ -3,9 +3,10 @@ import { updateCollectionDataGuarded } from "@/app/services/Collection";
 import { Milestone, Option, PropertyType, Reward } from "@/app/types";
 import { Box, Spinner, Stack } from "degen";
 import { motion, AnimatePresence } from "framer-motion";
+import _ from "lodash";
 import { matchSorter } from "match-sorter";
 import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   Column,
   DataSheetGrid,
@@ -68,9 +69,9 @@ export default function TableView() {
     }
   }, [dataSlug, setExpandedDataSlug, cardSlug]);
 
-  const updateData = async ({ row }: { row: any }) => {
+  const updateData = useCallback(async ({ row }: { row: any }) => {
     if (!row) return;
-    console.log("UPDATING DATA");
+    console.log("updating data");
     const res = await updateCollectionDataGuarded(collection.id, row.id, row);
     if (!res) return;
     if (res.id) {
@@ -79,7 +80,21 @@ export default function TableView() {
       toast.error("Error updating data");
     }
     return res;
-  };
+  }, []);
+
+  const debouncedOnChange = _.debounce(async (newData, operations) => {
+    // throttle the update to avoid spamming the server
+    if (operations[0].type === "UPDATE") {
+      setData(newData);
+      const row = newData.slice(
+        operations[0].fromRowIndex,
+        operations[0].toRowIndex
+      )[0];
+      await updateData({ row });
+    }
+  }, 500);
+
+  const onTableChange = useCallback(debouncedOnChange, []);
 
   useEffect(() => {
     if (collection.data) {
@@ -476,7 +491,7 @@ export default function TableView() {
             ) => {
               if (data) {
                 const row = data.findIndex((row) => row.id === dataId);
-                if (row === 0 || row) {
+                if (data[row] && (row === 0 || row)) {
                   const tempData = [...data];
                   tempData[row][propertyName] = reward;
                   console.log({ tempdata: tempData[row][propertyName] });
@@ -596,15 +611,7 @@ export default function TableView() {
                   ? 500
                   : 500
               }
-              onChange={async (newData, operations) => {
-                setData(newData);
-                console.log({ operations });
-                const row = newData.slice(
-                  operations[0].fromRowIndex,
-                  operations[0].toRowIndex
-                )[0];
-                updateData({ row });
-              }}
+              onChange={onTableChange}
               columns={columnsWithCredentials}
               gutterColumn={{
                 component: GutterColumnComponent,

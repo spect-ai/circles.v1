@@ -46,9 +46,8 @@ export default function Sort() {
       }
     });
     options = options.filter((option) => option !== undefined);
-    console.log(options);
-    setSortOptions([noneOption, ...options as Option[]]);
-  }, [collection.propertyOrder, isOpen]);
+    setSortOptions([noneOption, ...(options as Option[])]);
+  }, [JSON.stringify(collection.propertyOrder), isOpen]);
 
   useEffect(() => {
     setIsAsc(
