@@ -1,6 +1,6 @@
 import Popover from "@/app/common/components/Popover";
 import { Box, Stack, Tag, Text } from "degen";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Archive, MoreHorizontal } from "react-feather";
 import { MenuContainer, MenuItem } from "../EditValue";
 import { motion } from "framer-motion";
@@ -21,6 +21,31 @@ export default function CardOptions({ handleDrawerClose, cardSlug }: Props) {
     useLocalCollection();
   const { circle } = useCircle();
   const [isOpen, setIsOpen] = useState(false);
+
+  const rewardProperties = useMemo(
+    () =>
+      Object.values(collection?.properties).filter(
+        (property) => property.type === "reward"
+      ).length,
+    [collection?.properties]
+  );
+  const userProperties = useMemo(
+    () =>
+      Object.values(collection?.properties).filter(
+        (property) => property.type === "user"
+      ).length,
+    [collection?.properties]
+  );
+  const multiUserProperties = useMemo(
+    () =>
+      Object.values(collection?.properties).filter(
+        (property) => property.type === "user[]"
+      ).length,
+    [collection?.properties]
+  );
+
+  const showPendingPayment =
+    rewardProperties > 0 && (userProperties > 0 || multiUserProperties > 0);
   return (
     <Popover
       width="16"
@@ -47,24 +72,26 @@ export default function CardOptions({ handleDrawerClose, cardSlug }: Props) {
         }}
       >
         <MenuContainer cWidth="15rem">
-          <MenuItem
-            padding="2"
-            onClick={async () => {
-              setIsOpen(false);
-              handleDrawerClose();
-              await addPendingPayment(circle?.id, {
-                collectionId: collection.id,
-                dataSlugs: [cardSlug],
-              });
-            }}
-          >
-            <Stack direction="horizontal" align="center" space="2">
-              <Text color="red">
-                <DollarOutlined />
-              </Text>
-              <Text>Add to pending payment</Text>
-            </Stack>
-          </MenuItem>
+          {showPendingPayment && (
+            <MenuItem
+              padding="2"
+              onClick={async () => {
+                setIsOpen(false);
+                handleDrawerClose();
+                await addPendingPayment(circle?.id, {
+                  collectionId: collection.id,
+                  dataSlugs: [cardSlug],
+                });
+              }}
+            >
+              <Stack direction="horizontal" align="center" space="2">
+                <Text color="red">
+                  <DollarOutlined />
+                </Text>
+                <Text>Add to pending payment</Text>
+              </Stack>
+            </MenuItem>
+          )}
           <MenuItem
             padding="2"
             onClick={async () => {

@@ -119,7 +119,7 @@ export default function DataDrawer({
     <Drawer
       handleClose={async () => {
         setExpandedDataSlug("");
-        dataSlug && (await router.push(`/${cId}/r/${collection.slug}`));
+        dataId && (await router.push(`/${cId}/r/${collection.slug}`));
       }}
     >
       {!collection.voting?.periods?.[dataId]?.active && (

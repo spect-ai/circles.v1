@@ -104,6 +104,7 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
     if (slug) {
       let res;
       res = await updateCollectionDataGuarded(collection.id, slug, update);
+      if (!res) return;
       if (res.id) {
         updateCollection(res);
       } else toast.error("Error updating card");
@@ -180,16 +181,26 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
               <IconDotsVertical size="4" />
             </Text>
           </Box>
-          <EditProperty propertyName={property} />
-          <EditValue
-            propertyName={property}
-            value={value[property]}
-            setValue={(val) => {
-              setValue({ ...value, [property]: val });
-              void onChange({ [property]: val }, value.slug);
+          <Box
+            display="flex"
+            flexDirection={{
+              xs: "row",
+              md: "column",
+              lg: "row",
             }}
-            dataId={value.slug}
-          />
+            width="full"
+          >
+            <EditProperty propertyName={property} />
+            <EditValue
+              propertyName={property}
+              value={value[property]}
+              setValue={(val) => {
+                setValue({ ...value, [property]: val });
+                void onChange({ [property]: val }, value.slug);
+              }}
+              dataId={value.slug}
+            />
+          </Box>
         </Stack>
       </Box>
     );
@@ -233,9 +244,7 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
     <Box>
       <Drawer
         width="50%"
-        handleClose={() => {
-          handleClose();
-        }}
+        handleClose={handleClose}
         header={
           <Box marginLeft="-4">
             <Stack

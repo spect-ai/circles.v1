@@ -3,11 +3,12 @@ import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { updateCollectionDataGuarded } from "@/app/services/Collection";
 import { exportToCsv } from "@/app/services/CsvExport";
 import { Milestone, Option, PropertyType, Reward } from "@/app/types";
-import { Box, Button } from "degen";
+import { Box, Spinner, Stack } from "degen";
 import { motion, AnimatePresence } from "framer-motion";
+import _ from "lodash";
 import { matchSorter } from "match-sorter";
 import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   Column,
   DataSheetGrid,
@@ -54,7 +55,7 @@ export default function TableView() {
   } = useLocalCollection();
 
   const [expandedDataSlug, setExpandedDataSlug] = useState("");
-  const [dataLoading, setDataLoading] = useState(false);
+  const [refreshTable, setRefreshTable] = useState(false);
 
   const screenClass = useScreenClass();
 
@@ -70,21 +71,33 @@ export default function TableView() {
     }
   }, [dataSlug, setExpandedDataSlug, cardSlug]);
 
-  const updateData = async ({ row }: { row: any }) => {
-    if (!row) return;
-    console.log("UPDATING DATA");
-    console.log({ row }, row.id);
+  const updateData = useCallback(async ({ row }: { row: any }) => {
+    if (!row) return false;
     const res = await updateCollectionDataGuarded(collection.id, row.id, row);
-    console.log({ row });
-    if (!res) return;
+    if (!res) return false;
     if (res.id) {
-      console.log({ res });
+      console.log("update success!!");
       updateCollection(res);
+      return true;
     } else {
-      toast.error("Error updating data");
+      toast.error(res.error || "Error updating data");
+      return false;
     }
-    return res;
-  };
+  }, []);
+
+  const debouncedOnChange = _.debounce(async (newData, operations) => {
+    // throttle the update to avoid spamming the server
+    if (operations[0].type === "UPDATE" && data) {
+      const tempData = [...data];
+      setData(newData);
+      const row = newData.slice(
+        operations[0].fromRowIndex,
+        operations[0].toRowIndex
+      )[0];
+      const res = await updateData({ row });
+      !res && setData(tempData);
+    }
+  }, 300);
 
   useEffect(() => {
     if (collection.data) {
@@ -105,15 +118,12 @@ export default function TableView() {
         };
       });
 
-      setDataLoading(true);
-
       // filter the data based on the search filter
       let filteredData = matchSorter(Object.values(data), searchFilter, {
         keys: Object.keys(data[0]).map((key) => {
           return (item: any) => {
             if (key === "id") return item.id;
             if (collection.properties[key]?.type === "date") {
-              console.log({ item: item[key], key });
               if (typeof item[key] === "string") {
                 return new Date(item[key]).toLocaleDateString();
               }
@@ -233,9 +243,6 @@ export default function TableView() {
           return b[propertyName]?.localeCompare(a[propertyName]);
         });
       }
-      setTimeout(() => {
-        setDataLoading(false);
-      }, 400);
       setData(filteredData);
     }
   }, [
@@ -247,6 +254,14 @@ export default function TableView() {
     projectViewId,
     searchFilter,
   ]);
+
+  // refresh table if new property is added
+  useEffect(() => {
+    setRefreshTable(true);
+    setTimeout(() => {
+      setRefreshTable(false);
+    }, 300);
+  }, [JSON.stringify(collection.propertyOrder)]);
 
   const sortData = (columnName: string, asc: boolean) => {
     if (data) {
@@ -478,7 +493,7 @@ export default function TableView() {
             ) => {
               if (data) {
                 const row = data.findIndex((row) => row.id === dataId);
-                if (row === 0 || row) {
+                if (data[row] && (row === 0 || row)) {
                   const tempData = [...data];
                   tempData[row][propertyName] = reward;
                   console.log({ tempdata: tempData[row][propertyName] });
@@ -526,6 +541,11 @@ export default function TableView() {
             form={collection}
             propertyName={propertyName}
             dataId={dataId}
+            disabled={
+              collection.collectionType === 0
+                ? collection.properties[propertyName].isPartOfFormView
+                : false
+            }
             handleClose={async (
               value: Milestone[],
               dataId: string,
@@ -635,7 +655,7 @@ export default function TableView() {
       </Box>
 
       <AnimatePresence>
-        {collection.name && (
+        {collection.name && !refreshTable && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1, transition: { duration: 0.1 } }}
@@ -657,15 +677,7 @@ export default function TableView() {
                   ? 500
                   : 500
               }
-              onChange={async (newData, operations) => {
-                setData(newData);
-                console.log({ operations });
-                const row = newData.slice(
-                  operations[0].fromRowIndex,
-                  operations[0].toRowIndex
-                )[0];
-                updateData({ row });
-              }}
+              onChange={debouncedOnChange}
               columns={columnsWithCredentials}
               gutterColumn={{
                 component: GutterColumnComponent,
@@ -676,6 +688,7 @@ export default function TableView() {
             />
           </motion.div>
         )}
+        {refreshTable && <Spinner color="accent" />}
       </AnimatePresence>
     </Box>
   );

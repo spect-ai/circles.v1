@@ -67,6 +67,7 @@ function EditValue({ value, setValue, propertyName, dataId }: Props) {
         property?.type
       ) && (
         <Popover
+          width="full"
           isOpen={isEditing}
           setIsOpen={setIsEditing}
           dependentRef={fieldInput}
@@ -372,7 +373,7 @@ function EditValue({ value, setValue, propertyName, dataId }: Props) {
 export default EditValue;
 
 const FieldButton = styled.div<{ mode: string }>`
-  width: 30rem;
+  width: 100%;
   color: ${({ mode }) =>
     mode === "dark" ? "rgb(255, 255, 255, 0.25)" : "rgb(0, 0, 0, 0.25)"};
   padding: 0.5rem 0.5rem;
@@ -391,7 +392,7 @@ const FieldButton = styled.div<{ mode: string }>`
 `;
 
 const FieldInputContainer = styled(Box)`
-  width: 30rem;
+  width: 100%;
   display: flex;
   align-items: center;
   gap: 0.5rem;

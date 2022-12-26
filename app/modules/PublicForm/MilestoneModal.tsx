@@ -93,7 +93,7 @@ export default function MilestoneModal({
           value: address,
         };
       });
-      setSelectedToken(tokens[0]);
+      !data && setSelectedToken(tokens[0]);
       setTokenOptions(tokens);
     }
   }, [form.properties, propertyName, rewardOptions, selectedChain]);
@@ -243,6 +243,7 @@ export default function MilestoneModal({
                 xs: "full",
                 md: "72",
               }}
+              marginTop="2"
             >
               <Input
                 label=""

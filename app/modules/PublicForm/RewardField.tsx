@@ -53,12 +53,15 @@ export default function RewardField({
           value: address,
         };
       });
-      setSelectedToken(tokens[0]);
-      updateData({
-        chain: selectedChain,
-        token: tokens[0],
-        value: value?.value,
-      });
+      if (!value?.token) {
+        setSelectedToken(tokens[0]);
+        updateData({
+          chain: selectedChain,
+          token: tokens[0],
+          value: value?.value,
+        });
+      }
+
       setTokenOptions(tokens);
     }
   }, [selectedChain]);
