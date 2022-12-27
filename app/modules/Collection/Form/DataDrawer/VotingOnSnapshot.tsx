@@ -20,7 +20,7 @@ import {
   Legend,
 } from "chart.js";
 import useSnapshot from "@/app/services/Snapshot/useSnapshot";
-import Link from "next/link";
+import { useLocation } from "react-use";
 
 ChartJS.register(
   CategoryScale,
@@ -77,6 +77,7 @@ export default function SnapshotVoting({ dataId }: { dataId: string }) {
     useLocalCollection();
 
   const { castVote } = useSnapshot();
+  const { hostname } = useLocation();
 
   const router = useRouter();
   const { dataId: dataSlug, circle: cId } = router.query;
@@ -171,12 +172,16 @@ export default function SnapshotVoting({ dataId }: { dataId: string }) {
     [memberDetails]
   );
 
+  const hub = hostname?.startsWith("circles")
+    ? "https://snapshot.org"
+    : "https://demo.snapshot.org";
+
   return (
     <Box display="flex" flexDirection="column" gap="2">
       <Box
         onClick={() => {
           window.open(
-            `https://demo.snapshot.org/#/${collection?.voting?.snapshot?.id}/proposal/${proposal}`
+            `${hub}/#/${collection?.voting?.snapshot?.id}/proposal/${proposal}`
           );
         }}
         cursor="pointer"

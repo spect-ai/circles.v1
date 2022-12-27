@@ -18,9 +18,11 @@ import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { useQuery } from "react-query";
 import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
+import { useLocation } from "react-use";
 
 const CollectionPage: NextPage = () => {
   const router = useRouter();
+  const { hostname } = useLocation();
   const { circle: cId, collection: colId } = router.query;
   useConnectDiscordServer();
   const circlecontext = useProviderCircleContext();
@@ -60,7 +62,9 @@ const CollectionPage: NextPage = () => {
   );
 
   const client = new ApolloClient({
-    uri: "https://testnet.snapshot.org/graphql",
+    uri: hostname?.startsWith("circles")
+      ? "https://hub.snapshot.org/graphql"
+      : "https://testnet.snapshot.org/graphql",
     cache: new InMemoryCache(),
   });
 

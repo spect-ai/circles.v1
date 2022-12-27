@@ -1,6 +1,7 @@
 import snapshot from "@snapshot-labs/snapshot.js";
 import { ethers } from "ethers";
 import { useLocalCollection } from "@/app/modules/Collection/Context/LocalCollectionContext";
+import { useLocation } from "react-use";
 
 interface createProposalDto {
   title: string;
@@ -13,8 +14,12 @@ interface createProposalDto {
 export default function useSnapshot() {
   const { localCollection: collection, updateCollection } =
     useLocalCollection();
+  const { hostname } = useLocation();
 
-  const hub = "https://testnet.snapshot.org";
+  const hub = hostname?.startsWith("circles")
+    ? "https://hub.snapshot.org"
+    : "https://testnet.snapshot.org";
+  
   const client = new snapshot.Client712(hub);
 
   const space = collection?.voting?.snapshot?.id || "";
@@ -67,7 +72,7 @@ export default function useSnapshot() {
       console.log(receipt);
       return receipt;
     } catch (error) {
-      console.log(error)
+      console.log(error);
       return error;
     }
   }
