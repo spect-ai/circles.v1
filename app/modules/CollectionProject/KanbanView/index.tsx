@@ -62,10 +62,9 @@ export default function KanbanView() {
               />
             );
           })}
-          <Box marginTop="4" width="48">
+          <Box marginTop="2" width="48">
             {property.type === "singleSelect" && !loading && (
               <PrimaryButton
-                icon={<IconPlusSmall />}
                 onClick={async () => {
                   setLoading(true);
                   await updateField(collection.id, view.groupByColumn, {

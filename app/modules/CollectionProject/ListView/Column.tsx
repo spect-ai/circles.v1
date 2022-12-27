@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { smartTrim } from "@/app/common/utils/utils";
 import { updateField } from "@/app/services/Collection";
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
 import { Option } from "@/app/types";
@@ -117,24 +118,26 @@ export default function Column({
                           collection.data[slug] &&
                           collection.data[slug][propertyId];
                         if (!value || groupByColumn === propertyId) return null;
-                        if (
-                          property.type === "shortText" &&
-                          property.name === "Title"
-                        ) {
-                          return (
-                            <Box key={propertyId} width="1/3">
-                              {/* <Text weight="semiBold">{property.name}</Text> */}
-                              <Text weight="semiBold" color="text" size="large">
-                                {value}
-                              </Text>
-                            </Box>
-                          );
-                        }
-                        if (property.type === "shortText") {
+                        if (property.name === "Title") {
                           return (
                             <Box key={propertyId}>
                               {/* <Text weight="semiBold">{property.name}</Text> */}
-                              <Text>{value}</Text>
+                              <Text weight="semiBold">{value}</Text>
+                            </Box>
+                          );
+                        }
+                        if (
+                          property.type === "shortText" ||
+                          property.type === "email" ||
+                          property.type === "ethAddress" ||
+                          property.type === "singleURL"
+                        ) {
+                          return (
+                            <Box key={propertyId}>
+                              {/* <Text weight="semiBold">{property.name}</Text> */}
+                              <Text color="text" size="small">
+                                {smartTrim(value, 30)}
+                              </Text>
                             </Box>
                           );
                         }

@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { smartTrim } from "@/app/common/utils/utils";
 import { updateField } from "@/app/services/Collection";
 import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
 import { Option } from "@/app/types";
@@ -44,8 +45,13 @@ export default function Column({
   const router = useRouter();
 
   const ColumnList = (provided: DroppableProvided) => (
-    <Container padding="4" ref={provided.innerRef} {...provided.droppableProps}>
-      <Stack>
+    <Container
+      paddingX="2"
+      paddingY="1"
+      ref={provided.innerRef}
+      {...provided.droppableProps}
+    >
+      <Stack space="0">
         <Stack direction="horizontal" align="center" justify="space-between">
           <NameInput
             value={columnName}
@@ -80,7 +86,7 @@ export default function Column({
               });
             }}
           >
-            <IconPlusSmall />
+            <IconPlusSmall size="5" />
           </Button>
         </Stack>
         <ScrollContainer>
@@ -89,6 +95,7 @@ export default function Column({
               <Draggable key={slug} draggableId={slug} index={index}>
                 {(provided, snapshot) => (
                   <Box
+                    width="72"
                     key={slug}
                     padding="4"
                     borderWidth="0.375"
@@ -116,12 +123,25 @@ export default function Column({
                           collection.data[slug] &&
                           collection.data[slug][propertyId];
                         if (!value || groupByColumn === propertyId) return null;
-                        if (property.type === "shortText") {
+                        if (property.name === "Title") {
                           return (
                             <Box key={propertyId}>
                               {/* <Text weight="semiBold">{property.name}</Text> */}
-                              <Text weight="semiBold" color="text" size="large">
-                                {value}
+                              <Text weight="semiBold">{value}</Text>
+                            </Box>
+                          );
+                        }
+                        if (
+                          property.type === "shortText" ||
+                          property.type === "email" ||
+                          property.type === "ethAddress" ||
+                          property.type === "singleURL"
+                        ) {
+                          return (
+                            <Box key={propertyId}>
+                              {/* <Text weight="semiBold">{property.name}</Text> */}
+                              <Text color="text" size="small">
+                                {smartTrim(value, 30)}
                               </Text>
                             </Box>
                           );

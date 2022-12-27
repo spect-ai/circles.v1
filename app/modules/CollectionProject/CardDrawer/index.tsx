@@ -107,7 +107,7 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
       if (!res) return;
       if (res.id) {
         updateCollection(res);
-      } else toast.error("Error updating card");
+      } else toast.error(res.error || "Error updating card");
     }
   };
 
