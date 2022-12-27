@@ -6,6 +6,7 @@ import { Box, IconPlusSmall, Stack } from "degen";
 import { AnimatePresence } from "framer-motion";
 import { DragDropContext } from "react-beautiful-dnd";
 import { toast } from "react-toastify";
+import { useLocation } from "react-use";
 import uuid from "react-uuid";
 import InviteMemberModal from "../../Circle/ContributorsModal/InviteMembersModal";
 import CardDrawer from "../CardDrawer";
@@ -28,7 +29,6 @@ export default function KanbanView() {
     updateCollection,
     cardOrders,
   } = useViewCommon();
-
   return (
     <Box
       marginX="8"

@@ -46,7 +46,7 @@ export default function PublicForm() {
 
   const [memberDetails, setMemberDetails] = useState({} as any);
 
-  const { pathname } = useLocation();
+  const { pathname, hostname } = useLocation();
   const route = pathname?.split("/")[3];
 
   const getMemberDetails = React.useCallback(
@@ -256,7 +256,7 @@ export default function PublicForm() {
                       href={`https://discord.com/api/oauth2/authorize?client_id=942494607239958609&redirect_uri=${
                         process.env.NODE_ENV === "development"
                           ? `http%3A%2F%2Flocalhost%3A3000%2FlinkDiscord`
-                          : "https%3A%2F%2Fcircles.spect.network%2FlinkDiscord"
+                          : `https%3A%2F%2F${hostname}%2FlinkDiscord`
                       }&response_type=code&scope=identify&type=publicForm&state=/r/${
                         form.slug
                       }`}
