@@ -80,7 +80,7 @@ export default function DataDrawer({
                 </Box>
               </Stack>
             </Button>
-            <VotingActions dataId={dataId} />
+            <VotingActions dataId={dataId} data={data} />
           </Stack>
         </Box>
       }

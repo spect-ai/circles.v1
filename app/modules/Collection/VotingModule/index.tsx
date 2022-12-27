@@ -242,7 +242,7 @@ export default function VotingModule() {
                       loading={loading}
                       disabled={
                         loading ||
-                        (snapshotVoting && !snapshotSpace) ||
+                        (snapshotVoting && (!snapshotSpace || !data?.space?.id)) ||
                         !votingType ||
                         !votingOptions.length
                       }

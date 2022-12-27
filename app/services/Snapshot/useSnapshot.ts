@@ -2,6 +2,7 @@ import snapshot from "@snapshot-labs/snapshot.js";
 import { ethers } from "ethers";
 import { useLocalCollection } from "@/app/modules/Collection/Context/LocalCollectionContext";
 import { useLocation } from "react-use";
+import { useBlockNumber } from "wagmi";
 
 interface createProposalDto {
   title: string;
@@ -23,6 +24,9 @@ export default function useSnapshot() {
   const client = new snapshot.Client712(hub);
 
   const space = collection?.voting?.snapshot?.id || "";
+  const { refetch: refetchBlockNumber } = useBlockNumber({
+    chainId: Number(collection?.voting?.snapshot?.network) || 1,
+  });
 
   async function createProposal({
     title,
@@ -35,7 +39,7 @@ export default function useSnapshot() {
     const provider = new ethers.providers.Web3Provider(window?.ethereum);
     const signer = provider.getSigner();
     const account = await signer.getAddress();
-    const blockNumber = await provider.getBlockNumber();
+    const blockNumber = await refetchBlockNumber();
 
     const receipt = await client.proposal(provider, account, {
       space,
@@ -45,7 +49,7 @@ export default function useSnapshot() {
       choices: collection?.voting?.options?.map((option) => option.label),
       start: start || Math.floor(new Date().getTime() / 1000),
       end: end || Math.floor((new Date().getTime() + 7200000) / 1000),
-      snapshot: block || blockNumber - 1,
+      snapshot: blockNumber?.data as number - 1,
       network: "5",
       plugins: JSON.stringify({}),
       app: "Spect",
