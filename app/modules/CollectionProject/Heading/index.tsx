@@ -436,4 +436,5 @@ const MenuItem = styled(Box)`
   }
   cursor: pointer;
   transition: background 0.4s ease;
+  align-items: center;
 `;

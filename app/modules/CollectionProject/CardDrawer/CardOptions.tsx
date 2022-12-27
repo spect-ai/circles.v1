@@ -43,9 +43,17 @@ export default function CardOptions({ handleDrawerClose, cardSlug }: Props) {
       ).length,
     [collection?.properties]
   );
+  const ethAddressProperties = useMemo(
+    () =>
+      Object.values(collection?.properties).filter(
+        (property) => property.type === "ethAddress"
+      ).length,
+    [collection?.properties]
+  );
 
   const showPendingPayment =
-    rewardProperties > 0 && (userProperties > 0 || multiUserProperties > 0);
+    rewardProperties > 0 &&
+    (userProperties > 0 || multiUserProperties > 0 || ethAddressProperties > 0);
   return (
     <Popover
       width="16"
