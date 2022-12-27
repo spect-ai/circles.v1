@@ -3,7 +3,7 @@ import Drawer, { slideHorizontal } from "@/app/common/components/Drawer";
 import { OptionType } from "@/app/common/components/Dropdown";
 import Editor from "@/app/common/components/Editor";
 import { MemberDetails, UserType } from "@/app/types";
-import { Avatar, Box, Stack, Tag, Text } from "degen";
+import { Avatar, Box, Button, IconChevronRight, Stack, Tag, Text } from "degen";
 import { motion } from "framer-motion";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
@@ -56,14 +56,35 @@ export default function DataDrawer({
     [memberDetails]
   );
 
+  const handleClose = async () => {
+    setExpandedDataSlug("");
+    dataId && (await router.push(`/${cId}/r/${collection.slug}`));
+  };
+
   return (
     <Drawer
-      handleClose={async () => {
-        setExpandedDataSlug("");
-        dataId && (await router.push(`/${cId}/r/${collection.slug}`));
-      }}
+      handleClose={handleClose}
+      header={
+        <Box marginLeft="-4">
+          <Stack direction="horizontal" align="center" justify="space-between">
+            <Button
+              shape="circle"
+              size="small"
+              variant="transparent"
+              onClick={handleClose}
+            >
+              <Stack direction="horizontal" align="center" space="0">
+                <IconChevronRight />
+                <Box marginLeft="-4">
+                  <IconChevronRight />
+                </Box>
+              </Stack>
+            </Button>
+            <VotingActions dataId={dataId} />
+          </Stack>
+        </Box>
+      }
     >
-      <VotingActions dataId={dataId} />
       {Object.keys(data).length !== 0 && (
         <motion.div
           variants={slideHorizontal}
