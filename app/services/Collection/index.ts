@@ -311,8 +311,11 @@ export const startVotingPeriod = async (
   startVotingPeriodDto?: {
     endsOn?: string;
     postOnSnapshot?: boolean;
+    space?: string;
+    proposalId?: string;
   }
 ) => {
+  console.log(startVotingPeriodDto);
   return await (
     await fetch(
       `${process.env.API_HOST}/collection/v1/${collectionId}/startVotingPeriod?dataId=${dataId}`,
@@ -322,9 +325,7 @@ export const startVotingPeriod = async (
           "Content-Type": "application/json",
         },
         credentials: "include",
-        body: JSON.stringify({
-          startVotingPeriodDto,
-        }),
+        body: JSON.stringify(startVotingPeriodDto),
       }
     )
   ).json();

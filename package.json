@@ -27,6 +27,7 @@
     "@nadavshaar/react-grid-table": "^1.0.2",
     "@popperjs/core": "^2.11.5",
     "@rainbow-me/rainbowkit": "^0.6.1",
+    "@snapshot-labs/snapshot.js": "^0.4.56",
     "@svgr/webpack": "^6.2.1",
     "@table-library/react-table-library": "^4.0.18",
     "@types/mixpanel-browser": "^2.38.0",
