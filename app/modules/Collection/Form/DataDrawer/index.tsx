@@ -280,7 +280,6 @@ export default function DataDrawer({
                                 );
                               }
                             )}
-                            {console.log(data[property.name])}
                             {data[propertyName].length == 0 && "Unpaid"}
                           </Stack>
                         )}

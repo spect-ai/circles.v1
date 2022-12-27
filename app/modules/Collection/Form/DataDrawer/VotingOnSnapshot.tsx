@@ -227,7 +227,6 @@ export default function SnapshotVoting({ dataId }: { dataId: string }) {
                       return;
                     }
                     const tempTab = tab;
-                    console.log(tempTab);
                     const res: any = await castVote(
                       collection?.voting?.periods?.[data.slug].snapshot
                         ?.proposalId as string,

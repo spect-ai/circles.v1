@@ -44,8 +44,6 @@ export default function SpectVoting({ dataId }: { dataId: string }) {
   const [data, setData] = useState({} as any);
   const [vote, setVote] = useState(-1);
 
-  console.log({ collection });
-
   useEffect(() => {
     if (dataId && collection.data) {
       setData({});

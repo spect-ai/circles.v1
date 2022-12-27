@@ -132,7 +132,6 @@ export default function VotingActions({
     return body;
   };
 
-  console.log(getBodyOfProposal());
   return (
     <>
       {!collection.voting?.periods?.[dataId]?.active &&
