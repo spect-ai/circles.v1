@@ -55,16 +55,21 @@ export default function useSnapshot() {
     const provider = new ethers.providers.Web3Provider(window?.ethereum);
     const signer = provider.getSigner();
     const account = await signer.getAddress();
-    const receipt = await client.vote(provider, account, {
-      space,
-      proposal: proposal,
-      type: "single-choice",
-      choice: choice,
-      app: "Spect",
-    });
+    try {
+      const receipt = await client.vote(provider, account, {
+        space,
+        proposal: proposal,
+        type: "single-choice",
+        choice: choice,
+        app: "Spect",
+      });
 
-    console.log(receipt);
-    return receipt;
+      console.log(receipt);
+      return receipt;
+    } catch (error) {
+      console.log(error)
+      return error;
+    }
   }
 
   async function calculateScores(voters: string[], blockNumber: number) {
@@ -78,7 +83,7 @@ export default function useSnapshot() {
         },
       },
     ] as any;
-    const network = "5";
+    const network = collection?.voting?.snapshot?.network || "5";
 
     snapshot.utils
       .getScores(space, strategies, network, voters, blockNumber)

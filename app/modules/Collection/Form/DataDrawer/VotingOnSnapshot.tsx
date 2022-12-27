@@ -1,5 +1,5 @@
 import Tabs from "@/app/common/components/Tabs";
-import { voteCollectionData } from "@/app/services/Collection";
+import { endVotingPeriod, voteCollectionData } from "@/app/services/Collection";
 import { MemberDetails, UserType } from "@/app/types";
 import { Avatar, Box, Stack, Text } from "degen";
 import { useRouter } from "next/router";
@@ -8,6 +8,7 @@ import { Bar } from "react-chartjs-2";
 import { useQuery } from "react-query";
 import { toast } from "react-toastify";
 import { useLocalCollection } from "../../Context/LocalCollectionContext";
+import { useQuery as useApolloQuery, gql } from "@apollo/client";
 
 import {
   Chart as ChartJS,
@@ -19,6 +20,7 @@ import {
   Legend,
 } from "chart.js";
 import useSnapshot from "@/app/services/Snapshot/useSnapshot";
+import Link from "next/link";
 
 ChartJS.register(
   CategoryScale,
@@ -28,6 +30,47 @@ ChartJS.register(
   Tooltip,
   Legend
 );
+
+interface Vote {
+  voter: string;
+  vp: number;
+  choice: number;
+}
+
+export const Votes = gql`
+  query Votes($proposal: String!) {
+    votes(where: { proposal: $proposal }) {
+      voter
+      vp
+      choice
+    }
+  }
+`;
+
+export const UserVote = gql`
+  query Votes($proposal: String!, $voter: String!) {
+    votes(where: { proposal: $proposal, voter: $voter }) {
+      voter
+      vp
+      choice
+    }
+  }
+`;
+
+export const Proposal = gql`
+  query Proposal($proposal: String!) {
+    proposal(id: $proposal) {
+      id
+      title
+      end
+      snapshot
+      state
+      scores
+      scores_by_strategy
+      scores_total
+    }
+  }
+`;
 
 export default function SnapshotVoting({ dataId }: { dataId: string }) {
   const { localCollection: collection, updateCollection } =
@@ -42,10 +85,28 @@ export default function SnapshotVoting({ dataId }: { dataId: string }) {
     enabled: false,
   });
 
+  const proposal = collection?.voting?.periods?.[dataId]?.snapshot?.proposalId;
+
+  const { data: votesData, refetch: refetchVotes } = useApolloQuery(Votes, {
+    variables: { proposal: proposal },
+  });
+
+  const { data: proposalData, refetch: refetchProposal } = useApolloQuery(
+    Proposal,
+    {
+      variables: { proposal: proposal },
+    }
+  );
+
+  const { data: userVotes, refetch: refetchUserChoices } = useApolloQuery(
+    UserVote,
+    {
+      variables: { proposal: proposal, voter: currentUser?.ethAddress },
+    }
+  );
+
   const [data, setData] = useState({} as any);
   const [vote, setVote] = useState(-1);
-
-  console.log({ collection });
 
   useEffect(() => {
     if (dataId && collection.data) {
@@ -57,31 +118,38 @@ export default function SnapshotVoting({ dataId }: { dataId: string }) {
   }, [collection?.data, dataId]);
 
   useEffect(() => {
+    refetchVotes();
+    refetchProposal();
+    refetchUserChoices();
     if (
-      data &&
-      collection.voting?.periods &&
-      collection.voting?.periods[dataId] &&
-      collection.voting?.periods[dataId]?.votes?.[currentUser?.id || ""] !==
-        undefined
+      proposalData?.proposal?.state === "closed" &&
+      collection?.voting?.periods?.[data.slug]?.active
     ) {
-      setVote(
-        collection.voting?.periods[dataId].votes?.[
-          currentUser?.id || ""
-        ] as number
-      );
+      const endVoting = async () => {
+        const res = await endVotingPeriod(collection.id, dataId);
+        if (!res.id) {
+          toast.error("Something went wrong");
+        } else updateCollection(res);
+      };
+      endVoting();
+    }
+    if (
+      userVotes &&
+      userVotes?.votes &&
+      userVotes?.votes?.[0]?.voter.toLowerCase() == currentUser?.ethAddress
+    ) {
+      setVote(userVotes?.votes?.[0]?.choice - 1);
     } else setVote(-1);
-  }, [collection.voting, currentUser?.id, data, dataId]);
+  }, [userVotes, currentUser?.id, data, dataId, vote]);
 
   const getVotes = () => {
-    const dataVotes =
-      collection.voting?.periods && collection.voting?.periods?.[dataId]?.votes;
-    // sump up all the votes for each option
-    return (
+    const res =
       collection.voting?.periods?.[dataId]?.options?.map((option, index) => {
-        return Object.values(dataVotes || {}).filter((vote) => vote === index)
-          .length;
-      }) || []
-    );
+        return votesData?.votes?.filter(
+          (vote: any) => vote.choice - 1 === index
+        ).length;
+      }) || [];
+    return res;
   };
 
   const { data: memberDetails } = useQuery<MemberDetails>(
@@ -91,20 +159,37 @@ export default function SnapshotVoting({ dataId }: { dataId: string }) {
     }
   );
 
-  const getMemberDetails = React.useCallback(
-    (id: string) => {
-      return memberDetails?.memberDetails[id];
+  const getMemberDetailsUsingEthAddress = React.useCallback(
+    (ethAddress: string) => {
+      return Object.values(
+        (memberDetails as MemberDetails)?.memberDetails as any
+      )?.filter(
+        (member: any) =>
+          member?.ethAddress.toLowerCase() === ethAddress.toLowerCase()
+      );
     },
     [memberDetails]
   );
 
   return (
     <Box display="flex" flexDirection="column" gap="2">
+      <Box
+        onClick={() => {
+          window.open(
+            `https://demo.snapshot.org/#/${collection?.voting?.snapshot?.id}/proposal/${proposal}`
+          );
+        }}
+        cursor="pointer"
+      >
+        <Text variant="large" color={"accent"} weight={"semiBold"}>
+          {proposalData?.proposal?.title}
+        </Text>
+      </Box>
+
       {collection.voting?.periods &&
         collection.voting?.periods[data.slug] &&
-        (collection.voting?.periods[data.slug].active ||
-          Object.keys(collection.voting?.periods[dataId]?.votes || {})?.length >
-            0) &&
+        (proposalData?.proposal?.state !== "closed" ||
+          votesData?.votes?.length > 0) &&
         collection.voting?.periods[data.slug].options && (
           <Stack space="1">
             <Box
@@ -132,16 +217,22 @@ export default function SnapshotVoting({ dataId }: { dataId: string }) {
                         ?.proposalId
                     )
                       return;
+                    if (proposalData?.proposal?.state == "closed") {
+                      toast.error("Voting window is closed");
+                      return;
+                    }
                     const tempTab = tab;
                     console.log(tempTab);
-                    const res = await castVote(
+                    const res: any = await castVote(
                       collection?.voting?.periods?.[data.slug].snapshot
                         ?.proposalId as string,
                       tempTab + 1
                     );
-                    if (res) {
+                    if (res.id) {
                       setVote(tempTab);
                       toast.success("Vote casted successfully");
+                    } else {
+                      toast.error("Vote cast failed : " + res?.error);
                     }
                   }}
                   orientation="horizontal"
@@ -211,7 +302,7 @@ export default function SnapshotVoting({ dataId }: { dataId: string }) {
                 ),
                 datasets: [
                   {
-                    label: "Votes",
+                    label: " Votes ",
                     data: getVotes(),
                     backgroundColor: "rgb(191,90,242, 0.2)",
                     borderColor: "rgb(191,90,242)",
@@ -225,8 +316,7 @@ export default function SnapshotVoting({ dataId }: { dataId: string }) {
           </Box>
         )}
       {collection.voting?.periods &&
-        Object.keys(collection.voting?.periods[data.slug]?.votes || {}).length >
-          0 &&
+        votesData?.votes?.length > 0 &&
         collection.voting?.periods[data.slug]?.votesArePublic && (
           <Box
             borderColor="foregroundSecondary"
@@ -240,15 +330,15 @@ export default function SnapshotVoting({ dataId }: { dataId: string }) {
             </Text>
 
             {collection.voting?.periods &&
-              collection.voting?.periods[data.slug] &&
-              Object.entries(
-                collection.voting?.periods[data.slug]?.votes || {}
-              ).map(([voterId, vote]) => {
+              votesData?.votes?.map((vote: Vote) => {
+                const user: any = getMemberDetailsUsingEthAddress(
+                  vote.voter
+                )?.[0];
                 return (
                   <Box
                     display="flex"
                     flexDirection="row"
-                    key={voterId}
+                    key={vote.voter}
                     marginTop="4"
                     gap="4"
                   >
@@ -259,19 +349,23 @@ export default function SnapshotVoting({ dataId }: { dataId: string }) {
                       alignItems="center"
                     >
                       <a
-                        href={`/profile/${getMemberDetails(voterId)?.username}`}
+                        href={`/profile/${
+                          user?.username == undefined ? "fren" : user?.username
+                        }`}
                         target="_blank"
                         rel="noreferrer"
                       >
                         <Stack direction="horizontal" align="center" space="2">
                           <Avatar
-                            src={getMemberDetails(voterId)?.avatar}
-                            address={getMemberDetails(voterId)?.ethAddress}
+                            src={user?.avatar}
+                            address={vote.voter}
                             label=""
                             size="8"
                           />
                           <Text color="accentText" weight="semiBold">
-                            {getMemberDetails(voterId)?.username}
+                            {user?.username == undefined
+                              ? "fren"
+                              : user?.username}
                           </Text>
                         </Stack>
                       </a>
@@ -286,7 +380,7 @@ export default function SnapshotVoting({ dataId }: { dataId: string }) {
                         {collection?.voting?.periods &&
                         collection?.voting?.periods[data.slug]
                           ? collection?.voting?.periods[data.slug]?.options?.[
-                              vote
+                              vote.choice - 1
                             ]?.label
                           : "No vote"}
                       </Text>
@@ -298,9 +392,9 @@ export default function SnapshotVoting({ dataId }: { dataId: string }) {
                       alignItems="center"
                     >
                       <Text variant="base" weight="semiBold">
-                        {collection?.voting?.votesAreWeightedByTokens
-                          ? `${1} votes`
-                          : `1 vote`}
+                        {vote.vp.toFixed(1) +
+                          " " +
+                          collection?.voting?.snapshot?.symbol}
                       </Text>
                     </Box>
                   </Box>

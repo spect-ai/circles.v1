@@ -94,8 +94,6 @@ export default function VotingModule() {
     data,
   } = useQuery(Space, { variables: { id: snapshotSpace } });
 
-  console.log(data);
-
   return (
     <>
       <Text variant="label">Allow members to vote on responses</Text>
@@ -185,6 +183,9 @@ export default function VotingModule() {
                       <CheckBox
                         isChecked={snapshotVoting}
                         onClick={() => {
+                          if (snapshotVoting) {
+                            setSnapshotSpace("");
+                          }
                           setSnapshotVoting(!snapshotVoting);
                         }}
                         disabled={collection?.voting?.enabled}

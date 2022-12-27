@@ -315,7 +315,6 @@ export const startVotingPeriod = async (
     proposalId?: string;
   }
 ) => {
-  console.log(startVotingPeriodDto);
   return await (
     await fetch(
       `${process.env.API_HOST}/collection/v1/${collectionId}/startVotingPeriod?dataId=${dataId}`,

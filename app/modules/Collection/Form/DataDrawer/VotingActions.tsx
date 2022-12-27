@@ -9,15 +9,13 @@ import { AnimatePresence } from "framer-motion";
 import Modal from "@/app/common/components/Modal";
 import { DateInput } from "@/app/modules/Profile/ProfilePage/AddExperienceModal";
 import { dateIsInvalid } from "@/app/common/utils/utils";
-import { useBlockNumber } from "wagmi";
 import useSnapshot from "@/app/services/Snapshot/useSnapshot";
+import { Proposal } from "./VotingOnSnapshot";
+import { useQuery as useApolloQuery } from "@apollo/client";
 
 export default function VotingActions({ dataId }: { dataId: string }) {
   const { localCollection: collection, updateCollection } =
     useLocalCollection();
-  const block = useBlockNumber({
-    chainId: 1,
-  });
   const { mode } = useTheme();
   const { createProposal } = useSnapshot();
 
@@ -25,7 +23,12 @@ export default function VotingActions({ dataId }: { dataId: string }) {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [title, setTitle] = useState("");
-  const [blockNumber, setBlockNumber] = useState(block.data);
+
+  const proposal = collection?.voting?.periods?.[dataId]?.snapshot?.proposalId;
+
+  const { data: proposalData } = useApolloQuery(Proposal, {
+    variables: { proposal: proposal },
+  });
   return (
     <>
       {!collection.voting?.periods?.[dataId]?.active &&
@@ -99,12 +102,15 @@ export default function VotingActions({ dataId }: { dataId: string }) {
             paddingRight="8"
           >
             <Box display="flex" flexDirection="column" gap="2">
-              {collection.voting?.periods?.[dataId]?.votes &&
-                Object.keys(collection.voting?.periods[dataId]?.votes || {})
-                  ?.length > 0 && <Text variant="base"> Voting has ended</Text>}
+              {(proposalData?.proposal?.scores?.length > 0 ||
+                (collection.voting?.periods?.[dataId]?.votes &&
+                  Object.keys(collection.voting?.periods[dataId]?.votes || {})
+                    ?.length > 0)) && (
+                <Text variant="base"> Voting has ended</Text>
+              )}
               {collection.voting?.enabled &&
-                Object.keys(collection.voting?.periods?.[dataId]?.votes || {})
-                  ?.length === 0 && (
+                !proposal &&
+                !collection.voting?.periods?.[dataId]?.votes && (
                   <PrimaryButton
                     variant="secondary"
                     onClick={() => {
@@ -131,15 +137,6 @@ export default function VotingActions({ dataId }: { dataId: string }) {
                   hideLabel
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                />
-                <Text variant="label">Snapshot ( Block Number )</Text>
-                <Input
-                  label
-                  hideLabel
-                  min={0}
-                  type="number"
-                  value={blockNumber}
-                  onChange={(e) => setBlockNumber(Number(e.target.value))}
                 />
                 <Stack>
                   <Text variant="label">Voting Period</Text>
@@ -169,6 +166,7 @@ export default function VotingActions({ dataId }: { dataId: string }) {
                 </Stack>
                 <PrimaryButton
                   onClick={async () => {
+                    setSnapshotModal(false);
                     const start = Math.floor(
                       new Date(startDate).getTime() / 1000
                     );
@@ -178,9 +176,8 @@ export default function VotingActions({ dataId }: { dataId: string }) {
                       body: "ffsrw",
                       start,
                       end,
-                      block: blockNumber,
                     });
-                    setSnapshotModal(false);
+
                     if (!snapRes?.id) {
                       toast.error("Something went wrong" + snapRes.error);
                     } else {
