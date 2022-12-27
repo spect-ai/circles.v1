@@ -9,7 +9,7 @@ import {
   voteCollectionData,
 } from "@/app/services/Collection";
 import { MemberDetails, UserType } from "@/app/types";
-import { Avatar, Box, Stack, Tag, Text } from "degen";
+import { Avatar, Box, Button, IconChevronRight, Stack, Tag, Text } from "degen";
 import { motion } from "framer-motion";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
@@ -115,69 +115,95 @@ export default function DataDrawer({
     [memberDetails]
   );
 
+  const handleClose = async () => {
+    setExpandedDataSlug("");
+    dataId && (await router.push(`/${cId}/r/${collection.slug}`));
+  };
+
   return (
     <Drawer
-      handleClose={async () => {
-        setExpandedDataSlug("");
-        dataId && (await router.push(`/${cId}/r/${collection.slug}`));
-      }}
-    >
-      {!collection.voting?.periods?.[dataId]?.active && (
-        <Box
-          display="flex"
-          flexDirection="row"
-          width="full"
-          justifyContent="flex-end"
-          paddingRight="8"
-        >
-          <Box display="flex" flexDirection="column" gap="2">
-            {collection.voting?.periods?.[dataId]?.votes &&
-              Object.keys(collection.voting?.periods[dataId]?.votes || {})
-                ?.length > 0 && <Text variant="base"> Voting has ended</Text>}
-            {collection.voting?.enabled &&
-              Object.keys(collection.voting?.periods?.[dataId]?.votes || {})
-                ?.length === 0 && (
-                <PrimaryButton
-                  variant="secondary"
-                  onClick={async () => {
-                    const res = await startVotingPeriod(collection.id, dataId);
-                    if (!res.id) {
-                      toast.error("Something went wrong");
-                    } else updateCollection(res);
-                  }}
-                >
-                  Start Voting Period
-                </PrimaryButton>
-              )}
-          </Box>
-        </Box>
-      )}
-      {collection.voting?.enabled &&
-        collection.voting?.periods &&
-        collection.voting?.periods[dataId]?.active && (
-          <Box
-            display="flex"
-            flexDirection="row"
-            width="full"
-            justifyContent="flex-end"
-            paddingRight="8"
-          >
-            <Box display="flex" flexDirection="column" gap="2">
-              <Text variant="base"> Voting is active</Text>
-              <PrimaryButton
-                variant="tertiary"
-                onClick={async () => {
-                  const res = await endVotingPeriod(collection.id, dataId);
-                  if (!res.id) {
-                    toast.error("Something went wrong");
-                  } else updateCollection(res);
-                }}
+      handleClose={handleClose}
+      header={
+        <Box marginLeft="-4">
+          <Stack direction="horizontal" align="center" justify="space-between">
+            <Button
+              shape="circle"
+              size="small"
+              variant="transparent"
+              onClick={handleClose}
+            >
+              <Stack direction="horizontal" align="center" space="0">
+                <IconChevronRight />
+                <Box marginLeft="-4">
+                  <IconChevronRight />
+                </Box>
+              </Stack>
+            </Button>
+            {!collection.voting?.periods?.[dataId]?.active && (
+              <Box
+                display="flex"
+                flexDirection="row"
+                width="full"
+                justifyContent="flex-end"
+                paddingRight="8"
+                marginBottom="-3"
               >
-                End Voting Period
-              </PrimaryButton>
-            </Box>
-          </Box>
-        )}
+                <Box display="flex" flexDirection="column" gap="2">
+                  {collection.voting?.periods?.[dataId]?.votes &&
+                    Object.keys(collection.voting?.periods[dataId]?.votes || {})
+                      ?.length > 0 && (
+                      <Text variant="label"> Voting has ended</Text>
+                    )}
+                  {collection.voting?.enabled &&
+                    Object.keys(
+                      collection.voting?.periods?.[dataId]?.votes || {}
+                    )?.length === 0 && (
+                      <PrimaryButton
+                        variant="secondary"
+                        onClick={async () => {
+                          const res = await startVotingPeriod(
+                            collection.id,
+                            dataId
+                          );
+                          if (!res.id) {
+                            toast.error("Something went wrong");
+                          } else updateCollection(res);
+                        }}
+                      >
+                        Start Voting Period
+                      </PrimaryButton>
+                    )}
+                </Box>
+              </Box>
+            )}
+            {collection.voting?.enabled &&
+              collection.voting?.periods &&
+              collection.voting?.periods[dataId]?.active && (
+                <Box
+                  display="flex"
+                  flexDirection="row"
+                  width="full"
+                  justifyContent="flex-end"
+                  paddingRight="8"
+                  marginBottom="-3"
+                >
+                  <PrimaryButton
+                    variant="tertiary"
+                    onClick={async () => {
+                      const res = await endVotingPeriod(collection.id, dataId);
+                      if (!res.id) {
+                        toast.error("Something went wrong");
+                      } else updateCollection(res);
+                    }}
+                  >
+                    End Voting Period
+                  </PrimaryButton>
+                </Box>
+              )}
+          </Stack>
+        </Box>
+      }
+    >
       {Object.keys(data).length !== 0 && (
         <motion.div
           variants={slideHorizontal}

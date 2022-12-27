@@ -6,7 +6,7 @@ import { sendFormComment } from "@/app/services/Collection";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { CollectionActivity, MappedItem, UserType } from "@/app/types";
 import { SendOutlined } from "@ant-design/icons";
-import { Avatar, Box, Stack, Text } from "degen";
+import { Avatar, Box, Button, Stack, Text } from "degen";
 import React, { useState } from "react";
 import { useQuery } from "react-query";
 import { toast } from "react-toastify";
@@ -98,9 +98,15 @@ export default function DataActivity({
             address={currentUser?.ethAddress}
             size="8"
           />
-          <Box width="full" gap="2" marginBottom="4">
+          <Box
+            width="full"
+            gap="2"
+            marginBottom="4"
+            display="flex"
+            flexDirection="row"
+          >
             {!sendingComment && (
-              <Box height="40" overflow="auto">
+              <Box height="40" overflow="auto" width="full">
                 <Editor
                   placeholder="Write a reply..."
                   value={comment}
@@ -113,47 +119,46 @@ export default function DataActivity({
               </Box>
             )}
             {isDirty && currentUser && (
-              <Box width="1/4">
-                <PrimaryButton
-                  loading={sendingComment}
-                  icon={<SendOutlined style={{ fontSize: "1.3rem" }} />}
-                  onClick={async () => {
-                    if (
-                      !(
-                        formActions("addComments") ||
-                        currentUser.id == dataOwner.id
-                      )
-                    ) {
-                      toast.error(
-                        "Your role(s) doesn't have permission to add comments on this form"
-                      );
-                      return;
-                    }
-                    setSendingComment(true);
-                    const res = await sendFormComment(
-                      collectionId,
-                      dataId,
-                      comment,
-                      {
-                        actor: {
-                          id: currentUser.id,
-                          refType: "user",
-                        },
-                      },
-                      setForm ? true : false
+              <Button
+                variant="secondary"
+                size="small"
+                shape="circle"
+                loading={sendingComment}
+                onClick={async () => {
+                  if (
+                    !(
+                      formActions("addComments") ||
+                      currentUser.id == dataOwner.id
+                    )
+                  ) {
+                    toast.error(
+                      "Your role(s) doesn't have permission to add comments on this form"
                     );
-                    if (res.id) {
-                      if (setForm) setForm(res);
-                      else updateCollection(res);
-                      setComment("");
-                      setIsDirty(false);
-                    } else toast.error("Something went wrong");
-                    setSendingComment(false);
-                  }}
-                >
-                  Send
-                </PrimaryButton>
-              </Box>
+                    return;
+                  }
+                  setSendingComment(true);
+                  const res = await sendFormComment(
+                    collectionId,
+                    dataId,
+                    comment,
+                    {
+                      actor: {
+                        id: currentUser.id,
+                        refType: "user",
+                      },
+                    },
+                    false
+                  );
+                  if (res.id) {
+                    updateCollection(res);
+                    setComment("");
+                    setIsDirty(false);
+                  } else toast.error("Something went wrong");
+                  setSendingComment(false);
+                }}
+              >
+                <SendOutlined style={{ fontSize: "1.3rem", padding: 2 }} />
+              </Button>
             )}
           </Box>
         </Stack>

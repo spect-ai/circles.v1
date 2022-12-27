@@ -1,9 +1,19 @@
 import Popover from "@/app/common/components/Popover";
 import { PropertyType } from "@/app/types";
-import { Box, IconPencil, Stack, Text, useTheme } from "degen";
+import {
+  Box,
+  IconDotsHorizontal,
+  IconPencil,
+  Stack,
+  Text,
+  useTheme,
+} from "degen";
+import { AnimatePresence, motion } from "framer-motion";
 import React, { useState } from "react";
+import { toast } from "react-toastify";
 import styled from "styled-components";
 import { getPropertyIcon } from "../../CollectionProject/EditProperty/Utils";
+import { useLocalCollection } from "../Context/LocalCollectionContext";
 
 type Props = {
   sortData: (columnName: string, asc: boolean) => void;
@@ -36,24 +46,51 @@ export default function HeaderComponent({
   propertyType,
 }: Props) {
   const [isOpen, setIsOpen] = useState(false);
+  const [showEdit, setShowEdit] = useState(false);
+  const { localCollection: collection } = useLocalCollection();
   return (
     <Popover
       butttonComponent={
-        <Box>
-          <Stack direction="horizontal">
-            <Text variant="label">{getPropertyIcon(propertyType)}</Text>
-            <Text variant="label">{columnName}</Text>
-            {/* <DropdownButton
-              onClick={(e) => {
-                e.stopPropagation();
-                e.preventDefault();
-                setIsOpen(!isOpen);
-              }}
-            >
-              <Text variant="label">
-                <IconDotsHorizontal size="5" />
-              </Text>
-            </DropdownButton> */}
+        <Box
+          onMouseEnter={() => setShowEdit(true)}
+          onMouseLeave={() => setShowEdit(false)}
+        >
+          <Stack direction="horizontal" justify="space-between">
+            <Stack direction="horizontal" space="2">
+              <Text variant="label">{getPropertyIcon(propertyType)}</Text>
+              <Text variant="label">{columnName}</Text>
+            </Stack>
+            <AnimatePresence>
+              {showEdit && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <Box
+                    cursor="pointer"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      e.preventDefault();
+                      if (
+                        collection.collectionType === 1 &&
+                        (columnName === "Title" || columnName === "Description")
+                      ) {
+                        toast.warn("You can't edit this field");
+                        return;
+                      }
+                      setIsEditFieldOpen(true);
+                      setPropertyName(columnName);
+                    }}
+                  >
+                    <Text color="accent">
+                      <IconPencil size="5" />
+                    </Text>
+                  </Box>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </Stack>
         </Box>
       }

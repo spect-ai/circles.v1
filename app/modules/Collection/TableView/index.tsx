@@ -671,9 +671,9 @@ export default function TableView() {
                 screenClass === "xxl"
                   ? 700
                   : screenClass === "xl"
-                  ? 600
+                  ? 520
                   : screenClass === "lg"
-                  ? 550
+                  ? 500
                   : screenClass === "md"
                   ? 500
                   : screenClass === "sm"
