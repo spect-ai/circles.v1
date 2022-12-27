@@ -247,7 +247,7 @@ function Dashboard() {
               </Stack>
             </Hidden>
           </Stack>
-          {currentUser.discordUsername && (
+          {!currentUser.discordUsername && (
             <Box
               marginY={"3"}
               padding={"3"}
@@ -260,7 +260,7 @@ function Dashboard() {
             >
               <Text>
                 Want to explore your favourite DAOs on Spect ? Unlock countless
-                opportunities by connecting your Discord to Spect
+                opportunities by connecting your Discord account.
               </Text>
               <Link
                 href={`https://discord.com/api/oauth2/authorize?client_id=942494607239958609&redirect_uri=${

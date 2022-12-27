@@ -53,6 +53,15 @@ export function toIsoString(date: Date) {
   );
 }
 
+export const dateIsInvalid = (startDate: string, endDate: string) => {
+  if (startDate && endDate) {
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    return start > end;
+  }
+  return false;
+};
+
 export function timeSince(date: Date) {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore

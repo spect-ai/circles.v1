@@ -17,6 +17,7 @@ import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { useQuery } from "react-query";
+import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
 
 const CollectionPage: NextPage = () => {
   const router = useRouter();
@@ -58,6 +59,11 @@ const CollectionPage: NextPage = () => {
     }
   );
 
+  const client = new ApolloClient({
+    uri: "https://testnet.snapshot.org/graphql",
+    cache: new InMemoryCache(),
+  });
+
   useEffect(() => {
     if (!circle && cId) {
       void fetchCircle();
@@ -82,9 +88,11 @@ const CollectionPage: NextPage = () => {
       />
       <CircleContext.Provider value={circlecontext}>
         <LocalCollectionContext.Provider value={context}>
-          <PublicLayout>
-            <Collection key={colId as string} />
-          </PublicLayout>
+          <ApolloProvider client={client}>
+            <PublicLayout>
+              <Collection key={colId as string} />
+            </PublicLayout>
+          </ApolloProvider>
         </LocalCollectionContext.Provider>
       </CircleContext.Provider>
     </>

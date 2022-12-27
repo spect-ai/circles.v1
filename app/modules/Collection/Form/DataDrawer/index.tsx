@@ -699,3 +699,30 @@ const ScrollContainer = styled(Box)`
     border-radius: 0rem;
   }
 `;
+
+{/* <Stack>
+  <Text variant="label">Voting Period</Text>
+  <Stack direction={"horizontal"}>
+    <DateInput
+      placeholder={`Enter Start Date`}
+      value={startDate}
+      type="datetime-local"
+      mode={mode}
+      onChange={(e) => {
+        setStartDate(e.target.value);
+      }}
+    />
+    <DateInput
+      placeholder={`Enter End Date`}
+      value={endDate}
+      type="datetime-local"
+      mode={mode}
+      onChange={(e) => {
+        setEndDate(e.target.value);
+      }}
+    />
+  </Stack>
+  {dateIsInvalid(startDate, endDate) && (
+    <Text color={"red"}>Date is invalid</Text>
+  )}
+</Stack>; */}

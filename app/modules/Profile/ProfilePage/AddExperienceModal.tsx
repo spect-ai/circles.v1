@@ -376,7 +376,6 @@ export const DateInput = styled.input<{ mode: string }>`
   width: 100%;
   color: ${(props) =>
     props.mode === "dark" ? "rgb(255, 255, 255,0.7)" : "rgb(20,20,20,0.7)"};
-  margin-top: 10px;
   outline: none;
   &:focus {
     border-color: rgb(191, 90, 242, 1);
