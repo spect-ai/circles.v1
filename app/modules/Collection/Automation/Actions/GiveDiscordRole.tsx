@@ -8,6 +8,7 @@ import DiscordIcon from "@/app/assets/icons/discordIcon.svg";
 import { getGuildRoles } from "@/app/services/Discord";
 import Editor from "@/app/common/components/Editor";
 import { useLocalCollection } from "../../Context/LocalCollectionContext";
+import { useLocation } from "react-use";
 
 type Props = {
   actionMode: "edit" | "create";
@@ -23,6 +24,7 @@ export default function GiveDiscordRole({
   const [selectedRoles, setSelectedRoles] = useState(
     (action.data?.roles || {}) as { [roleId: string]: boolean }
   );
+  const { origin } = useLocation();
   const { circle } = useCircle();
   const { localCollection: collection } = useLocalCollection();
   const toggleSelectedRole = (roleId: string) => {
@@ -63,13 +65,7 @@ export default function GiveDiscordRole({
         }}
         onClick={() => {
           window.open(
-            `https://discord.com/oauth2/authorize?client_id=942494607239958609&permissions=17448306704&redirect_uri=${
-              process.env.NODE_ENV !== "production"
-                ? "http://localhost:3000/"
-                : "https://circles.spect.network/"
-            }api/connectDiscord&response_type=code&scope=bot&state=${
-              circle.slug
-            }/r/${collection.slug}`,
+            `https://discord.com/oauth2/authorize?client_id=942494607239958609&permissions=17448306704&redirect_uri=${origin}/api/connectDiscord&response_type=code&scope=bot&state=${circle.slug}/r/${collection.slug}`,
             "_blank"
           );
         }}

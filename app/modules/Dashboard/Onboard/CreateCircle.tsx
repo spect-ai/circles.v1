@@ -11,6 +11,7 @@ import PrimaryButton from "@/app/common/components/PrimaryButton";
 import Link from "next/link";
 import DiscordIcon from "@/app/assets/icons/discordIcon.svg";
 import { joinCirclesFromGuildxyz } from "@/app/services/JoinCircle";
+import { useLocation } from "react-use";
 
 type CreateCircleDto = {
   name: string;
@@ -32,6 +33,7 @@ export function CreateCircle({ setStep, setOnboardType }: Props) {
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
+  const { origin } = useLocation();
 
   const { mutateAsync } = useMutation((circle: CreateCircleDto) => {
     return fetch(`${process.env.API_HOST}/circle/v1`, {
@@ -127,7 +129,7 @@ export function CreateCircle({ setStep, setOnboardType }: Props) {
             </Text>
           </Box>
           <PrimaryButton
-            onClick={async() => {
+            onClick={async () => {
               setStep(3);
               setOnboardType("profile");
               await joinCirclesFromGuildxyz(currentUser?.ethAddress as string);
@@ -159,11 +161,7 @@ export function CreateCircle({ setStep, setOnboardType }: Props) {
             }}
             onClick={() => {
               window.open(
-                `https://discord.com/oauth2/authorize?client_id=942494607239958609&permissions=17448306704&redirect_uri=${
-                  process.env.NODE_ENV !== "production"
-                    ? "http://localhost:3000/"
-                    : "https://circles.spect.network/"
-                }api/connectDiscord&response_type=code&scope=bot&state=${slug}`,
+                `https://discord.com/oauth2/authorize?client_id=942494607239958609&permissions=17448306704&redirect_uri=${origin}/api/connectDiscord&response_type=code&scope=bot&state=${slug}`,
                 "_blank"
               );
               setStep(2);

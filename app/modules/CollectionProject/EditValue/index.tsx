@@ -373,7 +373,7 @@ function EditValue({ value, setValue, propertyName, dataId }: Props) {
 export default EditValue;
 
 const FieldButton = styled.div<{ mode: string }>`
-  width: 100%;
+  width: 25rem;
   color: ${({ mode }) =>
     mode === "dark" ? "rgb(255, 255, 255, 0.25)" : "rgb(0, 0, 0, 0.25)"};
   padding: 0.5rem 0.5rem;
@@ -392,7 +392,7 @@ const FieldButton = styled.div<{ mode: string }>`
 `;
 
 const FieldInputContainer = styled(Box)`
-  width: 100%;
+  width: 25rem;
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -414,7 +414,7 @@ const FieldInput = styled.input<{ mode: string }>`
 `;
 
 export const MenuContainer = styled(Box)<{ cWidth?: string }>`
-  width: ${(props) => props.cWidth || "30rem"};
+  width: ${(props) => props.cWidth || "25rem"};
   border-bottom-left-radius: 0.25rem;
   border-bottom-right-radius: 0.25rem;
   background: rgb(28, 25, 31);
@@ -428,7 +428,7 @@ export const MenuContainer = styled(Box)<{ cWidth?: string }>`
   }
 
   @media (max-width: 768px) {
-    width: 100%;
+    width: 15rem;
   }
 `;
 

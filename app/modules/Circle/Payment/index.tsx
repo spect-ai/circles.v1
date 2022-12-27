@@ -15,7 +15,6 @@ export default function Payment() {
   const [paymentViewId, setPaymentViewId] =
     useState<"Pending" | "Completed" | "Cancelled">("Pending");
 
-  const { circle } = useCircle();
   const { mode } = useTheme();
   return (
     <>

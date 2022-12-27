@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { updateCollectionDataGuarded } from "@/app/services/Collection";
+import { exportToCsv } from "@/app/services/CsvExport";
 import { Milestone, Option, PropertyType, Reward } from "@/app/types";
 import { Box, Spinner, Stack } from "degen";
 import { motion, AnimatePresence } from "framer-motion";
@@ -118,7 +120,7 @@ export default function TableView() {
 
       // filter the data based on the search filter
       let filteredData = matchSorter(Object.values(data), searchFilter, {
-        keys: Object.keys(data[0]).map((key) => {
+        keys: Object.keys(data[0] || {}).map((key) => {
           return (item: any) => {
             if (key === "id") return item.id;
             if (collection.properties[key]?.type === "date") {
@@ -588,6 +590,73 @@ export default function TableView() {
           />
         )}
       </AnimatePresence>
+      {collection.collectionType === 0 && (
+        <Box
+          display="flex"
+          flexDirection="row"
+          justifyContent="flex-end"
+          width="full"
+          marginBottom="4"
+        >
+          {" "}
+          <PrimaryButton
+            variant="tertiary"
+            onClick={() => {
+              const out = [] as any[];
+              const d = Object.values(data || {}).map((da) => {
+                Object.entries(da)
+                  .filter(([key, value]) => key !== "slug" && key !== "id")
+                  .forEach(([key, value]: [string, any]) => {
+                    console.log({ key });
+                    if (collection.properties[key].type === "reward") {
+                      da[key] = JSON.stringify({
+                        chain: value?.chain.label,
+                        token: value?.token.label,
+                        value: value?.value,
+                      });
+                    } else if (
+                      collection.properties[key].type === "milestone"
+                    ) {
+                      const milestones = value?.map((v: Milestone) => ({
+                        ...v,
+                        reward: {
+                          chain: v?.reward?.chain.label,
+                          token: v?.reward?.token.label,
+                          value: v?.reward?.value,
+                        },
+                      }));
+                      da[key] = JSON.stringify(milestones);
+                    } else if (
+                      ["user", "singleSelect"].includes(
+                        collection.properties[key].type
+                      )
+                    ) {
+                      da[key] = value?.label;
+                    } else if (collection.properties[key].type === "multiURL") {
+                      da[key] = JSON.stringify(value);
+                    } else if (
+                      ["user[]", "multiSelect"].includes(
+                        collection.properties[key].type
+                      )
+                    ) {
+                      da[key] = JSON.stringify(
+                        value?.map((v: Option) => v.label)
+                      );
+                    } else if (!value) {
+                      da[key] = "";
+                    } else {
+                      da[key] = value;
+                    }
+                    out.push(da);
+                  });
+              });
+              exportToCsv(out, collection.name);
+            }}
+          >
+            Export CSV
+          </PrimaryButton>
+        </Box>
+      )}
       <AnimatePresence>
         {collection.name && !refreshTable && (
           <motion.div

@@ -11,6 +11,7 @@ import DiscordIcon from "@/app/assets/icons/discordIcon.svg";
 import CheckBox from "@/app/common/components/Table/Checkbox";
 import CreatableDropdown from "@/app/common/components/CreatableDropdown";
 import Editor from "@/app/common/components/Editor";
+import { useLocation } from "react-use";
 
 type Props = {
   actionMode: "edit" | "create";
@@ -23,6 +24,7 @@ export default function CreateDiscordChannel({
   actionMode,
   action,
 }: Props) {
+  const { origin } = useLocation();
   const [channelName, setChannelName] = useState(
     action?.data?.channelName || ""
   );
@@ -88,14 +90,9 @@ export default function CreateDiscordChannel({
           md: "1/2",
         }}
         onClick={() => {
+          console.log({ origin });
           window.open(
-            `https://discord.com/oauth2/authorize?client_id=942494607239958609&permissions=17448306704&redirect_uri=${
-              process.env.NODE_ENV !== "production"
-                ? "http://localhost:3000/"
-                : "https://circles.spect.network/"
-            }api/connectDiscord&response_type=code&scope=bot&state=${
-              circle.slug
-            }/r/${collection.slug}`,
+            `https://discord.com/oauth2/authorize?client_id=942494607239958609&permissions=17448306704&redirect_uri=${origin}/api/connectDiscord&response_type=code&scope=bot&state=${circle.slug}/r/${collection.slug}`,
             "_blank"
           );
         }}

@@ -8,6 +8,7 @@ import { UserType } from "@/app/types";
 import { useQuery } from "react-query";
 import Link from "next/link";
 import DiscordIcon from "@/app/assets/icons/discordIcon.svg";
+import { useLocation } from "react-use";
 
 export const NameInput = styled.input`
   width: 100%;
@@ -28,6 +29,7 @@ export const NameInput = styled.input`
 export function BasicProfile({ setStep }: { setStep: (step: number) => void }) {
   const { updateProfile } = useProfileUpdate();
   const [userName, setUserName] = useState("");
+  const { hostname } = useLocation();
   const [part, setPart] = useState(0);
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
@@ -113,11 +115,12 @@ export function BasicProfile({ setStep }: { setStep: (step: number) => void }) {
                 </Box>
               }
               onClick={() => {
+                console.log({ hostname });
                 window.open(
                   `https://discord.com/api/oauth2/authorize?client_id=942494607239958609&redirect_uri=${
                     process.env.NODE_ENV === "development"
                       ? "http%3A%2F%2Flocalhost%3A3000%2FlinkDiscord"
-                      : "https%3A%2F%2Fcircles.spect.network%2FlinkDiscord"
+                      : `https%3A%2F%2F${hostname}%2FlinkDiscord`
                   }&response_type=code&scope=guilds%20identify`,
                   "_blank"
                 );

@@ -12,6 +12,7 @@ import ConnectGnosis from "../ConnectGnosis";
 import GuildIntegration from "../GuildIntegration";
 import GuildRoleMapping from "../GuildIntegration/GuildRoleMapping";
 import ConnectQuestbook from "../QuestbookIntegration";
+import { useLocation } from "react-use";
 
 export default function CircleIntegrations() {
   const router = useRouter();
@@ -19,6 +20,7 @@ export default function CircleIntegrations() {
   const { data: circle } = useQuery<CircleType>(["circle", cId], {
     enabled: false,
   });
+  const { origin } = useLocation();
   return (
     <Box>
       <Stack space="8">
@@ -71,11 +73,7 @@ export default function CircleIntegrations() {
           }}
         >
           <Link
-            href={`https://discord.com/oauth2/authorize?client_id=942494607239958609&permissions=17448306704&redirect_uri=${
-              process.env.NODE_ENV !== "production"
-                ? "http://localhost:3000/"
-                : "https://circles.spect.network/"
-            }api/connectDiscord&response_type=code&scope=bot&state=${cId}`}
+            href={`https://discord.com/oauth2/authorize?client_id=942494607239958609&permissions=17448306704&redirect_uri=${origin}/api/connectDiscord&response_type=code&scope=bot&state=${cId}`}
           >
             <Box
               width={{

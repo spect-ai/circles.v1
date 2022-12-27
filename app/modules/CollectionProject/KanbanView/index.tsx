@@ -6,6 +6,7 @@ import { Box, IconPlusSmall, Stack } from "degen";
 import { AnimatePresence } from "framer-motion";
 import { DragDropContext } from "react-beautiful-dnd";
 import { toast } from "react-toastify";
+import { useLocation } from "react-use";
 import uuid from "react-uuid";
 import InviteMemberModal from "../../Circle/ContributorsModal/InviteMembersModal";
 import CardDrawer from "../CardDrawer";
@@ -28,7 +29,6 @@ export default function KanbanView() {
     updateCollection,
     cardOrders,
   } = useViewCommon();
-
   return (
     <Box
       marginX="8"
@@ -62,10 +62,9 @@ export default function KanbanView() {
               />
             );
           })}
-          <Box marginTop="4" width="48">
+          <Box marginTop="2" width="48">
             {property.type === "singleSelect" && !loading && (
               <PrimaryButton
-                icon={<IconPlusSmall />}
                 onClick={async () => {
                   setLoading(true);
                   await updateField(collection.id, view.groupByColumn, {
