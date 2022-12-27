@@ -145,6 +145,10 @@ const PropertyButton = styled.div<{ mode: string }>`
   }
 
   transition: background 0.2s ease;
+
+  @media (max-width: 768px) {
+    gap: 0.3rem;
+  }
 `;
 
 const MenuContainer = styled(Box)`

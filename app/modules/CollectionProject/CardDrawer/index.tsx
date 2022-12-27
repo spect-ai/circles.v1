@@ -181,7 +181,7 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
               <IconDotsVertical size="4" />
             </Text>
           </Box>
-          <Box
+          {/* <Box
             display="flex"
             flexDirection={{
               xs: "row",
@@ -189,18 +189,18 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
               lg: "row",
             }}
             width="full"
-          >
-            <EditProperty propertyName={property} />
-            <EditValue
-              propertyName={property}
-              value={value[property]}
-              setValue={(val) => {
-                setValue({ ...value, [property]: val });
-                void onChange({ [property]: val }, value.slug);
-              }}
-              dataId={value.slug}
-            />
-          </Box>
+          > */}
+          <EditProperty propertyName={property} />
+          <EditValue
+            propertyName={property}
+            value={value[property]}
+            setValue={(val) => {
+              setValue({ ...value, [property]: val });
+              void onChange({ [property]: val }, value.slug);
+            }}
+            dataId={value.slug}
+          />
+          {/* </Box> */}
         </Stack>
       </Box>
     );

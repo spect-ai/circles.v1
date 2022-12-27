@@ -123,6 +123,10 @@ export const MotionContainer = styled(motion.div)<{ width?: string }>`
   @media (max-width: 768px) {
     width: 100%;
   }
+
+  @media (min-width: 768px) and (max-width: 1024px) {
+    width: 75%;
+  }
 `;
 
 export default Drawer;
