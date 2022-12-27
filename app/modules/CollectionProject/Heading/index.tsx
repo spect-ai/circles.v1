@@ -1,6 +1,7 @@
 import Popover from "@/app/common/components/Popover";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { updateFormCollection } from "@/app/services/Collection";
+import { TableOutlined } from "@ant-design/icons";
 import {
   Box,
   Heading,
@@ -368,10 +369,10 @@ export const getViewIcon = (viewType: string) => {
   switch (viewType) {
     case "grid":
       return (
-        <Grid
-          size={18}
+        <TableOutlined
           style={{
-            marginTop: 4,
+            fontSize: "1.1rem",
+            marginTop: 2,
           }}
         />
       );

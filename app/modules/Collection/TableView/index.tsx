@@ -120,7 +120,7 @@ export default function TableView() {
 
       // filter the data based on the search filter
       let filteredData = matchSorter(Object.values(data), searchFilter, {
-        keys: Object.keys(data[0]).map((key) => {
+        keys: Object.keys(data[0] || {}).map((key) => {
           return (item: any) => {
             if (key === "id") return item.id;
             if (collection.properties[key]?.type === "date") {

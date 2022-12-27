@@ -9,7 +9,7 @@ import {
   IconCollection,
   Stack,
 } from "degen";
-import { ProjectOutlined } from "@ant-design/icons";
+import { ProjectOutlined, TableOutlined } from "@ant-design/icons";
 import { Tooltip } from "react-tippy";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { toast } from "react-toastify";
@@ -108,10 +108,10 @@ export default function CreateFolderItem({
                 }}
               >
                 <Text color="accent">
-                  <Grid
-                    size={18}
+                  <TableOutlined
                     style={{
-                      marginTop: 4,
+                      fontSize: "1.1rem",
+                      marginTop: 2,
                     }}
                   />
                 </Text>
