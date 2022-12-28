@@ -28,7 +28,13 @@ export default function Sort() {
 
   const [sortOptions, setSortOptions] = useState<Option[]>([]);
 
-  const unSortableProperties = ["user[]", "multiSelect", "payWall", "longText"];
+  const unSortableProperties = [
+    "user[]",
+    "multiSelect",
+    "payWall",
+    "longText",
+    "multiURL",
+  ];
 
   useEffect(() => {
     const noneOption = {

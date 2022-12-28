@@ -21,6 +21,7 @@ import { CellWithId } from "react-datasheet-grid/dist/types";
 import { useScreenClass } from "react-grid-system";
 import { toast } from "react-toastify";
 import CardDrawer from "../../CollectionProject/CardDrawer";
+import Filtering from "../../CollectionProject/Filtering";
 import AddField from "../AddField";
 import { satisfiesConditions } from "../Common/SatisfiesFilter";
 import { useLocalCollection } from "../Context/LocalCollectionContext";
@@ -233,7 +234,8 @@ export default function TableView() {
           if (
             propertyType === "multiSelect" ||
             propertyType === "user[]" ||
-            propertyType === "payWall"
+            propertyType === "payWall" ||
+            propertyType === "multiURL"
           )
             return;
 
@@ -594,11 +596,12 @@ export default function TableView() {
         <Box
           display="flex"
           flexDirection="row"
+          gap={"2"}
           justifyContent="flex-end"
           width="full"
           marginBottom="4"
         >
-          {" "}
+          <Filtering />
           <PrimaryButton
             variant="tertiary"
             onClick={() => {

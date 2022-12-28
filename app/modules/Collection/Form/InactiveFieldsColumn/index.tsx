@@ -16,6 +16,7 @@ const Container = styled(Box)`
     width: 100%;
     margin-bottom: 2rem;
   }
+  padding: 1rem;
 `;
 
 type Props = {

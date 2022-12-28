@@ -124,7 +124,7 @@ export default function AddConditions({
           </Stack>
         </Box>
       ))}
-      <Box width="1/2" marginTop="4">
+      <Box marginTop="8">
         <PrimaryButton
           icon={<IconPlusSmall />}
           variant="tertiary"

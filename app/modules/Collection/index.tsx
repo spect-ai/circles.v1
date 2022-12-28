@@ -1,4 +1,4 @@
-import { Box, Button, useTheme } from "degen";
+import { Box, Button, Stack, useTheme } from "degen";
 import { AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import { ToastContainer } from "react-toastify";
@@ -40,7 +40,7 @@ export function Collection() {
         Migrate
       </PrimaryButton> */}
       {collection.collectionType === 0 && (
-        <Box>
+        <Stack space={"0"}>
           <CollectionHeading />
           {view === 0 && <Form />}
           <Box
@@ -56,7 +56,7 @@ export function Collection() {
           >
             {view === 1 && (
               <>
-                <Filtering />
+                
                 <TableView />
               </>
             )}
@@ -80,7 +80,7 @@ export function Collection() {
           <AnimatePresence>
             {faqOpen && <FAQModal handleClose={() => setFaqOpen(false)} />}
           </AnimatePresence>
-        </Box>
+        </Stack>
       )}
       {collection.collectionType === 1 && <CollectionProject />}
     </>

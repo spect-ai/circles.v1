@@ -8,6 +8,7 @@ type Props = {
   name: string;
   icon?: React.ReactNode;
   tourId?: string;
+  style?: any;
 };
 
 const TagContainer = styled(Box)<{ mode: string }>`
@@ -22,7 +23,7 @@ const TagContainer = styled(Box)<{ mode: string }>`
   }
 `;
 
-export default function ClickableTag({ name, icon, onClick, tourId }: Props) {
+export default function ClickableTag({ name, icon, onClick, tourId, style }: Props) {
   const [hover, setHover] = useState(false);
   const { mode } = useTheme();
   return (
@@ -42,6 +43,7 @@ export default function ClickableTag({ name, icon, onClick, tourId }: Props) {
       onMouseOver={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       mode={mode}
+      style={style}
     >
       <Box marginRight="1">{icon}</Box>
       <Text ellipsis>{smartTrim(name, 18)}</Text>
