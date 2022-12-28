@@ -35,10 +35,12 @@ import { toast, ToastContainer } from "react-toastify";
 import { Grid } from "react-feather";
 import styled from "styled-components";
 import DiscordIcon from "@/app/assets/icons/discordIcon.svg";
+import { useLocation } from "react-use";
 
 function Dashboard() {
   const { setIsProfilePanelExpanded } = useGlobal();
   useJoinCircle();
+  const { hostname } = useLocation();
   const [isOpen, setIsOpen] = useState(false);
   const [faqOpen, setFaqOpen] = useState(false);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
@@ -245,12 +247,17 @@ function Dashboard() {
               </Stack>
             </Hidden>
           </Stack>
-          {currentUser.discordUsername && (
+          {!currentUser.discordUsername && (
             <Box
               marginY={"3"}
               padding={"3"}
               display="flex"
-              flexDirection={{ lg: "row", xs: "column", md: "column", sm: "column" }}
+              flexDirection={{
+                lg: "row",
+                xs: "column",
+                md: "column",
+                sm: "column",
+              }}
               gap="3"
               justifyContent="space-between"
               alignItems={"center"}
@@ -265,10 +272,8 @@ function Dashboard() {
                 href={`https://discord.com/api/oauth2/authorize?client_id=942494607239958609&redirect_uri=${
                   process.env.NODE_ENV === "development"
                     ? "http%3A%2F%2Flocalhost%3A3000%2FlinkDiscord"
-                    : "https%3A%2F%2Fcircles.spect.network%2FlinkDiscord"
-                }&response_type=code&scope=guilds%20identify&state=${
-                  router.asPath
-                }`}
+                    : `https%3A%2F%2F${hostname}%2FlinkDiscord`
+                }&response_type=code&scope=guilds%20identify`}
               >
                 <Button
                   data-tour="connect-discord-button"
