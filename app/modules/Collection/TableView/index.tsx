@@ -139,7 +139,7 @@ export default function TableView() {
 
       if (
         (collection.collectionType === 0 &&
-          collection.projectMetadata.views?.["0x0"].filters) ||
+          collection.projectMetadata.views?.["0x0"]?.filters) ||
         (collection.collectionType === 1 &&
           collection.projectMetadata.views[projectViewId].filters)
       ) {
@@ -158,7 +158,7 @@ export default function TableView() {
         (collection.collectionType === 1 &&
           collection.projectMetadata.views[projectViewId].sort?.property) ||
         (collection.collectionType === 0 &&
-          collection.projectMetadata.views?.["0x0"].sort?.property)
+          collection.projectMetadata.views?.["0x0"]?.sort?.property)
       ) {
         const property =
           collection.properties[

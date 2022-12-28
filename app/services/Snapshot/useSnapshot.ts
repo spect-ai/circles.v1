@@ -2,7 +2,7 @@ import snapshot from "@snapshot-labs/snapshot.js";
 import { ethers } from "ethers";
 import { useLocalCollection } from "@/app/modules/Collection/Context/LocalCollectionContext";
 import { useLocation } from "react-use";
-import { useBlockNumber } from "wagmi";
+import { useBlockNumber, useAccount, useProvider } from "wagmi";
 
 interface createProposalDto {
   title: string;
@@ -16,11 +16,13 @@ export default function useSnapshot() {
   const { localCollection: collection, updateCollection } =
     useLocalCollection();
   const { hostname } = useLocation();
+  const { address } = useAccount();
+  // const provider = useProvider();
 
   const hub = hostname?.startsWith("circles")
     ? "https://hub.snapshot.org"
     : "https://testnet.snapshot.org";
-  
+
   const client = new snapshot.Client712(hub);
 
   const space = collection?.voting?.snapshot?.id || "";
@@ -35,37 +37,43 @@ export default function useSnapshot() {
     end,
     block,
   }: createProposalDto) {
-    const window: any = globalThis;
-    const provider = new ethers.providers.Web3Provider(window?.ethereum);
-    const signer = provider.getSigner();
-    const account = await signer.getAddress();
-    const blockNumber = await refetchBlockNumber();
+    try {
+      const window: any = globalThis;
+      const provider = new ethers.providers.Web3Provider(window?.ethereum);
+      const blockNumber = await refetchBlockNumber();
 
-    const receipt = await client.proposal(provider, account, {
-      space,
-      type: "single-choice",
-      title: title,
-      body: body,
-      choices: collection?.voting?.options?.map((option) => option.label),
-      start: start || Math.floor(new Date().getTime() / 1000),
-      end: end || Math.floor((new Date().getTime() + 7200000) / 1000),
-      snapshot: blockNumber?.data as number - 1,
-      network: "5",
-      plugins: JSON.stringify({}),
-      app: "Spect",
-    } as any);
+      const receipt = await client.proposal(
+        provider as any,
+        address as string,
+        {
+          space,
+          type: "single-choice",
+          title: title,
+          body: body,
+          choices: collection?.voting?.options?.map((option) => option.label),
+          start: start || Math.floor(new Date().getTime() / 1000),
+          end: end || Math.floor((new Date().getTime() + 7200000) / 1000),
+          snapshot: (blockNumber?.data as number) - 1,
+          network: "5",
+          plugins: JSON.stringify({}),
+          app: "Spect",
+        } as any
+      );
 
-    console.log(receipt);
-    return receipt;
+      console.log(receipt);
+      return receipt;
+    } catch (error) {
+      console.log(error);
+      return error;
+    }
   }
 
   async function castVote(proposal: string, choice: number) {
-    const window: any = globalThis;
-    const provider = new ethers.providers.Web3Provider(window?.ethereum);
-    const signer = provider.getSigner();
-    const account = await signer.getAddress();
     try {
-      const receipt = await client.vote(provider, account, {
+      const window: any = globalThis;
+      const provider = new ethers.providers.Web3Provider(window?.ethereum);
+
+      const receipt = await client.vote(provider, address as string, {
         space,
         proposal: proposal,
         type: "single-choice",

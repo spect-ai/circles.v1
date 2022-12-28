@@ -123,9 +123,12 @@ export default function SnapshotVoting({ dataId }: { dataId: string }) {
     refetchProposal();
     refetchUserChoices();
     if (
-      proposalData?.proposal?.state === "closed" &&
-      collection?.voting?.periods?.[data.slug]?.active
+      (proposalData?.proposal?.state === "closed" &&
+        collection?.voting?.periods?.[data.slug]?.active) ||
+      (proposalData?.proposal === null &&
+        collection?.voting?.periods?.[data.slug]?.active)
     ) {
+      
       const endVoting = async () => {
         const res = await endVotingPeriod(collection.id, dataId);
         if (!res.id) {
@@ -236,7 +239,12 @@ export default function SnapshotVoting({ dataId }: { dataId: string }) {
                       setVote(tempTab);
                       toast.success("Vote casted successfully");
                     } else {
-                      toast.error("Vote cast failed : " + res?.error);
+                      toast.error(
+                        "Couldn't cast vote : " +
+                          res?.error +
+                          " " +
+                          res?.error_description
+                      );
                     }
                   }}
                   orientation="horizontal"
