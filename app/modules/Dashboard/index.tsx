@@ -245,12 +245,13 @@ function Dashboard() {
               </Stack>
             </Hidden>
           </Stack>
-          {!currentUser.discordUsername && (
+          {currentUser.discordUsername && (
             <Box
               marginY={"3"}
               padding={"3"}
               display="flex"
-              flexDirection={"row"}
+              flexDirection={{ lg: "row", xs: "column", md: "column", sm: "column" }}
+              gap="3"
               justifyContent="space-between"
               alignItems={"center"}
               boxShadow="0.5"
