@@ -1,23 +1,37 @@
 import Dropdown from "@/app/common/components/Dropdown";
 import Modal from "@/app/common/components/Modal";
-import ConfirmModal from "@/app/common/components/Modal/ConfirmModal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import CheckBox from "@/app/common/components/Table/Checkbox";
 import { updateFormCollection } from "@/app/services/Collection";
 import { Option } from "@/app/types";
-import { Box, IconUserGroup, Input, Stack, Text } from "degen";
+import { Box, IconUserGroup, Input, Stack, Text, useTheme } from "degen";
 import { AnimatePresence } from "framer-motion";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import uuid from "react-uuid";
-import AddOptions from "../AddField/AddOptions";
 import { useLocalCollection } from "../Context/LocalCollectionContext";
 import MultiChoiceVotingOnMultipleResponses from "./MultiChoiceVotingOnMultipleResponses";
 import SingleChoiceVotingOnSingleResponse from "./SingleChoiceVotingOnSingleResponse";
+import { useQuery, gql } from "@apollo/client";
+
+export const Space = gql`
+  query Space($id: String!) {
+    space(id: $id) {
+      id
+      name
+      about
+      network
+      symbol
+      members
+    }
+  }
+`;
 
 export default function VotingModule() {
   const { localCollection: collection, setLocalCollection } =
     useLocalCollection();
+
+  const { mode } = useTheme();
 
   const [isOpen, setIsOpen] = useState(false);
   const [votingType, setVotingType] = useState({
@@ -25,8 +39,8 @@ export default function VotingModule() {
     value: "singleChoice",
   });
   const [votesArePublic, setVotesArePublic] = useState(false);
-  const [votesAreWeightedByTokens, setVotesAreWeightedByTokens] =
-    useState(false);
+  const [snapshotVoting, setSnapshotVoting] = useState(false);
+  const [snapshotSpace, setSnapshotSpace] = useState("");
   const [tokenWeightedWith, setTokenWeightedWith] = useState(
     [] as {
       chain: Option;
@@ -68,13 +82,17 @@ export default function VotingModule() {
           value: "singleChoice",
         }
       );
-      setVotesAreWeightedByTokens(
-        collection.voting.votesAreWeightedByTokens || false
-      );
-      setTokenWeightedWith(collection.voting.tokensWeightedWith || []);
+      setSnapshotVoting(collection.voting.votesAreWeightedByTokens || false);
+      setSnapshotSpace(collection.voting.snapshot?.id || "");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [collection]);
+
+  const {
+    loading: isLoading,
+    error,
+    data,
+  } = useQuery(Space, { variables: { id: snapshotSpace } });
 
   return (
     <>
@@ -96,7 +114,11 @@ export default function VotingModule() {
       </Box>
       <AnimatePresence>
         {isOpen && (
-          <Modal title="Voting Module" handleClose={() => setIsOpen(false)}>
+          <Modal
+            title="Voting Module"
+            handleClose={() => setIsOpen(false)}
+            size="large"
+          >
             <Box padding="8">
               <Stack space="4">
                 {" "}
@@ -124,25 +146,14 @@ export default function VotingModule() {
                     disabled={collection?.voting?.enabled}
                   />
                 </Stack>
-                <Box
-                  display="flex"
-                  flexDirection="row"
-                  gap="2"
-                  justifyContent="flex-start"
-                  alignItems="center"
+                <Stack
+                  direction={{
+                    lg: "horizontal",
+                    xs: "vertical",
+                    md: "vertical",
+                  }}
+                  justify="space-between"
                 >
-                  <CheckBox
-                    isChecked={votesArePublic}
-                    onClick={() => {
-                      setVotesArePublic(!votesArePublic);
-                    }}
-                    disabled={collection?.voting?.enabled}
-                  />
-                  <Text variant="small">
-                    Votes are visible by other members
-                  </Text>
-                </Box>
-                {/* <Box display="flex" flexDirection="column" gap="2">
                   <Box
                     display="flex"
                     flexDirection="row"
@@ -151,20 +162,70 @@ export default function VotingModule() {
                     alignItems="center"
                   >
                     <CheckBox
-                      isChecked={votesAreWeightedByTokens}
+                      isChecked={votesArePublic}
                       onClick={() => {
-                        setVotesAreWeightedByTokens(!votesAreWeightedByTokens);
+                        setVotesArePublic(!votesArePublic);
                       }}
                       disabled={collection?.voting?.enabled}
                     />
                     <Text variant="small">
-                      Votes are weighted by token holdings
+                      Votes are visible by other members
                     </Text>
                   </Box>
-                  {votesAreWeightedByTokens && (
-                    <Text variant="label">Pick Token</Text>
-                  )}
-                </Box> */}
+                  <Box display="flex" flexDirection="column" gap="2">
+                    <Box
+                      display="flex"
+                      flexDirection="row"
+                      gap="2"
+                      justifyContent="flex-start"
+                      alignItems="center"
+                    >
+                      <CheckBox
+                        isChecked={snapshotVoting}
+                        onClick={() => {
+                          if (snapshotVoting) {
+                            setSnapshotSpace("");
+                          }
+                          setSnapshotVoting(!snapshotVoting);
+                        }}
+                        disabled={collection?.voting?.enabled}
+                      />
+                      <Text variant="small">
+                        Votes are weighted by token holdings on your Snapshot
+                        space
+                      </Text>
+                    </Box>
+                  </Box>
+                </Stack>
+                {snapshotVoting && (
+                  <>
+                    <Text variant="label">Snapshot URL</Text>
+                    <Input
+                      label
+                      hideLabel
+                      prefix="https://snapshot.org/#/"
+                      value={snapshotSpace}
+                      placeholder="your-space.eth"
+                      onChange={(e) => {
+                        // const snapshotURL = e.target.value;
+                        // const spaceSlug = snapshotURL.replace(
+                        //   /^(https)\:\/\/snapshot.org\/#\//g,
+                        //   ""
+                        // );
+                        setSnapshotSpace(e.target.value);
+                      }}
+                    />
+                    {snapshotSpace &&
+                      !isLoading &&
+                      (data?.space?.id ? (
+                        <Text size={"extraSmall"} color="accent">
+                          Snapshot Space - {data?.space?.name}
+                        </Text>
+                      ) : (
+                        <Text color={"red"}>Incorrect URL</Text>
+                      ))}
+                  </>
+                )}
                 {["rankedChoice", "quadratic"].includes(votingType.value) && (
                   <MultiChoiceVotingOnMultipleResponses />
                 )}
@@ -179,6 +240,12 @@ export default function VotingModule() {
                   <Box width="full" marginTop="8">
                     <PrimaryButton
                       loading={loading}
+                      disabled={
+                        loading ||
+                        (snapshotVoting && (!snapshotSpace || !data?.space?.id)) ||
+                        !votingType ||
+                        !votingOptions.length
+                      }
                       onClick={async () => {
                         setLoading(true);
                         setIsConfirmModalOpen(false);
@@ -190,8 +257,13 @@ export default function VotingModule() {
                             message,
                             votingType,
                             votesArePublic,
-                            votesAreWeightedByTokens,
-                            tokensWeightedWith: tokenWeightedWith,
+                            votesAreWeightedByTokens: snapshotVoting,
+                            snapshot: {
+                              name: data?.space?.name || "",
+                              id: snapshotSpace,
+                              network: data?.space?.network || "",
+                              symbol: data?.space?.symbol || "",
+                            },
                           },
                         });
                         setLoading(false);

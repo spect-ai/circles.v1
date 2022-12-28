@@ -2,7 +2,7 @@ import {
   Box,
   Avatar,
   Tag,
-  IconCollection,
+  Text,
   Button,
   IconTokens,
   Heading,
@@ -35,6 +35,8 @@ import ResponsesTab from "./ResponsesTab";
 import FAQModal from "./FAQModal";
 import { toast, ToastContainer } from "react-toastify";
 import { Grid } from "react-feather";
+import styled from "styled-components";
+import DiscordIcon from "@/app/assets/icons/discordIcon.svg";
 
 function Dashboard() {
   const { setIsProfilePanelExpanded } = useGlobal();
@@ -245,6 +247,46 @@ function Dashboard() {
               </Stack>
             </Hidden>
           </Stack>
+          {!currentUser.discordUsername && (
+            <Box
+              marginY={"3"}
+              padding={"3"}
+              display="flex"
+              flexDirection={"row"}
+              justifyContent="space-between"
+              alignItems={"center"}
+              boxShadow="0.5"
+              borderRadius={"large"}
+            >
+              <Text>
+                Want to explore your favourite DAOs on Spect ? Unlock countless
+                opportunities by connecting your Discord account.
+              </Text>
+              <Link
+                href={`https://discord.com/api/oauth2/authorize?client_id=942494607239958609&redirect_uri=${
+                  process.env.NODE_ENV === "development"
+                    ? "http%3A%2F%2Flocalhost%3A3000%2FlinkDiscord"
+                    : "https%3A%2F%2Fcircles.spect.network%2FlinkDiscord"
+                }&response_type=code&scope=guilds%20identify&state=${
+                  router.asPath
+                }`}
+              >
+                <Button
+                  data-tour="connect-discord-button"
+                  width="fit"
+                  size="small"
+                  variant="secondary"
+                  prefix={
+                    <Box marginTop="1">
+                      <DiscordIcon />
+                    </Box>
+                  }
+                >
+                  Connect Discord
+                </Button>
+              </Link>
+            </Box>
+          )}
           <Box
             marginTop={{
               xs: "2",
@@ -343,5 +385,9 @@ function Dashboard() {
 
   return <Loader loading={isLoading} text="Fetching circles" />;
 }
+
+const UnderlinedText = styled(Box)`
+  text-decoration: underline;
+`;
 
 export default memo(Dashboard);

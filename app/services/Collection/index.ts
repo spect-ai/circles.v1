@@ -311,6 +311,8 @@ export const startVotingPeriod = async (
   startVotingPeriodDto?: {
     endsOn?: string;
     postOnSnapshot?: boolean;
+    space?: string;
+    proposalId?: string;
   }
 ) => {
   return await (
@@ -322,9 +324,7 @@ export const startVotingPeriod = async (
           "Content-Type": "application/json",
         },
         credentials: "include",
-        body: JSON.stringify({
-          startVotingPeriodDto,
-        }),
+        body: JSON.stringify(startVotingPeriodDto),
       }
     )
   ).json();

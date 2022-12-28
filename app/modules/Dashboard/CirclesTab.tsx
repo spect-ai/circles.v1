@@ -1,5 +1,5 @@
 import { CircleType, Option } from "@/app/types";
-import { Box } from "degen";
+import { Box, Tag } from "degen";
 import CircleCard from "@/app/modules/Explore/CircleCard/index";
 import CreateCircleCard from "@/app/modules/Explore/CircleCard/CreateCircleCard";
 import styled from "styled-components";
@@ -60,14 +60,20 @@ function YourCircles({
         justifyContent="flex-end"
         marginBottom="4"
       >
-        <Box width="96">
-          <Dropdown
-            options={options}
-            selected={selectedFilter}
-            onChange={setSelectedFilter}
-            multiple={false}
-            isClearable={false}
-          />
+        <Box
+          marginRight={"4"}
+          cursor="pointer"
+          onClick={() => {
+            if (selectedFilter.value === "all") {
+              setSelectedFilter(options[1]);
+            } else {
+              setSelectedFilter(options[0]);
+            }
+          }}
+        >
+          <Tag tone="accent" size="medium">
+            {selectedFilter.label}
+          </Tag>
         </Box>
       </Box>
       <Row>

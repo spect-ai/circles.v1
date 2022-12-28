@@ -1003,6 +1003,13 @@ export type SnapshotVoting = {
   proposalId?: string;
 };
 
+export type SnapshotSpace = {
+  name: string;
+  id: string;
+  network: string;
+  symbol: string;
+}
+
 export type Voting = {
   enabled: boolean;
   message?: string;
@@ -1015,6 +1022,7 @@ export type Voting = {
     token: Option;
     weight: number;
   }[];
+  snapshot?: SnapshotSpace;
   periods?: MappedItem<VotingPeriod>;
   periodsOnCollection?: MappedItem<VotingPeriod>;
 };
