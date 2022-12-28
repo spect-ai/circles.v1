@@ -35,7 +35,6 @@ export default function DataDrawer({
 
   useEffect(() => {
     if (dataId && collection.data) {
-      setData({});
       setTimeout(() => {
         setData(collection?.data[dataId]);
       }, 0);
@@ -87,10 +86,9 @@ export default function DataDrawer({
     >
       {Object.keys(data).length !== 0 && (
         <motion.div
-          variants={slideHorizontal}
-          initial="hidden"
-          animate="visible"
-          exit="exit"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
         >
           <ScrollContainer paddingX="4" paddingY="2">
             <Stack space="5">
