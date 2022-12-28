@@ -1161,6 +1161,7 @@ export type Automation = {
   conditions?: Condition[];
   actions: Action[];
   triggerCategory: "collection" | "root";
+  disabled?: boolean;
 };
 
 export type AutomationType = {

@@ -45,6 +45,7 @@ type UpdateAutomationDto = {
   description: string;
   trigger: Trigger;
   actions: Action[];
+  disabled?: boolean;
 };
 
 export const updateCircle = async (

@@ -280,6 +280,17 @@ export default function Automation() {
                     }
                   }}
                   onSave={onSave}
+                  onDisable={async () => {
+                    const res = await updateAutomation(
+                      circle?.id,
+                      automationId,
+                      {
+                        ...automations[automationId],
+                        disabled: !automations[automationId].disabled,
+                      }
+                    );
+                    if (res) setCircleData(res);
+                  }}
                   onMouseLeave={(
                     name: string,
                     description: string,

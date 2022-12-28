@@ -23,6 +23,7 @@ type Props = {
     action: Action[],
     conditions: Condition[]
   ) => void;
+  onDisable: (automationId: string) => void;
   onMouseLeave: (
     name: string,
     description: string,
@@ -38,6 +39,7 @@ export default function SingleAutomation({
   automationMode,
   onDelete,
   onSave,
+  onDisable,
   onMouseLeave,
 }: Props) {
   const { mode } = useTheme();
@@ -171,15 +173,23 @@ export default function SingleAutomation({
         onMouseLeave(name, description, trigger, actions, conditions, isDirty)
       }
     >
+      {automation.disabled && (
+        <Box
+          display="flex"
+          flexDirection="row"
+          gap="1"
+          justifyContent="flex-end"
+          alignItems="flex-end"
+        >
+          <Text variant="small">This automation is disabled</Text>
+        </Box>
+      )}
       <Box
         display="flex"
         flexDirection="row"
-        marginTop={{
-          xs: "2",
-          md: "8",
-        }}
         width="full"
         gap="2"
+        marginTop="2"
       >
         <Box
           display="flex"
@@ -209,6 +219,7 @@ export default function SingleAutomation({
             }}
           />
         </Box>
+
         <PrimaryButton
           variant="secondary"
           onClick={() => {
@@ -219,6 +230,14 @@ export default function SingleAutomation({
         >
           Save
         </PrimaryButton>
+        {automationMode === "edit" && (
+          <PrimaryButton
+            variant="tertiary"
+            onClick={() => onDisable(automation.id)}
+          >
+            {automation.disabled ? "Enable" : "Disable"}
+          </PrimaryButton>
+        )}
         {automationMode === "edit" && (
           <PrimaryButton
             variant="tertiary"
