@@ -28,7 +28,7 @@ export default function Sort() {
 
   const [sortOptions, setSortOptions] = useState<Option[]>([]);
 
-  const unSortableProperties = ["user[]", "multiSelect", "payWall"];
+  const unSortableProperties = ["user[]", "multiSelect", "payWall", "longText"];
 
   useEffect(() => {
     const noneOption = {
@@ -99,7 +99,7 @@ export default function Sort() {
                             views: {
                               ...collection.projectMetadata.views,
                               [projectViewId]: {
-                                ...collection.projectMetadata.views[
+                                ...collection.projectMetadata.views?.[
                                   projectViewId
                                 ],
                                 sort: {
@@ -145,7 +145,7 @@ export default function Sort() {
                   views: {
                     ...collection.projectMetadata.views,
                     [projectViewId]: {
-                      ...collection.projectMetadata.views[projectViewId],
+                      ...collection.projectMetadata?.views?.[projectViewId],
                       sort: {
                         property: sortProperty,
                         direction: !isAsc ? "asc" : "desc",
@@ -156,7 +156,7 @@ export default function Sort() {
               })
                 .then((res) => {
                   console.log({
-                    res: collection.projectMetadata.views[projectViewId],
+                    res: collection?.projectMetadata?.views?.[projectViewId],
                   });
                   if (res.id) updateCollection(res);
                   else throw new Error("Error updating collection");

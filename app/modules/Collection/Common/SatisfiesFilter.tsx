@@ -97,9 +97,13 @@ export function satisfiesConditions(
       case "date":
         switch (comparatorValue) {
           case "is":
-            return data[propertyId] == new Date(value);
+            return (
+              new Date(data[propertyId]).getTime() === new Date(value).getTime()
+            );
           case "is not":
-            return data[propertyId] != new Date(value);
+            return (
+              new Date(data[propertyId]).getTime() !== new Date(value).getTime()
+            );
           case "is before":
             return (
               data[propertyId] &&
