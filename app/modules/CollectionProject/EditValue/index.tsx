@@ -85,7 +85,7 @@ function EditValue({ value, setValue, propertyName, dataId }: Props) {
                   <Stack direction="horizontal" wrap space="2">
                     {["multiSelect", "user[]"].includes(property.type) &&
                       value?.map((val: any) => (
-                        <Tag key={val.value} tone="accent" hover>
+                        <Tag tone="accent" hover key={val.value}>
                           <Stack
                             direction="horizontal"
                             space="1"
@@ -126,15 +126,40 @@ function EditValue({ value, setValue, propertyName, dataId }: Props) {
                   {["multiSelect", "user[]"].includes(property.type) ? (
                     value?.length ? (
                       value?.map((val: any) => (
-                        <Tag key={val.value} tone="accent" hover>
-                          {val.label}
-                        </Tag>
+                        <Box
+                          cursor="pointer"
+                          key={val.value}
+                          onClick={(e) => {
+                            if (property.type === "user[]") {
+                              e.stopPropagation();
+                              // open new tab and direct to profile
+                              window.open(`/profile/${val.label}`, "_blank");
+                            }
+                          }}
+                        >
+                          <Tag key={val.value} tone="accent" hover>
+                            {val.label}
+                          </Tag>
+                        </Box>
                       ))
                     ) : (
                       "Empty"
                     )
                   ) : value ? (
-                    <Text>{value.label}</Text>
+                    <Box
+                      cursor="pointer"
+                      onClick={(e) => {
+                        if (property.type === "user") {
+                          e.stopPropagation();
+                          // open new tab and direct to profile
+                          window.open(`/profile/${value.label}`, "_blank");
+                        }
+                      }}
+                    >
+                      <Tag tone="accent" hover>
+                        {value.label}
+                      </Tag>
+                    </Box>
                   ) : (
                     "Empty"
                   )}

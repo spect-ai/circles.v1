@@ -19,7 +19,7 @@ const ScrollContainer = styled(Box)`
     height: calc(100vh - 12rem);
   }
 
-  height: calc(100vh - 10rem);
+  height: calc(100vh - 14rem);
 `;
 
 function YourCircles({

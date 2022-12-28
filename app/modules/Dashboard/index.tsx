@@ -11,8 +11,6 @@ import {
   IconSun,
   useTheme,
   IconDotsHorizontal,
-  IconSparkles,
-  IconExclamationCircle,
 } from "degen";
 import { useGlobal } from "@/app/context/globalContext";
 import { UserType, CircleType } from "@/app/types";
