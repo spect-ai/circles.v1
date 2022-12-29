@@ -16,6 +16,7 @@ import {
   Registry,
   Option,
   PayWallOptions,
+  Property,
 } from "@/app/types";
 import { SaveFilled } from "@ant-design/icons";
 import { Box, IconTrash, Input, Stack, Text, Textarea } from "degen";
@@ -26,7 +27,6 @@ import { fields } from "../Constants";
 import { useLocalCollection } from "../Context/LocalCollectionContext";
 import AddOptions from "./AddOptions";
 import MilestoneOptions from "./MilestoneOptions";
-import RewardOptions from "./RewardOptions";
 import uuid from "react-uuid";
 import { prevPropertyTypeToNewPropertyTypeThatDoesntRequiresClarance } from "@/app/common/utils/constants";
 import { AnimatePresence } from "framer-motion";
@@ -34,6 +34,7 @@ import ConfirmModal from "@/app/common/components/Modal/ConfirmModal";
 import Accordian from "@/app/common/components/Accordian";
 import AddConditions from "../Common/AddConditions";
 import PayWall from "./PayWallOptions";
+import RewardTokenOptions from "./RewardTokenOptions";
 
 type Props = {
   propertyName?: string;
@@ -46,7 +47,8 @@ export default function AddField({ propertyName, handleClose }: Props) {
     updateCollection,
     setProjectViewId,
   } = useLocalCollection();
-  const { registry } = useCircle();
+  const { registry, circle } = useCircle();
+  console.log({ reg: registry });
   const [networks, setNetworks] = useState(registry);
   const [payWallOption, setPayWallOption] = useState({
     network: registry as Registry,
@@ -157,6 +159,29 @@ export default function AddField({ propertyName, handleClose }: Props) {
     }
   };
 
+  const updateRewardOptions = (property: Property) => {
+    if (property?.rewardOptions) {
+      setNetworks(property.rewardOptions);
+    } else {
+      if (
+        circle.defaultPayment?.chain?.chainId &&
+        circle.defaultPayment?.token?.address &&
+        registry
+      ) {
+        const chainId = circle.defaultPayment?.chain?.chainId;
+        const tokenAddress = circle.defaultPayment?.token?.address;
+        setNetworks({
+          [chainId]: {
+            ...(registry[chainId] || {}),
+            [tokenAddress]: {
+              ...(registry[chainId].tokenDetails[tokenAddress] || {}),
+            },
+          },
+        });
+      }
+    }
+  };
+
   useEffect(() => {
     if (
       propertyName &&
@@ -189,13 +214,21 @@ export default function AddField({ propertyName, handleClose }: Props) {
         setUserType(property.userType);
       }
       if (property.type === "reward") {
-        setNetworks(property.rewardOptions);
+        updateRewardOptions(property);
       }
       if (property.type === "payWall") {
         setPayWallOption(property.payWallOptions as PayWallOptions);
       }
     }
   }, [collection.properties, propertyName]);
+
+  useEffect(() => {
+    if (type.value === "reward" || type.value === "milestone") {
+      const property = collection?.properties[name];
+
+      updateRewardOptions(property);
+    }
+  }, [type]);
 
   useEffect(() => {
     setModalSize(viewConditions?.length > 0 ? "large" : "small");
@@ -338,7 +371,10 @@ export default function AddField({ propertyName, handleClose }: Props) {
               </Stack>
             ) : null}
             {type.value === "reward" ? (
-              <RewardOptions networks={networks} setNetworks={setNetworks} />
+              <RewardTokenOptions
+                networks={networks}
+                setNetworks={setNetworks}
+              />
             ) : null}
             {type.value === "milestone" ? (
               <MilestoneOptions networks={networks} setNetworks={setNetworks} />

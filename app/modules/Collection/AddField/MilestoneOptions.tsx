@@ -3,7 +3,7 @@ import { Box, Stack, Text } from "degen";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import styled from "styled-components";
-import RewardOptions from "./RewardOptions";
+import RewardTokenOptions from "./RewardTokenOptions";
 
 const Input = styled.input`
   background-color: transparent;
@@ -80,7 +80,7 @@ export default function MilestoneOptions({ networks, setNetworks }: Props) {
           />
         </Box>
       </Stack>
-      <RewardOptions networks={networks} setNetworks={setNetworks} />
+      <RewardTokenOptions networks={networks} setNetworks={setNetworks} />
     </Box>
   );
 }
