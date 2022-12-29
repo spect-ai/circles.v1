@@ -193,6 +193,7 @@ export default function Automation() {
           }}
         >
           <PrimaryButton
+            center
             variant={
               automationOrder?.length > 1 ||
               !automationId?.startsWith("automation")

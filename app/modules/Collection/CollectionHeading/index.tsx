@@ -19,6 +19,7 @@ import { useQuery } from "react-query";
 import { UserType } from "@/app/types";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { Embed } from "../Embed";
+import { EyeOutlined, SendOutlined, ShareAltOutlined } from "@ant-design/icons";
 
 export const IconButton = styled(Box)`
   cursor: pointer;
@@ -62,7 +63,7 @@ function CollectionHeading() {
       display="flex"
       flexDirection="column"
       paddingLeft="3"
-      paddingRight="5"
+      paddingRight="8"
     >
       <Hidden xs sm>
         <Box marginLeft="4" marginTop="2">
@@ -220,10 +221,20 @@ function CollectionHeading() {
                   target="_blank"
                   rel="noreferrer"
                 >
-                  <PrimaryButton variant={"transparent"}>Preview</PrimaryButton>
+                  <PrimaryButton
+                    variant={"transparent"}
+                    icon={<EyeOutlined style={{ fontSize: "1rem" }} />}
+                  >
+                    Preview
+                  </PrimaryButton>
                 </a>
                 <PrimaryButton
-                  // icon={<ShareAltOutlined />}
+                  icon={
+                    <SendOutlined
+                      rotate={-40}
+                      style={{ marginBottom: "0.3rem" }}
+                    />
+                  }
                   onClick={() => {
                     void navigator.clipboard.writeText(
                       `https://circles.spect.network/r/${collection?.slug}`

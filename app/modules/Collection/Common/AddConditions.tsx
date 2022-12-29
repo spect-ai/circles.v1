@@ -32,7 +32,7 @@ export default function AddConditions({
     <Box>
       {viewConditions?.map((condition, index) => (
         <Box key={index} marginBottom="2">
-          <Stack direction="horizontal">
+          <Stack direction="horizontal" align={"center"}>
             <Box
               width={{
                 xs: "full",
@@ -50,16 +50,16 @@ export default function AddConditions({
                     setViewConditions(newConditions);
                   }}
                 >
-                  <DeleteOutlined />
+                  <DeleteOutlined style={{ fontSize: "1.2rem"}} />
                 </Button>
-                <Text size="small">
+                <Text size="base">
                   {index === 0
                     ? `${firstRowMessage || "Show field when"}`
                     : "and"}
                 </Text>
               </Stack>
             </Box>
-            <Box width="full" display="flex" gap="2" alignItems="baseline">
+            <Box width="full" display="flex" gap="2" alignItems="center">
               <Box
                 width={{
                   xs: "full",
@@ -107,20 +107,6 @@ export default function AddConditions({
                   xs: "full",
                   md: "1/3",
                 }}
-                marginTop={
-                  [
-                    "shortText",
-                    "longText",
-                    "number",
-                    "date",
-                    "ethAddress",
-                    "email",
-                  ].includes(
-                    collection.properties[condition?.data?.field?.value]?.type
-                  )
-                    ? "-2"
-                    : "0"
-                }
               >
                 <FilterValueField
                   value={condition?.data?.value}
@@ -138,7 +124,7 @@ export default function AddConditions({
           </Stack>
         </Box>
       ))}
-      <Box width="1/2" marginTop="4">
+      <Box marginTop="8">
         <PrimaryButton
           icon={<IconPlusSmall />}
           variant="tertiary"

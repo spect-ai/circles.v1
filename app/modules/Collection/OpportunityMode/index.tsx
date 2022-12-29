@@ -57,6 +57,7 @@ export default function OpportunityMode() {
         }}
       >
         <PrimaryButton
+          center
           variant={
             collection.formMetadata?.isAnOpportunity ? "tertiary" : "secondary"
           }

@@ -104,6 +104,7 @@ function FormBuilder({ fields }: Props) {
           >
             {() => (
               <ClickableTag
+                style={{ marginLeft: "1rem" }}
                 onClick={() => {}}
                 name={logo ? "Change Cover" : "Add Cover"}
               />

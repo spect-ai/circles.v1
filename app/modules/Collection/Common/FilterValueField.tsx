@@ -250,6 +250,7 @@ export default function FilterValueField({
           onChange={(e) => onChange(e.target.value)}
           type="date"
           mode={mode}
+          style={{ marginTop: "6px" }}
         />
       );
     case "reward":

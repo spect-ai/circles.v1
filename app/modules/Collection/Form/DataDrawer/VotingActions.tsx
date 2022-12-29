@@ -127,9 +127,7 @@ export default function VotingActions({
       return response;
     });
 
-    const body = res.join("\n");
-
-    return body;
+    return res.join("\n");
   };
 
   return (
@@ -211,6 +209,9 @@ export default function VotingActions({
                     ?.length > 0)) && (
                 <Text variant="base"> Voting has ended</Text>
               )}
+              {proposalData?.proposal === null && (
+                <Text variant="base"> Snapshot Proposal has been deleted.</Text>
+              )}
               {collection.voting?.enabled &&
                 !proposal &&
                 !collection.voting?.periods?.[dataId]?.votes && (
@@ -289,7 +290,12 @@ export default function VotingActions({
                     });
 
                     if (!snapRes?.id) {
-                      toast.error("Something went wrong" + snapRes.error);
+                      toast.error(
+                        "Couldn't create Proposal : " +
+                          snapRes.error +
+                          " - " +
+                          snapRes.error_description
+                      );
                     } else {
                       toast.success("Proposal created");
                       const res = await startVotingPeriod(
@@ -307,6 +313,7 @@ export default function VotingActions({
                       } else updateCollection(res);
                     }
                   }}
+                  disabled={!title || dateIsInvalid(startDate, endDate)}
                 >
                   Create Proposal
                 </PrimaryButton>

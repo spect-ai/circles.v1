@@ -21,6 +21,7 @@ import { CellWithId } from "react-datasheet-grid/dist/types";
 import { useScreenClass } from "react-grid-system";
 import { toast } from "react-toastify";
 import CardDrawer from "../../CollectionProject/CardDrawer";
+import Filtering from "../../CollectionProject/Filtering";
 import AddField from "../AddField";
 import { satisfiesConditions } from "../Common/SatisfiesFilter";
 import { useLocalCollection } from "../Context/LocalCollectionContext";
@@ -139,7 +140,7 @@ export default function TableView() {
 
       if (
         (collection.collectionType === 0 &&
-          collection.projectMetadata.views?.["0x0"].filters) ||
+          collection.projectMetadata.views?.["0x0"]?.filters) ||
         (collection.collectionType === 1 &&
           collection.projectMetadata.views[projectViewId].filters)
       ) {
@@ -158,7 +159,7 @@ export default function TableView() {
         (collection.collectionType === 1 &&
           collection.projectMetadata.views[projectViewId].sort?.property) ||
         (collection.collectionType === 0 &&
-          collection.projectMetadata.views?.["0x0"].sort?.property)
+          collection.projectMetadata.views?.["0x0"]?.sort?.property)
       ) {
         const property =
           collection.properties[
@@ -233,7 +234,8 @@ export default function TableView() {
           if (
             propertyType === "multiSelect" ||
             propertyType === "user[]" ||
-            propertyType === "payWall"
+            propertyType === "payWall" ||
+            propertyType === "multiURL"
           )
             return;
 
@@ -594,11 +596,12 @@ export default function TableView() {
         <Box
           display="flex"
           flexDirection="row"
+          gap={"2"}
           justifyContent="flex-end"
           width="full"
           marginBottom="4"
         >
-          {" "}
+          <Filtering />
           <PrimaryButton
             variant="tertiary"
             onClick={() => {

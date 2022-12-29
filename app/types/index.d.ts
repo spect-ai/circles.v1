@@ -756,6 +756,8 @@ export interface CollectionType {
   formMetadata: FormMetadata;
   projectMetadata: ProjectMetadata;
   archived: boolean;
+  circleRolesToNotifyUponUpdatedResponse?: string[];
+  circleRolesToNotifyUponNewResponse?: string[];
 }
 
 export type FormMetadata = {
@@ -769,8 +771,7 @@ export type FormMetadata = {
   messageOnSubmission: string;
   multipleResponsesAllowed: boolean;
   updatingResponseAllowed: boolean;
-  circleRolesToNotifyUponUpdatedResponse?: string[];
-  circleRolesToNotifyUponNewResponse?: string[];
+
   numOfKudos?: number;
   credentialCurationEnabled?: boolean;
   isAnOpportunity?: boolean;
@@ -1008,7 +1009,7 @@ export type SnapshotSpace = {
   id: string;
   network: string;
   symbol: string;
-}
+};
 
 export type Voting = {
   enabled: boolean;

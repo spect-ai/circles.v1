@@ -26,6 +26,7 @@ function FormSettings() {
   return (
     <Box>
       <PrimaryButton
+        center
         icon={<IconCog />}
         onClick={() => {
           process.env.NODE_ENV === "production" &&

@@ -1,6 +1,6 @@
 import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { Box, Stack, Tag, Text, useTheme } from "degen";
+import { Box, IconDocuments, Stack, Tag, Text, useTheme } from "degen";
 import { AnimatePresence } from "framer-motion";
 import React, { useState } from "react";
 import { Copy, HelpCircle } from "react-feather";
@@ -29,7 +29,7 @@ export const Embed = () => {
         </PopoverOption>
       </Visible>
       <Hidden xs sm>
-        <PrimaryButton variant="tertiary" onClick={() => setIsOpen(true)}>
+        <PrimaryButton variant="tertiary" onClick={() => setIsOpen(true)} icon={<IconDocuments size={"4"}/>}>
           Embed
         </PrimaryButton>
       </Hidden>
