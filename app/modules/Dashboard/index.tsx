@@ -346,7 +346,11 @@ function Dashboard() {
           </Stack>
           <Box>
             {panelTab === "circles" && (
-              <YourCircles circles={circles} isLoading={isLoading} />
+              <YourCircles
+                circles={circles}
+                isLoading={isLoading}
+                height={currentUser?.discordUsername}
+              />
             )}
             {panelTab === "responses" && <ResponsesTab />}
             {/* {panelTab == "Project" && (

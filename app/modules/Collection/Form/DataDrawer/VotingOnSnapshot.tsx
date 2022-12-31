@@ -9,6 +9,7 @@ import { useQuery } from "react-query";
 import { toast } from "react-toastify";
 import { useLocalCollection } from "../../Context/LocalCollectionContext";
 import { useQuery as useApolloQuery, gql } from "@apollo/client";
+import { useEnsName, useAccount } from "wagmi";
 
 import {
   Chart as ChartJS,
@@ -21,6 +22,8 @@ import {
 } from "chart.js";
 import useSnapshot from "@/app/services/Snapshot/useSnapshot";
 import { useLocation } from "react-use";
+import { smartTrim } from "@/app/common/utils/utils";
+import { ArrowUpOutlined, SelectOutlined } from "@ant-design/icons";
 
 ChartJS.register(
   CategoryScale,
@@ -75,6 +78,7 @@ export const Proposal = gql`
 export default function SnapshotVoting({ dataId }: { dataId: string }) {
   const { localCollection: collection, updateCollection } =
     useLocalCollection();
+  const { address } = useAccount();
 
   const { castVote } = useSnapshot();
   const { hostname } = useLocation();
@@ -128,7 +132,6 @@ export default function SnapshotVoting({ dataId }: { dataId: string }) {
       (proposalData?.proposal === null &&
         collection?.voting?.periods?.[data.slug]?.active)
     ) {
-      
       const endVoting = async () => {
         const res = await endVotingPeriod(collection.id, dataId);
         if (!res.id) {
@@ -188,10 +191,15 @@ export default function SnapshotVoting({ dataId }: { dataId: string }) {
           );
         }}
         cursor="pointer"
+        display="flex"
+        flexDirection={"row"}
+        alignItems={"center"}
+        gap="2"
       >
         <Text variant="large" color={"accent"} weight={"semiBold"}>
-          {proposalData?.proposal?.title}
+          Go to Snapshot
         </Text>
+        <ArrowUpOutlined rotate={45} style={{color: "rgb(191, 90, 242, 1)", fontSize: "1rem"}} />
       </Box>
 
       {collection.voting?.periods &&
@@ -219,6 +227,10 @@ export default function SnapshotVoting({ dataId }: { dataId: string }) {
                   }
                   selectedTab={vote}
                   onTabClick={async (tab) => {
+                    if (!address) {
+                      toast.error("Please unlock your wallet");
+                      return;
+                    }
                     if (
                       !collection?.voting?.periods?.[data.slug]?.active ||
                       !collection?.voting?.periods?.[data.slug]?.snapshot
@@ -346,6 +358,7 @@ export default function SnapshotVoting({ dataId }: { dataId: string }) {
                 const user: any = getMemberDetailsUsingEthAddress(
                   vote.voter
                 )?.[0];
+
                 return (
                   <Box
                     display="flex"
@@ -376,7 +389,7 @@ export default function SnapshotVoting({ dataId }: { dataId: string }) {
                           />
                           <Text color="accentText" weight="semiBold">
                             {user?.username == undefined
-                              ? "fren"
+                              ? smartTrim(vote.voter, 5)
                               : user?.username}
                           </Text>
                         </Stack>

@@ -20,6 +20,7 @@ import { UserType } from "@/app/types";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { Embed } from "../Embed";
 import { EyeOutlined, SendOutlined, ShareAltOutlined } from "@ant-design/icons";
+import { smartTrim } from "@/app/common/utils/utils";
 
 export const IconButton = styled(Box)`
   cursor: pointer;
@@ -89,7 +90,7 @@ function CollectionHeading() {
                   md: "4",
                 }}
               >
-                <Heading>{collection?.name}</Heading>
+                <Heading>{smartTrim(collection?.name, 20)}</Heading>
               </Box>
               <Hidden xs sm>
                 <PrimaryButton

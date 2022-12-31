@@ -14,6 +14,7 @@ import { Proposal } from "./VotingOnSnapshot";
 import { useQuery as useApolloQuery } from "@apollo/client";
 import { Option } from "@/app/types";
 import { useLocation } from "react-use";
+import { useAccount } from "wagmi";
 
 export default function VotingActions({
   dataId,
@@ -25,6 +26,7 @@ export default function VotingActions({
   const { localCollection: collection, updateCollection } =
     useLocalCollection();
   const { hostname } = useLocation();
+  const { address } = useAccount();
   const { mode } = useTheme();
   const { createProposal } = useSnapshot();
 
@@ -218,6 +220,10 @@ export default function VotingActions({
                   <PrimaryButton
                     variant="secondary"
                     onClick={() => {
+                      if (!address) {
+                        toast.error("Please unlock your wallet first");
+                        return;
+                      }
                       setSnapshotModal(true);
                     }}
                   >

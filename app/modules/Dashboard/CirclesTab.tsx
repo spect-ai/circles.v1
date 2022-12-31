@@ -7,7 +7,7 @@ import { Col, Row } from "react-grid-system";
 import { memo, useEffect, useState } from "react";
 import Dropdown from "@/app/common/components/Dropdown";
 
-const ScrollContainer = styled(Box)`
+const ScrollContainer = styled(Box)<{ height: boolean }>`
   ::-webkit-scrollbar {
     display: none;
   }
@@ -19,15 +19,17 @@ const ScrollContainer = styled(Box)`
     height: calc(100vh - 12rem);
   }
 
-  height: calc(100vh - 14rem);
+  height: calc(100vh - ${(props) => (props.height ? "11" : "14")}rem);
 `;
 
 function YourCircles({
   circles,
   isLoading,
+  height,
 }: {
   circles: CircleType[];
   isLoading: boolean;
+  height?: string;
 }) {
   const [circlesToShow, setCirclesToShow] = useState<CircleType[]>(circles);
   const [selectedFilter, setSelectedFilter] = useState<Option>({
@@ -53,7 +55,7 @@ function YourCircles({
   }, [selectedFilter, circles]);
 
   return (
-    <ScrollContainer marginTop="4">
+    <ScrollContainer marginTop="4" height={!!height}>
       <Box
         display="flex"
         flexDirection="row"
