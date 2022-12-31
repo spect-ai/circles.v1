@@ -187,6 +187,7 @@ export default function VotingModule() {
                             setSnapshotSpace("");
                           }
                           setSnapshotVoting(!snapshotVoting);
+                          setVotesArePublic(!snapshotVoting);
                         }}
                         disabled={collection?.voting?.enabled}
                       />

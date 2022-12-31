@@ -285,6 +285,7 @@ export default function RewardTokenOptions({ networks, setNetworks }: Props) {
                 flexDirection="column"
                 justifyContent="flex-end"
                 alignItems="flex-end"
+                marginLeft={"2"}
               >
                 <PrimaryButton
                   variant="transparent"
