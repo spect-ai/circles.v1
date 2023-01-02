@@ -369,7 +369,7 @@ export default function PublicForm() {
                         assigned scores below.
                       </Text>
                       <StampScrollContainer>
-                        {stamps.map((stamp: Stamp, index: number) => {
+                        {stamps?.map((stamp: Stamp, index: number) => {
                           return (
                             <Box
                               display="flex"

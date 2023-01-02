@@ -34,6 +34,7 @@ export default function Sort() {
     "payWall",
     "longText",
     "multiURL",
+    "milestone",
   ];
 
   useEffect(() => {
@@ -103,9 +104,9 @@ export default function Sort() {
                           projectMetadata: {
                             ...collection.projectMetadata,
                             views: {
-                              ...collection.projectMetadata.views,
+                              ...(collection?.projectMetadata?.views || {}),
                               [projectViewId]: {
-                                ...collection.projectMetadata.views?.[
+                                ...collection.projectMetadata?.views?.[
                                   projectViewId
                                 ],
                                 sort: {
@@ -118,16 +119,18 @@ export default function Sort() {
                         })
                           .then((collectionRes: CollectionType) => {
                             console.log({
-                              res: collectionRes.projectMetadata.cardOrders[
-                                collection.projectMetadata.views[projectViewId]
-                                  .groupByColumn
+                              res: collectionRes?.projectMetadata?.cardOrders?.[
+                                collection.projectMetadata.views?.[
+                                  projectViewId
+                                ]?.groupByColumn
                               ],
                             });
                             if (collectionRes.id)
                               updateCollection(collectionRes);
                             else throw new Error("Error updating collection");
                           })
-                          .catch(() => {
+                          .catch((err) => {
+                            console.log(err);
                             toast.error("Error updating collection");
                           });
                       }}
@@ -149,7 +152,7 @@ export default function Sort() {
                 projectMetadata: {
                   ...collection.projectMetadata,
                   views: {
-                    ...collection.projectMetadata.views,
+                    ...(collection.projectMetadata?.views || {}),
                     [projectViewId]: {
                       ...collection.projectMetadata?.views?.[projectViewId],
                       sort: {
@@ -164,10 +167,13 @@ export default function Sort() {
                   console.log({
                     res: collection?.projectMetadata?.views?.[projectViewId],
                   });
-                  if (res.id) updateCollection(res);
-                  else throw new Error("Error updating collection");
+                  if (res.id) {
+                    updateCollection(res);
+                  } else {
+                    throw new Error("Error updating collection");
+                  }
                 })
-                .catch(() => {
+                .catch((err) => {
                   toast.error("Error updating collection");
                 });
             }}

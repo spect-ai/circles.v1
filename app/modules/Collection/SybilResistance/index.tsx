@@ -36,7 +36,7 @@ export default function SybilResistance() {
   });
 
   const useDefaults = () => {
-    setAllocations(stamps.map((stamp) => stamp.defaultScore * 100));
+    setAllocations(stamps?.map((stamp) => stamp.defaultScore * 100));
   };
 
   useEffect(() => {
@@ -150,7 +150,7 @@ export default function SybilResistance() {
                 </Box>
               </Box>
               <ScrollContainer>
-                {stamps.map((stamp, index) => {
+                {stamps?.map((stamp, index) => {
                   return (
                     <Box
                       display="flex"
