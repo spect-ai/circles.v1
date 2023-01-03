@@ -73,12 +73,67 @@ export default function CreateCard({ setAction, actionMode, action }: Props) {
       }
     };
     void fetchCollectionOptions();
-    setFromPropertyOptions(
-      Object.entries(collection.properties).map(([propertyId, property]) => ({
-        label: property.name,
-        value: propertyId,
-      }))
+    const milestoneFields = Object.entries(collection.properties).filter(
+      ([propertyId, property]) => property.type === "milestone"
     );
+    const notMilestoneFields = Object.entries(collection.properties).filter(
+      ([propertyId, property]) => property.type !== "milestone"
+    );
+    let propOptions = notMilestoneFields.map(([propertyId, property]) => ({
+      label: property.name,
+      value: propertyId,
+    })) as Option[];
+
+    milestoneFields.forEach(([propertyId, property]) => {
+      propOptions = [
+        ...propOptions,
+        {
+          label: `${property.name}`,
+          value: `${propertyId}`,
+        },
+        {
+          label: `${property.name} title`,
+          value: `${propertyId}.title`,
+          data: {
+            type: "shortText",
+            fieldType: "milestone",
+            fieldName: propertyId,
+            subFieldName: "title",
+          },
+        },
+        {
+          label: `${property.name} description`,
+          value: `${propertyId}.description`,
+          data: {
+            type: "longText",
+            fieldType: "milestone",
+            fieldName: propertyId,
+            subFieldName: "description",
+          },
+        },
+        {
+          label: `${property.name} date`,
+          value: `${propertyId}.date`,
+          data: {
+            type: "date",
+            fieldType: "milestone",
+            fieldName: propertyId,
+            subFieldName: "dueDate",
+          },
+        },
+        {
+          label: `${property.name} reward`,
+          value: `${propertyId}.reward`,
+          data: {
+            type: "reward",
+            fieldType: "milestone",
+            fieldName: propertyId,
+            subFieldName: "reward",
+          },
+        },
+      ];
+    });
+    setFromPropertyOptions(propOptions);
   }, []);
 
   useEffect(() => {
@@ -94,7 +149,11 @@ export default function CreateCard({ setAction, actionMode, action }: Props) {
             }
           )
         ).json();
-        console.log({ data });
+        console.log({
+          selectedFromPropertyOptionType,
+          prop: data?.properties,
+          fieldType,
+        });
         if (data?.properties)
           if (fieldType === "mapping") {
             setToPropertyOptions(
@@ -132,7 +191,7 @@ export default function CreateCard({ setAction, actionMode, action }: Props) {
     };
     void fetchCollection();
   }, [selectedCollection, selectedFromPropertyOptionType, values]);
-  console.log({ toPropertyOptions });
+
   return (
     <Box
       marginTop="2"
@@ -249,7 +308,7 @@ export default function CreateCard({ setAction, actionMode, action }: Props) {
                       selected={value.mapping?.from}
                       onChange={(v) => {
                         const newValues = [...values];
-                        if (v.value !== value.mapping?.from?.value) {
+                        if (v?.value !== value.mapping?.from?.value) {
                           newValues[index] = {
                             type: "mapping",
                             mapping: {
@@ -262,11 +321,13 @@ export default function CreateCard({ setAction, actionMode, action }: Props) {
                           };
                           setValues(newValues);
                           setSelectedFromPropertyOptionType(
-                            collection.properties[v.value].type
+                            v?.data?.type ||
+                              collection.properties[v?.value]?.type
                           );
                         }
                       }}
                       multiple={false}
+                      isClearable={false}
                     />
                   </Box>
                   <Box
@@ -294,6 +355,7 @@ export default function CreateCard({ setAction, actionMode, action }: Props) {
                         setValues(newValues);
                       }}
                       multiple={false}
+                      isClearable={false}
                     />{" "}
                   </Box>
                 </>
