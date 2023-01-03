@@ -66,6 +66,11 @@ export default function PublicForm() {
     else toast.error("Error fetching member details");
   };
 
+  console.log({
+    form,
+    currentUser,
+  });
+
   const addStamps = async (form: FormType) => {
     const stamps = await getAllCredentials();
     const stampsWithScore = [];
@@ -241,7 +246,7 @@ export default function PublicForm() {
                 </Box>
               </Box>
             )}
-            {form.requireDiscordConnection &&
+            {form.formMetadata.discordConnectionRequired &&
               !currentUser?.discordUsername &&
               currentUser?.id && (
                 <Box paddingLeft="4">
@@ -294,7 +299,7 @@ export default function PublicForm() {
                   ease: [0, 0.71, 0.2, 1.01],
                 }}
               >
-                {!form.hasRole && (
+                {!form.formMetadata.hasRole && (
                   <Box
                     display="flex"
                     flexDirection="column"

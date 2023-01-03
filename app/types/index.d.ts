@@ -781,6 +781,8 @@ export type FormMetadata = {
   hasPassedSybilCheck: boolean;
   previousResponses: any[];
   kudosClaimedByUser: boolean;
+  hasRole: boolean;
+  discordConnectionRequired: boolean;
 };
 
 export type ProjectMetadata = {
@@ -912,12 +914,9 @@ export interface FormType {
     slug: string;
   }[];
   defaultView: string;
-  canClaimKudos: boolean;
-  hasRole: boolean;
   isAnOpportunity: boolean;
   opportunityInfo: OpportunityInfoType;
   viewConditions: Condition[];
-  requireDiscordConnection: boolean;
   createdAt: string;
   updatedAt: string;
   id: string;
