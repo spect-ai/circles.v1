@@ -50,7 +50,7 @@ export default function AddConditions({
                     setViewConditions(newConditions);
                   }}
                 >
-                  <DeleteOutlined style={{ fontSize: "1.2rem"}} />
+                  <DeleteOutlined style={{ fontSize: "1.2rem" }} />
                 </Button>
                 <Text size="base">
                   {index === 0

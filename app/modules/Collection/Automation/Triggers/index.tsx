@@ -14,7 +14,6 @@ export default function SingleTrigger({
   trigger,
   setTrigger,
 }: Props) {
-  console.log(triggerType);
   return (
     <>
       {triggerType === "dataChange" && (

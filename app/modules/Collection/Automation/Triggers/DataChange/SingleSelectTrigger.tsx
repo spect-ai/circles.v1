@@ -39,20 +39,22 @@ export default function SingleSelectTrigger({
         <Box width="1/4">
           <Text variant="label">From</Text>
         </Box>
-        <Dropdown
-          options={options}
-          selected={trigger.data.from || []}
-          onChange={(value) => {
-            setTrigger({
-              ...trigger,
-              data: {
-                ...trigger.data,
-                from: value,
-              },
-            });
-          }}
-          multiple={true}
-        />
+        <Box width="3/4">
+          <Dropdown
+            options={options}
+            selected={trigger.data.from || []}
+            onChange={(value) => {
+              setTrigger({
+                ...trigger,
+                data: {
+                  ...trigger.data,
+                  from: value,
+                },
+              });
+            }}
+            multiple={true}
+          />
+        </Box>
       </Box>
       <Box
         display="flex"
@@ -64,20 +66,22 @@ export default function SingleSelectTrigger({
         <Box width="1/4">
           <Text variant="label">To</Text>
         </Box>{" "}
-        <Dropdown
-          options={options}
-          selected={trigger.data.to || []}
-          onChange={(value) => {
-            setTrigger({
-              ...trigger,
-              data: {
-                ...trigger.data,
-                to: value,
-              },
-            });
-          }}
-          multiple={true}
-        />{" "}
+        <Box width="3/4">
+          <Dropdown
+            options={options}
+            selected={trigger.data.to || []}
+            onChange={(value) => {
+              setTrigger({
+                ...trigger,
+                data: {
+                  ...trigger.data,
+                  to: value,
+                },
+              });
+            }}
+            multiple={true}
+          />
+        </Box>
       </Box>
     </Box>
   );

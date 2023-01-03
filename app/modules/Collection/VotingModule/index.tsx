@@ -192,8 +192,9 @@ export default function VotingModule() {
                         disabled={collection?.voting?.enabled}
                       />
                       <Text variant="small">
-                        Votes are weighted by token holdings on your Snapshot
-                        space
+                        {/* Votes are weighted by token holdings on your Snapshot
+                        space */}
+                        Integrate with Snapshot (Token Weighted voting)
                       </Text>
                     </Box>
                   </Box>
@@ -243,7 +244,8 @@ export default function VotingModule() {
                       loading={loading}
                       disabled={
                         loading ||
-                        (snapshotVoting && (!snapshotSpace || !data?.space?.id)) ||
+                        (snapshotVoting &&
+                          (!snapshotSpace || !data?.space?.id)) ||
                         !votingType ||
                         !votingOptions.length
                       }
