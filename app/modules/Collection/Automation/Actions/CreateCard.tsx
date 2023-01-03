@@ -209,6 +209,21 @@ export default function CreateCard({ setAction, actionMode, action }: Props) {
     setValues(action?.data.values || []);
   }, [action]);
 
+  useEffect(() => {
+    setUsedProperty(
+      values.reduce((acc, value) => {
+        if (value.type === "mapping" && value?.mapping?.to?.value) {
+          acc[value.mapping.to.value] = true;
+        } else if (value.type === "default" && value?.default?.field?.value) {
+          acc[value.default.field?.value] = true;
+        } else if (value.type === "responder" && value.default?.field?.value) {
+          acc[value.default.field?.value] = true;
+        }
+        return acc;
+      }, {} as Record<string, boolean>)
+    );
+  }, [values]);
+
   return (
     <Box
       marginTop="2"
