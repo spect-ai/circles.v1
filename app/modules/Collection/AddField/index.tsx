@@ -324,13 +324,15 @@ export default function AddField({ propertyName, handleClose }: Props) {
                 setDescription(e.target.value);
               }}
             />
-            <Tabs
-              selectedTab={required}
-              onTabClick={onRequiredTabClick}
-              tabs={["Optional", "Required"]}
-              orientation="horizontal"
-              unselectedColor="transparent"
-            />
+            {collection.collectionType === 0 && (
+              <Tabs
+                selectedTab={required}
+                onTabClick={onRequiredTabClick}
+                tabs={["Optional", "Required"]}
+                orientation="horizontal"
+                unselectedColor="transparent"
+              />
+            )}
             <Dropdown
               options={fields}
               selected={type}

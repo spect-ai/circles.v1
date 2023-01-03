@@ -185,23 +185,29 @@ export default function CreateCard({ setAction, actionMode, action }: Props) {
   useEffect(() => {
     const fetchCollection = async () => {
       try {
-        const data: CollectionType = await (
-          await fetch(
-            `${process.env.API_HOST}/collection/v1/slug/${
-              selectedCollection?.data?.slug as string
-            }`,
-            {
-              credentials: "include",
-            }
-          )
-        ).json();
-        setMappedCollection(data);
+        if (selectedCollection?.data?.slug) {
+          const data: CollectionType = await (
+            await fetch(
+              `${process.env.API_HOST}/collection/v1/slug/${
+                selectedCollection?.data?.slug as string
+              }`,
+              {
+                credentials: "include",
+              }
+            )
+          ).json();
+          setMappedCollection(data);
+        }
       } catch (e) {
         console.log(e);
       }
     };
     void fetchCollection();
   }, [selectedCollection]);
+
+  useEffect(() => {
+    setValues(action?.data.values || []);
+  }, [action]);
 
   return (
     <Box

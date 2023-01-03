@@ -1,4 +1,5 @@
 import Modal from "@/app/common/components/Modal";
+import ConfirmModal from "@/app/common/components/Modal/ConfirmModal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import {
   deleteCollection,
@@ -16,12 +17,34 @@ export default function Settings() {
   const { localCollection: collection, updateCollection } =
     useLocalCollection();
   const [isOpen, setIsOpen] = useState(false);
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [name, setName] = useState(collection.name);
 
   const router = useRouter();
 
   return (
     <Box>
+      {isConfirmOpen && (
+        <ConfirmModal
+          title="Are you sure you want to archive this collection?"
+          onConfirm={() => {
+            void updateFormCollection(collection.id, {
+              archived: true,
+            }).then((res) => {
+              console.log({ res });
+              if (res.id) {
+                toast.success("Collection archived");
+                setIsConfirmOpen(false);
+                void router.push(`/${router.query.circle}`);
+              } else {
+                toast.error("Error archiving collection");
+              }
+            });
+          }}
+          handleClose={() => setIsConfirmOpen(false)}
+          onCancel={() => setIsConfirmOpen(false)}
+        />
+      )}
       <Button
         shape="circle"
         onClick={() => setIsOpen(!isOpen)}
@@ -62,23 +85,7 @@ export default function Settings() {
                       icon={<Archive size={16} style={{ marginTop: 2 }} />}
                       tone="red"
                       onClick={() => {
-                        if (
-                          !confirm(
-                            "Are you sure you want to archive this collection?"
-                          )
-                        )
-                          return;
-                        void updateFormCollection(collection.id, {
-                          archived: true,
-                        }).then((res) => {
-                          console.log({ res });
-                          if (res.id) {
-                            toast.success("Collection archived");
-                            void router.push(`/${router.query.circle}`);
-                          } else {
-                            toast.error("Error archiving collection");
-                          }
-                        });
+                        setIsConfirmOpen(true);
                       }}
                     >
                       Archive
