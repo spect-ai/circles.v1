@@ -95,7 +95,7 @@ export default function KanbanView() {
                   else toast.error("Error adding column");
                 }}
               >
-                Add Column
+                {`Add ${property.name}`}
               </PrimaryButton>
             )}
             {property.type === "user" && <InviteMemberModal />}

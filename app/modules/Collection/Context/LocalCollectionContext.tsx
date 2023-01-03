@@ -103,6 +103,12 @@ export function useProviderLocalCollection() {
         }, 2000)
       );
     }
+    return () => {
+      if (socket && socket.off) {
+        socket.off(`${localCollection.slug}:dataAdded`);
+        socket.off(`${localCollection.slug}:newActivityPrivate`);
+      }
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [localCollection.slug]);
 

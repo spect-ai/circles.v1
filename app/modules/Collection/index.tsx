@@ -9,16 +9,20 @@ import { Form } from "./Form";
 import TableView from "./TableView";
 import FAQModal from "../Dashboard/FAQModal";
 import { QuestionCircleOutlined } from "@ant-design/icons";
-import Filtering from "../CollectionProject/Filtering"
+import { useRouter } from "next/router";
 
 export function Collection() {
   const { view, setView, localCollection: collection } = useLocalCollection();
   const [faqOpen, setFaqOpen] = useState(false);
   const { mode } = useTheme();
 
+  const router = useRouter();
+  const { responses } = router.query;
+
   useEffect(() => {
-    setView(0);
-  }, [setView]);
+    if (responses !== undefined) setView(1);
+    else setView(0);
+  }, [responses]);
 
   return (
     <>
@@ -56,7 +60,6 @@ export function Collection() {
           >
             {view === 1 && (
               <>
-                
                 <TableView />
               </>
             )}

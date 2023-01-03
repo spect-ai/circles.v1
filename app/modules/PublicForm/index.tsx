@@ -116,6 +116,11 @@ export default function PublicForm() {
         }, 2000)
       );
     }
+    return () => {
+      if (socket && socket.off) {
+        socket.off(`${formId}:newActivityPublic`);
+      }
+    };
   }, [connectedUser, formId, socket]);
 
   if (loading) {
@@ -462,7 +467,11 @@ export default function PublicForm() {
           </FormContainer>
           <Stack align={"center"}>
             <Text variant="label">Powered By</Text>
-            <a href="https://spect.network/" target="_blank" rel="noopener noreferrer">
+            <a
+              href="https://spect.network/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               {mode == "dark" ? (
                 <Image
                   src={"/logo2.svg"}

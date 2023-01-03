@@ -141,7 +141,7 @@ export default function Column({
                             <Box key={propertyId}>
                               {/* <Text weight="semiBold">{property.name}</Text> */}
                               <Text color="text" size="small">
-                                {smartTrim(value, 30)}
+                                {smartTrim(value, 20)}
                               </Text>
                             </Box>
                           );
