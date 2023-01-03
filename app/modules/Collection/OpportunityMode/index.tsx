@@ -45,12 +45,12 @@ export default function OpportunityMode() {
 
   return (
     <>
-      <Stack direction="vertical">
+      {/* <Stack direction="vertical">
         {!collection.formMetadata?.isAnOpportunity && (
           <Text variant="small">{`Reach 1000+ opportunity seekers`}</Text>
         )}
-      </Stack>
-      <Box
+      </Stack> */}
+      {/* <Box
         width={{
           xs: "full",
           md: "full",
@@ -68,7 +68,7 @@ export default function OpportunityMode() {
             ? `Boosting Form`
             : `Boost Form`}
         </PrimaryButton>
-      </Box>
+      </Box> */}
 
       <AnimatePresence>
         {isOpen && (

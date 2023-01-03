@@ -40,9 +40,6 @@ export default function CreateCard({ setAction, actionMode, action }: Props) {
     action?.data?.selectedCollection || ({} as Option)
   );
   const [fromPropertyOptions, setFromPropertyOptions] = useState<Option[]>([]);
-  const [toPropertyOptions, setToPropertyOptions] = useState<Option[]>([]);
-  const [selectedFromPropertyOptionType, setSelectedFromPropertyOptionType] =
-    useState("");
   const [values, setValues] = useState<Value[]>(action?.data.values || []);
   const [fieldType, setFieldType] =
     useState<"mapping" | "default" | "responder">("default");
@@ -50,6 +47,55 @@ export default function CreateCard({ setAction, actionMode, action }: Props) {
 
   const { circle } = useCircle();
   const { localCollection: collection } = useLocalCollection();
+  const [mappedCollection, setMappedCollection] = useState<CollectionType>();
+
+  const getToPropertyOption = (
+    fieldType: string,
+    fromPropertyOptionType?: string
+  ) => {
+    if (mappedCollection)
+      if (fieldType === "mapping" && fromPropertyOptionType) {
+        return Object.entries(mappedCollection?.properties)
+          .filter(
+            ([propertyId, property]) =>
+              (property as Property).type === fromPropertyOptionType &&
+              !usedProperty[propertyId]
+          )
+          .map(([propertyId, property]) => ({
+            label: (property as Property).name,
+            value: propertyId,
+            data: {
+              type: (property as Property).type,
+            },
+          }));
+      } else if (fieldType === "default") {
+        return Object.entries(mappedCollection?.properties)
+          .filter(([propertyId, property]) => !usedProperty[propertyId])
+          .map(([propertyId, property]) => ({
+            label: (property as Property).name,
+            value: propertyId,
+            data: {
+              type: (property as Property).type,
+            },
+          }));
+      } else if (fieldType === "responder") {
+        return Object.entries(mappedCollection?.properties)
+          .filter(
+            ([propertyId, property]) =>
+              !usedProperty[propertyId] &&
+              ["user", "user[]", "ethAddress"].includes(property.type)
+          )
+          .map(([propertyId, property]) => ({
+            label: (property as Property).name,
+            value: propertyId,
+            data: {
+              type: (property as Property).type,
+            },
+          }));
+      }
+
+    return [];
+  };
 
   useEffect(() => {
     const fetchCollectionOptions = async () => {
@@ -149,48 +195,13 @@ export default function CreateCard({ setAction, actionMode, action }: Props) {
             }
           )
         ).json();
-        console.log({
-          selectedFromPropertyOptionType,
-          prop: data?.properties,
-          fieldType,
-        });
-        if (data?.properties)
-          if (fieldType === "mapping") {
-            setToPropertyOptions(
-              Object.entries(data?.properties)
-                .filter(
-                  ([propertyId, property]) =>
-                    (property as Property).type ===
-                      selectedFromPropertyOptionType &&
-                    !usedProperty[propertyId]
-                )
-                .map(([propertyId, property]) => ({
-                  label: (property as Property).name,
-                  value: propertyId,
-                  data: {
-                    type: (property as Property).type,
-                  },
-                }))
-            );
-          } else if (fieldType === "default") {
-            setToPropertyOptions(
-              Object.entries(data?.properties)
-                .filter(([propertyId, property]) => !usedProperty[propertyId])
-                .map(([propertyId, property]) => ({
-                  label: (property as Property).name,
-                  value: propertyId,
-                  data: {
-                    type: (property as Property).type,
-                  },
-                }))
-            );
-          }
+        setMappedCollection(data);
       } catch (e) {
         console.log(e);
       }
     };
     void fetchCollection();
-  }, [selectedCollection, selectedFromPropertyOptionType, values]);
+  }, [selectedCollection]);
 
   return (
     <Box
@@ -267,12 +278,10 @@ export default function CreateCard({ setAction, actionMode, action }: Props) {
                   marginBottom="2"
                 >
                   <Box width="1/4">
-                    <Text variant="label">To Form Field</Text>
+                    <Text variant="label">Map responder To Form Field</Text>
                   </Box>
                   <Dropdown
-                    options={toPropertyOptions.filter((a) =>
-                      ["user", "user[]", "ethAddress"].includes(a.data?.type)
-                    )}
+                    options={getToPropertyOption("responder")}
                     selected={value.mapping?.to}
                     onChange={(value) => {
                       const newValues = [...values];
@@ -283,10 +292,9 @@ export default function CreateCard({ setAction, actionMode, action }: Props) {
                         },
                       };
                       setValues(newValues);
-                      console.log({ newValues });
-                      console.log({ value });
                     }}
                     multiple={false}
+                    isClearable={false}
                   />
                 </Box>
               )}
@@ -303,34 +311,28 @@ export default function CreateCard({ setAction, actionMode, action }: Props) {
                     <Box width="1/4">
                       <Text variant="label">From Form Field</Text>
                     </Box>
-                    <Box width="3/4">
-                      <Dropdown
-                        options={fromPropertyOptions}
-                        selected={value.mapping?.from}
-                        onChange={(v) => {
-                          const newValues = [...values];
-                          if (v?.value !== value.mapping?.from?.value) {
-                            newValues[index] = {
-                              type: "mapping",
-                              mapping: {
-                                from: v,
-                                to: {
-                                  label: "",
-                                  value: "",
-                                },
+                    <Dropdown
+                      options={fromPropertyOptions}
+                      selected={value.mapping?.from}
+                      onChange={(v) => {
+                        const newValues = [...values];
+                        if (v?.value !== value.mapping?.from?.value) {
+                          newValues[index] = {
+                            type: "mapping",
+                            mapping: {
+                              from: v,
+                              to: {
+                                label: "",
+                                value: "",
                               },
-                            };
-                            setValues(newValues);
-                            setSelectedFromPropertyOptionType(
-                              v?.data?.type ||
-                                collection.properties[v?.value]?.type
-                            );
-                          }
-                        }}
-                        multiple={false}
-                        isClearable={false}
-                      />
-                    </Box>
+                            },
+                          };
+                          setValues(newValues);
+                        }
+                      }}
+                      multiple={false}
+                      isClearable={false}
+                    />
                   </Box>
                   <Box
                     display="flex"
@@ -342,25 +344,29 @@ export default function CreateCard({ setAction, actionMode, action }: Props) {
                     <Box width="1/4">
                       <Text variant="label">To Collection Field</Text>
                     </Box>{" "}
-                    <Box width="3/4">
-                      <Dropdown
-                        options={toPropertyOptions}
-                        selected={value.mapping?.to}
-                        onChange={(value) => {
-                          const newValues = [...values];
-                          newValues[index] = {
-                            type: "mapping",
-                            mapping: {
-                              to: value,
-                              from: newValues[index].mapping?.from,
-                            },
-                          };
-                          setValues(newValues);
-                        }}
-                        multiple={false}
-                        isClearable={false}
-                      />
-                    </Box>
+                    <Dropdown
+                      options={getToPropertyOption(
+                        "mapping",
+                        value.mapping?.from?.data?.type ||
+                          collection.properties[
+                            value.mapping?.from?.value || ""
+                          ]?.type
+                      )}
+                      selected={value.mapping?.to}
+                      onChange={(value) => {
+                        const newValues = [...values];
+                        newValues[index] = {
+                          type: "mapping",
+                          mapping: {
+                            to: value,
+                            from: newValues[index].mapping?.from,
+                          },
+                        };
+                        setValues(newValues);
+                      }}
+                      multiple={false}
+                      isClearable={false}
+                    />{" "}
                   </Box>
                 </>
               )}
@@ -395,7 +401,7 @@ export default function CreateCard({ setAction, actionMode, action }: Props) {
                         </Box>
 
                         <Dropdown
-                          options={toPropertyOptions}
+                          options={getToPropertyOption("default")}
                           selected={value.default?.field}
                           onChange={(v) => {
                             const newValues = [...values];
@@ -408,6 +414,7 @@ export default function CreateCard({ setAction, actionMode, action }: Props) {
                             setValues(newValues);
                           }}
                           multiple={false}
+                          isClearable={false}
                         />
                       </Box>
                       {value.default?.field?.value && (
