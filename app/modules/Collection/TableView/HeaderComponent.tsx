@@ -16,7 +16,6 @@ import { getPropertyIcon } from "../../CollectionProject/EditProperty/Utils";
 import { useLocalCollection } from "../Context/LocalCollectionContext";
 
 type Props = {
-  sortData: (columnName: string, asc: boolean) => void;
   columnName: string;
   setPropertyName: (name: string) => void;
   setIsEditFieldOpen: (value: boolean) => void;

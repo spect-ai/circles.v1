@@ -272,7 +272,7 @@ export default function PublicField({
         </Box>
       )}
       {form.properties[propertyName]?.type === "reward" && (
-        <Box marginTop="4">
+        <Box marginTop="0">
           <RewardField
             disabled={disabled}
             rewardOptions={
