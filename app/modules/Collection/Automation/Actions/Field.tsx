@@ -3,7 +3,7 @@ import Dropdown from "@/app/common/components/Dropdown";
 import Editor from "@/app/common/components/Editor";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import RewardField from "@/app/modules/PublicForm/RewardField";
-import { CollectionType, MemberDetails, Registry } from "@/app/types";
+import { CollectionType, MemberDetails, Property, Registry } from "@/app/types";
 import { Box, IconPlusSmall, Input, useTheme } from "degen";
 import { useRouter } from "next/router";
 import { useQuery } from "react-query";
@@ -11,13 +11,21 @@ import { DateInput } from "../../Form/Field";
 
 type Props = {
   collection: CollectionType;
-  propertyId: string;
   type: string;
   data: any;
   setData: (value: any) => void;
+  propertyId?: string;
+  property?: Property;
 };
 
-export function Field({ collection, propertyId, type, data, setData }: Props) {
+export function Field({
+  collection,
+  propertyId,
+  type,
+  data,
+  setData,
+  property,
+}: Props) {
   const { mode } = useTheme();
   const router = useRouter();
   const { circle: cId } = router.query;
@@ -125,7 +133,9 @@ export function Field({ collection, propertyId, type, data, setData }: Props) {
             options={
               type === "user" || type === "user[]"
                 ? (memberOptions as any)
-                : collection.properties[propertyId]?.options
+                : propertyId
+                ? collection.properties[propertyId]?.options
+                : property?.options
             }
             selected={data}
             onChange={(value: any) => {
@@ -139,7 +149,9 @@ export function Field({ collection, propertyId, type, data, setData }: Props) {
         <Box>
           <RewardField
             rewardOptions={
-              collection.properties[propertyId]?.rewardOptions as Registry
+              propertyId
+                ? (collection.properties[propertyId]?.rewardOptions as Registry)
+                : (property?.rewardOptions as Registry)
             }
             value={data}
             updateData={(reward) => {

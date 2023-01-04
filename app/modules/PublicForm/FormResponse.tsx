@@ -78,7 +78,7 @@ export default function FormResponse({
           gap="4"
           alignItems="center"
         >
-          {kudos?.imageUrl && (claimed || form.canClaimKudos) && (
+          {kudos?.imageUrl && (claimed || form.formMetadata.canClaimKudos) && (
             <StyledImage src={`${kudos.imageUrl}`} alt="kudos" />
           )}
           {claimed ? (
@@ -159,7 +159,7 @@ export default function FormResponse({
             </Stack>
           ) : (
             <Box>
-              {form.canClaimKudos && (
+              {form.formMetadata.canClaimKudos && (
                 <Stack>
                   <Text weight="semiBold" variant="large">
                     The creator of this form is distributing kudos to everyone

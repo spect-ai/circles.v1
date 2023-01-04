@@ -17,6 +17,7 @@ import {
   Option,
   PayWallOptions,
   Property,
+  PropertyType,
 } from "@/app/types";
 import { SaveFilled } from "@ant-design/icons";
 import { Box, IconTrash, Input, Stack, Text, Textarea } from "degen";
@@ -35,6 +36,7 @@ import Accordian from "@/app/common/components/Accordian";
 import AddConditions from "../Common/AddConditions";
 import PayWall from "./PayWallOptions";
 import RewardTokenOptions from "./RewardTokenOptions";
+import { Field } from "../Automation/Actions/Field";
 
 type Props = {
   propertyName?: string;
@@ -48,7 +50,6 @@ export default function AddField({ propertyName, handleClose }: Props) {
     setProjectViewId,
   } = useLocalCollection();
   const { registry, circle } = useCircle();
-  console.log({ reg: registry });
   const [networks, setNetworks] = useState(registry);
   const [payWallOption, setPayWallOption] = useState({
     network: registry as Registry,
@@ -61,7 +62,7 @@ export default function AddField({ propertyName, handleClose }: Props) {
   const [type, setType] = useState({ label: "Short Text", value: "shortText" });
   const [required, setRequired] = useState(0);
   const onRequiredTabClick = (id: number) => setRequired(id);
-
+  const [defaultValue, setDefaultValue] = useState<any>();
   const [loading, setLoading] = useState(false);
   const [fieldOptions, setFieldOptions] = useState([
     {
@@ -110,7 +111,7 @@ export default function AddField({ propertyName, handleClose }: Props) {
         rewardOptions,
         description,
         userType,
-        // default: defaultValue,
+        default: defaultValue,
         // onUpdateNotifyUserTypes: notifyUserType?.map(
         //   (type) => type.value
         // ) as FormUserType[],
@@ -140,7 +141,7 @@ export default function AddField({ propertyName, handleClose }: Props) {
         options: fieldOptions,
         rewardOptions,
         userType: userType,
-        // default: defaultValue,
+        default: defaultValue,
         // onUpdateNotifyUserTypes: notifyUserType?.map(
         //   (type) => type.value
         // ) as FormUserType[],
@@ -198,6 +199,7 @@ export default function AddField({ propertyName, handleClose }: Props) {
       const property = collection.properties[propertyName];
       setDescription(property?.description || "");
       setRequired(property?.required ? 1 : 0);
+      setDefaultValue(property?.default);
 
       setType({
         label:
@@ -387,6 +389,24 @@ export default function AddField({ propertyName, handleClose }: Props) {
                 setPayWallOption={setPayWallOption}
               />
             ) : null}
+            <Accordian name="Default Value" defaultOpen={false}>
+              <Field
+                collection={collection}
+                property={{
+                  name: name.trim(),
+                  options: fieldOptions,
+                  rewardOptions: networks,
+                  userType: userType,
+                  default: defaultValue,
+                  type: type.value as PropertyType,
+                  isPartOfFormView: true,
+                }}
+                type={type.value}
+                data={defaultValue}
+                setData={setDefaultValue}
+              />
+            </Accordian>
+
             {collection.collectionType === 0 && (
               <Accordian name="Advanced" defaultOpen={advancedDefaultOpen}>
                 <AddConditions
