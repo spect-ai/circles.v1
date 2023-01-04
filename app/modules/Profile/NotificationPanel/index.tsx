@@ -6,6 +6,7 @@ import { Notification } from "@/app/types";
 import { Avatar, Box, Heading, Stack, Text } from "degen";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
+import { useScreenClass } from "react-grid-system";
 import InfiniteScroll from "react-infinite-scroll-component";
 import styled from "styled-components";
 import TaskWalletHeader from "../TaskWallet/TaskWalletHeader";
@@ -26,6 +27,8 @@ export default function NotificationPanel() {
     })().catch((err) => console.log(err));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const screenClass = useScreenClass();
 
   return (
     <Box>
@@ -62,7 +65,11 @@ export default function NotificationPanel() {
                 overflowY: "scroll",
                 overflowX: "hidden",
               }}
-              height="calc(100vh - 200px)"
+              height={
+                screenClass === "xxl"
+                  ? "calc(100vh - 18rem)"
+                  : "calc(100vh - 11rem)"
+              }
               dataLength={notifications.length}
               next={() => {
                 setPage(page + 1);

@@ -332,28 +332,30 @@ export default function CreateCard({ setAction, actionMode, action }: Props) {
                     <Box width="1/4">
                       <Text variant="label">From Form Field</Text>
                     </Box>
-                    <Dropdown
-                      options={fromPropertyOptions}
-                      selected={value.mapping?.from}
-                      onChange={(v) => {
-                        const newValues = [...values];
-                        if (v?.value !== value.mapping?.from?.value) {
-                          newValues[index] = {
-                            type: "mapping",
-                            mapping: {
-                              from: v,
-                              to: {
-                                label: "",
-                                value: "",
+                    <Box width="3/4">
+                      <Dropdown
+                        options={fromPropertyOptions}
+                        selected={value.mapping?.from}
+                        onChange={(v) => {
+                          const newValues = [...values];
+                          if (v?.value !== value.mapping?.from?.value) {
+                            newValues[index] = {
+                              type: "mapping",
+                              mapping: {
+                                from: v,
+                                to: {
+                                  label: "",
+                                  value: "",
+                                },
                               },
-                            },
-                          };
-                          setValues(newValues);
-                        }
-                      }}
-                      multiple={false}
-                      isClearable={false}
-                    />
+                            };
+                            setValues(newValues);
+                          }
+                        }}
+                        multiple={false}
+                        isClearable={false}
+                      />
+                    </Box>
                   </Box>
                   <Box
                     display="flex"
@@ -364,30 +366,32 @@ export default function CreateCard({ setAction, actionMode, action }: Props) {
                   >
                     <Box width="1/4">
                       <Text variant="label">To Collection Field</Text>
-                    </Box>{" "}
-                    <Dropdown
-                      options={getToPropertyOption(
-                        "mapping",
-                        value.mapping?.from?.data?.type ||
-                          collection.properties[
-                            value.mapping?.from?.value || ""
-                          ]?.type
-                      )}
-                      selected={value.mapping?.to}
-                      onChange={(value) => {
-                        const newValues = [...values];
-                        newValues[index] = {
-                          type: "mapping",
-                          mapping: {
-                            to: value,
-                            from: newValues[index].mapping?.from,
-                          },
-                        };
-                        setValues(newValues);
-                      }}
-                      multiple={false}
-                      isClearable={false}
-                    />{" "}
+                    </Box>
+                    <Box width="3/4">
+                      <Dropdown
+                        options={getToPropertyOption(
+                          "mapping",
+                          value.mapping?.from?.data?.type ||
+                            collection.properties[
+                              value.mapping?.from?.value || ""
+                            ]?.type
+                        )}
+                        selected={value.mapping?.to}
+                        onChange={(value) => {
+                          const newValues = [...values];
+                          newValues[index] = {
+                            type: "mapping",
+                            mapping: {
+                              to: value,
+                              from: newValues[index].mapping?.from,
+                            },
+                          };
+                          setValues(newValues);
+                        }}
+                        multiple={false}
+                        isClearable={false}
+                      />
+                    </Box>
                   </Box>
                 </>
               )}
@@ -420,23 +424,24 @@ export default function CreateCard({ setAction, actionMode, action }: Props) {
                         <Box width="1/4">
                           <Text variant="label">Collection Field</Text>
                         </Box>
-
-                        <Dropdown
-                          options={getToPropertyOption("default")}
-                          selected={value.default?.field}
-                          onChange={(v) => {
-                            const newValues = [...values];
-                            newValues[index] = {
-                              type: "default",
-                              default: {
-                                field: v,
-                              },
-                            };
-                            setValues(newValues);
-                          }}
-                          multiple={false}
-                          isClearable={false}
-                        />
+                        <Box width="3/4">
+                          <Dropdown
+                            options={getToPropertyOption("default")}
+                            selected={value.default?.field}
+                            onChange={(v) => {
+                              const newValues = [...values];
+                              newValues[index] = {
+                                type: "default",
+                                default: {
+                                  field: v,
+                                },
+                              };
+                              setValues(newValues);
+                            }}
+                            multiple={false}
+                            isClearable={false}
+                          />
+                        </Box>
                       </Box>
                       {value.default?.field?.value && (
                         <>
