@@ -93,7 +93,7 @@ export default function MilestoneModal({
           value: address,
         };
       });
-      !data && setSelectedToken(tokens[0]);
+      data && setSelectedToken(tokens[0]);
       setTokenOptions(tokens);
     }
   }, [form.properties, propertyName, rewardOptions, selectedChain]);

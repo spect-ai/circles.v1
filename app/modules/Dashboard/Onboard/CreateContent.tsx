@@ -45,7 +45,7 @@ export function CreateContent() {
   const router = useRouter();
   const [itemName, setItemName] = useState("");
   const [loading, setIsLoading] = useState(false);
-  const [itemType, setItemType] = useState<"Form" | "Project">("Form");
+  const [itemType, setItemType] = useState<"Form" | "Collection">("Form");
 
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
@@ -165,8 +165,8 @@ export function CreateContent() {
         </Card>
         <Hidden xs sm>
           <Card
-            border={itemType == "Project"}
-            onClick={() => setItemType("Project")}
+            border={itemType == "Collection"}
+            onClick={() => setItemType("Collection")}
           >
             <Stack direction={"horizontal"} align="center" space={"2"}>
               <ProjectOutlined
@@ -178,11 +178,11 @@ export function CreateContent() {
                 color={"textPrimary"}
                 align="center"
               >
-                Project
+                Collection
               </Text>
             </Stack>
             <Text>
-              Projects are used to manage tasks, grants, bounties and onboarding
+            Collections are used to manage tasks, grants, bounties and onboarding
               and pay out contributors on any EVM network.
             </Text>
           </Card>
@@ -191,7 +191,7 @@ export function CreateContent() {
       <Text>Give your {itemType} a name </Text>
       <NameInput
         placeholder={
-          itemType == "Project"
+          itemType == "Collection"
             ? "Grant Milestones"
             : "Onboarding Interest Form"
         }
@@ -208,7 +208,7 @@ export function CreateContent() {
             createSorm(0);
             return;
           }
-          if (itemType == "Project" && myCircles?.[0]?.id) {
+          if (itemType == "Collection" && myCircles?.[0]?.id) {
             createSorm(1);
             return;
           }
