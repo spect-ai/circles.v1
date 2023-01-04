@@ -802,6 +802,10 @@ export type ProjectMetadata = {
   cardOrders: {
     [groupByColumn: string]: string[][];
   };
+  payments?: {
+    rewardField: string;
+    payeeField: string;
+  };
 };
 
 export type FormPermissions = {

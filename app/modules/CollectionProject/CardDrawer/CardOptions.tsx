@@ -54,6 +54,7 @@ export default function CardOptions({ handleDrawerClose, cardSlug }: Props) {
   const showPendingPayment =
     rewardProperties > 0 &&
     (userProperties > 0 || multiUserProperties > 0 || ethAddressProperties > 0);
+
   return (
     <Popover
       width="16"
@@ -84,12 +85,49 @@ export default function CardOptions({ handleDrawerClose, cardSlug }: Props) {
             <MenuItem
               padding="2"
               onClick={async () => {
+                if (
+                  !collection.projectMetadata.payments?.payeeField ||
+                  !collection.projectMetadata.payments?.rewardField
+                ) {
+                  toast.error(
+                    "Please set up payments first in collection settings"
+                  );
+                  setIsOpen(false);
+                  return;
+                }
+                if (
+                  !collection.data[cardSlug][
+                    collection.projectMetadata.payments?.payeeField
+                  ]
+                ) {
+                  toast.error(
+                    `"${collection.projectMetadata.payments.payeeField}" is not added, please add a payee first`
+                  );
+                  setIsOpen(false);
+                  return;
+                }
+                if (
+                  !collection.data[cardSlug][
+                    collection.projectMetadata.payments?.rewardField
+                  ]
+                ) {
+                  toast.error(
+                    `"${collection.projectMetadata.payments.rewardField}" is not added, please add a reward first`
+                  );
+                  setIsOpen(false);
+                  return;
+                }
                 setIsOpen(false);
                 handleDrawerClose();
-                await addPendingPayment(circle?.id, {
+                const res = await addPendingPayment(circle?.id, {
                   collectionId: collection.id,
                   dataSlugs: [cardSlug],
                 });
+                if (res.id)
+                  toast.success(
+                    "Added to pending payments, you can view it in the payments center"
+                  );
+                else toast.error("Error adding to pending payments");
               }}
             >
               <Stack direction="horizontal" align="center" space="2">
