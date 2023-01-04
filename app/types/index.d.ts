@@ -771,7 +771,6 @@ export type FormMetadata = {
   messageOnSubmission: string;
   multipleResponsesAllowed: boolean;
   updatingResponseAllowed: boolean;
-
   numOfKudos?: number;
   credentialCurationEnabled?: boolean;
   isAnOpportunity?: boolean;
@@ -783,6 +782,7 @@ export type FormMetadata = {
   kudosClaimedByUser: boolean;
   hasRole: boolean;
   discordConnectionRequired: boolean;
+  canClaimKudos: boolean;
 };
 
 export type ProjectMetadata = {
