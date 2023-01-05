@@ -182,8 +182,8 @@ export function CreateContent() {
               </Text>
             </Stack>
             <Text>
-            Collections are used to manage tasks, grants, bounties and onboarding
-              and pay out contributors on any EVM network.
+              Collections are used to manage tasks, grants, bounties and
+              onboarding and pay out contributors on any EVM network.
             </Text>
           </Card>
         </Hidden>
