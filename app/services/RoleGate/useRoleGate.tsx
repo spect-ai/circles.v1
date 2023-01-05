@@ -132,6 +132,7 @@ export default function useRoleGate() {
       return false;
     }
     const userRoles = circle?.memberRoles[connectedUser];
+    if (!userRoles) return false;
     switch (permission) {
       case "manageSettings":
         if (connectedUser == collection.creator) return true;

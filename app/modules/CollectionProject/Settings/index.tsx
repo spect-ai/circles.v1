@@ -1,6 +1,7 @@
 import Modal from "@/app/common/components/Modal";
 import Tabs from "@/app/common/components/Tabs";
 import { updateFormCollection } from "@/app/services/Collection";
+import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { Box, Button, IconCog, Input, Stack, Text } from "degen";
 import { AnimatePresence } from "framer-motion";
 import React, { useState } from "react";
@@ -28,11 +29,21 @@ export default function Settings() {
     label: collection.projectMetadata.payments?.payeeField,
   } as any);
 
+  const { formActions } = useRoleGate();
+
   return (
     <Box>
       <Button
         shape="circle"
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => {
+          if (formActions("manageSettings")) {
+            setIsOpen(true);
+          } else {
+            toast.error(
+              "Your role(s) doesn't have the permission to access this collection's settings"
+            );
+          }
+        }}
         size="small"
         variant="transparent"
       >

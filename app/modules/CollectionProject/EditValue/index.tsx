@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import Popover from "@/app/common/components/Popover";
 import { updateField, updateFormCollection } from "@/app/services/Collection";
+import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { Milestone } from "@/app/types";
 import { Box, IconClose, Stack, Tag, Text, useTheme } from "degen";
 import { AnimatePresence, motion } from "framer-motion";
@@ -32,6 +33,8 @@ function EditValue({ value, setValue, propertyName, dataId }: Props) {
   const [tempValue, setTempValue] = useState<any>();
 
   const { mode } = useTheme();
+
+  const { formActions } = useRoleGate();
 
   useEffect(() => {
     if (property.type === "singleSelect" || property.type === "multiSelect") {
@@ -122,7 +125,16 @@ function EditValue({ value, setValue, propertyName, dataId }: Props) {
                   </Stack>
                 </FieldInputContainer>
               ) : (
-                <FieldButton onClick={() => setIsEditing(true)} mode={mode}>
+                <FieldButton
+                  onClick={() => {
+                    if (!formActions("updateResponsesManually"))
+                      toast.error(
+                        "Your role doesn't have permission to update cards"
+                      );
+                    else setIsEditing(true);
+                  }}
+                  mode={mode}
+                >
                   {["multiSelect", "user[]"].includes(property.type) ? (
                     value?.length ? (
                       value?.map((val: any) => (
