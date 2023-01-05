@@ -1,3 +1,4 @@
+import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { Box } from "degen";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
 import Filter from "./Filter";
@@ -5,9 +6,9 @@ import { SearchCard } from "./Search";
 import Sort from "./Sort";
 
 export default function Filtering() {
-  const {
-    localCollection: collection,
-  } = useLocalCollection();
+  const { localCollection: collection } = useLocalCollection();
+
+  const { formActions } = useRoleGate();
   return (
     <Box
       width="full"
@@ -22,16 +23,18 @@ export default function Filtering() {
       marginBottom={collection?.collectionType === 1 ? "none" : "2"}
     >
       <SearchCard />
-      <Box
-        display="flex"
-        flexDirection="row"
-        gap="10"
-        alignItems="center"
-        width="1/2"
-      >
-        <Filter />
-        <Sort />
-      </Box>
+      {formActions("manageSettings") && (
+        <Box
+          display="flex"
+          flexDirection="row"
+          gap="10"
+          alignItems="center"
+          width="1/2"
+        >
+          <Filter />
+          <Sort />
+        </Box>
+      )}
     </Box>
   );
 }

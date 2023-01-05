@@ -1,6 +1,7 @@
 import Popover from "@/app/common/components/Popover";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { updateFormCollection } from "@/app/services/Collection";
+import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { TableOutlined } from "@ant-design/icons";
 import {
   Box,
@@ -44,6 +45,8 @@ export default function ProjectHeading() {
   const [viewType, setViewType] = useState("");
   const [isViewSettingsOpen, setIsViewSettingsOpen] = useState(false);
   const [isViewPopoverOpen, setIsViewPopoverOpen] = useState(false);
+
+  const { formActions } = useRoleGate();
 
   const handleDragEnd = async (result: DropResult) => {
     const { destination, source, draggableId } = result;
@@ -171,7 +174,13 @@ export default function ProjectHeading() {
                                   <Box
                                     cursor="pointer"
                                     marginLeft="2"
-                                    onClick={() => setIsViewSettingsOpen(true)}
+                                    onClick={() => {
+                                      if (!formActions("manageSettings"))
+                                        toast.error(
+                                          "Your role(s) doen't have permission to manage settings"
+                                        );
+                                      else setIsViewSettingsOpen(true);
+                                    }}
                                   >
                                     <Text variant="label">
                                       <IconCog size="5" />
@@ -196,7 +205,13 @@ export default function ProjectHeading() {
                   <AddViewButton
                     width="fit"
                     paddingX="8"
-                    onClick={() => setIsAddViewPopupOpen(true)}
+                    onClick={() => {
+                      if (!formActions("manageSettings"))
+                        toast.error(
+                          "Your role(s) doen't have permission to manage this collection's settings"
+                        );
+                      else setIsAddViewPopupOpen(true);
+                    }}
                   >
                     <Text>
                       <IconPlusSmall size="5" />
