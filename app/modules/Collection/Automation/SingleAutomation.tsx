@@ -164,7 +164,6 @@ export default function SingleAutomation({
         validateConditions(conditions) &&
         name !== ""
     );
-    console.log({ canSave });
   }, [actions, trigger, conditions, name]);
 
   return (
@@ -346,7 +345,6 @@ export default function SingleAutomation({
                       const newActions = [...actions];
                       newActions[index] = action;
                       setActions(newActions);
-                      console.log({ actions });
                       setIsDirty(true);
                     }}
                     actionMode="edit"

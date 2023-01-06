@@ -41,7 +41,6 @@ export default function PaymentCard({
     }
   };
 
-  console.log({ paymentDetails });
   return (
     <Card mode={mode} key={index} onClick={() => handleClick(index)}>
       <Box

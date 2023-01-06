@@ -297,19 +297,19 @@ export default function useViewCommon() {
       },
     });
 
-    void updateCollectionDataGuarded(collection.id, draggableId, {
+    updateCollectionDataGuarded(collection.id, draggableId, {
       [view.groupByColumn]:
         destColumn.value === "__unassigned__" ? null : destColumn,
-    });
-
-    void updateFormCollection(collection.id, {
-      projectMetadata: {
-        ...collection.projectMetadata,
-        cardOrders: {
-          ...collection.projectMetadata.cardOrders,
-          [view.groupByColumn]: newCardColumnOrder,
+    }).then(() => {
+      updateFormCollection(collection.id, {
+        projectMetadata: {
+          ...collection.projectMetadata,
+          cardOrders: {
+            ...collection.projectMetadata.cardOrders,
+            [view.groupByColumn]: newCardColumnOrder,
+          },
         },
-      },
+      });
     });
   };
 

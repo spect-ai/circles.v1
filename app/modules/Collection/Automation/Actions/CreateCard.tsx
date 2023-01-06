@@ -301,22 +301,24 @@ export default function CreateCard({ setAction, actionMode, action }: Props) {
                   <Box width="1/4">
                     <Text variant="label">Map responder To Form Field</Text>
                   </Box>
-                  <Dropdown
-                    options={getToPropertyOption("responder")}
-                    selected={value.mapping?.to}
-                    onChange={(value) => {
-                      const newValues = [...values];
-                      newValues[index] = {
-                        type: "responder",
-                        mapping: {
-                          to: value,
-                        },
-                      };
-                      setValues(newValues);
-                    }}
-                    multiple={false}
-                    isClearable={false}
-                  />
+                  <Box width="3/4">
+                    <Dropdown
+                      options={getToPropertyOption("responder")}
+                      selected={value.mapping?.to}
+                      onChange={(value) => {
+                        const newValues = [...values];
+                        newValues[index] = {
+                          type: "responder",
+                          mapping: {
+                            to: value,
+                          },
+                        };
+                        setValues(newValues);
+                      }}
+                      multiple={false}
+                      isClearable={false}
+                    />
+                  </Box>
                 </Box>
               )}
               {value.type === "mapping" && (

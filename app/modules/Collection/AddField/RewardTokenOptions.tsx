@@ -61,7 +61,7 @@ export default function RewardTokenOptions({ networks, setNetworks }: Props) {
   useEffect(() => {
     if (addFrom === "whitelist" && selectedChain && registry) {
       const tokens = Object.entries(
-        registry[selectedChain.value]?.tokenDetails
+        registry[selectedChain.value]?.tokenDetails || {}
       ).map(([address, token]) => {
         return {
           label: token.symbol,
