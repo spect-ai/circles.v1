@@ -403,7 +403,7 @@ export const approveUsingGnosis = async (
       );
     }
   }
-  return tokensApproved;
+  return { tokensApproved, nonce };
 };
 
 export const payUsingGnosis = async (
@@ -431,6 +431,7 @@ export const payUsingGnosis = async (
   console.log({ tokenAmounts });
   let tokensDistributed = [] as string[];
   let nonce = startNonce;
+  const txHash = {} as { [key: string]: string };
   // Distribute tokens
   if (tokenAmounts.length > 0) {
     await toast.promise(
@@ -440,12 +441,16 @@ export const payUsingGnosis = async (
         registry,
         gnosisSafeAddress,
         nonce
-      ).then(() => {
-        tokensDistributed = [
-          ...tokensDistributed,
-          ...tokenAmounts.map((a) => a.token),
-        ];
-        nonce++;
+      ).then((res) => {
+        if (res) {
+          tokensDistributed = [
+            ...tokensDistributed,
+            ...tokenAmounts.map((a) => a.token),
+          ];
+          nonce++;
+          console.log(res);
+          if (res) txHash["tokens"] = res;
+        }
       }),
       {
         pending: `Distributing ${
@@ -470,19 +475,22 @@ export const payUsingGnosis = async (
         registry,
         gnosisSafeAddress,
         nonce
-      ).then(() => {
-        tokensDistributed = [...tokensDistributed, "0x0"];
-        nonce++;
+      ).then((res) => {
+        if (res) {
+          tokensDistributed = [...tokensDistributed, "0x0"];
+          nonce++;
+          if (res) txHash["currency"] = res;
+        }
       }),
       {
-        pending: `Distributing ${registry[chainId]?.nativeCurrency}}`,
+        pending: `Distributing ${registry[chainId]?.nativeCurrency}`,
       },
       {
         position: "top-center",
       }
     );
   }
-  return tokensDistributed;
+  return { tokensDistributed, txHash };
 };
 
 export const covertToWei = async (
@@ -680,17 +688,20 @@ export const payUsingEOA = async (
       !tokensWithoutBalance.includes(a.token)
   );
 
-  console.log({ tokenAmounts });
   let tokensDistributed = [] as string[];
   // Distribute tokens
+  const txHash = {} as { [key: string]: string };
   if (tokenAmounts.length > 0) {
     await toast.promise(
       distributeTokensUsingEOA(chainId, tokenAmounts, registry).then(
-        () =>
-          (tokensDistributed = [
+        (res: any) => {
+          tokensDistributed = [
             ...tokensDistributed,
             ...tokenAmounts.map((a) => a.token),
-          ])
+          ];
+          console.log({ res });
+          txHash["tokens"] = res.transactionHash;
+        }
       ),
       {
         pending: `Distributing ${
@@ -710,17 +721,20 @@ export const payUsingEOA = async (
   if (currencyAmounts.length > 0) {
     await toast.promise(
       distributeCurrencyUsingEOA(chainId, currencyAmounts, registry).then(
-        () => (tokensDistributed = [...tokensDistributed, "0x0"])
+        (res) => {
+          tokensDistributed = [...tokensDistributed, "0x0"];
+          txHash["currency"] = res.transactionHash;
+        }
       ),
       {
-        pending: `Distributing ${registry[chainId]?.nativeCurrency}}`,
+        pending: `Distributing ${registry[chainId]?.nativeCurrency}`,
       },
       {
         position: "top-center",
       }
     );
   }
-  return tokensDistributed;
+  return { tokensDistributed, txHash };
 };
 
 export const findAndUpdatePaymentIds = async (
@@ -728,7 +742,8 @@ export const findAndUpdatePaymentIds = async (
   chainId: string,
   tokenAddresses: string[],
   paymentIds: string[],
-  paymentDetails: { [paymentId: string]: PaymentDetails }
+  paymentDetails: { [paymentId: string]: PaymentDetails },
+  transactionHash: { [key: string]: string }
 ) => {
   let filteredPaymentIds = [] as string[];
   for (const tokenAddress of tokenAddresses) {
@@ -746,6 +761,7 @@ export const findAndUpdatePaymentIds = async (
   }
   const res = await makePayments(circleId, {
     paymentIds: filteredPaymentIds,
+    transactionHash,
   });
   return res;
 };

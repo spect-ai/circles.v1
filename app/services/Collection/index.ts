@@ -6,6 +6,7 @@ import {
   PayWallOptions,
   Registry,
   Voting,
+  FormPermissions,
 } from "@/app/types";
 
 export const addField = async (
@@ -100,6 +101,7 @@ export const updateFormCollection = async (
     description?: string;
     propertyOrder?: string[];
     voting?: Voting;
+    permissions?: FormPermissions;
     circleRolesToNotifyUponNewResponse?: string[];
     circleRolesToNotifyUponUpdatedResponse?: string[];
     formMetadata?: {

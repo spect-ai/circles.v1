@@ -1,9 +1,12 @@
 import Avatar from "@/app/common/components/Avatar";
+import { cancelPayments } from "@/app/services/Paymentv2";
 import { MemberDetails, PaymentDetails } from "@/app/types";
-import { Box, useTheme, Text, Stack } from "degen";
+import { Box, useTheme, Text, Stack, IconClose, Button } from "degen";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import { useQuery } from "react-query";
 import styled from "styled-components";
+import { useCircle } from "../CircleContext";
 
 type Props = {
   index: number;
@@ -25,6 +28,19 @@ export default function PaymentCard({
       enabled: false,
     }
   );
+  const { fetchCircle, circle } = useCircle();
+  const { registry } = useCircle();
+
+  const onCancelPayment = async () => {
+    console.log("cancel payment");
+    const res = await cancelPayments(circle.id as string, {
+      paymentIds: [paymentDetails.id],
+    });
+    if (res) {
+      fetchCircle();
+    }
+  };
+
   console.log({ paymentDetails });
   return (
     <Card mode={mode} key={index} onClick={() => handleClick(index)}>
@@ -61,6 +77,7 @@ export default function PaymentCard({
                 {paymentDetails.title}
               </Text>
             </Box>
+
             <Box
               display="flex"
               flexDirection="column"
@@ -85,23 +102,22 @@ export default function PaymentCard({
                   </Text>
                 </Box>
               </Box>
-              {/* <Box
-            display="flex"
-            flexDirection="row"
-            gap="2"
-            justifyContent="flex-end"
-            alignItems="center"
-          >
-            <Text variant="label" weight="semiBold">
-              Pending Distribution:{" "}
-            </Text>
-            <Text variant="small">
-              {" "}
-              {paymentDetails.value} {paymentDetails.token.label} on{" "}
-              {paymentDetails.chain.label}
-            </Text>
-          </Box> */}
             </Box>
+            {cId && router.query?.status === "pending" && (
+              <Box display="flex" flexDirection="row" justifyContent="flex-end">
+                <Button
+                  variant="transparent"
+                  size="small"
+                  shape="circle"
+                  onClick={() => {
+                    void onCancelPayment();
+                  }}
+                >
+                  {" "}
+                  <IconClose />
+                </Button>
+              </Box>
+            )}
           </Box>
           <Box display="flex" flexDirection="column" gap="2" width="3/4">
             <Text variant="label" weight="semiBold">
@@ -201,6 +217,21 @@ export default function PaymentCard({
           </Box>
         </Box>
       </Box>
+      {cId && router.query?.status === "completed" && (
+        <a
+          href={`${registry?.[paymentDetails.chain.value].blockExplorer}tx/${
+            paymentDetails.transactionHash
+          }`}
+          target="_blank"
+          rel="noreferrer noopener"
+        >
+          <Box cursor="pointer">
+            <Text variant="small" color="blue">
+              View Transaction
+            </Text>
+          </Box>
+        </a>
+      )}
     </Card>
   );
 }
@@ -210,18 +241,14 @@ export const Card = styled(Box)<{ mode: string }>`
   flex-direction: column;
   min-height: 12vh;
   margin-top: 0.5rem;
-  padding: 0.4rem 1rem 0;
+  padding: 0.4rem 1rem;
   border-radius: 0.5rem;
   border: solid 2px
     ${(props) =>
       props.mode === "dark"
         ? "rgb(255, 255, 255, 0.05)"
         : "rgb(20, 20, 20, 0.05)"};
-  &:hover {
-    border: solid 2px rgb(191, 90, 242);
-    transition-duration: 0.7s;
-    cursor: pointer;
-  }
+
   position: relative;
   transition: all 0.3s ease-in-out;
   width: 80%;

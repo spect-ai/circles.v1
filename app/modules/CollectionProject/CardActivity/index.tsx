@@ -130,7 +130,7 @@ export default function CardActivity({
                     )
                   ) {
                     toast.error(
-                      "Your role(s) doesn't have permission to add comments on this form"
+                      "Your role(s) doesn't have permission to add comments on this"
                     );
                     return;
                   }

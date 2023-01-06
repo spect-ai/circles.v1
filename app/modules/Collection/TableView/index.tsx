@@ -244,6 +244,21 @@ export default function TableView() {
           }
           return b[propertyName]?.localeCompare(a[propertyName]);
         });
+      } else {
+        // sort the data based on the timestamp of their first activity
+        filteredData = filteredData.sort((a: any, b: any) => {
+          const aTime = new Date(
+            collection.dataActivities[a.id][
+              collection.dataActivityOrder[a.id][0]
+            ].timestamp
+          );
+          const bTime = new Date(
+            collection.dataActivities[b.id][
+              collection.dataActivityOrder[b.id][0]
+            ].timestamp
+          );
+          return aTime.getTime() - bTime.getTime();
+        });
       }
       setData(filteredData);
     }
@@ -265,36 +280,6 @@ export default function TableView() {
     }, 300);
   }, [JSON.stringify(collection.propertyOrder)]);
 
-  const sortData = (columnName: string, asc: boolean) => {
-    if (data) {
-      const sortedData = [...data].sort((a: any, b: any) => {
-        if (
-          ["longText", "shortText", "date", "singleURL"].includes(
-            collection.properties[columnName].type
-          )
-        ) {
-          if (a[columnName] < b[columnName]) {
-            return asc ? -1 : 1;
-          }
-          if (a[columnName] > b[columnName]) {
-            return asc ? 1 : -1;
-          }
-          return 0;
-        }
-        if (["reward"].includes(collection.properties[columnName].type)) {
-          if (a[columnName].value < b[columnName].value) {
-            return asc ? -1 : 1;
-          }
-          if (a[columnName].value > b[columnName].value) {
-            return asc ? 1 : -1;
-          }
-          return 0;
-        }
-        return 0;
-      });
-      setData(sortedData);
-    }
-  };
   const getCellComponent = (type: PropertyType) => {
     switch (type) {
       case "shortText":
@@ -346,7 +331,6 @@ export default function TableView() {
           }),
           title: (
             <HeaderComponent
-              sortData={sortData}
               columnName={property.name}
               setIsEditFieldOpen={setIsEditFieldOpen}
               setPropertyName={setPropertyName}
@@ -366,7 +350,6 @@ export default function TableView() {
           },
           title: (
             <HeaderComponent
-              sortData={sortData}
               columnName={property.name}
               setIsEditFieldOpen={setIsEditFieldOpen}
               setPropertyName={setPropertyName}
@@ -386,7 +369,6 @@ export default function TableView() {
           },
           title: (
             <HeaderComponent
-              sortData={sortData}
               columnName={property.name}
               setIsEditFieldOpen={setIsEditFieldOpen}
               setPropertyName={setPropertyName}
@@ -405,7 +387,6 @@ export default function TableView() {
           },
           title: (
             <HeaderComponent
-              sortData={sortData}
               columnName={property.name}
               setIsEditFieldOpen={setIsEditFieldOpen}
               setPropertyName={setPropertyName}
@@ -425,7 +406,6 @@ export default function TableView() {
           },
           title: (
             <HeaderComponent
-              sortData={sortData}
               columnName={property.name}
               setIsEditFieldOpen={setIsEditFieldOpen}
               setPropertyName={setPropertyName}
@@ -441,7 +421,6 @@ export default function TableView() {
             collection.collectionType === 0 ? property.isPartOfFormView : false,
           title: (
             <HeaderComponent
-              sortData={sortData}
               columnName={property.name}
               setIsEditFieldOpen={setIsEditFieldOpen}
               setPropertyName={setPropertyName}
@@ -461,7 +440,6 @@ export default function TableView() {
           columnData: {},
           title: (
             <HeaderComponent
-              sortData={sortData}
               columnName={"Responder"}
               setIsEditFieldOpen={setIsEditFieldOpen}
               setPropertyName={setPropertyName}

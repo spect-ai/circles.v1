@@ -18,7 +18,7 @@ export default function useJoinCircle() {
           inviteCode as string
         );
         if (res.id) {
-          void router.push(`/${res.slug}`);
+          window.location.replace(`/${res.slug}`);
           toast("You have joined the circle!", {
             theme: "dark",
           });

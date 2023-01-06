@@ -77,7 +77,6 @@ export default function RewardField({
       <Box
         width={{
           xs: "full",
-          md: "72",
         }}
         marginTop="2"
       >
@@ -109,7 +108,6 @@ export default function RewardField({
       <Box
         width={{
           xs: "full",
-          md: "72",
         }}
         marginTop="2"
       >
@@ -132,7 +130,6 @@ export default function RewardField({
       <Box
         width={{
           xs: "full",
-          md: "72",
         }}
         marginTop="2"
       >
