@@ -230,7 +230,8 @@ function CircleSidebar() {
             </PrimaryButton>
           </Link> */}
         </Stack>
-        <Container subH="18.1rem">
+        <Container subH="16.1rem">
+          {/** @chaks forgot to change the height when undoing credential changes */}
           <Stack>
             {!isLoading &&
               circle?.folderOrder?.map((fol) => {
