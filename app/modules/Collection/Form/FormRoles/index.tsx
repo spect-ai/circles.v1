@@ -102,19 +102,31 @@ export default function FormRoles() {
           >
             <Box padding="6" display={"flex"} flexDirection="column" gap={"4"}>
               <RoleChunks
-                permissionText="Manage Settings"
+                permissionText={
+                  collection?.collectionType === 0
+                    ? "Manage Form Settings"
+                    : "Manage Collection Settings"
+                }
                 permissions={manageSettings}
                 setPermissions={setManageSettings}
                 setIsDirty={setIsDirty}
               />
               <RoleChunks
-                permissionText="Update Responses Manually"
+                permissionText={
+                  collection?.collectionType === 0
+                    ? "Update Responses Manually"
+                    : "Update Cards"
+                }
                 permissions={updateResponses}
                 setPermissions={setUpdateResponses}
                 setIsDirty={setIsDirty}
               />
               <RoleChunks
-                permissionText="View Responses"
+                permissionText={
+                  collection?.collectionType === 0
+                    ? "View Responses"
+                    : "View Cards"
+                }
                 permissions={viewResponses}
                 setPermissions={setViewResponses}
                 setIsDirty={setIsDirty}
