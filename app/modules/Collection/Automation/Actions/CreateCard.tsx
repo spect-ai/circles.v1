@@ -212,6 +212,7 @@ export default function CreateCard({ setAction, actionMode, action }: Props) {
 
   useEffect(() => {
     setValues(action?.data.values || []);
+    setSelectedCollection(action?.data?.selectedCollection || {});
   }, [action]);
 
   useEffect(() => {

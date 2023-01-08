@@ -210,7 +210,7 @@ function CircleSidebar() {
               Payment Center
             </PrimaryButton>
           </Link>
-          <Link href={`/${cId}?tab=credential`}>
+          {/* <Link href={`/${cId}?tab=credential`}>
             <PrimaryButton
               variant={
                 cId && router.query?.tab === "credential" && !cSlug && !pId
@@ -228,7 +228,7 @@ function CircleSidebar() {
             >
               Credential Center
             </PrimaryButton>
-          </Link>
+          </Link> */}
         </Stack>
         <Container subH="18.1rem">
           <Stack>
