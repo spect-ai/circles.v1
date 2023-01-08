@@ -361,6 +361,7 @@ export default function DataDrawer({
                 dataId={dataId}
                 collectionId={collection.id}
                 dataOwner={collection.profiles[collection.dataOwner[data.slug]]}
+                setForm={updateCollection}
               />
             </Box>
           </ScrollContainer>

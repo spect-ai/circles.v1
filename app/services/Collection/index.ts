@@ -379,7 +379,7 @@ export const sendFormComment = async (
       refType: "circle" | "collection" | "user";
     };
   },
-  isPublic?: boolean
+  isPublic: boolean
 ) => {
   if (!isPublic) {
     return await (
