@@ -105,7 +105,7 @@ export function BasicProfile({ setStep }: { setStep: (step: number) => void }) {
               Connecting your Discord automatically lets you claim roles in all
               your circles that have setup Discord roles.
             </Text>
-            <ConnectDiscordButton />
+            <ConnectDiscordButton width="full"/>
             <Box onClick={() => setPart(1)} cursor="pointer">
               <Text color={"textTertiary"}>Let&apos;s skip this</Text>
             </Box>

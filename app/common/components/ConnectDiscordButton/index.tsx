@@ -3,7 +3,12 @@ import Link from "next/link";
 import { useLocation } from "react-use";
 import DiscordIcon from "@/app/assets/icons/discordIcon.svg";
 
-export default function ConnectDiscordButton({ state }: { state?: string }) {
+interface Props {
+  state?: string;
+  width: "fit" | "full";
+}
+
+export default function ConnectDiscordButton({ state, width }: Props) {
   const { hostname } = useLocation();
   return (
     <Link
@@ -17,8 +22,8 @@ export default function ConnectDiscordButton({ state }: { state?: string }) {
     >
       <Button
         data-tour="connect-discord-button"
-        width="full"
         size="small"
+        width={width}
         variant="secondary"
         prefix={
           <Box marginTop="1">

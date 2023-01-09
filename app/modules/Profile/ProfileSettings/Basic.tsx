@@ -77,7 +77,7 @@ export function BasicInfo() {
         }}
       >
         {!currentUser?.discordUsername && (
-          <ConnectDiscordButton state={router.asPath} />
+          <ConnectDiscordButton state={router.asPath} width="full"/>
         )}
         {currentUser?.discordUsername && (
           <Button

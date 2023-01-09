@@ -271,7 +271,7 @@ function Dashboard() {
                   ? "Want to explore your favourite DAOs on Spect ? Unlock countless opportunities by connecting your Discord account."
                   : "Looks like your Discord isn't connected properly. Try connecting it again."}
               </Text>
-              <ConnectDiscordButton />
+              <ConnectDiscordButton width="fit"/>
             </Box>
           )}
           <Box
