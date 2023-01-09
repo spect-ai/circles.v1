@@ -43,7 +43,6 @@ export function Field({
   }));
   const [col, setCol] = useState<CollectionType>(collection);
 
-  console.log({ type });
   useEffect(() => {
     if (type === "singleSelect" || type === "multiSelect") {
       fetch(`${process.env.API_HOST}/collection/v1/slug/${collection.slug}`, {
@@ -157,7 +156,6 @@ export function Field({
             onChange={(value: any) => {
               setData(value);
             }}
-            portal={false}
           />
         </Box>
       )}

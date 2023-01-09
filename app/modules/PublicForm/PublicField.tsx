@@ -232,7 +232,7 @@ export default function PublicField({
           id="editorContainer"
         >
           <Editor
-            value={data[propertyName]}
+            value={(data && data[propertyName]) || ""}
             onSave={(value) => {
               data[propertyName] = value;
               setData({ ...data });

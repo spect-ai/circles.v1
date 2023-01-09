@@ -18,6 +18,8 @@ import Folder from "./folder";
 import useDragFolder from "./useDragHook";
 import styled from "styled-components";
 import { FolderOpenOutlined } from "@ant-design/icons";
+import { createGrantWorkflow } from "@/app/services/Templates";
+import { updateCircle } from "@/app/services/UpdateCircle";
 
 interface Props {
   filteredProjects: {
@@ -167,6 +169,18 @@ export const FolderView = ({
           </Button>
         )}
       </Box>
+      <Button
+        size="small"
+        variant="secondary"
+        onClick={async() => {
+          const res = await createGrantWorkflow(circle?.id, {
+            name: "Grants Workflow",
+          });
+          window.location.reload();
+        }}
+      >
+        Use Template
+      </Button>
       {(circle?.folderOrder?.length == 0 ||
         circle?.folderOrder?.length === undefined) && (
         <Box
