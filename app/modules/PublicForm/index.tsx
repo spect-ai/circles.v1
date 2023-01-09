@@ -25,6 +25,7 @@ import { useLocation } from "react-use";
 import SocialMedia from "@/app/common/components/SocialMedia";
 import Link from "next/link";
 import DiscordIcon from "@/app/assets/icons/discordIcon.svg";
+import ConnectDiscordButton from "@/app/common/components/ConnectDiscordButton";
 
 export default function PublicForm() {
   const router = useRouter();
@@ -262,29 +263,7 @@ export default function PublicForm() {
                     }}
                     marginTop="4"
                   >
-                    <Link
-                      href={`https://discord.com/api/oauth2/authorize?client_id=942494607239958609&redirect_uri=${
-                        process.env.NODE_ENV === "development"
-                          ? `http%3A%2F%2Flocalhost%3A3000%2FlinkDiscord`
-                          : `https%3A%2F%2F${hostname}%2FlinkDiscord`
-                      }&response_type=code&scope=identify&type=publicForm&state=/r/${
-                        form.slug
-                      }`}
-                    >
-                      <Button
-                        data-tour="connect-discord-button"
-                        width="full"
-                        size="small"
-                        variant="secondary"
-                        prefix={
-                          <Box marginTop="1">
-                            <DiscordIcon />
-                          </Box>
-                        }
-                      >
-                        Connect Discord
-                      </Button>
-                    </Link>
+                    <ConnectDiscordButton state={form.slug} />
                   </Box>
                 </Box>
               )}
