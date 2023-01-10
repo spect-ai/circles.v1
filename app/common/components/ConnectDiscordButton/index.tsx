@@ -17,7 +17,7 @@ export default function ConnectDiscordButton({ state, width }: Props) {
           process.env.NODE_ENV === "development"
             ? "http%3A%2F%2Flocalhost%3A3000%2FlinkDiscord"
             : `https%3A%2F%2F${hostname}%2FlinkDiscord`
-        }&response_type=code&scope=guilds%20identify` + `${state ? state : ``}`
+        }&response_type=code&scope=guilds%20identify` + `${state ? "&state=" + state  : ``}`
       }
     >
       <Button

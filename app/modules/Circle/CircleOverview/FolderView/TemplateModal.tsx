@@ -157,7 +157,8 @@ export default function TemplateModal({ handleClose, setLoading }: Props) {
             {step == 1 && (
               <>
                 <Text align={"center"} variant="large">
-                  Users will be asked to Connect Discord before they fill up the form if you opt for any of these features
+                  Users will be asked to Connect Discord before they fill up the
+                  form if you opt for any of these features
                 </Text>
                 <Text align={"center"}>
                   Which roles would you like to give the grantees ?
@@ -301,6 +302,13 @@ export default function TemplateModal({ handleClose, setLoading }: Props) {
                     onClick={async () => {
                       handleClose(false);
                       setLoading(true);
+                      let roles = {};
+                      for (const i in selectedRoles) {
+                        roles = {
+                          ...roles,
+                          [selectedRoles[i]]: true,
+                        };
+                      }
                       const res = await createGrantWorkflow(circle?.id, {
                         name: "Grants Workflow",
                         channelCategory: selectedCategory,
