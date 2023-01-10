@@ -29,7 +29,7 @@ import { useLocalCollection } from "../Context/LocalCollectionContext";
 import AddOptions from "./AddOptions";
 import MilestoneOptions from "./MilestoneOptions";
 import uuid from "react-uuid";
-import { prevPropertyTypeToNewPropertyTypeThatDoesntRequiresClarance } from "@/app/common/utils/constants";
+import { prevPropertyTypeToNewPropertyTypeThatDoesntRequireClearance } from "@/app/common/utils/constants";
 import { AnimatePresence } from "framer-motion";
 import ConfirmModal from "@/app/common/components/Modal/ConfirmModal";
 import Accordian from "@/app/common/components/Accordian";
@@ -442,7 +442,7 @@ export default function AddField({ propertyName, handleClose }: Props) {
                 onClick={async () => {
                   if (
                     propertyName &&
-                    !prevPropertyTypeToNewPropertyTypeThatDoesntRequiresClarance[
+                    !prevPropertyTypeToNewPropertyTypeThatDoesntRequireClearance[
                       collection.properties[propertyName].type
                     ].includes(type.value)
                   ) {

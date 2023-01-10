@@ -9,6 +9,7 @@ import {
   Hash,
   Link,
   List,
+  Link2,
   Tag,
   Type,
   User,
@@ -44,6 +45,8 @@ export const getPropertyIcon = (type: PropertyType) => {
       return <DollarSign size={18} />;
     case "milestone":
       return <List size={18} />;
+    case "cardRelation":
+      return <Link2 size={18} />;
     default:
       return <Aperture size={18} />;
   }

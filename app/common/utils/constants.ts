@@ -98,7 +98,7 @@ export const kudosTokenTypes = {
   Claim: [{ name: "tokenId", type: "uint256" }],
 };
 
-export const prevPropertyTypeToNewPropertyTypeThatDoesntRequiresClarance = {
+export const prevPropertyTypeToNewPropertyTypeThatDoesntRequireClearance = {
   shortText: ["shortText", "longText"],
   longText: ["shortText", "longText"],
   number: ["number", "shortText", "longText"],
@@ -114,6 +114,7 @@ export const prevPropertyTypeToNewPropertyTypeThatDoesntRequiresClarance = {
   reward: ["reward"],
   payWall: ["payWall"],
   milestone: ["milestone"],
+  cardRelation: ["cardRelation"],
 };
 
 export const opportunityType = [
