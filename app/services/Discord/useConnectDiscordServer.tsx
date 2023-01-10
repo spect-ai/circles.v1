@@ -29,7 +29,7 @@ export default function useConnectDiscordServer() {
       circlecontext.setCircleData(data);
       queryClient.setQueryData(["circle", cId], data);
       if (colId) void router.push(`/${cId}/r/${colId}`);
-      else void router.push(`/${cId}`);
+      else window.location.replace(`/${cId}`);
     };
     if (circle?.id && guild_id) void connectServer();
     // eslint-disable-next-line react-hooks/exhaustive-deps

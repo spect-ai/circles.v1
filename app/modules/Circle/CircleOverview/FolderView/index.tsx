@@ -10,7 +10,7 @@ import {
   Droppable,
   DroppableProvided,
 } from "react-beautiful-dnd";
-import { Box, Button, IconPlusSmall, Text } from "degen";
+import { Box, Button, IconPlusSmall, Stack, Text } from "degen";
 import React, { useCallback, useEffect, useState } from "react";
 import { useCircle } from "../../CircleContext";
 import { createFolder } from "@/app/services/Folders";
@@ -19,7 +19,10 @@ import useDragFolder from "./useDragHook";
 import styled from "styled-components";
 import { FolderOpenOutlined } from "@ant-design/icons";
 import { createGrantWorkflow } from "@/app/services/Templates";
-import { updateCircle } from "@/app/services/UpdateCircle";
+import Loader from "@/app/common/components/Loader";
+import { AnimatePresence } from "framer-motion";
+import TemplateModal from "./TemplateModal";
+import { useRouter } from "next/router";
 
 interface Props {
   filteredProjects: {
@@ -64,9 +67,16 @@ export const FolderView = ({
   filteredCollections,
 }: Props) => {
   const { handleDrag } = useDragFolder();
-  const { localCircle: circle, setCircleData, setLocalCircle } = useCircle();
+  const {
+    localCircle: circle,
+    setCircleData,
+    setLocalCircle,
+    fetchCircle,
+  } = useCircle();
   const [allContentIds, setAllContentIds] = useState([] as string[]);
   const [unclassified, setUnclassified] = useState([] as string[]);
+  const [loading, setLoading] = useState(false);
+  const [useTemplateModal, setTemplateModal] = useState(false);
 
   const { canDo } = useRoleGate();
   const createNewFolder = useCallback(async () => {
@@ -169,18 +179,39 @@ export const FolderView = ({
           </Button>
         )}
       </Box>
-      <Button
-        size="small"
-        variant="secondary"
-        onClick={async() => {
-          const res = await createGrantWorkflow(circle?.id, {
-            name: "Grants Workflow",
-          });
-          window.location.reload();
-        }}
-      >
-        Use Template
-      </Button>
+      {canDo("manageCircleSettings") && (
+        <Box
+          margin={"1"}
+          padding={"3"}
+          display="flex"
+          flexDirection={{
+            lg: "row",
+            xs: "column",
+            md: "column",
+            sm: "column",
+          }}
+          gap="3"
+          justifyContent="space-between"
+          alignItems={"center"}
+          boxShadow="0.5"
+          borderRadius={"large"}
+          marginBottom="3"
+        >
+          <Text variant="large" align={{ lg: "left", xs: "center" }}>
+            Try out our Grants Workflow Template here !
+          </Text>
+          <Button
+            size="small"
+            variant="secondary"
+            onClick={() => {
+              setTemplateModal(true);
+            }}
+          >
+            Use Template
+          </Button>
+        </Box>
+      )}
+
       {(circle?.folderOrder?.length == 0 ||
         circle?.folderOrder?.length === undefined) && (
         <Box
@@ -235,11 +266,23 @@ export const FolderView = ({
     filteredWorkstreams,
   ]);
 
+  if (loading) return <Loader loading={loading} text={"Creating.."} />;
+
   return (
-    <DragDropContext onDragEnd={handleDrag}>
-      <Droppable droppableId="all-folders" direction="vertical" type="folder">
-        {DroppableContentCallback}
-      </Droppable>
-    </DragDropContext>
+    <>
+      <DragDropContext onDragEnd={handleDrag}>
+        <Droppable droppableId="all-folders" direction="vertical" type="folder">
+          {DroppableContentCallback}
+        </Droppable>
+      </DragDropContext>
+      <AnimatePresence>
+        {useTemplateModal && (
+          <TemplateModal
+            handleClose={setTemplateModal}
+            setLoading={setLoading}
+          />
+        )}
+      </AnimatePresence>
+    </>
   );
 };

@@ -22,7 +22,7 @@ import { useLocation } from "react-use";
 
 const CollectionPage: NextPage = () => {
   const router = useRouter();
-  const { hostname } = useLocation();
+
   const { circle: cId, collection: colId } = router.query;
   useConnectDiscordServer();
   const circlecontext = useProviderCircleContext();
@@ -61,13 +61,6 @@ const CollectionPage: NextPage = () => {
     }
   );
 
-  const client = new ApolloClient({
-    uri: hostname?.startsWith("circles")
-      ? "https://hub.snapshot.org/graphql"
-      : "https://testnet.snapshot.org/graphql",
-    cache: new InMemoryCache(),
-  });
-
   useEffect(() => {
     if (!circle && cId) {
       void fetchCircle();
@@ -92,11 +85,9 @@ const CollectionPage: NextPage = () => {
       />
       <CircleContext.Provider value={circlecontext}>
         <LocalCollectionContext.Provider value={context}>
-          <ApolloProvider client={client}>
-            <PublicLayout>
-              <Collection key={colId as string} />
-            </PublicLayout>
-          </ApolloProvider>
+          <PublicLayout>
+            <Collection key={colId as string} />
+          </PublicLayout>
         </LocalCollectionContext.Provider>
       </CircleContext.Provider>
     </>

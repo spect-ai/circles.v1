@@ -2,6 +2,20 @@ import { toast } from "react-toastify";
 
 type GrantWorkflowDto = {
   name: string;
+  snapshot?: {
+    name: string;
+    id: string;
+    network: string;
+    symbol: string;
+  };
+  permissions?: string[];
+  channelCategory?: {
+    label: string;
+    value: string;
+  };
+  roles?: {
+    [k: string]: boolean;
+  };
 };
 
 export async function createGrantWorkflow(
@@ -21,7 +35,7 @@ export async function createGrantWorkflow(
   );
 
   if (res.ok) {
-    toast.success("Grant Workflow created successfully!")
+    toast.success("Grant Workflow created successfully!");
     return res.json();
   }
 }
