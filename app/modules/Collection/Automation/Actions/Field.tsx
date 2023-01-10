@@ -156,6 +156,7 @@ export function Field({
             onChange={(value: any) => {
               setData(value);
             }}
+            portal
           />
         </Box>
       )}
