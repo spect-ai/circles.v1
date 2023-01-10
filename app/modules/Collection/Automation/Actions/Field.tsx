@@ -157,7 +157,7 @@ export function Field({
             onChange={(value: any) => {
               setData(value);
             }}
-            portal={false}
+            portal
           />
         </Box>
       )}
