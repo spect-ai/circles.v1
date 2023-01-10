@@ -14,6 +14,7 @@ export const fields = [
   { label: "Multiple Select", value: "multiSelect" },
   { label: "Multiple Users", value: "user[]" },
   { label: "Single User", value: "user" },
+  { label: "Card Relation", value: "cardRelation" },
 ];
 
 export const mockData = [

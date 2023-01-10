@@ -88,6 +88,14 @@ export default function AddField({ propertyName, handleClose }: Props) {
 
   const [cardOrder, setCardOrder] = useState<any>();
 
+  const [cardRelationProps, setCardRelationProps] = useState<{
+    parentRelation: string;
+    childRelation: string;
+  }>({
+    parentRelation: "",
+    childRelation: "",
+  });
+
   const onSave = async () => {
     setLoading(true);
     let res;
@@ -112,9 +120,6 @@ export default function AddField({ propertyName, handleClose }: Props) {
         description,
         userType,
         default: defaultValue,
-        // onUpdateNotifyUserTypes: notifyUserType?.map(
-        //   (type) => type.value
-        // ) as FormUserType[],
         isPartOfFormView: collection.properties[propertyName]?.isPartOfFormView,
         required: required === 1,
         milestoneFields,
@@ -142,13 +147,11 @@ export default function AddField({ propertyName, handleClose }: Props) {
         rewardOptions,
         userType: userType,
         default: defaultValue,
-        // onUpdateNotifyUserTypes: notifyUserType?.map(
-        //   (type) => type.value
-        // ) as FormUserType[],
         required: required === 1,
         milestoneFields,
         viewConditions,
         payWallOptions,
+        cardRelationOptions: cardRelationProps,
       });
     }
     setLoading(false);
@@ -287,24 +290,26 @@ export default function AddField({ propertyName, handleClose }: Props) {
       >
         <Box padding="8">
           <Stack>
-            <Input
-              label=""
-              placeholder="Field Name"
-              value={name}
-              onChange={(e) => {
-                setName(e.target.value);
-                if (
-                  collection.properties &&
-                  collection.properties[e.target.value] &&
-                  e.target.value !== initialName
-                ) {
-                  setShowNameCollissionError(true);
-                } else setShowNameCollissionError(false);
-                if (e.target.value === "slug") {
-                  setShowSlugNameError(true);
-                } else setShowSlugNameError(false);
-              }}
-            />
+            {!["cardRelation"].includes(type.value) && (
+              <Input
+                label=""
+                placeholder="Field Name"
+                value={name}
+                onChange={(e) => {
+                  setName(e.target.value);
+                  if (
+                    collection.properties &&
+                    collection.properties[e.target.value] &&
+                    e.target.value !== initialName
+                  ) {
+                    setShowNameCollissionError(true);
+                  } else setShowNameCollissionError(false);
+                  if (e.target.value === "slug") {
+                    setShowSlugNameError(true);
+                  } else setShowSlugNameError(false);
+                }}
+              />
+            )}
 
             {showNameCollissionError && (
               <Text color="red" size="small">
@@ -349,67 +354,75 @@ export default function AddField({ propertyName, handleClose }: Props) {
               isClearable={false}
             />
 
-            {type.value === "singleSelect" || type.value === "multiSelect" ? (
-              <AddOptions
-                fieldOptions={fieldOptions}
-                setFieldOptions={setFieldOptions}
-                setCardOrder={setCardOrder}
-                cardOrder={cardOrder}
-              />
-            ) : null}
-            {type.value === "user" || type.value === "user[]" ? (
-              <Stack>
-                {/* <Text variant="label">User Type</Text>
-                <Select
-                  options={[
-                    { label: "Assignee", value: "assignee" },
-                    { label: "Reviewer", value: "reviewer" },
-                    { label: "Grantee", value: "grantee" },
-                    { label: "Applicant", value: "applicant" },
-                    { label: "None", value: "none" },
-                  ]}
-                  value={{
-                    label: userType as string,
-                    value: userType as string,
-                  }}
-                  onChange={(type) => {
-                    setUserType(type.value as FormUserType);
-                  }}
-                /> */}
-              </Stack>
-            ) : null}
-            {type.value === "reward" ? (
+            {type.value === "singleSelect" ||
+              (type.value === "multiSelect" && (
+                <AddOptions
+                  fieldOptions={fieldOptions}
+                  setFieldOptions={setFieldOptions}
+                  setCardOrder={setCardOrder}
+                  cardOrder={cardOrder}
+                />
+              ))}
+            {type.value === "reward" && (
               <RewardTokenOptions
                 networks={networks}
                 setNetworks={setNetworks}
               />
-            ) : null}
-            {type.value === "milestone" ? (
+            )}
+            {type.value === "milestone" && (
               <MilestoneOptions networks={networks} setNetworks={setNetworks} />
-            ) : null}
-            {type.value === "payWall" ? (
+            )}
+            {type.value === "payWall" && (
               <PayWall
                 payWallOption={payWallOption}
                 setPayWallOption={setPayWallOption}
               />
-            ) : null}
-            <Accordian name="Default Value" defaultOpen={false}>
-              <Field
-                collection={collection}
-                property={{
-                  name: name.trim(),
-                  options: fieldOptions,
-                  rewardOptions: networks,
-                  userType: userType,
-                  default: defaultValue,
-                  type: type.value as PropertyType,
-                  isPartOfFormView: true,
-                }}
-                type={type.value}
-                data={defaultValue}
-                setData={setDefaultValue}
-              />
-            </Accordian>
+            )}
+            {type.value === "cardRelation" && (
+              <Stack>
+                <Input
+                  label="Children Relation Property Name"
+                  placeholder="Ex. Sub Cards"
+                  value={cardRelationProps?.parentRelation}
+                  onChange={(e) => {
+                    setCardRelationProps({
+                      ...cardRelationProps,
+                      parentRelation: e.target.value.replace(/ /g, "_"),
+                    });
+                  }}
+                />
+                <Input
+                  label="Parent Relation Property Name"
+                  placeholder="Ex. Parent Card"
+                  value={cardRelationProps?.childRelation}
+                  onChange={(e) => {
+                    setCardRelationProps({
+                      ...cardRelationProps,
+                      childRelation: e.target.value.replace(/ /g, "_"),
+                    });
+                  }}
+                />
+              </Stack>
+            )}
+            {!["cardRelation"].includes(type.value) && (
+              <Accordian name="Default Value" defaultOpen={false}>
+                <Field
+                  collection={collection}
+                  property={{
+                    name: name.trim(),
+                    options: fieldOptions,
+                    rewardOptions: networks,
+                    userType: userType,
+                    default: defaultValue,
+                    type: type.value as PropertyType,
+                    isPartOfFormView: true,
+                  }}
+                  type={type.value}
+                  data={defaultValue}
+                  setData={setDefaultValue}
+                />
+              </Accordian>
+            )}
 
             {collection.collectionType === 0 && (
               <Accordian name="Advanced" defaultOpen={advancedDefaultOpen}>
@@ -418,25 +431,6 @@ export default function AddField({ propertyName, handleClose }: Props) {
                   setViewConditions={setViewConditions}
                   buttonText="Add View Condition"
                 />
-                {/* {["shortText", "longText", "ethAddress"].includes(
-                  type.value
-                ) && <Input label="" placeholder="Default Value" />}
-
-                <Text>Notify User Type on Changes</Text>
-                <Dropdown
-                  placeholder="Select User Types"
-                  options={[
-                    { label: "Assignee", value: "assignee" },
-                    { label: "Reviewer", value: "reviewer" },
-                    { label: "Grantee", value: "grantee" },
-                    { label: "Applicant", value: "applicant" },
-                  ]}
-                  selected={notifyUserType}
-                  onChange={(type: Option[]) => {
-                    setNotifyUserType(type);
-                  }}
-                  multiple={true}
-                /> */}
               </Accordian>
             )}
 
@@ -444,7 +438,7 @@ export default function AddField({ propertyName, handleClose }: Props) {
               <PrimaryButton
                 icon={<SaveFilled style={{ fontSize: "1.3rem" }} />}
                 loading={loading}
-                disabled={showNameCollissionError || !name}
+                // disabled={showNameCollissionError || !name}
                 onClick={async () => {
                   if (
                     propertyName &&

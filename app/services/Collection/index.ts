@@ -25,6 +25,10 @@ export const addField = async (
     milestoneFields?: string[];
     viewConditions?: Condition[];
     payWallOptions?: PayWallOptions;
+    cardRelationOptions?: {
+      childRelation: string;
+      parentRelation: string;
+    };
   }
 ) => {
   return await (
