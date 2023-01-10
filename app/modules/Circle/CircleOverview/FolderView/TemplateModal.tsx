@@ -103,7 +103,7 @@ export default function TemplateModal({ handleClose, setLoading }: Props) {
     });
     console.log(res);
     if (res?.id) fetchCircle();
-    setTimeout(() => setLoading(false), 100);
+    setTimeout(() => setLoading(false), 300);
   };
 
   return (
@@ -316,7 +316,7 @@ export default function TemplateModal({ handleClose, setLoading }: Props) {
                       });
                       console.log(res);
                       if (res?.id) fetchCircle();
-                      setTimeout(() => setLoading(false), 100);
+                      setTimeout(() => setLoading(false), 300);
                     }}
                   >
                     Skip this
