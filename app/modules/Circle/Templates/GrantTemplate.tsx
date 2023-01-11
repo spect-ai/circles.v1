@@ -89,7 +89,6 @@ export default function GrantTemplate({ handleClose }: Props) {
       };
     }
     const res = await createGrantWorkflow(circle?.id, {
-      name: "Grants Workflow",
       snapshot: {
         name: data?.space?.name || "",
         id: snapshotSpace,
@@ -301,7 +300,6 @@ export default function GrantTemplate({ handleClose }: Props) {
                       };
                     }
                     const res = await createGrantWorkflow(circle?.id, {
-                      name: "Grants Workflow",
                       channelCategory: selectedCategory,
                       roles,
                     });

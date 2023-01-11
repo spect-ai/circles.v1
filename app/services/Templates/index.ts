@@ -1,7 +1,6 @@
 import { toast } from "react-toastify";
 
 type GrantWorkflowDto = {
-  name: string;
   snapshot?: {
     name: string;
     id: string;
