@@ -132,14 +132,14 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
   }
 
   return (
-    <Box padding={"8"}>
-      <Heading color={"accent"} align="left">
-        Lets set up a Grants Workflow
-      </Heading>
-      <Box paddingY={"6"}>
+    <Box padding={"5"}>
+      <Box paddingY={"1"}>
         <Stack direction={"vertical"} space="5">
           {step == 0 && (
             <>
+              <Heading color={"accent"} align="left">
+                Integrate Discord
+              </Heading>
               <Text variant="label">Connect Discord</Text>
               <Stack direction={"horizontal"} align="center">
                 <PrimaryButton
@@ -173,12 +173,15 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
           )}
           {step == 1 && (
             <>
-              <Text variant="large">
+              <Heading color={"accent"} align="left">
+                Integrate Discord
+              </Heading>
+              {/* <Text variant="large">
                 Users will be asked to Connect Discord before they fill up the
                 form if you opt for any of these features
-              </Text>
+              </Text> */}
               <Text variant="label">
-                Which roles would you like to give the grantees ?
+                Which Discord role would you like to assign to the grantees ?
               </Text>
               <Stack direction={"horizontal"} space={"4"} wrap>
                 {discordRoles?.map((role) => (
@@ -206,8 +209,8 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
                 ))}
               </Stack>
               <Text variant="label">
-                Select a channel category to create a channel for accepted grant
-                projects
+                Select a channel category to create a Discord channel for
+                accepted grant projects in your Discord Server
               </Text>
               <Box width={"1/3"}>
                 <Dropdown
@@ -252,6 +255,9 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
           )}
           {step == 2 && (
             <>
+              <Heading color={"accent"} align="left">
+                Enable Snapshot voting on Spect
+              </Heading>
               <Text variant="label">Integrate Snapshot</Text>
               <Input
                 label
@@ -273,47 +279,6 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
                 ) : (
                   <Text color={"red"}>Incorrect URL</Text>
                 ))}
-              <Text variant="label">
-                These roles will be notified of the proposal and will have the
-                permissions to view the form's responses
-              </Text>
-              <Box
-                display={"flex"}
-                flexDirection="row"
-                gap={"2"}
-                flexWrap="wrap"
-              >
-                {Object.keys(circle.roles)?.map((role) => {
-                  return (
-                    <Box
-                      key={role}
-                      onClick={() => {
-                        if (permissions.includes(role)) {
-                          setPermissions(
-                            permissions.filter((item) => item !== role)
-                          );
-                        } else {
-                          setPermissions([...permissions, role]);
-                        }
-                      }}
-                      style={{
-                        cursor: "pointer",
-                      }}
-                    >
-                      <Tag
-                        hover
-                        size="medium"
-                        as="span"
-                        tone={
-                          permissions.includes(role) ? "accent" : "secondary"
-                        }
-                      >
-                        {role}
-                      </Tag>
-                    </Box>
-                  );
-                })}
-              </Box>
               <Stack direction={"horizontal"}>
                 <Button
                   variant="transparent"
@@ -349,9 +314,7 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
                   }
                   variant="secondary"
                   size="small"
-                  disabled={
-                    !snapshotSpace || !permissions.length || !data?.space?.id
-                  }
+                  disabled={!snapshotSpace || !data?.space?.id}
                 >
                   Integrate Snapshot
                 </Button>
@@ -360,12 +323,17 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
           )}
           {step == 3 && (
             <>
+              <Heading color={"accent"} align="left">
+                Add Custom Token
+              </Heading>
               <RewardTokenOptions
                 networks={networks}
                 setNetworks={setNetworks}
-                customText={"Your Preferred Token"}
+                customText={
+                  "Add the token you'd want to use when paying grantees"
+                }
                 customTooltip={
-                  "Add the token you'd want to use in your workspace"
+                  "Add the token you'd want to use when paying grantees"
                 }
               />
               <Stack direction={"horizontal"}>

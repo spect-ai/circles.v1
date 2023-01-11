@@ -10,6 +10,7 @@ import {
 import { useState } from "react";
 import { Trello } from "react-feather";
 import GrantTemplate from "../../Templates/GrantTemplate";
+import KanbanProject from "../../Templates/KanbanProject";
 import OnboardingTemplate from "../../Templates/OnboardingTemplate";
 interface Props {
   handleClose: (close: boolean) => void;
@@ -63,6 +64,9 @@ export default function TemplateModal({ handleClose, setLoading }: Props) {
                 </Text>
               }
               width="full"
+              onClick={() => {
+                setTemplate(3);
+              }}
             >
               <Text>Create a new kanban project management board</Text>
               <Text color="inherit">
@@ -75,6 +79,9 @@ export default function TemplateModal({ handleClose, setLoading }: Props) {
           <GrantTemplate handleClose={handleClose} setLoading={setLoading} />
         )}
         {template === 2 && <OnboardingTemplate handleClose={handleClose} />}
+        {template === 3 && (
+          <KanbanProject handleClose={handleClose} setLoading={setLoading} />
+        )}
       </Box>
     </Modal>
   );
