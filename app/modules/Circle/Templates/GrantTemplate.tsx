@@ -130,22 +130,24 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
             <>
               <Text variant="label">Connect Discord</Text>
               <Stack direction={"horizontal"} align="center">
-                <Link
-                  href={`https://discord.com/oauth2/authorize?client_id=942494607239958609&permissions=17448306704&redirect_uri=${origin}/api/connectDiscord&response_type=code&scope=bot&state=${circle.slug}`}
+                <PrimaryButton
+                  disabled={!!circle?.discordGuildId}
+                  icon={
+                    <Box marginTop="1">
+                      <DiscordIcon />
+                    </Box>
+                  }
+                  onClick={() => {
+                    window.open(
+                      `https://discord.com/oauth2/authorize?client_id=942494607239958609&permissions=17448306704&redirect_uri=${origin}/api/connectDiscord&response_type=code&scope=bot&state=${circle.slug}`,
+                      "_blank"
+                    );
+                  }}
                 >
-                  <PrimaryButton
-                    disabled={!!circle?.discordGuildId}
-                    icon={
-                      <Box marginTop="1">
-                        <DiscordIcon />
-                      </Box>
-                    }
-                  >
-                    {circle?.discordGuildId
-                      ? "Discord Connected"
-                      : "Connect Discord"}
-                  </PrimaryButton>
-                </Link>
+                  {circle?.discordGuildId
+                    ? "Discord Connected"
+                    : "Connect Discord"}
+                </PrimaryButton>
               </Stack>
               <Button
                 variant="tertiary"
