@@ -82,7 +82,7 @@ export default function VotingModule() {
         }
       );
       setSnapshotVoting(collection.voting.votesAreWeightedByTokens || false);
-      setSnapshotSpace(collection.voting.snapshot?.id || "");
+      setSnapshotSpace(collection.voting?.snapshot?.id || "");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [collection]);

@@ -345,7 +345,7 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
                     !snapshotSpace || !permissions.length || !data?.space?.id
                   }
                 >
-                  Integrate Snap
+                  Integrate Snapshot
                 </Button>
               </Stack>
             </>

@@ -338,10 +338,10 @@ export default function DataDrawer({
                     );
                   })}
                 </Box>
-                {!collection.voting.periods?.[dataId]?.snapshot?.onSnapshot && (
+                {!collection.voting?.periods?.[dataId]?.snapshot?.onSnapshot && (
                   <SpectVoting dataId={dataId} />
                 )}
-                {collection.voting.periods?.[dataId]?.snapshot?.onSnapshot && (
+                {collection.voting?.periods?.[dataId]?.snapshot?.onSnapshot && (
                   <SnapshotVoting dataId={dataId} />
                 )}
               </Box>
