@@ -21,7 +21,7 @@ interface Props {
 }
 
 export default function GrantTemplate({ handleClose, setLoading }: Props) {
-  const { localCircle: circle, fetchCircle } = useCircle();
+  const { localCircle: circle, fetchCircle, setCircleData } = useCircle();
   const router = useRouter();
 
   const [step, setStep] = useState(0);
@@ -112,6 +112,7 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
     console.log(res);
     if (res?.id) {
       setLoading(false);
+      setCircleData(res);
       void router.push(
         `${res.slug}/r/${
           res.collections[
@@ -119,7 +120,6 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
           ].slug
         }`
       );
-      fetchCircle();
     }
   };
 

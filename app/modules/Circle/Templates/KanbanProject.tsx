@@ -13,7 +13,7 @@ interface Props {
 }
 
 export default function KanbanProject({ handleClose, setLoading }: Props) {
-  const { localCircle: circle, fetchCircle } = useCircle();
+  const { localCircle: circle, fetchCircle, setCircleData } = useCircle();
   const router = useRouter();
   const [networks, setNetworks] = useState<Registry>();
 
@@ -30,6 +30,7 @@ export default function KanbanProject({ handleClose, setLoading }: Props) {
     console.log(res);
     if (res?.id) {
       setLoading(false);
+      setCircleData(res);
       void router.push(
         `${res.slug}/r/${
           res.collections[
