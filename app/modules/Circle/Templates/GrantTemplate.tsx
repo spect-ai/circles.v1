@@ -1,5 +1,5 @@
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { Option } from "@/app/types";
+import { CircleType, Option } from "@/app/types";
 import { Box, Button, Heading, Input, Stack, Tag, Text } from "degen";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
@@ -12,6 +12,7 @@ import { fetchGuildChannels, getGuildRoles } from "@/app/services/Discord";
 import { Space } from "@/app/modules/Collection/VotingModule";
 import { useQuery } from "@apollo/client";
 import { createTemplateFlow } from "@/app/services/Templates";
+import { useRouter } from "next/router";
 
 interface Props {
   handleClose: (close: boolean) => void;
@@ -20,6 +21,7 @@ interface Props {
 
 export default function GrantTemplate({ handleClose, setLoading }: Props) {
   const { localCircle: circle, fetchCircle } = useCircle();
+  const router = useRouter();
 
   const [step, setStep] = useState(0);
   const [snapshotSpace, setSnapshotSpace] = useState("");
@@ -304,7 +306,7 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
                         [selectedRoles[i]]: true,
                       };
                     }
-                    const res = await createTemplateFlow(
+                    const res: CircleType = await createTemplateFlow(
                       circle?.id,
                       {
                         channelCategory: selectedCategory,
@@ -313,8 +315,18 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
                       1
                     );
                     console.log(res);
-                    if (res?.id) fetchCircle();
+                    if (res?.id) {
+                      fetchCircle();
+                    }
                     setTimeout(() => setLoading(false), 300);
+                    router.push(
+                      `${res.slug}/r/${
+                        res.collections[
+                          res?.folderDetails[res?.folderOrder?.[0]]
+                            ?.contentIds?.[0]
+                        ].slug
+                      }`
+                    );
                   }}
                 >
                   Skip this
