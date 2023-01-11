@@ -106,7 +106,7 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
     );
     console.log(res);
     if (res?.id) fetchCircle();
-    setTimeout(() => setLoading(false), 100);
+    setTimeout(() => setLoading(false), 300);
   };
   return (
     <Box padding={"8"}>
@@ -314,7 +314,7 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
                     );
                     console.log(res);
                     if (res?.id) fetchCircle();
-                    setTimeout(() => setLoading(false), 100);
+                    setTimeout(() => setLoading(false), 300);
                   }}
                 >
                   Skip this
