@@ -1,3 +1,4 @@
+import { Registry } from "@/app/types";
 import { toast } from "react-toastify";
 
 type GrantWorkflowDto = {
@@ -15,6 +16,7 @@ type GrantWorkflowDto = {
   roles?: {
     [k: string]: boolean;
   };
+  registry?: Registry;
 };
 
 export async function createTemplateFlow(
@@ -35,7 +37,7 @@ export async function createTemplateFlow(
   );
 
   if (res.ok) {
-    toast.success("Grant Workflow created successfully!");
+    toast.success("Created from template successfully!");
     return res.json();
   }
 }

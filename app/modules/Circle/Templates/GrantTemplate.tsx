@@ -1,5 +1,5 @@
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { CircleType, Option } from "@/app/types";
+import { CircleType, Option, Registry } from "@/app/types";
 import { Box, Button, Heading, Input, Stack, Tag, Text } from "degen";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
@@ -13,6 +13,7 @@ import { Space } from "@/app/modules/Collection/VotingModule";
 import { useQuery } from "@apollo/client";
 import { createTemplateFlow } from "@/app/services/Templates";
 import { useRouter } from "next/router";
+import RewardTokenOptions from "../../Collection/AddField/RewardTokenOptions";
 
 interface Props {
   handleClose: (close: boolean) => void;
@@ -32,6 +33,7 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
   const [selectedCategory, setSelectedCategory] = useState<Option>(
     categoreyOptions?.[0]
   );
+  const [networks, setNetworks] = useState<Registry>();
 
   useEffect(() => {
     if (!circle?.discordGuildId) {
@@ -43,7 +45,7 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
     if (circle?.discordGuildId && roles) {
       setStep(2);
     }
-  }, []);
+  }, [circle?.discordGuildId, roles]);
 
   const [discordRoles, setDiscordRoles] =
     useState<
@@ -103,6 +105,7 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
         permissions: permissions,
         channelCategory: selectedCategory,
         roles,
+        registry: networks,
       },
       1
     );
@@ -119,6 +122,15 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
       );
     }
   };
+
+  const intervalPromise = setInterval(() => {
+    fetchCircle();
+  }, 1000);
+
+  if (circle.discordGuildId || step != 0) {
+    clearInterval(intervalPromise);
+  }
+
   return (
     <Box padding={"8"}>
       <Heading color={"accent"} align="left">
@@ -233,7 +245,7 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
                   size="small"
                   disabled={!selectedRoles.length && !selectedCategory?.value}
                 >
-                  Next
+                  Integrate Discord
                 </Button>
               </Stack>
             </>
@@ -319,43 +331,16 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
                 <Button
                   variant="tertiary"
                   size="small"
-                  onClick={async () => {
-                    handleClose(false);
-                    setLoading(true);
-                    let roles = {};
-                    for (const i in selectedRoles) {
-                      roles = {
-                        ...roles,
-                        [selectedRoles[i]]: true,
-                      };
-                    }
-                    const res: CircleType = await createTemplateFlow(
-                      circle?.id,
-                      {
-                        channelCategory: selectedCategory,
-                        roles,
-                      },
-                      1
-                    );
-                    console.log(res);
-                    if (res?.id) {
-                      fetchCircle();
-                      setTimeout(() => setLoading(false), 300);
-                      router.push(
-                        `${res.slug}/r/${
-                          res.collections[
-                            res?.folderDetails[res?.folderOrder?.[0]]
-                              ?.contentIds?.[0]
-                          ].slug
-                        }`
-                      );
-                    }
+                  onClick={() => {
+                    setStep(3);
+                    setPermissions([]);
+                    setSnapshotSpace("");
                   }}
                 >
                   Skip this
                 </Button>
                 <Button
-                  onClick={() => useTemplate()}
+                  onClick={() => setStep(3)}
                   prefix={
                     <RocketOutlined
                       style={{ fontSize: "1.2rem" }}
@@ -369,6 +354,36 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
                   }
                 >
                   Integrate Snapshot
+                </Button>
+              </Stack>
+            </>
+          )}
+          {step == 3 && (
+            <>
+              <RewardTokenOptions
+                networks={networks}
+                setNetworks={setNetworks}
+                customText={"Your Preferred Token"}
+                customTooltip={
+                  "Add the token you'd want to use in your workspace"
+                }
+              />
+              <Stack direction={"horizontal"}>
+                <Button
+                  variant="transparent"
+                  size="small"
+                  onClick={() => {
+                    setStep(2);
+                  }}
+                >
+                  Back
+                </Button>
+                <Button
+                  onClick={() => useTemplate()}
+                  variant="secondary"
+                  size="small"
+                >
+                  Create Workflow
                 </Button>
               </Stack>
             </>
