@@ -107,34 +107,29 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
       1
     );
     console.log(res);
-    if (res?.id) fetchCircle();
-    setTimeout(() => setLoading(false), 300);
+    if (res?.id) {
+      fetchCircle();
+      setTimeout(() => setLoading(false), 300);
+      router.push(
+        `${res.slug}/r/${
+          res.collections[
+            res?.folderDetails[res?.folderOrder?.[0]]?.contentIds?.[0]
+          ].slug
+        }`
+      );
+    }
   };
   return (
     <Box padding={"8"}>
-      <Heading color={"accent"} align="center">
-        Awesome! Lets set up a Grants Workflow
+      <Heading color={"accent"} align="left">
+        Lets set up a Grants Workflow
       </Heading>
-      {/* <Text variant="base">Would you like to give the grantees a discord role ?</Text> */}
       <Box paddingY={"6"}>
-        <Stack direction={"vertical"} space="5" align={"center"}>
+        <Stack direction={"vertical"} space="5">
           {step == 0 && (
             <>
-              <Text align={"center"}>Would you like to connect discord ?</Text>
-              <Text align={"center"}>
-                Just a few clicks and the grantees will have a discord role,
-                every grants project will have a channel in your discord server
-              </Text>
-
-              <Stack direction={"horizontal"}>
-                <Button
-                  variant="tertiary"
-                  size="small"
-                  width={"full"}
-                  onClick={() => setStep(2)}
-                >
-                  Skip this
-                </Button>
+              <Text variant="label">Connect Discord</Text>
+              <Stack direction={"horizontal"} align="center">
                 <Link
                   href={`https://discord.com/oauth2/authorize?client_id=942494607239958609&permissions=17448306704&redirect_uri=${origin}/api/connectDiscord&response_type=code&scope=bot&state=${circle.slug}`}
                 >
@@ -152,18 +147,26 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
                   </PrimaryButton>
                 </Link>
               </Stack>
+              <Button
+                variant="tertiary"
+                size="small"
+                width={"fit"}
+                onClick={() => setStep(2)}
+              >
+                Skip this
+              </Button>
             </>
           )}
           {step == 1 && (
             <>
-              <Text align={"center"} variant="large">
+              <Text variant="large">
                 Users will be asked to Connect Discord before they fill up the
                 form if you opt for any of these features
               </Text>
-              <Text align={"center"}>
+              <Text variant="label">
                 Which roles would you like to give the grantees ?
               </Text>
-              <Stack direction={"horizontal"} space={"4"}>
+              <Stack direction={"horizontal"} space={"4"} wrap>
                 {discordRoles?.map((role) => (
                   <Box
                     onClick={() => {
@@ -188,23 +191,26 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
                   </Box>
                 ))}
               </Stack>
-              <Text align={"center"}>
-                Would you like to create a channel for each grant project which
-                has been accepted ? If yes, please select a channel category
+              <Text variant="label">
+                Select a channel category to create a channel for accepted grant
+                projects
               </Text>
-              <Dropdown
-                options={categoreyOptions}
-                selected={selectedCategory}
-                onChange={(value) => {
-                  setSelectedCategory(value);
-                }}
-                multiple={false}
-              />
+              <Box width={"1/3"}>
+                <Dropdown
+                  options={categoreyOptions}
+                  selected={selectedCategory}
+                  onChange={(value) => {
+                    setSelectedCategory(value);
+                  }}
+                  multiple={false}
+                />
+              </Box>
+
               <Stack direction={"horizontal"}>
                 <Button
                   variant="tertiary"
                   size="small"
-                  width={"full"}
+                  width={"fit"}
                   onClick={() => {
                     setStep(2);
                     setSelectedRoles([]);
@@ -217,7 +223,7 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
                   Skip
                 </Button>
                 <Button
-                  width={"full"}
+                  width={"fit"}
                   onClick={() => {
                     setStep(2);
                   }}
@@ -232,9 +238,7 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
           )}
           {step == 2 && (
             <>
-              <Text align={"center"}>
-                Would you like to integrate Snapshot in your grants program ?
-              </Text>
+              <Text variant="label">Integrate Snapshot</Text>
               <Input
                 label
                 hideLabel
@@ -255,12 +259,16 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
                 ) : (
                   <Text color={"red"}>Incorrect URL</Text>
                 ))}
-              <Text align={"center"}>
-                Which of these roles would you like to notify after creating a
-                proposal ? These roles will have the permissions to view the
-                form's responses
+              <Text variant="label">
+                These roles will be notified of the proposal and will have the
+                permissions to view the form's responses
               </Text>
-              <Box display={"flex"} flexDirection="row" gap={"2"}>
+              <Box
+                display={"flex"}
+                flexDirection="row"
+                gap={"2"}
+                flexWrap="wrap"
+              >
                 {Object.keys(circle.roles)?.map((role) => {
                   return (
                     <Box
@@ -294,6 +302,19 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
               </Box>
               <Stack direction={"horizontal"}>
                 <Button
+                  variant="transparent"
+                  size="small"
+                  onClick={() => {
+                    if (!circle?.discordGuildId) {
+                      setStep(0);
+                    } else if (circle?.discordGuildId && !roles) {
+                      setStep(1);
+                    }
+                  }}
+                >
+                  Back
+                </Button>
+                <Button
                   variant="tertiary"
                   size="small"
                   onClick={async () => {
@@ -317,16 +338,16 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
                     console.log(res);
                     if (res?.id) {
                       fetchCircle();
+                      setTimeout(() => setLoading(false), 300);
+                      router.push(
+                        `${res.slug}/r/${
+                          res.collections[
+                            res?.folderDetails[res?.folderOrder?.[0]]
+                              ?.contentIds?.[0]
+                          ].slug
+                        }`
+                      );
                     }
-                    setTimeout(() => setLoading(false), 300);
-                    router.push(
-                      `${res.slug}/r/${
-                        res.collections[
-                          res?.folderDetails[res?.folderOrder?.[0]]
-                            ?.contentIds?.[0]
-                        ].slug
-                      }`
-                    );
                   }}
                 >
                   Skip this
