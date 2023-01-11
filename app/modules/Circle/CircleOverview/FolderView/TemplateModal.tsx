@@ -10,6 +10,7 @@ import {
 import { useState } from "react";
 import { Trello } from "react-feather";
 import GrantTemplate from "../../Templates/GrantTemplate";
+import OnboardingTemplate from "../../Templates/OnboardingTemplate";
 interface Props {
   handleClose: (close: boolean) => void;
   setLoading: (load: boolean) => void;
@@ -43,6 +44,9 @@ export default function TemplateModal({ handleClose, setLoading }: Props) {
               buttonText="Create Onboarding Workflow"
               prefix={<IconSparkles color="accent" />}
               width="full"
+              onClick={() => {
+                setTemplate(2);
+              }}
             >
               <Text>
                 Create a new DAO onboarding workflow with the template.
@@ -70,6 +74,7 @@ export default function TemplateModal({ handleClose, setLoading }: Props) {
         {template == 1 && (
           <GrantTemplate handleClose={handleClose} setLoading={setLoading} />
         )}
+        {template === 2 && <OnboardingTemplate handleClose={handleClose} />}
       </Box>
     </Modal>
   );
