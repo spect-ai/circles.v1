@@ -1,5 +1,4 @@
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { createGrantWorkflow } from "@/app/services/Templates";
 import { Option } from "@/app/types";
 import { Box, Button, Heading, Input, Stack, Tag, Text } from "degen";
 import Link from "next/link";
@@ -12,6 +11,7 @@ import { RocketOutlined } from "@ant-design/icons";
 import { fetchGuildChannels, getGuildRoles } from "@/app/services/Discord";
 import { Space } from "@/app/modules/Collection/VotingModule";
 import { useQuery } from "@apollo/client";
+import { createTemplateFlow } from "@/app/services/Templates";
 
 type Props = {
   handleClose: (close: boolean) => void;
@@ -88,17 +88,21 @@ export default function GrantTemplate({ handleClose }: Props) {
         [selectedRoles[i]]: true,
       };
     }
-    const res = await createGrantWorkflow(circle?.id, {
-      snapshot: {
-        name: data?.space?.name || "",
-        id: snapshotSpace,
-        network: data?.space?.network || "",
-        symbol: data?.space?.symbol || "",
+    const res = await createTemplateFlow(
+      circle?.id,
+      {
+        snapshot: {
+          name: data?.space?.name || "",
+          id: snapshotSpace,
+          network: data?.space?.network || "",
+          symbol: data?.space?.symbol || "",
+        },
+        permissions: permissions,
+        channelCategory: selectedCategory,
+        roles,
       },
-      permissions: permissions,
-      channelCategory: selectedCategory,
-      roles,
-    });
+      1
+    );
     console.log(res);
     if (res?.id) fetchCircle();
     // setTimeout(() => setLoading(false), 100);
@@ -299,10 +303,14 @@ export default function GrantTemplate({ handleClose }: Props) {
                         [selectedRoles[i]]: true,
                       };
                     }
-                    const res = await createGrantWorkflow(circle?.id, {
-                      channelCategory: selectedCategory,
-                      roles,
-                    });
+                    const res = await createTemplateFlow(
+                      circle?.id,
+                      {
+                        channelCategory: selectedCategory,
+                        roles,
+                      },
+                      1
+                    );
                     console.log(res);
                     if (res?.id) fetchCircle();
                     //   setTimeout(() => setLoading(false), 100);

@@ -17,12 +17,13 @@ type GrantWorkflowDto = {
   };
 };
 
-export async function createGrantWorkflow(
+export async function createTemplateFlow(
   circleId: string,
-  template: GrantWorkflowDto
+  template: GrantWorkflowDto,
+  templateId: 1 | 2 | 3
 ) {
   const res = await fetch(
-    `${process.env.API_HOST}/collection/v1/${circleId}/useTemplate?templateId=1`,
+    `${process.env.API_HOST}/collection/v1/${circleId}/useTemplate?templateId=${templateId}`,
     {
       method: "PATCH",
       headers: {
