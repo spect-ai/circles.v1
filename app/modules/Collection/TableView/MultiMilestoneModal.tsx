@@ -30,7 +30,9 @@ function MultiMilestoneModal({
   return (
     <Modal
       handleClose={() => {
-        handleClose(value[propertyName], dataId, propertyName);
+        value
+          ? handleClose(value[propertyName], dataId, propertyName)
+          : handleClose([], dataId, propertyName);
       }}
       title="Edit Milestones"
     >
@@ -42,17 +44,15 @@ function MultiMilestoneModal({
         justifyContent="flex-start"
         gap="4"
       >
-        {dataId && (
-          <MilestoneField
-            form={form}
-            dataId={dataId}
-            propertyName={propertyName}
-            data={value}
-            setData={setValue}
-            showDescription={true}
-            disabled={disabled}
-          />
-        )}
+        <MilestoneField
+          form={form}
+          dataId={dataId}
+          propertyName={propertyName}
+          data={value}
+          setData={setValue}
+          showDescription={true}
+          disabled={disabled}
+        />
       </Box>
     </Modal>
   );

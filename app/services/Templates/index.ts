@@ -23,7 +23,7 @@ export async function createGrantWorkflow(
   template: GrantWorkflowDto
 ) {
   const res = await fetch(
-    `${process.env.API_HOST}/collection/v1/${circleId}/useTemplate`,
+    `${process.env.API_HOST}/collection/v1/${circleId}/useTemplate?templateId=1`,
     {
       method: "PATCH",
       headers: {

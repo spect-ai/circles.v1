@@ -1,10 +1,5 @@
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
-import {
-  CircleType,
-  ProjectType,
-  RetroType,
-  CollectionType,
-} from "@/app/types";
+import { CircleType, ProjectType, RetroType } from "@/app/types";
 import {
   DragDropContext,
   Droppable,
@@ -18,11 +13,10 @@ import Folder from "./folder";
 import useDragFolder from "./useDragHook";
 import styled from "styled-components";
 import { FolderOpenOutlined } from "@ant-design/icons";
-import { createGrantWorkflow } from "@/app/services/Templates";
 import Loader from "@/app/common/components/Loader";
 import { AnimatePresence } from "framer-motion";
 import TemplateModal from "./TemplateModal";
-import { useRouter } from "next/router";
+import { Pulse } from "@/app/modules/Project/ProjectHeading";
 
 interface Props {
   filteredProjects: {
@@ -157,29 +151,36 @@ export const FolderView = ({
       ref={provided.innerRef}
       paddingTop="4"
     >
-      <Box
-        display={"flex"}
-        flexDirection={"row"}
-        alignItems="center"
-        gap="2"
-        paddingBottom={"4"}
-      >
+      <Stack direction="horizontal" align="baseline">
         <Text size="headingTwo" weight="semiBold" ellipsis>
           Sections
         </Text>
         {canDo("manageCircleSettings") && (
-          <Button
-            data-tour="circle-create-folder-button"
-            size="small"
-            variant="transparent"
-            shape="circle"
-            onClick={createNewFolder}
-          >
-            <IconPlusSmall />
-          </Button>
+          <Stack direction="horizontal" align="baseline">
+            <Button
+              data-tour="circle-create-folder-button"
+              size="small"
+              variant="transparent"
+              shape="circle"
+              onClick={createNewFolder}
+            >
+              <IconPlusSmall size="5" />
+            </Button>
+            <Pulse borderRadius="large">
+              <Button
+                size="small"
+                variant="secondary"
+                onClick={() => {
+                  setTemplateModal(true);
+                }}
+              >
+                Use Template
+              </Button>
+            </Pulse>
+          </Stack>
         )}
-      </Box>
-      {canDo("manageCircleSettings") && (
+      </Stack>
+      {/* {canDo("manageCircleSettings") && (
         <Box
           margin={"1"}
           padding={"3"}
@@ -210,7 +211,7 @@ export const FolderView = ({
             Use Template
           </Button>
         </Box>
-      )}
+      )} */}
 
       {(circle?.folderOrder?.length == 0 ||
         circle?.folderOrder?.length === undefined) && (

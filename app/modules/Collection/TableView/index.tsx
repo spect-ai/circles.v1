@@ -539,6 +539,10 @@ export default function TableView() {
                 setMultipleMilestoneModalOpen(false);
                 return;
               }
+              if (!value) {
+                setMultipleMilestoneModalOpen(false);
+                return;
+              }
               if (data) {
                 const row = data.findIndex((row) => row.id === dataId);
                 console.log({ value });
