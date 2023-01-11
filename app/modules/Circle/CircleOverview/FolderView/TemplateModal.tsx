@@ -67,7 +67,9 @@ export default function TemplateModal({ handleClose, setLoading }: Props) {
             </ButtonCard>
           </Stack>
         )}
-        {template == 1 && <GrantTemplate handleClose={handleClose} />}
+        {template == 1 && (
+          <GrantTemplate handleClose={handleClose} setLoading={setLoading} />
+        )}
       </Box>
     </Modal>
   );

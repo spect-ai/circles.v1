@@ -13,11 +13,12 @@ import { fetchGuildChannels, getGuildRoles } from "@/app/services/Discord";
 import { Space } from "@/app/modules/Collection/VotingModule";
 import { useQuery } from "@apollo/client";
 
-type Props = {
+interface Props {
   handleClose: (close: boolean) => void;
-};
+  setLoading: (load: boolean) => void;
+}
 
-export default function GrantTemplate({ handleClose }: Props) {
+export default function GrantTemplate({ handleClose, setLoading }: Props) {
   const { localCircle: circle, fetchCircle } = useCircle();
 
   const [step, setStep] = useState(0);
@@ -80,7 +81,7 @@ export default function GrantTemplate({ handleClose }: Props) {
 
   const useTemplate = async () => {
     handleClose(false);
-    // setLoading(true);
+    setLoading(true);
     let roles = {};
     for (const i in selectedRoles) {
       roles = {
@@ -102,7 +103,7 @@ export default function GrantTemplate({ handleClose }: Props) {
     });
     console.log(res);
     if (res?.id) fetchCircle();
-    // setTimeout(() => setLoading(false), 100);
+    setTimeout(() => setLoading(false), 100);
   };
   return (
     <Box padding={"8"}>
@@ -292,7 +293,7 @@ export default function GrantTemplate({ handleClose }: Props) {
                   size="small"
                   onClick={async () => {
                     handleClose(false);
-                    //   setLoading(true);
+                    setLoading(true);
                     let roles = {};
                     for (const i in selectedRoles) {
                       roles = {
@@ -307,7 +308,7 @@ export default function GrantTemplate({ handleClose }: Props) {
                     });
                     console.log(res);
                     if (res?.id) fetchCircle();
-                    //   setTimeout(() => setLoading(false), 100);
+                    setTimeout(() => setLoading(false), 100);
                   }}
                 >
                   Skip this
