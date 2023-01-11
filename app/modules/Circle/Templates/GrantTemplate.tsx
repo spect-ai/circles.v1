@@ -111,15 +111,15 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
     );
     console.log(res);
     if (res?.id) {
-      fetchCircle();
-      setTimeout(() => setLoading(false), 300);
-      router.push(
+      void router.push(
         `${res.slug}/r/${
           res.collections[
             res?.folderDetails[res?.folderOrder?.[0]]?.contentIds?.[0]
           ].slug
         }`
       );
+      fetchCircle();
+      setTimeout(() => setLoading(false), 100);
     }
   };
 
