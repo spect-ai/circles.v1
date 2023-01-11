@@ -111,6 +111,7 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
     );
     console.log(res);
     if (res?.id) {
+      setLoading(false);
       void router.push(
         `${res.slug}/r/${
           res.collections[
@@ -119,7 +120,6 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
         }`
       );
       fetchCircle();
-      setTimeout(() => setLoading(false), 100);
     }
   };
 
