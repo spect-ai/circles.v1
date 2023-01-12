@@ -123,25 +123,24 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
     }
   };
 
-  const intervalPromise = setInterval(() => {
-    fetchCircle();
-  }, 1000);
+  // const intervalPromise = setInterval(() => {
+  //   fetchCircle();
+  // }, 1000);
 
-  if (circle.discordGuildId || step != 0) {
-    clearInterval(intervalPromise);
-  }
+  // if (circle.discordGuildId || step != 0) {
+  //   clearInterval(intervalPromise);
+  // }
 
   return (
-    <Box padding={"5"}>
-      <Box paddingY={"1"}>
+    <Box padding="0">
+      <Heading color={"accent"} align="left">
+        Integrate Discord
+      </Heading>
+      <Box paddingY={"6"}>
         <Stack direction={"vertical"} space="5">
           {step == 0 && (
-            <>
-              <Heading color={"accent"} align="left">
-                Integrate Discord
-              </Heading>
-              <Text variant="label">Connect Discord</Text>
-              <Stack direction={"horizontal"} align="center">
+            <Box width="1/3">
+              <Stack direction="vertical">
                 <PrimaryButton
                   disabled={!!circle?.discordGuildId}
                   icon={
@@ -160,16 +159,9 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
                     ? "Discord Connected"
                     : "Connect Discord"}
                 </PrimaryButton>
+                <PrimaryButton variant="tertiary">Skip this</PrimaryButton>
               </Stack>
-              <Button
-                variant="tertiary"
-                size="small"
-                width={"fit"}
-                onClick={() => setStep(2)}
-              >
-                Skip this
-              </Button>
-            </>
+            </Box>
           )}
           {step == 1 && (
             <>

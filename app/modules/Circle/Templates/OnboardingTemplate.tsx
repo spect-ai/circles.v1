@@ -35,35 +35,15 @@ export default function OnboardingTemplate({ handleClose }: Props) {
     >();
 
   return (
-    <Box padding={"8"}>
-      <Heading color={"accent"} align="center">
-        Awesome! Lets set up a contributor onboarding workflow
+    <Box padding={"0"}>
+      <Heading color={"accent"} align="left">
+        Integrate Discord
       </Heading>
-      {/* <Text variant="base">Would you like to give the grantees a discord role ?</Text> */}
       <Box paddingY={"6"}>
-        <Stack direction={"vertical"} space="5" align={"center"}>
+        <Stack direction={"vertical"} space="5">
           {step == 0 && (
-            <>
-              <Text align={"center"}>Would you like to connect discord ?</Text>
-              <Text align={"center"}>
-                Just a few clicks and the grantees will have a discord role,
-                every grants project will have a channel in your discord server
-              </Text>
-
-              <Stack direction={"horizontal"}>
-                <Button
-                  variant="tertiary"
-                  size="small"
-                  width={"full"}
-                  onClick={async () => {
-                    const res = await createTemplateFlow(circle?.id, {}, 2);
-                    handleClose(false);
-                    console.log(res);
-                    if (res?.id) fetchCircle();
-                  }}
-                >
-                  Skip this
-                </Button>
+            <Box width="1/3">
+              <Stack direction="vertical">
                 <Link
                   href={`https://discord.com/oauth2/authorize?client_id=942494607239958609&permissions=17448306704&redirect_uri=${origin}/api/connectDiscord&response_type=code&scope=bot&state=${circle.slug}`}
                 >
@@ -80,8 +60,21 @@ export default function OnboardingTemplate({ handleClose }: Props) {
                       : "Connect Discord"}
                   </PrimaryButton>
                 </Link>
+                <Button
+                  variant="tertiary"
+                  size="small"
+                  width={"full"}
+                  onClick={async () => {
+                    const res = await createTemplateFlow(circle?.id, {}, 2);
+                    handleClose(false);
+                    console.log(res);
+                    if (res?.id) fetchCircle();
+                  }}
+                >
+                  Skip this
+                </Button>
               </Stack>
-            </>
+            </Box>
           )}
           {step == 1 && (
             <>
