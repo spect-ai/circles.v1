@@ -1,4 +1,4 @@
-import { Box } from "degen";
+import { Box, useTheme } from "degen";
 import { VioletBlur } from "../ConnectPage";
 import Logout from "@/app/common/components/LogoutButton";
 import { BasicProfile } from "./BasicProfile";
@@ -10,12 +10,14 @@ import { CreateContent } from "./CreateContent";
 import { SetUpProfile } from "./SetupProfile";
 import { useGlobal } from "@/app/context/globalContext";
 import useConnectDiscord from "@/app/services/Discord/useConnectDiscord";
+import { ToastContainer } from "react-toastify";
 
 const Onboard = () => {
   useConnectDiscord();
   const [onboardType, setOnboardType] =
     useState<"circle" | "profile">("circle");
   const [step, setStep] = useState(1);
+  const { mode } = useTheme();
   const { connectedUser } = useGlobal();
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
@@ -39,10 +41,27 @@ const Onboard = () => {
       }
     }
     void refetch();
-  }, [currentUser, step, connectedUser, onboardType, refetch, myCircles?.length]);
+  }, [
+    currentUser,
+    step,
+    connectedUser,
+    onboardType,
+    refetch,
+    myCircles?.length,
+  ]);
 
   return (
     <Box position={"relative"} display="flex" width={"full"} gap="11">
+      <ToastContainer
+        toastStyle={{
+          backgroundColor: `${
+            mode === "dark" ? "rgb(20,20,20)" : "rgb(240,240,240)"
+          }`,
+          color: `${
+            mode === "dark" ? "rgb(255,255,255,0.7)" : "rgb(20,20,20,0.7)"
+          }`,
+        }}
+      />
       <VioletBlur style={{ top: "0px", left: "0rem" }} />
 
       <Box

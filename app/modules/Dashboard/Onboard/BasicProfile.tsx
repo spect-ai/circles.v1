@@ -10,6 +10,7 @@ import Link from "next/link";
 import DiscordIcon from "@/app/assets/icons/discordIcon.svg";
 import { useLocation } from "react-use";
 import ConnectDiscordButton from "@/app/common/components/ConnectDiscordButton";
+import { toast } from "react-toastify";
 
 export const NameInput = styled.input`
   width: 100%;
@@ -41,6 +42,8 @@ export function BasicProfile({ setStep }: { setStep: (step: number) => void }) {
     });
     if (res) {
       setStep(1);
+    } else {
+      toast.error("Username already taken");
     }
     process.env.NODE_ENV === "production" &&
       mixpanel.track("Onboard profile", {

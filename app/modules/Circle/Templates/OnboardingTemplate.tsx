@@ -1,12 +1,11 @@
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { Box, Button, Heading, Input, Stack, Tag, Text } from "degen";
+import { Box, Button, Heading, Stack, Tag, Text } from "degen";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { useCircle } from "../CircleContext";
 import DiscordIcon from "@/app/assets/icons/discordIcon.svg";
 import { createTemplateFlow } from "@/app/services/Templates";
 import { getGuildRoles } from "@/app/services/Discord";
-import { create } from "domain";
 
 type Props = {
   handleClose: (close: boolean) => void;
@@ -83,22 +82,32 @@ export default function OnboardingTemplate({ handleClose }: Props) {
             </Heading>
             <Box width="1/3">
               <Stack direction="vertical">
-                <Link
-                  href={`https://discord.com/oauth2/authorize?client_id=942494607239958609&permissions=17448306704&redirect_uri=${origin}/api/connectDiscord&response_type=code&scope=bot&state=${circle.slug}`}
+                <PrimaryButton
+                  disabled={!!circle?.discordGuildId}
+                  icon={
+                    <Box marginTop="1">
+                      <DiscordIcon />
+                    </Box>
+                  }
+                  onClick={() => {
+                    window.open(
+                      `https://discord.com/oauth2/authorize?client_id=942494607239958609&permissions=17448306704&redirect_uri=${origin}/api/connectDiscord&response_type=code&scope=bot&state=${circle.slug}`,
+                      "_blank"
+                    );
+
+                    const interval = setInterval(() => {
+                      fetchCircle();
+                    }, 5000);
+
+                    setTimeout(() => {
+                      clearInterval(interval);
+                    }, 60000);
+                  }}
                 >
-                  <PrimaryButton
-                    disabled={!!circle?.discordGuildId}
-                    icon={
-                      <Box marginTop="1">
-                        <DiscordIcon />
-                      </Box>
-                    }
-                  >
-                    {circle?.discordGuildId
-                      ? "Discord Connected"
-                      : "Connect Discord"}
-                  </PrimaryButton>
-                </Link>
+                  {circle?.discordGuildId
+                    ? "Discord Connected"
+                    : "Connect Discord"}
+                </PrimaryButton>
                 <Button
                   variant="tertiary"
                   size="small"
@@ -141,7 +150,7 @@ export default function OnboardingTemplate({ handleClose }: Props) {
                       selectedRoles.includes(role.id) ? "accent" : "secondary"
                     }
                   >
-                    {role.name}{" "}
+                    {role.name}
                   </Tag>
                 </Box>
               ))}

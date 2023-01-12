@@ -87,25 +87,27 @@ export default function useProfileUpdate() {
   };
 
   const updateProfile = async (body: UpdateProfileDTO) => {
-    const res = await fetch(`${process.env.API_HOST}/user/me`, {
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      method: "PATCH",
-      body: JSON.stringify(body),
-      credentials: "include",
-    });
-    // console.log({ data: await res.json() });
+    try {
+      const res = await fetch(`${process.env.API_HOST}/user/me`, {
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        method: "PATCH",
+        body: JSON.stringify(body),
+        credentials: "include",
+      });
+      // console.log({ data: await res.json() });
 
-    if (res.ok) {
-      const data = await res.json();
-      queryClient.setQueryData("getMyUser", data);
-      setUserData(data);
+      if (res.ok) {
+        const data = await res.json();
+        queryClient.setQueryData("getMyUser", data);
+        setUserData(data);
 
-      return true;
-    } else {
-      toast.error("Error updating profile", {
+        return true;
+      }
+    } catch (error) {
+      toast.error(`Error updating profile ${error}`, {
         theme: "dark",
       });
       return false;
