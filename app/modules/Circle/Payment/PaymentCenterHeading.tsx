@@ -2,6 +2,7 @@ import Breadcrumbs from "@/app/common/components/Breadcrumbs";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { UserType } from "@/app/types";
 import { Box, Heading, Stack, useTheme, Text } from "degen";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import { memo, useState } from "react";
 import { Hidden } from "react-grid-system";
@@ -27,7 +28,7 @@ function PaymentCenterHeading({ paymentViewId, setPaymentViewId }: Props) {
   const { mode } = useTheme();
   const router = useRouter();
   const { navigationBreadcrumbs } = useCircle();
-
+  const { circle: cId } = router.query;
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
@@ -80,51 +81,61 @@ function PaymentCenterHeading({ paymentViewId, setPaymentViewId }: Props) {
         display="flex"
         flexDirection="row"
       >
-        <ViewTab
-          paddingX="4"
-          backgroundColor={
-            paymentViewId === "Pending" ? "backgroundSecondary" : "background"
-          }
-          borderTopWidth={paymentViewId === "Pending" ? "0.375" : "0"}
-          borderRightWidth={paymentViewId === "Pending" ? "0.375" : "0"}
-          borderLeftWidth={paymentViewId === "Pending" ? "0.375" : "0"}
-          key={"pending"}
-          onClick={() => setPaymentViewId("Pending")}
-        >
-          <Text variant="small" weight="semiBold">
-            Pending
-          </Text>
-        </ViewTab>
-        <ViewTab
-          paddingX="4"
-          backgroundColor={
-            paymentViewId === "Completed" ? "backgroundSecondary" : "background"
-          }
-          borderTopWidth={paymentViewId === "Completed" ? "0.375" : "0"}
-          borderRightWidth={paymentViewId === "Completed" ? "0.375" : "0"}
-          borderLeftWidth={paymentViewId === "Completed" ? "0.375" : "0"}
-          key={"completed"}
-          onClick={() => setPaymentViewId("Completed")}
-        >
-          <Text variant="small" weight="semiBold">
-            Completed
-          </Text>
-        </ViewTab>
-        <ViewTab
-          paddingX="4"
-          backgroundColor={
-            paymentViewId === "Cancelled" ? "backgroundSecondary" : "background"
-          }
-          borderTopWidth={paymentViewId === "Cancelled" ? "0.375" : "0"}
-          borderRightWidth={paymentViewId === "Cancelled" ? "0.375" : "0"}
-          borderLeftWidth={paymentViewId === "Cancelled" ? "0.375" : "0"}
-          key={"cancelled"}
-          onClick={() => setPaymentViewId("Cancelled")}
-        >
-          <Text variant="small" weight="semiBold">
-            Cancelled
-          </Text>
-        </ViewTab>
+        <Link href={`/${cId}?tab=payment&status=pending`}>
+          <ViewTab
+            paddingX="4"
+            backgroundColor={
+              paymentViewId === "Pending" ? "backgroundSecondary" : "background"
+            }
+            borderTopWidth={paymentViewId === "Pending" ? "0.375" : "0"}
+            borderRightWidth={paymentViewId === "Pending" ? "0.375" : "0"}
+            borderLeftWidth={paymentViewId === "Pending" ? "0.375" : "0"}
+            key={"pending"}
+            onClick={() => setPaymentViewId("Pending")}
+          >
+            <Text variant="small" weight="semiBold">
+              Pending
+            </Text>
+          </ViewTab>
+        </Link>
+        <Link href={`/${cId}?tab=payment&status=completed`}>
+          <ViewTab
+            paddingX="4"
+            backgroundColor={
+              paymentViewId === "Completed"
+                ? "backgroundSecondary"
+                : "background"
+            }
+            borderTopWidth={paymentViewId === "Completed" ? "0.375" : "0"}
+            borderRightWidth={paymentViewId === "Completed" ? "0.375" : "0"}
+            borderLeftWidth={paymentViewId === "Completed" ? "0.375" : "0"}
+            key={"completed"}
+            onClick={() => setPaymentViewId("Completed")}
+          >
+            <Text variant="small" weight="semiBold">
+              Completed
+            </Text>
+          </ViewTab>
+        </Link>
+        <Link href={`/${cId}?tab=payment&status=cancelled`}>
+          <ViewTab
+            paddingX="4"
+            backgroundColor={
+              paymentViewId === "Cancelled"
+                ? "backgroundSecondary"
+                : "background"
+            }
+            borderTopWidth={paymentViewId === "Cancelled" ? "0.375" : "0"}
+            borderRightWidth={paymentViewId === "Cancelled" ? "0.375" : "0"}
+            borderLeftWidth={paymentViewId === "Cancelled" ? "0.375" : "0"}
+            key={"cancelled"}
+            onClick={() => setPaymentViewId("Cancelled")}
+          >
+            <Text variant="small" weight="semiBold">
+              Cancelled
+            </Text>
+          </ViewTab>
+        </Link>
       </ViewTabsContainer>
     </Box>
   );

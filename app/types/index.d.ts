@@ -1207,4 +1207,5 @@ export type PaymentDetails = {
   title?: string;
   description?: string;
   paidOn?: Date;
+  transactionHash?: string;
 };

@@ -7,6 +7,7 @@ import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { CollectionActivity, MappedItem, UserType } from "@/app/types";
 import { SendOutlined } from "@ant-design/icons";
 import { Avatar, Box, Button, Stack, Text } from "degen";
+import { useRouter } from "next/router";
 import React, { useState } from "react";
 import { useQuery } from "react-query";
 import { toast } from "react-toastify";
@@ -18,7 +19,7 @@ type Props = {
   getMemberDetails: (id: string) => UserType | undefined;
   dataId: string;
   collectionId: string;
-  setForm?: (form: any) => void;
+  setForm: (form: any) => void;
   dataOwner: UserType;
 };
 
@@ -37,9 +38,11 @@ export default function DataActivity({
   const [comment, setComment] = useState("");
   const [isDirty, setIsDirty] = useState(false);
   const [sendingComment, setSendingComment] = useState(false);
-  const { updateCollection } = useLocalCollection();
 
   const { formActions } = useRoleGate();
+
+  const router = useRouter();
+  const { circle } = router.query;
 
   return (
     <Box padding="4">
@@ -147,10 +150,10 @@ export default function DataActivity({
                         refType: "user",
                       },
                     },
-                    false
+                    circle ? false : true
                   );
                   if (res.id) {
-                    updateCollection(res);
+                    setForm(res);
                     setComment("");
                     setIsDirty(false);
                   } else toast.error("Something went wrong");

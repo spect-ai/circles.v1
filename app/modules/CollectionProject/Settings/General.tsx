@@ -1,4 +1,5 @@
 import { Input, Stack, Text } from "degen";
+import FormRoles from "../../Collection/Form/FormRoles";
 
 type Props = {
   name: string;
@@ -15,6 +16,7 @@ export default function General({ name, setName }: Props) {
         onChange={(e) => setName(e.target.value)}
         onBlur={() => {}}
       />
+      <FormRoles />
     </Stack>
   );
 }

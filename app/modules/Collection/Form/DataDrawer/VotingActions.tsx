@@ -15,6 +15,7 @@ import { useQuery as useApolloQuery } from "@apollo/client";
 import { Option } from "@/app/types";
 import { useLocation } from "react-use";
 import { useAccount } from "wagmi";
+import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 
 export default function VotingActions({
   dataId,
@@ -25,6 +26,7 @@ export default function VotingActions({
 }) {
   const { localCollection: collection, updateCollection } =
     useLocalCollection();
+  const { formActions } = useRoleGate();
   const { hostname } = useLocation();
   const { address } = useAccount();
   const { mode } = useTheme();
@@ -152,6 +154,7 @@ export default function VotingActions({
                   ?.length === 0 && (
                   <PrimaryButton
                     variant="secondary"
+                    disabled={!formActions("manageSettings")}
                     onClick={async () => {
                       const res = await startVotingPeriod(
                         collection.id,

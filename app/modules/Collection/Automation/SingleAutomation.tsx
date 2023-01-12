@@ -106,7 +106,7 @@ export default function SingleAutomation({
     const whenOptions = Object.entries(collection.properties)
       .filter((p) => p[1].type === "singleSelect")
       .map((p) => ({
-        label: `${p[1].name} changes`,
+        label: `"${p[1].name}" changes`,
         value: "dataChange",
         data: {
           fieldName: p[0],
@@ -164,7 +164,6 @@ export default function SingleAutomation({
         validateConditions(conditions) &&
         name !== ""
     );
-    console.log({ canSave });
   }, [actions, trigger, conditions, name]);
 
   return (
@@ -346,7 +345,6 @@ export default function SingleAutomation({
                       const newActions = [...actions];
                       newActions[index] = action;
                       setActions(newActions);
-                      console.log({ actions });
                       setIsDirty(true);
                     }}
                     actionMode="edit"

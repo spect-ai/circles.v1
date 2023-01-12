@@ -178,7 +178,7 @@ export default function usePaymentGateway(
     cardIds,
     circleId,
     nonce,
-  }: PayUsingGnosisParams): Promise<boolean> {
+  }: PayUsingGnosisParams): Promise<boolean | string> {
     if (paymentType === "tokens") {
       const data = await distributeTokens({
         contributors: userAddresses,

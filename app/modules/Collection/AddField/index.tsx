@@ -336,7 +336,11 @@ export default function AddField({ propertyName, handleClose }: Props) {
               />
             )}
             <Dropdown
-              options={fields}
+              options={
+                collection.collectionType === 0
+                  ? fields
+                  : fields.filter((f) => f.value !== "payWall")
+              }
               selected={type}
               onChange={(type) => {
                 setType(type);

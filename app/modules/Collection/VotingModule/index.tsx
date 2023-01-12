@@ -4,7 +4,7 @@ import PrimaryButton from "@/app/common/components/PrimaryButton";
 import CheckBox from "@/app/common/components/Table/Checkbox";
 import { updateFormCollection } from "@/app/services/Collection";
 import { Option } from "@/app/types";
-import { Box, IconUserGroup, Input, Stack, Text, useTheme } from "degen";
+import { Box, IconUserGroup, Input, Stack, Tag, Text, useTheme } from "degen";
 import { AnimatePresence } from "framer-motion";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -13,6 +13,7 @@ import { useLocalCollection } from "../Context/LocalCollectionContext";
 import MultiChoiceVotingOnMultipleResponses from "./MultiChoiceVotingOnMultipleResponses";
 import SingleChoiceVotingOnSingleResponse from "./SingleChoiceVotingOnSingleResponse";
 import { useQuery, gql } from "@apollo/client";
+import { useCircle } from "@/app/modules/Circle/CircleContext";
 
 export const Space = gql`
   query Space($id: String!) {
@@ -31,7 +32,12 @@ export default function VotingModule() {
   const { localCollection: collection, setLocalCollection } =
     useLocalCollection();
 
-  const { mode } = useTheme();
+  const { circle } = useCircle();
+  const [circleRoles, setCircleRoles] = useState(circle?.roles || {});
+
+  const [permissions, setPermissions] = useState<string[]>(
+    collection?.permissions?.viewResponses || []
+  );
 
   const [isOpen, setIsOpen] = useState(false);
   const [votingType, setVotingType] = useState({
@@ -41,13 +47,6 @@ export default function VotingModule() {
   const [votesArePublic, setVotesArePublic] = useState(false);
   const [snapshotVoting, setSnapshotVoting] = useState(false);
   const [snapshotSpace, setSnapshotSpace] = useState("");
-  const [tokenWeightedWith, setTokenWeightedWith] = useState(
-    [] as {
-      chain: Option;
-      token: Option;
-      weight: number;
-    }[]
-  );
 
   const [votingOptions, setVotingOptions] = useState([
     {
@@ -192,8 +191,6 @@ export default function VotingModule() {
                         disabled={collection?.voting?.enabled}
                       />
                       <Text variant="small">
-                        {/* Votes are weighted by token holdings on your Snapshot
-                        space */}
                         Integrate with Snapshot (Token Weighted voting)
                       </Text>
                     </Box>
@@ -228,6 +225,43 @@ export default function VotingModule() {
                       ))}
                   </>
                 )}
+                <Text variant="label">Notifications</Text>
+                <Box display={"flex"} flexDirection="row" gap={"2"}>
+                  {Object.keys(circleRoles)?.map((role) => {
+                    return (
+                      <Box
+                        key={role}
+                        onClick={() => {
+                          if (permissions.includes(role)) {
+                            setPermissions(
+                              permissions.filter((item) => item !== role)
+                            );
+                          } else {
+                            setPermissions([...permissions, role]);
+                          }
+                        }}
+                        style={{
+                          cursor: "pointer",
+                        }}
+                      >
+                        <Tag
+                          hover
+                          size="medium"
+                          as="span"
+                          tone={
+                            permissions.includes(role) ? "accent" : "secondary"
+                          }
+                        >
+                          {role}
+                        </Tag>
+                      </Box>
+                    );
+                  })}
+                </Box>
+                <Text>
+                  These roles will be notified when a voting period is starts
+                  and will have the permissions to view the form's responses.
+                </Text>
                 {["rankedChoice", "quadratic"].includes(votingType.value) && (
                   <MultiChoiceVotingOnMultipleResponses />
                 )}
@@ -253,6 +287,10 @@ export default function VotingModule() {
                         setLoading(true);
                         setIsConfirmModalOpen(false);
                         const res = await updateFormCollection(collection.id, {
+                          permissions: {
+                            ...collection.permissions,
+                            viewResponses: permissions,
+                          },
                           voting: {
                             ...collection.voting,
                             enabled: true,

@@ -69,6 +69,7 @@ export default function CreateCard({ setAction, actionMode, action }: Props) {
             },
           }));
       } else if (fieldType === "default") {
+        console.log({ prop: mappedCollection?.properties });
         return Object.entries(mappedCollection?.properties)
           .filter(([propertyId, property]) => !usedProperty[propertyId])
           .map(([propertyId, property]) => ({
@@ -97,28 +98,51 @@ export default function CreateCard({ setAction, actionMode, action }: Props) {
     return [];
   };
 
-  useEffect(() => {
-    const fetchCollectionOptions = async () => {
-      try {
-        const data: CollectionType[] = await (
+  const fetchCollectionOptions = async () => {
+    try {
+      const data: CollectionType[] = await (
+        await fetch(
+          `${process.env.API_HOST}/circle/v1/${circle.id}/allActiveCollections`
+        )
+      ).json();
+      setCollectionOptions(
+        data
+          .filter((collection) => collection.collectionType === 1)
+          .map((collection) => ({
+            label: collection.name,
+            value: collection.id,
+            data: collection,
+          }))
+      );
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const fetchCollection = async () => {
+    try {
+      if (selectedCollection?.data?.slug) {
+        const data: CollectionType = await (
           await fetch(
-            `${process.env.API_HOST}/circle/v1/${circle.id}/allActiveCollections`
+            `${process.env.API_HOST}/collection/v1/slug/${
+              selectedCollection?.data?.slug as string
+            }`,
+            {
+              credentials: "include",
+            }
           )
         ).json();
-        setCollectionOptions(
-          data
-            .filter((collection) => collection.collectionType === 1)
-            .map((collection) => ({
-              label: collection.name,
-              value: collection.id,
-              data: collection,
-            }))
-        );
-      } catch (e) {
-        console.log(e);
+        setMappedCollection(data);
       }
-    };
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  useEffect(() => {
     void fetchCollectionOptions();
+    void fetchCollection();
+
     const milestoneFields = Object.entries(collection.properties).filter(
       ([propertyId, property]) => property.type === "milestone"
     );
@@ -183,30 +207,12 @@ export default function CreateCard({ setAction, actionMode, action }: Props) {
   }, []);
 
   useEffect(() => {
-    const fetchCollection = async () => {
-      try {
-        if (selectedCollection?.data?.slug) {
-          const data: CollectionType = await (
-            await fetch(
-              `${process.env.API_HOST}/collection/v1/slug/${
-                selectedCollection?.data?.slug as string
-              }`,
-              {
-                credentials: "include",
-              }
-            )
-          ).json();
-          setMappedCollection(data);
-        }
-      } catch (e) {
-        console.log(e);
-      }
-    };
     void fetchCollection();
   }, [selectedCollection]);
 
   useEffect(() => {
     setValues(action?.data.values || []);
+    setSelectedCollection(action?.data?.selectedCollection || {});
   }, [action]);
 
   useEffect(() => {
@@ -301,22 +307,24 @@ export default function CreateCard({ setAction, actionMode, action }: Props) {
                   <Box width="1/4">
                     <Text variant="label">Map responder To Form Field</Text>
                   </Box>
-                  <Dropdown
-                    options={getToPropertyOption("responder")}
-                    selected={value.mapping?.to}
-                    onChange={(value) => {
-                      const newValues = [...values];
-                      newValues[index] = {
-                        type: "responder",
-                        mapping: {
-                          to: value,
-                        },
-                      };
-                      setValues(newValues);
-                    }}
-                    multiple={false}
-                    isClearable={false}
-                  />
+                  <Box width="3/4">
+                    <Dropdown
+                      options={getToPropertyOption("responder")}
+                      selected={value.mapping?.to}
+                      onChange={(value) => {
+                        const newValues = [...values];
+                        newValues[index] = {
+                          type: "responder",
+                          mapping: {
+                            to: value,
+                          },
+                        };
+                        setValues(newValues);
+                      }}
+                      multiple={false}
+                      isClearable={false}
+                    />
+                  </Box>
                 </Box>
               )}
               {value.type === "mapping" && (
@@ -454,11 +462,7 @@ export default function CreateCard({ setAction, actionMode, action }: Props) {
                               selectedCollection.data as CollectionType
                             }
                             propertyId={value.default?.field?.value}
-                            type={
-                              selectedCollection.data.properties[
-                                value.default?.field?.value
-                              ]?.type
-                            }
+                            type={value.default?.field?.data?.type}
                             data={value.default?.value}
                             setData={(v) => {
                               const newValues = [...values];

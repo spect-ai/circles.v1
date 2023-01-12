@@ -6,6 +6,7 @@ import {
   PayWallOptions,
   Registry,
   Voting,
+  FormPermissions,
 } from "@/app/types";
 
 export const addField = async (
@@ -100,6 +101,7 @@ export const updateFormCollection = async (
     description?: string;
     propertyOrder?: string[];
     voting?: Voting;
+    permissions?: FormPermissions;
     circleRolesToNotifyUponNewResponse?: string[];
     circleRolesToNotifyUponUpdatedResponse?: string[];
     formMetadata?: {
@@ -377,7 +379,7 @@ export const sendFormComment = async (
       refType: "circle" | "collection" | "user";
     };
   },
-  isPublic?: boolean
+  isPublic: boolean
 ) => {
   if (!isPublic) {
     return await (

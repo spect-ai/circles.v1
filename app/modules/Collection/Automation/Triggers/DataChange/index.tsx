@@ -12,7 +12,6 @@ export default function DataChange({
   triggerMode,
   trigger,
 }: Props) {
-  console.log(trigger?.data?.fieldType);
   return (
     <>
       {trigger?.data?.fieldType === "singleSelect" && (

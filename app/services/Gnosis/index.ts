@@ -110,7 +110,7 @@ export async function gnosisPayment(
       senderSignature: senderSignature.data,
       origin: "Spect Circles",
     });
-    return true;
+    return safeTxHash;
   } catch (err) {
     console.error(err);
     return false;

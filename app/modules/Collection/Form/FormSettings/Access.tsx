@@ -1,4 +1,4 @@
-import { Stack } from "degen";
+import { Box, Stack } from "degen";
 import React from "react";
 import RoleGate from "../../RoleGate";
 import SybilResistance from "../../SybilResistance";
@@ -9,7 +9,9 @@ export default function Access() {
     <Stack>
       <RoleGate />
       <SybilResistance />
-      <FormRoles />
+      <Box width={{ lg: "1/2" }}>
+        <FormRoles />
+      </Box>
     </Stack>
   );
 }

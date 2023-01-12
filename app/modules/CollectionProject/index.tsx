@@ -1,4 +1,5 @@
-import { Box } from "degen";
+import useRoleGate from "@/app/services/RoleGate/useRoleGate";
+import { Box, Stack, Text } from "degen";
 import React from "react";
 import { useLocalCollection } from "../Collection/Context/LocalCollectionContext";
 import ProjectHeading from "./Heading";
@@ -8,17 +9,33 @@ import ProjectTableView from "./TableView";
 
 export default function CollectionProject() {
   const { projectViewId, localCollection: collection } = useLocalCollection();
+  const { formActions } = useRoleGate();
   return (
     <Box>
       <ProjectHeading />
-      {collection.projectMetadata.views[projectViewId]?.type === "grid" && (
-        <ProjectTableView />
+      {formActions("viewResponses") && (
+        <Box>
+          {collection.projectMetadata.views[projectViewId]?.type === "grid" && (
+            <ProjectTableView />
+          )}
+          {collection.projectMetadata.views[projectViewId]?.type ===
+            "kanban" && <KanbanView />}
+          {collection.projectMetadata.views[projectViewId]?.type === "list" && (
+            <ListView />
+          )}
+        </Box>
       )}
-      {collection.projectMetadata.views[projectViewId]?.type === "kanban" && (
-        <KanbanView />
-      )}
-      {collection.projectMetadata.views[projectViewId]?.type === "list" && (
-        <ListView />
+      {!formActions("viewResponses") && (
+        <Box width="full" marginTop="32">
+          <Stack align="center" justify="center">
+            <Text color="text" weight="semiBold" size="headingTwo">
+              You do not have permission to view this collection.
+            </Text>
+            <Text color="text" size="large">
+              Ask the creator to update the access roles of this collection
+            </Text>
+          </Stack>
+        </Box>
       )}
     </Box>
   );

@@ -5,6 +5,7 @@ import { Box, Stack, Text } from "degen";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { useQuery } from "react-query";
+import styled from "styled-components";
 import { useCircle } from "../CircleContext";
 import PaymentCard from "./PaymentCard";
 
@@ -69,6 +70,7 @@ export default function CompletedPayments() {
                     "Paid to": JSON.stringify(paidTo),
                     "Payment Status": "Completed",
                     "Paid on": paymentDetails.paidOn,
+                    "Transaction Hash": paymentDetails.transactionHash,
                   });
                 });
                 exportToCsv(data, `completed-payments-${new Date().getDate()}`);
@@ -98,19 +100,34 @@ export default function CompletedPayments() {
           </Box>
         </Box>
       )}
-      {circle.completedPayments?.map((paymentId, index) => {
-        return (
-          <PaymentCard
-            key={index}
-            index={index}
-            paymentDetails={circle.paymentDetails[paymentId]}
-            handleClick={() => {
-              setSelectedPaymentId(paymentId);
-              setIsCardDrawerOpen(true);
-            }}
-          />
-        );
-      })}
+      <ScrollContainer>
+        {circle.completedPayments?.map((paymentId, index) => {
+          return (
+            <PaymentCard
+              key={index}
+              index={index}
+              paymentDetails={circle.paymentDetails[paymentId]}
+              handleClick={() => {
+                setSelectedPaymentId(paymentId);
+                setIsCardDrawerOpen(true);
+              }}
+            />
+          );
+        })}
+      </ScrollContainer>
     </Stack>
   );
 }
+
+const ScrollContainer = styled(Box)`
+  overflow-y: auto;
+  ::-webkit-scrollbar {
+    width: 4px;
+  }
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  @media (max-width: 768px) {
+    height: calc(100vh - 12rem);
+  }
+  height: calc(100vh - 12rem);
+`;

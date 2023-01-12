@@ -1,7 +1,11 @@
 import Accordian from "@/app/common/components/Accordian";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { CircleType, UserType } from "@/app/types";
-import { DollarOutlined, ProjectOutlined } from "@ant-design/icons";
+import {
+  DollarOutlined,
+  ProjectOutlined,
+  StarOutlined,
+} from "@ant-design/icons";
 import {
   Box,
   IconCollection,
@@ -166,7 +170,12 @@ function CircleSidebar() {
           <Link href={`/${cId}`}>
             <PrimaryButton
               variant={
-                cId && router.query?.tab !== "payment" && !cSlug && !pId
+                cId &&
+                !["payment", "credential"].includes(
+                  router.query?.tab as string
+                ) &&
+                !cSlug &&
+                !pId
                   ? "tertiary"
                   : "transparent"
               }
@@ -201,8 +210,28 @@ function CircleSidebar() {
               Payment Center
             </PrimaryButton>
           </Link>
+          {/* <Link href={`/${cId}?tab=credential`}>
+            <PrimaryButton
+              variant={
+                cId && router.query?.tab === "credential" && !cSlug && !pId
+                  ? "tertiary"
+                  : "transparent"
+              }
+              icon={<StarOutlined size={10} />}
+              onClick={() => {
+                process.env.NODE_ENV === "production" &&
+                  mixpanel.track("Credential Center Button", {
+                    user: currentUser?.username,
+                    url: window.location.href,
+                  });
+              }}
+            >
+              Credential Center
+            </PrimaryButton>
+          </Link> */}
         </Stack>
-        <Container subH="15.1rem">
+        <Container subH="16.1rem">
+          {/** @chaks forgot to change the height when undoing credential changes */}
           <Stack>
             {!isLoading &&
               circle?.folderOrder?.map((fol) => {

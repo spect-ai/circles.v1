@@ -6,6 +6,7 @@ import RewardField from "@/app/modules/PublicForm/RewardField";
 import { CollectionType, MemberDetails, Property, Registry } from "@/app/types";
 import { Box, IconPlusSmall, Input, useTheme } from "degen";
 import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { DateInput } from "../../Form/Field";
 
@@ -40,6 +41,21 @@ export function Field({
     label: memberDetails && memberDetails.memberDetails[member]?.username,
     value: member,
   }));
+  const [col, setCol] = useState<CollectionType>(collection);
+
+  console.log({ type });
+  useEffect(() => {
+    if (type === "singleSelect" || type === "multiSelect") {
+      fetch(`${process.env.API_HOST}/collection/v1/slug/${collection.slug}`, {
+        credentials: "include",
+      })
+        .then(async (res) => {
+          const data = await res.json();
+          setCol(data);
+        })
+        .catch((err) => console.log(err));
+    }
+  }, [type]);
 
   return (
     <>
@@ -134,7 +150,7 @@ export function Field({
               type === "user" || type === "user[]"
                 ? (memberOptions as any)
                 : propertyId
-                ? collection.properties[propertyId]?.options
+                ? col.properties[propertyId]?.options
                 : property?.options
             }
             selected={data}
@@ -150,7 +166,7 @@ export function Field({
           <RewardField
             rewardOptions={
               propertyId
-                ? (collection.properties[propertyId]?.rewardOptions as Registry)
+                ? (col.properties[propertyId]?.rewardOptions as Registry)
                 : (property?.rewardOptions as Registry)
             }
             value={data}

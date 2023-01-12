@@ -25,6 +25,7 @@ import { useState } from "react";
 import { useQuery } from "react-query";
 import { Tooltip } from "react-tippy";
 import { toast } from "react-toastify";
+import styled from "styled-components";
 import { useCircle } from "../CircleContext";
 import PaymentCard from "./PaymentCard";
 
@@ -33,6 +34,7 @@ export default function PendingPayments() {
   const [selectedPaymentId, setSelectedPaymentId] = useState("");
   const [selectedPaymentIds, setSelectedPaymentIds] = useState<string[]>([]);
   const [payUsingGnosisSafe, setPayUsingGnosisSafe] = useState(false);
+  const [isPayLoading, setIsPayLoading] = useState(false);
   const router = useRouter();
   const { mode } = useTheme();
 
@@ -160,20 +162,20 @@ export default function PendingPayments() {
       if (gnosisPayment) {
         console.log("Gnosis payment");
         const safeAddress = circle.safeAddresses[chainId][0];
-        const nonce = await getNonce(safeAddress);
-        console.log({ nonce });
+        const startNonce = await getNonce(safeAddress);
+        console.log({ startNonce });
         console.log("Approving ...");
-        const tokensApproved = await approveUsingGnosis(
+        const { tokensApproved, nonce } = await approveUsingGnosis(
           chainId,
           tokensWithInsufficientAllowance.map((token) => token.tokenAddress),
           registry as Registry,
-          nonce,
+          startNonce,
           safeAddress
         );
 
         console.log("Distributing ...");
         const tokensApprvoedSet = new Set(tokensApproved);
-        const tokensDistributed = await payUsingGnosis(
+        const { tokensDistributed, txHash } = await payUsingGnosis(
           chainId,
           amounts,
           tokensWithInsufficientAllowance
@@ -184,15 +186,20 @@ export default function PendingPayments() {
           nonce,
           safeAddress
         );
-        const res = await findAndUpdatePaymentIds(
-          circle.id,
-          chainId,
-          tokensDistributed,
-          circle.pendingPayments,
-          circle.paymentDetails
-        );
-        if (res) {
-          fetchCircle();
+
+        console.log({ tokensDistributed });
+        if (tokensDistributed?.length) {
+          const res = await findAndUpdatePaymentIds(
+            circle.id,
+            chainId,
+            tokensDistributed,
+            circle.pendingPayments,
+            circle.paymentDetails,
+            txHash
+          );
+          if (res) {
+            fetchCircle();
+          }
         }
       } else {
         console.log("EOA payment");
@@ -205,7 +212,7 @@ export default function PendingPayments() {
 
         console.log("Distributing ...");
         const tokensApprvoedSet = new Set(tokensApproved);
-        const tokensDistributed = await payUsingEOA(
+        const { tokensDistributed, txHash } = await payUsingEOA(
           chainId,
           amounts,
           tokensWithInsufficientAllowance
@@ -214,16 +221,18 @@ export default function PendingPayments() {
           tokensWithInsufficientBalance.map((token) => token.tokenAddress),
           registry as Registry
         );
-
-        const res = await findAndUpdatePaymentIds(
-          circle.id,
-          chainId,
-          tokensDistributed,
-          circle.pendingPayments,
-          circle.paymentDetails
-        );
-        if (res) {
-          fetchCircle();
+        if (tokensDistributed?.length) {
+          const res = await findAndUpdatePaymentIds(
+            circle.id,
+            chainId,
+            tokensDistributed,
+            circle.pendingPayments,
+            circle.paymentDetails,
+            txHash
+          );
+          if (res) {
+            fetchCircle();
+          }
         }
       }
     } catch (e: any) {
@@ -285,6 +294,7 @@ export default function PendingPayments() {
           <Box width="48">
             <PrimaryButton
               onClick={async () => {
+                setIsPayLoading(true);
                 const uniqueNetworks = getUniqueNetworks(
                   circle.pendingPayments,
                   circle.paymentDetails
@@ -297,7 +307,9 @@ export default function PendingPayments() {
                     await pay(chainId, payUsingGnosisSafe);
                   }
                 }
+                setIsPayLoading(false);
               }}
+              loading={isPayLoading}
             >
               Batch Pay
             </PrimaryButton>
@@ -327,19 +339,34 @@ export default function PendingPayments() {
           </Box>
         )}
       </Box>
-      {circle.pendingPayments?.map((paymentId, index) => {
-        return (
-          <PaymentCard
-            key={index}
-            index={index}
-            paymentDetails={circle.paymentDetails[paymentId]}
-            handleClick={() => {
-              setSelectedPaymentId(paymentId);
-              setIsCardDrawerOpen(true);
-            }}
-          />
-        );
-      })}
+      <ScrollContainer>
+        {circle.pendingPayments?.map((paymentId, index) => {
+          return (
+            <PaymentCard
+              key={index}
+              index={index}
+              paymentDetails={circle.paymentDetails[paymentId]}
+              handleClick={() => {
+                setSelectedPaymentId(paymentId);
+                setIsCardDrawerOpen(true);
+              }}
+            />
+          );
+        })}
+      </ScrollContainer>
     </Stack>
   );
 }
+
+const ScrollContainer = styled(Box)`
+  overflow-y: auto;
+  ::-webkit-scrollbar {
+    width: 4px;
+  }
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  @media (max-width: 768px) {
+    height: calc(100vh - 12rem);
+  }
+  height: calc(100vh - 12rem);
+`;
