@@ -265,7 +265,7 @@ export default function PublicForm() {
                   >
                     <ConnectDiscordButton
                       type="publicForm"
-                      state={`r/` + form.slug}
+                      state={`/r/` + form.slug}
                       width="full"
                     />
                   </Box>
