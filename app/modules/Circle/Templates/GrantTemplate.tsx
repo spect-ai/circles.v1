@@ -36,11 +36,8 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
     if (!circle?.discordGuildId) {
       setStep(0);
     }
-    if (circle?.discordGuildId && !selectedRoles.length) {
+    if (circle?.discordGuildId) {
       setStep(1);
-    }
-    if (circle?.discordGuildId && !!selectedRoles.length) {
-      setStep(2);
     }
   }, [circle?.discordGuildId, selectedRoles]);
 
@@ -278,7 +275,7 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
                 onClick={() => {
                   if (!circle?.discordGuildId) {
                     setStep(0);
-                  } else if (circle?.discordGuildId && !selectedRoles.length) {
+                  } else if (circle?.discordGuildId) {
                     setStep(1);
                   }
                 }}
