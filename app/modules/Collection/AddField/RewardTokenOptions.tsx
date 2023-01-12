@@ -323,6 +323,7 @@ export default function RewardTokenOptions({
             flexDirection="row"
             justifyContent="flex-start"
             alignItems="flex-start"
+            padding="2"
           >
             {" "}
             <Button
