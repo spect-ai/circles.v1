@@ -39,7 +39,7 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
     if (circle?.discordGuildId) {
       setStep(1);
     }
-  }, [circle?.discordGuildId, selectedRoles]);
+  }, [circle?.discordGuildId]);
 
   const [discordRoles, setDiscordRoles] =
     useState<
@@ -197,7 +197,7 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
                 </Box>
               ))}
             </Stack>
-            <Text variant="label">
+            {/* <Text variant="label">
               Select a channel category to create a Discord channel for accepted
               grant projects in your Discord Server
             </Text>
@@ -210,7 +210,7 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
                 }}
                 multiple={false}
               />
-            </Box>
+            </Box> */}
 
             <Stack direction={"horizontal"}>
               <Button
@@ -220,10 +220,10 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
                 onClick={() => {
                   setStep(2);
                   setSelectedRoles([]);
-                  setSelectedCategory({
-                    label: "",
-                    value: "",
-                  });
+                  // setSelectedCategory({
+                  //   label: "",
+                  //   value: "",
+                  // });
                 }}
               >
                 Skip
@@ -235,7 +235,7 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
                 }}
                 variant="secondary"
                 size="small"
-                disabled={!selectedRoles.length && !selectedCategory?.value}
+                disabled={!selectedRoles.length}
               >
                 Integrate Discord
               </Button>
