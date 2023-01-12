@@ -25,12 +25,10 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
 
   const [step, setStep] = useState(0);
   const [snapshotSpace, setSnapshotSpace] = useState("");
-  const [permissions, setPermissions] = useState([] as string[]);
-  const [roles, setRoles] = useState();
   const [selectedRoles, setSelectedRoles] = useState([] as string[]);
-  const [categoreyOptions, setCategoryOptions] = useState<Option[]>([]);
+  const [categoryOptions, setCategoryOptions] = useState<Option[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<Option>(
-    categoreyOptions?.[0]
+    categoryOptions?.[0]
   );
   const [networks, setNetworks] = useState<Registry>();
 
@@ -38,13 +36,13 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
     if (!circle?.discordGuildId) {
       setStep(0);
     }
-    if (circle?.discordGuildId && !roles) {
+    if (circle?.discordGuildId && !selectedRoles.length) {
       setStep(1);
     }
-    if (circle?.discordGuildId && roles) {
+    if (circle?.discordGuildId && !!selectedRoles.length) {
       setStep(2);
     }
-  }, [circle?.discordGuildId, roles]);
+  }, [circle?.discordGuildId, selectedRoles]);
 
   const [discordRoles, setDiscordRoles] =
     useState<
@@ -101,7 +99,6 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
           network: data?.space?.network || "",
           symbol: data?.space?.symbol || "",
         },
-        permissions: permissions,
         channelCategory: selectedCategory,
         roles,
         registry: networks,
@@ -112,13 +109,13 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
     if (res?.id) {
       setLoading(false);
       setCircleData(res);
-      void router.push(
-        `${res.slug}/r/${
-          res.collections[
-            res?.folderDetails[res?.folderOrder?.[0]]?.contentIds?.[0]
-          ].slug
-        }`
-      );
+      // void router.push(
+      //   `${res.slug}/r/${
+      //     res.collections[
+      //       res?.folderDetails[res?.folderOrder?.[0]]?.contentIds?.[0]
+      //     ].slug
+      //   }`
+      // );
     }
   };
 
@@ -175,10 +172,6 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
             <Heading color={"accent"} align="left">
               Integrate Discord
             </Heading>
-            {/* <Text variant="large">
-                Users will be asked to Connect Discord before they fill up the
-                form if you opt for any of these features
-              </Text> */}
             <Text variant="label">
               Which Discord role would you like to assign to the grantees ?
             </Text>
@@ -202,7 +195,7 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
                       selectedRoles.includes(role.id) ? "accent" : "secondary"
                     }
                   >
-                    {role.name}{" "}
+                    {role.name}
                   </Tag>
                 </Box>
               ))}
@@ -213,7 +206,7 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
             </Text>
             <Box width={"1/3"}>
               <Dropdown
-                options={categoreyOptions}
+                options={categoryOptions}
                 selected={selectedCategory}
                 onChange={(value) => {
                   setSelectedCategory(value);
@@ -285,7 +278,7 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
                 onClick={() => {
                   if (!circle?.discordGuildId) {
                     setStep(0);
-                  } else if (circle?.discordGuildId && !roles) {
+                  } else if (circle?.discordGuildId && !selectedRoles.length) {
                     setStep(1);
                   }
                 }}
@@ -297,7 +290,6 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
                 size="small"
                 onClick={() => {
                   setStep(3);
-                  setPermissions([]);
                   setSnapshotSpace("");
                 }}
               >

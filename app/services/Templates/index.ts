@@ -8,7 +8,6 @@ type GrantWorkflowDto = {
     network: string;
     symbol: string;
   };
-  permissions?: string[];
   channelCategory?: {
     label: string;
     value: string;

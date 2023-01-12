@@ -31,14 +31,14 @@ export default function KanbanProject({ handleClose, setLoading }: Props) {
     if (res?.id) {
       setLoading(false);
       setCircleData(res);
-      void router.push(
-        `${res.slug}/r/${
-          res.collections[
-            res?.folderDetails[res?.folderOrder?.[0]]?.contentIds?.[0]
-          ].slug
-        }`
-      );
-      fetchCircle();
+      // void router.push(
+      //   `${res.slug}/r/${
+      //     res.collections[
+      //       res?.folderDetails[res?.folderOrder?.[0]]?.contentIds?.[0]
+      //     ].slug
+      //   }`
+      // );
+      // fetchCircle();
     }
   };
 
