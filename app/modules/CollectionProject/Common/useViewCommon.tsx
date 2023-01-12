@@ -79,7 +79,6 @@ export default function useViewCommon() {
     if (view.filters?.length) {
       newCardOrder = newCardOrder.map((group) => {
         return group.filter((cardId) => {
-          console.log({ collection: collection.data, cardId });
           return satisfiesConditions(
             collection.data[cardId],
             collection.properties,
@@ -269,8 +268,9 @@ export default function useViewCommon() {
     );
 
     const newSourceColumnOrder = Array.from(cardColumnOrder[sourceColumnIndex]);
+    const sourceIndex = newSourceColumnOrder.indexOf(draggableId);
+    newSourceColumnOrder.splice(sourceIndex, 1);
 
-    newSourceColumnOrder.splice(source.index, 1);
     const newDestColumnOrder = Array.from(cardColumnOrder[destColumnIndex]);
     newDestColumnOrder.splice(destination.index, 0, draggableId);
 
