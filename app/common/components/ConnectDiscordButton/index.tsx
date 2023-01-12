@@ -5,10 +5,11 @@ import DiscordIcon from "@/app/assets/icons/discordIcon.svg";
 
 interface Props {
   state?: string;
+  type?: string;
   width: "fit" | "full";
 }
 
-export default function ConnectDiscordButton({ state, width }: Props) {
+export default function ConnectDiscordButton({ state, width, type }: Props) {
   const { hostname } = useLocation();
   return (
     <Link
@@ -17,7 +18,9 @@ export default function ConnectDiscordButton({ state, width }: Props) {
           process.env.NODE_ENV === "development"
             ? "http%3A%2F%2Flocalhost%3A3000%2FlinkDiscord"
             : `https%3A%2F%2F${hostname}%2FlinkDiscord`
-        }&response_type=code&scope=guilds%20identify` + `${state ? "&state=" + state  : ``}`
+        }&response_type=code&scope=guilds%20identify` +
+        `${type ? "&type=" + type : ``}` +
+        `${state ? "&state=" + state : ``}`
       }
     >
       <Button

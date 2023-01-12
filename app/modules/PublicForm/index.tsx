@@ -263,7 +263,11 @@ export default function PublicForm() {
                     }}
                     marginTop="4"
                   >
-                    <ConnectDiscordButton state={`r/`+ form.slug} width="full" />
+                    <ConnectDiscordButton
+                      type="publicForm"
+                      state={`r/` + form.slug}
+                      width="full"
+                    />
                   </Box>
                 </Box>
               )}

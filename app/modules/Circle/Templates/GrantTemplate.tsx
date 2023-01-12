@@ -1,7 +1,6 @@
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { CircleType, Option, Registry } from "@/app/types";
+import { Option, Registry } from "@/app/types";
 import { Box, Button, Heading, Input, Stack, Tag, Text } from "degen";
-import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { useCircle } from "../CircleContext";
 
@@ -123,14 +122,6 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
     }
   };
 
-  // const intervalPromise = setInterval(() => {
-  //   fetchCircle();
-  // }, 1000);
-
-  // if (circle.discordGuildId || step != 0) {
-  //   clearInterval(intervalPromise);
-  // }
-
   return (
     <Box padding="0">
       <Stack direction={"vertical"} space="5">
@@ -153,6 +144,14 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
                       `https://discord.com/oauth2/authorize?client_id=942494607239958609&permissions=17448306704&redirect_uri=${origin}/api/connectDiscord&response_type=code&scope=bot&state=${circle.slug}`,
                       "_blank"
                     );
+
+                    const interval = setInterval(() => {
+                      fetchCircle();
+                    }, 5000);
+
+                    setTimeout(() => {
+                      clearInterval(interval);
+                    }, 60000);
                   }}
                 >
                   {circle?.discordGuildId

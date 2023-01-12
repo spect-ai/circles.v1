@@ -81,8 +81,6 @@ export default function RewardTokenOptions({
     }
   }, [selectedChain]);
 
-  console.log(networks);
-
   return (
     <ScrollContainer maxHeight="72" overflow="auto">
       <Stack>

@@ -36,9 +36,7 @@ const Onboard = () => {
         setStep(0);
       } else if (currentUser && myCircles?.length == 0) {
         setStep(1);
-      } else {
-        setStep(2);
-      } 
+      }
     }
     void refetch();
   }, [currentUser, step, connectedUser, onboardType, refetch, myCircles?.length]);
@@ -70,7 +68,7 @@ const Onboard = () => {
         {onboardType == "circle" && step == 1 && (
           <CreateCircle setStep={setStep} setOnboardType={setOnboardType} />
         )}
-        {onboardType == "circle" && step == 2 && <CreateContent />}
+        {/* {onboardType == "circle" && step == 2 && <CreateContent />} */}
         {onboardType == "profile" && <SetUpProfile />}
       </Box>
     </Box>
