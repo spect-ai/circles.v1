@@ -8,7 +8,7 @@ import {
   Text,
 } from "degen";
 import { useState } from "react";
-import { Trello } from "react-feather";
+import { HelpCircle, Trello } from "react-feather";
 import GrantTemplate from "../../Templates/GrantTemplate";
 import KanbanProject from "../../Templates/KanbanProject";
 import OnboardingTemplate from "../../Templates/OnboardingTemplate";
@@ -35,6 +35,13 @@ export default function TemplateModal({ handleClose, setLoading }: Props) {
               onClick={() => {
                 setTemplate(1);
               }}
+              suffix={
+                <Box cursor="pointer">
+                  <Text variant="label">
+                    <HelpCircle size={20} />
+                  </Text>
+                </Box>
+              }
             >
               <Text>Create a new grant workflow with the template.</Text>
               <Text color="inherit">
@@ -48,6 +55,13 @@ export default function TemplateModal({ handleClose, setLoading }: Props) {
               onClick={() => {
                 setTemplate(2);
               }}
+              suffix={
+                <Box cursor="pointer">
+                  <Text variant="label">
+                    <HelpCircle size={20} />
+                  </Text>
+                </Box>
+              }
             >
               <Text>
                 Create a new DAO onboarding workflow with the template.
@@ -67,6 +81,13 @@ export default function TemplateModal({ handleClose, setLoading }: Props) {
               onClick={() => {
                 setTemplate(3);
               }}
+              suffix={
+                <Box cursor="pointer">
+                  <Text variant="label">
+                    <HelpCircle size={20} />
+                  </Text>
+                </Box>
+              }
             >
               <Text>Create a new kanban project management board</Text>
               <Text color="inherit">
