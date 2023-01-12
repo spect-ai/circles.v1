@@ -6,6 +6,7 @@ import { useCircle } from "../CircleContext";
 import DiscordIcon from "@/app/assets/icons/discordIcon.svg";
 import { createTemplateFlow } from "@/app/services/Templates";
 import { getGuildRoles } from "@/app/services/Discord";
+import { create } from "domain";
 
 type Props = {
   handleClose: (close: boolean) => void;
@@ -146,7 +147,7 @@ export default function OnboardingTemplate({ handleClose }: Props) {
               ))}
             </Stack>
             <Stack direction={"horizontal"}>
-              <Button
+              {/* <Button
                 variant="tertiary"
                 size="small"
                 width={"full"}
@@ -155,15 +156,14 @@ export default function OnboardingTemplate({ handleClose }: Props) {
                 }}
               >
                 Skip
-              </Button>
+              </Button> */}
               <Button
-                width={"full"}
-                onClick={() => setStep(2)}
+                width="1/2"
+                onClick={() => createFlow()}
                 variant="secondary"
                 size="small"
-                disabled={!selectedRoles.length}
               >
-                Next
+                Create Template
               </Button>
             </Stack>
           </>
