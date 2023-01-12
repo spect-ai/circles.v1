@@ -42,7 +42,7 @@ export default function ProjectHeading() {
   } = useLocalCollection();
   const [isAddViewPopupOpen, setIsAddViewPopupOpen] = useState(false);
   const [isAddViewModalOpen, setIsAddViewModalOpen] = useState(false);
-  const [viewType, setViewType] = useState("");
+  const [viewType, setViewType] = useState<"kanban" | "list" | "grid">("grid");
   const [isViewSettingsOpen, setIsViewSettingsOpen] = useState(false);
   const [isViewPopoverOpen, setIsViewPopoverOpen] = useState(false);
 
