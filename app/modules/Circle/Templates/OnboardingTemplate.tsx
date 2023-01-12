@@ -5,9 +5,6 @@ import React, { useEffect, useState } from "react";
 import { useCircle } from "../CircleContext";
 import DiscordIcon from "@/app/assets/icons/discordIcon.svg";
 import { createTemplateFlow } from "@/app/services/Templates";
-import RewardTokenOptions from "../../Collection/AddField/RewardTokenOptions";
-import { Registry } from "@/app/types";
-import { useRouter } from "next/router";
 import { getGuildRoles } from "@/app/services/Discord";
 
 type Props = {
@@ -17,17 +14,13 @@ type Props = {
 export default function OnboardingTemplate({ handleClose }: Props) {
   const { localCircle: circle, fetchCircle, setCircleData } = useCircle();
   const [step, setStep] = useState(0);
-  const [roles, setRoles] = useState();
   const [selectedRoles, setSelectedRoles] = useState([] as string[]);
-  const [networks, setNetworks] = useState<Registry>();
-
-  const router = useRouter();
 
   useEffect(() => {
     if (!circle?.discordGuildId) {
       setStep(0);
     }
-    if (circle?.discordGuildId && !roles) {
+    if (circle?.discordGuildId && !selectedRoles.length) {
       setStep(1);
     }
   }, []);
@@ -54,20 +47,19 @@ export default function OnboardingTemplate({ handleClose }: Props) {
       circle?.id,
       {
         roles,
-        registry: networks,
       },
-      1
+      2
     );
     console.log({ res });
     if (res?.id) {
       setCircleData(res);
-      void router.push(
-        `${res.slug}/r/${
-          res.collections[
-            res?.folderDetails[res?.folderOrder?.[0]]?.contentIds?.[0]
-          ].slug
-        }`
-      );
+      // void router.push(
+      //   `${res.slug}/r/${
+      //     res.collections[
+      //       res?.folderDetails[res?.folderOrder?.[0]]?.contentIds?.[0]
+      //     ].slug
+      //   }`
+      // );
     }
   };
 
@@ -110,8 +102,8 @@ export default function OnboardingTemplate({ handleClose }: Props) {
                   variant="tertiary"
                   size="small"
                   width={"full"}
-                  onClick={async () => {
-                    setStep(2);
+                  onClick={() => {
+                    createFlow();
                   }}
                 >
                   Skip this
@@ -122,12 +114,11 @@ export default function OnboardingTemplate({ handleClose }: Props) {
         )}
         {step == 1 && (
           <>
-            <Text align={"center"} variant="large">
-              Users will be asked to Connect Discord before they fill up the
-              form if you opt for any of these features
-            </Text>
-            <Text align={"center"}>
-              Which roles would you like to give the grantees ?
+            <Heading color={"accent"} align="left">
+              Integrate Discord
+            </Heading>
+            <Text variant="label">
+              Which Discord role would you like to assign to the contributors ?
             </Text>
             <Stack direction={"horizontal"} space={"4"}>
               {discordRoles?.map((role) => (
@@ -173,41 +164,6 @@ export default function OnboardingTemplate({ handleClose }: Props) {
                 disabled={!selectedRoles.length}
               >
                 Next
-              </Button>
-            </Stack>
-          </>
-        )}
-        {step == 2 && (
-          <>
-            <Heading color={"accent"} align="left">
-              Add Custom Token
-            </Heading>
-            <RewardTokenOptions
-              networks={networks}
-              setNetworks={setNetworks}
-              customText={
-                "Add the token you'd want to use when paying grantees"
-              }
-              customTooltip={
-                "Add the token you'd want to use when paying grantees"
-              }
-            />
-            <Stack direction={"horizontal"}>
-              <Button
-                variant="transparent"
-                size="small"
-                onClick={() => {
-                  setStep(1);
-                }}
-              >
-                Back
-              </Button>
-              <Button
-                onClick={() => createFlow()}
-                variant="secondary"
-                size="small"
-              >
-                Create Workflow
               </Button>
             </Stack>
           </>
