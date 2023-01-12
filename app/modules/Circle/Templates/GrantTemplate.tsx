@@ -133,12 +133,12 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
 
   return (
     <Box padding="0">
-      <Heading color={"accent"} align="left">
-        Integrate Discord
-      </Heading>
-      <Box paddingY={"6"}>
-        <Stack direction={"vertical"} space="5">
-          {step == 0 && (
+      <Stack direction={"vertical"} space="5">
+        {step == 0 && (
+          <Stack>
+            <Heading color={"accent"} align="left">
+              Integrate Discord
+            </Heading>
             <Box width="1/3">
               <Stack direction="vertical">
                 <PrimaryButton
@@ -159,197 +159,201 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
                     ? "Discord Connected"
                     : "Connect Discord"}
                 </PrimaryButton>
-                <PrimaryButton variant="tertiary">Skip this</PrimaryButton>
-              </Stack>
-            </Box>
-          )}
-          {step == 1 && (
-            <>
-              <Heading color={"accent"} align="left">
-                Integrate Discord
-              </Heading>
-              {/* <Text variant="large">
-                Users will be asked to Connect Discord before they fill up the
-                form if you opt for any of these features
-              </Text> */}
-              <Text variant="label">
-                Which Discord role would you like to assign to the grantees ?
-              </Text>
-              <Stack direction={"horizontal"} space={"4"} wrap>
-                {discordRoles?.map((role) => (
-                  <Box
-                    onClick={() => {
-                      if (selectedRoles.includes(role.id)) {
-                        setSelectedRoles(
-                          selectedRoles.filter((r) => r !== role.id)
-                        );
-                      } else {
-                        setSelectedRoles([...selectedRoles, role.id]);
-                      }
-                    }}
-                    cursor="pointer"
-                  >
-                    <Tag
-                      key={role.id}
-                      tone={
-                        selectedRoles.includes(role.id) ? "accent" : "secondary"
-                      }
-                    >
-                      {role.name}{" "}
-                    </Tag>
-                  </Box>
-                ))}
-              </Stack>
-              <Text variant="label">
-                Select a channel category to create a Discord channel for
-                accepted grant projects in your Discord Server
-              </Text>
-              <Box width={"1/3"}>
-                <Dropdown
-                  options={categoreyOptions}
-                  selected={selectedCategory}
-                  onChange={(value) => {
-                    setSelectedCategory(value);
-                  }}
-                  multiple={false}
-                />
-              </Box>
-
-              <Stack direction={"horizontal"}>
-                <Button
+                <PrimaryButton
                   variant="tertiary"
-                  size="small"
-                  width={"fit"}
                   onClick={() => {
-                    setStep(2);
-                    setSelectedRoles([]);
-                    setSelectedCategory({
-                      label: "",
-                      value: "",
-                    });
-                  }}
-                >
-                  Skip
-                </Button>
-                <Button
-                  width={"fit"}
-                  onClick={() => {
-                    setStep(2);
-                  }}
-                  variant="secondary"
-                  size="small"
-                  disabled={!selectedRoles.length && !selectedCategory?.value}
-                >
-                  Integrate Discord
-                </Button>
-              </Stack>
-            </>
-          )}
-          {step == 2 && (
-            <>
-              <Heading color={"accent"} align="left">
-                Enable Snapshot voting on Spect
-              </Heading>
-              <Text variant="label">Integrate Snapshot</Text>
-              <Input
-                label
-                hideLabel
-                width={"1/2"}
-                prefix="https://snapshot.org/#/"
-                value={snapshotSpace}
-                placeholder="your-space.eth"
-                onChange={(e) => {
-                  setSnapshotSpace(e.target.value);
-                }}
-              />
-              {snapshotSpace &&
-                !isLoading &&
-                (data?.space?.id ? (
-                  <Text size={"extraSmall"} color="accent">
-                    Snapshot Space - {data?.space?.name}
-                  </Text>
-                ) : (
-                  <Text color={"red"}>Incorrect URL</Text>
-                ))}
-              <Stack direction={"horizontal"}>
-                <Button
-                  variant="transparent"
-                  size="small"
-                  onClick={() => {
-                    if (!circle?.discordGuildId) {
-                      setStep(0);
-                    } else if (circle?.discordGuildId && !roles) {
-                      setStep(1);
-                    }
-                  }}
-                >
-                  Back
-                </Button>
-                <Button
-                  variant="tertiary"
-                  size="small"
-                  onClick={() => {
-                    setStep(3);
-                    setPermissions([]);
-                    setSnapshotSpace("");
+                    setStep(1);
                   }}
                 >
                   Skip this
-                </Button>
-                <Button
-                  onClick={() => setStep(3)}
-                  prefix={
-                    <RocketOutlined
-                      style={{ fontSize: "1.2rem" }}
-                      rotate={30}
-                    />
-                  }
-                  variant="secondary"
-                  size="small"
-                  disabled={!snapshotSpace || !data?.space?.id}
-                >
-                  Integrate Snapshot
-                </Button>
+                </PrimaryButton>
               </Stack>
-            </>
-          )}
-          {step == 3 && (
-            <>
-              <Heading color={"accent"} align="left">
-                Add Custom Token
-              </Heading>
-              <RewardTokenOptions
-                networks={networks}
-                setNetworks={setNetworks}
-                customText={
-                  "Add the token you'd want to use when paying grantees"
-                }
-                customTooltip={
-                  "Add the token you'd want to use when paying grantees"
-                }
-              />
-              <Stack direction={"horizontal"}>
-                <Button
-                  variant="transparent"
-                  size="small"
+            </Box>
+          </Stack>
+        )}
+        {step == 1 && (
+          <>
+            <Heading color={"accent"} align="left">
+              Integrate Discord
+            </Heading>
+            {/* <Text variant="large">
+                Users will be asked to Connect Discord before they fill up the
+                form if you opt for any of these features
+              </Text> */}
+            <Text variant="label">
+              Which Discord role would you like to assign to the grantees ?
+            </Text>
+            <Stack direction={"horizontal"} space={"4"} wrap>
+              {discordRoles?.map((role) => (
+                <Box
                   onClick={() => {
-                    setStep(2);
+                    if (selectedRoles.includes(role.id)) {
+                      setSelectedRoles(
+                        selectedRoles.filter((r) => r !== role.id)
+                      );
+                    } else {
+                      setSelectedRoles([...selectedRoles, role.id]);
+                    }
                   }}
+                  cursor="pointer"
                 >
-                  Back
-                </Button>
-                <Button
-                  onClick={() => useTemplate()}
-                  variant="secondary"
-                  size="small"
-                >
-                  Create Workflow
-                </Button>
-              </Stack>
-            </>
-          )}
-        </Stack>
-      </Box>
+                  <Tag
+                    key={role.id}
+                    tone={
+                      selectedRoles.includes(role.id) ? "accent" : "secondary"
+                    }
+                  >
+                    {role.name}{" "}
+                  </Tag>
+                </Box>
+              ))}
+            </Stack>
+            <Text variant="label">
+              Select a channel category to create a Discord channel for accepted
+              grant projects in your Discord Server
+            </Text>
+            <Box width={"1/3"}>
+              <Dropdown
+                options={categoreyOptions}
+                selected={selectedCategory}
+                onChange={(value) => {
+                  setSelectedCategory(value);
+                }}
+                multiple={false}
+              />
+            </Box>
+
+            <Stack direction={"horizontal"}>
+              <Button
+                variant="tertiary"
+                size="small"
+                width={"fit"}
+                onClick={() => {
+                  setStep(2);
+                  setSelectedRoles([]);
+                  setSelectedCategory({
+                    label: "",
+                    value: "",
+                  });
+                }}
+              >
+                Skip
+              </Button>
+              <Button
+                width={"fit"}
+                onClick={() => {
+                  setStep(2);
+                }}
+                variant="secondary"
+                size="small"
+                disabled={!selectedRoles.length && !selectedCategory?.value}
+              >
+                Integrate Discord
+              </Button>
+            </Stack>
+          </>
+        )}
+        {step == 2 && (
+          <>
+            <Heading color={"accent"} align="left">
+              Enable Snapshot voting on Spect
+            </Heading>
+            <Text variant="label">Integrate Snapshot</Text>
+            <Input
+              label
+              hideLabel
+              width={"1/2"}
+              prefix="https://snapshot.org/#/"
+              value={snapshotSpace}
+              placeholder="your-space.eth"
+              onChange={(e) => {
+                setSnapshotSpace(e.target.value);
+              }}
+            />
+            {snapshotSpace &&
+              !isLoading &&
+              (data?.space?.id ? (
+                <Text size={"extraSmall"} color="accent">
+                  Snapshot Space - {data?.space?.name}
+                </Text>
+              ) : (
+                <Text color={"red"}>Incorrect URL</Text>
+              ))}
+            <Stack direction={"horizontal"}>
+              <Button
+                variant="transparent"
+                size="small"
+                onClick={() => {
+                  if (!circle?.discordGuildId) {
+                    setStep(0);
+                  } else if (circle?.discordGuildId && !roles) {
+                    setStep(1);
+                  }
+                }}
+              >
+                Back
+              </Button>
+              <Button
+                variant="tertiary"
+                size="small"
+                onClick={() => {
+                  setStep(3);
+                  setPermissions([]);
+                  setSnapshotSpace("");
+                }}
+              >
+                Skip this
+              </Button>
+              <Button
+                onClick={() => setStep(3)}
+                prefix={
+                  <RocketOutlined style={{ fontSize: "1.2rem" }} rotate={30} />
+                }
+                variant="secondary"
+                size="small"
+                disabled={!snapshotSpace || !data?.space?.id}
+              >
+                Integrate Snapshot
+              </Button>
+            </Stack>
+          </>
+        )}
+        {step == 3 && (
+          <>
+            <Heading color={"accent"} align="left">
+              Add Custom Token
+            </Heading>
+            <RewardTokenOptions
+              networks={networks}
+              setNetworks={setNetworks}
+              customText={
+                "Add the token you'd want to use when paying grantees"
+              }
+              customTooltip={
+                "Add the token you'd want to use when paying grantees"
+              }
+            />
+            <Stack direction={"horizontal"}>
+              <Button
+                variant="transparent"
+                size="small"
+                onClick={() => {
+                  setStep(2);
+                }}
+              >
+                Back
+              </Button>
+              <Button
+                onClick={() => useTemplate()}
+                variant="secondary"
+                size="small"
+              >
+                Create Workflow
+              </Button>
+            </Stack>
+          </>
+        )}
+      </Stack>
     </Box>
   );
 }
