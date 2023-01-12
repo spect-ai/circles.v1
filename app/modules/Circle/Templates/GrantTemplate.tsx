@@ -162,7 +162,7 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
                 <PrimaryButton
                   variant="tertiary"
                   onClick={() => {
-                    setStep(1);
+                    setStep(2);
                   }}
                 >
                   Skip this
