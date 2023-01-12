@@ -796,7 +796,7 @@ export type ProjectMetadata = {
         property: string;
         direction: "asc" | "desc";
       };
-      groupByColumn?: string;
+      groupByColumn: string;
     };
   };
   cardOrders: {
