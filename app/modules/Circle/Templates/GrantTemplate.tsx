@@ -73,7 +73,6 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
 
   const {
     loading: isLoading,
-    error,
     data,
   } = useQuery(Space, { variables: { id: snapshotSpace } });
 
@@ -96,7 +95,6 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
           network: data?.space?.network || "",
           symbol: data?.space?.symbol || "",
         },
-        channelCategory: selectedCategory,
         roles,
         registry: networks,
       },
@@ -106,13 +104,6 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
     if (res?.id) {
       setLoading(false);
       setCircleData(res);
-      // void router.push(
-      //   `${res.slug}/r/${
-      //     res.collections[
-      //       res?.folderDetails[res?.folderOrder?.[0]]?.contentIds?.[0]
-      //     ].slug
-      //   }`
-      // );
     }
   };
 
