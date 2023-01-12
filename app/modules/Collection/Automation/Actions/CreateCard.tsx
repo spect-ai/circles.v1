@@ -69,7 +69,6 @@ export default function CreateCard({ setAction, actionMode, action }: Props) {
             },
           }));
       } else if (fieldType === "default") {
-        console.log({ prop: mappedCollection?.properties });
         return Object.entries(mappedCollection?.properties)
           .filter(([propertyId, property]) => !usedProperty[propertyId])
           .map(([propertyId, property]) => ({
