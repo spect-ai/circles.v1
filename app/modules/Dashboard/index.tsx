@@ -271,7 +271,7 @@ function Dashboard() {
                   ? "Want to explore your favourite DAOs on Spect ? Unlock countless opportunities by connecting your Discord account."
                   : "Looks like your Discord isn't connected properly. Try connecting it again."}
               </Text>
-              <ConnectDiscordButton width="fit"/>
+              <ConnectDiscordButton width="fit" />
             </Box>
           )}
           <Box
@@ -290,7 +290,7 @@ function Dashboard() {
                 setPanelTab("circles");
               }}
             >
-              Circles
+              Organizations
             </Button>
             <Button
               size="small"

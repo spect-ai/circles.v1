@@ -68,7 +68,7 @@ export default function ExploreSidebar() {
       <Stack>
         <HeaderButton padding="1" borderRadius="large" width="full" mode={mode}>
           <Stack direction="horizontal" align="center">
-            <Heading>Circles</Heading>
+            <Heading>Spect</Heading>
           </Stack>
         </HeaderButton>
 

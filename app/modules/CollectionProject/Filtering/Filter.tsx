@@ -13,13 +13,13 @@ import { useLocalCollection } from "../../Collection/Context/LocalCollectionCont
 function Filter() {
   const {
     localCollection: collection,
-    projectViewId : viewId,
+    projectViewId: viewId,
     updateCollection,
   } = useLocalCollection();
   const [isOpen, setIsOpen] = useState(false);
   const [viewCondtions, setViewCondtions] = useState<Condition[]>([]);
 
-  const projectViewId = collection?.collectionType === 1 ? viewId : '0x0';
+  const projectViewId = collection?.collectionType === 1 ? viewId : "0x0";
 
   useEffect(() => {
     if (collection?.projectMetadata?.views?.[projectViewId]?.filters) {
@@ -52,8 +52,8 @@ function Filter() {
                 width="4"
                 height="4"
                 position="absolute"
-                top="20"
-                marginLeft="2"
+                marginLeft="4"
+                marginBottom="4"
                 display="flex"
                 flexDirection="column"
                 alignItems="center"

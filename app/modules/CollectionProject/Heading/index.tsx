@@ -112,12 +112,13 @@ export default function ProjectHeading() {
         <Box marginBottom="1" />
         <Hidden xs sm>
           <DragDropContext onDragEnd={handleDragEnd}>
-            <ViewTabsContainer
+            <Box
               backgroundColor="background"
               paddingX="4"
               borderTopRadius="large"
               display="flex"
               flexDirection="row"
+              width="full"
             >
               <Droppable droppableId="Views" direction="horizontal">
                 {(provided) => (
@@ -125,6 +126,9 @@ export default function ProjectHeading() {
                     ref={provided.innerRef}
                     {...provided.droppableProps}
                     display="flex"
+                    flexDirection="row"
+                    flexWrap="wrap"
+                    width="full"
                   >
                     {collection.projectMetadata.viewOrder.map(
                       (viewId, index) => (
@@ -199,11 +203,11 @@ export default function ProjectHeading() {
               </Droppable>
 
               <Popover
+                width="24"
                 isOpen={isAddViewPopupOpen}
                 setIsOpen={setIsAddViewPopupOpen}
                 butttonComponent={
                   <AddViewButton
-                    width="fit"
                     paddingX="8"
                     onClick={() => {
                       if (!formActions("manageSettings"))
@@ -294,7 +298,7 @@ export default function ProjectHeading() {
                   </Box>
                 </motion.div>
               </Popover>
-            </ViewTabsContainer>
+            </Box>
           </DragDropContext>
           <Filtering />
         </Hidden>
@@ -422,8 +426,6 @@ export const getViewIcon = (viewType: string) => {
       return <IconCollection size="5" />;
   }
 };
-
-export const ViewTabsContainer = styled(Box)``;
 
 export const ViewTab = styled(Box)`
   max-width: 200px;

@@ -73,7 +73,6 @@ export function satisfiesConditions(
       case "multiSelect":
       case "multiURL":
       case "user[]":
-        console.log({ data, propertyId });
         // eslint-disable-next-line no-case-declarations
         const values = data[propertyId]?.map((d: { value: any }) => d?.value);
         switch (comparatorValue) {

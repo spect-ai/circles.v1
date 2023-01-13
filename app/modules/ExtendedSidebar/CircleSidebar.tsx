@@ -188,7 +188,7 @@ function CircleSidebar() {
                   });
               }}
             >
-              Circle Dashboard
+              Org Dashboard
             </PrimaryButton>
           </Link>
           <Link href={`/${cId}?tab=payment`}>
