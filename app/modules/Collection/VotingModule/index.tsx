@@ -95,13 +95,8 @@ export default function VotingModule() {
 
   return (
     <>
-      <Text variant="label">Allow members to vote on responses</Text>
-      <Box
-        width={{
-          xs: "full",
-          md: "1/2",
-        }}
-      >
+      <Stack space={"4"}>
+        <Text variant="label">Allow members to vote on responses</Text>
         <PrimaryButton
           onClick={() => setIsOpen(true)}
           icon={<IconUserGroup />}
@@ -110,7 +105,8 @@ export default function VotingModule() {
           {collection?.voting?.enabled ? "View" : "Enable"} Voting{" "}
           {collection?.voting?.enabled ? "Settings" : ""}
         </PrimaryButton>
-      </Box>
+      </Stack>
+
       <AnimatePresence>
         {isOpen && (
           <Modal

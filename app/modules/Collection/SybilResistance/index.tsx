@@ -69,10 +69,10 @@ export default function SybilResistance() {
     <>
       <Stack direction="vertical">
         {collection.formMetadata.sybilProtectionEnabled && (
-          <Text variant="small">{`This form is sybil protected!`}</Text>
+          <Text variant="label">{`This form is sybil protected!`}</Text>
         )}
         {!collection.formMetadata.sybilProtectionEnabled && (
-          <Text variant="small">{`Protect your form against sybil attacks`}</Text>
+          <Text variant="label">{`Protect your form against sybil attacks`}</Text>
         )}
       </Stack>
       <Box

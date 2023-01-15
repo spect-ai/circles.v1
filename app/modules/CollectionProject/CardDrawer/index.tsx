@@ -39,6 +39,9 @@ import { toast } from "react-toastify";
 import styled from "styled-components";
 import AddField from "../../Collection/AddField";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
+import VotingActions from "../../Collection/Form/DataDrawer/VotingActions";
+import SnapshotVoting from "../../Collection/Form/DataDrawer/VotingOnSnapshot";
+import SpectVoting from "../../Collection/Form/DataDrawer/VotingOnSpect";
 import CardActivity from "../CardActivity";
 import EditProperty from "../EditProperty";
 import EditValue from "../EditValue";
@@ -268,6 +271,9 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
                 </Stack>
               </Button>
               <Box width="56">
+                {!newCard && (
+                  <VotingActions dataId={cardSlug as string} data={value} />
+                )}
                 {newCard && (
                   <PrimaryButton
                     loading={loading}
@@ -365,6 +371,15 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
                     setIsDirty={setIsDirty}
                   />
                 </Box>
+                <Box marginY={"3"}>
+                  {!collection.voting?.periods?.[cardSlug as string]?.snapshot
+                    ?.onSnapshot && <SpectVoting dataId={cardSlug as string} />}
+                  {collection.voting?.periods?.[cardSlug as string]?.snapshot
+                    ?.onSnapshot && (
+                    <SnapshotVoting dataId={cardSlug as string} />
+                  )}
+                </Box>
+
                 {!newCard && (
                   <CardActivity
                     activities={collection.dataActivities[value.slug]}

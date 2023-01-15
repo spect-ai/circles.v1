@@ -143,7 +143,8 @@ export default function SnapshotVoting({ dataId }: { dataId: string }) {
     if (
       userVotes &&
       userVotes?.votes &&
-      userVotes?.votes?.[0]?.voter.toLowerCase() == currentUser?.ethAddress
+      userVotes?.votes?.[0]?.voter.toLowerCase() ===
+        currentUser?.ethAddress.toLowerCase()
     ) {
       setVote(userVotes?.votes?.[0]?.choice - 1);
     } else setVote(-1);
@@ -199,9 +200,11 @@ export default function SnapshotVoting({ dataId }: { dataId: string }) {
         <Text variant="large" color={"accent"} weight={"semiBold"}>
           Go to Snapshot
         </Text>
-        <ArrowUpOutlined rotate={45} style={{color: "rgb(191, 90, 242, 1)", fontSize: "1rem"}} />
+        <ArrowUpOutlined
+          rotate={45}
+          style={{ color: "rgb(191, 90, 242, 1)", fontSize: "1rem" }}
+        />
       </Box>
-
       {collection.voting?.periods &&
         collection.voting?.periods[data.slug] &&
         (proposalData?.proposal?.state !== "closed" ||
@@ -213,6 +216,7 @@ export default function SnapshotVoting({ dataId }: { dataId: string }) {
               borderWidth="0.375"
               padding="2"
               borderRadius="medium"
+              width={"80"}
             >
               <Text weight="semiBold" variant="large" color="accent">
                 Your Vote
@@ -229,6 +233,13 @@ export default function SnapshotVoting({ dataId }: { dataId: string }) {
                   onTabClick={async (tab) => {
                     if (!address) {
                       toast.error("Please unlock your wallet");
+                      return;
+                    }
+                    if (
+                      address.toLowerCase() !==
+                      currentUser?.ethAddress.toLowerCase()
+                    ) {
+                      toast.error("Please switch to the account you have connected with Spect");
                       return;
                     }
                     if (
