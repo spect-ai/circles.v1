@@ -291,7 +291,9 @@ export default function useViewCommon() {
     const sourceIndex = newSourceColumnOrder.indexOf(draggableId);
     newSourceColumnOrder.splice(sourceIndex, 1);
 
-    const newDestColumnOrder = Array.from(cardColumnOrder[destColumnIndex]);
+    const newDestColumnOrder = Array.from(
+      cardColumnOrder[destColumnIndex] || []
+    );
     newDestColumnOrder.splice(destination.index, 0, draggableId);
 
     const newCardColumnOrder = Array.from(cardColumnOrder);
