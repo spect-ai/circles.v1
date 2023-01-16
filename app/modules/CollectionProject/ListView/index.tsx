@@ -65,6 +65,7 @@ export default function ListView() {
           <Box marginLeft="4" width="48" marginBottom="4">
             {property.type === "singleSelect" && (
               <PrimaryButton
+                variant="transparent"
                 center
                 onClick={async () => {
                   setLoading(true);

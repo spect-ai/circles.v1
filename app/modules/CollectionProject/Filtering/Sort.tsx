@@ -68,12 +68,11 @@ export default function Sort() {
   }, [projectViewId]);
 
   return (
-    <Box width="1/4">
+    <Box width="fit">
       <Stack direction="horizontal" align="center" space="1">
-        <Box width="1/2">
-          <Text variant="label">Sort</Text>
-        </Box>
+        <Text variant="label">Sort</Text>
         <Popover
+          width="fit"
           butttonComponent={
             <Box cursor="pointer" onClick={() => setIsOpen(true)}>
               <Tag hover>{sortProperty || "none"}</Tag>

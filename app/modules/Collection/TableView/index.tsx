@@ -2,8 +2,8 @@
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { updateCollectionDataGuarded } from "@/app/services/Collection";
 import { exportToCsv } from "@/app/services/CsvExport";
-import { Milestone, Option, PropertyType, Reward } from "@/app/types";
-import { Box, Spinner, Stack } from "degen";
+import { Milestone, Option, PropertyType, Reward, UserType } from "@/app/types";
+import { Box, Spinner } from "degen";
 import { motion, AnimatePresence } from "framer-motion";
 import _ from "lodash";
 import { matchSorter } from "match-sorter";
@@ -17,13 +17,13 @@ import {
   keyColumn,
   textColumn,
 } from "react-datasheet-grid";
-import { CellWithId } from "react-datasheet-grid/dist/types";
 import { useScreenClass } from "react-grid-system";
+import { useQuery } from "react-query";
 import { toast } from "react-toastify";
 import CardDrawer from "../../CollectionProject/CardDrawer";
 import Filtering from "../../CollectionProject/Filtering";
 import AddField from "../AddField";
-import { satisfiesConditions } from "../Common/SatisfiesFilter";
+import { isMyCard, satisfiesConditions } from "../Common/SatisfiesFilter";
 import { useLocalCollection } from "../Context/LocalCollectionContext";
 import DataDrawer from "../Form/DataDrawer";
 import ExpandableCell from "../Form/ExpandableCell";
@@ -53,7 +53,12 @@ export default function TableView() {
     updateCollection,
     searchFilter,
     projectViewId,
+    showMyTasks,
   } = useLocalCollection();
+
+  const { data: currentUser, refetch } = useQuery<UserType>("getMyUser", {
+    enabled: false,
+  });
 
   const [expandedDataSlug, setExpandedDataSlug] = useState("");
   const [refreshTable, setRefreshTable] = useState(false);
@@ -151,6 +156,16 @@ export default function TableView() {
             collection.projectMetadata.views[
               collection.collectionType === 0 ? "0x0" : projectViewId
             ].filters || []
+          );
+        });
+      }
+
+      if (showMyTasks) {
+        filteredData = filteredData.filter((row) => {
+          return isMyCard(
+            collection.data[row.id],
+            collection.properties,
+            currentUser?.id || ""
           );
         });
       }
@@ -270,6 +285,7 @@ export default function TableView() {
     collection.propertyOrder,
     projectViewId,
     searchFilter,
+    showMyTasks,
   ]);
 
   // refresh table if new property is added

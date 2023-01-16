@@ -22,6 +22,8 @@ type LocalCollectionContextType = {
   setProjectViewId: React.Dispatch<React.SetStateAction<string>>;
   searchFilter: string;
   setSearchFilter: React.Dispatch<React.SetStateAction<string>>;
+  showMyTasks: boolean;
+  setShowMyTasks: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export const LocalCollectionContext = createContext<LocalCollectionContextType>(
@@ -53,8 +55,8 @@ export function useProviderLocalCollection() {
   const [view, setView] = useState(0);
   const { socket, connectedUser } = useGlobal();
   const [projectViewId, setProjectViewId] = useState("");
-
   const [searchFilter, setSearchFilter] = useState("");
+  const [showMyTasks, setShowMyTasks] = useState(false);
 
   const updateCollection = (collection: CollectionType) => {
     queryClient.setQueryData(["collection", colId], collection);
@@ -127,6 +129,8 @@ export function useProviderLocalCollection() {
     setProjectViewId,
     searchFilter,
     setSearchFilter,
+    showMyTasks,
+    setShowMyTasks,
   };
 }
 
