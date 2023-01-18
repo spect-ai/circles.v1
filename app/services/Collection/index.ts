@@ -7,6 +7,8 @@ import {
   Registry,
   Voting,
   FormPermissions,
+  GitcoinScoreType,
+  MappedItem,
 } from "@/app/types";
 
 export const addField = async (
@@ -112,6 +114,8 @@ export const updateFormCollection = async (
       cover?: string;
       active?: boolean;
       allowAnonymousResponses?: boolean;
+      sybilProtectionEnabled?: boolean;
+      sybilProtectionScores?: MappedItem<number>;
     };
     projectMetadata?: Partial<ProjectMetadata>;
     data?: any;
@@ -290,7 +294,11 @@ export const getForm = async (formId: string) => {
   ).json();
 };
 
-export const addData = async (collectionId: string, data: any, anon: boolean) => {
+export const addData = async (
+  collectionId: string,
+  data: any,
+  anon: boolean
+) => {
   return await (
     await fetch(
       `${process.env.API_HOST}/collection/v1/${collectionId}/addData`,
