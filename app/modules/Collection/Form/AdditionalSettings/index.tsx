@@ -55,11 +55,11 @@ export function AdditionalSettings() {
     );
   }, [collection]);
 
-  const automationsMappedToResponder = circle.automationsIndexedByCollection?.[
-    collection.slug
-  ].map((a) => {
-    return circle.automations?.[a].actions.find((action) =>
-      action.data?.values?.find((val: any) => val.type === "responder")
+  const automationsMappedToResponder = circle?.automationsIndexedByCollection?.[
+    collection?.slug
+  ]?.map((a) => {
+    return circle?.automations?.[a]?.actions?.find((action) =>
+      action?.data?.values?.find((val: any) => val?.type === "responder")
     );
   });
 
@@ -144,8 +144,8 @@ export function AdditionalSettings() {
                 }
               }}
               disabled={
-                !!collection.formMetadata.mintkudosTokenId ||
-                !!collection.formMetadata.numOfKudos ||
+                !!collection.formMetadata?.mintkudosTokenId ||
+                !!collection.formMetadata?.numOfKudos ||
                 automationsMappedToResponder?.filter((a) => a !== undefined)
                   ?.length > 0
               }
@@ -153,8 +153,8 @@ export function AdditionalSettings() {
             <Text
               variant="base"
               color={
-                !!collection.formMetadata.mintkudosTokenId ||
-                !!collection.formMetadata.numOfKudos ||
+                !!collection.formMetadata?.mintkudosTokenId ||
+                !!collection.formMetadata?.numOfKudos ||
                 automationsMappedToResponder?.filter((a) => a !== undefined)
                   ?.length > 0
                   ? "textTertiary"
@@ -163,8 +163,8 @@ export function AdditionalSettings() {
             >
               Allow users to submit responses anonymously
             </Text>
-            {(!!collection.formMetadata.mintkudosTokenId ||
-              !!collection.formMetadata.numOfKudos ||
+            {(!!collection.formMetadata?.mintkudosTokenId ||
+              !!collection.formMetadata?.numOfKudos ||
               automationsMappedToResponder?.filter((a) => a !== undefined)
                 ?.length > 0) && (
               <Tooltip title="Allowing anonymous responses isn't possible when you map users in automations or send them kudos">
