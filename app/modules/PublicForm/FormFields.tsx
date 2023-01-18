@@ -158,6 +158,7 @@ export default function FormFields({ form, setForm }: Props) {
           form.formMetadata.previousResponses[
             form.formMetadata.previousResponses.length - 1
           ];
+        setRespondAsAnonymous(lastResponse["anonymous"]);
         form.propertyOrder.forEach((propertyId) => {
           if (
             [
@@ -257,9 +258,12 @@ export default function FormFields({ form, setForm }: Props) {
         form.formMetadata.previousResponses[
           form.formMetadata.previousResponses.length - 1
         ];
-      res = await updateCollectionData(form.id || "", lastResponse.slug, data);
+      res = await updateCollectionData(form.id || "", lastResponse.slug, {
+        ...data,
+        anonymous: respondAsAnonymous,
+      });
     } else {
-      res = await addData(form.id || "", data);
+      res = await addData(form.id || "", data, respondAsAnonymous);
     }
     const resAfterSave = await getForm(form.slug);
     if (res.id) {
@@ -389,6 +393,26 @@ export default function FormFields({ form, setForm }: Props) {
               />
             );
         })}
+      {!viewResponse && form.formMetadata.allowAnonymousResponses && (
+        <Box
+          display="flex"
+          flexDirection="row"
+          gap="2"
+          justifyContent="flex-start"
+          alignItems="center"
+          marginY={"3"}
+        >
+          <CheckBox
+            isChecked={respondAsAnonymous}
+            onClick={() => {
+              if (connectedUser) {
+                setRespondAsAnonymous(!respondAsAnonymous);
+              }
+            }}
+          />
+          <Text variant="base">Respond anonymously</Text>
+        </Box>
+      )}
       <Stack
         direction={{
           xs: "vertical",
@@ -405,27 +429,6 @@ export default function FormFields({ form, setForm }: Props) {
                 ).join(",")}`}{" "}
               </Text>
             )}
-            {form.formMetadata.allowAnonymousResponses && (
-              <Box
-                display="flex"
-                flexDirection="row"
-                gap="2"
-                justifyContent="flex-start"
-                alignItems="center"
-                marginY={"3"}
-              >
-                <CheckBox
-                  isChecked={respondAsAnonymous}
-                  onClick={() => {
-                    if (connectedUser) {
-                      setRespondAsAnonymous(!respondAsAnonymous);
-                    }
-                  }}
-                />
-                <Text variant="base">Respond anonymously</Text>
-              </Box>
-            )}
-
             <PrimaryButton onClick={onSubmit} loading={submitting}>
               Submit
             </PrimaryButton>

@@ -290,7 +290,7 @@ export const getForm = async (formId: string) => {
   ).json();
 };
 
-export const addData = async (collectionId: string, data: any) => {
+export const addData = async (collectionId: string, data: any, anon: boolean) => {
   return await (
     await fetch(
       `${process.env.API_HOST}/collection/v1/${collectionId}/addData`,
@@ -301,6 +301,7 @@ export const addData = async (collectionId: string, data: any) => {
         },
         body: JSON.stringify({
           data,
+          anon,
         }),
         credentials: "include",
       }
