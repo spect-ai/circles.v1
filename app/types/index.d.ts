@@ -766,7 +766,7 @@ export type FormMetadata = {
   purpose?: string;
   formRoleGating?: GuildRole[];
   sybilProtectionEnabled?: boolean;
-  sybilProtectionScores?: MappedItem<GitcoinScoreType>;
+  sybilProtectionScores?: MappedItem<number>;
   mintkudosTokenId?: number;
   messageOnSubmission: string;
   multipleResponsesAllowed: boolean;
