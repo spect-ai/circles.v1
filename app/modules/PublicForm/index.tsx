@@ -450,6 +450,7 @@ export default function PublicForm() {
                 }
                 setForm={setForm}
                 dataOwner={currentUser as UserType}
+                collection={form}
               />
             )}
           </FormContainer>

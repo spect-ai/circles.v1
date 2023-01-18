@@ -783,6 +783,7 @@ export type FormMetadata = {
   hasRole: boolean;
   discordConnectionRequired: boolean;
   canClaimKudos: boolean;
+  allowAnonymousResponses: boolean;
 };
 
 export type ProjectMetadata = {

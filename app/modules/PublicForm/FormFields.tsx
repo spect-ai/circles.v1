@@ -27,6 +27,7 @@ import mixpanel from "@/app/common/utils/mixpanel";
 import NotificationPreferenceModal from "./NotificationPreferenceModal";
 import { AnimatePresence } from "framer-motion";
 import { satisfiesConditions } from "../Collection/Common/SatisfiesFilter";
+import CheckBox from "@/app/common/components/Table/Checkbox";
 
 type Props = {
   form: FormType;
@@ -52,6 +53,7 @@ export default function FormFields({ form, setForm }: Props) {
   const [loading, setLoading] = useState(false);
   const [claimed, setClaimed] = useState(form.formMetadata.kudosClaimedByUser);
   const [submitting, setSubmitting] = useState(false);
+  const [respondAsAnonymous, setRespondAsAnonymous] = useState(false);
   const [notificationPreferenceModalOpen, setNotificationPreferenceModalOpen] =
     useState(false);
   const { data: currentUser, refetch } = useQuery<UserType>(
@@ -156,6 +158,7 @@ export default function FormFields({ form, setForm }: Props) {
           form.formMetadata.previousResponses[
             form.formMetadata.previousResponses.length - 1
           ];
+        setRespondAsAnonymous(lastResponse["anonymous"]);
         form.propertyOrder.forEach((propertyId) => {
           if (
             [
@@ -255,9 +258,12 @@ export default function FormFields({ form, setForm }: Props) {
         form.formMetadata.previousResponses[
           form.formMetadata.previousResponses.length - 1
         ];
-      res = await updateCollectionData(form.id || "", lastResponse.slug, data);
+      res = await updateCollectionData(form.id || "", lastResponse.slug, {
+        ...data,
+        anonymous: respondAsAnonymous,
+      });
     } else {
-      res = await addData(form.id || "", data);
+      res = await addData(form.id || "", data, respondAsAnonymous);
     }
     const resAfterSave = await getForm(form.slug);
     if (res.id) {
@@ -387,6 +393,26 @@ export default function FormFields({ form, setForm }: Props) {
               />
             );
         })}
+      {!viewResponse && form.formMetadata.allowAnonymousResponses && (
+        <Box
+          display="flex"
+          flexDirection="row"
+          gap="2"
+          justifyContent="flex-start"
+          alignItems="center"
+          marginY={"3"}
+        >
+          <CheckBox
+            isChecked={respondAsAnonymous}
+            onClick={() => {
+              if (connectedUser) {
+                setRespondAsAnonymous(!respondAsAnonymous);
+              }
+            }}
+          />
+          <Text variant="base">Respond anonymously</Text>
+        </Box>
+      )}
       <Stack
         direction={{
           xs: "vertical",
@@ -403,7 +429,6 @@ export default function FormFields({ form, setForm }: Props) {
                 ).join(",")}`}{" "}
               </Text>
             )}
-
             <PrimaryButton onClick={onSubmit} loading={submitting}>
               Submit
             </PrimaryButton>
