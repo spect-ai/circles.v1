@@ -255,8 +255,8 @@ export default function VotingModule() {
                   })}
                 </Box>
                 <Text>
-                  These roles will be notified when a voting period is starts
-                  and will have the permissions to view the form's responses.
+                  These roles will be notified when a voting period starts and
+                  will have the permissions to view the form's responses.
                 </Text>
                 {["rankedChoice", "quadratic"].includes(votingType.value) && (
                   <MultiChoiceVotingOnMultipleResponses />
