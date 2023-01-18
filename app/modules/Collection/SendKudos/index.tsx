@@ -233,8 +233,16 @@ export default function SendKudos() {
           <PrimaryButton
             onClick={() => setIsOpen(true)}
             icon={<IconSparkles />}
+            disabled={collection.formMetadata.allowAnonymousResponses}
+            suffix={
+              collection.formMetadata.allowAnonymousResponses && (
+                <Tooltip title="You can only send kudos if the form doesnot allow anonymous responses">
+                  <InfoCircleOutlined style={{ color: "gray" }} />
+                </Tooltip>
+              )
+            }
           >
-            Send Kudos
+            Send Kudos{" "}
           </PrimaryButton>
         </Box>
       )}

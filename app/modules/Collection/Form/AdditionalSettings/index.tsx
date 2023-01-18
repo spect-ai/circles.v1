@@ -1,8 +1,11 @@
 import CheckBox from "@/app/common/components/Table/Checkbox";
 import { useGlobal } from "@/app/context/globalContext";
+import { useCircle } from "@/app/modules/Circle/CircleContext";
 import { updateFormCollection } from "@/app/services/Collection";
+import { InfoCircleOutlined } from "@ant-design/icons";
 import { Box, Stack, Text } from "degen";
 import { useEffect, useState } from "react";
+import { Tooltip } from "react-tippy";
 import { toast } from "react-toastify";
 import styled from "styled-components";
 import { useLocalCollection } from "../../Context/LocalCollectionContext";
@@ -36,6 +39,7 @@ export function AdditionalSettings() {
 
   const { localCollection: collection, updateCollection } =
     useLocalCollection();
+  const { localCircle: circle } = useCircle();
   const { connectedUser } = useGlobal();
 
   useEffect(() => {
@@ -50,6 +54,14 @@ export function AdditionalSettings() {
         : collection.formMetadata.allowAnonymousResponses
     );
   }, [collection]);
+
+  const automationsMappedToResponder = circle.automationsIndexedByCollection?.[
+    collection.slug
+  ].map((a) => {
+    return circle.automations?.[a].actions.find((action) =>
+      action.data?.values?.find((val: any) => val.type === "responder")
+    );
+  });
 
   return (
     <>
@@ -131,10 +143,34 @@ export function AdditionalSettings() {
                   else toast.error("Something went wrong");
                 }
               }}
+              disabled={
+                !!collection.formMetadata.mintkudosTokenId ||
+                !!collection.formMetadata.numOfKudos ||
+                automationsMappedToResponder.filter((a) => a !== undefined)
+                  ?.length > 0
+              }
             />
-            <Text variant="base">
+            <Text
+              variant="base"
+              color={
+                !!collection.formMetadata.mintkudosTokenId ||
+                !!collection.formMetadata.numOfKudos ||
+                automationsMappedToResponder.filter((a) => a !== undefined)
+                  ?.length > 0
+                  ? "textTertiary"
+                  : "text"
+              }
+            >
               Allow users to submit responses anonymously
             </Text>
+            {(!!collection.formMetadata.mintkudosTokenId ||
+              !!collection.formMetadata.numOfKudos ||
+              automationsMappedToResponder.filter((a) => a !== undefined)
+                ?.length > 0) && (
+              <Tooltip title="Allowing anonymous responses isn't possible when you map users in automations or send them kudos">
+                <InfoCircleOutlined style={{ color: "gray" }} />
+              </Tooltip>
+            )}
           </Box>
           <Box
             display="flex"
