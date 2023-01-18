@@ -4,7 +4,7 @@ import { updateFormCollection } from "@/app/services/Collection";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { Box, Button, IconCog, Input, Stack, Text } from "degen";
 import { AnimatePresence } from "framer-motion";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import styled from "styled-components";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
@@ -30,6 +30,18 @@ export default function Settings() {
   } as any);
 
   const { formActions } = useRoleGate();
+
+  useEffect(() => {
+    setName(collection.name);
+    setRewardField({
+      value: collection.projectMetadata.payments?.rewardField,
+      label: collection.projectMetadata.payments?.rewardField,
+    } as any);
+    setPayeeField({
+      value: collection.projectMetadata.payments?.payeeField,
+      label: collection.projectMetadata.payments?.payeeField,
+    } as any);
+  }, [collection]);
 
   return (
     <Box>

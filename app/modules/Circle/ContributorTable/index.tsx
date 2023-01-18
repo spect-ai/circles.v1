@@ -28,6 +28,24 @@ const IconBox = styled(Box)`
   border-radius: 1rem;
 `;
 
+const Container = styled.div`
+  height: calc(100vh - 7.5rem);
+  overflow-y: auto;
+  ::-webkit-scrollbar {
+    display: none;
+  }
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  @media only screen and (min-width: 0px) {
+    max-width: calc(100vw - 5rem);
+    padding: 0 0.1rem;
+  }
+  @media only screen and (min-width: 768px) {
+    max-width: calc(100vw - 4rem);
+    padding: 0 0.5rem;
+  }
+`;
+
 function ContributorTable({ filteredMembers }: Props) {
   const { mode } = useTheme();
   const { circle, memberDetails, fetchMemberDetails } = useCircle();
@@ -165,14 +183,14 @@ function ContributorTable({ filteredMembers }: Props) {
     }));
   return (
     <>
-      <Box marginTop="3">
+      <Container>
         <CompactTable
           columns={columns}
           theme={theme}
           data={{ nodes: data as any }}
           layout={{ custom: true, horizontalScroll: true, fixedHeader: true }}
         />
-      </Box>
+      </Container>
 
       <AnimatePresence>
         {roleModal && (
