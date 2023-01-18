@@ -1,9 +1,4 @@
-import {
-  Box,
-  Input,
-  MediaPicker,
-  Stack,
-} from "degen";
+import { Box, Input, MediaPicker, Stack } from "degen";
 import React, { useState } from "react";
 import { useRouter } from "next/router";
 import Loader from "@/app/common/components/Loader";
@@ -29,7 +24,6 @@ interface Props {
 }
 
 function CreateSpaceModal({ setWorkstreamModal, folderId }: Props) {
-
   const [visibilityTab, setVisibilityTab] = useState(0);
   const onVisibilityTabClick = (id: number) => setVisibilityTab(id);
   const close = () => setWorkstreamModal(false);
@@ -138,13 +132,6 @@ function CreateSpaceModal({ setWorkstreamModal, folderId }: Props) {
               onChange={uploadFile}
               uploading={uploading}
               maxSize={10}
-            />
-            <Tabs
-              selectedTab={visibilityTab}
-              onTabClick={onVisibilityTabClick}
-              tabs={["Public", "Private"]}
-              orientation="horizontal"
-              unselectedColor="transparent"
             />
             <Box width="full" marginTop="4">
               <PrimaryButton onClick={onSubmit} disabled={name.length === 0}>

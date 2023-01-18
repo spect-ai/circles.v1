@@ -188,7 +188,9 @@ function CircleSidebar() {
                   });
               }}
             >
-              Org Dashboard
+              {circle?.parents?.length
+                ? "Workstream Dashboard"
+                : "Organization Dashboard"}
             </PrimaryButton>
           </Link>
           <Link href={`/${cId}?tab=payment`}>

@@ -80,7 +80,7 @@ const CreateCircleCard = () => {
         height="72"
         onClick={open}
       >
-        Create a Organization
+        Create an Organization
       </Container>
       <AnimatePresence
         initial={false}
