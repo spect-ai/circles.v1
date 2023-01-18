@@ -36,7 +36,7 @@ export default function DataDrawer({
   useEffect(() => {
     if (dataId && collection.data) {
       setTimeout(() => {
-        setData(collection?.data[dataId]);
+        setData(collection?.data?.[dataId]);
       }, 0);
     }
   }, [collection?.data, dataId]);
@@ -92,35 +92,44 @@ export default function DataDrawer({
         >
           <ScrollContainer paddingX="4" paddingY="2">
             <Stack space="5">
-              <a
-                href={`/profile/${
-                  collection?.profiles?.[collection?.dataOwner[data?.slug]]
-                    ?.username
-                }`}
-                target="_blank"
-                rel="noreferrer"
-              >
+              {collection.data?.[dataId]?.["anonymous"] === true ? (
                 <Stack direction="horizontal" align="center" space="2">
-                  <Avatar
-                    src={
-                      collection.profiles[collection.dataOwner[data.slug]]
-                        .avatar
-                    }
-                    address={
-                      collection.profiles[collection.dataOwner[data.slug]]
-                        .ethAddress
-                    }
-                    label=""
-                    size="8"
-                  />
+                  <Avatar src="" label="" size="8" />
                   <Text color="accentText" weight="semiBold">
-                    {
-                      collection.profiles[collection.dataOwner[data.slug]]
-                        .username
-                    }
+                    Anonymous user
                   </Text>
                 </Stack>
-              </a>
+              ) : (
+                <a
+                  href={`/profile/${
+                    collection?.profiles?.[collection?.dataOwner[data?.slug]]
+                      ?.username
+                  }`}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <Stack direction="horizontal" align="center" space="2">
+                    <Avatar
+                      src={
+                        collection.profiles[collection.dataOwner[data.slug]]
+                          .avatar
+                      }
+                      address={
+                        collection.profiles[collection.dataOwner[data.slug]]
+                          .ethAddress
+                      }
+                      label=""
+                      size="8"
+                    />
+                    <Text color="accentText" weight="semiBold">
+                      {
+                        collection.profiles[collection.dataOwner[data.slug]]
+                          .username
+                      }
+                    </Text>
+                  </Stack>
+                </a>
+              )}
               <Box
                 display="flex"
                 flexDirection={{
@@ -338,9 +347,8 @@ export default function DataDrawer({
                     );
                   })}
                 </Box>
-                {!collection.voting?.periods?.[dataId]?.snapshot?.onSnapshot && (
-                  <SpectVoting dataId={dataId} />
-                )}
+                {!collection.voting?.periods?.[dataId]?.snapshot
+                  ?.onSnapshot && <SpectVoting dataId={dataId} />}
                 {collection.voting?.periods?.[dataId]?.snapshot?.onSnapshot && (
                   <SnapshotVoting dataId={dataId} />
                 )}
@@ -362,6 +370,7 @@ export default function DataDrawer({
                 collectionId={collection.id}
                 dataOwner={collection.profiles[collection.dataOwner[data.slug]]}
                 setForm={updateCollection}
+                collection={collection}
               />
             </Box>
           </ScrollContainer>

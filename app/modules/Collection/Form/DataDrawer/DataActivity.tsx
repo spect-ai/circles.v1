@@ -4,7 +4,12 @@ import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { timeSince } from "@/app/common/utils/utils";
 import { sendFormComment } from "@/app/services/Collection";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
-import { CollectionActivity, MappedItem, UserType } from "@/app/types";
+import {
+  CollectionActivity,
+  CollectionType,
+  MappedItem,
+  UserType,
+} from "@/app/types";
 import { SendOutlined } from "@ant-design/icons";
 import { Avatar, Box, Button, Stack, Text } from "degen";
 import { useRouter } from "next/router";
@@ -21,6 +26,7 @@ type Props = {
   collectionId: string;
   setForm: (form: any) => void;
   dataOwner: UserType;
+  collection: any;
 };
 
 export default function DataActivity({
@@ -31,6 +37,7 @@ export default function DataActivity({
   collectionId,
   setForm,
   dataOwner,
+  collection,
 }: Props) {
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
@@ -44,12 +51,23 @@ export default function DataActivity({
   const router = useRouter();
   const { circle } = router.query;
 
+  const anonActor = {
+    id: "anon",
+    avatar: "",
+    ethAddress: undefined,
+    username: "Anonymous User",
+  };
+
   return (
     <Box padding="4">
       <Stack>
         {activityOrder?.map((activityId) => {
           const activity = activities[activityId];
-          const actor = getMemberDetails(activity.ref.actor?.id) || dataOwner;
+          const actor =
+            collection.data?.[dataId]?.["anonymous"] === true &&
+            dataOwner.id === activity.ref.actor?.id
+              ? anonActor
+              : getMemberDetails(activity.ref.actor?.id) || dataOwner;
           return (
             <Box key={activityId}>
               <Stack direction="horizontal" align="flex-start" space="2">
@@ -66,13 +84,17 @@ export default function DataActivity({
                 >
                   <Stack direction="horizontal">
                     <Text color="accentText" weight="semiBold">
-                      <a
-                        href={`/profile/${actor?.username}`}
-                        target="_blank"
-                        rel="noreferrer"
-                      >
-                        {actor?.username}
-                      </a>
+                      {actor.id === "anon" ? (
+                        "Anonymous User"
+                      ) : (
+                        <a
+                          href={`/profile/${actor?.username}`}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          {actor?.username}
+                        </a>
+                      )}
                     </Text>
                     <Box paddingTop="1">
                       <Text ellipsis size="label" color="textTertiary">
