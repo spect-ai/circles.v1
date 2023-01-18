@@ -111,6 +111,7 @@ export const updateFormCollection = async (
       logo?: string;
       cover?: string;
       active?: boolean;
+      allowAnonymousResponses?: boolean;
     };
     projectMetadata?: Partial<ProjectMetadata>;
     data?: any;

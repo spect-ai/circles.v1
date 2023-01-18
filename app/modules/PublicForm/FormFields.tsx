@@ -27,6 +27,7 @@ import mixpanel from "@/app/common/utils/mixpanel";
 import NotificationPreferenceModal from "./NotificationPreferenceModal";
 import { AnimatePresence } from "framer-motion";
 import { satisfiesConditions } from "../Collection/Common/SatisfiesFilter";
+import CheckBox from "@/app/common/components/Table/Checkbox";
 
 type Props = {
   form: FormType;
@@ -52,6 +53,7 @@ export default function FormFields({ form, setForm }: Props) {
   const [loading, setLoading] = useState(false);
   const [claimed, setClaimed] = useState(form.formMetadata.kudosClaimedByUser);
   const [submitting, setSubmitting] = useState(false);
+  const [respondAsAnonymous, setRespondAsAnonymous] = useState(false);
   const [notificationPreferenceModalOpen, setNotificationPreferenceModalOpen] =
     useState(false);
   const { data: currentUser, refetch } = useQuery<UserType>(
@@ -402,6 +404,26 @@ export default function FormFields({ form, setForm }: Props) {
                   requiredFieldsNotSet
                 ).join(",")}`}{" "}
               </Text>
+            )}
+            {form.formMetadata.allowAnonymousResponses && (
+              <Box
+                display="flex"
+                flexDirection="row"
+                gap="2"
+                justifyContent="flex-start"
+                alignItems="center"
+                marginY={"3"}
+              >
+                <CheckBox
+                  isChecked={respondAsAnonymous}
+                  onClick={() => {
+                    if (connectedUser) {
+                      setRespondAsAnonymous(!respondAsAnonymous);
+                    }
+                  }}
+                />
+                <Text variant="base">Respond anonymously</Text>
+              </Box>
             )}
 
             <PrimaryButton onClick={onSubmit} loading={submitting}>

@@ -1,5 +1,5 @@
 import { CollectionType } from "@/app/types";
-import { Avatar, Box, IconCollection, Stack, Text, useTheme } from "degen";
+import { Avatar, Box, Stack, Text, useTheme } from "degen";
 import Link from "next/link";
 import React, { useEffect } from "react";
 import { Table } from "react-feather";
