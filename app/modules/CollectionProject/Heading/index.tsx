@@ -144,7 +144,6 @@ export default function ProjectHeading() {
                     display="flex"
                     flexDirection="row"
                     flexWrap="wrap"
-                    width="full"
                   >
                     {collection.projectMetadata.viewOrder.map(
                       (viewId, index) => (
