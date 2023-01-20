@@ -22,6 +22,7 @@ type Props = {
   setNetworks: React.Dispatch<React.SetStateAction<Registry | undefined>>;
   customText?: string;
   customTooltip?: string;
+  newTokenOpen?: boolean;
 };
 
 export default function RewardTokenOptions({
@@ -29,9 +30,10 @@ export default function RewardTokenOptions({
   setNetworks,
   customText,
   customTooltip,
+  newTokenOpen,
 }: Props) {
   const { registry, circle, setRegistryData } = useCircle();
-  const [newToken, setNewToken] = useState(false);
+  const [newToken, setNewToken] = useState(newTokenOpen || false);
   const { mode } = useTheme();
 
   const [address, setAddress] = useState("");

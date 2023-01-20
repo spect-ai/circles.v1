@@ -130,7 +130,7 @@ export default function OnboardingTemplate({ handleClose }: Props) {
             <Text variant="label">
               Which Discord role would you like to assign to the contributors ?
             </Text>
-            <Stack direction={"horizontal"} space={"4"}>
+            <Stack direction={"horizontal"} space={"4"} wrap>
               {discordRoles?.map((role) => (
                 <Box
                   onClick={() => {
