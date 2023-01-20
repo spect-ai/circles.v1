@@ -319,7 +319,7 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
               }
               newTokenOpen={true}
             />
-            <Stack direction={"horizontal"}>
+            <Box display={"flex"} flexDirection="row" gap={"2"} marginTop="8">
               <Button
                 variant="transparent"
                 size="small"
@@ -336,7 +336,7 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
               >
                 Create Workflow
               </Button>
-            </Stack>
+            </Box>
           </>
         )}
       </Stack>
