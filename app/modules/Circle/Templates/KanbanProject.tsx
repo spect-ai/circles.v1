@@ -13,9 +13,11 @@ interface Props {
 }
 
 export default function KanbanProject({ handleClose, setLoading }: Props) {
-  const { localCircle: circle, fetchCircle, setCircleData } = useCircle();
+  const { localCircle: circle, registry, setCircleData } = useCircle();
   const router = useRouter();
-  const [networks, setNetworks] = useState<Registry>();
+  const [networks, setNetworks] = useState<Registry | undefined>({
+    "137": registry?.["137"],
+  } as Registry);
 
   const useTemplate = async () => {
     handleClose(false);
@@ -53,11 +55,12 @@ export default function KanbanProject({ handleClose, setLoading }: Props) {
             networks={networks}
             setNetworks={setNetworks}
             customText={
-              "Add the token you'd want to use when paying contributors"
+              "Include the tokens you intend to utilise for distributing funds to contributors."
             }
             customTooltip={
-              "Add the token you'd want to use when paying contributors"
+              "Add the tokens you'd want to use when paying contributors"
             }
+            newTokenOpen={true}
           />
           <Button
             onClick={() => useTemplate()}

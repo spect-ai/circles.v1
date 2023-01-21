@@ -44,9 +44,10 @@ export default function MilestoneField({
               if (modalMode === "create") {
                 setData({
                   ...data,
-                  [propertyName]: data[propertyName]
-                    ? [...data[propertyName], value]
-                    : [value],
+                  [propertyName]:
+                    data && data[propertyName]
+                      ? [...data[propertyName], value]
+                      : [value],
                 });
                 updateRequiredFieldNotSet &&
                   updateRequiredFieldNotSet(

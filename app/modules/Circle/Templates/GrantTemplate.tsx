@@ -20,7 +20,12 @@ interface Props {
 }
 
 export default function GrantTemplate({ handleClose, setLoading }: Props) {
-  const { localCircle: circle, fetchCircle, setCircleData } = useCircle();
+  const {
+    localCircle: circle,
+    registry,
+    fetchCircle,
+    setCircleData,
+  } = useCircle();
   const router = useRouter();
 
   const [step, setStep] = useState(0);
@@ -30,7 +35,9 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
   const [selectedCategory, setSelectedCategory] = useState<Option>(
     categoryOptions?.[0]
   );
-  const [networks, setNetworks] = useState<Registry>();
+  const [networks, setNetworks] = useState<Registry | undefined>({
+    "137": registry?.["137"],
+  } as Registry);
 
   useEffect(() => {
     if (!circle?.discordGuildId) {
@@ -71,10 +78,9 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
     if (circle?.discordGuildId) void fetchGuildRoles();
   }, [circle?.discordGuildId]);
 
-  const {
-    loading: isLoading,
-    data,
-  } = useQuery(Space, { variables: { id: snapshotSpace } });
+  const { loading: isLoading, data } = useQuery(Space, {
+    variables: { id: snapshotSpace },
+  });
 
   const useTemplate = async () => {
     handleClose(false);
@@ -306,13 +312,14 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
               networks={networks}
               setNetworks={setNetworks}
               customText={
-                "Add the token you'd want to use when paying grantees"
+                "Add the tokens you'd want to use when disbursing funds to grantees"
               }
               customTooltip={
-                "Add the token you'd want to use when paying grantees"
+                "Add the tokens you'd want to use when paying grantees"
               }
+              newTokenOpen={true}
             />
-            <Stack direction={"horizontal"}>
+            <Box display={"flex"} flexDirection="row" gap={"2"} marginTop="8">
               <Button
                 variant="transparent"
                 size="small"
@@ -329,7 +336,7 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
               >
                 Create Workflow
               </Button>
-            </Stack>
+            </Box>
           </>
         )}
       </Stack>
