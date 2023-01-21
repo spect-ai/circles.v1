@@ -133,8 +133,6 @@ export default function Column({
                         }
                         if (
                           property.type === "shortText" ||
-                          property.type === "email" ||
-                          property.type === "ethAddress" ||
                           property.type === "singleURL"
                         ) {
                           return (
