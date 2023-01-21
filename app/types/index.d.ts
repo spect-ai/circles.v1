@@ -807,6 +807,9 @@ export type ProjectMetadata = {
     rewardField: string;
     payeeField: string;
   };
+  paymentStatus?: {
+    [dataSlug: string]: "pending" | "completed" | "pendingSignature";
+  };
 };
 
 export type FormPermissions = {

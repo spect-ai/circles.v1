@@ -52,6 +52,9 @@ export default function CardOptions({ handleDrawerClose, cardSlug }: Props) {
   );
 
   const showPendingPayment =
+    !["pending", "pendingSignature", "completed"].includes(
+      collection.projectMetadata.paymentStatus?.[cardSlug] || ""
+    ) &&
     rewardProperties > 0 &&
     (userProperties > 0 || multiUserProperties > 0 || ethAddressProperties > 0);
 
@@ -123,6 +126,7 @@ export default function CardOptions({ handleDrawerClose, cardSlug }: Props) {
                   collectionId: collection.id,
                   dataSlugs: [cardSlug],
                 });
+                updateCollection(res);
                 if (res.id)
                   toast.success(
                     "Added to pending payments, you can view it in the payments center"

@@ -193,7 +193,7 @@ function CircleSidebar() {
                 : "Organization Dashboard"}
             </PrimaryButton>
           </Link>
-          <Link href={`/${cId}?tab=payment`}>
+          <Link href={`/${cId}?tab=payment&status=pending`}>
             <PrimaryButton
               variant={
                 cId && router.query?.tab === "payment" && !cSlug && !pId
