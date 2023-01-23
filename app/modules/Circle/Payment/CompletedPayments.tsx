@@ -8,6 +8,7 @@ import { useQuery } from "react-query";
 import styled from "styled-components";
 import { useCircle } from "../CircleContext";
 import PaymentCard from "./PaymentCard";
+import PaymentCardDrawer from "./PaymentCardDrawer";
 
 export default function CompletedPayments() {
   const [isCardDrawerOpen, setIsCardDrawerOpen] = useState(false);
@@ -26,6 +27,9 @@ export default function CompletedPayments() {
 
   return (
     <Stack>
+      {isCardDrawerOpen && (
+        <PaymentCardDrawer handleClose={() => setIsCardDrawerOpen(false)} />
+      )}{" "}
       <Box
         style={{ width: "80%" }}
         height="full"

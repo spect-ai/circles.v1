@@ -471,33 +471,3 @@ const Container = styled(Box)`
 
   height: calc(100vh - 4rem);
 `;
-
-const IconPendingPaymentStatus = styled(Box)`
-  animation: pulse 2s infinite;
-  @keyframes pulse {
-    0% {
-      box-shadow: 0 0 0 0 rgba(191, 90, 242, 0.8);
-    }
-    90% {
-      box-shadow: 0 0 0 10px rgba(191, 90, 242, 0);
-    }
-    100% {
-      box-shadow: 0 0 0 0 rgba(191, 90, 242, 0);
-    }
-  }
-`;
-
-const IconCompletedPaymentStatus = styled(Box)`
-  animation: pulse 2s infinite;
-  @keyframes pulse {
-    0% {
-      box-shadow: 0 0 0 0 rgba(191, 90, 242, 0.8);
-    }
-    90% {
-      box-shadow: 0 0 0 10px rgba(191, 90, 242, 0);
-    }
-    100% {
-      box-shadow: 0 0 0 0 rgba(191, 90, 242, 0);
-    }
-  }
-`;

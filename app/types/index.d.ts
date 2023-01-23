@@ -1204,12 +1204,20 @@ export type PaymentDetails = {
       value: number;
     };
   }[];
-  type?: string;
-  notes?: string;
-  dataRef?: string;
-  collectionRef?: string;
+  type: "Manually Added" | "Added From Card";
+  dataSlug?: string;
+  collectionId?: string;
   title?: string;
   description?: string;
   paidOn?: Date;
   transactionHash?: string;
+  status?: "Pending" | "Pending Signature" | "Completed" | "Cancelled";
+  transactionCreatedBy?: {
+    propertyType: "ethAddress" | "user";
+    value: any;
+  };
+  transactionSignedBy?: {
+    propertyType: "ethAddress" | "user";
+    value: any;
+  }[];
 };
