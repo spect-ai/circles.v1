@@ -172,7 +172,7 @@ export default function OnboardingTemplate({ handleClose }: Props) {
                 variant="secondary"
                 size="small"
               >
-                Create Template
+                Create Workflow
               </Button>
             </Stack>
           </>
