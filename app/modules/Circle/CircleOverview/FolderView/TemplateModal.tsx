@@ -58,18 +58,22 @@ export default function TemplateModal({ handleClose, setLoading }: Props) {
               onClick={() => {
                 setTemplate(1);
               }}
-              // suffix={
-              //   <Box cursor="pointer">
-              //     <Text variant="label">
-              //       <HelpCircle size={20} />
-              //     </Text>
-              //   </Box>
-              // }
+              suffix={
+                <a href="https://scribehow.com/shared/Create_a_Grants_Workflow_on_Spect__Of7YjSwlRhW8ZiYbjgkO3g" target="_blank">
+                <Box cursor="pointer">
+                  <Text variant="label">
+                    <HelpCircle size={20} />
+                  </Text>
+                </Box>
+                </a>
+              }
             >
-              <Text>Create a new grant workflow with the template.</Text>
+              <Box height="28">
+              <Text>Create a new grant workflow</Text>
               <Text color="inherit">
                 It will create an application form and 2 projects
               </Text>
+              </Box>
             </ButtonCard>
             <ButtonCard
               buttonText="Create Onboarding Workflow"
@@ -78,20 +82,24 @@ export default function TemplateModal({ handleClose, setLoading }: Props) {
               onClick={() => {
                 setTemplate(2);
               }}
-              // suffix={
-              //   <Box cursor="pointer">
-              //     <Text variant="label">
-              //       <HelpCircle size={20} />
-              //     </Text>
-              //   </Box>
-              // }
+              suffix={
+                <a href="https://scribehow.com/shared/Run_a_onboarding_program__SxE6ihIxQzKbePZ8yVFu6A" target="_blank">
+                <Box cursor="pointer">
+                  <Text variant="label">
+                    <HelpCircle size={20} />
+                  </Text>
+                </Box>
+                </a>
+              }
             >
+              <Box height="28">
               <Text>
-                Create a new DAO onboarding workflow with the template.
+                Create a new DAO onboarding workflow
               </Text>
               <Text color="inherit">
                 It will create an onboarding form and a project
               </Text>
+              </Box>
             </ButtonCard>
             <ButtonCard
               buttonText="Create a Kanban Project"
@@ -113,10 +121,12 @@ export default function TemplateModal({ handleClose, setLoading }: Props) {
               //   </Box>
               // }
             >
+              <Box height="28">
               <Text>Create a new kanban project management board</Text>
               <Text color="inherit">
                 It will create a project with 4 columns
               </Text>
+              </Box>
             </ButtonCard>
           </Stack>
         )}
