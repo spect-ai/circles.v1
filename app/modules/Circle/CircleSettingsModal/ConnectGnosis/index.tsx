@@ -95,7 +95,9 @@ export default function ConnectGnosis() {
       <PrimaryButton
         variant={
           circle?.safeAddresses &&
-          Object.keys(circle?.safeAddresses)?.length > 0
+          Object.entries(circle?.safeAddresses).some(
+            ([aChain, aSafes]) => aSafes?.length > 0
+          )
             ? "tertiary"
             : "secondary"
         }
@@ -109,10 +111,11 @@ export default function ConnectGnosis() {
           }
         }}
       >
-        {circle?.safeAddresses
-          ? circle?.safeAddresses[Object.keys(circle?.safeAddresses || {})[0]]
-            ? "Gnosis Safe Connected"
-            : "Connect Gnosis Safe"
+        {circle?.safeAddresses &&
+        Object.entries(circle?.safeAddresses).some(
+          ([aChain, aSafes]) => aSafes?.length > 0
+        )
+          ? "Gnosis Safe Connected"
           : "Connect Gnosis Safe"}
       </PrimaryButton>
       <AnimatePresence>

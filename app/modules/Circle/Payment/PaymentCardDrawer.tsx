@@ -146,16 +146,21 @@ export default function PaymentCardDrawer({ handleClose }: Props) {
                   >
                     Pay
                   </PrimaryButton>
-                  <PrimaryButton
-                    variant="secondary"
-                    onClick={async () => {
-                      await pay(value.chain.value, true, [
-                        query.paymentId as string,
-                      ]);
-                    }}
-                  >
-                    Pay Using Gnosis
-                  </PrimaryButton>
+                  {circle?.safeAddresses &&
+                    Object.entries(circle?.safeAddresses).some(
+                      ([aChain, aSafes]) => aSafes?.length > 0
+                    ) && (
+                      <PrimaryButton
+                        variant="secondary"
+                        onClick={async () => {
+                          await pay(value.chain.value, true, [
+                            query.paymentId as string,
+                          ]);
+                        }}
+                      >
+                        Pay With Gnosis
+                      </PrimaryButton>
+                    )}
                   <PrimaryButton
                     variant="tertiary"
                     onClick={async () => {

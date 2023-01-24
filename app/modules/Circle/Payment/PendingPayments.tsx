@@ -1,30 +1,9 @@
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import CheckBox from "@/app/common/components/Table/Checkbox";
-import { getNonce } from "@/app/services/Gnosis";
-import {
-  approveUsingEOA,
-  approveUsingGnosis,
-  filterTokensByAllowanceOrBalance,
-  findAggregatedAmountForEachToken,
-  findAndUpdatePaymentIds,
-  findPendingPaymentsByNetwork,
-  flattenAmountByEachUniqueTokenAndUser,
-  getUniqueNetworks,
-  hasAllowance,
-  hasBalances,
-  payUsingEOA,
-  payUsingGnosis,
-  switchNetwork,
-} from "@/app/services/Paymentv2/utils";
-import { MemberDetails, Registry, UserType } from "@/app/types";
-import { useConnectModal } from "@rainbow-me/rainbowkit";
-import { getAccount } from "@wagmi/core";
+import { getUniqueNetworks } from "@/app/services/Paymentv2/utils";
 import { Box, Stack, Text, useTheme } from "degen";
 import { useRouter } from "next/router";
 import { useState } from "react";
-import { useQuery } from "react-query";
 import { Tooltip } from "react-tippy";
-import { toast } from "react-toastify";
 import styled from "styled-components";
 import { useCircle } from "../CircleContext";
 import usePaymentViewCommon from "./Common/usePaymentCommon";
@@ -33,7 +12,6 @@ import PaymentCardDrawer from "./PaymentCardDrawer";
 
 export default function PendingPayments() {
   const [selectedPaymentIds, setSelectedPaymentIds] = useState<string[]>([]);
-  const [payUsingGnosisSafe, setPayUsingGnosisSafe] = useState(false);
   const [isPayLoading, setIsPayLoading] = useState(false);
   const router = useRouter();
   const { mode } = useTheme();
@@ -89,7 +67,40 @@ export default function PendingPayments() {
         )}
 
         {circle.pendingPayments?.length > 0 && (
-          <Box width="48">
+          <Box display="flex" flexDirection="row" gap="2">
+            {circle?.safeAddresses &&
+              Object.entries(circle?.safeAddresses).some(
+                ([aChain, aSafes]) => aSafes?.length > 0
+              ) && (
+                <Tooltip
+                  title="Gnosis safe will be used to pay on networks which have a connected safe"
+                  theme={mode}
+                  position="top"
+                >
+                  {" "}
+                  <PrimaryButton
+                    onClick={async () => {
+                      setIsPayLoading(true);
+                      const uniqueNetworks = getUniqueNetworks(
+                        circle.pendingPayments,
+                        circle.paymentDetails
+                      );
+                      console.log({ uniqueNetworks });
+                      for (const chainId of uniqueNetworks) {
+                        if (!circle.safeAddresses?.[chainId]?.length)
+                          await pay(chainId);
+                        else {
+                          await pay(chainId, true);
+                        }
+                      }
+                      setIsPayLoading(false);
+                    }}
+                    loading={isPayLoading}
+                  >
+                    Pay All With Gnosis
+                  </PrimaryButton>
+                </Tooltip>
+              )}{" "}
             <PrimaryButton
               onClick={async () => {
                 setIsPayLoading(true);
@@ -99,41 +110,14 @@ export default function PendingPayments() {
                 );
                 console.log({ uniqueNetworks });
                 for (const chainId of uniqueNetworks) {
-                  if (!circle.safeAddresses?.[chainId]?.length)
-                    await pay(chainId);
-                  else {
-                    await pay(chainId, payUsingGnosisSafe);
-                  }
+                  await pay(chainId);
                 }
                 setIsPayLoading(false);
               }}
               loading={isPayLoading}
             >
-              Batch Pay
+              Pay All
             </PrimaryButton>
-            <Tooltip
-              title="Gnosis safe will be used to pay on networks which have a connected safe"
-              theme={mode}
-              position="top"
-            >
-              {" "}
-              <Box
-                display="flex"
-                flexDirection="row"
-                gap="2"
-                justifyContent="flex-start"
-                alignItems="center"
-                marginTop="2"
-              >
-                <CheckBox
-                  isChecked={payUsingGnosisSafe}
-                  onClick={() => {
-                    setPayUsingGnosisSafe(!payUsingGnosisSafe);
-                  }}
-                />
-                <Text variant="base">Pay Using Gnosis</Text>
-              </Box>
-            </Tooltip>
           </Box>
         )}
       </Box>
