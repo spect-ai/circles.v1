@@ -33,7 +33,7 @@ export const LocalCollectionContext = createContext<LocalCollectionContextType>(
 export function useProviderLocalCollection() {
   const router = useRouter();
   const { collection: colId } = router.query;
-  const { refetch: fetchCollection } = useQuery<CollectionType>(
+  const { refetch: fetchCollection, data } = useQuery<CollectionType>(
     ["collection", colId],
     () =>
       fetch(`${process.env.API_HOST}/collection/v1/slug/${colId as string}`, {
@@ -64,6 +64,12 @@ export function useProviderLocalCollection() {
   };
 
   useEffect(() => {
+    if (data) {
+      setLocalCollection(data);
+      if (data.collectionType === 1) {
+        setProjectViewId(data.projectMetadata.viewOrder[0]);
+      }
+    } else setLocalCollection({} as CollectionType);
     if (colId) {
       setLoading(true);
       fetchCollection()
