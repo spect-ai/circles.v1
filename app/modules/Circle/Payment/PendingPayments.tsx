@@ -1,7 +1,6 @@
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { getUniqueNetworks } from "@/app/services/Paymentv2/utils";
 import { Box, Stack, Text, useTheme } from "degen";
-import { useRouter } from "next/router";
 import { useState } from "react";
 import { Tooltip } from "react-tippy";
 import styled from "styled-components";
@@ -13,7 +12,7 @@ import PaymentCardDrawer from "./PaymentCardDrawer";
 export default function PendingPayments() {
   const [selectedPaymentIds, setSelectedPaymentIds] = useState<string[]>([]);
   const [isPayLoading, setIsPayLoading] = useState(false);
-  const router = useRouter();
+  const [isGnosisPayLoading, setIsGnosisPayLoading] = useState(false);
   const { mode } = useTheme();
   const { isCardDrawerOpen, setIsCardDrawerOpen, pay } = usePaymentViewCommon();
 
@@ -80,7 +79,7 @@ export default function PendingPayments() {
                   {" "}
                   <PrimaryButton
                     onClick={async () => {
-                      setIsPayLoading(true);
+                      setIsGnosisPayLoading(true);
                       const uniqueNetworks = getUniqueNetworks(
                         circle.pendingPayments,
                         circle.paymentDetails
@@ -93,9 +92,10 @@ export default function PendingPayments() {
                           await pay(chainId, true);
                         }
                       }
-                      setIsPayLoading(false);
+                      setIsGnosisPayLoading(false);
                     }}
-                    loading={isPayLoading}
+                    loading={isGnosisPayLoading}
+                    disabled={isPayLoading}
                   >
                     Pay All With Gnosis
                   </PrimaryButton>
@@ -115,6 +115,7 @@ export default function PendingPayments() {
                 setIsPayLoading(false);
               }}
               loading={isPayLoading}
+              disabled={isGnosisPayLoading}
             >
               Pay All
             </PrimaryButton>

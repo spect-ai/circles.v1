@@ -52,6 +52,7 @@ export default function usePaymentViewCommon() {
           circle.pendingPayments,
           circle.paymentDetails
         );
+      console.log({ pendingPayments });
       const amounts = flattenAmountByEachUniqueTokenAndUser(
         pendingPayments,
         circle.paymentDetails,
@@ -221,8 +222,6 @@ export default function usePaymentViewCommon() {
   }, [paymentId, newCard]);
 
   return {
-    currentUser,
-    refetch,
     memberDetails,
     isCardDrawerOpen,
     setIsCardDrawerOpen,

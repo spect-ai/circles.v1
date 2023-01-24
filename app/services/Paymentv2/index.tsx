@@ -1,3 +1,4 @@
+import { Option } from "@/app/types";
 import { toast } from "react-toastify";
 
 type AddPaymentsRequestDto = {
@@ -39,6 +40,7 @@ type UpdatePaymentsRequestDto = {
     propertyType: string;
     value: any;
   }[];
+  labels: Option[];
 };
 
 export const updatePayment = async (

@@ -56,10 +56,9 @@ export default function Payee({ value, mode, setValue }: Props) {
               <Box
                 display="flex"
                 flexDirection="row"
-                gap="2"
                 alignItems="center"
                 style={{
-                  width: "85%",
+                  width: "82%",
                 }}
               >
                 <a

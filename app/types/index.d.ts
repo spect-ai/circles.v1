@@ -297,6 +297,7 @@ export interface CircleType {
   completedPayments: string[];
   cancelledPayments: string[];
   paymentDetails: { [key: string]: PaymentDetails };
+  paymentLabelOptions: Option[];
 }
 
 // interface ProjectType {
@@ -1220,4 +1221,5 @@ export type PaymentDetails = {
     propertyType: "ethAddress" | "user";
     value: any;
   }[];
+  labels?: Option[];
 };

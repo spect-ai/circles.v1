@@ -1,29 +1,42 @@
 import Popover from "@/app/common/components/Popover";
-import { Box, Stack, useTheme, Text } from "degen";
+import { Box, Stack, useTheme, Text, IconClose, Tag } from "degen";
 import { motion } from "framer-motion";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { matchSorter } from "match-sorter";
-import { PaymentDetails } from "@/app/types";
+import { Option, PaymentDetails } from "@/app/types";
+import { toast } from "react-toastify";
+import { updateCircle } from "@/app/services/UpdateCircle";
+import { updatePayment } from "@/app/services/Paymentv2";
+import { useCircle } from "../CircleContext";
 
 type Props = {
-  options: any;
-  value: PaymentDetails;
-  setValue: (value: PaymentDetails) => void;
+  options: Option[];
+  setOptions: (options: Option[]) => void;
+  value: any;
+  setValue: (value: any, opts?: Option[]) => void;
+  paymentId: string;
   multiple?: boolean;
 };
 
 export default function PaymentDropdown({
   options,
+  setOptions,
   value,
   setValue,
+  paymentId,
   multiple = false,
 }: Props) {
   const { mode } = useTheme();
   const [isEditing, setIsEditing] = useState(false);
   const [filteredOptions, setFilteredOptions] = useState<any>([]);
   const fieldInput = useRef<any>();
-  const [tempValue, setTempValue] = useState<any>();
+  const [tempValue, setTempValue] = useState<any>("");
+  const { circle } = useCircle();
+
+  useEffect(() => {
+    setFilteredOptions(options);
+  }, []);
 
   return (
     <Popover
@@ -34,8 +47,30 @@ export default function PaymentDropdown({
       butttonComponent={
         <Box>
           {isEditing ? (
-            <FieldInputContainer ref={fieldInput} padding="0">
+            <FieldInputContainer
+              ref={fieldInput}
+              padding={multiple ? "2" : "0"}
+            >
               <Stack direction="horizontal" wrap space="2">
+                {multiple &&
+                  value?.map((val: any) => (
+                    <Tag tone="accent" hover key={val.value}>
+                      <Stack direction="horizontal" space="1" align="center">
+                        {val.label}
+                        <Box
+                          cursor="pointer"
+                          onClick={() => {
+                            const change = value.filter(
+                              (v: any) => v.value !== val.value
+                            );
+                            setValue(change);
+                          }}
+                        >
+                          <IconClose size="4" color="red" />
+                        </Box>
+                      </Stack>
+                    </Tag>
+                  ))}
                 <FieldInput
                   mode={mode}
                   autoFocus
@@ -43,9 +78,11 @@ export default function PaymentDropdown({
                   onChange={(e) => {
                     setTempValue(e.target.value);
                     setFilteredOptions(
-                      matchSorter(options, e.target.value, {
-                        keys: ["value", "label"],
-                      })
+                      options?.length
+                        ? matchSorter(options, e.target.value, {
+                            keys: ["value", "label"],
+                          })
+                        : []
                     );
                   }}
                 />
@@ -58,7 +95,23 @@ export default function PaymentDropdown({
               }}
               mode={mode}
             >
-              {value.status ? <Text>{value.status}</Text> : "Empty"}
+              {multiple ? (
+                value?.length ? (
+                  value?.map((val: any) => (
+                    <Box cursor="pointer" key={val.value}>
+                      <Tag key={val.value} tone="accent" hover>
+                        {val.label}
+                      </Tag>
+                    </Box>
+                  ))
+                ) : (
+                  "Empty"
+                )
+              ) : value ? (
+                <Text>{value.label}</Text>
+              ) : (
+                "Empty"
+              )}
             </FieldButton>
           )}
         </Box>
@@ -83,16 +136,71 @@ export default function PaymentDropdown({
                   padding="2"
                   key={option.value}
                   onClick={() => {
-                    setValue({
-                      ...value,
-                      status: option.label,
-                    });
-                    setIsEditing(false);
+                    if (multiple) {
+                      if (!value) {
+                        setValue([option]);
+                      } else {
+                        if (
+                          !value.find((val: any) => val.value === option.value)
+                        )
+                          setValue([...value, option]);
+                      }
+                    } else {
+                      setValue(option);
+                      setIsEditing(false);
+                    }
                   }}
                 >
                   <Text>{option.label}</Text>
                 </MenuItem>
               ))}
+              {tempValue && multiple && (
+                <MenuItem
+                  padding="2"
+                  onClick={async () => {
+                    let res;
+                    res = await updateCircle(
+                      {
+                        paymentLabelOptions: [
+                          ...(options || []),
+                          { label: tempValue, value: tempValue },
+                        ],
+                      },
+                      circle.id
+                    );
+                    if (!res.id) {
+                      toast.error("Failed to update label options");
+                      return;
+                    }
+                    const newOptions = [
+                      ...(options || []),
+                      { label: tempValue, value: tempValue },
+                    ];
+                    setOptions(newOptions);
+                    setFilteredOptions(newOptions);
+                    if (multiple) {
+                      if (!value) {
+                        setValue(
+                          [{ label: tempValue, value: tempValue }],
+                          newOptions
+                        );
+                      } else {
+                        if (!value.find((val: any) => val.value === tempValue))
+                          setValue(
+                            [...value, { label: tempValue, value: tempValue }],
+                            newOptions
+                          );
+                      }
+                    } else {
+                      setValue({ label: tempValue, value: tempValue });
+                      setIsEditing(false);
+                    }
+                    setTempValue("");
+                  }}
+                >
+                  <Text variant="label">{`Add "${tempValue}" Option`}</Text>
+                </MenuItem>
+              )}
             </Stack>
           </MenuContainer>
         </Box>

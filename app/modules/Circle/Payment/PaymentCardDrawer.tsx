@@ -1,31 +1,18 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import Avatar from "@/app/common/components/Avatar";
 import Drawer from "@/app/common/components/Drawer";
-import Dropdown from "@/app/common/components/Dropdown";
 import Editor from "@/app/common/components/Editor";
 import Modal from "@/app/common/components/Modal";
 import ConfirmModal from "@/app/common/components/Modal/ConfirmModal";
-import Popover from "@/app/common/components/Popover";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { cancelPayments, updatePayment } from "@/app/services/Paymentv2";
-import { Registry, Reward } from "@/app/types";
-import {
-  Box,
-  Button,
-  IconChevronRight,
-  Stack,
-  Tag,
-  Text,
-  useTheme,
-} from "degen";
+import { Option } from "@/app/types";
+import { Box, Button, IconChevronRight, Stack, Text, useTheme } from "degen";
 import { motion } from "framer-motion";
-import { matchSorter } from "match-sorter";
 import { useRouter } from "next/router";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { Save } from "react-feather";
 import styled from "styled-components";
-import RewardField from "../../PublicForm/RewardField";
 import { useCircle } from "../CircleContext";
 import usePaymentViewCommon from "./Common/usePaymentCommon";
 import Payee from "./Payee";
@@ -38,18 +25,31 @@ type Props = {
 
 export default function PaymentCardDrawer({ handleClose }: Props) {
   const { mode } = useTheme();
-  const { circle, fetchCircle } = useCircle();
+  const { circle, fetchCircle, setCircleData } = useCircle();
   const { push, pathname, query } = useRouter();
 
   const [isDirty, setIsDirty] = useState(false);
   const [cancelPaymentConfirmModal, setCancelPaymentConfirmModal] =
     useState(false);
   const [loading, setLoading] = useState(false);
+  const [isPayLoading, setIsPayLoading] = useState(false);
+  const [isGnosisPayLoading, setIsGnosisPayLoading] = useState(false);
   const [openPayeeModal, setOpenPayeeModal] = useState(false);
   const { newCard, value, setValue, pay } = usePaymentViewCommon();
-  const onChange = async (update: any) => {
+  const onChange = async (update: any, labelOptions?: Option[]) => {
     if (query.paymentId) {
       let res;
+      setCircleData({
+        ...circle,
+        paymentDetails: {
+          ...circle.paymentDetails,
+          [query.paymentId as string]: {
+            ...circle.paymentDetails[query.paymentId as string],
+            ...update,
+          },
+        },
+        paymentLabelOptions: labelOptions || circle.paymentLabelOptions,
+      });
       res = await updatePayment(circle.id, query.paymentId as string, update);
       if (!res) return;
     }
@@ -139,10 +139,14 @@ export default function PaymentCardDrawer({ handleClose }: Props) {
                   <PrimaryButton
                     variant="secondary"
                     onClick={async () => {
+                      setIsPayLoading(true);
                       await pay(value.chain.value, false, [
                         query.paymentId as string,
                       ]);
+                      setIsPayLoading(false);
                     }}
+                    loading={isPayLoading}
+                    disabled={isGnosisPayLoading}
                   >
                     Pay
                   </PrimaryButton>
@@ -153,10 +157,14 @@ export default function PaymentCardDrawer({ handleClose }: Props) {
                       <PrimaryButton
                         variant="secondary"
                         onClick={async () => {
+                          setIsGnosisPayLoading(true);
                           await pay(value.chain.value, true, [
                             query.paymentId as string,
                           ]);
+                          setIsGnosisPayLoading(false);
                         }}
+                        loading={isGnosisPayLoading}
+                        disabled={isPayLoading}
                       >
                         Pay With Gnosis
                       </PrimaryButton>
@@ -210,7 +218,12 @@ export default function PaymentCardDrawer({ handleClose }: Props) {
                     onChange={(e) => {
                       setIsDirty(true);
                       setValue({ ...value, title: e.target.value });
-                      onChange({ title: e.target.value });
+                    }}
+                    onBlur={async () => {
+                      if (isDirty) {
+                        await onChange({ title: value.title });
+                        setIsDirty(false);
+                      }
                     }}
                     disabled={value.status !== "Pending"}
                   />
@@ -273,11 +286,17 @@ export default function PaymentCardDrawer({ handleClose }: Props) {
                       <Text>Labels</Text>
                     </Box>
                     <Box width="3/4">
-                      <FieldButton onClick={() => {}} mode={mode}>
-                        <Box cursor="pointer" onClick={(e) => {}}>
-                          <Text> {value.status || "Unknown"} </Text>
-                        </Box>
-                      </FieldButton>
+                      <PaymentDropdown
+                        value={value.labels}
+                        setValue={(v, opts) => {
+                          setValue({ ...value, labels: v });
+                          onChange({ labels: v }, opts);
+                        }}
+                        options={circle.paymentLabelOptions}
+                        setOptions={(v) => {}}
+                        paymentId={value.id}
+                        multiple={true}
+                      />
                     </Box>
                   </Stack>
                   <Stack direction="horizontal" align="center" space="0">
@@ -316,9 +335,7 @@ export default function PaymentCardDrawer({ handleClose }: Props) {
                         }}
                         mode={mode}
                       >
-                        <Box cursor="pointer">
-                          <Payee value={value} mode="view" />
-                        </Box>
+                        <Payee value={value} mode="view" />
                       </FieldButton>
                     </Box>
                   </Stack>
@@ -337,7 +354,10 @@ export default function PaymentCardDrawer({ handleClose }: Props) {
                 <Box padding="2" borderBottomWidth="0.375" marginTop="4">
                   <Editor
                     placeholder="Describe your payment here...."
-                    value={value?.description}
+                    value={
+                      circle.paymentDetails[(query.paymentId as string) || ""]
+                        ?.description
+                    }
                     onSave={(val) => {
                       void onChange({ description: val });
                     }}
