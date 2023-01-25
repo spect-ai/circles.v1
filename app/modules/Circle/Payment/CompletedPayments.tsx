@@ -7,14 +7,14 @@ import { useState } from "react";
 import { useQuery } from "react-query";
 import styled from "styled-components";
 import { useCircle } from "../CircleContext";
+import usePaymentViewCommon from "./Common/usePaymentCommon";
 import PaymentCard from "./PaymentCard";
 import PaymentCardDrawer from "./PaymentCardDrawer";
 
 export default function CompletedPayments() {
-  const [isCardDrawerOpen, setIsCardDrawerOpen] = useState(false);
-  const [selectedPaymentId, setSelectedPaymentId] = useState("");
   const { circle, setCircleData } = useCircle();
   const router = useRouter();
+  const { isCardDrawerOpen, setIsCardDrawerOpen } = usePaymentViewCommon();
 
   const { circle: cId } = router.query;
 
@@ -112,7 +112,6 @@ export default function CompletedPayments() {
               index={index}
               paymentDetails={circle.paymentDetails[paymentId]}
               handleClick={() => {
-                setSelectedPaymentId(paymentId);
                 setIsCardDrawerOpen(true);
               }}
             />

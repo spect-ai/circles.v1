@@ -22,18 +22,8 @@ export default function PaymentCard({
 }: Props) {
   const router = useRouter();
   const { mode } = useTheme();
-  const { circle: cId } = router.query;
-  const { fetchCircle, circle } = useCircle();
+  const { circle: cId, status, tab, paymentId } = router.query;
   const { registry } = useCircle();
-  const onCancelPayment = async () => {
-    console.log("cancel payment");
-    const res = await cancelPayments(circle.id as string, {
-      paymentIds: [paymentDetails.id],
-    });
-    if (res) {
-      fetchCircle();
-    }
-  };
 
   return (
     <Card
@@ -45,7 +35,7 @@ export default function PaymentCard({
           query: {
             circle: router.query.circle,
             tab: "payment",
-            status: "pending",
+            status,
             paymentId: paymentDetails.id,
           },
         });
