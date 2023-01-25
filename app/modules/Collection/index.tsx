@@ -12,6 +12,7 @@ import { QuestionCircleOutlined } from "@ant-design/icons";
 import { useRouter } from "next/router";
 import Loader from "@/app/common/components/Loader";
 import { SkeletonLoader } from "./SkeletonLoader";
+import Help from "@/app/common/components/Help";
 
 export function Collection() {
   const {
@@ -75,28 +76,13 @@ export function Collection() {
               </>
             )}
           </Box>
-          <Box
-            style={{
-              position: "absolute",
-              right: "6rem",
-              bottom: "3.3rem",
-              zIndex: "1",
-            }}
-          >
-            <Button
-              variant="secondary"
-              onClick={() => setFaqOpen(true)}
-              shape="circle"
-            >
-              <QuestionCircleOutlined style={{ fontSize: "1.5rem" }} />
-            </Button>
-          </Box>
           <AnimatePresence>
             {faqOpen && <FAQModal handleClose={() => setFaqOpen(false)} />}
           </AnimatePresence>
         </Stack>
       )}
       {collection.collectionType === 1 && <CollectionProject />}
+      <Help setFaqOpen={setFaqOpen} />
     </>
   );
 }

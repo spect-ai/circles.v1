@@ -18,6 +18,7 @@ import { QuestionCircleOutlined } from "@ant-design/icons";
 import GanttChart from "./GanttChart";
 import TableView from "./TableView";
 import FAQModal from "../Dashboard/FAQModal";
+import Help from "@/app/common/components/Help";
 
 function Project() {
   const [graphOpen, setGraphOpen] = useState(false);
@@ -121,22 +122,7 @@ function Project() {
           {vId && selectedView?.type == "Table" && (
             <TableView viewId={viewId} />
           )}
-          <Box
-            style={{
-              position: "absolute",
-              right: "6rem",
-              bottom: "3.3rem",
-              zIndex: "1",
-            }}
-          >
-            <Button
-              variant="secondary"
-              onClick={() => setFaqOpen(true)}
-              shape="circle"
-            >
-              <QuestionCircleOutlined style={{ fontSize: "1.5rem" }} />
-            </Button>
-          </Box>
+          <Help setFaqOpen={setFaqOpen} />
         </Box>
       </motion.main>
       <AnimatePresence>

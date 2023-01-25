@@ -16,6 +16,7 @@ import NotificationPanel from "@/app/modules/Profile/NotificationPanel";
 import { AnimatePresence } from "framer-motion";
 import FAQModal from "@/app/modules/Dashboard/FAQModal";
 import { QuestionCircleOutlined } from "@ant-design/icons";
+import Help from "@/app/common/components/Help";
 
 const ProfilePage: NextPage = () => {
   const router = useRouter();
@@ -108,23 +109,7 @@ const ProfilePage: NextPage = () => {
             </Stack>
           </ScrollContainer>
         )}
-        <Box
-          style={{
-            position: "absolute",
-            right: "6rem",
-            bottom: "3.3rem",
-            zIndex: "1",
-          }}
-        >
-          <Button
-            variant="secondary"
-            onClick={() => setFaqOpen(true)}
-            shape="circle"
-            justifyContent="center"
-          >
-            <QuestionCircleOutlined style={{ fontSize: "1.5rem" }} />
-          </Button>
-        </Box>
+        <Help setFaqOpen={setFaqOpen} />
         <AnimatePresence>
           {faqOpen && <FAQModal handleClose={() => setFaqOpen(false)} />}
         </AnimatePresence>
