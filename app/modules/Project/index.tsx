@@ -124,8 +124,8 @@ function Project() {
           <Box
             style={{
               position: "absolute",
-              right: "2rem",
-              bottom: "1rem",
+              right: "6rem",
+              bottom: "3.3rem",
               zIndex: "1",
             }}
           >

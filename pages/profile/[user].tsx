@@ -1,11 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  Box,
-  Button,
-  Stack,
-  Text,
-  useTheme,
-} from "degen";
+import { Box, Button, Stack, Text, useTheme } from "degen";
 import MetaHead from "@/app/common/seo/MetaHead/MetaHead";
 import type { NextPage } from "next";
 import ProfileCard from "@/app/modules/Profile/ProfilePage/ProfileCard";
@@ -117,8 +111,8 @@ const ProfilePage: NextPage = () => {
         <Box
           style={{
             position: "absolute",
-            right: "2rem",
-            bottom: "1rem",
+            right: "6rem",
+            bottom: "3.3rem",
             zIndex: "1",
           }}
         >

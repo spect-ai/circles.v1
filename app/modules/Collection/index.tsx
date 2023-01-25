@@ -78,9 +78,9 @@ export function Collection() {
           <Box
             style={{
               position: "absolute",
-              right: "2rem",
-              bottom: "1rem",
-              zIndex: "2",
+              right: "6rem",
+              bottom: "3.3rem",
+              zIndex: "1",
             }}
           >
             <Button
