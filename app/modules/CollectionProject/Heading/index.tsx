@@ -29,6 +29,7 @@ import { useLocalCollection } from "../../Collection/Context/LocalCollectionCont
 import AddView from "../AddView";
 import Filtering from "../Filtering";
 import Filter from "../Filtering/Filter";
+import MyTasks from "../Filtering/MyTasks";
 import Sort from "../Filtering/Sort";
 import Settings from "../Settings";
 import ViewSettings from "../ViewSettings";
@@ -42,7 +43,7 @@ export default function ProjectHeading() {
   } = useLocalCollection();
   const [isAddViewPopupOpen, setIsAddViewPopupOpen] = useState(false);
   const [isAddViewModalOpen, setIsAddViewModalOpen] = useState(false);
-  const [viewType, setViewType] = useState("");
+  const [viewType, setViewType] = useState<"kanban" | "list" | "grid">("grid");
   const [isViewSettingsOpen, setIsViewSettingsOpen] = useState(false);
   const [isViewPopoverOpen, setIsViewPopoverOpen] = useState(false);
 
@@ -100,24 +101,40 @@ export default function ProjectHeading() {
         )}
       </AnimatePresence>
       <Stack space="0">
-        <Stack direction="horizontal" space="2" justify="space-between">
-          <Stack direction="horizontal">
+        <Stack
+          direction="horizontal"
+          space={{
+            xs: "0",
+            md: "2",
+          }}
+          justify="space-between"
+        >
+          <Stack
+            direction="horizontal"
+            space={{
+              xs: "0",
+              md: "2",
+            }}
+          >
             <Heading>{collection.name}</Heading>
             <Settings />
           </Stack>
-          <Box width="32">
-            <InviteMemberModal />
-          </Box>
+          <Hidden xs sm>
+            <Box width="32">
+              <InviteMemberModal />
+            </Box>
+          </Hidden>
         </Stack>
         <Box marginBottom="1" />
         <Hidden xs sm>
           <DragDropContext onDragEnd={handleDragEnd}>
-            <ViewTabsContainer
+            <Box
               backgroundColor="background"
               paddingX="4"
               borderTopRadius="large"
               display="flex"
               flexDirection="row"
+              width="full"
             >
               <Droppable droppableId="Views" direction="horizontal">
                 {(provided) => (
@@ -125,6 +142,8 @@ export default function ProjectHeading() {
                     ref={provided.innerRef}
                     {...provided.droppableProps}
                     display="flex"
+                    flexDirection="row"
+                    flexWrap="wrap"
                   >
                     {collection.projectMetadata.viewOrder.map(
                       (viewId, index) => (
@@ -199,11 +218,11 @@ export default function ProjectHeading() {
               </Droppable>
 
               <Popover
+                width="24"
                 isOpen={isAddViewPopupOpen}
                 setIsOpen={setIsAddViewPopupOpen}
                 butttonComponent={
                   <AddViewButton
-                    width="fit"
                     paddingX="8"
                     onClick={() => {
                       if (!formActions("manageSettings"))
@@ -294,85 +313,189 @@ export default function ProjectHeading() {
                   </Box>
                 </motion.div>
               </Popover>
-            </ViewTabsContainer>
+            </Box>
           </DragDropContext>
           <Filtering />
         </Hidden>
         <Visible xs sm>
-          <Stack direction="horizontal">
-            <Popover
-              width="1/2"
-              butttonComponent={
-                <PrimaryButton
-                  onClick={() => setIsViewPopoverOpen(!isViewPopoverOpen)}
-                  variant="tertiary"
-                  icon={
-                    <Text color="accent">
-                      {getViewIcon(
-                        collection.projectMetadata.views[projectViewId]?.type
-                      )}
+          <Stack>
+            <Stack direction="horizontal" align="center">
+              <Popover
+                width="full"
+                butttonComponent={
+                  <PrimaryButton
+                    onClick={() => setIsViewPopoverOpen(!isViewPopoverOpen)}
+                    variant="tertiary"
+                    icon={
+                      <Text color="accent">
+                        {getViewIcon(
+                          collection.projectMetadata.views[projectViewId]?.type
+                        )}
+                      </Text>
+                    }
+                  >
+                    <Text ellipsis>
+                      {collection.projectMetadata.views[projectViewId]?.name}
                     </Text>
-                  }
-                >
-                  <Text ellipsis>
-                    {collection.projectMetadata.views[projectViewId]?.name}
-                  </Text>
-                </PrimaryButton>
-              }
-              isOpen={isViewPopoverOpen}
-              setIsOpen={setIsViewPopoverOpen}
-            >
-              <motion.div
-                initial={{ height: 0 }}
-                animate={{ height: "auto", transition: { duration: 0.2 } }}
-                exit={{ height: 0 }}
-                style={{
-                  overflow: "hidden",
-                  borderRadius: "0.25rem",
-                }}
+                  </PrimaryButton>
+                }
+                isOpen={isViewPopoverOpen}
+                setIsOpen={setIsViewPopoverOpen}
               >
-                <Box
-                  backgroundColor="background"
-                  borderWidth="0.375"
-                  borderRadius="2xLarge"
+                <motion.div
+                  initial={{ height: 0 }}
+                  animate={{ height: "auto", transition: { duration: 0.2 } }}
+                  exit={{ height: 0 }}
+                  style={{
+                    overflow: "hidden",
+                    borderRadius: "0.25rem",
+                  }}
                 >
-                  {collection.projectMetadata.viewOrder.map((viewId) => (
+                  <Box
+                    backgroundColor="background"
+                    borderWidth="0.375"
+                    borderRadius="2xLarge"
+                  >
+                    {collection.projectMetadata.viewOrder.map((viewId) => (
+                      <MenuItem
+                        padding="2"
+                        borderTopRadius="2xLarge"
+                        borderBottomRadius="2xLarge"
+                        key={viewId}
+                        onClick={() => {
+                          setProjectViewId(viewId);
+                          setIsViewPopoverOpen(false);
+                        }}
+                      >
+                        <Text color="accent">
+                          {getViewIcon(
+                            collection.projectMetadata.views[viewId]?.type
+                          )}
+                        </Text>
+                        <Text ellipsis>
+                          {collection.projectMetadata.views[viewId]?.name}
+                        </Text>
+                        {viewId === projectViewId && (
+                          <Box
+                            cursor="pointer"
+                            marginLeft="2"
+                            onClick={() => setIsViewSettingsOpen(true)}
+                          >
+                            <Text variant="label">
+                              <IconCog />
+                            </Text>
+                          </Box>
+                        )}
+                      </MenuItem>
+                    ))}
+                  </Box>
+                </motion.div>
+              </Popover>
+              <Popover
+                width="16"
+                isOpen={isAddViewPopupOpen}
+                setIsOpen={setIsAddViewPopupOpen}
+                butttonComponent={
+                  <AddViewButton
+                    paddingX={{
+                      xs: "2",
+                      md: "8",
+                    }}
+                    onClick={() => {
+                      if (!formActions("manageSettings"))
+                        toast.error(
+                          "Your role(s) doen't have permission to manage this collection's settings"
+                        );
+                      else setIsAddViewPopupOpen(true);
+                    }}
+                  >
+                    <Text>
+                      <IconPlusSmall size="5" />
+                    </Text>
+                  </AddViewButton>
+                }
+              >
+                <motion.div
+                  initial={{ height: 0 }}
+                  animate={{ height: "auto", transition: { duration: 0.2 } }}
+                  exit={{ height: 0 }}
+                  style={{
+                    overflow: "hidden",
+                    borderRadius: "0.25rem",
+                  }}
+                >
+                  <Box
+                    backgroundColor="background"
+                    borderWidth="0.375"
+                    borderRadius="2xLarge"
+                  >
                     <MenuItem
                       padding="2"
                       borderTopRadius="2xLarge"
-                      borderBottomRadius="2xLarge"
-                      key={viewId}
                       onClick={() => {
-                        setProjectViewId(viewId);
-                        setIsViewPopoverOpen(false);
+                        setIsAddViewPopupOpen(false);
+                        setViewType("grid");
+                        setIsAddViewModalOpen(true);
                       }}
                     >
                       <Text color="accent">
-                        {getViewIcon(
-                          collection.projectMetadata.views[viewId]?.type
-                        )}
+                        <Grid
+                          size={18}
+                          style={{
+                            marginTop: 4,
+                          }}
+                        />
                       </Text>
-                      <Text ellipsis>
-                        {collection.projectMetadata.views[viewId]?.name}
-                      </Text>
-                      {viewId === projectViewId && (
-                        <Box
-                          cursor="pointer"
-                          marginLeft="2"
-                          onClick={() => setIsViewSettingsOpen(true)}
-                        >
-                          <Text variant="label">
-                            <IconCog />
-                          </Text>
-                        </Box>
-                      )}
+                      <Text weight="semiBold">Grid View</Text>
                     </MenuItem>
-                  ))}
-                </Box>
-              </motion.div>
-            </Popover>
-            <Filter />
-            <Sort />
+                    <MenuItem
+                      padding="2"
+                      onClick={() => {
+                        setIsAddViewPopupOpen(false);
+                        setViewType("kanban");
+                        setIsAddViewModalOpen(true);
+                      }}
+                    >
+                      <Text color="accent">
+                        <Trello />
+                      </Text>
+                      <Text weight="semiBold">Kanban View</Text>
+                    </MenuItem>
+                    <MenuItem
+                      padding="2"
+                      onClick={() => {
+                        setIsAddViewPopupOpen(false);
+                        setViewType("list");
+                        setIsAddViewModalOpen(true);
+                      }}
+                    >
+                      <Text color="accent">
+                        <List />
+                      </Text>
+                      <Text weight="semiBold">List View</Text>
+                    </MenuItem>
+                    <MenuItem
+                      padding="2"
+                      borderBottomRadius="2xLarge"
+                      onClick={() => {
+                        toast.warning("Coming soon!");
+                        setIsAddViewPopupOpen(false);
+                      }}
+                    >
+                      <Text color="accent">
+                        <Clock />
+                      </Text>
+                      <Text weight="semiBold">Gantt View</Text>
+                    </MenuItem>
+                  </Box>
+                </motion.div>
+              </Popover>
+            </Stack>
+            <Stack direction="horizontal" align="center">
+              <Filter />
+              <Sort />
+              <MyTasks />
+            </Stack>
           </Stack>
         </Visible>
       </Stack>
@@ -422,8 +545,6 @@ export const getViewIcon = (viewType: string) => {
       return <IconCollection size="5" />;
   }
 };
-
-export const ViewTabsContainer = styled(Box)``;
 
 export const ViewTab = styled(Box)`
   max-width: 200px;

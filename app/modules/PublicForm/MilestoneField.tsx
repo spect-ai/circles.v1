@@ -74,7 +74,8 @@ export default function MilestoneField({
       </AnimatePresence>
       <Box marginTop="4">
         <Stack direction="vertical" space="2">
-          {data[propertyName]?.length &&
+          {data &&
+            data[propertyName]?.length &&
             data[propertyName].map((milestone: Milestone, index: number) => {
               return (
                 <Box

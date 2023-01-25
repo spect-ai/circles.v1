@@ -20,6 +20,7 @@ import { toast } from "react-toastify";
 import mixpanel from "@/app/common/utils/mixpanel";
 import { useQuery } from "react-query";
 import Editor from "@/app/common/components/Editor";
+import { updateFormCollection } from "@/app/services/Collection";
 
 export default function SybilResistance() {
   const [isOpen, setIsOpen] = useState(false);
@@ -69,10 +70,10 @@ export default function SybilResistance() {
     <>
       <Stack direction="vertical">
         {collection.formMetadata.sybilProtectionEnabled && (
-          <Text variant="small">{`This form is sybil protected!`}</Text>
+          <Text variant="label">{`This form is sybil protected!`}</Text>
         )}
         {!collection.formMetadata.sybilProtectionEnabled && (
-          <Text variant="small">{`Protect your form against sybil attacks`}</Text>
+          <Text variant="label">{`Protect your form against sybil attacks`}</Text>
         )}
       </Stack>
       <Box
@@ -258,21 +259,12 @@ export default function SybilResistance() {
                       size="small"
                       onClick={async () => {
                         setLoading(true);
-                        const res = await (
-                          await fetch(
-                            `${process.env.API_HOST}/collection/v1/${collection.id}`,
-                            {
-                              method: "PATCH",
-                              body: JSON.stringify({
-                                sybilProtectionEnabled: false,
-                              }),
-                              headers: {
-                                "Content-Type": "application/json",
-                              },
-                              credentials: "include",
-                            }
-                          )
-                        ).json();
+                        const res = await updateFormCollection(collection.id, {
+                          formMetadata: {
+                            ...collection.formMetadata,
+                            sybilProtectionEnabled: false,
+                          },
+                        });
                         if (res.id) {
                           updateCollection(res);
                           setIsOpen(false);
@@ -300,22 +292,13 @@ export default function SybilResistance() {
                         for (let i = 0; i < stamps.length; i++) {
                           sybilProtectionScores[stamps[i].id] = allocations[i];
                         }
-                        const res = await (
-                          await fetch(
-                            `${process.env.API_HOST}/collection/v1/${collection.id}`,
-                            {
-                              method: "PATCH",
-                              body: JSON.stringify({
-                                sybilProtectionEnabled: true,
-                                sybilProtectionScores,
-                              }),
-                              headers: {
-                                "Content-Type": "application/json",
-                              },
-                              credentials: "include",
-                            }
-                          )
-                        ).json();
+                        const res = await updateFormCollection(collection.id, {
+                          formMetadata: {
+                            ...collection.formMetadata,
+                            sybilProtectionEnabled: true,
+                            sybilProtectionScores,
+                          },
+                        });
                         updateCollection(res);
                         setIsOpen(false);
                         setLoading(false);

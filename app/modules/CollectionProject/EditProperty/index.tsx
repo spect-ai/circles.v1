@@ -100,7 +100,7 @@ function EditProperty({ propertyName }: Props) {
                       <Text align="center">
                         <Edit size={16} />
                       </Text>
-                      <Text align="center">Edit property</Text>
+                      <Text align="center">Edit field</Text>
                     </Stack>
                   </MenuItem>
                   <MenuItem
@@ -114,7 +114,7 @@ function EditProperty({ propertyName }: Props) {
                       <Text align="center">
                         <Delete size={16} />
                       </Text>
-                      <Text align="center">Delete property</Text>
+                      <Text align="center">Delete field</Text>
                     </Stack>
                   </MenuItem>
                 </Stack>

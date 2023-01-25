@@ -73,7 +73,6 @@ export function satisfiesConditions(
       case "multiSelect":
       case "multiURL":
       case "user[]":
-        console.log({ data, propertyId });
         // eslint-disable-next-line no-case-declarations
         const values = data[propertyId]?.map((d: { value: any }) => d?.value);
         switch (comparatorValue) {
@@ -183,3 +182,24 @@ export function satisfiesConditions(
     }
   });
 }
+
+export const isMyCard = (
+  data: any,
+  properties: { [propertyId: string]: Property },
+  currentUser: string
+): boolean => {
+  const userProperties = Object.keys(properties).filter((propertyId) => {
+    const property = properties[propertyId];
+    return property.type === "user" || property.type === "user[]";
+  });
+
+  return userProperties.some((propertyId) => {
+    const property = properties[propertyId];
+    if (property.type === "user") {
+      return data[propertyId]?.value === currentUser;
+    } else if (property.type === "user[]") {
+      return data[propertyId]?.some((user: any) => user.value === currentUser);
+    }
+    return false;
+  });
+};

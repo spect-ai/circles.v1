@@ -81,7 +81,7 @@ export default function SettingsModal({ handleClose, initialTab }: Props) {
 
   return (
     <Modal
-      title="Circle Settings"
+      title="Org Settings"
       handleClose={handleClose}
       height="40rem"
       size="large"
@@ -131,13 +131,13 @@ export default function SettingsModal({ handleClose, initialTab }: Props) {
             <Stack>
               <Input
                 label=""
-                placeholder="Circle Name"
+                placeholder="Name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
               />
               <Textarea
                 label=""
-                placeholder="Circle Description"
+                placeholder=" Description"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
               />
@@ -153,13 +153,13 @@ export default function SettingsModal({ handleClose, initialTab }: Props) {
                 uploading={uploading}
                 maxSize={10}
               />
-              <Tabs
+              {/* <Tabs
                 selectedTab={visibilityTab}
                 onTabClick={onVisibilityTabClick}
                 tabs={["Public", "Private"]}
                 orientation="horizontal"
                 unselectedColor="transparent"
-              />
+              /> */}
               <Box marginTop="4" width="full">
                 <PrimaryButton
                   onClick={onSubmit}
@@ -167,7 +167,7 @@ export default function SettingsModal({ handleClose, initialTab }: Props) {
                   disabled={uploading}
                   shape="circle"
                 >
-                  Update Circle
+                  Update Org
                 </PrimaryButton>
               </Box>
             </Stack>
@@ -182,7 +182,8 @@ export default function SettingsModal({ handleClose, initialTab }: Props) {
               <Stack>
                 <Box>
                   <Text align="center" weight="semiBold" size="extraLarge">
-                    Danger, this will also archive everything within the circle!
+                    Danger, this will also archive everything within this
+                    organization!
                   </Text>
                 </Box>
                 <PrimaryButton
@@ -190,7 +191,7 @@ export default function SettingsModal({ handleClose, initialTab }: Props) {
                   disabled={uploading}
                   tone="red"
                 >
-                  Archive Circle
+                  Archive Org
                 </PrimaryButton>
               </Stack>
             </Box>

@@ -223,11 +223,12 @@ function EditValue({ value, setValue, propertyName, dataId }: Props) {
                     <MenuItem
                       padding="2"
                       onClick={async () => {
+                        const newId = uuid();
                         let res;
                         res = await updateField(collection.id, propertyName, {
                           options: [
                             ...options,
-                            { label: tempValue, value: uuid() },
+                            { label: tempValue, value: newId },
                           ],
                         });
                         if (!res.id) {
@@ -242,29 +243,29 @@ function EditValue({ value, setValue, propertyName, dataId }: Props) {
 
                         setOptions([
                           ...options,
-                          { label: tempValue, value: uuid() },
+                          { label: tempValue, value: newId },
                         ]);
                         setFilteredOptions([
                           ...options,
-                          { label: tempValue, value: uuid() },
+                          { label: tempValue, value: newId },
                         ]);
                         if (
                           property.type === "multiSelect" ||
                           property.type === "user[]"
                         ) {
                           if (!value) {
-                            setValue([{ label: tempValue, value: uuid() }]);
+                            setValue([{ label: tempValue, value: newId }]);
                           } else {
                             if (
                               !value.find((val: any) => val.value === tempValue)
                             )
                               setValue([
                                 ...value,
-                                { label: tempValue, value: uuid() },
+                                { label: tempValue, value: newId },
                               ]);
                           }
                         } else {
-                          setValue({ label: tempValue, value: uuid() });
+                          setValue({ label: tempValue, value: newId });
                           setIsEditing(false);
                         }
                       }}

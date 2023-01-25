@@ -82,7 +82,7 @@ export default function VotingModule() {
         }
       );
       setSnapshotVoting(collection.voting.votesAreWeightedByTokens || false);
-      setSnapshotSpace(collection.voting.snapshot?.id || "");
+      setSnapshotSpace(collection.voting?.snapshot?.id || "");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [collection]);
@@ -95,13 +95,8 @@ export default function VotingModule() {
 
   return (
     <>
-      <Text variant="label">Allow members to vote on responses</Text>
-      <Box
-        width={{
-          xs: "full",
-          md: "1/2",
-        }}
-      >
+      <Stack space={"4"}>
+        <Text variant="label">Allow members to vote on responses</Text>
         <PrimaryButton
           onClick={() => setIsOpen(true)}
           icon={<IconUserGroup />}
@@ -110,7 +105,8 @@ export default function VotingModule() {
           {collection?.voting?.enabled ? "View" : "Enable"} Voting{" "}
           {collection?.voting?.enabled ? "Settings" : ""}
         </PrimaryButton>
-      </Box>
+      </Stack>
+
       <AnimatePresence>
         {isOpen && (
           <Modal
@@ -259,8 +255,8 @@ export default function VotingModule() {
                   })}
                 </Box>
                 <Text>
-                  These roles will be notified when a voting period is starts
-                  and will have the permissions to view the form's responses.
+                  These roles will be notified when a voting period starts and
+                  will have the permissions to view the form's responses.
                 </Text>
                 {["rankedChoice", "quadratic"].includes(votingType.value) && (
                   <MultiChoiceVotingOnMultipleResponses />

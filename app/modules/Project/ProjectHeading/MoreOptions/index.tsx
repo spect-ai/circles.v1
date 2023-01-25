@@ -103,8 +103,10 @@ export function AssigneeColumn({ cards, column }: ColumnProps) {
 function AdvancedOptions() {
   const { advFilters, localProject: project } = useLocalProject();
   const { mode } = useTheme();
-  const hide = project.defaultView == "Gantt" || project.defaultView == "Table";
-  const show = project.defaultView == "Board" || project.defaultView == "List";
+  const hide =
+    project?.defaultView == "Gantt" || project?.defaultView == "Table";
+  const show =
+    project?.defaultView == "Board" || project?.defaultView == "List";
   return (
     <Box display="flex" flexDirection="column" width="full">
       <BoundingBox
@@ -121,7 +123,7 @@ function AdvancedOptions() {
           display="flex"
           flexDirection="row"
           width={hide ? "76" : advFilters.sortBy == "none" ? "1/2" : "168"}
-          gap={project.defaultView == "Gantt" ? "4" : "10"}
+          gap={project?.defaultView == "Gantt" ? "4" : "10"}
           alignItems="center"
           justifyContent="flex-end"
         >

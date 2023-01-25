@@ -31,10 +31,13 @@ export default function KanbanView() {
   } = useViewCommon();
   return (
     <Box
-      marginX="8"
+      marginX={{
+        xs: "0",
+        md: "8",
+      }}
       paddingY="0"
       style={{
-        height: "calc(100vh - 9rem)",
+        height: "calc(100vh - 10rem)",
         overflowX: "auto",
         overflowY: "hidden",
       }}
@@ -65,6 +68,7 @@ export default function KanbanView() {
           <Box marginTop="2" width="48">
             {property.type === "singleSelect" && !loading && (
               <PrimaryButton
+                variant="transparent"
                 onClick={async () => {
                   setLoading(true);
                   await updateField(collection.id, view.groupByColumn, {

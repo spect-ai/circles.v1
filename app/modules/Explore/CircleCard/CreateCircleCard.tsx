@@ -80,7 +80,7 @@ const CreateCircleCard = () => {
         height="72"
         onClick={open}
       >
-        Create a Circle
+        Create an Organization
       </Container>
       <AnimatePresence
         initial={false}
@@ -88,18 +88,18 @@ const CreateCircleCard = () => {
         onExitComplete={() => null}
       >
         {modalOpen && (
-          <Modal handleClose={close} title="Create Circle" zIndex={2}>
+          <Modal handleClose={close} title="Create Organization" zIndex={2}>
             <Box width="full" padding="8">
               <Stack>
                 <Input
                   label=""
-                  placeholder="Circle Name"
+                  placeholder="Name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                 />
                 <Input
                   label=""
-                  placeholder="Circle Description"
+                  placeholder="Description"
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                 />
@@ -109,19 +109,19 @@ const CreateCircleCard = () => {
                     type: "image/png",
                     url: logo,
                   }}
-                  label="Choose or drag and drop media"
+                  label="Select Org Avatar"
                   uploaded={!!logo}
                   onChange={uploadFile}
                   uploading={uploading}
                   maxSize={10}
                 />
-                <Tabs
+                {/* <Tabs
                   selectedTab={visibilityTab}
                   onTabClick={onVisibilityTabClick}
                   tabs={["Public", "Private"]}
                   orientation="horizontal"
                   unselectedColor="transparent"
-                />
+                /> */}
                 <Box display="flex" justifyContent="center">
                   <Button
                     width="full"
@@ -149,7 +149,7 @@ const CreateCircleCard = () => {
                         .catch((err) => console.log({ err }));
                     }}
                   >
-                    Create Circle
+                    Create Organization
                   </Button>
                 </Box>
               </Stack>

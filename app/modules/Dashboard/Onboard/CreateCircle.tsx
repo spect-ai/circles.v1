@@ -12,6 +12,7 @@ import Link from "next/link";
 import DiscordIcon from "@/app/assets/icons/discordIcon.svg";
 import { joinCirclesFromGuildxyz } from "@/app/services/JoinCircle";
 import { useLocation } from "react-use";
+import { useRouter } from "next/router";
 
 type CreateCircleDto = {
   name: string;
@@ -27,6 +28,7 @@ interface Props {
 }
 
 export function CreateCircle({ setStep, setOnboardType }: Props) {
+  const router = useRouter();
   const [circleName, setCircleName] = useState("");
   const [part, setPart] = useState(0);
   const [slug, setSlug] = useState("");
@@ -164,7 +166,6 @@ export function CreateCircle({ setStep, setOnboardType }: Props) {
                 `https://discord.com/oauth2/authorize?client_id=942494607239958609&permissions=17448306704&redirect_uri=${origin}/api/connectDiscord&response_type=code&scope=bot&state=${slug}`,
                 "_blank"
               );
-              setStep(2);
             }}
           >
             <PrimaryButton
@@ -177,7 +178,12 @@ export function CreateCircle({ setStep, setOnboardType }: Props) {
               Connect Discord
             </PrimaryButton>
           </Box>
-          <Box onClick={() => setStep(2)} cursor="pointer">
+          <Box
+            onClick={() => {
+              void router.push(`/${slug}`);
+            }}
+            cursor="pointer"
+          >
             <Text color={"textTertiary"}>Let&apos;s skip this</Text>
           </Box>
         </>

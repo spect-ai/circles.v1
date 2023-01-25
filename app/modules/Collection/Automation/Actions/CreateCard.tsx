@@ -3,8 +3,10 @@ import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { useCircle } from "@/app/modules/Circle/CircleContext";
 import { Action, CollectionType, Option, Property } from "@/app/types";
+import { InfoCircleOutlined } from "@ant-design/icons";
 import { Box, Button, IconClose, Input, Stack, Tag, Text } from "degen";
 import { SetStateAction, useEffect, useState } from "react";
+import { Tooltip } from "react-tippy";
 import { useLocalCollection } from "../../Context/LocalCollectionContext";
 import { Field } from "./Field";
 
@@ -69,7 +71,6 @@ export default function CreateCard({ setAction, actionMode, action }: Props) {
             },
           }));
       } else if (fieldType === "default") {
-        console.log({ prop: mappedCollection?.properties });
         return Object.entries(mappedCollection?.properties)
           .filter(([propertyId, property]) => !usedProperty[propertyId])
           .map(([propertyId, property]) => ({
@@ -491,6 +492,7 @@ export default function CreateCard({ setAction, actionMode, action }: Props) {
             flexDirection="row"
             justifyContent="flex-start"
             gap="2"
+            alignItems={"center"}
           >
             <PrimaryButton
               variant="tertiary"
@@ -539,6 +541,7 @@ export default function CreateCard({ setAction, actionMode, action }: Props) {
             </PrimaryButton>
             <PrimaryButton
               variant="tertiary"
+              disabled={collection.formMetadata.allowAnonymousResponses}
               onClick={() => {
                 setFieldType("responder");
                 setValues([
@@ -557,6 +560,11 @@ export default function CreateCard({ setAction, actionMode, action }: Props) {
             >
               + Map Responder
             </PrimaryButton>
+            {collection.formMetadata.allowAnonymousResponses && (
+              <Tooltip title="You can only map the responder if the form doesnot allow anonymous responses">
+                <InfoCircleOutlined style={{ color: "rgb(191, 90, 242, 1)" }} />
+              </Tooltip>
+            )}
           </Box>
         </Box>
       )}

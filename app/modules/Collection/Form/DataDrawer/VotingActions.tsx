@@ -8,7 +8,7 @@ import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { AnimatePresence } from "framer-motion";
 import Modal from "@/app/common/components/Modal";
 import { DateInput } from "@/app/modules/Profile/ProfilePage/AddExperienceModal";
-import { dateIsInvalid } from "@/app/common/utils/utils";
+import { dateIsInvalid, smartTrim } from "@/app/common/utils/utils";
 import useSnapshot from "@/app/services/Snapshot/useSnapshot";
 import { Proposal } from "./VotingOnSnapshot";
 import { useQuery as useApolloQuery } from "@apollo/client";
@@ -16,6 +16,7 @@ import { Option } from "@/app/types";
 import { useLocation } from "react-use";
 import { useAccount } from "wagmi";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
+import { useRouter } from "next/router";
 
 export default function VotingActions({
   dataId,
@@ -31,6 +32,8 @@ export default function VotingActions({
   const { address } = useAccount();
   const { mode } = useTheme();
   const { createProposal } = useSnapshot();
+  const router = useRouter();
+  const { circle: cId } = router.query;
 
   const [snapshotModal, setSnapshotModal] = useState(false);
   const [startDate, setStartDate] = useState("");
@@ -51,7 +54,7 @@ export default function VotingActions({
         response = response.concat(`## ${property.name} \n`);
       }
       if (property.description) {
-        response = response.concat(` ### ${property.description} \n`);
+        response = response.concat(` #### ${property.description} \n`);
       }
       if (data[property.name] === undefined || data[property.name] === null)
         return response;
@@ -131,13 +134,20 @@ export default function VotingActions({
       return response;
     });
 
-    return res.join("\n");
+    let body = res.join("\n");
+    body = smartTrim(body, 14300);
+    body = body.concat(
+      `\n\nThis proposal was created via Spect. View the proposal details at <https://circles.spect.network/${cId}/r/${collection.slug}?cardSlug=${dataId}> \n`
+    );
+
+    console.log(body);
+    return body;
   };
 
   return (
     <>
       {!collection.voting?.periods?.[dataId]?.active &&
-        !collection.voting.snapshot?.id && (
+        !collection.voting?.snapshot?.id && (
           <Box
             display="flex"
             flexDirection="row"
@@ -172,7 +182,7 @@ export default function VotingActions({
           </Box>
         )}
       {collection.voting?.enabled &&
-        !collection.voting.snapshot?.id &&
+        !collection.voting?.snapshot?.id &&
         collection.voting?.periods &&
         collection.voting?.periods[dataId]?.active && (
           <Box
@@ -199,7 +209,7 @@ export default function VotingActions({
           </Box>
         )}
       {!collection.voting?.periods?.[dataId]?.active &&
-        collection.voting.snapshot?.id && (
+        collection.voting?.snapshot?.id && (
           <Box
             display="flex"
             flexDirection="row"
@@ -237,7 +247,7 @@ export default function VotingActions({
           </Box>
         )}
       {collection.voting?.periods?.[dataId]?.active &&
-        collection.voting.snapshot?.id &&
+        collection.voting?.snapshot?.id &&
         proposal &&
         proposalData?.proposal?.state === "active" && (
           <Text variant="base"> Voting is active</Text>

@@ -107,7 +107,75 @@ const Card = ({
         }
       }}
     >
-      <Stack direction={"horizontal"} align="center" justify={"flex-start"}>
+      {projects?.[card]?.id && (
+        <>
+          <Stack direction={"horizontal"} align="center" justify={"flex-start"}>
+            <Box display={"block"}>
+              <ProjectOutlined style={{ fontSize: "1.1rem" }} />
+            </Box>
+            <Text ellipsis variant="base" weight={"semiBold"}>
+              {projects?.[card]?.name}
+            </Text>
+          </Stack>
+          <Box paddingTop={"2"}>
+            <Text color={"textSecondary"} ellipsis>
+              {projects?.[card]?.description}
+            </Text>
+          </Box>
+        </>
+      )}
+      {workstreams?.[card]?.id && (
+        <>
+          <Stack direction={"horizontal"} align="center" justify={"flex-start"}>
+            <Box display={"block"}>
+              <IconUserGroup size={"5"} />
+            </Box>
+            <Text ellipsis variant="base" weight={"semiBold"}>
+              {workstreams?.[card]?.name}
+            </Text>
+          </Stack>
+          <Box paddingTop={"2"}>
+            <Text color={"textSecondary"} ellipsis>
+              {workstreams?.[card]?.description}
+            </Text>
+          </Box>
+        </>
+      )}
+      {retros?.[card]?.id && (
+        <>
+          <Stack direction={"horizontal"} align="center" justify={"flex-start"}>
+            <Box display={"block"}>
+              <IconLightningBolt size={"5"} />
+            </Box>
+            <Text ellipsis variant="base" weight={"semiBold"}>
+              {retros?.[card]?.title}
+            </Text>
+          </Stack>
+          <Box paddingTop={"2"}>
+            <Text color={"textSecondary"} ellipsis>
+              {retros?.[card]?.description}
+            </Text>
+          </Box>
+        </>
+      )}
+      {collections?.[card]?.id && (
+        <>
+          <Stack direction={"horizontal"} align="center" justify={"flex-start"}>
+            <Box display={"block"}>
+              {collections?.[card].viewType ? (
+                getViewIcon(collections?.[card].viewType || "")
+              ) : (
+                <Table size={18} style={{ marginTop: 4 }} />
+              )}
+            </Box>
+            <Text ellipsis variant="base" weight={"semiBold"}>
+              {collections?.[card]?.name}
+            </Text>
+          </Stack>
+          <Box paddingTop={"2"}></Box>
+        </>
+      )}
+      {/* <Stack direction={"horizontal"} align="center" justify={"flex-start"}>
         <Box display={"block"}>
           {projects?.[card]?.id && (
             <ProjectOutlined style={{ fontSize: "1.1rem" }} />
@@ -135,7 +203,7 @@ const Card = ({
             workstreams?.[card].description ||
             retros?.[card]?.description}
         </Text>
-      </Box>
+      </Box> */}
     </Container>
   );
   // eslint-disable-next-line react-hooks/exhaustive-deps

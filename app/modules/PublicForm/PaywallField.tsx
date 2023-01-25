@@ -219,7 +219,7 @@ const PaywallField = ({
       .promise(
         batchPay(options),
         {
-          pending: `Distributing ${
+          pending: `Paying ${
             (circleRegistry &&
               circleRegistry[selectedChain.value]?.nativeCurrency) ||
             "Network Gas Token"
@@ -280,7 +280,7 @@ const PaywallField = ({
       .promise(
         batchPay(options),
         {
-          pending: `Distributing Approved Tokens`,
+          pending: `Sending ${selectedToken.label}`,
           error: {
             render: ({ data }) => data,
           },

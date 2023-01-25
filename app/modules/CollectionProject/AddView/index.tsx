@@ -11,7 +11,7 @@ import uuid from "react-uuid";
 import { toast } from "react-toastify";
 
 type Props = {
-  viewType: string;
+  viewType: "kanban" | "list" | "grid";
   handleClose: () => void;
 };
 
@@ -61,11 +61,45 @@ export default function AddView({ viewType, handleClose }: Props) {
             />
           )}
           <PrimaryButton
-            disabled={!groupByColumn.value}
+            disabled={
+              ["kanban", "list"].includes(viewType) ? !groupByColumn : !viewName
+            }
             loading={loading}
-            icon={<IconPlusSmall />}
+            icon={<IconPlusSmall size="5" />}
             onClick={async () => {
               setLoading(true);
+              if (viewType === "grid") {
+                const viewId = uuid();
+                const newCollection: any = {
+                  projectMetadata: {
+                    ...collection.projectMetadata,
+                    views: {
+                      ...collection.projectMetadata.views,
+                      [viewId]: {
+                        name: viewName,
+                        type: "grid",
+                        filters: [],
+                        sort: {
+                          property: "",
+                          direction: "asc",
+                        },
+                      },
+                    },
+                    viewOrder: [
+                      ...collection.projectMetadata.viewOrder,
+                      viewId,
+                    ],
+                  },
+                };
+                const res = await updateFormCollection(
+                  collection.id,
+                  newCollection
+                );
+                updateCollection(res);
+                setLoading(false);
+                handleClose();
+                return;
+              }
               const cardColumnOrder: Array<Array<string>> = Array.from(
                 {
                   length:

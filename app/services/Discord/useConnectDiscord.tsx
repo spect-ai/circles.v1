@@ -21,7 +21,9 @@ export default function useConnectDiscord() {
       const profileRes = await updateProfile({
         discordId: data.userData.id,
         discordUsername:
-          data.userData.username + "#" + data.userData.discriminator,
+          data.userData.username === undefined
+            ? undefined
+            : data.userData.username + "#" + data.userData.discriminator,
       });
       await joinCirclesFromDiscord(data.guildData, data.userData.id);
       if (profileRes) {

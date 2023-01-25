@@ -4,13 +4,16 @@ import {
   updateCollectionDataGuarded,
   updateFormCollection,
 } from "@/app/services/Collection";
-import { MemberDetails, Option } from "@/app/types";
+import { MemberDetails, Option, UserType } from "@/app/types";
 import { matchSorter } from "match-sorter";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { DropResult } from "react-beautiful-dnd";
 import { useQuery } from "react-query";
-import { satisfiesConditions } from "../../Collection/Common/SatisfiesFilter";
+import {
+  isMyCard,
+  satisfiesConditions,
+} from "../../Collection/Common/SatisfiesFilter";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
 
 export default function useViewCommon() {
@@ -19,6 +22,7 @@ export default function useViewCommon() {
     projectViewId,
     updateCollection,
     searchFilter,
+    showMyTasks,
   } = useLocalCollection();
 
   const view = collection.projectMetadata.views[projectViewId];
@@ -33,6 +37,10 @@ export default function useViewCommon() {
   const [cardOrders, setCardOrders] = useState(
     collection.projectMetadata.cardOrders[view.groupByColumn]
   );
+
+  const { data: currentUser, refetch } = useQuery<UserType>("getMyUser", {
+    enabled: false,
+  });
 
   const router = useRouter();
   const { circle: cId, cardSlug, newCard } = router.query;
@@ -79,11 +87,21 @@ export default function useViewCommon() {
     if (view.filters?.length) {
       newCardOrder = newCardOrder.map((group) => {
         return group.filter((cardId) => {
-          console.log({ collection: collection.data, cardId });
           return satisfiesConditions(
             collection.data[cardId],
             collection.properties,
             view.filters || []
+          );
+        });
+      });
+    }
+    if (showMyTasks) {
+      newCardOrder = newCardOrder.map((group) => {
+        return group.filter((cardId) => {
+          return isMyCard(
+            collection.data[cardId],
+            collection.properties,
+            currentUser?.id || ""
           );
         });
       });
@@ -174,6 +192,7 @@ export default function useViewCommon() {
     view.filters,
     view.sort,
     memberDetails?.members,
+    showMyTasks,
   ]);
 
   useEffect(() => {
@@ -269,9 +288,12 @@ export default function useViewCommon() {
     );
 
     const newSourceColumnOrder = Array.from(cardColumnOrder[sourceColumnIndex]);
+    const sourceIndex = newSourceColumnOrder.indexOf(draggableId);
+    newSourceColumnOrder.splice(sourceIndex, 1);
 
-    newSourceColumnOrder.splice(source.index, 1);
-    const newDestColumnOrder = Array.from(cardColumnOrder[destColumnIndex]);
+    const newDestColumnOrder = Array.from(
+      cardColumnOrder[destColumnIndex] || []
+    );
     newDestColumnOrder.splice(destination.index, 0, draggableId);
 
     const newCardColumnOrder = Array.from(cardColumnOrder);

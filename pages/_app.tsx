@@ -46,6 +46,9 @@ import { UserType } from "@/app/types";
 import { atom, useAtom } from "jotai";
 import { flags } from "@/app/common/utils/featureFlags";
 
+import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
+import { useLocation } from "react-use";
+
 const isProd = process.env.NODE_ENV === "production";
 
 const chainsObj = {
@@ -238,6 +241,15 @@ function MyApp({ Component, pageProps }: AppProps) {
     };
   }, [router.events]);
 
+  const { hostname } = useLocation();
+
+  const client = new ApolloClient({
+    uri: hostname?.startsWith("circles")
+      ? "https://hub.snapshot.org/graphql"
+      : "https://testnet.snapshot.org/graphql",
+    cache: new InMemoryCache(),
+  });
+
   useEffect(() => {
     void (async () => {
       try {
@@ -282,7 +294,9 @@ function MyApp({ Component, pageProps }: AppProps) {
                       onExitComplete={() => window.scrollTo(0, 0)}
                     >
                       <ErrorBoundary FallbackComponent={ErrorFallBack}>
-                        <Component {...pageProps} canonical={url} key={url} />
+                        <ApolloProvider client={client}>
+                          <Component {...pageProps} canonical={url} key={url} />
+                        </ApolloProvider>
                       </ErrorBoundary>
                     </AnimatePresence>
                   </Hydrate>

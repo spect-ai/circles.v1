@@ -88,12 +88,12 @@ export default function RoleGate() {
       <Stack direction="vertical">
         {collection.formMetadata.formRoleGating &&
           collection.formMetadata.formRoleGating.length > 0 && (
-            <Text variant="small">{`Responses to form can only be added by these roles`}</Text>
+            <Text variant="label">{`Responses to form can only be added by these roles`}</Text>
           )}
-        {!collection.formMetadata.formRoleGating ||
-          (collection.formMetadata.formRoleGating.length === 0 && (
-            <Text variant="small">{`Only allow holders of specific roles to submit response`}</Text>
-          ))}
+        {(!collection.formMetadata.formRoleGating ||
+          collection.formMetadata.formRoleGating.length === 0) && (
+          <Text variant="label">{`Only allow holders of specific roles to submit response`}</Text>
+        )}
       </Stack>
       {collection.formMetadata.formRoleGating &&
         collection.formMetadata.formRoleGating.length > 0 && (

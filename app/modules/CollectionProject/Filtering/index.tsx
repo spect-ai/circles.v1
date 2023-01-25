@@ -2,6 +2,7 @@ import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { Box } from "degen";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
 import Filter from "./Filter";
+import MyTasks from "./MyTasks";
 import { SearchCard } from "./Search";
 import Sort from "./Sort";
 
@@ -27,12 +28,13 @@ export default function Filtering() {
         <Box
           display="flex"
           flexDirection="row"
-          gap="10"
+          gap="4"
           alignItems="center"
           width="1/2"
         >
           <Filter />
           <Sort />
+          <MyTasks />
         </Box>
       )}
     </Box>

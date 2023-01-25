@@ -36,6 +36,7 @@ import { Grid } from "react-feather";
 import styled from "styled-components";
 import DiscordIcon from "@/app/assets/icons/discordIcon.svg";
 import { useLocation } from "react-use";
+import ConnectDiscordButton from "@/app/common/components/ConnectDiscordButton";
 
 function Dashboard() {
   const { setIsProfilePanelExpanded } = useGlobal();
@@ -247,7 +248,8 @@ function Dashboard() {
               </Stack>
             </Hidden>
           </Stack>
-          {!currentUser.discordUsername && (
+          {(!currentUser.discordUsername ||
+            currentUser.discordUsername === "undefined#undefined") && (
             <Box
               marginY={"3"}
               padding={"3"}
@@ -265,30 +267,11 @@ function Dashboard() {
               borderRadius={"large"}
             >
               <Text>
-                Want to explore your favourite DAOs on Spect ? Unlock countless
-                opportunities by connecting your Discord account.
+                {!currentUser.discordUsername
+                  ? "Want to explore your favourite DAOs on Spect ? Unlock countless opportunities by connecting your Discord account."
+                  : "Looks like your Discord isn't connected properly. Try connecting it again."}
               </Text>
-              <Link
-                href={`https://discord.com/api/oauth2/authorize?client_id=942494607239958609&redirect_uri=${
-                  process.env.NODE_ENV === "development"
-                    ? "http%3A%2F%2Flocalhost%3A3000%2FlinkDiscord"
-                    : `https%3A%2F%2F${hostname}%2FlinkDiscord`
-                }&response_type=code&scope=guilds%20identify`}
-              >
-                <Button
-                  data-tour="connect-discord-button"
-                  width="fit"
-                  size="small"
-                  variant="secondary"
-                  prefix={
-                    <Box marginTop="1">
-                      <DiscordIcon />
-                    </Box>
-                  }
-                >
-                  Connect Discord
-                </Button>
-              </Link>
+              <ConnectDiscordButton width="fit" />
             </Box>
           )}
           <Box
@@ -307,7 +290,7 @@ function Dashboard() {
                 setPanelTab("circles");
               }}
             >
-              Circles
+              Organizations
             </Button>
             <Button
               size="small"

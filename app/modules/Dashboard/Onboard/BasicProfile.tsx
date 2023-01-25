@@ -9,6 +9,8 @@ import { useQuery } from "react-query";
 import Link from "next/link";
 import DiscordIcon from "@/app/assets/icons/discordIcon.svg";
 import { useLocation } from "react-use";
+import ConnectDiscordButton from "@/app/common/components/ConnectDiscordButton";
+import { toast } from "react-toastify";
 
 export const NameInput = styled.input`
   width: 100%;
@@ -40,6 +42,8 @@ export function BasicProfile({ setStep }: { setStep: (step: number) => void }) {
     });
     if (res) {
       setStep(1);
+    } else {
+      toast.error("Username already taken");
     }
     process.env.NODE_ENV === "production" &&
       mixpanel.track("Onboard profile", {
@@ -104,31 +108,7 @@ export function BasicProfile({ setStep }: { setStep: (step: number) => void }) {
               Connecting your Discord automatically lets you claim roles in all
               your circles that have setup Discord roles.
             </Text>
-            <Button
-              data-tour="connect-discord-button"
-              width="full"
-              size="small"
-              variant="secondary"
-              prefix={
-                <Box marginTop="1">
-                  <DiscordIcon />
-                </Box>
-              }
-              onClick={() => {
-                console.log({ hostname });
-                window.open(
-                  `https://discord.com/api/oauth2/authorize?client_id=942494607239958609&redirect_uri=${
-                    process.env.NODE_ENV === "development"
-                      ? "http%3A%2F%2Flocalhost%3A3000%2FlinkDiscord"
-                      : `https%3A%2F%2F${hostname}%2FlinkDiscord`
-                  }&response_type=code&scope=guilds%20identify`,
-                  "_blank"
-                );
-                setPart(1);
-              }}
-            >
-              Connect Discord
-            </Button>
+            <ConnectDiscordButton width="full"/>
             <Box onClick={() => setPart(1)} cursor="pointer">
               <Text color={"textTertiary"}>Let&apos;s skip this</Text>
             </Box>

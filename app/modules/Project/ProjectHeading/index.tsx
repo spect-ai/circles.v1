@@ -112,7 +112,7 @@ function ProjectHeading() {
   );
 }
 
-const Pulse = styled(Box)`
+export const Pulse = styled(Box)`
   animation: pulse 2s infinite;
   @keyframes pulse {
     0% {

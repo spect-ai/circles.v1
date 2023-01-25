@@ -86,7 +86,7 @@ export default function FormRoles() {
   return (
     <>
       <Box width="full" display="flex" flexDirection={"column"} gap="4">
-        <Text>Configure granular permissions using Circle Roles</Text>
+        <Text variant="label">Configure granular permissions using Circle Roles</Text>
         <PrimaryButton
           icon={<IconUserGroupSolid />}
           onClick={() => setRoleModal(true)}

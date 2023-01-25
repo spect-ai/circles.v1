@@ -52,7 +52,7 @@ export default function AddField({ propertyName, handleClose }: Props) {
   const { registry, circle } = useCircle();
   const [networks, setNetworks] = useState(registry);
   const [payWallOption, setPayWallOption] = useState({
-    network: registry as Registry,
+    network: { "137": registry?.["137"] } as Registry,
     value: 0,
     receiver: "",
   });
@@ -416,7 +416,7 @@ export default function AddField({ propertyName, handleClose }: Props) {
                 <AddConditions
                   viewConditions={viewConditions}
                   setViewConditions={setViewConditions}
-                  buttonText="Add View Condition"
+                  buttonText="Add Condition when field is visible"
                 />
                 {/* {["shortText", "longText", "ethAddress"].includes(
                   type.value

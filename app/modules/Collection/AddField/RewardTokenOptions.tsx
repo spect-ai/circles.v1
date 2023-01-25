@@ -20,9 +20,16 @@ import { useCircle } from "../../Circle/CircleContext";
 type Props = {
   networks?: Registry;
   setNetworks: React.Dispatch<React.SetStateAction<Registry | undefined>>;
+  customText?: string;
+  customTooltip?: string;
 };
 
-export default function RewardTokenOptions({ networks, setNetworks }: Props) {
+export default function RewardTokenOptions({
+  networks,
+  setNetworks,
+  customText,
+  customTooltip,
+}: Props) {
   const { registry, circle, setRegistryData } = useCircle();
   const [newToken, setNewToken] = useState(false);
   const { mode } = useTheme();
@@ -78,10 +85,16 @@ export default function RewardTokenOptions({ networks, setNetworks }: Props) {
     <ScrollContainer maxHeight="72" overflow="auto">
       <Stack>
         <Stack direction="horizontal" space="2" align="center">
-          <Text variant="label">Token Options for reward</Text>
+          <Text variant="label">
+            {customText ? customText : "Token Options for reward"}
+          </Text>
           <Text variant="label">
             <Tooltip
-              title="The reward field can be set to any of the tokens that are added as an option."
+              title={
+                customTooltip
+                  ? customTooltip
+                  : "The reward field can be set to any of the tokens that are added as an option."
+              }
               theme={mode}
               position="top"
             >
@@ -308,6 +321,7 @@ export default function RewardTokenOptions({ networks, setNetworks }: Props) {
             flexDirection="row"
             justifyContent="flex-start"
             alignItems="flex-start"
+            padding="2"
           >
             {" "}
             <Button

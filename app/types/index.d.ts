@@ -766,7 +766,7 @@ export type FormMetadata = {
   purpose?: string;
   formRoleGating?: GuildRole[];
   sybilProtectionEnabled?: boolean;
-  sybilProtectionScores?: MappedItem<GitcoinScoreType>;
+  sybilProtectionScores?: MappedItem<number>;
   mintkudosTokenId?: number;
   messageOnSubmission: string;
   multipleResponsesAllowed: boolean;
@@ -783,6 +783,7 @@ export type FormMetadata = {
   hasRole: boolean;
   discordConnectionRequired: boolean;
   canClaimKudos: boolean;
+  allowAnonymousResponses: boolean;
 };
 
 export type ProjectMetadata = {

@@ -12,6 +12,7 @@ import { toast } from "react-toastify";
 import ConnectPage from "../../../modules/Dashboard/ConnectPage";
 import Onboard from "../../../modules/Dashboard/Onboard";
 import Loader from "@/app/common/components/Loader";
+import { useRouter } from "next/router";
 
 type PublicLayoutProps = {
   children: ReactNodeNoStrings;
@@ -85,14 +86,13 @@ function PublicLayout(props: PublicLayoutProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const router = useRouter();
+  const { inviteCode } = router.query;
+
   const onboard =
     (currentUser?.skillsV2?.length == 0 || currentUser?.email?.length == 0) &&
-    (myCircles?.length == 0 ||
-      (myCircles &&
-        myCircles?.length == 1 &&
-        myCircles?.[0]?.memberRoles[connectedUser]?.includes("steward") &&
-        Object.entries(myCircles?.[0]?.projects)?.length == 0 &&
-        Object.entries(myCircles?.[0]?.collections)?.length == 0));
+    myCircles?.length == 0 &&
+    !inviteCode;
 
   useEffect(() => {
     void fetchCircles();
