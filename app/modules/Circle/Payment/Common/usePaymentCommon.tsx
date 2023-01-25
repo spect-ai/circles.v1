@@ -212,6 +212,7 @@ export default function usePaymentViewCommon() {
   };
 
   useEffect(() => {
+    console.log({ paymentId });
     if (paymentId || newCard) {
       setValue(circle.paymentDetails[paymentId as string]);
       setIsCardDrawerOpen(true);

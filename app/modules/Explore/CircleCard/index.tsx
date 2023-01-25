@@ -4,6 +4,7 @@ import { Avatar, Box, Button, Stack, Text } from "degen";
 import styled, { keyframes } from "styled-components";
 import Link from "next/link";
 import Image from "next/image";
+import { smartTrim } from "@/app/common/utils/utils";
 
 interface Props {
   href: string;
@@ -87,7 +88,7 @@ const CircleCard: FC<Props> = ({ href, gradient, logo, name, description }) => {
             {name}
           </Text>
           <Text align="center" variant="label">
-            {description}
+            {smartTrim(description, 80)}
           </Text>
         </Stack>
       </Container>

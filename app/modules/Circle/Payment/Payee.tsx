@@ -24,7 +24,13 @@ export default function Payee({ value, mode, setValue }: Props) {
   );
 
   return (
-    <Box width="full" onClick={(e) => {}}>
+    <Box
+      display="flex"
+      flexDirection="column"
+      width="full"
+      gap="2"
+      onClick={(e) => {}}
+    >
       {value.paidTo?.map &&
         value.paidTo?.map((p, index) => (
           <Box
@@ -58,39 +64,30 @@ export default function Payee({ value, mode, setValue }: Props) {
                 flexDirection="row"
                 alignItems="center"
                 style={{
-                  width: "82%",
+                  width: "80%",
                 }}
               >
-                <a
-                  href={`/profile/${
-                    memberDetails?.memberDetails[p.value]?.username
-                  }`}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  <Stack direction="horizontal" align="center" space="2">
-                    <Avatar
-                      src={
-                        memberDetails?.memberDetails[p.value?.value]?.avatar ||
-                        ""
-                      }
-                      address={
-                        memberDetails?.memberDetails[p.value?.value]?.ethAddress
-                      }
-                      label=""
-                      size="8"
-                      username={
-                        memberDetails?.memberDetails[p.value?.value]
-                          ?.username || ""
-                      }
-                      userId={p.value}
-                    />
-                    <Text color="white" weight="semiBold">
-                      {memberDetails?.memberDetails[p.value?.value]?.username ||
-                        ""}
-                    </Text>
-                  </Stack>
-                </a>
+                <Stack direction="horizontal" align="center" space="2">
+                  <Avatar
+                    src={
+                      memberDetails?.memberDetails[p.value?.value]?.avatar || ""
+                    }
+                    address={
+                      memberDetails?.memberDetails[p.value?.value]?.ethAddress
+                    }
+                    label=""
+                    size="8"
+                    username={
+                      memberDetails?.memberDetails[p.value?.value]?.username ||
+                      ""
+                    }
+                    userId={p.value}
+                  />
+                  <Text color="white" weight="semiBold">
+                    {memberDetails?.memberDetails[p.value?.value]?.username ||
+                      ""}
+                  </Text>
+                </Stack>
               </Box>
             )}
             {p.propertyType === "user" && mode === "edit" && (
@@ -135,7 +132,7 @@ export default function Payee({ value, mode, setValue }: Props) {
                 flexDirection="row"
                 alignItems="center"
                 style={{
-                  width: "82%",
+                  width: "80%",
                 }}
               >
                 {" "}
@@ -195,7 +192,7 @@ export default function Payee({ value, mode, setValue }: Props) {
                 <Input
                   label=""
                   placeholder={`Enter Reward Amount in`}
-                  value={p.reward?.value || ""}
+                  value={p.reward?.value || 0}
                   onChange={(e) => {
                     if (setValue) {
                       const newPaidTo = value.paidTo[index];
@@ -217,7 +214,7 @@ export default function Payee({ value, mode, setValue }: Props) {
                     }
                   }}
                   type="number"
-                  units={p.reward.token.label}
+                  units={value.token.label}
                 />
               </Box>
             )}
