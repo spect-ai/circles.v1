@@ -24,7 +24,7 @@ import { AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
 import queryClient from "@/app/common/utils/queryClient";
 import GlobalContextProvider, { useGlobal } from "@/app/context/globalContext";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import ErrorFallBack from "@/app/common/components/Error";
 import * as gtag from "../lib/gtag";
@@ -48,6 +48,7 @@ import { flags } from "@/app/common/utils/featureFlags";
 
 import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
 import { useLocation } from "react-use";
+import ScribeEmbed from "@/app/common/components/Help/ScribeEmbed";
 
 const isProd = process.env.NODE_ENV === "production";
 
@@ -170,11 +171,16 @@ const wagmiClient = createClient({
 export const authStatusAtom =
   atom<"loading" | "authenticated" | "unauthenticated">("loading");
 
+export const scribeOpenAtom = atom(false);
+export const scribeUrlAtom = atom("");
+
 function MyApp({ Component, pageProps }: AppProps) {
   const router = useRouter();
   const url = `https:/circles.spect.network/${router.route}`;
 
   const { connectUser } = useGlobal();
+  const [isScribeOpen, setIsScribeOpen] = useAtom(scribeOpenAtom);
+  const [scribeUrl, setScribeUrl] = useAtom(scribeUrlAtom);
 
   const [authenticationStatus, setAuthenticationStatus] =
     useAtom(authStatusAtom);
@@ -288,17 +294,19 @@ function MyApp({ Component, pageProps }: AppProps) {
               <ThemeProvider defaultAccent="purple" defaultMode="dark">
                 <QueryClientProvider client={queryClient}>
                   <Hydrate state={pageProps}>
-                    <AnimatePresence
-                      exitBeforeEnter
-                      initial={false}
-                      onExitComplete={() => window.scrollTo(0, 0)}
-                    >
-                      <ErrorBoundary FallbackComponent={ErrorFallBack}>
-                        <ApolloProvider client={client}>
-                          <Component {...pageProps} canonical={url} key={url} />
-                        </ApolloProvider>
-                      </ErrorBoundary>
-                    </AnimatePresence>
+                    <ErrorBoundary FallbackComponent={ErrorFallBack}>
+                      <ApolloProvider client={client}>
+                        <Component {...pageProps} canonical={url} key={url} />
+                        <AnimatePresence>
+                          {isScribeOpen && (
+                            <ScribeEmbed
+                              handleClose={() => setIsScribeOpen(false)}
+                              src={scribeUrl}
+                            />
+                          )}
+                        </AnimatePresence>
+                      </ApolloProvider>
+                    </ErrorBoundary>
                   </Hydrate>
                 </QueryClientProvider>
               </ThemeProvider>

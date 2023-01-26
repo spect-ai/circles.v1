@@ -142,6 +142,7 @@ export default function Circle() {
       {page === "Overview" && <CircleDashboard />}
       {page === "Retro" && <RetroPage />}
       <Help setFaqOpen={setFaqOpen} />
+
       <AnimatePresence>
         {faqOpen && <FAQModal handleClose={() => setFaqOpen(false)} />}
       </AnimatePresence>
