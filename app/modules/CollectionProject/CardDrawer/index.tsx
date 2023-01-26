@@ -10,6 +10,7 @@ import {
   updateFormCollection,
 } from "@/app/services/Collection";
 import { MemberDetails, Option } from "@/app/types";
+import { CheckCircleOutlined, ClockCircleOutlined } from "@ant-design/icons";
 import {
   Box,
   Button,
@@ -309,6 +310,43 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
             exit={{ opacity: 0 }}
           >
             <Container paddingX="8" paddingY="4" overflow="auto">
+              {value.slug &&
+                ["pending", "pendingSignature"].includes(
+                  collection.projectMetadata?.paymentStatus?.[value.slug] || ""
+                ) && (
+                  <Box
+                    display="flex"
+                    flexDirection="row"
+                    justifyContent="flex-end"
+                    alignItems="center"
+                    marginRight="4"
+                    gap="2"
+                  >
+                    {" "}
+                    <Text color="yellow">
+                      <ClockCircleOutlined />
+                    </Text>
+                    <Text variant="small">Pending Payment</Text>
+                  </Box>
+                )}
+              {value.slug &&
+                collection.projectMetadata?.paymentStatus?.[value.slug] ===
+                  "completed" && (
+                  <Box
+                    display="flex"
+                    flexDirection="row"
+                    justifyContent="flex-end"
+                    alignItems="center"
+                    marginRight="4"
+                    gap="2"
+                  >
+                    <Text color="green">
+                      <CheckCircleOutlined />
+                    </Text>
+
+                    <Text variant="small">Payment Completed</Text>
+                  </Box>
+                )}
               <Stack space="1">
                 <Stack
                   direction="horizontal"

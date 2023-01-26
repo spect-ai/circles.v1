@@ -1,6 +1,6 @@
 import { Box, Stack, Text, useTheme } from "degen";
 import { AnimatePresence } from "framer-motion";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ToastContainer } from "react-toastify";
 import styled from "styled-components";
 import CardDrawer from "../../CollectionProject/CardDrawer";
@@ -16,6 +16,9 @@ export default function Payment() {
     useState<"Pending" | "Completed" | "Cancelled">("Pending");
 
   const { mode } = useTheme();
+
+  useEffect(() => {}, []);
+
   return (
     <>
       <ToastContainer

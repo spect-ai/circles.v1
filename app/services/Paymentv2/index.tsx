@@ -1,3 +1,4 @@
+import { Option } from "@/app/types";
 import { toast } from "react-toastify";
 
 type AddPaymentsRequestDto = {
@@ -12,6 +13,44 @@ export const addPendingPayment = async (
   return await (
     await fetch(
       `${process.env.API_HOST}/circle/v1/${circleId}/addPendingPayment`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
+        credentials: "include",
+      }
+    )
+  ).json();
+};
+
+type UpdatePaymentsRequestDto = {
+  type: "Manually Added" | "Added From Card";
+  chain: {
+    label: string;
+    value: string;
+  };
+  token: {
+    label: string;
+    value: string;
+  };
+  value: number;
+  paidTo: {
+    propertyType: string;
+    value: any;
+  }[];
+  labels: Option[];
+};
+
+export const updatePayment = async (
+  circleId: string,
+  paymentId: string,
+  body: UpdatePaymentsRequestDto
+) => {
+  return await (
+    await fetch(
+      `${process.env.API_HOST}/circle/v1/${circleId}/updatePayment?paymentId=${paymentId}`,
       {
         method: "PATCH",
         headers: {

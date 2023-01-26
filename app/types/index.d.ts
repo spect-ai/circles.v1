@@ -297,6 +297,7 @@ export interface CircleType {
   completedPayments: string[];
   cancelledPayments: string[];
   paymentDetails: { [key: string]: PaymentDetails };
+  paymentLabelOptions: Option[];
 }
 
 // interface ProjectType {
@@ -807,6 +808,9 @@ export type ProjectMetadata = {
     rewardField: string;
     payeeField: string;
   };
+  paymentStatus?: {
+    [dataSlug: string]: "pending" | "completed" | "pendingSignature";
+  };
 };
 
 export type FormPermissions = {
@@ -1202,12 +1206,21 @@ export type PaymentDetails = {
       value: number;
     };
   }[];
-  type?: string;
-  notes?: string;
-  dataRef?: string;
-  collectionRef?: string;
+  type: "Manually Added" | "Added From Card";
+  dataSlug?: string;
+  collectionId?: string;
   title?: string;
   description?: string;
   paidOn?: Date;
   transactionHash?: string;
+  status?: "Pending" | "Pending Signature" | "Completed" | "Cancelled";
+  transactionCreatedBy?: {
+    propertyType: "ethAddress" | "user";
+    value: any;
+  };
+  transactionSignedBy?: {
+    propertyType: "ethAddress" | "user";
+    value: any;
+  }[];
+  labels?: Option[];
 };

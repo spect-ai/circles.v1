@@ -7,6 +7,7 @@ import { useRouter } from "next/router";
 import { useQuery } from "react-query";
 import styled from "styled-components";
 import { useCircle } from "../CircleContext";
+import Payee from "./Payee";
 
 type Props = {
   index: number;
@@ -21,28 +22,26 @@ export default function PaymentCard({
 }: Props) {
   const router = useRouter();
   const { mode } = useTheme();
-  const { circle: cId } = router.query;
-  const { data: memberDetails } = useQuery<MemberDetails>(
-    ["memberDetails", cId],
-    {
-      enabled: false,
-    }
-  );
-  const { fetchCircle, circle } = useCircle();
+  const { circle: cId, status, tab, paymentId } = router.query;
   const { registry } = useCircle();
 
-  const onCancelPayment = async () => {
-    console.log("cancel payment");
-    const res = await cancelPayments(circle.id as string, {
-      paymentIds: [paymentDetails.id],
-    });
-    if (res) {
-      fetchCircle();
-    }
-  };
-
   return (
-    <Card mode={mode} key={index} onClick={() => handleClick(index)}>
+    <Card
+      mode={mode}
+      key={index}
+      onClick={() => {
+        void router.push({
+          pathname: router.pathname,
+          query: {
+            circle: router.query.circle,
+            tab: "payment",
+            status,
+            paymentId: paymentDetails.id,
+          },
+        });
+      }}
+      cursor="pointer"
+    >
       <Box
         display="flex"
         flexDirection={{
@@ -102,117 +101,12 @@ export default function PaymentCard({
                 </Box>
               </Box>
             </Box>
-            {cId && router.query?.status === "pending" && (
-              <Box display="flex" flexDirection="row" justifyContent="flex-end">
-                <Button
-                  variant="transparent"
-                  size="small"
-                  shape="circle"
-                  onClick={() => {
-                    void onCancelPayment();
-                  }}
-                >
-                  {" "}
-                  <IconClose />
-                </Button>
-              </Box>
-            )}
           </Box>
           <Box display="flex" flexDirection="column" gap="2" width="3/4">
             <Text variant="label" weight="semiBold">
-              Contributors:{" "}
+              Payee{" "}
             </Text>
-            {paymentDetails.paidTo?.map &&
-              paymentDetails.paidTo?.map((p) => {
-                if (p.propertyType === "user") {
-                  return (
-                    <Box
-                      display="flex"
-                      flexDirection="row"
-                      gap="2"
-                      width="full"
-                      alignItems="center"
-                    >
-                      <Box width="3/4">
-                        <a
-                          href={`/profile/${
-                            memberDetails?.memberDetails[p.value]?.username
-                          }`}
-                          target="_blank"
-                          rel="noreferrer"
-                        >
-                          <Stack
-                            direction="horizontal"
-                            align="center"
-                            space="2"
-                          >
-                            <Avatar
-                              src={
-                                memberDetails?.memberDetails[p.value]?.avatar ||
-                                ""
-                              }
-                              address={
-                                memberDetails?.memberDetails[p.value]
-                                  ?.ethAddress
-                              }
-                              label=""
-                              size="8"
-                              username={
-                                memberDetails?.memberDetails[p.value]
-                                  ?.username || ""
-                              }
-                              userId={p.value}
-                            />
-                            <Text color="white" weight="semiBold">
-                              {memberDetails?.memberDetails[p.value]
-                                ?.username || ""}
-                            </Text>
-                          </Stack>
-                        </a>
-                      </Box>
-                      <Box
-                        display="flex"
-                        flexDirection="column"
-                        gap="2"
-                        justifyContent="flex-end"
-                      >
-                        <Text variant="small">
-                          {p.reward?.value
-                            ? `${p.reward.value} ${p.reward.token.label}`
-                            : "None"}
-                        </Text>
-                      </Box>
-                    </Box>
-                  );
-                } else {
-                  return (
-                    <Box
-                      display="flex"
-                      flexDirection="row"
-                      gap="2"
-                      width="full"
-                      alignItems="center"
-                    >
-                      {" "}
-                      <Box width="3/4">
-                        <Text variant="small">{p.value}</Text>
-                      </Box>
-                      <Box
-                        display="flex"
-                        flexDirection="column"
-                        gap="2"
-                        justifyContent="flex-end"
-                      >
-                        <Text variant="small">
-                          {p.reward?.value
-                            ? `${p.reward.value} ${p.reward.token.label}`
-                            : "None"}
-                        </Text>
-                      </Box>
-                    </Box>
-                  );
-                }
-              })}
+            <Payee value={paymentDetails} mode="view" />
           </Box>
         </Box>
       </Box>

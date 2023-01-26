@@ -10,9 +10,17 @@ import TableView from "./TableView";
 import FAQModal from "../Dashboard/FAQModal";
 import { QuestionCircleOutlined } from "@ant-design/icons";
 import { useRouter } from "next/router";
+import Loader from "@/app/common/components/Loader";
+import { SkeletonLoader } from "./SkeletonLoader";
+import Help from "@/app/common/components/Help";
 
 export function Collection() {
-  const { view, setView, localCollection: collection } = useLocalCollection();
+  const {
+    view,
+    setView,
+    localCollection: collection,
+    loading,
+  } = useLocalCollection();
   const [faqOpen, setFaqOpen] = useState(false);
   const { mode } = useTheme();
 
@@ -23,6 +31,10 @@ export function Collection() {
     if (responses !== undefined) setView(1);
     else setView(0);
   }, [responses]);
+
+  if (!collection?.id && loading) {
+    return <SkeletonLoader />;
+  }
 
   return (
     <>
@@ -64,28 +76,13 @@ export function Collection() {
               </>
             )}
           </Box>
-          <Box
-            style={{
-              position: "absolute",
-              right: "2rem",
-              bottom: "1rem",
-              zIndex: "2",
-            }}
-          >
-            <Button
-              variant="secondary"
-              onClick={() => setFaqOpen(true)}
-              shape="circle"
-            >
-              <QuestionCircleOutlined style={{ fontSize: "1.5rem" }} />
-            </Button>
-          </Box>
           <AnimatePresence>
             {faqOpen && <FAQModal handleClose={() => setFaqOpen(false)} />}
           </AnimatePresence>
         </Stack>
       )}
       {collection.collectionType === 1 && <CollectionProject />}
+      <Help setFaqOpen={setFaqOpen} />
     </>
   );
 }

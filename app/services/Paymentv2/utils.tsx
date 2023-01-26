@@ -96,9 +96,10 @@ export const findAggregatedAmountForEachUserByToken = (
 
   paymentIds.forEach((paymentId) => {
     paymentDetails[paymentId].paidTo.forEach((p) => {
+      console.log({ p });
       let ethAddress = "";
       if (p.propertyType === "user") {
-        ethAddress = memberDetails.memberDetails[p.value].ethAddress;
+        ethAddress = memberDetails.memberDetails[p.value?.value].ethAddress;
       } else if (p.propertyType === "ethAddress") {
         ethAddress = p.value;
       }
@@ -133,6 +134,7 @@ export const flattenAmountByEachUniqueTokenAndUser = (
       paymentDetails,
       memberDetails
     );
+  console.log({ aggregatedAmountForEachUserByToken });
   const flattenedAmounts = [] as {
     ethAddress: string;
     token: string;

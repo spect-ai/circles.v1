@@ -1,11 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  Box,
-  Button,
-  Stack,
-  Text,
-  useTheme,
-} from "degen";
+import { Box, Button, Stack, Text, useTheme } from "degen";
 import MetaHead from "@/app/common/seo/MetaHead/MetaHead";
 import type { NextPage } from "next";
 import ProfileCard from "@/app/modules/Profile/ProfilePage/ProfileCard";
@@ -22,6 +16,7 @@ import NotificationPanel from "@/app/modules/Profile/NotificationPanel";
 import { AnimatePresence } from "framer-motion";
 import FAQModal from "@/app/modules/Dashboard/FAQModal";
 import { QuestionCircleOutlined } from "@ant-design/icons";
+import Help from "@/app/common/components/Help";
 
 const ProfilePage: NextPage = () => {
   const router = useRouter();
@@ -114,23 +109,7 @@ const ProfilePage: NextPage = () => {
             </Stack>
           </ScrollContainer>
         )}
-        <Box
-          style={{
-            position: "absolute",
-            right: "2rem",
-            bottom: "1rem",
-            zIndex: "1",
-          }}
-        >
-          <Button
-            variant="secondary"
-            onClick={() => setFaqOpen(true)}
-            shape="circle"
-            justifyContent="center"
-          >
-            <QuestionCircleOutlined style={{ fontSize: "1.5rem" }} />
-          </Button>
-        </Box>
+        <Help setFaqOpen={setFaqOpen} />
         <AnimatePresence>
           {faqOpen && <FAQModal handleClose={() => setFaqOpen(false)} />}
         </AnimatePresence>

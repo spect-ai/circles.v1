@@ -37,6 +37,7 @@ import styled from "styled-components";
 import DiscordIcon from "@/app/assets/icons/discordIcon.svg";
 import { useLocation } from "react-use";
 import ConnectDiscordButton from "@/app/common/components/ConnectDiscordButton";
+import Help from "@/app/common/components/Help";
 
 function Dashboard() {
   const { setIsProfilePanelExpanded } = useGlobal();
@@ -348,22 +349,7 @@ function Dashboard() {
           )} */}
           </Box>
         </Box>
-        <Box
-          style={{
-            position: "absolute",
-            right: "2rem",
-            bottom: "1rem",
-            zIndex: "1",
-          }}
-        >
-          <Button
-            variant="secondary"
-            onClick={() => setFaqOpen(true)}
-            shape="circle"
-          >
-            <QuestionCircleOutlined style={{ fontSize: "1.5rem" }} />
-          </Button>
-        </Box>
+        <Help setFaqOpen={setFaqOpen} />
         <AnimatePresence>
           {faqOpen && <FAQModal handleClose={() => setFaqOpen(false)} />}
         </AnimatePresence>

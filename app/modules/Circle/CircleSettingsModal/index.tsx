@@ -81,7 +81,11 @@ export default function SettingsModal({ handleClose, initialTab }: Props) {
 
   return (
     <Modal
-      title="Org Settings"
+      title={
+        circle?.parents?.length
+          ? "Workstream Settings"
+          : "Organization Settings"
+      }
       handleClose={handleClose}
       height="40rem"
       size="large"

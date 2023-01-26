@@ -3,6 +3,7 @@ import {
   DiscordChannel,
   DiscordRoleMappingType,
   GuildxyzToCircleRoles,
+  Option,
   Payment,
   SafeAddresses,
   Trigger,
@@ -29,6 +30,7 @@ type CircleUpdateDTO = {
   grantMilestoneProject: string;
   grantApplicantProject: string;
   grantNotificationChannel: DiscordChannel;
+  paymentLabelOptions: Option[];
 };
 
 type AddAutomationDto = {
