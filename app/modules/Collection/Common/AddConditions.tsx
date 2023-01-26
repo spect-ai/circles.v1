@@ -1,6 +1,6 @@
 import Dropdown from "@/app/common/components/Dropdown";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { Condition } from "@/app/types";
+import { CollectionType, Condition } from "@/app/types";
 import { DeleteOutlined } from "@ant-design/icons";
 import { Box, Button, IconPlusSmall, Stack, Text } from "degen";
 import { getComparators } from "./Comparator";
@@ -12,6 +12,7 @@ type Props = {
   setViewConditions: (viewConditions: Condition[]) => void;
   buttonText: string;
   firstRowMessage?: string;
+  collection: CollectionType;
 };
 
 export default function AddConditions({
@@ -19,8 +20,8 @@ export default function AddConditions({
   setViewConditions,
   firstRowMessage,
   buttonText,
+  collection,
 }: Props) {
-  const { localCollection: collection } = useLocalCollection();
 
   const fieldOptions = Object.entries(collection.properties)
     .filter((field) => !["multiURL"].includes(field[1].type))

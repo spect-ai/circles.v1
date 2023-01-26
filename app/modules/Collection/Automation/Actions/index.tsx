@@ -34,6 +34,7 @@ export default function SingleAction({
           action={action}
           actionMode={actionMode}
           setAction={setAction}
+          collection={collection}
         />
       )}
       {actionType === "createDiscordChannel" && (
@@ -41,6 +42,7 @@ export default function SingleAction({
           action={action}
           actionMode={actionMode}
           setAction={setAction}
+          collection={collection}
         />
       )}
       {actionType === "giveDiscordRole" && (
@@ -48,6 +50,7 @@ export default function SingleAction({
           action={action}
           actionMode={actionMode}
           setAction={setAction}
+          collection={collection}
         />
       )}
       {actionType === "createCard" && (

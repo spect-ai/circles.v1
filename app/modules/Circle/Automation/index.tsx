@@ -5,14 +5,15 @@ import { Box, Stack, Text, useTheme } from "degen";
 import { AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import { ToastContainer } from "react-toastify";
+import Automation from "../../Collection/Automation";
 import { useCircle } from "../CircleContext";
 import { AutomationHeading } from "./AutomationHeading";
 
-export default function Automation() {
+export default function AutomationCenter() {
   const { localCircle: circle } = useCircle();
   const { canDo } = useRoleGate();
   const { mode } = useTheme();
-  
+
   return (
     <>
       <ToastContainer
@@ -54,10 +55,10 @@ export default function Automation() {
             (collection) => {
               const automations =
                 circle.automationsIndexedByCollection[collection];
-              if(automations.length === 0) return null;
+              if (automations.length === 0) return null;
               const col = Object.values(circle.collections).find((col) => {
                 return col.slug === collection;
-              })
+              });
               return (
                 <Box
                   key={collection}
@@ -67,9 +68,7 @@ export default function Automation() {
                     border: "2px solid gray",
                   }}
                 >
-                  <Text variant="large" color={"textTertiary"} align="center">
-                    {col?.name}
-                  </Text>
+                  <Automation colId={collection} />
                   {automations?.map((auto, idx) => {
                     const automation = circle.automations[auto];
                     return (

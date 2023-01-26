@@ -122,29 +122,24 @@ export default function SingleAutomation({
     value: c.id,
   }));
 
-  console.log({whenOptions})
-
-  const { refetch: fetchCollection } =
-    useQuery<CollectionType>(
-      ["collection", collectionOption.value],
-      () =>
-        fetch(
-          `${process.env.API_HOST}/collection/v1/${
-            collectionOption.value as string
-          }`,
-          {
-            credentials: "include",
-          }
-        ).then((res) => {
-          if (res.status === 403) return { unauthorized: true };
-          return res.json();
-        }),
-      {
-        enabled: false,
-      }
-    );
-  
-  console.log("collection", collection);
+  const { refetch: fetchCollection } = useQuery<CollectionType>(
+    ["collection", collectionOption.value],
+    () =>
+      fetch(
+        `${process.env.API_HOST}/collection/v1/${
+          collectionOption.value as string
+        }`,
+        {
+          credentials: "include",
+        }
+      ).then((res) => {
+        if (res.status === 403) return { unauthorized: true };
+        return res.json();
+      }),
+    {
+      enabled: false,
+    }
+  );
 
   useEffect(() => {
     if (collection?.id) {
@@ -205,8 +200,6 @@ export default function SingleAutomation({
     }
   }, [automation, collection, collectionOption]);
 
-  Object.values(circle?.collections).find((c) => c.slug === automation.triggerCollectionSlug)
-
   useEffect(() => {
     fetchCollection()
       .then((res) => {
@@ -227,6 +220,18 @@ export default function SingleAutomation({
         name !== ""
     );
   }, [actions, trigger, conditions, name, collectionOption]);
+
+  useEffect(() => {
+    const collection = Object.values(circle.collections).find(
+      (c) => c.slug === automation.triggerCollectionSlug
+    );
+    setCollectionOption({
+      label: collection?.name || "Select collection",
+      value: collection?.id || "selectCollection",
+    });
+  }, []);
+
+  console.log("collection", collection);
 
   return (
     <Box
@@ -518,6 +523,7 @@ export default function SingleAutomation({
                   }}
                   firstRowMessage="It is true that"
                   buttonText="Add Condition"
+                  collection={collection}
                 />
               </Box>
             </>

@@ -79,7 +79,7 @@ function InactiveFieldsColumnComponent({ fields }: Props) {
         <Stack space="4">
           <FormSettings />
           <OpportunityMode />
-          <Automation />
+          {/* <Automation /> */}
 
           <Text size="headingTwo" weight="semiBold" ellipsis>
             Internal Fields

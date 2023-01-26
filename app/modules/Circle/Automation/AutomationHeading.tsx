@@ -1,8 +1,8 @@
 import Breadcrumbs from "@/app/common/components/Breadcrumbs";
-import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { Box, Heading, Stack } from "degen";
 import { Hidden } from "react-grid-system";
 import { useCircle } from "../../Circle/CircleContext";
+import Automation from "../../Collection/Automation";
 
 export const AutomationHeading = () => {
   const { navigationBreadcrumbs } = useCircle();
@@ -42,7 +42,7 @@ export const AutomationHeading = () => {
               <Heading>Automation Center</Heading>
             </Box>
           </Stack>
-          <PrimaryButton>New Automation</PrimaryButton>
+          <Automation colId={"3"} />
         </Box>
       </Box>
     </Box>

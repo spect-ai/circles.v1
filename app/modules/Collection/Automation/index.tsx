@@ -16,17 +16,12 @@ import {
 import { GatewayOutlined } from "@ant-design/icons";
 import { Box, Stack, Text, useTheme } from "degen";
 import { AnimatePresence } from "framer-motion";
-import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useCircle } from "../../Circle/CircleContext";
-import { useLocalCollection } from "../Context/LocalCollectionContext";
 import SingleAutomation from "./SingleAutomation";
 
-export default function Automation() {
+export default function Automation({colId}: {colId: string}) {
   const { circle, setCircleData } = useCircle();
-  const { localCollection: collection } = useLocalCollection();
-  const router = useRouter();
-  const { collection: colId } = router.query;
   const [isOpen, setIsOpen] = useState(false);
   const [tab, setTab] = useState(0);
   const onTabClick = (id: number) => {
@@ -190,7 +185,6 @@ export default function Automation() {
   return (
     <Box>
       <Stack direction="vertical" space="1">
-        <Text variant="small">{`Reduce recurring chores`}</Text>
         <Box
           width={{
             xs: "full",
