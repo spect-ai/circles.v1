@@ -102,13 +102,30 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
         setValue(collection.data[cardSlug as string]);
       }, 100);
     }
-  }, [defaultValue?.id, cardSlug]);
+    if (newCard) {
+      setValue({});
+    }
+  }, [defaultValue?.id, cardSlug, newCard]);
 
   const onChange = async (update: any, slug: string) => {
     if (slug) {
       let res;
+      // update collection locally
+      const tempColl = { ...collection };
+      updateCollection({
+        ...collection,
+        data: {
+          ...collection.data,
+          [slug]: {
+            ...collection.data[slug],
+            ...update,
+          },
+        },
+      });
       res = await updateCollectionDataGuarded(collection.id, slug, update);
-      if (!res) return;
+      if (!res) {
+        updateCollection(tempColl);
+      }
       if (res.id) {
         updateCollection(res);
       } else toast.error(res.error || "Error updating card");
