@@ -3,6 +3,7 @@ import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { CircleType, UserType } from "@/app/types";
 import {
   DollarOutlined,
+  GatewayOutlined,
   ProjectOutlined,
   StarOutlined,
 } from "@ant-design/icons";
@@ -171,7 +172,7 @@ function CircleSidebar() {
             <PrimaryButton
               variant={
                 cId &&
-                !["payment", "credential"].includes(
+                !["payment", "credential", "automation"].includes(
                   router.query?.tab as string
                 ) &&
                 !cSlug &&
@@ -212,6 +213,18 @@ function CircleSidebar() {
               Payment Center
             </PrimaryButton>
           </Link>
+          <Link href={`/${cId}?tab=automation`}>
+            <PrimaryButton
+              variant={
+                cId && router.query?.tab === "automation" && !cSlug && !pId
+                  ? "tertiary"
+                  : "transparent"
+              }
+              icon={<GatewayOutlined size={10} />}
+            >
+              Automation Center
+            </PrimaryButton>
+          </Link>
           {/* <Link href={`/${cId}?tab=credential`}>
             <PrimaryButton
               variant={
@@ -232,8 +245,7 @@ function CircleSidebar() {
             </PrimaryButton>
           </Link> */}
         </Stack>
-        <Container subH="16.1rem">
-          {/** @chaks forgot to change the height when undoing credential changes */}
+        <Container subH="18.5rem">
           <Stack>
             {!isLoading &&
               circle?.folderOrder?.map((fol) => {

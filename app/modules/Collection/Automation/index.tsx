@@ -86,6 +86,8 @@ export default function Automation() {
     setAutomationMode("edit");
   };
 
+  console.log({automations});
+
   const initNew = () => {
     setTabs(["𝘕𝘦𝘸: Automation 1"]);
     setAutomationOrder(["automation-1"]);
@@ -99,6 +101,7 @@ export default function Automation() {
         actions: [] as Action[],
         conditions: [] as Condition[],
         triggerCategory: "collection",
+        triggerCollectionSlug: "",
       },
     });
     setAutomationMode("create");
@@ -112,6 +115,7 @@ export default function Automation() {
         actions: [] as Action[],
         conditions: [] as Condition[],
         triggerCategory: "collection",
+        triggerCollectionSlug: "",
       },
     });
   };
@@ -121,8 +125,10 @@ export default function Automation() {
     description: string,
     trigger: Trigger,
     actions: Action[],
-    conditions: Condition[]
+    conditions: Condition[],
+    slug: string,
   ) => {
+    console.log(name, description, trigger, actions, conditions, slug);
     const newAutomation = {
       name,
       description,
@@ -134,7 +140,7 @@ export default function Automation() {
       const res = await addAutomation(circle?.id, {
         ...newAutomation,
         triggerCategory: "collection",
-        triggerCollectionSlug: collection?.slug,
+        triggerCollectionSlug: slug,
       });
       if (res) setCircleData(res);
     } else {

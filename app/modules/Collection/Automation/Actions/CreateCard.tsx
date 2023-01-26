@@ -14,6 +14,7 @@ type Props = {
   actionMode: "edit" | "create";
   action: Action;
   setAction: (action: Action) => void;
+  collection: CollectionType;
 };
 
 type Mapping = {
@@ -36,7 +37,12 @@ type UsedProperty = {
   [propertyId: string]: boolean;
 };
 
-export default function CreateCard({ setAction, actionMode, action }: Props) {
+export default function CreateCard({
+  setAction,
+  actionMode,
+  action,
+  collection,
+}: Props) {
   const [collectionOptions, setCollectionOptions] = useState<Option[]>([]);
   const [selectedCollection, setSelectedCollection] = useState<Option>(
     action?.data?.selectedCollection || ({} as Option)
@@ -48,7 +54,6 @@ export default function CreateCard({ setAction, actionMode, action }: Props) {
   const [usedProperty, setUsedProperty] = useState<UsedProperty>({});
 
   const { circle } = useCircle();
-  const { localCollection: collection } = useLocalCollection();
   const [mappedCollection, setMappedCollection] = useState<CollectionType>();
 
   const getToPropertyOption = (
@@ -541,7 +546,10 @@ export default function CreateCard({ setAction, actionMode, action }: Props) {
             </PrimaryButton>
             <PrimaryButton
               variant="tertiary"
-              disabled={collection.formMetadata.allowAnonymousResponses}
+              disabled={
+                collection.formMetadata &&
+                collection.formMetadata.allowAnonymousResponses
+              }
               onClick={() => {
                 setFieldType("responder");
                 setValues([
@@ -560,11 +568,14 @@ export default function CreateCard({ setAction, actionMode, action }: Props) {
             >
               + Map Responder
             </PrimaryButton>
-            {collection.formMetadata.allowAnonymousResponses && (
-              <Tooltip title="You can only map the responder if the form doesnot allow anonymous responses">
-                <InfoCircleOutlined style={{ color: "rgb(191, 90, 242, 1)" }} />
-              </Tooltip>
-            )}
+            {collection.formMetadata &&
+              collection.formMetadata.allowAnonymousResponses && (
+                <Tooltip title="You can only map the responder if the form doesnot allow anonymous responses">
+                  <InfoCircleOutlined
+                    style={{ color: "rgb(191, 90, 242, 1)" }}
+                  />
+                </Tooltip>
+              )}
           </Box>
         </Box>
       )}

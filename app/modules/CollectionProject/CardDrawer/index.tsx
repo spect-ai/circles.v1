@@ -321,7 +321,7 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
                     value={value.Title}
                     onChange={(e) => {
                       setIsDirty(true);
-                      setValue({ ...value, Title: e.target.value });
+                      setValue({ ...value, Title: e.target.value || "" });
                     }}
                     onBlur={async () => {
                       if (isDirty) {
@@ -365,7 +365,7 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
                     }}
                     onChange={(val) => {
                       setIsDirty(true);
-                      setValue({ ...value, Description: val });
+                      setValue({ ...value, Description: val || "" });
                     }}
                     isDirty={isDirty}
                     setIsDirty={setIsDirty}

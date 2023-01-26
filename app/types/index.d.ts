@@ -1174,6 +1174,7 @@ export type Automation = {
   conditions?: Condition[];
   actions: Action[];
   triggerCategory: "collection" | "root";
+  triggerCollectionSlug?: string;
   disabled?: boolean;
 };
 

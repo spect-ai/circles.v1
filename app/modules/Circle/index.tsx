@@ -15,6 +15,7 @@ import FAQModal from "../Dashboard/FAQModal";
 import Payment from "./Payment";
 import { QuestionCircleOutlined } from "@ant-design/icons";
 import Credential from "./Credential";
+import Automation from "./Automation";
 
 const BoxContainer = styled(Box)`
   width: calc(100vw - 3.5rem);
@@ -49,6 +50,10 @@ export default function Circle() {
 
   if (router.query?.tab === "credential") {
     return <Credential />;
+  }
+
+  if (router.query?.tab === "automation") {
+    return <Automation />;
   }
 
   if (circle?.unauthorized && !isLoading && circle?.id)
