@@ -1,6 +1,7 @@
 import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import Tabs from "@/app/common/components/Tabs";
+import { smartTrim } from "@/app/common/utils/utils";
 import {
   addAutomation,
   removeAutomation,
@@ -10,17 +11,22 @@ import {
   Action,
   Automation as SingleAutomationType,
   AutomationType,
+  CollectionType,
   Condition,
   Trigger,
 } from "@/app/types";
 import { GatewayOutlined } from "@ant-design/icons";
-import { Box, Stack, Text, useTheme } from "degen";
+import { Box, Button, IconPencil, Stack, Text, useTheme } from "degen";
 import { AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useCircle } from "../../Circle/CircleContext";
 import SingleAutomation from "./SingleAutomation";
 
-export default function Automation({colId}: {colId: string}) {
+export default function Automation({
+  collection,
+}: {
+  collection: CollectionType;
+}) {
   const { circle, setCircleData } = useCircle();
   const [isOpen, setIsOpen] = useState(false);
   const [tab, setTab] = useState(0);
@@ -37,7 +43,7 @@ export default function Automation({colId}: {colId: string}) {
   const [automations, setAutomations] = useState(circle.automations || {});
   const [automationOrder, setAutomationOrder] = useState(
     (circle.automationsIndexedByCollection &&
-      circle.automationsIndexedByCollection[colId as string]) ||
+      circle.automationsIndexedByCollection[collection.slug as string]) ||
       []
   );
   const [automationId, setAutomationId] = useState(automationOrder[tab]);
@@ -60,28 +66,32 @@ export default function Automation({colId}: {colId: string}) {
     }
   };
   const init = (initTab?: number) => {
-    setAutomationOrder(circle.automationsIndexedByCollection[colId as string]);
+    setAutomationOrder(
+      circle.automationsIndexedByCollection[collection.slug as string]
+    );
     setAutomations(circle.automations);
     if (initTab || initTab === 0) {
       setAutomationId(
-        circle.automationsIndexedByCollection[colId as string][initTab]
+        circle.automationsIndexedByCollection[collection.slug as string][
+          initTab
+        ]
       );
       setTab(initTab);
     } else
       setAutomationId(
-        circle.automationsIndexedByCollection[colId as string][tab]
+        circle.automationsIndexedByCollection[collection.slug as string][tab]
       );
-    const tabs = circle.automationsIndexedByCollection[colId as string].map(
-      (automationId) => {
-        return circle.automations[automationId].name;
-      }
-    );
+    const tabs = circle.automationsIndexedByCollection[
+      collection.slug as string
+    ].map((automationId) => {
+      return circle.automations[automationId].name;
+    });
 
     setTabs(tabs);
     setAutomationMode("edit");
   };
 
-  console.log({automations});
+  console.log({ automations });
 
   const initNew = () => {
     setTabs(["𝘕𝘦𝘸: Automation 1"]);
@@ -121,7 +131,7 @@ export default function Automation({colId}: {colId: string}) {
     trigger: Trigger,
     actions: Action[],
     conditions: Condition[],
-    slug: string,
+    slug: string
   ) => {
     console.log(name, description, trigger, actions, conditions, slug);
     const newAutomation = {
@@ -158,8 +168,8 @@ export default function Automation({colId}: {colId: string}) {
     if (!isOpen) return;
     if (
       !circle.automationsIndexedByCollection ||
-      !colId ||
-      !circle.automationsIndexedByCollection[colId as string]?.length
+      !collection.slug ||
+      !circle.automationsIndexedByCollection[collection.slug as string]?.length
     ) {
       initNew();
     } else {
@@ -173,8 +183,8 @@ export default function Automation({colId}: {colId: string}) {
 
     if (
       !circle.automationsIndexedByCollection ||
-      !colId ||
-      !circle.automationsIndexedByCollection[colId as string]?.length
+      !collection.slug ||
+      !circle.automationsIndexedByCollection[collection.slug as string]?.length
     ) {
       initNew();
     } else {
@@ -184,30 +194,37 @@ export default function Automation({colId}: {colId: string}) {
 
   return (
     <Box>
-      <Stack direction="vertical" space="1">
-        <Box
-          width={{
-            xs: "full",
-            md: "full",
-          }}
-        >
-          <PrimaryButton
-            center
-            variant={
-              automationOrder?.length > 1 ||
-              !automationId?.startsWith("automation")
-                ? "tertiary"
-                : "secondary"
-            }
-            onClick={() => setIsOpen(true)}
-            icon={<GatewayOutlined />}
-          >
-            {automationOrder?.length > 1 ||
+      <Stack direction="horizontal" space="3" align={"center"}>
+        {(automationOrder?.length > 1 ||
+          !automationId?.startsWith("automation")) && (
+          <Text variant="extraLarge" weight="semiBold" color={"accent"}>
+            {smartTrim(collection.name, 25)}
+          </Text>
+        )}
+        <Button
+          shape={
+            automationOrder?.length > 1 ||
             !automationId?.startsWith("automation")
-              ? `Edit Automations`
-              : `Add Automations`}
-          </PrimaryButton>
-        </Box>
+              ? "circle"
+              : undefined
+          }
+          size="small"
+          variant={
+            automationOrder?.length > 1 ||
+            !automationId?.startsWith("automation")
+              ? "transparent"
+              : "secondary"
+          }
+          onClick={() => setIsOpen(true)}
+          prefix={<GatewayOutlined />}
+        >
+          {automationOrder?.length > 1 ||
+          !automationId?.startsWith("automation") ? (
+            <IconPencil size={"3"} color="accent" />
+          ) : (
+            `Add Automations`
+          )}
+        </Button>
       </Stack>
 
       <AnimatePresence>
@@ -272,14 +289,16 @@ export default function Automation({colId}: {colId: string}) {
                     if (res) {
                       if (
                         tab >=
-                        res.automationsIndexedByCollection[colId as string]
-                          .length
+                        res.automationsIndexedByCollection[
+                          collection.slug as string
+                        ].length
                       )
                         setTab(tab - 1);
                       setCircleData(res);
                     }
                   }}
                   onSave={onSave}
+                  handleClose={() => setIsOpen(false)}
                   onDisable={async () => {
                     const res = await updateAutomation(
                       circle?.id,

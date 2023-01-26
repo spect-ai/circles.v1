@@ -25,6 +25,7 @@ type Props = {
   automation: any;
   automationMode: string;
   onDelete: (automationId: string) => void;
+  handleClose: () => void;
   onSave: (
     name: string,
     description: string,
@@ -50,6 +51,7 @@ export default function SingleAutomation({
   onDelete,
   onSave,
   onDisable,
+  handleClose,
   onMouseLeave,
 }: Props) {
   const { mode } = useTheme();
@@ -159,9 +161,9 @@ export default function SingleAutomation({
         ...whenOptions,
         {
           label:
-            (collection as CollectionType)?.defaultView === "form"
+            (collection as CollectionType)?.collectionType === 0
               ? "New Response is added"
-              : "New Data is added",
+              : "New Card is added",
           value: "newData",
         },
       ]);
@@ -231,7 +233,7 @@ export default function SingleAutomation({
     });
   }, []);
 
-  console.log("collection", collection);
+  console.log("automation", automation);
 
   return (
     <Box
@@ -239,7 +241,7 @@ export default function SingleAutomation({
         onMouseLeave(name, description, trigger, actions, conditions, isDirty)
       }
     >
-      {automation.disabled && (
+      {automation?.disabled && (
         <Box
           display="flex"
           flexDirection="row"
@@ -297,6 +299,7 @@ export default function SingleAutomation({
               conditions,
               (collection as CollectionType)?.slug
             );
+            if (automationMode === "create") handleClose();
             setIsDirty(false);
           }}
           disabled={!canSave || !isDirty}

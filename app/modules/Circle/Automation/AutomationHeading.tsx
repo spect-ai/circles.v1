@@ -42,7 +42,7 @@ export const AutomationHeading = () => {
               <Heading>Automation Center</Heading>
             </Box>
           </Stack>
-          <Automation colId={"3"} />
+          <Automation collection={{} as any} />
         </Box>
       </Box>
     </Box>
