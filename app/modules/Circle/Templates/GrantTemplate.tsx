@@ -13,6 +13,9 @@ import { useQuery } from "@apollo/client";
 import { createTemplateFlow } from "@/app/services/Templates";
 import { useRouter } from "next/router";
 import RewardTokenOptions from "../../Collection/AddField/RewardTokenOptions";
+import { useAtom } from "jotai";
+import { scribeOpenAtom, scribeUrlAtom } from "@/pages/_app";
+import { Scribes } from "@/app/common/utils/constants";
 
 interface Props {
   handleClose: (close: boolean) => void;
@@ -38,6 +41,9 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
   const [networks, setNetworks] = useState<Registry | undefined>({
     "137": registry?.["137"],
   } as Registry);
+
+  const [, setIsScribeOpen] = useAtom(scribeOpenAtom);
+  const [, setScribeUrl] = useAtom(scribeUrlAtom);
 
   useEffect(() => {
     if (!circle?.discordGuildId) {
@@ -108,6 +114,8 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
     );
     console.log(res);
     if (res?.id) {
+      setScribeUrl(Scribes.grants.using);
+      setIsScribeOpen(true);
       setLoading(false);
       setCircleData(res);
     }

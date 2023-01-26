@@ -16,6 +16,7 @@ import Payment from "./Payment";
 import { QuestionCircleOutlined } from "@ant-design/icons";
 import Credential from "./Credential";
 import AutomationCenter from "./Automation";
+import Help from "@/app/common/components/Help";
 
 const BoxContainer = styled(Box)`
   width: calc(100vw - 3.5rem);
@@ -145,22 +146,8 @@ export default function Circle() {
       />
       {page === "Overview" && <CircleDashboard />}
       {page === "Retro" && <RetroPage />}
-      <Box
-        style={{
-          position: "absolute",
-          right: "2rem",
-          bottom: "1rem",
-          zIndex: "1",
-        }}
-      >
-        <Button
-          variant="secondary"
-          onClick={() => setFaqOpen(true)}
-          shape="circle"
-        >
-          <QuestionCircleOutlined style={{ fontSize: "1.5rem" }} />
-        </Button>
-      </Box>
+      <Help setFaqOpen={setFaqOpen} />
+
       <AnimatePresence>
         {faqOpen && <FAQModal handleClose={() => setFaqOpen(false)} />}
       </AnimatePresence>

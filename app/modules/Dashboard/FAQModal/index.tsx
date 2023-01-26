@@ -1,46 +1,67 @@
 import Modal from "@/app/common/components/Modal";
-import { Box } from "degen";
+import { Box, IconBookOpen, Stack } from "degen";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import SocialMedia from "@/app/common/components/SocialMedia";
+import { useAtom } from "jotai";
+import { scribeOpenAtom, scribeUrlAtom } from "@/pages/_app";
+import { Scribes } from "@/app/common/utils/constants";
 
 type Props = {
   handleClose: () => void;
 };
 
 export default function FAQModal({ handleClose }: Props) {
+  const [, setIsScribeOpen] = useAtom(scribeOpenAtom);
+  const [, setScribeUrl] = useAtom(scribeUrlAtom);
   return (
     <Modal handleClose={handleClose} title="Spectopedia" size="small">
-      <Box display={"flex"} flexDirection="column" gap="4" padding="3">
-        <PrimaryButton
-          variant="transparent"
-          onClick={() => {
-            window.open("https://docs.spect.network/spect-docs/faq", "_blank");
-          }}
-        >
-          FAQ
-        </PrimaryButton>
-        <PrimaryButton
-          variant="transparent"
-          onClick={() => {
-            window.open(
-              "https://docs.spect.network/spect-docs/introduction/what-is-spect",
-              "_blank"
-            );
-          }}
-        >
-          Explore Docs
-        </PrimaryButton>
-        <PrimaryButton
-          onClick={() => {
-            window.open(
-              "https://calendly.com/adityachakra16/outreach",
-              "_blank"
-            );
-          }}
-        >
-          Book a Demo
-        </PrimaryButton>
-        <SocialMedia />
+      <Box padding="8">
+        <Stack>
+          <PrimaryButton
+            variant="transparent"
+            icon={<IconBookOpen />}
+            onClick={() => {
+              handleClose();
+              setIsScribeOpen(true);
+              setScribeUrl(Scribes.grants.using);
+            }}
+          >
+            Open Grants Workflow walkthrough
+          </PrimaryButton>
+          <PrimaryButton
+            variant="transparent"
+            icon={<IconBookOpen />}
+            onClick={() => {
+              handleClose();
+              setIsScribeOpen(true);
+              setScribeUrl(Scribes.onboarding.using);
+            }}
+          >
+            Open Onboarding Workflow walkthrough
+          </PrimaryButton>
+          <PrimaryButton
+            variant="transparent"
+            icon={<IconBookOpen />}
+            onClick={() => {
+              handleClose();
+              setIsScribeOpen(true);
+              setScribeUrl(Scribes.kanban.using);
+            }}
+          >
+            Open Kanban project walkthrough
+          </PrimaryButton>
+          <PrimaryButton
+            onClick={() => {
+              window.open(
+                "https://calendly.com/adityachakra16/outreach",
+                "_blank"
+              );
+            }}
+          >
+            Book a Demo
+          </PrimaryButton>
+          <SocialMedia />
+        </Stack>
       </Box>
     </Modal>
   );
