@@ -13,7 +13,13 @@ import {
   payUsingGnosis,
   switchNetwork,
 } from "@/app/services/Paymentv2/utils";
-import { MemberDetails, PaymentDetails, Registry, UserType } from "@/app/types";
+import {
+  MemberDetails,
+  Option,
+  PaymentDetails,
+  Registry,
+  UserType,
+} from "@/app/types";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
@@ -34,10 +40,13 @@ export default function usePaymentViewCommon() {
       enabled: false,
     }
   );
-
+  const [totalAmount, setTotalAmount] = useState(
+    [] as { chain: Option; token: Option; value: number }[]
+  );
   const [isCardDrawerOpen, setIsCardDrawerOpen] = useState(false);
   const [value, setValue] = useState({} as PaymentDetails);
   const { openConnectModal } = useConnectModal();
+  const [loading, setLoading] = useState(false);
 
   const pay = async (
     chainId: string,
@@ -212,15 +221,53 @@ export default function usePaymentViewCommon() {
   };
 
   useEffect(() => {
-    console.log({ paymentId });
-    if (paymentId || newCard) {
+    if (paymentId) {
       setValue(circle.paymentDetails[paymentId as string]);
+      setIsCardDrawerOpen(true);
+    } else if (newCard) {
+      setValue({
+        ...value,
+        type: "Manually Added",
+        chain: {
+          value: circle.defaultPayment?.chain?.chainId,
+          label: circle.defaultPayment?.chain?.name,
+        },
+      });
       setIsCardDrawerOpen(true);
     } else {
       setIsCardDrawerOpen(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paymentId, newCard]);
+
+  const getAggregateValues = () => {
+    const aggregatedValue = value.paidTo.reduce((acc, curr) => {
+      const index = acc.findIndex(
+        (a) => a.token?.value === curr.reward.token?.value
+      );
+      if (index === -1) {
+        acc.push({
+          chain: value.chain,
+          token: curr.reward.token,
+          value: curr.reward.value,
+        });
+      } else {
+        acc[index].value += curr.reward.value;
+      }
+      return acc;
+    }, [] as { chain: Option; token: Option; value: number }[]);
+    return aggregatedValue;
+  };
+
+  useEffect(() => {
+    setLoading(true);
+    if (value?.paidTo?.length) {
+      setTotalAmount(getAggregateValues());
+    } else {
+      setTotalAmount([]);
+    }
+    setLoading(false);
+  }, [value?.paidTo]);
 
   return {
     memberDetails,
@@ -233,5 +280,8 @@ export default function usePaymentViewCommon() {
     value,
     setValue,
     pay,
+    totalAmount,
+    loading,
+    setLoading,
   };
 }

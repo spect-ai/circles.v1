@@ -4,9 +4,11 @@ import { MemberDetails, PaymentDetails } from "@/app/types";
 import { Box, useTheme, Text, Stack, IconClose, Button } from "degen";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { useState } from "react";
 import { useQuery } from "react-query";
 import styled from "styled-components";
 import { useCircle } from "../CircleContext";
+import usePaymentViewCommon from "./Common/usePaymentCommon";
 import Payee from "./Payee";
 
 type Props = {
@@ -24,7 +26,10 @@ export default function PaymentCard({
   const { mode } = useTheme();
   const { circle: cId, status, tab, paymentId } = router.query;
   const { registry } = useCircle();
+  const { totalAmount, loading } = usePaymentViewCommon();
+  console.log({ totalAmount });
 
+  if (loading) return <></>;
   return (
     <Card
       mode={mode}
@@ -87,16 +92,20 @@ export default function PaymentCard({
                 <Box
                   display="flex"
                   flexDirection="row"
-                  alignItems="center"
+                  alignItems="flex-start"
                   gap="2"
                 >
-                  <Text variant="label" weight="semiBold">
-                    Total Amount:{" "}
-                  </Text>
+                  <Box paddingTop="1">
+                    <Text variant="label" weight="semiBold">
+                      Total Amount:{" "}
+                    </Text>
+                  </Box>
                   <Text variant="small">
-                    {" "}
-                    {paymentDetails.value} {paymentDetails.token.label} on{" "}
-                    {paymentDetails.chain.label}
+                    {totalAmount.map((t) => (
+                      <Text>
+                        {t.value} {t.token?.label} on {t.chain?.label}
+                      </Text>
+                    ))}
                   </Text>
                 </Box>
               </Box>

@@ -1208,7 +1208,7 @@ export type PaymentDetails = {
   type: "Manually Added" | "Added From Card";
   dataSlug?: string;
   collectionId?: string;
-  title?: string;
+  title: string;
   description?: string;
   paidOn?: Date;
   transactionHash?: string;

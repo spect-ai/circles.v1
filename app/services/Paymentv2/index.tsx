@@ -63,6 +63,53 @@ export const updatePayment = async (
   ).json();
 };
 
+type AddManualPaymentsRequestDto = {
+  title: string;
+
+  description?: string;
+
+  type: "Manually Added" | "Added From Card";
+
+  collectionId?: string;
+
+  chain: {
+    label: string;
+    value: string;
+  };
+
+  token: {
+    label: string;
+    value: string;
+  };
+
+  value: number;
+
+  paidTo: {
+    propertyType: string;
+    value: any;
+  }[];
+  labels?: Option[];
+};
+
+export const addManualPayment = async (
+  circleId: string,
+  body: AddManualPaymentsRequestDto
+) => {
+  return await (
+    await fetch(
+      `${process.env.API_HOST}/circle/v1/${circleId}/addManualPayment`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
+        credentials: "include",
+      }
+    )
+  ).json();
+};
+
 type PaymentIdsDto = {
   paymentIds: string[];
   transactionHash?: { [key: string]: string };

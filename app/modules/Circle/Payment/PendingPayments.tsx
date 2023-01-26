@@ -1,6 +1,8 @@
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { getUniqueNetworks } from "@/app/services/Paymentv2/utils";
 import { Box, Stack, Text, useTheme } from "degen";
+import { AnimatePresence } from "framer-motion";
+import { useRouter } from "next/router";
 import { useState } from "react";
 import { Tooltip } from "react-tippy";
 import styled from "styled-components";
@@ -15,14 +17,16 @@ export default function PendingPayments() {
   const [isGnosisPayLoading, setIsGnosisPayLoading] = useState(false);
   const { mode } = useTheme();
   const { isCardDrawerOpen, setIsCardDrawerOpen, pay } = usePaymentViewCommon();
-
+  const router = useRouter();
   const { circle } = useCircle();
 
   return (
     <Stack>
-      {isCardDrawerOpen && (
-        <PaymentCardDrawer handleClose={() => setIsCardDrawerOpen(false)} />
-      )}{" "}
+      <AnimatePresence>
+        {isCardDrawerOpen && (
+          <PaymentCardDrawer handleClose={() => setIsCardDrawerOpen(false)} />
+        )}{" "}
+      </AnimatePresence>
       {!circle.pendingPayments?.length && (
         <Box
           width="full"
@@ -39,6 +43,22 @@ export default function PendingPayments() {
             gap="4"
           >
             <Text variant="small">You have no pending payments.</Text>
+            <PrimaryButton
+              variant="tertiary"
+              onClick={() => {
+                void router.push({
+                  pathname: router.pathname,
+                  query: {
+                    circle: router.query.circle,
+                    tab: "payment",
+                    status: "pending",
+                    newCard: true,
+                  },
+                });
+              }}
+            >
+              Create a payment
+            </PrimaryButton>
           </Box>
         </Box>
       )}

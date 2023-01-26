@@ -5,12 +5,16 @@ import Editor from "@/app/common/components/Editor";
 import Modal from "@/app/common/components/Modal";
 import ConfirmModal from "@/app/common/components/Modal/ConfirmModal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { cancelPayments, updatePayment } from "@/app/services/Paymentv2";
+import {
+  addManualPayment,
+  cancelPayments,
+  updatePayment,
+} from "@/app/services/Paymentv2";
 import { Option } from "@/app/types";
 import { Box, Button, IconChevronRight, Stack, Text, useTheme } from "degen";
 import { motion } from "framer-motion";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Save } from "react-feather";
 import styled from "styled-components";
 import { useCircle } from "../CircleContext";
@@ -35,7 +39,8 @@ export default function PaymentCardDrawer({ handleClose }: Props) {
   const [isPayLoading, setIsPayLoading] = useState(false);
   const [isGnosisPayLoading, setIsGnosisPayLoading] = useState(false);
   const [openPayeeModal, setOpenPayeeModal] = useState(false);
-  const { newCard, value, setValue, pay } = usePaymentViewCommon();
+
+  const { newCard, value, setValue, pay, totalAmount } = usePaymentViewCommon();
   const onChange = async (update: any, labelOptions?: Option[]) => {
     if (query.paymentId) {
       let res;
@@ -52,6 +57,11 @@ export default function PaymentCardDrawer({ handleClose }: Props) {
       });
       res = await updatePayment(circle.id, query.paymentId as string, update);
       if (!res) return;
+    } else if (newCard) {
+      setValue({
+        ...value,
+        ...update,
+      });
     }
   };
   const closeCard = () => {
@@ -100,7 +110,11 @@ export default function PaymentCardDrawer({ handleClose }: Props) {
                   <PrimaryButton
                     loading={loading}
                     icon={<Save size="22" />}
-                    onClick={async () => {}}
+                    onClick={async () => {
+                      await addManualPayment(circle.id, value);
+                      await fetchCircle();
+                    }}
+                    disabled={!value.title || !value.paidTo?.length}
                   >
                     Create Payment
                   </PrimaryButton>
@@ -190,18 +204,25 @@ export default function PaymentCardDrawer({ handleClose }: Props) {
                   title="Payee"
                   handleClose={() => {
                     value.paidTo = value.paidTo?.filter(
-                      (p) => p.value && p.reward?.value
+                      (p) =>
+                        p.value && p.reward?.value && p.reward?.token?.value
                     );
                     if (value.paidTo?.length > 0) {
                       setOpenPayeeModal(false);
                       onChange(value);
                     } else {
-                      setCancelPaymentConfirmModal(true);
+                      if (newCard) setOpenPayeeModal(false);
+                      else setCancelPaymentConfirmModal(true);
                     }
                   }}
                 >
                   <Box padding="8" paddingTop="4">
-                    <Payee value={value} mode="edit" setValue={setValue} />
+                    <Payee
+                      value={value}
+                      mode="edit"
+                      setValue={setValue}
+                      newCard={newCard as string}
+                    />
                   </Box>
                 </Modal>
               )}
@@ -225,7 +246,7 @@ export default function PaymentCardDrawer({ handleClose }: Props) {
                         setIsDirty(false);
                       }
                     }}
-                    disabled={value.status !== "Pending"}
+                    disabled={value.status !== "Pending" && !newCard}
                   />
                 </Stack>
                 <Box marginY="1" marginLeft="2">
@@ -236,7 +257,7 @@ export default function PaymentCardDrawer({ handleClose }: Props) {
                     <Box width="3/4">
                       <FieldButton onClick={() => {}} mode={mode}>
                         <Box cursor="pointer" onClick={(e) => {}}>
-                          <Text>{value.type}</Text>
+                          {value.type ? <Text>{value.type}</Text> : "Empty"}
                         </Box>
                       </FieldButton>
                     </Box>
@@ -263,9 +284,13 @@ export default function PaymentCardDrawer({ handleClose }: Props) {
                     </Box>
                     <Box width="3/4">
                       <FieldButton onClick={() => {}} mode={mode}>
-                        <Text>
-                          {circle.collections[value.collectionId || ""]?.name}
-                        </Text>
+                        {value.collectionId ? (
+                          <Text>
+                            {circle.collections[value.collectionId]?.name}
+                          </Text>
+                        ) : (
+                          "Empty"
+                        )}
                       </FieldButton>
                     </Box>
                   </Stack>
@@ -305,20 +330,20 @@ export default function PaymentCardDrawer({ handleClose }: Props) {
                     </Box>
                     <Box width="3/4">
                       <FieldButton onClick={() => {}} mode={mode}>
-                        <Box cursor="pointer" onClick={(e) => {}}>
-                          {value?.token && value?.chain && (
-                            <Text variant="small">
-                              {" "}
-                              {value.value || 0} {value.token.label} on{" "}
-                              {value.chain.label}
-                            </Text>
-                          )}
-                          {(!value?.token || !value?.chain) && (
-                            <Text variant="small" color="backgroundTertiary">
-                              {" "}
-                              Not Set{" "}
-                            </Text>
-                          )}
+                        <Box
+                          display="flex"
+                          flexDirection="column"
+                          gap="2"
+                          cursor="pointer"
+                          onClick={(e) => {}}
+                        >
+                          {totalAmount?.length
+                            ? totalAmount.map((t) => (
+                                <Text>
+                                  {t.value} {t.token?.label} on {t.chain?.label}
+                                </Text>
+                              ))
+                            : "Empty"}
                         </Box>
                       </FieldButton>
                     </Box>
@@ -330,12 +355,16 @@ export default function PaymentCardDrawer({ handleClose }: Props) {
                     <Box width="3/4">
                       <FieldButton
                         onClick={() => {
-                          if (value.status === "Pending")
+                          if (value.status === "Pending" || newCard)
                             setOpenPayeeModal(true);
                         }}
                         mode={mode}
                       >
-                        <Payee value={value} mode="view" />
+                        {value?.paidTo?.length ? (
+                          <Payee value={value} mode="view" />
+                        ) : (
+                          "Empty"
+                        )}
                       </FieldButton>
                     </Box>
                   </Stack>
@@ -346,7 +375,11 @@ export default function PaymentCardDrawer({ handleClose }: Props) {
                     </Box>
                     <Box width="3/4">
                       <FieldButton onClick={() => {}} mode={mode}>
-                        <Text>{value.status}</Text>
+                        {value.status || newCard ? (
+                          <Text>{value.status || "Pending"}</Text>
+                        ) : (
+                          "Empty"
+                        )}
                       </FieldButton>
                     </Box>
                   </Stack>
@@ -367,7 +400,7 @@ export default function PaymentCardDrawer({ handleClose }: Props) {
                     }}
                     isDirty={isDirty}
                     setIsDirty={setIsDirty}
-                    disabled={value.status !== "Pending"}
+                    disabled={value.status !== "Pending" && !newCard}
                   />
                 </Box>
               </Stack>
