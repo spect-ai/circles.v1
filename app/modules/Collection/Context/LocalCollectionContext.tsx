@@ -85,7 +85,7 @@ export function useProviderLocalCollection() {
                   theme: "dark",
                 }
               );
-            }, 1000);
+            }, 1500);
           }
 
           if (res.data) {
