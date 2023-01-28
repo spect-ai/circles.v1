@@ -3,7 +3,7 @@ import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { useCircle } from "@/app/modules/Circle/CircleContext";
 import { fetchGuildChannels, getGuildRoles } from "@/app/services/Discord";
-import { Action, Option } from "@/app/types";
+import { Action, CollectionType, Option } from "@/app/types";
 import { Box, Input, Stack, Tag, Text } from "degen";
 import { useEffect, useState } from "react";
 import { useLocalCollection } from "../../Context/LocalCollectionContext";
@@ -17,12 +17,14 @@ type Props = {
   actionMode: "edit" | "create";
   action: Action;
   setAction: (action: Action) => void;
+  collection: CollectionType;
 };
 
 export default function CreateDiscordChannel({
   setAction,
   actionMode,
   action,
+  collection,
 }: Props) {
   const { origin } = useLocation();
   const [channelName, setChannelName] = useState(
@@ -52,7 +54,6 @@ export default function CreateDiscordChannel({
     >();
 
   const { circle } = useCircle();
-  const { localCollection: collection } = useLocalCollection();
   const toggleSelectedRole = (roleId: string) => {
     setSelectedRoles({
       ...selectedRoles,

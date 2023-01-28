@@ -1,4 +1,4 @@
-import { Button, Stack } from "degen";
+import { Button, IconBookOpenSolid, Stack } from "degen";
 import DiscordIcon from "@/app/assets/icons/discordIcon.svg";
 import {
   GithubOutlined,
@@ -9,6 +9,16 @@ import {
 export default function SocialMedia() {
   return (
     <Stack justify={"center"} direction="horizontal" align={"center"}>
+      <a
+        href="https://docs.spect.network/spect-docs/introduction/what-is-spect
+      "
+        target="_blank"
+        rel="noreferrer"
+      >
+        <Button shape="circle" size="small" variant="transparent">
+          <IconBookOpenSolid />
+        </Button>
+      </a>
       <a
         href={"https://twitter.com/joinSpect"}
         target="_blank"

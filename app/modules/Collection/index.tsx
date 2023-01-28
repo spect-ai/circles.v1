@@ -55,6 +55,9 @@ export function Collection() {
       >
         Migrate
       </PrimaryButton> */}
+      <AnimatePresence>
+        {faqOpen && <FAQModal handleClose={() => setFaqOpen(false)} />}
+      </AnimatePresence>
       {collection.collectionType === 0 && (
         <Stack space={"0"}>
           <CollectionHeading />
@@ -76,9 +79,6 @@ export function Collection() {
               </>
             )}
           </Box>
-          <AnimatePresence>
-            {faqOpen && <FAQModal handleClose={() => setFaqOpen(false)} />}
-          </AnimatePresence>
         </Stack>
       )}
       {collection.collectionType === 1 && <CollectionProject />}

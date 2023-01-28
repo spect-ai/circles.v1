@@ -102,13 +102,30 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
         setValue(collection.data[cardSlug as string]);
       }, 100);
     }
-  }, [defaultValue?.id, cardSlug]);
+    if (newCard) {
+      setValue({});
+    }
+  }, [defaultValue?.id, cardSlug, newCard]);
 
   const onChange = async (update: any, slug: string) => {
     if (slug) {
       let res;
+      // update collection locally
+      const tempColl = { ...collection };
+      updateCollection({
+        ...collection,
+        data: {
+          ...collection.data,
+          [slug]: {
+            ...collection.data[slug],
+            ...update,
+          },
+        },
+      });
       res = await updateCollectionDataGuarded(collection.id, slug, update);
-      if (!res) return;
+      if (!res) {
+        updateCollection(tempColl);
+      }
       if (res.id) {
         updateCollection(res);
       } else toast.error(res.error || "Error updating card");
@@ -359,7 +376,7 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
                     value={value.Title}
                     onChange={(e) => {
                       setIsDirty(true);
-                      setValue({ ...value, Title: e.target.value });
+                      setValue({ ...value, Title: e.target.value || "" });
                     }}
                     onBlur={async () => {
                       if (isDirty) {
@@ -403,7 +420,7 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
                     }}
                     onChange={(val) => {
                       setIsDirty(true);
-                      setValue({ ...value, Description: val });
+                      setValue({ ...value, Description: val || "" });
                     }}
                     isDirty={isDirty}
                     setIsDirty={setIsDirty}

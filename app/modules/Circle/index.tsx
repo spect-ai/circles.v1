@@ -13,8 +13,9 @@ import Roles from "./RolesTab";
 import { useGlobal } from "@/app/context/globalContext";
 import FAQModal from "../Dashboard/FAQModal";
 import Payment from "./Payment";
+import { QuestionCircleOutlined } from "@ant-design/icons";
 import Credential from "./Credential";
-import SocialMedia from "@/app/common/components/SocialMedia";
+import AutomationCenter from "./Automation";
 import Help from "@/app/common/components/Help";
 
 const BoxContainer = styled(Box)`
@@ -50,6 +51,10 @@ export default function Circle() {
 
   if (router.query?.tab === "credential") {
     return <Credential />;
+  }
+
+  if (router.query?.tab === "automation") {
+    return <AutomationCenter />;
   }
 
   if (circle?.unauthorized && !isLoading && circle?.id)
@@ -142,6 +147,7 @@ export default function Circle() {
       {page === "Overview" && <CircleDashboard />}
       {page === "Retro" && <RetroPage />}
       <Help setFaqOpen={setFaqOpen} />
+
       <AnimatePresence>
         {faqOpen && <FAQModal handleClose={() => setFaqOpen(false)} />}
       </AnimatePresence>
