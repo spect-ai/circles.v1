@@ -218,7 +218,13 @@ export default function useViewCommon() {
 
   useEffect(() => {
     if (cardSlug || newCard) {
-      setIsCardDrawerOpen(true);
+      if (!isCardDrawerOpen) setIsCardDrawerOpen(true);
+      else {
+        setIsCardDrawerOpen(false);
+        setTimeout(() => {
+          setIsCardDrawerOpen(true);
+        }, 1000);
+      }
     } else {
       setIsCardDrawerOpen(false);
     }

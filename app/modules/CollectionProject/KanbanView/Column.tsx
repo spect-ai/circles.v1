@@ -66,6 +66,7 @@ export default function Column({
               if (res.id) updateCollection(res);
               else toast.error("Error renaming column");
             }}
+            disabled={column.value === "__unassigned__"}
           />
           <Button
             shape="circle"

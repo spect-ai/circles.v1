@@ -74,12 +74,27 @@ export function useProviderLocalCollection() {
       setLoading(true);
       fetchCollection()
         .then((res) => {
+          console.log({ res });
+          if (res.data?.unauthorized) {
+            setLoading(false);
+            console.log("failed");
+            setTimeout(() => {
+              toast.error(
+                "You are not authorized to view this collection, either you are not part of the circle or you dont have the required role",
+                {
+                  theme: "dark",
+                }
+              );
+            }, 1000);
+          }
+
           if (res.data) {
             setLocalCollection(res.data);
             if (res.data.collectionType === 1) {
               setProjectViewId(res.data.projectMetadata.viewOrder[0]);
             }
           }
+
           setLoading(false);
         })
         .catch((err) => {

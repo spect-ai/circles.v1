@@ -66,7 +66,7 @@ export default function TableView() {
   const screenClass = useScreenClass();
 
   const router = useRouter();
-  const { dataId: dataSlug, cardSlug } = router.query;
+  const { dataId: dataSlug, cardSlug, newCard } = router.query;
 
   useEffect(() => {
     if (dataSlug) {
@@ -75,7 +75,10 @@ export default function TableView() {
     if (cardSlug) {
       setExpandedDataSlug(cardSlug as string);
     }
-  }, [dataSlug, setExpandedDataSlug, cardSlug]);
+    if (newCard) {
+      setExpandedDataSlug("");
+    }
+  }, [dataSlug, setExpandedDataSlug, cardSlug, newCard]);
 
   const updateData = useCallback(async ({ row }: { row: any }) => {
     if (!row) return false;
