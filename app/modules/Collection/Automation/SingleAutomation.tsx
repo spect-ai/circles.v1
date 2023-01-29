@@ -579,7 +579,7 @@ const ScrollContainer = styled(Box)`
   @media (max-width: 768px) {
     height: 25rem;
   }
-  height: 28.5rem;
+  height: 30rem;
   overflow-y: auto;
 `;
 

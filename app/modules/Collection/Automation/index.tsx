@@ -91,8 +91,6 @@ export default function Automation({
     setAutomationMode("edit");
   };
 
-  console.log({ automations });
-
   const initNew = () => {
     setTabs(["𝘕𝘦𝘸: Automation 1"]);
     setAutomationOrder(["automation-1"]);
@@ -193,12 +191,12 @@ export default function Automation({
   }, [isOpen]);
 
   return (
-    <Box>
+    <Box marginY="2">
       <Stack direction="horizontal" space="3" align={"center"}>
         {(automationOrder?.length > 1 ||
           !automationId?.startsWith("automation")) && (
           <Text variant="extraLarge" weight="semiBold" color={"accent"}>
-            {smartTrim(collection.name, 25)}
+            {collection.name}
           </Text>
         )}
         <Button
@@ -233,6 +231,7 @@ export default function Automation({
             title="Automation"
             size="large"
             handleClose={() => setIsOpen(false)}
+            height="90vh"
           >
             <Box
               display="flex"
@@ -244,35 +243,37 @@ export default function Automation({
                 xs: "full",
               }}
             >
-              <Box
-                width={{
-                  xs: "full",
-                  md: "1/4",
-                }}
-                paddingY="8"
-                paddingRight={{
-                  xs: "1",
-                  md: "1",
-                }}
-              >
-                <Tabs
-                  selectedTab={tab}
-                  onTabClick={onTabClick}
-                  tabs={tabs}
-                  tabTourIds={[]}
-                  orientation="vertical"
-                  unselectedColor="transparent"
-                />
-              </Box>
+              {collection?.id && (
+                <Box
+                  width={{
+                    xs: "full",
+                    md: "1/4",
+                  }}
+                  paddingY="8"
+                  paddingRight={{
+                    xs: "1",
+                    md: "1",
+                  }}
+                >
+                  <Tabs
+                    selectedTab={tab}
+                    onTabClick={onTabClick}
+                    tabs={tabs}
+                    tabTourIds={[]}
+                    orientation="vertical"
+                    unselectedColor="transparent"
+                  />
+                </Box>
+              )}
               <Box
                 display="flex"
                 flexDirection="column"
                 width={{
                   xs: "full",
-                  md: "3/4",
+                  md: !collection.id ? "full" : "3/4",
                 }}
                 paddingRight="8"
-                paddingLeft="2"
+                paddingLeft={collection.id ? "2" : "8"}
                 justifyContent="flex-start"
               >
                 <SingleAutomation
@@ -334,7 +335,7 @@ export default function Automation({
                 />
               </Box>
             </Box>
-            <Box
+            {collection?.id && (<Box
               width={{
                 xs: "full",
                 md: "1/4",
@@ -389,7 +390,7 @@ export default function Automation({
               >
                 + New Automation
               </PrimaryButton>
-            </Box>
+            </Box>)}
           </Modal>
         )}
       </AnimatePresence>
