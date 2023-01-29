@@ -40,7 +40,7 @@ export default function PaymentCardDrawer({ handleClose }: Props) {
   const [isGnosisPayLoading, setIsGnosisPayLoading] = useState(false);
   const [openPayeeModal, setOpenPayeeModal] = useState(false);
 
-  const { newCard, value, setValue, pay, totalAmount } = usePaymentViewCommon();
+  const { newCard, value, setValue, pay } = usePaymentViewCommon();
   const onChange = async (update: any, labelOptions?: Option[]) => {
     if (query.paymentId) {
       let res;
@@ -113,6 +113,14 @@ export default function PaymentCardDrawer({ handleClose }: Props) {
                     onClick={async () => {
                       await addManualPayment(circle.id, value);
                       await fetchCircle();
+                      push({
+                        pathname,
+                        query: {
+                          circle: query.circle,
+                          tab: query.tab,
+                          status: query.status,
+                        },
+                      });
                     }}
                     disabled={!value.title || !value.paidTo?.length}
                   >
@@ -128,6 +136,7 @@ export default function PaymentCardDrawer({ handleClose }: Props) {
           <ConfirmModal
             title="This will cancel the payment as there is no valid payee or the reward is not set. Confirm?"
             handleClose={() => setCancelPaymentConfirmModal(false)}
+            onCancel={() => setCancelPaymentConfirmModal(false)}
             onConfirm={async () => {
               setCancelPaymentConfirmModal(false);
               setOpenPayeeModal(false);
@@ -324,8 +333,8 @@ export default function PaymentCardDrawer({ handleClose }: Props) {
                       />
                     </Box>
                   </Stack>
-                  <Stack direction="horizontal" align="center" space="0">
-                    <Box width="1/4">
+                  <Stack direction="horizontal" align="flex-start" space="0">
+                    <Box width="1/4" paddingTop="2">
                       <Text>Total Amount</Text>
                     </Box>
                     <Box width="3/4">
@@ -337,19 +346,22 @@ export default function PaymentCardDrawer({ handleClose }: Props) {
                           cursor="pointer"
                           onClick={(e) => {}}
                         >
-                          {totalAmount?.length
-                            ? totalAmount.map((t) => (
-                                <Text>
-                                  {t.value} {t.token?.label} on {t.chain?.label}
-                                </Text>
-                              ))
-                            : "Empty"}
+                          {value.chain?.value &&
+                          value.token?.value &&
+                          value.value ? (
+                            <Text>
+                              {value.value} {value.token?.label} on{" "}
+                              {value.chain?.label}
+                            </Text>
+                          ) : (
+                            "Empty"
+                          )}
                         </Box>
                       </FieldButton>
                     </Box>
                   </Stack>
-                  <Stack direction="horizontal" align="center" space="0">
-                    <Box width="1/4">
+                  <Stack direction="horizontal" align="flex-start" space="0">
+                    <Box width="1/4" paddingTop="2">
                       <Text>Payee</Text>
                     </Box>
                     <Box width="3/4">

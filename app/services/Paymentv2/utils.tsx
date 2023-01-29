@@ -268,14 +268,15 @@ export const hasAllowance = async (
       contracts: reads,
     });
     console.log({ data });
-
-    Object.keys(allowancesRequired).map((tokenAddress, index) => {
+    let idx = 0;
+    Object.keys(allowancesRequired).map((tokenAddress) => {
       if (tokenAddress === "0x0") {
         hasAllowance[tokenAddress] = true;
       } else {
         hasAllowance[tokenAddress] = ethers.BigNumber.from(
           Math.ceil(allowancesRequired[tokenAddress])
-        ).lte(data[index]);
+        ).lte(data[idx]);
+        idx++;
       }
     });
     console.log({ hasAllowance });
@@ -419,7 +420,8 @@ export const payUsingGnosis = async (
   tokensWithoutBalance: string[],
   registry: Registry,
   startNonce: number,
-  gnosisSafeAddress: string
+  gnosisSafeAddress: string,
+  id: { [key: string]: string }
 ) => {
   const valuesInWei = await covertToWei(amounts);
 
@@ -431,6 +433,7 @@ export const payUsingGnosis = async (
   );
 
   console.log({ tokenAmounts });
+  console.log({ id });
   let tokensDistributed = [] as string[];
   let nonce = startNonce;
   const txHash = {} as { [key: string]: string };
@@ -442,7 +445,8 @@ export const payUsingGnosis = async (
         tokenAmounts,
         registry,
         gnosisSafeAddress,
-        nonce
+        nonce,
+        id["token"]
       ).then((res) => {
         if (res) {
           tokensDistributed = [
@@ -476,7 +480,8 @@ export const payUsingGnosis = async (
         currencyAmounts,
         registry,
         gnosisSafeAddress,
-        nonce
+        nonce,
+        id["currency"]
       ).then((res) => {
         if (res) {
           tokensDistributed = [...tokensDistributed, "0x0"];
@@ -532,7 +537,8 @@ export const distributeCurrencyUsingEOA = async (
     token: string;
     valueInWei: ethers.BigNumber;
   }[],
-  registry: Registry
+  registry: Registry,
+  id: string
 ) => {
   const distributorContract = await getContract(
     registry[chainId].distributorAddress as string,
@@ -548,7 +554,7 @@ export const distributeCurrencyUsingEOA = async (
   const gasEstimate = await distributorContract.estimateGas.distributeEther(
     ethAddressesArr,
     valuesInWeiArr,
-    "",
+    id,
     {
       value: totalValue,
     }
@@ -556,7 +562,7 @@ export const distributeCurrencyUsingEOA = async (
   const tx = await distributorContract.distributeEther(
     ethAddressesArr,
     valuesInWeiArr,
-    "",
+    id,
     {
       gasLimit: Math.ceil(gasEstimate.toNumber() * 1.2),
       value: totalValue,
@@ -574,7 +580,8 @@ export const distributeCurrencyUsingGnosis = async (
   }[],
   registry: Registry,
   safeAddress: string,
-  nonce: number
+  nonce: number,
+  id: string
 ) => {
   const distributorContract = await getContract(
     registry[chainId].distributorAddress as string,
@@ -589,7 +596,7 @@ export const distributeCurrencyUsingGnosis = async (
   const data = await distributorContract?.populateTransaction.distributeEther(
     ethAddressesArr,
     valuesInWeiArr,
-    "",
+    id,
     {
       value: totalValue,
       nonce: nonce,
@@ -609,7 +616,8 @@ export const distributeTokensUsingGnosis = async (
   }[],
   registry: Registry,
   safeAddress: string,
-  nonce: number
+  nonce: number,
+  id: string
 ) => {
   const distributorContract = await getContract(
     registry[chainId].distributorAddress as string,
@@ -624,7 +632,7 @@ export const distributeTokensUsingGnosis = async (
     tokenAddressesArr,
     ethAddressesArr,
     valuesInWeiArr,
-    "",
+    id,
     {
       nonce: nonce,
     }
@@ -640,7 +648,8 @@ export const distributeTokensUsingEOA = async (
     token: string;
     valueInWei: ethers.BigNumber;
   }[],
-  registry: Registry
+  registry: Registry,
+  id: string
 ) => {
   const distributorContract = await getContract(
     registry[chainId].distributorAddress as string,
@@ -653,7 +662,7 @@ export const distributeTokensUsingEOA = async (
     tokenAddressesArr,
     ethAddressesArr,
     valuesInWeiArr,
-    ""
+    id
   );
 
   console.log({ gasEstimate });
@@ -664,7 +673,7 @@ export const distributeTokensUsingEOA = async (
     tokenAddressesArr,
     ethAddressesArr,
     valuesInWeiArr,
-    "",
+    id,
     overrides
   );
   await tx.wait();
@@ -679,7 +688,8 @@ export const payUsingEOA = async (
   }[],
   tokensWithoutAllowance: string[],
   tokensWithoutBalance: string[],
-  registry: Registry
+  registry: Registry,
+  id: { [key: string]: string }
 ) => {
   const valuesInWei = await covertToWei(amounts);
 
@@ -693,18 +703,24 @@ export const payUsingEOA = async (
   let tokensDistributed = [] as string[];
   // Distribute tokens
   const txHash = {} as { [key: string]: string };
+
+  console.log({ id });
+
   if (tokenAmounts.length > 0) {
     await toast.promise(
-      distributeTokensUsingEOA(chainId, tokenAmounts, registry).then(
-        (res: any) => {
-          tokensDistributed = [
-            ...tokensDistributed,
-            ...tokenAmounts.map((a) => a.token),
-          ];
-          console.log({ res });
-          txHash["tokens"] = res.transactionHash;
-        }
-      ),
+      distributeTokensUsingEOA(
+        chainId,
+        tokenAmounts,
+        registry,
+        id["token"]
+      ).then((res: any) => {
+        // tokensDistributed = [
+        //   ...tokensDistributed,
+        //   ...tokenAmounts.map((a) => a.token),
+        // ];
+        // console.log({ res });
+        //txHash["tokens"] = res?.transactionHash;
+      }),
       {
         pending: `Distributing ${
           registry[chainId]?.tokenDetails[tokenAmounts[0].token]?.name
@@ -720,14 +736,19 @@ export const payUsingEOA = async (
     (a) => a.token === "0x0" && !tokensWithoutBalance.includes(a.token)
   );
   console.log({ currencyAmounts });
+
   if (currencyAmounts.length > 0) {
     await toast.promise(
-      distributeCurrencyUsingEOA(chainId, currencyAmounts, registry).then(
-        (res) => {
-          tokensDistributed = [...tokensDistributed, "0x0"];
-          txHash["currency"] = res.transactionHash;
-        }
-      ),
+      distributeCurrencyUsingEOA(
+        chainId,
+        currencyAmounts,
+        registry,
+        id["currency"]
+      ).then((res) => {
+        console.log({ res });
+        tokensDistributed = [...tokensDistributed, "0x0"];
+        //txHash["currency"] = res?.transactionHash;
+      }),
       {
         pending: `Distributing ${registry[chainId]?.nativeCurrency}`,
       },
@@ -748,6 +769,29 @@ export const findAndUpdatePaymentIds = async (
   transactionHash: { [key: string]: string }
 ) => {
   let filteredPaymentIds = [] as string[];
+  findPaymentIdsByTokenAndChain(
+    chainId,
+    tokenAddresses,
+    paymentIds,
+    paymentDetails
+  );
+  if (filteredPaymentIds.length === 0) {
+    return;
+  }
+  const res = await makePayments(circleId, {
+    paymentIds: filteredPaymentIds,
+    transactionHash,
+  });
+  return res;
+};
+
+export const findPaymentIdsByTokenAndChain = (
+  chainId: string,
+  tokenAddresses: string[],
+  paymentIds: string[],
+  paymentDetails: { [paymentId: string]: PaymentDetails }
+) => {
+  let filteredPaymentIds = [] as string[];
   for (const tokenAddress of tokenAddresses) {
     filteredPaymentIds = [
       ...paymentIds.filter(
@@ -758,12 +802,5 @@ export const findAndUpdatePaymentIds = async (
       ...filteredPaymentIds,
     ];
   }
-  if (filteredPaymentIds.length === 0) {
-    return;
-  }
-  const res = await makePayments(circleId, {
-    paymentIds: filteredPaymentIds,
-    transactionHash,
-  });
-  return res;
+  return filteredPaymentIds;
 };

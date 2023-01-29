@@ -1,5 +1,12 @@
 import queryClient from "@/app/common/utils/queryClient";
-import { CircleType, MemberDetails, Registry, RetroType } from "@/app/types";
+import { useGlobal } from "@/app/context/globalContext";
+import {
+  CircleType,
+  MemberDetails,
+  PaymentDetails,
+  Registry,
+  RetroType,
+} from "@/app/types";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { useQuery } from "react-query";
@@ -55,6 +62,7 @@ export function useProviderCircleContext() {
 
   const [navigationData, setNavigationData] = useState();
   const [navigationBreadcrumbs, setNavigationBreadcrumbs] = useState();
+  const { socket } = useGlobal();
 
   const {
     data: circle,
@@ -176,6 +184,23 @@ export function useProviderCircleContext() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [circle?.id]);
+
+  useEffect(() => {
+    if (socket && socket.on) {
+      socket.on(
+        `${cId}:paymentUpdate`,
+        (event: { data: { [key: string]: PaymentDetails }; user: string }) => {
+          console.log({ event });
+          if (circle)
+            setCircleData({
+              ...circle,
+              paymentDetails: event.data,
+            });
+        }
+      );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cId]);
 
   return {
     page,

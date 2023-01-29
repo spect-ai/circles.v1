@@ -811,6 +811,9 @@ export type ProjectMetadata = {
   paymentStatus?: {
     [dataSlug: string]: "pending" | "completed" | "pendingSignature";
   };
+  paymentIds?: {
+    [dataSlug: string]: string;
+  };
 };
 
 export type FormPermissions = {

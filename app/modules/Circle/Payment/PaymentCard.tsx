@@ -26,8 +26,7 @@ export default function PaymentCard({
   const { mode } = useTheme();
   const { circle: cId, status, tab, paymentId } = router.query;
   const { registry } = useCircle();
-  const { totalAmount, loading } = usePaymentViewCommon();
-  console.log({ totalAmount });
+  const { loading } = usePaymentViewCommon();
 
   if (loading) return <></>;
   return (
@@ -101,11 +100,10 @@ export default function PaymentCard({
                     </Text>
                   </Box>
                   <Text variant="small">
-                    {totalAmount.map((t) => (
-                      <Text>
-                        {t.value} {t.token?.label} on {t.chain?.label}
-                      </Text>
-                    ))}
+                    <Text>
+                      {paymentDetails.value} {paymentDetails.token?.label} on{" "}
+                      {paymentDetails.chain?.label}
+                    </Text>
                   </Text>
                 </Box>
               </Box>

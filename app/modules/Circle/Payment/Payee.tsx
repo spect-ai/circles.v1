@@ -32,18 +32,37 @@ export default function Payee({ value, mode, setValue, newCard }: Props) {
       value: id,
     };
   });
+  const [tokenOptions, setTokenOptions] = useState<Option[]>([]);
 
-  const tokenOptions =
-    registry &&
-    (Object.entries(registry[value.chain.value].tokenDetails).map(
-      ([address, token]) => {
-        return {
-          label: token.symbol,
-          value: address,
-        };
-      }
-    ) as Option[]);
   const [addRewardFromCard, setAddRewardFromCard] = useState(false);
+
+  useEffect(() => {
+    if (value.chain && value.chain.value && registry) {
+      const tOptions =
+        (Object.entries(registry[value.chain.value].tokenDetails).map(
+          ([address, token]) => {
+            return {
+              label: token.symbol,
+              value: address,
+            };
+          }
+        ) as Option[]) || [];
+      setTokenOptions(tOptions);
+      if (setValue)
+        setValue({
+          ...value,
+          token: tOptions[0],
+          paidTo: value.paidTo.map((p) => ({
+            ...p,
+            reward: {
+              ...p.reward,
+              token: tOptions[0],
+            },
+          })),
+        });
+      console.log({ tOptions });
+    }
+  }, [value.chain]);
 
   useEffect(() => {
     console.log("newCard", newCard);
@@ -114,6 +133,30 @@ export default function Payee({ value, mode, setValue, newCard }: Props) {
             multiple={false}
             isClearable={false}
           />
+          <Text>With</Text>
+          <Box>
+            <Dropdown
+              options={tokenOptions || []}
+              selected={value.token}
+              onChange={(option) => {
+                if (setValue) {
+                  setValue({
+                    ...value,
+                    token: option,
+                    paidTo: value.paidTo.map((p) => ({
+                      ...p,
+                      reward: {
+                        ...p.reward,
+                        token: option,
+                      },
+                    })),
+                  });
+                }
+              }}
+              multiple={false}
+              isClearable={false}
+            />
+          </Box>
         </Box>
       )}
       {value.paidTo?.map &&
@@ -282,10 +325,9 @@ export default function Payee({ value, mode, setValue, newCard }: Props) {
                   display="flex"
                   flexDirection="row"
                   justifyContent="flex-end"
-                  gap="2"
                 >
                   {" "}
-                  <Box width="1/2">
+                  <Box>
                     <Input
                       label=""
                       placeholder={`Enter Reward Amount`}
@@ -310,29 +352,7 @@ export default function Payee({ value, mode, setValue, newCard }: Props) {
                         }
                       }}
                       type="number"
-                    />
-                  </Box>
-                  <Box width="1/2">
-                    <Dropdown
-                      options={tokenOptions || []}
-                      selected={value.paidTo[index].reward?.token}
-                      onChange={(option) => {
-                        if (setValue) {
-                          const newPaidTo = value.paidTo[index];
-                          newPaidTo.reward = {
-                            ...newPaidTo.reward,
-                            token: option,
-                          };
-                          setValue({
-                            ...value,
-                            paidTo: value.paidTo.map((p, i) =>
-                              i === index ? newPaidTo : p
-                            ),
-                          });
-                        }
-                      }}
-                      multiple={false}
-                      isClearable={false}
+                      units={p?.reward?.token?.label}
                     />
                   </Box>
                 </Box>

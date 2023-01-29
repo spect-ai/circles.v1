@@ -5,6 +5,7 @@ import {
   filterTokensByAllowanceOrBalance,
   findAggregatedAmountForEachToken,
   findAndUpdatePaymentIds,
+  findPaymentIdsByTokenAndChain,
   findPendingPaymentsByNetwork,
   flattenAmountByEachUniqueTokenAndUser,
   hasAllowance,
@@ -21,6 +22,7 @@ import {
   UserType,
 } from "@/app/types";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
+import { AbiCoder } from "ethers/lib/utils";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
@@ -39,9 +41,6 @@ export default function usePaymentViewCommon() {
     {
       enabled: false,
     }
-  );
-  const [totalAmount, setTotalAmount] = useState(
-    [] as { chain: Option; token: Option; value: number }[]
   );
   const [isCardDrawerOpen, setIsCardDrawerOpen] = useState(false);
   const [value, setValue] = useState({} as PaymentDetails);
@@ -132,6 +131,12 @@ export default function usePaymentViewCommon() {
         registry as Registry,
         false
       );
+      const tokensWithSufficientAllowance = filterTokensByAllowanceOrBalance(
+        chainId,
+        hasRequiredAllowances,
+        registry as Registry,
+        true
+      );
 
       if (gnosisPayment) {
         console.log("Gnosis payment");
@@ -149,6 +154,42 @@ export default function usePaymentViewCommon() {
 
         console.log("Distributing ...");
         const tokensApprvoedSet = new Set(tokensApproved);
+        const tokenAddressesBeingDistributed = new Set([
+          ...tokensWithSufficientAllowance.map((token) => token.tokenAddress),
+          ...tokensApproved,
+          ...tokensWithSufficientBalance.map((token) => token.tokenAddress),
+        ]);
+
+        const paymentIdsBeingDistributed = findPaymentIdsByTokenAndChain(
+          chainId,
+          Array.from(tokenAddressesBeingDistributed),
+          pendingPayments,
+          circle.paymentDetails
+        );
+        console.log({ paymentIdsBeingDistributed });
+        const encoder = new AbiCoder();
+        let id = { token: "", currency: "" };
+        id["token"] = encoder.encode(
+          ["string", "string", "string[]"],
+          [
+            currentUser?._id.toString(),
+            circle.id,
+            paymentIdsBeingDistributed.filter(
+              (id) => circle.paymentDetails[id].token.value !== "0x0"
+            ),
+          ]
+        );
+
+        id["currency"] = encoder.encode(
+          ["string", "string", "string[]"],
+          [
+            currentUser?._id.toString(),
+            circle.id,
+            paymentIdsBeingDistributed.filter(
+              (id) => circle.paymentDetails[id].token.value === "0x0"
+            ),
+          ]
+        );
         const { tokensDistributed, txHash } = await payUsingGnosis(
           chainId,
           amounts,
@@ -158,7 +199,8 @@ export default function usePaymentViewCommon() {
           tokensWithInsufficientBalance.map((token) => token.tokenAddress),
           registry as Registry,
           nonce,
-          safeAddress
+          safeAddress,
+          id
         );
 
         console.log({ tokensDistributed });
@@ -186,6 +228,47 @@ export default function usePaymentViewCommon() {
 
         console.log("Distributing ...");
         const tokensApprvoedSet = new Set(tokensApproved);
+        const tokenAddressesBeingDistributed = new Set([
+          ...tokensWithSufficientAllowance.map((token) => token.tokenAddress),
+          ...tokensApproved,
+          ...tokensWithSufficientBalance.map((token) => token.tokenAddress),
+        ]);
+
+        const paymentIdsBeingDistributed = findPaymentIdsByTokenAndChain(
+          chainId,
+          Array.from(tokenAddressesBeingDistributed),
+          pendingPayments,
+          circle.paymentDetails
+        );
+        console.log({ paymentIdsBeingDistributed });
+        console.log({
+          user: currentUser?._id.toString(),
+          circle: circle.id,
+          paymentIdsBeingDistributed,
+        });
+        const encoder = new AbiCoder();
+        let id = { token: "", currency: "" };
+        id["token"] = encoder.encode(
+          ["string", "string", "string[]"],
+          [
+            currentUser?._id.toString(),
+            circle.id,
+            paymentIdsBeingDistributed.filter(
+              (id) => circle.paymentDetails[id].token.value !== "0x0"
+            ),
+          ]
+        );
+        id["currency"] = encoder.encode(
+          ["string", "string", "string[]"],
+          [
+            currentUser?._id.toString(),
+            circle.id,
+            paymentIdsBeingDistributed.filter(
+              (id) => circle.paymentDetails[id].token.value === "0x0"
+            ),
+          ]
+        );
+
         const { tokensDistributed, txHash } = await payUsingEOA(
           chainId,
           amounts,
@@ -193,21 +276,22 @@ export default function usePaymentViewCommon() {
             .filter((token) => !tokensApprvoedSet.has(token.tokenAddress))
             .map((token) => token.tokenAddress),
           tokensWithInsufficientBalance.map((token) => token.tokenAddress),
-          registry as Registry
+          registry as Registry,
+          id
         );
-        if (tokensDistributed?.length) {
-          const res = await findAndUpdatePaymentIds(
-            circle.id,
-            chainId,
-            tokensDistributed,
-            circle.pendingPayments,
-            circle.paymentDetails,
-            txHash
-          );
-          if (res) {
-            fetchCircle();
-          }
-        }
+        // if (tokensDistributed?.length) {
+        //   const res = await findAndUpdatePaymentIds(
+        //     circle.id,
+        //     chainId,
+        //     tokensDistributed,
+        //     circle.pendingPayments,
+        //     circle.paymentDetails,
+        //     txHash
+        //   );
+        //   if (res) {
+        //     fetchCircle();
+        //   }
+        // }
       }
     } catch (e: any) {
       console.log({ e });
@@ -240,35 +324,6 @@ export default function usePaymentViewCommon() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paymentId, newCard]);
 
-  const getAggregateValues = () => {
-    const aggregatedValue = value.paidTo.reduce((acc, curr) => {
-      const index = acc.findIndex(
-        (a) => a.token?.value === curr.reward.token?.value
-      );
-      if (index === -1) {
-        acc.push({
-          chain: value.chain,
-          token: curr.reward.token,
-          value: curr.reward.value,
-        });
-      } else {
-        acc[index].value += curr.reward.value;
-      }
-      return acc;
-    }, [] as { chain: Option; token: Option; value: number }[]);
-    return aggregatedValue;
-  };
-
-  useEffect(() => {
-    setLoading(true);
-    if (value?.paidTo?.length) {
-      setTotalAmount(getAggregateValues());
-    } else {
-      setTotalAmount([]);
-    }
-    setLoading(false);
-  }, [value?.paidTo]);
-
   return {
     memberDetails,
     isCardDrawerOpen,
@@ -280,7 +335,6 @@ export default function usePaymentViewCommon() {
     value,
     setValue,
     pay,
-    totalAmount,
     loading,
     setLoading,
   };
