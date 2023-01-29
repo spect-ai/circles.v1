@@ -1,14 +1,98 @@
-import { Box, Stack, Text, useTheme } from "degen";
+import {
+  Box,
+  Button,
+  IconLightningBolt,
+  Stack,
+  Tag,
+  Text,
+  useTheme,
+} from "degen";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { ToastContainer } from "react-toastify";
 import GovernanceHeading from "./GovernanceHeading";
+import { useQuery, gql } from "@apollo/client";
+import { useCircle } from "../CircleContext";
+import styled from "styled-components";
+import { Col, Row } from "react-grid-system";
+import ClickableAvatar from "@/app/common/components/Avatar";
+import Loader from "@/app/common/components/Loader";
+import { ThunderboltFilled } from "@ant-design/icons";
+
+const ScrollContainer = styled(Box)`
+  overflow-y: auto;
+  ::-webkit-scrollbar {
+    display: none;
+  }
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  height: calc(100vh - 9rem);
+  margin: 1rem 3rem;
+`;
+
+const Container = styled(Box)<{ mode: string }>`
+  border-width: 2px;
+  border-radius: 0.5rem;
+  border-color: ${(props) =>
+    props.mode === "dark" ? "rgb(255, 255, 255, 0.05)" : "rgb(20,20,20,0.05)"};
+  };
+  &:hover {
+    border-color: ${(props) =>
+      props.mode === "dark" ? "rgb(255, 255, 255, 0.1)" : "rgb(20,20,20,0.1)"};
+  }
+  color: rgb(191, 90, 242, 0.7);
+  padding: 1rem;
+  margin-bottom: 0.5rem;
+  height: 8rem;
+  width: 100%;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+`;
+
+export const Proposals = gql`
+  query Proposals($state: String!, $space: String!) {
+    proposals(
+      first: 20
+      skip: 0
+      where: { space_in: [$space], state: $state }
+      orderBy: "created"
+      orderDirection: desc
+    ) {
+      id
+      title
+      start
+      end
+      author
+    }
+  }
+`;
 
 export default function Governance() {
   const { mode } = useTheme();
   const router = useRouter();
   const { circle: cId, proposalStatus } = router.query;
   const [status, setStatus] = useState(proposalStatus);
+  const { localCircle: circle, memberDetails } = useCircle();
+
+  const { loading: isLoading, data: activeProposals } = useQuery(Proposals, {
+    variables: { state: "active", space: circle?.snapshot?.id },
+  });
+
+  const { loading: loading, data: closedProposals } = useQuery(Proposals, {
+    variables: { state: "closed", space: circle?.snapshot?.id },
+  });
+
+  function getAuthorDetails(auth: string) {
+    const author =
+      memberDetails &&
+      Object.values(memberDetails?.memberDetails)?.find(
+        (member) => member?.ethAddress?.toLowerCase() === auth?.toLowerCase()
+      );
+    return author;
+  }
+
   return (
     <>
       <ToastContainer
@@ -21,7 +105,127 @@ export default function Governance() {
           }`,
         }}
       />
+      <Loader
+        loading={isLoading || loading}
+        text="Fetching some thanos level data ..."
+      />
       <GovernanceHeading status={status as string} setStatus={setStatus} />
+      <ScrollContainer>
+        <Row id="row">
+          {proposalStatus == "Active" &&
+            !isLoading &&
+            activeProposals?.proposals?.length > 0 &&
+            activeProposals?.proposals?.map((proposal: any) => {
+              const author = getAuthorDetails(proposal.author);
+              return (
+                <Col md={5} style={{ padding: "0rem", marginLeft: "1rem" }}>
+                  <Container mode={mode}>
+                    <Stack direction={"horizontal"} justify="space-between">
+                      <ClickableAvatar
+                        username={author?.username || "Fren"}
+                        userId={author?.id || ""}
+                        label={""}
+                        src={author?.avatar || "0x0"}
+                        size="6"
+                      />
+                      <Tag hover tone="accent">
+                        Snapshot
+                      </Tag>
+                    </Stack>
+                    <Text
+                      variant="large"
+                      color="accent"
+                      align="left"
+                      weight={"semiBold"}
+                      ellipsis
+                    >
+                      {proposal.title}
+                    </Text>
+                    <Stack direction={"horizontal"} justify="flex-end">
+                      <Tag hover>
+                        Ends on {new Date(proposal.end * 1000).toDateString()}
+                      </Tag>
+                    </Stack>
+                  </Container>
+                </Col>
+              );
+            })}
+          {proposalStatus == "Completed" &&
+            !loading &&
+            closedProposals?.proposals?.length > 0 &&
+            closedProposals?.proposals?.map((proposal: any) => {
+              const author = getAuthorDetails(proposal.author);
+              return (
+                <Col md={5} style={{ padding: "0rem", marginLeft: "1rem" }}>
+                  <Container mode={mode}>
+                    <Stack direction={"horizontal"} justify="space-between">
+                      <ClickableAvatar
+                        username={author?.username || "Fren"}
+                        userId={author?.id || ""}
+                        label={""}
+                        src={author?.avatar || "0x0"}
+                        size="6"
+                      />
+                      <Tag hover tone="accent">
+                        <Stack
+                          direction={"horizontal"}
+                          align="center"
+                          space={"1"}
+                        >
+                          <IconLightningBolt size={"3"} />
+                          Snapshot
+                        </Stack>
+                      </Tag>
+                    </Stack>
+                    <Text
+                      variant="large"
+                      color="accent"
+                      align="left"
+                      weight={"semiBold"}
+                      ellipsis
+                    >
+                      {proposal.title}
+                    </Text>
+                    <Stack direction={"horizontal"} justify="flex-end">
+                      <Tag hover>
+                        Ended on {new Date(proposal.end * 1000).toDateString()}
+                      </Tag>
+                    </Stack>
+                  </Container>
+                </Col>
+              );
+            })}
+          {((proposalStatus == "Active" &&
+            (activeProposals?.proposals?.length === 0 ||
+              !circle.snapshot?.id)) ||
+            (proposalStatus == "Completed" &&
+              (closedProposals?.proposals?.length === 0 ||
+                !circle.snapshot?.id))) && (
+            <Box
+              style={{
+                margin: "20% 40%",
+                display: "flex",
+                flexDirection: "column",
+                gap: "1rem",
+                alignItems: "center",
+              }}
+            >
+              <Button shape="circle" variant="secondary" size="large">
+                <IconLightningBolt size={"8"} />
+              </Button>
+              <Text
+                variant="large"
+                color="accent"
+                align="left"
+                weight={"semiBold"}
+                ellipsis
+              >
+                No active proposals
+              </Text>
+            </Box>
+          )}
+        </Row>
+      </ScrollContainer>
     </>
   );
 }

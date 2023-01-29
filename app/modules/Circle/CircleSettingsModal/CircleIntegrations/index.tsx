@@ -23,7 +23,7 @@ export default function CircleIntegrations() {
   const { circle: cId } = router.query;
   const { localCircle: circle } = useCircle();
   const { origin } = useLocation();
-  const [snapshotSpace, setSnapshotSpace] = useState("");
+  const [snapshotSpace, setSnapshotSpace] = useState(circle?.snapshot.id || "");
 
   const { loading: isLoading, data } = useApolloQuery(Space, {
     variables: { id: snapshotSpace },
@@ -131,7 +131,7 @@ export default function CircleIntegrations() {
               />
             </Box>
             <PrimaryButton
-              disabled={!data?.space?.id || !snapshotSpace}
+              disabled={!data?.space?.id}
               loading={isLoading}
               onClick={async () => {
                 await updateCircle(
