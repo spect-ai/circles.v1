@@ -277,6 +277,7 @@ export default function Automation({
                 justifyContent="flex-start"
               >
                 <SingleAutomation
+                  col={collection}
                   automation={
                     automationMode === "create"
                       ? automationInCreate[automationId] ||
