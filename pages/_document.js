@@ -31,13 +31,12 @@ export default class MyDocument extends Document {
               />
             </>
           )}
-          {process.env.NODE_ENV ===
-            "production"(
-              <script
-                src="//code.tidio.co/x1bt9qhixmj7iqkf50xb9bjc4zstsuws.js"
-                async
-              ></script>
-            )}
+          {process.env.NODE_ENV === "production" && (
+            <script
+              src="//code.tidio.co/x1bt9qhixmj7iqkf50xb9bjc4zstsuws.js"
+              async
+            ></script>
+          )}
         </Head>
         <body>
           <Main />
