@@ -169,8 +169,14 @@ export default function SingleAutomation({
       ]);
 
       const thenOptions = Object.entries(allPossibleActions)
-        .filter((a) =>
-          collection?.voting?.enabled ? true : a[0] !== "startVotingPeriod"
+        .filter(
+          (a) =>
+            (collection?.collectionType === 0
+              ? true
+              : a[0] !== "giveDiscordRole" &&
+                a[0] !== "giveRole" &&
+                a[0] !== "createDiscordChannel") &&
+            (collection?.voting?.enabled ? true : a[0] !== "startVotingPeriod")
         )
         .map((a) => ({
           label: a[1].name,
@@ -232,8 +238,6 @@ export default function SingleAutomation({
       value: collection?.id || "selectCollection",
     });
   }, []);
-
-  console.log("automation", automation);
 
   return (
     <Box

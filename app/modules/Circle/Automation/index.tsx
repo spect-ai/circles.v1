@@ -20,7 +20,7 @@ const ScrollContainer = styled(Box)`
   }
   -ms-overflow-style: none;
   scrollbar-width: none;
-  height: calc(100vh - 13rem);
+  height: calc(100vh - 6rem);
 `;
 
 const Container = styled(Box)<{ mode: string }>`
