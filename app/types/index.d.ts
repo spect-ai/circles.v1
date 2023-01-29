@@ -298,6 +298,12 @@ export interface CircleType {
   cancelledPayments: string[];
   paymentDetails: { [key: string]: PaymentDetails };
   paymentLabelOptions: Option[];
+  snapshot: {
+    name: string;
+    id: string;
+    network: string;
+    symbol: string;
+  };
 }
 
 // interface ProjectType {

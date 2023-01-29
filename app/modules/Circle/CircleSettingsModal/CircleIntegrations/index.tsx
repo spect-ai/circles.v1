@@ -1,10 +1,10 @@
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { CircleType } from "@/app/types";
 import { GithubOutlined } from "@ant-design/icons";
-import { Box, Heading, Stack, Text } from "degen";
+import { Box, Heading, Input, Stack, Text } from "degen";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React from "react";
+import React, { useState } from "react";
 import { useQuery } from "react-query";
 import DiscordRoleMapping from "../DiscordRoleMapping";
 import DiscordIcon from "@/app/assets/icons/discordIcon.svg";
@@ -13,14 +13,22 @@ import GuildIntegration from "../GuildIntegration";
 import GuildRoleMapping from "../GuildIntegration/GuildRoleMapping";
 import ConnectQuestbook from "../QuestbookIntegration";
 import { useLocation } from "react-use";
+import { useQuery as useApolloQuery, gql } from "@apollo/client";
+import { Space } from "@/app/modules/Collection/VotingModule";
+import { updateCircle } from "@/app/services/UpdateCircle";
+import { useCircle } from "../../CircleContext";
 
 export default function CircleIntegrations() {
   const router = useRouter();
   const { circle: cId } = router.query;
-  const { data: circle } = useQuery<CircleType>(["circle", cId], {
-    enabled: false,
-  });
+  const { localCircle: circle } = useCircle();
   const { origin } = useLocation();
+  const [snapshotSpace, setSnapshotSpace] = useState("");
+
+  const { loading: isLoading, data } = useApolloQuery(Space, {
+    variables: { id: snapshotSpace },
+  });
+
   return (
     <Box>
       <Stack space="8">
@@ -103,6 +111,54 @@ export default function CircleIntegrations() {
           >
             <DiscordRoleMapping />
           </Box>
+        </Stack>
+        <Stack space="1">
+          <Heading>Snapshot</Heading>
+          <Text>
+            Enter your snapshot space to create and vote on proposals from Spect
+          </Text>
+          <Stack direction={"horizontal"} space="2" align={"center"}>
+            <Box width="1/2" marginTop="1">
+              <Input
+                label
+                hideLabel
+                prefix="https://snapshot.org/#/"
+                value={snapshotSpace}
+                placeholder="your-space.eth"
+                onChange={(e) => {
+                  setSnapshotSpace(e.target.value);
+                }}
+              />
+            </Box>
+            <PrimaryButton
+              disabled={!data?.space?.id || !snapshotSpace}
+              loading={isLoading}
+              onClick={async () => {
+                await updateCircle(
+                  {
+                    snapshot: {
+                      name: data?.space?.name || "",
+                      id: snapshotSpace,
+                      network: data?.space?.network || "",
+                      symbol: data?.space?.symbol || "",
+                    },
+                  },
+                  circle?.id as string
+                );
+              }}
+            >
+              Save
+            </PrimaryButton>
+          </Stack>
+          {snapshotSpace &&
+            !isLoading &&
+            (data?.space?.id ? (
+              <Text size={"extraSmall"} color="accent">
+                Snapshot Space - {data?.space?.name}
+              </Text>
+            ) : (
+              <Text color={"red"}>Incorrect URL</Text>
+            ))}
         </Stack>
         <Stack space="1">
           <Heading>Github</Heading>
