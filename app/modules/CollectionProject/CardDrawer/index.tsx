@@ -102,9 +102,6 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
         setValue(collection.data[cardSlug as string]);
       }, 100);
     }
-    if (newCard) {
-      setValue({});
-    }
   }, [defaultValue?.id, cardSlug, newCard]);
 
   const onChange = async (update: any, slug: string) => {
@@ -229,7 +226,9 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
     return usePortal ? ReactDOM.createPortal(child, document.body) : child;
   };
 
-  const PropertyDraggableCallback = useCallback(PropertyDraggable, []);
+  const PropertyDraggableCallback = useCallback(PropertyDraggable, [
+    collection,
+  ]);
 
   const PropertyList = (provided: DroppableProvided) => (
     <Box ref={provided.innerRef} {...provided.droppableProps}>
@@ -259,6 +258,7 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
     PropertyDraggableCallback,
     propertyOrder,
     value,
+    collection,
   ]);
 
   return (

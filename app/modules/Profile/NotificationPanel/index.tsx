@@ -83,7 +83,7 @@ export default function NotificationPanel() {
                 })().catch((err) => console.log(err));
               }}
               hasMore={hasMore}
-              loader={<Heading>Loading..</Heading>}
+              loader={<div />}
               endMessage={
                 <Stack align="center">
                   <Text variant="label">Yay! You have seen it all</Text>
