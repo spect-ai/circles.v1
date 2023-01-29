@@ -182,7 +182,7 @@ export default function VotingActions({
           </Box>
         )}
       {collection.voting?.enabled &&
-        !collection.voting?.snapshot?.id &&
+        !collection.voting?.periods?.[dataId]?.snapshot?.proposalId &&
         collection.voting?.periods &&
         collection.voting?.periods[dataId]?.active && (
           <Box
