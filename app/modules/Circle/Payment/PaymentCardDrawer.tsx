@@ -10,7 +10,7 @@ import {
   cancelPayments,
   updatePayment,
 } from "@/app/services/Paymentv2";
-import { Option } from "@/app/types";
+import { CollectionType, Option } from "@/app/types";
 import { Box, Button, IconChevronRight, Stack, Text, useTheme } from "degen";
 import { motion } from "framer-motion";
 import { useRouter } from "next/router";
@@ -41,6 +41,13 @@ export default function PaymentCardDrawer({ handleClose }: Props) {
   const [openPayeeModal, setOpenPayeeModal] = useState(false);
 
   const { newCard, value, setValue, pay } = usePaymentViewCommon();
+  const projectOptions = Object.values(circle.collections)?.map(
+    (collection) => ({
+      label: collection.name,
+      value: collection.slug,
+    })
+  );
+
   const onChange = async (update: any, labelOptions?: Option[]) => {
     if (query.paymentId) {
       let res;
@@ -75,6 +82,11 @@ export default function PaymentCardDrawer({ handleClose }: Props) {
     });
     handleClose();
   };
+  console.log({ value });
+
+  useEffect(() => {
+    console.log("fetch data");
+  }, [value.collection]);
 
   return (
     <Box>
@@ -292,15 +304,19 @@ export default function PaymentCardDrawer({ handleClose }: Props) {
                       <Text>Project</Text>
                     </Box>
                     <Box width="3/4">
-                      <FieldButton onClick={() => {}} mode={mode}>
-                        {value.collectionId ? (
-                          <Text>
-                            {circle.collections[value.collectionId]?.name}
-                          </Text>
-                        ) : (
-                          "Empty"
-                        )}
-                      </FieldButton>
+                      <PaymentDropdown
+                        value={value.collection}
+                        setValue={(v, opts) => {
+                          console.log({ v });
+                          setValue({ ...value, collection: v });
+                          onChange({ collection: v }, opts);
+                        }}
+                        options={projectOptions}
+                        setOptions={(v) => {}}
+                        paymentId={value.id}
+                        multiple={false}
+                        disabled={value.status !== "Pending" && !newCard}
+                      />
                     </Box>
                   </Stack>
                   {/* <Stack direction="horizontal" align="center" space="0">

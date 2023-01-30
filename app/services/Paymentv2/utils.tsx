@@ -769,20 +769,29 @@ export const findAndUpdatePaymentIds = async (
   transactionHash: { [key: string]: string }
 ) => {
   let filteredPaymentIds = [] as string[];
-  findPaymentIdsByTokenAndChain(
-    chainId,
-    tokenAddresses,
-    paymentIds,
-    paymentDetails
-  );
-  if (filteredPaymentIds.length === 0) {
+  if (
+    ["100", "56", "43114", "43113"].includes(
+      // All other chains are taken care of by events
+      chainId
+    )
+  ) {
+    findPaymentIdsByTokenAndChain(
+      chainId,
+      tokenAddresses,
+      paymentIds,
+      paymentDetails
+    );
+    if (filteredPaymentIds.length === 0) {
+      return;
+    }
+    const res = await makePayments(circleId, {
+      paymentIds: filteredPaymentIds,
+      transactionHash,
+    });
+    return res;
+  } else {
     return;
   }
-  const res = await makePayments(circleId, {
-    paymentIds: filteredPaymentIds,
-    transactionHash,
-  });
-  return res;
 };
 
 export const findPaymentIdsByTokenAndChain = (

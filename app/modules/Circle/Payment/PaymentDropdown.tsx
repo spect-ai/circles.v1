@@ -17,6 +17,7 @@ type Props = {
   setValue: (value: any, opts?: Option[]) => void;
   paymentId: string;
   multiple?: boolean;
+  disabled?: boolean;
 };
 
 export default function PaymentDropdown({
@@ -26,6 +27,7 @@ export default function PaymentDropdown({
   setValue,
   paymentId,
   multiple = false,
+  disabled,
 }: Props) {
   const { mode } = useTheme();
   const [isEditing, setIsEditing] = useState(false);
@@ -91,7 +93,7 @@ export default function PaymentDropdown({
           ) : (
             <FieldButton
               onClick={() => {
-                setIsEditing(true);
+                if (!disabled) setIsEditing(true);
               }}
               mode={mode}
             >

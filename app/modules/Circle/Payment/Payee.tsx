@@ -409,14 +409,14 @@ export default function Payee({ value, mode, setValue, newCard }: Props) {
           >
             Add User
           </PrimaryButton>
-          <PrimaryButton
+          {/* <PrimaryButton
             variant="transparent"
             onClick={() => {
               setAddRewardFromCard(true);
             }}
           >
             Add Reward From Card
-          </PrimaryButton>
+          </PrimaryButton> */}
         </Box>
       )}
     </Box>

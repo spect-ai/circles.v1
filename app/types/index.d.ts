@@ -1210,8 +1210,6 @@ export type PaymentDetails = {
     };
   }[];
   type: "Manually Added" | "Added From Card";
-  dataSlug?: string;
-  collectionId?: string;
   title: string;
   description?: string;
   paidOn?: Date;
@@ -1226,4 +1224,6 @@ export type PaymentDetails = {
     value: any;
   }[];
   labels?: Option[];
+  collection?: Option;
+  data?: Option;
 };

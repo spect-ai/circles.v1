@@ -202,21 +202,6 @@ export default function usePaymentViewCommon() {
           safeAddress,
           id
         );
-
-        console.log({ tokensDistributed });
-        if (tokensDistributed?.length) {
-          const res = await findAndUpdatePaymentIds(
-            circle.id,
-            chainId,
-            tokensDistributed,
-            circle.pendingPayments,
-            circle.paymentDetails,
-            txHash
-          );
-          if (res) {
-            fetchCircle();
-          }
-        }
       } else {
         console.log("EOA payment");
         console.log("Approving ...");
@@ -279,19 +264,19 @@ export default function usePaymentViewCommon() {
           registry as Registry,
           id
         );
-        // if (tokensDistributed?.length) {
-        //   const res = await findAndUpdatePaymentIds(
-        //     circle.id,
-        //     chainId,
-        //     tokensDistributed,
-        //     circle.pendingPayments,
-        //     circle.paymentDetails,
-        //     txHash
-        //   );
-        //   if (res) {
-        //     fetchCircle();
-        //   }
-        // }
+        if (tokensDistributed?.length) {
+          const res = await findAndUpdatePaymentIds(
+            circle.id,
+            chainId,
+            tokensDistributed,
+            circle.pendingPayments,
+            circle.paymentDetails,
+            txHash
+          );
+          if (res) {
+            fetchCircle();
+          }
+        }
       }
     } catch (e: any) {
       console.log({ e });

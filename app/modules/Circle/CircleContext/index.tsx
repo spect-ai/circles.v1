@@ -194,7 +194,7 @@ export function useProviderCircleContext() {
           if (circle)
             setCircleData({
               ...circle,
-              paymentDetails: event.data,
+              ...event.data,
             });
         }
       );
