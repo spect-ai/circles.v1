@@ -334,7 +334,7 @@ export default function SingleAutomation({
       >
         <Box>
           <Text variant="large" weight="semiBold" color="accent">
-            Select Collection
+            Select Project Or Form
           </Text>
           <AutomationCard mode={mode} backgroundColor="foregroundTertiary">
             <Box width="full">
@@ -353,7 +353,7 @@ export default function SingleAutomation({
           </AutomationCard>
 
           {collection?.id && (
-            <>
+            <Box>
               <Box
                 marginTop={{
                   xs: "2",
@@ -529,7 +529,7 @@ export default function SingleAutomation({
                   collection={collection}
                 />
               </Box>
-            </>
+            </Box>
           )}
         </Box>
       </ScrollContainer>

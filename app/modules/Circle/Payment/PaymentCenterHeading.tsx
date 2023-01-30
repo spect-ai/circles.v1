@@ -21,7 +21,9 @@ export const IconButton = styled(Box)`
 
 type Props = {
   paymentViewId: string;
-  setPaymentViewId: (id: "Pending" | "Completed" | "Cancelled") => void;
+  setPaymentViewId: (
+    id: "Pending" | "Pending Signature" | "Completed" | "Cancelled"
+  ) => void;
 };
 
 function PaymentCenterHeading({ paymentViewId, setPaymentViewId }: Props) {
@@ -95,6 +97,31 @@ function PaymentCenterHeading({ paymentViewId, setPaymentViewId }: Props) {
           >
             <Text variant="small" weight="semiBold">
               Pending
+            </Text>
+          </ViewTab>
+        </Link>
+        <Link href={`/${cId}?tab=payment&status=pendingSignature`}>
+          <ViewTab
+            paddingX="4"
+            backgroundColor={
+              paymentViewId === "Pending Signature"
+                ? "backgroundSecondary"
+                : "background"
+            }
+            borderTopWidth={
+              paymentViewId === "Pending Signature" ? "0.375" : "0"
+            }
+            borderRightWidth={
+              paymentViewId === "Pending Signature" ? "0.375" : "0"
+            }
+            borderLeftWidth={
+              paymentViewId === "Pending Signature" ? "0.375" : "0"
+            }
+            key={"pending"}
+            onClick={() => setPaymentViewId("Pending Signature")}
+          >
+            <Text variant="small" weight="semiBold">
+              Pending Signature
             </Text>
           </ViewTab>
         </Link>

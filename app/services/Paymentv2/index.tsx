@@ -63,6 +63,47 @@ export const updatePayment = async (
   ).json();
 };
 
+type UpdateMultiplePaymentsRequestDto = {
+  type?: "Manually Added" | "Added From Card";
+  chain?: {
+    label: string;
+    value: string;
+  };
+  token?: {
+    label: string;
+    value: string;
+  };
+  value?: number;
+  paidTo?: {
+    propertyType: string;
+    value: any;
+  }[];
+  labels?: Option[];
+  transactionHash?: string;
+  safeTransactionHash?: string;
+  status?: "Pending" | "Pending Signature" | "Completed" | "Cancelled";
+  paymentIds: string[];
+};
+
+export const updateMultiplePayments = async (
+  circleId: string,
+  body: UpdateMultiplePaymentsRequestDto
+) => {
+  return await (
+    await fetch(
+      `${process.env.API_HOST}/circle/v1/${circleId}/updateMultiplePayments`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
+        credentials: "include",
+      }
+    )
+  ).json();
+};
+
 type AddManualPaymentsRequestDto = {
   title: string;
 

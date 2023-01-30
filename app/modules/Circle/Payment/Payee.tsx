@@ -7,15 +7,23 @@ import usePaymentViewCommon from "./Common/usePaymentCommon";
 import { ethers } from "ethers";
 import { useCircle } from "../CircleContext";
 import { useEffect, useState } from "react";
+import { smartTrim } from "@/app/common/utils/utils";
 
 type Props = {
   value: PaymentDetails;
   mode: "view" | "edit";
   setValue?: (values: PaymentDetails) => void;
   newCard?: boolean | string;
+  shortenEthAddress?: boolean;
 };
 
-export default function Payee({ value, mode, setValue, newCard }: Props) {
+export default function Payee({
+  value,
+  mode,
+  setValue,
+  newCard,
+  shortenEthAddress,
+}: Props) {
   const { memberDetails } = usePaymentViewCommon();
   const memberOptions = Object.entries(memberDetails?.memberDetails || {}).map(
     ([id, member]) => {
@@ -34,9 +42,8 @@ export default function Payee({ value, mode, setValue, newCard }: Props) {
   });
   const [tokenOptions, setTokenOptions] = useState<Option[]>([]);
 
-  const [addRewardFromCard, setAddRewardFromCard] = useState(false);
-
   useEffect(() => {
+    console.log({ value });
     if (value.chain && value.chain.value && registry) {
       const tOptions =
         (Object.entries(registry[value.chain.value].tokenDetails).map(
@@ -51,25 +58,25 @@ export default function Payee({ value, mode, setValue, newCard }: Props) {
       if (setValue)
         setValue({
           ...value,
-          token: tOptions[0],
-          paidTo: value.paidTo.map((p) => ({
-            ...p,
-            reward: {
-              ...p.reward,
-              token: tOptions[0],
-            },
-          })),
+          token: value.token?.value ? value.token : tOptions[0],
+          paidTo:
+            value.paidTo?.map((p) => ({
+              ...p,
+              reward: {
+                ...p.reward,
+                token: value.token?.value ? value.token : tOptions[0],
+              },
+            })) || [],
         });
       console.log({ tOptions });
     }
   }, [value.chain]);
 
   useEffect(() => {
-    console.log("newCard", newCard);
-    console.log({ paidTo: value.paidTo });
     if (newCard && mode === "edit" && !value.paidTo?.length && setValue) {
       setValue({
         ...value,
+        chain: networkOptions[0],
         paidTo: [
           {
             propertyType: "user",
@@ -83,7 +90,7 @@ export default function Payee({ value, mode, setValue, newCard }: Props) {
                 value: "",
                 label: "",
               },
-              chain: value.chain,
+              chain: networkOptions[0],
             },
           },
         ],
@@ -116,6 +123,10 @@ export default function Payee({ value, mode, setValue, newCard }: Props) {
                 setValue({
                   ...value,
                   chain: option,
+                  token: {
+                    value: "",
+                    label: "",
+                  },
                   paidTo: value.paidTo.map((p) => ({
                     ...p,
                     reward: {
@@ -161,7 +172,7 @@ export default function Payee({ value, mode, setValue, newCard }: Props) {
       )}
       {value.paidTo?.map &&
         value.paidTo?.map((p, index) => (
-          <>
+          <Box>
             <Box
               display="flex"
               flexDirection="row"
@@ -187,13 +198,13 @@ export default function Payee({ value, mode, setValue, newCard }: Props) {
                   </Text>
                 </Box>
               )}
-              {p.propertyType === "user" && mode === "view" && (
+              {p.propertyType === "user" && mode === "view" && p.value && (
                 <Box
                   display="flex"
                   flexDirection="row"
                   alignItems="center"
                   style={{
-                    width: "80%",
+                    width: "70%",
                   }}
                 >
                   <Stack direction="horizontal" align="center" space="2">
@@ -256,17 +267,19 @@ export default function Payee({ value, mode, setValue, newCard }: Props) {
                   </Box>
                 </Box>
               )}
-              {p.propertyType === "ethAddress" && mode === "view" && (
+              {p.propertyType === "ethAddress" && mode === "view" && p.value && (
                 <Box
                   display="flex"
                   flexDirection="row"
                   alignItems="center"
                   style={{
-                    width: "80%",
+                    width: "70%",
                   }}
                 >
                   {" "}
-                  <Text variant="small">{p.value}</Text>
+                  <Text variant="small">
+                    {shortenEthAddress ? smartTrim(p.value, 12) : p.value}
+                  </Text>
                 </Box>
               )}
               {p.propertyType === "ethAddress" && mode === "edit" && (
@@ -311,6 +324,9 @@ export default function Payee({ value, mode, setValue, newCard }: Props) {
                   display="flex"
                   flexDirection="row"
                   justifyContent="flex-end"
+                  style={{
+                    width: "30%",
+                  }}
                 >
                   <Text variant="small">
                     {p.reward?.value
@@ -358,7 +374,7 @@ export default function Payee({ value, mode, setValue, newCard }: Props) {
                 </Box>
               )}
             </Box>
-          </>
+          </Box>
         ))}
       {mode === "edit" && (
         <Box display="flex" flexDirection="row" marginTop="8" gap="2">

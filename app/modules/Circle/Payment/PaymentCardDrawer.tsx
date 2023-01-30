@@ -5,6 +5,7 @@ import Editor from "@/app/common/components/Editor";
 import Modal from "@/app/common/components/Modal";
 import ConfirmModal from "@/app/common/components/Modal/ConfirmModal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
+import { smartTrim } from "@/app/common/utils/utils";
 import {
   addManualPayment,
   cancelPayments,
@@ -16,6 +17,8 @@ import { motion } from "framer-motion";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { Save } from "react-feather";
+import { useQuery } from "react-query";
+import { toast } from "react-toastify";
 import styled from "styled-components";
 import { useCircle } from "../CircleContext";
 import usePaymentViewCommon from "./Common/usePaymentCommon";
@@ -29,7 +32,7 @@ type Props = {
 
 export default function PaymentCardDrawer({ handleClose }: Props) {
   const { mode } = useTheme();
-  const { circle, fetchCircle, setCircleData } = useCircle();
+  const { circle, fetchCircle, setCircleData, registry } = useCircle();
   const { push, pathname, query } = useRouter();
 
   const [isDirty, setIsDirty] = useState(false);
@@ -41,11 +44,33 @@ export default function PaymentCardDrawer({ handleClose }: Props) {
   const [openPayeeModal, setOpenPayeeModal] = useState(false);
 
   const { newCard, value, setValue, pay } = usePaymentViewCommon();
-  const projectOptions = Object.values(circle.collections)?.map(
-    (collection) => ({
+  const [cardOptions, setCardOptions] = useState([] as Option[]);
+  const projectOptions = Object.values(circle.collections)
+    ?.filter(
+      (collection) => collection.collectionType === 1 && !collection.archived
+    )
+    .map((collection) => ({
       label: collection.name,
       value: collection.slug,
-    })
+    }));
+
+  const { refetch: fetchCollection } = useQuery<CollectionType>(
+    ["collection", value.collection?.value],
+    () =>
+      fetch(
+        `${process.env.API_HOST}/collection/v1/slug/${
+          value.collection?.value as string
+        }`,
+        {
+          credentials: "include",
+        }
+      ).then((res) => {
+        if (res.status === 403) return { unauthorized: true };
+        return res.json();
+      }),
+    {
+      enabled: false,
+    }
   );
 
   const onChange = async (update: any, labelOptions?: Option[]) => {
@@ -82,10 +107,31 @@ export default function PaymentCardDrawer({ handleClose }: Props) {
     });
     handleClose();
   };
-  console.log({ value });
 
+  console.log({ cardOptions });
   useEffect(() => {
-    console.log("fetch data");
+    if (value.collection?.value) {
+      console.log({ v: value.collection?.value });
+
+      fetchCollection()
+        .then((res) => {
+          if (res.data) {
+            console.log({ d: res.data?.data });
+            const options = Object.values(res.data?.data)?.map((card) => ({
+              label: card.Title,
+              value: card.slug,
+            }));
+            console.log({ options });
+            setCardOptions(options);
+          }
+        })
+        .catch((err) => {
+          console.error(err);
+          toast.error("Something went wrong while fetching cards", {
+            theme: "dark",
+          });
+        });
+    }
   }, [value.collection]);
 
   return (
@@ -179,6 +225,14 @@ export default function PaymentCardDrawer({ handleClose }: Props) {
                         query.paymentId as string,
                       ]);
                       setIsPayLoading(false);
+                      push({
+                        pathname,
+                        query: {
+                          circle: query.circle,
+                          tab: query.tab,
+                          status: query.status,
+                        },
+                      });
                     }}
                     loading={isPayLoading}
                     disabled={isGnosisPayLoading}
@@ -186,9 +240,8 @@ export default function PaymentCardDrawer({ handleClose }: Props) {
                     Pay
                   </PrimaryButton>
                   {circle?.safeAddresses &&
-                    Object.entries(circle?.safeAddresses).some(
-                      ([aChain, aSafes]) => aSafes?.length > 0
-                    ) && (
+                    value.chain?.value &&
+                    circle?.safeAddresses[value.chain.value]?.length && (
                       <PrimaryButton
                         variant="secondary"
                         onClick={async () => {
@@ -197,6 +250,14 @@ export default function PaymentCardDrawer({ handleClose }: Props) {
                             query.paymentId as string,
                           ]);
                           setIsGnosisPayLoading(false);
+                          push({
+                            pathname,
+                            query: {
+                              circle: query.circle,
+                              tab: query.tab,
+                              status: query.status,
+                            },
+                          });
                         }}
                         loading={isGnosisPayLoading}
                         disabled={isPayLoading}
@@ -299,40 +360,60 @@ export default function PaymentCardDrawer({ handleClose }: Props) {
                       </FieldButton>
                     </Box>
                   </Stack>
-                  <Stack direction="horizontal" align="center" space="0">
-                    <Box width="1/4">
+                  <Stack direction="horizontal" align="flex-start" space="0">
+                    <Box width="1/4" paddingTop="2">
                       <Text>Project</Text>
                     </Box>
                     <Box width="3/4">
                       <PaymentDropdown
                         value={value.collection}
                         setValue={(v, opts) => {
-                          console.log({ v });
-                          setValue({ ...value, collection: v });
-                          onChange({ collection: v }, opts);
+                          const updates = { collection: v } as any;
+                          if (!v) updates["data"] = null;
+                          setValue({ ...value, ...updates });
+                          onChange(updates, opts);
                         }}
                         options={projectOptions}
                         setOptions={(v) => {}}
                         paymentId={value.id}
                         multiple={false}
                         disabled={value.status !== "Pending" && !newCard}
+                        clearable={true}
+                        goToLink={
+                          value?.collection?.value &&
+                          `/${circle?.slug}/r/${value?.collection?.value}`
+                        }
                       />
                     </Box>
                   </Stack>
-                  {/* <Stack direction="horizontal" align="center" space="0">
-                    <Box width="1/4">
-                      <Text>Card</Text>
-                    </Box>
-                    <Box width="3/4">
-                      <FieldButton onClick={() => {}} mode={mode}>
-                        <Box cursor="pointer" onClick={(e) => {}}>
-                          <Text> val </Text>
-                        </Box>
-                      </FieldButton>
-                    </Box>
-                  </Stack> */}
-                  <Stack direction="horizontal" align="center" space="0">
-                    <Box width="1/4">
+                  {value.collection?.value && (
+                    <Stack direction="horizontal" align="flex-start" space="0">
+                      <Box width="1/4" paddingTop="2">
+                        <Text>Linked Card</Text>
+                      </Box>
+                      <Box width="3/4">
+                        <PaymentDropdown
+                          value={value.data}
+                          setValue={(v, opts) => {
+                            setValue({ ...value, data: v });
+                            onChange({ data: v }, opts);
+                          }}
+                          options={cardOptions}
+                          setOptions={(v) => {}}
+                          paymentId={value.id}
+                          multiple={false}
+                          disabled={value.status !== "Pending" && !newCard}
+                          clearable={true}
+                          goToLink={
+                            value?.data?.value &&
+                            `/${circle?.slug}/r/${value?.collection?.value}?cardSlug=${value?.data?.value}`
+                          }
+                        />
+                      </Box>
+                    </Stack>
+                  )}
+                  <Stack direction="horizontal" align="flex-start" space="0">
+                    <Box width="1/4" paddingTop="2">
                       <Text>Labels</Text>
                     </Box>
                     <Box width="3/4">
@@ -346,6 +427,7 @@ export default function PaymentCardDrawer({ handleClose }: Props) {
                         setOptions={(v) => {}}
                         paymentId={value.id}
                         multiple={true}
+                        clearable={true}
                       />
                     </Box>
                   </Stack>
@@ -389,7 +471,7 @@ export default function PaymentCardDrawer({ handleClose }: Props) {
                         mode={mode}
                       >
                         {value?.paidTo?.length ? (
-                          <Payee value={value} mode="view" />
+                          <Payee value={value} mode="view" shortenEthAddress />
                         ) : (
                           "Empty"
                         )}
@@ -411,6 +493,28 @@ export default function PaymentCardDrawer({ handleClose }: Props) {
                       </FieldButton>
                     </Box>
                   </Stack>
+                  {value.status === "Completed" && (
+                    <Stack direction="horizontal" align="center" space="0">
+                      <Box width="1/4">
+                        <Text>Transaction Hash</Text>
+                      </Box>
+                      <Box width="3/4">
+                        <FieldButton onClick={() => {}} mode={mode}>
+                          <a
+                            href={`${
+                              registry?.[value.chain.value].blockExplorer
+                            }tx/${value.transactionHash}`}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            <Text>
+                              {smartTrim(value.transactionHash as string, 16)}
+                            </Text>
+                          </a>
+                        </FieldButton>
+                      </Box>
+                    </Stack>
+                  )}
                 </Box>
                 <Box padding="2" borderBottomWidth="0.375" marginTop="4">
                   <Editor
@@ -473,10 +577,8 @@ const Container = styled(Box)`
   height: calc(100vh - 4rem);
 `;
 
-export {};
-
 const FieldButton = styled.div<{ mode: string }>`
-  width: 30rem;
+  width: 25rem;
   color: ${({ mode }) =>
     mode === "dark" ? "rgb(255, 255, 255, 0.25)" : "rgb(0, 0, 0, 0.25)"};
   padding: 0.5rem 0.5rem;

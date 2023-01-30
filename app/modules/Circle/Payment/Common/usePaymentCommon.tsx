@@ -4,7 +4,8 @@ import {
   approveUsingGnosis,
   filterTokensByAllowanceOrBalance,
   findAggregatedAmountForEachToken,
-  findAndUpdatePaymentIds,
+  findAndUpdateCompletedPaymentIds,
+  findAndUpdatePaymentIdsPendingSignature,
   findPaymentIdsByTokenAndChain,
   findPendingPaymentsByNetwork,
   flattenAmountByEachUniqueTokenAndUser,
@@ -202,6 +203,15 @@ export default function usePaymentViewCommon() {
           safeAddress,
           id
         );
+
+        const res = await findAndUpdatePaymentIdsPendingSignature(
+          circle.id,
+          chainId,
+          tokensDistributed,
+          pendingPayments,
+          circle.paymentDetails,
+          txHash
+        );
       } else {
         console.log("EOA payment");
         console.log("Approving ...");
@@ -265,17 +275,15 @@ export default function usePaymentViewCommon() {
           id
         );
         if (tokensDistributed?.length) {
-          const res = await findAndUpdatePaymentIds(
+          console.log({ tokensDistributed, txHash });
+          const res = await findAndUpdateCompletedPaymentIds(
             circle.id,
             chainId,
             tokensDistributed,
-            circle.pendingPayments,
+            pendingPayments,
             circle.paymentDetails,
             txHash
           );
-          if (res) {
-            fetchCircle();
-          }
         }
       }
     } catch (e: any) {
@@ -295,12 +303,19 @@ export default function usePaymentViewCommon() {
       setIsCardDrawerOpen(true);
     } else if (newCard) {
       setValue({
-        ...value,
         type: "Manually Added",
         chain: {
           value: circle.defaultPayment?.chain?.chainId,
           label: circle.defaultPayment?.chain?.name,
         },
+        token: {
+          value: "",
+          label: "",
+        },
+        paidTo: [],
+        title: "",
+        id: "",
+        value: 0,
       });
       setIsCardDrawerOpen(true);
     } else {

@@ -294,6 +294,7 @@ export interface CircleType {
   rootAutomations: RootAutomationsType;
   automationCount: number;
   pendingPayments: string[];
+  pendingSignaturePayments: string[];
   completedPayments: string[];
   cancelledPayments: string[];
   paymentDetails: { [key: string]: PaymentDetails };

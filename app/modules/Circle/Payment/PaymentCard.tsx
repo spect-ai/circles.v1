@@ -28,7 +28,7 @@ export default function PaymentCard({
   const { registry } = useCircle();
   const { loading } = usePaymentViewCommon();
 
-  if (loading) return <></>;
+  if (loading) return <Box></Box>;
   return (
     <Card
       mode={mode}

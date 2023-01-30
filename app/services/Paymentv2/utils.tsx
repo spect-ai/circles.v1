@@ -11,7 +11,7 @@ import { BigNumber, ethers, Signer } from "ethers";
 import { erc20ABI } from "wagmi";
 import DistributorABI from "@/app/common/contracts/mumbai/distributor.json";
 import { toast } from "react-toastify";
-import { makePayments } from ".";
+import { makePayments, updateMultiplePayments, updatePayment } from ".";
 import { gnosisPayment } from "../Gnosis";
 
 type WagmiBalanceObject = {
@@ -676,7 +676,7 @@ export const distributeTokensUsingEOA = async (
     id,
     overrides
   );
-  await tx.wait();
+  return await tx.wait();
 };
 
 export const payUsingEOA = async (
@@ -704,8 +704,6 @@ export const payUsingEOA = async (
   // Distribute tokens
   const txHash = {} as { [key: string]: string };
 
-  console.log({ id });
-
   if (tokenAmounts.length > 0) {
     await toast.promise(
       distributeTokensUsingEOA(
@@ -714,12 +712,12 @@ export const payUsingEOA = async (
         registry,
         id["token"]
       ).then((res: any) => {
-        // tokensDistributed = [
-        //   ...tokensDistributed,
-        //   ...tokenAmounts.map((a) => a.token),
-        // ];
-        // console.log({ res });
-        //txHash["tokens"] = res?.transactionHash;
+        tokensDistributed = [
+          ...tokensDistributed,
+          ...tokenAmounts.map((a) => a.token),
+        ];
+        console.log({ res });
+        txHash["tokens"] = res?.transactionHash;
       }),
       {
         pending: `Distributing ${
@@ -747,7 +745,7 @@ export const payUsingEOA = async (
       ).then((res) => {
         console.log({ res });
         tokensDistributed = [...tokensDistributed, "0x0"];
-        //txHash["currency"] = res?.transactionHash;
+        txHash["currency"] = res?.transactionHash;
       }),
       {
         pending: `Distributing ${registry[chainId]?.nativeCurrency}`,
@@ -758,40 +756,6 @@ export const payUsingEOA = async (
     );
   }
   return { tokensDistributed, txHash };
-};
-
-export const findAndUpdatePaymentIds = async (
-  circleId: string,
-  chainId: string,
-  tokenAddresses: string[],
-  paymentIds: string[],
-  paymentDetails: { [paymentId: string]: PaymentDetails },
-  transactionHash: { [key: string]: string }
-) => {
-  let filteredPaymentIds = [] as string[];
-  if (
-    ["100", "56", "43114", "43113"].includes(
-      // All other chains are taken care of by events
-      chainId
-    )
-  ) {
-    findPaymentIdsByTokenAndChain(
-      chainId,
-      tokenAddresses,
-      paymentIds,
-      paymentDetails
-    );
-    if (filteredPaymentIds.length === 0) {
-      return;
-    }
-    const res = await makePayments(circleId, {
-      paymentIds: filteredPaymentIds,
-      transactionHash,
-    });
-    return res;
-  } else {
-    return;
-  }
 };
 
 export const findPaymentIdsByTokenAndChain = (
@@ -812,4 +776,100 @@ export const findPaymentIdsByTokenAndChain = (
     ];
   }
   return filteredPaymentIds;
+};
+
+export const findAndUpdateCompletedPaymentIds = async (
+  circleId: string,
+  chainId: string,
+  tokenAddresses: string[],
+  paymentIds: string[],
+  paymentDetails: { [paymentId: string]: PaymentDetails },
+  transactionHash: { [key: string]: string }
+) => {
+  let filteredPaymentIds = [] as string[];
+  if (!["100", "56", "43114", "43113"].includes(chainId)) return;
+  if (transactionHash["tokens"]) {
+    filteredPaymentIds = findPaymentIdsByTokenAndChain(
+      chainId,
+      tokenAddresses.filter((t) => t !== "0x0"),
+      paymentIds,
+      paymentDetails
+    );
+    if (filteredPaymentIds.length === 0) {
+      return;
+    }
+
+    const res = await updateMultiplePayments(circleId, {
+      paymentIds: filteredPaymentIds,
+      transactionHash: transactionHash["tokens"],
+      status: "Completed",
+    });
+    return res;
+  } else if (transactionHash["currency"]) {
+    filteredPaymentIds = findPaymentIdsByTokenAndChain(
+      chainId,
+      ["0x0"],
+      paymentIds,
+      paymentDetails
+    );
+    if (filteredPaymentIds.length === 0) {
+      return;
+    }
+
+    const res = await updateMultiplePayments(circleId, {
+      paymentIds: filteredPaymentIds,
+      transactionHash: transactionHash["currency"],
+      status: "Completed",
+    });
+    return res;
+  }
+
+  return;
+};
+
+export const findAndUpdatePaymentIdsPendingSignature = async (
+  circleId: string,
+  chainId: string,
+  tokenAddresses: string[],
+  paymentIds: string[],
+  paymentDetails: { [paymentId: string]: PaymentDetails },
+  transactionHash: { [key: string]: string }
+) => {
+  let filteredPaymentIds = [] as string[];
+
+  if (transactionHash["tokens"]) {
+    filteredPaymentIds = findPaymentIdsByTokenAndChain(
+      chainId,
+      tokenAddresses.filter((t) => t !== "0x0"),
+      paymentIds,
+      paymentDetails
+    );
+    if (filteredPaymentIds.length === 0) {
+      return;
+    }
+    const res = await updateMultiplePayments(circleId, {
+      paymentIds: filteredPaymentIds,
+      safeTransactionHash: transactionHash["tokens"],
+      status: "Pending Signature",
+    });
+    return res;
+  } else if (transactionHash["currency"]) {
+    filteredPaymentIds = findPaymentIdsByTokenAndChain(
+      chainId,
+      ["0x0"],
+      paymentIds,
+      paymentDetails
+    );
+    if (filteredPaymentIds.length === 0) {
+      return;
+    }
+    const res = await updateMultiplePayments(circleId, {
+      paymentIds: filteredPaymentIds,
+      safeTransactionHash: transactionHash["currency"],
+      status: "Pending Signature",
+    });
+    return res;
+  }
+
+  return;
 };
