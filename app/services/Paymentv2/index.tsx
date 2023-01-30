@@ -40,7 +40,7 @@ type UpdatePaymentsRequestDto = {
     propertyType: string;
     value: any;
   }[];
-  labels: Option[];
+  labels?: Option[];
 };
 
 export const updatePayment = async (

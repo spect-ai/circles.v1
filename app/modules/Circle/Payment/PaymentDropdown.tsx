@@ -42,6 +42,10 @@ export default function PaymentDropdown({
   const [mouseOver, setMouseOver] = useState(false);
   const [dynamicFieldWidth, setDynamicFieldWidth] = useState(0);
 
+  useEffect(() => {
+    setFilteredOptions(options);
+  }, [options]);
+
   return (
     <Popover
       width="full"

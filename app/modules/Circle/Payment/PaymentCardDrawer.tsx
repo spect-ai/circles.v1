@@ -42,7 +42,7 @@ export default function PaymentCardDrawer({ handleClose }: Props) {
   const [isPayLoading, setIsPayLoading] = useState(false);
   const [isGnosisPayLoading, setIsGnosisPayLoading] = useState(false);
   const [openPayeeModal, setOpenPayeeModal] = useState(false);
-
+  const [confirmRewardUpdate, setConfirmRewardUpdate] = useState(false);
   const { newCard, value, setValue, pay } = usePaymentViewCommon();
   const [cardOptions, setCardOptions] = useState([] as Option[]);
   const projectOptions = Object.values(circle.collections)
@@ -120,6 +120,19 @@ export default function PaymentCardDrawer({ handleClose }: Props) {
             const options = Object.values(res.data?.data)?.map((card) => ({
               label: card.Title,
               value: card.slug,
+              data: {
+                payee: res.data.projectMetadata?.payments?.payeeField
+                  ? card[res.data.projectMetadata?.payments?.payeeField]
+                  : null,
+                reward: res.data.projectMetadata?.payments?.rewardField
+                  ? card[res.data.projectMetadata?.payments?.rewardField]
+                  : null,
+                payeeType: res.data.projectMetadata?.payments?.payeeField
+                  ? res.data.properties[
+                      res.data.projectMetadata?.payments?.payeeField
+                    ]?.type
+                  : null,
+              },
             }));
             console.log({ options });
             setCardOptions(options);
@@ -169,8 +182,10 @@ export default function PaymentCardDrawer({ handleClose }: Props) {
                     loading={loading}
                     icon={<Save size="22" />}
                     onClick={async () => {
+                      setLoading(true);
                       await addManualPayment(circle.id, value);
                       await fetchCircle();
+                      setLoading(false);
                       push({
                         pathname,
                         query: {
@@ -204,6 +219,75 @@ export default function PaymentCardDrawer({ handleClose }: Props) {
               });
               if (res) {
                 fetchCircle();
+              }
+            }}
+          />
+        )}
+        {confirmRewardUpdate && (
+          <ConfirmModal
+            title="Would you like to update the payee for this payment from the linked card?"
+            handleClose={() => setConfirmRewardUpdate(false)}
+            onCancel={() => setConfirmRewardUpdate(false)}
+            onConfirm={async () => {
+              setConfirmRewardUpdate(false);
+              const paidTo = [];
+              if (value.data?.data?.payeeType === "user[]") {
+                for (const user of value.data?.data?.payee) {
+                  paidTo.push({
+                    propertyType: "user",
+                    value: user,
+                    reward:
+                      paidTo.length === 0
+                        ? {
+                            chain: value?.data?.data?.reward.chain,
+                            token: value?.data?.data?.reward.token,
+                            value: value?.data?.data?.reward.value,
+                          }
+                        : {
+                            chain: null,
+                            token: null,
+                            value: 0,
+                          },
+                  });
+                }
+              } else {
+                paidTo.push({
+                  propertyType: value.data?.data?.payeeType,
+                  value: value?.data?.data?.reward.value,
+                  reward:
+                    paidTo.length === 0
+                      ? {
+                          chain: value?.data?.data?.reward.chain,
+                          token: value?.data?.data?.reward.token,
+                          value: value?.data?.data?.reward.value,
+                        }
+                      : {
+                          chain: null,
+                          token: null,
+                          value: 0,
+                        },
+                });
+              }
+              setValue({
+                ...value,
+                type: "Added From Card",
+                paidTo: paidTo,
+                chain: value?.data?.data?.reward.chain,
+                token: value?.data?.data?.reward.token,
+                value: value?.data?.data?.reward.value,
+              });
+              if (query.paymentId) {
+                const res = await updatePayment(
+                  circle.id,
+                  query.paymentId as string,
+                  {
+                    type: "Added From Card",
+                    paidTo: paidTo,
+                    chain: value?.data?.data?.reward.chain,
+                    token: value?.data?.data?.reward.token,
+                    value: value?.data?.data?.reward.value,
+                  }
+                );
               }
             }}
           />
@@ -397,6 +481,13 @@ export default function PaymentCardDrawer({ handleClose }: Props) {
                           setValue={(v, opts) => {
                             setValue({ ...value, data: v });
                             onChange({ data: v }, opts);
+                            if (
+                              value.paidTo?.length > 0 &&
+                              v.data?.payee &&
+                              v.data?.reward
+                            ) {
+                              setConfirmRewardUpdate(true);
+                            }
                           }}
                           options={cardOptions}
                           setOptions={(v) => {}}
