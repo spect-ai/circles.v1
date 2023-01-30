@@ -189,12 +189,16 @@ export function useProviderCircleContext() {
     if (socket && socket.on) {
       socket.on(
         `${cId}:paymentUpdate`,
-        (event: { data: { [key: string]: PaymentDetails }; user: string }) => {
+        (event: { data: any; user: string }) => {
           console.log({ event });
-          if (circle)
+          if (circle && circle.id === event.data.circleId)
             setCircleData({
               ...circle,
-              ...event.data,
+              pendingPayments: event.data.pendingPayments,
+              paymentDetails: event.data.paymentDetails,
+              completedPayments: event.data.completedPayments,
+              cancelledPayments: event.data.cancelledPayments,
+              pendingSignaturePayments: event.data.pendingSignaturePayments,
             });
         }
       );

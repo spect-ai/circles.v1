@@ -108,7 +108,6 @@ export default function PaymentCardDrawer({ handleClose }: Props) {
     handleClose();
   };
 
-  console.log({ cardOptions });
   useEffect(() => {
     if (value.collection?.value) {
       console.log({ v: value.collection?.value });
@@ -577,7 +576,27 @@ export default function PaymentCardDrawer({ handleClose }: Props) {
                     <Box width="3/4">
                       <FieldButton onClick={() => {}} mode={mode}>
                         {value.status || newCard ? (
-                          <Text>{value.status || "Pending"}</Text>
+                          value.status === "Pending Signature" ? (
+                            <a
+                              href={`https://app.safe.global/${
+                                value.chain?.value === "137"
+                                  ? "matic"
+                                  : value.chain?.value === "1"
+                                  ? "eth"
+                                  : value.chain?.value === "10"
+                                  ? "oeth"
+                                  : "arb1"
+                              }:${
+                                circle.safeAddresses[value.chain?.value][0]
+                              }/transactions/queue`}
+                              target="_blank"
+                              rel="noreferrer"
+                            >
+                              <Text>{value.status}</Text>
+                            </a>
+                          ) : (
+                            <Text>{value.status || "Pending"}</Text>
+                          )
                         ) : (
                           "Empty"
                         )}

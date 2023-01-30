@@ -804,8 +804,8 @@ export const findAndUpdateCompletedPaymentIds = async (
       transactionHash: transactionHash["tokens"],
       status: "Completed",
     });
-    return res;
-  } else if (transactionHash["currency"]) {
+  }
+  if (transactionHash["currency"]) {
     filteredPaymentIds = findPaymentIdsByTokenAndChain(
       chainId,
       ["0x0"],
@@ -821,10 +821,9 @@ export const findAndUpdateCompletedPaymentIds = async (
       transactionHash: transactionHash["currency"],
       status: "Completed",
     });
-    return res;
   }
 
-  return;
+  return true;
 };
 
 export const findAndUpdatePaymentIdsPendingSignature = async (
@@ -852,8 +851,8 @@ export const findAndUpdatePaymentIdsPendingSignature = async (
       safeTransactionHash: transactionHash["tokens"],
       status: "Pending Signature",
     });
-    return res;
-  } else if (transactionHash["currency"]) {
+  }
+  if (transactionHash["currency"]) {
     filteredPaymentIds = findPaymentIdsByTokenAndChain(
       chainId,
       ["0x0"],
@@ -863,13 +862,13 @@ export const findAndUpdatePaymentIdsPendingSignature = async (
     if (filteredPaymentIds.length === 0) {
       return;
     }
+    console.log({ filteredPaymentIds });
     const res = await updateMultiplePayments(circleId, {
       paymentIds: filteredPaymentIds,
       safeTransactionHash: transactionHash["currency"],
       status: "Pending Signature",
     });
-    return res;
   }
 
-  return;
+  return true;
 };

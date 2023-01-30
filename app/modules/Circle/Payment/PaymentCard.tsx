@@ -1,7 +1,7 @@
 import Avatar from "@/app/common/components/Avatar";
 import { cancelPayments } from "@/app/services/Paymentv2";
 import { MemberDetails, PaymentDetails } from "@/app/types";
-import { Box, useTheme, Text, Stack, IconClose, Button } from "degen";
+import { Box, useTheme, Text, Stack, IconClose, Button, Tag } from "degen";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState } from "react";
@@ -64,7 +64,7 @@ export default function PaymentCard({
             xs: "0",
             md: "2",
           }}
-          gap="4"
+          gap="2"
         >
           <Box
             display="flex"
@@ -109,7 +109,28 @@ export default function PaymentCard({
               </Box>
             </Box>
           </Box>
-          <Box display="flex" flexDirection="column" gap="2" width="3/4">
+          {paymentDetails?.labels?.length && (
+            <Box
+              display="flex"
+              flexDirection="row"
+              width="1/3"
+              gap="2"
+              flexWrap="wrap"
+            >
+              {paymentDetails.labels.map((label, index) => (
+                <Tag key={index} tone="accent" size="small">
+                  {label.label}
+                </Tag>
+              ))}
+            </Box>
+          )}
+          <Box
+            display="flex"
+            flexDirection="column"
+            gap="2"
+            width="3/4"
+            paddingTop="2"
+          >
             <Text variant="label" weight="semiBold">
               Payee{" "}
             </Text>
@@ -119,7 +140,7 @@ export default function PaymentCard({
       </Box>
       {cId && router.query?.status === "completed" && (
         <a
-          href={`${registry?.[paymentDetails.chain.value].blockExplorer}tx/${
+          href={`${registry?.[paymentDetails.chain?.value]?.blockExplorer}tx/${
             paymentDetails.transactionHash
           }`}
           target="_blank"
