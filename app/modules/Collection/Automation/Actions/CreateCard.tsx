@@ -1,13 +1,11 @@
 import Dropdown from "@/app/common/components/Dropdown";
-import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { useCircle } from "@/app/modules/Circle/CircleContext";
 import { Action, CollectionType, Option, Property } from "@/app/types";
 import { InfoCircleOutlined } from "@ant-design/icons";
-import { Box, Button, IconClose, Input, Stack, Tag, Text } from "degen";
-import { SetStateAction, useEffect, useState } from "react";
+import { Box, Button, IconClose, Text } from "degen";
+import { useEffect, useState } from "react";
 import { Tooltip } from "react-tippy";
-import { useLocalCollection } from "../../Context/LocalCollectionContext";
 import { Field } from "./Field";
 
 type Props = {
@@ -113,7 +111,10 @@ export default function CreateCard({
       ).json();
       setCollectionOptions(
         data
-          .filter((collection) => collection.collectionType === 1)
+          .filter(
+            (collect) =>
+              collect.collectionType === 1 && collection.id !== collect.id
+          )
           .map((collection) => ({
             label: collection.name,
             value: collection.id,

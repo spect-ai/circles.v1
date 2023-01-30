@@ -233,8 +233,8 @@ export default function ConnectGnosis() {
                   loading={isLoading}
                   disabled={
                     circle.safeAddresses?.[chain]?.includes(
-                      selectedSafe.value
-                    ) || !selectedSafe.value
+                      selectedSafe?.value
+                    ) || !selectedSafe?.value
                   }
                 >
                   Save

@@ -11,7 +11,7 @@ import { useCircle } from "../CircleContext";
 import { AutomationHeading } from "./AutomationHeading";
 import { Col, Row } from "react-grid-system";
 import styled from "styled-components";
-import { smartTrim } from "@/app/common/utils/utils";
+import { useRouter } from "next/router";
 
 const ScrollContainer = styled(Box)`
   overflow-y: auto;
@@ -20,7 +20,7 @@ const ScrollContainer = styled(Box)`
   }
   -ms-overflow-style: none;
   scrollbar-width: none;
-  height: calc(100vh - 13rem);
+  height: calc(100vh - 6rem);
 `;
 
 const Container = styled(Box)<{ mode: string }>`
@@ -36,13 +36,17 @@ const Container = styled(Box)<{ mode: string }>`
   color: rgb(191, 90, 242, 0.7);
   padding: 1rem;
   margin-bottom: 0.5rem;
-  height: 9.5rem;
+  height: 4rem;
 `;
 
 export default function AutomationCenter() {
   const { localCircle: circle } = useCircle();
   const { canDo } = useRoleGate();
+  const router = useRouter();
+  const { tab } = router.query;
   const { mode } = useTheme();
+
+  console.log(tab);
 
   return (
     <>
@@ -57,10 +61,9 @@ export default function AutomationCenter() {
         }}
       />
       <AutomationHeading />
-      <Box margin={"4"}>
-        {(circle?.automationsIndexedByCollection === undefined ||
-          Object.entries(circle?.automationsIndexedByCollection)?.length ==
-            0) && (
+      <Box marginX={"4"}>
+        {(circle?.automations === undefined ||
+          Object.entries(circle?.automations).length == 0) && (
           <Box
             style={{
               margin: "12% 20%",
@@ -88,32 +91,44 @@ export default function AutomationCenter() {
             paddingTop: "1rem",
           }}
         >
-          <Row id="row">
-            {circle.automationsIndexedByCollection !== undefined &&
-              Object.keys(circle?.automationsIndexedByCollection).map(
-                (collection) => {
-                  const automations =
-                    circle.automationsIndexedByCollection[collection];
-                  if (automations.length === 0) return null;
-                  const col = Object.values(circle.collections).find((col) => {
-                    return col.slug === collection;
-                  });
-                  let automation = "";
-                  automations?.map((auto, idx) => {
-                    const automat = circle.automations[auto];
-                    automation = automation.concat(automat.name + ", ");
-                  });
-                  return (
-                    <Col sm={6} md={4} lg={4} key={collection} id="col">
-                      <Container mode={mode} key={collection}>
-                        <Automation collection={col as CollectionType} />
-                        <Text wordBreak="break-word">{smartTrim(automation, 120)}</Text>
-                      </Container>
-                    </Col>
-                  );
-                }
-              )}
-          </Row>
+          {circle.automationsIndexedByCollection !== undefined &&
+            Object.keys(circle?.automationsIndexedByCollection).map(
+              (collection) => {
+                const automations =
+                  circle.automationsIndexedByCollection[collection];
+                if (automations.length === 0) return null;
+                const col = Object.values(circle.collections).find((col) => {
+                  return col.slug === collection;
+                });
+                return (
+                  <Box>
+                    <Automation collection={col as CollectionType} />
+                    <Row id="row">
+                      {automations?.map((auto, idx) => {
+                        const automat = circle.automations[auto];
+                        return (
+                          <Col
+                            md={3}
+                            style={{ padding: "0rem", marginLeft: "1rem" }}
+                          >
+                            <Container mode={mode}>
+                              <Text
+                                variant="base"
+                                color={"textTertiary"}
+                                align="center"
+                                ellipsis
+                              >
+                                {automat.name}
+                              </Text>
+                            </Container>
+                          </Col>
+                        );
+                      })}
+                    </Row>
+                  </Box>
+                );
+              }
+            )}
         </ScrollContainer>
       </Box>
     </>

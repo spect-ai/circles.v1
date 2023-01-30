@@ -22,6 +22,7 @@ import { validateConditions } from "./Validation/ConditionValidations";
 import { validateTrigger } from "./Validation/TriggerValidations";
 
 type Props = {
+  col: CollectionType;
   automation: any;
   automationMode: string;
   onDelete: (automationId: string) => void;
@@ -46,6 +47,7 @@ type Props = {
 };
 
 export default function SingleAutomation({
+  col,
   automation,
   automationMode,
   onDelete,
@@ -56,7 +58,6 @@ export default function SingleAutomation({
 }: Props) {
   const { mode } = useTheme();
   const { localCircle: circle } = useCircle();
-  // const { localCollection: collection } = useLocalCollection();
   const [whenOptions, setWhenOptions] = useState<Option[]>([]);
   const [collection, setCollection] = useState({} as CollectionType);
   const [thenOptions, setThenOptions] = useState<Option[]>([]);
@@ -169,8 +170,14 @@ export default function SingleAutomation({
       ]);
 
       const thenOptions = Object.entries(allPossibleActions)
-        .filter((a) =>
-          collection?.voting?.enabled ? true : a[0] !== "startVotingPeriod"
+        .filter(
+          (a) =>
+            (collection?.collectionType === 0
+              ? true
+              : a[0] !== "giveDiscordRole" &&
+                a[0] !== "giveRole" &&
+                a[0] !== "createDiscordChannel") &&
+            (collection?.voting?.enabled ? true : a[0] !== "startVotingPeriod")
         )
         .map((a) => ({
           label: a[1].name,
@@ -232,8 +239,6 @@ export default function SingleAutomation({
       value: collection?.id || "selectCollection",
     });
   }, []);
-
-  console.log("automation", automation);
 
   return (
     <Box
@@ -324,6 +329,7 @@ export default function SingleAutomation({
         )}
       </Box>
       <ScrollContainer
+        containerHeight={col?.id ? "65vh" : "70vh"}
         width="full"
         paddingRight={{
           xs: "2",
@@ -572,14 +578,16 @@ const AutomationCard = styled(Box)<{
   transition: all 0.5s ease-in-out;
 `;
 
-const ScrollContainer = styled(Box)`
+const ScrollContainer = styled(Box)<{
+  containerHeight?: string;
+}>`
   ::-webkit-scrollbar {
     width: 5px;
   }
   @media (max-width: 768px) {
     height: 25rem;
   }
-  height: 28.5rem;
+  height: ${(props) => props.containerHeight || "65vh"};
   overflow-y: auto;
 `;
 
