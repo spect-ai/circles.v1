@@ -137,7 +137,7 @@ export default function VotingActions({
     let body = res.join("\n");
     body = smartTrim(body, 14300);
     body = body.concat(
-      `\n\nThis proposal was created via Spect. View the proposal details at <https://circles.spect.network/${cId}/r/${collection.slug}?cardSlug=${dataId}> \n`
+      `\n\nThis proposal was created via Spect. View the proposal details at <https://${hostname}/${cId}/r/${collection.slug}?cardSlug=${dataId}> \n`
     );
 
     console.log(body);

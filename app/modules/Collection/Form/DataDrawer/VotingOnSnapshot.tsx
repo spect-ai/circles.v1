@@ -24,6 +24,8 @@ import useSnapshot from "@/app/services/Snapshot/useSnapshot";
 import { useLocation } from "react-use";
 import { smartTrim } from "@/app/common/utils/utils";
 import { ArrowUpOutlined, SelectOutlined } from "@ant-design/icons";
+import { useCircle } from "@/app/modules/Circle/CircleContext";
+import Loader from "@/app/common/components/Loader";
 
 ChartJS.register(
   CategoryScale,
@@ -71,14 +73,22 @@ export const Proposal = gql`
       scores
       scores_by_strategy
       scores_total
+      choices
     }
   }
 `;
 
-export default function SnapshotVoting({ dataId }: { dataId: string }) {
+export default function SnapshotVoting({
+  dataId,
+  proposalId,
+}: {
+  dataId?: string;
+  proposalId?: string;
+}) {
   const { localCollection: collection, updateCollection } =
     useLocalCollection();
   const { address } = useAccount();
+  const { localCircle: circle } = useCircle();
 
   const { castVote } = useSnapshot();
   const { hostname } = useLocation();
@@ -90,25 +100,33 @@ export default function SnapshotVoting({ dataId }: { dataId: string }) {
     enabled: false,
   });
 
-  const proposal = collection?.voting?.periods?.[dataId]?.snapshot?.proposalId;
+  const proposal = proposalId
+    ? proposalId
+    : collection?.voting?.periods?.[dataId as string]?.snapshot?.proposalId;
 
-  const { data: votesData, refetch: refetchVotes } = useApolloQuery(Votes, {
+  const {
+    data: votesData,
+    refetch: refetchVotes,
+    loading: votesLoading,
+  } = useApolloQuery(Votes, {
     variables: { proposal: proposal },
   });
 
-  const { data: proposalData, refetch: refetchProposal } = useApolloQuery(
-    Proposal,
-    {
-      variables: { proposal: proposal },
-    }
-  );
+  const {
+    data: proposalData,
+    refetch: refetchProposal,
+    loading: proposalLoading,
+  } = useApolloQuery(Proposal, {
+    variables: { proposal: proposal },
+  });
 
-  const { data: userVotes, refetch: refetchUserChoices } = useApolloQuery(
-    UserVote,
-    {
-      variables: { proposal: proposal, voter: currentUser?.ethAddress },
-    }
-  );
+  const {
+    data: userVotes,
+    refetch: refetchUserChoices,
+    loading: userVotesLoading,
+  } = useApolloQuery(UserVote, {
+    variables: { proposal: proposal, voter: currentUser?.ethAddress },
+  });
 
   const [data, setData] = useState({} as any);
   const [vote, setVote] = useState(-1);
@@ -133,7 +151,7 @@ export default function SnapshotVoting({ dataId }: { dataId: string }) {
         collection?.voting?.periods?.[data.slug]?.active)
     ) {
       const endVoting = async () => {
-        const res = await endVotingPeriod(collection.id, dataId);
+        const res = await endVotingPeriod(collection.id, dataId as string);
         if (!res.id) {
           toast.error("Something went wrong");
         } else updateCollection(res);
@@ -152,7 +170,7 @@ export default function SnapshotVoting({ dataId }: { dataId: string }) {
 
   const getVotes = () => {
     const res =
-      collection.voting?.periods?.[dataId]?.options?.map((option, index) => {
+      proposalData.proposal.choices.map((choices: string, index: number) => {
         return votesData?.votes?.filter(
           (vote: any) => vote.choice - 1 === index
         ).length;
@@ -187,9 +205,7 @@ export default function SnapshotVoting({ dataId }: { dataId: string }) {
     <Box display="flex" flexDirection="column" gap="2">
       <Box
         onClick={() => {
-          window.open(
-            `${hub}/#/${collection?.voting?.snapshot?.id}/proposal/${proposal}`
-          );
+          window.open(`${hub}/#/${circle?.snapshot?.id}/proposal/${proposal}`);
         }}
         cursor="pointer"
         display="flex"
@@ -205,238 +221,236 @@ export default function SnapshotVoting({ dataId }: { dataId: string }) {
           style={{ color: "rgb(191, 90, 242, 1)", fontSize: "1rem" }}
         />
       </Box>
-      {collection.voting?.periods &&
-        collection.voting?.periods[data.slug] &&
-        (proposalData?.proposal?.state !== "closed" ||
-          votesData?.votes?.length > 0) &&
-        collection.voting?.periods[data.slug].options && (
-          <Stack space="1">
-            <Box
-              borderColor="foregroundSecondary"
-              borderWidth="0.375"
-              padding="2"
-              borderRadius="medium"
-              width={"80"}
-            >
-              <Text weight="semiBold" variant="large" color="accent">
-                Your Vote
-              </Text>
-              <Text>{collection.voting?.message}</Text>
-              <Box marginTop="4">
-                <Tabs
-                  tabs={
-                    collection.voting?.periods[data.slug].options?.map(
-                      (option) => option.label
-                    ) || []
-                  }
-                  selectedTab={vote}
-                  onTabClick={async (tab) => {
-                    if (!address) {
-                      toast.error("Please unlock your wallet");
-                      return;
-                    }
-                    if (
-                      address.toLowerCase() !==
-                      currentUser?.ethAddress.toLowerCase()
-                    ) {
-                      toast.error("Please switch to the account you have connected with Spect");
-                      return;
-                    }
-                    if (
-                      !collection?.voting?.periods?.[data.slug]?.active ||
-                      !collection?.voting?.periods?.[data.slug]?.snapshot
-                        ?.proposalId
-                    )
-                      return;
-                    if (proposalData?.proposal?.state == "closed") {
-                      toast.error("Voting window is closed");
-                      return;
-                    }
-                    const tempTab = tab;
-                    const res: any = await castVote(
-                      collection?.voting?.periods?.[data.slug].snapshot
-                        ?.proposalId as string,
-                      tempTab + 1
-                    );
-                    if (res.id) {
-                      setVote(tempTab);
-                      toast.success("Vote casted successfully");
-                    } else {
-                      toast.error(
-                        "Couldn't cast vote : " +
-                          res?.error +
-                          " " +
-                          res?.error_description
-                      );
-                    }
+      {!votesLoading &&
+        !proposalLoading &&
+        !userVotesLoading &&
+        (proposalId ||
+          (collection.voting?.periods &&
+            collection.voting?.periods[data.slug])) && (
+          <>
+            {(proposalData?.proposal?.state !== "closed" ||
+              votesData?.votes?.length > 0) && (
+              <Stack space="1">
+                <Box
+                  borderColor="foregroundSecondary"
+                  borderWidth="0.375"
+                  padding="2"
+                  borderRadius="medium"
+                  width={"80"}
+                >
+                  <Text weight="semiBold" variant="large" color="accent">
+                    Your Vote
+                  </Text>
+                  <Text>{collection?.voting?.message}</Text>
+                  <Box marginTop="4">
+                    <Tabs
+                      tabs={proposalData && proposalData?.proposal?.choices}
+                      selectedTab={vote}
+                      onTabClick={async (tab) => {
+                        if (!address) {
+                          toast.error("Please unlock your wallet");
+                          return;
+                        }
+                        if (
+                          address.toLowerCase() !==
+                          currentUser?.ethAddress.toLowerCase()
+                        ) {
+                          toast.error(
+                            "Please switch to the account you have connected with Spect"
+                          );
+                          return;
+                        }
+                        if (
+                          (!collection?.voting?.periods?.[data.slug]?.active ||
+                            !collection?.voting?.periods?.[data.slug]?.snapshot
+                              ?.proposalId) &&
+                          !proposalId
+                        )
+                          return;
+                        if (proposalData?.proposal?.state == "closed") {
+                          toast.error("Voting window is closed");
+                          return;
+                        }
+                        const tempTab = tab;
+                        const res: any = await castVote(
+                          collection?.voting?.periods?.[data.slug].snapshot
+                            ?.proposalId || (proposalId as string),
+                          tempTab + 1
+                        );
+                        if (res.id) {
+                          setVote(tempTab);
+                          toast.success("Vote casted successfully");
+                        } else {
+                          toast.error(
+                            "Couldn't cast vote : " +
+                              res?.error +
+                              " " +
+                              res?.error_description
+                          );
+                        }
+                      }}
+                      orientation="horizontal"
+                      unselectedColor="transparent"
+                      selectedColor="secondary"
+                    />
+                  </Box>
+                </Box>
+              </Stack>
+            )}
+
+            {proposalData && proposalData.proposal.choices.length > 0 && (
+              <Box
+                width={{
+                  xs: "full",
+                  md: "full",
+                }}
+                height={{
+                  xs: "32",
+                  md: "48",
+                }}
+                borderColor="foregroundSecondary"
+                borderWidth="0.375"
+                padding="2"
+                borderRadius="medium"
+              >
+                <Text weight="semiBold" variant="large" color="accent">
+                  Results
+                </Text>
+                <Bar
+                  options={{
+                    indexAxis: "y",
+                    plugins: {
+                      legend: {
+                        display: false,
+                      },
+                    },
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                      y: {
+                        ticks: {
+                          color: "rgb(191,90,242,0.8)",
+                        },
+                        grid: {
+                          borderColor: "rgb(191,90,242,0.2)",
+                        },
+                      },
+                      x: {
+                        beginAtZero: true,
+
+                        grid: {
+                          borderColor: "rgb(191,90,242,0.2)",
+                        },
+                        ticks: {
+                          stepSize: 1,
+                          color: "rgb(191,90,242,0.8)",
+                        },
+                      },
+                    },
                   }}
-                  orientation="horizontal"
-                  unselectedColor="transparent"
-                  selectedColor="secondary"
+                  data={{
+                    labels: proposalData.proposal.choices,
+                    datasets: [
+                      {
+                        label: " Votes ",
+                        data: getVotes(),
+                        backgroundColor: "rgb(191,90,242, 0.2)",
+                        borderColor: "rgb(191,90,242)",
+                        borderWidth: 1,
+                        borderRadius: 5,
+                        barPercentage: 0.5,
+                      },
+                    ],
+                  }}
                 />
               </Box>
-            </Box>
-          </Stack>
-        )}
+            )}
+            {votesData?.votes?.length > 0 && (
+              <Box
+                borderColor="foregroundSecondary"
+                borderWidth="0.375"
+                padding="2"
+                borderRadius="medium"
+                marginTop="8"
+              >
+                <Text weight="semiBold" variant="large" color="accent">
+                  Votes
+                </Text>
 
-      {collection.voting?.periods &&
-        collection.voting?.periods[data.slug] &&
-        collection.voting?.periods[data.slug].options && (
-          <Box
-            width={{
-              xs: "full",
-              md: "full",
-            }}
-            height={{
-              xs: "32",
-              md: "48",
-            }}
-            borderColor="foregroundSecondary"
-            borderWidth="0.375"
-            padding="2"
-            borderRadius="medium"
-          >
-            <Text weight="semiBold" variant="large" color="accent">
-              Results
-            </Text>
-            <Bar
-              options={{
-                indexAxis: "y",
-                plugins: {
-                  legend: {
-                    display: false,
-                  },
-                },
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                  y: {
-                    ticks: {
-                      color: "rgb(191,90,242,0.8)",
-                    },
-                    grid: {
-                      borderColor: "rgb(191,90,242,0.2)",
-                    },
-                  },
-                  x: {
-                    beginAtZero: true,
+                {votesData?.votes?.map((vote: Vote) => {
+                  const user: any = getMemberDetailsUsingEthAddress(
+                    vote.voter
+                  )?.[0];
 
-                    grid: {
-                      borderColor: "rgb(191,90,242,0.2)",
-                    },
-                    ticks: {
-                      stepSize: 1,
-                      color: "rgb(191,90,242,0.8)",
-                    },
-                  },
-                },
-              }}
-              data={{
-                labels: collection.voting?.periods[data.slug]?.options?.map(
-                  (option) => option.label
-                ),
-                datasets: [
-                  {
-                    label: " Votes ",
-                    data: getVotes(),
-                    backgroundColor: "rgb(191,90,242, 0.2)",
-                    borderColor: "rgb(191,90,242)",
-                    borderWidth: 1,
-                    borderRadius: 5,
-                    barPercentage: 0.5,
-                  },
-                ],
-              }}
-            />
-          </Box>
-        )}
-      {collection.voting?.periods &&
-        votesData?.votes?.length > 0 &&
-        collection.voting?.periods[data.slug]?.votesArePublic && (
-          <Box
-            borderColor="foregroundSecondary"
-            borderWidth="0.375"
-            padding="2"
-            borderRadius="medium"
-            marginTop="8"
-          >
-            <Text weight="semiBold" variant="large" color="accent">
-              Votes
-            </Text>
-
-            {collection.voting?.periods &&
-              votesData?.votes?.map((vote: Vote) => {
-                const user: any = getMemberDetailsUsingEthAddress(
-                  vote.voter
-                )?.[0];
-
-                return (
-                  <Box
-                    display="flex"
-                    flexDirection="row"
-                    key={vote.voter}
-                    marginTop="4"
-                    gap="4"
-                  >
+                  return (
                     <Box
                       display="flex"
                       flexDirection="row"
-                      width="1/3"
-                      alignItems="center"
+                      key={vote.voter}
+                      marginTop="4"
+                      gap="4"
                     >
-                      <a
-                        href={`/profile/${
-                          user?.username == undefined ? "fren" : user?.username
-                        }`}
-                        target="_blank"
-                        rel="noreferrer"
+                      <Box
+                        display="flex"
+                        flexDirection="row"
+                        width="1/3"
+                        alignItems="center"
                       >
-                        <Stack direction="horizontal" align="center" space="2">
-                          <Avatar
-                            src={user?.avatar}
-                            address={vote.voter}
-                            label=""
-                            size="8"
-                          />
-                          <Text color="accentText" weight="semiBold">
-                            {user?.username == undefined
-                              ? smartTrim(vote.voter, 5)
-                              : user?.username}
-                          </Text>
-                        </Stack>
-                      </a>
+                        <a
+                          href={`/profile/${
+                            user?.username == undefined
+                              ? "fren"
+                              : user?.username
+                          }`}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          <Stack
+                            direction="horizontal"
+                            align="center"
+                            space="2"
+                          >
+                            <Avatar
+                              src={user?.avatar}
+                              address={vote.voter}
+                              label=""
+                              size="8"
+                            />
+                            <Text color="accentText" weight="semiBold">
+                              {user?.username == undefined
+                                ? smartTrim(vote.voter, 5)
+                                : user?.username}
+                            </Text>
+                          </Stack>
+                        </a>
+                      </Box>
+                      <Box
+                        display="flex"
+                        flexDirection="row"
+                        width="1/3"
+                        alignItems="center"
+                      >
+                        <Text variant="base" weight="semiBold">
+                          {proposalData.proposal.choices?.[vote.choice - 1] ||
+                            "No vote"}
+                        </Text>
+                      </Box>
+                      <Box
+                        display="flex"
+                        flexDirection="row"
+                        width="1/3"
+                        alignItems="center"
+                      >
+                        <Text variant="base" weight="semiBold">
+                          {vote.vp.toFixed(1) + " " + circle?.snapshot?.symbol}
+                        </Text>
+                      </Box>
                     </Box>
-                    <Box
-                      display="flex"
-                      flexDirection="row"
-                      width="1/3"
-                      alignItems="center"
-                    >
-                      <Text variant="base" weight="semiBold">
-                        {collection?.voting?.periods &&
-                        collection?.voting?.periods[data.slug]
-                          ? collection?.voting?.periods[data.slug]?.options?.[
-                              vote.choice - 1
-                            ]?.label
-                          : "No vote"}
-                      </Text>
-                    </Box>
-                    <Box
-                      display="flex"
-                      flexDirection="row"
-                      width="1/3"
-                      alignItems="center"
-                    >
-                      <Text variant="base" weight="semiBold">
-                        {vote.vp.toFixed(1) +
-                          " " +
-                          collection?.voting?.snapshot?.symbol}
-                      </Text>
-                    </Box>
-                  </Box>
-                );
-              })}
-          </Box>
+                  );
+                })}
+              </Box>
+            )}
+          </>
         )}
     </Box>
   );

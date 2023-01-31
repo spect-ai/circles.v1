@@ -8,7 +8,7 @@ import {
   useTheme,
 } from "degen";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ToastContainer } from "react-toastify";
 import GovernanceHeading from "./GovernanceHeading";
 import { useQuery, gql } from "@apollo/client";
@@ -18,6 +18,8 @@ import { Col, Row } from "react-grid-system";
 import ClickableAvatar from "@/app/common/components/Avatar";
 import Loader from "@/app/common/components/Loader";
 import { ThunderboltFilled } from "@ant-design/icons";
+import Link from "next/link";
+import ProposalDrawer from "./ProposalDrawer";
 
 const ScrollContainer = styled(Box)`
   overflow-y: auto;
@@ -75,6 +77,9 @@ export default function Governance() {
   const { circle: cId, proposalStatus } = router.query;
   const [status, setStatus] = useState(proposalStatus);
   const { localCircle: circle, memberDetails } = useCircle();
+  const [proposals, setProposals] = useState<any>([]);
+  const [proposalId, setProposalId] = useState<string>("");
+  const [openDrawer, setOpenDrawer] = useState<boolean>(false);
 
   const { loading: isLoading, data: activeProposals } = useQuery(Proposals, {
     variables: { state: "active", space: circle?.snapshot?.id },
@@ -93,6 +98,14 @@ export default function Governance() {
     return author;
   }
 
+  useEffect(() => {
+    if (status === "Active") {
+      setProposals(activeProposals?.proposals);
+    } else if (status === "Completed") {
+      setProposals(closedProposals?.proposals);
+    }
+  }, [status, activeProposals, closedProposals]);
+
   return (
     <>
       <ToastContainer
@@ -109,89 +122,60 @@ export default function Governance() {
         loading={isLoading || loading}
         text="Fetching some thanos level data ..."
       />
+      {openDrawer && (
+        <ProposalDrawer
+          proposalId={proposalId}
+          handleClose={() => setOpenDrawer(false)}
+        />
+      )}
       <GovernanceHeading status={status as string} setStatus={setStatus} />
       <ScrollContainer>
         <Row id="row">
-          {proposalStatus == "Active" &&
+          {!loading &&
             !isLoading &&
-            activeProposals?.proposals?.length > 0 &&
-            activeProposals?.proposals?.map((proposal: any) => {
+            proposals?.length > 0 &&
+            proposals?.map((proposal: any) => {
               const author = getAuthorDetails(proposal.author);
               return (
                 <Col md={5} style={{ padding: "0rem", marginLeft: "1rem" }}>
-                  <Container mode={mode}>
-                    <Stack direction={"horizontal"} justify="space-between">
-                      <ClickableAvatar
-                        username={author?.username || "Fren"}
-                        userId={author?.id || ""}
-                        label={""}
-                        src={author?.avatar || "0x0"}
-                        size="6"
-                      />
-                      <Tag hover tone="accent">
-                        Snapshot
-                      </Tag>
-                    </Stack>
-                    <Text
-                      variant="large"
-                      color="accent"
-                      align="left"
-                      weight={"semiBold"}
-                      ellipsis
+                  <Link
+                    href={`/${cId}?tab=governance&proposalStatus=${status}&proposalId=${proposal.id}`}
+                  >
+                    <Container
+                      mode={mode}
+                      onClick={() => {
+                        setProposalId(proposal.id);
+                        setOpenDrawer(true);
+                      }}
                     >
-                      {proposal.title}
-                    </Text>
-                    <Stack direction={"horizontal"} justify="flex-end">
-                      <Tag hover>
-                        Ends on {new Date(proposal.end * 1000).toDateString()}
-                      </Tag>
-                    </Stack>
-                  </Container>
-                </Col>
-              );
-            })}
-          {proposalStatus == "Completed" &&
-            !loading &&
-            closedProposals?.proposals?.length > 0 &&
-            closedProposals?.proposals?.map((proposal: any) => {
-              const author = getAuthorDetails(proposal.author);
-              return (
-                <Col md={5} style={{ padding: "0rem", marginLeft: "1rem" }}>
-                  <Container mode={mode}>
-                    <Stack direction={"horizontal"} justify="space-between">
-                      <ClickableAvatar
-                        username={author?.username || "Fren"}
-                        userId={author?.id || ""}
-                        label={""}
-                        src={author?.avatar || "0x0"}
-                        size="6"
-                      />
-                      <Tag hover tone="accent">
-                        <Stack
-                          direction={"horizontal"}
-                          align="center"
-                          space={"1"}
-                        >
-                          <IconLightningBolt size={"3"} />
+                      <Stack direction={"horizontal"} justify="space-between">
+                        <ClickableAvatar
+                          username={author?.username || "Fren"}
+                          userId={author?.id || ""}
+                          label={""}
+                          src={author?.avatar || "0x0"}
+                          size="6"
+                        />
+                        <Tag hover tone="accent">
                           Snapshot
-                        </Stack>
-                      </Tag>
-                    </Stack>
-                    <Text
-                      variant="large"
-                      color="accent"
-                      align="left"
-                      weight={"semiBold"}
-                      ellipsis
-                    >
-                      {proposal.title}
-                    </Text>
-                    <Stack direction={"horizontal"} justify="flex-end">
-                      <Tag hover>
-                        Ended on {new Date(proposal.end * 1000).toDateString()}
-                      </Tag>
-                    </Stack>
-                  </Container>
+                        </Tag>
+                      </Stack>
+                      <Text
+                        variant="large"
+                        color="accent"
+                        align="left"
+                        weight={"semiBold"}
+                        ellipsis
+                      >
+                        {proposal.title}
+                      </Text>
+                      <Stack direction={"horizontal"} justify="flex-end">
+                        <Tag hover>
+                          Ends on {new Date(proposal.end * 1000).toDateString()}
+                        </Tag>
+                      </Stack>
+                    </Container>
+                  </Link>
                 </Col>
               );
             })}
