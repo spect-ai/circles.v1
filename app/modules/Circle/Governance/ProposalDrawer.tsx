@@ -1,12 +1,5 @@
 import Drawer from "@/app/common/components/Drawer";
-import {
-  Box,
-  Button,
-  Heading,
-  IconChevronRight,
-  Stack,
-  Tag,
-} from "degen";
+import { Box, Button, Heading, IconChevronRight, Stack, Tag } from "degen";
 import { useRouter } from "next/router";
 import SnapshotVoting from "../../Collection/Form/DataDrawer/VotingOnSnapshot";
 import { useQuery as useApolloQuery, gql } from "@apollo/client";
@@ -63,12 +56,12 @@ export default function ProposalDrawer({
     handleClose();
   };
 
-  const {
-    data: proposalData,
-    loading: proposalLoading,
-  } = useApolloQuery(Proposal, {
-    variables: { proposal: proposalId },
-  });
+  const { data: proposalData, loading: proposalLoading } = useApolloQuery(
+    Proposal,
+    {
+      variables: { proposal: proposalId },
+    }
+  );
   return (
     <Box>
       <Loader loading={proposalLoading} text="Fetching Data from Snapshot..." />
@@ -113,7 +106,11 @@ export default function ProposalDrawer({
               onClick={() => {
                 setShowDescription(!showDescription);
               }}
-              style={{ cursor: "pointer", margin: "1rem 0rem" }}
+              style={{
+                cursor: "pointer",
+                margin: "1rem 0rem",
+                width: "fit-content",
+              }}
             >
               <Tag tone="accent">
                 {showDescription ? "Hide" : "Show"} Proposal
