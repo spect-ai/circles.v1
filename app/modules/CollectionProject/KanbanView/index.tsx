@@ -27,6 +27,7 @@ export default function KanbanView() {
     setLoading,
     updateCollection,
     cardOrders,
+    filteredOnGroupByColumn,
   } = useViewCommon();
   return (
     <Box
@@ -53,6 +54,8 @@ export default function KanbanView() {
         <Stack direction="horizontal" align="flex-start">
           {columns?.map((column, index) => {
             if (index === 0 && (!cardOrders[0] || cardOrders[0]?.length === 0))
+              return null;
+            if (filteredOnGroupByColumn && cardOrders[index]?.length === 0)
               return null;
             return (
               <Column
