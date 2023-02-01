@@ -128,8 +128,10 @@ export default function SpectVoting({
                   }
                   selectedTab={vote}
                   onTabClick={async (tab) => {
-                    if (!collection?.voting?.periods?.[data.slug]?.active)
+                    if (!collection?.voting?.periods?.[data.slug]?.active) {
+                      toast.error("Voting is not active");
                       return;
+                    }
                     const tempTab = tab;
                     setVote(tab);
                     const res = await voteCollectionData(

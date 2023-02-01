@@ -17,21 +17,8 @@ import styled from "styled-components";
 import { Col, Row } from "react-grid-system";
 import ClickableAvatar from "@/app/common/components/Avatar";
 import Loader from "@/app/common/components/Loader";
-import { ThunderboltFilled } from "@ant-design/icons";
 import Link from "next/link";
 import ProposalDrawer from "./ProposalDrawer";
-import { CollectionType, MappedItem, VotingPeriod } from "@/app/types";
-import { useQuery } from "react-query";
-
-interface Period {
-  id: string;
-  title: any;
-  start: number;
-  end: number;
-  author: string;
-  onSpect: boolean;
-  collectionId: string;
-}
 
 export default function Governance() {
   const { mode } = useTheme();
@@ -43,29 +30,7 @@ export default function Governance() {
   const [proposalId, setProposalId] = useState<string>(
     (proposalHash as string) || ""
   );
-  const [collectionId, setCollectionId] = useState<string>("");
   const [openDrawer, setOpenDrawer] = useState<boolean>(false);
-
-  const { refetch: fetchCollection, data: collections } = useQuery<
-    CollectionType[]
-  >(
-    ["collections", circle?.id],
-    () =>
-      fetch(
-        `${process.env.API_HOST}/collection/v1/${
-          circle?.id as string
-        }/getAllCollections`,
-        {
-          credentials: "include",
-        }
-      ).then((res) => {
-        if (res.status === 403) return { unauthorized: true };
-        return res.json();
-      }),
-    {
-      enabled: false,
-    }
-  );
 
   const { loading: isLoading, data: activeProposals } = useApolloQuery(
     Proposals,
@@ -91,58 +56,10 @@ export default function Governance() {
   }
 
   useEffect(() => {
-    fetchCollection();
-    const activePeriods: Period[] = [];
-    const completedPeriods: Period[] = [];
-
-    collections &&
-      Object.values(collections)?.map((collection) => {
-        if (
-          !collection.voting ||
-          !collection.voting.enabled ||
-          !collection.voting.periods
-        )
-          return;
-
-        Object.entries(collection.voting.periods)?.map(([key, period]) => {
-          if (period.snapshot?.proposalId) return;
-          const proposal = {
-            id: key,
-            title: collection?.data?.[key]?.["Title"] || collection.name,
-            start: Math.floor(
-              new Date(period.startedOn as Date).getTime() / 1000
-            ),
-            end: Math.floor(new Date(period.endsOn as Date).getTime() / 1000),
-            author: collection.creator,
-            onSpect: true,
-            collectionId: collection.id,
-          };
-          if (period.active === true) {
-            activePeriods.push(proposal);
-          } else if (period.active === false) {
-            completedPeriods.push(proposal);
-          }
-        });
-      });
-
     if (status === "Active") {
-      const filteredData = [
-        ...(activeProposals?.proposals || []),
-        ...activePeriods,
-      ].slice(0);
-      filteredData.sort(function (a: any, b: any) {
-        return new Date(b.start).getTime() - new Date(a.start).getTime();
-      });
-      setProposals(filteredData);
+      setProposals(activeProposals?.proposals);
     } else if (status === "Completed") {
-      const filteredData = [
-        ...(closedProposals?.proposals || []),
-        ...completedPeriods,
-      ].slice(0);
-      filteredData.sort(function (a: any, b: any) {
-        return new Date(b.start).getTime() - new Date(a.start).getTime();
-      });
-      setProposals(filteredData);
+      setProposals(closedProposals?.proposals);
     }
   }, [status]);
 
@@ -172,9 +89,6 @@ export default function Governance() {
         <ProposalDrawer
           proposalId={proposalId}
           handleClose={() => setOpenDrawer(false)}
-          collection={collections && Object.values(collections)?.find(
-            (c) => c.id === collectionId
-          )}
         />
       )}
       <GovernanceHeading status={status as string} setStatus={setStatus} />
@@ -194,7 +108,6 @@ export default function Governance() {
                       mode={mode}
                       onClick={() => {
                         setProposalId(proposal.id);
-                        setCollectionId(proposal.collectionId);
                         setOpenDrawer(true);
                       }}
                     >
@@ -207,7 +120,7 @@ export default function Governance() {
                           size="6"
                         />
                         <Tag hover tone="accent">
-                          {!proposal.onSpect ? "Snapshot" : "Spect"}
+                          Snapshot
                         </Tag>
                       </Stack>
                       <Text

@@ -3,6 +3,7 @@ import { ethers } from "ethers";
 import { useLocalCollection } from "@/app/modules/Collection/Context/LocalCollectionContext";
 import { useLocation } from "react-use";
 import { useBlockNumber, useAccount, useProvider } from "wagmi";
+import { useCircle } from "@/app/modules/Circle/CircleContext";
 
 interface createProposalDto {
   title: string;
@@ -13,8 +14,8 @@ interface createProposalDto {
 }
 
 export default function useSnapshot() {
-  const { localCollection: collection, updateCollection } =
-    useLocalCollection();
+  const { localCircle: circle } = useCircle();
+  const { localCollection: collection } = useLocalCollection();
   const { hostname } = useLocation();
   const { address } = useAccount();
   // const provider = useProvider();
@@ -25,9 +26,9 @@ export default function useSnapshot() {
 
   const client = new snapshot.Client712(hub);
 
-  const space = collection?.voting?.snapshot?.id || "";
+  const space = circle?.snapshot?.id || "";
   const { refetch: refetchBlockNumber } = useBlockNumber({
-    chainId: Number(collection?.voting?.snapshot?.network) || 1,
+    chainId: Number(circle?.snapshot?.network) || 1,
   });
 
   async function createProposal({
@@ -100,7 +101,7 @@ export default function useSnapshot() {
         },
       },
     ] as any;
-    const network = collection?.voting?.snapshot?.network || "5";
+    const network = circle?.snapshot?.network || "5";
 
     snapshot.utils
       .getScores(space, strategies, network, voters, blockNumber)

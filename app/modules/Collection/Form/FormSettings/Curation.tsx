@@ -7,14 +7,14 @@ export default function Curation() {
   return (
     <Stack>
       {/* <CredentialCuration /> */}
-      <Box
+      {/* <Box
         width={{
           xs: "full",
           md: "1/2",
         }}
       >
         <VotingModule />
-      </Box>
+      </Box> */}
 
       <SendKudos />
 

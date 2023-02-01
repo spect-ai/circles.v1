@@ -39,6 +39,7 @@ import { useQuery } from "react-query";
 import { toast } from "react-toastify";
 import styled from "styled-components";
 import AddField from "../../Collection/AddField";
+import { SnapshotModal } from "../../Collection/Common/SnapshotModal";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
 import VotingActions from "../../Collection/Form/DataDrawer/VotingActions";
 import SnapshotVoting from "../../Collection/Form/DataDrawer/VotingOnSnapshot";
@@ -59,6 +60,7 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
     useLocalCollection();
 
   const [value, setValue] = useState<any>(defaultValue || {});
+  const [snapshotModal, setSnapshotModal] = useState(false);
 
   const [isAddFieldOpen, setIsAddFieldOpen] = useState(false);
   const [isDirty, setIsDirty] = useState(false);
@@ -289,9 +291,6 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
                 </Stack>
               </Button>
               <Box width="56">
-                {!newCard && (
-                  <VotingActions dataId={cardSlug as string} data={value} />
-                )}
                 {newCard && (
                   <PrimaryButton
                     loading={loading}
@@ -405,6 +404,7 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
                     <CardOptions
                       handleDrawerClose={closeCard}
                       cardSlug={value.slug}
+                      setSnapshotModal={setSnapshotModal}
                     />
                   )}
                 </Stack>
@@ -443,8 +443,8 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
                   />
                 </Box>
                 <Box marginY={"3"}>
-                  {!collection.voting?.periods?.[cardSlug as string]?.snapshot
-                    ?.onSnapshot && <SpectVoting dataId={cardSlug as string} />}
+                  {/* {!collection.voting?.periods?.[cardSlug as string]?.snapshot
+                    ?.onSnapshot && <SpectVoting dataId={cardSlug as string} />} */}
                   {collection.voting?.periods?.[cardSlug as string]?.snapshot
                     ?.onSnapshot && (
                     <SnapshotVoting dataId={cardSlug as string} />
@@ -467,6 +467,15 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
             </Container>
           </motion.div>
         )}
+        <AnimatePresence>
+          {snapshotModal && (
+            <SnapshotModal
+              data={collection.data}
+              dataId={value.slug}
+              setSnapshotModal={setSnapshotModal}
+            />
+          )}
+        </AnimatePresence>
       </Drawer>
     </Box>
   );
