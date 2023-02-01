@@ -186,7 +186,11 @@ export default function ConnectGnosis() {
                 <Text variant="small">Pick a Network</Text>
                 <Stack direction="horizontal">
                   {getFlattenedNetworks(registry as Registry)?.map((aChain) => {
-                    if (aChain.chainId !== "56" && aChain.chainId !== "43114")
+                    if (
+                      aChain.chainId !== "56" &&
+                      aChain.chainId !== "43114" &&
+                      aChain.chainId !== "100"
+                    )
                       return (
                         <Box
                           cursor="pointer"

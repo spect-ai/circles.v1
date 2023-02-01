@@ -7,8 +7,8 @@ import {
   Registry,
   Voting,
   FormPermissions,
-  GitcoinScoreType,
   MappedItem,
+  Property,
 } from "@/app/types";
 
 export const addField = async (
@@ -426,4 +426,25 @@ export const sendFormComment = async (
       )
     ).json();
   }
+};
+
+export const importFromCsv = async (payload: {
+  data: any;
+  collectionName: string;
+  collectionProperties: {
+    [key: string]: Property;
+  };
+  groupByColumn: string;
+  circleId: string;
+}) => {
+  return await (
+    await fetch(`${process.env.API_HOST}/collection/v1/importfromcsv`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify(payload),
+    })
+  ).json();
 };

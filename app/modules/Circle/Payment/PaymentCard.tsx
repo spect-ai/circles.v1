@@ -1,12 +1,14 @@
 import Avatar from "@/app/common/components/Avatar";
 import { cancelPayments } from "@/app/services/Paymentv2";
 import { MemberDetails, PaymentDetails } from "@/app/types";
-import { Box, useTheme, Text, Stack, IconClose, Button } from "degen";
+import { Box, useTheme, Text, Stack, IconClose, Button, Tag } from "degen";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { useState } from "react";
 import { useQuery } from "react-query";
 import styled from "styled-components";
 import { useCircle } from "../CircleContext";
+import usePaymentViewCommon from "./Common/usePaymentCommon";
 import Payee from "./Payee";
 
 type Props = {
@@ -24,7 +26,9 @@ export default function PaymentCard({
   const { mode } = useTheme();
   const { circle: cId, status, tab, paymentId } = router.query;
   const { registry } = useCircle();
+  const { loading } = usePaymentViewCommon();
 
+  if (loading) return <Box></Box>;
   return (
     <Card
       mode={mode}
@@ -60,7 +64,7 @@ export default function PaymentCard({
             xs: "0",
             md: "2",
           }}
-          gap="4"
+          gap="2"
         >
           <Box
             display="flex"
@@ -87,22 +91,46 @@ export default function PaymentCard({
                 <Box
                   display="flex"
                   flexDirection="row"
-                  alignItems="center"
+                  alignItems="flex-start"
                   gap="2"
                 >
-                  <Text variant="label" weight="semiBold">
-                    Total Amount:{" "}
-                  </Text>
+                  <Box paddingTop="1">
+                    <Text variant="label" weight="semiBold">
+                      Total Amount:{" "}
+                    </Text>
+                  </Box>
                   <Text variant="small">
-                    {" "}
-                    {paymentDetails.value} {paymentDetails.token.label} on{" "}
-                    {paymentDetails.chain.label}
+                    <Text>
+                      {paymentDetails.value} {paymentDetails.token?.label} on{" "}
+                      {paymentDetails.chain?.label}
+                    </Text>
                   </Text>
                 </Box>
               </Box>
             </Box>
           </Box>
-          <Box display="flex" flexDirection="column" gap="2" width="3/4">
+          {paymentDetails?.labels?.length && (
+            <Box
+              display="flex"
+              flexDirection="row"
+              width="1/3"
+              gap="2"
+              flexWrap="wrap"
+            >
+              {paymentDetails.labels.map((label, index) => (
+                <Tag key={index} tone="accent" size="small">
+                  {label.label}
+                </Tag>
+              ))}
+            </Box>
+          )}
+          <Box
+            display="flex"
+            flexDirection="column"
+            gap="2"
+            width="3/4"
+            paddingTop="2"
+          >
             <Text variant="label" weight="semiBold">
               Payee{" "}
             </Text>
@@ -112,7 +140,7 @@ export default function PaymentCard({
       </Box>
       {cId && router.query?.status === "completed" && (
         <a
-          href={`${registry?.[paymentDetails.chain.value].blockExplorer}tx/${
+          href={`${registry?.[paymentDetails.chain?.value]?.blockExplorer}tx/${
             paymentDetails.transactionHash
           }`}
           target="_blank"

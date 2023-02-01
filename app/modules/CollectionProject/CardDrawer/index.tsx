@@ -338,6 +338,22 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
                     alignItems="center"
                     marginRight="4"
                     gap="2"
+                    cursor="pointer"
+                    onClick={() => {
+                      if (collection.projectMetadata?.paymentIds?.[value.slug])
+                        push({
+                          pathname: "/[circle]",
+                          query: {
+                            circle: query.circle,
+                            tab: "payment",
+                            status: "pending",
+                            paymentId:
+                              collection.projectMetadata?.paymentIds?.[
+                                value.slug
+                              ],
+                          },
+                        });
+                    }}
                   >
                     {" "}
                     <Text color="yellow">

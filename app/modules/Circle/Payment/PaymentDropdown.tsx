@@ -1,6 +1,6 @@
 import Popover from "@/app/common/components/Popover";
 import { Box, Stack, useTheme, Text, IconClose, Tag } from "degen";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { matchSorter } from "match-sorter";
@@ -17,6 +17,9 @@ type Props = {
   setValue: (value: any, opts?: Option[]) => void;
   paymentId: string;
   multiple?: boolean;
+  disabled?: boolean;
+  clearable?: boolean;
+  goToLink?: string;
 };
 
 export default function PaymentDropdown({
@@ -26,17 +29,22 @@ export default function PaymentDropdown({
   setValue,
   paymentId,
   multiple = false,
+  disabled,
+  clearable,
+  goToLink,
 }: Props) {
   const { mode } = useTheme();
   const [isEditing, setIsEditing] = useState(false);
-  const [filteredOptions, setFilteredOptions] = useState<any>([]);
+  const [filteredOptions, setFilteredOptions] = useState<any>(options);
   const fieldInput = useRef<any>();
   const [tempValue, setTempValue] = useState<any>("");
   const { circle } = useCircle();
+  const [mouseOver, setMouseOver] = useState(false);
+  const [dynamicFieldWidth, setDynamicFieldWidth] = useState(0);
 
   useEffect(() => {
     setFilteredOptions(options);
-  }, []);
+  }, [options]);
 
   return (
     <Popover
@@ -45,7 +53,14 @@ export default function PaymentDropdown({
       setIsOpen={setIsEditing}
       dependentRef={fieldInput}
       butttonComponent={
-        <Box>
+        <Box
+          onMouseOver={() => {
+            setMouseOver(true);
+          }}
+          onMouseLeave={() => {
+            setMouseOver(false);
+          }}
+        >
           {isEditing ? (
             <FieldInputContainer
               ref={fieldInput}
@@ -89,30 +104,83 @@ export default function PaymentDropdown({
               </Stack>
             </FieldInputContainer>
           ) : (
-            <FieldButton
-              onClick={() => {
-                setIsEditing(true);
-              }}
-              mode={mode}
-            >
-              {multiple ? (
-                value?.length ? (
-                  value?.map((val: any) => (
-                    <Box cursor="pointer" key={val.value}>
-                      <Tag key={val.value} tone="accent" hover>
-                        {val.label}
-                      </Tag>
-                    </Box>
-                  ))
+            <Box>
+              <FieldButton
+                onClick={() => {
+                  if (!disabled) setIsEditing(true);
+                }}
+                mode={mode}
+              >
+                {multiple ? (
+                  value?.length ? (
+                    value?.map((val: any) => (
+                      <Box cursor="pointer" key={val.value}>
+                        <Tag key={val.value} tone="accent" hover>
+                          {val.label}
+                        </Tag>
+                      </Box>
+                    ))
+                  ) : (
+                    "Empty"
+                  )
+                ) : value ? (
+                  <Box display="flex" flexDirection="row" gap="4">
+                    <Text>{value.label}</Text>
+                  </Box>
                 ) : (
                   "Empty"
-                )
-              ) : value ? (
-                <Text>{value.label}</Text>
-              ) : (
-                "Empty"
-              )}
-            </FieldButton>
+                )}
+              </FieldButton>
+              {mouseOver &&
+                (value?.length || value?.value) &&
+                (clearable || goToLink) && (
+                  <AnimatePresence>
+                    <motion.div
+                      initial={{ height: 0 }}
+                      animate={{
+                        height: "auto",
+                        transition: { duration: 0.2 },
+                      }}
+                      exit={{ transition: { duration: 0.2 } }}
+                    >
+                      <Box
+                        display="flex"
+                        flexDirection="row"
+                        gap="4"
+                        padding="2"
+                        justifyContent="flex-end"
+                        alignItems="center"
+                        style={{
+                          width: "25rem",
+                        }}
+                      >
+                        {goToLink && (
+                          <a href={goToLink} target="_blank">
+                            <Box cursor="pointer">
+                              <Text variant="label" color="backgroundTertiary">
+                                Check it out
+                              </Text>
+                            </Box>
+                          </a>
+                        )}
+                        {clearable && (
+                          <Box
+                            onClick={() => {
+                              if (multiple) setValue([]);
+                              else setValue(null);
+                            }}
+                            cursor="pointer"
+                          >
+                            <Text variant="label" color="backgroundTertiary">
+                              Clear
+                            </Text>
+                          </Box>
+                        )}
+                      </Box>
+                    </motion.div>
+                  </AnimatePresence>
+                )}
+            </Box>
           )}
         </Box>
       }
@@ -210,7 +278,7 @@ export default function PaymentDropdown({
 }
 
 const FieldButton = styled.div<{ mode: string }>`
-  width: 30rem;
+  width: 25rem;
   color: ${({ mode }) =>
     mode === "dark" ? "rgb(255, 255, 255, 0.25)" : "rgb(0, 0, 0, 0.25)"};
   padding: 0.5rem 0.5rem;

@@ -294,6 +294,7 @@ export interface CircleType {
   rootAutomations: RootAutomationsType;
   automationCount: number;
   pendingPayments: string[];
+  pendingSignaturePayments: string[];
   completedPayments: string[];
   cancelledPayments: string[];
   paymentDetails: { [key: string]: PaymentDetails };
@@ -817,6 +818,9 @@ export type ProjectMetadata = {
   paymentStatus?: {
     [dataSlug: string]: "pending" | "completed" | "pendingSignature";
   };
+  paymentIds?: {
+    [dataSlug: string]: string;
+  };
 };
 
 export type FormPermissions = {
@@ -1213,9 +1217,7 @@ export type PaymentDetails = {
     };
   }[];
   type: "Manually Added" | "Added From Card";
-  dataSlug?: string;
-  collectionId?: string;
-  title?: string;
+  title: string;
   description?: string;
   paidOn?: Date;
   transactionHash?: string;
@@ -1229,4 +1231,6 @@ export type PaymentDetails = {
     value: any;
   }[];
   labels?: Option[];
+  collection?: Option;
+  data?: Option;
 };

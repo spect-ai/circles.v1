@@ -1,6 +1,8 @@
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { getUniqueNetworks } from "@/app/services/Paymentv2/utils";
 import { Box, Stack, Text, useTheme } from "degen";
+import { AnimatePresence } from "framer-motion";
+import { useRouter } from "next/router";
 import { useState } from "react";
 import { Tooltip } from "react-tippy";
 import styled from "styled-components";
@@ -15,14 +17,16 @@ export default function PendingPayments() {
   const [isGnosisPayLoading, setIsGnosisPayLoading] = useState(false);
   const { mode } = useTheme();
   const { isCardDrawerOpen, setIsCardDrawerOpen, pay } = usePaymentViewCommon();
-
+  const router = useRouter();
   const { circle } = useCircle();
 
   return (
     <Stack>
-      {isCardDrawerOpen && (
-        <PaymentCardDrawer handleClose={() => setIsCardDrawerOpen(false)} />
-      )}{" "}
+      <AnimatePresence>
+        {isCardDrawerOpen && (
+          <PaymentCardDrawer handleClose={() => setIsCardDrawerOpen(false)} />
+        )}{" "}
+      </AnimatePresence>
       {!circle.pendingPayments?.length && (
         <Box
           width="full"
@@ -39,6 +43,22 @@ export default function PendingPayments() {
             gap="4"
           >
             <Text variant="small">You have no pending payments.</Text>
+            <PrimaryButton
+              variant="tertiary"
+              onClick={() => {
+                void router.push({
+                  pathname: router.pathname,
+                  query: {
+                    circle: router.query.circle,
+                    tab: "payment",
+                    status: "pending",
+                    newCard: true,
+                  },
+                });
+              }}
+            >
+              Create Payment
+            </PrimaryButton>
           </Box>
         </Box>
       )}
@@ -50,7 +70,6 @@ export default function PendingPayments() {
         display="flex"
         flexDirection="row"
         alignItems="center"
-        justifyContent="flex-end"
         marginTop="4"
         gap="4"
       >
@@ -66,60 +85,86 @@ export default function PendingPayments() {
         )}
 
         {circle.pendingPayments?.length > 0 && (
-          <Box display="flex" flexDirection="row" gap="2">
-            {circle?.safeAddresses &&
-              Object.entries(circle?.safeAddresses).some(
-                ([aChain, aSafes]) => aSafes?.length > 0
-              ) && (
-                <Tooltip
-                  title="Gnosis safe will be used to pay on networks which have a connected safe"
-                  theme={mode}
-                  position="top"
-                >
-                  {" "}
-                  <PrimaryButton
-                    onClick={async () => {
-                      setIsGnosisPayLoading(true);
-                      const uniqueNetworks = getUniqueNetworks(
-                        circle.pendingPayments,
-                        circle.paymentDetails
-                      );
-                      console.log({ uniqueNetworks });
-                      for (const chainId of uniqueNetworks) {
-                        if (!circle.safeAddresses?.[chainId]?.length)
-                          await pay(chainId);
-                        else {
-                          await pay(chainId, true);
-                        }
-                      }
-                      setIsGnosisPayLoading(false);
-                    }}
-                    loading={isGnosisPayLoading}
-                    disabled={isPayLoading}
-                  >
-                    Pay All With Gnosis
-                  </PrimaryButton>
-                </Tooltip>
-              )}{" "}
-            <PrimaryButton
-              onClick={async () => {
-                setIsPayLoading(true);
-                const uniqueNetworks = getUniqueNetworks(
-                  circle.pendingPayments,
-                  circle.paymentDetails
-                );
-                console.log({ uniqueNetworks });
-                for (const chainId of uniqueNetworks) {
-                  await pay(chainId);
-                }
-                setIsPayLoading(false);
-              }}
-              loading={isPayLoading}
-              disabled={isGnosisPayLoading}
+          <>
+            <Box display="flex" flexDirection="row" gap="2">
+              <PrimaryButton
+                variant="tertiary"
+                onClick={() => {
+                  void router.push({
+                    pathname: router.pathname,
+                    query: {
+                      circle: router.query.circle,
+                      tab: "payment",
+                      status: "pending",
+                      newCard: true,
+                    },
+                  });
+                }}
+              >
+                Create Payment
+              </PrimaryButton>
+            </Box>
+            <Box
+              display="flex"
+              flexDirection="row"
+              gap="2"
+              justifyContent="flex-end"
+              width="full"
             >
-              Pay All
-            </PrimaryButton>
-          </Box>
+              {circle?.safeAddresses &&
+                Object.entries(circle?.safeAddresses).some(
+                  ([aChain, aSafes]) => aSafes?.length > 0
+                ) && (
+                  <Tooltip
+                    title="Gnosis safe will be used to pay on networks which have a connected safe"
+                    theme={mode}
+                    position="top"
+                  >
+                    {" "}
+                    <PrimaryButton
+                      onClick={async () => {
+                        setIsGnosisPayLoading(true);
+                        const uniqueNetworks = getUniqueNetworks(
+                          circle.pendingPayments,
+                          circle.paymentDetails
+                        );
+                        console.log({ uniqueNetworks });
+                        for (const chainId of uniqueNetworks) {
+                          if (!circle.safeAddresses?.[chainId]?.length)
+                            await pay(chainId);
+                          else {
+                            await pay(chainId, true);
+                          }
+                        }
+                        setIsGnosisPayLoading(false);
+                      }}
+                      loading={isGnosisPayLoading}
+                      disabled={isPayLoading}
+                    >
+                      Pay All With Gnosis
+                    </PrimaryButton>
+                  </Tooltip>
+                )}{" "}
+              <PrimaryButton
+                onClick={async () => {
+                  setIsPayLoading(true);
+                  const uniqueNetworks = getUniqueNetworks(
+                    circle.pendingPayments,
+                    circle.paymentDetails
+                  );
+                  console.log({ uniqueNetworks });
+                  for (const chainId of uniqueNetworks) {
+                    await pay(chainId);
+                  }
+                  setIsPayLoading(false);
+                }}
+                loading={isPayLoading}
+                disabled={isGnosisPayLoading}
+              >
+                Pay All
+              </PrimaryButton>
+            </Box>
+          </>
         )}
       </Box>
       <ScrollContainer>
