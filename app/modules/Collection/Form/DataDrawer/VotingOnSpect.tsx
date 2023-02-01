@@ -1,8 +1,6 @@
 import Tabs from "@/app/common/components/Tabs";
-import {
-  voteCollectionData,
-} from "@/app/services/Collection";
-import { MemberDetails, UserType } from "@/app/types";
+import { voteCollectionData } from "@/app/services/Collection";
+import { CollectionType, MemberDetails, UserType } from "@/app/types";
 import { Avatar, Box, Stack, Text } from "degen";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
@@ -30,9 +28,16 @@ ChartJS.register(
   Legend
 );
 
-export default function SpectVoting({ dataId }: { dataId: string }) {
-  const { localCollection: collection, updateCollection } =
-    useLocalCollection();
+export default function SpectVoting({
+  dataId,
+  col,
+}: {
+  dataId: string;
+  col?: CollectionType;
+}) {
+  const { localCollection, updateCollection } = useLocalCollection();
+
+  const [collection, setCollection] = useState(col ? col : localCollection);
 
   const router = useRouter();
   const { dataId: dataSlug, circle: cId } = router.query;
@@ -135,7 +140,9 @@ export default function SpectVoting({ dataId }: { dataId: string }) {
                     if (!res.id) {
                       toast.error("Something went wrong");
                       setVote(tempTab);
-                    } else updateCollection(res);
+                    } else {
+                      col ? setCollection(res) : updateCollection(res);
+                    }
                   }}
                   orientation="horizontal"
                   unselectedColor="transparent"

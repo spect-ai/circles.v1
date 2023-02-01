@@ -30,6 +30,7 @@ interface Period {
   end: number;
   author: string;
   onSpect: boolean;
+  collectionId: string;
 }
 
 export default function Governance() {
@@ -42,11 +43,12 @@ export default function Governance() {
   const [proposalId, setProposalId] = useState<string>(
     (proposalHash as string) || ""
   );
+  const [collectionId, setCollectionId] = useState<string>("");
   const [openDrawer, setOpenDrawer] = useState<boolean>(false);
 
-  const { refetch: fetchCollection, data: collections } = useQuery<{
-    [key: string]: CollectionType;
-  }>(
+  const { refetch: fetchCollection, data: collections } = useQuery<
+    CollectionType[]
+  >(
     ["collections", circle?.id],
     () =>
       fetch(
@@ -113,6 +115,7 @@ export default function Governance() {
             end: Math.floor(new Date(period.endsOn as Date).getTime() / 1000),
             author: collection.creator,
             onSpect: true,
+            collectionId: collection.id,
           };
           if (period.active === true) {
             activePeriods.push(proposal);
@@ -169,6 +172,9 @@ export default function Governance() {
         <ProposalDrawer
           proposalId={proposalId}
           handleClose={() => setOpenDrawer(false)}
+          collection={collections && Object.values(collections)?.find(
+            (c) => c.id === collectionId
+          )}
         />
       )}
       <GovernanceHeading status={status as string} setStatus={setStatus} />
@@ -188,6 +194,7 @@ export default function Governance() {
                       mode={mode}
                       onClick={() => {
                         setProposalId(proposal.id);
+                        setCollectionId(proposal.collectionId);
                         setOpenDrawer(true);
                       }}
                     >
