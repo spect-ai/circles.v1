@@ -41,6 +41,15 @@ type UpdatePaymentsRequestDto = {
     value: any;
   }[];
   labels?: Option[];
+  transactionHash?: string;
+  collection?: {
+    label: string;
+    value: string;
+  };
+  data?: {
+    label: string;
+    value: string;
+  };
 };
 
 export const updatePayment = async (

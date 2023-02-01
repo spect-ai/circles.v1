@@ -22,11 +22,9 @@ export default function PendingPayments() {
 
   return (
     <Stack>
-      <AnimatePresence>
-        {isCardDrawerOpen && (
-          <PaymentCardDrawer handleClose={() => setIsCardDrawerOpen(false)} />
-        )}{" "}
-      </AnimatePresence>
+      {isCardDrawerOpen && (
+        <PaymentCardDrawer handleClose={() => setIsCardDrawerOpen(false)} />
+      )}{" "}
       {!circle.pendingPayments?.length && (
         <Box
           width="full"

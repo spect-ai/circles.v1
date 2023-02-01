@@ -146,7 +146,12 @@ export default function PaymentCard({
           target="_blank"
           rel="noreferrer noopener"
         >
-          <Box cursor="pointer">
+          <Box
+            cursor="pointer"
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
+          >
             <Text variant="small" color="blue">
               View Transaction
             </Text>
