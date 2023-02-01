@@ -139,7 +139,13 @@ export const isEmail = (email: string) => {
 export const isURL = (url: string) => {
   return String(url)
     .toLowerCase()
-    .match(
-      /((?:https?:\/\/|www\.)(?:[-a-z0-9]+\.)*[-a-z0-9]+.*)/i
-    );
+    .match(/((?:https?:\/\/|www\.)(?:[-a-z0-9]+\.)*[-a-z0-9]+.*)/i);
+};
+
+export const convertToId = (text: string) => {
+  // lowercase and replace spaces with underscores
+  return text
+    .toLowerCase()
+    .replace(/ /g, "_")
+    .replace(/[^\w-]+/g, "");
 };

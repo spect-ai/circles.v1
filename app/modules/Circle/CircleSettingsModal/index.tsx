@@ -101,20 +101,11 @@ export default function SettingsModal({ handleClose, initialTab }: Props) {
           <Tabs
             selectedTab={tab}
             onTabClick={onTabClick}
-            tabs={[
-              "Info",
-              "Integrations",
-              "Credentials",
-              "Payments",
-              "Contributors",
-              "Roles",
-              "Archive",
-            ]}
+            tabs={["Info", "Integrations", "Credentials", "Roles", "Archive"]}
             tabTourIds={[
               "circle-settings-info",
               "circle-settings-integrations",
-              "circle-settings-payments",
-              "circle-settings-members",
+              "circle-settings-credentials",
               "circle-settings-roles",
               "circle-settings-delete",
             ]}
@@ -178,10 +169,8 @@ export default function SettingsModal({ handleClose, initialTab }: Props) {
           )}
           {tab === 1 && <CircleIntegrations />}
           {tab === 2 && <Credentials />}
-          {tab === 3 && <DefaultPayment />}
-          {tab === 4 && <Contributors />}
-          {tab === 5 && <Roles />}
-          {tab === 6 && (
+          {tab === 3 && <Roles />}
+          {tab === 4 && (
             <Box width="full">
               <Stack>
                 <Box>

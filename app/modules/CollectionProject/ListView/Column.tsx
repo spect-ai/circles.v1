@@ -38,7 +38,6 @@ export default function Column({
   const { localCollection: collection, updateCollection } =
     useLocalCollection();
   const { getMemberDetails } = useModalOptions();
-
   const [columnName, setColumnName] = useState(column.label);
   const { mode } = useTheme();
   const columns = collection.properties[groupByColumn].options as Option[];
@@ -54,6 +53,8 @@ export default function Column({
             onChange={(e) => setColumnName(e.target.value)}
             mode={mode}
             onBlur={async () => {
+              // update only if name is changed
+              if (column.label === columnName) return;
               const res = await updateField(collection.id, groupByColumn, {
                 options: columns.map((c) =>
                   c.value === column.value ? { ...c, label: columnName } : c
