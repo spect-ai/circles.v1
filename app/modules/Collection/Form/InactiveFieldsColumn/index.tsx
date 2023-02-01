@@ -77,8 +77,7 @@ function InactiveFieldsColumnComponent({ fields }: Props) {
       </AnimatePresence>
       <Container>
         <Stack space="4">
-          <FormSettings />
-          <OpportunityMode />
+          {/* <OpportunityMode /> */}
           {/* <Automation /> */}
 
           <Text size="headingTwo" weight="semiBold" ellipsis>
