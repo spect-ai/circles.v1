@@ -14,6 +14,9 @@ import RewardTokenOptions from "../../Collection/AddField/RewardTokenOptions";
 import { useAtom } from "jotai";
 import { scribeOpenAtom, scribeUrlAtom } from "@/pages/_app";
 import { Scribes } from "@/app/common/utils/constants";
+import { Space } from "@/app/modules/Collection/VotingModule";
+import { useQuery } from "@apollo/client";
+import { updateCircle } from "@/app/services/UpdateCircle";
 
 interface Props {
   handleClose: (close: boolean) => void;
@@ -30,6 +33,7 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
   const router = useRouter();
 
   const [step, setStep] = useState(0);
+  const [snapshotSpace, setSnapshotSpace] = useState("");
   const [selectedRoles, setSelectedRoles] = useState([] as string[]);
   const [categoryOptions, setCategoryOptions] = useState<Option[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<Option>(
@@ -42,6 +46,10 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
   const [, setIsScribeOpen] = useAtom(scribeOpenAtom);
   const [, setScribeUrl] = useAtom(scribeUrlAtom);
 
+  const { loading: isLoading, data } = useQuery(Space, {
+    variables: { id: snapshotSpace },
+  });
+
   useEffect(() => {
     if (!circle?.discordGuildId) {
       setStep(0);
@@ -51,14 +59,13 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
     }
   }, [circle?.discordGuildId]);
 
-  const [discordRoles, setDiscordRoles] =
-    useState<
-      | {
-          id: string;
-          name: string;
-        }[]
-      | undefined
-    >();
+  const [discordRoles, setDiscordRoles] = useState<
+    | {
+        id: string;
+        name: string;
+      }[]
+    | undefined
+  >();
 
   useEffect(() => {
     const getGuildChannels = async () => {
@@ -196,7 +203,11 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
                 size="small"
                 width={"fit"}
                 onClick={() => {
-                  setStep(2);
+                  if (!circle?.snapshot?.id) {
+                    setStep(2);
+                  } else {
+                    setStep(3);
+                  }
                   setSelectedRoles([]);
                 }}
               >
@@ -205,7 +216,11 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
               <Button
                 width={"fit"}
                 onClick={() => {
-                  setStep(2);
+                  if (!circle?.snapshot?.id) {
+                    setStep(2);
+                  } else {
+                    setStep(3);
+                  }
                 }}
                 variant="secondary"
                 size="small"
@@ -217,6 +232,86 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
           </>
         )}
         {step == 2 && (
+          <>
+            <Heading color={"accent"} align="left">
+              Enable Snapshot voting on Spect
+            </Heading>
+            <Text variant="label">Integrate Snapshot</Text>
+            <Input
+              label
+              hideLabel
+              width={"1/2"}
+              prefix="https://snapshot.org/#/"
+              value={snapshotSpace}
+              placeholder="your-space.eth"
+              onChange={(e) => {
+                setSnapshotSpace(e.target.value);
+              }}
+            />
+            {snapshotSpace &&
+              !isLoading &&
+              (data?.space?.id ? (
+                <Text size={"extraSmall"} color="accent">
+                  Snapshot Space - {data?.space?.name}
+                </Text>
+              ) : (
+                <Text color={"red"}>Incorrect URL</Text>
+              ))}
+            <Stack direction={"horizontal"}>
+              <Button
+                variant="transparent"
+                size="small"
+                onClick={() => {
+                  if (!circle?.discordGuildId) {
+                    setStep(0);
+                  } else if (circle?.discordGuildId) {
+                    setStep(1);
+                  }
+                }}
+              >
+                Back
+              </Button>
+              <Button
+                variant="tertiary"
+                size="small"
+                onClick={() => {
+                  setStep(3);
+                  setSnapshotSpace("");
+                }}
+              >
+                Skip this
+              </Button>
+              <Button
+                onClick={async () => {
+                  setStep(3);
+                  if (snapshotSpace && data?.space?.id) {
+                    const circleRes = await updateCircle(
+                      {
+                        snapshot: {
+                          name: data?.space?.name || "",
+                          id: snapshotSpace,
+                          network: data?.space?.network || "",
+                          symbol: data?.space?.symbol || "",
+                        },
+                      },
+                      circle?.id as string
+                    );
+                    setCircleData(circleRes);
+                  }
+                }}
+                prefix={
+                  <RocketOutlined style={{ fontSize: "1.2rem" }} rotate={30} />
+                }
+                variant="secondary"
+                size="small"
+                disabled={!snapshotSpace || !data?.space?.id}
+              >
+                Integrate Snapshot
+              </Button>
+            </Stack>
+          </>
+        )}
+        {step == 3 && (
           <>
             <Heading color={"accent"} align="left">
               Add Custom Token
@@ -237,7 +332,13 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
                 variant="transparent"
                 size="small"
                 onClick={() => {
-                  setStep(1);
+                  if (!circle?.snapshot.id) {
+                    setStep(2);
+                  } else if (!circle?.discordGuildId) {
+                    setStep(0);
+                  } else {
+                    setStep(1);
+                  }
                 }}
               >
                 Back
