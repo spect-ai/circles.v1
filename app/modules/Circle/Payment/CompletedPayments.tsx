@@ -2,6 +2,7 @@ import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { exportToCsv } from "@/app/services/CsvExport";
 import { MemberDetails } from "@/app/types";
 import { Box, Stack, Text } from "degen";
+import { AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { useQuery } from "react-query";
@@ -27,9 +28,13 @@ export default function CompletedPayments() {
 
   return (
     <Stack>
-      {isCardDrawerOpen && (
-        <PaymentCardDrawer handleClose={() => setIsCardDrawerOpen(false)} />
-      )}{" "}
+      <Box>
+        <AnimatePresence>
+          {isCardDrawerOpen && (
+            <PaymentCardDrawer handleClose={() => setIsCardDrawerOpen(false)} />
+          )}
+        </AnimatePresence>
+      </Box>
       <Box
         style={{ width: "80%" }}
         height="full"

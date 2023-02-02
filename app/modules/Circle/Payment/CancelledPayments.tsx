@@ -1,5 +1,6 @@
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { Box, Stack, Text } from "degen";
+import { AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import styled from "styled-components";
 import { useCircle } from "../CircleContext";
@@ -13,9 +14,11 @@ export default function CompletedPayments() {
 
   return (
     <Stack>
-      {isCardDrawerOpen && (
-        <PaymentCardDrawer handleClose={() => setIsCardDrawerOpen(false)} />
-      )}{" "}
+      <AnimatePresence>
+        {isCardDrawerOpen && (
+          <PaymentCardDrawer handleClose={() => setIsCardDrawerOpen(false)} />
+        )}
+      </AnimatePresence>
       <Box marginTop="4">
         {!circle.cancelledPayments?.length && (
           <Box

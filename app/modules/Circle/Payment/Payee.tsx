@@ -8,6 +8,8 @@ import { ethers } from "ethers";
 import { useCircle } from "../CircleContext";
 import { useEffect, useState } from "react";
 import { smartTrim } from "@/app/common/utils/utils";
+import AddToken from "../CircleSettingsModal/CirclePayment/AddToken";
+import { AnimatePresence } from "framer-motion";
 
 type Props = {
   value: PaymentDetails;
@@ -24,6 +26,8 @@ export default function Payee({
   newCard,
   shortenEthAddress,
 }: Props) {
+  const [isAddTokenModalOpen, setIsAddTokenModalOpen] = useState(false);
+
   const { memberDetails } = usePaymentViewCommon();
   const memberOptions = Object.entries(memberDetails?.memberDetails || {}).map(
     ([id, member]) => {
@@ -33,7 +37,7 @@ export default function Payee({
       };
     }
   );
-  const { circle, registry } = useCircle();
+  const { registry } = useCircle();
   const networkOptions = Object.entries(registry || {}).map(([id, network]) => {
     return {
       label: network.name,
@@ -41,6 +45,8 @@ export default function Payee({
     };
   });
   const [tokenOptions, setTokenOptions] = useState<Option[]>([]);
+
+  console.log({ registry });
 
   useEffect(() => {
     console.log({ value });
@@ -54,11 +60,16 @@ export default function Payee({
             };
           }
         ) as Option[]) || [];
+      // add custom token option in the beginning
+      tOptions.unshift({
+        label: "Add Other Token",
+        value: "__custom__",
+      });
       setTokenOptions(tOptions);
       if (setValue)
         setValue({
           ...value,
-          token: value.token?.value ? value.token : tOptions[0],
+          token: value.token?.value ? value.token : tOptions[1],
           paidTo:
             value.paidTo?.map((p) => ({
               ...p,
@@ -70,7 +81,7 @@ export default function Payee({
         });
       console.log({ tOptions });
     }
-  }, [value.chain]);
+  }, [value.chain, registry]);
 
   useEffect(() => {
     if (newCard && mode === "edit" && !value.paidTo?.length && setValue) {
@@ -150,6 +161,10 @@ export default function Payee({
               options={tokenOptions || []}
               selected={value.token}
               onChange={(option) => {
+                if (option?.value === "__custom__") {
+                  setIsAddTokenModalOpen(true);
+                  return;
+                }
                 if (setValue) {
                   setValue({
                     ...value,
@@ -168,6 +183,15 @@ export default function Payee({
               isClearable={false}
             />
           </Box>
+          <AnimatePresence>
+            {isAddTokenModalOpen && (
+              <AddToken
+                chainId={value.chain.value}
+                chainName={value.chain?.label}
+                handleClose={() => setIsAddTokenModalOpen(false)}
+              />
+            )}
+          </AnimatePresence>
         </Box>
       )}
       {value.paidTo?.map &&

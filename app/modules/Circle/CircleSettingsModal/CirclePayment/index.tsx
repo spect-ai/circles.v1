@@ -7,6 +7,7 @@ import { updateCircle } from "@/app/services/UpdateCircle";
 import { Registry } from "@/app/types";
 import { SaveOutlined } from "@ant-design/icons";
 import { Box, Heading, Input, Stack, Tag, Text } from "degen";
+import { AnimatePresence } from "framer-motion";
 import React, { useState } from "react";
 import { toast } from "react-toastify";
 import styled from "styled-components";
@@ -30,6 +31,8 @@ export default function DefaultPayment() {
 
   const [isLoading, setIsLoading] = useState(false);
   const [isDirty, setIsDirty] = useState(false);
+
+  const [isAddTokenModalOpen, setIsAddTokenModalOpen] = useState(false);
 
   const [circleAddress, setCircleAddress] = useState(
     circle?.paymentAddress || ""
@@ -64,10 +67,8 @@ export default function DefaultPayment() {
     <Container>
       <Stack space="4">
         <Box>
-          <Heading>Default Payment</Heading>
-          <Text>
-            Pick the default method of payment from your whitelisted tokens
-          </Text>
+          <Heading>Circle Payments</Heading>
+          <Text>Add your whitelisted tokens</Text>
         </Box>
         <Stack>
           <Text size="extraLarge">Chain</Text>
@@ -110,24 +111,28 @@ export default function DefaultPayment() {
                     setToken(aToken);
                   }}
                 >
-                  <Tag
-                    hover
-                    tone={
-                      token?.address === aToken.address ? "accent" : "secondary"
-                    }
-                  >
-                    <Text
-                      color={
-                        token?.address === aToken.address ? "accent" : "inherit"
-                      }
-                    >
-                      {aToken.symbol}
-                    </Text>
+                  <Tag hover>
+                    <Text>{aToken.symbol}</Text>
                   </Tag>
                 </Box>
               )
             )}
-            <AddToken chain={chain} />
+            <Box cursor="pointer" onClick={() => setIsAddTokenModalOpen(true)}>
+              <Tag hover label="Add">
+                <Stack direction="horizontal" align="center" space="1">
+                  <Text>Custom Token</Text>
+                </Stack>
+              </Tag>
+            </Box>
+            <AnimatePresence>
+              {isAddTokenModalOpen && (
+                <AddToken
+                  chainId={chain?.chainId}
+                  chainName={chain?.name}
+                  handleClose={() => setIsAddTokenModalOpen(false)}
+                />
+              )}
+            </AnimatePresence>
           </Stack>
         </Stack>
         <Box marginTop="4" />
