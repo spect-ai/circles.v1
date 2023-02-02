@@ -46,8 +46,6 @@ export default function Payee({
   });
   const [tokenOptions, setTokenOptions] = useState<Option[]>([]);
 
-  console.log({ registry });
-
   useEffect(() => {
     console.log({ value });
     if (value.chain && value.chain.value && registry) {

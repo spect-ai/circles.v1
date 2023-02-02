@@ -316,16 +316,18 @@ export default function AddField({ propertyName, handleClose }: Props) {
                 Field name cannot be slug
               </Text>
             )}
-            <Textarea
-              label
-              hideLabel
-              placeholder="Description"
-              rows={2}
-              value={description}
-              onChange={(e) => {
-                setDescription(e.target.value);
-              }}
-            />
+            {collection.collectionType === 0 && (
+              <Textarea
+                label
+                hideLabel
+                placeholder="Description"
+                rows={2}
+                value={description}
+                onChange={(e) => {
+                  setDescription(e.target.value);
+                }}
+              />
+            )}
             {collection.collectionType === 0 && (
               <Tabs
                 selectedTab={required}
@@ -378,21 +380,21 @@ export default function AddField({ propertyName, handleClose }: Props) {
                 /> */}
               </Stack>
             ) : null}
-            {type.value === "reward" ? (
+            {type.value === "reward" && collection.collectionType === 0 && (
               <RewardTokenOptions
                 networks={networks}
                 setNetworks={setNetworks}
               />
-            ) : null}
-            {type.value === "milestone" ? (
+            )}
+            {type.value === "milestone" && (
               <MilestoneOptions networks={networks} setNetworks={setNetworks} />
-            ) : null}
-            {type.value === "payWall" ? (
+            )}
+            {type.value === "payWall" && (
               <PayWall
                 payWallOption={payWallOption}
                 setPayWallOption={setPayWallOption}
               />
-            ) : null}
+            )}
             <Accordian name="Default Value" defaultOpen={false}>
               <Field
                 collection={collection}
