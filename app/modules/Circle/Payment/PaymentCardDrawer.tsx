@@ -212,7 +212,6 @@ export default function PaymentCardDrawer({ handleClose }: Props) {
                     : null,
                 },
               }));
-            console.log({ options });
             setCardOptions(options);
           }
         })

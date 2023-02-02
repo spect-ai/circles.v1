@@ -48,15 +48,17 @@ export default function CompletedPayments() {
                 const data = [] as any[];
                 circle.completedPayments?.forEach((paymentId) => {
                   const paymentDetails = circle.paymentDetails[paymentId];
-                  const paidTo = paymentDetails.paidTo.map((paidTo) => {
+                  const paidTo = paymentDetails.paidTo?.map((paidTo) => {
                     if (paidTo.propertyType === "user")
                       return {
                         username:
-                          memberDetails?.memberDetails[paidTo.value as string]
-                            .username,
+                          memberDetails?.memberDetails[
+                            paidTo.value?.value as string
+                          ].username,
                         ethAddress:
-                          memberDetails?.memberDetails[paidTo.value as string]
-                            .ethAddress,
+                          memberDetails?.memberDetails[
+                            paidTo.value?.value as string
+                          ].ethAddress,
                         reward: paidTo.reward,
                       };
                     else if (paidTo.propertyType === "ethAddress")
