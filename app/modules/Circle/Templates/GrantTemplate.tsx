@@ -154,7 +154,11 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
                 <PrimaryButton
                   variant="tertiary"
                   onClick={() => {
-                    setStep(2);
+                    if (!circle?.snapshot?.id) {
+                      setStep(2);
+                    } else {
+                      setStep(3);
+                    }
                   }}
                 >
                   Skip this
