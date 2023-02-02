@@ -189,23 +189,29 @@ export default function PaymentCardDrawer({ handleClose }: Props) {
         .then((res) => {
           if (res.data) {
             console.log({ d: res.data?.data });
-            const options = Object.values(res.data?.data)?.map((card) => ({
-              label: card.Title,
-              value: card.slug,
-              data: {
-                payee: res.data.projectMetadata?.payments?.payeeField
-                  ? card[res.data.projectMetadata?.payments?.payeeField]
-                  : null,
-                reward: res.data.projectMetadata?.payments?.rewardField
-                  ? card[res.data.projectMetadata?.payments?.rewardField]
-                  : null,
-                payeeType: res.data.projectMetadata?.payments?.payeeField
-                  ? res.data.properties[
-                      res.data.projectMetadata?.payments?.payeeField
-                    ]?.type
-                  : null,
-              },
-            }));
+            const options = Object.values(res.data?.data)
+              ?.filter(
+                (card) =>
+                  res.data.projectMetadata?.paymentStatus?.[card.slug] !==
+                  "completed"
+              )
+              .map((card) => ({
+                label: card.Title,
+                value: card.slug,
+                data: {
+                  payee: res.data.projectMetadata?.payments?.payeeField
+                    ? card[res.data.projectMetadata?.payments?.payeeField]
+                    : null,
+                  reward: res.data.projectMetadata?.payments?.rewardField
+                    ? card[res.data.projectMetadata?.payments?.rewardField]
+                    : null,
+                  payeeType: res.data.projectMetadata?.payments?.payeeField
+                    ? res.data.properties[
+                        res.data.projectMetadata?.payments?.payeeField
+                      ]?.type
+                    : null,
+                },
+              }));
             console.log({ options });
             setCardOptions(options);
           }

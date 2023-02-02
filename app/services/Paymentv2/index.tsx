@@ -92,6 +92,7 @@ type UpdateMultiplePaymentsRequestDto = {
   safeTransactionHash?: string;
   status?: "Pending" | "Pending Signature" | "Completed" | "Cancelled";
   paymentIds: string[];
+  paidOn?: Date;
 };
 
 export const updateMultiplePayments = async (

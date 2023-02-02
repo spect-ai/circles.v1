@@ -820,6 +820,7 @@ export const findAndUpdateCompletedPaymentIds = async (
       paymentIds: filteredPaymentIds,
       transactionHash: transactionHash["currency"],
       status: "Completed",
+      paidOn: new Date(),
     });
   }
 
