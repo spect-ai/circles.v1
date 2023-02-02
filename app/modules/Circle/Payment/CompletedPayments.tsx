@@ -2,6 +2,7 @@ import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { exportToCsv } from "@/app/services/CsvExport";
 import { MemberDetails } from "@/app/types";
 import { Box, Stack, Text } from "degen";
+import { AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { useQuery } from "react-query";
@@ -27,9 +28,13 @@ export default function CompletedPayments() {
 
   return (
     <Stack>
-      {isCardDrawerOpen && (
-        <PaymentCardDrawer handleClose={() => setIsCardDrawerOpen(false)} />
-      )}{" "}
+      <Box>
+        <AnimatePresence>
+          {isCardDrawerOpen && (
+            <PaymentCardDrawer handleClose={() => setIsCardDrawerOpen(false)} />
+          )}
+        </AnimatePresence>
+      </Box>
       <Box
         style={{ width: "80%" }}
         height="full"
@@ -48,15 +53,17 @@ export default function CompletedPayments() {
                 const data = [] as any[];
                 circle.completedPayments?.forEach((paymentId) => {
                   const paymentDetails = circle.paymentDetails[paymentId];
-                  const paidTo = paymentDetails.paidTo.map((paidTo) => {
+                  const paidTo = paymentDetails.paidTo?.map((paidTo) => {
                     if (paidTo.propertyType === "user")
                       return {
                         username:
-                          memberDetails?.memberDetails[paidTo.value as string]
-                            .username,
+                          memberDetails?.memberDetails[
+                            paidTo.value?.value as string
+                          ].username,
                         ethAddress:
-                          memberDetails?.memberDetails[paidTo.value as string]
-                            .ethAddress,
+                          memberDetails?.memberDetails[
+                            paidTo.value?.value as string
+                          ].ethAddress,
                         reward: paidTo.reward,
                       };
                     else if (paidTo.propertyType === "ethAddress")

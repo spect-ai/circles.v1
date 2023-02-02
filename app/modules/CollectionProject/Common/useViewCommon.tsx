@@ -38,6 +38,8 @@ export default function useViewCommon() {
     collection.projectMetadata.cardOrders[view.groupByColumn]
   );
 
+  const [filteredOnGroupByColumn, setFilteredOnGroupByColumn] = useState(false);
+
   const { data: currentUser, refetch } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
@@ -94,6 +96,11 @@ export default function useViewCommon() {
           );
         });
       });
+      // check if the filters are on the groupByColumn
+      const filteredOnGroupByColumn = view.filters.some(
+        (filter) => filter.data.field.value === view.groupByColumn
+      );
+      setFilteredOnGroupByColumn(filteredOnGroupByColumn);
     }
     if (showMyTasks) {
       newCardOrder = newCardOrder.map((group) => {
@@ -358,5 +365,6 @@ export default function useViewCommon() {
     cardSlug,
     newCard,
     cardOrders,
+    filteredOnGroupByColumn,
   };
 }

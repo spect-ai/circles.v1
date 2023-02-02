@@ -11,14 +11,15 @@ import { useCircle } from "../../CircleContext";
 import Dropdown from "@/app/common/components/Dropdown";
 
 interface Props {
-  chain: Chain | undefined;
+  chainName: string;
+  chainId: string;
+  handleClose: () => void;
 }
 
-export default function AddToken({ chain }: Props) {
-  const [isOpen, setIsOpen] = useState(false);
+export default function AddToken({ chainName, chainId, handleClose }: Props) {
   const [network, setNetwork] = useState({
-    label: chain?.name,
-    value: chain?.chainId,
+    label: chainName,
+    value: chainId,
   });
   const [address, setAddress] = useState("");
   const [tokenSymbol, setTokenSymbol] = useState("");
@@ -33,77 +34,75 @@ export default function AddToken({ chain }: Props) {
     value: r.chainId,
   }));
   return (
-    <>
-      <Box cursor="pointer" onClick={() => setIsOpen(true)}>
-        <Tag hover label="Add">
-          <Stack direction="horizontal" align="center" space="1">
-            <Text>Custom Token</Text>
-          </Stack>
-        </Tag>
+    // <>
+    //   <Box cursor="pointer" onClick={() => setIsOpen(true)}>
+    //     <Tag hover label="Add">
+    //       <Stack direction="horizontal" align="center" space="1">
+    //         <Text>Custom Token</Text>
+    //       </Stack>
+    //     </Tag>
+    //   </Box>
+    //   <AnimatePresence>
+    //     {isOpen && (
+    <Modal handleClose={handleClose} title="Add Token">
+      <Box padding="8">
+        {tokenLoading && <Loader loading text="Fetching" />}
+        <Stack>
+          <Dropdown
+            multiple={false}
+            options={options}
+            selected={network as Option}
+            onChange={(option) => {
+              setNetwork(option);
+            }}
+            isClearable={false}
+            placeholder="Select Network"
+          />
+          <Input
+            label=""
+            placeholder="Token Address"
+            value={address}
+            onChange={async (e) => {
+              setAddress(e.target.value);
+              setTokenLoading(true);
+              console.log({ chainName });
+              try {
+                console.log(await symbol(e.target.value, network?.value));
+                setTokenSymbol(await symbol(e.target.value, network?.value));
+                setTokenName(await name(e.target.value, network?.value));
+              } catch (e) {
+                console.log(e);
+                setTokenLoading(false);
+              }
+              setTokenLoading(false);
+            }}
+          />
+          <Text weight="semiBold">{tokenSymbol}</Text>
+          <Text weight="semiBold">{tokenName}</Text>
+          <PrimaryButton
+            loading={loading}
+            disabled={!tokenSymbol}
+            onClick={async () => {
+              setLoading(true);
+              const res = await addToken(circle?.id, {
+                chainId: network.value as string,
+                address,
+                symbol: tokenSymbol,
+                name: tokenName,
+              });
+              console.log({ res });
+              setLoading(false);
+              setRegistryData(res as Registry);
+              res && handleClose();
+            }}
+          >
+            Add
+          </PrimaryButton>
+        </Stack>
       </Box>
-      <AnimatePresence>
-        {isOpen && (
-          <Modal handleClose={() => setIsOpen(false)} title="Add Token">
-            <Box padding="8">
-              {tokenLoading && <Loader loading text="Fetching" />}
-              <Stack>
-                <Dropdown
-                  multiple={false}
-                  options={options}
-                  selected={network as Option}
-                  onChange={(option) => {
-                    setNetwork(option);
-                  }}
-                  portal={false}
-                  isClearable={false}
-                />
-                <Input
-                  label=""
-                  placeholder="Token Address"
-                  value={address}
-                  onChange={async (e) => {
-                    setAddress(e.target.value);
-                    setTokenLoading(true);
-                    console.log({ chain });
-                    try {
-                      console.log(await symbol(e.target.value, network?.value));
-                      setTokenSymbol(
-                        await symbol(e.target.value, network?.value)
-                      );
-                      setTokenName(await name(e.target.value, network?.value));
-                    } catch (e) {
-                      console.log(e);
-                      setTokenLoading(false);
-                    }
-                    setTokenLoading(false);
-                  }}
-                />
-                <Text weight="semiBold">{tokenSymbol}</Text>
-                <Text weight="semiBold">{tokenName}</Text>
-                <PrimaryButton
-                  loading={loading}
-                  disabled={!tokenSymbol}
-                  onClick={async () => {
-                    setLoading(true);
-                    const res = await addToken(circle?.id, {
-                      chainId: network.value as string,
-                      address,
-                      symbol: tokenSymbol,
-                      name: tokenName,
-                    });
-                    console.log({ res });
-                    setLoading(false);
-                    setRegistryData(res as Registry);
-                    res && setIsOpen(false);
-                  }}
-                >
-                  Add
-                </PrimaryButton>
-              </Stack>
-            </Box>
-          </Modal>
-        )}
-      </AnimatePresence>
-    </>
+    </Modal>
+    //     )}
+    //   </AnimatePresence>
+    // </>
   );
 }

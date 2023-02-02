@@ -27,6 +27,7 @@ export default function ListView() {
     setLoading,
     updateCollection,
     cardOrders,
+    filteredOnGroupByColumn,
   } = useViewCommon();
 
   return (
@@ -50,6 +51,8 @@ export default function ListView() {
         <Stack>
           {columns?.map((column, index) => {
             if (index === 0 && (!cardOrders[0] || cardOrders[0]?.length === 0))
+              return null;
+            if (filteredOnGroupByColumn && cardOrders[index]?.length === 0)
               return null;
             return (
               <Column

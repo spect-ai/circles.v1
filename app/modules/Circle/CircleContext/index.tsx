@@ -190,8 +190,8 @@ export function useProviderCircleContext() {
       socket.on(
         `${cId}:paymentUpdate`,
         (event: { data: any; user: string }) => {
-          console.log({ event });
-          if (circle && circle.id === event.data.circleId)
+          console.log({ event, cId });
+          if (circle && cId === event.data.circleSlug)
             setCircleData({
               ...circle,
               pendingPayments: event.data.pendingPayments,

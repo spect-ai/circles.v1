@@ -184,7 +184,9 @@ export default function PublicForm() {
             </Box>
             {!form.formMetadata.active && (
               <Box width="full" padding="4">
-                <Text variant="large">This form is not active</Text>
+                <Text variant="large" weight="semiBold">
+                  This form is not active
+                </Text>
               </Box>
             )}
             {canFillForm && currentUser?.id && (

@@ -41,6 +41,15 @@ type UpdatePaymentsRequestDto = {
     value: any;
   }[];
   labels?: Option[];
+  transactionHash?: string;
+  collection?: {
+    label: string;
+    value: string;
+  };
+  data?: {
+    label: string;
+    value: string;
+  };
 };
 
 export const updatePayment = async (
@@ -83,6 +92,7 @@ type UpdateMultiplePaymentsRequestDto = {
   safeTransactionHash?: string;
   status?: "Pending" | "Pending Signature" | "Completed" | "Cancelled";
   paymentIds: string[];
+  paidOn?: Date;
 };
 
 export const updateMultiplePayments = async (

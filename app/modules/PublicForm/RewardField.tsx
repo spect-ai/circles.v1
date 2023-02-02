@@ -55,15 +55,12 @@ export default function RewardField({
           value: address,
         };
       });
-      if (!value?.token) {
-        setSelectedToken(tokens[0]);
-        updateData({
-          chain: selectedChain,
-          token: tokens[0],
-          value: value?.value,
-        });
-      }
-
+      setSelectedToken(tokens[0]);
+      updateData({
+        chain: selectedChain,
+        token: tokens[0],
+        value: value?.value,
+      });
       setTokenOptions(tokens);
     }
   }, [selectedChain]);
@@ -148,7 +145,7 @@ export default function RewardField({
           }}
           type="number"
           onKeyDown={onValueKeyDown}
-          units={selectedToken.label}
+          units={selectedToken?.label}
           disabled={disabled}
         />
       </Box>
