@@ -31,6 +31,12 @@ type CircleUpdateDTO = {
   grantApplicantProject: string;
   grantNotificationChannel: DiscordChannel;
   paymentLabelOptions: Option[];
+  snapshot: {
+    name: string;
+    id: string;
+    network: string;
+    symbol: string;
+  };
 };
 
 type AddAutomationDto = {

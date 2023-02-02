@@ -11,7 +11,6 @@ import { useQuery } from "react-query";
 import styled from "styled-components";
 import { useLocalCollection } from "../../Context/LocalCollectionContext";
 import DataActivity from "./DataActivity";
-import SpectVoting from "./VotingOnSpect";
 import VotingActions from "./VotingActions";
 import SnapshotVoting from "./VotingOnSnapshot";
 
@@ -79,7 +78,7 @@ export default function DataDrawer({
                 </Box>
               </Stack>
             </Button>
-            <VotingActions dataId={dataId} data={data} />
+            <VotingActions dataId={dataId} data={data} col={false} />
           </Stack>
         </Box>
       }
@@ -347,9 +346,9 @@ export default function DataDrawer({
                     );
                   })}
                 </Box>
-                {!collection.voting?.periods?.[dataId]?.snapshot
-                  ?.onSnapshot && <SpectVoting dataId={dataId} />}
-                {collection.voting?.periods?.[dataId]?.snapshot?.onSnapshot && (
+                {/* {!collection.voting?.periods?.[dataId]?.snapshot
+                  ?.proposalId && <SpectVoting dataId={dataId} />} */}
+                {collection.voting?.snapshot?.[dataId]?.proposalId && (
                   <SnapshotVoting dataId={dataId} />
                 )}
               </Box>

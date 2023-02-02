@@ -1,5 +1,5 @@
 import Popover from "@/app/common/components/Popover";
-import { Box, Stack, Tag, Text } from "degen";
+import { Box, IconLightningBolt, Stack, Tag, Text } from "degen";
 import React, { useMemo, useState } from "react";
 import { Archive, MoreHorizontal } from "react-feather";
 import { MenuContainer, MenuItem } from "../EditValue";
@@ -10,13 +10,20 @@ import { toast } from "react-toastify";
 import { DollarOutlined } from "@ant-design/icons";
 import { addPendingPayment } from "@/app/services/Paymentv2";
 import { useCircle } from "../../Circle/CircleContext";
+import { useAccount } from "wagmi";
 
 type Props = {
   handleDrawerClose: () => void;
   cardSlug: string;
+  setSnapshotModal: (value: boolean) => void;
 };
 
-export default function CardOptions({ handleDrawerClose, cardSlug }: Props) {
+export default function CardOptions({
+  handleDrawerClose,
+  cardSlug,
+  setSnapshotModal,
+}: Props) {
+  const { address } = useAccount();
   const { localCollection: collection, updateCollection } =
     useLocalCollection();
   const { circle } = useCircle();
@@ -189,6 +196,32 @@ export default function CardOptions({ handleDrawerClose, cardSlug }: Props) {
               <Text>Archive</Text>
             </Stack>
           </MenuItem>
+          {!collection.voting.snapshot?.[cardSlug]?.proposalId && (
+            <MenuItem
+              style={{
+                padding: "6px",
+              }}
+              onClick={() => {
+                setIsOpen(false);
+                if (!address) {
+                  toast.error("Please unlock your wallet first");
+                  return;
+                }
+                if (!circle?.snapshot?.id) {
+                  toast.error(
+                    "Please integrate your Snapshot in the Governance Center first"
+                  );
+                  return;
+                }
+                setSnapshotModal(true);
+              }}
+            >
+              <Stack direction={"horizontal"}>
+                <IconLightningBolt color={"accent"} />
+                <Text>Create Snapshot Proposal</Text>
+              </Stack>
+            </MenuItem>
+          )}
         </MenuContainer>
       </motion.div>
     </Popover>

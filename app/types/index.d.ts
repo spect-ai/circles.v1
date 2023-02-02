@@ -299,6 +299,12 @@ export interface CircleType {
   cancelledPayments: string[];
   paymentDetails: { [key: string]: PaymentDetails };
   paymentLabelOptions: Option[];
+  snapshot: {
+    name: string;
+    id: string;
+    network: string;
+    symbol: string;
+  };
 }
 
 // interface ProjectType {
@@ -1035,7 +1041,9 @@ export type Voting = {
     token: Option;
     weight: number;
   }[];
-  snapshot?: SnapshotSpace;
+  snapshot?: {
+    [key: string]: { space?: string; proposalId?: string };
+  };
   periods?: MappedItem<VotingPeriod>;
   periodsOnCollection?: MappedItem<VotingPeriod>;
 };

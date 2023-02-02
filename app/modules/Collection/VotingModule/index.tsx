@@ -14,6 +14,7 @@ import MultiChoiceVotingOnMultipleResponses from "./MultiChoiceVotingOnMultipleR
 import SingleChoiceVotingOnSingleResponse from "./SingleChoiceVotingOnSingleResponse";
 import { useQuery, gql } from "@apollo/client";
 import { useCircle } from "@/app/modules/Circle/CircleContext";
+import { updateCircle } from "@/app/services/UpdateCircle";
 
 export const Space = gql`
   query Space($id: String!) {
@@ -32,7 +33,7 @@ export default function VotingModule() {
   const { localCollection: collection, setLocalCollection } =
     useLocalCollection();
 
-  const { circle } = useCircle();
+  const { circle, setCircleData } = useCircle();
   const [circleRoles, setCircleRoles] = useState(circle?.roles || {});
 
   const [permissions, setPermissions] = useState<string[]>(
@@ -46,7 +47,9 @@ export default function VotingModule() {
   });
   const [votesArePublic, setVotesArePublic] = useState(false);
   const [snapshotVoting, setSnapshotVoting] = useState(false);
-  const [snapshotSpace, setSnapshotSpace] = useState("");
+  const [snapshotSpace, setSnapshotSpace] = useState(
+    circle?.snapshot?.id || ""
+  );
 
   const [votingOptions, setVotingOptions] = useState([
     {
@@ -82,7 +85,7 @@ export default function VotingModule() {
         }
       );
       setSnapshotVoting(collection.voting.votesAreWeightedByTokens || false);
-      setSnapshotSpace(collection.voting?.snapshot?.id || "");
+      setSnapshotSpace(circle?.snapshot?.id || "");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [collection]);
@@ -192,7 +195,7 @@ export default function VotingModule() {
                     </Box>
                   </Box>
                 </Stack>
-                {snapshotVoting && (
+                {snapshotVoting && !circle?.snapshot?.id && (
                   <>
                     <Text variant="label">Snapshot URL</Text>
                     <Input
@@ -202,11 +205,6 @@ export default function VotingModule() {
                       value={snapshotSpace}
                       placeholder="your-space.eth"
                       onChange={(e) => {
-                        // const snapshotURL = e.target.value;
-                        // const spaceSlug = snapshotURL.replace(
-                        //   /^(https)\:\/\/snapshot.org\/#\//g,
-                        //   ""
-                        // );
                         setSnapshotSpace(e.target.value);
                       }}
                     />
@@ -295,14 +293,27 @@ export default function VotingModule() {
                             votingType,
                             votesArePublic,
                             votesAreWeightedByTokens: snapshotVoting,
-                            snapshot: {
-                              name: data?.space?.name || "",
-                              id: snapshotSpace,
-                              network: data?.space?.network || "",
-                              symbol: data?.space?.symbol || "",
-                            },
                           },
                         });
+                        if (
+                          snapshotVoting &&
+                          !circle?.snapshot?.id &&
+                          data?.space?.id
+                        ) {
+                          const circleRes = await updateCircle(
+                            {
+                              snapshot: {
+                                name: data?.space?.name || "",
+                                id: snapshotSpace,
+                                network: data?.space?.network || "",
+                                symbol: data?.space?.symbol || "",
+                              },
+                            },
+                            circle?.id as string
+                          );
+                          setCircleData(circleRes);
+                        }
+
                         setLoading(false);
                         if (res.id) {
                           setIsOpen(false);

@@ -357,6 +357,29 @@ export const endVotingPeriod = async (collectionId: string, dataId: string) => {
   ).json();
 };
 
+export const recordSnapshotProposal = async (
+  collectionId: string,
+  dataId: string,
+  snapshotProposalDto: {
+    snapshotSpace: string;
+    proposalId: string;
+  }
+) => {
+  return await (
+    await fetch(
+      `${process.env.API_HOST}/collection/v1/${collectionId}/snapshotProposal?dataId=${dataId}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify(snapshotProposalDto),
+      }
+    )
+  ).json();
+};
+
 export const voteCollectionData = async (
   collectionId: string,
   dataId: string,

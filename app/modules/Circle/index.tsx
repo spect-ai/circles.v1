@@ -17,6 +17,7 @@ import { QuestionCircleOutlined } from "@ant-design/icons";
 import Credential from "./Credential";
 import AutomationCenter from "./Automation";
 import Help from "@/app/common/components/Help";
+import Governance from "./Governance";
 
 const BoxContainer = styled(Box)`
   width: calc(100vw - 3.5rem);
@@ -55,6 +56,10 @@ export default function Circle() {
 
   if (router.query?.tab === "automation") {
     return <AutomationCenter />;
+  }
+
+  if (router.query?.tab === "governance") {
+    return <Governance />;
   }
 
   if (circle?.unauthorized && !isLoading && circle?.id)

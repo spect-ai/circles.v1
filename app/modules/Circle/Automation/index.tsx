@@ -46,8 +46,6 @@ export default function AutomationCenter() {
   const { tab } = router.query;
   const { mode } = useTheme();
 
-  console.log(tab);
-
   return (
     <>
       <ToastContainer

@@ -2,6 +2,7 @@ import Accordian from "@/app/common/components/Accordian";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { CircleType, UserType } from "@/app/types";
 import {
+  BankOutlined,
   DollarOutlined,
   GatewayOutlined,
   ProjectOutlined,
@@ -172,7 +173,7 @@ function CircleSidebar() {
             <PrimaryButton
               variant={
                 cId &&
-                !["payment", "credential", "automation"].includes(
+                !["payment", "credential", "automation", "governance"].includes(
                   router.query?.tab as string
                 ) &&
                 !cSlug &&
@@ -225,6 +226,18 @@ function CircleSidebar() {
               Automation Center
             </PrimaryButton>
           </Link>
+          <Link href={`/${cId}?tab=governance&proposalStatus=Active`}>
+            <PrimaryButton
+              variant={
+                cId && router.query?.tab === "governance" && !cSlug && !pId
+                  ? "tertiary"
+                  : "transparent"
+              }
+              icon={<BankOutlined />}
+            >
+              Governance Center
+            </PrimaryButton>
+          </Link>
           {/* <Link href={`/${cId}?tab=credential`}>
             <PrimaryButton
               variant={
@@ -245,7 +258,7 @@ function CircleSidebar() {
             </PrimaryButton>
           </Link> */}
         </Stack>
-        <Container subH="18.5rem">
+        <Container subH="21.5rem">
           <Stack>
             {!isLoading &&
               circle?.folderOrder?.map((fol) => {
