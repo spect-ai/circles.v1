@@ -110,13 +110,13 @@ export default function SingleAutomation({
       type: "sendEmail",
       data: {},
     },
-    startVotingPeriod: {
-      id: "startVotingPeriod",
-      name: "Start Voting Period",
-      service: "collection",
-      type: "startVotingPeriod",
-      data: {},
-    },
+    // startVotingPeriod: {
+    //   id: "startVotingPeriod",
+    //   name: "Start Voting Period",
+    //   service: "collection",
+    //   type: "startVotingPeriod",
+    //   data: {},
+    // },
   } as { [id: string]: Action });
   const [canSave, setCanSave] = useState(false);
 
@@ -170,14 +170,12 @@ export default function SingleAutomation({
       ]);
 
       const thenOptions = Object.entries(allPossibleActions)
-        .filter(
-          (a) =>
-            (collection?.collectionType === 0
-              ? true
-              : a[0] !== "giveDiscordRole" &&
-                a[0] !== "giveRole" &&
-                a[0] !== "createDiscordChannel") &&
-            (collection?.voting?.enabled ? true : a[0] !== "startVotingPeriod")
+        .filter((a) =>
+          collection?.collectionType === 0
+            ? true
+            : a[0] !== "giveDiscordRole" &&
+              a[0] !== "giveRole" &&
+              a[0] !== "createDiscordChannel"
         )
         .map((a) => ({
           label: a[1].name,

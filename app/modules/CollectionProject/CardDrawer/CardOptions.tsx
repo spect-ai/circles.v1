@@ -216,9 +216,9 @@ export default function CardOptions({
                 setSnapshotModal(true);
               }}
             >
-              <Stack direction={"horizontal"}>
-                <IconLightningBolt color={"accent"} />
-                <Text>Create Snapshot Proposal</Text>
+              <Stack direction="horizontal" align="center" space="2">
+                <IconLightningBolt color={"accent"} size="5" />
+                <Text align={"left"} >Create Snapshot Proposal</Text>
               </Stack>
             </MenuItem>
           )}

@@ -168,77 +168,82 @@ function CircleSidebar() {
             Claim
           </PrimaryButton>
         )}
-        <Stack direction="vertical" space="2">
-          <Link href={`/${cId}`}>
-            <PrimaryButton
-              variant={
-                cId &&
-                !["payment", "credential", "automation", "governance"].includes(
-                  router.query?.tab as string
-                ) &&
-                !cSlug &&
-                !pId
-                  ? "tertiary"
-                  : "transparent"
-              }
-              icon={<IconSparkles size="5" />}
-              onClick={() => {
-                process.env.NODE_ENV === "production" &&
-                  mixpanel.track("Circle Dashboard Button", {
-                    user: currentUser?.username,
-                    url: window.location.href,
-                  });
-              }}
-            >
-              {circle?.parents?.length
-                ? "Workstream Dashboard"
-                : "Organization Dashboard"}
-            </PrimaryButton>
-          </Link>
-          <Link href={`/${cId}?tab=payment&status=pending`}>
-            <PrimaryButton
-              variant={
-                cId && router.query?.tab === "payment" && !cSlug && !pId
-                  ? "tertiary"
-                  : "transparent"
-              }
-              icon={<DollarOutlined size={10} />}
-              onClick={() => {
-                process.env.NODE_ENV === "production" &&
-                  mixpanel.track("Payment Center Button", {
-                    user: currentUser?.username,
-                    url: window.location.href,
-                  });
-              }}
-            >
-              Payment Center
-            </PrimaryButton>
-          </Link>
-          <Link href={`/${cId}?tab=automation`}>
-            <PrimaryButton
-              variant={
-                cId && router.query?.tab === "automation" && !cSlug && !pId
-                  ? "tertiary"
-                  : "transparent"
-              }
-              icon={<GatewayOutlined size={10} />}
-            >
-              Automation Center
-            </PrimaryButton>
-          </Link>
-          <Link href={`/${cId}?tab=governance&proposalStatus=Active`}>
-            <PrimaryButton
-              variant={
-                cId && router.query?.tab === "governance" && !cSlug && !pId
-                  ? "tertiary"
-                  : "transparent"
-              }
-              icon={<BankOutlined />}
-            >
-              Governance Center
-            </PrimaryButton>
-          </Link>
-          {/* <Link href={`/${cId}?tab=credential`}>
+
+        <Container subH="9.5rem">
+          <Stack direction="vertical" space="2">
+            <Link href={`/${cId}`}>
+              <PrimaryButton
+                variant={
+                  cId &&
+                  ![
+                    "payment",
+                    "credential",
+                    "automation",
+                    "governance",
+                  ].includes(router.query?.tab as string) &&
+                  !cSlug &&
+                  !pId
+                    ? "tertiary"
+                    : "transparent"
+                }
+                icon={<IconSparkles size="5" />}
+                onClick={() => {
+                  process.env.NODE_ENV === "production" &&
+                    mixpanel.track("Circle Dashboard Button", {
+                      user: currentUser?.username,
+                      url: window.location.href,
+                    });
+                }}
+              >
+                {circle?.parents?.length
+                  ? "Workstream Dashboard"
+                  : "Organization Dashboard"}
+              </PrimaryButton>
+            </Link>
+            <Link href={`/${cId}?tab=payment&status=pending`}>
+              <PrimaryButton
+                variant={
+                  cId && router.query?.tab === "payment" && !cSlug && !pId
+                    ? "tertiary"
+                    : "transparent"
+                }
+                icon={<DollarOutlined size={10} />}
+                onClick={() => {
+                  process.env.NODE_ENV === "production" &&
+                    mixpanel.track("Payment Center Button", {
+                      user: currentUser?.username,
+                      url: window.location.href,
+                    });
+                }}
+              >
+                Payment Center
+              </PrimaryButton>
+            </Link>
+            <Link href={`/${cId}?tab=automation`}>
+              <PrimaryButton
+                variant={
+                  cId && router.query?.tab === "automation" && !cSlug && !pId
+                    ? "tertiary"
+                    : "transparent"
+                }
+                icon={<GatewayOutlined size={10} />}
+              >
+                Automation Center
+              </PrimaryButton>
+            </Link>
+            <Link href={`/${cId}?tab=governance&proposalStatus=Active`}>
+              <PrimaryButton
+                variant={
+                  cId && router.query?.tab === "governance" && !cSlug && !pId
+                    ? "tertiary"
+                    : "transparent"
+                }
+                icon={<BankOutlined />}
+              >
+                Governance Center
+              </PrimaryButton>
+            </Link>
+            {/* <Link href={`/${cId}?tab=credential`}>
             <PrimaryButton
               variant={
                 cId && router.query?.tab === "credential" && !cSlug && !pId
@@ -257,8 +262,7 @@ function CircleSidebar() {
               Credential Center
             </PrimaryButton>
           </Link> */}
-        </Stack>
-        <Container subH="21.5rem">
+          </Stack>
           <Stack>
             {!isLoading &&
               circle?.folderOrder?.map((fol) => {

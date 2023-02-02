@@ -62,7 +62,7 @@ export default function Governance() {
     } else if (status === "Completed") {
       setProposals(closedProposals?.proposals);
     }
-  }, [status]);
+  }, [status, loading, isLoading]);
 
   useEffect(() => {
     if (proposalHash) {

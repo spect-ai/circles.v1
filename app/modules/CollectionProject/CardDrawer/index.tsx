@@ -470,7 +470,7 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
         <AnimatePresence>
           {snapshotModal && (
             <SnapshotModal
-              data={collection.data}
+              data={collection.data?.[value.slug]}
               dataId={value.slug}
               setSnapshotModal={setSnapshotModal}
             />

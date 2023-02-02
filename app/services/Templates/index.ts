@@ -2,12 +2,6 @@ import { Registry } from "@/app/types";
 import { toast } from "react-toastify";
 
 type GrantWorkflowDto = {
-  snapshot?: {
-    name: string;
-    id: string;
-    network: string;
-    symbol: string;
-  };
   channelCategory?: {
     label: string;
     value: string;
