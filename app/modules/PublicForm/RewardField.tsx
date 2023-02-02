@@ -43,8 +43,6 @@ export default function RewardField({
     value: value?.token?.value || firstTokenAddress,
   });
 
-  console.log({ selectedChain, selectedToken, rewardOptions });
-
   useEffect(() => {
     if (rewardOptions && selectedChain) {
       const tokens = Object.entries(
