@@ -231,18 +231,25 @@ function CircleSidebar() {
                 Automation Center
               </PrimaryButton>
             </Link>
-            <Link href={`/${cId}?tab=governance&proposalStatus=Active`}>
-              <PrimaryButton
-                variant={
-                  cId && router.query?.tab === "governance" && !cSlug && !pId
-                    ? "tertiary"
-                    : "transparent"
-                }
-                icon={<BankOutlined />}
-              >
-                Governance Center
-              </PrimaryButton>
-            </Link>
+            <Box position="relative">
+              <Link href={`/${cId}?tab=governance&proposalStatus=Active`}>
+                <PrimaryButton
+                  variant={
+                    cId && router.query?.tab === "governance" && !cSlug && !pId
+                      ? "tertiary"
+                      : "transparent"
+                  }
+                  icon={<BankOutlined />}
+                >
+                  Governance Center
+                </PrimaryButton>
+              </Link>
+              <Badge>
+                <Text color="accent" size="extraSmall">
+                  New
+                </Text>
+              </Badge>
+            </Box>
             {/* <Link href={`/${cId}?tab=credential`}>
             <PrimaryButton
               variant={
@@ -398,3 +405,12 @@ function CircleSidebar() {
 }
 
 export default memo(CircleSidebar);
+
+const Badge = styled(Box)`
+  position: absolute;
+  top: 12px;
+  right: 32px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
