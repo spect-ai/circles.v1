@@ -26,12 +26,6 @@ export default function Governance() {
   const { circle: cId, proposalStatus, proposalHash } = router.query;
   const [status, setStatus] = useState(proposalStatus);
   const { localCircle: circle, memberDetails } = useCircle();
-  const [proposals, setProposals] = useState<any>([]);
-  const [proposalId, setProposalId] = useState<string>(
-    (proposalHash as string) || ""
-  );
-  const [openDrawer, setOpenDrawer] = useState<boolean>(false);
-
   const { loading: isLoading, data: activeProposals } = useApolloQuery(
     Proposals,
     {
@@ -45,6 +39,13 @@ export default function Governance() {
       variables: { state: "closed", space: circle?.snapshot?.id },
     }
   );
+  const [proposals, setProposals] = useState<any>(
+    [] || activeProposals?.proposals
+  );
+  const [proposalId, setProposalId] = useState<string>(
+    (proposalHash as string) || ""
+  );
+  const [openDrawer, setOpenDrawer] = useState<boolean>(false);
 
   function getAuthorDetails(auth: string) {
     const author =
@@ -143,7 +144,7 @@ export default function Governance() {
                 </Col>
               );
             })}
-          {proposals?.length === 0 && (
+          {(!proposals || proposals?.length === 0) && (
             <Box
               style={{
                 margin: "20% 40%",

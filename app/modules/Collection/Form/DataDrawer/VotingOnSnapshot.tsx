@@ -1,5 +1,4 @@
 import Tabs from "@/app/common/components/Tabs";
-import { endVotingPeriod, voteCollectionData } from "@/app/services/Collection";
 import { MemberDetails, UserType } from "@/app/types";
 import { Avatar, Box, Stack, Text } from "degen";
 import { useRouter } from "next/router";
@@ -9,7 +8,7 @@ import { useQuery } from "react-query";
 import { toast } from "react-toastify";
 import { useLocalCollection } from "../../Context/LocalCollectionContext";
 import { useQuery as useApolloQuery, gql } from "@apollo/client";
-import { useEnsName, useAccount } from "wagmi";
+import { useAccount } from "wagmi";
 
 import {
   Chart as ChartJS,
@@ -23,9 +22,8 @@ import {
 import useSnapshot from "@/app/services/Snapshot/useSnapshot";
 import { useLocation } from "react-use";
 import { smartTrim } from "@/app/common/utils/utils";
-import { ArrowUpOutlined, SelectOutlined } from "@ant-design/icons";
+import { ArrowUpOutlined } from "@ant-design/icons";
 import { useCircle } from "@/app/modules/Circle/CircleContext";
-import Loader from "@/app/common/components/Loader";
 
 ChartJS.register(
   CategoryScale,
@@ -102,7 +100,7 @@ export default function SnapshotVoting({
 
   const proposal = proposalId
     ? proposalId
-    : collection?.voting?.periods?.[dataId as string]?.snapshot?.proposalId;
+    : collection?.voting?.snapshot?.[dataId as string]?.proposalId;
 
   const {
     data: votesData,
@@ -144,20 +142,6 @@ export default function SnapshotVoting({
     refetchVotes();
     refetchProposal();
     refetchUserChoices();
-    if (
-      (proposalData?.proposal?.state === "closed" &&
-        collection?.voting?.periods?.[data.slug]?.active) ||
-      (proposalData?.proposal === null &&
-        collection?.voting?.periods?.[data.slug]?.active)
-    ) {
-      const endVoting = async () => {
-        const res = await endVotingPeriod(collection.id, dataId as string);
-        if (!res.id) {
-          toast.error("Something went wrong");
-        } else updateCollection(res);
-      };
-      endVoting();
-    }
     if (
       userVotes &&
       userVotes?.votes &&
@@ -225,8 +209,8 @@ export default function SnapshotVoting({
         !proposalLoading &&
         !userVotesLoading &&
         (proposalId ||
-          (collection.voting?.periods &&
-            collection.voting?.periods[data.slug])) && (
+          (collection.voting?.snapshot &&
+            collection.voting?.snapshot?.[data.slug]?.proposalId)) && (
           <>
             {(proposalData?.proposal?.state !== "closed" ||
               votesData?.votes?.length > 0) && (
@@ -241,7 +225,6 @@ export default function SnapshotVoting({
                   <Text weight="semiBold" variant="large" color="accent">
                     Your Vote
                   </Text>
-                  <Text>{collection?.voting?.message}</Text>
                   <Box marginTop="4">
                     <Tabs
                       tabs={proposalData && proposalData?.proposal?.choices}
@@ -261,9 +244,8 @@ export default function SnapshotVoting({
                           return;
                         }
                         if (
-                          (!collection?.voting?.periods?.[data.slug]?.active ||
-                            !collection?.voting?.periods?.[data.slug]?.snapshot
-                              ?.proposalId) &&
+                          !collection?.voting?.snapshot?.[data.slug]
+                            ?.proposalId &&
                           !proposalId
                         )
                           return;
@@ -273,7 +255,7 @@ export default function SnapshotVoting({
                         }
                         const tempTab = tab;
                         const res: any = await castVote(
-                          collection?.voting?.periods?.[data.slug].snapshot
+                          collection?.voting?.snapshot?.[data.slug]
                             ?.proposalId || (proposalId as string),
                           tempTab + 1
                         );

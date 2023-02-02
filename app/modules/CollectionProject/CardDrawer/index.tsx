@@ -445,8 +445,8 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
                 <Box marginY={"3"}>
                   {/* {!collection.voting?.periods?.[cardSlug as string]?.snapshot
                     ?.onSnapshot && <SpectVoting dataId={cardSlug as string} />} */}
-                  {collection.voting?.periods?.[cardSlug as string]?.snapshot
-                    ?.onSnapshot && (
+                  {collection.voting?.snapshot?.[cardSlug as string]
+                    ?.proposalId && (
                     <SnapshotVoting dataId={cardSlug as string} />
                   )}
                 </Box>

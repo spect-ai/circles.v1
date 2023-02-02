@@ -1,21 +1,13 @@
-import { endVotingPeriod, startVotingPeriod } from "@/app/services/Collection";
-import { Box, IconLightningBolt, Input, Stack, Text, useTheme } from "degen";
+import { Box, Text } from "degen";
 import React, { useState } from "react";
 import { toast } from "react-toastify";
 import { useLocalCollection } from "../../Context/LocalCollectionContext";
 
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { AnimatePresence } from "framer-motion";
-import Modal from "@/app/common/components/Modal";
-import { DateInput } from "@/app/modules/Profile/ProfilePage/AddExperienceModal";
-import { dateIsInvalid, smartTrim } from "@/app/common/utils/utils";
-import useSnapshot from "@/app/services/Snapshot/useSnapshot";
 import { Proposal } from "./VotingOnSnapshot";
 import { useQuery as useApolloQuery } from "@apollo/client";
-import { CollectionType, Option } from "@/app/types";
-import { useLocation } from "react-use";
 import { useAccount } from "wagmi";
-import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { useRouter } from "next/router";
 import { useCircle } from "@/app/modules/Circle/CircleContext";
 import { SnapshotModal } from "../../Common/SnapshotModal";
@@ -32,17 +24,12 @@ export default function VotingActions({
   const { localCollection: collection, updateCollection } =
     useLocalCollection();
   const { localCircle: circle } = useCircle();
-  const { formActions } = useRoleGate();
-  const { hostname } = useLocation();
   const { address } = useAccount();
-  const { mode } = useTheme();
-  const { createProposal } = useSnapshot();
   const router = useRouter();
-  const { circle: cId } = router.query;
 
   const [snapshotModal, setSnapshotModal] = useState(false);
 
-  const proposal = collection?.voting?.periods?.[dataId]?.snapshot?.proposalId;
+  const proposal = collection?.voting?.snapshot?.[dataId]?.proposalId;
 
   const { data: proposalData } = useApolloQuery(Proposal, {
     variables: { proposal: proposal },
@@ -64,7 +51,7 @@ export default function VotingActions({
           {proposalData?.proposal === null && (
             <Text variant="base"> Snapshot Proposal has been deleted.</Text>
           )}
-          {!collection.voting?.periods?.[dataId]?.active && (
+          {!proposal && !collection.voting?.snapshot?.[dataId]?.proposalId && (
             <PrimaryButton
               variant="secondary"
               onClick={() => {
@@ -72,6 +59,13 @@ export default function VotingActions({
                   toast.error("Please unlock your wallet first");
                   return;
                 }
+                if (!circle?.snapshot?.id) {
+                  toast.error(
+                    "Please integrate your Snapshot in the Governance Center first"
+                  );
+                  return;
+                }
+
                 setSnapshotModal(true);
               }}
             >
@@ -80,8 +74,7 @@ export default function VotingActions({
           )}
         </Box>
       </Box>
-      {collection.voting?.periods?.[dataId]?.active &&
-        circle?.snapshot?.id &&
+      {circle?.snapshot?.id &&
         proposal &&
         proposalData?.proposal?.state === "active" && (
           <Text variant="base"> Voting is active</Text>

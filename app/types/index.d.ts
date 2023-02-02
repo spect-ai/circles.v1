@@ -1041,7 +1041,9 @@ export type Voting = {
     token: Option;
     weight: number;
   }[];
-  snapshot?: SnapshotSpace;
+  snapshot?: {
+    [key: string]: { space?: string; proposalId?: string };
+  };
   periods?: MappedItem<VotingPeriod>;
   periodsOnCollection?: MappedItem<VotingPeriod>;
 };

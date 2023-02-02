@@ -1,4 +1,4 @@
-import { endVotingPeriod, startVotingPeriod } from "@/app/services/Collection";
+import { endVotingPeriod, recordSnapshotProposal, startVotingPeriod } from "@/app/services/Collection";
 import { Box, IconLightningBolt, Input, Stack, Text, useTheme } from "degen";
 import React, { useState } from "react";
 import { toast } from "react-toastify";
@@ -16,6 +16,9 @@ import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { useRouter } from "next/router";
 import { useCircle } from "@/app/modules/Circle/CircleContext";
 import { useLocalCollection } from "../Context/LocalCollectionContext";
+import Accordian from "@/app/common/components/Accordian";
+import uuid from "react-uuid";
+import SingleChoiceVotingOnSingleResponse from "../VotingModule/SingleChoiceVotingOnSingleResponse";
 
 export const getBodyOfProposal = (
   collection: CollectionType,
@@ -141,6 +144,20 @@ export const SnapshotModal = ({
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [title, setTitle] = useState("");
+  const [votingOptions, setVotingOptions] = useState([
+    {
+      label: "For",
+      value: `option-${uuid()}`,
+    },
+    {
+      label: "Against",
+      value: `option-${uuid()}`,
+    },
+    {
+      label: "Abstain",
+      value: `option-${uuid()}`,
+    },
+  ]);
   return (
     <Modal
       handleClose={() => setSnapshotModal(false)}
@@ -155,32 +172,43 @@ export const SnapshotModal = ({
             value={title}
             onChange={(e) => setTitle(e.target.value)}
           />
-          <Stack>
-            <Text variant="label">Voting Period</Text>
-            <Stack direction={"horizontal"}>
-              <DateInput
-                placeholder={`Enter Start Date`}
-                value={startDate}
-                type="datetime-local"
-                mode={mode}
-                onChange={(e) => {
-                  setStartDate(e.target.value);
-                }}
-              />
-              <DateInput
-                placeholder={`Enter End Date`}
-                value={endDate}
-                type="datetime-local"
-                mode={mode}
-                onChange={(e) => {
-                  setEndDate(e.target.value);
-                }}
+          <Accordian name="Advanced Settings" defaultOpen={false}>
+            <Stack space={"3"}>
+              <Stack>
+                <Text variant="label">Voting Period</Text>
+                <Stack direction={"horizontal"}>
+                  <DateInput
+                    placeholder={`Enter Start Date`}
+                    value={startDate}
+                    type="datetime-local"
+                    mode={mode}
+                    onChange={(e) => {
+                      setStartDate(e.target.value);
+                    }}
+                  />
+                  <DateInput
+                    placeholder={`Enter End Date`}
+                    value={endDate}
+                    type="datetime-local"
+                    mode={mode}
+                    onChange={(e) => {
+                      setEndDate(e.target.value);
+                    }}
+                  />
+                </Stack>
+                {dateIsInvalid(startDate, endDate) && (
+                  <Text color={"red"}>Date is invalid</Text>
+                )}
+              </Stack>
+
+              <SingleChoiceVotingOnSingleResponse
+                options={votingOptions}
+                setOptions={setVotingOptions}
+                disabled={false}
               />
             </Stack>
-            {dateIsInvalid(startDate, endDate) && (
-              <Text color={"red"}>Date is invalid</Text>
-            )}
-          </Stack>
+          </Accordian>
+
           <PrimaryButton
             onClick={async () => {
               setSnapshotModal(false);
@@ -198,6 +226,7 @@ export const SnapshotModal = ({
                 body: bodyOfProposal,
                 start,
                 end,
+                choices: votingOptions.map((option) => option.label),
               });
 
               if (!snapRes?.id) {
@@ -209,14 +238,12 @@ export const SnapshotModal = ({
                 );
               } else {
                 toast.success("Proposal created");
-                const res = await startVotingPeriod(collection.id, dataId, {
-                  endsOn: endDate,
-                  postOnSnapshot: true,
-                  space: circle?.snapshot?.id,
+                const res = await recordSnapshotProposal(collection.id, dataId, {
+                  snapshotSpace: circle?.snapshot?.id,
                   proposalId: snapRes.id,
                 });
                 if (!res.id) {
-                  toast.error("Something went wrong");
+                  toast.error("Something went wrong while recording snapshot proposal");
                 } else updateCollection(res);
               }
             }}

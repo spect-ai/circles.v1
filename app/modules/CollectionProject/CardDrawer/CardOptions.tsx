@@ -196,24 +196,32 @@ export default function CardOptions({
               <Text>Archive</Text>
             </Stack>
           </MenuItem>
-          <MenuItem
-            style={{
-              padding: "6px",
-            }}
-            onClick={() => {
-              setIsOpen(false);
-              if (!address) {
-                toast.error("Please unlock your wallet first");
-                return;
-              }
-              setSnapshotModal(true);
-            }}
-          >
-            <Stack direction={"horizontal"}>
-              <IconLightningBolt color={"accent"} />
-              <Text>Create Snapshot Proposal</Text>
-            </Stack>
-          </MenuItem>
+          {!collection.voting.snapshot?.[cardSlug]?.proposalId && (
+            <MenuItem
+              style={{
+                padding: "6px",
+              }}
+              onClick={() => {
+                setIsOpen(false);
+                if (!address) {
+                  toast.error("Please unlock your wallet first");
+                  return;
+                }
+                if (!circle?.snapshot?.id) {
+                  toast.error(
+                    "Please integrate your Snapshot in the Governance Center first"
+                  );
+                  return;
+                }
+                setSnapshotModal(true);
+              }}
+            >
+              <Stack direction={"horizontal"}>
+                <IconLightningBolt color={"accent"} />
+                <Text>Create Snapshot Proposal</Text>
+              </Stack>
+            </MenuItem>
+          )}
         </MenuContainer>
       </motion.div>
     </Popover>
