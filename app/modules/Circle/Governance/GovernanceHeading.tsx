@@ -12,6 +12,8 @@ import Modal from "@/app/common/components/Modal";
 import { useQuery as useApolloQuery, gql } from "@apollo/client";
 import { Space } from "@/app/modules/Collection/VotingModule";
 import { updateCircle } from "@/app/services/UpdateCircle";
+import useRoleGate from "@/app/services/RoleGate/useRoleGate";
+import { toast } from "react-toastify";
 
 type Props = {
   status: string;
@@ -21,6 +23,7 @@ type Props = {
 export default function GovernanceHeading({ status, setStatus }: Props) {
   const { navigationBreadcrumbs, localCircle } = useCircle();
   const router = useRouter();
+  const { canDo } = useRoleGate()
   const { circle: cId, proposalStatus } = router.query;
   const [snapshotModalOpen, setSnapshotModalOpen] = useState(false);
   const [snapshotSpace, setSnapshotSpace] = useState("");
@@ -125,7 +128,13 @@ export default function GovernanceHeading({ status, setStatus }: Props) {
               </Box>
             </Stack>
             {!localCircle?.snapshot?.id && (
-              <PrimaryButton onClick={() => setSnapshotModalOpen(true)}>
+              <PrimaryButton onClick={() => {
+                if (!canDo("manageCircleSettings")) {
+                  toast.error("You don't have permission to connect Snapshot")
+                  return;
+                }
+                setSnapshotModalOpen(true)
+              }}>
                 Connect Snapshot
               </PrimaryButton>
             )}
