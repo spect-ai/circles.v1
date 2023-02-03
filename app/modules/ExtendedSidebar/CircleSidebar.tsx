@@ -274,6 +274,7 @@ function CircleSidebar() {
             {!isLoading &&
               circle?.folderOrder?.map((fol) => {
                 const folder = circle?.folderDetails?.[fol];
+                if (!folder) return null;
                 return (
                   <Accordian name={folder.name} key={fol} defaultOpen>
                     {folder.contentIds?.map((content) => {
