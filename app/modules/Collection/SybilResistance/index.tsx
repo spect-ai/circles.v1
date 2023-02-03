@@ -222,7 +222,7 @@ export default function SybilResistance() {
                           placeholder="0"
                           width={{
                             xs: "3/4",
-                            md: "auto",
+                            md: "1/4",
                           }}
                           max={100}
                           min={0}
