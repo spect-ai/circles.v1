@@ -46,11 +46,15 @@ export default function SybilResistance() {
         .then((res) => {
           setStamps(res);
           const allocs = [];
+          if (!collection.formMetadata.sybilProtectionScores)
+            collection.formMetadata.sybilProtectionScores = {};
           for (const stamp of res) {
-            if (collection.formMetadata.sybilProtectionScores)
+            if (
+              collection.formMetadata.sybilProtectionScores[stamp.id] ||
+              collection.formMetadata.sybilProtectionScores[stamp.id] === 0
+            )
               allocs.push(
-                collection.formMetadata.sybilProtectionScores[stamp.id] ||
-                  stamp.defaultScore * 100
+                collection.formMetadata.sybilProtectionScores[stamp.id]
               );
             else allocs.push(stamp.defaultScore * 100);
           }
