@@ -27,7 +27,6 @@ export default function useViewCommon() {
 
   const view = collection.projectMetadata.views[projectViewId];
   const property = collection.properties[view.groupByColumn];
-
   const [isCardDrawerOpen, setIsCardDrawerOpen] = useState(false);
   const [defaultValue, setDefaultValue] = useState({} as any);
 
@@ -54,6 +53,11 @@ export default function useViewCommon() {
   );
 
   useEffect(() => {
+    console.log({ view: view.groupByColumn });
+    console.log({
+      pj: collection.projectMetadata,
+      collection: collection.properties,
+    });
     let newCardOrder =
       collection.projectMetadata.cardOrders[view.groupByColumn];
     if (searchFilter) {
@@ -189,17 +193,14 @@ export default function useViewCommon() {
     }
     setCardOrders(newCardOrder);
   }, [
-    collection.data,
-    collection.projectMetadata.cardOrders,
     searchFilter,
     view.groupByColumn,
-    collection.propertyOrder,
-    collection.properties,
     memberDetails?.memberDetails,
     view.filters,
     view.sort,
     memberDetails?.members,
     showMyTasks,
+    collection,
   ]);
 
   useEffect(() => {
