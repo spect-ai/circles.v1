@@ -52,7 +52,7 @@ export default function AddField({ propertyName, handleClose }: Props) {
   const { registry, circle } = useCircle();
   const [networks, setNetworks] = useState(registry);
   const [payWallOption, setPayWallOption] = useState({
-    network: { "137": registry?.["137"] } as Registry,
+    network: {},
     value: 0,
     receiver: "",
   });
@@ -395,23 +395,25 @@ export default function AddField({ propertyName, handleClose }: Props) {
                 setPayWallOption={setPayWallOption}
               />
             )}
-            <Accordian name="Default Value" defaultOpen={false}>
-              <Field
-                collection={collection}
-                property={{
-                  name: name.trim(),
-                  options: fieldOptions,
-                  rewardOptions: networks,
-                  userType: userType,
-                  default: defaultValue,
-                  type: type.value as PropertyType,
-                  isPartOfFormView: true,
-                }}
-                type={type.value}
-                data={defaultValue}
-                setData={setDefaultValue}
-              />
-            </Accordian>
+            {type.value !== "payWall" && (
+              <Accordian name="Default Value" defaultOpen={false}>
+                <Field
+                  collection={collection}
+                  property={{
+                    name: name.trim(),
+                    options: fieldOptions,
+                    rewardOptions: networks,
+                    userType: userType,
+                    default: defaultValue,
+                    type: type.value as PropertyType,
+                    isPartOfFormView: true,
+                  }}
+                  type={type.value}
+                  data={defaultValue}
+                  setData={setDefaultValue}
+                />
+              </Accordian>
+            )}
 
             {collection.collectionType === 0 && (
               <Accordian name="Advanced" defaultOpen={advancedDefaultOpen}>
