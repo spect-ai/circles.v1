@@ -124,10 +124,10 @@ export default function AddField({ propertyName, handleClose }: Props) {
       if (collection.collectionType === 1) {
         res = await updateFormCollection(collection.id, {
           projectMetadata: {
-            ...collection.projectMetadata,
+            ...res.projectMetadata,
             cardOrders: {
-              ...collection.projectMetadata.cardOrders,
-              [propertyName]: cardOrder,
+              ...res.projectMetadata.cardOrders,
+              [name.trim()]: cardOrder,
             },
           },
         });

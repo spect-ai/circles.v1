@@ -49,7 +49,7 @@ export default function AddOptions({
                       // apend all the elements from the array index to the 0th index
                       newCardOrder[0] = [
                         ...newCardOrder[0],
-                        ...newCardOrder[index],
+                        ...newCardOrder[index + 1],
                       ];
                       // delete the array index
                       newCardOrder.splice(index + 1, 1);
@@ -80,6 +80,12 @@ export default function AddOptions({
                   value: `option-${uuid()}`,
                 });
                 setFieldOptions(newOptions);
+
+                if (cardOrder && setCardOrder) {
+                  const newCardOrder = [...cardOrder];
+                  newCardOrder.push([]);
+                  setCardOrder(newCardOrder);
+                }
               }}
             >
               Add Option
