@@ -335,7 +335,7 @@ export default function FormFields({ form, setForm }: Props) {
       case "reward":
         return !value?.value;
       case "payWall":
-        return !value.some((v: any) => v.txnHash);
+        return !value?.some((v: any) => v.txnHash);
       default:
         return false;
     }
