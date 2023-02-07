@@ -94,6 +94,10 @@ export function useProviderLocalProfile() {
     setUsername(currentUser?.username || "");
     setBio(currentUser?.bio || "");
     setEmail(currentUser?.email || "");
+    setTwitter(currentUser?.twitter || "");
+    setGithub(currentUser?.github || "");
+    setBehance(currentUser?.behance || "");
+    setWebsite(currentUser?.website || "");
     setLoading(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentUser, isLoading]);

@@ -84,7 +84,7 @@ export default function DataActivity({
                 >
                   <Stack direction="horizontal">
                     <Text color="accentText" weight="semiBold">
-                      {actor.id === "anon" ? (
+                      {actor?.id === "anon" ? (
                         "Anonymous User"
                       ) : (
                         <a
