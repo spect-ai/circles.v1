@@ -110,6 +110,13 @@ export default function SingleAutomation({
       type: "sendEmail",
       data: {},
     },
+    postOnDiscord: {
+      id: "postOnDiscord",
+      name: "Post in Discord Channel",
+      service: "discord",
+      type: "postOnDiscord",
+      data: {},
+    },
     // startVotingPeriod: {
     //   id: "startVotingPeriod",
     //   name: "Start Voting Period",
