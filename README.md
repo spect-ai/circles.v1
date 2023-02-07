@@ -103,7 +103,7 @@ Must be one of the following:
 
 ### Example
 
-For a commit which should state that updates where made to the overview page, the commit message would be modelled like this:
+For a commit which should state that updates were made to the overview page, the commit message would be modelled like this:
 
 ```bash
 chore: minor updates on overview page
