@@ -34,17 +34,7 @@ export default function AddToken({ chainName, chainId, handleClose }: Props) {
     value: r.chainId,
   }));
   return (
-    // <>
-    //   <Box cursor="pointer" onClick={() => setIsOpen(true)}>
-    //     <Tag hover label="Add">
-    //       <Stack direction="horizontal" align="center" space="1">
-    //         <Text>Custom Token</Text>
-    //       </Stack>
-    //     </Tag>
-    //   </Box>
-    //   <AnimatePresence>
-    //     {isOpen && (
-    <Modal handleClose={handleClose} title="Add Token">
+    <Modal handleClose={handleClose} title="Add Token" size="small">
       <Box padding="8">
         {tokenLoading && <Loader loading text="Fetching" />}
         <Stack>
@@ -77,6 +67,7 @@ export default function AddToken({ chainName, chainId, handleClose }: Props) {
               setTokenLoading(false);
             }}
           />
+
           <Text weight="semiBold">{tokenSymbol}</Text>
           <Text weight="semiBold">{tokenName}</Text>
           <PrimaryButton
@@ -101,8 +92,5 @@ export default function AddToken({ chainName, chainId, handleClose }: Props) {
         </Stack>
       </Box>
     </Modal>
-    //     )}
-    //   </AnimatePresence>
-    // </>
   );
 }

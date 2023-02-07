@@ -768,6 +768,24 @@ export interface CollectionType {
   circleRolesToNotifyUponNewResponse?: string[];
 }
 
+export type PaymentConfig = {
+  networks: {
+    [chainId: string]: {
+      chainId: string;
+      chainName: string;
+      tokens: {
+        address: string;
+        symbol: string;
+        amount?: number;
+        dollars?: number;
+      }[];
+      receiverAddress: string;
+    };
+  };
+  type: "paywall" | "donation";
+  required: boolean;
+};
+
 export type FormMetadata = {
   cover?: string;
   logo: string;
@@ -792,6 +810,7 @@ export type FormMetadata = {
   discordConnectionRequired: boolean;
   canClaimKudos: boolean;
   allowAnonymousResponses: boolean;
+  paymentConfig?: PaymentConfig;
 };
 
 export type ProjectMetadata = {

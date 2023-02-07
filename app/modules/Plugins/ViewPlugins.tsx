@@ -9,6 +9,7 @@ import { useLocalCollection } from "../Collection/Context/LocalCollectionContext
 import SybilResistance from "./gtcpassport";
 import RoleGate from "./guildxyz";
 import SendKudos from "./mintkudos";
+import Payments from "./payments";
 import { SpectPlugin, spectPlugins } from "./Plugins";
 
 type Props = {};
@@ -29,10 +30,15 @@ export default function ViewPlugins({}: Props) {
       case "gtcpassport":
         setIsPluginOpen(true);
         setPluginOpen(pluginName);
-
+        break;
       case "mintkudos":
         setIsPluginOpen(true);
         setPluginOpen(pluginName);
+        break;
+      case "payments":
+        setIsPluginOpen(true);
+        setPluginOpen(pluginName);
+        break;
       default:
         break;
     }
@@ -44,6 +50,8 @@ export default function ViewPlugins({}: Props) {
         return !!collection.formMetadata.formRoleGating;
       case "gtcpassport":
         return collection.formMetadata.sybilProtectionEnabled;
+      case "payments":
+        return !!collection.formMetadata.paymentConfig;
       default:
         return false;
     }
@@ -107,6 +115,9 @@ export default function ViewPlugins({}: Props) {
             handleClose={() => setIsPluginOpen(false)}
             key="mintkudos"
           />
+        )}
+        {isPluginOpen && pluginOpen === "payments" && (
+          <Payments handleClose={() => setIsPluginOpen(false)} key="payments" />
         )}
       </AnimatePresence>
     </Box>

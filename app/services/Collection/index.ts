@@ -9,6 +9,7 @@ import {
   FormPermissions,
   MappedItem,
   Property,
+  CollectionType,
 } from "@/app/types";
 
 export const addField = async (
@@ -98,30 +99,7 @@ export const deleteField = async (collectionId: string, name: string) => {
 
 export const updateFormCollection = async (
   collectionId: string,
-  update: {
-    name?: string;
-    description?: string;
-    propertyOrder?: string[];
-    voting?: Voting;
-    permissions?: FormPermissions;
-    circleRolesToNotifyUponNewResponse?: string[];
-    circleRolesToNotifyUponUpdatedResponse?: string[];
-    formMetadata?: {
-      messageOnSubmission?: string;
-      multipleResponsesAllowed?: boolean;
-      updatingResponseAllowed?: boolean;
-      logo?: string;
-      cover?: string;
-      active?: boolean;
-      allowAnonymousResponses?: boolean;
-      sybilProtectionEnabled?: boolean;
-      sybilProtectionScores?: MappedItem<number>;
-    };
-    projectMetadata?: Partial<ProjectMetadata>;
-    data?: any;
-    archivedData?: any;
-    archived?: boolean;
-  }
+  update: Partial<CollectionType>
 ) => {
   return await (
     await fetch(`${process.env.API_HOST}/collection/v1/${collectionId}`, {
