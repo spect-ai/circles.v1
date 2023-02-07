@@ -242,28 +242,16 @@ export default function SendKudos() {
               )
             }
           >
-            Send Kudos{" "}
+            Send Soulbounds{" "}
           </PrimaryButton>
         </Box>
       )}
       {
         <AnimatePresence>
-          {/* {isOpen && !hasMintkudosCredentialsSetup && (
-            <Modal
-              title="Mintkudos Integration"
-              handleClose={() => setIsOpen(false)}
-              size="small"
-              zIndex={2}
-            >
-              <Box padding="8">
-                <Credentials />
-              </Box>
-            </Modal>
-          )} */}
           {isOpen && (
             <Modal
               size="medium"
-              title="Send Kudos 🎉"
+              title="Send Soulbounds 🎉"
               handleClose={() => setIsOpen(false)}
               zIndex={2}
             >
@@ -354,6 +342,7 @@ export default function SendKudos() {
                           value={headlineContent}
                           onChange={(e) => setHeadlineContent(e.target.value)}
                           maxLength={50}
+                          rows={2}
                         />
                       </Stack>
                       <MediaPicker
@@ -385,7 +374,7 @@ export default function SendKudos() {
                         maxSize={10}
                       />
                       <Input
-                        label="Number of Kudos"
+                        label="Number of Tokens"
                         value={numberOfKudosToMint}
                         type="number"
                         min={1}
@@ -469,7 +458,7 @@ export default function SendKudos() {
                       }
                     }}
                   >
-                    Send Kudos to Responders
+                    Send Soulbounds to Responders
                   </Button>
                 </Box>
               </Box>
