@@ -1,3 +1,4 @@
+import ViewPlugins from "@/app/modules/Plugins/ViewPlugins";
 import { Box, Stack, Text } from "degen";
 import { AnimatePresence } from "framer-motion";
 import { memo, useCallback, useState } from "react";
@@ -79,7 +80,7 @@ function InactiveFieldsColumnComponent({ fields }: Props) {
         <Stack space="4">
           {/* <OpportunityMode /> */}
           {/* <Automation /> */}
-
+          <ViewPlugins />
           <Text size="headingTwo" weight="semiBold" ellipsis>
             Internal Fields
           </Text>
