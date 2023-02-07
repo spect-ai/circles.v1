@@ -203,3 +203,14 @@ export const isMyCard = (
     return false;
   });
 };
+
+export const paymentStatus = (filter: string, id: string, status: any) => {
+  if (filter === "Paid") {
+    return status?.[id] === "completed";
+  } else if (filter === "Pending") {
+    return status?.[id] === "pending";
+  } else if (filter === "Pending Signature") {
+    return status?.[id] === "pendingSignature";
+  }
+  return true;
+};

@@ -23,7 +23,7 @@ import { toast } from "react-toastify";
 import CardDrawer from "../../CollectionProject/CardDrawer";
 import Filtering from "../../CollectionProject/Filtering";
 import AddField from "../AddField";
-import { isMyCard, satisfiesConditions } from "../Common/SatisfiesFilter";
+import { isMyCard, paymentStatus, satisfiesConditions } from "../Common/SatisfiesFilter";
 import { useLocalCollection } from "../Context/LocalCollectionContext";
 import DataDrawer from "../Form/DataDrawer";
 import ExpandableCell from "../Form/ExpandableCell";
@@ -54,6 +54,7 @@ export default function TableView() {
     searchFilter,
     projectViewId,
     showMyTasks,
+    paymentFilter,
   } = useLocalCollection();
 
   const { data: currentUser, refetch } = useQuery<UserType>("getMyUser", {
@@ -169,6 +170,16 @@ export default function TableView() {
             collection.data[row.id],
             collection.properties,
             currentUser?.id || ""
+          );
+        });
+      }
+
+      if (paymentFilter) {
+        filteredData = filteredData.filter((row) => {
+          return paymentStatus(
+            paymentFilter,
+            row.id,
+            collection.projectMetadata.paymentStatus
           );
         });
       }
@@ -289,6 +300,7 @@ export default function TableView() {
     projectViewId,
     searchFilter,
     showMyTasks,
+    paymentFilter,
   ]);
 
   // refresh table if new property is added
