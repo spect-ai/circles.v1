@@ -316,7 +316,7 @@ export default function PublicField({
         <PaywallField
           form={form}
           data={data}
-          setData={(paywall: PayWallOptions) => {
+          setData={(paywall) => {
             setData({
               ...data,
               [propertyName]: paywall,

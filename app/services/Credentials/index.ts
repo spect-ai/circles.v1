@@ -185,8 +185,11 @@ export default function useCredentials() {
               fetch(`${process.env.API_HOST}/collection/v1/${collection.id}`, {
                 method: "PATCH",
                 body: JSON.stringify({
-                  mintkudosTokenId: data.resourceId,
-                  numOfKudos: numOfKudos || 10000,
+                  formMetadata: {
+                    ...(collection.formMetadata || {}),
+                    mintkudosTokenId: data.resourceId,
+                    numOfKudos: numOfKudos || 10000,
+                  },
                 }),
                 headers: {
                   "Content-Type": "application/json",

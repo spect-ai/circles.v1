@@ -1,6 +1,6 @@
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { PayWallOptions, Registry } from "@/app/types";
-import { Box, Input, Stack } from "degen";
+import { Box, Input, Stack, Text } from "degen";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import usePaymentGateway from "@/app/services/Payment/usePayment";
@@ -9,6 +9,7 @@ import { useAccount, useNetwork, useSwitchNetwork } from "wagmi";
 import useERC20 from "@/app/services/Payment/useERC20";
 import Dropdown, { OptionType } from "@/app/common/components/Dropdown";
 import { useRouter } from "next/router";
+import { useCircle } from "../Circle/CircleContext";
 
 type Props = {
   form: any;
@@ -54,6 +55,8 @@ const PaywallField = ({
   const { chain } = useNetwork();
   const { switchNetworkAsync } = useSwitchNetwork();
   const { address: userAddress } = useAccount();
+
+  const { registry } = useCircle();
 
   const [tokenOptions, setTokenOptions] = useState<OptionType[]>([]);
   const [loading, setLoading] = useState(false);
@@ -242,26 +245,26 @@ const PaywallField = ({
   const tokenPayment = async () => {
     setLoading(true);
     // Paying on Mumbai or Polygon Mainnet --> Gasless transactions via BICO
-    if (
-      circleRegistry &&
-      (selectedChain.value === "137" || selectedChain.value === "80001")
-    ) {
-      setLoading(true);
-      await payGasless({
-        chainId: selectedChain.value || "",
-        paymentType: "tokens",
-        batchPayType: "form",
-        userAddresses: [payWallOptions.receiver],
-        amounts: [payWallOptions.value > 0 ? payWallOptions.value : payValue],
-        tokenAddresses: [selectedToken.value],
-        cardIds: [""],
-        circleId: form.parents?.[0].id,
-        circleRegistry: circleRegistry,
-      });
-      recordPayment("gasless");
-      setLoading(false);
-      return;
-    }
+    // if (
+    //   circleRegistry &&
+    //   (selectedChain.value === "137" || selectedChain.value === "80001")
+    // ) {
+    //   setLoading(true);
+    //   await payGasless({
+    //     chainId: selectedChain.value || "",
+    //     paymentType: "tokens",
+    //     batchPayType: "form",
+    //     userAddresses: [payWallOptions.receiver],
+    //     amounts: [payWallOptions.value > 0 ? payWallOptions.value : payValue],
+    //     tokenAddresses: [selectedToken.value],
+    //     cardIds: [""],
+    //     circleId: form.parents?.[0].id,
+    //     circleRegistry: circleRegistry,
+    //   });
+    //   recordPayment("gasless");
+    //   setLoading(false);
+    //   return;
+    // }
 
     // Paying on all other networks
     const options = {
@@ -282,7 +285,9 @@ const PaywallField = ({
         {
           pending: `Sending ${selectedToken.label}`,
           error: {
-            render: ({ data }) => data,
+            render: ({ data }) => {
+              return "Cannot proceed with the transaction, check if you have enough balance";
+            },
           },
         },
         {
@@ -300,84 +305,100 @@ const PaywallField = ({
 
   return (
     <Box display={"flex"} flexDirection="column" gap={"2"}>
-      <Stack
-        direction={{
-          xs: "vertical",
-          md: "horizontal",
-        }}
-        align="center"
-      >
-        <Box
-          width={{
-            xs: "full",
-            md: "72",
+      {data[propertyName] ? (
+        <Stack space="4" direction="horizontal" align="center">
+          <a
+            href={`${circleRegistry?.[selectedChain.value].blockExplorer}tx/${
+              data[propertyName][0].txnHash
+            }`}
+            target="_blank"
+            rel="noreferrer"
+          >
+            <Text underline>View Transaction</Text>
+          </a>
+        </Stack>
+      ) : (
+        <Stack
+          direction={{
+            xs: "vertical",
+            md: "horizontal",
           }}
-          marginTop="2"
+          align="center"
         >
-          <Dropdown
-            options={
-              payWallOptions.network
-                ? Object.entries(payWallOptions.network).map(
-                    ([chainId, network]) => {
-                      return {
-                        label: network.name,
-                        value: chainId,
-                      };
-                    }
-                  )
-                : []
-            }
-            selected={selectedChain}
-            onChange={(option) => {
-              setSelectedChain(option);
+          <Box
+            width={{
+              xs: "full",
+              md: "72",
             }}
-            multiple={false}
-            isClearable={false}
-            disabled={disabled}
-            portal={false}
-          />
-        </Box>
-        <Box
-          width={{
-            xs: "full",
-            md: "72",
-          }}
-          marginTop="2"
-        >
-          <Dropdown
-            options={tokenOptions}
-            selected={selectedToken}
-            onChange={(option) => {
-              setSelectedToken(option);
+            marginTop="2"
+          >
+            <Dropdown
+              options={
+                payWallOptions.network
+                  ? Object.entries(payWallOptions.network).map(
+                      ([chainId, network]) => {
+                        return {
+                          label: network.name,
+                          value: chainId,
+                        };
+                      }
+                    )
+                  : []
+              }
+              selected={selectedChain}
+              onChange={(option) => {
+                setSelectedChain(option);
+              }}
+              multiple={false}
+              isClearable={false}
+              disabled={true}
+              portal={false}
+            />
+          </Box>
+          <Box
+            width={{
+              xs: "full",
+              md: "72",
             }}
-            multiple={false}
-            isClearable={false}
-            disabled={disabled}
-            portal={false}
-          />
-        </Box>
-        <Box
-          width={{
-            xs: "full",
-            md: "72",
-          }}
-          marginTop="2"
-        >
-          <Input
-            label=""
-            placeholder={`Enter Reward Amount`}
-            value={payWallOptions.value > 0 ? payWallOptions?.value : payValue}
-            onChange={(e) => {
-              setPayValue(parseFloat(e.target.value));
+            marginTop="2"
+          >
+            <Dropdown
+              options={tokenOptions}
+              selected={selectedToken}
+              onChange={(option) => {
+                setSelectedToken(option);
+              }}
+              multiple={false}
+              isClearable={false}
+              disabled={true}
+              portal={false}
+            />
+          </Box>
+          <Box
+            width={{
+              xs: "full",
+              md: "72",
             }}
-            type="number"
-            units={selectedToken.label}
-            min={0}
-            disabled={!!payWallOptions.value || disabled}
-          />
-        </Box>
-      </Stack>
-      {!cId && (
+            marginTop="2"
+          >
+            <Input
+              label=""
+              placeholder={`Enter Reward Amount`}
+              value={
+                payWallOptions.value > 0 ? payWallOptions?.value : payValue
+              }
+              onChange={(e) => {
+                setPayValue(parseFloat(e.target.value));
+              }}
+              type="number"
+              units={selectedToken.label}
+              min={0}
+              disabled={!!payWallOptions.value || disabled}
+            />
+          </Box>
+        </Stack>
+      )}
+      {!cId && !data[propertyName] && (
         <Box display="flex" flexDirection="row" width="full">
           <Box
             width={{
@@ -455,7 +476,7 @@ const PaywallField = ({
                   await checkNetwork();
                 }}
               >
-                Switch Network
+                Switch Network To Pay
               </PrimaryButton>
             )}
           </Box>

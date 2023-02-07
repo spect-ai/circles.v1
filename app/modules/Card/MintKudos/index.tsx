@@ -113,7 +113,7 @@ export default function MintKudos() {
             }
           }}
         >
-          Send Kudos 🎉
+          Send Soulbounds 🎉
         </PrimaryButton>
       )}
       {isSettingsModalOpen && (
@@ -128,7 +128,7 @@ export default function MintKudos() {
         {isOpen && (
           <Modal
             size="small"
-            title="Send Kudos 🎉"
+            title="Send Soulbounds 🎉"
             handleClose={() => setIsOpen(false)}
           >
             <Box

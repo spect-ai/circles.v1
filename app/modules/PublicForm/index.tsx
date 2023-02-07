@@ -67,11 +67,6 @@ export default function PublicForm() {
     else toast.error("Error fetching member details");
   };
 
-  console.log({
-    form,
-    currentUser,
-  });
-
   const addStamps = async (form: FormType) => {
     const stamps = await getAllCredentials();
     const stampsWithScore = [];
