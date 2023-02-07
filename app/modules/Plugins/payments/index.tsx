@@ -15,6 +15,8 @@ type Props = {
 };
 
 export default function Payments({ handleClose }: Props) {
+  const [loading, setLoading] = useState(false);
+
   const [isAddTokenOpen, setIsAddTokenOpen] = useState(false);
 
   const [paymentType, setPaymentType] = useState<{
@@ -337,7 +339,9 @@ export default function Payments({ handleClose }: Props) {
           </AnimatePresence>
           <Box width={"1/2"}>
             <PrimaryButton
+              loading={loading}
               onClick={async () => {
+                console.log({ addedTokens });
                 const payload = {
                   required: required.value === "yes",
                   type: paymentType.value,
@@ -348,18 +352,33 @@ export default function Payments({ handleClose }: Props) {
                         chainId: network.value,
                         chainName: network.label,
                         receiverAddress: receiverAddresses[network.value],
-                        tokens: addedTokens[network.value].map((token) => ({
-                          address: token.value,
-                          symbol: token.label,
-                          amount: tokenAmounts[network.value][token.value],
-                          dollarAmount:
-                            dollarAmounts[network.value][token.value],
-                        })),
+                        tokens: addedTokens[network.value].reduce(
+                          (acc, token) => ({
+                            ...acc,
+                            [token.value]: {
+                              address: token.value,
+                              symbol: token.label,
+                              tokenAmount:
+                                tokenAmounts[network.value] &&
+                                tokenAmounts[network.value][token.value]
+                                  ? tokenAmounts[network.value][token.value]
+                                  : "",
+                              dollarAmount:
+                                dollarAmounts[network.value] &&
+                                dollarAmounts[network.value][token.value]
+                                  ? dollarAmounts[network.value][token.value]
+                                  : "",
+                            },
+                          }),
+                          {}
+                        ),
                       },
                     }),
                     {}
                   ),
                 };
+                console.log({ payload });
+                setLoading(true);
                 const res = await updateFormCollection(collection.id, {
                   formMetadata: {
                     ...collection.formMetadata,
@@ -367,7 +386,9 @@ export default function Payments({ handleClose }: Props) {
                   },
                 });
                 console.log({ res });
+                setLoading(false);
                 updateCollection(res);
+                handleClose();
               }}
             >
               Enable Payment

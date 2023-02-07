@@ -50,7 +50,7 @@ const PaywallField = ({
     }
   );
 
-  const { batchPay, payGasless } = usePaymentGateway();
+  const { batchPay } = usePaymentGateway();
   const { approve, isApproved, hasBalance } = useERC20();
   const { chain } = useNetwork();
   const { switchNetworkAsync } = useSwitchNetwork();

@@ -769,21 +769,23 @@ export interface CollectionType {
 }
 
 export type PaymentConfig = {
+  required: boolean;
+  type: "paywall" | "donation";
   networks: {
     [chainId: string]: {
       chainId: string;
       chainName: string;
-      tokens: {
-        address: string;
-        symbol: string;
-        amount?: number;
-        dollars?: number;
-      }[];
       receiverAddress: string;
+      tokens: {
+        [tokenAddress: string]: {
+          address: string;
+          symbol: string;
+          tokenAmount?: string;
+          dollarAmount?: string;
+        };
+      };
     };
   };
-  type: "paywall" | "donation";
-  required: boolean;
 };
 
 export type FormMetadata = {

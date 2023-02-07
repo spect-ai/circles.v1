@@ -95,7 +95,6 @@ export default function PublicForm() {
         if (res.id) {
           await fetchMemberDetails(res.parents[0].slug);
           setForm(res);
-          console.log(res.formMetadata.canFillForm);
           setCanFillForm(res.formMetadata.canFillForm);
           await addStamps(res);
         } else toast.error("Error fetching form");
