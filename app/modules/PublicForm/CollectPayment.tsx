@@ -71,40 +71,6 @@ export default function CollectPayment({
     setSelectedToken(tokens[0]);
   }, [selectedNetwork]);
 
-  // useEffect(() => {
-  //   const token =
-  //     paymentConfig.networks[selectedNetwork.value].tokens[tokens[0].value];
-  //   console.log({ token });
-  //   if (
-  //     token.dollarAmount &&
-  //     paymentConfig.type === "paywall" &&
-  //     circleRegistry
-  //   ) {
-  //     if (token.address === "0x0") {
-  //       const coinGeckoTokenId =
-  //         circleRegistry[selectedNetwork.value].coinGeckoCurrencyId;
-  //       getCurrencyPrice(coinGeckoTokenId).then((price) => {
-  //         console.log({ price });
-  //         setAmount((parseFloat(token.dollarAmount || "") / price).toString());
-  //       });
-  //     } else {
-  //       getPlatformTokenPrice(
-  //         token.address,
-  //         circleRegistry[selectedNetwork.value].coinGeckoPlatformId
-  //       ).then((price) => {
-  //         console.log({ price });
-  //         setAmount((parseFloat(token.dollarAmount || "") / price).toString());
-  //       });
-  //     }
-  //   } else if (
-  //     token.tokenAmount &&
-  //     paymentConfig.type === "paywall" &&
-  //     circleRegistry
-  //   ) {
-  //     setAmount(token.tokenAmount);
-  //   }
-  // }, [selectedNetwork]);
-
   useEffect(() => {
     const token =
       paymentConfig.networks[selectedNetwork.value].tokens[selectedToken.value];
