@@ -1,8 +1,8 @@
 import Modal from "@/app/common/components/Modal";
+import Popover from "@/app/common/components/Popover";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import Select from "@/app/common/components/Select";
 import { updateFormCollection } from "@/app/services/Collection";
-import { PaymentConfig } from "@/app/types";
 import { Box, IconPlusSmall, Input, Stack, Tag, Text } from "degen";
 import { AnimatePresence, motion } from "framer-motion";
 import React, { useEffect, useState } from "react";
@@ -15,7 +15,9 @@ type Props = {
 };
 
 export default function Payments({ handleClose }: Props) {
-  const [loading, setLoading] = useState(false);
+  const [updateLoading, setUpdateLoading] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [isAddChainOpen, setIsAddChainOpen] = useState(false);
 
   const [isAddTokenOpen, setIsAddTokenOpen] = useState(false);
 
@@ -85,6 +87,95 @@ export default function Payments({ handleClose }: Props) {
   });
 
   useEffect(() => {
+    if (collection.formMetadata.paymentConfig) {
+      const paymentConfig = collection.formMetadata.paymentConfig;
+      setPaymentType({
+        label: paymentConfig.type === "donation" ? "Donation" : "Paywall",
+        value: paymentConfig.type,
+      });
+      setRequired({
+        label: paymentConfig.required ? "Yes" : "No",
+        value: paymentConfig.required ? "yes" : "no",
+      });
+      const networks = Object.keys(paymentConfig.networks).map((key) => {
+        return {
+          label: (registry && registry[key].name) || "",
+          value: key,
+        };
+      });
+      setAddedNetworks(networks);
+      setSelectedNetwork(networks[0]);
+      const tokens: {
+        [key: string]: { label: string; value: string }[];
+      } = Object.keys(paymentConfig.networks).reduce((acc, key) => {
+        const tokensList = Object.keys(
+          (registry && registry[key].tokenDetails) || {}
+        ).map((tokenKey) => {
+          return {
+            label:
+              (registry && registry[key].tokenDetails[tokenKey].symbol) || "",
+            value: tokenKey,
+          };
+        });
+        return {
+          ...acc,
+          [key]: tokensList,
+        };
+      }, {});
+      setAddedTokens(tokens);
+      setSelectedToken(tokens[networks[0].value][0]);
+      const receiverAddresses = Object.keys(paymentConfig.networks).reduce(
+        (acc, key) => {
+          return {
+            ...acc,
+            [key]: paymentConfig.networks[key].receiverAddress,
+          };
+        },
+        {}
+      );
+      setReceiverAddresses(receiverAddresses);
+
+      const tokenAmounts = Object.keys(paymentConfig.networks).reduce(
+        (acc, key) => {
+          const amounts = Object.keys(paymentConfig.networks[key].tokens).map(
+            (tokenKey) => {
+              return {
+                [tokenKey]:
+                  paymentConfig.networks[key].tokens[tokenKey].tokenAmount,
+              };
+            }
+          );
+          return {
+            ...acc,
+            [key]: Object.assign({}, ...amounts),
+          };
+        },
+        {}
+      );
+      console.log({ tokenAmounts });
+      setTokenAmounts(tokenAmounts);
+      const dollarAmounts = Object.keys(paymentConfig.networks).reduce(
+        (acc, key) => {
+          const amounts = Object.keys(paymentConfig.networks[key].tokens).map(
+            (tokenKey) => {
+              return {
+                [tokenKey]:
+                  paymentConfig.networks[key].tokens[tokenKey].dollarAmount,
+              };
+            }
+          );
+          return {
+            ...acc,
+            [key]: Object.assign({}, ...amounts),
+          };
+        },
+        {}
+      );
+      setDollarAmounts(dollarAmounts);
+    }
+  }, []);
+
+  useEffect(() => {
     setSelectedToken(addedTokens[selectedNetwork.value][0]);
   }, [selectedNetwork.value]);
 
@@ -109,6 +200,90 @@ export default function Payments({ handleClose }: Props) {
     }, {});
     setAddedTokens(newTokens);
   }, [registry]);
+
+  const validate = () => {
+    const errMessages: string[] = [];
+    if (paymentType.value === "paywall") {
+      // check receiver address
+      for (const network of addedNetworks) {
+        if (!receiverAddresses[network.value]) {
+          errMessages.push(`Receiver address is required for ${network.label}`);
+        }
+      }
+      // check token amounts
+      for (const network of addedNetworks) {
+        for (const token of addedTokens[network.value]) {
+          try {
+            if (
+              !tokenAmounts[network.value][token.value] &&
+              !dollarAmounts[network.value][token.value]
+            ) {
+              errMessages.push(
+                `Token amount or dollar amount is required for ${token.label} on ${network.label}`
+              );
+            }
+          } catch (e) {
+            console.log(e);
+            errMessages.push(
+              `Token amount or dollar amount is required for ${token.label} on ${network.label}`
+            );
+          }
+          // check if not both token amount and dollar amount are set
+          try {
+            if (
+              tokenAmounts[network.value][token.value] &&
+              dollarAmounts[network.value][token.value]
+            ) {
+              errMessages.push(
+                `Token amount and dollar amount cannot be set for ${token.label} on ${network.label}. Please set only one of them.`
+              );
+            }
+          } catch (e) {
+            errMessages.push(
+              `Token amount and dollar amount cannot be set for ${token.label} on ${network.label}. Please set only one of them.`
+            );
+          }
+        }
+      }
+
+      if (addedNetworks.length === 0) {
+        errMessages.push("At least one network is required");
+      }
+
+      if (addedTokens[selectedNetwork.value].length === 0) {
+        errMessages.push("At least one token is required");
+      }
+    } else if (paymentType.value === "donation") {
+      // check receiver address
+      for (const network of addedNetworks) {
+        if (!receiverAddresses[network.value]) {
+          errMessages.push(`Receiver address is required for ${network.label}`);
+        }
+
+        if (addedNetworks.length === 0) {
+          errMessages.push("At least one network is required");
+        }
+
+        if (addedTokens[selectedNetwork.value].length === 0) {
+          errMessages.push("At least one token is required");
+        }
+
+        if (required.value === "yes") {
+          errMessages.push(
+            "Donation cannot be required, please change to paywall"
+          );
+        }
+      }
+    }
+
+    if (errMessages.length > 0) {
+      errMessages.forEach((err) => {
+        toast.error(err);
+      });
+      return false;
+    }
+    return true;
+  };
 
   return (
     <Modal handleClose={handleClose} title="Payments">
@@ -188,6 +363,66 @@ export default function Payments({ handleClose }: Props) {
                   setSelectedToken(addedTokens[newNetworks[0].value][0]);
                 }}
               />
+              <Popover
+                isOpen={isAddChainOpen}
+                setIsOpen={setIsAddChainOpen}
+                butttonComponent={
+                  <Box
+                    cursor="pointer"
+                    onClick={() => {
+                      setIsAddChainOpen(true);
+                    }}
+                  >
+                    <Tag>
+                      <IconPlusSmall size="5" color="accent" />
+                    </Tag>
+                  </Box>
+                }
+              >
+                <motion.div
+                  initial={{ height: 0 }}
+                  animate={{ height: "auto", transition: { duration: 0.2 } }}
+                  exit={{ height: 0 }}
+                  style={{
+                    overflow: "hidden",
+                    borderRadius: "0.25rem",
+                  }}
+                >
+                  <Box
+                    backgroundColor="background"
+                    borderWidth="0.375"
+                    borderRadius="2xLarge"
+                    height="64"
+                    overflow="auto"
+                  >
+                    {networks.map((network) => (
+                      <Box
+                        key={network.value}
+                        padding="4"
+                        borderBottomWidth="0.375"
+                        cursor="pointer"
+                        onClick={() => {
+                          if (
+                            addedNetworks.find(
+                              (addedNetwork) =>
+                                addedNetwork.value === network.value
+                            )
+                          ) {
+                            toast.error("Network already added");
+                            return;
+                          }
+                          setAddedNetworks([...addedNetworks, network]);
+                          setSelectedNetwork(network);
+                          setSelectedToken(addedTokens[network.value][0]);
+                          setIsAddChainOpen(false);
+                        }}
+                      >
+                        <Text>{network.label}</Text>
+                      </Box>
+                    ))}
+                  </Box>
+                </motion.div>
+              </Popover>
             </Stack>
           </Stack>
           <Stack>
@@ -337,63 +572,89 @@ export default function Payments({ handleClose }: Props) {
               </motion.div>
             )}
           </AnimatePresence>
-          <Box width={"1/2"}>
-            <PrimaryButton
-              loading={loading}
-              onClick={async () => {
-                console.log({ addedTokens });
-                const payload = {
-                  required: required.value === "yes",
-                  type: paymentType.value,
-                  networks: addedNetworks.reduce(
-                    (acc, network) => ({
-                      ...acc,
-                      [network.value]: {
-                        chainId: network.value,
-                        chainName: network.label,
-                        receiverAddress: receiverAddresses[network.value],
-                        tokens: addedTokens[network.value].reduce(
-                          (acc, token) => ({
-                            ...acc,
-                            [token.value]: {
-                              address: token.value,
-                              symbol: token.label,
-                              tokenAmount:
-                                tokenAmounts[network.value] &&
-                                tokenAmounts[network.value][token.value]
-                                  ? tokenAmounts[network.value][token.value]
-                                  : "",
-                              dollarAmount:
-                                dollarAmounts[network.value] &&
-                                dollarAmounts[network.value][token.value]
-                                  ? dollarAmounts[network.value][token.value]
-                                  : "",
-                            },
-                          }),
-                          {}
-                        ),
-                      },
-                    }),
-                    {}
-                  ),
-                };
-                console.log({ payload });
-                setLoading(true);
-                const res = await updateFormCollection(collection.id, {
-                  formMetadata: {
-                    ...collection.formMetadata,
-                    paymentConfig: payload,
-                  },
-                });
-                console.log({ res });
-                setLoading(false);
-                updateCollection(res);
-                handleClose();
-              }}
-            >
-              Enable Payment
-            </PrimaryButton>
-          </Box>
+          <Stack direction="horizontal">
+            <Box width={"1/2"}>
+              <PrimaryButton
+                loading={updateLoading}
+                onClick={async () => {
+                  if (!validate()) return;
+                  console.log({ addedTokens });
+                  const payload = {
+                    required: required.value === "yes",
+                    type: paymentType.value,
+                    networks: addedNetworks.reduce(
+                      (acc, network) => ({
+                        ...acc,
+                        [network.value]: {
+                          chainId: network.value,
+                          chainName: network.label,
+                          receiverAddress: receiverAddresses[network.value],
+                          tokens: addedTokens[network.value].reduce(
+                            (acc, token) => ({
+                              ...acc,
+                              [token.value]: {
+                                address: token.value,
+                                symbol: token.label,
+                                tokenAmount:
+                                  tokenAmounts[network.value] &&
+                                  tokenAmounts[network.value][token.value]
+                                    ? tokenAmounts[network.value][token.value]
+                                    : "",
+                                dollarAmount:
+                                  dollarAmounts[network.value] &&
+                                  dollarAmounts[network.value][token.value]
+                                    ? dollarAmounts[network.value][token.value]
+                                    : "",
+                              },
+                            }),
+                            {}
+                          ),
+                        },
+                      }),
+                      {}
+                    ),
+                  };
+                  console.log({ payload });
+                  setUpdateLoading(true);
+                  const res = await updateFormCollection(collection.id, {
+                    formMetadata: {
+                      ...collection.formMetadata,
+                      paymentConfig: payload,
+                    },
+                  });
+                  console.log({ res });
+                  setUpdateLoading(false);
+                  updateCollection(res);
+                  handleClose();
+                }}
+              >
+                {collection.formMetadata.paymentConfig ? "Update" : "Add"}{" "}
+                Payment
+              </PrimaryButton>
+            </Box>
+            <Box width={"1/2"}>
+              <PrimaryButton
+                tone="red"
+                loading={deleteLoading}
+                onClick={async () => {
+                  console.log({ addedTokens });
+                  setDeleteLoading(true);
+                  const res = await updateFormCollection(collection.id, {
+                    formMetadata: {
+                      ...collection.formMetadata,
+                      paymentConfig: undefined,
+                    },
+                  });
+                  console.log({ res });
+                  setDeleteLoading(false);
+                  updateCollection(res);
+                  handleClose();
+                }}
+              >
+                Disable Payment
+              </PrimaryButton>
+            </Box>
+          </Stack>
         </Stack>
       </Box>
     </Modal>

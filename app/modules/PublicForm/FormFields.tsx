@@ -242,6 +242,15 @@ export default function FormFields({ form, setForm }: Props) {
 
   const onSubmit = async () => {
     let res;
+    if (
+      form.formMetadata.paymentConfig?.type === "paywall" &&
+      form.formMetadata.paymentConfig?.required &&
+      !data["__payment__"]
+    ) {
+      toast.error("This form is paywalled, please pay to submit this form");
+      return;
+    }
+
     if (!form.formMetadata.active) {
       toast.error("This form is not accepting responses");
       return;

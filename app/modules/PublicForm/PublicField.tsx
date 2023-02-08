@@ -49,8 +49,6 @@ export default function PublicField({
   const [invalidNumberCharEntered, setInvalidNumberCharEntered] = useState(
     {} as { [key: string]: boolean }
   );
-  console.log({ prop: form.properties[propertyName] });
-
   if (
     !satisfiesConditions(
       data,

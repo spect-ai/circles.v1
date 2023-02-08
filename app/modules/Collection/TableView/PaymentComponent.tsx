@@ -14,29 +14,36 @@ const PaymentComponent = ({ rowData, columnData }: CellProps) => {
       alignItems="center"
       width="full"
     >
-      <a
-        href={`${registry?.[payment[0].chain.value].blockExplorer}tx/${
-          payment[0].txnHash
-        }`}
-        target="_blank"
-        rel="noreferrer"
-        style={{ width: "100%" }}
-      >
+      {payment ? (
+        <a
+          href={`${registry?.[payment.chain.value].blockExplorer}tx/${
+            payment.txnHash
+          }`}
+          target="_blank"
+          rel="noreferrer"
+          style={{ width: "100%" }}
+        >
+          <Button
+            variant="transparent"
+            width="full"
+            size="small"
+            justifyContent="flex-start"
+          >
+            <Text variant="small">
+              Paid {payment.value} {payment.token.label}
+            </Text>
+          </Button>
+        </a>
+      ) : (
         <Button
           variant="transparent"
           width="full"
           size="small"
           justifyContent="flex-start"
         >
-          {payment?.length > 0 ? (
-            <Text variant="small">
-              Paid {payment[0].value} {payment[0].token.label}
-            </Text>
-          ) : (
-            <Text variant="small">{"Unpaid"}</Text>
-          )}
+          <Text variant="small">Not Paid</Text>
         </Button>
-      </a>
+      )}
     </Box>
   );
 };

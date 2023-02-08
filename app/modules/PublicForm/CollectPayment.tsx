@@ -1,5 +1,9 @@
 import Dropdown from "@/app/common/components/Dropdown";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
+import {
+  getCurrencyPrice,
+  getPlatformTokenPrice,
+} from "@/app/services/CoinGecko";
 import useERC20 from "@/app/services/Payment/useERC20";
 import usePaymentGateway from "@/app/services/Payment/usePayment";
 import { CollectionType, PaymentConfig, Registry } from "@/app/types";
@@ -44,12 +48,7 @@ export default function CollectPayment({
   const [tokenOptions, setTokenOptions] = useState(tokens);
   const [selectedToken, setSelectedToken] = useState(tokens[0]);
 
-  const [amount, setAmount] = useState(
-    paymentConfig.networks[networks[0].value].tokens[tokens[0].value]
-      .tokenAmount ||
-      paymentConfig.networks[networks[0].value].tokens[tokens[0].value]
-        .dollarAmount
-  );
+  const [amount, setAmount] = useState<string>();
 
   useEffect(() => {
     (async () => {
@@ -62,27 +61,90 @@ export default function CollectPayment({
   }, []);
 
   useEffect(() => {
-    setTokenOptions(
-      Object.keys(paymentConfig.networks[selectedNetwork.value].tokens).map(
-        (key) => ({
-          label:
-            paymentConfig.networks[selectedNetwork.value].tokens[key].symbol,
-          value:
-            paymentConfig.networks[selectedNetwork.value].tokens[key].address,
-        })
-      )
-    );
+    const tokens = Object.keys(
+      paymentConfig.networks[selectedNetwork.value].tokens
+    ).map((key) => ({
+      label: paymentConfig.networks[selectedNetwork.value].tokens[key].symbol,
+      value: paymentConfig.networks[selectedNetwork.value].tokens[key].address,
+    }));
+    setTokenOptions(tokens);
+    setSelectedToken(tokens[0]);
   }, [selectedNetwork]);
 
+  // useEffect(() => {
+  //   const token =
+  //     paymentConfig.networks[selectedNetwork.value].tokens[tokens[0].value];
+  //   console.log({ token });
+  //   if (
+  //     token.dollarAmount &&
+  //     paymentConfig.type === "paywall" &&
+  //     circleRegistry
+  //   ) {
+  //     if (token.address === "0x0") {
+  //       const coinGeckoTokenId =
+  //         circleRegistry[selectedNetwork.value].coinGeckoCurrencyId;
+  //       getCurrencyPrice(coinGeckoTokenId).then((price) => {
+  //         console.log({ price });
+  //         setAmount((parseFloat(token.dollarAmount || "") / price).toString());
+  //       });
+  //     } else {
+  //       getPlatformTokenPrice(
+  //         token.address,
+  //         circleRegistry[selectedNetwork.value].coinGeckoPlatformId
+  //       ).then((price) => {
+  //         console.log({ price });
+  //         setAmount((parseFloat(token.dollarAmount || "") / price).toString());
+  //       });
+  //     }
+  //   } else if (
+  //     token.tokenAmount &&
+  //     paymentConfig.type === "paywall" &&
+  //     circleRegistry
+  //   ) {
+  //     setAmount(token.tokenAmount);
+  //   }
+  // }, [selectedNetwork]);
+
   useEffect(() => {
-    setAmount(
-      paymentConfig.networks[selectedNetwork.value].tokens[selectedToken.value]
-        .tokenAmount ||
-        paymentConfig.networks[selectedNetwork.value].tokens[
-          selectedToken.value
-        ].dollarAmount
-    );
-  }, [selectedToken]);
+    const token =
+      paymentConfig.networks[selectedNetwork.value].tokens[selectedToken.value];
+    console.log({ token });
+    if (
+      token?.dollarAmount &&
+      paymentConfig.type === "paywall" &&
+      circleRegistry
+    ) {
+      console.log("here");
+      if (token.address === "0x0") {
+        const coinGeckoTokenId =
+          circleRegistry[selectedNetwork.value].coinGeckoCurrencyId;
+        getCurrencyPrice(coinGeckoTokenId).then((price) => {
+          if (!price)
+            return toast.error("Coingecko price not found for this token");
+          setAmount(
+            (parseFloat(token.dollarAmount || "") / price).toFixed(4).toString()
+          );
+        });
+      } else {
+        getPlatformTokenPrice(
+          token.address,
+          circleRegistry[selectedNetwork.value].coinGeckoPlatformId
+        ).then((price) => {
+          if (!price)
+            return toast.error("Coingecko price not found for this token");
+          setAmount(
+            (parseFloat(token.dollarAmount || "") / price).toFixed(4).toString()
+          );
+        });
+      }
+    } else if (
+      token?.tokenAmount &&
+      paymentConfig.type === "paywall" &&
+      circleRegistry
+    ) {
+      setAmount(token.tokenAmount);
+    }
+  }, [selectedToken, circleRegistry]);
 
   const { chain } = useNetwork();
   const { switchNetworkAsync } = useSwitchNetwork();
@@ -130,11 +192,7 @@ export default function CollectPayment({
         isApproved(
           selectedToken.value,
           circleRegistry?.[selectedNetwork.value].distributorAddress as string,
-          parseFloat(
-            paymentConfig.networks[selectedNetwork.value].tokens[
-              selectedToken.value
-            ].tokenAmount || "0"
-          ),
+          parseFloat(amount || "0"),
           paymentConfig.networks[selectedNetwork.value].receiverAddress,
           circleRegistry?.[selectedNetwork.value].provider || ""
         ),
@@ -157,23 +215,18 @@ export default function CollectPayment({
     setLoading(true);
     const options = {
       chainId: selectedNetwork.value || "",
-      paymentType: "tokens",
+      paymentType: "currency",
       batchPayType: "form",
       userAddresses: [
         paymentConfig.networks[selectedNetwork.value].receiverAddress,
       ],
-      amounts: [
-        parseFloat(
-          paymentConfig.networks[selectedNetwork.value].tokens[
-            selectedToken.value
-          ].tokenAmount || "0"
-        ),
-      ],
+      amounts: [parseFloat(amount || "0")],
       tokenAddresses: [selectedToken.value],
       cardIds: [""],
       circleId: circleId,
       circleRegistry: circleRegistry,
     };
+    console.log({ options });
     const currencyTxnHash = await toast
       .promise(
         batchPay(options),
@@ -207,13 +260,7 @@ export default function CollectPayment({
       userAddresses: [
         paymentConfig.networks[selectedNetwork.value].receiverAddress,
       ],
-      amounts: [
-        parseFloat(
-          paymentConfig.networks[selectedNetwork.value].tokens[
-            selectedToken.value
-          ].tokenAmount || "0"
-        ),
-      ],
+      amounts: [parseFloat(amount || "0")],
       tokenAddresses: [selectedToken.value],
       cardIds: [""],
       circleId: circleId,
@@ -279,14 +326,29 @@ export default function CollectPayment({
                 isClearable={false}
               />
             </Box>
-            <Input
-              width="1/3"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              disabled={paymentConfig.type === "paywall"}
-              label=""
-              units={selectedToken.label}
-            />
+            <Stack>
+              <Input
+                width="full"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                disabled={paymentConfig.type === "paywall"}
+                units={selectedToken.label}
+                placeholder="Add any amount of"
+                label={
+                  paymentConfig.networks[selectedNetwork.value].tokens[
+                    selectedToken.value
+                  ]?.dollarAmount && paymentConfig.type === "paywall"
+                    ? `
+                  ${
+                    paymentConfig.networks[selectedNetwork.value].tokens[
+                      selectedToken.value
+                    ].dollarAmount
+                  } USD converted to ${selectedToken.label}`
+                    : "Token Amount"
+                }
+              />
+              <Text variant="label"></Text>
+            </Stack>
           </Stack>
           <Box width="1/3">
             <PrimaryButton
@@ -296,7 +358,6 @@ export default function CollectPayment({
               onClick={async () => {
                 // Checks if you are on the right network
                 await checkNetwork();
-
                 // Paying via Native Currency
                 if (
                   circleRegistry &&

@@ -479,6 +479,8 @@ export type NetworkInfo = {
   blockExplorer?: string;
   provider: string;
   tokenDetails: { [tokenAddress: string]: Token };
+  coinGeckoCurrencyId: string;
+  coinGeckoPlatformId: string;
 };
 
 export interface Template {
@@ -885,6 +887,7 @@ export type Property = {
   description?: string;
   viewConditions?: Condition[];
   payWallOptions?: PayWallOptions;
+  internal?: boolean;
 };
 
 export type PropertyType =

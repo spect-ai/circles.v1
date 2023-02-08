@@ -54,7 +54,7 @@ export const spectPlugins: { [key: string]: SpectPlugin } = {
   },
   ceramic: {
     id: "ceramic",
-    name: "Ceramic",
+    name: "Ceramic (Coming Soon)",
     version: "1.0.0",
     description:
       "Ceramic is a decentralized identity solution that allows you to prove your identity to other applications.",
