@@ -276,7 +276,7 @@ export default function DataDrawer({
                         )}
                         {property?.type === "payWall" && (
                           <Stack>
-                            {data[property.name]?.map(
+                            {[data[property.name]]?.map(
                               (payment: {
                                 token: OptionType;
                                 chain: OptionType;
@@ -285,19 +285,27 @@ export default function DataDrawer({
                               }) => {
                                 return (
                                   <Text key={payment.token.label}>
-                                    Paid {payment.value} {payment.token.label}{" "}
-                                    on {payment.chain.label}
-                                    <a
-                                      href={`${
-                                        registry?.[payment.chain.value]
-                                          .blockExplorer
-                                      }tx/${payment.txnHash}`}
-                                      target="_blank"
-                                      rel="noreferrer"
-                                      style={{ marginLeft: "8px" }}
+                                    <Stack
+                                      direction="horizontal"
+                                      align="center"
+                                      space="0"
                                     >
-                                      <ExternalLink size={20} />
-                                    </a>
+                                      Paid {payment.value} {payment.token.label}{" "}
+                                      on {payment.chain.label}
+                                      <a
+                                        href={`${
+                                          registry?.[payment.chain.value]
+                                            .blockExplorer
+                                        }tx/${payment.txnHash}`}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        style={{
+                                          marginLeft: "8px",
+                                        }}
+                                      >
+                                        <ExternalLink size={20} />
+                                      </a>
+                                    </Stack>
                                   </Text>
                                 );
                               }

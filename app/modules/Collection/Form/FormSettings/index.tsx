@@ -6,7 +6,6 @@ import { AnimatePresence } from "framer-motion";
 import React, { useState } from "react";
 import styled from "styled-components";
 import Access from "./Access";
-import Curation from "./Curation";
 import General from "./General";
 import mixpanel from "@/app/common/utils/mixpanel";
 import { useQuery } from "react-query";
@@ -66,7 +65,7 @@ function FormSettings() {
                   <Tabs
                     selectedTab={selectedTab}
                     onTabClick={(tab) => setSelectedTab(tab)}
-                    tabs={["General", "Access", "Plugins", "Archive"]}
+                    tabs={["General", "Access", "Archive"]}
                     orientation="vertical"
                     unselectedColor="transparent"
                   />
@@ -82,8 +81,7 @@ function FormSettings() {
                 >
                   {selectedTab === 0 && <General />}
                   {selectedTab === 1 && <Access />}
-                  {selectedTab === 2 && <Curation />}
-                  {selectedTab === 3 && <Archive />}
+                  {selectedTab === 2 && <Archive />}
                 </ScrollContainer>
               </Stack>
             </Box>

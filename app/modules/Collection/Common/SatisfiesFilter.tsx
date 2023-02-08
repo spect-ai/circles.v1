@@ -162,18 +162,14 @@ export function satisfiesConditions(
         switch (comparatorValue) {
           case "is paid":
             if (!data[propertyId]) return false;
-            for (const pay of data?.[propertyId]) {
-              if (pay.paid) {
-                return true;
-              }
+            if (data[propertyId].paid) {
+              return true;
             }
             return false;
           case "is unpaid":
             if (!data[propertyId]) return true;
-            for (const pay of data?.[propertyId]) {
-              if (pay.paid) {
-                return false;
-              }
+            if (data[propertyId].paid) {
+              return false;
             }
             return true;
         }

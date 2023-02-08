@@ -479,6 +479,8 @@ export type NetworkInfo = {
   blockExplorer?: string;
   provider: string;
   tokenDetails: { [tokenAddress: string]: Token };
+  coinGeckoCurrencyId: string;
+  coinGeckoPlatformId: string;
 };
 
 export interface Template {
@@ -769,6 +771,26 @@ export interface CollectionType {
   dataStatus: MappedItem<boolean>;
 }
 
+export type PaymentConfig = {
+  required: boolean;
+  type: "paywall" | "donation";
+  networks: {
+    [chainId: string]: {
+      chainId: string;
+      chainName: string;
+      receiverAddress: string;
+      tokens: {
+        [tokenAddress: string]: {
+          address: string;
+          symbol: string;
+          tokenAmount?: string;
+          dollarAmount?: string;
+        };
+      };
+    };
+  };
+};
+
 export type FormMetadata = {
   cover?: string;
   logo: string;
@@ -793,6 +815,7 @@ export type FormMetadata = {
   discordConnectionRequired: boolean;
   canClaimKudos: boolean;
   allowAnonymousResponses: boolean;
+  paymentConfig?: PaymentConfig;
 };
 
 export type ProjectMetadata = {
@@ -865,6 +888,7 @@ export type Property = {
   description?: string;
   viewConditions?: Condition[];
   payWallOptions?: PayWallOptions;
+  internal?: boolean;
 };
 
 export type PropertyType =

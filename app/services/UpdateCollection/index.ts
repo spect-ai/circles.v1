@@ -1,15 +1,8 @@
-import { GuildRole } from "@/app/types";
+import { CollectionType, GuildRole } from "@/app/types";
 import { toast } from "react-toastify";
 
-export type UpdateCollectionDto = {
-  name?: string;
-  private?: boolean;
-  description?: string;
-  formRoleGating?: GuildRole[];
-};
-
 export const updateCollection = async (
-  collectionUpdate: Partial<UpdateCollectionDto>,
+  collectionUpdate: Partial<CollectionType>,
   collectionId: string
 ) => {
   const res = await fetch(

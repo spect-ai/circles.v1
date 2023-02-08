@@ -565,7 +565,7 @@ const AddViewButton = styled(Box)`
   margin-top: 4px;
 `;
 
-const MenuItem = styled(Box)`
+export const MenuItem = styled(Box)`
   display: flex;
   gap: 8px;
   &:hover {

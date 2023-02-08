@@ -28,6 +28,7 @@ import NotificationPreferenceModal from "./NotificationPreferenceModal";
 import { AnimatePresence } from "framer-motion";
 import { satisfiesConditions } from "../Collection/Common/SatisfiesFilter";
 import CheckBox from "@/app/common/components/Table/Checkbox";
+import CollectPayment from "./CollectPayment";
 
 type Props = {
   form: FormType;
@@ -241,6 +242,15 @@ export default function FormFields({ form, setForm }: Props) {
 
   const onSubmit = async () => {
     let res;
+    if (
+      form.formMetadata.paymentConfig?.type === "paywall" &&
+      form.formMetadata.paymentConfig?.required &&
+      !data["__payment__"]
+    ) {
+      toast.error("This form is paywalled, please pay to submit this form");
+      return;
+    }
+
     if (!form.formMetadata.active) {
       toast.error("This form is not accepting responses");
       return;
@@ -393,6 +403,7 @@ export default function FormFields({ form, setForm }: Props) {
               />
             );
         })}
+
       {!viewResponse && form.formMetadata.allowAnonymousResponses && (
         <Box
           display="flex"
@@ -411,6 +422,17 @@ export default function FormFields({ form, setForm }: Props) {
             }}
           />
           <Text variant="base">Respond anonymously</Text>
+        </Box>
+      )}
+      {form.formMetadata.paymentConfig && (
+        <Box marginBottom="8">
+          <CollectPayment
+            paymentConfig={form.formMetadata.paymentConfig}
+            circleSlug={form.parents[0].slug}
+            circleId={form.parents[0].id}
+            data={data}
+            setData={setData}
+          />
         </Box>
       )}
       <Stack
