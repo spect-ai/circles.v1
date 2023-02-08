@@ -3,6 +3,7 @@ import CreateCard from "./CreateCard";
 import CreateDiscordChannel from "./CreateDiscordChannel";
 import GiveDiscordRole from "./GiveDiscordRole";
 import GiveRole from "./GiveRole";
+import PostCardOnDiscord from "./PostOnDiscord";
 import SendEmail from "./SendEmail";
 
 type Props = {
@@ -55,6 +56,14 @@ export default function SingleAction({
       )}
       {actionType === "createCard" && (
         <CreateCard
+          action={action}
+          actionMode={actionMode}
+          setAction={setAction}
+          collection={collection}
+        />
+      )}
+      {actionType === "postOnDiscord" && (
+        <PostCardOnDiscord
           action={action}
           actionMode={actionMode}
           setAction={setAction}
