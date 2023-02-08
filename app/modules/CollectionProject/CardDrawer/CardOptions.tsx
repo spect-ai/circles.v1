@@ -1,10 +1,21 @@
 import Popover from "@/app/common/components/Popover";
-import { Box, IconLightningBolt, Stack, Tag, Text } from "degen";
+import {
+  Box,
+  IconCheck,
+  IconClose,
+  IconLightningBolt,
+  Stack,
+  Tag,
+  Text,
+} from "degen";
 import React, { useMemo, useState } from "react";
 import { Archive, MoreHorizontal } from "react-feather";
 import { MenuContainer, MenuItem } from "../EditValue";
 import { motion } from "framer-motion";
-import { updateFormCollection } from "@/app/services/Collection";
+import {
+  modifyCardStatus,
+  updateFormCollection,
+} from "@/app/services/Collection";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
 import { toast } from "react-toastify";
 import { DollarOutlined } from "@ant-design/icons";
@@ -91,6 +102,32 @@ export default function CardOptions({
         }}
       >
         <MenuContainer cWidth="15rem">
+          {!collection.voting.snapshot?.[cardSlug]?.proposalId && (
+            <MenuItem
+              style={{
+                padding: "6px",
+              }}
+              onClick={() => {
+                setIsOpen(false);
+                if (!address) {
+                  toast.error("Please unlock your wallet first");
+                  return;
+                }
+                if (!circle?.snapshot?.id) {
+                  toast.error(
+                    "Please integrate your Snapshot in the Governance Center first"
+                  );
+                  return;
+                }
+                setSnapshotModal(true);
+              }}
+            >
+              <Stack direction="horizontal" align="center" space="2">
+                <IconLightningBolt color={"accent"} size="5" />
+                <Text align={"left"}>Create Snapshot Proposal</Text>
+              </Stack>
+            </MenuItem>
+          )}
           {showPendingPayment && (
             <MenuItem
               padding="2"
@@ -150,6 +187,43 @@ export default function CardOptions({
             </MenuItem>
           )}
           <MenuItem
+            style={{
+              padding: "6px",
+            }}
+            onClick={async () => {
+              setIsOpen(false);
+              handleDrawerClose();
+              const res = await modifyCardStatus(
+                collection.id,
+                cardSlug,
+                collection.dataStatus?.[cardSlug] === undefined ||
+                  collection.dataStatus?.[cardSlug] === true
+                  ? false
+                  : true
+              );
+              if (res.id) {
+                updateCollection(res);
+              } else {
+                toast.error("Error changing card status");
+              }
+            }}
+          >
+            <Stack direction="horizontal" align="center" space="2">
+              {collection.dataStatus?.[cardSlug] === undefined ||
+              collection.dataStatus?.[cardSlug] === true ? (
+                <>
+                  <IconClose color={"red"} size="5" />
+                  <Text align={"left"}>Close Card</Text>
+                </>
+              ) : (
+                <>
+                  <IconCheck color={"green"} size="5" />
+                  <Text align={"left"}>Re Open Card</Text>
+                </>
+              )}
+            </Stack>
+          </MenuItem>
+          <MenuItem
             padding="2"
             onClick={async () => {
               setIsOpen(false);
@@ -196,32 +270,6 @@ export default function CardOptions({
               <Text>Archive</Text>
             </Stack>
           </MenuItem>
-          {!collection.voting.snapshot?.[cardSlug]?.proposalId && (
-            <MenuItem
-              style={{
-                padding: "6px",
-              }}
-              onClick={() => {
-                setIsOpen(false);
-                if (!address) {
-                  toast.error("Please unlock your wallet first");
-                  return;
-                }
-                if (!circle?.snapshot?.id) {
-                  toast.error(
-                    "Please integrate your Snapshot in the Governance Center first"
-                  );
-                  return;
-                }
-                setSnapshotModal(true);
-              }}
-            >
-              <Stack direction="horizontal" align="center" space="2">
-                <IconLightningBolt color={"accent"} size="5" />
-                <Text align={"left"} >Create Snapshot Proposal</Text>
-              </Stack>
-            </MenuItem>
-          )}
         </MenuContainer>
       </motion.div>
     </Popover>
