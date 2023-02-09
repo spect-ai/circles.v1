@@ -23,7 +23,11 @@ import { toast } from "react-toastify";
 import CardDrawer from "../../CollectionProject/CardDrawer";
 import Filtering from "../../CollectionProject/Filtering";
 import AddField from "../AddField";
-import { isMyCard, paymentStatus, satisfiesConditions } from "../Common/SatisfiesFilter";
+import {
+  isMyCard,
+  paymentStatus,
+  satisfiesConditions,
+} from "../Common/SatisfiesFilter";
 import { useLocalCollection } from "../Context/LocalCollectionContext";
 import DataDrawer from "../Form/DataDrawer";
 import ExpandableCell from "../Form/ExpandableCell";
@@ -348,120 +352,128 @@ export default function TableView() {
 
   const columns: Column<any>[] =
     collection.propertyOrder &&
-    collection.propertyOrder.map((propertyName: string) => {
-      const property = collection.properties[propertyName];
-      if (
-        ["singleSelect", "multiSelect", "longText", "user", "user[]"].includes(
-          property.type
-        )
-      ) {
-        return {
-          ...keyColumn(property.name, {
+    collection.propertyOrder
+      .filter((prop) => prop !== "__cardStatus__")
+      .map((propertyName: string) => {
+        const property = collection.properties[propertyName];
+        if (
+          [
+            "singleSelect",
+            "multiSelect",
+            "longText",
+            "user",
+            "user[]",
+          ].includes(property.type)
+        ) {
+          return {
+            ...keyColumn(property.name, {
+              component: getCellComponent(property.type) as any,
+              columnData: property,
+            }),
+            title: (
+              <HeaderComponent
+                columnName={property.name}
+                setIsEditFieldOpen={setIsEditFieldOpen}
+                setPropertyName={setPropertyName}
+                propertyType={property.type}
+              />
+            ),
+            minWidth: 200,
+          };
+        } else if (["reward"].includes(property.type)) {
+          return {
             component: getCellComponent(property.type) as any,
-            columnData: property,
-          }),
-          title: (
-            <HeaderComponent
-              columnName={property.name}
-              setIsEditFieldOpen={setIsEditFieldOpen}
-              setPropertyName={setPropertyName}
-              propertyType={property.type}
-            />
-          ),
-          minWidth: 200,
-        };
-      } else if (["reward"].includes(property.type)) {
-        return {
-          component: getCellComponent(property.type) as any,
-          columnData: {
-            property,
-            setIsRewardFieldOpen,
-            setPropertyName,
-            setDataId,
-          },
-          title: (
-            <HeaderComponent
-              columnName={property.name}
-              setIsEditFieldOpen={setIsEditFieldOpen}
-              setPropertyName={setPropertyName}
-              propertyType={property.type}
-            />
-          ),
-          minWidth: 200,
-        };
-      } else if (["milestone"].includes(property.type)) {
-        return {
-          component: getCellComponent(property.type) as any,
-          columnData: {
-            property,
-            setMultipleMilestoneModalOpen,
-            setPropertyName,
-            setDataId,
-          },
-          title: (
-            <HeaderComponent
-              columnName={property.name}
-              setIsEditFieldOpen={setIsEditFieldOpen}
-              setPropertyName={setPropertyName}
-              propertyType={property.type}
-            />
-          ),
-          minWidth: 200,
-        };
-      } else if (["payWall"].includes(property.type)) {
-        return {
-          component: getCellComponent(property.type) as any,
-          columnData: {
-            property,
-            setPropertyName,
-            setDataId,
-          },
-          title: (
-            <HeaderComponent
-              columnName={property.name}
-              setIsEditFieldOpen={setIsEditFieldOpen}
-              setPropertyName={setPropertyName}
-              propertyType={property.type}
-            />
-          ),
-          minWidth: 200,
-        };
-      } else if (["multiURL"].includes(property.type)) {
-        return {
-          component: getCellComponent(property.type) as any,
-          columnData: {
-            property,
-            setIsURLFieldOpen,
-            setPropertyName,
-            setDataId,
-          },
-          title: (
-            <HeaderComponent
-              columnName={property.name}
-              setIsEditFieldOpen={setIsEditFieldOpen}
-              setPropertyName={setPropertyName}
-              propertyType={property.type}
-            />
-          ),
-          minWidth: 200,
-        };
-      } else {
-        return {
-          ...keyColumn(property.name, getCellComponent(property.type) as any),
-          disabled:
-            collection.collectionType === 0 ? property.isPartOfFormView : false,
-          title: (
-            <HeaderComponent
-              columnName={property.name}
-              setIsEditFieldOpen={setIsEditFieldOpen}
-              setPropertyName={setPropertyName}
-              propertyType={property.type}
-            />
-          ),
-          minWidth: 200,
-        };
-      }
-    });
+            columnData: {
+              property,
+              setIsRewardFieldOpen,
+              setPropertyName,
+              setDataId,
+            },
+            title: (
+              <HeaderComponent
+                columnName={property.name}
+                setIsEditFieldOpen={setIsEditFieldOpen}
+                setPropertyName={setPropertyName}
+                propertyType={property.type}
+              />
+            ),
+            minWidth: 200,
+          };
+        } else if (["milestone"].includes(property.type)) {
+          return {
+            component: getCellComponent(property.type) as any,
+            columnData: {
+              property,
+              setMultipleMilestoneModalOpen,
+              setPropertyName,
+              setDataId,
+            },
+            title: (
+              <HeaderComponent
+                columnName={property.name}
+                setIsEditFieldOpen={setIsEditFieldOpen}
+                setPropertyName={setPropertyName}
+                propertyType={property.type}
+              />
+            ),
+            minWidth: 200,
+          };
+        } else if (["payWall"].includes(property.type)) {
+          return {
+            component: getCellComponent(property.type) as any,
+            columnData: {
+              property,
+              setPropertyName,
+              setDataId,
+            },
+            title: (
+              <HeaderComponent
+                columnName={property.name}
+                setIsEditFieldOpen={setIsEditFieldOpen}
+                setPropertyName={setPropertyName}
+                propertyType={property.type}
+              />
+            ),
+            minWidth: 200,
+          };
+        } else if (["multiURL"].includes(property.type)) {
+          return {
+            component: getCellComponent(property.type) as any,
+            columnData: {
+              property,
+              setIsURLFieldOpen,
+              setPropertyName,
+              setDataId,
+            },
+            title: (
+              <HeaderComponent
+                columnName={property.name}
+                setIsEditFieldOpen={setIsEditFieldOpen}
+                setPropertyName={setPropertyName}
+                propertyType={property.type}
+              />
+            ),
+            minWidth: 200,
+          };
+        } else {
+          return {
+            ...keyColumn(property.name, getCellComponent(property.type) as any),
+            disabled:
+              collection.collectionType === 0
+                ? property.isPartOfFormView
+                : false,
+            title: (
+              <HeaderComponent
+                columnName={property.name}
+                setIsEditFieldOpen={setIsEditFieldOpen}
+                setPropertyName={setPropertyName}
+                propertyType={property.type}
+              />
+            ),
+            minWidth: 200,
+          };
+        }
+      });
 
   const columnsWithCredentials = collection.formMetadata
     ?.credentialCurationEnabled

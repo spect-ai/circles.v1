@@ -74,7 +74,9 @@ export default function HeaderComponent({
                       e.preventDefault();
                       if (
                         collection.collectionType === 1 &&
-                        (columnName === "Title" || columnName === "Description")
+                        (columnName === "Title" ||
+                          columnName === "Description" ||
+                          columnName === "__cardStatus__")
                       ) {
                         toast.warn("You can't edit this field");
                         return;
