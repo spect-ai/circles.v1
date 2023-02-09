@@ -10,6 +10,7 @@ import { toast } from "react-toastify";
 import { useCircle } from "../../Circle/CircleContext";
 import AddToken from "../../Circle/CircleSettingsModal/CirclePayment/AddToken";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
+import Chain from "./Chain";
 type Props = {
   handleClose: () => void;
 };
@@ -17,8 +18,6 @@ type Props = {
 export default function Payments({ handleClose }: Props) {
   const [updateLoading, setUpdateLoading] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
-  const [isAddChainOpen, setIsAddChainOpen] = useState(false);
-
   const [isAddTokenOpen, setIsAddTokenOpen] = useState(false);
 
   const [paymentType, setPaymentType] = useState<{
@@ -37,8 +36,7 @@ export default function Payments({ handleClose }: Props) {
       value: key,
     };
   });
-  const [selectedNetwork, setSelectedNetwork] = useState(networks[0]);
-  const [addedNetworks, setAddedNetworks] = useState(networks);
+  const [addedNetworks, setAddedNetworks] = useState([networks[0]]);
 
   const { localCollection: collection, updateCollection } =
     useLocalCollection();
@@ -61,9 +59,6 @@ export default function Payments({ handleClose }: Props) {
   }, {});
 
   const [addedTokens, setAddedTokens] = useState(initTokens);
-  const [selectedToken, setSelectedToken] = useState(
-    initTokens[selectedNetwork.value][0]
-  );
 
   const [required, setRequired] = useState({
     label: "Yes",
@@ -71,20 +66,16 @@ export default function Payments({ handleClose }: Props) {
   });
 
   const [receiverAddresses, setReceiverAddresses] = useState({
-    [selectedNetwork.value]: "",
+    [addedNetworks[0].value]: "",
   });
 
-  const [tokenAmounts, setTokenAmounts] = useState({
-    [selectedNetwork.value]: {
-      [selectedToken.value]: "",
-    },
-  });
+  const [tokenAmounts, setTokenAmounts] = useState<{
+    [key: string]: { [key: string]: string };
+  }>({});
 
-  const [dollarAmounts, setDollarAmounts] = useState({
-    [selectedNetwork.value]: {
-      [selectedToken.value]: "",
-    },
-  });
+  const [dollarAmounts, setDollarAmounts] = useState<{
+    [key: string]: { [key: string]: string };
+  }>({});
 
   useEffect(() => {
     if (collection.formMetadata.paymentConfig) {
@@ -104,12 +95,11 @@ export default function Payments({ handleClose }: Props) {
         };
       });
       setAddedNetworks(networks);
-      setSelectedNetwork(networks[0]);
       const tokens: {
         [key: string]: { label: string; value: string }[];
       } = Object.keys(paymentConfig.networks).reduce((acc, key) => {
         const tokensList = Object.keys(
-          (registry && registry[key].tokenDetails) || {}
+          paymentConfig.networks[key].tokens || {}
         ).map((tokenKey) => {
           return {
             label:
@@ -122,8 +112,8 @@ export default function Payments({ handleClose }: Props) {
           [key]: tokensList,
         };
       }, {});
+      console.log({ tokens });
       setAddedTokens(tokens);
-      setSelectedToken(tokens[networks[0].value][0]);
       const receiverAddresses = Object.keys(paymentConfig.networks).reduce(
         (acc, key) => {
           return {
@@ -152,7 +142,6 @@ export default function Payments({ handleClose }: Props) {
         },
         {}
       );
-      console.log({ tokenAmounts });
       setTokenAmounts(tokenAmounts);
       const dollarAmounts = Object.keys(paymentConfig.networks).reduce(
         (acc, key) => {
@@ -176,29 +165,27 @@ export default function Payments({ handleClose }: Props) {
   }, []);
 
   useEffect(() => {
-    setSelectedToken(addedTokens[selectedNetwork.value][0]);
-  }, [selectedNetwork.value]);
-
-  useEffect(() => {
-    // update token options when registry changes
-    const newTokens: {
-      [key: string]: { label: string; value: string }[];
-    } = Object.keys(registry || {}).reduce((acc, key) => {
-      const tokensList = Object.keys(
-        (registry && registry[key].tokenDetails) || {}
-      ).map((tokenKey) => {
+    if (!collection.formMetadata.paymentConfig) {
+      // update token options when registry changes
+      const newTokens: {
+        [key: string]: { label: string; value: string }[];
+      } = Object.keys(registry || {}).reduce((acc, key) => {
+        const tokensList = Object.keys(
+          (registry && registry[key].tokenDetails) || {}
+        ).map((tokenKey) => {
+          return {
+            label:
+              (registry && registry[key].tokenDetails[tokenKey].symbol) || "",
+            value: tokenKey,
+          };
+        });
         return {
-          label:
-            (registry && registry[key].tokenDetails[tokenKey].symbol) || "",
-          value: tokenKey,
+          ...acc,
+          [key]: tokensList,
         };
-      });
-      return {
-        ...acc,
-        [key]: tokensList,
-      };
-    }, {});
-    setAddedTokens(newTokens);
+      }, {});
+      setAddedTokens(newTokens);
+    }
   }, [registry]);
 
   const validate = () => {
@@ -206,26 +193,25 @@ export default function Payments({ handleClose }: Props) {
     if (paymentType.value === "paywall") {
       // check receiver address
       for (const network of addedNetworks) {
-        if (!receiverAddresses[network.value]) {
+        if (!receiverAddresses[network.value] && network.value) {
           errMessages.push(`Receiver address is required for ${network.label}`);
         }
       }
       // check token amounts
       for (const network of addedNetworks) {
+        if (!network.value) {
+          continue;
+        }
         for (const token of addedTokens[network.value]) {
-          try {
-            if (
-              !tokenAmounts[network.value][token.value] &&
-              !dollarAmounts[network.value][token.value]
-            ) {
-              errMessages.push(
-                `Token amount or dollar amount is required for ${token.label} on ${network.label}`
-              );
-            }
-          } catch (e) {
-            console.log(e);
+          if (token.value === "") {
+            continue;
+          }
+          if (
+            !tokenAmounts[network.value][token.value] &&
+            !dollarAmounts[network.value][token.value]
+          ) {
             errMessages.push(
-              `Token amount or dollar amount is required for ${token.label} on ${network.label}`
+              `Amount is required for ${token.label} on ${network.label}`
             );
           }
           // check if not both token amount and dollar amount are set
@@ -249,23 +235,15 @@ export default function Payments({ handleClose }: Props) {
       if (addedNetworks.length === 0) {
         errMessages.push("At least one network is required");
       }
-
-      if (addedTokens[selectedNetwork.value].length === 0) {
-        errMessages.push("At least one token is required");
-      }
     } else if (paymentType.value === "donation") {
       // check receiver address
       for (const network of addedNetworks) {
-        if (!receiverAddresses[network.value]) {
+        if (!receiverAddresses[network.value] && network.value) {
           errMessages.push(`Receiver address is required for ${network.label}`);
         }
 
         if (addedNetworks.length === 0) {
           errMessages.push("At least one network is required");
-        }
-
-        if (addedTokens[selectedNetwork.value].length === 0) {
-          errMessages.push("At least one token is required");
         }
 
         if (required.value === "yes") {
@@ -290,8 +268,8 @@ export default function Payments({ handleClose }: Props) {
       <AnimatePresence>
         {isAddTokenOpen && (
           <AddToken
-            chainId={selectedNetwork.value}
-            chainName={selectedNetwork.label}
+            chainId={"1"}
+            chainName={"Ethereum"}
             handleClose={() => {
               setIsAddTokenOpen(false);
             }}
@@ -302,8 +280,7 @@ export default function Payments({ handleClose }: Props) {
         <Stack>
           <Stack>
             <Stack space="1">
-              <Text variant="label">Payment Type</Text>
-              <Text size="extraSmall">
+              <Text variant="label">
                 Paywall: User must pay the amount specified. Donation: User can
                 pay any amount
               </Text>
@@ -320,8 +297,7 @@ export default function Payments({ handleClose }: Props) {
           </Stack>
           <Stack>
             <Stack space="1">
-              <Text variant="label">Required</Text>
-              <Text size="extraSmall">
+              <Text variant="label">
                 Is this payment required to submit the form?
               </Text>
             </Stack>
@@ -336,283 +312,201 @@ export default function Payments({ handleClose }: Props) {
             />
           </Stack>
           <Stack>
-            <Stack space="1">
-              <Text variant="label">Chain</Text>
-              <Text size="extraSmall">
-                Configure the chains you want to receive payments on
-              </Text>
-            </Stack>
-            <Stack direction="horizontal" space="4">
-              <Select
-                options={addedNetworks}
-                value={selectedNetwork}
-                onChange={setSelectedNetwork}
-                variant="secondary"
-                canDelete
-                onDelete={(value) => {
-                  console.log({ value });
-                  const newNetworks = addedNetworks.filter(
-                    (network) => network.value !== value.value
-                  );
-                  if (newNetworks.length === 0) {
-                    toast.error("You must have at least one network");
-                    return;
-                  }
-                  setAddedNetworks(newNetworks);
-                  setSelectedNetwork(newNetworks[0]);
-                  setSelectedToken(addedTokens[newNetworks[0].value][0]);
-                }}
-              />
-              <Popover
-                isOpen={isAddChainOpen}
-                setIsOpen={setIsAddChainOpen}
-                butttonComponent={
-                  <Box
-                    cursor="pointer"
-                    onClick={() => {
-                      setIsAddChainOpen(true);
-                    }}
-                  >
-                    <Tag>
-                      <IconPlusSmall size="5" color="accent" />
-                    </Tag>
-                  </Box>
-                }
-              >
-                <motion.div
-                  initial={{ height: 0 }}
-                  animate={{ height: "auto", transition: { duration: 0.2 } }}
-                  exit={{ height: 0 }}
-                  style={{
-                    overflow: "hidden",
-                    borderRadius: "0.25rem",
+            <Text variant="label">
+              Add the networks and tokens you want to accept payments in
+            </Text>
+            {registry &&
+              addedNetworks.map((network, index) => (
+                <Chain
+                  paymentType={paymentType.value}
+                  key={network.value}
+                  registry={registry}
+                  network={network}
+                  networkOptions={networks}
+                  addedTokens={addedTokens[network.value]}
+                  tokenAmounts={tokenAmounts[network.value]}
+                  dollarAmounts={dollarAmounts[network.value]}
+                  receiverAddress={receiverAddresses[network.value]}
+                  onNetworkDelete={() => {
+                    if (addedNetworks.length === 1) {
+                      toast.error("At least one network is required");
+                      return;
+                    }
+                    // delete network at the index
+                    const newNetworks = addedNetworks.filter(
+                      (n, idx) => idx !== index
+                    );
+                    setAddedNetworks(newNetworks);
                   }}
-                >
-                  <Box
-                    backgroundColor="background"
-                    borderWidth="0.375"
-                    borderRadius="2xLarge"
-                    height="64"
-                    overflow="auto"
-                  >
-                    {networks.map((network) => (
-                      <Box
-                        key={network.value}
-                        padding="4"
-                        borderBottomWidth="0.375"
-                        cursor="pointer"
-                        onClick={() => {
-                          if (
-                            addedNetworks.find(
-                              (addedNetwork) =>
-                                addedNetwork.value === network.value
-                            )
-                          ) {
-                            toast.error("Network already added");
-                            return;
-                          }
-                          setAddedNetworks([...addedNetworks, network]);
-                          setSelectedNetwork(network);
-                          setSelectedToken(addedTokens[network.value][0]);
-                          setIsAddChainOpen(false);
-                        }}
-                      >
-                        <Text>{network.label}</Text>
-                      </Box>
-                    ))}
-                  </Box>
-                </motion.div>
-              </Popover>
-            </Stack>
-          </Stack>
-          <Stack>
-            <Stack space="1">
-              <Text variant="label">Receiver Address</Text>
-              <Text size="extraSmall">
-                {selectedNetwork.label} address which will receive the payments
-              </Text>
-            </Stack>
-            <Input
-              width="1/2"
-              label=""
-              placeholder="0x"
-              value={receiverAddresses[selectedNetwork.value] || ""}
-              onChange={(e) => {
-                setReceiverAddresses({
-                  ...receiverAddresses,
-                  [selectedNetwork.value]: e.target.value,
-                });
-              }}
-            />
-          </Stack>
-          <Stack>
-            <Stack space="1">
-              <Text variant="label">Tokens</Text>
-              <Text size="extraSmall">
-                Configure the tokens you want to receive payments in
-              </Text>
-            </Stack>
-            <Stack direction="horizontal">
-              <Select
-                options={addedTokens[selectedNetwork.value]}
-                value={selectedToken}
-                onChange={setSelectedToken}
-                variant="secondary"
-                canDelete
-                onDelete={(value) => {
-                  console.log({ value });
-                  const ch = {
-                    ...addedTokens,
-                    [selectedNetwork.value]: addedTokens[
-                      selectedNetwork.value
-                    ].filter((token) => token.value !== value.value),
-                  };
-                  console.log({ ch });
-                  setAddedTokens({
-                    ...addedTokens,
-                    [selectedNetwork.value]: addedTokens[
-                      selectedNetwork.value
-                    ].filter((token) => token.value !== value.value),
-                  });
-                }}
-              />
-              <Box
-                cursor="pointer"
+                  onNetworkChange={(updatedNetwork) => {
+                    // check if network already exists
+                    const existingNetwork = addedNetworks.find(
+                      (n, idx) =>
+                        idx !== index && n.value === updatedNetwork.value
+                    );
+                    if (existingNetwork) {
+                      toast.error(
+                        `Network ${updatedNetwork.label} already exists`
+                      );
+                      return;
+                    }
+
+                    const newNetworks = addedNetworks.map((n, idx) => {
+                      if (idx === index) {
+                        return updatedNetwork;
+                      }
+                      return n;
+                    });
+                    setAddedNetworks(newNetworks);
+                    console.log({ newNetworks });
+                  }}
+                  onAddToken={() => {
+                    setAddedTokens({
+                      ...addedTokens,
+                      [network.value]: [
+                        ...addedTokens[network.value],
+                        { label: "", value: "" },
+                      ],
+                    });
+                  }}
+                  onUpdateToken={(token, index) => {
+                    console.log({ token, index });
+                    if (token.value === "custom") {
+                      setIsAddTokenOpen(true);
+                      return;
+                    }
+
+                    // check if token already exists
+                    const existingToken = addedTokens[network.value].find(
+                      (t, idx) => idx !== index && t.value === token.value
+                    );
+                    if (existingToken) {
+                      toast.error(
+                        `Token ${token.label} already exists for ${network.label}`
+                      );
+                      return;
+                    }
+                    const newTokens = addedTokens[network.value].map(
+                      (t, idx) => {
+                        if (idx === index) {
+                          return token;
+                        }
+                        return t;
+                      }
+                    );
+                    console.log({ newTokens });
+                    setAddedTokens({
+                      ...addedTokens,
+                      [network.value]: newTokens,
+                    });
+                  }}
+                  onRemoveToken={(token, index) => {
+                    if (addedTokens[network.value].length === 1) {
+                      toast.error("At least one token is required");
+                      return;
+                    }
+                    const newTokens = addedTokens[network.value].filter(
+                      (t, idx) => idx !== index
+                    );
+                    setAddedTokens({
+                      ...addedTokens,
+                      [network.value]: newTokens,
+                    });
+                  }}
+                  onTokenAmountChange={(token, amount) => {
+                    setTokenAmounts({
+                      ...tokenAmounts,
+                      [network.value]: {
+                        ...tokenAmounts[network.value],
+                        [token.value]: amount,
+                      },
+                    });
+                  }}
+                  onDollarAmountChange={(token, amount) => {
+                    setDollarAmounts({
+                      ...dollarAmounts,
+                      [network.value]: {
+                        ...dollarAmounts[network.value],
+                        [token.value]: amount,
+                      },
+                    });
+                  }}
+                  onUpdateReceiverAddress={(address) => {
+                    setReceiverAddresses({
+                      ...receiverAddresses,
+                      [network.value]: address,
+                    });
+                  }}
+                />
+              ))}
+            <Box width="1/3" paddingRight="6">
+              <PrimaryButton
                 onClick={() => {
-                  setIsAddTokenOpen(true);
+                  setAddedNetworks([
+                    ...addedNetworks,
+                    { label: "", value: "" },
+                  ]);
                 }}
+                variant="tertiary"
+                icon={<IconPlusSmall size="4" />}
               >
-                <Tag>
-                  <IconPlusSmall size="5" color="accent" />
-                </Tag>
-              </Box>
-            </Stack>
+                Add Chain
+              </PrimaryButton>
+            </Box>
           </Stack>
-          <AnimatePresence>
-            {paymentType.value === "paywall" && (
-              <motion.div
-                initial={{
-                  height: 0,
-                }}
-                animate={{
-                  height: "auto",
-                }}
-                exit={{
-                  height: 0,
-                }}
-                transition={{
-                  duration: 0.2,
-                  ease: "easeInOut",
-                }}
-                style={{
-                  overflow: "hidden",
-                }}
-              >
-                <Stack>
-                  <Stack space="1">
-                    <Text variant="label">Amount</Text>
-                    <Text size="extraSmall">
-                      Amount of {selectedToken.label} to receive. You can set
-                      token amount or dollar amount pegged to the current price
-                      of the token
-                    </Text>
-                  </Stack>
-                  <Stack direction="horizontal" align="center">
-                    <Input
-                      type="number"
-                      label=""
-                      placeholder="0"
-                      value={
-                        tokenAmounts[selectedNetwork.value] &&
-                        tokenAmounts[selectedNetwork.value][selectedToken.value]
-                          ? tokenAmounts[selectedNetwork.value][
-                              selectedToken.value
-                            ]
-                          : ""
-                      }
-                      onChange={(e) => {
-                        setTokenAmounts({
-                          ...tokenAmounts,
-                          [selectedNetwork.value]: {
-                            ...tokenAmounts[selectedNetwork.value],
-                            [selectedToken.value]: e.target.value,
-                          },
-                        });
-                      }}
-                      units={selectedToken.label}
-                    />
-                    <Text variant="label">OR</Text>
-                    <Input
-                      type="number"
-                      label=""
-                      placeholder="0"
-                      value={
-                        dollarAmounts[selectedNetwork.value] &&
-                        dollarAmounts[selectedNetwork.value][
-                          selectedToken.value
-                        ]
-                          ? dollarAmounts[selectedNetwork.value][
-                              selectedToken.value
-                            ]
-                          : ""
-                      }
-                      onChange={(e) => {
-                        setDollarAmounts({
-                          ...dollarAmounts,
-                          [selectedNetwork.value]: {
-                            ...dollarAmounts[selectedNetwork.value],
-                            [selectedToken.value]: e.target.value,
-                          },
-                        });
-                      }}
-                      units="$"
-                    />
-                  </Stack>
-                </Stack>
-              </motion.div>
-            )}
-          </AnimatePresence>
           <Stack direction="horizontal">
             <Box width={"1/2"}>
               <PrimaryButton
                 loading={updateLoading}
                 onClick={async () => {
                   if (!validate()) return;
-                  console.log({ addedTokens });
                   const payload = {
                     required: required.value === "yes",
                     type: paymentType.value,
-                    networks: addedNetworks.reduce(
-                      (acc, network) => ({
-                        ...acc,
-                        [network.value]: {
-                          chainId: network.value,
-                          chainName: network.label,
-                          receiverAddress: receiverAddresses[network.value],
-                          tokens: addedTokens[network.value].reduce(
-                            (acc, token) => ({
-                              ...acc,
-                              [token.value]: {
-                                address: token.value,
-                                symbol: token.label,
-                                tokenAmount:
-                                  tokenAmounts[network.value] &&
-                                  tokenAmounts[network.value][token.value]
-                                    ? tokenAmounts[network.value][token.value]
-                                    : "",
-                                dollarAmount:
-                                  dollarAmounts[network.value] &&
-                                  dollarAmounts[network.value][token.value]
-                                    ? dollarAmounts[network.value][token.value]
-                                    : "",
+                    networks: addedNetworks.reduce((acc, network) => {
+                      if (network.value) {
+                        return {
+                          ...acc,
+                          [network.value]: {
+                            chainId: network.value,
+                            chainName: network.label,
+                            receiverAddress: receiverAddresses[network.value],
+                            tokens: addedTokens[network.value].reduce(
+                              (acc, token) => {
+                                if (token.value) {
+                                  return {
+                                    ...acc,
+                                    [token.value]: {
+                                      address: token.value,
+                                      symbol: token.label,
+                                      tokenAmount:
+                                        tokenAmounts[network.value] &&
+                                        tokenAmounts[network.value][token.value]
+                                          ? tokenAmounts[network.value][
+                                              token.value
+                                            ]
+                                          : "",
+                                      dollarAmount:
+                                        dollarAmounts[network.value] &&
+                                        dollarAmounts[network.value][
+                                          token.value
+                                        ]
+                                          ? dollarAmounts[network.value][
+                                              token.value
+                                            ]
+                                          : "",
+                                    },
+                                  };
+                                }
+                                return acc;
                               },
-                            }),
-                            {}
-                          ),
-                        },
-                      }),
-                      {}
-                    ),
+                              {}
+                            ),
+                          },
+                        };
+                      }
+                      return acc;
+                    }, {}),
                   };
                   console.log({ payload });
                   setUpdateLoading(true);

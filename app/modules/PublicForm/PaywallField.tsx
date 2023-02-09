@@ -56,8 +56,6 @@ const PaywallField = ({
   const { switchNetworkAsync } = useSwitchNetwork();
   const { address: userAddress } = useAccount();
 
-  const { registry } = useCircle();
-
   const [tokenOptions, setTokenOptions] = useState<OptionType[]>([]);
   const [loading, setLoading] = useState(false);
 
