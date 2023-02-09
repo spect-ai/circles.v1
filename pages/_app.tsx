@@ -4,6 +4,19 @@ import type { AppProps } from "next/app";
 import { Hydrate, QueryClientProvider } from "react-query";
 import mixpanel from "@/app/common/utils/mixpanel";
 import { FlagsProvider } from "react-feature-flags";
+import {
+  avalanche,
+  bsc,
+  mainnet,
+  polygon,
+  polygonMumbai,
+  goerli,
+  fantom,
+  gnosis,
+  optimism,
+  arbitrum,
+  avalancheFuji,
+} from "@wagmi/core/chains";
 
 import "@fontsource/inter/300.css";
 import "@fontsource/inter/400.css";
@@ -38,7 +51,7 @@ import {
   createAuthenticationAdapter,
   RainbowKitAuthenticationProvider,
 } from "@rainbow-me/rainbowkit";
-import { chain, configureChains, createClient, WagmiConfig } from "wagmi";
+import { configureChains, createClient, WagmiConfig } from "wagmi";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { publicProvider } from "wagmi/providers/public";
 import { SiweMessage } from "siwe";
@@ -143,18 +156,22 @@ const chainsObj = {
 
 const { chains, provider } = configureChains(
   [
-    chain.mainnet,
-    chain.polygon,
-    chain.optimism,
-    chain.arbitrum,
-    chain.goerli,
-    chain.polygonMumbai,
-    chainsObj.avalanche,
-    chainsObj.bsc,
-    chainsObj.gnosis,
-    chainsObj.fuji,
+    mainnet,
+    polygon,
+    optimism,
+    arbitrum,
+    goerli,
+    polygonMumbai,
+    avalanche,
+    bsc,
+    gnosis,
+    avalancheFuji,
+    fantom,
   ],
-  [alchemyProvider({ apiKey: process.env.ALCHEMY_KEY }), publicProvider()]
+  [
+    alchemyProvider({ apiKey: process.env.ALCHEMY_KEY as string }),
+    publicProvider(),
+  ]
 );
 
 const { connectors } = getDefaultWallets({

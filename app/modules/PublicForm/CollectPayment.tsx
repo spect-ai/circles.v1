@@ -6,12 +6,20 @@ import {
 } from "@/app/services/CoinGecko";
 import useERC20 from "@/app/services/Payment/useERC20";
 import usePaymentGateway from "@/app/services/Payment/usePayment";
+import {
+  approveOneTokenUsingEOA,
+  convertToWei,
+  distributeCurrencyUsingEOA,
+  distributeTokensUsingEOA,
+  hasAllowance,
+} from "@/app/services/Paymentv2/utils";
 import { CollectionType, PaymentConfig, Registry } from "@/app/types";
 import { DollarCircleOutlined } from "@ant-design/icons";
 import { Box, Input, Stack, Text } from "degen";
+import { ethers } from "ethers";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { useNetwork, useSwitchNetwork } from "wagmi";
+import { useAccount, useNetwork, useSwitchNetwork } from "wagmi";
 
 type Props = {
   paymentConfig: PaymentConfig;
@@ -29,6 +37,7 @@ export default function CollectPayment({
   setData,
 }: Props) {
   const [circleRegistry, setCircleRegistry] = useState<Registry>();
+  const { address } = useAccount();
 
   const networks = Object.keys(paymentConfig.networks).map((key) => ({
     label: paymentConfig.networks[key].chainName,
@@ -115,8 +124,7 @@ export default function CollectPayment({
   const { chain } = useNetwork();
   const { switchNetworkAsync } = useSwitchNetwork();
   const [loading, setLoading] = useState(false);
-  const { batchPay } = usePaymentGateway();
-  const { approve, isApproved, hasBalance } = useERC20();
+  // const { batchPay } = usePaymentGateway();
 
   const checkNetwork = async () => {
     if (!(chain?.id.toString() == selectedNetwork.value)) {
@@ -152,15 +160,16 @@ export default function CollectPayment({
 
   const approval = async () => {
     setLoading(true);
-    console.log(selectedNetwork.value, circleRegistry);
-    const approvalStatus = await toast
+    console.log({ chain: selectedNetwork.value, token: selectedToken });
+    const approvalStatus: any = await toast
       .promise(
-        isApproved(
-          selectedToken.value,
-          circleRegistry?.[selectedNetwork.value].distributorAddress as string,
-          parseFloat(amount || "0"),
-          paymentConfig.networks[selectedNetwork.value].receiverAddress,
-          circleRegistry?.[selectedNetwork.value].provider || ""
+        hasAllowance(
+          circleRegistry as Registry,
+          selectedNetwork.value,
+          address as string,
+          {
+            [selectedToken.value]: parseFloat(amount || "0"),
+          }
         ),
         {
           pending: "Checking token approval",
@@ -174,7 +183,7 @@ export default function CollectPayment({
     console.log({ approvalStatus });
 
     setLoading(false);
-    return approvalStatus;
+    return approvalStatus[selectedToken.value];
   };
 
   const currencyPayment = async () => {
@@ -195,7 +204,21 @@ export default function CollectPayment({
     console.log({ options });
     const currencyTxnHash = await toast
       .promise(
-        batchPay(options),
+        distributeCurrencyUsingEOA(
+          options.chainId,
+          [
+            {
+              ethAddress: options.userAddresses[0],
+              valueInWei: ethers.utils.parseUnits(
+                options.amounts[0].toString(),
+                "ether"
+              ),
+              token: options.tokenAddresses[0],
+            },
+          ],
+          circleRegistry as Registry,
+          ""
+        ),
         {
           pending: `Paying ${
             (circleRegistry &&
@@ -203,7 +226,7 @@ export default function CollectPayment({
             "Network Gas Token"
           }`,
           error: {
-            render: ({ data }) => data,
+            render: ({ data }: { data: string }) => data.toString(),
           },
         },
         {
@@ -212,7 +235,7 @@ export default function CollectPayment({
       )
       .catch((err) => console.log(err));
 
-    recordPayment(currencyTxnHash);
+    recordPayment(currencyTxnHash?.transactionHash);
     setLoading(false);
     return;
   };
@@ -233,9 +256,21 @@ export default function CollectPayment({
       circleRegistry: circleRegistry,
     };
     setLoading(true);
+    const payload = await convertToWei([
+      {
+        ethAddress: options.userAddresses[0],
+        token: options.tokenAddresses[0],
+        amount: options.amounts[0],
+      },
+    ]);
     const tokenTxnHash = await toast
       .promise(
-        batchPay(options),
+        distributeTokensUsingEOA(
+          options.chainId,
+          payload,
+          circleRegistry as Registry,
+          ""
+        ),
         {
           pending: `Sending ${selectedToken.label}`,
           error: {
@@ -249,7 +284,7 @@ export default function CollectPayment({
         }
       )
       .catch((err) => console.log(err));
-    recordPayment(tokenTxnHash);
+    recordPayment(tokenTxnHash?.transactionHash);
     setLoading(false);
   };
 
@@ -341,12 +376,11 @@ export default function CollectPayment({
                 ) {
                   // Check if you have sufficient ERC20 Allowance
                   const approvalStatus = await approval();
-
                   // Approval for ERC20 token
                   setLoading(true);
                   if (!approvalStatus) {
                     await toast.promise(
-                      approve(
+                      approveOneTokenUsingEOA(
                         selectedNetwork.value,
                         selectedToken.value,
                         circleRegistry
@@ -361,7 +395,7 @@ export default function CollectPayment({
                       {
                         pending: `Approving ${selectedToken.label} Token`,
                         error: {
-                          render: ({ data }) => data,
+                          render: ({ data }: { data: any }) => data.toString(),
                         },
                       },
                       {

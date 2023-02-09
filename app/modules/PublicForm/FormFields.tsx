@@ -153,7 +153,6 @@ export default function FormFields({ form, setForm }: Props) {
     if (form) {
       setLoading(true);
       const tempData: any = {};
-
       if (updateResponse && form?.formMetadata.previousResponses?.length > 0) {
         const lastResponse =
           form.formMetadata.previousResponses[
@@ -190,6 +189,7 @@ export default function FormFields({ form, setForm }: Props) {
           ) {
             tempData[propertyId] = lastResponse[propertyId];
           }
+          tempData["__payment__"] = lastResponse?.__payment__;
         });
       } else {
         const tempData: any = {};
