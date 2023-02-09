@@ -114,6 +114,7 @@ export const prevPropertyTypeToNewPropertyTypeThatDoesntRequiresClarance = {
   reward: ["reward"],
   payWall: ["payWall"],
   milestone: ["milestone"],
+  cardStatus: ["cardStatus"],
 };
 
 export const opportunityType = [
