@@ -173,6 +173,15 @@ export function satisfiesConditions(
             }
             return true;
         }
+      case "cardStatus":
+        switch (comparatorValue) {
+          case "is active":
+            return data[propertyId] !== "closed";
+          case "is closed":
+            return data[propertyId] === "closed";
+          default:
+            return false;
+        }
       default:
         return false;
     }

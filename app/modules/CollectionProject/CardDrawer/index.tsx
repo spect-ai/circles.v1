@@ -10,11 +10,17 @@ import {
   updateFormCollection,
 } from "@/app/services/Collection";
 import { MemberDetails, Option } from "@/app/types";
-import { CheckCircleOutlined, ClockCircleOutlined } from "@ant-design/icons";
+import {
+  CheckCircleOutlined,
+  ClockCircleOutlined,
+  InfoCircleOutlined,
+  InfoOutlined,
+} from "@ant-design/icons";
 import {
   Box,
   Button,
   IconChevronRight,
+  IconClose,
   IconDotsVertical,
   IconPlusSmall,
   Stack,
@@ -208,7 +214,12 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
             }}
             width="full"
           > */}
-          <EditProperty propertyName={property} />
+          <EditProperty
+            propertyName={property}
+            disabled={
+              collection.data?.[cardSlug as string]?.__cardStatus__ === "closed"
+            }
+          />
           <EditValue
             propertyName={property}
             value={value[property]}
@@ -217,6 +228,9 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
               void onChange({ [property]: val }, value.slug);
             }}
             dataId={value.slug}
+            disabled={
+              collection.data?.[cardSlug as string]?.__cardStatus__ === "closed"
+            }
           />
           {/* </Box> */}
         </Stack>
@@ -233,7 +247,11 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
   const PropertyList = (provided: DroppableProvided) => (
     <Box ref={provided.innerRef} {...provided.droppableProps}>
       {propertyOrder.map((property, index) => {
-        if (property !== "Title" && property !== "Description") {
+        if (
+          property !== "Title" &&
+          property !== "Description" &&
+          property !== "__cardStatus__"
+        ) {
           return (
             <Draggable key={property} draggableId={property} index={index}>
               {(provided, snapshot) => {
@@ -377,6 +395,22 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
                     <Text variant="small">Payment Completed</Text>
                   </Box>
                 )}
+              {collection.data?.[cardSlug as string]?.__cardStatus__ ===
+                "closed" && (
+                <Box
+                  display="flex"
+                  flexDirection="row"
+                  justifyContent="flex-end"
+                  alignItems="center"
+                  marginRight="4"
+                  gap="2"
+                >
+                  <Text color="red">
+                    <InfoCircleOutlined />
+                  </Text>
+                  <Text variant="small">This card is closed</Text>
+                </Box>
+              )}
               <Stack space="1">
                 <Stack
                   direction="horizontal"
@@ -397,12 +431,17 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
                         setIsDirty(false);
                       }
                     }}
+                    disabled={
+                      collection.data?.[cardSlug as string]?.__cardStatus__ ===
+                      "closed"
+                    }
                   />
                   {value.slug && (
                     <CardOptions
                       handleDrawerClose={closeCard}
                       cardSlug={value.slug}
                       setSnapshotModal={setSnapshotModal}
+                      onChange={onChange}
                     />
                   )}
                 </Stack>
@@ -421,6 +460,10 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
                     variant="tertiary"
                     icon={<IconPlusSmall size={"5"} />}
                     onClick={() => setIsAddFieldOpen(true)}
+                    disabled={
+                      collection.data?.[cardSlug as string]?.__cardStatus__ ===
+                      "closed"
+                    }
                   >
                     Add Field
                   </PrimaryButton>
@@ -438,6 +481,10 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
                     }}
                     isDirty={isDirty}
                     setIsDirty={setIsDirty}
+                    disabled={
+                      collection.data?.[cardSlug as string]?.__cardStatus__ ===
+                      "closed"
+                    }
                   />
                 </Box>
                 <Box marginY={"3"}>

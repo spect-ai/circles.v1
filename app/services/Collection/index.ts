@@ -449,25 +449,3 @@ export const importFromCsv = async (payload: {
     })
   ).json();
 };
-
-export const modifyCardStatus = async (
-  collectionId: string,
-  dataId: string,
-  active: boolean
-) => {
-  return await (
-    await fetch(
-      `${process.env.API_HOST}/collection/v1/${collectionId}/changeDataStatus?dataId=${dataId}`,
-      {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify({
-          active,
-        }),
-      }
-    )
-  ).json();
-};

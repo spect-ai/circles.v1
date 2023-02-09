@@ -906,7 +906,8 @@ export type PropertyType =
   | "milestone"
   | "singleURL"
   | "multiURL"
-  | "payWall";
+  | "payWall"
+  | "cardStatus";
 
 export type Option = {
   label: string;

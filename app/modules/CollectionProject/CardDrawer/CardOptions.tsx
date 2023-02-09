@@ -12,10 +12,7 @@ import React, { useMemo, useState } from "react";
 import { Archive, MoreHorizontal } from "react-feather";
 import { MenuContainer, MenuItem } from "../EditValue";
 import { motion } from "framer-motion";
-import {
-  modifyCardStatus,
-  updateFormCollection,
-} from "@/app/services/Collection";
+import { updateFormCollection } from "@/app/services/Collection";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
 import { toast } from "react-toastify";
 import { DollarOutlined } from "@ant-design/icons";
@@ -27,12 +24,14 @@ type Props = {
   handleDrawerClose: () => void;
   cardSlug: string;
   setSnapshotModal: (value: boolean) => void;
+  onChange: (data: any, slug: string) => Promise<void>;
 };
 
 export default function CardOptions({
   handleDrawerClose,
   cardSlug,
   setSnapshotModal,
+  onChange,
 }: Props) {
   const { address } = useAccount();
   const { localCollection: collection, updateCollection } =
@@ -193,24 +192,21 @@ export default function CardOptions({
             onClick={async () => {
               setIsOpen(false);
               handleDrawerClose();
-              const res = await modifyCardStatus(
-                collection.id,
-                cardSlug,
-                collection.dataStatus?.[cardSlug] === undefined ||
-                  collection.dataStatus?.[cardSlug] === true
-                  ? false
-                  : true
+              await onChange(
+                {
+                  ["__cardStatus__"]:
+                    collection.data?.[cardSlug]?.__cardStatus__ === undefined ||
+                    collection.data?.[cardSlug]?.__cardStatus__ === "active"
+                      ? "closed"
+                      : "active",
+                },
+                cardSlug
               );
-              if (res.id) {
-                updateCollection(res);
-              } else {
-                toast.error("Error changing card status");
-              }
             }}
           >
             <Stack direction="horizontal" align="center" space="2">
-              {collection.dataStatus?.[cardSlug] === undefined ||
-              collection.dataStatus?.[cardSlug] === true ? (
+              {collection.data?.[cardSlug].__cardStatus__ === undefined ||
+              collection.data?.[cardSlug].__cardStatus__ === "active" ? (
                 <>
                   <IconClose color={"red"} size="5" />
                   <Text align={"left"}>Close Card</Text>
