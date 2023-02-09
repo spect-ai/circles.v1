@@ -267,7 +267,6 @@ export const hasAllowance = async (
     const data = await readContracts({
       contracts: reads,
     });
-    console.log({ data });
     let idx = 0;
     Object.keys(allowancesRequired).map((tokenAddress) => {
       if (tokenAddress === "0x0") {
@@ -319,7 +318,7 @@ export const approveOneTokenUsingEOA = async (
       registry[chainId].distributorAddress,
       ethers.constants.MaxUint256
     );
-    await tx.wait();
+    return await tx.wait();
   } catch (e) {
     console.log(e);
     return;
@@ -428,7 +427,7 @@ export const payUsingGnosis = async (
   gnosisSafeAddress: string,
   id: { [key: string]: string }
 ) => {
-  const valuesInWei = await covertToWei(amounts);
+  const valuesInWei = await convertToWei(amounts);
 
   const tokenAmounts = valuesInWei.filter(
     (a) =>
@@ -505,27 +504,20 @@ export const payUsingGnosis = async (
   return { tokensDistributed, txHash };
 };
 
-export const covertToWei = async (
+export const convertToWei = async (
   amounts: { ethAddress: string; token: string; amount: number }[]
 ) => {
   const valuesInWei = [] as ethers.BigNumber[];
   for (const amt of amounts) {
-    console.log({ amt });
     const numDecimals = amt.token === "0x0" ? 18 : await getDecimals(amt.token);
-
-    valuesInWei.push(
-      ethers.BigNumber.from(amt?.amount.toFixed())
-        .mul(ethers.BigNumber.from(10).pow(numDecimals))
-        .add(
-          ethers.BigNumber.from(
-            ((amt.amount - Math.floor(amt.amount)) * 10 ** numDecimals)
-              .toFixed()
-              .toString()
-          )
-        )
-    );
+    const wei = ethers.utils
+      .parseEther(amt.amount.toString())
+      .div(ethers.BigNumber.from(10).pow(18 - numDecimals));
+    console.log({ eth: ethers.utils.formatUnits(wei, numDecimals) });
+    valuesInWei.push(wei);
   }
   const values = amounts.map((v, index) => {
+    console.log({ fromwei: ethers.utils.formatUnits(valuesInWei[index], 6) });
     return {
       ethAddress: v.ethAddress,
       token: v.token,
@@ -696,7 +688,7 @@ export const payUsingEOA = async (
   registry: Registry,
   id: { [key: string]: string }
 ) => {
-  const valuesInWei = await covertToWei(amounts);
+  const valuesInWei = await convertToWei(amounts);
 
   const tokenAmounts = valuesInWei.filter(
     (a) =>
