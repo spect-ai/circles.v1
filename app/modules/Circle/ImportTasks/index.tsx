@@ -12,6 +12,7 @@ import { useCircle } from "../CircleContext";
 import { useRouter } from "next/router";
 import { toast } from "react-toastify";
 import { isAddress } from "ethers/lib/utils";
+import { importFromCsv } from "@/app/services/Collection";
 
 type Props = {};
 
@@ -352,18 +353,18 @@ export default function ImportTasks({}: Props) {
                           delete properties[descriptionColumn];
 
                         console.log({ formattedData, properties });
-                        // const res = await importFromCsv({
-                        //   data: formattedData,
-                        //   collectionName,
-                        //   groupByColumn,
-                        //   collectionProperties: properties,
-                        //   circleId: circle.id,
-                        // });
-                        // console.log({ res });
-                        // setLocalCircle(res.circle);
-                        // router.push(
-                        //   `/${router.query.circle}/r/${res.collection.slug}`
-                        // );
+                        const res = await importFromCsv({
+                          data: formattedData,
+                          collectionName,
+                          groupByColumn,
+                          collectionProperties: properties,
+                          circleId: circle.id,
+                        });
+                        console.log({ res });
+                        setLocalCircle(res.circle);
+                        router.push(
+                          `/${router.query.circle}/r/${res.collection.slug}`
+                        );
                         setLoading(false);
                       }}
                     >
