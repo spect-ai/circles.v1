@@ -314,11 +314,16 @@ export const approveOneTokenUsingEOA = async (
   registry: Registry
 ) => {
   const tokenContract = await getContract(tokenAddress, erc20ABI);
-  const tx = await tokenContract.approve(
-    registry[chainId].distributorAddress,
-    ethers.constants.MaxUint256
-  );
-  await tx.wait();
+  try {
+    const tx = await tokenContract.approve(
+      registry[chainId].distributorAddress,
+      ethers.constants.MaxUint256
+    );
+    await tx.wait();
+  } catch (e) {
+    console.log(e);
+    return;
+  }
 };
 
 export const approveUsingEOA = async (

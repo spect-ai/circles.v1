@@ -6,9 +6,15 @@ import {
 } from "@/app/services/CoinGecko";
 import useERC20 from "@/app/services/Payment/useERC20";
 import usePaymentGateway from "@/app/services/Payment/usePayment";
+import {
+  approveOneTokenUsingEOA,
+  distributeCurrencyUsingEOA,
+  distributeTokensUsingEOA,
+} from "@/app/services/Paymentv2/utils";
 import { CollectionType, PaymentConfig, Registry } from "@/app/types";
 import { DollarCircleOutlined } from "@ant-design/icons";
 import { Box, Input, Stack, Text } from "degen";
+import { ethers } from "ethers";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useNetwork, useSwitchNetwork } from "wagmi";
@@ -115,8 +121,8 @@ export default function CollectPayment({
   const { chain } = useNetwork();
   const { switchNetworkAsync } = useSwitchNetwork();
   const [loading, setLoading] = useState(false);
-  const { batchPay } = usePaymentGateway();
-  const { approve, isApproved, hasBalance } = useERC20();
+  // const { batchPay } = usePaymentGateway();
+  const { isApproved, hasBalance } = useERC20();
 
   const checkNetwork = async () => {
     if (!(chain?.id.toString() == selectedNetwork.value)) {
@@ -195,7 +201,21 @@ export default function CollectPayment({
     console.log({ options });
     const currencyTxnHash = await toast
       .promise(
-        batchPay(options),
+        distributeCurrencyUsingEOA(
+          options.chainId,
+          [
+            {
+              ethAddress: options.userAddresses[0],
+              valueInWei: ethers.utils.parseUnits(
+                options.amounts[0].toString(),
+                "ether"
+              ),
+              token: options.tokenAddresses[0],
+            },
+          ],
+          circleRegistry as Registry,
+          ""
+        ),
         {
           pending: `Paying ${
             (circleRegistry &&
@@ -203,7 +223,7 @@ export default function CollectPayment({
             "Network Gas Token"
           }`,
           error: {
-            render: ({ data }) => data,
+            render: ({ data }: { data: string }) => data.toString(),
           },
         },
         {
@@ -235,7 +255,21 @@ export default function CollectPayment({
     setLoading(true);
     const tokenTxnHash = await toast
       .promise(
-        batchPay(options),
+        distributeTokensUsingEOA(
+          options.chainId,
+          [
+            {
+              ethAddress: options.userAddresses[0],
+              valueInWei: ethers.utils.parseUnits(
+                options.amounts[0].toString(),
+                "ether"
+              ),
+              token: options.tokenAddresses[0],
+            },
+          ],
+          circleRegistry as Registry,
+          ""
+        ),
         {
           pending: `Sending ${selectedToken.label}`,
           error: {
@@ -346,7 +380,7 @@ export default function CollectPayment({
                   setLoading(true);
                   if (!approvalStatus) {
                     await toast.promise(
-                      approve(
+                      approveOneTokenUsingEOA(
                         selectedNetwork.value,
                         selectedToken.value,
                         circleRegistry
@@ -361,7 +395,7 @@ export default function CollectPayment({
                       {
                         pending: `Approving ${selectedToken.label} Token`,
                         error: {
-                          render: ({ data }) => data,
+                          render: ({ data }: { data: any }) => data.toString(),
                         },
                       },
                       {
