@@ -24,9 +24,9 @@ type LocalCollectionContextType = {
   setSearchFilter: React.Dispatch<React.SetStateAction<string>>;
   showMyTasks: boolean;
   setShowMyTasks: React.Dispatch<React.SetStateAction<boolean>>;
-  paymentFilter: "none" | "Paid" | "Cancelled" | "Pending";
+  paymentFilter: "none" | "Paid" | "Pending Signature" | "Pending";
   setPaymentFilter: React.Dispatch<
-    React.SetStateAction<"none" | "Paid" | "Cancelled" | "Pending">
+    React.SetStateAction<"none" | "Paid" | "Pending Signature" | "Pending">
   >;
 };
 
