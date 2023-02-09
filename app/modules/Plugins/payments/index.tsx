@@ -207,24 +207,27 @@ export default function Payments({ handleClose }: Props) {
             continue;
           }
           if (
-            !tokenAmounts[network.value][token.value] &&
-            !dollarAmounts[network.value][token.value]
+            !(
+              tokenAmounts[network.value] &&
+              tokenAmounts[network.value][token.value]
+            ) &&
+            !(
+              dollarAmounts[network.value] &&
+              dollarAmounts[network.value][token.value]
+            )
           ) {
+            console.log("here");
             errMessages.push(
               `Amount is required for ${token.label} on ${network.label}`
             );
           }
           // check if not both token amount and dollar amount are set
-          try {
-            if (
-              tokenAmounts[network.value][token.value] &&
-              dollarAmounts[network.value][token.value]
-            ) {
-              errMessages.push(
-                `Token amount and dollar amount cannot be set for ${token.label} on ${network.label}. Please set only one of them.`
-              );
-            }
-          } catch (e) {
+          if (
+            tokenAmounts[network.value] &&
+            tokenAmounts[network.value][token.value] &&
+            dollarAmounts[network.value] &&
+            dollarAmounts[network.value][token.value]
+          ) {
             errMessages.push(
               `Token amount and dollar amount cannot be set for ${token.label} on ${network.label}. Please set only one of them.`
             );
@@ -358,9 +361,20 @@ export default function Payments({ handleClose }: Props) {
                       return n;
                     });
                     setAddedNetworks(newNetworks);
+                    if (!addedTokens[updatedNetwork.value]) {
+                      setAddedTokens({
+                        ...addedTokens,
+                        [updatedNetwork.value]:
+                          initTokens[updatedNetwork.value],
+                      });
+                    }
                     console.log({ newNetworks });
                   }}
                   onAddToken={() => {
+                    if (!addedTokens[network.value]) {
+                      toast.error("Please select a network first");
+                      return;
+                    }
                     setAddedTokens({
                       ...addedTokens,
                       [network.value]: [

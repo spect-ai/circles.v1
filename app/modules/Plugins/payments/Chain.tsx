@@ -65,8 +65,6 @@ export default function Chain({
     value: "custom",
   });
 
-  console.log({ addedTokens });
-
   const [isExpanded, setIsExpanded] = useState(true);
 
   return (
