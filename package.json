@@ -26,7 +26,7 @@
     "@guildxyz/sdk": "^1.1.1",
     "@nadavshaar/react-grid-table": "^1.0.2",
     "@popperjs/core": "^2.11.5",
-    "@rainbow-me/rainbowkit": "^0.6.1",
+    "@rainbow-me/rainbowkit": "^0.8.1",
     "@snapshot-labs/snapshot.js": "^0.4.56",
     "@svgr/webpack": "^6.2.1",
     "@table-library/react-table-library": "^4.0.18",
@@ -81,7 +81,7 @@
     "siwe": "^1.1.6",
     "socket.io-client": "4.3.2",
     "styled-components": "^5.3.6",
-    "wagmi": "^0.6.7",
+    "wagmi": "^0.11.5",
     "web3.storage": "^4.2.0"
   },
   "devDependencies": {

@@ -192,15 +192,15 @@ export const hasBalances = async (
     let balanceObj: WagmiBalanceObject;
     if (tokenAddress === "0x0") {
       balanceObj = await fetchBalance({
-        addressOrName: callerAddress,
+        address: callerAddress as `0x${string}`,
         chainId: parseInt(chainId),
         formatUnits: "ether",
       });
     } else {
       console.log({ tokenAddress, callerAddress, chainId });
       balanceObj = await fetchBalance({
-        addressOrName: callerAddress,
-        token: tokenAddress,
+        address: callerAddress as `0x${string}`,
+        token: tokenAddress as `0x${string}`,
         chainId: parseInt(chainId),
         formatUnits: "ether",
       });
@@ -257,14 +257,14 @@ export const hasAllowance = async (
     if (tokenAddress !== "0x0")
       reads.push({
         chainId: parseInt(chainId),
-        addressOrName: tokenAddress,
-        contractInterface: erc20ABI,
+        address: tokenAddress as `0x${string}`,
+        abi: erc20ABI,
         functionName: "allowance",
         args: [callerAddress, registry[chainId].distributorAddress],
       });
   });
   try {
-    const data = await readContracts({
+    const data: any[] = await readContracts({
       contracts: reads,
     });
     let idx = 0;

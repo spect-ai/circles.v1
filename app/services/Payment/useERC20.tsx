@@ -26,7 +26,7 @@ export default function useERC20() {
   const { chain } = useNetwork();
   const { address } = useAccount();
   const { data: balance } = useBalance({
-    addressOrName: address,
+    address,
     chainId: chain?.id,
   });
 
