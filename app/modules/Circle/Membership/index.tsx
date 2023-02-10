@@ -82,27 +82,14 @@ export default function Membership({}: Props) {
         </Stack>
       )}
       <ScrollContainer>
-        <Stack align="center" space="2">
-          {Object.keys(circle.roles).map((role) => {
-            const members = Object.keys(circle.memberRoles).filter((id) => {
-              return circle.memberRoles[id].find((r) => r === role);
-            });
-            if (!members.length) return null;
-            return (
-              <Box>
-                <Text variant="label" align="center">
-                  {role}
-                </Text>
-                <Stack direction="horizontal" wrap space="0" justify="center">
-                  {members.map((id) => {
-                    const member = memberDetails?.memberDetails[id];
-                    if (!member) return null;
-                    return <Member key={id} member={member} />;
-                  })}
-                </Stack>
-              </Box>
-            );
-          })}
+        <Stack align="baseline" space="2" direction="horizontal" wrap>
+          {circle.members.map((member) => (
+            <Member
+              key={member}
+              member={memberDetails?.memberDetails[member] as UserType}
+              roles={circle.memberRoles[member]}
+            />
+          ))}
         </Stack>
       </ScrollContainer>
     </Box>
@@ -111,11 +98,19 @@ export default function Membership({}: Props) {
 
 type MemberProps = {
   member: UserType;
+  roles: string[];
 };
 
-const Member = ({ member }: MemberProps) => {
+const Member = ({ member, roles }: MemberProps) => {
   return (
-    <a href={`/profile/${member.username}`} target="_blank" rel="noreferrer">
+    <a
+      href={`/profile/${member.username}`}
+      target="_blank"
+      rel="noreferrer"
+      style={{
+        width: "19.63%",
+      }}
+    >
       <motion.div
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
@@ -123,7 +118,7 @@ const Member = ({ member }: MemberProps) => {
           cursor: "pointer",
         }}
       >
-        <Box padding="2" margin="0" width="72">
+        <Box padding="2" margin="0">
           <Stack space="1" align="center">
             <Box
               style={{
@@ -151,6 +146,18 @@ const Member = ({ member }: MemberProps) => {
               <Box marginTop="4" />
               <Stack align="center">
                 <Text weight="semiBold">{member.username}</Text>
+                <Stack direction="horizontal" space="1" wrap>
+                  {roles.map((role, index) => (
+                    <Stack direction="horizontal" space="1" align="center">
+                      <Text key={role} variant="label">
+                        {role}
+                      </Text>
+                      {index !== roles.length - 1 && (
+                        <Text variant="label">|</Text>
+                      )}
+                    </Stack>
+                  ))}
+                </Stack>
                 <Stack direction="horizontal" wrap space="1">
                   {member.skillsV2?.map((skill) => (
                     <Stack direction="horizontal" space="2" align="center">
