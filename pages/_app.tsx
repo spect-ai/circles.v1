@@ -264,7 +264,7 @@ function MyApp({ Component, pageProps }: AppProps) {
     };
   }, [router.events]);
 
-  const { hostname } = useLocation();
+  const { hostname, pathname } = useLocation();
 
   const client = new ApolloClient({
     uri: hostname?.startsWith("circles")

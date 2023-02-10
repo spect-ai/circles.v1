@@ -4,6 +4,18 @@ import { GA_ANALYTICS_MEASUREMENT_ID } from "../lib/gtag";
 
 const isProd = process.env.NODE_ENV === "production";
 
+const TidioScript = () => {
+  if (process.env.NODE_ENV === "production") {
+    return (
+      <script
+        src="//code.tidio.co/x1bt9qhixmj7iqkf50xb9bjc4zstsuws.js"
+        async
+      ></script>
+    );
+  }
+  return null;
+};
+
 export default class MyDocument extends Document {
   render() {
     return (
@@ -31,12 +43,7 @@ export default class MyDocument extends Document {
               />
             </>
           )}
-          {process.env.NODE_ENV === "production" && (
-            <script
-              src="//code.tidio.co/x1bt9qhixmj7iqkf50xb9bjc4zstsuws.js"
-              async
-            ></script>
-          )}
+          <TidioScript />
         </Head>
         <body>
           <Main />

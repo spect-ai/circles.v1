@@ -179,6 +179,9 @@ export default function AddSkillModal({
 
               let newSkills;
               if (modalMode === "add") {
+                if (!skills) {
+                  skills = [];
+                }
                 newSkills = [
                   ...skills,
                   {

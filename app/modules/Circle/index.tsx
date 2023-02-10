@@ -18,6 +18,7 @@ import Credential from "./Credential";
 import AutomationCenter from "./Automation";
 import Help from "@/app/common/components/Help";
 import Governance from "./Governance";
+import Membership from "./Membership";
 
 const BoxContainer = styled(Box)`
   width: calc(100vw - 3.5rem);
@@ -60,6 +61,10 @@ export default function Circle() {
 
   if (router.query?.tab === "governance") {
     return <Governance />;
+  }
+
+  if (router.query.tab === "membership") {
+    return <Membership />;
   }
 
   if (circle?.unauthorized && !isLoading && circle?.id)
