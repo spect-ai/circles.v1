@@ -35,7 +35,6 @@ export default function Membership({}: Props) {
   const [isEmebedOpen, setIsEmebedOpen] = useState(false);
   const { pathname, hostname } = useLocation();
   const route = pathname?.split("/")[2];
-  console.log({ route, pathname });
 
   return (
     <Box paddingX="8" paddingY="4">
@@ -136,6 +135,7 @@ const Member = ({ member }: MemberProps) => {
           padding="4"
           width="full"
           borderRadius="2xLarge"
+          boxShadow="0.5"
         >
           <Box marginTop="4" />
           <Stack align="center">
