@@ -82,7 +82,7 @@ export default function Membership({}: Props) {
         </Stack>
       )}
       <ScrollContainer>
-        <Stack align="center">
+        <Stack align="center" space="2">
           {Object.keys(circle.roles).map((role) => {
             const members = Object.keys(circle.memberRoles).filter((id) => {
               return circle.memberRoles[id].find((r) => r === role);
@@ -93,7 +93,7 @@ export default function Membership({}: Props) {
                 <Text variant="label" align="center">
                   {role}
                 </Text>
-                <Stack direction="horizontal" wrap>
+                <Stack direction="horizontal" wrap space="0" justify="center">
                   {members.map((id) => {
                     const member = memberDetails?.memberDetails[id];
                     if (!member) return null;
@@ -123,7 +123,7 @@ const Member = ({ member }: MemberProps) => {
           cursor: "pointer",
         }}
       >
-        <Box padding="2" margin="1" width="64">
+        <Box padding="2" margin="0" width="72">
           <Stack space="1" align="center">
             <Box
               style={{
