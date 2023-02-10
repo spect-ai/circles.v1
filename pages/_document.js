@@ -10,7 +10,7 @@ const TidioScript = () => {
 
   if (
     process.env.NODE_ENV === "production" &&
-    !pathname.split["/"].includes("embed")
+    !pathname?.split["/"].includes("embed")
   ) {
     return (
       <script
