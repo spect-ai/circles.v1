@@ -1,17 +1,11 @@
 import Document, { Html, Head, Main, NextScript } from "next/document";
-import { useLocation } from "react-use";
 import { ServerStyleSheet } from "styled-components";
 import { GA_ANALYTICS_MEASUREMENT_ID } from "../lib/gtag";
 
 const isProd = process.env.NODE_ENV === "production";
 
 const TidioScript = () => {
-  const { pathname } = useLocation();
-
-  if (
-    process.env.NODE_ENV === "production" &&
-    !pathname?.split["/"].includes("embed")
-  ) {
+  if (process.env.NODE_ENV === "production") {
     return (
       <script
         src="//code.tidio.co/x1bt9qhixmj7iqkf50xb9bjc4zstsuws.js"
