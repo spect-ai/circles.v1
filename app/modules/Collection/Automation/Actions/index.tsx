@@ -1,4 +1,5 @@
 import { Action, CollectionType } from "@/app/types";
+import CloseCard from "./CloseCard";
 import CreateCard from "./CreateCard";
 import CreateDiscordChannel from "./CreateDiscordChannel";
 import GiveDiscordRole from "./GiveDiscordRole";
@@ -64,6 +65,14 @@ export default function SingleAction({
       )}
       {actionType === "postOnDiscord" && (
         <PostCardOnDiscord
+          action={action}
+          actionMode={actionMode}
+          setAction={setAction}
+          collection={collection}
+        />
+      )}
+      {actionType === "closeCard" && (
+        <CloseCard
           action={action}
           actionMode={actionMode}
           setAction={setAction}

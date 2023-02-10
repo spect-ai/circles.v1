@@ -117,6 +117,13 @@ export default function SingleAutomation({
       type: "postOnDiscord",
       data: {},
     },
+    closeCard: {
+      id: "closeCard",
+      name: "Close Card",
+      service: "collection",
+      type: "closeCard",
+      data: {},
+    }
     // startVotingPeriod: {
     //   id: "startVotingPeriod",
     //   name: "Start Voting Period",
@@ -179,7 +186,7 @@ export default function SingleAutomation({
       const thenOptions = Object.entries(allPossibleActions)
         .filter((a) =>
           collection?.collectionType === 0
-            ? true
+            ? a[0] !== "closeCard"
             : a[0] !== "giveDiscordRole" &&
               a[0] !== "giveRole" &&
               a[0] !== "createDiscordChannel"

@@ -205,8 +205,7 @@ export default function CardOptions({
             }}
           >
             <Stack direction="horizontal" align="center" space="2">
-              {collection.data?.[cardSlug].__cardStatus__ === undefined ||
-              collection.data?.[cardSlug].__cardStatus__ === "active" ? (
+              {!(collection.data?.[cardSlug]?.__cardStatus__ === "closed") ? (
                 <>
                   <IconClose color={"red"} size="5" />
                   <Text align={"left"}>Close Card</Text>

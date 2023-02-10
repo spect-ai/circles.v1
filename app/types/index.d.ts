@@ -768,7 +768,6 @@ export interface CollectionType {
   archived: boolean;
   circleRolesToNotifyUponUpdatedResponse?: string[];
   circleRolesToNotifyUponNewResponse?: string[];
-  dataStatus: MappedItem<boolean>;
 }
 
 export type PaymentConfig = {

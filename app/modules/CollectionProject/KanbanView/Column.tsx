@@ -93,7 +93,14 @@ export default function Column({
         <ScrollContainer>
           <Stack space="2">
             {cardIds?.map((slug, index) => (
-              <Draggable key={slug} draggableId={slug} index={index}>
+              <Draggable
+                key={slug}
+                draggableId={slug}
+                index={index}
+                isDragDisabled={
+                  collection.data[slug]?.__cardStatus__ === "closed"
+                }
+              >
                 {(provided, snapshot) => (
                   <Box
                     width="72"

@@ -446,7 +446,14 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
                   )}
                 </Stack>
                 <DragDropContext onDragEnd={handleDragEnd}>
-                  <Droppable droppableId="droppable" type="PROPERTY">
+                  <Droppable
+                    droppableId="droppable"
+                    type="PROPERTY"
+                    isDropDisabled={
+                      collection.data?.[cardSlug as string]?.__cardStatus__ ===
+                      "closed"
+                    }
+                  >
                     {ProperyListCallback}
                   </Droppable>
                 </DragDropContext>
