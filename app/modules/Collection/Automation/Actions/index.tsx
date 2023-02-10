@@ -4,6 +4,7 @@ import CreateCard from "./CreateCard";
 import CreateDiscordChannel from "./CreateDiscordChannel";
 import GiveDiscordRole from "./GiveDiscordRole";
 import GiveRole from "./GiveRole";
+import InitiatePendingPayment from "./InitiatePendingPayment";
 import PostCardOnDiscord from "./PostOnDiscord";
 import SendEmail from "./SendEmail";
 
@@ -74,6 +75,14 @@ export default function SingleAction({
       {actionType === "closeCard" && (
         <CloseCard
           action={action}
+          actionMode={actionMode}
+          setAction={setAction}
+          collection={collection}
+        />
+      )}
+      {actionType === "initiatePendingPayment" && (
+        <InitiatePendingPayment
+        action={action}
           actionMode={actionMode}
           setAction={setAction}
           collection={collection}

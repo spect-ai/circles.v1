@@ -123,7 +123,14 @@ export default function SingleAutomation({
       service: "collection",
       type: "closeCard",
       data: {},
-    }
+    },
+    initiatePendingPayment: {
+      id: "initiatePendingPayment",
+      name: "Initiate Pending Payment",
+      service: "collection",
+      type: "initiatePendingPayment",
+      data: {},
+    },
     // startVotingPeriod: {
     //   id: "startVotingPeriod",
     //   name: "Start Voting Period",
@@ -186,7 +193,7 @@ export default function SingleAutomation({
       const thenOptions = Object.entries(allPossibleActions)
         .filter((a) =>
           collection?.collectionType === 0
-            ? a[0] !== "closeCard"
+            ? a[0] !== "closeCard" && a[0] !== "initiatePendingPayment"
             : a[0] !== "giveDiscordRole" &&
               a[0] !== "giveRole" &&
               a[0] !== "createDiscordChannel"
