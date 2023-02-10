@@ -6,14 +6,13 @@ import {
   DollarOutlined,
   GatewayOutlined,
   ProjectOutlined,
-  StarOutlined,
 } from "@ant-design/icons";
 import {
   Box,
-  IconCollection,
   IconLightningBolt,
   IconSparkles,
   IconUserGroup,
+  IconUserGroupSolid,
   Skeleton,
   SkeletonGroup,
   Stack,
@@ -173,6 +172,7 @@ function CircleSidebar() {
           <Stack direction="vertical" space="2">
             <Link href={`/${cId}`}>
               <PrimaryButton
+                center
                 variant={
                   cId &&
                   ![
@@ -202,6 +202,7 @@ function CircleSidebar() {
             </Link>
             <Link href={`/${cId}?tab=payment&status=pending`}>
               <PrimaryButton
+                center
                 variant={
                   cId && router.query?.tab === "payment" && !cSlug && !pId
                     ? "tertiary"
@@ -221,6 +222,7 @@ function CircleSidebar() {
             </Link>
             <Link href={`/${cId}?tab=automation`}>
               <PrimaryButton
+                center
                 variant={
                   cId && router.query?.tab === "automation" && !cSlug && !pId
                     ? "tertiary"
@@ -234,6 +236,7 @@ function CircleSidebar() {
             <Box position="relative">
               <Link href={`/${cId}?tab=governance&proposalStatus=Active`}>
                 <PrimaryButton
+                  center
                   variant={
                     cId && router.query?.tab === "governance" && !cSlug && !pId
                       ? "tertiary"
@@ -247,6 +250,26 @@ function CircleSidebar() {
               <Badge>
                 <Text color="accent" size="extraSmall">
                   New
+                </Text>
+              </Badge>
+            </Box>
+            <Box position="relative">
+              <Link href={`/${cId}?tab=membership`}>
+                <PrimaryButton
+                  center
+                  variant={
+                    cId && router.query?.tab === "membership" && !cSlug && !pId
+                      ? "tertiary"
+                      : "transparent"
+                  }
+                  icon={<IconUserGroupSolid size="4" />}
+                >
+                  Membership Center
+                </PrimaryButton>
+              </Link>
+              <Badge>
+                <Text color="accent" size="extraSmall">
+                  Alpha
                 </Text>
               </Badge>
             </Box>

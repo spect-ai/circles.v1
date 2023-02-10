@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-interface UserType {
+export interface UserType {
   accounts: string[];
   createdAt: string;
   ethAddress: string;

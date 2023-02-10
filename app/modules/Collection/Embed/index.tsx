@@ -10,16 +10,24 @@ import { useLocalCollection } from "../Context/LocalCollectionContext";
 type EmbedProps = {
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
+  component: "form" | "members";
+  routeId: string;
 };
 
-export const Embed = ({ isOpen, setIsOpen }: EmbedProps) => {
+export const Embed = ({
+  isOpen,
+  setIsOpen,
+  component,
+  routeId,
+}: EmbedProps) => {
   const [selectedMode, setSelectedMode] = useState(0);
-
-  const { localCollection: collection } = useLocalCollection();
-
   const { mode } = useTheme();
   return (
-    <Modal title="Embed form" handleClose={() => setIsOpen(false)} size="small">
+    <Modal
+      title={`Embed ${component}`}
+      handleClose={() => setIsOpen(false)}
+      size="small"
+    >
       <Box padding="8">
         <Stack>
           <Stack direction="horizontal" align="center" space="2">
@@ -37,11 +45,6 @@ export const Embed = ({ isOpen, setIsOpen }: EmbedProps) => {
             </Box>
           </Stack>
           <Stack direction="horizontal" space="4" align="center">
-            {/* <Box cursor="pointer" onClick={() => setSelectedMode(0)}>
-                    <Tag tone={selectedMode === 0 ? "accent" : undefined} hover>
-                      Transparent
-                    </Tag>
-                  </Box> */}
             <Box cursor="pointer" onClick={() => setSelectedMode(0)}>
               <Tag tone={selectedMode === 0 ? "accent" : undefined} hover>
                 Dark
@@ -57,9 +60,15 @@ export const Embed = ({ isOpen, setIsOpen }: EmbedProps) => {
             icon={<Copy size={18} />}
             onClick={async () => {
               const colorMode = selectedMode === 0 ? "dark" : "light";
-              await navigator.clipboard.writeText(
-                `https://circles-v1-production.vercel.app/r/${collection?.slug}/embed?mode=${colorMode}`
-              );
+              if (component === "form") {
+                await navigator.clipboard.writeText(
+                  `https://circles-v1-production.vercel.app/r/${routeId}/embed?mode=${colorMode}`
+                );
+              } else {
+                await navigator.clipboard.writeText(
+                  `https://circles-v1-production.vercel.app/${routeId}/embed?mode=${colorMode}&tab=membership`
+                );
+              }
               toast.success(
                 "Copied to clipboard, paste it on any website which supports embed"
               );

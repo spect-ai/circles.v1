@@ -1,14 +1,13 @@
 import EmbedFormLayout from "@/app/common/layout/PublicLayout/EmbedFormLayout";
 import MetaHead from "@/app/common/seo/MetaHead/MetaHead";
+import Circle from "@/app/modules/Circle";
 import {
   CircleContext,
   useProviderCircleContext,
 } from "@/app/modules/Circle/CircleContext";
-import PublicForm from "@/app/modules/PublicForm";
-import useConnectDiscordServer from "@/app/services/Discord/useConnectDiscordServer";
 import { NextPage } from "next";
 
-const EmbedPage: NextPage = () => {
+const EmbedCirclePage: NextPage = () => {
   const context = useProviderCircleContext();
   return (
     <>
@@ -19,11 +18,11 @@ const EmbedPage: NextPage = () => {
       />
       <CircleContext.Provider value={context}>
         <EmbedFormLayout>
-          <PublicForm />
+          <Circle />
         </EmbedFormLayout>
       </CircleContext.Provider>
     </>
   );
 };
 
-export default EmbedPage;
+export default EmbedCirclePage;

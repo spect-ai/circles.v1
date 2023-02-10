@@ -307,7 +307,12 @@ function CollectionHeading() {
           <AddField handleClose={() => setIsAddFieldOpen(false)} />
         )}
         {isEmbedModalOpen && (
-          <Embed isOpen={isEmbedModalOpen} setIsOpen={setIsEmbedModalOpen} />
+          <Embed
+            isOpen={isEmbedModalOpen}
+            setIsOpen={setIsEmbedModalOpen}
+            component="form"
+            routeId={collection.slug}
+          />
         )}
       </AnimatePresence>
     </Box>
