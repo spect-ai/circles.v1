@@ -51,6 +51,8 @@ export default function ViewPlugins({}: Props) {
         return !!collection.formMetadata.formRoleGating;
       case "gtcpassport":
         return collection.formMetadata.sybilProtectionEnabled === true;
+      case "mintkudos":
+        return !!collection.formMetadata.mintkudosTokenId;
       case "payments":
         return !!collection.formMetadata.paymentConfig;
       default:
@@ -155,9 +157,9 @@ const PluginCard = ({
         <Stack>
           <Text weight="bold">{plugin.name}</Text>
           <Text>{plugin.description}</Text>
-          <a href={plugin.docs} target="_blank">
+          {/* <a href={plugin.docs} target="_blank">
             <Text color="accent">View Docs</Text>
-          </a>
+          </a> */}
         </Stack>
       </Box>
     </PluginContainer>
