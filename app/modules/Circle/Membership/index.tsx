@@ -108,7 +108,7 @@ const Member = ({ member, roles }: MemberProps) => {
       target="_blank"
       rel="noreferrer"
       style={{
-        width: "19.63%",
+        width: "19.1%",
       }}
     >
       <motion.div
