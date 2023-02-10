@@ -768,6 +768,7 @@ export interface CollectionType {
   archived: boolean;
   circleRolesToNotifyUponUpdatedResponse?: string[];
   circleRolesToNotifyUponNewResponse?: string[];
+  dataStatus: MappedItem<boolean>;
 }
 
 export type PaymentConfig = {
@@ -905,7 +906,8 @@ export type PropertyType =
   | "milestone"
   | "singleURL"
   | "multiURL"
-  | "payWall";
+  | "payWall"
+  | "cardStatus";
 
 export type Option = {
   label: string;

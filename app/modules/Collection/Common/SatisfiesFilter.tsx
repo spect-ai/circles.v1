@@ -173,6 +173,15 @@ export function satisfiesConditions(
             }
             return true;
         }
+      case "cardStatus":
+        switch (comparatorValue) {
+          case "is active":
+            return data[propertyId] !== "closed";
+          case "is closed":
+            return data[propertyId] === "closed";
+          default:
+            return false;
+        }
       default:
         return false;
     }
@@ -198,4 +207,15 @@ export const isMyCard = (
     }
     return false;
   });
+};
+
+export const paymentStatus = (filter: string, id: string, status: any) => {
+  if (filter === "Paid") {
+    return status?.[id] === "completed";
+  } else if (filter === "Pending") {
+    return status?.[id] === "pending";
+  } else if (filter === "Pending Signature") {
+    return status?.[id] === "pendingSignature";
+  }
+  return true;
 };

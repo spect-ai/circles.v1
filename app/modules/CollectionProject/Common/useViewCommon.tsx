@@ -12,6 +12,7 @@ import { DropResult } from "react-beautiful-dnd";
 import { useQuery } from "react-query";
 import {
   isMyCard,
+  paymentStatus,
   satisfiesConditions,
 } from "../../Collection/Common/SatisfiesFilter";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
@@ -23,6 +24,7 @@ export default function useViewCommon() {
     updateCollection,
     searchFilter,
     showMyTasks,
+    paymentFilter,
   } = useLocalCollection();
 
   const view = collection.projectMetadata.views[projectViewId];
@@ -117,6 +119,19 @@ export default function useViewCommon() {
         });
       });
     }
+
+    if (paymentFilter) {
+      newCardOrder = newCardOrder.map((group) => {
+        return group.filter((cardId) => {
+          return paymentStatus(
+            paymentFilter,
+            cardId,
+            collection.projectMetadata.paymentStatus
+          );
+        });
+      });
+    }
+
     if (view.sort?.property) {
       const { property, direction } = view.sort;
       const propertyType = collection.properties[property].type;
@@ -201,6 +216,7 @@ export default function useViewCommon() {
     memberDetails?.members,
     showMyTasks,
     collection,
+    paymentFilter,
   ]);
 
   useEffect(() => {

@@ -67,6 +67,11 @@ export function getComparators(propertyType: string): Option[] {
         { label: "is paid", value: "is paid" },
         { label: "is unpaid", value: "is unpaid" },
       ];
+    case "cardStatus":
+      return [
+        { label: "is active", value: "is active" },
+        { label: "is closed", value: "is closed" },
+      ];
 
     default:
       return [];

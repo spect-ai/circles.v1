@@ -24,6 +24,10 @@ type LocalCollectionContextType = {
   setSearchFilter: React.Dispatch<React.SetStateAction<string>>;
   showMyTasks: boolean;
   setShowMyTasks: React.Dispatch<React.SetStateAction<boolean>>;
+  paymentFilter: "none" | "Paid" | "Pending Signature" | "Pending";
+  setPaymentFilter: React.Dispatch<
+    React.SetStateAction<"none" | "Paid" | "Pending Signature" | "Pending">
+  >;
 };
 
 export const LocalCollectionContext = createContext<LocalCollectionContextType>(
@@ -57,6 +61,8 @@ export function useProviderLocalCollection() {
   const [projectViewId, setProjectViewId] = useState("");
   const [searchFilter, setSearchFilter] = useState("");
   const [showMyTasks, setShowMyTasks] = useState(false);
+  const [paymentFilter, setPaymentFilter] =
+    useState<"none" | "Paid" | "Pending Signature" | "Pending">("none");
 
   const updateCollection = (collection: CollectionType) => {
     queryClient.setQueryData(["collection", colId], collection);
@@ -152,6 +158,8 @@ export function useProviderLocalCollection() {
     setSearchFilter,
     showMyTasks,
     setShowMyTasks,
+    paymentFilter,
+    setPaymentFilter,
   };
 }
 

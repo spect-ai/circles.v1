@@ -20,9 +20,10 @@ type Props = {
   setValue: (value: any) => void;
   propertyName: string;
   dataId: string;
+  disabled: boolean;
 };
 
-function EditValue({ value, setValue, propertyName, dataId }: Props) {
+function EditValue({ value, setValue, propertyName, dataId, disabled }: Props) {
   const [isEditing, setIsEditing] = useState(false);
   const fieldInput = useRef<any>();
   const { localCollection: collection, updateCollection } =
@@ -129,6 +130,10 @@ function EditValue({ value, setValue, propertyName, dataId }: Props) {
               ) : (
                 <FieldButton
                   onClick={() => {
+                    if (disabled) {
+                      toast.error("You can't edit a closed card");
+                      return;
+                    }
                     if (!formActions("updateResponsesManually"))
                       toast.error(
                         "Your role doesn't have permission to update cards"
