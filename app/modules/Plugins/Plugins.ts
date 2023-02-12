@@ -11,10 +11,10 @@ export interface SpectPlugin {
 export const spectPlugins: { [key: string]: SpectPlugin } = {
   guildxyz: {
     id: "guildxyz",
-    name: "Guild.xyz",
+    name: "Role Gating with Guild.xyz",
     version: "1.0.0",
     description:
-      "Guild.xyz allows you to role gate your forms. Choose which roles on guild.xyz can access your form.",
+      "Guild.xyz allows you to role gate forms. Creating an internal form where you only want specific people to respond? This one's for you!",
     docs: "https://docs.guild.xyz",
     image:
       "https://ik.imagekit.io/spectcdn/GuildOnFire.png?ik-sdk-version=javascript-1.4.3&updatedAt=1675753128685",
@@ -22,10 +22,10 @@ export const spectPlugins: { [key: string]: SpectPlugin } = {
   },
   gtcpassport: {
     id: "gtcpassport",
-    name: "Sybil Protection with GTC Passport",
+    name: "Sybil Protection with Gitcoin Passport",
     version: "1.0.0",
     description:
-      "GTC Passport allows you to sybil protect your form. You can set your own score for each passport stamp",
+      "Gitcoin Passport allows you to sybil protect your form. Customize passport scores & protect your forms against bots and bad actors!",
     docs: "https://docs.guild.xyz",
     image:
       "https://ik.imagekit.io/spectcdn/gtcpassport_XqHKx4FMG?ik-sdk-version=javascript-1.4.3&updatedAt=1675753373123",
@@ -33,10 +33,10 @@ export const spectPlugins: { [key: string]: SpectPlugin } = {
   },
   mintkudos: {
     id: "mintkudos",
-    name: "Mint Kudos",
+    name: "Incentivize responders with MintKudos",
     version: "1.0.0",
     description:
-      "Mint Kudos allows you distribute soul bound tokens or 'Kudos' to your form responders",
+      "MintKudos allows you distribute soulbound tokens to responders automatically. Kudos to them for filling out this form!",
     docs: "https://docs.guild.xyz",
     image:
       "https://ik.imagekit.io/spectcdn/CDfgJBIe_2x.jpg?ik-sdk-version=javascript-1.4.3&updatedAt=1675753635232",
@@ -47,7 +47,7 @@ export const spectPlugins: { [key: string]: SpectPlugin } = {
     name: "Collect Payments",
     version: "1.0.0",
     description:
-      "Collect payments, paywall form or just accept donations on all supported chains.",
+      "Create a paywall or take donations directly on your form. Easier than ever!",
     docs: "https://docs.guild.xyz",
     image:
       "https://ik.imagekit.io/spectcdn/payments.png?ik-sdk-version=javascript-1.4.3&updatedAt=1675753949461",
@@ -55,10 +55,10 @@ export const spectPlugins: { [key: string]: SpectPlugin } = {
   },
   ceramic: {
     id: "ceramic",
-    name: "Ceramic (Coming Soon)",
+    name: "Data Ownership with Ceramic (Coming Soon)",
     version: "1.0.0",
     description:
-      "Using ceramic we can store the form responder's data on the decentralized database.",
+      "Care about data ownership & composability? Use Ceramic to store your form data.",
     docs: "https://docs.guild.xyz",
     image:
       "https://ik.imagekit.io/spectcdn/ceramic.png?ik-sdk-version=javascript-1.4.3&updatedAt=1675754081907",

@@ -154,7 +154,7 @@ export default function useCredentials() {
                         if (cardId === res2.id) setCard(res2);
                       })
                       .catch((err) => console.log(err));
-                    toast.success("Successfully minted kudos!", {
+                    toast.success("Successfully created kudos!", {
                       theme: mode,
                     });
                   }
@@ -206,7 +206,7 @@ export default function useCredentials() {
                           setLocalCollection(res2);
                       })
                       .catch((err) => console.log(err));
-                    toast.success("Successfully minted kudos!", {
+                    toast.success("Successfully created kudos!", {
                       theme: mode,
                     });
                   }

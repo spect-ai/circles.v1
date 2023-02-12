@@ -34,7 +34,7 @@ function InactiveFieldsColumnComponent({ fields }: Props) {
         {fields?.map((field, idx) => {
           if (
             !collection.properties[field]?.isPartOfFormView &&
-            !collection.properties[field].internal
+            !collection.properties[field]?.internal
           ) {
             return (
               <InactiveFieldComponent
