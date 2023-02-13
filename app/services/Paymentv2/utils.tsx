@@ -297,7 +297,7 @@ export const switchNetwork = async (chainId: string) => {
     });
 };
 
-async function getContract(address: string, abi: any) {
+export async function getContract(address: string, abi: any) {
   const signer = await fetchSigner();
   return new ethers.Contract(address, abi, signer as unknown as Signer);
 }

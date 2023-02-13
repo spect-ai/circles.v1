@@ -1,0 +1,270 @@
+import Dropdown from "@/app/common/components/Dropdown";
+import Modal from "@/app/common/components/Modal";
+import PrimaryButton from "@/app/common/components/PrimaryButton";
+import Select from "@/app/common/components/Select";
+import { updateFormCollection } from "@/app/services/Collection";
+import { createSurvey, getLastSurveyId } from "@/app/services/SurveyProtocol";
+import { Option } from "@/app/types";
+import { Box, Input, Stack, Text } from "degen";
+import { AnimatePresence } from "framer-motion";
+import { useEffect, useState } from "react";
+import { useCircle } from "../../Circle/CircleContext";
+import AddToken from "../../Circle/CircleSettingsModal/CirclePayment/AddToken";
+import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
+
+type Props = {
+  handleClose: () => void;
+};
+
+export default function DistributeERC20({ handleClose }: Props) {
+  const { registry } = useCircle();
+  const { localCollection: collection, updateCollection } =
+    useLocalCollection();
+  const [paymentType, setPaymentType] = useState({
+    label: "Pay per response",
+    value: "payPerResponse",
+  });
+  const [isAddTokenModalOpen, setIsAddTokenModalOpen] = useState(false);
+
+  const networks = Object.keys(registry || {})
+    .filter((key) => ["137", "43113"].includes(key))
+    .map((key) => {
+      return {
+        label: (registry && registry[key].name) || "",
+        value: key,
+      };
+    });
+  const [selectedNetwork, setSelectedNetwork] = useState(networks[0]);
+  const [tokenOptions, setTokenOptions] = useState([] as Option[]);
+  const [selectedToken, setSelectedToken] = useState({} as Option);
+  const [value, setValue] = useState(0);
+  const [valuePerResponse, setValuePerResponse] = useState(0);
+  const [minResponses, setMinResponses] = useState(0);
+  const [minTimestamp, setMinTimestamp] = useState(0);
+  const [lotteryClaimOptions, setLotteryClaimOptions] =
+    useState<"minDays" | "minResponses">("minDays");
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (registry && selectedNetwork) {
+      const tokens = Object.entries(
+        registry[selectedNetwork.value].tokenDetails
+      ).map(([address, token]) => {
+        return {
+          label: token.symbol,
+          value: address,
+        };
+      });
+      tokens.unshift({
+        label: "Add Token from address",
+        value: "__custom__",
+      });
+      setSelectedToken(tokens[1]);
+      setTokenOptions(tokens);
+    }
+  }, [selectedNetwork]);
+
+  return (
+    <Modal handleClose={handleClose} title="Distribute Tokens">
+      <AnimatePresence>
+        {isAddTokenModalOpen && (
+          <AddToken
+            chainId={selectedNetwork?.value}
+            chainName={selectedNetwork?.label}
+            handleClose={() => setIsAddTokenModalOpen(false)}
+          />
+        )}
+      </AnimatePresence>
+      <Box padding="8">
+        <Stack>
+          <Stack>
+            <Stack space="1">
+              <Stack space="1">
+                <Text variant="label">Pick Network & Token to distribute</Text>
+              </Stack>
+              <Box display="flex" gap="4">
+                <Box width="1/3">
+                  <Dropdown
+                    options={networks}
+                    selected={selectedNetwork}
+                    onChange={setSelectedNetwork}
+                    multiple={false}
+                    isClearable={false}
+                    placeholder="Select Network"
+                  />
+                </Box>
+                <Box width="1/3">
+                  <Dropdown
+                    options={tokenOptions}
+                    selected={selectedToken}
+                    onChange={(option) => {
+                      if (option?.value === "__custom__") {
+                        setIsAddTokenModalOpen(true);
+                        return;
+                      }
+                      setSelectedToken(option);
+                    }}
+                    multiple={false}
+                    isClearable={false}
+                  />
+                </Box>
+              </Box>
+            </Stack>
+            <Stack space="1">
+              <Text variant="label">Total Amount</Text>
+              <Box width="1/3">
+                <Input
+                  label=""
+                  placeholder={`Enter Total Amount in`}
+                  value={value}
+                  onChange={(e) => {
+                    setValue(parseFloat(e.target.value));
+                  }}
+                  type="number"
+                  units={selectedToken?.label}
+                />
+              </Box>
+            </Stack>
+            <Stack space="2">
+              <Stack space="1">
+                <Text variant="label">
+                  Pay per response: Each responder gets paid, Lottery: Only
+                  lucky responder get paid
+                </Text>
+              </Stack>
+              <Select
+                options={[
+                  { label: "Pay per response", value: "payPerResponse" },
+                  { label: "Lottery", value: "lottery" },
+                ]}
+                value={paymentType}
+                onChange={setPaymentType}
+                variant="secondary"
+              />
+            </Stack>
+            {paymentType?.value === "payPerResponse" && (
+              <Stack space="1">
+                <Text variant="label">Amount To Pay Per Response</Text>
+                <Box width="1/3">
+                  <Input
+                    label=""
+                    placeholder={`Enter Amount in`}
+                    value={valuePerResponse}
+                    onChange={(e) => {
+                      setValuePerResponse(parseFloat(e.target.value));
+                    }}
+                    type="number"
+                    units={selectedToken?.label}
+                  />
+                </Box>
+              </Stack>
+            )}
+            <Stack space="0">
+              {paymentType?.value === "lottery" &&
+                lotteryClaimOptions === "minDays" && (
+                  <Stack space="1">
+                    <Text variant="label">
+                      When can the lottery be claimed?
+                    </Text>
+                    <Box width="1/3">
+                      <Input
+                        label=""
+                        placeholder={`Min `}
+                        value={minTimestamp}
+                        onChange={(e) => {
+                          setMinTimestamp(parseInt(e.target.value));
+                          setMinResponses(0);
+                        }}
+                        type="number"
+                        units={"days"}
+                      />
+                    </Box>
+                  </Stack>
+                )}
+              {paymentType?.value === "lottery" &&
+                lotteryClaimOptions === "minResponses" && (
+                  <Stack space="1">
+                    <Text variant="label">
+                      Minimum Responses after which lottery can be claimed
+                    </Text>
+                    <Box width="1/3">
+                      <Input
+                        label=""
+                        placeholder={``}
+                        value={minResponses}
+                        onChange={(e) => {
+                          setMinResponses(parseInt(e.target.value));
+                          setMinTimestamp(0);
+                        }}
+                        type="number"
+                        units={"responses"}
+                      />
+                    </Box>
+                  </Stack>
+                )}
+              {paymentType?.value === "lottery" && (
+                <Box width="1/3">
+                  <PrimaryButton
+                    variant="transparent"
+                    onClick={() => {
+                      setLotteryClaimOptions(
+                        lotteryClaimOptions === "minDays"
+                          ? "minResponses"
+                          : "minDays"
+                      );
+                    }}
+                  >
+                    {lotteryClaimOptions === "minDays"
+                      ? "Or set number or responses"
+                      : "Or set minimum days"}
+                  </PrimaryButton>
+                </Box>
+              )}
+            </Stack>
+          </Stack>
+        </Stack>
+        <Box
+          marginTop="8"
+          width="full"
+          display="flex"
+          justifyContent="flex-end"
+        >
+          <Box width="1/2">
+            <PrimaryButton
+              loading={isLoading}
+              onClick={async () => {
+                setIsLoading(true);
+                const tx = await createSurvey(
+                  selectedToken?.value,
+                  paymentType?.value === "payPerResponse" ? 1 : 0,
+                  value,
+                  valuePerResponse,
+                  minTimestamp,
+                  minResponses
+                );
+                if (!tx) {
+                  setIsLoading(false);
+                  return;
+                }
+                console.log({ tx });
+                const lastSurveyId = await getLastSurveyId();
+                console.log({ lastSurveyId });
+                const res = await updateFormCollection(collection.id, {
+                  formMetadata: {
+                    ...collection.formMetadata,
+                    surveyTokenId: lastSurveyId,
+                  },
+                });
+                console.log({ res });
+                setIsLoading(false);
+                if (res) handleClose();
+              }}
+            >
+              Confirm
+            </PrimaryButton>
+          </Box>
+        </Box>
+      </Box>
+    </Modal>
+  );
+}

@@ -64,4 +64,15 @@ export const spectPlugins: { [key: string]: SpectPlugin } = {
       "https://ik.imagekit.io/spectcdn/ceramic.png?ik-sdk-version=javascript-1.4.3&updatedAt=1675754081907",
     premium: true,
   },
+  erc20: {
+    id: "erc20",
+    name: "Distribute ERC20 Tokens to Responders",
+    version: "1.0.0",
+    description:
+      "Want to incentivize responders for filling out your form? Use this plugin to distribute ERC20 tokens to responders!",
+    docs: "",
+    image:
+      "https://ik.imagekit.io/spectcdn/moneybagethereummb3dmodel001.jpg?ik-sdk-version=javascript-1.4.3&updatedAt=1676107655114",
+    premium: true,
+  },
 };

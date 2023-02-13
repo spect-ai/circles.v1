@@ -7,6 +7,7 @@ import { Cpu } from "react-feather";
 import styled from "styled-components";
 import { useCircle } from "../Circle/CircleContext";
 import { useLocalCollection } from "../Collection/Context/LocalCollectionContext";
+import DistributeERC20 from "./erc20";
 import SybilResistance from "./gtcpassport";
 import RoleGate from "./guildxyz";
 import SendKudos from "./mintkudos";
@@ -37,6 +38,10 @@ export default function ViewPlugins({}: Props) {
         setPluginOpen(pluginName);
         break;
       case "payments":
+        setIsPluginOpen(true);
+        setPluginOpen(pluginName);
+        break;
+      case "erc20":
         setIsPluginOpen(true);
         setPluginOpen(pluginName);
         break;
@@ -123,6 +128,12 @@ export default function ViewPlugins({}: Props) {
         )}
         {isPluginOpen && pluginOpen === "payments" && (
           <Payments handleClose={() => setIsPluginOpen(false)} key="payments" />
+        )}
+        {isPluginOpen && pluginOpen === "erc20" && (
+          <DistributeERC20
+            handleClose={() => setIsPluginOpen(false)}
+            key="erc20"
+          />
         )}
       </AnimatePresence>
     </Box>
