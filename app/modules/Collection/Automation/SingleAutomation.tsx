@@ -470,7 +470,7 @@ export default function SingleAutomation({
                           selected={selectedThenOptions[index]}
                           onChange={(value) => {
                             const newActions = [...actions];
-                            newActions[index] = allPossibleActions[value.value];
+                            newActions[index] = allPossibleActions[value?.value];
                             setActions(newActions);
                             const newSelectedThenOptions = [
                               ...selectedThenOptions,
