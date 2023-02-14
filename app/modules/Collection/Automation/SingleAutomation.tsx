@@ -179,6 +179,19 @@ export default function SingleAutomation({
             fieldType: p[1].type,
           },
         }));
+      const paymentOptions =
+        (collection as CollectionType)?.collectionType === 0
+          ? []
+          : [
+              {
+                label: "Payment is Completed",
+                value: "completedPayment",
+              },
+              {
+                label: "Payment is Cancelled",
+                value: "cancelledPayment",
+              },
+            ];
       setWhenOptions([
         ...whenOptions,
         {
@@ -188,6 +201,7 @@ export default function SingleAutomation({
               : "New Card is added",
           value: "newData",
         },
+        ...paymentOptions,
       ]);
 
       const thenOptions = Object.entries(allPossibleActions)
@@ -196,7 +210,10 @@ export default function SingleAutomation({
             ? a[0] !== "closeCard" && a[0] !== "initiatePendingPayment"
             : a[0] !== "giveDiscordRole" &&
               a[0] !== "giveRole" &&
-              a[0] !== "createDiscordChannel"
+              a[0] !== "createDiscordChannel" &&
+              (selectedWhenOption.value === "completedPayment" ||
+                selectedWhenOption.value === "cancelledPayment") &&
+              a[0] !== "initiatePendingPayment"
         )
         .map((a) => ({
           label: a[1].name,
