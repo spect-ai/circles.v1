@@ -485,7 +485,7 @@ export default function SingleAutomation({
                         />
                       </Box>
                       <SingleAction
-                        actionType={selectedThenOptions[index].value}
+                        actionType={selectedThenOptions[index]?.value}
                         action={action}
                         setAction={(action) => {
                           const newActions = [...actions];
@@ -538,11 +538,11 @@ export default function SingleAutomation({
                     onClick={() => {
                       setActions([
                         ...actions,
-                        allPossibleActions[thenOptions[0].value],
+                        allPossibleActions[thenOptions?.[0]?.value],
                       ]);
                       setSelectedThenOptions([
                         ...selectedThenOptions,
-                        thenOptions[0],
+                        thenOptions?.[0],
                       ]);
                       setIsDirty(true);
                     }}
