@@ -77,6 +77,7 @@ function PublicLayout(props: PublicLayoutProps) {
     refetch()
       .then((res) => {
         const data = res.data;
+
         if (data?.id) connectUser(data.id);
       })
       .catch((err) => {

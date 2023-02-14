@@ -7,6 +7,7 @@ import { Cpu } from "react-feather";
 import styled from "styled-components";
 import { useCircle } from "../Circle/CircleContext";
 import { useLocalCollection } from "../Collection/Context/LocalCollectionContext";
+import Ceramic from "./ceramic";
 import SybilResistance from "./gtcpassport";
 import RoleGate from "./guildxyz";
 import SendKudos from "./mintkudos";
@@ -40,6 +41,10 @@ export default function ViewPlugins({}: Props) {
         setIsPluginOpen(true);
         setPluginOpen(pluginName);
         break;
+      case "ceramic":
+        setIsPluginOpen(true);
+        setPluginOpen(pluginName);
+        break;
       default:
         break;
     }
@@ -55,6 +60,8 @@ export default function ViewPlugins({}: Props) {
         return !!collection.formMetadata.mintkudosTokenId;
       case "payments":
         return !!collection.formMetadata.paymentConfig;
+      case "ceramic":
+        return !!collection.formMetadata.ceramicEnabled;
       default:
         return false;
     }
@@ -123,6 +130,9 @@ export default function ViewPlugins({}: Props) {
         )}
         {isPluginOpen && pluginOpen === "payments" && (
           <Payments handleClose={() => setIsPluginOpen(false)} key="payments" />
+        )}
+        {isPluginOpen && pluginOpen === "ceramic" && (
+          <Ceramic handleClose={() => setIsPluginOpen(false)} key="ceramic" />
         )}
       </AnimatePresence>
     </Box>

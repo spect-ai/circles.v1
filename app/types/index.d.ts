@@ -815,6 +815,7 @@ export type FormMetadata = {
   canClaimKudos: boolean;
   allowAnonymousResponses: boolean;
   paymentConfig?: PaymentConfig;
+  ceramicEnabled?: boolean;
 };
 
 export type ProjectMetadata = {
