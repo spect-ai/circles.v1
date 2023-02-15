@@ -252,7 +252,7 @@ export default function FormFields({ form, setForm }: Props) {
 
   const onSubmit = async () => {
     setSubmitting(true);
-    if (form.formMetadata.ceramicEnabled) {
+    if (false && form.formMetadata.ceramicEnabled) {
       let session: any;
       const loadedSession = await loadCeramicSession(address as string);
       console.log({ loadedSession });

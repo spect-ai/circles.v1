@@ -34,8 +34,6 @@ export default function DataDrawer({
   const { dataId: dataSlug, circle: cId } = router.query;
   const [data, setData] = useState({} as any);
 
-  console.log({ collection });
-
   useEffect(() => {
     if (dataId && collection.data) {
       setTimeout(() => {
@@ -155,7 +153,7 @@ export default function DataDrawer({
                 <Box display="flex" flexDirection="column" width="3/4" gap="4">
                   {collection.propertyOrder.map((propertyName: string) => {
                     const property = collection.properties[propertyName];
-                    if (!data[property.name])
+                    if (!data[property.id || property.name])
                       return (
                         <Stack key={property.name} space="1">
                           <Text
@@ -199,7 +197,9 @@ export default function DataDrawer({
                           "email",
                           "number",
                         ].includes(property.type) && (
-                          <Text size="small">{data[property.name]}</Text>
+                          <Text size="small">
+                            {data[property.id || property.name]}
+                          </Text>
                         )}
                         {property?.type === "longText" && (
                           <Editor value={data[property.name]} disabled />
@@ -276,7 +276,7 @@ export default function DataDrawer({
                         )}
                         {property?.type === "payWall" && (
                           <Stack>
-                            {[data[property.name]]?.map(
+                            {[data[property.id || property.name]]?.map(
                               (payment: {
                                 token: OptionType;
                                 chain: OptionType;
