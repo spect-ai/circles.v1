@@ -4,10 +4,11 @@ import PrimaryButton from "@/app/common/components/PrimaryButton";
 import Select from "@/app/common/components/Select";
 import { updateFormCollection } from "@/app/services/Collection";
 import { createSurvey, getLastSurveyId } from "@/app/services/SurveyProtocol";
-import { Option } from "@/app/types";
+import { Option, UserType } from "@/app/types";
 import { Box, Input, Stack, Text } from "degen";
 import { AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
+import { useQuery } from "react-query";
 import { useCircle } from "../../Circle/CircleContext";
 import AddToken from "../../Circle/CircleSettingsModal/CirclePayment/AddToken";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
@@ -26,8 +27,11 @@ export default function DistributeERC20({ handleClose }: Props) {
   });
   const [isAddTokenModalOpen, setIsAddTokenModalOpen] = useState(false);
 
+  const { data: currentUser } = useQuery<UserType>("getMyUser", {
+    enabled: false,
+  });
   const networks = Object.keys(registry || {})
-    .filter((key) => ["137", "43113"].includes(key))
+    .filter((key) => ["137", "43113", "80001"].includes(key))
     .map((key) => {
       return {
         label: (registry && registry[key].name) || "",
@@ -233,11 +237,22 @@ export default function DistributeERC20({ handleClose }: Props) {
             <PrimaryButton
               loading={isLoading}
               onClick={async () => {
+                if (!registry) return;
+                if (
+                  selectedToken?.value !== "0x0" &&
+                  !currentUser?.ethAddress
+                ) {
+                  console.log("no eth address");
+                  return;
+                }
                 setIsLoading(true);
                 const tx = await createSurvey(
+                  selectedNetwork.value,
+                  registry[selectedNetwork.value].surveyHubAddress,
                   selectedToken?.value,
                   paymentType?.value === "payPerResponse" ? 1 : 0,
                   value,
+                  currentUser?.ethAddress || "",
                   valuePerResponse,
                   minTimestamp,
                   minResponses
@@ -247,12 +262,15 @@ export default function DistributeERC20({ handleClose }: Props) {
                   return;
                 }
                 console.log({ tx });
-                const lastSurveyId = await getLastSurveyId();
+                const lastSurveyId = await getLastSurveyId(
+                  registry[selectedNetwork.value].surveyHubAddress
+                );
                 console.log({ lastSurveyId });
                 const res = await updateFormCollection(collection.id, {
                   formMetadata: {
                     ...collection.formMetadata,
                     surveyTokenId: lastSurveyId,
+                    surveyTokenChainId: selectedNetwork.value,
                   },
                 });
                 console.log({ res });

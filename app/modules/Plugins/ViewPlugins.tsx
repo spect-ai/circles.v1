@@ -60,6 +60,8 @@ export default function ViewPlugins({}: Props) {
         return !!collection.formMetadata.mintkudosTokenId;
       case "payments":
         return !!collection.formMetadata.paymentConfig;
+      case "erc20":
+        return !!collection.formMetadata.surveyTokenId;
       default:
         return false;
     }

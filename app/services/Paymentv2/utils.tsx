@@ -289,8 +289,6 @@ export const hasAllowance = async (
 
 export const switchNetwork = async (chainId: string) => {
   const network = getNetwork();
-  console.log({ network });
-  console.log({ id: network.chain?.id, chainId });
   if (parseInt(chainId) !== network.chain?.id)
     await switchNet({
       chainId: parseInt(chainId),

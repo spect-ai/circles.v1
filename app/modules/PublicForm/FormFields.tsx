@@ -53,6 +53,9 @@ export default function FormFields({ form, setForm }: Props) {
   const { connectedUser, connectUser } = useGlobal();
   const [loading, setLoading] = useState(false);
   const [claimed, setClaimed] = useState(form.formMetadata.kudosClaimedByUser);
+  const [surveyTokenClaimed, setSurveyTokenClaimed] = useState(
+    form.formMetadata.surveyTokenClaimedByUser
+  );
   const [submitting, setSubmitting] = useState(false);
   const [respondAsAnonymous, setRespondAsAnonymous] = useState(false);
   const [notificationPreferenceModalOpen, setNotificationPreferenceModalOpen] =
@@ -304,6 +307,8 @@ export default function FormFields({ form, setForm }: Props) {
         kudos={kudos}
         claimed={claimed}
         setClaimed={setClaimed}
+        surveyTokenClaimed={surveyTokenClaimed}
+        setSurveyTokenClaimed={setSurveyTokenClaimed}
         setViewResponse={setViewResponse}
       />
     );

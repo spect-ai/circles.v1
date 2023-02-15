@@ -87,6 +87,7 @@ export default function PublicForm() {
     }
   };
 
+  console.log({ form });
   useEffect(() => {
     void (async () => {
       if (formId) {
@@ -215,6 +216,11 @@ export default function PublicForm() {
                 {form.formMetadata.mintkudosTokenId && (
                   <Text weight="semiBold" variant="large" color="textPrimary">
                     This form distributes soulbound tokens to responders
+                  </Text>
+                )}
+                {form.formMetadata.surveyTokenId && (
+                  <Text weight="semiBold" variant="large" color="textPrimary">
+                    This form distributes erc20 tokens to responders
                   </Text>
                 )}
                 {form.formMetadata.sybilProtectionEnabled && (

@@ -481,6 +481,8 @@ export type NetworkInfo = {
   tokenDetails: { [tokenAddress: string]: Token };
   coinGeckoCurrencyId: string;
   coinGeckoPlatformId: string;
+  surveyHubAddress: string;
+  chainlinkVRFConsumerAddress: string;
 };
 
 export interface Template {
@@ -816,6 +818,9 @@ export type FormMetadata = {
   allowAnonymousResponses: boolean;
   paymentConfig?: PaymentConfig;
   surveyTokenId?: number;
+  surveyTokenClaimedByUser: boolean;
+  canClaimSurveyToken: boolean;
+  surveyTokenChainId?: string;
 };
 
 export type ProjectMetadata = {
