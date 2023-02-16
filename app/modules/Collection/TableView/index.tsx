@@ -632,6 +632,9 @@ export default function TableView() {
             onClick={() => {
               let out = [] as any[];
               const d = data?.map((da) => {
+                const csvData: {
+                  [key: string]: string;
+                } = {};
                 Object.entries(da)
                   .filter(
                     ([key, value]) =>
@@ -640,7 +643,7 @@ export default function TableView() {
                   .forEach(([key, value]: [string, any]) => {
                     if (!collection.properties[key]) return;
                     if (collection.properties[key].type === "reward") {
-                      da[key] = JSON.stringify({
+                      csvData[key] = JSON.stringify({
                         chain: value?.chain.label,
                         token: value?.token.label,
                         value: value?.value,
@@ -656,33 +659,34 @@ export default function TableView() {
                           value: v?.reward?.value,
                         },
                       }));
-                      da[key] = JSON.stringify(milestones);
+                      csvData[key] = JSON.stringify(milestones);
                     } else if (
                       ["user", "singleSelect"].includes(
                         collection.properties[key].type
                       )
                     ) {
-                      da[key] = value?.label;
+                      csvData[key] = value?.label;
                     } else if (collection.properties[key].type === "multiURL") {
-                      da[key] = JSON.stringify(value);
+                      csvData[key] = JSON.stringify(value);
                     } else if (
                       ["user[]", "multiSelect"].includes(
                         collection.properties[key].type
                       )
                     ) {
-                      da[key] = JSON.stringify(
+                      csvData[key] = JSON.stringify(
                         value?.map((v: Option) => v.label)
                       );
                     } else if (key === "__payment__") {
-                      da[key] = JSON.stringify(value);
+                      csvData[key] = JSON.stringify(value);
                     } else if (!value) {
-                      da[key] = "";
+                      csvData[key] = "";
                     } else {
-                      da[key] = value;
+                      csvData[key] = value;
                     }
                   });
-                delete da["id"] && delete da["anonymous"];
-                return da;
+                // delete csvData["id"] && delete csvData["anonymous"];
+                csvData["slug"] = da.slug;
+                return csvData;
               });
               console.log({ d });
               exportToCsv((d as []).reverse(), collection.name);
