@@ -366,6 +366,25 @@ export default function DataDrawer({
                             )}
                           </Stack>
                         )}
+                        {property?.type === "discord" && (
+                          <Box padding="0">
+                            <Stack direction="horizontal" align="center">
+                              <Avatar
+                                label="Discord Avatar"
+                                src={`https://cdn.discordapp.com/avatars/${data[propertyName].id}/${data[propertyName].avatar}.png`}
+                              />
+                              <Box>
+                                <Text
+                                  size="extraSmall"
+                                  font="mono"
+                                  weight="bold"
+                                >
+                                  {data[propertyName].username}
+                                </Text>
+                              </Box>
+                            </Stack>
+                          </Box>
+                        )}
                       </Stack>
                     );
                   })}

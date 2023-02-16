@@ -45,6 +45,11 @@ export default function useConnectDiscord() {
   };
   useEffect(() => {
     if (code) {
+      if (window.opener) {
+        window.opener.postMessage({ code }, "*");
+        window.close();
+        return;
+      }
       void fetchDiscordUser();
     }
   }, [code]);

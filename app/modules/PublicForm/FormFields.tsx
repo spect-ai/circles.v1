@@ -168,6 +168,7 @@ export default function FormFields({ form, setForm }: Props) {
           ];
         setRespondAsAnonymous(lastResponse["anonymous"]);
         form.propertyOrder.forEach((propertyId) => {
+          if (!form.properties[propertyId].isPartOfFormView) return;
           if (
             [
               "longText",
@@ -196,8 +197,11 @@ export default function FormFields({ form, setForm }: Props) {
             ["reward", "payWall"].includes(form.properties[propertyId].type)
           ) {
             tempData[propertyId] = lastResponse[propertyId];
+          } else {
+            tempData[propertyId] = lastResponse[propertyId] || "";
           }
-          tempData["__payment__"] = lastResponse?.__payment__;
+          // tempData["__payment__"] = lastResponse?.__payment__;
+          // tempData["__ceramic__"] = lastResponse?.__ceramic__;
         });
       } else {
         const tempData: any = {};

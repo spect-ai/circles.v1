@@ -131,9 +131,9 @@ export default function ViewPlugins({}: Props) {
         {isPluginOpen && pluginOpen === "payments" && (
           <Payments handleClose={() => setIsPluginOpen(false)} key="payments" />
         )}
-        {isPluginOpen && pluginOpen === "ceramic" && (
+        {/* {isPluginOpen && pluginOpen === "ceramic" && (
           <Ceramic handleClose={() => setIsPluginOpen(false)} key="ceramic" />
-        )}
+        )} */}
       </AnimatePresence>
     </Box>
   );

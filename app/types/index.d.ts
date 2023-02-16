@@ -908,7 +908,11 @@ export type PropertyType =
   | "singleURL"
   | "multiURL"
   | "payWall"
-  | "cardStatus";
+  | "cardStatus"
+  | "discord"
+  | "twitter"
+  | "github"
+  | "telegram";
 
 export type Option = {
   label: string;

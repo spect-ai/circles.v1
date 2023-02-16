@@ -32,6 +32,7 @@ import { useLocalCollection } from "../Context/LocalCollectionContext";
 import DataDrawer from "../Form/DataDrawer";
 import ExpandableCell from "../Form/ExpandableCell";
 import CredentialComponent from "./CredentialComponent";
+import DiscordComponent from "./DiscordComponent";
 import GutterColumnComponent from "./GutterColumnComponent";
 import HeaderComponent from "./HeaderComponent";
 import MilestoneComponent from "./MilestoneComponent";
@@ -345,6 +346,8 @@ export default function TableView() {
         return MultiURLComponent;
       case "milestone":
         return MilestoneComponent;
+      case "discord":
+        return DiscordComponent;
       default:
         return textColumn;
     }
@@ -363,6 +366,7 @@ export default function TableView() {
             "longText",
             "user",
             "user[]",
+            "discord",
           ].includes(property.type)
         ) {
           return {

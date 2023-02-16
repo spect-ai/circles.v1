@@ -25,6 +25,7 @@ import styled from "styled-components";
 import { useLocalCollection } from "../../Context/LocalCollectionContext";
 import mixpanel from "@/app/common/utils/mixpanel";
 import Editor from "@/app/common/components/Editor";
+import { FaDiscord } from "react-icons/fa";
 
 type Props = {
   id: string;
@@ -236,6 +237,17 @@ function FieldComponent({
             onClick={async () => {}}
           >
             Add new milestone
+          </PrimaryButton>
+        </Box>
+      )}
+      {collection.properties[id]?.type === "discord" && (
+        <Box marginTop="4" width="1/3">
+          <PrimaryButton
+            variant="tertiary"
+            icon={<FaDiscord size={24} />}
+            onClick={async () => {}}
+          >
+            Connect Discord
           </PrimaryButton>
         </Box>
       )}

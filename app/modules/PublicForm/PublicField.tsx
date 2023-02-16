@@ -2,19 +2,13 @@
 import Dropdown from "@/app/common/components/Dropdown";
 import Editor from "@/app/common/components/Editor";
 import { isEmail, isURL } from "@/app/common/utils/utils";
-import {
-  FormType,
-  Option,
-  Property,
-  Registry,
-  Reward,
-  PayWallOptions,
-} from "@/app/types";
+import { FormType, Option, Property, Registry, Reward } from "@/app/types";
 import { Box, Input, Stack, Tag, Text, useTheme } from "degen";
 import { ethers } from "ethers";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { satisfiesConditions } from "../Collection/Common/SatisfiesFilter";
 import { DateInput } from "../Collection/Form/Field";
+import DiscordField from "./DiscordField";
 import MilestoneField from "./MilestoneField";
 import MultiURLField from "./MultiURLField";
 import PaywallField from "./PaywallField";
@@ -46,6 +40,7 @@ export default function PublicField({
   disabled,
 }: Props) {
   const { mode } = useTheme();
+
   const [invalidNumberCharEntered, setInvalidNumberCharEntered] = useState(
     {} as { [key: string]: boolean }
   );
@@ -323,6 +318,14 @@ export default function PublicField({
           }}
           propertyName={propertyName}
           disabled={disabled}
+        />
+      )}
+      {form.properties[propertyName]?.type === "discord" && (
+        <DiscordField
+          data={data}
+          setData={setData}
+          propertyName={propertyName}
+          form={form}
         />
       )}
 
