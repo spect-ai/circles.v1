@@ -630,14 +630,20 @@ export default function TableView() {
           <PrimaryButton
             variant="tertiary"
             onClick={() => {
-              const out = [] as any[];
-              const d = Object.values(data || {}).map((da) => {
+              let out = [] as any[];
+              const d = data?.map((da) => {
+                const csvData: {
+                  [key: string]: string;
+                } = {};
                 Object.entries(da)
-                  .filter(([key, value]) => key !== "slug" && key !== "id")
+                  .filter(
+                    ([key, value]) =>
+                      key !== "slug" && key !== "id" && key !== "anonymous"
+                  )
                   .forEach(([key, value]: [string, any]) => {
-                    console.log({ key });
+                    if (!collection.properties[key]) return;
                     if (collection.properties[key].type === "reward") {
-                      da[key] = JSON.stringify({
+                      csvData[key] = JSON.stringify({
                         chain: value?.chain.label,
                         token: value?.token.label,
                         value: value?.value,
@@ -653,32 +659,37 @@ export default function TableView() {
                           value: v?.reward?.value,
                         },
                       }));
-                      da[key] = JSON.stringify(milestones);
+                      csvData[key] = JSON.stringify(milestones);
                     } else if (
                       ["user", "singleSelect"].includes(
                         collection.properties[key].type
                       )
                     ) {
-                      da[key] = value?.label;
+                      csvData[key] = value?.label;
                     } else if (collection.properties[key].type === "multiURL") {
-                      da[key] = JSON.stringify(value);
+                      csvData[key] = JSON.stringify(value);
                     } else if (
                       ["user[]", "multiSelect"].includes(
                         collection.properties[key].type
                       )
                     ) {
-                      da[key] = JSON.stringify(
+                      csvData[key] = JSON.stringify(
                         value?.map((v: Option) => v.label)
                       );
+                    } else if (key === "__payment__") {
+                      csvData[key] = JSON.stringify(value);
                     } else if (!value) {
-                      da[key] = "";
+                      csvData[key] = "";
                     } else {
-                      da[key] = value;
+                      csvData[key] = value;
                     }
-                    out.push(da);
                   });
+                // delete csvData["id"] && delete csvData["anonymous"];
+                csvData["slug"] = da.slug;
+                return csvData;
               });
-              exportToCsv(out, collection.name);
+              console.log({ d });
+              exportToCsv((d as []).reverse(), collection.name);
             }}
           >
             Export CSV
