@@ -630,12 +630,15 @@ export default function TableView() {
           <PrimaryButton
             variant="tertiary"
             onClick={() => {
-              const out = [] as any[];
-              const d = Object.values(data || {}).map((da) => {
+              let out = [] as any[];
+              const d = data?.map((da) => {
                 Object.entries(da)
-                  .filter(([key, value]) => key !== "slug" && key !== "id")
+                  .filter(
+                    ([key, value]) =>
+                      key !== "slug" && key !== "id" && key !== "anonymous"
+                  )
                   .forEach(([key, value]: [string, any]) => {
-                    console.log({ key });
+                    if (!collection.properties[key]) return;
                     if (collection.properties[key].type === "reward") {
                       da[key] = JSON.stringify({
                         chain: value?.chain.label,
@@ -670,15 +673,19 @@ export default function TableView() {
                       da[key] = JSON.stringify(
                         value?.map((v: Option) => v.label)
                       );
+                    } else if (key === "__payment__") {
+                      da[key] = JSON.stringify(value);
                     } else if (!value) {
                       da[key] = "";
                     } else {
                       da[key] = value;
                     }
-                    out.push(da);
                   });
+                delete da["id"] && delete da["anonymous"];
+                return da;
               });
-              exportToCsv(out, collection.name);
+              console.log({ d });
+              exportToCsv((d as []).reverse(), collection.name);
             }}
           >
             Export CSV
