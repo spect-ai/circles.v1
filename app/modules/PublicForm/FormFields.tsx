@@ -29,6 +29,12 @@ import { AnimatePresence } from "framer-motion";
 import { satisfiesConditions } from "../Collection/Common/SatisfiesFilter";
 import CheckBox from "@/app/common/components/Table/Checkbox";
 import CollectPayment from "./CollectPayment";
+import {
+  compose,
+  createCeramicSession,
+  loadCeramicSession,
+} from "@/app/services/Ceramic";
+import { useAccount } from "wagmi";
 
 type Props = {
   form: FormType;
@@ -84,6 +90,8 @@ export default function FormFields({ form, setForm }: Props) {
       enabled: false,
     }
   );
+
+  const { address, connector } = useAccount();
 
   const checkRequired = (data: any) => {
     const requiredFieldsNotSet = {} as { [key: string]: boolean };
@@ -226,7 +234,9 @@ export default function FormFields({ form, setForm }: Props) {
   }, [form, updateResponse]);
 
   useEffect(() => {
-    if (!connectedUser && currentUser?.id) connectUser(currentUser.id);
+    if (!connectedUser && currentUser?.id) {
+      connectUser(currentUser.id);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentUser, connectedUser]);
 
@@ -244,6 +254,42 @@ export default function FormFields({ form, setForm }: Props) {
   }, []);
 
   const onSubmit = async () => {
+    setSubmitting(true);
+    if (false && form.formMetadata.ceramicEnabled) {
+      let session: any;
+      const loadedSession = await loadCeramicSession(address as string);
+      console.log({ loadedSession });
+      if (!loadedSession) {
+        const newSession = await createCeramicSession(
+          address as string,
+          connector
+        );
+        console.log({ newSession });
+        session = newSession;
+      } else {
+        session = loadedSession;
+      }
+      compose.setDID(session.did);
+      const result: any = await compose.executeQuery(
+        `
+      mutation {
+        createSpectForm(input: {content: {
+          formId: "${form.slug}",
+          data: "${JSON.stringify(data).replace(/"/g, '\\"')}",
+          createdAt: "${new Date().toISOString()}",
+          link: "https://circles.spect.network/r/${form.id}",
+          origin: "https://circles.spect.network",
+        }}) {
+          document {
+            id
+          }
+        }
+      }
+      `
+      );
+      const streamId = result.data.createSpectForm.document.id;
+      data["__ceramic__"] = streamId;
+    }
     let res;
     if (
       form.formMetadata.paymentConfig?.type === "paywall" &&
@@ -265,7 +311,7 @@ export default function FormFields({ form, setForm }: Props) {
       setNotificationPreferenceModalOpen(true);
       return;
     }
-    setSubmitting(true);
+
     if (updateResponse) {
       const lastResponse =
         form.formMetadata.previousResponses[

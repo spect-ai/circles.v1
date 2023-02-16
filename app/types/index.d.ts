@@ -821,6 +821,7 @@ export type FormMetadata = {
   surveyTokenClaimedByUser: boolean;
   canClaimSurveyToken: boolean;
   surveyTokenChainId?: string;
+  ceramicEnabled?: boolean;
 };
 
 export type ProjectMetadata = {
@@ -880,6 +881,7 @@ export type PaymentData = {
 };
 
 export type Property = {
+  id?: string;
   name: string;
   type: PropertyType;
   isPartOfFormView: boolean;

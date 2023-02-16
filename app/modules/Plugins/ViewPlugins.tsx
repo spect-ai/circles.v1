@@ -8,6 +8,7 @@ import styled from "styled-components";
 import { useCircle } from "../Circle/CircleContext";
 import { useLocalCollection } from "../Collection/Context/LocalCollectionContext";
 import DistributeERC20 from "./erc20";
+import Ceramic from "./ceramic";
 import SybilResistance from "./gtcpassport";
 import RoleGate from "./guildxyz";
 import SendKudos from "./mintkudos";
@@ -45,6 +46,10 @@ export default function ViewPlugins({}: Props) {
         setIsPluginOpen(true);
         setPluginOpen(pluginName);
         break;
+      case "ceramic":
+        setIsPluginOpen(true);
+        setPluginOpen(pluginName);
+        break;
       default:
         break;
     }
@@ -62,6 +67,8 @@ export default function ViewPlugins({}: Props) {
         return !!collection.formMetadata.paymentConfig;
       case "erc20":
         return !!collection.formMetadata.surveyTokenId;
+      case "ceramic":
+        return !!collection.formMetadata.ceramicEnabled;
       default:
         return false;
     }
@@ -136,6 +143,9 @@ export default function ViewPlugins({}: Props) {
             handleClose={() => setIsPluginOpen(false)}
             key="erc20"
           />
+        )}
+        {isPluginOpen && pluginOpen === "ceramic" && (
+          <Ceramic handleClose={() => setIsPluginOpen(false)} key="ceramic" />
         )}
       </AnimatePresence>
     </Box>

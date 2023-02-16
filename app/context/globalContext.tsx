@@ -11,6 +11,7 @@ import { useRouter } from "next/router";
 import { io, Socket } from "socket.io-client";
 import { useSigner } from "wagmi";
 import { Signer } from "ethers";
+import { DIDSession } from "did-session";
 
 interface GlobalContextType {
   isSidebarExpanded: boolean;
@@ -43,6 +44,8 @@ interface GlobalContextType {
   toggle: number;
   setToggle: (toggle: number) => void;
   signer: Signer;
+  ceramicSession: DIDSession | null;
+  setCeramicSession: React.Dispatch<React.SetStateAction<DIDSession | null>>;
 }
 
 const useProviderGlobalContext = () => {
@@ -74,6 +77,8 @@ const useProviderGlobalContext = () => {
   const [userData, setUserData] = useState({} as UserType);
   const [profileLoading, setProfileLoading] = useState(false);
 
+  const [ceramicSession, setCeramicSession] = useState<DIDSession | null>(null);
+
   function connectUser(userId: string) {
     setConnectedUser(userId);
   }
@@ -98,7 +103,6 @@ const useProviderGlobalContext = () => {
   useEffect(() => {
     const socket = io(process.env.API_HOST || "");
     socket.on("connect", function () {
-      console.log("Connected");
       setSocket(socket);
     });
 
@@ -151,7 +155,9 @@ const useProviderGlobalContext = () => {
     setUserData,
     profileLoading,
     setProfileLoading,
-    signer
+    signer,
+    ceramicSession,
+    setCeramicSession,
   };
 };
 
