@@ -20,6 +20,8 @@ type Props = {
   setUpdateResponse: (val: boolean) => void;
   claimed: boolean;
   setClaimed: (val: boolean) => void;
+  surveyTokenClaimed: boolean;
+  setSurveyTokenClaimed: (val: boolean) => void;
   setViewResponse: (val: boolean) => void;
 };
 
@@ -38,6 +40,9 @@ export default function FormResponse({
   setUpdateResponse,
   claimed,
   setClaimed,
+  surveyTokenClaimed,
+  setSurveyTokenClaimed,
+
   setViewResponse,
 }: Props) {
   const { width, height } = useWindowSize();
@@ -64,8 +69,8 @@ export default function FormResponse({
           numberOfPieces={600}
         />
       )}
-      <Stack align="center">
-        <Heading align="center">{`${
+      <Stack>
+        <Heading align="left">{`${
           form?.formMetadata.messageOnSubmission ||
           "Your response has been submitted!"
         }`}</Heading>
@@ -76,10 +81,127 @@ export default function FormResponse({
             md: "row",
           }}
           gap="4"
-          alignItems="center"
+          alignItems="flex-start"
+          marginTop="8"
         >
-          {kudos?.imageUrl && (claimed || form.formMetadata.canClaimKudos) && (
-            <StyledImage src={`${kudos.imageUrl}`} alt="kudos" />
+          {surveyTokenClaimed && (
+            <Box>
+              {" "}
+              <Text variant="extraLarge" weight="bold">
+                🙌
+              </Text>
+            </Box>
+          )}
+          {form.formMetadata.canClaimSurveyToken && !surveyTokenClaimed && (
+            <Box paddingTop="8">
+              {" "}
+              <Text variant="extraLarge" weight="bold">
+                👉
+              </Text>
+            </Box>
+          )}
+          {surveyTokenClaimed ? (
+            <Stack>
+              <Text variant="large" weight="bold">
+                You have claimed your tokens 💰
+              </Text>
+              <Box>
+                <Stack direction="vertical">
+                  <TwitterShareButton
+                    url={`https://circles.spect.network/`}
+                    title={
+                      "I just filled out a web3 enabled form and claimed some tokens on @JoinSpect 💰"
+                    }
+                  >
+                    <Box
+                      width={{
+                        xs: "full",
+                        md: "48",
+                      }}
+                    >
+                      <PrimaryButton
+                        variant="transparent"
+                        icon={
+                          <TwitterOutlined
+                            style={{
+                              fontSize: "1.8rem",
+                              color: "rgb(29, 155, 240, 1)",
+                            }}
+                          />
+                        }
+                      >
+                        <Text>Share on Twitter</Text>
+                      </PrimaryButton>
+                    </Box>
+                  </TwitterShareButton>
+                </Stack>
+              </Box>
+            </Stack>
+          ) : (
+            <Box width="1/2" padding="8">
+              {form.formMetadata.canClaimSurveyToken && (
+                <Stack>
+                  <Text weight="semiBold" variant="large">
+                    You are eligible to receive tokens for submitting a response
+                    💰
+                  </Text>
+                  <Box width="72">
+                    <PrimaryButton
+                      loading={claiming}
+                      onClick={async () => {
+                        setClaiming(true);
+                        try {
+                          const res = await fetch(
+                            `${process.env.API_HOST}/collection/v1/${form?.id}/claimSurveyTokens`,
+                            {
+                              method: "PATCH",
+                              headers: {
+                                "Content-Type": "application/json",
+                              },
+                              credentials: "include",
+                            }
+                          );
+
+                          console.log(res);
+                          if (res.ok) {
+                            setSurveyTokenClaimed(true);
+                            setClaimedJustNow(true);
+                          }
+                        } catch (e) {
+                          console.log(e);
+                          toast.error(
+                            "Something went wrong, please try again later"
+                          );
+                        }
+
+                        setClaiming(false);
+                      }}
+                    >
+                      Claim Token
+                    </PrimaryButton>
+                  </Box>
+                </Stack>
+              )}
+            </Box>
+          )}
+        </Box>
+        <Box
+          display="flex"
+          flexDirection={{
+            xs: "column",
+            md: "row",
+          }}
+          gap="4"
+          alignItems="flex-start"
+          marginTop="8"
+        >
+          {form.formMetadata.canClaimKudos && (
+            <Box paddingTop="8">
+              {" "}
+              <Text variant="extraLarge" weight="bold">
+                👉
+              </Text>
+            </Box>
           )}
           {claimed ? (
             <Stack>
@@ -158,14 +280,14 @@ export default function FormResponse({
               </Box>
             </Stack>
           ) : (
-            <Box>
+            <Box padding="8">
               {form.formMetadata.canClaimKudos && (
                 <Stack>
                   <Text weight="semiBold" variant="large">
-                    The creator of this form is distributing kudos to everyone
-                    that submitted a response 🎉
+                    You are eligible to receive a soulbound token for submitting
+                    a response 🎉
                   </Text>
-                  <Box width="full">
+                  <Box width="72">
                     <PrimaryButton
                       loading={claiming}
                       onClick={async () => {
@@ -197,14 +319,22 @@ export default function FormResponse({
                         setClaiming(false);
                       }}
                     >
-                      Claim Kudos
+                      Claim Soulbound Token
                     </PrimaryButton>
                   </Box>
                 </Stack>
               )}
             </Box>
           )}
+
+          {kudos?.imageUrl && (claimed || form.formMetadata.canClaimKudos) && (
+            <Box padding="8">
+              {" "}
+              <StyledImage src={`${kudos.imageUrl}`} alt="kudos" />
+            </Box>
+          )}
         </Box>
+
         <Box
           width="full"
           display="flex"

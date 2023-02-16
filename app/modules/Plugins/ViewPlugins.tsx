@@ -7,6 +7,7 @@ import { Cpu } from "react-feather";
 import styled from "styled-components";
 import { useCircle } from "../Circle/CircleContext";
 import { useLocalCollection } from "../Collection/Context/LocalCollectionContext";
+import DistributeERC20 from "./erc20";
 import Ceramic from "./ceramic";
 import SybilResistance from "./gtcpassport";
 import RoleGate from "./guildxyz";
@@ -41,6 +42,10 @@ export default function ViewPlugins({}: Props) {
         setIsPluginOpen(true);
         setPluginOpen(pluginName);
         break;
+      case "erc20":
+        setIsPluginOpen(true);
+        setPluginOpen(pluginName);
+        break;
       case "ceramic":
         setIsPluginOpen(true);
         setPluginOpen(pluginName);
@@ -60,6 +65,8 @@ export default function ViewPlugins({}: Props) {
         return !!collection.formMetadata.mintkudosTokenId;
       case "payments":
         return !!collection.formMetadata.paymentConfig;
+      case "erc20":
+        return !!collection.formMetadata.surveyTokenId;
       case "ceramic":
         return !!collection.formMetadata.ceramicEnabled;
       default:
@@ -131,7 +138,14 @@ export default function ViewPlugins({}: Props) {
         {isPluginOpen && pluginOpen === "payments" && (
           <Payments handleClose={() => setIsPluginOpen(false)} key="payments" />
         )}
-        {/* {isPluginOpen && pluginOpen === "ceramic" && (
+        {/*
+        {isPluginOpen && pluginOpen === "erc20" && (
+          <DistributeERC20
+            handleClose={() => setIsPluginOpen(false)}
+            key="erc20"
+          />
+        )}
+        {isPluginOpen && pluginOpen === "ceramic" && (
           <Ceramic handleClose={() => setIsPluginOpen(false)} key="ceramic" />
         )} */}
       </AnimatePresence>

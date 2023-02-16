@@ -73,7 +73,7 @@ export default function Payee({
               ...p,
               reward: {
                 ...p.reward,
-                token: value.token?.value ? value.token : tOptions[0],
+                token: value.token?.value ? value.token : tOptions[1],
               },
             })) || [],
         });

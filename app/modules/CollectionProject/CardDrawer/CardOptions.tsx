@@ -4,6 +4,7 @@ import {
   IconCheck,
   IconClose,
   IconLightningBolt,
+  IconRefresh,
   Stack,
   Tag,
   Text,
@@ -15,7 +16,11 @@ import { motion } from "framer-motion";
 import { updateFormCollection } from "@/app/services/Collection";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
 import { toast } from "react-toastify";
-import { DollarOutlined } from "@ant-design/icons";
+import {
+  ClockCircleOutlined,
+  DollarOutlined,
+  IssuesCloseOutlined,
+} from "@ant-design/icons";
 import { addPendingPayment } from "@/app/services/Paymentv2";
 import { useCircle } from "../../Circle/CircleContext";
 import { useAccount } from "wagmi";
@@ -178,7 +183,7 @@ export default function CardOptions({
               }}
             >
               <Stack direction="horizontal" align="center" space="2">
-                <Text color="red">
+                <Text color="accent">
                   <DollarOutlined />
                 </Text>
                 <Text>Add to pending payment</Text>
@@ -207,13 +212,13 @@ export default function CardOptions({
             <Stack direction="horizontal" align="center" space="2">
               {!(collection.data?.[cardSlug]?.__cardStatus__ === "closed") ? (
                 <>
-                  <IconClose color={"red"} size="5" />
+                  <IconCheck color={"accent"} size="5" />
                   <Text align={"left"}>Close Card</Text>
                 </>
               ) : (
                 <>
-                  <IconCheck color={"green"} size="5" />
-                  <Text align={"left"}>Re Open Card</Text>
+                  <IconRefresh color={"accent"} size="5" />
+                  <Text align={"left"}>Re-open Card</Text>
                 </>
               )}
             </Stack>
