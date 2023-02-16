@@ -2,7 +2,7 @@ import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { Box, Stack, Text } from "degen";
 import { AnimatePresence, motion } from "framer-motion";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Cpu } from "react-feather";
 import styled from "styled-components";
 import { useCircle } from "../Circle/CircleContext";
@@ -14,6 +14,7 @@ import RoleGate from "./guildxyz";
 import SendKudos from "./mintkudos";
 import Payments from "./payments";
 import { SpectPlugin, spectPlugins } from "./Plugins";
+import { isWhitelisted } from "@/app/services/Whitelist";
 
 type Props = {};
 
@@ -21,8 +22,19 @@ export default function ViewPlugins({}: Props) {
   const [isOpen, setIsOpen] = useState(false);
   const [isPluginOpen, setIsPluginOpen] = useState(false);
   const [pluginOpen, setPluginOpen] = useState("");
+  const [isWhitelistedSurveyProtocol, setIsWhitelistedSurveyProtocol] =
+    useState(false);
 
   const { localCollection: collection } = useLocalCollection();
+
+  useEffect(() => {
+    if (isOpen)
+      isWhitelisted("Survey Protocol").then((res) => {
+        if (res) {
+          setIsWhitelistedSurveyProtocol(true);
+        }
+      });
+  }, [isOpen]);
 
   const onClick = (pluginName: string) => {
     switch (pluginName) {
@@ -111,7 +123,25 @@ export default function ViewPlugins({}: Props) {
                     <PluginCard
                       key={pluginName}
                       plugin={spectPlugins[pluginName]}
-                      onClick={() => onClick(pluginName)}
+                      onClick={() => {
+                        console.log("pluginName", pluginName);
+                        console.log({
+                          pluginName,
+                          isWhitelistedSurveyProtocol,
+                        });
+                        if (
+                          pluginName === "erc20" &&
+                          !isWhitelistedSurveyProtocol
+                        ) {
+                          window.open(
+                            "https://circles.spect.network/r/9991d6ed-f3c8-425a-8b9e-0f598514482c",
+                            "_blank"
+                          );
+                          return;
+                        } else {
+                          onClick(pluginName);
+                        }
+                      }}
                       added={isPluginAdded(pluginName)}
                     />
                   ))}
