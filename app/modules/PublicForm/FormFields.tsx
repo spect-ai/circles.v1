@@ -406,6 +406,10 @@ export default function FormFields({ form, setForm }: Props) {
         return !value?.id;
       case "github":
         return !value?.id;
+      case "twitter":
+        return !value?.id;
+      case "telegram":
+        return !value?.id;
       default:
         return false;
     }
