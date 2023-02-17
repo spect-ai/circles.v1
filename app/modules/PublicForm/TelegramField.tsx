@@ -16,30 +16,6 @@ export default function TelegramField({
   propertyName,
   updateRequiredFieldNotSet,
 }: Props) {
-  const [userData, setUserData] = useState<any>();
-  useEffect(() => {
-    console.log("useEffect");
-    window.addEventListener(
-      "message",
-      (event) => {
-        // if (event.origin !== "http://example.org:8080")
-        //   return;
-        console.log({ event });
-        if (event.data.userData) {
-          setUserData(event.data.userData);
-        }
-      },
-      false
-    );
-  }, []);
-
-  useEffect(() => {
-    if (userData) {
-      setData((data: any) => ({ ...data, [propertyName]: userData }));
-      updateRequiredFieldNotSet(propertyName, userData);
-    }
-  }, [userData]);
-
   return (
     <Box marginTop="4" width="64">
       {data[propertyName] && data[propertyName].id ? (
@@ -55,12 +31,11 @@ export default function TelegramField({
           variant="tertiary"
           icon={<FaTelegram size={24} />}
           onClick={async () => {
-            // const url = `https://oauth.telegram.org/auth?bot_id=5655889542&origin=dev.spect.network&request_access=write&return_to=https%3A%2F%2Fdev.spect.network%2FauthCallback`;
-            // window.open(url, "popup", "width=600,height=600");
             (window as any).Telegram.Login.auth(
               { bot_id: "5655889542", request_access: true },
               (data: any) => {
-                console.log({ data });
+                setData({ ...data, [propertyName]: data });
+                updateRequiredFieldNotSet(propertyName, false);
               }
             );
           }}
