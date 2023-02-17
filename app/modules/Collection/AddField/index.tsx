@@ -24,7 +24,7 @@ import { Box, IconTrash, Input, Stack, Text, Textarea } from "degen";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useCircle } from "../../Circle/CircleContext";
-import { fields } from "../Constants";
+import { fieldOptionsDropdown, fields } from "../Constants";
 import { useLocalCollection } from "../Context/LocalCollectionContext";
 import AddOptions from "./AddOptions";
 import MilestoneOptions from "./MilestoneOptions";
@@ -338,11 +338,7 @@ export default function AddField({ propertyName, handleClose }: Props) {
               />
             )}
             <Dropdown
-              options={
-                collection.collectionType === 0
-                  ? fields
-                  : fields.filter((f) => f.value !== "payWall")
-              }
+              options={fieldOptionsDropdown}
               selected={type}
               onChange={(type) => {
                 setType(type);
@@ -395,7 +391,9 @@ export default function AddField({ propertyName, handleClose }: Props) {
                 setPayWallOption={setPayWallOption}
               />
             )}
-            {type.value !== "payWall" && (
+            {!["discord", "github", "twitter", "telegram", "wallet"].includes(
+              type.value
+            ) && (
               <Accordian name="Default Value" defaultOpen={false}>
                 <Field
                   collection={collection}

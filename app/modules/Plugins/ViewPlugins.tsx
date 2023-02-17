@@ -168,6 +168,7 @@ export default function ViewPlugins({}: Props) {
         {isPluginOpen && pluginOpen === "payments" && (
           <Payments handleClose={() => setIsPluginOpen(false)} key="payments" />
         )}
+        {/*
         {isPluginOpen && pluginOpen === "erc20" && (
           <DistributeERC20
             handleClose={() => setIsPluginOpen(false)}
@@ -176,7 +177,7 @@ export default function ViewPlugins({}: Props) {
         )}
         {isPluginOpen && pluginOpen === "ceramic" && (
           <Ceramic handleClose={() => setIsPluginOpen(false)} key="ceramic" />
-        )}
+        )} */}
       </AnimatePresence>
     </Box>
   );
