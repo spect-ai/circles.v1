@@ -56,7 +56,7 @@ export default function TelegramField({
           icon={<FaTelegram size={24} />}
           onClick={async () => {
             const url = `https://oauth.telegram.org/auth?bot_id=5655889542&origin=dev.spect.network&request_access=write&return_to=https%3A%2F%2Fdev.spect.network%2FauthCallback`;
-            window.open(url, "popup");
+            window.open(url, "popup", "width=600,height=600");
           }}
         >
           Connect Telegram
