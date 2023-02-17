@@ -55,8 +55,14 @@ export default function TelegramField({
           variant="tertiary"
           icon={<FaTelegram size={24} />}
           onClick={async () => {
-            const url = `https://oauth.telegram.org/auth?bot_id=5655889542&origin=dev.spect.network&request_access=write&return_to=https%3A%2F%2Fdev.spect.network%2FauthCallback`;
-            window.open(url, "popup", "width=600,height=600");
+            // const url = `https://oauth.telegram.org/auth?bot_id=5655889542&origin=dev.spect.network&request_access=write&return_to=https%3A%2F%2Fdev.spect.network%2FauthCallback`;
+            // window.open(url, "popup", "width=600,height=600");
+            (window as any).Telegram.Login.auth(
+              { bot_id: "5655889542", request_access: true },
+              (data: any) => {
+                console.log({ data });
+              }
+            );
           }}
         >
           Connect Telegram
