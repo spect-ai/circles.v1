@@ -385,6 +385,31 @@ export default function DataDrawer({
                             </Stack>
                           </Box>
                         )}
+                        {property?.type === "github" && (
+                          <a
+                            href={data[propertyName].html_url}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            <Box padding="0">
+                              <Stack direction="horizontal" align="center">
+                                <Avatar
+                                  label="Discord Avatar"
+                                  src={data[propertyName].avatar_url}
+                                />
+                                <Box>
+                                  <Text
+                                    size="extraSmall"
+                                    font="mono"
+                                    weight="bold"
+                                  >
+                                    {data[propertyName].login}
+                                  </Text>
+                                </Box>
+                              </Stack>
+                            </Box>
+                          </a>
+                        )}
                       </Stack>
                     );
                   })}

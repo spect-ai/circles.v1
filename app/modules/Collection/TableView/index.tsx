@@ -33,6 +33,7 @@ import DataDrawer from "../Form/DataDrawer";
 import ExpandableCell from "../Form/ExpandableCell";
 import CredentialComponent from "./CredentialComponent";
 import DiscordComponent from "./DiscordComponent";
+import GithubComponent from "./GithubComponent";
 import GutterColumnComponent from "./GutterColumnComponent";
 import HeaderComponent from "./HeaderComponent";
 import MilestoneComponent from "./MilestoneComponent";
@@ -348,6 +349,8 @@ export default function TableView() {
         return MilestoneComponent;
       case "discord":
         return DiscordComponent;
+      case "github":
+        return GithubComponent;
       default:
         return textColumn;
     }
@@ -367,6 +370,9 @@ export default function TableView() {
             "user",
             "user[]",
             "discord",
+            "github",
+            "twitter",
+            "telegram",
           ].includes(property.type)
         ) {
           return {

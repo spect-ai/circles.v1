@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import { satisfiesConditions } from "../Collection/Common/SatisfiesFilter";
 import { DateInput } from "../Collection/Form/Field";
 import DiscordField from "./DiscordField";
+import GithubField from "./GithubField";
 import MilestoneField from "./MilestoneField";
 import MultiURLField from "./MultiURLField";
 import PaywallField from "./PaywallField";
@@ -325,7 +326,15 @@ export default function PublicField({
           data={data}
           setData={setData}
           propertyName={propertyName}
-          form={form}
+          updateRequiredFieldNotSet={updateRequiredFieldNotSet}
+        />
+      )}
+      {form.properties[propertyName]?.type === "github" && (
+        <GithubField
+          data={data}
+          setData={setData}
+          propertyName={propertyName}
+          updateRequiredFieldNotSet={updateRequiredFieldNotSet}
         />
       )}
 

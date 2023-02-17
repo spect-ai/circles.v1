@@ -25,7 +25,12 @@ import styled from "styled-components";
 import { useLocalCollection } from "../../Context/LocalCollectionContext";
 import mixpanel from "@/app/common/utils/mixpanel";
 import Editor from "@/app/common/components/Editor";
-import { FaDiscord } from "react-icons/fa";
+import {
+  FaDiscord,
+  FaGithub,
+  FaTelegramPlane,
+  FaTwitter,
+} from "react-icons/fa";
 
 type Props = {
   id: string;
@@ -248,6 +253,39 @@ function FieldComponent({
             onClick={async () => {}}
           >
             Connect Discord
+          </PrimaryButton>
+        </Box>
+      )}
+      {collection.properties[id]?.type === "twitter" && (
+        <Box marginTop="4" width="1/3">
+          <PrimaryButton
+            variant="tertiary"
+            icon={<FaTwitter size={24} />}
+            onClick={async () => {}}
+          >
+            Connect Twitter
+          </PrimaryButton>
+        </Box>
+      )}
+      {collection.properties[id]?.type === "telegram" && (
+        <Box marginTop="4" width="1/3">
+          <PrimaryButton
+            variant="tertiary"
+            icon={<FaTelegramPlane size={24} />}
+            onClick={async () => {}}
+          >
+            Connect Telegram
+          </PrimaryButton>
+        </Box>
+      )}
+      {collection.properties[id]?.type === "github" && (
+        <Box marginTop="4" width="1/3">
+          <PrimaryButton
+            variant="tertiary"
+            icon={<FaGithub size={24} />}
+            onClick={async () => {}}
+          >
+            Connect Github
           </PrimaryButton>
         </Box>
       )}

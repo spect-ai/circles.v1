@@ -35,6 +35,11 @@ export default function useConnectGithub() {
   };
   useEffect(() => {
     if (code) {
+      if (window.opener) {
+        window.opener.postMessage({ code }, "*");
+        window.close();
+        return;
+      }
       void fetchGithubUser();
     }
   }, [code]);
