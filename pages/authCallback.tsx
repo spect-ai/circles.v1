@@ -4,7 +4,7 @@ import { NextPage } from "next";
 import { useEffect } from "react";
 import { useLocation } from "react-use";
 
-export const AuthCallback: NextPage = () => {
+const AuthCallback: NextPage = () => {
   const location = useLocation();
   useEffect(() => {
     var locationHash = "",
@@ -41,3 +41,5 @@ export const AuthCallback: NextPage = () => {
     </PublicLayout>
   );
 };
+
+export default AuthCallback;
