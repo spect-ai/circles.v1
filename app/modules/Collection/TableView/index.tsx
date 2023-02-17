@@ -44,6 +44,7 @@ import PaymentComponent from "./PaymentComponent";
 import RewardComponent from "./RewardComponent";
 import RewardModal from "./RewardModal";
 import SelectComponent from "./SelectComponent";
+import TelegramComponent from "./TelegramComponent";
 
 export default function TableView() {
   const [isEditFieldOpen, setIsEditFieldOpen] = useState(false);
@@ -351,6 +352,8 @@ export default function TableView() {
         return DiscordComponent;
       case "github":
         return GithubComponent;
+      case "telegram":
+        return TelegramComponent;
       default:
         return textColumn;
     }

@@ -410,6 +410,27 @@ export default function DataDrawer({
                             </Box>
                           </a>
                         )}
+                        {property?.type === "telegram" && (
+                          // <a
+                          //   href={data[propertyName].html_url}
+                          //   target="_blank"
+                          //   rel="noreferrer"
+                          // >
+                          <Box padding="0">
+                            <Stack direction="horizontal" align="center">
+                              <Box>
+                                <Text
+                                  size="extraSmall"
+                                  font="mono"
+                                  weight="bold"
+                                >
+                                  {data[propertyName].username}
+                                </Text>
+                              </Box>
+                            </Stack>
+                          </Box>
+                          // </a>
+                        )}
                       </Stack>
                     );
                   })}

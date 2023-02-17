@@ -14,6 +14,7 @@ import MilestoneField from "./MilestoneField";
 import MultiURLField from "./MultiURLField";
 import PaywallField from "./PaywallField";
 import RewardField from "./RewardField";
+import TelegramField from "./TelegramField";
 
 type Props = {
   form: FormType;
@@ -331,6 +332,14 @@ export default function PublicField({
       )}
       {form.properties[propertyName]?.type === "github" && (
         <GithubField
+          data={data}
+          setData={setData}
+          propertyName={propertyName}
+          updateRequiredFieldNotSet={updateRequiredFieldNotSet}
+        />
+      )}
+      {form.properties[propertyName]?.type === "telegram" && (
+        <TelegramField
           data={data}
           setData={setData}
           propertyName={propertyName}

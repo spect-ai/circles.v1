@@ -63,7 +63,7 @@ export const fieldOptionsDropdown = [
       { label: "Email", value: "email", icon: <AiOutlineMail /> },
       // { label: "Twitter", value: "twitter", icon: <FaTwitter /> },
       { label: "Discord", value: "discord", icon: <FaDiscord /> },
-      // { label: "Telegram", value: "telegram", icon: <FaTelegram /> },
+      { label: "Telegram", value: "telegram", icon: <FaTelegram /> },
       { label: "Github", value: "github", icon: <FaGithub /> },
     ],
   },
