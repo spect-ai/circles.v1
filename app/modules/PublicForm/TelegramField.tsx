@@ -35,7 +35,7 @@ export default function TelegramField({
               { bot_id: "5655889542", request_access: true },
               (data: any) => {
                 setData({ ...data, [propertyName]: data });
-                updateRequiredFieldNotSet(propertyName, false);
+                updateRequiredFieldNotSet(propertyName, data);
               }
             );
           }}

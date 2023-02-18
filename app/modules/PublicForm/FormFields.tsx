@@ -258,7 +258,7 @@ export default function FormFields({ form, setForm }: Props) {
   }, []);
 
   const onSubmit = async () => {
-    if (false && form.formMetadata.ceramicEnabled) {
+    if (form.formMetadata.ceramicEnabled) {
       let session: any;
       setSubmitting(true);
       const loadedSession = await loadCeramicSession(address as string);
@@ -367,9 +367,6 @@ export default function FormFields({ form, setForm }: Props) {
 
   const isIncorrectType = (propertyName: string, value: any) => {
     switch (form.properties[propertyName]?.type) {
-      case "ethAddress":
-        return value && !isAddress(value);
-
       case "email":
         return value && !isEmail(value);
 

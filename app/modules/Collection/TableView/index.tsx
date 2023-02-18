@@ -31,6 +31,7 @@ import {
 import { useLocalCollection } from "../Context/LocalCollectionContext";
 import DataDrawer from "../Form/DataDrawer";
 import ExpandableCell from "../Form/ExpandableCell";
+import CeramicComponent from "./CeramicComponent";
 import CredentialComponent from "./CredentialComponent";
 import DiscordComponent from "./DiscordComponent";
 import GithubComponent from "./GithubComponent";
@@ -358,14 +359,29 @@ export default function TableView() {
         return textColumn;
     }
   };
-
   const columns: Column<any>[] =
     collection.propertyOrder &&
     collection.propertyOrder
       .filter((prop) => prop !== "__cardStatus__")
       .map((propertyName: string) => {
         const property = collection.properties[propertyName];
-        if (
+        if (property.id === "__ceramic__") {
+          return {
+            ...keyColumn(property.id, {
+              component: CeramicComponent,
+            }),
+            disabled: true,
+            title: (
+              <HeaderComponent
+                columnName={property.name}
+                setIsEditFieldOpen={setIsEditFieldOpen}
+                setPropertyName={setPropertyName}
+                propertyType={property.type}
+              />
+            ),
+            minWidth: 200,
+          };
+        } else if (
           [
             "singleSelect",
             "multiSelect",
