@@ -15,49 +15,64 @@ import SendKudos from "./mintkudos";
 import Payments from "./payments";
 import { SpectPlugin, spectPlugins } from "./Plugins";
 import { isWhitelisted } from "@/app/services/Whitelist";
+import {
+  getSurveyConditionInfo,
+  getSurveyDistributionInfo,
+} from "@/app/services/SurveyProtocol";
+import { BigNumber, ethers } from "ethers";
+import DistributePOAP from "./poap";
 
 type Props = {};
 
 export default function ViewPlugins({}: Props) {
+  const { registry } = useCircle();
   const [isOpen, setIsOpen] = useState(false);
   const [isPluginOpen, setIsPluginOpen] = useState(false);
   const [pluginOpen, setPluginOpen] = useState("");
   const [isWhitelistedSurveyProtocol, setIsWhitelistedSurveyProtocol] =
     useState(false);
 
+  const [surveyConditions, setSurveyConditions] = useState<any>({});
+  const [surveyDistributionInfo, setSurveyDistributionInfo] = useState<any>({});
+
   const { localCollection: collection } = useLocalCollection();
 
   useEffect(() => {
-    if (isOpen)
+    if (isOpen) {
       isWhitelisted("Survey Protocol").then((res) => {
         if (res) {
           setIsWhitelistedSurveyProtocol(true);
         }
       });
+      if (collection.formMetadata.surveyTokenId && registry) {
+        getSurveyConditionInfo(
+          registry["80001"].surveyHubAddress,
+          collection.formMetadata.surveyTokenId
+        ).then((res) => {
+          if (res) {
+            setSurveyConditions(res);
+          }
+        });
+        getSurveyDistributionInfo(
+          registry["80001"].surveyHubAddress,
+          collection.formMetadata.surveyTokenId
+        ).then((res) => {
+          if (res) {
+            setSurveyDistributionInfo(res);
+          }
+        });
+      }
+    }
   }, [isOpen]);
 
   const onClick = (pluginName: string) => {
     switch (pluginName) {
+      case "poap":
       case "guildxyz":
-        setIsPluginOpen(true);
-        setPluginOpen(pluginName);
-        break;
       case "gtcpassport":
-        setIsPluginOpen(true);
-        setPluginOpen(pluginName);
-        break;
       case "mintkudos":
-        setIsPluginOpen(true);
-        setPluginOpen(pluginName);
-        break;
       case "payments":
-        setIsPluginOpen(true);
-        setPluginOpen(pluginName);
-        break;
       case "erc20":
-        setIsPluginOpen(true);
-        setPluginOpen(pluginName);
-        break;
       case "ceramic":
         setIsPluginOpen(true);
         setPluginOpen(pluginName);
@@ -69,6 +84,8 @@ export default function ViewPlugins({}: Props) {
 
   const isPluginAdded = (pluginName: string) => {
     switch (pluginName) {
+      case "poap":
+        return !!collection.formMetadata.formRoleGating;
       case "guildxyz":
         return !!collection.formMetadata.formRoleGating;
       case "gtcpassport":
@@ -137,7 +154,6 @@ export default function ViewPlugins({}: Props) {
                             "https://circles.spect.network/r/9991d6ed-f3c8-425a-8b9e-0f598514482c",
                             "_blank"
                           );
-                          return;
                         } else {
                           onClick(pluginName);
                         }
@@ -168,16 +184,24 @@ export default function ViewPlugins({}: Props) {
         {isPluginOpen && pluginOpen === "payments" && (
           <Payments handleClose={() => setIsPluginOpen(false)} key="payments" />
         )}
-        {/*
+
         {isPluginOpen && pluginOpen === "erc20" && (
           <DistributeERC20
             handleClose={() => setIsPluginOpen(false)}
             key="erc20"
+            distributionInfo={surveyDistributionInfo}
+            conditionInfo={surveyConditions}
           />
         )}
         {isPluginOpen && pluginOpen === "ceramic" && (
           <Ceramic handleClose={() => setIsPluginOpen(false)} key="ceramic" />
-        )} */}
+        )}
+        {isPluginOpen && pluginOpen === "poap" && (
+          <DistributePOAP
+            handleClose={() => setIsPluginOpen(false)}
+            key="poap"
+          />
+        )}
       </AnimatePresence>
     </Box>
   );

@@ -15,7 +15,7 @@ import {
   Registry,
   UserType,
 } from "@/app/types";
-import { Box, Stack, Text } from "degen";
+import { Box, Input, Stack, Text } from "degen";
 import { isAddress } from "ethers/lib/utils";
 import React, { useEffect, useState } from "react";
 import { useQuery } from "react-query";
@@ -35,6 +35,8 @@ import {
   loadCeramicSession,
 } from "@/app/services/Ceramic";
 import { useAccount } from "wagmi";
+import Modal from "@/app/common/components/Modal";
+import { useProfile } from "../Profile/ProfileSettings/LocalProfileContext";
 
 type Props = {
   form: FormType;
@@ -62,6 +64,8 @@ export default function FormFields({ form, setForm }: Props) {
   const [surveyTokenClaimed, setSurveyTokenClaimed] = useState(
     form.formMetadata.surveyTokenClaimedByUser
   );
+  const { onSaveProfile, email, setEmail } = useProfile();
+  const [emailModalOpen, setEmailModalOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [respondAsAnonymous, setRespondAsAnonymous] = useState(false);
   const [notificationPreferenceModalOpen, setNotificationPreferenceModalOpen] =
@@ -258,7 +262,16 @@ export default function FormFields({ form, setForm }: Props) {
   }, []);
 
   const onSubmit = async () => {
+    if (
+      form.formMetadata?.surveyDistributionType === 0 &&
+      form.formMetadata?.surveyTokenId &&
+      !email
+    ) {
+      setEmailModalOpen(true);
+      return;
+    }
     setSubmitting(true);
+
     if (false && form.formMetadata.ceramicEnabled) {
       let session: any;
       const loadedSession = await loadCeramicSession(address as string);
@@ -432,6 +445,34 @@ export default function FormFields({ form, setForm }: Props) {
 
   return (
     <Container borderRadius="2xLarge">
+      {emailModalOpen && (
+        <Modal
+          title="Please enter email"
+          size="small"
+          handleClose={() => {
+            if (email) onSaveProfile();
+            setEmailModalOpen(false);
+          }}
+        >
+          <Box padding="8" display="flex" flexDirection="column" gap="2">
+            <Text variant="label">
+              This form is incentivized using a lottery mechanism. Please enter
+              your email to get notified upon winning.
+            </Text>
+            <Input
+              label=""
+              placeholder="Email"
+              value={email}
+              inputMode="email"
+              type="email"
+              error={email && !isEmail(email)}
+              onChange={(e) => {
+                setEmail(e.target.value);
+              }}
+            />
+          </Box>
+        </Modal>
+      )}
       <AnimatePresence>
         {notificationPreferenceModalOpen && (
           <NotificationPreferenceModal

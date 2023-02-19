@@ -820,7 +820,12 @@ export type FormMetadata = {
   surveyTokenId?: number;
   surveyTokenClaimedByUser: boolean;
   canClaimSurveyToken: boolean;
-  surveyTokenChainId?: string;
+  surveyChain?: Option;
+  surveyToken?: Option;
+  surveyTotalValue?: number;
+  surveyVRFRequestId?: string;
+  surveyLotteryWinner?: number;
+  surveyDistributionType?: number;
   ceramicEnabled?: boolean;
 };
 

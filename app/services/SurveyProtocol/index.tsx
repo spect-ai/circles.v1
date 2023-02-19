@@ -49,15 +49,6 @@ export const createSurvey = async (
       amountPerResponse = 0;
     }
 
-    console.log({
-      surveyHub,
-      distributionType,
-      totalAmount,
-      amountPerResponse,
-      minResponses,
-      minNumDays,
-      tokenAddress,
-    });
     if (tokenAddress === "0x0") {
       tx = await surveyHub.createSurveyWithEther(
         distributionType,
@@ -121,5 +112,23 @@ export const createSurvey = async (
 export const getLastSurveyId = async (surveyHubAddress: string) => {
   const surveyHub = await getContract(surveyHubAddress, SurveyABI.abi);
   const count = await surveyHub.surveyCount();
-  return parseInt(ethers.utils.formatUnits(count, 0));
+  return parseInt(ethers.utils.formatUnits(count, 0)) - 1;
+};
+
+export const getSurveyDistributionInfo = async (
+  surveyHubAddress: string,
+  surveyId: number
+) => {
+  console.log({ surveyHubAddress, surveyId });
+  const surveyHub = await getContract(surveyHubAddress, SurveyABI.abi);
+  return await surveyHub.distributionInfo(surveyId);
+};
+
+export const getSurveyConditionInfo = async (
+  surveyHubAddress: string,
+  surveyId: number
+) => {
+  const surveyHub = await getContract(surveyHubAddress, SurveyABI.abi);
+  console.log({ surveyHub });
+  return await surveyHub.conditionInfo(surveyId);
 };

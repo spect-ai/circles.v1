@@ -31,15 +31,14 @@ export const spectPlugins: { [key: string]: SpectPlugin } = {
       "https://ik.imagekit.io/spectcdn/gtcpassport_XqHKx4FMG?ik-sdk-version=javascript-1.4.3&updatedAt=1675753373123",
     premium: true,
   },
-  mintkudos: {
-    id: "mintkudos",
-    name: "Incentivize responders with MintKudos",
+  poap: {
+    id: "poap",
+    name: "Incentivize responders with POAPs",
     version: "1.0.0",
     description:
-      "MintKudos allows you distribute soulbound tokens to responders automatically. Kudos to them for filling out this form!",
-    docs: "https://docs.guild.xyz",
-    image:
-      "https://ik.imagekit.io/spectcdn/CDfgJBIe_2x.jpg?ik-sdk-version=javascript-1.4.3&updatedAt=1675753635232",
+      "Looking to incentivize responders with POAPs? This plugin helps you create a POAP event or import an existing one!",
+    docs: "https://poap.xyz/",
+    image: "https://ik.imagekit.io/spectcdn/poap.png",
     premium: true,
   },
   payments: {
@@ -73,6 +72,18 @@ export const spectPlugins: { [key: string]: SpectPlugin } = {
     docs: "",
     image:
       "https://ik.imagekit.io/spectcdn/moneybagethereummb3dmodel001.jpg?ik-sdk-version=javascript-1.4.3&updatedAt=1676107655114",
+    premium: true,
+  },
+
+  mintkudos: {
+    id: "mintkudos",
+    name: "Incentivize responders with MintKudos",
+    version: "1.0.0",
+    description:
+      "MintKudos allows you distribute soulbound tokens to responders automatically. Kudos to them for filling out this form!",
+    docs: "https://docs.guild.xyz",
+    image:
+      "https://ik.imagekit.io/spectcdn/CDfgJBIe_2x.jpg?ik-sdk-version=javascript-1.4.3&updatedAt=1675753635232",
     premium: true,
   },
 };

@@ -13,18 +13,45 @@ import { useCircle } from "../../Circle/CircleContext";
 import AddToken from "../../Circle/CircleSettingsModal/CirclePayment/AddToken";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
 
-type Props = {
-  handleClose: () => void;
+export type DistributionInfo = {
+  distributionType: 0 | 1 | null;
+  tokenAddress: string;
+  amountPerResponse: number;
+  requestId: string;
+  supplySnapshot: number;
 };
 
-export default function DistributeERC20({ handleClose }: Props) {
+export type ConditionInfo = {
+  timestamp: number;
+  minTotalSupply: number;
+  tokenId: string;
+};
+
+type Props = {
+  handleClose: () => void;
+  distributionInfo?: DistributionInfo;
+  conditionInfo?: ConditionInfo;
+};
+
+export default function DistributeERC20({
+  handleClose,
+  distributionInfo,
+  conditionInfo,
+}: Props) {
   const { registry } = useCircle();
   const { localCollection: collection, updateCollection } =
     useLocalCollection();
-  const [paymentType, setPaymentType] = useState({
-    label: "Pay per response",
-    value: "payPerResponse",
-  });
+  const [paymentType, setPaymentType] = useState(
+    distributionInfo?.distributionType === 0
+      ? {
+          label: "Lottery",
+          value: "lottery",
+        }
+      : {
+          label: "Pay per response",
+          value: "payPerResponse",
+        }
+  );
   const [isAddTokenModalOpen, setIsAddTokenModalOpen] = useState(false);
 
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
@@ -38,15 +65,32 @@ export default function DistributeERC20({ handleClose }: Props) {
         value: key,
       };
     });
-  const [selectedNetwork, setSelectedNetwork] = useState(networks[0]);
+  const [selectedNetwork, setSelectedNetwork] = useState(
+    collection?.formMetadata?.surveyChain || networks[0]
+  );
   const [tokenOptions, setTokenOptions] = useState([] as Option[]);
-  const [selectedToken, setSelectedToken] = useState({} as Option);
-  const [value, setValue] = useState(0);
-  const [valuePerResponse, setValuePerResponse] = useState(0);
-  const [minResponses, setMinResponses] = useState(0);
-  const [minTimestamp, setMinTimestamp] = useState(0);
-  const [lotteryClaimOptions, setLotteryClaimOptions] =
-    useState<"minDays" | "minResponses">("minDays");
+  const [selectedToken, setSelectedToken] = useState(
+    collection?.formMetadata?.surveyToken as Option
+  );
+  const [value, setValue] = useState(
+    collection?.formMetadata?.surveyTotalValue || 0
+  );
+  const [valuePerResponse, setValuePerResponse] = useState(
+    distributionInfo?.amountPerResponse || 0
+  );
+  const [minResponses, setMinResponses] = useState(
+    conditionInfo?.minTotalSupply || 0
+  );
+  const [minTimestamp, setMinTimestamp] = useState(
+    conditionInfo?.timestamp || 0
+  );
+  const [lotteryClaimOptions, setLotteryClaimOptions] = useState<
+    "minDays" | "minResponses"
+  >(
+    conditionInfo?.timestamp && conditionInfo?.timestamp > 0
+      ? "minDays"
+      : "minResponses"
+  );
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -270,7 +314,23 @@ export default function DistributeERC20({ handleClose }: Props) {
                   formMetadata: {
                     ...collection.formMetadata,
                     surveyTokenId: lastSurveyId,
-                    surveyTokenChainId: selectedNetwork.value,
+                    surveyChain: selectedNetwork,
+                    surveyToken: selectedToken,
+                    surveyTotalValue: value,
+                    surveyDistributionType:
+                      paymentType?.value === "payPerResponse" ? 1 : 0,
+                  },
+                });
+                updateCollection({
+                  ...collection,
+                  formMetadata: {
+                    ...collection.formMetadata,
+                    surveyTokenId: lastSurveyId,
+                    surveyChain: selectedNetwork,
+                    surveyToken: selectedToken,
+                    surveyTotalValue: value,
+                    surveyDistributionType:
+                      paymentType?.value === "payPerResponse" ? 1 : 0,
                   },
                 });
                 console.log({ res });
