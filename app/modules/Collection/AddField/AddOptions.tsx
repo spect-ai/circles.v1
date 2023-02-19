@@ -1,5 +1,5 @@
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { Box, IconClose, Stack, Text, useTheme } from "degen";
+import { Box, IconClose, Input, Stack, Text, useTheme } from "degen";
 import React from "react";
 import styled from "styled-components";
 import uuid from "react-uuid";
@@ -13,6 +13,11 @@ type Props = {
   disabled?: boolean;
   setCardOrder?: (cardOrder: string[][]) => void;
   cardOrder?: string[][];
+  maxSelections?: number;
+  setMaxSelections: (maxSelections: number) => void;
+  allowCustom: boolean;
+  setAllowCustom: (allowCustom: boolean) => void;
+  multiSelect?: boolean;
 };
 
 export default function AddOptions({
@@ -22,11 +27,50 @@ export default function AddOptions({
   disabled,
   setCardOrder,
   cardOrder,
+  maxSelections,
+  setMaxSelections,
+  allowCustom,
+  setAllowCustom,
+  multiSelect,
 }: Props) {
   const { mode } = useTheme();
   return (
     <Box maxHeight="56" overflow="auto">
       <Stack>
+        <Text variant="label">Settings</Text>
+        <Stack direction="horizontal" align="center" space="2">
+          <input
+            type="checkbox"
+            name={"Settings"}
+            checked={allowCustom}
+            onChange={() => {
+              setAllowCustom(!allowCustom);
+            }}
+            style={{
+              width: "16px",
+              height: "16px",
+              cursor: "pointer",
+            }}
+          />
+          <Text size="small" weight="light">
+            Allow custom answer
+          </Text>
+        </Stack>
+        {multiSelect && (
+          <Box marginTop="-2" marginRight="8">
+            <Input
+              label=""
+              type="number"
+              value={maxSelections}
+              onChange={(e) => {
+                setMaxSelections(parseInt(e.target.value));
+              }}
+              placeholder="Max number of selections allowed"
+              min={2}
+            />
+          </Box>
+        )}
+
         <Text variant="label">{label}</Text>
         {fieldOptions.map((option, index) => (
           <Box key={index}>

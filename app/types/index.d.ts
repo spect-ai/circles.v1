@@ -896,6 +896,9 @@ export type Property = {
   viewConditions?: Condition[];
   payWallOptions?: PayWallOptions;
   internal?: boolean;
+  maxSelections?: number;
+  allowCustom?: boolean;
+  milestoneFields?: string[];
 };
 
 export type PropertyType =

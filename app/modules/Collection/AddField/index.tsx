@@ -14,7 +14,6 @@ import {
   Condition,
   FormUserType,
   Registry,
-  Option,
   PayWallOptions,
   Property,
   PropertyType,
@@ -88,6 +87,9 @@ export default function AddField({ propertyName, handleClose }: Props) {
 
   const [cardOrder, setCardOrder] = useState<any>();
 
+  const [maxSelections, setMaxSelections] = useState<number>();
+  const [allowCustom, setAllowCustom] = useState(true);
+
   const onSave = async () => {
     setLoading(true);
     let res;
@@ -106,20 +108,19 @@ export default function AddField({ propertyName, handleClose }: Props) {
     if (propertyName) {
       res = await updateField(collection.id, propertyName, {
         name: name.trim(),
-        type: type.value,
+        type: type.value as PropertyType,
         options: fieldOptions,
         rewardOptions,
         description,
         userType,
         default: defaultValue,
-        // onUpdateNotifyUserTypes: notifyUserType?.map(
-        //   (type) => type.value
-        // ) as FormUserType[],
         isPartOfFormView: collection.properties[propertyName]?.isPartOfFormView,
         required: required === 1,
         milestoneFields,
         viewConditions,
         payWallOptions,
+        maxSelections,
+        allowCustom,
       });
       if (collection.collectionType === 1) {
         res = await updateFormCollection(collection.id, {
@@ -142,9 +143,6 @@ export default function AddField({ propertyName, handleClose }: Props) {
         rewardOptions,
         userType: userType,
         default: defaultValue,
-        // onUpdateNotifyUserTypes: notifyUserType?.map(
-        //   (type) => type.value
-        // ) as FormUserType[],
         required: required === 1,
         milestoneFields,
         viewConditions,
@@ -211,6 +209,8 @@ export default function AddField({ propertyName, handleClose }: Props) {
         property?.type === "multiSelect"
       ) {
         setFieldOptions(property?.options || []);
+        setMaxSelections(property?.maxSelections);
+        setAllowCustom(Boolean(property?.allowCustom));
       }
       if (property.type === "user") {
         setUserType(property.userType);
@@ -353,6 +353,11 @@ export default function AddField({ propertyName, handleClose }: Props) {
                 setFieldOptions={setFieldOptions}
                 setCardOrder={setCardOrder}
                 cardOrder={cardOrder}
+                allowCustom={allowCustom}
+                maxSelections={maxSelections}
+                setMaxSelections={setMaxSelections}
+                setAllowCustom={setAllowCustom}
+                multiSelect={type.value === "multiSelect"}
               />
             ) : null}
             {type.value === "user" || type.value === "user[]" ? (

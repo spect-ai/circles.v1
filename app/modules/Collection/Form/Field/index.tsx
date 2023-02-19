@@ -31,12 +31,16 @@ import {
   FaTelegramPlane,
   FaTwitter,
 } from "react-icons/fa";
+import SingleSelect from "@/app/modules/PublicForm/SingleSelect";
+import MultiSelect from "@/app/modules/PublicForm/MultiSelect";
 
 type Props = {
   id: string;
   index: number;
   setIsEditFieldOpen: (value: boolean) => void;
   setPropertyName: (value: string) => void;
+  formData: any;
+  setFormData: (value: any) => void;
 };
 
 function FieldComponent({
@@ -44,6 +48,8 @@ function FieldComponent({
   index,
   setIsEditFieldOpen,
   setPropertyName,
+  formData,
+  setFormData,
 }: Props) {
   const { localCollection: collection } = useLocalCollection();
   const [hover, setHover] = useState(false);
@@ -96,7 +102,6 @@ function FieldComponent({
         </Box>
         <Box
           cursor="pointer"
-          backgroundColor="accentSecondary"
           borderRadius="full"
           paddingY="1"
           paddingX="2"
@@ -201,27 +206,49 @@ function FieldComponent({
         </Box>
       )}
       {(collection.properties[id]?.type === "singleSelect" ||
-        collection.properties[id]?.type === "user" ||
-        collection.properties[id]?.type === "multiSelect" ||
+        collection.properties[id]?.type === "user") && (
+        <Box marginTop="4">
+          <SingleSelect
+            allowCustom={collection.properties[id]?.allowCustom || false}
+            options={
+              collection.properties[id]?.type === "user"
+                ? (memberOptions as any)
+                : collection.properties[id]?.options
+            }
+            selected={formData[id]}
+            onSelect={(value: any) => {
+              setFormData({ ...formData, [id]: value });
+            }}
+            propertyName={id}
+          />
+        </Box>
+      )}
+      {(collection.properties[id]?.type === "multiSelect" ||
         collection.properties[id]?.type === "user[]") && (
         <Box marginTop="4">
-          <Dropdown
-            placeholder={`Select ${collection.properties[id]?.name}`}
-            multiple={
-              collection.properties[id]?.type === "multiSelect" ||
-              collection.properties[id]?.type === "user[]"
-            }
+          <MultiSelect
+            allowCustom={collection.properties[id]?.allowCustom || false}
             options={
-              collection.properties[id]?.type === "user" ||
               collection.properties[id]?.type === "user[]"
                 ? (memberOptions as any)
                 : collection.properties[id]?.options
             }
-            selected={collection.data && collection.data[id]}
-            onChange={(value: any) => {
-              console.log({ value });
+            selected={formData[id]}
+            onSelect={(value: any) => {
+              if (!formData[id]) {
+                setFormData({ [id]: [value] });
+              } else {
+                if (formData[id]?.includes(value)) {
+                  setFormData({
+                    ...formData,
+                    [id]: formData[id].filter((item: any) => item !== value),
+                  });
+                } else {
+                  setFormData({ ...formData, [id]: [...formData[id], value] });
+                }
+              }
             }}
-            portal
+            propertyName={id}
           />
         </Box>
       )}
@@ -299,6 +326,7 @@ function FieldComponent({
     hover,
     id,
     mode,
+    formData,
   ]);
 
   return (
