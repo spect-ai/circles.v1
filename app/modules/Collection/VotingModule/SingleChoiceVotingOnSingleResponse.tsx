@@ -16,6 +16,8 @@ export default function SingleChoiceVotingOnSingleResponse({
   setOptions,
   disabled,
 }: Props) {
+  const [maxSelections, setMaxSelections] = useState<number>();
+  const [allowCustom, setAllowCustom] = useState(true);
   return (
     <>
       <Box>
@@ -26,6 +28,10 @@ export default function SingleChoiceVotingOnSingleResponse({
               setFieldOptions={setOptions}
               label="Voting Options"
               disabled={disabled}
+              maxSelections={maxSelections}
+              allowCustom={allowCustom}
+              setAllowCustom={setAllowCustom}
+              setMaxSelections={setMaxSelections}
             />
           </Stack>
         </Stack>

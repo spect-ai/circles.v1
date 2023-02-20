@@ -49,6 +49,9 @@ export default function MapField({
       ["payWall", "reward", "milestone", "multiURL"].indexOf(f.value) === -1
   );
 
+  const [maxSelections, setMaxSelections] = useState<number>();
+  const [allowCustom, setAllowCustom] = useState(true);
+
   return (
     <Box>
       <Stack direction="horizontal" align="center">
@@ -121,6 +124,10 @@ export default function MapField({
             <AddOptions
               fieldOptions={fieldOptions}
               setFieldOptions={setFieldOptions}
+              maxSelections={maxSelections}
+              setMaxSelections={setMaxSelections}
+              allowCustom={allowCustom}
+              setAllowCustom={setAllowCustom}
             />
           )}
           {(properties[propertyName].type === "user" ||
