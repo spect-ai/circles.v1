@@ -1,7 +1,7 @@
 export const definition = {
   models: {
     SpectForm: {
-      id: "kjzl6hvfrbw6ca1b5y4fkh5v7mla4a19r8nrwleb6stipcbcnxgjyvk916cnjut",
+      id: "kjzl6hvfrbw6c5iv52dc4niy6m90mzouxdnp2l1vhk4dghp25uixmcf2wuj3zjt",
       accountRelation: { type: "list" },
     },
   },
