@@ -4,7 +4,7 @@ import { EthereumWebAuth, getAccountId } from "@didtools/pkh-ethereum";
 import { DIDSession } from "did-session";
 
 export const compose = new ComposeClient({
-  ceramic: "https://ceramic-clay.spect.network/node",
+  ceramic: "https://ceramic-clay.spect.network",
   definition: definition as any,
 });
 
