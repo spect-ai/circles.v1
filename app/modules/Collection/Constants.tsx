@@ -42,9 +42,9 @@ export const fields = [
   { label: "Single User", value: "user" },
   { label: "Connect Wallet", value: "connectWallet", icon: <FaWallet /> },
   { label: "Email", value: "email", icon: <AiOutlineMail /> },
-  // { label: "Twitter", value: "twitter", icon: <FaTwitter /> },
+  { label: "Twitter", value: "twitter", icon: <FaTwitter /> },
   { label: "Discord", value: "discord", icon: <FaDiscord /> },
-  // { label: "Telegram", value: "telegram", icon: <FaTelegram /> },
+  { label: "Telegram", value: "telegram", icon: <FaTelegram /> },
   { label: "Github", value: "github", icon: <FaGithub /> },
 ];
 
@@ -63,8 +63,8 @@ export const fieldOptionsDropdown = [
       { label: "Email", value: "email", icon: <AiOutlineMail /> },
       // { label: "Twitter", value: "twitter", icon: <FaTwitter /> },
       { label: "Discord", value: "discord", icon: <FaDiscord /> },
-      // { label: "Telegram", value: "telegram", icon: <FaTelegram /> },
-      // { label: "Github", value: "github", icon: <FaGithub /> },
+      { label: "Telegram", value: "telegram", icon: <FaTelegram /> },
+      { label: "Github", value: "github", icon: <FaGithub /> },
     ],
   },
   {

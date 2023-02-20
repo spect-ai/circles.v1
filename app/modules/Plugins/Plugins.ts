@@ -54,7 +54,7 @@ export const spectPlugins: { [key: string]: SpectPlugin } = {
   },
   ceramic: {
     id: "ceramic",
-    name: "Data Ownership with Ceramic (Launching soon)",
+    name: "Data Ownership with Ceramic (Alpha)",
     version: "1.0.0",
     description:
       "Care about data ownership & composability? Use Ceramic to store your form data.",

@@ -196,12 +196,6 @@ export default function ViewPlugins({}: Props) {
         {isPluginOpen && pluginOpen === "ceramic" && (
           <Ceramic handleClose={() => setIsPluginOpen(false)} key="ceramic" />
         )}
-        {isPluginOpen && pluginOpen === "poap" && (
-          <DistributePOAP
-            handleClose={() => setIsPluginOpen(false)}
-            key="poap"
-          />
-        )}
       </AnimatePresence>
     </Box>
   );

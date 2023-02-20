@@ -262,18 +262,9 @@ export default function FormFields({ form, setForm }: Props) {
   }, []);
 
   const onSubmit = async () => {
-    if (
-      form.formMetadata?.surveyDistributionType === 0 &&
-      form.formMetadata?.surveyTokenId &&
-      !email
-    ) {
-      setEmailModalOpen(true);
-      return;
-    }
-    setSubmitting(true);
-
-    if (false && form.formMetadata.ceramicEnabled) {
+    if (form.formMetadata.ceramicEnabled) {
       let session: any;
+      setSubmitting(true);
       const loadedSession = await loadCeramicSession(address as string);
       console.log({ loadedSession });
       if (!loadedSession) {
@@ -328,6 +319,7 @@ export default function FormFields({ form, setForm }: Props) {
       setNotificationPreferenceModalOpen(true);
       return;
     }
+    setSubmitting(true);
 
     if (updateResponse) {
       const lastResponse =
@@ -379,9 +371,6 @@ export default function FormFields({ form, setForm }: Props) {
 
   const isIncorrectType = (propertyName: string, value: any) => {
     switch (form.properties[propertyName]?.type) {
-      case "ethAddress":
-        return value && !isAddress(value);
-
       case "email":
         return value && !isEmail(value);
 
@@ -414,6 +403,14 @@ export default function FormFields({ form, setForm }: Props) {
         return !value?.value;
       case "payWall":
         return !value?.some((v: any) => v.txnHash);
+      case "discord":
+        return !value?.id;
+      case "github":
+        return !value?.id;
+      case "twitter":
+        return !value?.id;
+      case "telegram":
+        return !value?.id;
       default:
         return false;
     }
@@ -440,7 +437,7 @@ export default function FormFields({ form, setForm }: Props) {
   };
 
   if (!form.formMetadata.active) {
-    return <></>;
+    return <Box />;
   }
 
   return (
@@ -539,14 +536,14 @@ export default function FormFields({ form, setForm }: Props) {
       >
         {!viewResponse && (
           <Box width="full" paddingX="5">
-            {Object.keys(requiredFieldsNotSet).length > 0 && (
+            {/* {Object.keys(requiredFieldsNotSet).length > 0 && (
               <Text color="red" variant="small">
                 {" "}
                 {`Required fields are empty: ${Object.keys(
                   requiredFieldsNotSet
                 ).join(",")}`}{" "}
               </Text>
-            )}
+            )} */}
             <PrimaryButton onClick={onSubmit} loading={submitting}>
               Submit
             </PrimaryButton>

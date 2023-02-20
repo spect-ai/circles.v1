@@ -5,7 +5,6 @@ import { Milestone } from "@/app/types";
 import { Box, Button, IconPlusSmall, Stack, Text } from "degen";
 import { AnimatePresence } from "framer-motion";
 import { useState } from "react";
-import { useLocalCollection } from "../Collection/Context/LocalCollectionContext";
 import MilestoneModal from "./MilestoneModal";
 
 type Props = {

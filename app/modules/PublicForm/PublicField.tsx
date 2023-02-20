@@ -9,10 +9,13 @@ import { useEffect, useState } from "react";
 import { satisfiesConditions } from "../Collection/Common/SatisfiesFilter";
 import { DateInput } from "../Collection/Form/Field";
 import DiscordField from "./DiscordField";
+import EthAddressField from "./EthAddressField";
+import GithubField from "./GithubField";
 import MilestoneField from "./MilestoneField";
 import MultiURLField from "./MultiURLField";
 import PaywallField from "./PaywallField";
 import RewardField from "./RewardField";
+import TelegramField from "./TelegramField";
 
 type Props = {
   form: FormType;
@@ -191,23 +194,13 @@ export default function PublicField({
         />
       )}
       {form.properties[propertyName]?.type === "ethAddress" && (
-        <Input
-          label=""
-          placeholder={`Enter ${form.properties[propertyName]?.name}`}
+        <EthAddressField
           value={data && data[propertyName]}
-          onChange={(e) => {
-            setData({ ...data, [propertyName]: e.target.value });
-            updateRequiredFieldNotSet(propertyName, e.target.value);
-            updateFieldHasInvalidType(propertyName, e.target.value);
-          }}
           disabled={disabled}
-          error={
-            data &&
-            data[propertyName] &&
-            !ethers.utils.isAddress(data[propertyName])
-              ? "Invalid address"
-              : undefined
-          }
+          onChange={(value) => {
+            setData({ ...data, [propertyName]: value });
+            updateRequiredFieldNotSet(propertyName, value);
+          }}
         />
       )}
       {form.properties[propertyName]?.type === "longText" && (
@@ -325,7 +318,23 @@ export default function PublicField({
           data={data}
           setData={setData}
           propertyName={propertyName}
-          form={form}
+          updateRequiredFieldNotSet={updateRequiredFieldNotSet}
+        />
+      )}
+      {form.properties[propertyName]?.type === "github" && (
+        <GithubField
+          data={data}
+          setData={setData}
+          propertyName={propertyName}
+          updateRequiredFieldNotSet={updateRequiredFieldNotSet}
+        />
+      )}
+      {form.properties[propertyName]?.type === "telegram" && (
+        <TelegramField
+          data={data}
+          setData={setData}
+          propertyName={propertyName}
+          updateRequiredFieldNotSet={updateRequiredFieldNotSet}
         />
       )}
 
