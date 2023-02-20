@@ -21,7 +21,7 @@ const SingleSelect = ({
   disabled,
 }: Props) => {
   useEffect(() => {
-    if (allowCustom) {
+    if (allowCustom && !options.some((o) => o.value === "__custom__")) {
       options.push({ label: "Other", value: "__custom__" });
     }
   }, []);

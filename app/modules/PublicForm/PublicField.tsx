@@ -246,7 +246,6 @@ export default function PublicField({
             selected={data && data[propertyName]}
             onSelect={(value: any) => {
               if (disabled) return;
-              console.log({ value });
               setData({ ...data, [propertyName]: value });
             }}
             propertyName={propertyName}
@@ -258,6 +257,7 @@ export default function PublicField({
         form.properties[propertyName]?.type === "user[]") && (
         <Box marginTop="4">
           <MultiSelect
+            disabled={disabled}
             allowCustom={form.properties[propertyName]?.allowCustom || false}
             options={
               form.properties[propertyName]?.type === "user[]"
@@ -267,21 +267,36 @@ export default function PublicField({
             selected={data && data[propertyName]}
             onSelect={(value: any) => {
               if (disabled) return;
-
               if (!data[propertyName]) {
                 setData({ ...data, [propertyName]: [value] });
               } else {
-                if (data[propertyName].includes(value)) {
+                if (
+                  data[propertyName].some(
+                    (item: any) => item.value === value.value
+                  )
+                ) {
+                  if (value.value === "__custom__" && value.label !== "") {
+                    // change value of custom option
+                    setData({
+                      ...data,
+                      [propertyName]: data[propertyName].map((item: any) => {
+                        if (item.value === "__custom__") {
+                          return value;
+                        }
+                        return item;
+                      }),
+                    });
+                    return;
+                  }
                   setData({
                     ...data,
                     [propertyName]: data[propertyName].filter(
-                      (item: any) => item !== value
+                      (item: any) => item.value !== value.value
                     ),
                   });
                 } else {
                   const maxSelections =
                     form.properties[propertyName]?.maxSelections;
-
                   if (maxSelections && data[propertyName]) {
                     if (data[propertyName].length >= maxSelections) {
                       toast.error(

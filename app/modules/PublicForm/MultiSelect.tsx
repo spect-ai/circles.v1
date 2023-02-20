@@ -1,6 +1,6 @@
 import { Option } from "@/app/types";
 import { Box, Input, Stack, Text } from "degen";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 type Props = {
   options: Option[];
@@ -20,10 +20,12 @@ const MultiSelect = ({
   disabled,
 }: Props) => {
   useEffect(() => {
-    if (allowCustom) {
+    if (allowCustom && !options.some((o) => o.value === "__custom__")) {
       options.push({ label: "Other", value: "__custom__" });
     }
   }, []);
+
+  const [customValue, setCustomValue] = useState("");
 
   const inputRef: any = useRef();
   return (
@@ -36,7 +38,16 @@ const MultiSelect = ({
               name={propertyName}
               value={option.value}
               checked={selected?.some((o) => o.value === option.value)}
-              onChange={() => onSelect(option)}
+              onChange={() => {
+                if (option.value === "__custom__") {
+                  onSelect({ label: "", value: "__custom__" });
+                  if (!selected?.some((o) => o.value === "__custom__")) {
+                    inputRef.current.focus();
+                  }
+                } else {
+                  onSelect(option);
+                }
+              }}
               style={{
                 width: "20px",
                 height: "20px",
@@ -56,11 +67,16 @@ const MultiSelect = ({
             defaultValue={
               selected?.find((o) => o.value === "__custom__")?.label
             }
+            onChange={(e) => {
+              setCustomValue(e.target.value);
+            }}
             onBlur={(e) => {
-              onSelect({ label: e.target.value, value: "__custom__" });
+              onSelect({ label: customValue, value: "__custom__" });
             }}
             onFocus={(e) => {
-              onSelect({ label: "", value: "__custom__" });
+              if (selected?.some((o) => o.value === "__custom__")) {
+                onSelect({ label: customValue, value: "__custom__" });
+              }
             }}
             disabled={disabled}
           />

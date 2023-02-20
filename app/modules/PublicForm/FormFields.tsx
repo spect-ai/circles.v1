@@ -309,7 +309,10 @@ export default function FormFields({ form, setForm }: Props) {
       return;
     }
 
-    if (!checkRequired(data)) return;
+    if (!checkRequired(data)) {
+      toast.error("Please fill all required fields");
+      return;
+    }
     if (!checkValue(data)) return;
     if (!currentUser?.email && form?.isAnOpportunity) {
       setNotificationPreferenceModalOpen(true);
