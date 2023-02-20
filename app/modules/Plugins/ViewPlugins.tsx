@@ -21,6 +21,7 @@ import {
 } from "@/app/services/SurveyProtocol";
 import { BigNumber, ethers } from "ethers";
 import DistributePOAP from "./poap";
+import Poap from "./poap";
 
 type Props = {};
 
@@ -195,6 +196,9 @@ export default function ViewPlugins({}: Props) {
         )}
         {isPluginOpen && pluginOpen === "ceramic" && (
           <Ceramic handleClose={() => setIsPluginOpen(false)} key="ceramic" />
+        )}
+        {isPluginOpen && pluginOpen === "poap" && (
+          <Poap handleClose={() => setIsPluginOpen(false)} key="poap" />
         )}
       </AnimatePresence>
     </Box>
