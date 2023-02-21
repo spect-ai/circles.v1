@@ -6,15 +6,18 @@ import { FormType, Option, Property, Registry, Reward } from "@/app/types";
 import { Box, Input, Stack, Tag, Text, useTheme } from "degen";
 import { ethers } from "ethers";
 import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 import { satisfiesConditions } from "../Collection/Common/SatisfiesFilter";
 import { DateInput } from "../Collection/Form/Field";
 import DiscordField from "./DiscordField";
 import EthAddressField from "./EthAddressField";
 import GithubField from "./GithubField";
 import MilestoneField from "./MilestoneField";
+import MultiSelect from "./MultiSelect";
 import MultiURLField from "./MultiURLField";
 import PaywallField from "./PaywallField";
 import RewardField from "./RewardField";
+import SingleSelect from "./SingleSelect";
 import TelegramField from "./TelegramField";
 
 type Props = {
@@ -67,7 +70,7 @@ export default function PublicField({
           gap="2"
           alignItems="center"
         >
-          <Text variant="label">{form.properties[propertyName]?.name}</Text>
+          <Text weight="semiBold">{form.properties[propertyName]?.name}</Text>
           {form.properties[propertyName].required && (
             <Tag size="small" tone="accent">
               Required
@@ -84,7 +87,7 @@ export default function PublicField({
             {`This field is of type ${form.properties[propertyName].type}`}
           </Text>
         )}
-        <Text variant="small">
+        <Text variant="label">
           {form.properties[propertyName]?.description}
         </Text>
       </Stack>
@@ -231,29 +234,85 @@ export default function PublicField({
         </Box>
       )}
       {(form.properties[propertyName]?.type === "singleSelect" ||
-        form.properties[propertyName]?.type === "user" ||
-        form.properties[propertyName]?.type === "multiSelect" ||
+        form.properties[propertyName]?.type === "user") && (
+        <Box marginTop="4">
+          <SingleSelect
+            allowCustom={form.properties[propertyName]?.allowCustom || false}
+            options={
+              form.properties[propertyName]?.type === "user"
+                ? (memberOptions as any)
+                : form.properties[propertyName]?.options
+            }
+            selected={data && data[propertyName]}
+            onSelect={(value: any) => {
+              if (disabled) return;
+              setData({ ...data, [propertyName]: value });
+            }}
+            propertyName={propertyName}
+            disabled={disabled}
+          />
+        </Box>
+      )}
+      {(form.properties[propertyName]?.type === "multiSelect" ||
         form.properties[propertyName]?.type === "user[]") && (
         <Box marginTop="4">
-          <Dropdown
-            placeholder={`Select ${form.properties[propertyName]?.name}`}
-            multiple={
-              form.properties[propertyName]?.type === "multiSelect" ||
-              form.properties[propertyName]?.type === "user[]"
-            }
+          <MultiSelect
+            disabled={disabled}
+            allowCustom={form.properties[propertyName]?.allowCustom || false}
             options={
-              form.properties[propertyName]?.type === "user" ||
               form.properties[propertyName]?.type === "user[]"
                 ? (memberOptions as any)
                 : form.properties[propertyName]?.options
             }
             selected={data && data[propertyName]}
-            onChange={(value: any) => {
-              setData({ ...data, [propertyName]: value });
-              updateRequiredFieldNotSet(propertyName, value);
+            onSelect={(value: any) => {
+              if (disabled) return;
+              if (!data[propertyName]) {
+                setData({ ...data, [propertyName]: [value] });
+              } else {
+                if (
+                  data[propertyName].some(
+                    (item: any) => item.value === value.value
+                  )
+                ) {
+                  if (value.value === "__custom__" && value.label !== "") {
+                    // change value of custom option
+                    setData({
+                      ...data,
+                      [propertyName]: data[propertyName].map((item: any) => {
+                        if (item.value === "__custom__") {
+                          return value;
+                        }
+                        return item;
+                      }),
+                    });
+                    return;
+                  }
+                  setData({
+                    ...data,
+                    [propertyName]: data[propertyName].filter(
+                      (item: any) => item.value !== value.value
+                    ),
+                  });
+                } else {
+                  const maxSelections =
+                    form.properties[propertyName]?.maxSelections;
+                  if (maxSelections && data[propertyName]) {
+                    if (data[propertyName].length >= maxSelections) {
+                      toast.error(
+                        `You can only select ${maxSelections} options`
+                      );
+                      return;
+                    }
+                  }
+                  setData({
+                    ...data,
+                    [propertyName]: [...data[propertyName], value],
+                  });
+                }
+              }
             }}
-            portal
-            disabled={disabled}
+            propertyName={propertyName}
           />
         </Box>
       )}

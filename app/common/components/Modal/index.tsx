@@ -102,7 +102,7 @@ function Modal({
         initial="hidden"
         animate="visible"
         exit="exit"
-        style={{ width: "100%", display: "flex", justifyContent: "center" }}
+        style={{ display: "flex", justifyContent: "center" }}
       >
         <Container
           position="relative"

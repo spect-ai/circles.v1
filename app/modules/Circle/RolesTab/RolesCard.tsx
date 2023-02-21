@@ -55,7 +55,7 @@ function RoleCard({ roleKey, role }: Props) {
   return (
     <Container key={role.name} mode={mode}>
       <Stack direction={"horizontal"} align="center" justify={"space-between"}>
-        <Text variant="extraLarge" weight="semiBold" transform="capitalize">
+        <Text variant="extraLarge" weight="semiBold">
           {role.name}
         </Text>
         <Tag>

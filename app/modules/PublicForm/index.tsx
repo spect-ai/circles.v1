@@ -87,7 +87,6 @@ export default function PublicForm() {
     }
   };
 
-  console.log({ form });
   useEffect(() => {
     void (async () => {
       if (formId) {

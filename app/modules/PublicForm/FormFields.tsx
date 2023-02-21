@@ -350,21 +350,22 @@ export default function FormFields({ form, setForm }: Props) {
     if (form.formMetadata.ceramicEnabled) {
       let session: any;
       setSubmitting(true);
-      const loadedSession = await loadCeramicSession(address as string);
-      console.log({ loadedSession });
-      if (!loadedSession) {
-        const newSession = await createCeramicSession(
-          address as string,
-          connector
-        );
-        console.log({ newSession });
-        session = newSession;
-      } else {
-        session = loadedSession;
-      }
-      compose.setDID(session.did);
-      const result: any = await compose.executeQuery(
-        `
+      try {
+        const loadedSession = await loadCeramicSession(address as string);
+        console.log({ loadedSession });
+        if (!loadedSession) {
+          const newSession = await createCeramicSession(
+            address as string,
+            connector
+          );
+          console.log({ newSession });
+          session = newSession;
+        } else {
+          session = loadedSession;
+        }
+        compose.setDID(session.did);
+        const result: any = await compose.executeQuery(
+          `
       mutation {
         createSpectForm(input: {content: {
           formId: "${form.slug}",
@@ -379,9 +380,15 @@ export default function FormFields({ form, setForm }: Props) {
         }
       }
       `
-      );
-      const streamId = result.data.createSpectForm.document.id;
-      data["__ceramic__"] = streamId;
+        );
+        const streamId = result.data.createSpectForm.document.id;
+        data["__ceramic__"] = streamId;
+      } catch (err) {
+        console.log(err);
+        toast.error("Could not upload data to Ceramic");
+        setSubmitting(false);
+        return;
+      }
     }
     let res;
     if (
@@ -398,7 +405,10 @@ export default function FormFields({ form, setForm }: Props) {
       return;
     }
 
-    if (!checkRequired(data)) return;
+    if (!checkRequired(data)) {
+      toast.error("Please fill all required fields");
+      return;
+    }
     if (!checkValue(data)) return;
     if (!currentUser?.email && form?.isAnOpportunity) {
       setNotificationPreferenceModalOpen(true);

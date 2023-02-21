@@ -54,10 +54,10 @@ export const spectPlugins: { [key: string]: SpectPlugin } = {
   },
   ceramic: {
     id: "ceramic",
-    name: "Data Ownership with Ceramic (Alpha)",
+    name: "Data Ownership with Ceramic (Testnet Alpha)",
     version: "1.0.0",
     description:
-      "Care about data ownership & composability? Use Ceramic to store your form data.",
+      "Care about data ownership & composability? Use Ceramic to allow your responders to own their data.",
     docs: "https://docs.guild.xyz",
     image:
       "https://ik.imagekit.io/spectcdn/ceramic.png?ik-sdk-version=javascript-1.4.3&updatedAt=1675754081907",
