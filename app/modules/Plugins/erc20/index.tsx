@@ -6,6 +6,7 @@ import { updateFormCollection } from "@/app/services/Collection";
 import { createSurvey, getLastSurveyId } from "@/app/services/SurveyProtocol";
 import { Option, UserType } from "@/app/types";
 import { Box, Input, Stack, Text } from "degen";
+import { ethers } from "ethers";
 import { AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
@@ -75,9 +76,7 @@ export default function DistributeERC20({
   const [value, setValue] = useState(
     collection?.formMetadata?.surveyTotalValue || 0
   );
-  const [valuePerResponse, setValuePerResponse] = useState(
-    distributionInfo?.amountPerResponse || 0
-  );
+  const [valuePerResponse, setValuePerResponse] = useState(0);
   const [minResponses, setMinResponses] = useState(
     conditionInfo?.minTotalSupply || 0
   );
@@ -111,6 +110,18 @@ export default function DistributeERC20({
       setTokenOptions(tokens);
     }
   }, [selectedNetwork]);
+
+  useEffect(() => {
+    if (distributionInfo?.amountPerResponse) {
+      setValuePerResponse(
+        parseFloat(
+          ethers.utils.formatEther(
+            distributionInfo?.amountPerResponse.toString()
+          )
+        )
+      );
+    }
+  }, [distributionInfo?.amountPerResponse]);
 
   return (
     <Modal handleClose={handleClose} title="Distribute Tokens">
@@ -250,7 +261,7 @@ export default function DistributeERC20({
                     </Box>
                   </Stack>
                 )}
-              {paymentType?.value === "lottery" && (
+              {/* {paymentType?.value === "lottery" && (
                 <Box width="1/3">
                   <PrimaryButton
                     variant="transparent"
@@ -267,7 +278,7 @@ export default function DistributeERC20({
                       : "Or set minimum days"}
                   </PrimaryButton>
                 </Box>
-              )}
+              )} */}
             </Stack>
           </Stack>
         </Stack>

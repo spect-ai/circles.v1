@@ -45,9 +45,15 @@ export default function ViewPlugins({}: Props) {
           setIsWhitelistedSurveyProtocol(true);
         }
       });
-      if (collection.formMetadata.surveyTokenId && registry) {
+      if (
+        (collection.formMetadata.surveyTokenId ||
+          collection.formMetadata.surveyTokenId === 0) &&
+        registry
+      ) {
         getSurveyConditionInfo(
-          registry["80001"].surveyHubAddress,
+          collection.formMetadata.surveyChain?.value || "80001",
+          registry[collection.formMetadata.surveyChain?.value || "80001"]
+            .surveyHubAddress,
           collection.formMetadata.surveyTokenId
         ).then((res) => {
           if (res) {
@@ -55,7 +61,9 @@ export default function ViewPlugins({}: Props) {
           }
         });
         getSurveyDistributionInfo(
-          registry["80001"].surveyHubAddress,
+          collection.formMetadata.surveyChain?.value || "80001",
+          registry[collection.formMetadata.surveyChain?.value || "80001"]
+            .surveyHubAddress,
           collection.formMetadata.surveyTokenId
         ).then((res) => {
           if (res) {
@@ -64,7 +72,7 @@ export default function ViewPlugins({}: Props) {
         });
       }
     }
-  }, [isOpen]);
+  }, [isOpen, collection]);
 
   const onClick = (pluginName: string) => {
     switch (pluginName) {
@@ -86,7 +94,7 @@ export default function ViewPlugins({}: Props) {
   const isPluginAdded = (pluginName: string) => {
     switch (pluginName) {
       case "poap":
-        return !!collection.formMetadata.formRoleGating;
+        return collection.formMetadata.poapDistributionEnabled === true;
       case "guildxyz":
         return !!collection.formMetadata.formRoleGating;
       case "gtcpassport":
@@ -96,7 +104,10 @@ export default function ViewPlugins({}: Props) {
       case "payments":
         return !!collection.formMetadata.paymentConfig;
       case "erc20":
-        return !!collection.formMetadata.surveyTokenId;
+        return !!(
+          collection.formMetadata.surveyTokenId ||
+          collection.formMetadata.surveyTokenId === 0
+        );
       case "ceramic":
         return !!collection.formMetadata.ceramicEnabled;
       default:

@@ -12,6 +12,7 @@ import {
   Condition,
   FormType,
   KudosType,
+  POAPEventType,
   Registry,
   UserType,
 } from "@/app/types";
@@ -37,6 +38,13 @@ import {
 import { useAccount } from "wagmi";
 import Modal from "@/app/common/components/Modal";
 import { useProfile } from "../Profile/ProfileSettings/LocalProfileContext";
+import { getClaimCode, getPoap } from "@/app/services/Poap";
+import {
+  getSurveyConditionInfo,
+  getSurveyDistributionInfo,
+  hasClaimedSurveyToken,
+  isEligibleToClaimSurveyToken,
+} from "@/app/services/SurveyProtocol";
 
 type Props = {
   form: FormType;
@@ -58,17 +66,23 @@ export default function FormFields({ form, setForm }: Props) {
   const [submitted, setSubmitted] = useState(false);
   const [submitAnotherResponse, setSubmitAnotherResponse] = useState(false);
   const [kudos, setKudos] = useState({} as KudosType);
+  const [poap, setPoap] = useState({} as POAPEventType);
   const { connectedUser, connectUser } = useGlobal();
   const [loading, setLoading] = useState(false);
   const [claimed, setClaimed] = useState(form.formMetadata.kudosClaimedByUser);
-  const [surveyTokenClaimed, setSurveyTokenClaimed] = useState(
-    form.formMetadata.surveyTokenClaimedByUser
-  );
+  const [surveyTokenClaimed, setSurveyTokenClaimed] = useState(false);
   const { onSaveProfile, email, setEmail } = useProfile();
   const [emailModalOpen, setEmailModalOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [respondAsAnonymous, setRespondAsAnonymous] = useState(false);
+  const [poapClaimed, setPoapClaimed] = useState(false);
+  const [poapClaimCode, setPoapClaimCode] = useState("");
+  const [distributionInfo, setDistributionInfo] = useState({} as any);
+  const [conditionInfo, setConditionInfo] = useState({} as any);
+  const [canClaimSurveyToken, setCanClaimSurveyToken] = useState(false);
   const [notificationPreferenceModalOpen, setNotificationPreferenceModalOpen] =
+    useState(false);
+  const [surveyIsLotteryYetToBeDrawn, setSurveyIsLotteryYetToBeDrawn] =
     useState(false);
   const { data: currentUser, refetch } = useQuery<UserType>(
     "getMyUser",
@@ -84,7 +98,7 @@ export default function FormFields({ form, setForm }: Props) {
     {} as { [key: string]: boolean }
   );
 
-  const { refetch: fetchRegistry } = useQuery<Registry>(
+  const { data: registry, refetch: fetchRegistry } = useQuery<Registry>(
     ["registry", form.parents[0].slug],
     () =>
       fetch(
@@ -129,6 +143,25 @@ export default function FormFields({ form, setForm }: Props) {
   };
 
   useEffect(() => {
+    if (
+      form.formMetadata.poapDistributionEnabled &&
+      form.formMetadata.poapEventId
+    ) {
+      void (async () => {
+        const res = await getPoap(
+          form.formMetadata.poapEventId?.toString() || ""
+        );
+        setPoap(res);
+
+        const claimCode = await getClaimCode(form.id);
+        if (claimCode) {
+          setPoapClaimCode(claimCode);
+        }
+      })();
+    }
+  }, [form]);
+
+  useEffect(() => {
     void fetchRegistry();
     // setClaimed(form.kudosClaimedByUser);
     setSubmitted(form.formMetadata.previousResponses?.length > 0);
@@ -163,6 +196,49 @@ export default function FormFields({ form, setForm }: Props) {
       })();
     }
   }, [form]);
+
+  useEffect(() => {
+    if (
+      form?.formMetadata?.surveyTokenId ||
+      form?.formMetadata?.surveyTokenId === 0
+    ) {
+      void (async () => {
+        if (!registry) return;
+        const distributionInfo = (await getSurveyDistributionInfo(
+          form.formMetadata.surveyChain?.value || "",
+          registry[form.formMetadata.surveyChain?.value || ""].surveyHubAddress,
+          form.formMetadata.surveyTokenId as number
+        )) as any;
+        setDistributionInfo(distributionInfo);
+
+        if (
+          distributionInfo?.distributionType === 0 &&
+          distributionInfo?.requestId?.toString() === "0"
+        ) {
+          setSurveyIsLotteryYetToBeDrawn(true);
+        }
+
+        const surveyTokenClaimed = await hasClaimedSurveyToken(
+          form.formMetadata.surveyChain?.value || "",
+          registry[form.formMetadata.surveyChain?.value || ""].surveyHubAddress,
+          form.formMetadata.surveyTokenId as number,
+          address as string
+        );
+        setSurveyTokenClaimed(surveyTokenClaimed as boolean);
+
+        const canClaim = await isEligibleToClaimSurveyToken(
+          form.formMetadata.surveyChain?.value || "",
+          registry[form.formMetadata.surveyChain?.value || ""].surveyHubAddress,
+          form.formMetadata.surveyTokenId as number,
+          address as string,
+          distributionInfo,
+          surveyTokenClaimed as boolean
+        );
+        console.log({ canClaim });
+        setCanClaimSurveyToken(canClaim as boolean);
+      })();
+    }
+  }, [form, registry]);
 
   useEffect(() => {
     if (form) {
@@ -262,6 +338,15 @@ export default function FormFields({ form, setForm }: Props) {
   }, []);
 
   const onSubmit = async () => {
+    if (
+      !email &&
+      (form.formMetadata.surveyTokenId ||
+        form.formMetadata.surveyTokenId === 0) &&
+      form.formMetadata.surveyDistributionType === 0
+    ) {
+      setEmailModalOpen(true);
+      return;
+    }
     if (form.formMetadata.ceramicEnabled) {
       let session: any;
       setSubmitting(true);
@@ -365,6 +450,13 @@ export default function FormFields({ form, setForm }: Props) {
         surveyTokenClaimed={surveyTokenClaimed}
         setSurveyTokenClaimed={setSurveyTokenClaimed}
         setViewResponse={setViewResponse}
+        poap={poap}
+        poapClaimed={poapClaimed}
+        setPoapClaimed={setPoapClaimed}
+        poapClaimCode={poapClaimCode}
+        canClaimSurveyToken={canClaimSurveyToken}
+        surveyDistributionInfo={distributionInfo}
+        surveyIsLotteryYetToBeDrawn={surveyIsLotteryYetToBeDrawn}
       />
     );
   }

@@ -116,19 +116,132 @@ export const getLastSurveyId = async (surveyHubAddress: string) => {
 };
 
 export const getSurveyDistributionInfo = async (
+  chainId: string,
   surveyHubAddress: string,
   surveyId: number
 ) => {
-  console.log({ surveyHubAddress, surveyId });
-  const surveyHub = await getContract(surveyHubAddress, SurveyABI.abi);
-  return await surveyHub.distributionInfo(surveyId);
+  const res = await readContract({
+    address: surveyHubAddress as `0x${string}`,
+    abi: SurveyABI.abi,
+    functionName: "distributionInfo",
+    args: [surveyId],
+    chainId: parseInt(chainId),
+  });
+  return res;
 };
 
 export const getSurveyConditionInfo = async (
+  chainId: string,
   surveyHubAddress: string,
   surveyId: number
 ) => {
-  const surveyHub = await getContract(surveyHubAddress, SurveyABI.abi);
-  console.log({ surveyHub });
-  return await surveyHub.conditionInfo(surveyId);
+  const res = await readContract({
+    address: surveyHubAddress as `0x${string}`,
+    abi: SurveyABI.abi,
+    functionName: "conditionInfo",
+    args: [surveyId],
+    chainId: parseInt(chainId),
+  });
+  return res;
+};
+
+export const hasClaimedSurveyReceipt = async (
+  chainId: string,
+  surveyHubAddress: string,
+  surveyId: number,
+  callerAddress: string
+) => {
+  const res = await readContract({
+    address: surveyHubAddress as `0x${string}`,
+    abi: SurveyABI.abi,
+    functionName: "hasResponded",
+    args: [surveyId, callerAddress],
+    chainId: parseInt(chainId),
+  });
+  return res;
+};
+
+export const hasClaimedSurveyToken = async (
+  chainId: string,
+  surveyHubAddress: string,
+  surveyId: number,
+  callerAddress: string
+) => {
+  const res = await readContract({
+    address: surveyHubAddress as `0x${string}`,
+    abi: SurveyABI.abi,
+    functionName: "hasReceivedPayment",
+    args: [surveyId, callerAddress],
+    chainId: parseInt(chainId),
+  });
+  return res;
+};
+
+export const hasWonLottery = async (
+  chainId: string,
+  surveyHubAddress: string,
+  surveyId: number,
+  callerAddress: string
+) => {
+  const res = await readContract({
+    address: surveyHubAddress as `0x${string}`,
+    abi: SurveyABI.abi,
+    functionName: "findLotteryWinner",
+    args: [surveyId],
+    chainId: parseInt(chainId),
+  });
+
+  if (callerAddress === res) {
+    return true;
+  }
+};
+
+export const isEligibleToClaimSurveyToken = async (
+  chainId: string,
+  surveyHubAddress: string,
+  surveyId: number,
+  callerAddress: string,
+  distributionInfo?: any,
+  hasClaimedSurveyTokens?: boolean
+) => {
+  let distrInfo = distributionInfo;
+  if (!distrInfo) {
+    distrInfo = await getSurveyDistributionInfo(
+      chainId,
+      surveyHubAddress,
+      surveyId
+    );
+  }
+  console.log({ reqId: distrInfo.requestId.toString() });
+
+  let hasClaimed;
+
+  if (hasClaimedSurveyTokens === undefined) {
+    hasClaimed = await hasClaimedSurveyToken(
+      chainId,
+      surveyHubAddress,
+      surveyId,
+      callerAddress
+    );
+  } else hasClaimed = hasClaimedSurveyTokens;
+  if (hasClaimed) return false;
+  if (distributionInfo.distributionType === 0) {
+    if (distributionInfo.requestId.toString() === "0") return false;
+    return await hasWonLottery(
+      chainId,
+      surveyHubAddress,
+      surveyId,
+      callerAddress
+    );
+  } else {
+    console.log("assdsd");
+    const res = await hasClaimedSurveyReceipt(
+      chainId,
+      surveyHubAddress,
+      surveyId,
+      callerAddress
+    );
+    console.log({ res });
+    return res;
+  }
 };
