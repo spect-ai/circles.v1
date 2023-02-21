@@ -67,6 +67,7 @@ export default function AddOptions({
               }}
               placeholder="Max number of selections allowed"
               min={2}
+              units="max selections"
             />
           </Box>
         )}
