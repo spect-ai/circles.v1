@@ -2,7 +2,7 @@
 import { Box, Stack, Text, useTheme } from "degen";
 import { FC } from "react";
 
-import Select from "react-select";
+import Select, { components } from "react-select";
 
 export type OptionType = {
   label: string;
@@ -13,7 +13,7 @@ export type OptionType = {
 type Props =
   | {
       multiple: false;
-      options: OptionType[];
+      options: any[];
       selected: OptionType | undefined;
       onChange: (option: OptionType) => void;
       placeholder?: string;
@@ -24,7 +24,7 @@ type Props =
     }
   | {
       multiple: true;
-      options: OptionType[];
+      options: any[];
       selected: OptionType[] | undefined;
       onChange: (option: OptionType[]) => void;
       placeholder?: string;
@@ -33,6 +33,18 @@ type Props =
       disabled?: boolean;
       label?: string;
     };
+
+const { Option } = components;
+const IconOption = (props: any) => (
+  <Option {...props}>
+    <Stack space="2" align="center" direction="horizontal">
+      <Box marginTop="1.5">
+        <Text color="accent">{props.data.icon}</Text>
+      </Box>
+      {props.data.label}
+    </Stack>
+  </Option>
+);
 
 const Dropdown: FC<Props> = ({
   options,
@@ -63,6 +75,7 @@ const Dropdown: FC<Props> = ({
         onChange={(option) => onChange(option as any)}
         menuPortalTarget={portal ? document.body : undefined}
         isClearable={isClearable}
+        components={{ Option: IconOption }}
         styles={{
           menuPortal: (base) => ({ ...base, zIndex: 9999 }),
           container: (provided) => ({

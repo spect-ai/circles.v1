@@ -31,17 +31,16 @@ export const spectPlugins: { [key: string]: SpectPlugin } = {
       "https://ik.imagekit.io/spectcdn/gtcpassport_XqHKx4FMG?ik-sdk-version=javascript-1.4.3&updatedAt=1675753373123",
     premium: true,
   },
-  mintkudos: {
-    id: "mintkudos",
-    name: "Incentivize responders with MintKudos",
-    version: "1.0.0",
-    description:
-      "MintKudos allows you distribute soulbound tokens to responders automatically. Kudos to them for filling out this form!",
-    docs: "https://docs.guild.xyz",
-    image:
-      "https://ik.imagekit.io/spectcdn/CDfgJBIe_2x.jpg?ik-sdk-version=javascript-1.4.3&updatedAt=1675753635232",
-    premium: true,
-  },
+  // poap: {
+  //   id: "poap",
+  //   name: "Incentivize responders with POAPs",
+  //   version: "1.0.0",
+  //   description:
+  //     "Looking to incentivize responders with POAPs? This plugin helps you create a POAP event or import an existing one!",
+  //   docs: "https://poap.xyz/",
+  //   image: "https://ik.imagekit.io/spectcdn/poap.png",
+  //   premium: true,
+  // },
   payments: {
     id: "payments",
     name: "Collect Payments",
@@ -55,13 +54,36 @@ export const spectPlugins: { [key: string]: SpectPlugin } = {
   },
   ceramic: {
     id: "ceramic",
-    name: "Data Ownership with Ceramic (Coming Soon)",
+    name: "Data Ownership with Ceramic (Testnet)",
     version: "1.0.0",
     description:
-      "Care about data ownership & composability? Use Ceramic to store your form data.",
+      "Care about data ownership & composability? Use Ceramic to allow your responders to own their data.",
     docs: "https://docs.guild.xyz",
     image:
       "https://ik.imagekit.io/spectcdn/ceramic.png?ik-sdk-version=javascript-1.4.3&updatedAt=1675754081907",
+    premium: true,
+  },
+  erc20: {
+    id: "erc20",
+    name: "Distribute ERC20 Tokens to Responders (Closed Beta)",
+    version: "1.0.0",
+    description:
+      "Want to incentivize responders for filling out your form? Use this plugin to distribute ERC20 tokens to responders!",
+    docs: "",
+    image:
+      "https://ik.imagekit.io/spectcdn/moneybagethereummb3dmodel001.jpg?ik-sdk-version=javascript-1.4.3&updatedAt=1676107655114",
+    premium: true,
+  },
+
+  mintkudos: {
+    id: "mintkudos",
+    name: "Incentivize responders with MintKudos",
+    version: "1.0.0",
+    description:
+      "MintKudos allows you distribute soulbound tokens to responders automatically. Kudos to them for filling out this form!",
+    docs: "https://docs.guild.xyz",
+    image:
+      "https://ik.imagekit.io/spectcdn/CDfgJBIe_2x.jpg?ik-sdk-version=javascript-1.4.3&updatedAt=1675753635232",
     premium: true,
   },
 };

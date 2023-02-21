@@ -54,7 +54,7 @@ export default function AddRole({ role }: props) {
         <Button
           prefix={
             circle.roles[role]?.mutable && canDo("manageRoles") ? (
-              <IconPencil />
+              <IconPencil size="5" />
             ) : (
               <EyeOutlined />
             )

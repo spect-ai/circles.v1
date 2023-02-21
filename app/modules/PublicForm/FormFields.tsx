@@ -12,10 +12,11 @@ import {
   Condition,
   FormType,
   KudosType,
+  POAPEventType,
   Registry,
   UserType,
 } from "@/app/types";
-import { Box, Stack, Text } from "degen";
+import { Box, Input, Stack, Text } from "degen";
 import { isAddress } from "ethers/lib/utils";
 import React, { useEffect, useState } from "react";
 import { useQuery } from "react-query";
@@ -29,6 +30,21 @@ import { AnimatePresence } from "framer-motion";
 import { satisfiesConditions } from "../Collection/Common/SatisfiesFilter";
 import CheckBox from "@/app/common/components/Table/Checkbox";
 import CollectPayment from "./CollectPayment";
+import {
+  compose,
+  createCeramicSession,
+  loadCeramicSession,
+} from "@/app/services/Ceramic";
+import { useAccount } from "wagmi";
+import Modal from "@/app/common/components/Modal";
+import { useProfile } from "../Profile/ProfileSettings/LocalProfileContext";
+import { getClaimCode, getPoap } from "@/app/services/Poap";
+import {
+  getSurveyConditionInfo,
+  getSurveyDistributionInfo,
+  hasClaimedSurveyToken,
+  isEligibleToClaimSurveyToken,
+} from "@/app/services/SurveyProtocol";
 
 type Props = {
   form: FormType;
@@ -50,12 +66,23 @@ export default function FormFields({ form, setForm }: Props) {
   const [submitted, setSubmitted] = useState(false);
   const [submitAnotherResponse, setSubmitAnotherResponse] = useState(false);
   const [kudos, setKudos] = useState({} as KudosType);
+  const [poap, setPoap] = useState({} as POAPEventType);
   const { connectedUser, connectUser } = useGlobal();
   const [loading, setLoading] = useState(false);
   const [claimed, setClaimed] = useState(form.formMetadata.kudosClaimedByUser);
+  const [surveyTokenClaimed, setSurveyTokenClaimed] = useState(false);
+  const { onSaveProfile, email, setEmail } = useProfile();
+  const [emailModalOpen, setEmailModalOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [respondAsAnonymous, setRespondAsAnonymous] = useState(false);
+  const [poapClaimed, setPoapClaimed] = useState(false);
+  const [poapClaimCode, setPoapClaimCode] = useState("");
+  const [distributionInfo, setDistributionInfo] = useState({} as any);
+  const [conditionInfo, setConditionInfo] = useState({} as any);
+  const [canClaimSurveyToken, setCanClaimSurveyToken] = useState(false);
   const [notificationPreferenceModalOpen, setNotificationPreferenceModalOpen] =
+    useState(false);
+  const [surveyIsLotteryYetToBeDrawn, setSurveyIsLotteryYetToBeDrawn] =
     useState(false);
   const { data: currentUser, refetch } = useQuery<UserType>(
     "getMyUser",
@@ -71,7 +98,7 @@ export default function FormFields({ form, setForm }: Props) {
     {} as { [key: string]: boolean }
   );
 
-  const { refetch: fetchRegistry } = useQuery<Registry>(
+  const { data: registry, refetch: fetchRegistry } = useQuery<Registry>(
     ["registry", form.parents[0].slug],
     () =>
       fetch(
@@ -81,6 +108,8 @@ export default function FormFields({ form, setForm }: Props) {
       enabled: false,
     }
   );
+
+  const { address, connector } = useAccount();
 
   const checkRequired = (data: any) => {
     const requiredFieldsNotSet = {} as { [key: string]: boolean };
@@ -112,6 +141,25 @@ export default function FormFields({ form, setForm }: Props) {
     setFieldHasInvalidType(fieldHasInvalidType);
     return Object.keys(fieldHasInvalidType).length === 0;
   };
+
+  useEffect(() => {
+    if (
+      form.formMetadata.poapDistributionEnabled &&
+      form.formMetadata.poapEventId
+    ) {
+      void (async () => {
+        const res = await getPoap(
+          form.formMetadata.poapEventId?.toString() || ""
+        );
+        setPoap(res);
+
+        const claimCode = await getClaimCode(form.id);
+        if (claimCode) {
+          setPoapClaimCode(claimCode);
+        }
+      })();
+    }
+  }, [form]);
 
   useEffect(() => {
     void fetchRegistry();
@@ -150,6 +198,49 @@ export default function FormFields({ form, setForm }: Props) {
   }, [form]);
 
   useEffect(() => {
+    if (
+      form?.formMetadata?.surveyTokenId ||
+      form?.formMetadata?.surveyTokenId === 0
+    ) {
+      void (async () => {
+        if (!registry) return;
+        const distributionInfo = (await getSurveyDistributionInfo(
+          form.formMetadata.surveyChain?.value || "",
+          registry[form.formMetadata.surveyChain?.value || ""].surveyHubAddress,
+          form.formMetadata.surveyTokenId as number
+        )) as any;
+        setDistributionInfo(distributionInfo);
+
+        if (
+          distributionInfo?.distributionType === 0 &&
+          distributionInfo?.requestId?.toString() === "0"
+        ) {
+          setSurveyIsLotteryYetToBeDrawn(true);
+        }
+
+        const surveyTokenClaimed = await hasClaimedSurveyToken(
+          form.formMetadata.surveyChain?.value || "",
+          registry[form.formMetadata.surveyChain?.value || ""].surveyHubAddress,
+          form.formMetadata.surveyTokenId as number,
+          address as string
+        );
+        setSurveyTokenClaimed(surveyTokenClaimed as boolean);
+
+        const canClaim = await isEligibleToClaimSurveyToken(
+          form.formMetadata.surveyChain?.value || "",
+          registry[form.formMetadata.surveyChain?.value || ""].surveyHubAddress,
+          form.formMetadata.surveyTokenId as number,
+          address as string,
+          distributionInfo,
+          surveyTokenClaimed as boolean
+        );
+        console.log({ canClaim });
+        setCanClaimSurveyToken(canClaim as boolean);
+      })();
+    }
+  }, [form, registry]);
+
+  useEffect(() => {
     if (form) {
       setLoading(true);
       const tempData: any = {};
@@ -160,6 +251,7 @@ export default function FormFields({ form, setForm }: Props) {
           ];
         setRespondAsAnonymous(lastResponse["anonymous"]);
         form.propertyOrder.forEach((propertyId) => {
+          if (!form.properties[propertyId].isPartOfFormView) return;
           if (
             [
               "longText",
@@ -188,8 +280,11 @@ export default function FormFields({ form, setForm }: Props) {
             ["reward", "payWall"].includes(form.properties[propertyId].type)
           ) {
             tempData[propertyId] = lastResponse[propertyId];
+          } else {
+            tempData[propertyId] = lastResponse[propertyId] || "";
           }
-          tempData["__payment__"] = lastResponse?.__payment__;
+          // tempData["__payment__"] = lastResponse?.__payment__;
+          // tempData["__ceramic__"] = lastResponse?.__ceramic__;
         });
       } else {
         const tempData: any = {};
@@ -223,7 +318,9 @@ export default function FormFields({ form, setForm }: Props) {
   }, [form, updateResponse]);
 
   useEffect(() => {
-    if (!connectedUser && currentUser?.id) connectUser(currentUser.id);
+    if (!connectedUser && currentUser?.id) {
+      connectUser(currentUser.id);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentUser, connectedUser]);
 
@@ -241,6 +338,58 @@ export default function FormFields({ form, setForm }: Props) {
   }, []);
 
   const onSubmit = async () => {
+    if (
+      !email &&
+      (form.formMetadata.surveyTokenId ||
+        form.formMetadata.surveyTokenId === 0) &&
+      form.formMetadata.surveyDistributionType === 0
+    ) {
+      setEmailModalOpen(true);
+      return;
+    }
+    if (form.formMetadata.ceramicEnabled) {
+      let session: any;
+      setSubmitting(true);
+      try {
+        const loadedSession = await loadCeramicSession(address as string);
+        console.log({ loadedSession });
+        if (!loadedSession) {
+          const newSession = await createCeramicSession(
+            address as string,
+            connector
+          );
+          console.log({ newSession });
+          session = newSession;
+        } else {
+          session = loadedSession;
+        }
+        compose.setDID(session.did);
+        const result: any = await compose.executeQuery(
+          `
+      mutation {
+        createSpectForm(input: {content: {
+          formId: "${form.slug}",
+          data: "${JSON.stringify(data).replace(/"/g, '\\"')}",
+          createdAt: "${new Date().toISOString()}",
+          link: "https://circles.spect.network/r/${form.id}",
+          origin: "https://circles.spect.network",
+        }}) {
+          document {
+            id
+          }
+        }
+      }
+      `
+        );
+        const streamId = result.data.createSpectForm.document.id;
+        data["__ceramic__"] = streamId;
+      } catch (err) {
+        console.log(err);
+        toast.error("Could not upload data to Ceramic");
+        setSubmitting(false);
+        return;
+      }
+    }
     let res;
     if (
       form.formMetadata.paymentConfig?.type === "paywall" &&
@@ -256,13 +405,17 @@ export default function FormFields({ form, setForm }: Props) {
       return;
     }
 
-    if (!checkRequired(data)) return;
+    if (!checkRequired(data)) {
+      toast.error("Please fill all required fields");
+      return;
+    }
     if (!checkValue(data)) return;
     if (!currentUser?.email && form?.isAnOpportunity) {
       setNotificationPreferenceModalOpen(true);
       return;
     }
     setSubmitting(true);
+
     if (updateResponse) {
       const lastResponse =
         form.formMetadata.previousResponses[
@@ -304,16 +457,22 @@ export default function FormFields({ form, setForm }: Props) {
         kudos={kudos}
         claimed={claimed}
         setClaimed={setClaimed}
+        surveyTokenClaimed={surveyTokenClaimed}
+        setSurveyTokenClaimed={setSurveyTokenClaimed}
         setViewResponse={setViewResponse}
+        poap={poap}
+        poapClaimed={poapClaimed}
+        setPoapClaimed={setPoapClaimed}
+        poapClaimCode={poapClaimCode}
+        canClaimSurveyToken={canClaimSurveyToken}
+        surveyDistributionInfo={distributionInfo}
+        surveyIsLotteryYetToBeDrawn={surveyIsLotteryYetToBeDrawn}
       />
     );
   }
 
   const isIncorrectType = (propertyName: string, value: any) => {
     switch (form.properties[propertyName]?.type) {
-      case "ethAddress":
-        return value && !isAddress(value);
-
       case "email":
         return value && !isEmail(value);
 
@@ -346,6 +505,14 @@ export default function FormFields({ form, setForm }: Props) {
         return !value?.value;
       case "payWall":
         return !value?.some((v: any) => v.txnHash);
+      case "discord":
+        return !value?.id;
+      case "github":
+        return !value?.id;
+      case "twitter":
+        return !value?.id;
+      case "telegram":
+        return !value?.id;
       default:
         return false;
     }
@@ -372,11 +539,39 @@ export default function FormFields({ form, setForm }: Props) {
   };
 
   if (!form.formMetadata.active) {
-    return <></>;
+    return <Box />;
   }
 
   return (
     <Container borderRadius="2xLarge">
+      {emailModalOpen && (
+        <Modal
+          title="Please enter email"
+          size="small"
+          handleClose={() => {
+            if (email) onSaveProfile();
+            setEmailModalOpen(false);
+          }}
+        >
+          <Box padding="8" display="flex" flexDirection="column" gap="2">
+            <Text variant="label">
+              This form is incentivized using a lottery mechanism. Please enter
+              your email to get notified upon winning.
+            </Text>
+            <Input
+              label=""
+              placeholder="Email"
+              value={email}
+              inputMode="email"
+              type="email"
+              error={email && !isEmail(email)}
+              onChange={(e) => {
+                setEmail(e.target.value);
+              }}
+            />
+          </Box>
+        </Modal>
+      )}
       <AnimatePresence>
         {notificationPreferenceModalOpen && (
           <NotificationPreferenceModal
@@ -443,14 +638,14 @@ export default function FormFields({ form, setForm }: Props) {
       >
         {!viewResponse && (
           <Box width="full" paddingX="5">
-            {Object.keys(requiredFieldsNotSet).length > 0 && (
+            {/* {Object.keys(requiredFieldsNotSet).length > 0 && (
               <Text color="red" variant="small">
                 {" "}
                 {`Required fields are empty: ${Object.keys(
                   requiredFieldsNotSet
                 ).join(",")}`}{" "}
               </Text>
-            )}
+            )} */}
             <PrimaryButton onClick={onSubmit} loading={submitting}>
               Submit
             </PrimaryButton>
