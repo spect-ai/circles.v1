@@ -136,7 +136,7 @@ export default function AddField({ propertyName, handleClose }: Props) {
     } else {
       res = await addField(collection.id, {
         name: name.trim(),
-        type: type.value,
+        type: type.value as PropertyType,
         isPartOfFormView: false,
         description,
         options: fieldOptions,
@@ -147,6 +147,8 @@ export default function AddField({ propertyName, handleClose }: Props) {
         milestoneFields,
         viewConditions,
         payWallOptions,
+        maxSelections,
+        allowCustom,
       });
     }
     setLoading(false);

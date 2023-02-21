@@ -14,21 +14,7 @@ import {
 
 export const addField = async (
   collectionId: string,
-  createDto: {
-    name: string;
-    type: string;
-    default?: string;
-    options?: { label: string; value: string }[];
-    rewardOptions?: Registry;
-    isPartOfFormView: boolean;
-    userType?: FormUserType;
-    onUpdateNotifyUserTypes?: FormUserType[];
-    required?: boolean;
-    description?: string;
-    milestoneFields?: string[];
-    viewConditions?: Condition[];
-    payWallOptions?: PayWallOptions;
-  }
+  createDto: Partial<Property>
 ) => {
   return await (
     await fetch(
