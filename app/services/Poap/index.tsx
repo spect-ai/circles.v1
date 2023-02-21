@@ -1,5 +1,3 @@
-import { Readable } from "stream";
-
 type CreatePoapDto = {
   name: string;
   description: string;
@@ -37,9 +35,33 @@ export const createPoap = async (
       {
         method: "PATCH",
         credentials: "include",
-
         body: formData,
       }
     )
   ).json();
+};
+
+export const getPoap = async (poapId: string) => {
+  return await (
+    await fetch(`${process.env.API_HOST}/credentials/v1/poap/${poapId}`, {
+      method: "GET",
+      credentials: "include",
+    })
+  ).json();
+};
+
+export const getClaimCode = async (collectionId: string) => {
+  return await (
+    await fetch(
+      `${process.env.API_HOST}/collection/v1/${collectionId}/claimCode`,
+      {
+        method: "GET",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          accept: "application/json",
+        },
+      }
+    )
+  ).text();
 };

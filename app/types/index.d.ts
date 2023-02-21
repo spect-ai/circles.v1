@@ -665,6 +665,25 @@ export type KudosType = {
   claimabilityAttributes: ClaimabilityAttributes;
 };
 
+export type POAPEventType = {
+  id: number;
+  fancey_id: string;
+  name: string;
+  description: string;
+  city: string;
+  country: string;
+  event_url: string;
+  image_url: string;
+  year: number;
+  start_date: string;
+  end_date: string;
+  expiry_date: string;
+  from_admin: boolean;
+  virtual_event: boolean;
+  event_template_id: number;
+  private_event: boolean;
+};
+
 export type KudosForType = {
   [kudosFor: "assignee" | "reviewer"]: string;
 };
@@ -827,6 +846,11 @@ export type FormMetadata = {
   surveyLotteryWinner?: number;
   surveyDistributionType?: number;
   ceramicEnabled?: boolean;
+  claimCodes?: string[];
+  claimCode?: string;
+  poapDistributionEnabled?: boolean;
+  poapEventId?: string;
+  poapEditCode?: string;
 };
 
 export type ProjectMetadata = {
