@@ -21,6 +21,7 @@ import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { Embed } from "../Embed";
 import { EyeOutlined, SendOutlined, ShareAltOutlined } from "@ant-design/icons";
 import { smartTrim } from "@/app/common/utils/utils";
+import FormSettings from "../Form/FormSettings";
 
 export const IconButton = styled(Box)`
   cursor: pointer;
@@ -43,6 +44,8 @@ function CollectionHeading() {
   const [isOpen, setIsOpen] = useState(false);
   const { navigationBreadcrumbs } = useCircle();
   const { formActions } = useRoleGate();
+  const [isShareOpen, setIsShareOpen] = useState(false);
+  const [isEmbedModalOpen, setIsEmbedModalOpen] = useState(false);
 
   const location = useLocation();
 
@@ -92,6 +95,7 @@ function CollectionHeading() {
               >
                 <Heading>{smartTrim(collection?.name, 20)}</Heading>
               </Box>
+              <FormSettings />
               <Hidden xs sm>
                 <PrimaryButton
                   // icon={<IconPencil />}
@@ -117,9 +121,9 @@ function CollectionHeading() {
                 >
                   Responses
                 </PrimaryButton>
-                <PrimaryButton onClick={() => setIsAddFieldOpen(true)}>
+                {/* <PrimaryButton onClick={() => setIsAddFieldOpen(true)}>
                   Add Field
-                </PrimaryButton>{" "}
+                </PrimaryButton> */}
               </Hidden>
               <Visible xs sm>
                 <Box width="5">
@@ -216,40 +220,69 @@ function CollectionHeading() {
                 }}
                 align="center"
               >
-                <Embed />
-                <a
-                  href={`/r/${collection?.slug}`}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  <PrimaryButton
-                    variant={"transparent"}
-                    icon={<EyeOutlined style={{ fontSize: "1rem" }} />}
-                  >
-                    Preview
-                  </PrimaryButton>
-                </a>
-                <PrimaryButton
-                  icon={
-                    <SendOutlined
-                      rotate={-40}
-                      style={{ marginBottom: "0.3rem" }}
-                    />
+                <Popover
+                  butttonComponent={
+                    <PrimaryButton
+                      icon={
+                        <SendOutlined
+                          rotate={-40}
+                          style={{ marginBottom: "0.3rem" }}
+                        />
+                      }
+                      onClick={() => {
+                        setIsShareOpen(!isShareOpen);
+                      }}
+                    >
+                      Share
+                    </PrimaryButton>
                   }
-                  onClick={() => {
-                    void navigator.clipboard.writeText(
-                      `https://circles.spect.network/r/${collection?.slug}`
-                    );
-                    toast.success("Copied to clipboard");
-                    process.env.NODE_ENV === "production" &&
-                      mixpanel.track("Share Form", {
-                        user: currentUser?.username,
-                        form: collection?.name,
-                      });
-                  }}
+                  isOpen={isShareOpen}
+                  setIsOpen={setIsShareOpen}
                 >
-                  Share
-                </PrimaryButton>
+                  <Box
+                    backgroundColor="background"
+                    borderWidth="0.5"
+                    borderRadius="2xLarge"
+                  >
+                    <PopoverOption
+                      onClick={() => {
+                        void navigator.clipboard.writeText(
+                          `https://circles.spect.network/r/${collection?.slug}`
+                        );
+                        toast.success("Copied to clipboard");
+                        process.env.NODE_ENV === "production" &&
+                          mixpanel.track("Share Form", {
+                            user: currentUser?.username,
+                            form: collection?.name,
+                          });
+                        setIsShareOpen(false);
+                      }}
+                    >
+                      Copy Link
+                    </PopoverOption>
+                    <PopoverOption
+                      onClick={() => {
+                        setIsShareOpen(false);
+                        setIsEmbedModalOpen(true);
+                      }}
+                    >
+                      Embed
+                    </PopoverOption>
+                    <a
+                      href={`/r/${collection?.slug}`}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      <PopoverOption
+                        onClick={() => {
+                          setIsShareOpen(false);
+                        }}
+                      >
+                        Preview
+                      </PopoverOption>
+                    </a>
+                  </Box>
+                </Popover>
               </Stack>
             </Hidden>
           </Stack>
@@ -272,6 +305,14 @@ function CollectionHeading() {
       <AnimatePresence>
         {isAddFieldOpen && (
           <AddField handleClose={() => setIsAddFieldOpen(false)} />
+        )}
+        {isEmbedModalOpen && (
+          <Embed
+            isOpen={isEmbedModalOpen}
+            setIsOpen={setIsEmbedModalOpen}
+            component="form"
+            routeId={collection.slug}
+          />
         )}
       </AnimatePresence>
     </Box>

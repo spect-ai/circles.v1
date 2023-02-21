@@ -12,6 +12,7 @@ import { DropResult } from "react-beautiful-dnd";
 import { useQuery } from "react-query";
 import {
   isMyCard,
+  paymentStatus,
   satisfiesConditions,
 } from "../../Collection/Common/SatisfiesFilter";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
@@ -23,11 +24,11 @@ export default function useViewCommon() {
     updateCollection,
     searchFilter,
     showMyTasks,
+    paymentFilter,
   } = useLocalCollection();
 
   const view = collection.projectMetadata.views[projectViewId];
   const property = collection.properties[view.groupByColumn];
-
   const [isCardDrawerOpen, setIsCardDrawerOpen] = useState(false);
   const [defaultValue, setDefaultValue] = useState({} as any);
 
@@ -37,6 +38,8 @@ export default function useViewCommon() {
   const [cardOrders, setCardOrders] = useState(
     collection.projectMetadata.cardOrders[view.groupByColumn]
   );
+
+  const [filteredOnGroupByColumn, setFilteredOnGroupByColumn] = useState(false);
 
   const { data: currentUser, refetch } = useQuery<UserType>("getMyUser", {
     enabled: false,
@@ -52,6 +55,11 @@ export default function useViewCommon() {
   );
 
   useEffect(() => {
+    console.log({ view: view.groupByColumn });
+    console.log({
+      pj: collection.projectMetadata,
+      collection: collection.properties,
+    });
     let newCardOrder =
       collection.projectMetadata.cardOrders[view.groupByColumn];
     if (searchFilter) {
@@ -94,6 +102,11 @@ export default function useViewCommon() {
           );
         });
       });
+      // check if the filters are on the groupByColumn
+      const filteredOnGroupByColumn = view.filters.some(
+        (filter) => filter.data.field.value === view.groupByColumn
+      );
+      setFilteredOnGroupByColumn(filteredOnGroupByColumn);
     }
     if (showMyTasks) {
       newCardOrder = newCardOrder.map((group) => {
@@ -106,6 +119,19 @@ export default function useViewCommon() {
         });
       });
     }
+
+    if (paymentFilter) {
+      newCardOrder = newCardOrder.map((group) => {
+        return group.filter((cardId) => {
+          return paymentStatus(
+            paymentFilter,
+            cardId,
+            collection.projectMetadata.paymentStatus
+          );
+        });
+      });
+    }
+
     if (view.sort?.property) {
       const { property, direction } = view.sort;
       const propertyType = collection.properties[property].type;
@@ -182,17 +208,15 @@ export default function useViewCommon() {
     }
     setCardOrders(newCardOrder);
   }, [
-    collection.data,
-    collection.projectMetadata.cardOrders,
     searchFilter,
     view.groupByColumn,
-    collection.propertyOrder,
-    collection.properties,
     memberDetails?.memberDetails,
     view.filters,
     view.sort,
     memberDetails?.members,
     showMyTasks,
+    collection,
+    paymentFilter,
   ]);
 
   useEffect(() => {
@@ -218,7 +242,13 @@ export default function useViewCommon() {
 
   useEffect(() => {
     if (cardSlug || newCard) {
-      setIsCardDrawerOpen(true);
+      if (!isCardDrawerOpen) setIsCardDrawerOpen(true);
+      else {
+        setIsCardDrawerOpen(false);
+        setTimeout(() => {
+          setIsCardDrawerOpen(true);
+        }, 1000);
+      }
     } else {
       setIsCardDrawerOpen(false);
     }
@@ -352,5 +382,6 @@ export default function useViewCommon() {
     cardSlug,
     newCard,
     cardOrders,
+    filteredOnGroupByColumn,
   };
 }

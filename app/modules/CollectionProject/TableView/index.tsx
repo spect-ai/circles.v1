@@ -18,6 +18,7 @@ export default function ProjectTableView() {
   });
   const [isCardDrawerOpen, setIsCardDrawerOpen] = useState(false);
   const router = useRouter();
+  const { cardSlug } = router.query;
 
   const { mode } = useTheme();
 
@@ -78,7 +79,13 @@ export default function ProjectTableView() {
           <AddRowButton
             mode={mode}
             onClick={() => {
-              setIsCardDrawerOpen(true);
+              if (!cardSlug) setIsCardDrawerOpen(true);
+              else {
+                setIsCardDrawerOpen(false);
+                setTimeout(() => {
+                  setIsCardDrawerOpen(true);
+                }, 1000);
+              }
               void router.push({
                 pathname: router.pathname,
                 query: {

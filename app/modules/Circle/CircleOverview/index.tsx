@@ -70,8 +70,7 @@ export const Toggle = ({ toggle, setToggle }: Props) => {
 };
 
 export default function CircleDashboard() {
-  const { isSidebarExpanded, toggle, setToggle } =
-    useGlobal();
+  const { isSidebarExpanded, toggle, setToggle } = useGlobal();
   const router = useRouter();
   const { circle: cId, retroSlug } = router.query;
   const {
@@ -163,7 +162,7 @@ export default function CircleDashboard() {
               >
                 <Input
                   label=""
-                  placeholder="Search projects, workstreams, retros"
+                  placeholder="Search forms, projects, workstreams"
                   prefix={<IconSearch />}
                   onChange={(e) => {
                     const proj = matchSorter(
@@ -243,13 +242,13 @@ export default function CircleDashboard() {
                   )}
                 </Box>
               </Stack>
-                <FolderView
-                  filteredCollections={filteredCollections}
-                  filteredRetro={filteredRetro}
-                  filteredProjects={filteredProjects}
-                  filteredWorkstreams={filteredWorkstreams}
-                  setIsRetroOpen={setIsRetroOpen}
-                />
+              <FolderView
+                filteredCollections={filteredCollections}
+                filteredRetro={filteredRetro}
+                filteredProjects={filteredProjects}
+                filteredWorkstreams={filteredWorkstreams}
+                setIsRetroOpen={setIsRetroOpen}
+              />
             </Stack>
           )}
           {toggle == 1 && <CircleMembers />}

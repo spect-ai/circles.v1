@@ -1,4 +1,6 @@
 import Modal from "@/app/common/components/Modal";
+import { createTemplateFlow } from "@/app/services/Templates";
+import { Registry } from "@/app/types";
 import {
   Box,
   ButtonCard,
@@ -9,6 +11,7 @@ import {
 } from "degen";
 import { useState } from "react";
 import { HelpCircle, Trello } from "react-feather";
+import { useCircle } from "../../CircleContext";
 import GrantTemplate from "../../Templates/GrantTemplate";
 import KanbanProject from "../../Templates/KanbanProject";
 import OnboardingTemplate from "../../Templates/OnboardingTemplate";
@@ -18,7 +21,27 @@ interface Props {
 }
 
 export default function TemplateModal({ handleClose, setLoading }: Props) {
+  const { localCircle: circle, registry, setCircleData } = useCircle();
   const [template, setTemplate] = useState(0);
+
+  const useTemplate = async () => {
+    handleClose(false);
+    setLoading(true);
+    const res = await createTemplateFlow(
+      circle?.id,
+      {
+        registry: {
+          "137": registry?.["137"],
+        } as Registry,
+      },
+      3
+    );
+    console.log(res);
+    if (res?.id) {
+      setLoading(false);
+      setCircleData(res);
+    }
+  };
   return (
     <Modal
       handleClose={() => handleClose(false)}
@@ -86,8 +109,9 @@ export default function TemplateModal({ handleClose, setLoading }: Props) {
                 </Text>
               }
               width="full"
-              onClick={() => {
-                setTemplate(3);
+              onClick={async() => {
+                await useTemplate();
+                // setTemplate(3);
               }}
               // suffix={
               //   <Box cursor="pointer">

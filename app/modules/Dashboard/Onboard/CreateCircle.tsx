@@ -13,6 +13,7 @@ import DiscordIcon from "@/app/assets/icons/discordIcon.svg";
 import { joinCirclesFromGuildxyz } from "@/app/services/JoinCircle";
 import { useLocation } from "react-use";
 import { useRouter } from "next/router";
+import { createDefaultProject } from "@/app/services/Defaults";
 
 type CreateCircleDto = {
   name: string;
@@ -100,6 +101,7 @@ export function CreateCircle({ setStep, setOnboardType }: Props) {
                   const resJson = await res.json();
                   console.log({ resJson });
                   if (resJson.slug) {
+                    await createDefaultProject(resJson.id);
                     setSlug(resJson.slug);
                     setPart(1);
                   }

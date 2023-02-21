@@ -2,11 +2,10 @@
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { updateField, updateFormCollection } from "@/app/services/Collection";
 import { Option } from "@/app/types";
-import { Box, IconPlusSmall, Stack } from "degen";
+import { Box, Stack } from "degen";
 import { AnimatePresence } from "framer-motion";
 import { DragDropContext } from "react-beautiful-dnd";
 import { toast } from "react-toastify";
-import { useLocation } from "react-use";
 import uuid from "react-uuid";
 import InviteMemberModal from "../../Circle/ContributorsModal/InviteMembersModal";
 import CardDrawer from "../CardDrawer";
@@ -28,6 +27,7 @@ export default function KanbanView() {
     setLoading,
     updateCollection,
     cardOrders,
+    filteredOnGroupByColumn,
   } = useViewCommon();
   return (
     <Box
@@ -37,7 +37,7 @@ export default function KanbanView() {
       }}
       paddingY="0"
       style={{
-        height: "calc(100vh - 10rem)",
+        height: "calc(100vh - 9rem)",
         overflowX: "auto",
         overflowY: "hidden",
       }}
@@ -54,6 +54,8 @@ export default function KanbanView() {
         <Stack direction="horizontal" align="flex-start">
           {columns?.map((column, index) => {
             if (index === 0 && (!cardOrders[0] || cardOrders[0]?.length === 0))
+              return null;
+            if (filteredOnGroupByColumn && cardOrders[index]?.length === 0)
               return null;
             return (
               <Column

@@ -17,6 +17,8 @@ import Loader from "@/app/common/components/Loader";
 import { AnimatePresence } from "framer-motion";
 import TemplateModal from "./TemplateModal";
 import { Pulse } from "@/app/modules/Project/ProjectHeading";
+import PrimaryButton from "@/app/common/components/PrimaryButton";
+import ImportTasks from "../../ImportTasks";
 
 interface Props {
   filteredProjects: {
@@ -167,16 +169,15 @@ export const FolderView = ({
               <IconPlusSmall size="5" />
             </Button>
             <Pulse borderRadius="large">
-              <Button
-                size="small"
-                variant="secondary"
+              <PrimaryButton
                 onClick={() => {
                   setTemplateModal(true);
                 }}
               >
                 Use Template
-              </Button>
+              </PrimaryButton>
             </Pulse>
+            <ImportTasks />
           </Stack>
         )}
       </Stack>

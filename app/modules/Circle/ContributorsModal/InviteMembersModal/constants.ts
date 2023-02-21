@@ -17,7 +17,7 @@ export const expiryOptions = [
   },
   {
     name: "Never",
-    expiry: 0,
+    expiry: 2147483647,
   },
 ];
 

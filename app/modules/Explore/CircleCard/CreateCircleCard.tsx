@@ -9,6 +9,7 @@ import { storeImage } from "@/app/common/utils/ipfs";
 import Tabs from "@/app/common/components/Tabs";
 import { generateColorHEX } from "@/app/common/utils/utils";
 import { AnimatePresence } from "framer-motion";
+import { createDefaultProject } from "@/app/services/Defaults";
 
 const Container = styled(Box)<{ mode: string }>`
   border: 0.1rem solid transparent;
@@ -143,7 +144,12 @@ const CreateCircleCard = () => {
                         .then(async (res) => {
                           const resJson = await res.json();
                           console.log({ resJson });
-                          void router.push(`/${resJson.slug}`);
+                          const response = await createDefaultProject(
+                            resJson.id
+                          );
+                          if (response) {
+                            void router.push(`/${resJson.slug}`);
+                          }
                           close();
                         })
                         .catch((err) => console.log({ err }));

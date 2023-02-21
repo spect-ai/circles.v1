@@ -1,7 +1,7 @@
 import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { useCircle } from "@/app/modules/Circle/CircleContext";
-import { Action } from "@/app/types";
+import { Action, CollectionType } from "@/app/types";
 import { Box, Stack, Tag, Text } from "degen";
 import { useEffect, useState } from "react";
 import DiscordIcon from "@/app/assets/icons/discordIcon.svg";
@@ -14,19 +14,20 @@ type Props = {
   actionMode: "edit" | "create";
   action: Action;
   setAction: (action: Action) => void;
+  collection: CollectionType;
 };
 
 export default function GiveDiscordRole({
   setAction,
   actionMode,
   action,
+  collection,
 }: Props) {
   const [selectedRoles, setSelectedRoles] = useState(
     (action.data?.roles || {}) as { [roleId: string]: boolean }
   );
   const { origin } = useLocation();
   const { circle } = useCircle();
-  const { localCollection: collection } = useLocalCollection();
   const toggleSelectedRole = (roleId: string) => {
     setSelectedRoles({
       ...selectedRoles,

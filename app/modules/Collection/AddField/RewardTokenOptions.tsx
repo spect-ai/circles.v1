@@ -22,6 +22,8 @@ type Props = {
   setNetworks: React.Dispatch<React.SetStateAction<Registry | undefined>>;
   customText?: string;
   customTooltip?: string;
+  newTokenOpen?: boolean;
+  singleSelect?: boolean;
 };
 
 export default function RewardTokenOptions({
@@ -29,9 +31,11 @@ export default function RewardTokenOptions({
   setNetworks,
   customText,
   customTooltip,
+  newTokenOpen,
+  singleSelect,
 }: Props) {
   const { registry, circle, setRegistryData } = useCircle();
-  const [newToken, setNewToken] = useState(false);
+  const [newToken, setNewToken] = useState(newTokenOpen || false);
   const { mode } = useTheme();
 
   const [address, setAddress] = useState("");
@@ -55,15 +59,16 @@ export default function RewardTokenOptions({
     label: "Mainnet",
     value: "1",
   } as OptionType);
-  const [selectedToken, setSelectedToken] = useState([] as OptionType[]);
-
+  const [selectedToken, setSelectedToken] = useState({} as OptionType);
   const isDisabled = () => {
     if (addFrom === "whitelist") {
-      return !selectedToken?.length;
+      return !selectedToken;
     } else {
       return !tokenSymbol;
     }
   };
+
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (addFrom === "whitelist" && selectedChain && registry) {
@@ -77,7 +82,7 @@ export default function RewardTokenOptions({
       });
 
       setTokenOptions(tokens);
-      setSelectedToken([tokens[0]]);
+      setSelectedToken(tokens[0]);
     }
   }, [selectedChain]);
 
@@ -201,7 +206,7 @@ export default function RewardTokenOptions({
                     onChange={(option) => {
                       setSelectedToken(option);
                     }}
-                    multiple={true}
+                    multiple={false}
                     isClearable={false}
                   />
                 </Box>
@@ -217,7 +222,7 @@ export default function RewardTokenOptions({
                 <Text variant="small">{`Adding ${tokenSymbol} (${tokenName})`}</Text>
               </Box>
             )}
-            {addFrom === "address" && address && !tokenSymbol && (
+            {addFrom === "address" && address && !tokenSymbol && !tokenLoading && (
               <Box
                 marginTop="2"
                 display="flex"
@@ -233,14 +238,15 @@ export default function RewardTokenOptions({
               flexDirection="row"
               justifyContent="flex-start"
               alignItems="flex-start"
+              gap="2"
+              padding="1"
             >
               <Button
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                //@ts-ignore
-                marginRight="2"
                 variant="secondary"
                 size="small"
+                loading={loading || tokenLoading}
                 onClick={async () => {
+                  setLoading(true);
                   const newNetworks = networks || {};
                   if (!newNetworks[selectedChain.value] && registry) {
                     newNetworks[selectedChain.value] = {
@@ -266,7 +272,7 @@ export default function RewardTokenOptions({
                     console.log({ res });
                     setRegistryData(res);
                   } else {
-                    selectedToken.forEach((token) => {
+                    [selectedToken].forEach((token) => {
                       newNetworks[selectedChain.value].tokenDetails = {
                         ...newNetworks[selectedChain.value].tokenDetails,
                         [token.value]: {
@@ -277,8 +283,8 @@ export default function RewardTokenOptions({
                       };
                     });
                   }
+                  setLoading(false);
                   setNetworks(newNetworks);
-
                   setNewToken(false);
                 }}
                 disabled={isDisabled()}
@@ -314,27 +320,28 @@ export default function RewardTokenOptions({
             </Box>
           </Box>
         )}
-        {!newToken && (
-          <Box
-            marginTop="4"
-            display="flex"
-            flexDirection="row"
-            justifyContent="flex-start"
-            alignItems="flex-start"
-            padding="2"
-          >
-            {" "}
-            <Button
-              variant="tertiary"
-              size="small"
-              onClick={() => {
-                setNewToken(true);
-              }}
+        {!newToken &&
+          (singleSelect ? Object.keys(networks || {}).length === 0 : true) && (
+            <Box
+              marginTop="4"
+              display="flex"
+              flexDirection="row"
+              justifyContent="flex-start"
+              alignItems="flex-start"
+              padding="2"
             >
-              Add Token
-            </Button>
-          </Box>
-        )}
+              <Button
+                variant="tertiary"
+                size="small"
+                onClick={() => {
+                  setNewToken(true);
+                }}
+                disabled={tokenLoading}
+              >
+                Add Token
+              </Button>
+            </Box>
+          )}
       </Stack>
     </ScrollContainer>
   );

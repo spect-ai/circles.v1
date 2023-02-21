@@ -49,8 +49,6 @@ export default function PublicField({
   const [invalidNumberCharEntered, setInvalidNumberCharEntered] = useState(
     {} as { [key: string]: boolean }
   );
-  console.log({ prop: form.properties[propertyName] });
-
   if (
     !satisfiesConditions(
       data,
@@ -316,7 +314,7 @@ export default function PublicField({
         <PaywallField
           form={form}
           data={data}
-          setData={(paywall: PayWallOptions) => {
+          setData={(paywall) => {
             setData({
               ...data,
               [propertyName]: paywall,

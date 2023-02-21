@@ -1,3 +1,4 @@
+import ViewPlugins from "@/app/modules/Plugins/ViewPlugins";
 import { Box, Stack, Text } from "degen";
 import { AnimatePresence } from "framer-motion";
 import { memo, useCallback, useState } from "react";
@@ -31,7 +32,10 @@ function InactiveFieldsColumnComponent({ fields }: Props) {
     <Box {...provided.droppableProps} ref={provided.innerRef}>
       <Stack space="1">
         {fields?.map((field, idx) => {
-          if (!collection.properties[field]?.isPartOfFormView) {
+          if (
+            !collection.properties[field]?.isPartOfFormView &&
+            !collection.properties[field]?.internal
+          ) {
             return (
               <InactiveFieldComponent
                 id={field}
@@ -77,10 +81,9 @@ function InactiveFieldsColumnComponent({ fields }: Props) {
       </AnimatePresence>
       <Container>
         <Stack space="4">
-          <FormSettings />
-          <OpportunityMode />
-          <Automation />
-
+          {/* <OpportunityMode /> */}
+          {/* <Automation /> */}
+          <ViewPlugins />
           <Text size="headingTwo" weight="semiBold" ellipsis>
             Internal Fields
           </Text>

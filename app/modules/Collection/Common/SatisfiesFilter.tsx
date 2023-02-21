@@ -162,20 +162,25 @@ export function satisfiesConditions(
         switch (comparatorValue) {
           case "is paid":
             if (!data[propertyId]) return false;
-            for (const pay of data?.[propertyId]) {
-              if (pay.paid) {
-                return true;
-              }
+            if (data[propertyId].paid) {
+              return true;
             }
             return false;
           case "is unpaid":
             if (!data[propertyId]) return true;
-            for (const pay of data?.[propertyId]) {
-              if (pay.paid) {
-                return false;
-              }
+            if (data[propertyId].paid) {
+              return false;
             }
             return true;
+        }
+      case "cardStatus":
+        switch (comparatorValue) {
+          case "is active":
+            return data[propertyId] !== "closed";
+          case "is closed":
+            return data[propertyId] === "closed";
+          default:
+            return false;
         }
       default:
         return false;
@@ -202,4 +207,15 @@ export const isMyCard = (
     }
     return false;
   });
+};
+
+export const paymentStatus = (filter: string, id: string, status: any) => {
+  if (filter === "Paid") {
+    return status?.[id] === "completed";
+  } else if (filter === "Pending") {
+    return status?.[id] === "pending";
+  } else if (filter === "Pending Signature") {
+    return status?.[id] === "pendingSignature";
+  }
+  return true;
 };

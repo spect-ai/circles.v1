@@ -2,18 +2,20 @@ import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { exportToCsv } from "@/app/services/CsvExport";
 import { MemberDetails } from "@/app/types";
 import { Box, Stack, Text } from "degen";
+import { AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { useQuery } from "react-query";
 import styled from "styled-components";
 import { useCircle } from "../CircleContext";
+import usePaymentViewCommon from "./Common/usePaymentCommon";
 import PaymentCard from "./PaymentCard";
+import PaymentCardDrawer from "./PaymentCardDrawer";
 
 export default function CompletedPayments() {
-  const [isCardDrawerOpen, setIsCardDrawerOpen] = useState(false);
-  const [selectedPaymentId, setSelectedPaymentId] = useState("");
   const { circle, setCircleData } = useCircle();
   const router = useRouter();
+  const { isCardDrawerOpen, setIsCardDrawerOpen } = usePaymentViewCommon();
 
   const { circle: cId } = router.query;
 
@@ -26,6 +28,13 @@ export default function CompletedPayments() {
 
   return (
     <Stack>
+      <Box>
+        <AnimatePresence>
+          {isCardDrawerOpen && (
+            <PaymentCardDrawer handleClose={() => setIsCardDrawerOpen(false)} />
+          )}
+        </AnimatePresence>
+      </Box>
       <Box
         style={{ width: "80%" }}
         height="full"
@@ -44,15 +53,17 @@ export default function CompletedPayments() {
                 const data = [] as any[];
                 circle.completedPayments?.forEach((paymentId) => {
                   const paymentDetails = circle.paymentDetails[paymentId];
-                  const paidTo = paymentDetails.paidTo.map((paidTo) => {
+                  const paidTo = paymentDetails.paidTo?.map((paidTo) => {
                     if (paidTo.propertyType === "user")
                       return {
                         username:
-                          memberDetails?.memberDetails[paidTo.value as string]
-                            .username,
+                          memberDetails?.memberDetails[
+                            paidTo.value?.value as string
+                          ].username,
                         ethAddress:
-                          memberDetails?.memberDetails[paidTo.value as string]
-                            .ethAddress,
+                          memberDetails?.memberDetails[
+                            paidTo.value?.value as string
+                          ].ethAddress,
                         reward: paidTo.reward,
                       };
                     else if (paidTo.propertyType === "ethAddress")
@@ -108,7 +119,6 @@ export default function CompletedPayments() {
               index={index}
               paymentDetails={circle.paymentDetails[paymentId]}
               handleClick={() => {
-                setSelectedPaymentId(paymentId);
                 setIsCardDrawerOpen(true);
               }}
             />

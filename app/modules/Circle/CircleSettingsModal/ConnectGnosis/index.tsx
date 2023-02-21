@@ -95,7 +95,9 @@ export default function ConnectGnosis() {
       <PrimaryButton
         variant={
           circle?.safeAddresses &&
-          Object.keys(circle?.safeAddresses)?.length > 0
+          Object.entries(circle?.safeAddresses).some(
+            ([aChain, aSafes]) => aSafes?.length > 0
+          )
             ? "tertiary"
             : "secondary"
         }
@@ -109,10 +111,11 @@ export default function ConnectGnosis() {
           }
         }}
       >
-        {circle?.safeAddresses
-          ? circle?.safeAddresses[Object.keys(circle?.safeAddresses || {})[0]]
-            ? "Gnosis Safe Connected"
-            : "Connect Gnosis Safe"
+        {circle?.safeAddresses &&
+        Object.entries(circle?.safeAddresses).some(
+          ([aChain, aSafes]) => aSafes?.length > 0
+        )
+          ? "Gnosis Safe Connected"
           : "Connect Gnosis Safe"}
       </PrimaryButton>
       <AnimatePresence>
@@ -183,7 +186,11 @@ export default function ConnectGnosis() {
                 <Text variant="small">Pick a Network</Text>
                 <Stack direction="horizontal">
                   {getFlattenedNetworks(registry as Registry)?.map((aChain) => {
-                    if (aChain.chainId !== "56" && aChain.chainId !== "43114")
+                    if (
+                      aChain.chainId !== "56" &&
+                      aChain.chainId !== "43114" &&
+                      aChain.chainId !== "100"
+                    )
                       return (
                         <Box
                           cursor="pointer"
@@ -226,8 +233,8 @@ export default function ConnectGnosis() {
                   loading={isLoading}
                   disabled={
                     circle.safeAddresses?.[chain]?.includes(
-                      selectedSafe.value
-                    ) || !selectedSafe.value
+                      selectedSafe?.value
+                    ) || !selectedSafe?.value
                   }
                 >
                   Save

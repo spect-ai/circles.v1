@@ -11,7 +11,7 @@ import { BigNumber, ethers, Signer } from "ethers";
 import { erc20ABI } from "wagmi";
 import DistributorABI from "@/app/common/contracts/mumbai/distributor.json";
 import { toast } from "react-toastify";
-import { makePayments } from ".";
+import { makePayments, updateMultiplePayments, updatePayment } from ".";
 import { gnosisPayment } from "../Gnosis";
 
 type WagmiBalanceObject = {
@@ -96,9 +96,10 @@ export const findAggregatedAmountForEachUserByToken = (
 
   paymentIds.forEach((paymentId) => {
     paymentDetails[paymentId].paidTo.forEach((p) => {
+      console.log({ p });
       let ethAddress = "";
       if (p.propertyType === "user") {
-        ethAddress = memberDetails.memberDetails[p.value].ethAddress;
+        ethAddress = memberDetails.memberDetails[p.value?.value].ethAddress;
       } else if (p.propertyType === "ethAddress") {
         ethAddress = p.value;
       }
@@ -133,6 +134,7 @@ export const flattenAmountByEachUniqueTokenAndUser = (
       paymentDetails,
       memberDetails
     );
+  console.log({ aggregatedAmountForEachUserByToken });
   const flattenedAmounts = [] as {
     ethAddress: string;
     token: string;
@@ -190,15 +192,15 @@ export const hasBalances = async (
     let balanceObj: WagmiBalanceObject;
     if (tokenAddress === "0x0") {
       balanceObj = await fetchBalance({
-        addressOrName: callerAddress,
+        address: callerAddress as `0x${string}`,
         chainId: parseInt(chainId),
         formatUnits: "ether",
       });
     } else {
       console.log({ tokenAddress, callerAddress, chainId });
       balanceObj = await fetchBalance({
-        addressOrName: callerAddress,
-        token: tokenAddress,
+        address: callerAddress as `0x${string}`,
+        token: tokenAddress as `0x${string}`,
         chainId: parseInt(chainId),
         formatUnits: "ether",
       });
@@ -255,25 +257,25 @@ export const hasAllowance = async (
     if (tokenAddress !== "0x0")
       reads.push({
         chainId: parseInt(chainId),
-        addressOrName: tokenAddress,
-        contractInterface: erc20ABI,
+        address: tokenAddress as `0x${string}`,
+        abi: erc20ABI,
         functionName: "allowance",
         args: [callerAddress, registry[chainId].distributorAddress],
       });
   });
   try {
-    const data = await readContracts({
+    const data: any[] = await readContracts({
       contracts: reads,
     });
-    console.log({ data });
-
-    Object.keys(allowancesRequired).map((tokenAddress, index) => {
+    let idx = 0;
+    Object.keys(allowancesRequired).map((tokenAddress) => {
       if (tokenAddress === "0x0") {
         hasAllowance[tokenAddress] = true;
       } else {
         hasAllowance[tokenAddress] = ethers.BigNumber.from(
           Math.ceil(allowancesRequired[tokenAddress])
-        ).lte(data[index]);
+        ).lte(data[idx]);
+        idx++;
       }
     });
     console.log({ hasAllowance });
@@ -311,11 +313,16 @@ export const approveOneTokenUsingEOA = async (
   registry: Registry
 ) => {
   const tokenContract = await getContract(tokenAddress, erc20ABI);
-  const tx = await tokenContract.approve(
-    registry[chainId].distributorAddress,
-    ethers.constants.MaxUint256
-  );
-  await tx.wait();
+  try {
+    const tx = await tokenContract.approve(
+      registry[chainId].distributorAddress,
+      ethers.constants.MaxUint256
+    );
+    return await tx.wait();
+  } catch (e) {
+    console.log(e);
+    return;
+  }
 };
 
 export const approveUsingEOA = async (
@@ -417,9 +424,10 @@ export const payUsingGnosis = async (
   tokensWithoutBalance: string[],
   registry: Registry,
   startNonce: number,
-  gnosisSafeAddress: string
+  gnosisSafeAddress: string,
+  id: { [key: string]: string }
 ) => {
-  const valuesInWei = await covertToWei(amounts);
+  const valuesInWei = await convertToWei(amounts);
 
   const tokenAmounts = valuesInWei.filter(
     (a) =>
@@ -429,6 +437,7 @@ export const payUsingGnosis = async (
   );
 
   console.log({ tokenAmounts });
+  console.log({ id });
   let tokensDistributed = [] as string[];
   let nonce = startNonce;
   const txHash = {} as { [key: string]: string };
@@ -440,7 +449,8 @@ export const payUsingGnosis = async (
         tokenAmounts,
         registry,
         gnosisSafeAddress,
-        nonce
+        nonce,
+        id["token"]
       ).then((res) => {
         if (res) {
           tokensDistributed = [
@@ -474,7 +484,8 @@ export const payUsingGnosis = async (
         currencyAmounts,
         registry,
         gnosisSafeAddress,
-        nonce
+        nonce,
+        id["currency"]
       ).then((res) => {
         if (res) {
           tokensDistributed = [...tokensDistributed, "0x0"];
@@ -493,27 +504,20 @@ export const payUsingGnosis = async (
   return { tokensDistributed, txHash };
 };
 
-export const covertToWei = async (
+export const convertToWei = async (
   amounts: { ethAddress: string; token: string; amount: number }[]
 ) => {
   const valuesInWei = [] as ethers.BigNumber[];
   for (const amt of amounts) {
-    console.log({ amt });
     const numDecimals = amt.token === "0x0" ? 18 : await getDecimals(amt.token);
-
-    valuesInWei.push(
-      ethers.BigNumber.from(amt?.amount.toFixed())
-        .mul(ethers.BigNumber.from(10).pow(numDecimals))
-        .add(
-          ethers.BigNumber.from(
-            ((amt.amount - Math.floor(amt.amount)) * 10 ** numDecimals)
-              .toFixed()
-              .toString()
-          )
-        )
-    );
+    const wei = ethers.utils
+      .parseEther(amt.amount.toString())
+      .div(ethers.BigNumber.from(10).pow(18 - numDecimals));
+    console.log({ eth: ethers.utils.formatUnits(wei, numDecimals) });
+    valuesInWei.push(wei);
   }
   const values = amounts.map((v, index) => {
+    console.log({ fromwei: ethers.utils.formatUnits(valuesInWei[index], 6) });
     return {
       ethAddress: v.ethAddress,
       token: v.token,
@@ -530,7 +534,8 @@ export const distributeCurrencyUsingEOA = async (
     token: string;
     valueInWei: ethers.BigNumber;
   }[],
-  registry: Registry
+  registry: Registry,
+  id: string
 ) => {
   const distributorContract = await getContract(
     registry[chainId].distributorAddress as string,
@@ -546,7 +551,7 @@ export const distributeCurrencyUsingEOA = async (
   const gasEstimate = await distributorContract.estimateGas.distributeEther(
     ethAddressesArr,
     valuesInWeiArr,
-    "",
+    id,
     {
       value: totalValue,
     }
@@ -554,7 +559,7 @@ export const distributeCurrencyUsingEOA = async (
   const tx = await distributorContract.distributeEther(
     ethAddressesArr,
     valuesInWeiArr,
-    "",
+    id,
     {
       gasLimit: Math.ceil(gasEstimate.toNumber() * 1.2),
       value: totalValue,
@@ -572,7 +577,8 @@ export const distributeCurrencyUsingGnosis = async (
   }[],
   registry: Registry,
   safeAddress: string,
-  nonce: number
+  nonce: number,
+  id: string
 ) => {
   const distributorContract = await getContract(
     registry[chainId].distributorAddress as string,
@@ -587,7 +593,7 @@ export const distributeCurrencyUsingGnosis = async (
   const data = await distributorContract?.populateTransaction.distributeEther(
     ethAddressesArr,
     valuesInWeiArr,
-    "",
+    id,
     {
       value: totalValue,
       nonce: nonce,
@@ -607,7 +613,8 @@ export const distributeTokensUsingGnosis = async (
   }[],
   registry: Registry,
   safeAddress: string,
-  nonce: number
+  nonce: number,
+  id: string
 ) => {
   const distributorContract = await getContract(
     registry[chainId].distributorAddress as string,
@@ -622,7 +629,7 @@ export const distributeTokensUsingGnosis = async (
     tokenAddressesArr,
     ethAddressesArr,
     valuesInWeiArr,
-    "",
+    id,
     {
       nonce: nonce,
     }
@@ -638,7 +645,8 @@ export const distributeTokensUsingEOA = async (
     token: string;
     valueInWei: ethers.BigNumber;
   }[],
-  registry: Registry
+  registry: Registry,
+  id: string
 ) => {
   const distributorContract = await getContract(
     registry[chainId].distributorAddress as string,
@@ -651,7 +659,7 @@ export const distributeTokensUsingEOA = async (
     tokenAddressesArr,
     ethAddressesArr,
     valuesInWeiArr,
-    ""
+    id
   );
 
   console.log({ gasEstimate });
@@ -662,10 +670,10 @@ export const distributeTokensUsingEOA = async (
     tokenAddressesArr,
     ethAddressesArr,
     valuesInWeiArr,
-    "",
+    id,
     overrides
   );
-  await tx.wait();
+  return await tx.wait();
 };
 
 export const payUsingEOA = async (
@@ -677,9 +685,10 @@ export const payUsingEOA = async (
   }[],
   tokensWithoutAllowance: string[],
   tokensWithoutBalance: string[],
-  registry: Registry
+  registry: Registry,
+  id: { [key: string]: string }
 ) => {
-  const valuesInWei = await covertToWei(amounts);
+  const valuesInWei = await convertToWei(amounts);
 
   const tokenAmounts = valuesInWei.filter(
     (a) =>
@@ -691,18 +700,22 @@ export const payUsingEOA = async (
   let tokensDistributed = [] as string[];
   // Distribute tokens
   const txHash = {} as { [key: string]: string };
+
   if (tokenAmounts.length > 0) {
     await toast.promise(
-      distributeTokensUsingEOA(chainId, tokenAmounts, registry).then(
-        (res: any) => {
-          tokensDistributed = [
-            ...tokensDistributed,
-            ...tokenAmounts.map((a) => a.token),
-          ];
-          console.log({ res });
-          txHash["tokens"] = res.transactionHash;
-        }
-      ),
+      distributeTokensUsingEOA(
+        chainId,
+        tokenAmounts,
+        registry,
+        id["token"]
+      ).then((res: any) => {
+        tokensDistributed = [
+          ...tokensDistributed,
+          ...tokenAmounts.map((a) => a.token),
+        ];
+        console.log({ res });
+        txHash["tokens"] = res?.transactionHash;
+      }),
       {
         pending: `Distributing ${
           registry[chainId]?.tokenDetails[tokenAmounts[0].token]?.name
@@ -718,14 +731,19 @@ export const payUsingEOA = async (
     (a) => a.token === "0x0" && !tokensWithoutBalance.includes(a.token)
   );
   console.log({ currencyAmounts });
+
   if (currencyAmounts.length > 0) {
     await toast.promise(
-      distributeCurrencyUsingEOA(chainId, currencyAmounts, registry).then(
-        (res) => {
-          tokensDistributed = [...tokensDistributed, "0x0"];
-          txHash["currency"] = res.transactionHash;
-        }
-      ),
+      distributeCurrencyUsingEOA(
+        chainId,
+        currencyAmounts,
+        registry,
+        id["currency"]
+      ).then((res) => {
+        console.log({ res });
+        tokensDistributed = [...tokensDistributed, "0x0"];
+        txHash["currency"] = res?.transactionHash;
+      }),
       {
         pending: `Distributing ${registry[chainId]?.nativeCurrency}`,
       },
@@ -737,13 +755,11 @@ export const payUsingEOA = async (
   return { tokensDistributed, txHash };
 };
 
-export const findAndUpdatePaymentIds = async (
-  circleId: string,
+export const findPaymentIdsByTokenAndChain = (
   chainId: string,
   tokenAddresses: string[],
   paymentIds: string[],
-  paymentDetails: { [paymentId: string]: PaymentDetails },
-  transactionHash: { [key: string]: string }
+  paymentDetails: { [paymentId: string]: PaymentDetails }
 ) => {
   let filteredPaymentIds = [] as string[];
   for (const tokenAddress of tokenAddresses) {
@@ -756,12 +772,101 @@ export const findAndUpdatePaymentIds = async (
       ...filteredPaymentIds,
     ];
   }
-  if (filteredPaymentIds.length === 0) {
-    return;
+  return filteredPaymentIds;
+};
+
+export const findAndUpdateCompletedPaymentIds = async (
+  circleId: string,
+  chainId: string,
+  tokenAddresses: string[],
+  paymentIds: string[],
+  paymentDetails: { [paymentId: string]: PaymentDetails },
+  transactionHash: { [key: string]: string }
+) => {
+  let filteredPaymentIds = [] as string[];
+  if (!["100", "56", "43114", "43113"].includes(chainId)) return;
+  if (transactionHash["tokens"]) {
+    filteredPaymentIds = findPaymentIdsByTokenAndChain(
+      chainId,
+      tokenAddresses.filter((t) => t !== "0x0"),
+      paymentIds,
+      paymentDetails
+    );
+    if (filteredPaymentIds.length === 0) {
+      return;
+    }
+
+    const res = await updateMultiplePayments(circleId, {
+      paymentIds: filteredPaymentIds,
+      transactionHash: transactionHash["tokens"],
+      status: "Completed",
+    });
   }
-  const res = await makePayments(circleId, {
-    paymentIds: filteredPaymentIds,
-    transactionHash,
-  });
-  return res;
+  if (transactionHash["currency"]) {
+    filteredPaymentIds = findPaymentIdsByTokenAndChain(
+      chainId,
+      ["0x0"],
+      paymentIds,
+      paymentDetails
+    );
+    if (filteredPaymentIds.length === 0) {
+      return;
+    }
+
+    const res = await updateMultiplePayments(circleId, {
+      paymentIds: filteredPaymentIds,
+      transactionHash: transactionHash["currency"],
+      status: "Completed",
+      paidOn: new Date(),
+    });
+  }
+
+  return true;
+};
+
+export const findAndUpdatePaymentIdsPendingSignature = async (
+  circleId: string,
+  chainId: string,
+  tokenAddresses: string[],
+  paymentIds: string[],
+  paymentDetails: { [paymentId: string]: PaymentDetails },
+  transactionHash: { [key: string]: string }
+) => {
+  let filteredPaymentIds = [] as string[];
+
+  if (transactionHash["tokens"]) {
+    filteredPaymentIds = findPaymentIdsByTokenAndChain(
+      chainId,
+      tokenAddresses.filter((t) => t !== "0x0"),
+      paymentIds,
+      paymentDetails
+    );
+    if (filteredPaymentIds.length === 0) {
+      return;
+    }
+    const res = await updateMultiplePayments(circleId, {
+      paymentIds: filteredPaymentIds,
+      safeTransactionHash: transactionHash["tokens"],
+      status: "Pending Signature",
+    });
+  }
+  if (transactionHash["currency"]) {
+    filteredPaymentIds = findPaymentIdsByTokenAndChain(
+      chainId,
+      ["0x0"],
+      paymentIds,
+      paymentDetails
+    );
+    if (filteredPaymentIds.length === 0) {
+      return;
+    }
+    console.log({ filteredPaymentIds });
+    const res = await updateMultiplePayments(circleId, {
+      paymentIds: filteredPaymentIds,
+      safeTransactionHash: transactionHash["currency"],
+      status: "Pending Signature",
+    });
+  }
+
+  return true;
 };

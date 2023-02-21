@@ -2,16 +2,17 @@
 import Drawer, { slideHorizontal } from "@/app/common/components/Drawer";
 import { OptionType } from "@/app/common/components/Dropdown";
 import Editor from "@/app/common/components/Editor";
+import { useCircle } from "@/app/modules/Circle/CircleContext";
 import { MemberDetails, UserType } from "@/app/types";
 import { Avatar, Box, Button, IconChevronRight, Stack, Tag, Text } from "degen";
 import { motion } from "framer-motion";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
+import { ExternalLink } from "react-feather";
 import { useQuery } from "react-query";
 import styled from "styled-components";
 import { useLocalCollection } from "../../Context/LocalCollectionContext";
 import DataActivity from "./DataActivity";
-import SpectVoting from "./VotingOnSpect";
 import VotingActions from "./VotingActions";
 import SnapshotVoting from "./VotingOnSnapshot";
 
@@ -26,6 +27,8 @@ export default function DataDrawer({
 }: props) {
   const { localCollection: collection, updateCollection } =
     useLocalCollection();
+
+  const { registry } = useCircle();
 
   const router = useRouter();
   const { dataId: dataSlug, circle: cId } = router.query;
@@ -79,7 +82,7 @@ export default function DataDrawer({
                 </Box>
               </Stack>
             </Button>
-            <VotingActions dataId={dataId} data={data} />
+            <VotingActions dataId={dataId} data={data} col={false} />
           </Stack>
         </Box>
       }
@@ -273,16 +276,36 @@ export default function DataDrawer({
                         )}
                         {property?.type === "payWall" && (
                           <Stack>
-                            {data[property.name]?.map(
+                            {[data[property.name]]?.map(
                               (payment: {
                                 token: OptionType;
                                 chain: OptionType;
                                 value: number;
+                                txnHash: string;
                               }) => {
                                 return (
                                   <Text key={payment.token.label}>
-                                    Paid {payment.value} {payment.token.label}{" "}
-                                    on {payment.chain.label}
+                                    <Stack
+                                      direction="horizontal"
+                                      align="center"
+                                      space="0"
+                                    >
+                                      Paid {payment.value} {payment.token.label}{" "}
+                                      on {payment.chain.label}
+                                      <a
+                                        href={`${
+                                          registry?.[payment.chain.value]
+                                            .blockExplorer
+                                        }tx/${payment.txnHash}`}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        style={{
+                                          marginLeft: "8px",
+                                        }}
+                                      >
+                                        <ExternalLink size={20} />
+                                      </a>
+                                    </Stack>
                                   </Text>
                                 );
                               }
@@ -347,9 +370,9 @@ export default function DataDrawer({
                     );
                   })}
                 </Box>
-                {!collection.voting?.periods?.[dataId]?.snapshot
-                  ?.onSnapshot && <SpectVoting dataId={dataId} />}
-                {collection.voting?.periods?.[dataId]?.snapshot?.onSnapshot && (
+                {/* {!collection.voting?.periods?.[dataId]?.snapshot
+                  ?.proposalId && <SpectVoting dataId={dataId} />} */}
+                {collection.voting?.snapshot?.[dataId]?.proposalId && (
                   <SnapshotVoting dataId={dataId} />
                 )}
               </Box>

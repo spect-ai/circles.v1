@@ -20,7 +20,7 @@ import {
   Droppable,
   DropResult,
 } from "react-beautiful-dnd";
-import { Clock, Grid, List, Trello } from "react-feather";
+import { Clock, Grid, List, Table, Trello } from "react-feather";
 import { Hidden, Visible } from "react-grid-system";
 import { toast } from "react-toastify";
 import styled from "styled-components";
@@ -542,7 +542,7 @@ export const getViewIcon = (viewType: string) => {
         />
       );
     default:
-      return <IconCollection size="5" />;
+      return <Table size={18} style={{ marginTop: 4 }} />;
   }
 };
 
@@ -565,7 +565,7 @@ const AddViewButton = styled(Box)`
   margin-top: 4px;
 `;
 
-const MenuItem = styled(Box)`
+export const MenuItem = styled(Box)`
   display: flex;
   gap: 8px;
   &:hover {

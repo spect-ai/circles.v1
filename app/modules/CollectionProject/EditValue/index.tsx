@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import Popover from "@/app/common/components/Popover";
-import { updateField, updateFormCollection } from "@/app/services/Collection";
+import { updateField } from "@/app/services/Collection";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { Milestone } from "@/app/types";
 import { Box, IconClose, Stack, Tag, Text, useTheme } from "degen";
@@ -20,9 +20,10 @@ type Props = {
   setValue: (value: any) => void;
   propertyName: string;
   dataId: string;
+  disabled: boolean;
 };
 
-function EditValue({ value, setValue, propertyName, dataId }: Props) {
+function EditValue({ value, setValue, propertyName, dataId, disabled }: Props) {
   const [isEditing, setIsEditing] = useState(false);
   const fieldInput = useRef<any>();
   const { localCollection: collection, updateCollection } =
@@ -37,27 +38,29 @@ function EditValue({ value, setValue, propertyName, dataId }: Props) {
   const { formActions } = useRoleGate();
 
   useEffect(() => {
-    if (property.type === "singleSelect" || property.type === "multiSelect") {
-      setOptions(property.options);
-      setFilteredOptions(property.options);
-    } else if (property.type === "user" || property.type === "user[]") {
-      void (async () => {
-        const res = await (
-          await fetch(
-            `${process.env.API_HOST}/circle/${
-              collection.parents[0].id || collection.parents[0]
-            }/memberDetails?circleIds=${
-              collection.parents[0].id || collection.parents[0]
-            }`
-          )
-        ).json();
-        const memberOptions = res.members?.map((member: string) => ({
-          label: res.memberDetails && res.memberDetails[member]?.username,
-          value: member,
-        }));
-        setOptions(memberOptions);
-        setFilteredOptions(memberOptions);
-      })();
+    if (property) {
+      if (property.type === "singleSelect" || property.type === "multiSelect") {
+        setOptions(property.options);
+        setFilteredOptions(property.options);
+      } else if (property.type === "user" || property.type === "user[]") {
+        void (async () => {
+          const res = await (
+            await fetch(
+              `${process.env.API_HOST}/circle/${
+                collection.parents[0].id || collection.parents[0]
+              }/memberDetails?circleIds=${
+                collection.parents[0].id || collection.parents[0]
+              }`
+            )
+          ).json();
+          const memberOptions = res.members?.map((member: string) => ({
+            label: res.memberDetails && res.memberDetails[member]?.username,
+            value: member,
+          }));
+          setOptions(memberOptions);
+          setFilteredOptions(memberOptions);
+        })();
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [propertyName]);
@@ -127,6 +130,10 @@ function EditValue({ value, setValue, propertyName, dataId }: Props) {
               ) : (
                 <FieldButton
                   onClick={() => {
+                    if (disabled) {
+                      toast.error("You can't edit a closed card");
+                      return;
+                    }
                     if (!formActions("updateResponsesManually"))
                       toast.error(
                         "Your role doesn't have permission to update cards"

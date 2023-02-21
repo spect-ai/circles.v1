@@ -15,9 +15,10 @@ import { getPropertyIcon } from "./Utils";
 
 type Props = {
   propertyName: string;
+  disabled?: boolean;
 };
 
-function EditProperty({ propertyName }: Props) {
+function EditProperty({ propertyName, disabled }: Props) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const fieldInput = useRef<any>();
   const {
@@ -69,7 +70,16 @@ function EditProperty({ propertyName }: Props) {
           dependentRef={fieldInput}
           butttonComponent={
             <Box width="full">
-              <PropertyButton onClick={() => setIsMenuOpen(true)} mode={mode}>
+              <PropertyButton
+                onClick={() => {
+                  if (disabled) {
+                    toast.error("You can't edit a closed card")
+                    return;
+                  }
+                  setIsMenuOpen(true);
+                }}
+                mode={mode}
+              >
                 {getPropertyIcon(property.type)}
                 {property.name}
                 {property.required && <Box color="accent">*</Box>}

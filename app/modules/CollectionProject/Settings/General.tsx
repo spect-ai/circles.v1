@@ -26,7 +26,7 @@ export default function General({ name, setName }: Props) {
       </Stack>
 
       <FormRoles />
-      <VotingModule />
+      {/* <VotingModule /> */}
     </Stack>
   );
 }

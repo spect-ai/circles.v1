@@ -1,8 +1,11 @@
-import { Action } from "@/app/types";
+import { Action, CollectionType } from "@/app/types";
+import CloseCard from "./CloseCard";
 import CreateCard from "./CreateCard";
 import CreateDiscordChannel from "./CreateDiscordChannel";
 import GiveDiscordRole from "./GiveDiscordRole";
 import GiveRole from "./GiveRole";
+import InitiatePendingPayment from "./InitiatePendingPayment";
+import PostCardOnDiscord from "./PostOnDiscord";
 import SendEmail from "./SendEmail";
 
 type Props = {
@@ -10,6 +13,7 @@ type Props = {
   actionMode: "edit" | "create";
   action: Action;
   setAction: (action: Action) => void;
+  collection: CollectionType;
 };
 
 export default function SingleAction({
@@ -17,6 +21,7 @@ export default function SingleAction({
   actionMode,
   action,
   setAction,
+  collection,
 }: Props) {
   return (
     <>
@@ -32,6 +37,7 @@ export default function SingleAction({
           action={action}
           actionMode={actionMode}
           setAction={setAction}
+          collection={collection}
         />
       )}
       {actionType === "createDiscordChannel" && (
@@ -39,6 +45,7 @@ export default function SingleAction({
           action={action}
           actionMode={actionMode}
           setAction={setAction}
+          collection={collection}
         />
       )}
       {actionType === "giveDiscordRole" && (
@@ -46,6 +53,7 @@ export default function SingleAction({
           action={action}
           actionMode={actionMode}
           setAction={setAction}
+          collection={collection}
         />
       )}
       {actionType === "createCard" && (
@@ -53,6 +61,31 @@ export default function SingleAction({
           action={action}
           actionMode={actionMode}
           setAction={setAction}
+          collection={collection}
+        />
+      )}
+      {actionType === "postOnDiscord" && (
+        <PostCardOnDiscord
+          action={action}
+          actionMode={actionMode}
+          setAction={setAction}
+          collection={collection}
+        />
+      )}
+      {actionType === "closeCard" && (
+        <CloseCard
+          action={action}
+          actionMode={actionMode}
+          setAction={setAction}
+          collection={collection}
+        />
+      )}
+      {actionType === "initiatePendingPayment" && (
+        <InitiatePendingPayment
+        action={action}
+          actionMode={actionMode}
+          setAction={setAction}
+          collection={collection}
         />
       )}
     </>

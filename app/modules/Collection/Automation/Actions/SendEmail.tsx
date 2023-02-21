@@ -1,7 +1,7 @@
 import Dropdown from "@/app/common/components/Dropdown";
 import Editor from "@/app/common/components/Editor";
 import { useCircle } from "@/app/modules/Circle/CircleContext";
-import { Action, Option } from "@/app/types";
+import { Action, CollectionType, Option } from "@/app/types";
 import { Box, Input, Text, Textarea } from "degen";
 import { useEffect, useState } from "react";
 import { useLocalCollection } from "../../Context/LocalCollectionContext";
@@ -10,13 +10,13 @@ type Props = {
   actionMode: "edit" | "create";
   action: Action;
   setAction: (action: Action) => void;
+  collection: CollectionType;
 };
 
-export default function SendEmail({ setAction, actionMode, action }: Props) {
+export default function SendEmail({ setAction, actionMode, action, collection }: Props) {
   const [propertyOptions, setPropertyOptions] = useState([] as Option[]);
 
   const { circle } = useCircle();
-  const { localCollection: collection } = useLocalCollection();
 
   useEffect(() => {
     setPropertyOptions(

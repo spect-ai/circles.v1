@@ -1,12 +1,5 @@
 import { PayWallOptions, Registry } from "@/app/types";
-import {
-  Box,
-  Input,
-  Stack,
-  Tag,
-  Text,
-  useTheme,
-} from "degen";
+import { Box, Input, Stack, Tag, Text, useTheme } from "degen";
 import React, { useEffect, useState } from "react";
 import { isAddress } from "ethers/lib/utils";
 import { Tooltip } from "react-tippy";
@@ -19,7 +12,7 @@ interface Props {
 
 export default function PayWall({ payWallOption, setPayWallOption }: Props) {
   const [networks, setNetworks] = useState<Registry | undefined>(
-    payWallOption.network
+    payWallOption.network || {}
   );
   const [receiver, setReceiver] = useState(payWallOption?.receiver);
   const [value, setValue] = useState(payWallOption?.value);
@@ -84,14 +77,15 @@ export default function PayWall({ payWallOption, setPayWallOption }: Props) {
             networks={networks}
             setNetworks={setNetworks}
             customText={
-              "Pick the networks and tokens that the payer can pay with"
+              "Pick the network and token that the payer can pay with"
             }
-            customTooltip="Pick the networks and tokens that the payer can pay with"
+            customTooltip="You can only pick one token"
+            singleSelect={true}
           />
-          {!networks ||
+          {/* {!networks ||
             (!Object.keys(networks)?.length && (
               <Text variant="label">No Payment options added yet</Text>
-            ))}
+            ))} */}
         </Stack>
       </Box>
     </>

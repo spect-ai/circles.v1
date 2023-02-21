@@ -4,6 +4,19 @@ import type { AppProps } from "next/app";
 import { Hydrate, QueryClientProvider } from "react-query";
 import mixpanel from "@/app/common/utils/mixpanel";
 import { FlagsProvider } from "react-feature-flags";
+import {
+  avalanche,
+  bsc,
+  mainnet,
+  polygon,
+  polygonMumbai,
+  goerli,
+  fantom,
+  gnosis,
+  optimism,
+  arbitrum,
+  avalancheFuji,
+} from "@wagmi/core/chains";
 
 import "@fontsource/inter/300.css";
 import "@fontsource/inter/400.css";
@@ -24,7 +37,7 @@ import { AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
 import queryClient from "@/app/common/utils/queryClient";
 import GlobalContextProvider, { useGlobal } from "@/app/context/globalContext";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import ErrorFallBack from "@/app/common/components/Error";
 import * as gtag from "../lib/gtag";
@@ -38,7 +51,7 @@ import {
   createAuthenticationAdapter,
   RainbowKitAuthenticationProvider,
 } from "@rainbow-me/rainbowkit";
-import { chain, configureChains, createClient, WagmiConfig } from "wagmi";
+import { configureChains, createClient, WagmiConfig } from "wagmi";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { publicProvider } from "wagmi/providers/public";
 import { SiweMessage } from "siwe";
@@ -48,6 +61,7 @@ import { flags } from "@/app/common/utils/featureFlags";
 
 import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
 import { useLocation } from "react-use";
+import ScribeEmbed from "@/app/common/components/Help/ScribeEmbed";
 
 const isProd = process.env.NODE_ENV === "production";
 
@@ -142,18 +156,22 @@ const chainsObj = {
 
 const { chains, provider } = configureChains(
   [
-    chain.mainnet,
-    chain.polygon,
-    chain.optimism,
-    chain.arbitrum,
-    chain.goerli,
-    chain.polygonMumbai,
-    chainsObj.avalanche,
-    chainsObj.bsc,
-    chainsObj.gnosis,
-    chainsObj.fuji,
+    mainnet,
+    polygon,
+    optimism,
+    arbitrum,
+    goerli,
+    polygonMumbai,
+    avalanche,
+    bsc,
+    gnosis,
+    avalancheFuji,
+    fantom,
   ],
-  [alchemyProvider({ apiKey: process.env.ALCHEMY_KEY }), publicProvider()]
+  [
+    alchemyProvider({ apiKey: process.env.ALCHEMY_KEY as string }),
+    publicProvider(),
+  ]
 );
 
 const { connectors } = getDefaultWallets({
@@ -170,11 +188,16 @@ const wagmiClient = createClient({
 export const authStatusAtom =
   atom<"loading" | "authenticated" | "unauthenticated">("loading");
 
+export const scribeOpenAtom = atom(false);
+export const scribeUrlAtom = atom("");
+
 function MyApp({ Component, pageProps }: AppProps) {
   const router = useRouter();
   const url = `https:/circles.spect.network/${router.route}`;
 
   const { connectUser } = useGlobal();
+  const [isScribeOpen, setIsScribeOpen] = useAtom(scribeOpenAtom);
+  const [scribeUrl, setScribeUrl] = useAtom(scribeUrlAtom);
 
   const [authenticationStatus, setAuthenticationStatus] =
     useAtom(authStatusAtom);
@@ -241,7 +264,7 @@ function MyApp({ Component, pageProps }: AppProps) {
     };
   }, [router.events]);
 
-  const { hostname } = useLocation();
+  const { hostname, pathname } = useLocation();
 
   const client = new ApolloClient({
     uri: hostname?.startsWith("circles")
@@ -288,17 +311,19 @@ function MyApp({ Component, pageProps }: AppProps) {
               <ThemeProvider defaultAccent="purple" defaultMode="dark">
                 <QueryClientProvider client={queryClient}>
                   <Hydrate state={pageProps}>
-                    <AnimatePresence
-                      exitBeforeEnter
-                      initial={false}
-                      onExitComplete={() => window.scrollTo(0, 0)}
-                    >
-                      <ErrorBoundary FallbackComponent={ErrorFallBack}>
-                        <ApolloProvider client={client}>
-                          <Component {...pageProps} canonical={url} key={url} />
-                        </ApolloProvider>
-                      </ErrorBoundary>
-                    </AnimatePresence>
+                    <ErrorBoundary FallbackComponent={ErrorFallBack}>
+                      <ApolloProvider client={client}>
+                        <Component {...pageProps} canonical={url} key={url} />
+                        <AnimatePresence>
+                          {isScribeOpen && (
+                            <ScribeEmbed
+                              handleClose={() => setIsScribeOpen(false)}
+                              src={scribeUrl}
+                            />
+                          )}
+                        </AnimatePresence>
+                      </ApolloProvider>
+                    </ErrorBoundary>
                   </Hydrate>
                 </QueryClientProvider>
               </ThemeProvider>

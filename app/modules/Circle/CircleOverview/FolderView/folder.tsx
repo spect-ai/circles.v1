@@ -202,7 +202,7 @@ const Folder = ({
             />
           )}
           {avatar !== "All" &&
-            content.length == 0 &&
+            content?.length == 0 &&
             canDo("manageCircleSettings") && (
               <Button
                 data-tour="circle-create-folder-button"

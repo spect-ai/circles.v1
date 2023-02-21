@@ -44,7 +44,7 @@ export default function CardActivity({
       <Stack>
         {activityOrder?.map((activityId) => {
           const activity = activities[activityId];
-          const actor = getMemberDetails(activity.ref.actor?.id) || dataOwner;
+          const actor = getMemberDetails(activity?.ref?.actor?.id) || dataOwner;
           return (
             <Box key={activityId}>
               <Stack direction="horizontal" align="flex-start" space="2">

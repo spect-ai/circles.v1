@@ -11,9 +11,16 @@ import {
 } from "@/app/services/Collection";
 import { MemberDetails, Option } from "@/app/types";
 import {
+  CheckCircleOutlined,
+  ClockCircleOutlined,
+  InfoCircleOutlined,
+  InfoOutlined,
+} from "@ant-design/icons";
+import {
   Box,
   Button,
   IconChevronRight,
+  IconClose,
   IconDotsVertical,
   IconPlusSmall,
   Stack,
@@ -38,10 +45,9 @@ import { useQuery } from "react-query";
 import { toast } from "react-toastify";
 import styled from "styled-components";
 import AddField from "../../Collection/AddField";
+import { SnapshotModal } from "../../Collection/Common/SnapshotModal";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
-import VotingActions from "../../Collection/Form/DataDrawer/VotingActions";
 import SnapshotVoting from "../../Collection/Form/DataDrawer/VotingOnSnapshot";
-import SpectVoting from "../../Collection/Form/DataDrawer/VotingOnSpect";
 import CardActivity from "../CardActivity";
 import EditProperty from "../EditProperty";
 import EditValue from "../EditValue";
@@ -58,6 +64,7 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
     useLocalCollection();
 
   const [value, setValue] = useState<any>(defaultValue || {});
+  const [snapshotModal, setSnapshotModal] = useState(false);
 
   const [isAddFieldOpen, setIsAddFieldOpen] = useState(false);
   const [isDirty, setIsDirty] = useState(false);
@@ -101,13 +108,27 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
         setValue(collection.data[cardSlug as string]);
       }, 100);
     }
-  }, [defaultValue?.id, cardSlug]);
+  }, [defaultValue?.id, cardSlug, newCard]);
 
   const onChange = async (update: any, slug: string) => {
     if (slug) {
       let res;
+      // update collection locally
+      const tempColl = { ...collection };
+      updateCollection({
+        ...collection,
+        data: {
+          ...collection.data,
+          [slug]: {
+            ...collection.data[slug],
+            ...update,
+          },
+        },
+      });
       res = await updateCollectionDataGuarded(collection.id, slug, update);
-      if (!res) return;
+      if (!res) {
+        updateCollection(tempColl);
+      }
       if (res.id) {
         updateCollection(res);
       } else toast.error(res.error || "Error updating card");
@@ -193,7 +214,12 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
             }}
             width="full"
           > */}
-          <EditProperty propertyName={property} />
+          <EditProperty
+            propertyName={property}
+            disabled={
+              collection.data?.[cardSlug as string]?.__cardStatus__ === "closed"
+            }
+          />
           <EditValue
             propertyName={property}
             value={value[property]}
@@ -202,6 +228,9 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
               void onChange({ [property]: val }, value.slug);
             }}
             dataId={value.slug}
+            disabled={
+              collection.data?.[cardSlug as string]?.__cardStatus__ === "closed"
+            }
           />
           {/* </Box> */}
         </Stack>
@@ -211,12 +240,18 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
     return usePortal ? ReactDOM.createPortal(child, document.body) : child;
   };
 
-  const PropertyDraggableCallback = useCallback(PropertyDraggable, []);
+  const PropertyDraggableCallback = useCallback(PropertyDraggable, [
+    collection,
+  ]);
 
   const PropertyList = (provided: DroppableProvided) => (
     <Box ref={provided.innerRef} {...provided.droppableProps}>
       {propertyOrder.map((property, index) => {
-        if (property !== "Title" && property !== "Description") {
+        if (
+          property !== "Title" &&
+          property !== "Description" &&
+          property !== "__cardStatus__"
+        ) {
           return (
             <Draggable key={property} draggableId={property} index={index}>
               {(provided, snapshot) => {
@@ -241,6 +276,7 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
     PropertyDraggableCallback,
     propertyOrder,
     value,
+    collection,
   ]);
 
   return (
@@ -271,9 +307,6 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
                 </Stack>
               </Button>
               <Box width="56">
-                {!newCard && (
-                  <VotingActions dataId={cardSlug as string} data={value} />
-                )}
                 {newCard && (
                   <PrimaryButton
                     loading={loading}
@@ -309,6 +342,75 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
             exit={{ opacity: 0 }}
           >
             <Container paddingX="8" paddingY="4" overflow="auto">
+              {value.slug &&
+                ["pending", "pendingSignature"].includes(
+                  collection.projectMetadata?.paymentStatus?.[value.slug] || ""
+                ) && (
+                  <Box
+                    display="flex"
+                    flexDirection="row"
+                    justifyContent="flex-end"
+                    alignItems="center"
+                    marginRight="4"
+                    gap="2"
+                    cursor="pointer"
+                    onClick={() => {
+                      if (collection.projectMetadata?.paymentIds?.[value.slug])
+                        push({
+                          pathname: "/[circle]",
+                          query: {
+                            circle: query.circle,
+                            tab: "payment",
+                            status: "pending",
+                            paymentId:
+                              collection.projectMetadata?.paymentIds?.[
+                                value.slug
+                              ],
+                          },
+                        });
+                    }}
+                  >
+                    {" "}
+                    <Text color="yellow">
+                      <ClockCircleOutlined />
+                    </Text>
+                    <Text variant="small">Pending Payment</Text>
+                  </Box>
+                )}
+              {value.slug &&
+                collection.projectMetadata?.paymentStatus?.[value.slug] ===
+                  "completed" && (
+                  <Box
+                    display="flex"
+                    flexDirection="row"
+                    justifyContent="flex-end"
+                    alignItems="center"
+                    marginRight="4"
+                    gap="2"
+                  >
+                    <Text color="green">
+                      <CheckCircleOutlined />
+                    </Text>
+
+                    <Text variant="small">Payment Completed</Text>
+                  </Box>
+                )}
+              {collection.data?.[cardSlug as string]?.__cardStatus__ ===
+                "closed" && (
+                <Box
+                  display="flex"
+                  flexDirection="row"
+                  justifyContent="flex-end"
+                  alignItems="center"
+                  marginRight="4"
+                  gap="2"
+                >
+                  <Text color="red">
+                    <InfoCircleOutlined />
+                  </Text>
+                  <Text variant="small">This card is closed</Text>
+                </Box>
+              )}
               <Stack space="1">
                 <Stack
                   direction="horizontal"
@@ -321,7 +423,7 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
                     value={value.Title}
                     onChange={(e) => {
                       setIsDirty(true);
-                      setValue({ ...value, Title: e.target.value });
+                      setValue({ ...value, Title: e.target.value || "" });
                     }}
                     onBlur={async () => {
                       if (isDirty) {
@@ -329,16 +431,29 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
                         setIsDirty(false);
                       }
                     }}
+                    disabled={
+                      collection.data?.[cardSlug as string]?.__cardStatus__ ===
+                      "closed"
+                    }
                   />
                   {value.slug && (
                     <CardOptions
                       handleDrawerClose={closeCard}
                       cardSlug={value.slug}
+                      setSnapshotModal={setSnapshotModal}
+                      onChange={onChange}
                     />
                   )}
                 </Stack>
                 <DragDropContext onDragEnd={handleDragEnd}>
-                  <Droppable droppableId="droppable" type="PROPERTY">
+                  <Droppable
+                    droppableId="droppable"
+                    type="PROPERTY"
+                    isDropDisabled={
+                      collection.data?.[cardSlug as string]?.__cardStatus__ ===
+                      "closed"
+                    }
+                  >
                     {ProperyListCallback}
                   </Droppable>
                 </DragDropContext>
@@ -352,6 +467,10 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
                     variant="tertiary"
                     icon={<IconPlusSmall size={"5"} />}
                     onClick={() => setIsAddFieldOpen(true)}
+                    disabled={
+                      collection.data?.[cardSlug as string]?.__cardStatus__ ===
+                      "closed"
+                    }
                   >
                     Add Field
                   </PrimaryButton>
@@ -365,17 +484,21 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
                     }}
                     onChange={(val) => {
                       setIsDirty(true);
-                      setValue({ ...value, Description: val });
+                      setValue({ ...value, Description: val || "" });
                     }}
                     isDirty={isDirty}
                     setIsDirty={setIsDirty}
+                    disabled={
+                      collection.data?.[cardSlug as string]?.__cardStatus__ ===
+                      "closed"
+                    }
                   />
                 </Box>
                 <Box marginY={"3"}>
-                  {!collection.voting?.periods?.[cardSlug as string]?.snapshot
-                    ?.onSnapshot && <SpectVoting dataId={cardSlug as string} />}
-                  {collection.voting?.periods?.[cardSlug as string]?.snapshot
-                    ?.onSnapshot && (
+                  {/* {!collection.voting?.periods?.[cardSlug as string]?.snapshot
+                    ?.onSnapshot && <SpectVoting dataId={cardSlug as string} />} */}
+                  {collection.voting?.snapshot?.[cardSlug as string]
+                    ?.proposalId && (
                     <SnapshotVoting dataId={cardSlug as string} />
                   )}
                 </Box>
@@ -396,6 +519,15 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
             </Container>
           </motion.div>
         )}
+        <AnimatePresence>
+          {snapshotModal && (
+            <SnapshotModal
+              data={collection.data?.[value.slug]}
+              dataId={value.slug}
+              setSnapshotModal={setSnapshotModal}
+            />
+          )}
+        </AnimatePresence>
       </Drawer>
     </Box>
   );

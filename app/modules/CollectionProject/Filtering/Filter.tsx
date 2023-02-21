@@ -101,6 +101,7 @@ function Filter() {
                   setViewConditions={setViewCondtions}
                   firstRowMessage="Add a filter"
                   buttonText="Add Filter"
+                  collection={collection}
                 />
               </Stack>
             </Box>

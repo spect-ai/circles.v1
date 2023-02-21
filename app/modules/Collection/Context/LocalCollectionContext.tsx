@@ -24,6 +24,10 @@ type LocalCollectionContextType = {
   setSearchFilter: React.Dispatch<React.SetStateAction<string>>;
   showMyTasks: boolean;
   setShowMyTasks: React.Dispatch<React.SetStateAction<boolean>>;
+  paymentFilter: "none" | "Paid" | "Pending Signature" | "Pending";
+  setPaymentFilter: React.Dispatch<
+    React.SetStateAction<"none" | "Paid" | "Pending Signature" | "Pending">
+  >;
 };
 
 export const LocalCollectionContext = createContext<LocalCollectionContextType>(
@@ -33,7 +37,7 @@ export const LocalCollectionContext = createContext<LocalCollectionContextType>(
 export function useProviderLocalCollection() {
   const router = useRouter();
   const { collection: colId } = router.query;
-  const { refetch: fetchCollection } = useQuery<CollectionType>(
+  const { refetch: fetchCollection, data } = useQuery<CollectionType>(
     ["collection", colId],
     () =>
       fetch(`${process.env.API_HOST}/collection/v1/slug/${colId as string}`, {
@@ -57,6 +61,8 @@ export function useProviderLocalCollection() {
   const [projectViewId, setProjectViewId] = useState("");
   const [searchFilter, setSearchFilter] = useState("");
   const [showMyTasks, setShowMyTasks] = useState(false);
+  const [paymentFilter, setPaymentFilter] =
+    useState<"none" | "Paid" | "Pending Signature" | "Pending">("none");
 
   const updateCollection = (collection: CollectionType) => {
     queryClient.setQueryData(["collection", colId], collection);
@@ -64,16 +70,37 @@ export function useProviderLocalCollection() {
   };
 
   useEffect(() => {
+    if (data) {
+      setLocalCollection(data);
+      if (data.collectionType === 1) {
+        setProjectViewId(data.projectMetadata.viewOrder[0]);
+      }
+    } else setLocalCollection({} as CollectionType);
     if (colId) {
       setLoading(true);
       fetchCollection()
         .then((res) => {
+          console.log({ res });
+          if (res.data?.unauthorized) {
+            setLoading(false);
+            console.log("failed");
+            setTimeout(() => {
+              toast.error(
+                "You are not authorized to view this collection, either you are not part of the circle or you dont have the required role",
+                {
+                  theme: "dark",
+                }
+              );
+            }, 1500);
+          }
+
           if (res.data) {
             setLocalCollection(res.data);
             if (res.data.collectionType === 1) {
               setProjectViewId(res.data.projectMetadata.viewOrder[0]);
             }
           }
+
           setLoading(false);
         })
         .catch((err) => {
@@ -131,6 +158,8 @@ export function useProviderLocalCollection() {
     setSearchFilter,
     showMyTasks,
     setShowMyTasks,
+    paymentFilter,
+    setPaymentFilter,
   };
 }
 

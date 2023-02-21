@@ -66,6 +66,7 @@ export default function Column({
               if (res.id) updateCollection(res);
               else toast.error("Error renaming column");
             }}
+            disabled={column.value === "__unassigned__"}
           />
           <Button
             shape="circle"
@@ -92,7 +93,14 @@ export default function Column({
         <ScrollContainer>
           <Stack space="2">
             {cardIds?.map((slug, index) => (
-              <Draggable key={slug} draggableId={slug} index={index}>
+              <Draggable
+                key={slug}
+                draggableId={slug}
+                index={index}
+                isDragDisabled={
+                  collection.data[slug]?.__cardStatus__ === "closed"
+                }
+              >
                 {(provided, snapshot) => (
                   <Box
                     width="72"
@@ -133,8 +141,6 @@ export default function Column({
                         }
                         if (
                           property.type === "shortText" ||
-                          property.type === "email" ||
-                          property.type === "ethAddress" ||
                           property.type === "singleURL"
                         ) {
                           return (

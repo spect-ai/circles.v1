@@ -67,11 +67,6 @@ export default function PublicForm() {
     else toast.error("Error fetching member details");
   };
 
-  console.log({
-    form,
-    currentUser,
-  });
-
   const addStamps = async (form: FormType) => {
     const stamps = await getAllCredentials();
     const stampsWithScore = [];
@@ -100,7 +95,6 @@ export default function PublicForm() {
         if (res.id) {
           await fetchMemberDetails(res.parents[0].slug);
           setForm(res);
-          console.log(res.formMetadata.canFillForm);
           setCanFillForm(res.formMetadata.canFillForm);
           await addStamps(res);
         } else toast.error("Error fetching form");
@@ -184,7 +178,9 @@ export default function PublicForm() {
             </Box>
             {!form.formMetadata.active && (
               <Box width="full" padding="4">
-                <Text variant="large">This form is not active</Text>
+                <Text variant="large" weight="semiBold">
+                  This form is not active
+                </Text>
               </Box>
             )}
             {canFillForm && currentUser?.id && (

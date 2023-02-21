@@ -1,19 +1,18 @@
 import Dropdown from "@/app/common/components/Dropdown";
-import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { useCircle } from "@/app/modules/Circle/CircleContext";
 import { Action, CollectionType, Option, Property } from "@/app/types";
 import { InfoCircleOutlined } from "@ant-design/icons";
-import { Box, Button, IconClose, Input, Stack, Tag, Text } from "degen";
-import { SetStateAction, useEffect, useState } from "react";
+import { Box, Button, IconClose, Text } from "degen";
+import { useEffect, useState } from "react";
 import { Tooltip } from "react-tippy";
-import { useLocalCollection } from "../../Context/LocalCollectionContext";
 import { Field } from "./Field";
 
 type Props = {
   actionMode: "edit" | "create";
   action: Action;
   setAction: (action: Action) => void;
+  collection: CollectionType;
 };
 
 type Mapping = {
@@ -36,7 +35,12 @@ type UsedProperty = {
   [propertyId: string]: boolean;
 };
 
-export default function CreateCard({ setAction, actionMode, action }: Props) {
+export default function CreateCard({
+  setAction,
+  actionMode,
+  action,
+  collection,
+}: Props) {
   const [collectionOptions, setCollectionOptions] = useState<Option[]>([]);
   const [selectedCollection, setSelectedCollection] = useState<Option>(
     action?.data?.selectedCollection || ({} as Option)
@@ -48,7 +52,6 @@ export default function CreateCard({ setAction, actionMode, action }: Props) {
   const [usedProperty, setUsedProperty] = useState<UsedProperty>({});
 
   const { circle } = useCircle();
-  const { localCollection: collection } = useLocalCollection();
   const [mappedCollection, setMappedCollection] = useState<CollectionType>();
 
   const getToPropertyOption = (
@@ -108,7 +111,10 @@ export default function CreateCard({ setAction, actionMode, action }: Props) {
       ).json();
       setCollectionOptions(
         data
-          .filter((collection) => collection.collectionType === 1)
+          .filter(
+            (collect) =>
+              collect.collectionType === 1 && collection.id !== collect.id
+          )
           .map((collection) => ({
             label: collection.name,
             value: collection.id,
@@ -541,7 +547,10 @@ export default function CreateCard({ setAction, actionMode, action }: Props) {
             </PrimaryButton>
             <PrimaryButton
               variant="tertiary"
-              disabled={collection.formMetadata.allowAnonymousResponses}
+              disabled={
+                collection.formMetadata &&
+                collection.formMetadata.allowAnonymousResponses
+              }
               onClick={() => {
                 setFieldType("responder");
                 setValues([
@@ -560,11 +569,14 @@ export default function CreateCard({ setAction, actionMode, action }: Props) {
             >
               + Map Responder
             </PrimaryButton>
-            {collection.formMetadata.allowAnonymousResponses && (
-              <Tooltip title="You can only map the responder if the form doesnot allow anonymous responses">
-                <InfoCircleOutlined style={{ color: "rgb(191, 90, 242, 1)" }} />
-              </Tooltip>
-            )}
+            {collection.formMetadata &&
+              collection.formMetadata.allowAnonymousResponses && (
+                <Tooltip title="You can only map the responder if the form doesnot allow anonymous responses">
+                  <InfoCircleOutlined
+                    style={{ color: "rgb(191, 90, 242, 1)" }}
+                  />
+                </Tooltip>
+              )}
           </Box>
         </Box>
       )}

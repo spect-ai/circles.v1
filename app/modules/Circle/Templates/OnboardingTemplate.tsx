@@ -1,11 +1,13 @@
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { Box, Button, Heading, Stack, Tag, Text } from "degen";
-import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { useCircle } from "../CircleContext";
 import DiscordIcon from "@/app/assets/icons/discordIcon.svg";
 import { createTemplateFlow } from "@/app/services/Templates";
 import { getGuildRoles } from "@/app/services/Discord";
+import { useAtom } from "jotai";
+import { scribeOpenAtom, scribeUrlAtom } from "@/pages/_app";
+import { Scribes } from "@/app/common/utils/constants";
 
 type Props = {
   handleClose: (close: boolean) => void;
@@ -15,6 +17,9 @@ export default function OnboardingTemplate({ handleClose }: Props) {
   const { localCircle: circle, fetchCircle, setCircleData } = useCircle();
   const [step, setStep] = useState(0);
   const [selectedRoles, setSelectedRoles] = useState([] as string[]);
+
+  const [, setIsScribeOpen] = useAtom(scribeOpenAtom);
+  const [, setScribeUrl] = useAtom(scribeUrlAtom);
 
   useEffect(() => {
     if (!circle?.discordGuildId) {
@@ -52,14 +57,9 @@ export default function OnboardingTemplate({ handleClose }: Props) {
     );
     console.log({ res });
     if (res?.id) {
+      setScribeUrl(Scribes.onboarding.using);
+      setIsScribeOpen(true);
       setCircleData(res);
-      // void router.push(
-      //   `${res.slug}/r/${
-      //     res.collections[
-      //       res?.folderDetails[res?.folderOrder?.[0]]?.contentIds?.[0]
-      //     ].slug
-      //   }`
-      // );
     }
   };
 
@@ -130,7 +130,7 @@ export default function OnboardingTemplate({ handleClose }: Props) {
             <Text variant="label">
               Which Discord role would you like to assign to the contributors ?
             </Text>
-            <Stack direction={"horizontal"} space={"4"}>
+            <Stack direction={"horizontal"} space={"4"} wrap>
               {discordRoles?.map((role) => (
                 <Box
                   onClick={() => {

@@ -6,6 +6,9 @@ import { useCircle } from "../CircleContext";
 import { createTemplateFlow } from "@/app/services/Templates";
 import { useRouter } from "next/router";
 import RewardTokenOptions from "../../Collection/AddField/RewardTokenOptions";
+import { useAtom } from "jotai";
+import { scribeOpenAtom, scribeUrlAtom } from "@/pages/_app";
+import { Scribes } from "@/app/common/utils/constants";
 
 interface Props {
   handleClose: (close: boolean) => void;
@@ -13,9 +16,13 @@ interface Props {
 }
 
 export default function KanbanProject({ handleClose, setLoading }: Props) {
-  const { localCircle: circle, fetchCircle, setCircleData } = useCircle();
+  const { localCircle: circle, registry, setCircleData } = useCircle();
   const router = useRouter();
-  const [networks, setNetworks] = useState<Registry>();
+  const [networks, setNetworks] = useState<Registry | undefined>({
+    "137": registry?.["137"],
+  } as Registry);
+  const [, setIsScribeOpen] = useAtom(scribeOpenAtom);
+  const [, setScribeUrl] = useAtom(scribeUrlAtom);
 
   const useTemplate = async () => {
     handleClose(false);
@@ -29,16 +36,10 @@ export default function KanbanProject({ handleClose, setLoading }: Props) {
     );
     console.log(res);
     if (res?.id) {
+      setScribeUrl(Scribes.kanban.using);
+      setIsScribeOpen(true);
       setLoading(false);
       setCircleData(res);
-      // void router.push(
-      //   `${res.slug}/r/${
-      //     res.collections[
-      //       res?.folderDetails[res?.folderOrder?.[0]]?.contentIds?.[0]
-      //     ].slug
-      //   }`
-      // );
-      // fetchCircle();
     }
   };
 
@@ -53,11 +54,12 @@ export default function KanbanProject({ handleClose, setLoading }: Props) {
             networks={networks}
             setNetworks={setNetworks}
             customText={
-              "Add the token you'd want to use when paying contributors"
+              "Include the tokens you intend to utilise for distributing funds to contributors."
             }
             customTooltip={
-              "Add the token you'd want to use when paying contributors"
+              "Add the tokens you'd want to use when paying contributors"
             }
+            newTokenOpen={true}
           />
           <Button
             onClick={() => useTemplate()}

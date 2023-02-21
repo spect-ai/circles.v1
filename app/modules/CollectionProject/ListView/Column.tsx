@@ -38,7 +38,6 @@ export default function Column({
   const { localCollection: collection, updateCollection } =
     useLocalCollection();
   const { getMemberDetails } = useModalOptions();
-
   const [columnName, setColumnName] = useState(column.label);
   const { mode } = useTheme();
   const columns = collection.properties[groupByColumn].options as Option[];
@@ -54,6 +53,8 @@ export default function Column({
             onChange={(e) => setColumnName(e.target.value)}
             mode={mode}
             onBlur={async () => {
+              // update only if name is changed
+              if (column.label === columnName) return;
               const res = await updateField(collection.id, groupByColumn, {
                 options: columns.map((c) =>
                   c.value === column.value ? { ...c, label: columnName } : c
@@ -111,94 +112,76 @@ export default function Column({
                     {...provided.draggableProps}
                     {...provided.dragHandleProps}
                   >
-                    <Stack space="3" direction="horizontal">
-                      {collection.propertyOrder.map((propertyId) => {
-                        const property = collection.properties[propertyId];
-                        const value =
-                          collection.data[slug] &&
-                          collection.data[slug][propertyId];
-                        if (!value || groupByColumn === propertyId) return null;
-                        if (property.name === "Title") {
-                          return (
-                            <Box key={propertyId}>
-                              {/* <Text weight="semiBold">{property.name}</Text> */}
-                              <Text weight="semiBold">{value}</Text>
-                            </Box>
-                          );
-                        }
-                        if (
-                          property.type === "shortText" ||
-                          property.type === "email" ||
-                          property.type === "ethAddress" ||
-                          property.type === "singleURL"
-                        ) {
-                          return (
-                            <Box key={propertyId}>
-                              {/* <Text weight="semiBold">{property.name}</Text> */}
-                              <Text color="text" size="small">
-                                {smartTrim(value, 30)}
-                              </Text>
-                            </Box>
-                          );
-                        }
-                        if (property.type === "singleSelect") {
-                          return (
-                            <Box key={propertyId}>
-                              {/* <Text weight="semiBold">{property.name}</Text> */}
-                              <Text variant="label">{value.label}</Text>
-                            </Box>
-                          );
-                        }
-                        if (property.type === "multiSelect") {
-                          return (
-                            <Box key={propertyId}>
-                              {/* <Text weight="semiBold">{property.name}</Text> */}
-                              <Stack direction="horizontal" wrap space="1">
-                                {value.map((value: Option) => (
-                                  <Tag key={value.value} tone="accent">
-                                    {value.label}
-                                  </Tag>
-                                ))}
-                              </Stack>
-                            </Box>
-                          );
-                        }
-                        if (property.type === "user") {
-                          return (
-                            <Box key={propertyId}>
-                              {/* <Text weight="semiBold">{property.name}</Text> */}
-                              <Tag>
-                                <Stack
-                                  direction="horizontal"
-                                  space="1"
-                                  align="center"
-                                >
-                                  <Avatar
-                                    src={
-                                      getMemberDetails(value.value || "")
-                                        ?.avatar
-                                    }
-                                    label=""
-                                    size="6"
-                                  />
-                                  <Text weight="semiBold">
-                                    {
-                                      getMemberDetails(value.value || "")
-                                        ?.username
-                                    }
-                                  </Text>
+                    <Stack
+                      space="3"
+                      direction="horizontal"
+                      justify="space-between"
+                    >
+                      <Box>
+                        {/* <Text weight="semiBold">{property.name}</Text> */}
+                        <Text weight="semiBold">
+                          {collection.data[slug] &&
+                            collection.data[slug]["Title"]}
+                        </Text>
+                      </Box>
+                      <Stack space="3" direction="horizontal" align="center">
+                        {collection.propertyOrder.map((propertyId) => {
+                          const property = collection.properties[propertyId];
+                          const value =
+                            collection.data[slug] &&
+                            collection.data[slug][propertyId];
+                          if (
+                            !value ||
+                            groupByColumn === propertyId ||
+                            propertyId === "Title"
+                          )
+                            return null;
+
+                          if (
+                            property.type === "shortText" ||
+                            property.type === "singleURL"
+                          ) {
+                            return (
+                              <Box key={propertyId}>
+                                {/* <Text weight="semiBold">{property.name}</Text> */}
+                                <Text color="text" size="small">
+                                  {smartTrim(value, 30)}
+                                </Text>
+                              </Box>
+                            );
+                          }
+                          if (property.type === "singleSelect") {
+                            return (
+                              <Box key={propertyId}>
+                                {/* <Text weight="semiBold">{property.name}</Text> */}
+                                <Text variant="label">{value.label}</Text>
+                              </Box>
+                            );
+                          }
+                          if (property.type === "multiSelect") {
+                            return (
+                              <Box key={propertyId}>
+                                {/* <Text weight="semiBold">{property.name}</Text> */}
+                                <Stack direction="horizontal" wrap space="1">
+                                  {value.map((value: Option) => (
+                                    <Tag key={value.value} tone="accent">
+                                      {value.label}
+                                    </Tag>
+                                  ))}
                                 </Stack>
-                              </Tag>
-                            </Box>
-                          );
-                        }
-                        if (property.type === "user[]") {
-                          return (
-                            <Box key={propertyId}>
-                              {/* <Text weight="semiBold">{property.name}</Text> */}
-                              <Stack direction="horizontal" wrap space="1">
-                                {value.map((value: Option) => (
-                                  <Box key={value.value}>
+                              </Box>
+                            );
+                          }
+                          if (property.type === "user") {
+                            return (
+                              <Box key={propertyId}>
+                                {/* <Text weight="semiBold">{property.name}</Text> */}
+                                <Tag>
+                                  <Stack
+                                    direction="horizontal"
+                                    space="1"
+                                    align="center"
+                                  >
                                     <Avatar
                                       src={
                                         getMemberDetails(value.value || "")
@@ -207,55 +190,82 @@ export default function Column({
                                       label=""
                                       size="6"
                                     />
-                                  </Box>
-                                ))}
-                              </Stack>
-                            </Box>
-                          );
-                        }
-                        if (property.type === "date") {
-                          return (
-                            <Box key={propertyId}>
-                              <Tag>
-                                <Stack
-                                  direction="horizontal"
-                                  space="1"
-                                  align="center"
-                                >
-                                  <Text>
-                                    <Calendar
-                                      size={16}
-                                      style={{
-                                        marginTop: 2,
-                                      }}
-                                    />
-                                  </Text>
-                                  <Text variant="label">
-                                    {new Date(value).toDateString()}
-                                  </Text>
+                                    <Text weight="semiBold">
+                                      {
+                                        getMemberDetails(value.value || "")
+                                          ?.username
+                                      }
+                                    </Text>
+                                  </Stack>
+                                </Tag>
+                              </Box>
+                            );
+                          }
+                          if (property.type === "user[]") {
+                            return (
+                              <Box key={propertyId}>
+                                {/* <Text weight="semiBold">{property.name}</Text> */}
+                                <Stack direction="horizontal" wrap space="1">
+                                  {value.map((value: Option) => (
+                                    <Box key={value.value}>
+                                      <Avatar
+                                        src={
+                                          getMemberDetails(value.value || "")
+                                            ?.avatar
+                                        }
+                                        label=""
+                                        size="6"
+                                      />
+                                    </Box>
+                                  ))}
                                 </Stack>
-                              </Tag>
-                            </Box>
-                          );
-                        }
-                        if (property.type === "reward") {
-                          return (
-                            <Box key={propertyId}>
-                              <Tag tone="green">
-                                <Stack
-                                  direction="horizontal"
-                                  space="0"
-                                  align="center"
-                                >
-                                  <Text color="green" weight="semiBold">
-                                    {`${value.value} ${value.token.label} `}
-                                  </Text>
-                                </Stack>
-                              </Tag>
-                            </Box>
-                          );
-                        }
-                      })}
+                              </Box>
+                            );
+                          }
+                          if (property.type === "date") {
+                            return (
+                              <Box key={propertyId}>
+                                <Tag>
+                                  <Stack
+                                    direction="horizontal"
+                                    space="1"
+                                    align="center"
+                                  >
+                                    <Text>
+                                      <Calendar
+                                        size={16}
+                                        style={{
+                                          marginTop: 2,
+                                        }}
+                                      />
+                                    </Text>
+                                    <Text variant="label">
+                                      {new Date(value).toDateString()}
+                                    </Text>
+                                  </Stack>
+                                </Tag>
+                              </Box>
+                            );
+                          }
+                          if (property.type === "reward") {
+                            return (
+                              <Box key={propertyId}>
+                                <Tag tone="green">
+                                  <Stack
+                                    direction="horizontal"
+                                    space="0"
+                                    align="center"
+                                  >
+                                    <Text color="green" weight="semiBold">
+                                      {`${value.value} ${value.token.label} `}
+                                    </Text>
+                                  </Stack>
+                                </Tag>
+                              </Box>
+                            );
+                          }
+                        })}
+                      </Stack>
                     </Stack>
                   </Box>
                 )}

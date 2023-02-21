@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-interface UserType {
+export interface UserType {
   accounts: string[];
   createdAt: string;
   ethAddress: string;
@@ -294,9 +294,17 @@ export interface CircleType {
   rootAutomations: RootAutomationsType;
   automationCount: number;
   pendingPayments: string[];
+  pendingSignaturePayments: string[];
   completedPayments: string[];
   cancelledPayments: string[];
   paymentDetails: { [key: string]: PaymentDetails };
+  paymentLabelOptions: Option[];
+  snapshot: {
+    name: string;
+    id: string;
+    network: string;
+    symbol: string;
+  };
 }
 
 // interface ProjectType {
@@ -471,6 +479,8 @@ export type NetworkInfo = {
   blockExplorer?: string;
   provider: string;
   tokenDetails: { [tokenAddress: string]: Token };
+  coinGeckoCurrencyId: string;
+  coinGeckoPlatformId: string;
 };
 
 export interface Template {
@@ -760,6 +770,26 @@ export interface CollectionType {
   circleRolesToNotifyUponNewResponse?: string[];
 }
 
+export type PaymentConfig = {
+  required: boolean;
+  type: "paywall" | "donation";
+  networks: {
+    [chainId: string]: {
+      chainId: string;
+      chainName: string;
+      receiverAddress: string;
+      tokens: {
+        [tokenAddress: string]: {
+          address: string;
+          symbol: string;
+          tokenAmount?: string;
+          dollarAmount?: string;
+        };
+      };
+    };
+  };
+};
+
 export type FormMetadata = {
   cover?: string;
   logo: string;
@@ -784,6 +814,7 @@ export type FormMetadata = {
   discordConnectionRequired: boolean;
   canClaimKudos: boolean;
   allowAnonymousResponses: boolean;
+  paymentConfig?: PaymentConfig;
 };
 
 export type ProjectMetadata = {
@@ -806,6 +837,12 @@ export type ProjectMetadata = {
   payments?: {
     rewardField: string;
     payeeField: string;
+  };
+  paymentStatus?: {
+    [dataSlug: string]: "pending" | "completed" | "pendingSignature";
+  };
+  paymentIds?: {
+    [dataSlug: string]: string;
   };
 };
 
@@ -850,6 +887,7 @@ export type Property = {
   description?: string;
   viewConditions?: Condition[];
   payWallOptions?: PayWallOptions;
+  internal?: boolean;
 };
 
 export type PropertyType =
@@ -867,7 +905,8 @@ export type PropertyType =
   | "milestone"
   | "singleURL"
   | "multiURL"
-  | "payWall";
+  | "payWall"
+  | "cardStatus";
 
 export type Option = {
   label: string;
@@ -1027,7 +1066,9 @@ export type Voting = {
     token: Option;
     weight: number;
   }[];
-  snapshot?: SnapshotSpace;
+  snapshot?: {
+    [key: string]: { space?: string; proposalId?: string };
+  };
   periods?: MappedItem<VotingPeriod>;
   periodsOnCollection?: MappedItem<VotingPeriod>;
 };
@@ -1174,6 +1215,7 @@ export type Automation = {
   conditions?: Condition[];
   actions: Action[];
   triggerCategory: "collection" | "root";
+  triggerCollectionSlug?: string;
   disabled?: boolean;
 };
 
@@ -1201,12 +1243,21 @@ export type PaymentDetails = {
       value: number;
     };
   }[];
-  type?: string;
-  notes?: string;
-  dataRef?: string;
-  collectionRef?: string;
-  title?: string;
+  type: "Manually Added" | "Added From Card";
+  title: string;
   description?: string;
   paidOn?: Date;
   transactionHash?: string;
+  status?: "Pending" | "Pending Signature" | "Completed" | "Cancelled";
+  transactionCreatedBy?: {
+    propertyType: "ethAddress" | "user";
+    value: any;
+  };
+  transactionSignedBy?: {
+    propertyType: "ethAddress" | "user";
+    value: any;
+  }[];
+  labels?: Option[];
+  collection?: Option;
+  data?: Option;
 };

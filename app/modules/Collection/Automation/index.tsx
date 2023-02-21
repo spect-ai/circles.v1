@@ -1,6 +1,7 @@
 import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import Tabs from "@/app/common/components/Tabs";
+import { smartTrim } from "@/app/common/utils/utils";
 import {
   addAutomation,
   removeAutomation,
@@ -10,23 +11,23 @@ import {
   Action,
   Automation as SingleAutomationType,
   AutomationType,
+  CollectionType,
   Condition,
   Trigger,
 } from "@/app/types";
 import { GatewayOutlined } from "@ant-design/icons";
-import { Box, Stack, Text, useTheme } from "degen";
+import { Box, Button, IconPencil, Stack, Text, useTheme } from "degen";
 import { AnimatePresence } from "framer-motion";
-import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useCircle } from "../../Circle/CircleContext";
-import { useLocalCollection } from "../Context/LocalCollectionContext";
 import SingleAutomation from "./SingleAutomation";
 
-export default function Automation() {
+export default function Automation({
+  collection,
+}: {
+  collection: CollectionType;
+}) {
   const { circle, setCircleData } = useCircle();
-  const { localCollection: collection } = useLocalCollection();
-  const router = useRouter();
-  const { collection: colId } = router.query;
   const [isOpen, setIsOpen] = useState(false);
   const [tab, setTab] = useState(0);
   const onTabClick = (id: number) => {
@@ -42,7 +43,7 @@ export default function Automation() {
   const [automations, setAutomations] = useState(circle.automations || {});
   const [automationOrder, setAutomationOrder] = useState(
     (circle.automationsIndexedByCollection &&
-      circle.automationsIndexedByCollection[colId as string]) ||
+      circle.automationsIndexedByCollection[collection.slug as string]) ||
       []
   );
   const [automationId, setAutomationId] = useState(automationOrder[tab]);
@@ -65,22 +66,26 @@ export default function Automation() {
     }
   };
   const init = (initTab?: number) => {
-    setAutomationOrder(circle.automationsIndexedByCollection[colId as string]);
+    setAutomationOrder(
+      circle.automationsIndexedByCollection[collection.slug as string]
+    );
     setAutomations(circle.automations);
     if (initTab || initTab === 0) {
       setAutomationId(
-        circle.automationsIndexedByCollection[colId as string][initTab]
+        circle.automationsIndexedByCollection[collection.slug as string][
+          initTab
+        ]
       );
       setTab(initTab);
     } else
       setAutomationId(
-        circle.automationsIndexedByCollection[colId as string][tab]
+        circle.automationsIndexedByCollection[collection.slug as string][tab]
       );
-    const tabs = circle.automationsIndexedByCollection[colId as string].map(
-      (automationId) => {
-        return circle.automations[automationId].name;
-      }
-    );
+    const tabs = circle.automationsIndexedByCollection[
+      collection.slug as string
+    ].map((automationId) => {
+      return circle.automations[automationId].name;
+    });
 
     setTabs(tabs);
     setAutomationMode("edit");
@@ -99,6 +104,7 @@ export default function Automation() {
         actions: [] as Action[],
         conditions: [] as Condition[],
         triggerCategory: "collection",
+        triggerCollectionSlug: "",
       },
     });
     setAutomationMode("create");
@@ -112,6 +118,7 @@ export default function Automation() {
         actions: [] as Action[],
         conditions: [] as Condition[],
         triggerCategory: "collection",
+        triggerCollectionSlug: "",
       },
     });
   };
@@ -121,8 +128,10 @@ export default function Automation() {
     description: string,
     trigger: Trigger,
     actions: Action[],
-    conditions: Condition[]
+    conditions: Condition[],
+    slug: string
   ) => {
+    console.log(name, description, trigger, actions, conditions, slug);
     const newAutomation = {
       name,
       description,
@@ -134,7 +143,7 @@ export default function Automation() {
       const res = await addAutomation(circle?.id, {
         ...newAutomation,
         triggerCategory: "collection",
-        triggerCollectionSlug: collection?.slug,
+        triggerCollectionSlug: slug,
       });
       if (res) setCircleData(res);
     } else {
@@ -157,8 +166,8 @@ export default function Automation() {
     if (!isOpen) return;
     if (
       !circle.automationsIndexedByCollection ||
-      !colId ||
-      !circle.automationsIndexedByCollection[colId as string]?.length
+      !collection.slug ||
+      !circle.automationsIndexedByCollection[collection.slug as string]?.length
     ) {
       initNew();
     } else {
@@ -172,8 +181,8 @@ export default function Automation() {
 
     if (
       !circle.automationsIndexedByCollection ||
-      !colId ||
-      !circle.automationsIndexedByCollection[colId as string]?.length
+      !collection.slug ||
+      !circle.automationsIndexedByCollection[collection.slug as string]?.length
     ) {
       initNew();
     } else {
@@ -182,32 +191,38 @@ export default function Automation() {
   }, [isOpen]);
 
   return (
-    <Box>
-      <Stack direction="vertical" space="1">
-        <Text variant="small">{`Reduce recurring chores`}</Text>
-        <Box
-          width={{
-            xs: "full",
-            md: "full",
-          }}
-        >
-          <PrimaryButton
-            center
-            variant={
-              automationOrder?.length > 1 ||
-              !automationId?.startsWith("automation")
-                ? "tertiary"
-                : "secondary"
-            }
-            onClick={() => setIsOpen(true)}
-            icon={<GatewayOutlined />}
-          >
-            {automationOrder?.length > 1 ||
+    <Box marginY="2">
+      <Stack direction="horizontal" space="3" align={"center"}>
+        {(automationOrder?.length > 1 ||
+          !automationId?.startsWith("automation")) && (
+          <Text variant="extraLarge" weight="semiBold" color={"accent"}>
+            {collection.name}
+          </Text>
+        )}
+        <Button
+          shape={
+            automationOrder?.length > 1 ||
             !automationId?.startsWith("automation")
-              ? `Edit Automations`
-              : `Add Automations`}
-          </PrimaryButton>
-        </Box>
+              ? "circle"
+              : undefined
+          }
+          size="small"
+          variant={
+            automationOrder?.length > 1 ||
+            !automationId?.startsWith("automation")
+              ? "transparent"
+              : "secondary"
+          }
+          onClick={() => setIsOpen(true)}
+          prefix={<GatewayOutlined />}
+        >
+          {automationOrder?.length > 1 ||
+          !automationId?.startsWith("automation") ? (
+            <IconPencil size={"3"} color="accent" />
+          ) : (
+            `Add Automations`
+          )}
+        </Button>
       </Stack>
 
       <AnimatePresence>
@@ -216,6 +231,7 @@ export default function Automation() {
             title="Automation"
             size="large"
             handleClose={() => setIsOpen(false)}
+            height="90vh"
           >
             <Box
               display="flex"
@@ -227,38 +243,41 @@ export default function Automation() {
                 xs: "full",
               }}
             >
-              <Box
-                width={{
-                  xs: "full",
-                  md: "1/4",
-                }}
-                paddingY="8"
-                paddingRight={{
-                  xs: "1",
-                  md: "1",
-                }}
-              >
-                <Tabs
-                  selectedTab={tab}
-                  onTabClick={onTabClick}
-                  tabs={tabs}
-                  tabTourIds={[]}
-                  orientation="vertical"
-                  unselectedColor="transparent"
-                />
-              </Box>
+              {collection?.id && (
+                <Box
+                  width={{
+                    xs: "full",
+                    md: "1/4",
+                  }}
+                  paddingY="8"
+                  paddingRight={{
+                    xs: "1",
+                    md: "1",
+                  }}
+                >
+                  <Tabs
+                    selectedTab={tab}
+                    onTabClick={onTabClick}
+                    tabs={tabs}
+                    tabTourIds={[]}
+                    orientation="vertical"
+                    unselectedColor="transparent"
+                  />
+                </Box>
+              )}
               <Box
                 display="flex"
                 flexDirection="column"
                 width={{
                   xs: "full",
-                  md: "3/4",
+                  md: !collection.id ? "full" : "3/4",
                 }}
                 paddingRight="8"
-                paddingLeft="2"
+                paddingLeft={collection.id ? "2" : "8"}
                 justifyContent="flex-start"
               >
                 <SingleAutomation
+                  col={collection}
                   automation={
                     automationMode === "create"
                       ? automationInCreate[automationId] ||
@@ -272,14 +291,16 @@ export default function Automation() {
                     if (res) {
                       if (
                         tab >=
-                        res.automationsIndexedByCollection[colId as string]
-                          .length
+                        res.automationsIndexedByCollection[
+                          collection.slug as string
+                        ].length
                       )
                         setTab(tab - 1);
                       setCircleData(res);
                     }
                   }}
                   onSave={onSave}
+                  handleClose={() => setIsOpen(false)}
                   onDisable={async () => {
                     const res = await updateAutomation(
                       circle?.id,
@@ -315,7 +336,7 @@ export default function Automation() {
                 />
               </Box>
             </Box>
-            <Box
+            {collection?.id && (<Box
               width={{
                 xs: "full",
                 md: "1/4",
@@ -370,7 +391,7 @@ export default function Automation() {
               >
                 + New Automation
               </PrimaryButton>
-            </Box>
+            </Box>)}
           </Modal>
         )}
       </AnimatePresence>

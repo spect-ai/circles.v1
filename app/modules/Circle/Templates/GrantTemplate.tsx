@@ -8,11 +8,15 @@ import DiscordIcon from "@/app/assets/icons/discordIcon.svg";
 import Dropdown from "@/app/common/components/Dropdown";
 import { RocketOutlined } from "@ant-design/icons";
 import { fetchGuildChannels, getGuildRoles } from "@/app/services/Discord";
-import { Space } from "@/app/modules/Collection/VotingModule";
-import { useQuery } from "@apollo/client";
 import { createTemplateFlow } from "@/app/services/Templates";
 import { useRouter } from "next/router";
 import RewardTokenOptions from "../../Collection/AddField/RewardTokenOptions";
+import { useAtom } from "jotai";
+import { scribeOpenAtom, scribeUrlAtom } from "@/pages/_app";
+import { Scribes } from "@/app/common/utils/constants";
+import { Space } from "@/app/modules/Collection/VotingModule";
+import { useQuery } from "@apollo/client";
+import { updateCircle } from "@/app/services/UpdateCircle";
 
 interface Props {
   handleClose: (close: boolean) => void;
@@ -20,7 +24,12 @@ interface Props {
 }
 
 export default function GrantTemplate({ handleClose, setLoading }: Props) {
-  const { localCircle: circle, fetchCircle, setCircleData } = useCircle();
+  const {
+    localCircle: circle,
+    registry,
+    fetchCircle,
+    setCircleData,
+  } = useCircle();
   const router = useRouter();
 
   const [step, setStep] = useState(0);
@@ -30,7 +39,16 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
   const [selectedCategory, setSelectedCategory] = useState<Option>(
     categoryOptions?.[0]
   );
-  const [networks, setNetworks] = useState<Registry>();
+  const [networks, setNetworks] = useState<Registry | undefined>({
+    "137": registry?.["137"],
+  } as Registry);
+
+  const [, setIsScribeOpen] = useAtom(scribeOpenAtom);
+  const [, setScribeUrl] = useAtom(scribeUrlAtom);
+
+  const { loading: isLoading, data } = useQuery(Space, {
+    variables: { id: snapshotSpace },
+  });
 
   useEffect(() => {
     if (!circle?.discordGuildId) {
@@ -41,14 +59,13 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
     }
   }, [circle?.discordGuildId]);
 
-  const [discordRoles, setDiscordRoles] =
-    useState<
-      | {
-          id: string;
-          name: string;
-        }[]
-      | undefined
-    >();
+  const [discordRoles, setDiscordRoles] = useState<
+    | {
+        id: string;
+        name: string;
+      }[]
+    | undefined
+  >();
 
   useEffect(() => {
     const getGuildChannels = async () => {
@@ -71,11 +88,6 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
     if (circle?.discordGuildId) void fetchGuildRoles();
   }, [circle?.discordGuildId]);
 
-  const {
-    loading: isLoading,
-    data,
-  } = useQuery(Space, { variables: { id: snapshotSpace } });
-
   const useTemplate = async () => {
     handleClose(false);
     setLoading(true);
@@ -89,12 +101,6 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
     const res = await createTemplateFlow(
       circle?.id,
       {
-        snapshot: {
-          name: data?.space?.name || "",
-          id: snapshotSpace,
-          network: data?.space?.network || "",
-          symbol: data?.space?.symbol || "",
-        },
         roles,
         registry: networks,
       },
@@ -102,6 +108,8 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
     );
     console.log(res);
     if (res?.id) {
+      setScribeUrl(Scribes.grants.using);
+      setIsScribeOpen(true);
       setLoading(false);
       setCircleData(res);
     }
@@ -146,7 +154,11 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
                 <PrimaryButton
                   variant="tertiary"
                   onClick={() => {
-                    setStep(2);
+                    if (!circle?.snapshot?.id) {
+                      setStep(2);
+                    } else {
+                      setStep(3);
+                    }
                   }}
                 >
                   Skip this
@@ -188,20 +200,6 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
                 </Box>
               ))}
             </Stack>
-            {/* <Text variant="label">
-              Select a channel category to create a Discord channel for accepted
-              grant projects in your Discord Server
-            </Text>
-            <Box width={"1/3"}>
-              <Dropdown
-                options={categoryOptions}
-                selected={selectedCategory}
-                onChange={(value) => {
-                  setSelectedCategory(value);
-                }}
-                multiple={false}
-              />
-            </Box> */}
 
             <Stack direction={"horizontal"}>
               <Button
@@ -209,12 +207,12 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
                 size="small"
                 width={"fit"}
                 onClick={() => {
-                  setStep(2);
+                  if (!circle?.snapshot?.id) {
+                    setStep(2);
+                  } else {
+                    setStep(3);
+                  }
                   setSelectedRoles([]);
-                  // setSelectedCategory({
-                  //   label: "",
-                  //   value: "",
-                  // });
                 }}
               >
                 Skip
@@ -222,7 +220,11 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
               <Button
                 width={"fit"}
                 onClick={() => {
-                  setStep(2);
+                  if (!circle?.snapshot?.id) {
+                    setStep(2);
+                  } else {
+                    setStep(3);
+                  }
                 }}
                 variant="secondary"
                 size="small"
@@ -284,7 +286,23 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
                 Skip this
               </Button>
               <Button
-                onClick={() => setStep(3)}
+                onClick={async () => {
+                  setStep(3);
+                  if (snapshotSpace && data?.space?.id) {
+                    const circleRes = await updateCircle(
+                      {
+                        snapshot: {
+                          name: data?.space?.name || "",
+                          id: snapshotSpace,
+                          network: data?.space?.network || "",
+                          symbol: data?.space?.symbol || "",
+                        },
+                      },
+                      circle?.id as string
+                    );
+                    setCircleData(circleRes);
+                  }
+                }}
                 prefix={
                   <RocketOutlined style={{ fontSize: "1.2rem" }} rotate={30} />
                 }
@@ -306,18 +324,25 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
               networks={networks}
               setNetworks={setNetworks}
               customText={
-                "Add the token you'd want to use when paying grantees"
+                "Add the tokens you'd want to use when disbursing funds to grantees"
               }
               customTooltip={
-                "Add the token you'd want to use when paying grantees"
+                "Add the tokens you'd want to use when paying grantees"
               }
+              newTokenOpen={true}
             />
-            <Stack direction={"horizontal"}>
+            <Box display={"flex"} flexDirection="row" gap={"2"} marginTop="8">
               <Button
                 variant="transparent"
                 size="small"
                 onClick={() => {
-                  setStep(2);
+                  if (!circle?.snapshot.id) {
+                    setStep(2);
+                  } else if (!circle?.discordGuildId) {
+                    setStep(0);
+                  } else {
+                    setStep(1);
+                  }
                 }}
               >
                 Back
@@ -329,7 +354,7 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
               >
                 Create Workflow
               </Button>
-            </Stack>
+            </Box>
           </>
         )}
       </Stack>

@@ -1,17 +1,24 @@
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { Box, Stack, Text } from "degen";
+import { AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import styled from "styled-components";
 import { useCircle } from "../CircleContext";
+import usePaymentViewCommon from "./Common/usePaymentCommon";
 import PaymentCard from "./PaymentCard";
+import PaymentCardDrawer from "./PaymentCardDrawer";
 
 export default function CompletedPayments() {
-  const [isCardDrawerOpen, setIsCardDrawerOpen] = useState(false);
-  const [selectedPaymentId, setSelectedPaymentId] = useState("");
   const { circle, setCircleData } = useCircle();
+  const { isCardDrawerOpen, setIsCardDrawerOpen } = usePaymentViewCommon();
 
   return (
     <Stack>
+      <AnimatePresence>
+        {isCardDrawerOpen && (
+          <PaymentCardDrawer handleClose={() => setIsCardDrawerOpen(false)} />
+        )}
+      </AnimatePresence>
       <Box marginTop="4">
         {!circle.cancelledPayments?.length && (
           <Box
@@ -40,7 +47,6 @@ export default function CompletedPayments() {
                 index={index}
                 paymentDetails={circle.paymentDetails[paymentId]}
                 handleClick={() => {
-                  setSelectedPaymentId(paymentId);
                   setIsCardDrawerOpen(true);
                 }}
               />

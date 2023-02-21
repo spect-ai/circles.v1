@@ -1,6 +1,6 @@
 import { Box, Stack, Text, useTheme } from "degen";
 import { AnimatePresence } from "framer-motion";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ToastContainer } from "react-toastify";
 import styled from "styled-components";
 import CardDrawer from "../../CollectionProject/CardDrawer";
@@ -10,14 +10,20 @@ import CompletedPayments from "./CompletedPayments";
 import PaymentCard from "./PaymentCard";
 import PaymentCenterHeading from "./PaymentCenterHeading";
 import PendingPayments from "./PendingPayments";
+import PendingSignaturePayments from "./PendingSignaturePayments";
 
 export default function Payment() {
   const [paymentViewId, setPaymentViewId] =
-    useState<"Pending" | "Completed" | "Cancelled">("Pending");
+    useState<"Pending" | "Pending Signature" | "Completed" | "Cancelled">(
+      "Pending"
+    );
 
   const { mode } = useTheme();
+
+  useEffect(() => {}, []);
+
   return (
-    <>
+    <Box>
       <ToastContainer
         toastStyle={{
           backgroundColor: `${
@@ -33,20 +39,12 @@ export default function Payment() {
         setPaymentViewId={setPaymentViewId}
       />
       <Container marginX="8" paddingY="0">
-        {/* 
-<AnimatePresence>
-        {isCardDrawerOpen && (
-          <CardDrawer
-            handleClose={() => setIsCardDrawerOpen(false)}
-            defaultValue={{}}
-          />
-        )}
-      </AnimatePresence> */}
         {paymentViewId === "Pending" && <PendingPayments />}
+        {paymentViewId === "Pending Signature" && <PendingSignaturePayments />}
         {paymentViewId === "Completed" && <CompletedPayments />}
         {paymentViewId === "Cancelled" && <CancelledPayments />}
       </Container>
-    </>
+    </Box>
   );
 }
 

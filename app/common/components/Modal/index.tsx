@@ -80,7 +80,7 @@ const getResponsiveWidth = (size: "small" | "medium" | "large") => {
     case "medium":
       return "192";
     case "large":
-      return "256";
+      return "320";
     default:
       return "192";
   }

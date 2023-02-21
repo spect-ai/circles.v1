@@ -2,16 +2,17 @@ import Accordian from "@/app/common/components/Accordian";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { CircleType, UserType } from "@/app/types";
 import {
+  BankOutlined,
   DollarOutlined,
+  GatewayOutlined,
   ProjectOutlined,
-  StarOutlined,
 } from "@ant-design/icons";
 import {
   Box,
-  IconCollection,
   IconLightningBolt,
   IconSparkles,
   IconUserGroup,
+  IconUserGroupSolid,
   Skeleton,
   SkeletonGroup,
   Stack,
@@ -166,53 +167,113 @@ function CircleSidebar() {
             Claim
           </PrimaryButton>
         )}
-        <Stack direction="vertical" space="2">
-          <Link href={`/${cId}`}>
-            <PrimaryButton
-              variant={
-                cId &&
-                !["payment", "credential"].includes(
-                  router.query?.tab as string
-                ) &&
-                !cSlug &&
-                !pId
-                  ? "tertiary"
-                  : "transparent"
-              }
-              icon={<IconSparkles size="5" />}
-              onClick={() => {
-                process.env.NODE_ENV === "production" &&
-                  mixpanel.track("Circle Dashboard Button", {
-                    user: currentUser?.username,
-                    url: window.location.href,
-                  });
-              }}
-            >
-              {circle?.parents?.length
-                ? "Workstream Dashboard"
-                : "Organization Dashboard"}
-            </PrimaryButton>
-          </Link>
-          <Link href={`/${cId}?tab=payment`}>
-            <PrimaryButton
-              variant={
-                cId && router.query?.tab === "payment" && !cSlug && !pId
-                  ? "tertiary"
-                  : "transparent"
-              }
-              icon={<DollarOutlined size={10} />}
-              onClick={() => {
-                process.env.NODE_ENV === "production" &&
-                  mixpanel.track("Payment Center Button", {
-                    user: currentUser?.username,
-                    url: window.location.href,
-                  });
-              }}
-            >
-              Payment Center
-            </PrimaryButton>
-          </Link>
-          {/* <Link href={`/${cId}?tab=credential`}>
+
+        <Container subH="9.5rem">
+          <Stack direction="vertical" space="2">
+            <Link href={`/${cId}`}>
+              <PrimaryButton
+                center
+                variant={
+                  cId &&
+                  ![
+                    "payment",
+                    "credential",
+                    "automation",
+                    "governance",
+                  ].includes(router.query?.tab as string) &&
+                  !cSlug &&
+                  !pId
+                    ? "tertiary"
+                    : "transparent"
+                }
+                icon={<IconSparkles size="5" />}
+                onClick={() => {
+                  process.env.NODE_ENV === "production" &&
+                    mixpanel.track("Circle Dashboard Button", {
+                      user: currentUser?.username,
+                      url: window.location.href,
+                    });
+                }}
+              >
+                {circle?.parents?.length
+                  ? "Workstream Dashboard"
+                  : "Organization Dashboard"}
+              </PrimaryButton>
+            </Link>
+            <Link href={`/${cId}?tab=payment&status=pending`}>
+              <PrimaryButton
+                center
+                variant={
+                  cId && router.query?.tab === "payment" && !cSlug && !pId
+                    ? "tertiary"
+                    : "transparent"
+                }
+                icon={<DollarOutlined size={10} />}
+                onClick={() => {
+                  process.env.NODE_ENV === "production" &&
+                    mixpanel.track("Payment Center Button", {
+                      user: currentUser?.username,
+                      url: window.location.href,
+                    });
+                }}
+              >
+                Payment Center
+              </PrimaryButton>
+            </Link>
+            <Link href={`/${cId}?tab=automation`}>
+              <PrimaryButton
+                center
+                variant={
+                  cId && router.query?.tab === "automation" && !cSlug && !pId
+                    ? "tertiary"
+                    : "transparent"
+                }
+                icon={<GatewayOutlined size={10} />}
+              >
+                Automation Center
+              </PrimaryButton>
+            </Link>
+            <Box position="relative">
+              <Link href={`/${cId}?tab=governance&proposalStatus=Active`}>
+                <PrimaryButton
+                  center
+                  variant={
+                    cId && router.query?.tab === "governance" && !cSlug && !pId
+                      ? "tertiary"
+                      : "transparent"
+                  }
+                  icon={<BankOutlined />}
+                >
+                  Governance Center
+                </PrimaryButton>
+              </Link>
+              <Badge>
+                <Text color="accent" size="extraSmall">
+                  New
+                </Text>
+              </Badge>
+            </Box>
+            <Box position="relative">
+              <Link href={`/${cId}?tab=membership`}>
+                <PrimaryButton
+                  center
+                  variant={
+                    cId && router.query?.tab === "membership" && !cSlug && !pId
+                      ? "tertiary"
+                      : "transparent"
+                  }
+                  icon={<IconUserGroupSolid size="4" />}
+                >
+                  Membership Center
+                </PrimaryButton>
+              </Link>
+              <Badge>
+                <Text color="accent" size="extraSmall">
+                  Alpha
+                </Text>
+              </Badge>
+            </Box>
+            {/* <Link href={`/${cId}?tab=credential`}>
             <PrimaryButton
               variant={
                 cId && router.query?.tab === "credential" && !cSlug && !pId
@@ -231,13 +292,12 @@ function CircleSidebar() {
               Credential Center
             </PrimaryButton>
           </Link> */}
-        </Stack>
-        <Container subH="16.1rem">
-          {/** @chaks forgot to change the height when undoing credential changes */}
+          </Stack>
           <Stack>
             {!isLoading &&
               circle?.folderOrder?.map((fol) => {
                 const folder = circle?.folderDetails?.[fol];
+                if (!folder) return null;
                 return (
                   <Accordian name={folder.name} key={fol} defaultOpen>
                     {folder.contentIds?.map((content) => {
@@ -369,3 +429,12 @@ function CircleSidebar() {
 }
 
 export default memo(CircleSidebar);
+
+const Badge = styled(Box)`
+  position: absolute;
+  top: 12px;
+  right: 32px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;

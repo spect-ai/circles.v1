@@ -7,8 +7,9 @@ import {
   Registry,
   Voting,
   FormPermissions,
-  GitcoinScoreType,
   MappedItem,
+  Property,
+  CollectionType,
 } from "@/app/types";
 
 export const addField = async (
@@ -98,30 +99,7 @@ export const deleteField = async (collectionId: string, name: string) => {
 
 export const updateFormCollection = async (
   collectionId: string,
-  update: {
-    name?: string;
-    description?: string;
-    propertyOrder?: string[];
-    voting?: Voting;
-    permissions?: FormPermissions;
-    circleRolesToNotifyUponNewResponse?: string[];
-    circleRolesToNotifyUponUpdatedResponse?: string[];
-    formMetadata?: {
-      messageOnSubmission?: string;
-      multipleResponsesAllowed?: boolean;
-      updatingResponseAllowed?: boolean;
-      logo?: string;
-      cover?: string;
-      active?: boolean;
-      allowAnonymousResponses?: boolean;
-      sybilProtectionEnabled?: boolean;
-      sybilProtectionScores?: MappedItem<number>;
-    };
-    projectMetadata?: Partial<ProjectMetadata>;
-    data?: any;
-    archivedData?: any;
-    archived?: boolean;
-  }
+  update: Partial<CollectionType>
 ) => {
   return await (
     await fetch(`${process.env.API_HOST}/collection/v1/${collectionId}`, {
@@ -357,6 +335,29 @@ export const endVotingPeriod = async (collectionId: string, dataId: string) => {
   ).json();
 };
 
+export const recordSnapshotProposal = async (
+  collectionId: string,
+  dataId: string,
+  snapshotProposalDto: {
+    snapshotSpace: string;
+    proposalId: string;
+  }
+) => {
+  return await (
+    await fetch(
+      `${process.env.API_HOST}/collection/v1/${collectionId}/snapshotProposal?dataId=${dataId}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify(snapshotProposalDto),
+      }
+    )
+  ).json();
+};
+
 export const voteCollectionData = async (
   collectionId: string,
   dataId: string,
@@ -426,4 +427,25 @@ export const sendFormComment = async (
       )
     ).json();
   }
+};
+
+export const importFromCsv = async (payload: {
+  data: any;
+  collectionName: string;
+  collectionProperties: {
+    [key: string]: Property;
+  };
+  groupByColumn: string;
+  circleId: string;
+}) => {
+  return await (
+    await fetch(`${process.env.API_HOST}/collection/v1/importfromcsv`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify(payload),
+    })
+  ).json();
 };

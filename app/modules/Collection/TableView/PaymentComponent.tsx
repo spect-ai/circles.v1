@@ -1,10 +1,11 @@
 import { Box, Button, Text } from "degen";
 import React from "react";
 import { CellProps } from "react-datasheet-grid";
+import { useCircle } from "../../Circle/CircleContext";
 
 const PaymentComponent = ({ rowData, columnData }: CellProps) => {
   const payment = rowData[columnData.property.name];
-  const id = rowData.id;
+  const { registry } = useCircle();
   return (
     <Box
       marginLeft="1"
@@ -13,23 +14,36 @@ const PaymentComponent = ({ rowData, columnData }: CellProps) => {
       alignItems="center"
       width="full"
     >
-      <Button
-        variant="transparent"
-        width="full"
-        size="small"
-        justifyContent="flex-start"
-        onClick={() => {
-          if (columnData.property.isPartOfFormView) return;
-          columnData.setPropertyName(columnData.property.name);
-          columnData.setDataId(id);
-        }}
-      >
-        {payment?.length > 0 ? (
-          <Text variant="small">Paid </Text>
-        ) : (
-          <Text variant="small">{"Unpaid"}</Text>
-        )}
-      </Button>
+      {payment ? (
+        <a
+          href={`${registry?.[payment.chain.value].blockExplorer}tx/${
+            payment.txnHash
+          }`}
+          target="_blank"
+          rel="noreferrer"
+          style={{ width: "100%" }}
+        >
+          <Button
+            variant="transparent"
+            width="full"
+            size="small"
+            justifyContent="flex-start"
+          >
+            <Text variant="small">
+              Paid {payment.value} {payment.token.label}
+            </Text>
+          </Button>
+        </a>
+      ) : (
+        <Button
+          variant="transparent"
+          width="full"
+          size="small"
+          justifyContent="flex-start"
+        >
+          <Text variant="small">Not Paid</Text>
+        </Button>
+      )}
     </Box>
   );
 };

@@ -20,18 +20,26 @@ export default function Archive({}: Props) {
       <AnimatePresence>
         {isConfirmOpen && (
           <ConfirmModal
-            title="Are you sure you want to archive this collection?"
+            title={
+              collection.collectionType === 0
+                ? "Are you sure you want to archive this collection?"
+                : "Are you sure you want to archive this project?"
+            }
             onConfirm={() => {
               void updateFormCollection(collection.id, {
                 archived: true,
+                formMetadata: {
+                  ...collection.formMetadata,
+                  active: false,
+                },
               }).then((res) => {
                 console.log({ res });
                 if (res.id) {
-                  toast.success("Collection archived");
+                  toast.success("Archived successfully");
                   setIsConfirmOpen(false);
                   void router.push(`/${router.query.circle}`);
                 } else {
-                  toast.error("Error archiving collection");
+                  toast.error("Error archiving");
                 }
               });
             }}

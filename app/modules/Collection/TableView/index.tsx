@@ -23,7 +23,11 @@ import { toast } from "react-toastify";
 import CardDrawer from "../../CollectionProject/CardDrawer";
 import Filtering from "../../CollectionProject/Filtering";
 import AddField from "../AddField";
-import { isMyCard, satisfiesConditions } from "../Common/SatisfiesFilter";
+import {
+  isMyCard,
+  paymentStatus,
+  satisfiesConditions,
+} from "../Common/SatisfiesFilter";
 import { useLocalCollection } from "../Context/LocalCollectionContext";
 import DataDrawer from "../Form/DataDrawer";
 import ExpandableCell from "../Form/ExpandableCell";
@@ -54,6 +58,7 @@ export default function TableView() {
     searchFilter,
     projectViewId,
     showMyTasks,
+    paymentFilter,
   } = useLocalCollection();
 
   const { data: currentUser, refetch } = useQuery<UserType>("getMyUser", {
@@ -66,7 +71,7 @@ export default function TableView() {
   const screenClass = useScreenClass();
 
   const router = useRouter();
-  const { dataId: dataSlug, cardSlug } = router.query;
+  const { dataId: dataSlug, cardSlug, newCard } = router.query;
 
   useEffect(() => {
     if (dataSlug) {
@@ -75,7 +80,10 @@ export default function TableView() {
     if (cardSlug) {
       setExpandedDataSlug(cardSlug as string);
     }
-  }, [dataSlug, setExpandedDataSlug, cardSlug]);
+    if (newCard) {
+      setExpandedDataSlug("");
+    }
+  }, [dataSlug, setExpandedDataSlug, cardSlug, newCard]);
 
   const updateData = useCallback(async ({ row }: { row: any }) => {
     if (!row) return false;
@@ -166,6 +174,16 @@ export default function TableView() {
             collection.data[row.id],
             collection.properties,
             currentUser?.id || ""
+          );
+        });
+      }
+
+      if (paymentFilter) {
+        filteredData = filteredData.filter((row) => {
+          return paymentStatus(
+            paymentFilter,
+            row.id,
+            collection.projectMetadata.paymentStatus
           );
         });
       }
@@ -286,6 +304,7 @@ export default function TableView() {
     projectViewId,
     searchFilter,
     showMyTasks,
+    paymentFilter,
   ]);
 
   // refresh table if new property is added
@@ -333,120 +352,128 @@ export default function TableView() {
 
   const columns: Column<any>[] =
     collection.propertyOrder &&
-    collection.propertyOrder.map((propertyName: string) => {
-      const property = collection.properties[propertyName];
-      if (
-        ["singleSelect", "multiSelect", "longText", "user", "user[]"].includes(
-          property.type
-        )
-      ) {
-        return {
-          ...keyColumn(property.name, {
+    collection.propertyOrder
+      .filter((prop) => prop !== "__cardStatus__")
+      .map((propertyName: string) => {
+        const property = collection.properties[propertyName];
+        if (
+          [
+            "singleSelect",
+            "multiSelect",
+            "longText",
+            "user",
+            "user[]",
+          ].includes(property.type)
+        ) {
+          return {
+            ...keyColumn(property.name, {
+              component: getCellComponent(property.type) as any,
+              columnData: property,
+            }),
+            title: (
+              <HeaderComponent
+                columnName={property.name}
+                setIsEditFieldOpen={setIsEditFieldOpen}
+                setPropertyName={setPropertyName}
+                propertyType={property.type}
+              />
+            ),
+            minWidth: 200,
+          };
+        } else if (["reward"].includes(property.type)) {
+          return {
             component: getCellComponent(property.type) as any,
-            columnData: property,
-          }),
-          title: (
-            <HeaderComponent
-              columnName={property.name}
-              setIsEditFieldOpen={setIsEditFieldOpen}
-              setPropertyName={setPropertyName}
-              propertyType={property.type}
-            />
-          ),
-          minWidth: 200,
-        };
-      } else if (["reward"].includes(property.type)) {
-        return {
-          component: getCellComponent(property.type) as any,
-          columnData: {
-            property,
-            setIsRewardFieldOpen,
-            setPropertyName,
-            setDataId,
-          },
-          title: (
-            <HeaderComponent
-              columnName={property.name}
-              setIsEditFieldOpen={setIsEditFieldOpen}
-              setPropertyName={setPropertyName}
-              propertyType={property.type}
-            />
-          ),
-          minWidth: 200,
-        };
-      } else if (["milestone"].includes(property.type)) {
-        return {
-          component: getCellComponent(property.type) as any,
-          columnData: {
-            property,
-            setMultipleMilestoneModalOpen,
-            setPropertyName,
-            setDataId,
-          },
-          title: (
-            <HeaderComponent
-              columnName={property.name}
-              setIsEditFieldOpen={setIsEditFieldOpen}
-              setPropertyName={setPropertyName}
-              propertyType={property.type}
-            />
-          ),
-          minWidth: 200,
-        };
-      } else if (["payWall"].includes(property.type)) {
-        return {
-          component: getCellComponent(property.type) as any,
-          columnData: {
-            property,
-            setPropertyName,
-            setDataId,
-          },
-          title: (
-            <HeaderComponent
-              columnName={property.name}
-              setIsEditFieldOpen={setIsEditFieldOpen}
-              setPropertyName={setPropertyName}
-              propertyType={property.type}
-            />
-          ),
-          minWidth: 200,
-        };
-      } else if (["multiURL"].includes(property.type)) {
-        return {
-          component: getCellComponent(property.type) as any,
-          columnData: {
-            property,
-            setIsURLFieldOpen,
-            setPropertyName,
-            setDataId,
-          },
-          title: (
-            <HeaderComponent
-              columnName={property.name}
-              setIsEditFieldOpen={setIsEditFieldOpen}
-              setPropertyName={setPropertyName}
-              propertyType={property.type}
-            />
-          ),
-          minWidth: 200,
-        };
-      } else {
-        return {
-          ...keyColumn(property.name, getCellComponent(property.type) as any),
-          disabled:
-            collection.collectionType === 0 ? property.isPartOfFormView : false,
-          title: (
-            <HeaderComponent
-              columnName={property.name}
-              setIsEditFieldOpen={setIsEditFieldOpen}
-              setPropertyName={setPropertyName}
-              propertyType={property.type}
-            />
-          ),
-          minWidth: 200,
-        };
-      }
-    });
+            columnData: {
+              property,
+              setIsRewardFieldOpen,
+              setPropertyName,
+              setDataId,
+            },
+            title: (
+              <HeaderComponent
+                columnName={property.name}
+                setIsEditFieldOpen={setIsEditFieldOpen}
+                setPropertyName={setPropertyName}
+                propertyType={property.type}
+              />
+            ),
+            minWidth: 200,
+          };
+        } else if (["milestone"].includes(property.type)) {
+          return {
+            component: getCellComponent(property.type) as any,
+            columnData: {
+              property,
+              setMultipleMilestoneModalOpen,
+              setPropertyName,
+              setDataId,
+            },
+            title: (
+              <HeaderComponent
+                columnName={property.name}
+                setIsEditFieldOpen={setIsEditFieldOpen}
+                setPropertyName={setPropertyName}
+                propertyType={property.type}
+              />
+            ),
+            minWidth: 200,
+          };
+        } else if (["payWall"].includes(property.type)) {
+          return {
+            component: getCellComponent(property.type) as any,
+            columnData: {
+              property,
+              setPropertyName,
+              setDataId,
+            },
+            title: (
+              <HeaderComponent
+                columnName={property.name}
+                setIsEditFieldOpen={setIsEditFieldOpen}
+                setPropertyName={setPropertyName}
+                propertyType={property.type}
+              />
+            ),
+            minWidth: 200,
+          };
+        } else if (["multiURL"].includes(property.type)) {
+          return {
+            component: getCellComponent(property.type) as any,
+            columnData: {
+              property,
+              setIsURLFieldOpen,
+              setPropertyName,
+              setDataId,
+            },
+            title: (
+              <HeaderComponent
+                columnName={property.name}
+                setIsEditFieldOpen={setIsEditFieldOpen}
+                setPropertyName={setPropertyName}
+                propertyType={property.type}
+              />
+            ),
+            minWidth: 200,
+          };
+        } else {
+          return {
+            ...keyColumn(property.name, getCellComponent(property.type) as any),
+            disabled:
+              collection.collectionType === 0
+                ? property.isPartOfFormView
+                : false,
+            title: (
+              <HeaderComponent
+                columnName={property.name}
+                setIsEditFieldOpen={setIsEditFieldOpen}
+                setPropertyName={setPropertyName}
+                propertyType={property.type}
+              />
+            ),
+            minWidth: 200,
+          };
+        }
+      });
 
   const columnsWithCredentials = collection.formMetadata
     ?.credentialCurationEnabled
@@ -603,14 +630,20 @@ export default function TableView() {
           <PrimaryButton
             variant="tertiary"
             onClick={() => {
-              const out = [] as any[];
-              const d = Object.values(data || {}).map((da) => {
+              let out = [] as any[];
+              const d = data?.map((da) => {
+                const csvData: {
+                  [key: string]: string;
+                } = {};
                 Object.entries(da)
-                  .filter(([key, value]) => key !== "slug" && key !== "id")
+                  .filter(
+                    ([key, value]) =>
+                      key !== "slug" && key !== "id" && key !== "anonymous"
+                  )
                   .forEach(([key, value]: [string, any]) => {
-                    console.log({ key });
+                    if (!collection.properties[key]) return;
                     if (collection.properties[key].type === "reward") {
-                      da[key] = JSON.stringify({
+                      csvData[key] = JSON.stringify({
                         chain: value?.chain.label,
                         token: value?.token.label,
                         value: value?.value,
@@ -626,32 +659,37 @@ export default function TableView() {
                           value: v?.reward?.value,
                         },
                       }));
-                      da[key] = JSON.stringify(milestones);
+                      csvData[key] = JSON.stringify(milestones);
                     } else if (
                       ["user", "singleSelect"].includes(
                         collection.properties[key].type
                       )
                     ) {
-                      da[key] = value?.label;
+                      csvData[key] = value?.label;
                     } else if (collection.properties[key].type === "multiURL") {
-                      da[key] = JSON.stringify(value);
+                      csvData[key] = JSON.stringify(value);
                     } else if (
                       ["user[]", "multiSelect"].includes(
                         collection.properties[key].type
                       )
                     ) {
-                      da[key] = JSON.stringify(
+                      csvData[key] = JSON.stringify(
                         value?.map((v: Option) => v.label)
                       );
+                    } else if (key === "__payment__") {
+                      csvData[key] = JSON.stringify(value);
                     } else if (!value) {
-                      da[key] = "";
+                      csvData[key] = "";
                     } else {
-                      da[key] = value;
+                      csvData[key] = value;
                     }
-                    out.push(da);
                   });
+                // delete csvData["id"] && delete csvData["anonymous"];
+                csvData["slug"] = da.slug;
+                return csvData;
               });
-              exportToCsv(out, collection.name);
+              console.log({ d });
+              exportToCsv((d as []).reverse(), collection.name);
             }}
           >
             Export CSV

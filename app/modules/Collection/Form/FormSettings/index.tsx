@@ -1,12 +1,11 @@
 import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import Tabs from "@/app/common/components/Tabs";
-import { Box, IconCog, Stack } from "degen";
+import { Box, Button, IconCog, Stack } from "degen";
 import { AnimatePresence } from "framer-motion";
 import React, { useState } from "react";
 import styled from "styled-components";
 import Access from "./Access";
-import Curation from "./Curation";
 import General from "./General";
 import mixpanel from "@/app/common/utils/mixpanel";
 import { useQuery } from "react-query";
@@ -14,6 +13,7 @@ import { UserType } from "@/app/types";
 import { useLocalCollection } from "../../Context/LocalCollectionContext";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { toast } from "react-toastify";
+import Archive from "@/app/modules/CollectionProject/Settings/Archive";
 
 function FormSettings() {
   const [isOpen, setIsOpen] = useState(false);
@@ -25,9 +25,11 @@ function FormSettings() {
   const { localCollection: collection } = useLocalCollection();
   return (
     <Box>
-      <PrimaryButton
+      <Button
+        shape="circle"
+        size="small"
+        variant="secondary"
         center
-        icon={<IconCog />}
         onClick={() => {
           process.env.NODE_ENV === "production" &&
             mixpanel.track("Form Settings", {
@@ -43,8 +45,8 @@ function FormSettings() {
           }
         }}
       >
-        Form Settings
-      </PrimaryButton>
+        <IconCog />
+      </Button>
       <AnimatePresence>
         {isOpen && (
           <Modal
@@ -63,7 +65,7 @@ function FormSettings() {
                   <Tabs
                     selectedTab={selectedTab}
                     onTabClick={(tab) => setSelectedTab(tab)}
-                    tabs={["General", "Access", "Plugins"]}
+                    tabs={["General", "Access", "Archive"]}
                     orientation="vertical"
                     unselectedColor="transparent"
                   />
@@ -79,7 +81,7 @@ function FormSettings() {
                 >
                   {selectedTab === 0 && <General />}
                   {selectedTab === 1 && <Access />}
-                  {selectedTab === 2 && <Curation />}
+                  {selectedTab === 2 && <Archive />}
                 </ScrollContainer>
               </Stack>
             </Box>

@@ -1,5 +1,13 @@
 import Popover from "@/app/common/components/Popover";
-import { Box, Stack, Tag, Text } from "degen";
+import {
+  Box,
+  IconCheck,
+  IconClose,
+  IconLightningBolt,
+  Stack,
+  Tag,
+  Text,
+} from "degen";
 import React, { useMemo, useState } from "react";
 import { Archive, MoreHorizontal } from "react-feather";
 import { MenuContainer, MenuItem } from "../EditValue";
@@ -10,13 +18,22 @@ import { toast } from "react-toastify";
 import { DollarOutlined } from "@ant-design/icons";
 import { addPendingPayment } from "@/app/services/Paymentv2";
 import { useCircle } from "../../Circle/CircleContext";
+import { useAccount } from "wagmi";
 
 type Props = {
   handleDrawerClose: () => void;
   cardSlug: string;
+  setSnapshotModal: (value: boolean) => void;
+  onChange: (data: any, slug: string) => Promise<void>;
 };
 
-export default function CardOptions({ handleDrawerClose, cardSlug }: Props) {
+export default function CardOptions({
+  handleDrawerClose,
+  cardSlug,
+  setSnapshotModal,
+  onChange,
+}: Props) {
+  const { address } = useAccount();
   const { localCollection: collection, updateCollection } =
     useLocalCollection();
   const { circle } = useCircle();
@@ -52,6 +69,9 @@ export default function CardOptions({ handleDrawerClose, cardSlug }: Props) {
   );
 
   const showPendingPayment =
+    !["pending", "pendingSignature", "completed"].includes(
+      collection.projectMetadata.paymentStatus?.[cardSlug] || ""
+    ) &&
     rewardProperties > 0 &&
     (userProperties > 0 || multiUserProperties > 0 || ethAddressProperties > 0);
 
@@ -81,6 +101,32 @@ export default function CardOptions({ handleDrawerClose, cardSlug }: Props) {
         }}
       >
         <MenuContainer cWidth="15rem">
+          {!collection.voting.snapshot?.[cardSlug]?.proposalId && (
+            <MenuItem
+              style={{
+                padding: "6px",
+              }}
+              onClick={() => {
+                setIsOpen(false);
+                if (!address) {
+                  toast.error("Please unlock your wallet first");
+                  return;
+                }
+                if (!circle?.snapshot?.id) {
+                  toast.error(
+                    "Please integrate your Snapshot in the Governance Center first"
+                  );
+                  return;
+                }
+                setSnapshotModal(true);
+              }}
+            >
+              <Stack direction="horizontal" align="center" space="2">
+                <IconLightningBolt color={"accent"} size="5" />
+                <Text align={"left"}>Create Snapshot Proposal</Text>
+              </Stack>
+            </MenuItem>
+          )}
           {showPendingPayment && (
             <MenuItem
               padding="2"
@@ -123,6 +169,7 @@ export default function CardOptions({ handleDrawerClose, cardSlug }: Props) {
                   collectionId: collection.id,
                   dataSlugs: [cardSlug],
                 });
+                updateCollection(res);
                 if (res.id)
                   toast.success(
                     "Added to pending payments, you can view it in the payments center"
@@ -138,6 +185,39 @@ export default function CardOptions({ handleDrawerClose, cardSlug }: Props) {
               </Stack>
             </MenuItem>
           )}
+          <MenuItem
+            style={{
+              padding: "6px",
+            }}
+            onClick={async () => {
+              setIsOpen(false);
+              handleDrawerClose();
+              await onChange(
+                {
+                  ["__cardStatus__"]:
+                    collection.data?.[cardSlug]?.__cardStatus__ === undefined ||
+                    collection.data?.[cardSlug]?.__cardStatus__ === "active"
+                      ? "closed"
+                      : "active",
+                },
+                cardSlug
+              );
+            }}
+          >
+            <Stack direction="horizontal" align="center" space="2">
+              {!(collection.data?.[cardSlug]?.__cardStatus__ === "closed") ? (
+                <>
+                  <IconClose color={"red"} size="5" />
+                  <Text align={"left"}>Close Card</Text>
+                </>
+              ) : (
+                <>
+                  <IconCheck color={"green"} size="5" />
+                  <Text align={"left"}>Re Open Card</Text>
+                </>
+              )}
+            </Stack>
+          </MenuItem>
           <MenuItem
             padding="2"
             onClick={async () => {

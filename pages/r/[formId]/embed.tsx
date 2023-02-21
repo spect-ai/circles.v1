@@ -9,7 +9,6 @@ import useConnectDiscordServer from "@/app/services/Discord/useConnectDiscordSer
 import { NextPage } from "next";
 
 const EmbedPage: NextPage = () => {
-  useConnectDiscordServer();
   const context = useProviderCircleContext();
   return (
     <>

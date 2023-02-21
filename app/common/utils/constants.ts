@@ -114,6 +114,7 @@ export const prevPropertyTypeToNewPropertyTypeThatDoesntRequiresClarance = {
   reward: ["reward"],
   payWall: ["payWall"],
   milestone: ["milestone"],
+  cardStatus: ["cardStatus"],
 };
 
 export const opportunityType = [
@@ -243,4 +244,25 @@ export const tags = {
   "Product Management": ["Product Planning"],
   Writing: ["Content Writing"],
   Translation: ["Hindi"],
+};
+
+export const Scribes = {
+  grants: {
+    create:
+      "https://scribehow.com/embed/Create_a_Grants_Workflow_on_Spect__Of7YjSwlRhW8ZiYbjgkO3g?skipIntro=true",
+    using:
+      "https://scribehow.com/embed/Using_the_Grants_Workflow_on_Spect__3wAVohzbQE-jucIYdf3nPw?skipIntro=true",
+  },
+  onboarding: {
+    create:
+      "https://scribehow.com/embed/Using_Onboarding_Workflow__7rbU0WKITSiftkuFBI0QAg?skipIntro=true",
+    using:
+      "https://scribehow.com/embed/Using_Onboarding_Workflow__7rbU0WKITSiftkuFBI0QAg?skipIntro=true",
+  },
+  kanban: {
+    create:
+      "https://scribehow.com/embed/Using_Kanban_Project__XSb29SqSTvSmbWGiH8AJjg?skipIntro=true",
+    using:
+      "https://scribehow.com/embed/Using_Kanban_Project__XSb29SqSTvSmbWGiH8AJjg?skipIntro=true",
+  },
 };
