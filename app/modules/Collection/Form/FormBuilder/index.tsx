@@ -38,6 +38,7 @@ function FormBuilder({ fields }: Props) {
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
+  const [formData, setFormData] = useState({} as any);
 
   const FieldDraggable = (provided: DroppableProvided) => (
     <Box {...provided.droppableProps} ref={provided.innerRef}>
@@ -50,6 +51,8 @@ function FormBuilder({ fields }: Props) {
               key={field}
               setIsEditFieldOpen={setIsEditFieldOpen}
               setPropertyName={setPropertyName}
+              formData={formData}
+              setFormData={setFormData}
             />
           );
         }
@@ -62,6 +65,7 @@ function FormBuilder({ fields }: Props) {
   const FieldDraggableCallback = useCallback(FieldDraggable, [
     fields,
     collection.properties,
+    formData,
   ]);
 
   return (

@@ -48,21 +48,7 @@ export const addField = async (
 export const updateField = async (
   collectionId: string,
   name: string,
-  update: {
-    isPartOfFormView?: boolean;
-    name?: string;
-    type?: string;
-    default?: string;
-    options?: { label: string; value: string }[];
-    rewardOptions?: Registry;
-    userType?: FormUserType;
-    onUpdateNotifyUserTypes?: FormUserType[];
-    required?: boolean;
-    description?: string;
-    milestoneFields?: string[];
-    viewConditions?: Condition[];
-    payWallOptions?: PayWallOptions;
-  }
+  update: Partial<Property>
 ) => {
   return await (
     await fetch(

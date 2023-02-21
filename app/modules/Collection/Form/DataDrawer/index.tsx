@@ -34,8 +34,6 @@ export default function DataDrawer({
   const { dataId: dataSlug, circle: cId } = router.query;
   const [data, setData] = useState({} as any);
 
-  console.log({ collection });
-
   useEffect(() => {
     if (dataId && collection.data) {
       setTimeout(() => {
@@ -155,7 +153,7 @@ export default function DataDrawer({
                 <Box display="flex" flexDirection="column" width="3/4" gap="4">
                   {collection.propertyOrder.map((propertyName: string) => {
                     const property = collection.properties[propertyName];
-                    if (!data[property.name])
+                    if (!data[property.id || property.name])
                       return (
                         <Stack key={property.name} space="1">
                           <Text
@@ -199,7 +197,9 @@ export default function DataDrawer({
                           "email",
                           "number",
                         ].includes(property.type) && (
-                          <Text size="small">{data[property.name]}</Text>
+                          <Text size="small">
+                            {data[property.id || property.name]}
+                          </Text>
                         )}
                         {property?.type === "longText" && (
                           <Editor value={data[property.name]} disabled />
@@ -276,7 +276,7 @@ export default function DataDrawer({
                         )}
                         {property?.type === "payWall" && (
                           <Stack>
-                            {[data[property.name]]?.map(
+                            {[data[property.id || property.name]]?.map(
                               (payment: {
                                 token: OptionType;
                                 chain: OptionType;
@@ -365,6 +365,71 @@ export default function DataDrawer({
                               )
                             )}
                           </Stack>
+                        )}
+                        {property?.type === "discord" && (
+                          <Box padding="0">
+                            <Stack direction="horizontal" align="center">
+                              <Avatar
+                                label="Discord Avatar"
+                                src={`https://cdn.discordapp.com/avatars/${data[propertyName].id}/${data[propertyName].avatar}.png`}
+                              />
+                              <Box>
+                                <Text
+                                  size="extraSmall"
+                                  font="mono"
+                                  weight="bold"
+                                >
+                                  {data[propertyName].username}
+                                </Text>
+                              </Box>
+                            </Stack>
+                          </Box>
+                        )}
+                        {property?.type === "github" && (
+                          <a
+                            href={data[propertyName].html_url}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            <Box padding="0">
+                              <Stack direction="horizontal" align="center">
+                                <Avatar
+                                  label="Discord Avatar"
+                                  src={data[propertyName].avatar_url}
+                                />
+                                <Box>
+                                  <Text
+                                    size="extraSmall"
+                                    font="mono"
+                                    weight="bold"
+                                  >
+                                    {data[propertyName].login}
+                                  </Text>
+                                </Box>
+                              </Stack>
+                            </Box>
+                          </a>
+                        )}
+                        {property?.type === "telegram" && (
+                          // <a
+                          //   href={data[propertyName].html_url}
+                          //   target="_blank"
+                          //   rel="noreferrer"
+                          // >
+                          <Box padding="0">
+                            <Stack direction="horizontal" align="center">
+                              <Box>
+                                <Text
+                                  size="extraSmall"
+                                  font="mono"
+                                  weight="bold"
+                                >
+                                  {data[propertyName].username}
+                                </Text>
+                              </Box>
+                            </Stack>
+                          </Box>
+                          // </a>
                         )}
                       </Stack>
                     );

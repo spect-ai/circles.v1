@@ -31,7 +31,10 @@ import {
 import { useLocalCollection } from "../Context/LocalCollectionContext";
 import DataDrawer from "../Form/DataDrawer";
 import ExpandableCell from "../Form/ExpandableCell";
+import CeramicComponent from "./CeramicComponent";
 import CredentialComponent from "./CredentialComponent";
+import DiscordComponent from "./DiscordComponent";
+import GithubComponent from "./GithubComponent";
 import GutterColumnComponent from "./GutterColumnComponent";
 import HeaderComponent from "./HeaderComponent";
 import MilestoneComponent from "./MilestoneComponent";
@@ -42,6 +45,7 @@ import PaymentComponent from "./PaymentComponent";
 import RewardComponent from "./RewardComponent";
 import RewardModal from "./RewardModal";
 import SelectComponent from "./SelectComponent";
+import TelegramComponent from "./TelegramComponent";
 
 export default function TableView() {
   const [isEditFieldOpen, setIsEditFieldOpen] = useState(false);
@@ -345,24 +349,49 @@ export default function TableView() {
         return MultiURLComponent;
       case "milestone":
         return MilestoneComponent;
+      case "discord":
+        return DiscordComponent;
+      case "github":
+        return GithubComponent;
+      case "telegram":
+        return TelegramComponent;
       default:
         return textColumn;
     }
   };
-
   const columns: Column<any>[] =
     collection.propertyOrder &&
     collection.propertyOrder
       .filter((prop) => prop !== "__cardStatus__")
       .map((propertyName: string) => {
         const property = collection.properties[propertyName];
-        if (
+        if (property.id === "__ceramic__") {
+          return {
+            ...keyColumn(property.id, {
+              component: CeramicComponent,
+            }),
+            disabled: true,
+            title: (
+              <HeaderComponent
+                columnName={property.name}
+                setIsEditFieldOpen={setIsEditFieldOpen}
+                setPropertyName={setPropertyName}
+                propertyType={property.type}
+              />
+            ),
+            minWidth: 200,
+          };
+        } else if (
           [
             "singleSelect",
             "multiSelect",
             "longText",
             "user",
             "user[]",
+            "discord",
+            "github",
+            "twitter",
+            "telegram",
           ].includes(property.type)
         ) {
           return {

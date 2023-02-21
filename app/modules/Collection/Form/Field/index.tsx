@@ -25,12 +25,22 @@ import styled from "styled-components";
 import { useLocalCollection } from "../../Context/LocalCollectionContext";
 import mixpanel from "@/app/common/utils/mixpanel";
 import Editor from "@/app/common/components/Editor";
+import {
+  FaDiscord,
+  FaGithub,
+  FaTelegramPlane,
+  FaTwitter,
+} from "react-icons/fa";
+import SingleSelect from "@/app/modules/PublicForm/SingleSelect";
+import MultiSelect from "@/app/modules/PublicForm/MultiSelect";
 
 type Props = {
   id: string;
   index: number;
   setIsEditFieldOpen: (value: boolean) => void;
   setPropertyName: (value: string) => void;
+  formData: any;
+  setFormData: (value: any) => void;
 };
 
 function FieldComponent({
@@ -38,6 +48,8 @@ function FieldComponent({
   index,
   setIsEditFieldOpen,
   setPropertyName,
+  formData,
+  setFormData,
 }: Props) {
   const { localCollection: collection } = useLocalCollection();
   const [hover, setHover] = useState(false);
@@ -90,7 +102,6 @@ function FieldComponent({
         </Box>
         <Box
           cursor="pointer"
-          backgroundColor="accentSecondary"
           borderRadius="full"
           paddingY="1"
           paddingX="2"
@@ -195,27 +206,49 @@ function FieldComponent({
         </Box>
       )}
       {(collection.properties[id]?.type === "singleSelect" ||
-        collection.properties[id]?.type === "user" ||
-        collection.properties[id]?.type === "multiSelect" ||
+        collection.properties[id]?.type === "user") && (
+        <Box marginTop="4">
+          <SingleSelect
+            allowCustom={collection.properties[id]?.allowCustom || false}
+            options={
+              collection.properties[id]?.type === "user"
+                ? (memberOptions as any)
+                : collection.properties[id]?.options
+            }
+            selected={formData[id]}
+            onSelect={(value: any) => {
+              setFormData({ ...formData, [id]: value });
+            }}
+            propertyName={id}
+          />
+        </Box>
+      )}
+      {(collection.properties[id]?.type === "multiSelect" ||
         collection.properties[id]?.type === "user[]") && (
         <Box marginTop="4">
-          <Dropdown
-            placeholder={`Select ${collection.properties[id]?.name}`}
-            multiple={
-              collection.properties[id]?.type === "multiSelect" ||
-              collection.properties[id]?.type === "user[]"
-            }
+          <MultiSelect
+            allowCustom={collection.properties[id]?.allowCustom || false}
             options={
-              collection.properties[id]?.type === "user" ||
               collection.properties[id]?.type === "user[]"
                 ? (memberOptions as any)
                 : collection.properties[id]?.options
             }
-            selected={collection.data && collection.data[id]}
-            onChange={(value: any) => {
-              console.log({ value });
+            selected={formData[id]}
+            onSelect={(value: any) => {
+              if (!formData[id]) {
+                setFormData({ [id]: [value] });
+              } else {
+                if (formData[id]?.includes(value)) {
+                  setFormData({
+                    ...formData,
+                    [id]: formData[id].filter((item: any) => item !== value),
+                  });
+                } else {
+                  setFormData({ ...formData, [id]: [...formData[id], value] });
+                }
+              }
             }}
-            portal
+            propertyName={id}
           />
         </Box>
       )}
@@ -239,6 +272,50 @@ function FieldComponent({
           </PrimaryButton>
         </Box>
       )}
+      {collection.properties[id]?.type === "discord" && (
+        <Box marginTop="4" width="1/3">
+          <PrimaryButton
+            variant="tertiary"
+            icon={<FaDiscord size={24} />}
+            onClick={async () => {}}
+          >
+            Connect Discord
+          </PrimaryButton>
+        </Box>
+      )}
+      {collection.properties[id]?.type === "twitter" && (
+        <Box marginTop="4" width="1/3">
+          <PrimaryButton
+            variant="tertiary"
+            icon={<FaTwitter size={24} />}
+            onClick={async () => {}}
+          >
+            Connect Twitter
+          </PrimaryButton>
+        </Box>
+      )}
+      {collection.properties[id]?.type === "telegram" && (
+        <Box marginTop="4" width="1/3">
+          <PrimaryButton
+            variant="tertiary"
+            icon={<FaTelegramPlane size={24} />}
+            onClick={async () => {}}
+          >
+            Connect Telegram
+          </PrimaryButton>
+        </Box>
+      )}
+      {collection.properties[id]?.type === "github" && (
+        <Box marginTop="4" width="1/3">
+          <PrimaryButton
+            variant="tertiary"
+            icon={<FaGithub size={24} />}
+            onClick={async () => {}}
+          >
+            Connect Github
+          </PrimaryButton>
+        </Box>
+      )}
     </Container>
   );
 
@@ -249,6 +326,7 @@ function FieldComponent({
     hover,
     id,
     mode,
+    formData,
   ]);
 
   return (

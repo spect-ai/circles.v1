@@ -147,18 +147,18 @@ function ContributorTable({ filteredMembers }: Props) {
     {
       label: "Role",
       renderCell: (item: TableNode) => (
-        <Stack direction="horizontal" wrap>
+        <Stack direction="horizontal" wrap align="center" space="1">
           {item?.roles &&
             item?.roles?.map((role: string) => {
               return (
                 <Tag key={role} tone="accent" hover>
-                  {role}
+                  {circle.roles[role].name}
                 </Tag>
               );
             })}
           {canDo("manageMembers") && (
             <IconBox
-              transitionDuration="700"
+              transitionDuration="300"
               onClick={() => {
                 setSelectedUser(item.id);
                 setRoleModal(true);

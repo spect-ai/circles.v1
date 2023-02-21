@@ -73,7 +73,6 @@ function Sidebar(): ReactElement {
   useEffect(() => {
     socket.connected &&
       socket?.on("notification", (data) => {
-        console.log({ data });
         setUnreadNotifications(data.unreadNotifications);
       });
   }, [socket]);

@@ -118,7 +118,7 @@ export default function GuildRoleMapping() {
             <Box paddingX="8" paddingY="4">
               <Stack>
                 {Object.keys(circle.roles).map((role) => (
-                  <RoleSection key={role} roleName={role} />
+                  <RoleSection key={role} roleName={circle.roles[role].name} />
                 ))}
                 <PrimaryButton
                   loading={loading}

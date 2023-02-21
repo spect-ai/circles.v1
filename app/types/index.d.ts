@@ -481,6 +481,8 @@ export type NetworkInfo = {
   tokenDetails: { [tokenAddress: string]: Token };
   coinGeckoCurrencyId: string;
   coinGeckoPlatformId: string;
+  surveyHubAddress: string;
+  chainlinkVRFConsumerAddress: string;
 };
 
 export interface Template {
@@ -663,6 +665,25 @@ export type KudosType = {
   claimabilityAttributes: ClaimabilityAttributes;
 };
 
+export type POAPEventType = {
+  id: number;
+  fancey_id: string;
+  name: string;
+  description: string;
+  city: string;
+  country: string;
+  event_url: string;
+  image_url: string;
+  year: number;
+  start_date: string;
+  end_date: string;
+  expiry_date: string;
+  from_admin: boolean;
+  virtual_event: boolean;
+  event_template_id: number;
+  private_event: boolean;
+};
+
 export type KudosForType = {
   [kudosFor: "assignee" | "reviewer"]: string;
 };
@@ -815,6 +836,21 @@ export type FormMetadata = {
   canClaimKudos: boolean;
   allowAnonymousResponses: boolean;
   paymentConfig?: PaymentConfig;
+  surveyTokenId?: number;
+  surveyTokenClaimedByUser: boolean;
+  canClaimSurveyToken: boolean;
+  surveyChain?: Option;
+  surveyToken?: Option;
+  surveyTotalValue?: number;
+  surveyVRFRequestId?: string;
+  surveyLotteryWinner?: number;
+  surveyDistributionType?: number;
+  ceramicEnabled?: boolean;
+  claimCodes?: string[];
+  claimCode?: string;
+  poapDistributionEnabled?: boolean;
+  poapEventId?: string;
+  poapEditCode?: string;
 };
 
 export type ProjectMetadata = {
@@ -874,6 +910,7 @@ export type PaymentData = {
 };
 
 export type Property = {
+  id?: string;
   name: string;
   type: PropertyType;
   isPartOfFormView: boolean;
@@ -888,6 +925,9 @@ export type Property = {
   viewConditions?: Condition[];
   payWallOptions?: PayWallOptions;
   internal?: boolean;
+  maxSelections?: number;
+  allowCustom?: boolean;
+  milestoneFields?: string[];
 };
 
 export type PropertyType =
@@ -906,7 +946,11 @@ export type PropertyType =
   | "singleURL"
   | "multiURL"
   | "payWall"
-  | "cardStatus";
+  | "cardStatus"
+  | "discord"
+  | "twitter"
+  | "github"
+  | "telegram";
 
 export type Option = {
   label: string;

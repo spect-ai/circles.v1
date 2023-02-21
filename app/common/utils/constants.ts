@@ -115,6 +115,10 @@ export const prevPropertyTypeToNewPropertyTypeThatDoesntRequiresClarance = {
   payWall: ["payWall"],
   milestone: ["milestone"],
   cardStatus: ["cardStatus"],
+  discord: ["discord"],
+  telegram: ["telegram"],
+  twitter: ["twitter"],
+  github: ["github"],
 };
 
 export const opportunityType = [

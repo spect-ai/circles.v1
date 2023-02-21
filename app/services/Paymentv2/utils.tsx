@@ -289,15 +289,13 @@ export const hasAllowance = async (
 
 export const switchNetwork = async (chainId: string) => {
   const network = getNetwork();
-  console.log({ network });
-  console.log({ id: network.chain?.id, chainId });
   if (parseInt(chainId) !== network.chain?.id)
     await switchNet({
       chainId: parseInt(chainId),
     });
 };
 
-async function getContract(address: string, abi: any) {
+export async function getContract(address: string, abi: any) {
   const signer = await fetchSigner();
   return new ethers.Contract(address, abi, signer as unknown as Signer);
 }
