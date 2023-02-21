@@ -58,6 +58,7 @@ export const fieldOptionsDropdown = [
   },
   {
     label: "Contact Info",
+    onlyForm: true,
     options: [
       // { label: "Connect Wallet", value: "wallet", icon: <FaWallet /> },
       { label: "Email", value: "email", icon: <AiOutlineMail /> },

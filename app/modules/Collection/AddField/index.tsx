@@ -338,7 +338,11 @@ export default function AddField({ propertyName, handleClose }: Props) {
               />
             )}
             <Dropdown
-              options={fieldOptionsDropdown}
+              options={
+                collection.collectionType === 0
+                  ? fieldOptionsDropdown
+                  : fieldOptionsDropdown.filter((option) => !option.onlyForm)
+              }
               selected={type}
               onChange={(type) => {
                 setType(type);
