@@ -7,7 +7,7 @@ const TelegramComponent = ({ rowData }: CellProps) => {
   return (
     // <a href={rowData?.html_url} target="_blank" rel="noreferrer">
     <Box padding="2" cursor="pointer">
-      <Text variant="small">{rowData?.username}</Text>
+      <Text variant="small">{rowData?.username || rowData}</Text>
     </Box>
     // </a>
   );

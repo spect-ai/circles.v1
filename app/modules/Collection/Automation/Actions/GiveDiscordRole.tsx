@@ -124,7 +124,7 @@ export default function GiveDiscordRole({
       <Box marginTop="4" marginBottom="-4">
         <Editor
           value={
-            ":::tip\nIf this action is picked, form responders will be asked to connect Discord Account before filling up form."
+            ":::tip\nEnsure you have a discord field added to your collection which the user will use to connect their discord account. If no discord field is there the user the automation will not work as expected\n:::"
           }
           disabled={true}
         />

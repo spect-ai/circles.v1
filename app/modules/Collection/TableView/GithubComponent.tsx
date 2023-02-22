@@ -7,7 +7,7 @@ const GithubComponent = ({ rowData }: CellProps) => {
   return (
     <a href={rowData?.html_url} target="_blank" rel="noreferrer">
       <Box padding="2" cursor="pointer">
-        <Text variant="small">{rowData?.login}</Text>
+        <Text variant="small">{rowData?.login || rowData}</Text>
       </Box>
     </a>
   );

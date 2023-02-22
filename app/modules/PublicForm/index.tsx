@@ -24,8 +24,6 @@ import _ from "lodash";
 import { useLocation } from "react-use";
 import SocialMedia from "@/app/common/components/SocialMedia";
 import Link from "next/link";
-import DiscordIcon from "@/app/assets/icons/discordIcon.svg";
-import ConnectDiscordButton from "@/app/common/components/ConnectDiscordButton";
 
 export default function PublicForm() {
   const router = useRouter();
@@ -42,11 +40,8 @@ export default function PublicForm() {
     form?.formMetadata.canFillForm || false
   );
   const [stamps, setStamps] = useState([] as Stamp[]);
-
   const { connectedUser, socket } = useGlobal();
-
   const [memberDetails, setMemberDetails] = useState({} as any);
-
   const { pathname, hostname } = useLocation();
   const route = pathname?.split("/")[3];
 
@@ -56,7 +51,6 @@ export default function PublicForm() {
     },
     [memberDetails]
   );
-
   const fetchMemberDetails = async (cId: string) => {
     const res = await (
       await fetch(
@@ -248,30 +242,6 @@ export default function PublicForm() {
                 </Box>
               </Box>
             )}
-            {form.formMetadata.discordConnectionRequired &&
-              !currentUser?.discordId &&
-              currentUser?.id && (
-                <Box paddingLeft="4">
-                  <Text weight="semiBold" variant="large" color="textPrimary">
-                    This form requires Discord connection so it can
-                    automatically assign roles
-                  </Text>
-                  <Box
-                    width={{
-                      xs: "full",
-                      sm: "full",
-                      md: "1/4",
-                    }}
-                    marginTop="4"
-                  >
-                    <ConnectDiscordButton
-                      type="publicForm"
-                      state={`/r/` + form.slug}
-                      width="full"
-                    />
-                  </Box>
-                </Box>
-              )}
             {!canFillForm && currentUser?.id && !loading && (
               <motion.div
                 className="box"

@@ -345,6 +345,43 @@ function EditValue({ value, setValue, propertyName, dataId, disabled }: Props) {
           )}
         </Box>
       )}
+      {console.log({ value })}
+      {["discord", "telegram", "github"].includes(property?.type) && (
+        <Box>
+          {isEditing ? (
+            <FieldInputContainer>
+              <FieldInput
+                mode={mode}
+                autoFocus
+                ref={fieldInput}
+                defaultValue={value?.username || value?.login || value}
+                onChange={(e) => {
+                  setTempValue(e.target.value);
+                }}
+                onBlur={() => {
+                  setValue(tempValue);
+                  setIsEditing(false);
+                }}
+              />
+            </FieldInputContainer>
+          ) : (
+            <FieldButton
+              onClick={() => {
+                if (Object.keys(value || {}).length === 0) {
+                  setIsEditing(true);
+                }
+              }}
+              mode={mode}
+            >
+              {value ? (
+                <Text>{value.username || value.login || value}</Text>
+              ) : (
+                "Empty"
+              )}
+            </FieldButton>
+          )}
+        </Box>
+      )}
       {["reward"].includes(property.type) && (
         <Box>
           <AnimatePresence>
