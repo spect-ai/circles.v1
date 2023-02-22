@@ -31,16 +31,16 @@ export const spectPlugins: { [key: string]: SpectPlugin } = {
       "https://ik.imagekit.io/spectcdn/gtcpassport_XqHKx4FMG?ik-sdk-version=javascript-1.4.3&updatedAt=1675753373123",
     premium: true,
   },
-  // poap: {
-  //   id: "poap",
-  //   name: "Incentivize responders with POAPs",
-  //   version: "1.0.0",
-  //   description:
-  //     "Looking to incentivize responders with POAPs? This plugin helps you create a POAP event or import an existing one!",
-  //   docs: "https://poap.xyz/",
-  //   image: "https://ik.imagekit.io/spectcdn/poap.png",
-  //   premium: true,
-  // },
+  poap: {
+    id: "poap",
+    name: "Incentivize responders with POAPs",
+    version: "1.0.0",
+    description:
+      "Import a POAP event and get more responses by incentivizing responders with POAPs!",
+    docs: "https://poap.xyz/",
+    image: "https://ik.imagekit.io/spectcdn/poap.png",
+    premium: true,
+  },
   payments: {
     id: "payments",
     name: "Collect Payments",

@@ -49,19 +49,3 @@ export const getPoap = async (poapId: string) => {
     })
   ).json();
 };
-
-export const getClaimCode = async (collectionId: string) => {
-  return await (
-    await fetch(
-      `${process.env.API_HOST}/collection/v1/${collectionId}/claimCode`,
-      {
-        method: "GET",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-          accept: "application/json",
-        },
-      }
-    )
-  ).text();
-};

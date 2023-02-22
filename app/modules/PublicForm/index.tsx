@@ -222,6 +222,11 @@ export default function PublicForm() {
                     This form distributes erc20 tokens to responders
                   </Text>
                 )}
+                {form.formMetadata.poapEventId && (
+                  <Text weight="semiBold" variant="large" color="textPrimary">
+                    This form distributes POAPs to responders
+                  </Text>
+                )}
                 {form.formMetadata.sybilProtectionEnabled && (
                   <Text weight="semiBold" variant="large" color="textPrimary">
                     This form is Sybil protected

@@ -12,6 +12,7 @@ import styled from "styled-components";
 import mixpanel from "@/app/common/utils/mixpanel";
 import { useQuery } from "react-query";
 import { ethers } from "ethers";
+import { PassportStampIcons } from "@/app/assets";
 
 type Props = {
   form: FormType;
@@ -35,7 +36,7 @@ type Props = {
 
 const StyledImage = styled.img`
   @media (max-width: 768px) {
-    width: 12rem;
+    width: 18rem;
   }
   width: 24rem;
 `;
@@ -84,29 +85,41 @@ export default function FormResponse({
         />
       )}
       <Stack>
-        <Heading align="left">{`${
+        <Text variant="extraLarge" align="left">{`${
           form?.formMetadata.messageOnSubmission ||
           "Your response has been submitted!"
-        }`}</Heading>
+        }`}</Text>
         <Box
           display="flex"
           flexDirection={{
             xs: "column",
-            md: "row",
+            xl: "row",
+          }}
+          alignItems={{
+            xs: "center",
+            xl: "flex-start",
           }}
           gap="4"
-          alignItems="flex-start"
           marginTop="8"
+          padding="2"
         >
-          {form.formMetadata.poapDistributionEnabled && !poapClaimed && (
-            <Box paddingTop="8">
-              {" "}
-              <Text variant="extraLarge" weight="bold">
-                👉
-              </Text>
-            </Box>
-          )}
-          {claimed ? (
+          {poap?.image_url &&
+            (poapClaimed || form.formMetadata.poapDistributionEnabled) && (
+              <Box
+                display="flex"
+                flexDirection="row"
+                justifyContent="center"
+                alignItems="center"
+                width={{
+                  xs: "full",
+                  xl: "1/2",
+                }}
+              >
+                {" "}
+                <StyledImage src={`${poap.image_url}`} alt="poap" />
+              </Box>
+            )}
+          {poapClaimed ? (
             <Stack>
               <Text variant="extraLarge" weight="bold">
                 You have claimed this Poap 🏅
@@ -116,7 +129,7 @@ export default function FormResponse({
                   <TwitterShareButton
                     url={`https://circles.spect.network/`}
                     title={
-                      "I just filled out a web3 form and claimed my Poap on @JoinSpect!"
+                      "I just filled out a web3 form and claimed my @poapxyz on @JoinSpect!"
                     }
                   >
                     <Box
@@ -149,109 +162,133 @@ export default function FormResponse({
                   >
                     <PrimaryButton
                       variant="transparent"
-                      icon={<img src="/raribleLogo.svg" alt="src" />}
+                      icon={PassportStampIcons["POAP"]}
                       onClick={() => {
                         window.open(`https://app.poap.xyz/`, "_blank");
                       }}
                     >
                       {" "}
-                      <Text>View on Poap</Text>
+                      <Text>View on poap.xyz</Text>
                     </PrimaryButton>
                   </Box>
                 </Stack>
               </Box>
             </Stack>
           ) : (
-            <Box padding="8">
+            <Box
+              display="flex"
+              flexDirection="row"
+              justifyContent={{
+                xs: "center",
+                xl: "flex-start",
+              }}
+              alignItems="center"
+              width={{
+                xs: "full",
+                xl: "1/2",
+              }}
+            >
               {form.formMetadata.poapDistributionEnabled && !poapClaimed && (
-                <Stack>
-                  <Text weight="semiBold" variant="large">
-                    You are eligible to receive a Poap for submitting a response
-                    🏅
-                  </Text>
-                  <Box width="72">
-                    <PrimaryButton
-                      loading={claiming}
-                      onClick={async () => {
-                        setClaiming(true);
-                        try {
-                          const res = await (
-                            await fetch(
-                              `${process.env.API_HOST}/collection/v1/${form.id}/claimPoap`,
-                              {
-                                method: "PATCH",
-                                headers: {
-                                  "Content-Type": "application/json",
-                                },
-                                credentials: "include",
-                                body: JSON.stringify({
-                                  claimCode: poapClaimCode.toString(),
-                                }),
-                              }
-                            )
-                          ).json();
-
-                          console.log(res);
-                          if (res.ok) {
-                            setPoapClaimed(true);
-                            setClaimedJustNow(true);
-                          }
-                        } catch (e) {
-                          console.log(e);
-                          toast.error(
-                            "Something went wrong, please try again later"
-                          );
-                        }
-
-                        setClaiming(false);
+                <Stack direction="horizontal" align="flex-start">
+                  <Box>
+                    {" "}
+                    <Text variant="extraLarge" weight="bold">
+                      👉
+                    </Text>
+                  </Box>
+                  <Stack>
+                    <Text weight="semiBold" variant="large">
+                      You are eligible to receive a POAP for submitting a
+                      response 🏅
+                    </Text>
+                    <Box
+                      width={{
+                        xs: "48",
+                        md: "72",
                       }}
                     >
-                      Claim Poap
-                    </PrimaryButton>
-                  </Box>
+                      <PrimaryButton
+                        loading={claiming}
+                        onClick={async () => {
+                          setClaiming(true);
+                          try {
+                            const res = await (
+                              await fetch(
+                                `${process.env.API_HOST}/collection/v1/${form.id}/claimPoap`,
+                                {
+                                  method: "PATCH",
+                                  headers: {
+                                    "Content-Type": "application/json",
+                                  },
+                                  credentials: "include",
+                                  body: JSON.stringify({
+                                    claimCode: poapClaimCode.toString(),
+                                  }),
+                                }
+                              )
+                            ).json();
+
+                            console.log(res);
+                            if (res.claimed) {
+                              setPoapClaimed(true);
+                              setClaimedJustNow(true);
+                            }
+                          } catch (e) {
+                            console.log(e);
+                            toast.error(
+                              "Something went wrong, please try again later"
+                            );
+                          }
+
+                          setClaiming(false);
+                        }}
+                      >
+                        Claim Poap
+                      </PrimaryButton>
+                    </Box>
+                  </Stack>
                 </Stack>
               )}
             </Box>
           )}
-
-          {poap?.image_url &&
-            (poapClaimed || form.formMetadata.poapDistributionEnabled) && (
-              <Box padding="8">
-                {" "}
-                <StyledImage src={`${poap.image_url}`} alt="poap" />
-              </Box>
-            )}
         </Box>
 
         <Box
           display="flex"
           flexDirection={{
             xs: "column",
-            md: "row",
+            xl: "row",
+          }}
+          alignItems={{
+            xs: "center",
+            xl: "flex-start",
           }}
           gap="4"
-          alignItems="flex-start"
           marginTop="8"
+          padding="2"
         >
-          {surveyTokenClaimed && (
-            <Box>
+          {form.formMetadata.surveyTokenId && (
+            <Box
+              display="flex"
+              flexDirection="row"
+              justifyContent="center"
+              alignItems="center"
+              width={{
+                xs: "full",
+                xl: "1/2",
+              }}
+            >
               {" "}
-              <Text variant="extraLarge" weight="bold">
-                🙌
-              </Text>
+              <StyledImage
+                src={
+                  "https://ik.imagekit.io/spectcdn/moneybagethereummb3dmodel001.jpg?ik-sdk-version=javascript-1.4.3&updatedAt=1676107655114"
+                }
+                alt="poap"
+              />
             </Box>
           )}
-          {(canClaimSurveyToken || surveyIsLotteryYetToBeDrawn) &&
-            !surveyTokenClaimed && (
-              <Box paddingTop="8">
-                {" "}
-                <Text variant="extraLarge" weight="bold">
-                  👉
-                </Text>
-              </Box>
-            )}
           {surveyIsLotteryYetToBeDrawn && (
-            <Box paddingTop="8">
+            <Box>
               <Text variant="large" weight="bold">
                 Responders to this survey will automatically be added to a
                 lottery to win {form.formMetadata.surveyTotalValue}{" "}
@@ -260,18 +297,45 @@ export default function FormResponse({
             </Box>
           )}
           {surveyTokenClaimed ? (
-            <Stack>
-              <Text variant="large" weight="bold">
-                {form.formMetadata.surveyDistributionType === 1
-                  ? surveyDistributionInfo?.amountPerResponse
-                    ? `You have claimed ${ethers.utils.formatEther(
-                        surveyDistributionInfo?.amountPerResponse?.toString()
-                      )} ${
-                        form.formMetadata?.surveyToken?.label
-                      } for responding to this form 💰`
-                    : "You have claimed your tokens for responding to this form 💰"
-                  : `You have claimed ${form.formMetadata.surveyTotalValue} ${form.formMetadata.surveyToken?.label} for submitting a response 💰`}
-              </Text>
+            <Box
+              display="flex"
+              flexDirection="column"
+              justifyContent="center"
+              alignItems="center"
+              width={{
+                xs: "full",
+                xl: "1/2",
+              }}
+              gap="4"
+            >
+              {" "}
+              {surveyTokenClaimed && (
+                <Box
+                  display="flex"
+                  flexDirection="row"
+                  gap="4"
+                  justifyContent={{
+                    xs: "center",
+                    xl: "flex-start",
+                  }}
+                >
+                  {" "}
+                  <Text variant="extraLarge" weight="bold">
+                    🙌
+                  </Text>
+                  <Text variant="large" weight="bold">
+                    {form.formMetadata.surveyDistributionType === 1
+                      ? surveyDistributionInfo?.amountPerResponse
+                        ? `You have claimed ${ethers.utils.formatEther(
+                            surveyDistributionInfo?.amountPerResponse?.toString()
+                          )} ${
+                            form.formMetadata?.surveyToken?.label
+                          } for responding to this form 💰`
+                        : "You have claimed your tokens for responding to this form 💰"
+                      : `You have claimed ${form.formMetadata.surveyTotalValue} ${form.formMetadata.surveyToken?.label} for submitting a response 💰`}
+                  </Text>
+                </Box>
+              )}
               <Box>
                 <Stack direction="vertical">
                   <TwitterShareButton
@@ -303,58 +367,81 @@ export default function FormResponse({
                   </TwitterShareButton>
                 </Stack>
               </Box>
-            </Stack>
+            </Box>
           ) : (
-            <Box width="1/2" padding="8">
+            <Box
+              display="flex"
+              flexDirection="row"
+              justifyContent={{
+                xs: "center",
+                xl: "flex-start",
+              }}
+              alignItems="center"
+              width={{
+                xs: "full",
+                xl: "1/2",
+              }}
+            >
               {canClaimSurveyToken && (
-                <Stack>
-                  <Text weight="semiBold" variant="large">
-                    {form.formMetadata.surveyDistributionType === 1
-                      ? surveyDistributionInfo?.amountPerResponse
-                        ? `You are eligible to receive ${ethers.utils.formatEther(
-                            surveyDistributionInfo?.amountPerResponse?.toString()
-                          )} ${
-                            form.formMetadata.surveyToken?.label
-                          } for submitting a response
-                    💰`
-                        : `You are eligible to receive tokens 💰`
-                      : `You are eligible to receive ${form.formMetadata.surveyTotalValue} ${form.formMetadata.surveyToken?.label} for submitting a response 💰`}
+                <Stack direction="horizontal" align="flex-start">
+                  <Text variant="extraLarge" weight="bold">
+                    👉
                   </Text>
-                  <Box width="72">
-                    <PrimaryButton
-                      loading={claiming}
-                      onClick={async () => {
-                        setClaiming(true);
-                        try {
-                          const res = await fetch(
-                            `${process.env.API_HOST}/collection/v1/${form?.id}/claimSurveyTokens`,
-                            {
-                              method: "PATCH",
-                              headers: {
-                                "Content-Type": "application/json",
-                              },
-                              credentials: "include",
-                            }
-                          );
-
-                          console.log(res);
-                          if (res.ok) {
-                            setSurveyTokenClaimed(true);
-                            setClaimedJustNow(true);
-                          }
-                        } catch (e) {
-                          console.log(e);
-                          toast.error(
-                            "Something went wrong, please try again later"
-                          );
-                        }
-
-                        setClaiming(false);
+                  <Stack>
+                    <Text weight="semiBold" variant="large">
+                      {form.formMetadata.surveyDistributionType === 1
+                        ? surveyDistributionInfo?.amountPerResponse
+                          ? `You are eligible to receive ${ethers.utils.formatEther(
+                              surveyDistributionInfo?.amountPerResponse?.toString()
+                            )} ${
+                              form.formMetadata.surveyToken?.label
+                            } for submitting a response
+                    💰`
+                          : `You are eligible to receive tokens 💰`
+                        : `You are eligible to receive ${form.formMetadata.surveyTotalValue} ${form.formMetadata.surveyToken?.label} for submitting a response 💰`}
+                    </Text>
+                    <Box
+                      width={{
+                        xs: "48",
+                        md: "72",
                       }}
                     >
-                      Claim Token
-                    </PrimaryButton>
-                  </Box>
+                      {" "}
+                      <PrimaryButton
+                        loading={claiming}
+                        onClick={async () => {
+                          setClaiming(true);
+                          try {
+                            const res = await fetch(
+                              `${process.env.API_HOST}/collection/v1/${form?.id}/claimSurveyTokens`,
+                              {
+                                method: "PATCH",
+                                headers: {
+                                  "Content-Type": "application/json",
+                                },
+                                credentials: "include",
+                              }
+                            );
+
+                            console.log(res);
+                            if (res.ok) {
+                              setSurveyTokenClaimed(true);
+                              setClaimedJustNow(true);
+                            }
+                          } catch (e) {
+                            console.log(e);
+                            toast.error(
+                              "Something went wrong, please try again later"
+                            );
+                          }
+
+                          setClaiming(false);
+                        }}
+                      >
+                        Claim Token
+                      </PrimaryButton>
+                    </Box>
+                  </Stack>
                 </Stack>
               )}
             </Box>
@@ -364,25 +451,56 @@ export default function FormResponse({
           display="flex"
           flexDirection={{
             xs: "column",
-            md: "row",
+            xl: "row",
+          }}
+          alignItems={{
+            xs: "center",
+            xl: "flex-start",
           }}
           gap="4"
-          alignItems="flex-start"
           marginTop="8"
+          padding="2"
         >
-          {form.formMetadata.canClaimKudos && (
-            <Box paddingTop="8">
+          {kudos?.imageUrl && (claimed || form.formMetadata.canClaimKudos) && (
+            <Box
+              display="flex"
+              flexDirection="row"
+              justifyContent="center"
+              alignItems="center"
+              width={{
+                xs: "full",
+                xl: "1/2",
+              }}
+            >
               {" "}
-              <Text variant="extraLarge" weight="bold">
-                👉
-              </Text>
+              <StyledImage src={`${kudos.imageUrl}`} alt="kudos" />
             </Box>
           )}
           {claimed ? (
-            <Stack>
-              <Text variant="extraLarge" weight="bold">
-                You have claimed this Kudos 🎉
-              </Text>
+            <Box
+              display="flex"
+              flexDirection="column"
+              justifyContent="center"
+              alignItems="center"
+              width={{
+                xs: "full",
+                xl: "1/2",
+              }}
+              gap="4"
+            >
+              <Box
+                display="flex"
+                flexDirection="row"
+                gap="4"
+                alignItems="center"
+              >
+                <Text variant="extraLarge" weight="bold">
+                  🙌{" "}
+                </Text>
+                <Text variant="extraLarge" weight="bold">
+                  You have claimed this Kudos 🎉
+                </Text>
+              </Box>
               <Box>
                 <Stack direction="vertical">
                   <TwitterShareButton
@@ -453,59 +571,73 @@ export default function FormResponse({
                   </Box>
                 </Stack>
               </Box>
-            </Stack>
+            </Box>
           ) : (
-            <Box padding="8">
+            <Box
+              display="flex"
+              flexDirection="row"
+              justifyContent="center"
+              alignItems="center"
+              width={{
+                xs: "full",
+                xl: "1/2",
+              }}
+            >
               {form.formMetadata.canClaimKudos && (
-                <Stack>
-                  <Text weight="semiBold" variant="large">
-                    You are eligible to receive a soulbound token for submitting
-                    a response 🎉
-                  </Text>
-                  <Box width="72">
-                    <PrimaryButton
-                      loading={claiming}
-                      onClick={async () => {
-                        setClaiming(true);
-                        try {
-                          const res = await fetch(
-                            `${process.env.API_HOST}/collection/v1/${form?.id}/airdropKudos`,
-                            {
-                              method: "PATCH",
-                              headers: {
-                                "Content-Type": "application/json",
-                              },
-                              credentials: "include",
-                            }
-                          );
-
-                          console.log(res);
-                          if (res.ok) {
-                            setClaimed(true);
-                            setClaimedJustNow(true);
-                          }
-                        } catch (e) {
-                          console.log(e);
-                          toast.error(
-                            "Something went wrong, please try again later"
-                          );
-                        }
-
-                        setClaiming(false);
+                <Stack direction="horizontal" align="flex-start">
+                  <Box>
+                    <Text variant="extraLarge" weight="bold">
+                      👉
+                    </Text>
+                  </Box>
+                  <Stack>
+                    <Text weight="semiBold" variant="large">
+                      You are eligible to receive a soulbound token for
+                      submitting a response 🎉
+                    </Text>
+                    <Box
+                      width={{
+                        xs: "48",
+                        md: "72",
                       }}
                     >
-                      Claim Soulbound Token
-                    </PrimaryButton>
-                  </Box>
+                      <PrimaryButton
+                        loading={claiming}
+                        onClick={async () => {
+                          setClaiming(true);
+                          try {
+                            const res = await fetch(
+                              `${process.env.API_HOST}/collection/v1/${form?.id}/airdropKudos`,
+                              {
+                                method: "PATCH",
+                                headers: {
+                                  "Content-Type": "application/json",
+                                },
+                                credentials: "include",
+                              }
+                            );
+
+                            console.log(res);
+                            if (res.ok) {
+                              setClaimed(true);
+                              setClaimedJustNow(true);
+                            }
+                          } catch (e) {
+                            console.log(e);
+                            toast.error(
+                              "Something went wrong, please try again later"
+                            );
+                          }
+
+                          setClaiming(false);
+                        }}
+                      >
+                        Claim SBT
+                      </PrimaryButton>
+                    </Box>
+                  </Stack>
                 </Stack>
               )}
-            </Box>
-          )}
-
-          {kudos?.imageUrl && (claimed || form.formMetadata.canClaimKudos) && (
-            <Box padding="8">
-              {" "}
-              <StyledImage src={`${kudos.imageUrl}`} alt="kudos" />
             </Box>
           )}
         </Box>

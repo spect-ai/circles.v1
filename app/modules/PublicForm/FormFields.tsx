@@ -38,7 +38,7 @@ import {
 import { useAccount } from "wagmi";
 import Modal from "@/app/common/components/Modal";
 import { useProfile } from "../Profile/ProfileSettings/LocalProfileContext";
-import { getClaimCode, getPoap } from "@/app/services/Poap";
+import { getPoap } from "@/app/services/Poap";
 import {
   getSurveyConditionInfo,
   getSurveyDistributionInfo,
@@ -143,6 +143,7 @@ export default function FormFields({ form, setForm }: Props) {
   };
 
   useEffect(() => {
+    console.log({ f: form.formMetadata });
     if (
       form.formMetadata.poapDistributionEnabled &&
       form.formMetadata.poapEventId
@@ -151,12 +152,9 @@ export default function FormFields({ form, setForm }: Props) {
         const res = await getPoap(
           form.formMetadata.poapEventId?.toString() || ""
         );
+        console.log({ resss: res });
         setPoap(res);
-
-        const claimCode = await getClaimCode(form.id);
-        if (claimCode) {
-          setPoapClaimCode(claimCode);
-        }
+        setPoapClaimed(res.claimed);
       })();
     }
   }, [form]);
