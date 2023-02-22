@@ -281,8 +281,6 @@ export default function FormFields({ form, setForm }: Props) {
           } else {
             tempData[propertyId] = lastResponse[propertyId] || "";
           }
-          // tempData["__payment__"] = lastResponse?.__payment__;
-          // tempData["__ceramic__"] = lastResponse?.__ceramic__;
         });
       } else {
         const tempData: any = {};

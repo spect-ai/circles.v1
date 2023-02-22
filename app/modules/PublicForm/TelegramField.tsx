@@ -33,9 +33,9 @@ export default function TelegramField({
           onClick={async () => {
             (window as any).Telegram.Login.auth(
               { bot_id: "5655889542", request_access: true },
-              (data: any) => {
-                setData({ ...data, [propertyName]: data });
-                updateRequiredFieldNotSet(propertyName, data);
+              (telegramData: any) => {
+                setData({ ...data, [propertyName]: telegramData });
+                updateRequiredFieldNotSet(propertyName, telegramData);
               }
             );
           }}

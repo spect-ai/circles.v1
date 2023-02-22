@@ -5,7 +5,7 @@ import { CellProps } from "react-datasheet-grid";
 const DiscordComponent = ({ rowData }: CellProps) => {
   return (
     <Box padding="2">
-      <Text variant="small">{rowData?.username}</Text>
+      <Text variant="small">{rowData?.username || rowData}</Text>
     </Box>
   );
 };

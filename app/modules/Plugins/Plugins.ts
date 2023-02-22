@@ -54,7 +54,7 @@ export const spectPlugins: { [key: string]: SpectPlugin } = {
   },
   ceramic: {
     id: "ceramic",
-    name: "Data Ownership with Ceramic (Testnet Alpha)",
+    name: "Data Ownership with Ceramic (Testnet)",
     version: "1.0.0",
     description:
       "Care about data ownership & composability? Use Ceramic to allow your responders to own their data.",
@@ -65,7 +65,7 @@ export const spectPlugins: { [key: string]: SpectPlugin } = {
   },
   erc20: {
     id: "erc20",
-    name: "Distribute ERC20 Tokens to Responders",
+    name: "Distribute ERC20 Tokens to Responders (Closed Beta)",
     version: "1.0.0",
     description:
       "Want to incentivize responders for filling out your form? Use this plugin to distribute ERC20 tokens to responders!",

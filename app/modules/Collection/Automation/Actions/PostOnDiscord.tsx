@@ -53,7 +53,6 @@ export default function PostCardOnDiscord({
           md: "1/2",
         }}
         onClick={() => {
-          console.log({ origin });
           window.open(
             `https://discord.com/oauth2/authorize?client_id=942494607239958609&permissions=17448306704&redirect_uri=${origin}/api/connectDiscord&response_type=code&scope=bot&state=${circle.slug}/r/${collection.slug}`,
             "_blank"
@@ -71,8 +70,6 @@ export default function PostCardOnDiscord({
         </PrimaryButton>
       </Box>
     );
-
-  console.log(action);
 
   return (
     <Box

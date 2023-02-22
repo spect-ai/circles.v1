@@ -136,7 +136,7 @@ export default function AddField({ propertyName, handleClose }: Props) {
     } else {
       res = await addField(collection.id, {
         name: name.trim(),
-        type: type.value,
+        type: type.value as PropertyType,
         isPartOfFormView: false,
         description,
         options: fieldOptions,
@@ -147,6 +147,8 @@ export default function AddField({ propertyName, handleClose }: Props) {
         milestoneFields,
         viewConditions,
         payWallOptions,
+        maxSelections,
+        allowCustom,
       });
     }
     setLoading(false);
@@ -338,11 +340,7 @@ export default function AddField({ propertyName, handleClose }: Props) {
               />
             )}
             <Dropdown
-              options={
-                collection.collectionType === 0
-                  ? fieldOptionsDropdown
-                  : fieldOptionsDropdown.filter((option) => !option.onlyForm)
-              }
+              options={fieldOptionsDropdown}
               selected={type}
               onChange={(type) => {
                 setType(type);

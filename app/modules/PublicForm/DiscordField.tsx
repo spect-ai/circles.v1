@@ -42,12 +42,7 @@ export default function DiscordField({
       );
       if (res.ok) {
         const data = await res.json();
-        console.log({ data });
         if (data.userData.id) {
-          console.log({ userData: data.userData.id });
-          console.log({
-            avatar: `https://cdn.discordapp.com/avatars/${data.userData.id}/${data.userData.avatar}.png`,
-          });
           setData((d: any) => ({
             ...d,
             [propertyName]: data.userData,
