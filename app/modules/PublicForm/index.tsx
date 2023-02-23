@@ -176,16 +176,19 @@ export default function PublicForm() {
                 </Text>
               </Box>
             )}
-            {canFillForm && (
-              <motion.div
-                className="box"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-              >
-                <FormFields form={form} setForm={setForm} />
-              </motion.div>
-            )}
-            {false && (
+            {(form.formMetadata.walletConnectionRequired
+              ? currentUser?.id
+              : true) &&
+              canFillForm && (
+                <motion.div
+                  className="box"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                >
+                  <FormFields form={form} setForm={setForm} />
+                </motion.div>
+              )}
+            {form.formMetadata.walletConnectionRequired && !currentUser?.id && (
               <Box
                 display="flex"
                 flexDirection="column"
@@ -193,6 +196,35 @@ export default function PublicForm() {
                 marginTop="4"
                 gap="4"
               >
+                {form.formMetadata.formRoleGating &&
+                  form.formMetadata.formRoleGating.length > 0 && (
+                    <Text weight="semiBold" variant="large" color="textPrimary">
+                      This form is role gated
+                    </Text>
+                  )}
+                {form.formMetadata.mintkudosTokenId && (
+                  <Text weight="semiBold" variant="large" color="textPrimary">
+                    This form distributes soulbound tokens to responders
+                  </Text>
+                )}
+                {form.formMetadata.surveyTokenId && (
+                  <Text weight="semiBold" variant="large" color="textPrimary">
+                    This form distributes erc20 tokens to responders
+                  </Text>
+                )}
+                {form.formMetadata.sybilProtectionEnabled && (
+                  <Text weight="semiBold" variant="large" color="textPrimary">
+                    This form is Sybil protected
+                  </Text>
+                )}
+                {form.formMetadata.poapDistributionEnabled && (
+                  <Text weight="semiBold" variant="large" color="textPrimary">
+                    This form distributes POAP tokens to responders
+                  </Text>
+                )}
+                <Text weight="semiBold" variant="large" color="textPrimary">
+                  This form requires you to connect your wallet
+                </Text>
                 <Box
                   width={{
                     xs: "full",

@@ -66,10 +66,7 @@ export default function DistributePOAP({ handleClose }: Props) {
   const [assetUrl, setAssetUrl] = useState("");
   const [modalMode, setModalMode] =
     useState<"createPoapFromScratch" | "importClaimCodes">("importClaimCodes");
-  const [claimCodes, setClaimCodes] = useState([] as string[]);
-  const [rawClaimCodes, setRawClaimCodes] = useState(
-    collection?.formMetadata?.claimCodes?.join("\n") || ""
-  );
+
   const [errorMessage, setErrorMessage] = useState("");
   const [poapEventId, setPoapEventId] = useState(
     collection.formMetadata?.poapEventId || ""
@@ -77,23 +74,6 @@ export default function DistributePOAP({ handleClose }: Props) {
   const [poapEditCode, setPoapEditCode] = useState(
     collection.formMetadata?.poapEditCode || ""
   );
-
-  const updateCodes = () => {
-    const codes = rawClaimCodes.trim().split("\n");
-    setClaimCodes(codes);
-    return codes;
-  };
-
-  const importCodes = (file: File) => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      const codes = reader.result
-        ? reader.result.toString().trim().split("\n")
-        : [];
-      setRawClaimCodes([...claimCodes, ...codes].join("\n"));
-    };
-    reader.readAsText(file);
-  };
 
   const validateClaimCodes = (codes: string[]) => {
     console.log({ codes });
@@ -123,8 +103,8 @@ export default function DistributePOAP({ handleClose }: Props) {
   if (modalMode === "importClaimCodes") {
     return (
       <Modal
-        size="medium"
-        title="Import Claim Codes"
+        size="small"
+        title="Import POAP Event 🏅"
         handleClose={handleClose}
         zIndex={2}
       >
@@ -146,54 +126,6 @@ export default function DistributePOAP({ handleClose }: Props) {
                 onChange={(e) => setPoapEditCode(e.target.value)}
               />
             </Stack>
-            <Stack direction="vertical" space="2">
-              <Text variant="label">
-                Claim Codes (if adding manually, please make sure each code is
-                on a new line)
-              </Text>
-              <ClaimCodeContainer
-                placeholder="http://POAP.xyz/claim/jqmkmv"
-                rows={8}
-                mode={mode}
-                value={rawClaimCodes}
-                onChange={(e) => {
-                  setRawClaimCodes(e.target.value);
-                }}
-              />
-            </Stack>
-            <Box display="flex">
-              <FileInput
-                onChange={(file) => {
-                  importCodes(file);
-                }}
-              >
-                {(context) =>
-                  context.name ? (
-                    <Stack align="center" direction="horizontal">
-                      <Text>{context.name}</Text>
-                      <Button
-                        shape="circle"
-                        size="small"
-                        variant="transparent"
-                        onClick={context.reset}
-                      >
-                        <VisuallyHidden>Remove</VisuallyHidden>
-                        <IconClose />
-                      </Button>
-                    </Stack>
-                  ) : (
-                    <Box
-                      cursor="pointer"
-                      backgroundColor="foregroundSecondary"
-                      padding="4"
-                      borderRadius="medium"
-                    >
-                      <Text>Import claim codes from text file</Text>
-                    </Box>
-                  )
-                }
-              </FileInput>
-            </Box>
           </Stack>
           <Box display="flex" flexDirection="column" gap="2" marginTop="4">
             <Box display="flex" flexDirection="row" justifyContent="flex-end">
@@ -207,77 +139,55 @@ export default function DistributePOAP({ handleClose }: Props) {
               alignItems="flex-start"
               gap="2"
             >
-              <PrimaryButton
-                variant="tertiary"
-                loading={loading}
-                onClick={async () => {
-                  setLoading(true);
-                  const res = await updateFormCollection(collection.id, {
-                    formMetadata: {
-                      ...collection.formMetadata,
-                      claimCodes: [],
-                      poapDistributionEnabled: false,
-                      poapEventId: "",
-                    },
-                  });
-                  updateCollection({
-                    ...collection,
-                    formMetadata: {
-                      ...collection.formMetadata,
-                      claimCodes: [],
-                      poapDistributionEnabled: false,
-                      poapEventId: "",
-                      poapEditCode: "",
-                    },
-                  });
-                  if (res) {
-                    handleClose();
-                  }
-
-                  setLoading(false);
-                }}
-              >
-                Disable Claim Codes
-              </PrimaryButton>
-              <PrimaryButton
-                variant="secondary"
-                loading={loading}
-                onClick={async () => {
-                  setLoading(true);
-                  const codes = updateCodes();
-                  const valid = validateClaimCodes(codes);
-                  console.log({ valid });
-                  if (valid) {
+              {collection.formMetadata.poapEventId && (
+                <PrimaryButton
+                  variant="tertiary"
+                  loading={loading}
+                  onClick={async () => {
+                    setLoading(true);
                     const res = await updateFormCollection(collection.id, {
                       formMetadata: {
                         ...collection.formMetadata,
-                        claimCodes: codes,
-                        poapDistributionEnabled: true,
-                        poapEventId,
-                        poapEditCode,
+                        poapDistributionEnabled: false,
+                        poapEventId: "",
+                        poapEditCode: "",
                       },
                     });
-                    updateCollection({
-                      ...collection,
-                      formMetadata: {
-                        ...collection.formMetadata,
-                        claimCodes: codes,
-                        poapDistributionEnabled: true,
-                        poapEventId,
-                        poapEditCode,
-                      },
-                    });
+                    updateCollection(res);
                     if (res) {
                       handleClose();
                     }
-                  }
-                  setLoading(false);
-                }}
-              >
-                {collection?.formMetadata?.poapDistributionEnabled
-                  ? `Update Claim Codes`
-                  : `Add Claim Codes`}
-              </PrimaryButton>
+
+                    setLoading(false);
+                  }}
+                >
+                  Disable POAP
+                </PrimaryButton>
+              )}
+              {!collection.formMetadata.poapEventId && (
+                <PrimaryButton
+                  variant="secondary"
+                  loading={loading}
+                  onClick={async () => {
+                    setLoading(true);
+                    const res = await updateFormCollection(collection.id, {
+                      formMetadata: {
+                        ...collection.formMetadata,
+                        poapDistributionEnabled: true,
+                        poapEventId,
+                        poapEditCode,
+                        walletConnectionRequired: true,
+                      },
+                    });
+                    updateCollection(res);
+                    if (res) {
+                      setLoading(false);
+                    } else setLoading(false);
+                  }}
+                >
+                  Add Poap Event
+                </PrimaryButton>
+              )}
             </Box>
           </Box>
         </Box>
