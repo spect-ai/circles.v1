@@ -151,14 +151,19 @@ export const hasClaimedSurveyReceipt = async (
   surveyId: number,
   callerAddress: string
 ) => {
-  const res = await readContract({
-    address: surveyHubAddress as `0x${string}`,
-    abi: SurveyABI.abi,
-    functionName: "hasResponded",
-    args: [surveyId, callerAddress],
-    chainId: parseInt(chainId),
-  });
-  return res;
+  try {
+    const res = await readContract({
+      address: surveyHubAddress as `0x${string}`,
+      abi: SurveyABI.abi,
+      functionName: "hasResponded",
+      args: [surveyId, callerAddress],
+      chainId: parseInt(chainId),
+    });
+    return res;
+  } catch (err) {
+    console.log(err);
+    return false;
+  }
 };
 
 export const hasClaimedSurveyToken = async (
@@ -167,14 +172,19 @@ export const hasClaimedSurveyToken = async (
   surveyId: number,
   callerAddress: string
 ) => {
-  const res = await readContract({
-    address: surveyHubAddress as `0x${string}`,
-    abi: SurveyABI.abi,
-    functionName: "hasReceivedPayment",
-    args: [surveyId, callerAddress],
-    chainId: parseInt(chainId),
-  });
-  return res;
+  try {
+    const res = await readContract({
+      address: surveyHubAddress as `0x${string}`,
+      abi: SurveyABI.abi,
+      functionName: "hasReceivedPayment",
+      args: [surveyId, callerAddress],
+      chainId: parseInt(chainId),
+    });
+    return res;
+  } catch (err) {
+    console.log(err);
+    return false;
+  }
 };
 
 export const hasWonLottery = async (

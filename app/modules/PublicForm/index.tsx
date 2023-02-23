@@ -27,7 +27,6 @@ import Link from "next/link";
 
 export default function PublicForm() {
   const router = useRouter();
-  const { isReady } = router;
   const { formId } = router.query;
   const [form, setForm] = useState<FormType>();
   const { mode } = useTheme();
@@ -177,21 +176,16 @@ export default function PublicForm() {
                 </Text>
               </Box>
             )}
-            {canFillForm && currentUser?.id && (
+            {canFillForm && (
               <motion.div
                 className="box"
-                initial={{ opacity: 0, scale: 0.5 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{
-                  duration: 0.8,
-                  delay: 0.5,
-                  ease: [0, 0.71, 0.2, 1.01],
-                }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
               >
                 <FormFields form={form} setForm={setForm} />
               </motion.div>
             )}
-            {!currentUser?.id && (
+            {false && (
               <Box
                 display="flex"
                 flexDirection="column"
@@ -199,28 +193,6 @@ export default function PublicForm() {
                 marginTop="4"
                 gap="4"
               >
-                {" "}
-                {form.formMetadata.formRoleGating &&
-                  form.formMetadata.formRoleGating.length > 0 && (
-                    <Text weight="semiBold" variant="large" color="textPrimary">
-                      This form is role gated
-                    </Text>
-                  )}
-                {form.formMetadata.mintkudosTokenId && (
-                  <Text weight="semiBold" variant="large" color="textPrimary">
-                    This form distributes soulbound tokens to responders
-                  </Text>
-                )}
-                {form.formMetadata.surveyTokenId && (
-                  <Text weight="semiBold" variant="large" color="textPrimary">
-                    This form distributes erc20 tokens to responders
-                  </Text>
-                )}
-                {form.formMetadata.sybilProtectionEnabled && (
-                  <Text weight="semiBold" variant="large" color="textPrimary">
-                    This form is Sybil protected
-                  </Text>
-                )}
                 <Box
                   width={{
                     xs: "full",
@@ -232,7 +204,7 @@ export default function PublicForm() {
                     onClick={() => {
                       process.env.NODE_ENV === "production" &&
                         mixpanel.track("Connect Wallet Form", {
-                          formId: form.slug,
+                          formId: form?.slug,
                         });
                       openConnectModal && openConnectModal();
                     }}
@@ -242,7 +214,7 @@ export default function PublicForm() {
                 </Box>
               </Box>
             )}
-            {!canFillForm && currentUser?.id && !loading && (
+            {!canFillForm && !loading && (
               <motion.div
                 className="box"
                 initial={{ opacity: 0, scale: 0.5 }}

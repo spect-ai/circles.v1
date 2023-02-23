@@ -424,7 +424,11 @@ export default function FormFields({ form, setForm }: Props) {
         anonymous: respondAsAnonymous,
       });
     } else {
-      res = await addData(form.id || "", data, respondAsAnonymous);
+      res = await addData(
+        form.id || "",
+        data,
+        !connectedUser ? true : respondAsAnonymous
+      );
     }
     const resAfterSave = await getForm(form.slug);
     if (res.id) {
