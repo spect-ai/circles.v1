@@ -133,19 +133,10 @@ export default function DistributePOAP({ handleClose }: Props) {
                       setLoading(false);
                       return;
                     }
-                    updateCollection({
-                      ...collection,
-                      formMetadata: {
-                        ...collection.formMetadata,
-                        poapEventId: "",
-                        poapEditCode: "",
-                      },
-                    });
-                    if (res) {
-                      handleClose();
-                    }
 
+                    updateCollection(res);
                     setLoading(false);
+                    handleClose();
                   }}
                 >
                   Disable POAP
@@ -162,6 +153,7 @@ export default function DistributePOAP({ handleClose }: Props) {
                         ...collection.formMetadata,
                         poapEventId,
                         poapEditCode,
+                        walletConnectionRequired: true,
                       },
                     });
                     if (!res?.formMetadata?.poapEventId) {
@@ -170,19 +162,9 @@ export default function DistributePOAP({ handleClose }: Props) {
                       return;
                     }
 
-                    if (res) {
-                      updateCollection({
-                        ...collection,
-                        formMetadata: {
-                          ...collection.formMetadata,
-                          poapEventId,
-                          poapEditCode,
-                        },
-                      });
-                      setLoading(false);
-
-                      handleClose();
-                    } else setLoading(false);
+                    updateCollection(res);
+                    setLoading(false);
+                    handleClose();
                   }}
                 >
                   Add Poap Event

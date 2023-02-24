@@ -65,7 +65,7 @@ export default function DataActivity({
           const activity = activities[activityId];
           const actor =
             collection.data?.[dataId]?.["anonymous"] === true &&
-            dataOwner.id === activity.ref.actor?.id
+            dataOwner?.id === activity.ref?.actor?.id
               ? anonActor
               : getMemberDetails(activity.ref.actor?.id) || dataOwner;
           return (

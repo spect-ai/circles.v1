@@ -74,7 +74,6 @@ export const spectPlugins: { [key: string]: SpectPlugin } = {
       "https://ik.imagekit.io/spectcdn/moneybagethereummb3dmodel001.jpg?ik-sdk-version=javascript-1.4.3&updatedAt=1676107655114",
     premium: true,
   },
-
   mintkudos: {
     id: "mintkudos",
     name: "Incentivize responders with MintKudos",

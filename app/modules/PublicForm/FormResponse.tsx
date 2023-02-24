@@ -660,7 +660,8 @@ export default function FormResponse({
           >
             <Stack>
               {form?.formMetadata.updatingResponseAllowed &&
-                form?.formMetadata.active && (
+                form?.formMetadata.active &&
+                form.formMetadata.walletConnectionRequired && (
                   <PrimaryButton
                     variant="transparent"
                     onClick={() => {
@@ -671,16 +672,18 @@ export default function FormResponse({
                     Update response
                   </PrimaryButton>
                 )}
-              <PrimaryButton
-                variant="transparent"
-                onClick={() => {
-                  setUpdateResponse(true);
-                  setViewResponse(true);
-                  setSubmitted(false);
-                }}
-              >
-                View response
-              </PrimaryButton>
+              {form.formMetadata.walletConnectionRequired && (
+                <PrimaryButton
+                  variant="transparent"
+                  onClick={() => {
+                    setUpdateResponse(true);
+                    setViewResponse(true);
+                    setSubmitted(false);
+                  }}
+                >
+                  View response
+                </PrimaryButton>
+              )}
               {form?.formMetadata.multipleResponsesAllowed &&
                 form?.formMetadata.active && (
                   <PrimaryButton

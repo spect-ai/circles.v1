@@ -528,6 +528,7 @@ export default function Payments({ handleClose }: Props) {
                     formMetadata: {
                       ...collection.formMetadata,
                       paymentConfig: payload,
+                      walletConnectionRequired: true,
                     },
                   });
                   console.log({ res });

@@ -835,6 +835,7 @@ export type FormMetadata = {
   discordConnectionRequired: boolean;
   canClaimKudos: boolean;
   allowAnonymousResponses: boolean;
+  walletConnectionRequired: boolean;
   paymentConfig?: PaymentConfig;
   surveyTokenId?: number;
   surveyTokenClaimedByUser: boolean;
