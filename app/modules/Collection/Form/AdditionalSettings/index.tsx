@@ -126,7 +126,7 @@ export function AdditionalSettings() {
               Allow changing responses after submission
             </Text>
           </Box>
-          <Box
+          {/* <Box
             display="flex"
             flexDirection="row"
             gap="2"
@@ -176,7 +176,7 @@ export function AdditionalSettings() {
                 <InfoCircleOutlined style={{ color: "gray" }} />
               </Tooltip>
             )}
-          </Box>
+          </Box> */}
           <Box
             display="flex"
             flexDirection="row"
@@ -217,43 +217,43 @@ export function AdditionalSettings() {
                 if (connectedUser) {
                   if (collection.formMetadata.sybilProtectionEnabled) {
                     toast.error(
-                      "Wallet connection is required for Sybil protection, disable that plugin to disable wallet connection"
+                      "Wallet connection is required for Sybil protection, disable that plugin in the plugins section to disable wallet connection"
                     );
                     return;
                   }
                   if (collection.formMetadata.ceramicEnabled) {
                     toast.error(
-                      "Wallet connection is required for Ceramic, disable that plugin to disable wallet connection"
+                      "Wallet connection is required for Ceramic, disable that plugin in the plugins section to disable wallet connection"
                     );
                     return;
                   }
                   if (collection.formMetadata.paymentConfig) {
                     toast.error(
-                      "Wallet connection is required for payments, disable that plugin to disable wallet connection"
+                      "Wallet connection is required for payments, disable that plugin in the plugins section to disable wallet connection"
                     );
                     return;
                   }
                   if (collection.formMetadata?.mintkudosTokenId) {
                     toast.error(
-                      "Wallet connection is required for Kudos, disable that plugin to disable wallet connection"
+                      "Wallet connection is required for Kudos, disable that plugin in the plugins section to disable wallet connection"
                     );
                     return;
                   }
                   if (collection.formMetadata.formRoleGating) {
                     toast.error(
-                      "Wallet connection is required for Role Gating, disable that plugin to disable wallet connection"
+                      "Wallet connection is required for Role Gating, disable that plugin in the plugins section to disable wallet connection"
                     );
                     return;
                   }
                   if (collection.formMetadata.surveyTokenId) {
                     toast.error(
-                      "Wallet connection is required for Survey, disable that plugin to disable wallet connection"
+                      "Wallet connection is required for Survey, disable that plugin tin the plugins section to disable wallet connection"
                     );
                     return;
                   }
                   if (collection.formMetadata.poapDistributionEnabled) {
                     toast.error(
-                      "Wallet connection is required for POAP, disable that plugin to disable wallet connection"
+                      "Wallet connection is required for POAP, disable that plugin in the plugins section to disable wallet connection"
                     );
                     return;
                   }

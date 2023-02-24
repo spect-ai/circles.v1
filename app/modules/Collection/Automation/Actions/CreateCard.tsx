@@ -6,6 +6,7 @@ import { InfoCircleOutlined } from "@ant-design/icons";
 import { Box, Button, IconClose, Text } from "degen";
 import { useEffect, useState } from "react";
 import { Tooltip } from "react-tippy";
+import { toast } from "react-toastify";
 import { Field } from "./Field";
 
 type Props = {
@@ -547,11 +548,25 @@ export default function CreateCard({
             </PrimaryButton>
             <PrimaryButton
               variant="tertiary"
-              disabled={
-                collection.formMetadata &&
-                collection.formMetadata.allowAnonymousResponses
-              }
               onClick={() => {
+                if (
+                  collection.collectionType === 0 &&
+                  collection.formMetadata.allowAnonymousResponses
+                ) {
+                  toast.warning(
+                    "You can only map the responder if the form does not allow anonymous responses"
+                  );
+                  return;
+                }
+                if (
+                  collection.collectionType === 0 &&
+                  !collection.formMetadata.walletConnectionRequired
+                ) {
+                  toast.warning(
+                    "The selected form does not require wallet connection, so the responder cannot be mapped. Please change it in the form settings"
+                  );
+                  return;
+                }
                 setFieldType("responder");
                 setValues([
                   ...values,

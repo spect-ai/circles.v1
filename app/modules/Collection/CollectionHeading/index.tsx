@@ -22,6 +22,7 @@ import { Embed } from "../Embed";
 import { EyeOutlined, SendOutlined, ShareAltOutlined } from "@ant-design/icons";
 import { smartTrim } from "@/app/common/utils/utils";
 import FormSettings from "../Form/FormSettings";
+import WarnConnectWallet from "./WarnConnectWallet";
 
 export const IconButton = styled(Box)`
   cursor: pointer;
@@ -46,6 +47,7 @@ function CollectionHeading() {
   const { formActions } = useRoleGate();
   const [isShareOpen, setIsShareOpen] = useState(false);
   const [isEmbedModalOpen, setIsEmbedModalOpen] = useState(false);
+  const [isWarningOpened, setIsWarningOpened] = useState(false);
 
   const location = useLocation();
 
@@ -230,7 +232,7 @@ function CollectionHeading() {
                         />
                       }
                       onClick={() => {
-                        setIsShareOpen(!isShareOpen);
+                        setIsWarningOpened(true);
                       }}
                     >
                       Share
@@ -312,6 +314,17 @@ function CollectionHeading() {
             setIsOpen={setIsEmbedModalOpen}
             component="form"
             routeId={collection.slug}
+          />
+        )}
+        {isWarningOpened && (
+          <WarnConnectWallet
+            onYes={() => {
+              setIsWarningOpened(false);
+              setIsShareOpen(!isShareOpen);
+            }}
+            onNo={() => {
+              setIsWarningOpened(false);
+            }}
           />
         )}
       </AnimatePresence>
