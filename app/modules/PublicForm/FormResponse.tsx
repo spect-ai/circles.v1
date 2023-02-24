@@ -39,6 +39,7 @@ const StyledImage = styled.img`
     width: 18rem;
   }
   width: 24rem;
+  border-radius: 20rem;
 `;
 
 export default function FormResponse({
@@ -103,22 +104,24 @@ export default function FormResponse({
           marginTop="8"
           padding="2"
         >
-          {poap?.image_url &&
-            (poapClaimed || form.formMetadata.poapDistributionEnabled) && (
-              <Box
-                display="flex"
-                flexDirection="row"
-                justifyContent="center"
-                alignItems="center"
-                width={{
-                  xs: "full",
-                  xl: "1/2",
-                }}
-              >
-                {" "}
-                <StyledImage src={`${poap.image_url}`} alt="poap" />
-              </Box>
-            )}
+          {poap?.image_url && (poapClaimed || form.formMetadata.poapEventId) && (
+            <Box
+              display="flex"
+              flexDirection="row"
+              justifyContent="center"
+              alignItems="center"
+              width={{
+                xs: "full",
+                xl: "1/2",
+              }}
+            >
+              {" "}
+              <StyledImage
+                src={`https://spect.infura-ipfs.io/ipfs/QmcBLdB23dQkXdMKFHAjVKMKBPJF82XkqR5ZkxyCk6aset`}
+                alt="poap"
+              />
+            </Box>
+          )}
           {poapClaimed ? (
             <Stack>
               <Text variant="extraLarge" weight="bold">
@@ -188,7 +191,7 @@ export default function FormResponse({
                 xl: "1/2",
               }}
             >
-              {form.formMetadata.poapDistributionEnabled && !poapClaimed && (
+              {form.formMetadata.poapEventId && !poapClaimed && (
                 <Stack direction="horizontal" align="flex-start">
                   <Box>
                     {" "}
