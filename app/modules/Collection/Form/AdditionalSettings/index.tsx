@@ -251,7 +251,7 @@ export function AdditionalSettings() {
                     );
                     return;
                   }
-                  if (collection.formMetadata.poapDistributionEnabled) {
+                  if (collection.formMetadata.poapEventId) {
                     toast.error(
                       "Wallet connection is required for POAP, disable that plugin in the plugins section to disable wallet connection"
                     );

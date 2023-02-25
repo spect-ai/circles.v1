@@ -217,7 +217,7 @@ export default function PublicForm() {
                     This form is Sybil protected
                   </Text>
                 )}
-                {form.formMetadata.poapDistributionEnabled && (
+                {form.formMetadata.poapEventId && (
                   <Text weight="semiBold" variant="large" color="textPrimary">
                     This form distributes POAP tokens to responders
                   </Text>
