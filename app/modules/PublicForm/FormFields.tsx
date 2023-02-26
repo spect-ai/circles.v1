@@ -143,11 +143,7 @@ export default function FormFields({ form, setForm }: Props) {
   };
 
   useEffect(() => {
-    console.log({ f: form.formMetadata });
-    if (
-      form.formMetadata.poapDistributionEnabled &&
-      form.formMetadata.poapEventId
-    ) {
+    if (form.formMetadata.poapEventId) {
       void (async () => {
         const res = await getPoap(
           form.formMetadata.poapEventId?.toString() || ""

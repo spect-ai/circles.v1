@@ -20,6 +20,7 @@ import {
 } from "degen";
 import { useState } from "react";
 import { useQuery } from "react-query";
+import { toast } from "react-toastify";
 import styled from "styled-components";
 import { useCircle } from "../../Circle/CircleContext";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
@@ -75,31 +76,6 @@ export default function DistributePOAP({ handleClose }: Props) {
     collection.formMetadata?.poapEditCode || ""
   );
 
-  const validateClaimCodes = (codes: string[]) => {
-    console.log({ codes });
-    if (codes.length === 0) {
-      setErrorMessage("Please add at least one claim code");
-      return false;
-    }
-    for (const code of codes) {
-      if (!code.includes("http://POAP.xyz/claim/")) {
-        console.log({ code });
-        setErrorMessage(
-          "Please make sure all claim codes start with http://POAP.xyz/claim/"
-        );
-        return false;
-      }
-      if (code.split("http://POAP.xyz/claim/")[1].length !== 6) {
-        setErrorMessage(
-          "Please make sure all claim codes are 6 characters long"
-        );
-        return false;
-      }
-    }
-    setErrorMessage("");
-    return true;
-  };
-
   if (modalMode === "importClaimCodes") {
     return (
       <Modal
@@ -148,17 +124,19 @@ export default function DistributePOAP({ handleClose }: Props) {
                     const res = await updateFormCollection(collection.id, {
                       formMetadata: {
                         ...collection.formMetadata,
-                        poapDistributionEnabled: false,
                         poapEventId: "",
                         poapEditCode: "",
                       },
                     });
-                    updateCollection(res);
-                    if (res) {
-                      handleClose();
+                    if (!res) {
+                      toast.error("Something went wrong");
+                      setLoading(false);
+                      return;
                     }
 
+                    updateCollection(res);
                     setLoading(false);
+                    handleClose();
                   }}
                 >
                   Disable POAP
@@ -173,16 +151,20 @@ export default function DistributePOAP({ handleClose }: Props) {
                     const res = await updateFormCollection(collection.id, {
                       formMetadata: {
                         ...collection.formMetadata,
-                        poapDistributionEnabled: true,
                         poapEventId,
                         poapEditCode,
                         walletConnectionRequired: true,
                       },
                     });
-                    updateCollection(res);
-                    if (res) {
+                    if (!res?.formMetadata?.poapEventId) {
+                      toast.error("Something went wrong");
                       setLoading(false);
-                    } else setLoading(false);
+                      return;
+                    }
+
+                    updateCollection(res);
+                    setLoading(false);
+                    handleClose();
                   }}
                 >
                   Add Poap Event

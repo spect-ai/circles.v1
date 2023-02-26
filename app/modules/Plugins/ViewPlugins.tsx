@@ -94,7 +94,7 @@ export default function ViewPlugins({}: Props) {
   const isPluginAdded = (pluginName: string) => {
     switch (pluginName) {
       case "poap":
-        return collection.formMetadata.poapDistributionEnabled === true;
+        return !!collection.formMetadata.poapEventId;
       case "guildxyz":
         return !!collection.formMetadata.formRoleGating;
       case "gtcpassport":

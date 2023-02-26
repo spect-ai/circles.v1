@@ -849,7 +849,6 @@ export type FormMetadata = {
   ceramicEnabled?: boolean;
   claimCodes?: string[];
   claimCode?: string;
-  poapDistributionEnabled?: boolean;
   poapEventId?: string;
   poapEditCode?: string;
 };

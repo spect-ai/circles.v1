@@ -38,7 +38,7 @@ export const updateField = async (
 ) => {
   return await (
     await fetch(
-      `${process.env.API_HOST}/collection/v1/${collectionId}/updateProperty?propertyId=${name}`,
+      `${process.env.API_HOST}/collection/v1/${collectionId}/updateProperty`,
       {
         method: "PATCH",
         headers: {
@@ -47,6 +47,7 @@ export const updateField = async (
         credentials: "include",
         body: JSON.stringify({
           id: collectionId,
+          propertyId: name,
           ...update,
         }),
       }
@@ -57,13 +58,16 @@ export const updateField = async (
 export const deleteField = async (collectionId: string, name: string) => {
   return await (
     await fetch(
-      `${process.env.API_HOST}/collection/v1/${collectionId}/removeProperty?propertyId=${name}`,
+      `${process.env.API_HOST}/collection/v1/${collectionId}/removeProperty`,
       {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
         },
         credentials: "include",
+        body: JSON.stringify({
+          propertyId: name,
+        }),
       }
     )
   ).json();
