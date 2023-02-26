@@ -191,11 +191,6 @@ export default function AddField({ propertyName, handleClose }: Props) {
     ) {
       setName(propertyName);
       setInitialName(propertyName);
-      // setNotifyUserType(
-      //   collection.properties[propertyName].onUpdateNotifyUserTypes?.map(
-      //     (type) => ({ label: type, value: type })
-      //   )
-      // );
       const property = collection.properties[propertyName];
       setDescription(property?.description || "");
       setRequired(property?.required ? 1 : 0);

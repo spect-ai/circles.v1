@@ -345,7 +345,6 @@ function EditValue({ value, setValue, propertyName, dataId, disabled }: Props) {
           )}
         </Box>
       )}
-      {console.log({ value })}
       {["discord", "telegram", "github"].includes(property?.type) && (
         <Box>
           {isEditing ? (
