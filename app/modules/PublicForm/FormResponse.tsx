@@ -39,6 +39,13 @@ const StyledImage = styled.img`
     width: 18rem;
   }
   width: 24rem;
+`;
+
+const CircularStyledImage = styled.img`
+  @media (max-width: 768px) {
+    width: 18rem;
+  }
+  width: 24rem;
   border-radius: 20rem;
 `;
 
@@ -68,6 +75,8 @@ export default function FormResponse({
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
+
+  console.log({ surveyTokenClaimed });
 
   return (
     <Box
@@ -116,7 +125,7 @@ export default function FormResponse({
               }}
             >
               {" "}
-              <StyledImage
+              <CircularStyledImage
                 src={`https://spect.infura-ipfs.io/ipfs/QmcBLdB23dQkXdMKFHAjVKMKBPJF82XkqR5ZkxyCk6aset`}
                 alt="poap"
               />
@@ -270,7 +279,7 @@ export default function FormResponse({
           marginTop="8"
           padding="2"
         >
-          {form.formMetadata.surveyTokenId && (
+          {(canClaimSurveyToken || surveyTokenClaimed) && (
             <Box
               display="flex"
               flexDirection="row"
@@ -311,34 +320,31 @@ export default function FormResponse({
               }}
               gap="4"
             >
-              {" "}
-              {surveyTokenClaimed && (
-                <Box
-                  display="flex"
-                  flexDirection="row"
-                  gap="4"
-                  justifyContent={{
-                    xs: "center",
-                    xl: "flex-start",
-                  }}
-                >
-                  {" "}
-                  <Text variant="extraLarge" weight="bold">
-                    🙌
-                  </Text>
-                  <Text variant="large" weight="bold">
-                    {form.formMetadata.surveyDistributionType === 1
-                      ? surveyDistributionInfo?.amountPerResponse
-                        ? `You have claimed ${ethers.utils.formatEther(
-                            surveyDistributionInfo?.amountPerResponse?.toString()
-                          )} ${
-                            form.formMetadata?.surveyToken?.label
-                          } for responding to this form 💰`
-                        : "You have claimed your tokens for responding to this form 💰"
-                      : `You have claimed ${form.formMetadata.surveyTotalValue} ${form.formMetadata.surveyToken?.label} for submitting a response 💰`}
-                  </Text>
-                </Box>
-              )}
+              <Box
+                display="flex"
+                flexDirection="row"
+                gap="4"
+                justifyContent={{
+                  xs: "center",
+                  xl: "flex-start",
+                }}
+              >
+                {" "}
+                <Text variant="extraLarge" weight="bold">
+                  🙌
+                </Text>
+                <Text variant="large" weight="bold">
+                  {form.formMetadata.surveyDistributionType === 1
+                    ? surveyDistributionInfo?.amountPerResponse
+                      ? `You have claimed ${ethers.utils.formatEther(
+                          surveyDistributionInfo?.amountPerResponse?.toString()
+                        )} ${
+                          form.formMetadata?.surveyToken?.label
+                        } for responding to this form 💰`
+                      : "You have claimed your tokens for responding to this form 💰"
+                    : `You have claimed ${form.formMetadata.surveyTotalValue} ${form.formMetadata.surveyToken?.label} for submitting a response 💰`}
+                </Text>
+              </Box>
               <Box>
                 <Stack direction="vertical">
                   <TwitterShareButton

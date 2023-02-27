@@ -291,6 +291,7 @@ export default function DistributeERC20({
           <Box width="1/2">
             <PrimaryButton
               loading={isLoading}
+              disabled={isLoading}
               onClick={async () => {
                 if (!registry) return;
                 if (
