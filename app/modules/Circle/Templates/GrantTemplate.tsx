@@ -63,24 +63,26 @@ export default function GrantTemplate({ handleClose }: Props) {
     >();
 
   useEffect(() => {
-    const getGuildChannels = async () => {
-      const data = await fetchGuildChannels(
-        circle?.discordGuildId,
-        "GUILD_CATEGORY"
-      );
-      const categoryOptions = data.guildChannels?.map((channel: any) => ({
-        label: channel.name,
-        value: channel.id,
-      }));
-      setCategoryOptions(categoryOptions);
-    };
-    if (circle?.discordGuildId) void getGuildChannels();
-    const fetchGuildRoles = async () => {
-      const data = await getGuildRoles(circle?.discordGuildId);
-      data && setDiscordRoles(data.roles);
-      console.log({ data });
-    };
-    if (circle?.discordGuildId) void fetchGuildRoles();
+    if (circle) {
+      const getGuildChannels = async () => {
+        const data = await fetchGuildChannels(
+          circle?.discordGuildId,
+          "GUILD_CATEGORY"
+        );
+        const categoryOptions = data.guildChannels?.map((channel: any) => ({
+          label: channel.name,
+          value: channel.id,
+        }));
+        setCategoryOptions(categoryOptions);
+      };
+      if (circle?.discordGuildId) void getGuildChannels();
+      const fetchGuildRoles = async () => {
+        const data = await getGuildRoles(circle?.discordGuildId);
+        data && setDiscordRoles(data.roles);
+        console.log({ data });
+      };
+      if (circle?.discordGuildId) void fetchGuildRoles();
+    }
   }, [circle?.discordGuildId]);
 
   const useTemplate = async () => {
@@ -93,7 +95,7 @@ export default function GrantTemplate({ handleClose }: Props) {
       };
     }
     const res = await createTemplateFlow(
-      circle?.id,
+      circle?.id || "",
       {
         roles,
         registry: networks,
@@ -127,7 +129,7 @@ export default function GrantTemplate({ handleClose }: Props) {
                   }
                   onClick={() => {
                     window.open(
-                      `https://discord.com/oauth2/authorize?client_id=942494607239958609&permissions=17448306704&redirect_uri=${origin}/api/connectDiscord&response_type=code&scope=bot&state=${circle.slug}`,
+                      `https://discord.com/oauth2/authorize?client_id=942494607239958609&permissions=17448306704&redirect_uri=${origin}/api/connectDiscord&response_type=code&scope=bot&state=${circle?.slug}`,
                       "_blank"
                     );
 

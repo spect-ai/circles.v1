@@ -2,9 +2,7 @@ import { Registry } from "@/app/types";
 import { Box, Button, Heading, Stack } from "degen";
 import React, { useState } from "react";
 import { useCircle } from "../CircleContext";
-
 import { createTemplateFlow } from "@/app/services/Templates";
-import { useRouter } from "next/router";
 import RewardTokenOptions from "../../Collection/AddField/RewardTokenOptions";
 import { useAtom } from "jotai";
 import { scribeOpenAtom, scribeUrlAtom } from "@/pages/_app";
@@ -16,7 +14,6 @@ interface Props {
 
 export default function KanbanProject({ handleClose }: Props) {
   const { circle, registry, setCircleData } = useCircle();
-  const router = useRouter();
   const [networks, setNetworks] = useState<Registry | undefined>({
     "137": registry?.["137"],
   } as Registry);
@@ -26,7 +23,7 @@ export default function KanbanProject({ handleClose }: Props) {
   const useTemplate = async () => {
     handleClose(false);
     const res = await createTemplateFlow(
-      circle?.id,
+      circle?.id || "",
       {
         registry: networks,
       },

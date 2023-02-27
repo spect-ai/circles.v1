@@ -263,7 +263,7 @@ export default function RewardTokenOptions({
                         address,
                       },
                     };
-                    const res = await addToken(circle?.id, {
+                    const res = await addToken(circle?.id || "", {
                       chainId: selectedChain.value as string,
                       address,
                       symbol: tokenSymbol,

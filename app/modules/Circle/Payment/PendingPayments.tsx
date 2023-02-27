@@ -20,6 +20,7 @@ export default function PendingPayments() {
   const router = useRouter();
   const { circle } = useCircle();
 
+  if (!circle) return null;
   return (
     <Stack>
       <Box>

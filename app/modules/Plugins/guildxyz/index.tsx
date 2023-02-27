@@ -88,7 +88,7 @@ export default function RoleGate({ handleClose }: Props) {
   return (
     <Modal title="Guild Integration" handleClose={handleClose} size="small">
       <Box padding="8" width="full">
-        {!circle.guildxyzId ? (
+        {!circle?.guildxyzId ? (
           <Stack space="1">
             <Input
               label="Guild URL on Guild.xyz"
@@ -119,7 +119,7 @@ export default function RoleGate({ handleClose }: Props) {
                       {
                         guildxyzId: guildServer.id,
                       },
-                      circle?.id
+                      circle?.id || ""
                     );
                     console.log({ res });
                     setCircleData(res);

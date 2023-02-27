@@ -53,49 +53,53 @@ function CreateCollectionModal({
   );
 
   const onSubmit = () => {
-    setLoading(true);
-    mutateAsync({
-      name,
-      private: false,
-      circleId: circle?.id,
-      defaultView: collectionType === 0 ? "form" : "table",
-      collectionType,
-    })
-      .then(async (res) => {
-        const resJson = await res.json();
-        console.log({ resJson });
-        void router.push(`/${circle?.slug}/r/${resJson.slug}`);
-        void close();
-        if (folderId) {
-          const prev = Array.from(circle?.folderDetails[folderId]?.contentIds);
-          prev.push(resJson.id);
-          const payload = {
-            contentIds: prev,
-          };
-          void updateFolder(payload, circle?.id, folderId).then(
-            () => void fetchCircle()
-          );
-        } else if (circle?.folderOrder.length !== 0) {
-          const folder = Object.entries(circle?.folderDetails)?.find(
-            (pair) => pair[1].avatar === "All"
-          );
-          const prev = Array.from(
-            circle?.folderDetails[folder?.[0] as string]?.contentIds
-          );
-          prev.push(resJson.id);
-          const payload = {
-            contentIds: prev,
-          };
-          void updateFolder(payload, circle?.id, folder?.[0] as string).then(
-            () => void fetchCircle()
-          );
-        }
-        setLoading(false);
+    if (circle) {
+      setLoading(true);
+      mutateAsync({
+        name,
+        private: false,
+        circleId: circle?.id,
+        defaultView: collectionType === 0 ? "form" : "table",
+        collectionType,
       })
-      .catch((err) => {
-        console.log(err);
-        setLoading(false);
-      });
+        .then(async (res) => {
+          const resJson = await res.json();
+          console.log({ resJson });
+          void router.push(`/${circle?.slug}/r/${resJson.slug}`);
+          void close();
+          if (folderId) {
+            const prev = Array.from(
+              circle?.folderDetails[folderId]?.contentIds
+            );
+            prev.push(resJson.id);
+            const payload = {
+              contentIds: prev,
+            };
+            void updateFolder(payload, circle?.id, folderId).then(
+              () => void fetchCircle()
+            );
+          } else if (circle?.folderOrder.length !== 0) {
+            const folder = Object.entries(circle?.folderDetails)?.find(
+              (pair) => pair[1].avatar === "All"
+            );
+            const prev = Array.from(
+              circle?.folderDetails[folder?.[0] as string]?.contentIds
+            );
+            prev.push(resJson.id);
+            const payload = {
+              contentIds: prev,
+            };
+            void updateFolder(payload, circle?.id, folder?.[0] as string).then(
+              () => void fetchCircle()
+            );
+          }
+          setLoading(false);
+        })
+        .catch((err) => {
+          console.log(err);
+          setLoading(false);
+        });
+    }
   };
 
   return (

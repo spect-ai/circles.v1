@@ -242,7 +242,7 @@ export const SnapshotModal = ({
                   collection.id,
                   dataId,
                   {
-                    snapshotSpace: circle?.snapshot?.id,
+                    snapshotSpace: circle?.snapshot?.id || "",
                     proposalId: snapRes.id,
                   }
                 );

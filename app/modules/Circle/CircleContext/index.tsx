@@ -11,7 +11,7 @@ interface CircleContextType {
   isLoading: boolean;
   isBatchPayOpen: boolean;
   setIsBatchPayOpen: (isBatchPayOpen: boolean) => void;
-  circle: CircleType;
+  circle: CircleType | undefined;
   memberDetails: MemberDetails | undefined;
   registry: Registry | undefined;
   retro: RetroType | undefined;

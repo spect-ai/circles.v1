@@ -14,16 +14,16 @@ import styled from "styled-components";
 import CreateItems from "./CreateItems";
 
 interface Props {
-  filteredProjects: {
+  filteredProjects?: {
     [key: string]: ProjectType;
   };
-  filteredRetro: {
+  filteredRetro?: {
     [key: string]: RetroType;
   };
-  filteredWorkstreams: {
+  filteredWorkstreams?: {
     [key: string]: CircleType;
   };
-  filteredCollections: {
+  filteredCollections?: {
     [key: string]: {
       id: string;
       name: string;

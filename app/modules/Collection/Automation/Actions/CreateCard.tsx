@@ -107,7 +107,7 @@ export default function CreateCard({
     try {
       const data: CollectionType[] = await (
         await fetch(
-          `${process.env.API_HOST}/circle/v1/${circle.id}/allActiveCollections`
+          `${process.env.API_HOST}/circle/v1/${circle?.id}/allActiveCollections`
         )
       ).json();
       setCollectionOptions(

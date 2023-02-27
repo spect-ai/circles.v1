@@ -161,24 +161,26 @@ export default function AddField({ propertyName, handleClose }: Props) {
   };
 
   const updateRewardOptions = (property: Property) => {
-    if (property?.rewardOptions) {
-      setNetworks(property.rewardOptions);
-    } else {
-      if (
-        circle.defaultPayment?.chain?.chainId &&
-        circle.defaultPayment?.token?.address &&
-        registry
-      ) {
-        const chainId = circle.defaultPayment?.chain?.chainId;
-        const tokenAddress = circle.defaultPayment?.token?.address;
-        setNetworks({
-          [chainId]: {
-            ...(registry[chainId] || {}),
-            [tokenAddress]: {
-              ...(registry[chainId].tokenDetails[tokenAddress] || {}),
+    if (circle) {
+      if (property?.rewardOptions) {
+        setNetworks(property.rewardOptions);
+      } else {
+        if (
+          circle.defaultPayment?.chain?.chainId &&
+          circle.defaultPayment?.token?.address &&
+          registry
+        ) {
+          const chainId = circle.defaultPayment?.chain?.chainId;
+          const tokenAddress = circle.defaultPayment?.token?.address;
+          setNetworks({
+            [chainId]: {
+              ...(registry[chainId] || {}),
+              [tokenAddress]: {
+                ...(registry[chainId].tokenDetails[tokenAddress] || {}),
+              },
             },
-          },
-        });
+          });
+        }
       }
     }
   };

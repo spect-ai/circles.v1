@@ -35,7 +35,7 @@ export default function PostCardOnDiscord({
 
   useEffect(() => {
     const getGuildChannels = async () => {
-      const data = await fetchGuildChannels(circle?.discordGuildId);
+      const data = await fetchGuildChannels(circle?.discordGuildId || "");
       const categoryOptions = data.guildChannels?.map((channel: any) => ({
         label: channel.name,
         value: channel.id,
@@ -45,7 +45,7 @@ export default function PostCardOnDiscord({
     if (circle?.discordGuildId) void getGuildChannels();
   }, [circle?.discordGuildId]);
 
-  if (!circle.discordGuildId)
+  if (!circle?.discordGuildId)
     return (
       <Box
         width={{
@@ -54,7 +54,7 @@ export default function PostCardOnDiscord({
         }}
         onClick={() => {
           window.open(
-            `https://discord.com/oauth2/authorize?client_id=942494607239958609&permissions=17448306704&redirect_uri=${origin}/api/connectDiscord&response_type=code&scope=bot&state=${circle.slug}/r/${collection.slug}`,
+            `https://discord.com/oauth2/authorize?client_id=942494607239958609&permissions=17448306704&redirect_uri=${origin}/api/connectDiscord&response_type=code&scope=bot&state=${circle?.slug}/r/${collection.slug}`,
             "_blank"
           );
         }}

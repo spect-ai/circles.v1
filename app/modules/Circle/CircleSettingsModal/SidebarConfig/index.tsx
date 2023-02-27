@@ -27,7 +27,7 @@ const SidebarConfig = (props: Props) => {
       {
         sidebarConfig,
       },
-      circle.id
+      circle?.id || ""
     )
       .then((res) => {
         if (res) {
@@ -37,6 +37,7 @@ const SidebarConfig = (props: Props) => {
       .catch((err) => console.log(err));
   };
 
+  if (!circle) return null;
   return (
     <Box padding="8">
       <Stack>

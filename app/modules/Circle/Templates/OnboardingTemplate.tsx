@@ -49,7 +49,7 @@ export default function OnboardingTemplate({ handleClose }: Props) {
       };
     }
     const res = await createTemplateFlow(
-      circle?.id,
+      circle?.id || "",
       {
         roles,
       },
@@ -65,7 +65,7 @@ export default function OnboardingTemplate({ handleClose }: Props) {
 
   useEffect(() => {
     const fetchGuildRoles = async () => {
-      const data = await getGuildRoles(circle?.discordGuildId);
+      const data = await getGuildRoles(circle?.discordGuildId || "");
       data && setDiscordRoles(data.roles);
       console.log({ data });
     };
@@ -91,7 +91,7 @@ export default function OnboardingTemplate({ handleClose }: Props) {
                   }
                   onClick={() => {
                     window.open(
-                      `https://discord.com/oauth2/authorize?client_id=942494607239958609&permissions=17448306704&redirect_uri=${origin}/api/connectDiscord&response_type=code&scope=bot&state=${circle.slug}`,
+                      `https://discord.com/oauth2/authorize?client_id=942494607239958609&permissions=17448306704&redirect_uri=${origin}/api/connectDiscord&response_type=code&scope=bot&state=${circle?.slug}`,
                       "_blank"
                     );
 

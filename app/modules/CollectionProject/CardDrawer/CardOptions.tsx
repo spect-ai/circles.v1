@@ -170,7 +170,7 @@ export default function CardOptions({
                 }
                 setIsOpen(false);
                 handleDrawerClose();
-                const res = await addPendingPayment(circle?.id, {
+                const res = await addPendingPayment(circle?.id || "", {
                   collectionId: collection.id,
                   dataSlugs: [cardSlug],
                 });

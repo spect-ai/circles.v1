@@ -53,50 +53,54 @@ function CreateSpaceModal({ setWorkstreamModal, folderId }: Props) {
   );
 
   const onSubmit = () => {
-    setLoading(true);
-    mutateAsync({
-      name,
-      description,
-      private: visibilityTab === 1,
-      parent: circle?.id,
-      avatar: logo,
-    })
-      .then(async (res) => {
-        const resJson = await res.json();
-        console.log({ resJson });
-        void router.push(`/${resJson.slug}`);
-        void close();
-        if (resJson.id && folderId) {
-          const prev = Array.from(circle?.folderDetails[folderId]?.contentIds);
-          prev.push(resJson.id);
-          const payload = {
-            contentIds: prev,
-          };
-          console.log(payload);
-          await updateFolder(payload, circle?.id, folderId);
-        }
-
-        if (resJson.id && !folderId && circle?.folderOrder.length !== 0) {
-          const folder = Object.entries(circle?.folderDetails)?.find(
-            (pair) => pair[1].avatar === "All"
-          );
-          const prev = Array.from(
-            circle?.folderDetails[folder?.[0] as string]?.contentIds
-          );
-          prev.push(resJson.id);
-          const payload = {
-            contentIds: prev,
-          };
-          console.log(payload);
-          await updateFolder(payload, circle?.id, folder?.[0] as string);
-        }
-        fetchCircle();
-        setLoading(false);
+    if (circle) {
+      setLoading(true);
+      mutateAsync({
+        name,
+        description,
+        private: visibilityTab === 1,
+        parent: circle?.id,
+        avatar: logo,
       })
-      .catch((err) => {
-        console.log({ err });
-        setLoading(false);
-      });
+        .then(async (res) => {
+          const resJson = await res.json();
+          console.log({ resJson });
+          void router.push(`/${resJson.slug}`);
+          void close();
+          if (resJson.id && folderId) {
+            const prev = Array.from(
+              circle?.folderDetails[folderId]?.contentIds
+            );
+            prev.push(resJson.id);
+            const payload = {
+              contentIds: prev,
+            };
+            console.log(payload);
+            await updateFolder(payload, circle?.id, folderId);
+          }
+
+          if (resJson.id && !folderId && circle?.folderOrder.length !== 0) {
+            const folder = Object.entries(circle?.folderDetails)?.find(
+              (pair) => pair[1].avatar === "All"
+            );
+            const prev = Array.from(
+              circle?.folderDetails[folder?.[0] as string]?.contentIds
+            );
+            prev.push(resJson.id);
+            const payload = {
+              contentIds: prev,
+            };
+            console.log(payload);
+            await updateFolder(payload, circle?.id, folder?.[0] as string);
+          }
+          fetchCircle();
+          setLoading(false);
+        })
+        .catch((err) => {
+          console.log({ err });
+          setLoading(false);
+        });
+    }
   };
 
   const uploadFile = async (file: File) => {

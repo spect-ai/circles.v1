@@ -26,7 +26,7 @@ export default function TemplateModal({ handleClose }: Props) {
   const useTemplate = async () => {
     handleClose(false);
     const res = await createTemplateFlow(
-      circle?.id,
+      circle?.id || "",
       {
         registry: {
           "137": registry?.["137"],

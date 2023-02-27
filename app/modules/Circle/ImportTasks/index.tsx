@@ -31,8 +31,7 @@ export default function ImportTasks({}: Props) {
   const [titleColumn, setTitleColumn] = useState("");
   const [descriptionColumn, setDescriptionColumn] = useState("");
 
-  const { circle, setLocalCircle } = useCircle();
-  const router = useRouter();
+  const { circle } = useCircle();
 
   const { localCollection: collection, updateCollection } =
     useLocalCollection();
@@ -354,7 +353,7 @@ export default function ImportTasks({}: Props) {
                           collectionId: collection.id,
                           groupByColumn,
                           collectionProperties: properties,
-                          circleId: circle.id,
+                          circleId: circle?.id || "",
                         });
                         console.log({ res });
                         updateCollection(res.collection);

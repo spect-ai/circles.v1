@@ -45,7 +45,7 @@ export default function PaymentCardDrawer({ handleClose }: Props) {
   const [confirmRewardUpdate, setConfirmRewardUpdate] = useState(false);
   const { newCard, value, setValue, pay } = usePaymentViewCommon();
   const [cardOptions, setCardOptions] = useState([] as Option[]);
-  const projectOptions = Object.values(circle.collections)
+  const projectOptions = Object.values(circle?.collections || {})
     ?.filter(
       (collection) => collection.collectionType === 1 && !collection.archived
     )
@@ -74,6 +74,7 @@ export default function PaymentCardDrawer({ handleClose }: Props) {
   );
 
   const updateRewardFromCard = async (val?: Option) => {
+    if (!circle) return;
     const payeeType = val?.data?.payeeType || value.data?.data?.payeeType;
     const payee = val?.data?.payee || value.data?.data?.payee;
     const reward = val?.data?.reward || value.data?.data?.reward;
@@ -147,7 +148,7 @@ export default function PaymentCardDrawer({ handleClose }: Props) {
   };
 
   const onChange = async (update: any, labelOptions?: Option[]) => {
-    if (query.paymentId) {
+    if (query.paymentId && circle) {
       let res;
       setCircleData({
         ...circle,
@@ -223,6 +224,8 @@ export default function PaymentCardDrawer({ handleClose }: Props) {
         });
     }
   }, [value.collection]);
+
+  if (!circle) return null;
 
   return (
     <Drawer

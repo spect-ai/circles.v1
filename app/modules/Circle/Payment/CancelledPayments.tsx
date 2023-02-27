@@ -1,7 +1,5 @@
-import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { Box, Stack, Text } from "degen";
 import { AnimatePresence } from "framer-motion";
-import { useState } from "react";
 import styled from "styled-components";
 import { useCircle } from "../CircleContext";
 import usePaymentViewCommon from "./Common/usePaymentCommon";
@@ -9,9 +7,10 @@ import PaymentCard from "./PaymentCard";
 import PaymentCardDrawer from "./PaymentCardDrawer";
 
 export default function CompletedPayments() {
-  const { circle, setCircleData } = useCircle();
+  const { circle } = useCircle();
   const { isCardDrawerOpen, setIsCardDrawerOpen } = usePaymentViewCommon();
 
+  if (!circle) return null;
   return (
     <Stack>
       <AnimatePresence>

@@ -43,7 +43,7 @@ export default function ConnectGnosis() {
         chainId: chain,
         address: selectedSafe.value,
       },
-      circle?.id
+      circle?.id || ""
     );
     console.log({ res });
     setIsLoading(false);
@@ -59,7 +59,7 @@ export default function ConnectGnosis() {
         chainId,
         address,
       },
-      circle?.id
+      circle?.id || ""
     );
     console.log({ res });
     setIsLoading(false);
@@ -90,160 +90,171 @@ export default function ConnectGnosis() {
     }
   }, [chain, isOpen]);
 
-  return (
-    <>
-      <PrimaryButton
-        variant={
-          circle?.safeAddresses &&
+  if (circle) {
+    return (
+      <>
+        <PrimaryButton
+          variant={
+            circle?.safeAddresses &&
+            Object.entries(circle?.safeAddresses).some(
+              ([aChain, aSafes]) => aSafes?.length > 0
+            )
+              ? "tertiary"
+              : "secondary"
+          }
+          onClick={() => {
+            setIsOpen(true);
+            try {
+              const account = getAccount();
+              if (!account?.isConnected) openConnectModal && openConnectModal();
+            } catch (e) {
+              console.log(e);
+            }
+          }}
+        >
+          {circle?.safeAddresses &&
           Object.entries(circle?.safeAddresses).some(
             ([aChain, aSafes]) => aSafes?.length > 0
           )
-            ? "tertiary"
-            : "secondary"
-        }
-        onClick={() => {
-          setIsOpen(true);
-          try {
-            const account = getAccount();
-            if (!account?.isConnected) openConnectModal && openConnectModal();
-          } catch (e) {
-            console.log(e);
-          }
-        }}
-      >
-        {circle?.safeAddresses &&
-        Object.entries(circle?.safeAddresses).some(
-          ([aChain, aSafes]) => aSafes?.length > 0
-        )
-          ? "Gnosis Safe Connected"
-          : "Connect Gnosis Safe"}
-      </PrimaryButton>
-      <AnimatePresence>
-        {isOpen && (
-          <Modal handleClose={() => setIsOpen(false)} title="Connect Gnosis">
-            <Box
-              display="flex"
-              flexDirection="column"
-              padding={{
-                xs: "4",
-                md: "8",
-              }}
-              paddingBottom="0"
-              gap="2"
-            >
-              <Text variant="label">Your Gnosis Safe addressses</Text>
-              {Object.keys(circle?.safeAddresses || {}).map((aChain) => {
-                if (circle?.safeAddresses[aChain].length > 0)
-                  return (
-                    <Box
-                      key={aChain}
-                      display="flex"
-                      flexDirection="row"
-                      gap="2"
-                      alignItems="center"
-                    >
-                      <Button
-                        shape="circle"
-                        size="small"
-                        variant="transparent"
-                        onClick={async () => {
-                          await onDelete(
-                            aChain,
-                            circle?.safeAddresses[aChain][0]
-                          );
-                        }}
+            ? "Gnosis Safe Connected"
+            : "Connect Gnosis Safe"}
+        </PrimaryButton>
+        <AnimatePresence>
+          {isOpen && (
+            <Modal handleClose={() => setIsOpen(false)} title="Connect Gnosis">
+              <Box
+                display="flex"
+                flexDirection="column"
+                padding={{
+                  xs: "4",
+                  md: "8",
+                }}
+                paddingBottom="0"
+                gap="2"
+              >
+                <Text variant="label">Your Gnosis Safe addressses</Text>
+                {Object.keys(circle?.safeAddresses || {}).map((aChain) => {
+                  if (circle?.safeAddresses[aChain].length > 0)
+                    return (
+                      <Box
+                        key={aChain}
+                        display="flex"
+                        flexDirection="row"
+                        gap="2"
+                        alignItems="center"
                       >
-                        <DeleteOutlined />
-                      </Button>
-                      <Box width="1/4">
-                        <Text variant="small">{registry?.[aChain]?.name}</Text>
-                      </Box>
-                      <Stack direction="horizontal" wrap>
-                        {circle?.safeAddresses[aChain].map((aSafe) => (
-                          <Box key={aSafe}>
-                            <Tag hover tone="accent">
-                              <Text color="accent">{aSafe}</Text>
-                            </Tag>
-                          </Box>
-                        ))}
-                      </Stack>
-                    </Box>
-                  );
-              })}
-              {!Object.keys(circle?.safeAddresses || {}).some(
-                (aChain) => circle?.safeAddresses[aChain].length > 0
-              ) && (
-                <Box>
-                  <Text variant="small">
-                    You have not connected any Gnosis Safe addresses yet.
-                  </Text>
-                </Box>
-              )}
-            </Box>
-            <Box padding="8">
-              <Stack>
-                <Text variant="label">Add a new safe address</Text>
-                <Text variant="small">Pick a Network</Text>
-                <Stack direction="horizontal">
-                  {getFlattenedNetworks(registry as Registry)?.map((aChain) => {
-                    if (
-                      aChain.chainId !== "56" &&
-                      aChain.chainId !== "43114" &&
-                      aChain.chainId !== "100"
-                    )
-                      return (
-                        <Box
-                          cursor="pointer"
-                          key={aChain.chainId}
-                          onClick={() => {
-                            setChain(aChain.chainId);
+                        <Button
+                          shape="circle"
+                          size="small"
+                          variant="transparent"
+                          onClick={async () => {
+                            await onDelete(
+                              aChain,
+                              circle?.safeAddresses[aChain][0]
+                            );
                           }}
                         >
-                          <Tag
-                            hover
-                            tone={
-                              chain === aChain.chainId ? "accent" : "secondary"
-                            }
-                          >
-                            <Text
-                              color={
-                                chain === aChain.chainId ? "accent" : "inherit"
-                              }
-                            >
-                              {aChain.name}
-                            </Text>
-                          </Tag>
+                          <DeleteOutlined />
+                        </Button>
+                        <Box width="1/4">
+                          <Text variant="small">
+                            {registry?.[aChain]?.name}
+                          </Text>
                         </Box>
-                      );
-                  })}
+                        <Stack direction="horizontal" wrap>
+                          {circle?.safeAddresses[aChain].map((aSafe) => (
+                            <Box key={aSafe}>
+                              <Tag hover tone="accent">
+                                <Text color="accent">{aSafe}</Text>
+                              </Tag>
+                            </Box>
+                          ))}
+                        </Stack>
+                      </Box>
+                    );
+                })}
+                {!Object.keys(circle?.safeAddresses || {}).some(
+                  (aChain) => circle?.safeAddresses[aChain].length > 0
+                ) && (
+                  <Box>
+                    <Text variant="small">
+                      You have not connected any Gnosis Safe addresses yet.
+                    </Text>
+                  </Box>
+                )}
+              </Box>
+              <Box padding="8">
+                <Stack>
+                  <Text variant="label">Add a new safe address</Text>
+                  <Text variant="small">Pick a Network</Text>
+                  <Stack direction="horizontal">
+                    {getFlattenedNetworks(registry as Registry)?.map(
+                      (aChain) => {
+                        if (
+                          aChain.chainId !== "56" &&
+                          aChain.chainId !== "43114" &&
+                          aChain.chainId !== "100"
+                        )
+                          return (
+                            <Box
+                              cursor="pointer"
+                              key={aChain.chainId}
+                              onClick={() => {
+                                setChain(aChain.chainId);
+                              }}
+                            >
+                              <Tag
+                                hover
+                                tone={
+                                  chain === aChain.chainId
+                                    ? "accent"
+                                    : "secondary"
+                                }
+                              >
+                                <Text
+                                  color={
+                                    chain === aChain.chainId
+                                      ? "accent"
+                                      : "inherit"
+                                  }
+                                >
+                                  {aChain.name}
+                                </Text>
+                              </Tag>
+                            </Box>
+                          );
+                      }
+                    )}
+                  </Stack>
+                  <Text variant="small">Address of your Safe</Text>
+                  <Dropdown
+                    options={safes}
+                    selected={selectedSafe}
+                    onChange={(value) => {
+                      setselectedSafe(value);
+                    }}
+                    multiple={false}
+                    portal
+                  />
+                  <PrimaryButton
+                    shape="circle"
+                    onClick={onSubmit}
+                    loading={isLoading}
+                    disabled={
+                      circle.safeAddresses?.[chain]?.includes(
+                        selectedSafe?.value
+                      ) || !selectedSafe?.value
+                    }
+                  >
+                    Save
+                  </PrimaryButton>
                 </Stack>
-                <Text variant="small">Address of your Safe</Text>
-                <Dropdown
-                  options={safes}
-                  selected={selectedSafe}
-                  onChange={(value) => {
-                    setselectedSafe(value);
-                  }}
-                  multiple={false}
-                  portal
-                />
-                <PrimaryButton
-                  shape="circle"
-                  onClick={onSubmit}
-                  loading={isLoading}
-                  disabled={
-                    circle.safeAddresses?.[chain]?.includes(
-                      selectedSafe?.value
-                    ) || !selectedSafe?.value
-                  }
-                >
-                  Save
-                </PrimaryButton>
-              </Stack>
-            </Box>
-          </Modal>
-        )}
-      </AnimatePresence>
-    </>
-  );
+              </Box>
+            </Modal>
+          )}
+        </AnimatePresence>
+      </>
+    );
+  }
+  return null;
 }

@@ -43,92 +43,95 @@ export default function AutomationCenter() {
   const { circle } = useCircle();
   const { canDo } = useRoleGate();
   const router = useRouter();
-  const { tab } = router.query;
   const { mode } = useTheme();
 
-  return (
-    <>
-      <ToastContainer
-        toastStyle={{
-          backgroundColor: `${
-            mode === "dark" ? "rgb(20,20,20)" : "rgb(240,240,240)"
-          }`,
-          color: `${
-            mode === "dark" ? "rgb(255,255,255,0.7)" : "rgb(20,20,20,0.7)"
-          }`,
-        }}
-      />
-      <AutomationHeading />
-      <Box marginX={"4"}>
-        {(circle?.automations === undefined ||
-          Object.entries(circle?.automations).length == 0) && (
-          <Box
+  if (circle) {
+    return (
+      <>
+        <ToastContainer
+          toastStyle={{
+            backgroundColor: `${
+              mode === "dark" ? "rgb(20,20,20)" : "rgb(240,240,240)"
+            }`,
+            color: `${
+              mode === "dark" ? "rgb(255,255,255,0.7)" : "rgb(20,20,20,0.7)"
+            }`,
+          }}
+        />
+        <AutomationHeading />
+        <Box marginX={"4"}>
+          {(circle?.automations === undefined ||
+            Object.entries(circle?.automations).length == 0) && (
+            <Box
+              style={{
+                margin: "12% 20%",
+                display: "flex",
+                flexDirection: "column",
+                gap: "1rem",
+                alignItems: "center",
+              }}
+            >
+              <GatewayOutlined
+                style={{ fontSize: "5rem", color: "rgb(191, 90, 242, 0.7)" }}
+              />
+              <Text variant="large" color={"textTertiary"} align="center">
+                {canDo("manageCircleSettings")
+                  ? `Create Automations to reduce repetitive tasks.`
+                  : `Ouch ! This Circle doesnot have automations. And You do not have permission to create new automations.`}
+              </Text>
+            </Box>
+          )}
+          <ScrollContainer
+            id="scroll"
             style={{
-              margin: "12% 20%",
-              display: "flex",
-              flexDirection: "column",
-              gap: "1rem",
+              marginLeft: "0rem",
               alignItems: "center",
+              paddingTop: "1rem",
             }}
           >
-            <GatewayOutlined
-              style={{ fontSize: "5rem", color: "rgb(191, 90, 242, 0.7)" }}
-            />
-            <Text variant="large" color={"textTertiary"} align="center">
-              {canDo("manageCircleSettings")
-                ? `Create Automations to reduce repetitive tasks.`
-                : `Ouch ! This Circle doesnot have automations. And You do not have permission to create new automations.`}
-            </Text>
-          </Box>
-        )}
-        <ScrollContainer
-          id="scroll"
-          style={{
-            marginLeft: "0rem",
-            alignItems: "center",
-            paddingTop: "1rem",
-          }}
-        >
-          {circle.automationsIndexedByCollection !== undefined &&
-            Object.keys(circle?.automationsIndexedByCollection).map(
-              (collection) => {
-                const automations =
-                  circle.automationsIndexedByCollection[collection];
-                if (automations.length === 0) return null;
-                const col = Object.values(circle.collections).find((col) => {
-                  return col.slug === collection;
-                });
-                return (
-                  <Box>
-                    <Automation collection={col as CollectionType} />
-                    <Row id="row">
-                      {automations?.map((auto, idx) => {
-                        const automat = circle.automations[auto];
-                        return (
-                          <Col
-                            md={3}
-                            style={{ padding: "0rem", marginLeft: "1rem" }}
-                          >
-                            <Container mode={mode}>
-                              <Text
-                                variant="base"
-                                color={"textTertiary"}
-                                align="center"
-                                ellipsis
-                              >
-                                {automat.name}
-                              </Text>
-                            </Container>
-                          </Col>
-                        );
-                      })}
-                    </Row>
-                  </Box>
-                );
-              }
-            )}
-        </ScrollContainer>
-      </Box>
-    </>
-  );
+            {circle.automationsIndexedByCollection !== undefined &&
+              Object.keys(circle?.automationsIndexedByCollection).map(
+                (collection) => {
+                  const automations =
+                    circle.automationsIndexedByCollection[collection];
+                  if (automations.length === 0) return null;
+                  const col = Object.values(circle.collections).find((col) => {
+                    return col.slug === collection;
+                  });
+                  return (
+                    <Box>
+                      <Automation collection={col as CollectionType} />
+                      <Row id="row">
+                        {automations?.map((auto, idx) => {
+                          const automat = circle.automations[auto];
+                          return (
+                            <Col
+                              md={3}
+                              style={{ padding: "0rem", marginLeft: "1rem" }}
+                            >
+                              <Container mode={mode}>
+                                <Text
+                                  variant="base"
+                                  color={"textTertiary"}
+                                  align="center"
+                                  ellipsis
+                                >
+                                  {automat.name}
+                                </Text>
+                              </Container>
+                            </Col>
+                          );
+                        })}
+                      </Row>
+                    </Box>
+                  );
+                }
+              )}
+          </ScrollContainer>
+        </Box>
+      </>
+    );
+  } else {
+    return null;
+  }
 }

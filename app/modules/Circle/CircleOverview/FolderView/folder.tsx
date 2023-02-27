@@ -20,12 +20,12 @@ interface Props {
   name: string;
   id: string;
   index: number;
-  projects: { [key: string]: ProjectType };
-  workstreams: { [key: string]: CircleType };
-  retros: {
+  projects?: { [key: string]: ProjectType };
+  workstreams?: { [key: string]: CircleType };
+  retros?: {
     [key: string]: RetroType;
   };
-  collections: {
+  collections?: {
     [key: string]: {
       id: string;
       name: string;
@@ -98,7 +98,7 @@ const Folder = ({
       );
       return;
     }
-    const res = await deleteFolder(circle.id, id);
+    const res = await deleteFolder(circle?.id || "", id);
     console.log({ res });
 
     if (res?.id) {
@@ -114,7 +114,7 @@ const Folder = ({
     }
     const updatedCircle = await updateFolder(
       { name: folderTitle },
-      circle.id,
+      circle?.id || "",
       id
     );
     if (updatedCircle?.id) {

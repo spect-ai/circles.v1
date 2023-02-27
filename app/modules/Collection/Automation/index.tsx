@@ -37,13 +37,13 @@ export default function Automation({
     setTab(id);
   };
   const [tabs, setTabs] = useState([
-    `𝘕𝘦𝘸: Automation ${circle.automationCount || 0 + 1}`,
+    `𝘕𝘦𝘸: Automation ${circle?.automationCount || 0 + 1}`,
   ] as string[]);
   const [automationMode, setAutomationMode] = useState("create");
-  const [automations, setAutomations] = useState(circle.automations || {});
+  const [automations, setAutomations] = useState(circle?.automations || {});
   const [automationOrder, setAutomationOrder] = useState(
-    (circle.automationsIndexedByCollection &&
-      circle.automationsIndexedByCollection[collection.slug as string]) ||
+    (circle?.automationsIndexedByCollection &&
+      circle?.automationsIndexedByCollection[collection.slug as string]) ||
       []
   );
   const [automationId, setAutomationId] = useState(automationOrder[tab]);
@@ -66,6 +66,7 @@ export default function Automation({
     }
   };
   const init = (initTab?: number) => {
+    if (!circle) return;
     setAutomationOrder(
       circle.automationsIndexedByCollection[collection.slug as string]
     );
@@ -131,6 +132,7 @@ export default function Automation({
     conditions: Condition[],
     slug: string
   ) => {
+    if (!circle) return;
     console.log(name, description, trigger, actions, conditions, slug);
     const newAutomation = {
       name,
@@ -163,7 +165,7 @@ export default function Automation({
   };
 
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen || !circle) return;
     if (
       !circle.automationsIndexedByCollection ||
       !collection.slug ||
@@ -173,14 +175,14 @@ export default function Automation({
     } else {
       init();
     }
-  }, [circle.automationsIndexedByCollection, circle.automations]);
+  }, [circle?.automationsIndexedByCollection, circle?.automations]);
 
   useEffect(() => {
     setAutomationInCreate({});
     setAutomationMode("edit");
 
     if (
-      !circle.automationsIndexedByCollection ||
+      !circle?.automationsIndexedByCollection ||
       !collection.slug ||
       !circle.automationsIndexedByCollection[collection.slug as string]?.length
     ) {
@@ -189,6 +191,8 @@ export default function Automation({
       init(0);
     }
   }, [isOpen]);
+
+  if (!circle) return null;
 
   return (
     <Box marginY="2">
@@ -336,62 +340,64 @@ export default function Automation({
                 />
               </Box>
             </Box>
-            {collection?.id && (<Box
-              width={{
-                xs: "full",
-                md: "1/4",
-              }}
-              paddingBottom="4"
-              padding={{
-                xs: "1",
-                md: "1",
-              }}
-              marginLeft="1"
-            >
-              <PrimaryButton
-                variant="secondary"
-                disabled={Object.keys(automationInCreate).length > 0}
-                onClick={() => {
-                  setTabs([
-                    ...tabs,
-                    `𝘕𝘦𝘸: Automation ${circle.automationCount + 1}`,
-                  ]);
-                  setAutomationOrder([
-                    ...automationOrder,
-                    `automation-${circle.automationCount + 1}`,
-                  ]);
-                  setAutomationId(`automation-${circle.automationCount + 1}`);
-
-                  setAutomations({
-                    ...automations,
-                    [`automation-${circle.automationCount + 1}`]: {
-                      id: `automation-${circle.automationCount + 1}`,
-                      name: `Automation ${circle.automationCount + 1}`,
-                      description: "",
-                      trigger: {} as Trigger,
-                      actions: [] as Action[],
-                      conditions: [] as Condition[],
-                      triggerCategory: "collection",
-                    },
-                  });
-                  setAutomationMode("create");
-                  setTab(tabs.length);
-                  setAutomationInCreate({
-                    [`automation-${circle.automationCount + 1}`]: {
-                      id: `automation-${circle.automationCount + 1}`,
-                      name: `Automation ${circle.automationCount + 1}`,
-                      description: "",
-                      trigger: {} as Trigger,
-                      actions: [] as Action[],
-                      conditions: [] as Condition[],
-                      triggerCategory: "collection",
-                    },
-                  });
+            {collection?.id && (
+              <Box
+                width={{
+                  xs: "full",
+                  md: "1/4",
                 }}
+                paddingBottom="4"
+                padding={{
+                  xs: "1",
+                  md: "1",
+                }}
+                marginLeft="1"
               >
-                + New Automation
-              </PrimaryButton>
-            </Box>)}
+                <PrimaryButton
+                  variant="secondary"
+                  disabled={Object.keys(automationInCreate).length > 0}
+                  onClick={() => {
+                    setTabs([
+                      ...tabs,
+                      `𝘕𝘦𝘸: Automation ${circle.automationCount + 1}`,
+                    ]);
+                    setAutomationOrder([
+                      ...automationOrder,
+                      `automation-${circle.automationCount + 1}`,
+                    ]);
+                    setAutomationId(`automation-${circle.automationCount + 1}`);
+
+                    setAutomations({
+                      ...automations,
+                      [`automation-${circle.automationCount + 1}`]: {
+                        id: `automation-${circle.automationCount + 1}`,
+                        name: `Automation ${circle.automationCount + 1}`,
+                        description: "",
+                        trigger: {} as Trigger,
+                        actions: [] as Action[],
+                        conditions: [] as Condition[],
+                        triggerCategory: "collection",
+                      },
+                    });
+                    setAutomationMode("create");
+                    setTab(tabs.length);
+                    setAutomationInCreate({
+                      [`automation-${circle.automationCount + 1}`]: {
+                        id: `automation-${circle.automationCount + 1}`,
+                        name: `Automation ${circle.automationCount + 1}`,
+                        description: "",
+                        trigger: {} as Trigger,
+                        actions: [] as Action[],
+                        conditions: [] as Condition[],
+                        triggerCategory: "collection",
+                      },
+                    });
+                  }}
+                >
+                  + New Automation
+                </PrimaryButton>
+              </Box>
+            )}
           </Modal>
         )}
       </AnimatePresence>

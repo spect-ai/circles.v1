@@ -109,7 +109,7 @@ export default function SendKudos({ handleClose }: Props) {
           .json()
           .then((permissions: Permissions) => {
             if (permissions?.distributeCredentials) {
-              getPrivateCircleCredentials(circle?.id)
+              getPrivateCircleCredentials(circle?.id || "")
                 .then((creds: GetPrivateCirclePropertiesDto | boolean) => {
                   const credentials = creds as GetPrivateCirclePropertiesDto;
                   if (

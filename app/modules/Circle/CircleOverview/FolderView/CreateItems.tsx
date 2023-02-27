@@ -29,25 +29,27 @@ export default function CreateItems({}: Props) {
 
   const createNewFolder = useCallback(async () => {
     setLoading(true);
-    const payload = {
-      name: `Folder-${circle?.folderOrder?.length + 1}`,
-      avatar: "New Avatar",
-      contentIds: [],
-    };
-    const res = await toast.promise(createFolder(payload, circle?.id), {
-      pending: "Creating a new folder...",
-      success: {
-        render: "Folder created successfully",
-      },
-      error: "Some error occured🤯",
-    });
-    console.log({ res });
-    if (res?.id) {
-      setCircleData(res);
-    } else {
-      toast.error("Something went wrong while creating a new folder");
+    if (circle) {
+      const payload = {
+        name: `Folder-${circle?.folderOrder?.length + 1}`,
+        avatar: "New Avatar",
+        contentIds: [],
+      };
+      const res = await toast.promise(createFolder(payload, circle?.id), {
+        pending: "Creating a new folder...",
+        success: {
+          render: "Folder created successfully",
+        },
+        error: "Some error occured🤯",
+      });
+      console.log({ res });
+      if (res?.id) {
+        setCircleData(res);
+      } else {
+        toast.error("Something went wrong while creating a new folder");
+      }
+      setLoading(false);
     }
-    setLoading(false);
   }, [circle?.folderOrder?.length, circle?.id]);
   return (
     <Box paddingX="2">
