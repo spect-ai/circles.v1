@@ -125,10 +125,7 @@ export default function FormResponse({
               }}
             >
               {" "}
-              <CircularStyledImage
-                src={`https://spect.infura-ipfs.io/ipfs/QmcBLdB23dQkXdMKFHAjVKMKBPJF82XkqR5ZkxyCk6aset`}
-                alt="poap"
-              />
+              <CircularStyledImage src={`${poap?.image_url}`} alt="poap" />
             </Box>
           )}
           {poapClaimed ? (
