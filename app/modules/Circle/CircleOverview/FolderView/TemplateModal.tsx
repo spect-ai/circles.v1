@@ -20,7 +20,7 @@ interface Props {
 }
 
 export default function TemplateModal({ handleClose }: Props) {
-  const { localCircle: circle, registry, setCircleData } = useCircle();
+  const { circle, registry, setCircleData } = useCircle();
   const [template, setTemplate] = useState(0);
 
   const useTemplate = async () => {

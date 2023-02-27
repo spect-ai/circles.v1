@@ -113,8 +113,8 @@ const Member = ({ member, roles }: MemberProps) => {
         }}
       >
         <motion.div
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
+          whileHover={{ scale: 1.03 }}
+          whileTap={{ scale: 0.97 }}
           style={{
             cursor: "pointer",
           }}

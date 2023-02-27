@@ -1,4 +1,5 @@
 import { createFolder } from "@/app/services/Folders";
+import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { Box, Stack, Text } from "degen";
 import { AnimatePresence, motion } from "framer-motion";
 import React, { useCallback, useState } from "react";
@@ -6,6 +7,7 @@ import { Trello } from "react-feather";
 import { AiFillFolderAdd } from "react-icons/ai";
 import { FaWpforms } from "react-icons/fa";
 import { MdGroupWork } from "react-icons/md";
+import { toast } from "react-toastify";
 import styled from "styled-components";
 import { useCircle } from "../../CircleContext";
 import CreateCollectionModal from "../../CreateCollectionModal";
@@ -20,19 +22,32 @@ export default function CreateItems({}: Props) {
   const [createWorkstreamModalOpen, setCreateWorkstreamModalOpen] =
     useState(false);
   const [collectionType, setCollectionType] = useState<0 | 1>(0);
-
+  const { canDo } = useRoleGate();
   const { circle, setCircleData } = useCircle();
 
+  const [loading, setLoading] = useState(false);
+
   const createNewFolder = useCallback(async () => {
+    setLoading(true);
     const payload = {
-      name: `Section-${circle?.folderOrder?.length + 1}`,
+      name: `Folder-${circle?.folderOrder?.length + 1}`,
       avatar: "New Avatar",
       contentIds: [],
     };
-    const res = await createFolder(payload, circle?.id);
-    if (res) {
+    const res = await toast.promise(createFolder(payload, circle?.id), {
+      pending: "Creating a new folder...",
+      success: {
+        render: "Folder created successfully",
+      },
+      error: "Some error occured🤯",
+    });
+    console.log({ res });
+    if (res?.id) {
       setCircleData(res);
+    } else {
+      toast.error("Something went wrong while creating a new folder");
     }
+    setLoading(false);
   }, [circle?.folderOrder?.length, circle?.id]);
   return (
     <Box paddingX="2">
@@ -51,29 +66,31 @@ export default function CreateItems({}: Props) {
           />
         )}
       </AnimatePresence>
-      <Grid>
-        {Items.map((item, index) => (
-          <Item
-            key={index}
-            name={item.name}
-            Icon={item.icon}
-            description={item.description}
-            onClick={() => {
-              if (item.component === "form") {
-                setCollectionType(0);
-                setCreateCollectionModalOpen(true);
-              } else if (item.component === "project") {
-                setCollectionType(1);
-                setCreateCollectionModalOpen(true);
-              } else if (item.component === "workstream") {
-                setCreateWorkstreamModalOpen(true);
-              } else if (item.component === "folder") {
-                createNewFolder();
-              }
-            }}
-          />
-        ))}
-      </Grid>
+      {canDo("createNewForm") && (
+        <Grid>
+          {Items.map((item, index) => (
+            <Item
+              key={index}
+              name={item.name}
+              Icon={item.icon}
+              description={item.description}
+              onClick={() => {
+                if (item.component === "form") {
+                  setCollectionType(0);
+                  setCreateCollectionModalOpen(true);
+                } else if (item.component === "project") {
+                  setCollectionType(1);
+                  setCreateCollectionModalOpen(true);
+                } else if (item.component === "workstream") {
+                  setCreateWorkstreamModalOpen(true);
+                } else if (item.component === "folder") {
+                  createNewFolder();
+                }
+              }}
+            />
+          ))}
+        </Grid>
+      )}
     </Box>
   );
 }

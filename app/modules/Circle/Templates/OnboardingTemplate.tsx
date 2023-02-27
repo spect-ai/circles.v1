@@ -14,7 +14,7 @@ type Props = {
 };
 
 export default function OnboardingTemplate({ handleClose }: Props) {
-  const { localCircle: circle, fetchCircle, setCircleData } = useCircle();
+  const { circle, fetchCircle, setCircleData } = useCircle();
   const [step, setStep] = useState(0);
   const [selectedRoles, setSelectedRoles] = useState([] as string[]);
 

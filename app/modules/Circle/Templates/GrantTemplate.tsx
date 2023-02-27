@@ -23,12 +23,7 @@ interface Props {
 }
 
 export default function GrantTemplate({ handleClose }: Props) {
-  const {
-    localCircle: circle,
-    registry,
-    fetchCircle,
-    setCircleData,
-  } = useCircle();
+  const { circle, registry, fetchCircle, setCircleData } = useCircle();
   const router = useRouter();
 
   const [step, setStep] = useState(0);

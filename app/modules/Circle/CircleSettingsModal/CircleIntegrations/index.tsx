@@ -21,9 +21,11 @@ import { useCircle } from "../../CircleContext";
 export default function CircleIntegrations() {
   const router = useRouter();
   const { circle: cId } = router.query;
-  const { localCircle: circle } = useCircle();
+  const { circle } = useCircle();
   const { origin } = useLocation();
-  const [snapshotSpace, setSnapshotSpace] = useState(circle?.snapshot?.id || "");
+  const [snapshotSpace, setSnapshotSpace] = useState(
+    circle?.snapshot?.id || ""
+  );
 
   const { loading: isLoading, data } = useApolloQuery(Space, {
     variables: { id: snapshotSpace },

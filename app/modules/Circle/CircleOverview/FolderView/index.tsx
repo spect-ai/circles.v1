@@ -5,20 +5,12 @@ import {
   Droppable,
   DroppableProvided,
 } from "react-beautiful-dnd";
-import { Box, Button, IconPlusSmall, Stack, Text } from "degen";
+import { Box, Stack } from "degen";
 import React, { useCallback, useEffect, useState } from "react";
 import { useCircle } from "../../CircleContext";
-import { createFolder } from "@/app/services/Folders";
 import Folder from "./folder";
 import useDragFolder from "./useDragHook";
 import styled from "styled-components";
-import { FolderOpenOutlined } from "@ant-design/icons";
-import Loader from "@/app/common/components/Loader";
-import { AnimatePresence } from "framer-motion";
-import TemplateModal from "./TemplateModal";
-import { Pulse } from "@/app/modules/Project/ProjectHeading";
-import PrimaryButton from "@/app/common/components/PrimaryButton";
-import ImportTasks from "../../ImportTasks";
 import CreateItems from "./CreateItems";
 
 interface Props {
@@ -64,12 +56,7 @@ export const FolderView = ({
   filteredCollections,
 }: Props) => {
   const { handleDrag } = useDragFolder();
-  const {
-    localCircle: circle,
-    setCircleData,
-    setLocalCircle,
-    fetchCircle,
-  } = useCircle();
+  const { circle } = useCircle();
   const [allContentIds, setAllContentIds] = useState([] as string[]);
   const { canDo } = useRoleGate();
 

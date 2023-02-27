@@ -169,7 +169,7 @@ export default function SettingsModal({ handleClose, initialTab }: Props) {
                   disabled={uploading}
                   shape="circle"
                 >
-                  Update Org
+                  Update Space
                 </PrimaryButton>
               </Box>
             </Stack>
@@ -184,8 +184,7 @@ export default function SettingsModal({ handleClose, initialTab }: Props) {
               <Stack>
                 <Box>
                   <Text align="center" weight="semiBold" size="extraLarge">
-                    Danger, this will also archive everything within this
-                    organization!
+                    Danger, this will also archive everything within this space!
                   </Text>
                 </Box>
                 <PrimaryButton
@@ -193,7 +192,7 @@ export default function SettingsModal({ handleClose, initialTab }: Props) {
                   disabled={uploading}
                   tone="red"
                 >
-                  Archive Org
+                  Archive Space
                 </PrimaryButton>
               </Stack>
             </Box>

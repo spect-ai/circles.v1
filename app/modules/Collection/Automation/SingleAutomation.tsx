@@ -57,7 +57,7 @@ export default function SingleAutomation({
   onMouseLeave,
 }: Props) {
   const { mode } = useTheme();
-  const { localCircle: circle } = useCircle();
+  const { circle } = useCircle();
   const [whenOptions, setWhenOptions] = useState<Option[]>([]);
   const [collection, setCollection] = useState({} as CollectionType);
   const [thenOptions, setThenOptions] = useState<Option[]>([]);
@@ -470,7 +470,8 @@ export default function SingleAutomation({
                           selected={selectedThenOptions[index]}
                           onChange={(value) => {
                             const newActions = [...actions];
-                            newActions[index] = allPossibleActions[value?.value];
+                            newActions[index] =
+                              allPossibleActions[value?.value];
                             setActions(newActions);
                             const newSelectedThenOptions = [
                               ...selectedThenOptions,

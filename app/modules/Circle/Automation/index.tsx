@@ -40,7 +40,7 @@ const Container = styled(Box)<{ mode: string }>`
 `;
 
 export default function AutomationCenter() {
-  const { localCircle: circle } = useCircle();
+  const { circle } = useCircle();
   const { canDo } = useRoleGate();
   const router = useRouter();
   const { tab } = router.query;

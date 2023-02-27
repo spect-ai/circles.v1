@@ -74,13 +74,12 @@ export default function CircleDashboard() {
   const router = useRouter();
   const { circle: cId, retroSlug } = router.query;
   const {
-    localCircle: circle,
+    circle,
     setIsBatchPayOpen,
     isBatchPayOpen,
     retro,
     navigationBreadcrumbs,
   } = useCircle();
-  const { canDo } = useRoleGate();
   const [isRetroOpen, setIsRetroOpen] = useState(false);
   const [filteredProjects, setFilteredProjects] = useState(circle?.projects);
   const [filteredCollections, setFilteredCollections] = useState(

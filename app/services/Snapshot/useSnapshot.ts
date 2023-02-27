@@ -14,7 +14,7 @@ interface createProposalDto {
 }
 
 export default function useSnapshot() {
-  const { localCircle: circle } = useCircle();
+  const { circle } = useCircle();
   const { hostname } = useLocation();
   const { address } = useAccount();
 

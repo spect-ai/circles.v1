@@ -25,7 +25,7 @@ export default function Governance() {
   const router = useRouter();
   const { circle: cId, proposalStatus, proposalHash } = router.query;
   const [status, setStatus] = useState(proposalStatus);
-  const { localCircle: circle, memberDetails } = useCircle();
+  const { circle, memberDetails } = useCircle();
   const { loading: isLoading, data: activeProposals } = useApolloQuery(
     Proposals,
     {

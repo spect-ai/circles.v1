@@ -6,17 +6,13 @@ import {
   DroppableProvided,
 } from "react-beautiful-dnd";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
-import { Box, IconTrash, Stack, useTheme, Button } from "degen";
+import { Box, IconTrash, Stack, useTheme, Button, Text } from "degen";
 import styled from "styled-components";
 import Card from "./card";
-import {
-  CircleType,
-  CollectionType,
-  ProjectType,
-  RetroType,
-} from "@/app/types";
+import { CircleType, ProjectType, RetroType } from "@/app/types";
 import { deleteFolder, updateFolder } from "@/app/services/Folders";
 import { useCircle } from "../../CircleContext";
+import { toast } from "react-toastify";
 
 interface Props {
   content: string[];
@@ -86,16 +82,22 @@ const Folder = ({
 }: Props) => {
   const { canDo } = useRoleGate();
   const { mode } = useTheme();
-  const { localCircle: circle, setCircleData } = useCircle();
+  const { circle, setCircleData } = useCircle();
   const [folderTitle, setFolderTitle] = useState(name);
-  const [projectModal, setProjectModal] = useState(false);
-  const [workstreamModal, setWorkstreamModal] = useState(false);
-  const [retroOpen, setRetroOpen] = useState(false);
-  const [collectionModal, setCollectionModal] = useState(false);
-  const [collectionProjectModal, setCollectionProjectModal] = useState(false);
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const [hover, setHover] = useState(false);
   const ondeleteFolder = async () => {
+    const unarchivedContent = content.filter(
+      (card) =>
+        (projects?.[card] && projects?.[card].archived !== true) ||
+        (workstreams?.[card] && workstreams?.[card].archived !== true) ||
+        (collections?.[card] && collections?.[card].archived !== true)
+    );
+    if (unarchivedContent.length > 0) {
+      toast.error(
+        "Please archive/move all cards from the folder before deleting it."
+      );
+      return;
+    }
     const res = await deleteFolder(circle.id, id);
     console.log({ res });
 
@@ -172,6 +174,8 @@ const Folder = ({
         {...provided.draggableProps}
         {...provided.dragHandleProps}
         ref={provided.innerRef}
+        onMouseEnter={() => setHover(true)}
+        onMouseLeave={() => setHover(false)}
       >
         <Stack direction={"horizontal"} align={"center"} space="1">
           <NameInput
@@ -182,19 +186,13 @@ const Folder = ({
             mode={mode}
             maxLength={20}
           />
-          {avatar !== "All" &&
-            content?.length == 0 &&
-            canDo("manageCircleSettings") && (
-              <Button
-                data-tour="circle-create-folder-button"
-                size="small"
-                variant="transparent"
-                shape="circle"
-                onClick={ondeleteFolder}
-              >
+          {canDo("manageCircleSettings") && hover && (
+            <Box onClick={ondeleteFolder} cursor="pointer">
+              <Text variant="label">
                 <IconTrash size={"5"} />
-              </Button>
-            )}
+              </Text>
+            </Box>
+          )}
         </Stack>
         <Droppable droppableId={id} type="content" direction="horizontal">
           {CardDraggableCallback}
@@ -202,7 +200,6 @@ const Folder = ({
       </Box>
     );
   }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   const DraggableContentCallback = useCallback(DraggableContent, [
     CardDraggableCallback,
     canDo,

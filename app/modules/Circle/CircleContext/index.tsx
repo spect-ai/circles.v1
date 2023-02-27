@@ -1,12 +1,6 @@
 import queryClient from "@/app/common/utils/queryClient";
 import { useGlobal } from "@/app/context/globalContext";
-import {
-  CircleType,
-  MemberDetails,
-  PaymentDetails,
-  Registry,
-  RetroType,
-} from "@/app/types";
+import { CircleType, MemberDetails, Registry, RetroType } from "@/app/types";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { useQuery } from "react-query";
@@ -33,12 +27,8 @@ interface CircleContextType {
   setHasMintkudosCredentialsSetup: (isBatchPayOpen: boolean) => void;
   mintkudosCommunityId: string;
   setMintkudosCommunityId: (isBatchPayOpen: string) => void;
-  localCircle: CircleType;
-  setLocalCircle: (circle: CircleType) => void;
   loading: boolean;
   setLoading: (loading: boolean) => void;
-  navigationData: any;
-  setNavigationData: (data: any) => void;
   navigationBreadcrumbs: any;
   setNavigationBreadcrumbs: (data: any) => void;
 }
@@ -55,13 +45,9 @@ export function useProviderCircleContext() {
   const [hasMintkudosCredentialsSetup, setHasMintkudosCredentialsSetup] =
     useState(false);
   const [mintkudosCommunityId, setMintkudosCommunityId] = useState("");
-  const [localCircle, setLocalCircle] = useState({} as CircleType);
   const [loading, setLoading] = useState(false);
 
   const [isBatchPayOpen, setIsBatchPayOpen] = useState(false);
-
-  const [navigationData, setNavigationData] = useState();
-  const [navigationBreadcrumbs, setNavigationBreadcrumbs] = useState();
   const { socket } = useGlobal();
 
   const {
@@ -104,6 +90,18 @@ export function useProviderCircleContext() {
     }
   );
 
+  const { data: navigationBreadcrumbs, refetch: fetchNavigationBreadcrumbs } =
+    useQuery<Registry>(
+      ["navigationBreadcrumbs", cId],
+      () =>
+        fetch(
+          `${process.env.API_HOST}/circle/v1/${circle?.id}/circleNavBreadcrumbs`
+        ).then((res) => res.json()),
+      {
+        enabled: false,
+      }
+    );
+
   const { data: retro, refetch: fetchRetro } = useQuery<RetroType>(
     ["retro", retroSlug],
     {
@@ -113,7 +111,6 @@ export function useProviderCircleContext() {
 
   const setCircleData = (data: CircleType) => {
     queryClient.setQueryData(["circle", cId], data);
-    setLocalCircle(data);
   };
 
   const fetchCircle = async () => {
@@ -138,34 +135,8 @@ export function useProviderCircleContext() {
     queryClient.setQueryData(["retro", retroSlug], data);
   };
 
-  const fetchNavigation = async () => {
-    const res = await fetch(
-      `${process.env.API_HOST}/circle/v1/${circle?.id}/circleNav`,
-      {
-        credentials: "include",
-      }
-    );
-    if (res.ok) {
-      const data = await res.json();
-      setNavigationData(data);
-    } else {
-      return false;
-    }
-  };
-
-  const fetchNavigationBreadcrumbs = async () => {
-    const res = await fetch(
-      `${process.env.API_HOST}/circle/v1/${circle?.id}/circleNavBreadcrumbs`,
-      {
-        credentials: "include",
-      }
-    );
-    if (res.ok) {
-      const data = await res.json();
-      setNavigationBreadcrumbs(data);
-    } else {
-      return false;
-    }
+  const setNavigationBreadcrumbs = (data: any) => {
+    queryClient.setQueryData(["navigationBreadcrumbs", cId], data);
   };
 
   useEffect(() => {
@@ -174,15 +145,12 @@ export function useProviderCircleContext() {
       void fetchRegistry();
       void fetchMemberDetails();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cId]);
 
   useEffect(() => {
     if (circle?.id) {
-      void fetchNavigation();
       void fetchNavigationBreadcrumbs();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [circle?.id]);
 
   useEffect(() => {
@@ -213,7 +181,7 @@ export function useProviderCircleContext() {
     setLoading,
     isBatchPayOpen,
     setIsBatchPayOpen,
-    circle: circle || localCircle,
+    circle,
     memberDetails,
     registry,
     retro,
@@ -229,10 +197,6 @@ export function useProviderCircleContext() {
     setHasMintkudosCredentialsSetup,
     mintkudosCommunityId,
     setMintkudosCommunityId,
-    localCircle,
-    setLocalCircle,
-    navigationData,
-    setNavigationData,
     navigationBreadcrumbs,
     setNavigationBreadcrumbs,
     isLoading,

@@ -110,7 +110,7 @@ const CreateCircleCard = () => {
                     type: "image/png",
                     url: logo,
                   }}
-                  label="Select Org Avatar"
+                  label="Select Space Avatar"
                   uploaded={!!logo}
                   onChange={uploadFile}
                   uploading={uploading}

@@ -80,7 +80,6 @@ export function useProviderLocalCollection() {
       setLoading(true);
       fetchCollection()
         .then((res) => {
-          console.log({ res });
           if (res.data?.unauthorized) {
             setLoading(false);
             console.log("failed");

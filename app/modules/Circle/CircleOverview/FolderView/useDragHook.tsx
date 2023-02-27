@@ -5,7 +5,7 @@ import { useCircle } from "../../CircleContext";
 import { updateFolderDetails, updateFolder } from "@/app/services/Folders";
 
 export default function useDragFolder() {
-  const { localCircle: circle, setCircleData, setLocalCircle } = useCircle();
+  const { circle, setCircleData } = useCircle();
   const { canDo } = useRoleGate();
 
   const reorder = (list: string[], startIndex: number, endIndex: number) => {
@@ -39,7 +39,7 @@ export default function useDragFolder() {
         destination.index
       );
 
-      setLocalCircle({
+      setCircleData({
         ...circle,
         folderOrder: newFolderOrder,
       });
@@ -75,7 +75,7 @@ export default function useDragFolder() {
         destination.index
       );
 
-      setLocalCircle({
+      setCircleData({
         ...circle,
         folderDetails: {
           ...circle.folderDetails,
@@ -112,7 +112,7 @@ export default function useDragFolder() {
         ...finish,
         contentIds: finishContentIds,
       };
-      setLocalCircle({
+      setCircleData({
         ...circle,
         folderDetails: {
           ...circle.folderDetails,

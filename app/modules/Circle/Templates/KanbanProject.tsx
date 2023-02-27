@@ -15,7 +15,7 @@ interface Props {
 }
 
 export default function KanbanProject({ handleClose }: Props) {
-  const { localCircle: circle, registry, setCircleData } = useCircle();
+  const { circle, registry, setCircleData } = useCircle();
   const router = useRouter();
   const [networks, setNetworks] = useState<Registry | undefined>({
     "137": registry?.["137"],

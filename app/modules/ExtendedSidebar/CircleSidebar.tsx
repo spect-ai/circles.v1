@@ -180,6 +180,7 @@ function CircleSidebar() {
                     "credential",
                     "automation",
                     "governance",
+                    "membership",
                   ].includes(router.query?.tab as string) &&
                   !cSlug &&
                   !pId

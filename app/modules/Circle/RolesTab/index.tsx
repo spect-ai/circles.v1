@@ -28,7 +28,7 @@ const ScrollContainer = styled(Box)`
 function Roles() {
   const router = useRouter();
   const { circle: cId } = router.query;
-  const { localCircle: circle, loading, isLoading } = useCircle();
+  const { circle, loading, isLoading } = useCircle();
   const { isSidebarExpanded } = useGlobal();
   const { canDo } = useRoleGate();
   const [circleRoles, setCircleRoles] = useState(circle?.roles || {});

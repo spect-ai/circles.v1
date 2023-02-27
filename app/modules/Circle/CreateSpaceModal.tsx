@@ -25,7 +25,6 @@ interface Props {
 
 function CreateSpaceModal({ setWorkstreamModal, folderId }: Props) {
   const [visibilityTab, setVisibilityTab] = useState(0);
-  const onVisibilityTabClick = (id: number) => setVisibilityTab(id);
   const close = () => setWorkstreamModal(false);
 
   const [name, setName] = useState("");
@@ -36,6 +35,8 @@ function CreateSpaceModal({ setWorkstreamModal, folderId }: Props) {
 
   const [logo, setLogo] = useState(circle?.avatar || "");
   const [uploading, setUploading] = useState(false);
+
+  const [loading, setLoading] = useState(false);
 
   const { mutateAsync, isLoading } = useMutation(
     (circle: CreateWorkspaceDto) => {
@@ -52,6 +53,7 @@ function CreateSpaceModal({ setWorkstreamModal, folderId }: Props) {
   );
 
   const onSubmit = () => {
+    setLoading(true);
     mutateAsync({
       name,
       description,
@@ -89,8 +91,12 @@ function CreateSpaceModal({ setWorkstreamModal, folderId }: Props) {
           await updateFolder(payload, circle?.id, folder?.[0] as string);
         }
         fetchCircle();
+        setLoading(false);
       })
-      .catch((err) => console.log({ err }));
+      .catch((err) => {
+        console.log({ err });
+        setLoading(false);
+      });
   };
 
   const uploadFile = async (file: File) => {
@@ -104,44 +110,45 @@ function CreateSpaceModal({ setWorkstreamModal, folderId }: Props) {
   };
 
   return (
-    <>
-      <Loader loading={isLoading} text="Creating your workstream" />
-      <Modal handleClose={close} title="Create Workstream">
-        <Box width="full" padding="8">
-          <Stack>
-            <Input
-              label=""
-              placeholder="Name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
-            <Input
-              label=""
-              placeholder="Description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-            />
-            <MediaPicker
-              compact
-              defaultValue={{
-                type: "image/png",
-                url: logo,
-              }}
-              label="Choose or drag and drop media"
-              uploaded={!!logo}
-              onChange={uploadFile}
-              uploading={uploading}
-              maxSize={10}
-            />
-            <Box width="full" marginTop="4">
-              <PrimaryButton onClick={onSubmit} disabled={name.length === 0}>
-                Create Workstream
-              </PrimaryButton>
-            </Box>
-          </Stack>
-        </Box>
-      </Modal>
-    </>
+    <Modal handleClose={close} title="Create Workstream">
+      <Box width="full" padding="8">
+        <Stack>
+          <Input
+            label=""
+            placeholder="Name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+          <Input
+            label=""
+            placeholder="Description"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+          />
+          <MediaPicker
+            compact
+            defaultValue={{
+              type: "image/png",
+              url: logo,
+            }}
+            label="Choose or drag and drop media"
+            uploaded={!!logo}
+            onChange={uploadFile}
+            uploading={uploading}
+            maxSize={10}
+          />
+          <Box width="full" marginTop="4">
+            <PrimaryButton
+              onClick={onSubmit}
+              disabled={name.length === 0}
+              loading={loading}
+            >
+              Create Workstream
+            </PrimaryButton>
+          </Box>
+        </Stack>
+      </Box>
+    </Modal>
   );
 }
 

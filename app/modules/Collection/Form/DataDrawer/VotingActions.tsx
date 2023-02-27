@@ -23,7 +23,7 @@ export default function VotingActions({
 }) {
   const { localCollection: collection, updateCollection } =
     useLocalCollection();
-  const { localCircle: circle } = useCircle();
+  const { circle } = useCircle();
   const { address } = useAccount();
   const router = useRouter();
 
