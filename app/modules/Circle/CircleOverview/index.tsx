@@ -118,12 +118,19 @@ export default function CircleDashboard() {
           <BatchPay setIsOpen={setIsBatchPayOpen} retro={retro} />
         )}
       </AnimatePresence>
-      <Box marginTop="1">
-        <Hidden xs sm>
-          {navigationBreadcrumbs && (
-            <Breadcrumbs crumbs={navigationBreadcrumbs} />
-          )}
-        </Hidden>
+      <Box marginBottom="-4">
+        <Stack direction="horizontal" justify="space-between">
+          <Hidden xs sm>
+            {navigationBreadcrumbs && (
+              <Breadcrumbs crumbs={navigationBreadcrumbs} />
+            )}
+          </Hidden>
+          <Hidden xs sm>
+            <Box width="24">
+              <InviteMemberModal />
+            </Box>
+          </Hidden>
+        </Stack>
       </Box>
       <Box
         style={{

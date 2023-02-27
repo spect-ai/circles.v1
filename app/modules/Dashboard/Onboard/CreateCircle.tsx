@@ -35,7 +35,6 @@ export function CreateCircle({ setStep, setOnboardType }: Props) {
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
-  const { origin } = useLocation();
   const [loading, setLoading] = useState(false);
 
   const { mutateAsync } = useMutation((circle: CreateCircleDto) => {

@@ -41,14 +41,7 @@ const Onboard = () => {
       }
     }
     void refetch();
-  }, [
-    currentUser,
-    step,
-    connectedUser,
-    onboardType,
-    refetch,
-    myCircles?.length,
-  ]);
+  }, [currentUser, connectedUser, onboardType, refetch, myCircles?.length]);
 
   return (
     <Box position={"relative"} display="flex" width={"full"} gap="11">

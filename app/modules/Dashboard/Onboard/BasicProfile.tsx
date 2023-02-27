@@ -69,7 +69,12 @@ export function BasicProfile({ setStep }: { setStep: (step: number) => void }) {
           spaces that have setup Discord roles.
         </Text>
         <ConnectDiscordButton setStep={setStep} />
-        <Box onClick={() => setStep(1)} cursor="pointer">
+        <Box
+          onClick={() => {
+            setStep(1);
+          }}
+          cursor="pointer"
+        >
           <Text color={"textTertiary"}>Let&apos;s skip this</Text>
         </Box>
       </Stack>
