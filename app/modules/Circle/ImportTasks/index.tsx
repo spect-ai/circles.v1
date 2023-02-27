@@ -13,6 +13,7 @@ import { useRouter } from "next/router";
 import { toast } from "react-toastify";
 import { isAddress } from "ethers/lib/utils";
 import { importFromCsv } from "@/app/services/Collection";
+import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
 
 type Props = {};
 
@@ -26,15 +27,15 @@ export default function ImportTasks({}: Props) {
   const [properties, setProperties] = useState<{
     [key: string]: Property;
   }>({});
-
-  const [collectionName, setCollectionName] = useState("");
   const [groupByColumn, setGroupByColumn] = useState("");
   const [titleColumn, setTitleColumn] = useState("");
   const [descriptionColumn, setDescriptionColumn] = useState("");
 
   const { circle, setLocalCircle } = useCircle();
-
   const router = useRouter();
+
+  const { localCollection: collection, updateCollection } =
+    useLocalCollection();
 
   return (
     <Box>
@@ -151,11 +152,6 @@ export default function ImportTasks({}: Props) {
               )}
               {step === 2 && (
                 <Stack>
-                  <Input
-                    label="Collection Name"
-                    value={collectionName}
-                    onChange={(e) => setCollectionName(e.target.value)}
-                  />
                   <Dropdown
                     label="Group By Field"
                     onChange={(e) => setGroupByColumn(e.value)}
@@ -355,17 +351,15 @@ export default function ImportTasks({}: Props) {
                         console.log({ formattedData, properties });
                         const res = await importFromCsv({
                           data: formattedData,
-                          collectionName,
+                          collectionId: collection.id,
                           groupByColumn,
                           collectionProperties: properties,
                           circleId: circle.id,
                         });
                         console.log({ res });
-                        setLocalCircle(res.circle);
-                        router.push(
-                          `/${router.query.circle}/r/${res.collection.slug}`
-                        );
+                        updateCollection(res.collection);
                         setLoading(false);
+                        setIsOpen(false);
                       }}
                     >
                       Finish

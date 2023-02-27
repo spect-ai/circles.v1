@@ -195,84 +195,96 @@ function CircleSidebar() {
                     });
                 }}
               >
-                {circle?.parents?.length
-                  ? "Workstream Dashboard"
-                  : "Organization Dashboard"}
+                Dashboard
               </PrimaryButton>
             </Link>
-            <Link href={`/${cId}?tab=payment&status=pending`}>
-              <PrimaryButton
-                center
-                variant={
-                  cId && router.query?.tab === "payment" && !cSlug && !pId
-                    ? "tertiary"
-                    : "transparent"
-                }
-                icon={<DollarOutlined size={10} />}
-                onClick={() => {
-                  process.env.NODE_ENV === "production" &&
-                    mixpanel.track("Payment Center Button", {
-                      user: currentUser?.username,
-                      url: window.location.href,
-                    });
-                }}
-              >
-                Payment Center
-              </PrimaryButton>
-            </Link>
-            <Link href={`/${cId}?tab=automation`}>
-              <PrimaryButton
-                center
-                variant={
-                  cId && router.query?.tab === "automation" && !cSlug && !pId
-                    ? "tertiary"
-                    : "transparent"
-                }
-                icon={<GatewayOutlined size={10} />}
-              >
-                Automation Center
-              </PrimaryButton>
-            </Link>
-            <Box position="relative">
-              <Link href={`/${cId}?tab=governance&proposalStatus=Active`}>
+            {circle?.sidebarConfig?.showPayment && (
+              <Link href={`/${cId}?tab=payment&status=pending`}>
                 <PrimaryButton
                   center
                   variant={
-                    cId && router.query?.tab === "governance" && !cSlug && !pId
+                    cId && router.query?.tab === "payment" && !cSlug && !pId
                       ? "tertiary"
                       : "transparent"
                   }
-                  icon={<BankOutlined />}
+                  icon={<DollarOutlined size={10} />}
+                  onClick={() => {
+                    process.env.NODE_ENV === "production" &&
+                      mixpanel.track("Payment Center Button", {
+                        user: currentUser?.username,
+                        url: window.location.href,
+                      });
+                  }}
                 >
-                  Governance Center
+                  Payment Center
                 </PrimaryButton>
               </Link>
-              <Badge>
-                <Text color="accent" size="extraSmall">
-                  New
-                </Text>
-              </Badge>
-            </Box>
-            <Box position="relative">
-              <Link href={`/${cId}?tab=membership`}>
+            )}
+            {circle?.sidebarConfig?.showAutomation && (
+              <Link href={`/${cId}?tab=automation`}>
                 <PrimaryButton
                   center
                   variant={
-                    cId && router.query?.tab === "membership" && !cSlug && !pId
+                    cId && router.query?.tab === "automation" && !cSlug && !pId
                       ? "tertiary"
                       : "transparent"
                   }
-                  icon={<IconUserGroupSolid size="4" />}
+                  icon={<GatewayOutlined size={10} />}
                 >
-                  Membership Center
+                  Automation Center
                 </PrimaryButton>
               </Link>
-              <Badge>
-                <Text color="accent" size="extraSmall">
-                  Alpha
-                </Text>
-              </Badge>
-            </Box>
+            )}
+            {circle?.sidebarConfig?.showGovernance && (
+              <Box position="relative">
+                <Link href={`/${cId}?tab=governance&proposalStatus=Active`}>
+                  <PrimaryButton
+                    center
+                    variant={
+                      cId &&
+                      router.query?.tab === "governance" &&
+                      !cSlug &&
+                      !pId
+                        ? "tertiary"
+                        : "transparent"
+                    }
+                    icon={<BankOutlined />}
+                  >
+                    Governance Center
+                  </PrimaryButton>
+                </Link>
+                <Badge>
+                  <Text color="accent" size="extraSmall">
+                    New
+                  </Text>
+                </Badge>
+              </Box>
+            )}
+            {circle?.sidebarConfig?.showMembership && (
+              <Box position="relative">
+                <Link href={`/${cId}?tab=membership`}>
+                  <PrimaryButton
+                    center
+                    variant={
+                      cId &&
+                      router.query?.tab === "membership" &&
+                      !cSlug &&
+                      !pId
+                        ? "tertiary"
+                        : "transparent"
+                    }
+                    icon={<IconUserGroupSolid size="4" />}
+                  >
+                    Membership Center
+                  </PrimaryButton>
+                </Link>
+                <Badge>
+                  <Text color="accent" size="extraSmall">
+                    Alpha
+                  </Text>
+                </Badge>
+              </Box>
+            )}
             {/* <Link href={`/${cId}?tab=credential`}>
             <PrimaryButton
               variant={

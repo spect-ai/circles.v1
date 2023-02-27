@@ -407,7 +407,7 @@ export const sendFormComment = async (
 
 export const importFromCsv = async (payload: {
   data: any;
-  collectionName: string;
+  collectionId: string;
   collectionProperties: {
     [key: string]: Property;
   };

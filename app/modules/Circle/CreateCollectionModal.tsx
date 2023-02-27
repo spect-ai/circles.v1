@@ -7,6 +7,8 @@ import { useMutation } from "react-query";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { useCircle } from "./CircleContext";
 import { updateFolder } from "@/app/services/Folders";
+import { AnimatePresence } from "framer-motion";
+import TemplateModal from "./CircleOverview/FolderView/TemplateModal";
 
 type CreateCollectionDto = {
   name: string;
@@ -28,11 +30,13 @@ function CreateCollectionModal({
   collectionType,
 }: Props) {
   const close = () => setCollectionModal(false);
+  const [templateModalOpen, setTemplateModalOpen] = useState(false);
 
   const [name, setName] = useState("");
 
   const router = useRouter();
   const { circle, fetchCircle } = useCircle();
+  const [loading, setLoading] = useState(false);
 
   const { mutateAsync, isLoading } = useMutation(
     (createDto: CreateCollectionDto) => {
@@ -49,6 +53,7 @@ function CreateCollectionModal({
   );
 
   const onSubmit = () => {
+    setLoading(true);
     mutateAsync({
       name,
       private: false,
@@ -85,36 +90,63 @@ function CreateCollectionModal({
             () => void fetchCircle()
           );
         }
+        setLoading(false);
       })
-      .catch((err) => console.log({ err }));
+      .catch((err) => {
+        console.log(err);
+        setLoading(false);
+      });
   };
 
   return (
-    <>
-      <Loader loading={isLoading} text="On it......" />
-      <Modal
-        handleClose={close}
-        title={
-          collectionType === 0 ? "Create a new form" : "Create a new collection"
-        }
-      >
-        <Box width="full" padding="8">
-          <Stack>
-            <Input
-              label=""
-              placeholder="Name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
-            <Box width="full" marginTop="4">
-              <PrimaryButton onClick={onSubmit} disabled={name.length === 0}>
-                {collectionType === 0 ? "Create form" : "Create collection"}
-              </PrimaryButton>
-            </Box>
-          </Stack>
-        </Box>
-      </Modal>
-    </>
+    <Box>
+      <AnimatePresence>
+        {templateModalOpen && (
+          <TemplateModal
+            handleClose={() => {
+              close();
+            }}
+          />
+        )}
+      </AnimatePresence>
+      {!templateModalOpen && (
+        <Modal
+          handleClose={close}
+          title={
+            collectionType === 0 ? "Create a new form" : "Create a new project"
+          }
+        >
+          <Box width="full" padding="8">
+            <Stack>
+              <Input
+                label=""
+                placeholder="Name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+              <Stack>
+                <PrimaryButton
+                  onClick={onSubmit}
+                  disabled={name.length === 0}
+                  loading={loading}
+                >
+                  {collectionType === 0
+                    ? "Create empty form"
+                    : "Create empty project"}
+                </PrimaryButton>
+                <PrimaryButton
+                  onClick={() => {
+                    setTemplateModalOpen(true);
+                  }}
+                >
+                  Use a template Instead
+                </PrimaryButton>
+              </Stack>
+            </Stack>
+          </Box>
+        </Modal>
+      )}
+    </Box>
   );
 }
 

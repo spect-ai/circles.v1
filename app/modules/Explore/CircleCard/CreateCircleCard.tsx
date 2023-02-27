@@ -81,7 +81,7 @@ const CreateCircleCard = () => {
         height="72"
         onClick={open}
       >
-        Create an Organization
+        Create a Space
       </Container>
       <AnimatePresence
         initial={false}
@@ -89,7 +89,7 @@ const CreateCircleCard = () => {
         onExitComplete={() => null}
       >
         {modalOpen && (
-          <Modal handleClose={close} title="Create Organization" zIndex={2}>
+          <Modal handleClose={close} title="Create Space" zIndex={2}>
             <Box width="full" padding="8">
               <Stack>
                 <Input
@@ -155,7 +155,7 @@ const CreateCircleCard = () => {
                         .catch((err) => console.log({ err }));
                     }}
                   >
-                    Create Organization
+                    Create Space
                   </Button>
                 </Box>
               </Stack>

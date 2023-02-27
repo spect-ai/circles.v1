@@ -447,7 +447,7 @@ export default function PaymentCardDrawer({ handleClose }: Props) {
                 <Stack direction="horizontal" align="center" space="0">
                   <Box width="1/4">
                     <Text>
-                      {circle?.parents?.length ? "Workstream" : "Organization"}
+                      {circle?.parents?.length ? "Workstream" : "Space"}
                     </Text>
                   </Box>
                   <Box width="3/4">

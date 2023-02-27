@@ -14,6 +14,7 @@ import { joinCirclesFromGuildxyz } from "@/app/services/JoinCircle";
 import { useLocation } from "react-use";
 import { useRouter } from "next/router";
 import { createDefaultProject } from "@/app/services/Defaults";
+import { MdGroupWork } from "react-icons/md";
 
 type CreateCircleDto = {
   name: string;
@@ -31,12 +32,11 @@ interface Props {
 export function CreateCircle({ setStep, setOnboardType }: Props) {
   const router = useRouter();
   const [circleName, setCircleName] = useState("");
-  const [part, setPart] = useState(0);
-  const [slug, setSlug] = useState("");
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
   const { origin } = useLocation();
+  const [loading, setLoading] = useState(false);
 
   const { mutateAsync } = useMutation((circle: CreateCircleDto) => {
     return fetch(`${process.env.API_HOST}/circle/v1`, {
@@ -58,138 +58,91 @@ export function CreateCircle({ setStep, setOnboardType }: Props) {
       alignItems="center"
       marginTop={"48"}
     >
-      {part == 0 && (
-        <>
-          <Stack direction={"horizontal"} align="center">
-            <IconTokens color={"accent"} size="8" />
-            <Heading>Let&apos;s create a Circle</Heading>
-          </Stack>
-          <Box
-            width={"3/4"}
-            style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
-          >
-            <Text align={"center"}>
-              A Circle is a workspace for you and your frens. Circles come with
-              roles, integrations such as Gnosis, Discord and Guild.xyz
-            </Text>
-            <Text align={"center"} color="textSecondary">
-              Give your Circle a name
-            </Text>
-          </Box>
+      <Stack align="center">
+        {/* <IconTokens color={"accent"} size="8" /> */}
+        <Heading>Let&apos;s create your space</Heading>
+        <Text color="accent">
+          <MdGroupWork size="40" />
+        </Text>
+        <Box
+          width={"3/4"}
+          style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
+        >
+          <Text align={"center"}>
+            A Space is a workspace for you and your frens.
+          </Text>
+        </Box>
 
-          <NameInput
-            placeholder="Meta DAO"
-            value={circleName}
-            onChange={(e) => {
-              setCircleName(e.target.value);
-            }}
-          />
-          <Button
-            onClick={async () => {
-              const color1 = generateColorHEX();
-              const color2 = generateColorHEX();
-              const color3 = generateColorHEX();
-              const gradient = `linear-gradient(300deg, ${color1}, ${color2}, ${color3})`;
-              mutateAsync({
-                name: circleName,
-                description: `${circleName}'s Circle`,
-                avatar: "",
-                private: false,
-                gradient,
-              })
-                .then(async (res) => {
-                  const resJson = await res.json();
-                  console.log({ resJson });
-                  if (resJson.slug) {
-                    await createDefaultProject(resJson.id);
-                    setSlug(resJson.slug);
-                    setPart(1);
-                  }
+        <NameInput
+          placeholder="My Space"
+          value={circleName}
+          onChange={(e) => {
+            setCircleName(e.target.value);
+          }}
+        />
+        <Button
+          loading={loading}
+          onClick={async () => {
+            setLoading(true);
+            const color1 = generateColorHEX();
+            const color2 = generateColorHEX();
+            const color3 = generateColorHEX();
+            const gradient = `linear-gradient(300deg, ${color1}, ${color2}, ${color3})`;
+            mutateAsync({
+              name: circleName,
+              description: `Welcome to ${circleName}`,
+              avatar: "",
+              private: false,
+              gradient,
+            })
+              .then(async (res) => {
+                const resJson = await res.json();
+                console.log({ resJson });
+                if (resJson.slug) {
+                  void joinCirclesFromGuildxyz(
+                    currentUser?.ethAddress as string
+                  );
+                  await createDefaultProject(resJson.id);
                   process.env.NODE_ENV === "production" &&
                     mixpanel.track("Onboard circle", {
                       user: currentUser?.username,
                     });
-                })
-                .catch((err) => console.log({ err }));
-              await joinCirclesFromGuildxyz(currentUser?.ethAddress as string);
-            }}
-            prefix={
-              <RocketOutlined style={{ fontSize: "1.2rem" }} rotate={30} />
-            }
-            variant="secondary"
-            size="small"
-            disabled={circleName.length == 0}
-          >
-            LFG
-          </Button>
-          <Box
-            width={"3/4"}
-            style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
-          >
-            <Text align={"center"}>
-              Not here to manage your DAO? Set up your profile instead to
-              receive notifications about new opportunities being created on
-              Spect.
-            </Text>
-          </Box>
-          <PrimaryButton
-            onClick={async () => {
-              setStep(3);
-              setOnboardType("profile");
-              await joinCirclesFromGuildxyz(currentUser?.ethAddress as string);
-            }}
-          >
-            Set up Profile
-          </PrimaryButton>
-        </>
-      )}
-      {part == 1 && (
-        <>
-          <Stack direction={"horizontal"} align="center">
-            <IconTokens color={"accent"} size="8" />
-            <Heading>Connect your Discord Server</Heading>
-          </Stack>
-          <Box
-            width={"3/4"}
-            style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
-          >
-            <Text align={"center"}>
-              Discord Integration will help you import roles, import discussion
-              channels & optimize grant workflows
-            </Text>
-          </Box>
-          <Box
-            width={{
-              xs: "full",
-              md: "1/3",
-            }}
-            onClick={() => {
-              window.open(
-                `https://discord.com/oauth2/authorize?client_id=942494607239958609&permissions=17448306704&redirect_uri=${origin}/api/connectDiscord&response_type=code&scope=bot&state=${slug}`,
-                "_blank"
-              );
-            }}
-          >
-            <PrimaryButton
-              icon={
-                <Box marginTop="1">
-                  <DiscordIcon />
-                </Box>
-              }
-            >
-              Connect Discord
-            </PrimaryButton>
-          </Box>
-          <Box
-            onClick={() => {
-              void router.push(`/${slug}`);
-            }}
-            cursor="pointer"
-          >
-            <Text color={"textTertiary"}>Let&apos;s skip this</Text>
-          </Box>
-        </>
-      )}
+                  console.log("redirecting to circle");
+                  void router.push(`/${resJson.slug}`);
+                }
+                setLoading(false);
+              })
+              .catch((err) => {
+                console.log({ err });
+                setLoading(false);
+              });
+          }}
+          prefix={<RocketOutlined style={{ fontSize: "1.2rem" }} rotate={30} />}
+          variant="secondary"
+          size="small"
+          disabled={circleName.length == 0}
+        >
+          Let's goo
+        </Button>
+        {/* <Box
+          width={"3/4"}
+          style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
+        >
+          <Text align={"center"}>
+            Not here to manage your DAO? Set up your profile instead to receive
+            notifications about new opportunities being created on Spect.
+          </Text>
+        </Box> */}
+        {/* <PrimaryButton
+          onClick={async () => {
+            setStep(3);
+            setOnboardType("profile");
+            await joinCirclesFromGuildxyz(currentUser?.ethAddress as string);
+          }}
+        >
+          Set up Profile
+        </PrimaryButton> */}
+      </Stack>
     </Box>
   );
 }

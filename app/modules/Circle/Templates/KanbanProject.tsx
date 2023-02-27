@@ -12,10 +12,9 @@ import { Scribes } from "@/app/common/utils/constants";
 
 interface Props {
   handleClose: (close: boolean) => void;
-  setLoading: (load: boolean) => void;
 }
 
-export default function KanbanProject({ handleClose, setLoading }: Props) {
+export default function KanbanProject({ handleClose }: Props) {
   const { localCircle: circle, registry, setCircleData } = useCircle();
   const router = useRouter();
   const [networks, setNetworks] = useState<Registry | undefined>({
@@ -26,7 +25,6 @@ export default function KanbanProject({ handleClose, setLoading }: Props) {
 
   const useTemplate = async () => {
     handleClose(false);
-    setLoading(true);
     const res = await createTemplateFlow(
       circle?.id,
       {
@@ -38,7 +36,6 @@ export default function KanbanProject({ handleClose, setLoading }: Props) {
     if (res?.id) {
       setScribeUrl(Scribes.kanban.using);
       setIsScribeOpen(true);
-      setLoading(false);
       setCircleData(res);
     }
   };

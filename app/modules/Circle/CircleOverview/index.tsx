@@ -105,7 +105,7 @@ export default function CircleDashboard() {
   }, [retroSlug]);
 
   return (
-    <>
+    <Box>
       <AnimatePresence>
         {isRetroOpen && (
           <RetroModal
@@ -126,135 +126,23 @@ export default function CircleDashboard() {
           )}
         </Hidden>
       </Box>
-      <Stack direction="horizontal">
-        <Box
-          style={{
-            width: isSidebarExpanded ? "75%" : "100%",
-            alignItems: "center",
-          }}
-          transitionDuration="500"
-        >
-          {/* <Box width={{ lg: "112"}} marginX="auto">
-            <Tabs
-              selectedTab={toggle}
-              onTabClick={onTabClick}
-              tabs={["Overview", "Contributors", "Roles"]}
-              tabTourIds={[
-                "circle-dashboard-overview",
-                "circle-dashboard-contributor",
-                "circle-dashboard-roles",
-              ]}
-              orientation="horizontal"
-              unselectedColor="transparent"
-              selectedColor="secondary"
-            />
-          </Box> */}
-          <Toggle toggle={toggle} setToggle={setToggle} />
-
-          {toggle == 0 && (
-            <Stack space="1">
-              <Stack
-                direction={{
-                  xs: "vertical",
-                  md: "horizontal",
-                }}
-                align="flex-end"
-              >
-                <Input
-                  label=""
-                  placeholder="Search forms, projects, workstreams"
-                  prefix={<IconSearch />}
-                  onChange={(e) => {
-                    const proj = matchSorter(
-                      Object.values(circle?.projects),
-                      e.target.value,
-                      {
-                        keys: ["name"],
-                      }
-                    );
-                    const workstream = matchSorter(
-                      Object.values(circle?.children),
-                      e.target.value,
-                      {
-                        keys: ["name"],
-                      }
-                    );
-                    const retro = matchSorter(
-                      Object.values(circle?.retro),
-                      e.target.value,
-                      {
-                        keys: ["title"],
-                      }
-                    );
-                    const collections = matchSorter(
-                      Object.values(circle?.collections),
-                      e.target.value,
-                      {
-                        keys: ["name"],
-                      }
-                    );
-                    setFilteredProjects(
-                      proj.reduce((rest, p) => ({ ...rest, [p.id]: p }), {})
-                    );
-                    setFilteredWorkstreams(
-                      workstream.reduce(
-                        (rest, w) => ({ ...rest, [w.id]: w }),
-                        {}
-                      )
-                    );
-                    setFilteredRetro(
-                      retro.reduce((rest, r) => ({ ...rest, [r.id]: r }), {})
-                    );
-                    setFilteredCollections(
-                      collections.reduce(
-                        (rest, c) => ({ ...rest, [c.id]: c }),
-                        {}
-                      )
-                    );
-                  }}
-                />
-                <Box
-                  width="full"
-                  display="flex"
-                  flexDirection="row"
-                  alignItems="flex-start"
-                  justifyContent={{ xs: "center", md: "flex-start" }}
-                  gap="4"
-                >
-                  {/* <Button
-                    size="small"
-                    variant="secondary"
-                    shape="circle"
-                    onClick={() =>
-                      setGroupBy(groupBy == "Type" ? "Folder" : "Type")
-                    }
-                  >
-                    {groupBy == "Type" ? (
-                      <IconGrid size={"4"} />
-                    ) : (
-                      <FolderOpenOutlined style={{ fontSize: "1.1rem" }} />
-                    )}
-                  </Button> */}
-                  {canDo("inviteMembers") && (
-                    <Box width="1/2">
-                      <InviteMemberModal />
-                    </Box>
-                  )}
-                </Box>
-              </Stack>
-              <FolderView
-                filteredCollections={filteredCollections}
-                filteredRetro={filteredRetro}
-                filteredProjects={filteredProjects}
-                filteredWorkstreams={filteredWorkstreams}
-                setIsRetroOpen={setIsRetroOpen}
-              />
-            </Stack>
-          )}
-          {toggle == 1 && <CircleMembers />}
-          {toggle == 2 && <Roles />}
-        </Box>
-      </Stack>
-    </>
+      <Box
+        style={{
+          width: isSidebarExpanded ? "75%" : "100%",
+          alignItems: "center",
+        }}
+        transitionDuration="500"
+      >
+        <Stack space="1">
+          <FolderView
+            filteredCollections={filteredCollections}
+            filteredRetro={filteredRetro}
+            filteredProjects={filteredProjects}
+            filteredWorkstreams={filteredWorkstreams}
+            setIsRetroOpen={setIsRetroOpen}
+          />
+        </Stack>
+      </Box>
+    </Box>
   );
 }

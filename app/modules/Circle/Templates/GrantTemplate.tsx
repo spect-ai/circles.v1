@@ -20,10 +20,9 @@ import { updateCircle } from "@/app/services/UpdateCircle";
 
 interface Props {
   handleClose: (close: boolean) => void;
-  setLoading: (load: boolean) => void;
 }
 
-export default function GrantTemplate({ handleClose, setLoading }: Props) {
+export default function GrantTemplate({ handleClose }: Props) {
   const {
     localCircle: circle,
     registry,
@@ -59,13 +58,14 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
     }
   }, [circle?.discordGuildId]);
 
-  const [discordRoles, setDiscordRoles] = useState<
-    | {
-        id: string;
-        name: string;
-      }[]
-    | undefined
-  >();
+  const [discordRoles, setDiscordRoles] =
+    useState<
+      | {
+          id: string;
+          name: string;
+        }[]
+      | undefined
+    >();
 
   useEffect(() => {
     const getGuildChannels = async () => {
@@ -90,7 +90,6 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
 
   const useTemplate = async () => {
     handleClose(false);
-    setLoading(true);
     let roles = {};
     for (const i in selectedRoles) {
       roles = {
@@ -110,7 +109,6 @@ export default function GrantTemplate({ handleClose, setLoading }: Props) {
     if (res?.id) {
       setScribeUrl(Scribes.grants.using);
       setIsScribeOpen(true);
-      setLoading(false);
       setCircleData(res);
     }
   };

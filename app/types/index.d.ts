@@ -305,7 +305,15 @@ export interface CircleType {
     network: string;
     symbol: string;
   };
+  sidebarConfig?: SidebarConfig;
 }
+export type SidebarConfig = {
+  showPayment?: boolean;
+  showAutomation?: boolean;
+  showGovernance?: boolean;
+  showMembership?: boolean;
+  showDiscussion?: boolean;
+};
 
 // interface ProjectType {
 //   archived: boolean;

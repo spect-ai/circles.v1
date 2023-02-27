@@ -17,7 +17,6 @@ export default function useConnectDiscord() {
     );
     if (res.ok) {
       const data = await res.json();
-      console.log({ data });
       const profileRes = await updateProfile({
         discordId: data.userData.id,
         discordUsername:

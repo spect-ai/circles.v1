@@ -17,13 +17,6 @@ import {
 } from "@/app/types";
 import { deleteFolder, updateFolder } from "@/app/services/Folders";
 import { useCircle } from "../../CircleContext";
-import { Col, Container, Row } from "react-grid-system";
-import CreateFolderItem from "./CreateFolderItem";
-import CreateProjectModal from "@/app/modules/Circle/CreateProjectModal";
-import CreateSpaceModal from "@/app/modules/Circle/CreateSpaceModal";
-import CreateRetroModal from "@/app/modules/Retro/CreateRetro";
-import { AnimatePresence } from "framer-motion";
-import CreateCollectionModal from "../../CreateCollectionModal";
 
 interface Props {
   content: string[];
@@ -189,18 +182,6 @@ const Folder = ({
             mode={mode}
             maxLength={20}
           />
-          {(canDo("createNewCircle") ||
-            canDo("createNewProject") ||
-            canDo("createNewRetro") ||
-            canDo("createNewForm")) && (
-            <CreateFolderItem
-              setProjectModal={setProjectModal}
-              setWorkstreamModal={setWorkstreamModal}
-              setRetroOpen={setRetroOpen}
-              setCollectionModal={setCollectionModal}
-              setCollectionProjectModal={setCollectionProjectModal}
-            />
-          )}
           {avatar !== "All" &&
             content?.length == 0 &&
             canDo("manageCircleSettings") && (
@@ -231,42 +212,9 @@ const Folder = ({
   ]);
 
   return (
-    <>
-      <Draggable draggableId={id} index={index}>
-        {DraggableContentCallback}
-      </Draggable>
-      <AnimatePresence>
-        {projectModal && (
-          <CreateProjectModal folderId={id} setModalOpen={setProjectModal} />
-        )}
-        {workstreamModal && (
-          <CreateSpaceModal
-            folderId={id}
-            setWorkstreamModal={setWorkstreamModal}
-          />
-        )}
-        {retroOpen && (
-          <CreateRetroModal
-            folderId={id}
-            handleClose={() => setRetroOpen(false)}
-          />
-        )}
-        {collectionModal && (
-          <CreateCollectionModal
-            folderId={id}
-            setCollectionModal={setCollectionModal}
-            collectionType={0}
-          />
-        )}
-        {collectionProjectModal && (
-          <CreateCollectionModal
-            folderId={id}
-            setCollectionModal={setCollectionProjectModal}
-            collectionType={1}
-          />
-        )}
-      </AnimatePresence>
-    </>
+    <Draggable draggableId={id} index={index}>
+      {DraggableContentCallback}
+    </Draggable>
   );
 };
 
