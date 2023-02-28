@@ -24,21 +24,19 @@ interface Props {
 
 export default function GrantTemplate({ handleClose }: Props) {
   const { circle, registry, fetchCircle, setCircleData } = useCircle();
-  const router = useRouter();
-
   const [step, setStep] = useState(0);
   const [snapshotSpace, setSnapshotSpace] = useState("");
   const [selectedRoles, setSelectedRoles] = useState([] as string[]);
   const [categoryOptions, setCategoryOptions] = useState<Option[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<Option>(
-    categoryOptions?.[0]
-  );
+
   const [networks, setNetworks] = useState<Registry | undefined>({
     "137": registry?.["137"],
   } as Registry);
 
   const [, setIsScribeOpen] = useAtom(scribeOpenAtom);
   const [, setScribeUrl] = useAtom(scribeUrlAtom);
+
+  const [loading, setLoading] = useState(false);
 
   const { loading: isLoading, data } = useQuery(Space, {
     variables: { id: snapshotSpace },
@@ -86,7 +84,7 @@ export default function GrantTemplate({ handleClose }: Props) {
   }, [circle?.discordGuildId]);
 
   const useTemplate = async () => {
-    handleClose(false);
+    setLoading(true);
     let roles = {};
     for (const i in selectedRoles) {
       roles = {
@@ -106,8 +104,11 @@ export default function GrantTemplate({ handleClose }: Props) {
     if (res?.id) {
       setScribeUrl(Scribes.grants.using);
       setIsScribeOpen(true);
+      console.log("here");
       setCircleData(res);
     }
+    handleClose(false);
+    setLoading(false);
   };
 
   return (
@@ -343,7 +344,8 @@ export default function GrantTemplate({ handleClose }: Props) {
                 Back
               </Button>
               <Button
-                onClick={() => useTemplate()}
+                loading={loading}
+                onClick={useTemplate}
                 variant="secondary"
                 size="small"
               >

@@ -19,9 +19,10 @@ export default function KanbanProject({ handleClose }: Props) {
   } as Registry);
   const [, setIsScribeOpen] = useAtom(scribeOpenAtom);
   const [, setScribeUrl] = useAtom(scribeUrlAtom);
+  const [loading, setLoading] = useState(false);
 
   const useTemplate = async () => {
-    handleClose(false);
+    setLoading(true);
     const res = await createTemplateFlow(
       circle?.id || "",
       {
@@ -35,6 +36,8 @@ export default function KanbanProject({ handleClose }: Props) {
       setIsScribeOpen(true);
       setCircleData(res);
     }
+    setLoading(false);
+    handleClose(false);
   };
 
   return (
@@ -56,9 +59,10 @@ export default function KanbanProject({ handleClose }: Props) {
             newTokenOpen={true}
           />
           <Button
-            onClick={() => useTemplate()}
+            onClick={useTemplate}
             variant="secondary"
             size="small"
+            loading={loading}
           >
             Create Project
           </Button>

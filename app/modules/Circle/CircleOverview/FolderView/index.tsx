@@ -108,7 +108,6 @@ export const FolderView = ({
   useEffect(() => {
     setAllContentIds([]);
     getFormattedData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [circle]);
 
   const DroppableContent = (provided: DroppableProvided) => (
@@ -122,6 +121,7 @@ export const FolderView = ({
       </Stack>
       {circle?.folderOrder?.map((folder, i) => {
         const folderDetail = circle?.folderDetails?.[folder];
+        console.log({ folderDetail });
         return (
           <Folder
             key={folder}
@@ -141,11 +141,8 @@ export const FolderView = ({
     </ScrollContainer>
   );
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   const DroppableContentCallback = useCallback(DroppableContent, [
     canDo,
-    circle?.folderDetails,
-    circle?.folderOrder,
     circle,
     filteredProjects,
     filteredRetro,

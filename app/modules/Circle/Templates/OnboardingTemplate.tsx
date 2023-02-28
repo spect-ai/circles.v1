@@ -17,9 +17,9 @@ export default function OnboardingTemplate({ handleClose }: Props) {
   const { circle, fetchCircle, setCircleData } = useCircle();
   const [step, setStep] = useState(0);
   const [selectedRoles, setSelectedRoles] = useState([] as string[]);
-
   const [, setIsScribeOpen] = useAtom(scribeOpenAtom);
   const [, setScribeUrl] = useAtom(scribeUrlAtom);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (!circle?.discordGuildId) {
@@ -40,7 +40,7 @@ export default function OnboardingTemplate({ handleClose }: Props) {
     >();
 
   const createFlow = async () => {
-    handleClose(false);
+    setLoading(true);
     let roles = {};
     for (const i in selectedRoles) {
       roles = {
@@ -61,6 +61,8 @@ export default function OnboardingTemplate({ handleClose }: Props) {
       setIsScribeOpen(true);
       setCircleData(res);
     }
+    setLoading(false);
+    handleClose(false);
   };
 
   useEffect(() => {
@@ -112,9 +114,8 @@ export default function OnboardingTemplate({ handleClose }: Props) {
                   variant="tertiary"
                   size="small"
                   width={"full"}
-                  onClick={() => {
-                    createFlow();
-                  }}
+                  onClick={createFlow}
+                  loading={loading}
                 >
                   Skip this
                 </Button>
@@ -168,9 +169,10 @@ export default function OnboardingTemplate({ handleClose }: Props) {
               </Button> */}
               <Button
                 width="1/2"
-                onClick={() => createFlow()}
+                onClick={createFlow}
                 variant="secondary"
                 size="small"
+                loading={loading}
               >
                 Create Workflow
               </Button>

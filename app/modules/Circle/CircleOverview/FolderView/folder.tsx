@@ -120,7 +120,6 @@ const Folder = ({
     if (updatedCircle?.id) {
       setCircleData(updatedCircle);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [folderTitle]);
 
   const CardDraggable = (provided: DroppableProvided) => (
@@ -156,13 +155,12 @@ const Folder = ({
     </ScrollContainer>
   );
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   const CardDraggableCallback = useCallback(CardDraggable, [
     content,
-    projects,
     retros,
     workstreams,
     circle,
+    collections,
   ]);
 
   function DraggableContent(provided: DraggableProvided) {
@@ -204,8 +202,6 @@ const Folder = ({
     CardDraggableCallback,
     canDo,
     circle,
-    circle?.folderOrder,
-    circle?.folderDetails,
   ]);
 
   return (
