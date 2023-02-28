@@ -1,6 +1,13 @@
 import queryClient from "@/app/common/utils/queryClient";
 import { useGlobal } from "@/app/context/globalContext";
-import { CircleType, MemberDetails, Registry, RetroType } from "@/app/types";
+import {
+  CircleType,
+  MemberDetails,
+  Registry,
+  RetroType,
+  UserType,
+} from "@/app/types";
+import mixpanel from "mixpanel-browser";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { useQuery } from "react-query";
@@ -46,7 +53,6 @@ export function useProviderCircleContext() {
     useState(false);
   const [mintkudosCommunityId, setMintkudosCommunityId] = useState("");
   const [loading, setLoading] = useState(false);
-
   const [isBatchPayOpen, setIsBatchPayOpen] = useState(false);
   const { socket } = useGlobal();
 
@@ -109,6 +115,10 @@ export function useProviderCircleContext() {
     }
   );
 
+  const { data: currentUser } = useQuery<UserType>("getMyUser", {
+    enabled: false,
+  });
+
   const setCircleData = (data: CircleType) => {
     queryClient.setQueryData(["circle", cId], data);
   };
@@ -145,6 +155,15 @@ export function useProviderCircleContext() {
       void fetchRegistry();
       void fetchMemberDetails();
     }
+    process.env.NODE_ENV === "production" &&
+      mixpanel.time_event("Circle Session");
+    return () => {
+      process.env.NODE_ENV === "production" &&
+        mixpanel.track("Circle Session", {
+          circle: cId,
+          user: currentUser?.username,
+        });
+    };
   }, [cId]);
 
   useEffect(() => {
