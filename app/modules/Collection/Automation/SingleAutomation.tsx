@@ -205,22 +205,31 @@ export default function SingleAutomation({
         },
         ...paymentOptions,
       ]);
-
+      console.log({ allPossibleActions });
       const thenOptions = Object.entries(allPossibleActions)
         .filter((a) =>
           collection?.collectionType === 0
-            ? a[0] !== "closeCard" && a[0] !== "initiatePendingPayment"
-            : a[0] !== "giveDiscordRole" &&
-              a[0] !== "giveRole" &&
-              a[0] !== "createDiscordChannel" &&
-              (selectedWhenOption.value === "completedPayment" ||
-                selectedWhenOption.value === "cancelledPayment") &&
-              a[0] !== "initiatePendingPayment"
+            ? [
+                "createCard",
+                "createDiscordChannel",
+                "giveDiscordRole",
+                "giveRole",
+                "postOnDiscord",
+                "sendEmail",
+                "initiatePendingPayment",
+              ].includes(a[0])
+            : ["closeCard", "createCard", "postOnDiscord"].includes(a[0]) ||
+              (!["completedPayment", "cancelledPayment"].includes(
+                selectedWhenOption.value
+              ) &&
+                a[0] === "initiatePendingPayment")
         )
         .map((a) => ({
           label: a[1].name,
           value: a[0],
         }));
+      console.log({ thenOptions });
+
       setThenOptions(thenOptions);
       if (automation) {
         setName(automation.name);
@@ -241,11 +250,14 @@ export default function SingleAutomation({
           }))
         );
         setTrigger(automation.trigger);
+        console.log({ actions: automation.actions });
         setActions(automation.actions);
         setConditions(automation.conditions || []);
       }
     }
   }, [automation, collection, collectionOption]);
+
+  console.log({ act: actions });
 
   useEffect(() => {
     fetchCollection()
@@ -260,6 +272,7 @@ export default function SingleAutomation({
           theme: "dark",
         });
       });
+    console.log({ actions });
     setCanSave(
       validateActions(actions) &&
         validateTrigger(trigger) &&
@@ -539,14 +552,17 @@ export default function SingleAutomation({
                   <PrimaryButton
                     variant="tertiary"
                     onClick={() => {
-                      setActions([
-                        ...actions,
-                        allPossibleActions[thenOptions?.[0]?.value],
-                      ]);
+                      console.log({ allPossibleActions, thenOptions, actions });
+                      if (allPossibleActions[thenOptions?.[0]?.value])
+                        setActions([
+                          ...actions,
+                          allPossibleActions[thenOptions?.[0]?.value],
+                        ]);
                       setSelectedThenOptions([
                         ...selectedThenOptions,
                         thenOptions?.[0],
                       ]);
+                      console.log({ actions });
                       setIsDirty(true);
                     }}
                   >

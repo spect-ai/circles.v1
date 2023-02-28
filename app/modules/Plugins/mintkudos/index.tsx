@@ -166,184 +166,98 @@ export default function SendKudos({ handleClose }: Props) {
       handleClose={handleClose}
       zIndex={2}
     >
-      {kudos.imageUrl && !updateKudos ? (
-        <Box>
+      <Box>
+        <Box
+          display="flex"
+          flexDirection={{
+            xs: "column",
+            md: "row",
+          }}
+          padding={{
+            xs: "4",
+            md: "8",
+          }}
+          justifyContent="center"
+          alignItems="flex-start"
+          width="full"
+        >
           <Box
-            display="flex"
-            flexDirection={{
-              xs: "column",
-              md: "row",
+            width={{
+              xs: "full",
+              md: "1/2",
             }}
-            width="full"
-            id="imagecontainer"
+            display="flex"
+            flexDirection="column"
+            justifyContent="center"
           >
             <Box
-              width={{
-                xs: "full",
-                md: "1/2",
+              marginY="4"
+              display="flex"
+              flexDirection="column"
+              justifyContent="center"
+              marginRight={{
+                xs: "0",
+                md: "8",
               }}
-              marginBottom="4"
-              id="imagebox"
             >
               <Image
-                src={`${kudos.imageUrl}`}
-                width="100%"
-                height="100%"
+                src={assetUrl}
+                width="250%"
+                height="250%"
                 objectFit="contain"
                 alt="Kudos img"
-                layout="responsive"
               />
-            </Box>
-            <Box
-              marginLeft={{
-                xs: "0",
-                md: "4",
-              }}
-            >
-              <Stack direction="vertical" space="4">
-                <PrimaryButton onClick={() => setUpdateKudos(true)}>
-                  Update kudos
-                </PrimaryButton>
-                <PrimaryButton
-                  onClick={async () => {
-                    const res = await (
-                      await fetch(
-                        `${process.env.API_HOST}/collection/v1/${collection.id}`,
-                        {
-                          method: "PATCH",
-                          body: JSON.stringify({
-                            mintkudosTokenId: null,
-                          }),
-                          headers: {
-                            "Content-Type": "application/json",
-                          },
-                          credentials: "include",
-                        }
-                      )
-                    ).json();
-                    updateCollection(res);
-                  }}
-                  variant="tertiary"
+              {!kudos.imageUrl && communityKudosDesigns.length > 0 && (
+                <ScrollContainer
+                  display="flex"
+                  flexDirection="row"
+                  alignItems="center"
+                  marginY="4"
                 >
-                  Remove kudos
-                </PrimaryButton>
-              </Stack>
+                  {communityKudosDesigns.map((k: CommunityKudosType) => (
+                    <Box key={k.nftTypeId}>
+                      <Image
+                        src={k.previewAssetUrl}
+                        width="100%"
+                        height="100%"
+                        objectFit="contain"
+                        alt="Kudos img"
+                        onClick={() => {
+                          setAssetToUse(k.nftTypeId);
+                          setAssetUrl(k.previewAssetUrl);
+                        }}
+                      />
+                    </Box>
+                  ))}
+                </ScrollContainer>
+              )}
             </Box>
           </Box>
-
           <Box
             width={{
               xs: "full",
               md: "1/2",
             }}
           >
-            <PrimaryButton
-              onClick={() => setUpdateKudos(true)}
-              icon={<IconSparkles />}
-              disabled={collection.formMetadata.allowAnonymousResponses}
-              suffix={
-                collection.formMetadata.allowAnonymousResponses && (
-                  <Tooltip title="You can only send kudos if the form doesnot allow anonymous responses">
-                    <InfoCircleOutlined style={{ color: "gray" }} />
-                  </Tooltip>
-                )
-              }
-            >
-              Send Kudos{" "}
-            </PrimaryButton>
-          </Box>
-        </Box>
-      ) : (
-        <Box>
-          <Box
-            display="flex"
-            flexDirection={{
-              xs: "column",
-              md: "row",
-            }}
-            padding={{
-              xs: "4",
-              md: "8",
-            }}
-            justifyContent="center"
-            alignItems="flex-start"
-            width="full"
-          >
-            <Box
-              width={{
-                xs: "full",
-                md: "1/2",
-              }}
-              display="flex"
-              flexDirection="column"
-              justifyContent="center"
-            >
-              <Box
-                marginY="4"
-                display="flex"
-                flexDirection="column"
-                justifyContent="center"
-                marginRight={{
-                  xs: "0",
-                  md: "8",
-                }}
-              >
-                <Image
-                  src={assetUrl}
-                  width="250%"
-                  height="250%"
-                  objectFit="contain"
-                  alt="Kudos img"
-                />
-                {communityKudosDesigns.length > 0 && (
-                  <ScrollContainer
-                    display="flex"
-                    flexDirection="row"
-                    alignItems="center"
-                    marginY="4"
-                  >
-                    {communityKudosDesigns.map((k: CommunityKudosType) => (
-                      <Box key={k.nftTypeId}>
-                        <Image
-                          src={k.previewAssetUrl}
-                          width="100%"
-                          height="100%"
-                          objectFit="contain"
-                          alt="Kudos img"
-                          onClick={() => {
-                            setAssetToUse(k.nftTypeId);
-                            setAssetUrl(k.previewAssetUrl);
-                          }}
-                        />
-                      </Box>
-                    ))}
-                  </ScrollContainer>
-                )}
-              </Box>
-            </Box>
-            <Box
-              width={{
-                xs: "full",
-                md: "1/2",
-              }}
-            >
-              <Box paddingBottom="4" width="full">
-                <Stack>
-                  <Stack direction="horizontal" space="4">
-                    <Textarea
-                      label={
-                        <Stack direction="horizontal" space="2">
-                          <Text variant="label">Headline</Text>
-                          <Tooltip title="The headline only shows up in the image for the default mintkudos image. For custom images, the headline is still added on chain with the NFT, however it doesn't show up in the image.">
-                            <InfoCircleOutlined />
-                          </Tooltip>
-                        </Stack>
-                      }
-                      value={headlineContent}
-                      onChange={(e) => setHeadlineContent(e.target.value)}
-                      maxLength={50}
-                    />
-                  </Stack>
+            <Box paddingBottom="4" width="full">
+              <Stack>
+                <Stack direction="horizontal" space="4">
+                  <Textarea
+                    label={
+                      <Stack direction="horizontal" space="2">
+                        <Text variant="label">Headline</Text>
+                        <Tooltip title="The headline only shows up in the image for the default mintkudos image. For custom images, the headline is still added on chain with the NFT, however it doesn't show up in the image.">
+                          <InfoCircleOutlined />
+                        </Tooltip>
+                      </Stack>
+                    }
+                    value={headlineContent}
+                    onChange={(e) => setHeadlineContent(e.target.value)}
+                    maxLength={50}
+                    disabled={!!kudos.imageUrl}
+                  />
+                </Stack>
+                {!kudos.imageUrl && (
                   <MediaPicker
                     compact
                     defaultValue={{
@@ -372,46 +286,83 @@ export default function SendKudos({ handleClose }: Props) {
                     uploading={uploading}
                     maxSize={10}
                   />
-                  <Input
-                    label="Number of Kudos"
-                    value={numberOfKudosToMint}
-                    type="number"
-                    min={1}
-                    max={10000}
-                    required={true}
-                    onChange={(e) =>
-                      setNumberOfKudosToMint(parseInt(e.target.value))
-                    }
-                  />
-                  {filenameExceedsLimit && (
-                    <Text variant="small" color="red">
-                      Please add a file with filename less than 20 characters.
-                    </Text>
-                  )}
-                </Stack>
-              </Box>
+                )}
+                <Input
+                  label="Number of Kudos"
+                  value={numberOfKudosToMint}
+                  type="number"
+                  min={1}
+                  max={10000}
+                  required={true}
+                  onChange={(e) =>
+                    setNumberOfKudosToMint(parseInt(e.target.value))
+                  }
+                  disabled={!!kudos.imageUrl}
+                />
+                {filenameExceedsLimit && (
+                  <Text variant="small" color="red">
+                    Please add a file with filename less than 20 characters.
+                  </Text>
+                )}
+              </Stack>
             </Box>
           </Box>
+        </Box>
+        <Box
+          display="flex"
+          flexDirection="row"
+          justifyContent="flex-end"
+          width="full"
+          paddingBottom="8"
+          paddingLeft="8"
+          paddingRight="8"
+        >
           <Box
+            width="1/2"
             display="flex"
             flexDirection="row"
             justifyContent="flex-end"
-            width="full"
-            paddingBottom="8"
-            paddingLeft="8"
-            paddingRight="8"
           >
-            <Box
-              width="1/2"
-              display="flex"
-              flexDirection="row"
-              justifyContent="flex-end"
-            >
+            {kudos.imageUrl && (
+              <PrimaryButton
+                onClick={async () => {
+                  setLoading(true);
+                  const res = await (
+                    await fetch(
+                      `${process.env.API_HOST}/collection/v1/${collection.id}`,
+                      {
+                        method: "PATCH",
+                        body: JSON.stringify({
+                          formMetadata: {
+                            ...collection.formMetadata,
+                            mintkudosTokenId: null,
+                          },
+                        }),
+                        headers: {
+                          "Content-Type": "application/json",
+                        },
+                        credentials: "include",
+                      }
+                    )
+                  ).json();
+                  updateCollection(res);
+                  setLoading(false);
+                  handleClose();
+                }}
+                variant="tertiary"
+                loading={loading}
+                disabled={loading}
+              >
+                Remove kudos
+              </PrimaryButton>
+            )}
+            {!kudos.imageUrl && (
               <Button
                 loading={loading}
                 width="full"
                 size="small"
                 variant="secondary"
+                disabled={loading}
                 onClick={async () => {
                   setLoading(true);
                   try {
@@ -456,10 +407,10 @@ export default function SendKudos({ handleClose }: Props) {
               >
                 Send Kudos to Responders
               </Button>
-            </Box>
+            )}
           </Box>
         </Box>
-      )}
+      </Box>
     </Modal>
   );
 }
