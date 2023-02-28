@@ -152,6 +152,12 @@ export const hasClaimedSurveyReceipt = async (
   callerAddress: string
 ) => {
   try {
+    console.log({
+      chainId,
+      surveyHubAddress,
+      surveyId,
+      callerAddress,
+    });
     const res = await readContract({
       address: surveyHubAddress as `0x${string}`,
       abi: SurveyABI.abi,
@@ -159,6 +165,7 @@ export const hasClaimedSurveyReceipt = async (
       args: [surveyId, callerAddress],
       chainId: parseInt(chainId),
     });
+    console.log({ hasResponded: res });
     return res;
   } catch (err) {
     console.log(err);

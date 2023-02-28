@@ -91,6 +91,10 @@ export default function DistributeERC20({
       : "minResponses"
   );
   const [isLoading, setIsLoading] = useState(false);
+  const [isError, setIsError] = useState({
+    amountPerResponse: false,
+    totalAmount: false,
+  });
 
   useEffect(() => {
     if (registry && selectedNetwork) {
@@ -122,6 +126,38 @@ export default function DistributeERC20({
       );
     }
   }, [distributionInfo?.amountPerResponse]);
+
+  useEffect(() => {
+    if (paymentType?.value === "lottery") {
+      setValuePerResponse(0);
+    } else if (paymentType?.value === "payPerResponse") {
+      setMinResponses(0);
+      setMinTimestamp(0);
+    }
+  }, [paymentType]);
+
+  useEffect(() => {
+    if (paymentType?.value === "payPerResponse") {
+      if (valuePerResponse > value) {
+        setIsError({
+          ...isError,
+          amountPerResponse: true,
+        });
+      } else {
+        setIsError({
+          ...isError,
+          amountPerResponse: false,
+          totalAmount: false,
+        });
+      }
+    } else {
+      setIsError({
+        ...isError,
+        totalAmount: false,
+        amountPerResponse: false,
+      });
+    }
+  }, [valuePerResponse, value]);
 
   return (
     <Modal handleClose={handleClose} title="Distribute Tokens">
@@ -183,6 +219,11 @@ export default function DistributeERC20({
                   units={selectedToken?.label}
                 />
               </Box>
+              {isError["totalAmount"] && (
+                <Text variant="small" color="red">
+                  Amount To Pay Per Response cannot be greater than Total Amount
+                </Text>
+              )}
             </Stack>
             <Stack space="2">
               <Stack space="1">
@@ -214,8 +255,15 @@ export default function DistributeERC20({
                     }}
                     type="number"
                     units={selectedToken?.label}
+                    error={valuePerResponse > value}
                   />
                 </Box>
+                {isError["amountPerResponse"] && (
+                  <Text variant="small" color="red">
+                    Amount To Pay Per Response cannot be greater than Total
+                    Amount
+                  </Text>
+                )}
               </Stack>
             )}
             <Stack space="0">
@@ -291,6 +339,14 @@ export default function DistributeERC20({
           <Box width="1/2">
             <PrimaryButton
               loading={isLoading}
+              disabled={
+                isLoading ||
+                value === 0 ||
+                isError["totalAmount"] ||
+                isError["amountPerResponse"] ||
+                (paymentType?.value === "payPerResponse" &&
+                  valuePerResponse === 0)
+              }
               onClick={async () => {
                 if (!registry) return;
                 if (

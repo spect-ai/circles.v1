@@ -191,6 +191,7 @@ export default function FormFields({ form, setForm }: Props) {
   }, [form]);
 
   useEffect(() => {
+    console.log({ f: form.formMetadata, registry });
     if (
       form?.formMetadata?.surveyTokenId ||
       form?.formMetadata?.surveyTokenId === 0
