@@ -64,6 +64,17 @@ export const createSurvey = async (
     );
 
     if (tokenAddress === "0x0") {
+      const estimatedGas = await surveyHub.estimateGas.createSurveyWithEther(
+        distributionType,
+        ethers.utils.parseEther(amountPerResponse?.toString() || "0"),
+        minResponses || 0,
+        minNumDays || 0,
+        {
+          value: ethers.utils.parseEther(totalAmount.toString()),
+          maxFeePerGas,
+          maxPriorityFeePerGas,
+        }
+      );
       tx = await surveyHub.createSurveyWithEther(
         distributionType,
         ethers.utils.parseEther(amountPerResponse?.toString() || "0"),
@@ -73,6 +84,7 @@ export const createSurvey = async (
           value: ethers.utils.parseEther(totalAmount.toString()),
           maxFeePerGas,
           maxPriorityFeePerGas,
+          gasLimit: Math.ceil(estimatedGas.toNumber() * 1.2),
         }
       );
     } else {
@@ -109,6 +121,8 @@ export const createSurvey = async (
             ethers.constants.MaxUint256,
             {
               gasLimit: Math.ceil(gasEstimate.toNumber() * 1.2),
+              maxFeePerGas,
+              maxPriorityFeePerGas,
             }
           );
 
@@ -116,7 +130,18 @@ export const createSurvey = async (
         }
       }
       console.log("creating survey ...");
-
+      const gasEstimate = await surveyHub.estimateGas.createSurveyWithToken(
+        distributionType,
+        tokenAddress,
+        ethers.utils.parseEther(amountPerResponse?.toString() || "0"),
+        minResponses || 0,
+        minNumDays || 0,
+        amountInWei,
+        {
+          maxFeePerGas,
+          maxPriorityFeePerGas,
+        }
+      );
       tx = await surveyHub.createSurveyWithToken(
         distributionType,
         tokenAddress,
@@ -127,6 +152,7 @@ export const createSurvey = async (
         {
           maxFeePerGas,
           maxPriorityFeePerGas,
+          gasLimit: Math.ceil(gasEstimate.toNumber() * 1.2),
         }
       );
       console.log("sdsds");

@@ -137,19 +137,20 @@ const Items = [
     component: "form",
     name: "Create a Form",
     icon: FaWpforms,
-    description: "Create a form to collect data, feedback, or ideas.",
+    description: "Create a form to collect data, feedback, or ideas",
   },
   {
     component: "project",
     name: "Create a Project",
     icon: Trello,
-    description: "Create a project to track tasks.",
+    description:
+      "Create a project to track tasks, contacts and share context with your team",
   },
   {
     component: "workstream",
     name: "Create a Workstream",
     icon: MdGroupWork,
-    description: "Create a workstream to scale your space",
+    description: "Create a workstream to scale your organization",
   },
   {
     component: "folder",

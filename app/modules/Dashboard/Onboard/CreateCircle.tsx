@@ -59,7 +59,7 @@ export function CreateCircle({ setStep, setOnboardType }: Props) {
     >
       <Stack align="center">
         {/* <IconTokens color={"accent"} size="8" /> */}
-        <Heading>Let&apos;s create your space</Heading>
+        <Heading>Let&apos;s create a space for you & your frens</Heading>
         <Text color="accent">
           <MdGroupWork size="40" />
         </Text>
@@ -68,7 +68,7 @@ export function CreateCircle({ setStep, setOnboardType }: Props) {
           style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
         >
           <Text align={"center"}>
-            A Space is a workspace for you and your frens.
+            Give your space a name and we&apos;ll get you started
           </Text>
         </Box>
 
