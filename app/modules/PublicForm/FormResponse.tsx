@@ -454,6 +454,7 @@ export default function FormResponse({
               }}
             >
               {form.formMetadata?.previousResponses?.length > 0 &&
+                form.formMetadata?.surveyTokenId &&
                 !surveyIsLotteryYetToBeDrawn && (
                   <Stack direction="horizontal" align="flex-start">
                     <Text variant="extraLarge" weight="bold">
