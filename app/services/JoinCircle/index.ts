@@ -44,9 +44,9 @@ export const joinCircleFromDiscord = async (circleId: string) => {
     console.log({ data });
     return data;
   } else {
-    toast.error(
-      "Something went wrong, please ensure you have the required role"
-    );
+    // toast.error(
+    //   "Something went wrong, please ensure you have the required role"
+    // );
     return null;
   }
 };
@@ -70,9 +70,9 @@ export const joinCircleFromGuildxyz = async (circleId: string) => {
     console.log({ data });
     return data;
   } else {
-    toast.error(
-      "Something went wrong, please ensure you have the required role"
-    );
+    // toast.error(
+    //   "Something went wrong, please ensure you have the required role"
+    // );
     return null;
   }
 };
@@ -93,9 +93,9 @@ export const joinCirclesFromGuildxyz = async (ethAddress: string) => {
     //   theme: "dark",
     // });
   } else {
-    toast.error(
-      "Something went wrong, please ensure you have the required Guild role"
-    );
+    // toast.error(
+    //   "Something went wrong, please ensure you have the required Guild role"
+    // );
     return null;
   }
 };
@@ -122,9 +122,9 @@ export const joinCirclesFromDiscord = async (
       theme: "dark",
     });
   } else {
-    toast.error(
-      "Something went wrong, please ensure you have the required  Discord role"
-    );
+    // toast.error(
+    //   "Something went wrong, please ensure you have the required  Discord role"
+    // );
     return null;
   }
 };

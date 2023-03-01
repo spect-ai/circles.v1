@@ -1,6 +1,6 @@
 import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { Box, Stack, Text } from "degen";
+import { Box, IconPlug, Stack, Text } from "degen";
 import { AnimatePresence, motion } from "framer-motion";
 import React, { useEffect, useState } from "react";
 import { Cpu } from "react-feather";
@@ -121,7 +121,7 @@ export default function ViewPlugins({}: Props) {
         onClick={() => {
           setIsOpen(true);
         }}
-        icon={<Cpu />}
+        icon={<IconPlug color="accent" />}
       >
         Add Plugins
       </PrimaryButton>
