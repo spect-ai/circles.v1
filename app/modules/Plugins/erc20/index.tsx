@@ -336,7 +336,14 @@ export default function DistributeERC20({
           display="flex"
           justifyContent="flex-end"
         >
-          <Box width="1/2">
+          <Box display="flex" flexDirection="column" gap="4" width="1/2">
+            {value > 0 && (
+              <Box marginRight="2">
+                <Text variant="base">
+                  {`${value} ${selectedToken?.label} will be escrowed for distribution`}
+                </Text>
+              </Box>
+            )}
             <PrimaryButton
               loading={isLoading}
               disabled={
@@ -374,7 +381,8 @@ export default function DistributeERC20({
                 }
                 console.log({ tx });
                 const lastSurveyId = await getLastSurveyId(
-                  registry[selectedNetwork.value].surveyHubAddress
+                  registry[selectedNetwork.value].surveyHubAddress,
+                  selectedNetwork?.value
                 );
                 console.log({ lastSurveyId });
                 const res = await updateFormCollection(collection.id, {
