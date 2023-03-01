@@ -161,7 +161,11 @@ export const createSurvey = async (
   } catch (err: any) {
     console.log(err);
     console.log(err.message);
-    if (err.message.includes("Try again after some time")) {
+    if (err.message.includes("Invalid transaction params")) {
+      toast.error(
+        "Please switch to another network & switch back to the current network. If this error persists, please report it to us."
+      );
+    } else if (err.message.includes("Try again after some time")) {
       toast.error(
         "Sometimes, all you need is a second try, please click the button again 🙏. If this error persists, please report it to us."
       );

@@ -453,80 +453,81 @@ export default function FormResponse({
                 xl: "1/2",
               }}
             >
-              {form.formMetadata?.previousResponses?.length > 0 && (
-                <Stack direction="horizontal" align="flex-start">
-                  <Text variant="extraLarge" weight="bold">
-                    👉
-                  </Text>
-                  <Stack>
-                    <Text weight="semiBold" variant="large">
-                      {form.formMetadata.surveyDistributionType === 1
-                        ? surveyDistributionInfo?.amountPerResponse
-                          ? `You are eligible to receive ${ethers.utils.formatEther(
-                              surveyDistributionInfo?.amountPerResponse?.toString()
-                            )} ${
-                              form.formMetadata.surveyToken?.label
-                            } for submitting a response
-                    💰`
-                          : `You are eligible to receive tokens 💰`
-                        : `You are eligible to receive ${form.formMetadata.surveyTotalValue} ${form.formMetadata.surveyToken?.label} for submitting a response 💰`}
+              {form.formMetadata?.previousResponses?.length > 0 &&
+                !surveyIsLotteryYetToBeDrawn && (
+                  <Stack direction="horizontal" align="flex-start">
+                    <Text variant="extraLarge" weight="bold">
+                      👉
                     </Text>
-                    {!canClaimSurveyToken && (
-                      <Text variant="small">
-                        It takes a few seconds for your response to be
-                        processed, after which you will be able to claim your
-                        tokens.
+                    <Stack>
+                      <Text weight="semiBold" variant="large">
+                        {form.formMetadata.surveyDistributionType === 1
+                          ? surveyDistributionInfo?.amountPerResponse
+                            ? `You are eligible to receive ${ethers.utils.formatEther(
+                                surveyDistributionInfo?.amountPerResponse?.toString()
+                              )} ${
+                                form.formMetadata.surveyToken?.label
+                              } for submitting a response
+                    💰`
+                            : `You are eligible to receive tokens 💰`
+                          : `You are eligible to receive ${form.formMetadata.surveyTotalValue} ${form.formMetadata.surveyToken?.label} for submitting a response 💰`}
                       </Text>
-                    )}
-                    <Box
-                      width={{
-                        xs: "48",
-                        md: "72",
-                      }}
-                    >
-                      {" "}
-                      <PrimaryButton
-                        loading={claiming}
-                        disabled={canClaimSurveyToken ? false : true}
-                        onClick={async () => {
-                          setClaiming(true);
-                          try {
-                            const res = await fetch(
-                              `${process.env.API_HOST}/collection/v1/${form?.id}/claimSurveyTokens`,
-                              {
-                                method: "PATCH",
-                                headers: {
-                                  "Content-Type": "application/json",
-                                },
-                                credentials: "include",
-                              }
-                            );
-
-                            console.log(res);
-                            if (res.ok) {
-                              const data = await res.json();
-                              setSurveyTokenClaimed(true);
-                              setClaimedJustNow(true);
-                              setSurveyTokenClaimTransactionHash(
-                                data.transactionHash
-                              );
-                            }
-                          } catch (e) {
-                            console.log(e);
-                            toast.error(
-                              "Something went wrong, please try again later"
-                            );
-                          }
-
-                          setClaiming(false);
+                      {!canClaimSurveyToken && (
+                        <Text variant="small">
+                          It takes a few seconds for your response to be
+                          processed, after which you will be able to claim your
+                          tokens.
+                        </Text>
+                      )}
+                      <Box
+                        width={{
+                          xs: "48",
+                          md: "72",
                         }}
                       >
-                        Claim Token
-                      </PrimaryButton>
-                    </Box>
+                        {" "}
+                        <PrimaryButton
+                          loading={claiming}
+                          disabled={canClaimSurveyToken ? false : true}
+                          onClick={async () => {
+                            setClaiming(true);
+                            try {
+                              const res = await fetch(
+                                `${process.env.API_HOST}/collection/v1/${form?.id}/claimSurveyTokens`,
+                                {
+                                  method: "PATCH",
+                                  headers: {
+                                    "Content-Type": "application/json",
+                                  },
+                                  credentials: "include",
+                                }
+                              );
+
+                              console.log(res);
+                              if (res.ok) {
+                                const data = await res.json();
+                                setSurveyTokenClaimed(true);
+                                setClaimedJustNow(true);
+                                setSurveyTokenClaimTransactionHash(
+                                  data.transactionHash
+                                );
+                              }
+                            } catch (e) {
+                              console.log(e);
+                              toast.error(
+                                "Something went wrong, please try again later"
+                              );
+                            }
+
+                            setClaiming(false);
+                          }}
+                        >
+                          Claim Token
+                        </PrimaryButton>
+                      </Box>
+                    </Stack>
                   </Stack>
-                </Stack>
-              )}
+                )}
             </Box>
           )}
         </Box>

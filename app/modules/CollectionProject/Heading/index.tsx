@@ -119,7 +119,7 @@ export default function ProjectHeading() {
             <Heading>{collection.name}</Heading>
             <Settings />
           </Stack>
-          <Hidden xs sm>
+          {/* <Hidden xs sm>
             <Box width="32">
               <PrimaryButton
                 icon={
@@ -138,7 +138,7 @@ export default function ProjectHeading() {
                 Share
               </PrimaryButton>
             </Box>
-          </Hidden>
+          </Hidden> */}
         </Stack>
         <Box marginBottom="1" />
         <Hidden xs sm>
