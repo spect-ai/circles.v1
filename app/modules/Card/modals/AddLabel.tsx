@@ -15,20 +15,22 @@ export default function AddLabel() {
   const [label, setLabel] = useState("");
 
   const onSubmit = async () => {
-    setLoading(true);
+    if (circle) {
+      setLoading(true);
 
-    const res = await updateCircle(
-      {
-        labels: [...(circle?.labels || []), label],
-      },
-      circle?.id
-    );
-    setLoading(false);
-    if (res) {
-      setLabel("");
-      setCircleData(res);
-      setLabels([...labels, label]);
-      setIsOpen(false);
+      const res = await updateCircle(
+        {
+          labels: [...(circle?.labels || []), label],
+        },
+        circle?.id
+      );
+      setLoading(false);
+      if (res) {
+        setLabel("");
+        setCircleData(res);
+        setLabels([...labels, label]);
+        setIsOpen(false);
+      }
     }
   };
 

@@ -1,4 +1,4 @@
-import { endVotingPeriod, recordSnapshotProposal, startVotingPeriod } from "@/app/services/Collection";
+import { recordSnapshotProposal } from "@/app/services/Collection";
 import { Box, IconLightningBolt, Input, Stack, Text, useTheme } from "degen";
 import React, { useState } from "react";
 import { toast } from "react-toastify";
@@ -133,7 +133,7 @@ export const SnapshotModal = ({
 }) => {
   const { localCollection: collection, updateCollection } =
     useLocalCollection();
-  const { localCircle: circle } = useCircle();
+  const { circle } = useCircle();
   const { hostname } = useLocation();
   const { address } = useAccount();
   const { mode } = useTheme();
@@ -238,12 +238,18 @@ export const SnapshotModal = ({
                 );
               } else {
                 toast.success("Proposal created");
-                const res = await recordSnapshotProposal(collection.id, dataId, {
-                  snapshotSpace: circle?.snapshot?.id,
-                  proposalId: snapRes.id,
-                });
+                const res = await recordSnapshotProposal(
+                  collection.id,
+                  dataId,
+                  {
+                    snapshotSpace: circle?.snapshot?.id || "",
+                    proposalId: snapRes.id,
+                  }
+                );
                 if (!res.id) {
-                  toast.error("Something went wrong while recording snapshot proposal");
+                  toast.error(
+                    "Something went wrong while recording snapshot proposal"
+                  );
                 } else updateCollection(res);
               }
             }}

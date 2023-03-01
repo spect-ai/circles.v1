@@ -51,7 +51,7 @@ export default function ConnectQuestbook() {
         grantApplicantProject: applicantProject?.value,
         grantNotificationChannel: discordGrantNotifChannel,
       },
-      circle?.id
+      circle?.id || ""
     );
     console.log({ res });
     setIsLoading(false);
@@ -86,7 +86,7 @@ export default function ConnectQuestbook() {
 
   useEffect(() => {
     const getGuildChannels = async () => {
-      const res = await fetchGuildChannels(circle?.discordGuildId);
+      const res = await fetchGuildChannels(circle?.discordGuildId || "");
       setChannels(
         res.guildChannels.map((channel: any) => ({
           label: channel.name,

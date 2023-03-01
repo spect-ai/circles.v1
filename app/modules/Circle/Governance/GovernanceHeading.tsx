@@ -21,10 +21,10 @@ type Props = {
 };
 
 export default function GovernanceHeading({ status, setStatus }: Props) {
-  const { navigationBreadcrumbs, localCircle } = useCircle();
+  const { navigationBreadcrumbs, circle } = useCircle();
   const router = useRouter();
-  const { canDo } = useRoleGate()
-  const { circle: cId, proposalStatus } = router.query;
+  const { canDo } = useRoleGate();
+  const { circle: cId } = router.query;
   const [snapshotModalOpen, setSnapshotModalOpen] = useState(false);
   const [snapshotSpace, setSnapshotSpace] = useState("");
 
@@ -42,7 +42,7 @@ export default function GovernanceHeading({ status, setStatus }: Props) {
           symbol: data?.space?.symbol || "",
         },
       },
-      localCircle?.id as string
+      circle?.id as string
     );
   };
 
@@ -127,14 +127,18 @@ export default function GovernanceHeading({ status, setStatus }: Props) {
                 <Heading>Governance Center</Heading>
               </Box>
             </Stack>
-            {!localCircle?.snapshot?.id && (
-              <PrimaryButton onClick={() => {
-                if (!canDo("manageCircleSettings")) {
-                  toast.error("You don't have permission to connect Snapshot")
-                  return;
-                }
-                setSnapshotModalOpen(true)
-              }}>
+            {!circle?.snapshot?.id && (
+              <PrimaryButton
+                onClick={() => {
+                  if (!canDo("manageCircleSettings")) {
+                    toast.error(
+                      "You don't have permission to connect Snapshot"
+                    );
+                    return;
+                  }
+                  setSnapshotModalOpen(true);
+                }}
+              >
                 Connect Snapshot
               </PrimaryButton>
             )}

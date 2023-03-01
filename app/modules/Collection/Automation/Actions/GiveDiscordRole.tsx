@@ -49,6 +49,7 @@ export default function GiveDiscordRole({
     >();
 
   useEffect(() => {
+    if (!circle?.discordGuildId) return;
     const fetchGuildRoles = async () => {
       const data = await getGuildRoles(circle?.discordGuildId);
       data && setDiscordRoles(data.roles);
@@ -57,7 +58,7 @@ export default function GiveDiscordRole({
     if (circle?.discordGuildId) void fetchGuildRoles();
   }, [circle?.discordGuildId]);
 
-  if (!circle.discordGuildId)
+  if (!circle?.discordGuildId)
     return (
       <Box
         width={{
@@ -66,7 +67,7 @@ export default function GiveDiscordRole({
         }}
         onClick={() => {
           window.open(
-            `https://discord.com/oauth2/authorize?client_id=942494607239958609&permissions=17448306704&redirect_uri=${origin}/api/connectDiscord&response_type=code&scope=bot&state=${circle.slug}/r/${collection.slug}`,
+            `https://discord.com/oauth2/authorize?client_id=942494607239958609&permissions=17448306704&redirect_uri=${origin}/api/connectDiscord&response_type=code&scope=bot&state=${circle?.slug}/r/${collection.slug}`,
             "_blank"
           );
         }}

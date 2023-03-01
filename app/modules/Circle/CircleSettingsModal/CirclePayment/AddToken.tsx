@@ -75,7 +75,7 @@ export default function AddToken({ chainName, chainId, handleClose }: Props) {
             disabled={!tokenSymbol}
             onClick={async () => {
               setLoading(true);
-              const res = await addToken(circle?.id, {
+              const res = await addToken(circle?.id || "", {
                 chainId: network.value as string,
                 address,
                 symbol: tokenSymbol,

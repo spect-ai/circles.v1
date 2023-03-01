@@ -35,13 +35,14 @@ interface Props {
 }
 
 function RoleCard({ roleKey, role }: Props) {
-  const { localCircle: circle, setCircleData } = useCircle();
+  const { circle, setCircleData } = useCircle();
   const { mode } = useTheme();
   const { canDo } = useRoleGate();
   const [isDirty, setIsDirty] = useState(false);
   const [description, setDescription] = useState(role?.description);
 
   const onSaveDescription = async () => {
+    if (circle?.id === undefined) return;
     const payload = {
       ...role,
       description: description,
@@ -61,12 +62,15 @@ function RoleCard({ roleKey, role }: Props) {
         <Tag>
           <Stack direction="horizontal" space="1" align="center">
             <IconUserSolid size="5" />
-            {Object.values(circle.memberRoles).reduce((acc, memberRole) => {
-              if (memberRole.includes(roleKey)) {
-                return acc + 1;
-              }
-              return acc;
-            }, 0)}
+            {Object.values(circle?.memberRoles || {}).reduce(
+              (acc, memberRole) => {
+                if (memberRole.includes(roleKey)) {
+                  return acc + 1;
+                }
+                return acc;
+              },
+              0
+            )}
           </Stack>
         </Tag>
       </Stack>

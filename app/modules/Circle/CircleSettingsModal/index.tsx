@@ -13,6 +13,7 @@ import { useCircle } from "../CircleContext";
 import Credentials from "./Credentials";
 import styled from "styled-components";
 import Roles from "../RolesModal/Roles";
+import SidebarConfig from "./SidebarConfig";
 interface Props {
   handleClose: () => void;
   initialTab?: number;
@@ -52,7 +53,7 @@ export default function SettingsModal({ handleClose, initialTab }: Props) {
         avatar: logo,
         private: visibilityTab === 1,
       },
-      circle?.id
+      circle?.id || ""
     );
     setIsLoading(false);
     if (res) {
@@ -62,7 +63,7 @@ export default function SettingsModal({ handleClose, initialTab }: Props) {
   };
 
   const onDelete = async () => {
-    const res = await deleteCircle(circle?.id);
+    const res = await deleteCircle(circle?.id || "");
     if (res) {
       handleClose();
       void router.push("/");
@@ -81,11 +82,7 @@ export default function SettingsModal({ handleClose, initialTab }: Props) {
 
   return (
     <Modal
-      title={
-        circle?.parents?.length
-          ? "Workstream Settings"
-          : "Organization Settings"
-      }
+      title={circle?.parents?.length ? "Workstream Settings" : "Space Settings"}
       handleClose={handleClose}
       height="40rem"
       size="large"
@@ -104,6 +101,7 @@ export default function SettingsModal({ handleClose, initialTab }: Props) {
             tabs={[
               "Info",
               "Integrations",
+              "Sidebar",
               "Credentials",
               "Roles",
               "Payments",
@@ -112,6 +110,7 @@ export default function SettingsModal({ handleClose, initialTab }: Props) {
             tabTourIds={[
               "circle-settings-info",
               "circle-settings-integrations",
+              "circle-settings-sidebar",
               "circle-settings-credentials",
               "circle-settings-roles",
               "circle-settings-payments",
@@ -170,22 +169,22 @@ export default function SettingsModal({ handleClose, initialTab }: Props) {
                   disabled={uploading}
                   shape="circle"
                 >
-                  Update Org
+                  Update Space
                 </PrimaryButton>
               </Box>
             </Stack>
           )}
           {tab === 1 && <CircleIntegrations />}
-          {tab === 2 && <Credentials />}
-          {tab === 3 && <Roles />}
-          {tab === 4 && <DefaultPayment />}
-          {tab === 5 && (
+          {tab === 2 && <SidebarConfig />}
+          {tab === 3 && <Credentials />}
+          {tab === 4 && <Roles />}
+          {tab === 5 && <DefaultPayment />}
+          {tab === 6 && (
             <Box width="full">
               <Stack>
                 <Box>
                   <Text align="center" weight="semiBold" size="extraLarge">
-                    Danger, this will also archive everything within this
-                    organization!
+                    Danger, this will also archive everything within this space!
                   </Text>
                 </Box>
                 <PrimaryButton
@@ -193,7 +192,7 @@ export default function SettingsModal({ handleClose, initialTab }: Props) {
                   disabled={uploading}
                   tone="red"
                 >
-                  Archive Org
+                  Archive Space
                 </PrimaryButton>
               </Stack>
             </Box>

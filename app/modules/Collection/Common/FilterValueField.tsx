@@ -32,7 +32,7 @@ export default function FilterValueField({
       void (async () => {
         const res = await (
           await fetch(
-            `${process.env.API_HOST}/circle/${circle.id}/memberDetails?circleIds=${circle.id}`
+            `${process.env.API_HOST}/circle/${circle?.id}/memberDetails?circleIds=${circle?.id}`
           )
         ).json();
         const memberOptions = res.members?.map((member: string) => ({
@@ -53,7 +53,7 @@ export default function FilterValueField({
       });
       setRewardTokenOptions(tokenOptions.flat());
     }
-  }, [circle.id, collection?.properties, propertyId]);
+  }, [circle?.id, collection?.properties, propertyId]);
 
   switch (type) {
     case "shortText":

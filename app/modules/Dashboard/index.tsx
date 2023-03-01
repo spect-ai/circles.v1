@@ -291,7 +291,7 @@ function Dashboard() {
                 setPanelTab("circles");
               }}
             >
-              Organizations
+              Spaces
             </Button>
             <Button
               size="small"
@@ -337,16 +337,6 @@ function Dashboard() {
               />
             )}
             {panelTab === "responses" && <ResponsesTab />}
-            {/* {panelTab == "Project" && (
-              <YourProjects circles={circles} isLoading={isLoading} />
-            )} */}
-            {/* {panelTab == "Card" && (
-            <YourCards
-              circles={circles}
-              isLoading={isLoading}
-              currentUser={currentUser}
-            />
-          )} */}
           </Box>
         </Box>
         <Help setFaqOpen={setFaqOpen} />

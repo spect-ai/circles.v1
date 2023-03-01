@@ -4,6 +4,7 @@ import { AppstoreOutlined, SettingOutlined } from "@ant-design/icons";
 import {
   Box,
   Button,
+  Heading,
   IconUserGroup,
   IconUsersSolid,
   Stack,
@@ -19,6 +20,7 @@ import SettingsModal from "../Circle/CircleSettingsModal";
 import { HeaderButton } from "./ExploreSidebar";
 import { useGlobal } from "@/app/context/globalContext";
 import mixpanel from "@/app/common/utils/mixpanel";
+import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 
 function CircleOptions() {
   const router = useRouter();
@@ -33,31 +35,11 @@ function CircleOptions() {
   });
   const [isOpen, setIsOpen] = useState(false);
   const [settingsModalOpen, setSettingsModalOpen] = useState(false);
-  const [perm, setPerm] = useState({} as Permissions);
   const { mode } = useTheme();
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
-
-  useEffect(() => {
-    if (circle?.id) {
-      fetch(
-        `${process.env.API_HOST}/circle/myPermissions?circleIds=${circle?.id}`,
-        {
-          credentials: "include",
-        }
-      )
-        .then((res) => {
-          res
-            .json()
-            .then((permissions: Permissions) => {
-              setPerm(permissions);
-            })
-            .catch((err) => console.log(err));
-        })
-        .catch((err) => console.log(err));
-    }
-  }, [circle?.id]);
+  const { canDo } = useRoleGate();
 
   return (
     <Box width="full">
@@ -68,7 +50,8 @@ function CircleOptions() {
       </AnimatePresence>
       <Box display="flex" flexDirection="row" alignItems="center" width="full">
         <Box width="full">
-          <Popover
+          <Heading>{circle?.name || project?.parents[0].name}</Heading>
+          {/* <Popover
             data-tour="circle-options-popover"
             butttonComponent={
               <HeaderButton
@@ -146,7 +129,7 @@ function CircleOptions() {
                 </Stack>
               </PopoverOption>
             </Box>
-          </Popover>
+          </Popover> */}
         </Box>
         <Box
           display="flex"
@@ -154,7 +137,7 @@ function CircleOptions() {
           width="1/4"
           justifyContent="flex-end"
         >
-          {perm?.manageCircleSettings && (
+          {canDo("manageCircleSettings") && (
             <Button
               data-tour="circle-settings-button"
               shape="circle"

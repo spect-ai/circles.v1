@@ -7,6 +7,8 @@ import { useMutation } from "react-query";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { useCircle } from "./CircleContext";
 import { updateFolder } from "@/app/services/Folders";
+import { AnimatePresence } from "framer-motion";
+import TemplateModal from "./CircleOverview/FolderView/TemplateModal";
 
 type CreateCollectionDto = {
   name: string;
@@ -28,11 +30,13 @@ function CreateCollectionModal({
   collectionType,
 }: Props) {
   const close = () => setCollectionModal(false);
+  const [templateModalOpen, setTemplateModalOpen] = useState(false);
 
   const [name, setName] = useState("");
 
   const router = useRouter();
   const { circle, fetchCircle } = useCircle();
+  const [loading, setLoading] = useState(false);
 
   const { mutateAsync, isLoading } = useMutation(
     (createDto: CreateCollectionDto) => {
@@ -49,72 +53,104 @@ function CreateCollectionModal({
   );
 
   const onSubmit = () => {
-    mutateAsync({
-      name,
-      private: false,
-      circleId: circle?.id,
-      defaultView: collectionType === 0 ? "form" : "table",
-      collectionType,
-    })
-      .then(async (res) => {
-        const resJson = await res.json();
-        console.log({ resJson });
-        void router.push(`/${circle?.slug}/r/${resJson.slug}`);
-        void close();
-        if (folderId) {
-          const prev = Array.from(circle?.folderDetails[folderId]?.contentIds);
-          prev.push(resJson.id);
-          const payload = {
-            contentIds: prev,
-          };
-          void updateFolder(payload, circle?.id, folderId).then(
-            () => void fetchCircle()
-          );
-        } else if (circle?.folderOrder.length !== 0) {
-          const folder = Object.entries(circle?.folderDetails)?.find(
-            (pair) => pair[1].avatar === "All"
-          );
-          const prev = Array.from(
-            circle?.folderDetails[folder?.[0] as string]?.contentIds
-          );
-          prev.push(resJson.id);
-          const payload = {
-            contentIds: prev,
-          };
-          void updateFolder(payload, circle?.id, folder?.[0] as string).then(
-            () => void fetchCircle()
-          );
-        }
+    if (circle) {
+      setLoading(true);
+      mutateAsync({
+        name,
+        private: false,
+        circleId: circle?.id,
+        defaultView: collectionType === 0 ? "form" : "table",
+        collectionType,
       })
-      .catch((err) => console.log({ err }));
+        .then(async (res) => {
+          const resJson = await res.json();
+          console.log({ resJson });
+          void router.push(`/${circle?.slug}/r/${resJson.slug}`);
+          void close();
+          if (folderId) {
+            const prev = Array.from(
+              circle?.folderDetails[folderId]?.contentIds
+            );
+            prev.push(resJson.id);
+            const payload = {
+              contentIds: prev,
+            };
+            void updateFolder(payload, circle?.id, folderId).then(
+              () => void fetchCircle()
+            );
+          } else if (circle?.folderOrder.length !== 0) {
+            const folder = Object.entries(circle?.folderDetails)?.find(
+              (pair) => pair[1].avatar === "All"
+            );
+            const prev = Array.from(
+              circle?.folderDetails[folder?.[0] as string]?.contentIds
+            );
+            prev.push(resJson.id);
+            const payload = {
+              contentIds: prev,
+            };
+            void updateFolder(payload, circle?.id, folder?.[0] as string).then(
+              () => void fetchCircle()
+            );
+          }
+          setLoading(false);
+        })
+        .catch((err) => {
+          console.log(err);
+          setLoading(false);
+        });
+    }
   };
 
   return (
-    <>
-      <Loader loading={isLoading} text="On it......" />
-      <Modal
-        handleClose={close}
-        title={
-          collectionType === 0 ? "Create a new form" : "Create a new collection"
-        }
-      >
-        <Box width="full" padding="8">
-          <Stack>
-            <Input
-              label=""
-              placeholder="Name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
-            <Box width="full" marginTop="4">
-              <PrimaryButton onClick={onSubmit} disabled={name.length === 0}>
-                {collectionType === 0 ? "Create form" : "Create collection"}
-              </PrimaryButton>
-            </Box>
-          </Stack>
-        </Box>
-      </Modal>
-    </>
+    <Box>
+      <AnimatePresence>
+        {templateModalOpen && (
+          <TemplateModal
+            handleClose={() => {
+              close();
+            }}
+          />
+        )}
+      </AnimatePresence>
+      {!templateModalOpen && (
+        <Modal
+          handleClose={close}
+          title={
+            collectionType === 0 ? "Create a new form" : "Create a new project"
+          }
+        >
+          <Box width="full" padding="8">
+            <Stack>
+              <Input
+                label=""
+                placeholder="Name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+              <Stack>
+                <PrimaryButton
+                  onClick={onSubmit}
+                  disabled={name.length === 0}
+                  loading={loading}
+                >
+                  {collectionType === 0
+                    ? "Create empty form"
+                    : "Create empty project"}
+                </PrimaryButton>
+                <PrimaryButton
+                  onClick={() => {
+                    setTemplateModalOpen(true);
+                  }}
+                >
+                  Use a template Instead
+                </PrimaryButton>
+              </Stack>
+            </Stack>
+          </Box>
+        </Modal>
+      )}
+    </Box>
   );
 }
 

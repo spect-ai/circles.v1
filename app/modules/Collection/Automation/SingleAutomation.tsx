@@ -57,7 +57,7 @@ export default function SingleAutomation({
   onMouseLeave,
 }: Props) {
   const { mode } = useTheme();
-  const { localCircle: circle } = useCircle();
+  const { circle } = useCircle();
   const [whenOptions, setWhenOptions] = useState<Option[]>([]);
   const [collection, setCollection] = useState({} as CollectionType);
   const [thenOptions, setThenOptions] = useState<Option[]>([]);
@@ -141,10 +141,12 @@ export default function SingleAutomation({
   } as { [id: string]: Action });
   const [canSave, setCanSave] = useState(false);
 
-  const collectionOptions = Object.values(circle.collections).map((c) => ({
-    label: c.name,
-    value: c.id,
-  }));
+  const collectionOptions = Object.values(circle?.collections || {}).map(
+    (c) => ({
+      label: c.name,
+      value: c.id,
+    })
+  );
 
   const { refetch: fetchCollection } = useQuery<CollectionType>(
     ["collection", collectionOption.value],
@@ -280,7 +282,7 @@ export default function SingleAutomation({
   }, [actions, trigger, conditions, name, collectionOption]);
 
   useEffect(() => {
-    const collection = Object.values(circle.collections).find(
+    const collection = Object.values(circle?.collections || {}).find(
       (c) => c.slug === automation.triggerCollectionSlug
     );
     setCollectionOption({

@@ -41,7 +41,7 @@ export function AdditionalSettings() {
 
   const { localCollection: collection, updateCollection } =
     useLocalCollection();
-  const { localCircle: circle } = useCircle();
+  const { circle } = useCircle();
   const { connectedUser } = useGlobal();
 
   useEffect(() => {

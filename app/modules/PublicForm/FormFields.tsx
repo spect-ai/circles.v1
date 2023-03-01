@@ -439,6 +439,7 @@ export default function FormFields({ form, setForm }: Props) {
         form: form.name,
         sybilEnabled: form.formMetadata.sybilProtectionEnabled,
         user: currentUser?.username,
+        circle: form.parents[0].slug,
       });
     setSubmitting(false);
   };

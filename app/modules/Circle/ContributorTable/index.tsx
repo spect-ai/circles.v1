@@ -152,7 +152,7 @@ function ContributorTable({ filteredMembers }: Props) {
             item?.roles?.map((role: string) => {
               return (
                 <Tag key={role} tone="accent" hover>
-                  {circle.roles[role].name}
+                  {circle?.roles[role].name}
                 </Tag>
               );
             })}

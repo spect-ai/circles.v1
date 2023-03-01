@@ -84,6 +84,7 @@ function CreateProjectModal({ folderId, setModalOpen }: Props) {
         return;
       }
     }
+    if (!circle) return;
 
     setIsLoading(true);
     const data = await createProject({

@@ -10,6 +10,7 @@ import styled from "styled-components";
 import CardDrawer from "../CardDrawer";
 import { useRouter } from "next/router";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
+import ImportTasks from "../../Circle/ImportTasks";
 
 export default function ProjectTableView() {
   const [isAddFieldOpen, setIsAddFieldOpen] = useState(false);
@@ -108,6 +109,9 @@ export default function ProjectTableView() {
             </Stack>
           </AddRowButton>
         )}
+      </Box>
+      <Box paddingX="8" width="1/4">
+        <ImportTasks />
       </Box>
     </Box>
   );

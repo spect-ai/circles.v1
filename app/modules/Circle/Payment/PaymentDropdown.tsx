@@ -234,7 +234,7 @@ export default function PaymentDropdown({
                           { label: tempValue, value: tempValue },
                         ],
                       },
-                      circle.id
+                      circle?.id || ""
                     );
                     if (!res.id) {
                       toast.error("Failed to update label options");

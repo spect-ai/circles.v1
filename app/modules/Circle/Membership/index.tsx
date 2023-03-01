@@ -55,7 +55,7 @@ export default function Membership({}: Props) {
             isOpen={isEmebedOpen}
             setIsOpen={setIsEmebedOpen}
             component="members"
-            routeId={circle.slug}
+            routeId={circle?.slug || ""}
           />
         )}
       </AnimatePresence>
@@ -83,7 +83,7 @@ export default function Membership({}: Props) {
       )}
       <ScrollContainer>
         <Stack align="baseline" space="2" direction="horizontal" wrap>
-          {circle.members.map((member) => (
+          {circle?.members.map((member) => (
             <Member
               key={member}
               member={memberDetails?.memberDetails[member] as UserType}
@@ -113,8 +113,8 @@ const Member = ({ member, roles }: MemberProps) => {
         }}
       >
         <motion.div
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
+          whileHover={{ scale: 1.03 }}
+          whileTap={{ scale: 0.97 }}
           style={{
             cursor: "pointer",
           }}

@@ -68,8 +68,8 @@ export default function MintKudos() {
           .json()
           .then((permissions: Permissions) => {
             setPerm(permissions);
-            if (permissions?.distributeCredentials) {
-              getPrivateCircleCredentials(circle?.id)
+            if (permissions?.distributeCredentials && circle) {
+              getPrivateCircleCredentials(circle.id)
                 .then((creds: GetPrivateCirclePropertiesDto | boolean) => {
                   const credentials = creds as GetPrivateCirclePropertiesDto;
                   if (

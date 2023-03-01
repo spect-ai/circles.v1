@@ -40,6 +40,7 @@ export default function AddRole({ role }: props) {
     }
   }, [circle, role]);
 
+  if (!circle) return null;
   return (
     <Box>
       {!role ? (

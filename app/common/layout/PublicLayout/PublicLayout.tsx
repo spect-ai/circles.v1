@@ -88,7 +88,7 @@ function PublicLayout(props: PublicLayoutProps) {
   }, []);
 
   const router = useRouter();
-  const { inviteCode } = router.query;
+  const { inviteCode, circle } = router.query;
 
   const onboard =
     (currentUser?.skillsV2?.length == 0 || currentUser?.email?.length == 0) &&
@@ -99,7 +99,7 @@ function PublicLayout(props: PublicLayoutProps) {
     void fetchCircles();
     // void fetchNotifications();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentUser, connectedUser]);
+  }, [currentUser, connectedUser, circle]);
 
   useEffect(() => {
     setTimeout(() => {
