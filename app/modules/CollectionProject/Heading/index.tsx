@@ -2,7 +2,7 @@ import Popover from "@/app/common/components/Popover";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { updateFormCollection } from "@/app/services/Collection";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
-import { TableOutlined } from "@ant-design/icons";
+import { SendOutlined, TableOutlined } from "@ant-design/icons";
 import {
   Box,
   Heading,
@@ -119,11 +119,26 @@ export default function ProjectHeading() {
             <Heading>{collection.name}</Heading>
             <Settings />
           </Stack>
-          <Hidden xs sm>
+          {/* <Hidden xs sm>
             <Box width="32">
-              <InviteMemberModal />
+              <PrimaryButton
+                icon={
+                  <SendOutlined
+                    rotate={-40}
+                    style={{ marginBottom: "0.3rem" }}
+                  />
+                }
+                onClick={() => {
+                  void navigator.clipboard.writeText(
+                    `https://circles.spect.network/r/${collection?.slug}`
+                  );
+                  toast.success("Copied to clipboard");
+                }}
+              >
+                Share
+              </PrimaryButton>
             </Box>
-          </Hidden>
+          </Hidden> */}
         </Stack>
         <Box marginBottom="1" />
         <Hidden xs sm>

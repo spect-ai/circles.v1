@@ -9,6 +9,7 @@ import { ethers } from "ethers";
 import { toast } from "react-toastify";
 import { erc20ABI } from "wagmi";
 import { readContract } from "@wagmi/core";
+import { getPredictedGas } from "../GasPrediction";
 
 // const localAddress = "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0";
 
@@ -49,7 +50,31 @@ export const createSurvey = async (
       amountPerResponse = 0;
     }
 
+    let maxFeePerGas = ethers.BigNumber.from(40000000000); // fallback to 40 gwei
+    let maxPriorityFeePerGas = ethers.BigNumber.from(40000000000); // fallback to 40 gwei
+
+    const feeEstimate = await getPredictedGas(chainId);
+    maxFeePerGas = ethers.utils.parseUnits(
+      Math.ceil(feeEstimate.maxFee) + "",
+      "gwei"
+    );
+    maxPriorityFeePerGas = ethers.utils.parseUnits(
+      Math.ceil(feeEstimate.maxPriorityFee) + "",
+      "gwei"
+    );
+
     if (tokenAddress === "0x0") {
+      const estimatedGas = await surveyHub.estimateGas.createSurveyWithEther(
+        distributionType,
+        ethers.utils.parseEther(amountPerResponse?.toString() || "0"),
+        minResponses || 0,
+        minNumDays || 0,
+        {
+          value: ethers.utils.parseEther(totalAmount.toString()),
+          maxFeePerGas,
+          maxPriorityFeePerGas,
+        }
+      );
       tx = await surveyHub.createSurveyWithEther(
         distributionType,
         ethers.utils.parseEther(amountPerResponse?.toString() || "0"),
@@ -57,6 +82,9 @@ export const createSurvey = async (
         minNumDays || 0,
         {
           value: ethers.utils.parseEther(totalAmount.toString()),
+          maxFeePerGas,
+          maxPriorityFeePerGas,
+          gasLimit: Math.ceil(estimatedGas.toNumber() * 1.2),
         }
       );
     } else {
@@ -83,36 +111,83 @@ export const createSurvey = async (
       if (data < amountInWei) {
         {
           const tokenContract = await getContract(tokenAddress, erc20ABI);
-          const approveTx = await tokenContract.approve(
+          const gasEstimate = await tokenContract.estimateGas.approve(
             surveyHubAddress,
             ethers.constants.MaxUint256
+          );
+          console.log({ app: gasEstimate });
+          const approveTx = await tokenContract.approve(
+            surveyHubAddress,
+            ethers.constants.MaxUint256,
+            {
+              gasLimit: Math.ceil(gasEstimate.toNumber() * 1.2),
+              maxFeePerGas,
+              maxPriorityFeePerGas,
+            }
           );
 
           await approveTx.wait();
         }
       }
       console.log("creating survey ...");
+      const gasEstimate = await surveyHub.estimateGas.createSurveyWithToken(
+        distributionType,
+        tokenAddress,
+        ethers.utils.parseEther(amountPerResponse?.toString() || "0"),
+        minResponses || 0,
+        minNumDays || 0,
+        amountInWei,
+        {
+          maxFeePerGas,
+          maxPriorityFeePerGas,
+        }
+      );
       tx = await surveyHub.createSurveyWithToken(
         distributionType,
         tokenAddress,
         ethers.utils.parseEther(amountPerResponse?.toString() || "0"),
         minResponses || 0,
         minNumDays || 0,
-        amountInWei
+        amountInWei,
+        {
+          maxFeePerGas,
+          maxPriorityFeePerGas,
+          gasLimit: Math.ceil(gasEstimate.toNumber() * 1.2),
+        }
       );
       console.log("sdsds");
     }
     return await tx.wait();
-  } catch (err) {
+  } catch (err: any) {
     console.log(err);
-    toast.error("Error creating survey");
+    console.log(err.message);
+    if (err.message.includes("Invalid transaction params")) {
+      toast.error(
+        "Please switch to another network & switch back to the current network. If this error persists, please report it to us."
+      );
+    } else if (err.message.includes("Try again after some time")) {
+      toast.error(
+        "Sometimes, all you need is a second try, please click the button again 🙏. If this error persists, please report it to us."
+      );
+    } else toast.error("Error creating survey");
   }
 };
 
-export const getLastSurveyId = async (surveyHubAddress: string) => {
-  const surveyHub = await getContract(surveyHubAddress, SurveyABI.abi);
-  const count = await surveyHub.surveyCount();
-  return parseInt(ethers.utils.formatUnits(count, 0)) - 1;
+export const getLastSurveyId = async (
+  surveyHubAddress: string,
+  chainId: string
+) => {
+  console.log({ surveyHubAddress, chainId });
+  const count = await readContract({
+    address: surveyHubAddress as `0x${string}`,
+    abi: SurveyABI.abi,
+    functionName: "surveyCount",
+    chainId: parseInt(chainId),
+  });
+  // const surveyHub = await getContract(surveyHubAddress, SurveyABI.abi);
+  // const count = await surveyHub.surveyCount();
+  console.log({ count });
+  return parseInt(ethers.utils.formatUnits(count as any, 0)) - 1;
 };
 
 export const getSurveyDistributionInfo = async (

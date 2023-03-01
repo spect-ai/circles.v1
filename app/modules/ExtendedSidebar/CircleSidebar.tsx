@@ -36,6 +36,7 @@ import mixpanel from "@/app/common/utils/mixpanel";
 import { smartTrim } from "@/app/common/utils/utils";
 import { getViewIcon } from "../CollectionProject/Heading";
 import { Table } from "react-feather";
+import InviteMemberModal from "../Circle/ContributorsModal/InviteMembersModal";
 
 export const Container = styled(Box)<{ subH?: string }>`
   ::-webkit-scrollbar {
@@ -170,6 +171,8 @@ function CircleSidebar() {
 
         <Container subH="9.5rem">
           <Stack direction="vertical" space="2">
+            <InviteMemberModal />
+
             <Link href={`/${cId}`}>
               <PrimaryButton
                 center

@@ -51,7 +51,7 @@ export default function VotingActions({
           {proposalData?.proposal === null && (
             <Text variant="base"> Snapshot Proposal has been deleted.</Text>
           )}
-          {!proposal && !collection.voting?.snapshot?.[dataId]?.proposalId && (
+          {/* {!proposal && !collection.voting?.snapshot?.[dataId]?.proposalId && (
             <PrimaryButton
               variant="secondary"
               onClick={() => {
@@ -71,7 +71,7 @@ export default function VotingActions({
             >
               Create Proposal on Snapshot
             </PrimaryButton>
-          )}
+          )} */}
         </Box>
       </Box>
       {circle?.snapshot?.id &&

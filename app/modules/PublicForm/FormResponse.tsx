@@ -1,9 +1,15 @@
 /* eslint-disable @next/next/no-img-element */
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { FormType, KudosType, POAPEventType, UserType } from "@/app/types";
+import {
+  FormType,
+  KudosType,
+  POAPEventType,
+  Registry,
+  UserType,
+} from "@/app/types";
 import { TwitterOutlined } from "@ant-design/icons";
-import { Box, Heading, Stack, Text } from "degen";
-import React, { useState } from "react";
+import { Box, Heading, IconDocumentsSolid, Stack, Text } from "degen";
+import React, { useEffect, useState } from "react";
 import Confetti from "react-confetti";
 import { TwitterShareButton } from "react-share";
 import { toast } from "react-toastify";
@@ -13,6 +19,9 @@ import mixpanel from "@/app/common/utils/mixpanel";
 import { useQuery } from "react-query";
 import { ethers } from "ethers";
 import { PassportStampIcons } from "@/app/assets";
+import { useGlobal } from "@/app/context/globalContext";
+import { useRouter } from "next/router";
+import _ from "lodash";
 
 type Props = {
   form: FormType;
@@ -27,11 +36,13 @@ type Props = {
   surveyDistributionInfo: any;
   surveyIsLotteryYetToBeDrawn: boolean;
   canClaimSurveyToken: boolean;
+  setCanClaimSurveyToken: (val: boolean) => void;
   setViewResponse: (val: boolean) => void;
   poap: POAPEventType;
   poapClaimed: boolean;
   setPoapClaimed: (val: boolean) => void;
   poapClaimCode: string;
+  registry?: Registry;
 };
 
 const StyledImage = styled.img`
@@ -63,20 +74,44 @@ export default function FormResponse({
   surveyDistributionInfo,
   surveyIsLotteryYetToBeDrawn,
   canClaimSurveyToken,
+  setCanClaimSurveyToken,
   setViewResponse,
   poapClaimed,
   setPoapClaimed,
   poapClaimCode,
+  registry,
 }: Props) {
   const { width, height } = useWindowSize();
   const [claiming, setClaiming] = useState(false);
   const [claimedJustNow, setClaimedJustNow] = useState(false);
-
+  const router = useRouter();
+  const { formId } = router.query;
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
+  const { connectedUser, socket } = useGlobal();
 
-  console.log({ surveyTokenClaimed });
+  const [surveyTokenClaimTransactionHash, setSurveyTokenClaimTransactionHash] =
+    useState(
+      form?.formMetadata?.transactionHashesOfUser?.surveyTokenClaim || ""
+    );
+
+  useEffect(() => {
+    socket.on(
+      `${formId}:responseAddedOnChain`,
+      _.debounce(async (event: { userAddress: string }) => {
+        console.log({ event, connectedUser, currentUser });
+        if (event.userAddress === currentUser?.ethAddress) {
+          setCanClaimSurveyToken(true);
+        }
+      }, 2000)
+    );
+    return () => {
+      if (socket && socket.off) {
+        socket.off(`${formId}:newActivityPublic`);
+      }
+    };
+  }, [connectedUser, formId, socket]);
 
   return (
     <Box
@@ -276,7 +311,7 @@ export default function FormResponse({
           marginTop="8"
           padding="2"
         >
-          {(canClaimSurveyToken || surveyTokenClaimed) && (
+          {form.formMetadata?.surveyTokenId && (
             <Box
               display="flex"
               flexDirection="row"
@@ -343,7 +378,12 @@ export default function FormResponse({
                 </Text>
               </Box>
               <Box>
-                <Stack direction="vertical">
+                <Stack
+                  direction="vertical"
+                  justify="flex-start"
+                  align="flex-start"
+                  space="2"
+                >
                   <TwitterShareButton
                     url={`https://circles.spect.network/`}
                     title={
@@ -371,6 +411,31 @@ export default function FormResponse({
                       </PrimaryButton>
                     </Box>
                   </TwitterShareButton>
+                  {registry && surveyTokenClaimTransactionHash && (
+                    <Box
+                      width={{
+                        xs: "full",
+                        md: "48",
+                      }}
+                    >
+                      <PrimaryButton
+                        variant="transparent"
+                        icon={<IconDocumentsSolid color="white" />}
+                        onClick={() => {
+                          window.open(
+                            `${
+                              registry?.[
+                                form.formMetadata.surveyChain?.value || ""
+                              ].blockExplorer
+                            }tx/${surveyTokenClaimTransactionHash}`,
+                            "_blank"
+                          );
+                        }}
+                      >
+                        <Text>View Transaction</Text>
+                      </PrimaryButton>
+                    </Box>
+                  )}
                 </Stack>
               </Box>
             </Box>
@@ -388,68 +453,81 @@ export default function FormResponse({
                 xl: "1/2",
               }}
             >
-              {canClaimSurveyToken && (
-                <Stack direction="horizontal" align="flex-start">
-                  <Text variant="extraLarge" weight="bold">
-                    👉
-                  </Text>
-                  <Stack>
-                    <Text weight="semiBold" variant="large">
-                      {form.formMetadata.surveyDistributionType === 1
-                        ? surveyDistributionInfo?.amountPerResponse
-                          ? `You are eligible to receive ${ethers.utils.formatEther(
-                              surveyDistributionInfo?.amountPerResponse?.toString()
-                            )} ${
-                              form.formMetadata.surveyToken?.label
-                            } for submitting a response
-                    💰`
-                          : `You are eligible to receive tokens 💰`
-                        : `You are eligible to receive ${form.formMetadata.surveyTotalValue} ${form.formMetadata.surveyToken?.label} for submitting a response 💰`}
+              {form.formMetadata?.previousResponses?.length > 0 &&
+                !surveyIsLotteryYetToBeDrawn && (
+                  <Stack direction="horizontal" align="flex-start">
+                    <Text variant="extraLarge" weight="bold">
+                      👉
                     </Text>
-                    <Box
-                      width={{
-                        xs: "48",
-                        md: "72",
-                      }}
-                    >
-                      {" "}
-                      <PrimaryButton
-                        loading={claiming}
-                        onClick={async () => {
-                          setClaiming(true);
-                          try {
-                            const res = await fetch(
-                              `${process.env.API_HOST}/collection/v1/${form?.id}/claimSurveyTokens`,
-                              {
-                                method: "PATCH",
-                                headers: {
-                                  "Content-Type": "application/json",
-                                },
-                                credentials: "include",
-                              }
-                            );
-
-                            console.log(res);
-                            if (res.ok) {
-                              setSurveyTokenClaimed(true);
-                              setClaimedJustNow(true);
-                            }
-                          } catch (e) {
-                            console.log(e);
-                            toast.error(
-                              "Something went wrong, please try again later"
-                            );
-                          }
-
-                          setClaiming(false);
+                    <Stack>
+                      <Text weight="semiBold" variant="large">
+                        {form.formMetadata.surveyDistributionType === 1
+                          ? surveyDistributionInfo?.amountPerResponse
+                            ? `You are eligible to receive ${ethers.utils.formatEther(
+                                surveyDistributionInfo?.amountPerResponse?.toString()
+                              )} ${
+                                form.formMetadata.surveyToken?.label
+                              } for submitting a response
+                    💰`
+                            : `You are eligible to receive tokens 💰`
+                          : `You are eligible to receive ${form.formMetadata.surveyTotalValue} ${form.formMetadata.surveyToken?.label} for submitting a response 💰`}
+                      </Text>
+                      {!canClaimSurveyToken && (
+                        <Text variant="small">
+                          It takes a few seconds for your response to be
+                          processed, after which you will be able to claim your
+                          tokens.
+                        </Text>
+                      )}
+                      <Box
+                        width={{
+                          xs: "48",
+                          md: "72",
                         }}
                       >
-                        Claim Token
-                      </PrimaryButton>
-                    </Box>
+                        {" "}
+                        <PrimaryButton
+                          loading={claiming}
+                          disabled={canClaimSurveyToken ? false : true}
+                          onClick={async () => {
+                            setClaiming(true);
+                            try {
+                              const res = await fetch(
+                                `${process.env.API_HOST}/collection/v1/${form?.id}/claimSurveyTokens`,
+                                {
+                                  method: "PATCH",
+                                  headers: {
+                                    "Content-Type": "application/json",
+                                  },
+                                  credentials: "include",
+                                }
+                              );
+
+                              console.log(res);
+                              if (res.ok) {
+                                const data = await res.json();
+                                setSurveyTokenClaimed(true);
+                                setClaimedJustNow(true);
+                                setSurveyTokenClaimTransactionHash(
+                                  data.transactionHash
+                                );
+                              }
+                            } catch (e) {
+                              console.log(e);
+                              toast.error(
+                                "Something went wrong, please try again later"
+                              );
+                            }
+
+                            setClaiming(false);
+                          }}
+                        >
+                          Claim Token
+                        </PrimaryButton>
+                      </Box>
+                    </Stack>
                   </Stack>
-                </Stack>
-              )}
+                )}
             </Box>
           )}
         </Box>

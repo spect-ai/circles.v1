@@ -2,7 +2,7 @@ import Accordian from "@/app/common/components/Accordian";
 import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { CircleType, UserType } from "@/app/types";
-import { SendOutlined } from "@ant-design/icons";
+import { SendOutlined, UserAddOutlined } from "@ant-design/icons";
 import { Box, Stack, Tag, Text } from "degen";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
@@ -58,14 +58,19 @@ function InviteMemberModal() {
                 user: currentUser?.username,
               });
           }}
-          icon={<SendOutlined />}
+          icon={<UserAddOutlined />}
         >
           Invite
         </PrimaryButton>
       </Box>
       <AnimatePresence>
         {isOpen && (
-          <Modal title="Create Invite" handleClose={handleClose} zIndex={2}>
+          <Modal
+            size="small"
+            title="Create Invite"
+            handleClose={handleClose}
+            zIndex={2}
+          >
             <Box
               padding="8"
               display="flex"

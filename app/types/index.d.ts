@@ -859,6 +859,14 @@ export type FormMetadata = {
   claimCode?: string;
   poapEventId?: string;
   poapEditCode?: string;
+  transactionHashes?: {
+    [userAddress: string]: {
+      [transactionType: "surveyTokenClaim"]: string;
+    };
+  };
+  transactionHashesOfUser?: {
+    [transactionType: string]: string;
+  };
 };
 
 export type ProjectMetadata = {
