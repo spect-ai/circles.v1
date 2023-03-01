@@ -109,6 +109,8 @@ export default function FormFields({ form, setForm }: Props) {
     }
   );
 
+  console.log({ form });
+
   const { address, connector } = useAccount();
 
   const checkRequired = (data: any) => {
@@ -464,6 +466,8 @@ export default function FormFields({ form, setForm }: Props) {
         canClaimSurveyToken={canClaimSurveyToken}
         surveyDistributionInfo={distributionInfo}
         surveyIsLotteryYetToBeDrawn={surveyIsLotteryYetToBeDrawn}
+        registry={registry}
+        setCanClaimSurveyToken={setCanClaimSurveyToken}
       />
     );
   }
