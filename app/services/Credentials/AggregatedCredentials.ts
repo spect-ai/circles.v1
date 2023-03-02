@@ -27,3 +27,21 @@ export const getCredentialsByAddressAndIssuer = async (
     )
   ).json();
 };
+
+export const getPassportScoreAndCredentials = async (
+  address: string,
+  scores: any
+) => {
+  return await (
+    await fetch(
+      `${process.env.API_HOST}/credentials/v1/${address}/passportScoreAndStamps`,
+      {
+        method: "POST",
+        body: JSON.stringify({ scores }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    )
+  ).json();
+};
