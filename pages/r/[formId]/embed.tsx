@@ -13,9 +13,13 @@ const EmbedPage: NextPage = () => {
   return (
     <>
       <MetaHead
-        title={"Circle"}
-        description={"Circle Description"}
-        image={"Circle Avatar"}
+        title={"Spect Form"}
+        description={
+          "Incentivized forms for your community to collect feedback, run surveys, onboarding, and more."
+        }
+        image={
+          "https://spect.infura-ipfs.io/ipfs/QmcBLdB23dQkXdMKFHAjVKMKBPJF82XkqR5ZkxyCk6aset"
+        }
       />
       <CircleContext.Provider value={context}>
         <EmbedFormLayout>

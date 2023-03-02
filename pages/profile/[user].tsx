@@ -73,8 +73,8 @@ const ProfilePage: NextPage = () => {
   return (
     <>
       <MetaHead
-        title="Spect Circles"
-        description="Playground of coordination tools for DAO contributors to manage projects and fund each other"
+        title="Spect Profile"
+        description="Check out my profile on Spect"
         image="/og.jpg"
       />
       <PublicLayout>

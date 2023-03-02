@@ -18,7 +18,7 @@ export default function MetaHead({
   const pathName = useRouter().pathname;
   const pageURL = pathName === "/" ? siteURL : siteURL + pathName;
   const twitterHandle = "@JoinSpect";
-  const siteName = "Spect Circles";
+  const siteName = "Spect";
 
   return (
     <NextSeo

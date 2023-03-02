@@ -9,8 +9,8 @@ const Home: NextPage = () => {
   return (
     <>
       <MetaHead
-        title="Spect Circles"
-        description="Playground of coordination tools for DAO contributors to manage projects and fund each other"
+        title="Spect"
+        description="Playground of coordination tools for you & your frens to build the next big thing."
         image="/og.jpg"
       />
       <PublicLayout>
