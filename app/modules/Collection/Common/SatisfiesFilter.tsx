@@ -77,18 +77,21 @@ export function satisfiesConditions(
         const values = data[propertyId]?.map((d: { value: any }) => d?.value);
         switch (comparatorValue) {
           case "does not include":
-            return !value?.some((v: { value: any }) =>
-              values?.includes(v.value)
+            return (
+              !value ||
+              !value?.some((v: { value: any }) => values?.includes(v.value))
             );
           case "includes one of":
             // eslint-disable-next-line no-case-declarations
 
-            return value?.some((v: { value: any }) =>
-              values?.includes(v.value)
+            return (
+              value &&
+              value?.some((v: { value: any }) => values?.includes(v.value))
             );
           case "includes all of":
-            return value.every((v: { value: any }) =>
-              values?.includes(v?.value)
+            return (
+              value &&
+              value.every((v: { value: any }) => values?.includes(v?.value))
             );
           default:
             return false;
