@@ -162,7 +162,7 @@ export default function PublicForm() {
                   autoFocus
                   value={form.name}
                   disabled
-                  rows={Math.floor(form.name?.length / 60) + 1}
+                  rows={Math.floor(form.name?.length / 20) + 1}
                 />
                 {form.description && (
                   <Editor value={form.description} isDirty={true} disabled />
@@ -316,7 +316,7 @@ export default function PublicForm() {
                         size="small"
                         onClick={() => router.push("/")}
                       >
-                        No worries, go to dashboard
+                        No worries, create a space instead
                       </Button>
                     </Box>
                   </Box>
@@ -405,7 +405,7 @@ export default function PublicForm() {
                           size="small"
                           onClick={() => router.push("/")}
                         >
-                          No worries, go to dashboard
+                          No worries, create a space instead
                         </Button>
                       </Box>
                     </Box>
