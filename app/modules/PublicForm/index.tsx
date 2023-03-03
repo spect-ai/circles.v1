@@ -13,7 +13,10 @@ import styled from "styled-components";
 import FormFields from "./FormFields";
 import { motion } from "framer-motion";
 import Loader from "@/app/common/components/Loader";
-import { getAllCredentials } from "@/app/services/Credentials/AggregatedCredentials";
+import {
+  getAllCredentials,
+  getPassportScoreAndCredentials,
+} from "@/app/services/Credentials/AggregatedCredentials";
 import { useGlobal } from "@/app/context/globalContext";
 import { PassportStampIcons, PassportStampIconsLightMode } from "@/app/assets";
 import mixpanel from "@/app/common/utils/mixpanel";
@@ -24,6 +27,7 @@ import _ from "lodash";
 import { useLocation } from "react-use";
 import SocialMedia from "@/app/common/components/SocialMedia";
 import Link from "next/link";
+import { CheckOutlined } from "@ant-design/icons";
 
 export default function PublicForm() {
   const router = useRouter();
@@ -41,6 +45,8 @@ export default function PublicForm() {
   const [stamps, setStamps] = useState([] as Stamp[]);
   const { connectedUser, socket } = useGlobal();
   const [memberDetails, setMemberDetails] = useState({} as any);
+  const [currentScore, setCurrentScore] = useState(0);
+  const [hasStamps, setHasStamps] = useState({} as any);
   const { pathname, hostname } = useLocation();
   const route = pathname?.split("/")[3];
 
@@ -76,11 +82,12 @@ export default function PublicForm() {
           stampsWithScore.push(stampWithScore);
         }
       }
-      setStamps(stampsWithScore);
+      setStamps(stampsWithScore.sort((a, b) => b.score - a.score));
     }
   };
 
   useEffect(() => {
+    console.log({ formdata: form?.formMetadata.sybilProtectionScores });
     void (async () => {
       if (formId) {
         setLoading(true);
@@ -115,6 +122,27 @@ export default function PublicForm() {
       }
     };
   }, [connectedUser, formId, socket]);
+
+  useEffect(() => {
+    if (
+      form &&
+      form.formMetadata &&
+      form.formMetadata.sybilProtectionEnabled &&
+      form.formMetadata.sybilProtectionScores &&
+      currentUser
+    ) {
+      console.log("getting score");
+      void (async () => {
+        const res = await getPassportScoreAndCredentials(
+          currentUser?.ethAddress,
+          form.formMetadata.sybilProtectionScores
+        );
+        console.log({ result: res });
+        setCurrentScore(res?.score);
+        setHasStamps(res?.mappedStampsWithCredentials);
+      })();
+    }
+  }, [form, currentUser]);
 
   if (loading) {
     return <Loader loading text="Fetching form..." />;
@@ -311,13 +339,6 @@ export default function PublicForm() {
                       >
                         How do I get these roles?
                       </Button>
-                      <Button
-                        variant="tertiary"
-                        size="small"
-                        onClick={() => router.push("/")}
-                      >
-                        No worries, create a space instead
-                      </Button>
                     </Box>
                   </Box>
                 )}
@@ -335,6 +356,9 @@ export default function PublicForm() {
                         This form is sybil protected. You must have a minimum
                         score of 100% to fill this form. Please check the
                         assigned scores below.
+                      </Text>
+                      <Text variant="label">
+                        Your current score: {currentScore}%
                       </Text>
                       <StampScrollContainer>
                         {stamps?.map((stamp: Stamp, index: number) => {
@@ -360,6 +384,13 @@ export default function PublicForm() {
                                   width="full"
                                   paddingRight="4"
                                 >
+                                  <Box width="12">
+                                    {hasStamps[stamp.id] && (
+                                      <Text variant="large" color="green">
+                                        <CheckOutlined />
+                                      </Text>
+                                    )}
+                                  </Box>
                                   <Box
                                     width="8"
                                     height="8"
@@ -399,13 +430,6 @@ export default function PublicForm() {
                           }
                         >
                           Get Stamps
-                        </Button>
-                        <Button
-                          variant="tertiary"
-                          size="small"
-                          onClick={() => router.push("/")}
-                        >
-                          No worries, create a space instead
                         </Button>
                       </Box>
                     </Box>

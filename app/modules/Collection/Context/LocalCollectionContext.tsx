@@ -1,6 +1,6 @@
 import queryClient from "@/app/common/utils/queryClient";
 import { useGlobal } from "@/app/context/globalContext";
-import { CollectionType } from "@/app/types";
+import { CollectionType, Property } from "@/app/types";
 import _ from "lodash";
 import { useRouter } from "next/router";
 import React, { createContext, useContext, useEffect, useState } from "react";
@@ -28,6 +28,16 @@ type LocalCollectionContextType = {
   setPaymentFilter: React.Dispatch<
     React.SetStateAction<"none" | "Paid" | "Pending Signature" | "Pending">
   >;
+  fieldNeedsAttention: {
+    [key: string]: boolean;
+  };
+  reasonFieldNeedsAttention: {
+    [key: string]: string;
+  };
+  getIfFieldNeedsAttention: (value: Property) => {
+    needsAttention: boolean;
+    reason: string;
+  };
 };
 
 export const LocalCollectionContext = createContext<LocalCollectionContextType>(
@@ -63,11 +73,72 @@ export function useProviderLocalCollection() {
   const [showMyTasks, setShowMyTasks] = useState(false);
   const [paymentFilter, setPaymentFilter] =
     useState<"none" | "Paid" | "Pending Signature" | "Pending">("none");
+  const [fieldNeedsAttention, setFieldNeedsAttention] = useState(
+    {} as {
+      [key: string]: boolean;
+    }
+  );
+  const [reasonFieldNeedsAttention, setReasonFieldNeedsAttention] = useState(
+    {} as {
+      [key: string]: string;
+    }
+  );
 
   const updateCollection = (collection: CollectionType) => {
     queryClient.setQueryData(["collection", colId], collection);
     setLocalCollection(collection);
   };
+
+  const getIfFieldNeedsAttention = (value: Property) => {
+    console.log({
+      value,
+    });
+    let res = { needsAttention: false, reason: "" };
+    if (value.viewConditions && value.viewConditions.length > 0) {
+      for (const condition of value.viewConditions) {
+        if (condition.type === "data") {
+          if (
+            condition.data?.field &&
+            !localCollection.properties[condition.data?.field?.value]
+          ) {
+            res = {
+              needsAttention: true,
+              reason: `"${condition.data?.field?.label}" field has been added to visibility conditions but doesn't exist on the form`,
+            };
+            break;
+          }
+          if (
+            condition.data?.field &&
+            !localCollection.properties[condition.data?.field?.value]
+              ?.isPartOfFormView
+          ) {
+            res = {
+              needsAttention: true,
+              reason: `"${condition.data?.field?.label}" field has been added to visibility conditions but is an internal field`,
+            };
+            break;
+          }
+        }
+      }
+    }
+    return res;
+  };
+
+  useEffect(() => {
+    let fieldsThatNeedAttention = {} as {
+      [key: string]: boolean;
+    };
+    let reasonFieldNeedsAttention = {} as {
+      [key: string]: string;
+    };
+    Object.entries(localCollection.properties || {}).forEach(([key, value]) => {
+      const res = getIfFieldNeedsAttention(value);
+      fieldsThatNeedAttention[key] = res?.needsAttention;
+      reasonFieldNeedsAttention[key] = res?.reason;
+    });
+    setFieldNeedsAttention(fieldsThatNeedAttention);
+    setReasonFieldNeedsAttention(reasonFieldNeedsAttention);
+  }, [localCollection.properties]);
 
   useEffect(() => {
     if (data) {
@@ -159,6 +230,9 @@ export function useProviderLocalCollection() {
     setShowMyTasks,
     paymentFilter,
     setPaymentFilter,
+    fieldNeedsAttention,
+    reasonFieldNeedsAttention,
+    getIfFieldNeedsAttention,
   };
 }
 

@@ -14,7 +14,7 @@ import {
   useTheme,
 } from "degen";
 import { useRouter } from "next/router";
-import React, { memo, useCallback, useState } from "react";
+import React, { memo, useCallback, useEffect, useState } from "react";
 import {
   Draggable,
   DraggableProvided,
@@ -51,7 +51,8 @@ function FieldComponent({
   formData,
   setFormData,
 }: Props) {
-  const { localCollection: collection } = useLocalCollection();
+  const { localCollection: collection, fieldNeedsAttention } =
+    useLocalCollection();
   const [hover, setHover] = useState(false);
   const { mode } = useTheme();
   const router = useRouter();
@@ -91,37 +92,44 @@ function FieldComponent({
       }}
       mode={mode}
     >
-      <Stack direction="horizontal">
-        <Box width="full" display="flex" flexDirection="row" gap="2">
-          <Text weight="semiBold">{collection.properties[id]?.name}</Text>
-          {collection.properties[id].required && (
-            <Tag size="small" tone="accent">
-              Required
-            </Tag>
-          )}
-        </Box>
-        <Box
-          cursor="pointer"
-          borderRadius="full"
-          paddingY="1"
-          paddingX="2"
-          onClick={() => {
-            setPropertyName(collection.properties[id]?.name);
-            setIsEditFieldOpen(true);
-            process.env.NODE_ENV === "production" &&
-              mixpanel.track("Edit Field Button", {
-                user: currentUser?.username,
-                field: collection.properties[id]?.name,
-              });
-          }}
-        >
-          <IconPencil color="accent" size="4" />
-        </Box>
+      <Stack direction="vertical" space="1">
+        {fieldNeedsAttention[id] && (
+          <Text variant="small" color="yellow">
+            Needs your attention
+          </Text>
+        )}
+        <Stack direction="horizontal">
+          <Box width="full" display="flex" flexDirection="row" gap="2">
+            <Text weight="semiBold">{collection.properties[id]?.name}</Text>
+            {collection.properties[id].required && (
+              <Tag size="small" tone="accent">
+                Required
+              </Tag>
+            )}
+          </Box>
+          <Box
+            cursor="pointer"
+            borderRadius="full"
+            paddingY="1"
+            paddingX="2"
+            onClick={() => {
+              setPropertyName(collection.properties[id]?.name);
+              setIsEditFieldOpen(true);
+              process.env.NODE_ENV === "production" &&
+                mixpanel.track("Edit Field Button", {
+                  user: currentUser?.username,
+                  field: collection.properties[id]?.name,
+                });
+            }}
+          >
+            <IconPencil color="accent" size="4" />
+          </Box>
+        </Stack>
       </Stack>
       {collection.properties[id]?.type === "shortText" && (
         <Input
           label=""
-          placeholder={`Enter ${collection.properties[id]?.name}`}
+          placeholder={`Enter short text`}
           value={collection.data && collection.data[id]}
           // onChange={(e) => setLabel(e.target.value)}
         />
@@ -129,7 +137,7 @@ function FieldComponent({
       {collection.properties[id]?.type === "email" && (
         <Input
           label=""
-          placeholder={`Enter ${collection.properties[id]?.name}`}
+          placeholder={`Enter email`}
           value={collection.data && collection.data[id]}
           inputMode="email"
           // onChange={(e) => setLabel(e.target.value)}
@@ -138,7 +146,7 @@ function FieldComponent({
       {collection.properties[id]?.type === "singleURL" && (
         <Input
           label=""
-          placeholder={`Enter ${collection.properties[id]?.name}`}
+          placeholder={`Enter URL`}
           value={collection.data && collection.data[id]}
           inputMode="text"
           // onChange={(e) => setLabel(e.target.value)}
@@ -152,7 +160,7 @@ function FieldComponent({
       {collection.properties[id]?.type === "multiURL" && (
         <Input
           label=""
-          placeholder={`Enter ${collection.properties[id]?.name}`}
+          placeholder={`Enter URL`}
           value={collection.data && collection.data[id]?.[0]}
           inputMode="text"
           // onChange={(e) => setLabel(e.target.value)}
@@ -161,7 +169,7 @@ function FieldComponent({
       {collection.properties[id]?.type === "number" && (
         <Input
           label=""
-          placeholder={`Enter ${collection.properties[id]?.name}`}
+          placeholder={`Enter number`}
           value={collection.data && collection.data[id]}
           // onChange={(e) => setLabel(e.target.value)}
           type="number"
@@ -169,7 +177,7 @@ function FieldComponent({
       )}
       {collection.properties[id]?.type === "date" && (
         <DateInput
-          placeholder={`Enter ${collection.properties[id]?.name}`}
+          placeholder={`Enter date`}
           value={collection.data && collection.data[id]}
           // onChange={(e) => setLabel(e.target.value)}
           type="date"
@@ -179,7 +187,7 @@ function FieldComponent({
       {collection.properties[id]?.type === "ethAddress" && (
         <Input
           label=""
-          placeholder={`Enter ${collection.properties[id]?.name}`}
+          placeholder={`Enter ethereum address or ENS`}
           value={collection.data && collection.data[id]}
           // onChange={(e) => setLabel(e.target.value)}
           // error={
@@ -200,7 +208,7 @@ function FieldComponent({
           id="editorContainer"
         >
           <Editor
-            placeholder={`Type here to edit ${collection.properties[id]?.name}`}
+            placeholder={`Enter long text, use / for commands`}
             isDirty={true}
           />
         </Box>
@@ -327,6 +335,7 @@ function FieldComponent({
     id,
     mode,
     formData,
+    fieldNeedsAttention,
   ]);
 
   return (

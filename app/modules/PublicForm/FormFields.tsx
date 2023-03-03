@@ -45,6 +45,7 @@ import {
   hasClaimedSurveyToken,
   isEligibleToClaimSurveyToken,
 } from "@/app/services/SurveyProtocol";
+import { getPassportScoreAndCredentials } from "@/app/services/Credentials/AggregatedCredentials";
 
 type Props = {
   form: FormType;

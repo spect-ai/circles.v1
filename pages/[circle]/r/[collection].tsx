@@ -79,7 +79,7 @@ const CollectionPage: NextPage = () => {
   return (
     <>
       <MetaHead
-        title="Spect Projects"
+        title="Spect"
         description="Helping organizations centralize context, decentralize decision making & operate with ease."
         image="/og.jpg"
       />

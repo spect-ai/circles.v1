@@ -47,6 +47,8 @@ export default function AddField({ propertyName, handleClose }: Props) {
     localCollection: collection,
     updateCollection,
     setProjectViewId,
+    reasonFieldNeedsAttention,
+    getIfFieldNeedsAttention,
   } = useLocalCollection();
   const { registry, circle } = useCircle();
   const [networks, setNetworks] = useState(registry);
@@ -84,6 +86,8 @@ export default function AddField({ propertyName, handleClose }: Props) {
   const [advancedDefaultOpen, setAdvancedDefaultOpen] = useState(
     viewConditions?.length > 0 ? true : false
   );
+  const [reasonFieldNeedsUserAttention, setReasonFieldNeedsUserAttention] =
+    useState(propertyName ? reasonFieldNeedsAttention[propertyName] : "");
 
   const [cardOrder, setCardOrder] = useState<any>();
 
@@ -241,6 +245,25 @@ export default function AddField({ propertyName, handleClose }: Props) {
       setCardOrder(collection.projectMetadata.cardOrders[propertyName]);
     }
   }, [collection.projectMetadata?.cardOrders, propertyName]);
+
+  useEffect(() => {
+    if (viewConditions) {
+      const res = getIfFieldNeedsAttention({
+        name: name.trim(),
+        type: type.value as PropertyType,
+        isPartOfFormView: false,
+        description,
+        options: fieldOptions,
+        userType: userType,
+        default: defaultValue,
+        required: required === 1,
+        viewConditions,
+        maxSelections,
+        allowCustom,
+      });
+      setReasonFieldNeedsUserAttention(res?.reason);
+    }
+  }, [viewConditions]);
 
   return (
     <Box>
@@ -445,6 +468,12 @@ export default function AddField({ propertyName, handleClose }: Props) {
                   multiple={true}
                 /> */}
               </Accordian>
+            )}
+
+            {reasonFieldNeedsUserAttention && (
+              <Text color="yellow" size="small">
+                {reasonFieldNeedsUserAttention}
+              </Text>
             )}
 
             <Box marginTop="8" display="flex" flexDirection="column" gap="2">
