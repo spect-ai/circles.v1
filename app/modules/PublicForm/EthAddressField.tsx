@@ -46,7 +46,7 @@ export default function EthAddressField({ value, onChange, disabled }: Props) {
         }
       }}
       disabled={disabled}
-      placeholder="0x... or ENS name"
+      placeholder="Enter EthAddress (0x...) or ENS name"
       error={error}
     />
   );

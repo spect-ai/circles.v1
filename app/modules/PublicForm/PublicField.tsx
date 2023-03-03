@@ -94,7 +94,7 @@ export default function PublicField({
       {form.properties[propertyName]?.type === "shortText" && (
         <Input
           label=""
-          placeholder={`Enter ${form.properties[propertyName]?.name}`}
+          placeholder={`Enter short text`}
           value={data && data[propertyName]}
           onChange={(e) => {
             setData({ ...data, [propertyName]: e.target.value });
@@ -106,7 +106,7 @@ export default function PublicField({
       {form.properties[propertyName]?.type === "email" && (
         <Input
           label=""
-          placeholder={`Enter ${form.properties[propertyName]?.name}`}
+          placeholder={`Enter email`}
           value={data && data[propertyName]}
           inputMode="email"
           onChange={(e) => {
@@ -125,7 +125,7 @@ export default function PublicField({
       {form.properties[propertyName]?.type === "singleURL" && (
         <Input
           label=""
-          placeholder={`Enter ${form.properties[propertyName]?.name}`}
+          placeholder={`Enter URL`}
           value={data && data[propertyName]}
           inputMode="text"
           onChange={(e) => {
@@ -143,7 +143,7 @@ export default function PublicField({
       )}
       {form.properties[propertyName]?.type === "multiURL" && (
         <MultiURLField
-          placeholder={`Enter ${form.properties[propertyName]?.name}`}
+          placeholder={`Enter URL`}
           value={data && data[propertyName]}
           disabled={disabled}
           updateFieldHasInvalidType={updateFieldHasInvalidType}
@@ -156,7 +156,7 @@ export default function PublicField({
       {form.properties[propertyName]?.type === "number" && (
         <Input
           label=""
-          placeholder={`Enter ${form.properties[propertyName]?.name}`}
+          placeholder={`Enter number`}
           value={data && data[propertyName]?.toString()}
           type="number"
           onChange={(e) => {
@@ -185,8 +185,7 @@ export default function PublicField({
       )}
       {form.properties[propertyName]?.type === "date" && (
         <DateInput
-          placeholder={`Enter ${form.properties[propertyName]?.name}`}
-          value={data && data[propertyName]}
+          placeholder={`Enter date`}
           type="date"
           mode={mode}
           onChange={(e) => {
@@ -227,7 +226,7 @@ export default function PublicField({
               setData({ ...data });
               updateRequiredFieldNotSet(propertyName, value);
             }}
-            placeholder={`Type here to edit ${propertyName}`}
+            placeholder={`Enter long text, use / for commands`}
             isDirty={true}
             disabled={disabled}
           />
