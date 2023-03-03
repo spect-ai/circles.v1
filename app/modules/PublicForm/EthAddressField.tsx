@@ -33,7 +33,7 @@ export default function EthAddressField({ value, onChange, disabled }: Props) {
               setError("Invalid ENS name");
             } else {
               setError("");
-              onChange(tempValue);
+              onChange(value);
             }
           });
         } else {
@@ -41,7 +41,7 @@ export default function EthAddressField({ value, onChange, disabled }: Props) {
             setError("Invalid address or ENS name");
           } else {
             setError("");
-            onChange(tempValue);
+            onChange(value);
           }
         }
       }}
