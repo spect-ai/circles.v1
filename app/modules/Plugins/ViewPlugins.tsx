@@ -96,7 +96,7 @@ export default function ViewPlugins({}: Props) {
       case "poap":
         return !!collection.formMetadata.poapEventId;
       case "guildxyz":
-        return !!collection.formMetadata.formRoleGating;
+        return !!collection.formMetadata.formRoleGating?.length;
       case "gtcpassport":
         return collection.formMetadata.sybilProtectionEnabled === true;
       case "mintkudos":
