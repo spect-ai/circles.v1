@@ -363,19 +363,13 @@ export default function PublicForm() {
                       <StampScrollContainer>
                         {stamps?.map((stamp: Stamp, index: number) => {
                           return (
-                            <Box
-                              display="flex"
-                              flexDirection="row"
-                              alignItems="center"
-                              padding="4"
-                              width="full"
-                              key={index}
-                            >
+                            <StampCard mode={mode} key={index}>
                               <Box
                                 display="flex"
                                 flexDirection="row"
                                 width="full"
                                 alignItems="center"
+                                gap="4"
                               >
                                 <Box
                                   display="flex"
@@ -384,13 +378,6 @@ export default function PublicForm() {
                                   width="full"
                                   paddingRight="4"
                                 >
-                                  <Box width="12">
-                                    {hasStamps[stamp.id] && (
-                                      <Text variant="large" color="green">
-                                        <CheckOutlined />
-                                      </Text>
-                                    )}
-                                  </Box>
                                   <Box
                                     width="8"
                                     height="8"
@@ -411,10 +398,13 @@ export default function PublicForm() {
                                       {stamp.stampDescription}
                                     </Text>
                                   </Box>
-                                </Box>
-                                <Text variant="small">{stamp.score}%</Text>
+                                </Box>{" "}
+                                {hasStamps[stamp.id] && (
+                                  <Tag tone="green">Verified</Tag>
+                                )}
+                                <Text variant="large">{stamp.score}%</Text>
                               </Box>
-                            </Box>
+                            </StampCard>
                           );
                         })}
                       </StampScrollContainer>
@@ -552,5 +542,29 @@ const StampScrollContainer = styled(Box)`
   height: calc(100vh - 35rem);
   ::-webkit-scrollbar {
     width: 5px;
+  }
+`;
+
+export const StampCard = styled(Box)<{ mode: string }>`
+  display: flex;
+  flex-direction: column;
+  margin-top: 0.5rem;
+  padding: 1rem 1rem;
+  border-radius: 0.5rem;
+  border: solid 2px
+    ${(props) =>
+      props.mode === "dark"
+        ? "rgb(255, 255, 255, 0.05)"
+        : "rgb(20, 20, 20, 0.05)"};
+  &:hover {
+    border: solid 2px rgb(191, 90, 242);
+    transition-duration: 0.7s;
+    cursor: pointer;
+  }
+  position: relative;
+  transition: all 0.3s ease-in-out;
+  width: 80%;
+  @media (max-width: 768px) {
+    width: 100%;
   }
 `;
