@@ -151,6 +151,7 @@ export default function FormFields({ form, setForm }: Props) {
         const res = await getPoap(
           form.formMetadata.poapEventId?.toString() || ""
         );
+        console.log({ res });
         setPoap(res);
         setPoapClaimed(res.claimed);
       })();

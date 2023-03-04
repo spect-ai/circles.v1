@@ -173,7 +173,8 @@ export default function MintKudos() {
                       isAllowlistRequired: true,
                     } as KudosRequestType,
                     mintkudosCommunityId ||
-                      (process.env.MINTKUDOS_DEFAULT_COMMUNITY_ID as string)
+                      (process.env.MINTKUDOS_DEFAULT_COMMUNITY_ID as string),
+                    circle?.name as string
                   );
                   if (res) {
                     recordTokenId(res.operationId);

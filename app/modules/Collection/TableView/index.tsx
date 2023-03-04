@@ -22,6 +22,7 @@ import { useQuery } from "react-query";
 import { toast } from "react-toastify";
 import CardDrawer from "../../CollectionProject/CardDrawer";
 import Filtering from "../../CollectionProject/Filtering";
+import IncentiveFilter from "../../CollectionProject/Filtering/IncentiveFilter";
 import AddField from "../AddField";
 import {
   isMyCard,
@@ -656,6 +657,7 @@ export default function TableView() {
           marginBottom="4"
         >
           <Filtering />
+          <IncentiveFilter />
           <PrimaryButton
             variant="tertiary"
             onClick={() => {

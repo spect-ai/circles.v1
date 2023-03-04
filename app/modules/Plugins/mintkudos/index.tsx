@@ -57,7 +57,7 @@ export default function SendKudos({ handleClose }: Props) {
   const { localCollection: collection, updateCollection } =
     useLocalCollection();
   const [loading, setLoading] = useState(false);
-  const [issuingCommunity, setIssuingCommunity] = useState(circle?.name);
+  const [issuingCommunity, setIssuingCommunity] = useState(circle?.name || "");
   const [headlineContent, setHeadlineContent] = useState(
     "Thanks for filling up the form!"
   );
