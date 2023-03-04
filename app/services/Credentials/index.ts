@@ -27,6 +27,7 @@ export default function useCredentials() {
   const mintKudos = async (
     kudos: KudosRequestType,
     communityId: string,
+    issuingCommunity: string,
     nftTypeId?: File
   ) => {
     const value = {
@@ -45,7 +46,7 @@ export default function useCredentials() {
         {
           fieldName: "Issuing Community",
           type: "string",
-          value: `${circle?.name}`,
+          value: `${issuingCommunity}`,
         },
       ],
     };

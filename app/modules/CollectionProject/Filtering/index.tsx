@@ -2,6 +2,7 @@ import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { Box } from "degen";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
 import Filter from "./Filter";
+import IncentiveFilter from "./IncentiveFilter";
 import MyTasks from "./MyTasks";
 import PaymentFilter from "./PaymentFilter";
 import { SearchCard } from "./Search";

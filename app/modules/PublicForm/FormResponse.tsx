@@ -276,9 +276,17 @@ export default function FormResponse({
                             if (res.claimed) {
                               setPoapClaimed(true);
                               setClaimedJustNow(true);
+                            } else if (res.statusCode === 500) {
+                              if (res.message.includes("dssd"))
+                                toast.error(
+                                  "All POAPs have been claimed for this form, please ask the form creator to request more"
+                                );
+                              else
+                                toast.error(
+                                  "Something went wrong, please try again later"
+                                );
                             }
-                          } catch (e) {
-                            console.log(e);
+                          } catch (e: any) {
                             toast.error(
                               "Something went wrong, please try again later"
                             );
@@ -287,7 +295,7 @@ export default function FormResponse({
                           setClaiming(false);
                         }}
                       >
-                        Claim Poap
+                        Claim POAP
                       </PrimaryButton>
                     </Box>
                   </Stack>

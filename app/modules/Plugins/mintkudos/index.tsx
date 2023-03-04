@@ -57,6 +57,7 @@ export default function SendKudos({ handleClose }: Props) {
   const { localCollection: collection, updateCollection } =
     useLocalCollection();
   const [loading, setLoading] = useState(false);
+  const [issuingCommunity, setIssuingCommunity] = useState(circle?.name || "");
   const [headlineContent, setHeadlineContent] = useState(
     "Thanks for filling up the form!"
   );
@@ -241,16 +242,28 @@ export default function SendKudos({ handleClose }: Props) {
           >
             <Box paddingBottom="4" width="full">
               <Stack>
-                <Stack direction="horizontal" space="4">
+                <Stack space="1">
+                  <Text variant="label">Issuing Community</Text>
+                  <Input
+                    label=""
+                    value={issuingCommunity}
+                    required={true}
+                    onChange={(e) => setIssuingCommunity(e.target.value)}
+                    disabled={!!kudos.imageUrl}
+                  />
+                </Stack>
+
+                <Stack direction="vertical" space="1">
+                  <Stack direction="horizontal" space="1" align="center">
+                    <Text variant="label">Headline</Text>
+                    <Tooltip title="The headline only shows up in the image for the default mintkudos image. For custom images, the headline is still added on chain with the NFT, however it doesn't show up in the image.">
+                      <Text color="foregroundSecondary">
+                        <InfoCircleOutlined />
+                      </Text>
+                    </Tooltip>
+                  </Stack>
                   <Textarea
-                    label={
-                      <Stack direction="horizontal" space="2">
-                        <Text variant="label">Headline</Text>
-                        <Tooltip title="The headline only shows up in the image for the default mintkudos image. For custom images, the headline is still added on chain with the NFT, however it doesn't show up in the image.">
-                          <InfoCircleOutlined />
-                        </Tooltip>
-                      </Stack>
-                    }
+                    label={""}
                     value={headlineContent}
                     onChange={(e) => setHeadlineContent(e.target.value)}
                     maxLength={50}
@@ -287,18 +300,23 @@ export default function SendKudos({ handleClose }: Props) {
                     maxSize={10}
                   />
                 )}
-                <Input
-                  label="Number of Kudos"
-                  value={numberOfKudosToMint}
-                  type="number"
-                  min={1}
-                  max={10000}
-                  required={true}
-                  onChange={(e) =>
-                    setNumberOfKudosToMint(parseInt(e.target.value))
-                  }
-                  disabled={!!kudos.imageUrl}
-                />
+                <Stack space="1">
+                  <Text variant="label">Number of Kudos</Text>
+
+                  <Input
+                    label=""
+                    value={numberOfKudosToMint}
+                    type="number"
+                    min={1}
+                    max={10000}
+                    required={true}
+                    onChange={(e) =>
+                      setNumberOfKudosToMint(parseInt(e.target.value))
+                    }
+                    disabled={!!kudos.imageUrl}
+                  />
+                </Stack>
+
                 {filenameExceedsLimit && (
                   <Text variant="small" color="red">
                     Please add a file with filename less than 20 characters.
@@ -389,6 +407,7 @@ export default function SendKudos({ handleClose }: Props) {
                       mintkudosCommunityId?.length > 0
                         ? mintkudosCommunityId
                         : "c6c9a5ff-9d3c-4858-ade1-354e1ecd0cb0",
+                      issuingCommunity,
                       communityAsset?.nftTypeId || assetToUse
                     );
                     if (res) {

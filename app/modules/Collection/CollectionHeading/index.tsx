@@ -121,7 +121,7 @@ function CollectionHeading() {
                     setView(1);
                   }}
                 >
-                  Responses
+                  Responses ({Object.keys(collection.data)?.length})
                 </PrimaryButton>
                 {/* <PrimaryButton onClick={() => setIsAddFieldOpen(true)}>
                   Add Field
@@ -192,7 +192,7 @@ function CollectionHeading() {
                             setIsOpen(false);
                           }}
                         >
-                          Responses
+                          Responses {Object.keys(collection.data)?.length}
                         </PopoverOption>
                       )}
                       <a
