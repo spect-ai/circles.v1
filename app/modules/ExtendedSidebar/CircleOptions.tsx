@@ -1,30 +1,17 @@
-import Popover from "@/app/common/components/Popover";
-import { CircleType, Permissions, ProjectType, UserType } from "@/app/types";
-import { AppstoreOutlined, SettingOutlined } from "@ant-design/icons";
-import {
-  Box,
-  Button,
-  Heading,
-  IconUserGroup,
-  IconUsersSolid,
-  Stack,
-  Text,
-  useTheme,
-} from "degen";
+import { CircleType, ProjectType, UserType } from "@/app/types";
+import { SettingOutlined } from "@ant-design/icons";
+import { Box, Button, Heading, Text, useTheme } from "degen";
 import { AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
-import React, { memo, useEffect, useState } from "react";
+import React, { memo, useState } from "react";
 import { useQuery } from "react-query";
-import { PopoverOption } from "../Card/OptionPopover";
 import SettingsModal from "../Circle/CircleSettingsModal";
-import { HeaderButton } from "./ExploreSidebar";
 import { useGlobal } from "@/app/context/globalContext";
 import mixpanel from "@/app/common/utils/mixpanel";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 
 function CircleOptions() {
   const router = useRouter();
-  const { setToggle } = useGlobal();
   const { circle: cId, project: pId } = router.query;
   const { data: circle } = useQuery<CircleType>(["circle", cId], {
     enabled: false,
@@ -33,9 +20,7 @@ function CircleOptions() {
   const { data: project } = useQuery<ProjectType>(["project", pId], {
     enabled: false,
   });
-  const [isOpen, setIsOpen] = useState(false);
   const [settingsModalOpen, setSettingsModalOpen] = useState(false);
-  const { mode } = useTheme();
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
@@ -49,8 +34,14 @@ function CircleOptions() {
         )}
       </AnimatePresence>
       <Box display="flex" flexDirection="row" alignItems="center" width="full">
-        <Box width="full">
-          <Heading>{circle?.name || project?.parents[0].name}</Heading>
+        <Box
+          style={{
+            width: "90%",
+          }}
+        >
+          <Text size="headingTwo" ellipsis>
+            {circle?.name || project?.parents[0].name}
+          </Text>
           {/* <Popover
             data-tour="circle-options-popover"
             butttonComponent={
@@ -134,8 +125,10 @@ function CircleOptions() {
         <Box
           display="flex"
           flexDirection="row"
-          width="1/4"
           justifyContent="flex-end"
+          style={{
+            width: "10%",
+          }}
         >
           {canDo("manageCircleSettings") && (
             <Button
