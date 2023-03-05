@@ -59,7 +59,7 @@ export default function DistributeERC20({
     enabled: false,
   });
   const networks = Object.keys(registry || {})
-    .filter((key) => ["137", "43113", "80001"].includes(key))
+    .filter((key) => ["137", "43113", "80001", "5"].includes(key))
     .map((key) => {
       return {
         label: (registry && registry[key].name) || "",
@@ -113,7 +113,7 @@ export default function DistributeERC20({
       setSelectedToken(tokens[1]);
       setTokenOptions(tokens);
     }
-  }, [selectedNetwork]);
+  }, [selectedNetwork, registry]);
 
   useEffect(() => {
     if (distributionInfo?.amountPerResponse) {

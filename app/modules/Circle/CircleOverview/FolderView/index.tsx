@@ -121,7 +121,6 @@ export const FolderView = ({
       </Stack>
       {circle?.folderOrder?.map((folder, i) => {
         const folderDetail = circle?.folderDetails?.[folder];
-        console.log({ folderDetail });
         return (
           <Folder
             key={folder}

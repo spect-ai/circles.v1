@@ -50,19 +50,19 @@ export const createSurvey = async (
       amountPerResponse = 0;
     }
 
-    let maxFeePerGas = ethers.BigNumber.from(40000000000); // fallback to 40 gwei
+    let maxFeePerGas = ethers.BigNumber.from(65670415053); // fallback to 66 gwei
     let maxPriorityFeePerGas = ethers.BigNumber.from(40000000000); // fallback to 40 gwei
-
-    const feeEstimate = await getPredictedGas(chainId);
-    maxFeePerGas = ethers.utils.parseUnits(
-      Math.ceil(feeEstimate.maxFee) + "",
-      "gwei"
-    );
-    maxPriorityFeePerGas = ethers.utils.parseUnits(
-      Math.ceil(feeEstimate.maxPriorityFee) + "",
-      "gwei"
-    );
-
+    if (["137"].includes(chainId)) {
+      const feeEstimate = await getPredictedGas(chainId);
+      maxFeePerGas = ethers.utils.parseUnits(
+        Math.ceil(feeEstimate.maxFee) + "",
+        "gwei"
+      );
+      maxPriorityFeePerGas = ethers.utils.parseUnits(
+        Math.ceil(feeEstimate.maxPriorityFee) + "",
+        "gwei"
+      );
+    }
     if (tokenAddress === "0x0") {
       const estimatedGas = await surveyHub.estimateGas.createSurveyWithEther(
         distributionType,
@@ -88,15 +88,10 @@ export const createSurvey = async (
         }
       );
     } else {
-      console.log({
-        totalAmount,
-        amt: ethers.utils.parseEther(totalAmount.toString()),
-      });
       const numDecimals = await getDecimals(tokenAddress);
       const amountInWei = ethers.utils
         .parseEther(totalAmount.toString())
         .div(ethers.BigNumber.from(10).pow(18 - numDecimals));
-      console.log({ amountInWei });
       const data = await readContract({
         chainId: parseInt(chainId),
         address: tokenAddress as `0x${string}`,
@@ -107,7 +102,6 @@ export const createSurvey = async (
           surveyHubAddress as `0x${string}`,
         ],
       });
-      console.log({ data });
       if (data < amountInWei) {
         {
           const tokenContract = await getContract(tokenAddress, erc20ABI);
@@ -155,7 +149,6 @@ export const createSurvey = async (
           gasLimit: Math.ceil(gasEstimate.toNumber() * 1.2),
         }
       );
-      console.log("sdsds");
     }
     return await tx.wait();
   } catch (err: any) {
@@ -288,6 +281,21 @@ export const hasWonLottery = async (
   }
 };
 
+export const getEscrowBalance = async (
+  chainId: string,
+  surveyHubAddress: string,
+  surveyId: number
+) => {
+  const res = await readContract({
+    address: surveyHubAddress as `0x${string}`,
+    abi: SurveyABI.abi,
+    functionName: "escrowBalance",
+    args: [surveyId],
+    chainId: parseInt(chainId),
+  });
+  return res;
+};
+
 export const isEligibleToClaimSurveyToken = async (
   chainId: string,
   surveyHubAddress: string,
@@ -304,8 +312,7 @@ export const isEligibleToClaimSurveyToken = async (
       surveyId
     );
   }
-  console.log({ reqId: distrInfo.requestId.toString() });
-
+  console.log({ distrInfo });
   let hasClaimed;
 
   if (hasClaimedSurveyTokens === undefined) {

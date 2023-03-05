@@ -35,6 +35,7 @@ type Props = {
   setSurveyTokenClaimed: (val: boolean) => void;
   surveyDistributionInfo: any;
   surveyIsLotteryYetToBeDrawn: boolean;
+  surveyHasInsufficientBalance: boolean;
   canClaimSurveyToken: boolean;
   setCanClaimSurveyToken: (val: boolean) => void;
   setViewResponse: (val: boolean) => void;
@@ -73,6 +74,7 @@ export default function FormResponse({
   setSurveyTokenClaimed,
   surveyDistributionInfo,
   surveyIsLotteryYetToBeDrawn,
+  surveyHasInsufficientBalance,
   canClaimSurveyToken,
   setCanClaimSurveyToken,
   setViewResponse,
@@ -463,7 +465,23 @@ export default function FormResponse({
             >
               {form.formMetadata?.previousResponses?.length > 0 &&
                 form.formMetadata?.surveyTokenId &&
-                !surveyIsLotteryYetToBeDrawn && (
+                surveyHasInsufficientBalance && (
+                  <Stack direction="horizontal" align="flex-start">
+                    <Text variant="extraLarge" weight="bold">
+                      👉
+                    </Text>
+                    <Text weight="bold" variant="large">
+                      {" "}
+                      Looks like all {form.formMetadata.surveyToken?.label} for
+                      this form have been claimed, please reach out to form
+                      creator
+                    </Text>
+                  </Stack>
+                )}
+              {form.formMetadata?.previousResponses?.length > 0 &&
+                form.formMetadata?.surveyTokenId &&
+                !surveyIsLotteryYetToBeDrawn &&
+                !surveyHasInsufficientBalance && (
                   <Stack direction="horizontal" align="flex-start">
                     <Text variant="extraLarge" weight="bold">
                       👉

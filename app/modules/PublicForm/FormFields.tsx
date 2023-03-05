@@ -40,12 +40,14 @@ import Modal from "@/app/common/components/Modal";
 import { useProfile } from "../Profile/ProfileSettings/LocalProfileContext";
 import { getPoap } from "@/app/services/Poap";
 import {
+  getEscrowBalance,
   getSurveyConditionInfo,
   getSurveyDistributionInfo,
   hasClaimedSurveyToken,
   isEligibleToClaimSurveyToken,
 } from "@/app/services/SurveyProtocol";
 import { getPassportScoreAndCredentials } from "@/app/services/Credentials/AggregatedCredentials";
+import { BigNumber } from "ethers";
 
 type Props = {
   form: FormType;
@@ -79,7 +81,8 @@ export default function FormFields({ form, setForm }: Props) {
   const [poapClaimed, setPoapClaimed] = useState(false);
   const [poapClaimCode, setPoapClaimCode] = useState("");
   const [distributionInfo, setDistributionInfo] = useState({} as any);
-  const [conditionInfo, setConditionInfo] = useState({} as any);
+  const [escrowHasInsufficientBalance, setEscrowHasInsufficientBalance] =
+    useState(false);
   const [canClaimSurveyToken, setCanClaimSurveyToken] = useState(false);
   const [notificationPreferenceModalOpen, setNotificationPreferenceModalOpen] =
     useState(false);
@@ -224,14 +227,29 @@ export default function FormFields({ form, setForm }: Props) {
         );
         setSurveyTokenClaimed(surveyTokenClaimed as boolean);
 
-        const canClaim = await isEligibleToClaimSurveyToken(
+        const balanceInEscrow = (await getEscrowBalance(
           form.formMetadata.surveyChain?.value || "",
           registry[form.formMetadata.surveyChain?.value || ""].surveyHubAddress,
-          form.formMetadata.surveyTokenId as number,
-          address as string,
-          distributionInfo,
-          surveyTokenClaimed as boolean
-        );
+          form.formMetadata.surveyTokenId as number
+        )) as BigNumber;
+        const insufficientEscrowBalance =
+          distributionInfo?.distributionType === 0
+            ? balanceInEscrow.toString() === "0"
+            : balanceInEscrow.lt(distributionInfo?.amountPerResponse || 0);
+        console.log({ insufficientEscrowBalance });
+        setEscrowHasInsufficientBalance(insufficientEscrowBalance);
+        const canClaim =
+          !insufficientEscrowBalance &&
+          (await isEligibleToClaimSurveyToken(
+            form.formMetadata.surveyChain?.value || "",
+            registry[form.formMetadata.surveyChain?.value || ""]
+              .surveyHubAddress,
+            form.formMetadata.surveyTokenId as number,
+            address as string,
+            distributionInfo,
+            surveyTokenClaimed as boolean
+          ));
+
         console.log({ canClaim });
         setCanClaimSurveyToken(canClaim as boolean);
       })();
@@ -470,6 +488,7 @@ export default function FormFields({ form, setForm }: Props) {
         surveyIsLotteryYetToBeDrawn={surveyIsLotteryYetToBeDrawn}
         registry={registry}
         setCanClaimSurveyToken={setCanClaimSurveyToken}
+        surveyHasInsufficientBalance={escrowHasInsufficientBalance}
       />
     );
   }
