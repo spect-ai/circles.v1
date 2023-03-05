@@ -125,7 +125,7 @@ export default function GiveDiscordRole({
       <Box marginTop="4" marginBottom="-4">
         <Editor
           value={
-            ":::tip\nEnsure you have a discord field added to your collection which the user will use to connect their discord account. If no discord field is there the user the automation will not work as expected\n:::"
+            ":::tip\nEnsure you have a discord field added to your form which the user will use to connect their discord account.\n:::\n\n:::warning\nYou also need to check if the spect bot's role in your server is placed above the roles you are giving\n:::"
           }
           disabled={true}
         />

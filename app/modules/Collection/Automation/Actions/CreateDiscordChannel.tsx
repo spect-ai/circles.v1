@@ -225,7 +225,7 @@ export default function CreateDiscordChannel({
             <Box marginTop="4" marginBottom="-4">
               <Editor
                 value={
-                  ":::tip\nForm responder will be asked to connect Discord Account before filling up form."
+                  ":::tip\nEnsure you have a discord field added to your form which the user will use to connect their discord account."
                 }
                 disabled={true}
               />
