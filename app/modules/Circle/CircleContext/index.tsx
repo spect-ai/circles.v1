@@ -156,9 +156,11 @@ export function useProviderCircleContext() {
       void fetchRegistry();
       void fetchMemberDetails();
     }
+    console.log("STARTED TRACKING SESSION FOR CIRCLE" + cId);
     process.env.NODE_ENV === "production" &&
       mixpanel.time_event("Circle Session");
     return () => {
+      console.log("ENDED TRACKING SESSION FOR CIRCLE" + cId);
       process.env.NODE_ENV === "production" &&
         mixpanel.track("Circle Session", {
           circle: cId,
