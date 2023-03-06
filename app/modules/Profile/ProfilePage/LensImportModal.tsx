@@ -2,11 +2,12 @@ import Dropdown from "@/app/common/components/Dropdown";
 import Editor from "@/app/common/components/Editor";
 import Modal from "@/app/common/components/Modal";
 import ConfirmModal from "@/app/common/components/Modal/ConfirmModal";
-import { useGlobal } from "@/app/context/globalContext";
 import { getLensProfileHandles, updateProfileData } from "@/app/services/Lens";
 import useProfileUpdate from "@/app/services/Profile/useProfileUpdate";
+import { profileLoadingAtom, userDataAtom } from "@/app/state/global";
 import { Milestone, Option, Registry, UserType } from "@/app/types";
 import { Box, Button, Input, Stack, Tag, Text, useTheme } from "degen";
+import { useAtom } from "jotai";
 import router from "next/router";
 import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
@@ -30,7 +31,9 @@ export default function LensImportModal({ handleClose }: Props) {
     enabled: false,
   });
   const { updateProfile } = useProfileUpdate();
-  const { setUserData, setProfileLoading } = useGlobal();
+  const [userData, setUserData] = useAtom(userDataAtom);
+  const [profileLoading, setProfileLoading] = useAtom(profileLoadingAtom);
+
   const username = router.query.user;
 
   const fetchUser = async () => {

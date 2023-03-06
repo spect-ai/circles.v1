@@ -7,7 +7,6 @@ import Logo from "@/app/common/components/Logo";
 import { HomeOutlined } from "@ant-design/icons";
 import { useQuery } from "react-query";
 import { CircleType, UserType } from "@/app/types";
-import { useGlobal } from "@/app/context/globalContext";
 import styled from "styled-components";
 import mixpanel from "@/app/common/utils/mixpanel";
 import NotificationPanel from "../Profile/NotificationPanel";
@@ -16,6 +15,14 @@ import {
   patchUnreadNotifications,
 } from "@/app/services/Notification";
 import { toast } from "react-toastify";
+import { useAtom } from "jotai";
+import {
+  connectedUserAtom,
+  isProfilePanelExpandedAtom,
+  isSidebarExpandedAtom,
+  quickProfileUserAtom,
+  socketAtom,
+} from "@/app/state/global";
 
 export const ScrollContainer = styled(Box)`
   ::-webkit-scrollbar {
@@ -33,13 +40,14 @@ function Sidebar(): ReactElement {
   const { data: circle, isLoading } = useQuery<CircleType>(["circle", cId], {
     enabled: false,
   });
-  const {
-    connectedUser,
-    isSidebarExpanded,
-    openQuickProfile,
-    isProfilePanelExpanded,
-    setIsSidebarExpanded,
-  } = useGlobal();
+  const [connectedUser, setConnectedUser] = useAtom(connectedUserAtom);
+  const [isSidebarExpanded, setIsSidebarExpanded] = useAtom(
+    isSidebarExpandedAtom
+  );
+  const [isProfilePanelExpanded, setIsProfilePanelExpanded] = useAtom(
+    isProfilePanelExpandedAtom
+  );
+  const [quickProfileUser, setQuickProfileUser] = useAtom(quickProfileUserAtom);
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
@@ -52,7 +60,7 @@ function Sidebar(): ReactElement {
     enabled: false,
   });
 
-  const { socket } = useGlobal();
+  const [socket, setSocket] = useAtom(socketAtom);
 
   const [unreadNotifications, setUnreadNotifications] = useState(0);
 
@@ -71,7 +79,7 @@ function Sidebar(): ReactElement {
   }, [isSidebarExpanded]);
 
   useEffect(() => {
-    socket.connected &&
+    socket?.connected &&
       socket?.on("notification", (data) => {
         setUnreadNotifications(data.unreadNotifications);
       });
@@ -171,7 +179,8 @@ function Sidebar(): ReactElement {
               shape="circle"
               variant="transparent"
               onClick={() => {
-                openQuickProfile(currentUser.id);
+                setIsProfilePanelExpanded(true);
+                setQuickProfileUser(connectedUser);
                 (async () => {
                   if (unreadNotifications > 0) {
                     const res = await patchUnreadNotifications();

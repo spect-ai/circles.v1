@@ -1,7 +1,7 @@
 import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { useGlobal } from "@/app/context/globalContext";
 import useCircleOnboarding from "@/app/services/Onboarding/useCircleOnboarding";
+import { isSidebarExpandedAtom } from "@/app/state/global";
 import { CloseCircleOutlined } from "@ant-design/icons";
 import {
   Box,
@@ -13,6 +13,7 @@ import {
   Text,
 } from "degen";
 import { AnimatePresence } from "framer-motion";
+import { useAtom } from "jotai";
 import dynamic from "next/dynamic";
 import React, { useState } from "react";
 import { tourConfig } from "./tourConfig";
@@ -25,7 +26,9 @@ export default function Onboarding() {
   const [isOpen, setIsOpen] = useState(true);
   const [isTourOpen, setIsTourOpen] = useState(false);
 
-  const { setIsSidebarExpanded } = useGlobal();
+  const [isSidebarExpanded, setIsSidebarExpanded] = useAtom(
+    isSidebarExpandedAtom
+  );
   const { finishOnboarding } = useCircleOnboarding();
 
   return (

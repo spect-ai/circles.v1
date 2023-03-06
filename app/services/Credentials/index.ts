@@ -1,7 +1,6 @@
 import { kudosTokenTypes, kudosTypes } from "@/app/common/utils/constants";
 import { useCircle } from "@/app/modules/Circle/CircleContext";
 import { useLocalCollection } from "@/app/modules/Collection/Context/LocalCollectionContext";
-import { useLocalCard } from "@/app/modules/Project/CreateCardModal/hooks/LocalCardContext";
 import { KudosRequestType, KudosType } from "@/app/types";
 import { useTheme } from "degen";
 import { ethers } from "ethers";
@@ -19,7 +18,6 @@ export default function useCredentials() {
   const { registry, circle } = useCircle();
   const { chain } = useNetwork();
   const { switchNetworkAsync } = useSwitchNetwork();
-  const { kudosMinted, cardId, assignees, reviewers, setCard } = useLocalCard();
   const { localCollection: collection, setLocalCollection } =
     useLocalCollection();
   const { mode } = useTheme();
@@ -122,54 +120,54 @@ export default function useCredentials() {
     return null;
   };
 
-  const recordTokenId = (operationId: string, kudosFor?: string) => {
-    let time = 1000;
-    const intervalPromise = setInterval(() => {
-      time += 1000;
-      fetch(`${process.env.MINTKUDOS_HOST}${operationId}`)
-        .then(async (res) => {
-          if (res.ok) {
-            const data = await res.json();
-            if (data.status === "success") {
-              clearInterval(intervalPromise);
-              const kudosForUsers = kudosFor || "assignee";
-              fetch(`${process.env.API_HOST}/card/v1/${cardId}/recordKudos`, {
-                method: "PATCH",
-                body: JSON.stringify({
-                  for: kudosForUsers,
-                  tokenId: data.resourceId,
-                  contributors:
-                    kudosForUsers === "assignee" ? assignees : reviewers,
-                }),
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                credentials: "include",
-              })
-                .then((res) => {
-                  if (res.ok) {
-                    res
-                      .json()
-                      .then((res2) => {
-                        // Only update state if user is on same card
-                        if (cardId === res2.id) setCard(res2);
-                      })
-                      .catch((err) => console.log(err));
-                    toast.success("Successfully created kudos!", {
-                      theme: mode,
-                    });
-                  }
-                })
-                .catch((err) => console.log(err));
-            }
-          }
-        })
-        .catch((err) => console.log(err));
-    }, 1000);
-    setTimeout(() => {
-      clearInterval(intervalPromise);
-    }, 20000);
-  };
+  //   const recordTokenId = (operationId: string, kudosFor?: string) => {
+  //     let time = 1000;
+  //     const intervalPromise = setInterval(() => {
+  //       time += 1000;
+  //       fetch(`${process.env.MINTKUDOS_HOST}${operationId}`)
+  //         .then(async (res) => {
+  //           if (res.ok) {
+  //             const data = await res.json();
+  //             if (data.status === "success") {
+  //               clearInterval(intervalPromise);
+  //               const kudosForUsers = kudosFor || "assignee";
+  //               fetch(`${process.env.API_HOST}/card/v1/${cardId}/recordKudos`, {
+  //                 method: "PATCH",
+  //                 body: JSON.stringify({
+  //                   for: kudosForUsers,
+  //                   tokenId: data.resourceId,
+  //                   contributors:
+  //                     kudosForUsers === "assignee" ? assignees : reviewers,
+  //                 }),
+  //                 headers: {
+  //                   "Content-Type": "application/json",
+  //                 },
+  //                 credentials: "include",
+  //               })
+  //                 .then((res) => {
+  //                   if (res.ok) {
+  //                     res
+  //                       .json()
+  //                       .then((res2) => {
+  //                         // Only update state if user is on same card
+  //                         if (cardId === res2.id) setCard(res2);
+  //                       })
+  //                       .catch((err) => console.log(err));
+  //                     toast.success("Successfully created kudos!", {
+  //                       theme: mode,
+  //                     });
+  //                   }
+  //                 })
+  //                 .catch((err) => console.log(err));
+  //             }
+  //           }
+  //         })
+  //         .catch((err) => console.log(err));
+  //     }, 1000);
+  //     setTimeout(() => {
+  //       clearInterval(intervalPromise);
+  //     }, 20000);
+  //   };
 
   const recordCollectionKudos = (operationId: string, numOfKudos?: number) => {
     let time = 1000;
@@ -223,18 +221,18 @@ export default function useCredentials() {
     }, 120000);
   };
 
-  const viewKudos = async (): Promise<KudosType[]> => {
-    const kudos = [];
-    for (const [role, tokenId] of Object.entries(kudosMinted)) {
-      const res = await fetch(
-        `${process.env.MINTKUDOS_HOST}/v1/tokens/${tokenId}`
-      );
-      if (res.ok) {
-        kudos.push(await res.json());
-      }
-    }
-    return kudos;
-  };
+  //   const viewKudos = async (): Promise<KudosType[]> => {
+  //     const kudos = [];
+  //     for (const [role, tokenId] of Object.entries(kudosMinted)) {
+  //       const res = await fetch(
+  //         `${process.env.MINTKUDOS_HOST}/v1/tokens/${tokenId}`
+  //       );
+  //       if (res.ok) {
+  //         kudos.push(await res.json());
+  //       }
+  //     }
+  //     return kudos;
+  //   };
 
   const claimKudos = async (tokenId: number, claimingAddress: string) => {
     const value = {
@@ -289,55 +287,55 @@ export default function useCredentials() {
     }
   };
 
-  const recordClaimInfo = (operationId: string, kudosFor?: string) => {
-    let time = 1000;
-    const intervalPromise = setInterval(() => {
-      time += 1000;
-      console.log(time);
-      fetch(`${process.env.MINTKUDOS_HOST}${operationId}`)
-        .then(async (res) => {
-          if (res.ok) {
-            const data = await res.json();
-            console.log(data);
-            if (data.status === "success") {
-              clearInterval(intervalPromise);
-              fetch(
-                `${process.env.API_HOST}/card/v1/${cardId}/recordClaimInfo`,
-                {
-                  method: "PATCH",
-                  body: JSON.stringify({
-                    for: kudosFor || "assignee",
-                    tokenId: data.resourceId,
-                  }),
-                  headers: {
-                    "Content-Type": "application/json",
-                  },
-                  credentials: "include",
-                }
-              )
-                .then((res2) => {
-                  if (res2.ok)
-                    res2
-                      .json()
-                      .then((res2) => {
-                        // Only update state if user is on same card
-                        if (cardId === res2.id) setCard(res2);
-                      })
-                      .catch((err) => console.log(err));
-                  toast.success("Successfully claimed kudos!", {
-                    theme: mode,
-                  });
-                })
-                .catch((err) => console.log(err));
-            }
-          }
-        })
-        .catch((err) => console.log(err));
-    }, 1000);
-    setTimeout(() => {
-      clearInterval(intervalPromise);
-    }, 120000);
-  };
+  //   const recordClaimInfo = (operationId: string, kudosFor?: string) => {
+  //     let time = 1000;
+  //     const intervalPromise = setInterval(() => {
+  //       time += 1000;
+  //       console.log(time);
+  //       fetch(`${process.env.MINTKUDOS_HOST}${operationId}`)
+  //         .then(async (res) => {
+  //           if (res.ok) {
+  //             const data = await res.json();
+  //             console.log(data);
+  //             if (data.status === "success") {
+  //               clearInterval(intervalPromise);
+  //               fetch(
+  //                 `${process.env.API_HOST}/card/v1/${cardId}/recordClaimInfo`,
+  //                 {
+  //                   method: "PATCH",
+  //                   body: JSON.stringify({
+  //                     for: kudosFor || "assignee",
+  //                     tokenId: data.resourceId,
+  //                   }),
+  //                   headers: {
+  //                     "Content-Type": "application/json",
+  //                   },
+  //                   credentials: "include",
+  //                 }
+  //               )
+  //                 .then((res2) => {
+  //                   if (res2.ok)
+  //                     res2
+  //                       .json()
+  //                       .then((res2) => {
+  //                         // Only update state if user is on same card
+  //                         if (cardId === res2.id) setCard(res2);
+  //                       })
+  //                       .catch((err) => console.log(err));
+  //                   toast.success("Successfully claimed kudos!", {
+  //                     theme: mode,
+  //                   });
+  //                 })
+  //                 .catch((err) => console.log(err));
+  //             }
+  //           }
+  //         })
+  //         .catch((err) => console.log(err));
+  //     }, 1000);
+  //     setTimeout(() => {
+  //       clearInterval(intervalPromise);
+  //     }, 120000);
+  //   };
 
   const getKudosOfUser = async (ethAddress: string) => {
     const res = await fetch(
@@ -403,10 +401,10 @@ export default function useCredentials() {
 
   return {
     mintKudos,
-    recordTokenId,
+    // recordTokenId,
     claimKudos,
-    viewKudos,
-    recordClaimInfo,
+    // viewKudos,
+    // recordClaimInfo,
     getKudosOfUser,
     recordCollectionKudos,
     getKudos,

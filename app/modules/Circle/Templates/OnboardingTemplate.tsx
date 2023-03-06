@@ -6,8 +6,8 @@ import DiscordIcon from "@/app/assets/icons/discordIcon.svg";
 import { createTemplateFlow } from "@/app/services/Templates";
 import { getGuildRoles } from "@/app/services/Discord";
 import { useAtom } from "jotai";
-import { scribeOpenAtom, scribeUrlAtom } from "@/pages/_app";
 import { Scribes } from "@/app/common/utils/constants";
+import { scribeOpenAtom, scribeUrlAtom } from "@/app/state/global";
 
 type Props = {
   handleClose: (close: boolean) => void;

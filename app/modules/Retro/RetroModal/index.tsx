@@ -1,12 +1,14 @@
 import Loader from "@/app/common/components/Loader";
 import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { useGlobal } from "@/app/context/globalContext";
+import {} from "@/app/context/globalContext";
 import { addVotes, endRetro } from "@/app/services/Retro";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
+import { connectedUserAtom } from "@/app/state/global";
 import { RetroType } from "@/app/types";
 import { SaveOutlined } from "@ant-design/icons";
 import { Box, Heading, IconClose, Stack, Tag, Text } from "degen";
+import { useAtom } from "jotai";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { useQuery } from "react-query";
@@ -29,7 +31,8 @@ export type MemberDetails = {
 };
 
 export default function RetroModal({ handleClose }: Props) {
-  const { connectedUser } = useGlobal();
+  const [connectedUser, setConnectedUser] = useAtom(connectedUserAtom);
+
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const { retroSlug } = router.query;

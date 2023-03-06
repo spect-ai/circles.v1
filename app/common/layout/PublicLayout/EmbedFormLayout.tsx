@@ -2,11 +2,17 @@ import React, { memo, useEffect } from "react";
 import { ReactNodeNoStrings } from "degen/dist/types/types";
 import { Box, useTheme } from "degen";
 import styled from "styled-components";
-import { useGlobal } from "@/app/context/globalContext";
 import { useQuery } from "react-query";
 import { UserType } from "@/app/types";
 import { toast } from "react-toastify";
 import { useRouter } from "next/router";
+import { useAtom } from "jotai";
+import {
+  connectedUserAtom,
+  isSidebarExpandedAtom,
+  socketAtom,
+} from "@/app/state/global";
+import { io } from "socket.io-client";
 
 type PublicLayoutProps = {
   children: ReactNodeNoStrings;
@@ -35,8 +41,11 @@ const getUser = async () => {
 
 function EmbedLayout(props: PublicLayoutProps) {
   const { children } = props;
-  const { connectedUser, connectUser, setIsSidebarExpanded } = useGlobal();
-
+  const [socket, setSocket] = useAtom(socketAtom);
+  const [connectedUser, setConnectedUser] = useAtom(connectedUserAtom);
+  const [isSidebarExpanded, setIsSidebarExpanded] = useAtom(
+    isSidebarExpandedAtom
+  );
   // eslint-disable-next-line @typescript-eslint/unbound-method
   const { setMode } = useTheme();
 
@@ -52,7 +61,7 @@ function EmbedLayout(props: PublicLayoutProps) {
   );
 
   useEffect(() => {
-    if (!connectedUser && currentUser?.id) connectUser(currentUser.id);
+    if (!connectedUser && currentUser?.id) setConnectedUser(currentUser.id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentUser, connectedUser]);
 
@@ -60,7 +69,7 @@ function EmbedLayout(props: PublicLayoutProps) {
     refetch()
       .then((res) => {
         const data = res.data;
-        if (data?.id) connectUser(data.id);
+        if (data?.id) setConnectedUser(currentUser?.id || "");
       })
       .catch((err) => {
         console.log(err);
@@ -93,6 +102,27 @@ function EmbedLayout(props: PublicLayoutProps) {
   useEffect(() => {
     setIsSidebarExpanded(false);
   }, [setIsSidebarExpanded]);
+
+  useEffect(() => {
+    const socket = io(process.env.API_HOST || "");
+    socket.on("connect", function () {
+      setSocket(socket);
+    });
+
+    socket.on("disconnect", function () {
+      console.log("Disconnected");
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (socket?.connected && connectedUser) {
+      socket.emit("join", connectedUser);
+    }
+  }, [connectedUser, socket]);
 
   return (
     <DesktopContainer backgroundColor="transparent" id="public-layout">

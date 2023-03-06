@@ -8,9 +8,10 @@ import { useState, useEffect } from "react";
 import { CreateCircle } from "./CreateCircle";
 import { CreateContent } from "./CreateContent";
 import { SetUpProfile } from "./SetupProfile";
-import { useGlobal } from "@/app/context/globalContext";
 import useConnectDiscord from "@/app/services/Discord/useConnectDiscord";
 import { ToastContainer } from "react-toastify";
+import { useAtom } from "jotai";
+import { connectedUserAtom } from "@/app/state/global";
 
 const Onboard = () => {
   useConnectDiscord();
@@ -18,7 +19,8 @@ const Onboard = () => {
     useState<"circle" | "profile">("circle");
   const [step, setStep] = useState(1);
   const { mode } = useTheme();
-  const { connectedUser } = useGlobal();
+  const [connectedUser, setConnectedUser] = useAtom(connectedUserAtom);
+
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });

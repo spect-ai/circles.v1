@@ -1,10 +1,12 @@
 import Editor from "@/app/common/components/Editor";
 import Modal from "@/app/common/components/Modal";
 import CheckBox from "@/app/common/components/Table/Checkbox";
-import { useGlobal } from "@/app/context/globalContext";
+import {} from "@/app/context/globalContext";
 import useProfileUpdate from "@/app/services/Profile/useProfileUpdate";
+import { userDataAtom } from "@/app/state/global";
 import { Credential } from "@/app/types";
 import { Box, Button, Input, Tag, Text, useTheme } from "degen";
+import { useAtom } from "jotai";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import LinkCredentialsModal from "./LinkCredentialsModal";
@@ -20,7 +22,7 @@ export default function AddEducationModal({
   modalMode,
   educationId,
 }: Props) {
-  const { userData } = useGlobal();
+  const [userData] = useAtom<any>(userDataAtom);
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState(

@@ -1,8 +1,9 @@
 import queryClient from "@/app/common/utils/queryClient";
-import { useGlobal } from "@/app/context/globalContext";
 import { LensDate, LensSkills, NFT, VerifiableCredential } from "@/app/types";
 import { toast } from "react-toastify";
 import { Credential } from "@/app/types";
+import { useAtom } from "jotai";
+import { userDataAtom } from "@/app/state/global";
 
 interface UpdateProfileDTO {
   username?: string;
@@ -74,7 +75,7 @@ interface UpdateEducationDTO {
 }
 
 export default function useProfileUpdate() {
-  const { setProfileLoading, setUserData } = useGlobal();
+  const [userData, setUserData] = useAtom(userDataAtom);
 
   const preprocessDate = (date: string) => {
     if (!date) return {};

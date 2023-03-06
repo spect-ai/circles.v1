@@ -4,7 +4,7 @@ import { useState } from "react";
 import { RocketOutlined } from "@ant-design/icons";
 import { useMutation, useQuery } from "react-query";
 import { generateColorHEX } from "@/app/common/utils/utils";
-import { useGlobal } from "@/app/context/globalContext";
+import {} from "@/app/context/globalContext";
 import mixpanel from "@/app/common/utils/mixpanel";
 import { UserType } from "@/app/types";
 import PrimaryButton from "@/app/common/components/PrimaryButton";

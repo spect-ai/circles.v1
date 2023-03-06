@@ -10,7 +10,6 @@ import Skeleton from "react-loading-skeleton";
 import { toast } from "react-toastify";
 import { useLocation } from "react-use";
 import styled from "styled-components";
-import { PopoverOption } from "../../Card/OptionPopover";
 import { useCircle } from "../../Circle/CircleContext";
 import AddField from "../AddField";
 import { useLocalCollection } from "../Context/LocalCollectionContext";
@@ -23,6 +22,7 @@ import { EyeOutlined, SendOutlined, ShareAltOutlined } from "@ant-design/icons";
 import { smartTrim } from "@/app/common/utils/utils";
 import FormSettings from "../Form/FormSettings";
 import WarnConnectWallet from "./WarnConnectWallet";
+import { PopoverOption } from "../../Circle/CircleSettingsModal/DiscordRoleMapping/RolePopover";
 
 export const IconButton = styled(Box)`
   cursor: pointer;

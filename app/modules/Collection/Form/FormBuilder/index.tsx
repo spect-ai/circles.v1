@@ -2,7 +2,6 @@
 import ClickableTag from "@/app/common/components/EditTag/ClickableTag";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { storeImage } from "@/app/common/utils/ipfs";
-import { useGlobal } from "@/app/context/globalContext";
 import { CoverImage, NameInput } from "@/app/modules/PublicForm";
 import { updateFormCollection } from "@/app/services/Collection";
 import { Avatar, Box, FileInput, IconPlusSmall, Stack } from "degen";
@@ -17,6 +16,8 @@ import mixpanel from "@/app/common/utils/mixpanel";
 import Editor from "@/app/common/components/Editor";
 import { useQuery } from "react-query";
 import { UserType } from "@/app/types";
+import { useAtom } from "jotai";
+import { connectedUserAtom } from "@/app/state/global";
 
 type Props = {
   fields: string[];
@@ -34,7 +35,8 @@ function FormBuilder({ fields }: Props) {
   const [cover, setCover] = useState(collection.formMetadata?.cover || "");
   const [logo, setLogo] = useState(collection.formMetadata?.logo || "");
 
-  const { connectedUser } = useGlobal();
+  const [connectedUser, setConnectedUser] = useAtom(connectedUserAtom);
+
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });

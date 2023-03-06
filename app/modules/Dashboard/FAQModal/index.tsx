@@ -3,8 +3,8 @@ import { Box, IconBookOpen, Stack } from "degen";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import SocialMedia from "@/app/common/components/SocialMedia";
 import { useAtom } from "jotai";
-import { scribeOpenAtom, scribeUrlAtom } from "@/pages/_app";
 import { Scribes } from "@/app/common/utils/constants";
+import { scribeOpenAtom, scribeUrlAtom } from "@/app/state/global";
 
 type Props = {
   handleClose: () => void;

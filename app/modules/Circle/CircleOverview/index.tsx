@@ -1,20 +1,16 @@
-import { useGlobal } from "@/app/context/globalContext";
-import useRoleGate from "@/app/services/RoleGate/useRoleGate";
-import { Box, Stack, Input, IconSearch } from "degen";
+import { Box, Stack } from "degen";
 import { AnimatePresence } from "framer-motion";
-import { matchSorter } from "match-sorter";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
-import BatchPay from "../../Project/BatchPay";
 import RetroModal from "../../Retro/RetroModal";
 import { useCircle } from "../CircleContext";
-import CircleMembers from "../CircleMembers";
 import InviteMemberModal from "../ContributorsModal/InviteMembersModal";
 import { FolderView } from "./FolderView";
 import Breadcrumbs from "@/app/common/components/Breadcrumbs";
-import Roles from "../RolesTab";
 import { Hidden } from "react-grid-system";
 import styled from "styled-components";
+import { useAtom } from "jotai";
+import { isSidebarExpandedAtom } from "@/app/state/global";
 
 interface Props {
   toggle: number;
@@ -70,16 +66,12 @@ export const Toggle = ({ toggle, setToggle }: Props) => {
 };
 
 export default function CircleDashboard() {
-  const { isSidebarExpanded, toggle, setToggle } = useGlobal();
+  const [isSidebarExpanded, setIsSidebarExpanded] = useAtom(
+    isSidebarExpandedAtom
+  );
   const router = useRouter();
   const { circle: cId, retroSlug } = router.query;
-  const {
-    circle,
-    setIsBatchPayOpen,
-    isBatchPayOpen,
-    retro,
-    navigationBreadcrumbs,
-  } = useCircle();
+  const { circle, navigationBreadcrumbs } = useCircle();
   const [isRetroOpen, setIsRetroOpen] = useState(false);
   const [filteredProjects, setFilteredProjects] = useState(circle?.projects);
   const [filteredCollections, setFilteredCollections] = useState(
@@ -113,9 +105,6 @@ export default function CircleDashboard() {
               void router.push(`/${cId}`);
             }}
           />
-        )}
-        {isBatchPayOpen && (
-          <BatchPay setIsOpen={setIsBatchPayOpen} retro={retro} />
         )}
       </AnimatePresence>
       <Box marginBottom="-4">

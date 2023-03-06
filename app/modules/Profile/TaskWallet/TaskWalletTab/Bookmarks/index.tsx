@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 import { Box, Avatar, Text, useTheme } from "degen";
-import { IconButton } from "@/app/modules/Project/ProjectHeading";
 import { StarFilled } from "@ant-design/icons";
 import { Card, GigInfo } from "../index";
 import { UserType } from "@/app/types";
 import { useQuery } from "react-query";
 import Link from "next/link";
+import { IconButton } from "../../../ProfilePage/Tabs/Kudos";
 
 const BookMarks = () => {
   const { mode } = useTheme();

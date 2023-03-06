@@ -4,9 +4,10 @@ import { motion } from "framer-motion";
 import { useRouter } from "next/router";
 import ExploreSidebar from "./ExploreSidebar";
 import CircleSidebar from "./CircleSidebar";
-import { useGlobal } from "@/app/context/globalContext";
 import ProfileButton from "../Sidebar/ProfileButton";
 import { Connect } from "../Sidebar/ProfileButton/ConnectButton";
+import { useAtom } from "jotai";
+import { connectedUserAtom } from "@/app/state/global";
 
 const slide = {
   hidden: {
@@ -35,7 +36,7 @@ const slide = {
 function ExtendedSidebar(): ReactElement {
   const router = useRouter();
   const { circle: cId } = router.query;
-  const { connectedUser } = useGlobal();
+  const [connectedUser, setConnectedUser] = useAtom(connectedUserAtom);
 
   return (
     <motion.div

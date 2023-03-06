@@ -17,7 +17,6 @@ import {
   getAllCredentials,
   getPassportScoreAndCredentials,
 } from "@/app/services/Credentials/AggregatedCredentials";
-import { useGlobal } from "@/app/context/globalContext";
 import { PassportStampIcons, PassportStampIconsLightMode } from "@/app/assets";
 import mixpanel from "@/app/common/utils/mixpanel";
 import Image from "next/image";
@@ -26,6 +25,8 @@ import DataActivity from "../Collection/Form/DataDrawer/DataActivity";
 import _ from "lodash";
 import { useLocation } from "react-use";
 import SocialMedia from "@/app/common/components/SocialMedia";
+import { connectedUserAtom, socketAtom } from "@/app/state/global";
+import { useAtom } from "jotai";
 
 function PublicForm() {
   const router = useRouter();
@@ -41,7 +42,8 @@ function PublicForm() {
     form?.formMetadata.canFillForm || false
   );
   const [stamps, setStamps] = useState([] as Stamp[]);
-  const { connectedUser, socket } = useGlobal();
+  const [socket, setSocket] = useAtom(socketAtom);
+  const [connectedUser, setConnectedUser] = useAtom(connectedUserAtom);
   const [memberDetails, setMemberDetails] = useState({} as any);
   const [currentScore, setCurrentScore] = useState(0);
   const [hasStamps, setHasStamps] = useState({} as any);

@@ -12,11 +12,11 @@ import { createTemplateFlow } from "@/app/services/Templates";
 import { useRouter } from "next/router";
 import RewardTokenOptions from "../../Collection/AddField/RewardTokenOptions";
 import { useAtom } from "jotai";
-import { scribeOpenAtom, scribeUrlAtom } from "@/pages/_app";
 import { Scribes } from "@/app/common/utils/constants";
 import { Space } from "@/app/modules/Collection/VotingModule";
 import { useQuery } from "@apollo/client";
 import { updateCircle } from "@/app/services/UpdateCircle";
+import { scribeOpenAtom, scribeUrlAtom } from "@/app/state/global";
 
 interface Props {
   handleClose: (close: boolean) => void;

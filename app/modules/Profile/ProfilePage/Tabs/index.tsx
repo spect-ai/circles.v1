@@ -9,8 +9,9 @@ import Kudos from "./Kudos";
 import Retro from "./Retro";
 import Experience from "./Experience";
 import Education from "./Education";
-import { useGlobal } from "@/app/context/globalContext";
 import Skills from "./Skills";
+import { useAtom } from "jotai";
+import { profileLoadingAtom, userDataAtom } from "@/app/state/global";
 
 export const Card = styled(Box)<{ mode: string }>`
   display: flex;
@@ -79,7 +80,8 @@ export const ScrollContainer = styled(Box)`
 
 const ProfileTabs = () => {
   const [tab, setProfileTab] = useState("Experience");
-  const { userData, profileLoading } = useGlobal();
+  const [userData, setUserData] = useAtom(userDataAtom);
+  const [profileLoading, setProfileLoading] = useAtom(profileLoadingAtom);
 
   return (
     <Box

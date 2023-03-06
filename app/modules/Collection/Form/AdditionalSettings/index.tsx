@@ -1,9 +1,10 @@
 import CheckBox from "@/app/common/components/Table/Checkbox";
-import { useGlobal } from "@/app/context/globalContext";
 import { useCircle } from "@/app/modules/Circle/CircleContext";
 import { updateFormCollection } from "@/app/services/Collection";
+import { connectedUserAtom } from "@/app/state/global";
 import { InfoCircleOutlined } from "@ant-design/icons";
 import { Box, Stack, Text } from "degen";
+import { useAtom } from "jotai";
 import { useEffect, useState } from "react";
 import { Tooltip } from "react-tippy";
 import { toast } from "react-toastify";
@@ -42,7 +43,7 @@ export function AdditionalSettings() {
   const { localCollection: collection, updateCollection } =
     useLocalCollection();
   const { circle } = useCircle();
-  const { connectedUser } = useGlobal();
+  const [connectedUser, setConnectedUser] = useAtom(connectedUserAtom);
 
   useEffect(() => {
     setMultipleResponsesAllowed(

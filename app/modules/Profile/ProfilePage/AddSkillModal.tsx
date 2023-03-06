@@ -1,6 +1,5 @@
 import Dropdown from "@/app/common/components/Dropdown";
 import Modal from "@/app/common/components/Modal";
-import { useGlobal } from "@/app/context/globalContext";
 import useProfileUpdate from "@/app/services/Profile/useProfileUpdate";
 import { Credential, LensSkills, Option } from "@/app/types";
 import { Box, Button, Input, Tag, Text } from "degen";
@@ -8,6 +7,8 @@ import { useEffect, useState } from "react";
 import styled from "styled-components";
 import LinkCredentialsModal from "./LinkCredentialsModal";
 import { skills as skillsList } from "@/app/common/utils/constants";
+import { useAtom } from "jotai";
+import { userDataAtom } from "@/app/state/global";
 
 type Props = {
   handleClose: () => void;
@@ -22,7 +23,7 @@ export default function AddSkillModal({
   skills,
   skillId,
 }: Props) {
-  const { userData } = useGlobal();
+  const [userData, setUserData] = useAtom(userDataAtom);
 
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState({} as Option);

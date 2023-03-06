@@ -1,6 +1,6 @@
 import { Box, Input, IconSearch, Stack } from "degen";
 import { useCircle } from "../CircleContext";
-import { useGlobal } from "@/app/context/globalContext";
+import {} from "@/app/context/globalContext";
 import Loader from "@/app/common/components/Loader";
 
 import { matchSorter } from "match-sorter";
@@ -14,6 +14,8 @@ import RoleCard from "./RolesCard";
 import { Row, Col, Hidden, Visible } from "react-grid-system";
 import { useRouter } from "next/router";
 import styled from "styled-components";
+import { isSidebarExpandedAtom } from "@/app/state/global";
+import { useAtom } from "jotai";
 
 const ScrollContainer = styled(Box)`
   overflow-y: auto;
@@ -29,7 +31,9 @@ function Roles() {
   const router = useRouter();
   const { circle: cId } = router.query;
   const { circle, loading, isLoading } = useCircle();
-  const { isSidebarExpanded } = useGlobal();
+  const [isSidebarExpanded, setIsSidebarExpanded] = useAtom(
+    isSidebarExpandedAtom
+  );
   const { canDo } = useRoleGate();
   const [circleRoles, setCircleRoles] = useState(circle?.roles || {});
   useEffect(() => {

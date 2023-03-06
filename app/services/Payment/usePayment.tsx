@@ -1,8 +1,8 @@
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { useGlobal } from "@/app/context/globalContext";
+import { connectedUserAtom } from "@/app/state/global";
 import { Registry } from "@/app/types";
 import { Stack } from "degen";
-import Link from "next/link";
+import { useAtom } from "jotai";
 import { useRouter } from "next/router";
 import { useQuery } from "react-query";
 import { toast } from "react-toastify";
@@ -39,7 +39,7 @@ export default function usePaymentGateway(
   const { address } = useAccount();
   const { chain } = useNetwork();
   const { switchNetworkAsync } = useSwitchNetwork();
-  const { connectedUser, signer } = useGlobal();
+  const [connectedUser, setConnectedUser] = useAtom(connectedUserAtom);
   const router = useRouter();
   const { circle: cId } = router.query;
   const { data: registry } = useQuery<Registry>(["registry", cId], {

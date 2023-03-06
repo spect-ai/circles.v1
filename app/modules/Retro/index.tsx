@@ -1,6 +1,7 @@
-import { useGlobal } from "@/app/context/globalContext";
+import { isSidebarExpandedAtom } from "@/app/state/global";
 import { Box, Stack, Text } from "degen";
 import { AnimatePresence } from "framer-motion";
+import { useAtom } from "jotai";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
 import { useCircle } from "../Circle/CircleContext";
@@ -9,7 +10,9 @@ import RetroRow from "./RetroRow";
 
 export default function RetroPage() {
   const { circle, setPage } = useCircle();
-  const { isSidebarExpanded } = useGlobal();
+  const [isSidebarExpanded, setIsSidebarExpanded] = useAtom(
+    isSidebarExpandedAtom
+  );
   const [isRetroOpen, setIsRetroOpen] = useState(false);
 
   const router = useRouter();

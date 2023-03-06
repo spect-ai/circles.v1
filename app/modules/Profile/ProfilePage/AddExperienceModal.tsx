@@ -2,7 +2,6 @@ import Dropdown from "@/app/common/components/Dropdown";
 import Editor from "@/app/common/components/Editor";
 import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { useGlobal } from "@/app/context/globalContext";
 import useProfileUpdate from "@/app/services/Profile/useProfileUpdate";
 import { Milestone, Option, Registry, VerifiableCredential } from "@/app/types";
 import { Box, Button, Input, Stack, Tag, Text, useTheme } from "degen";
@@ -11,6 +10,8 @@ import styled from "styled-components";
 import LinkCredentialsModal from "./LinkCredentialsModal";
 import { Credential } from "@/app/types";
 import CheckBox from "@/app/common/components/Table/Checkbox";
+import { useAtom } from "jotai";
+import { userDataAtom } from "@/app/state/global";
 
 type Props = {
   handleClose: () => void;
@@ -23,7 +24,8 @@ export default function AddExperienceModal({
   modalMode,
   experienceId,
 }: Props) {
-  const { userData } = useGlobal();
+  const [userData, setUserData] = useAtom(userDataAtom);
+
   const [role, setRole] = useState("");
   const [description, setDescription] = useState(
     experienceId || experienceId === 0

@@ -6,10 +6,11 @@ import { Box, Text, useTheme } from "degen";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import Tabs from "@/app/common/components/Tabs";
-import { useGlobal } from "@/app/context/globalContext";
 import { getCredentialsByAddressAndIssuer } from "@/app/services/Credentials/AggregatedCredentials";
 import { PassportStampIcons, PassportStampIconsLightMode } from "@/app/assets";
 import Image from "next/image";
+import { useAtom } from "jotai";
+import { userDataAtom } from "@/app/state/global";
 
 type Props = {
   credentials: Credential[];
@@ -40,7 +41,7 @@ export default function LinkCredentialsModal({
   const [normalizedSelectedCredentials, setNormalizedSelectedCredentials] =
     useState<Credential[]>(credentials ? credentials : []);
   const [loading, setLoading] = useState(false);
-  const { userData } = useGlobal();
+  const [userData, setUserData] = useAtom(userDataAtom);
   const { mode } = useTheme();
 
   console.log({ normalizedSelectedCredentials });

@@ -1,8 +1,8 @@
 import Popover from "@/app/common/components/Popover";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { useGlobal } from "@/app/context/globalContext";
 import useJoinCircle from "@/app/services/JoinCircle/useJoinCircle";
 import useExploreOnboarding from "@/app/services/Onboarding/useExploreOnboarding";
+import { connectedUserAtom, isSidebarExpandedAtom } from "@/app/state/global";
 import { BucketizedCircleType, CircleType } from "@/app/types";
 import {
   Box,
@@ -13,6 +13,7 @@ import {
   Text,
   useTheme,
 } from "degen";
+import { useAtom } from "jotai";
 import { matchSorter } from "match-sorter";
 import { useEffect, useState } from "react";
 import { Container, Row, Col } from "react-grid-system";
@@ -99,7 +100,8 @@ export default function Explore() {
       enabled: false,
     }
   );
-  const { connectedUser } = useGlobal();
+  const [connectedUser, setConnectedUser] = useAtom(connectedUserAtom);
+
   useJoinCircle();
   const { onboarded } = useExploreOnboarding();
 
@@ -107,7 +109,9 @@ export default function Explore() {
   const [joinableCircles, setJoinableCircles] = useState<CircleType[]>([]);
   const [claimableCircles, setClaimableCircles] = useState<CircleType[]>([]);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
-  const { setIsSidebarExpanded } = useGlobal();
+  const [isSidebarExpanded, setIsSidebarExpanded] = useAtom(
+    isSidebarExpandedAtom
+  );
   const { mode } = useTheme();
 
   useEffect(() => {

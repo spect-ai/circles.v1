@@ -2,7 +2,6 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { isEmail, isURL } from "@/app/common/utils/utils";
-import { useGlobal } from "@/app/context/globalContext";
 import {
   addData,
   getForm,
@@ -45,6 +44,8 @@ import {
   isEligibleToClaimSurveyToken,
 } from "@/app/services/SurveyProtocol";
 import { BigNumber } from "ethers";
+import { useAtom } from "jotai";
+import { connectedUserAtom } from "@/app/state/global";
 
 type Props = {
   form: FormType;
@@ -67,7 +68,8 @@ function FormFields({ form, setForm }: Props) {
   const [submitAnotherResponse, setSubmitAnotherResponse] = useState(false);
   const [kudos, setKudos] = useState({} as KudosType);
   const [poap, setPoap] = useState({} as POAPEventType);
-  const { connectedUser } = useGlobal();
+  const [connectedUser, setConnectedUser] = useAtom(connectedUserAtom);
+
   const [loading, setLoading] = useState(false);
   const [claimed, setClaimed] = useState(form.formMetadata.kudosClaimedByUser);
   const [surveyTokenClaimed, setSurveyTokenClaimed] = useState(false);

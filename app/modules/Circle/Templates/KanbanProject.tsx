@@ -5,8 +5,8 @@ import { useCircle } from "../CircleContext";
 import { createTemplateFlow } from "@/app/services/Templates";
 import RewardTokenOptions from "../../Collection/AddField/RewardTokenOptions";
 import { useAtom } from "jotai";
-import { scribeOpenAtom, scribeUrlAtom } from "@/pages/_app";
 import { Scribes } from "@/app/common/utils/constants";
+import { scribeOpenAtom, scribeUrlAtom } from "@/app/state/global";
 
 interface Props {
   handleClose: (close: boolean) => void;

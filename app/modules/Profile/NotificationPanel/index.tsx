@@ -1,9 +1,10 @@
 import Drawer from "@/app/common/components/Drawer";
 import { timeSince } from "@/app/common/utils/utils";
-import { useGlobal } from "@/app/context/globalContext";
 import { getNotifications } from "@/app/services/Notification";
+import { isProfilePanelExpandedAtom } from "@/app/state/global";
 import { Notification } from "@/app/types";
 import { Avatar, Box, Heading, Stack, Text } from "degen";
+import { useAtom } from "jotai";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { useScreenClass } from "react-grid-system";
@@ -12,7 +13,9 @@ import styled from "styled-components";
 import TaskWalletHeader from "../TaskWallet/TaskWalletHeader";
 
 export default function NotificationPanel() {
-  const { setIsProfilePanelExpanded } = useGlobal();
+  const [isProfilePanelExpanded, setIsProfilePanelExpanded] = useAtom(
+    isProfilePanelExpandedAtom
+  );
   const handleClose = () => setIsProfilePanelExpanded(false);
   const [tab, setTab] = useState(0);
   const [notifications, setnotifications] = useState<Notification[]>([]);

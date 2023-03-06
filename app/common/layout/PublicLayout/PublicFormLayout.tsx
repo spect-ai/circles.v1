@@ -5,10 +5,16 @@ import { AnimatePresence } from "framer-motion";
 import ExtendedSidebar from "../../../modules/ExtendedSidebar/ExtendedSidebar";
 import Sidebar from "@/app/modules/Sidebar";
 import styled from "styled-components";
-import { useGlobal } from "@/app/context/globalContext";
 import { useQuery } from "react-query";
 import { UserType } from "@/app/types";
 import { toast } from "react-toastify";
+import { useAtom } from "jotai";
+import {
+  connectedUserAtom,
+  isSidebarExpandedAtom,
+  socketAtom,
+} from "@/app/state/global";
+import { io } from "socket.io-client";
 
 type PublicLayoutProps = {
   children: ReactNodeNoStrings;
@@ -48,13 +54,11 @@ const getUser = async () => {
 
 function PublicLayout(props: PublicLayoutProps) {
   const { children } = props;
-  const {
-    isSidebarExpanded,
-    connectedUser,
-    connectUser,
-    setIsSidebarExpanded,
-  } = useGlobal();
-
+  const [socket, setSocket] = useAtom(socketAtom);
+  const [connectedUser, setConnectedUser] = useAtom(connectedUserAtom);
+  const [isSidebarExpanded, setIsSidebarExpanded] = useAtom(
+    isSidebarExpandedAtom
+  );
   // eslint-disable-next-line @typescript-eslint/unbound-method
   const { setMode } = useTheme();
 
@@ -68,7 +72,7 @@ function PublicLayout(props: PublicLayoutProps) {
         .then((res) => {
           const data = res.data;
           if (data?.id) {
-            connectUser(data.id);
+            setConnectedUser(data.id);
             console.log("CONNECT USER");
           }
         })
@@ -103,6 +107,27 @@ function PublicLayout(props: PublicLayoutProps) {
   useEffect(() => {
     isSidebarExpanded && setIsSidebarExpanded(false);
   }, [setIsSidebarExpanded]);
+
+  useEffect(() => {
+    const socket = io(process.env.API_HOST || "");
+    socket.on("connect", function () {
+      setSocket(socket);
+    });
+
+    socket.on("disconnect", function () {
+      console.log("Disconnected");
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (socket?.connected && connectedUser) {
+      socket.emit("join", connectedUser);
+    }
+  }, [connectedUser, socket]);
 
   return (
     <DesktopContainer backgroundColor="backgroundSecondary" id="public-layout">

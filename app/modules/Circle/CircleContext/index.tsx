@@ -1,5 +1,5 @@
 import queryClient from "@/app/common/utils/queryClient";
-import { useGlobal } from "@/app/context/globalContext";
+import { socketAtom } from "@/app/state/global";
 import {
   CircleType,
   MemberDetails,
@@ -7,6 +7,7 @@ import {
   RetroType,
   UserType,
 } from "@/app/types";
+import { useAtom } from "jotai";
 import mixpanel from "mixpanel-browser";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
@@ -54,7 +55,7 @@ export function useProviderCircleContext() {
   const [mintkudosCommunityId, setMintkudosCommunityId] = useState("");
   const [loading, setLoading] = useState(false);
   const [isBatchPayOpen, setIsBatchPayOpen] = useState(false);
-  const { socket } = useGlobal();
+  const [socket, setSocket] = useAtom(socketAtom);
 
   const {
     data: circle,

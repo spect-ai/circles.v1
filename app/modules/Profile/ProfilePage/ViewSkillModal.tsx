@@ -1,11 +1,12 @@
 import { PassportStampIcons, PassportStampIconsLightMode } from "@/app/assets";
 import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { useGlobal } from "@/app/context/globalContext";
 import useProfileUpdate from "@/app/services/Profile/useProfileUpdate";
+import { userDataAtom } from "@/app/state/global";
 import { Credential, UserType, VerifiableCredential } from "@/app/types";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import { Box, Text, useTheme } from "degen";
+import { useAtom } from "jotai";
 import Image from "next/image";
 import router from "next/router";
 import { useEffect, useState } from "react";
@@ -24,7 +25,8 @@ export default function ViewSkillModal({
   skillId,
   setEditSkill,
 }: Props) {
-  const { userData } = useGlobal();
+  const [userData, setUserData] = useAtom(userDataAtom);
+
   const [title, setTitle] = useState("");
   const [linkedCredentials, setLinkedCredentials] = useState<Credential[]>([]);
   const { updateProfile } = useProfileUpdate();
@@ -189,7 +191,7 @@ export default function ViewSkillModal({
                 onClick={async () => {
                   handleClose();
                   const newSkills = userData.skillsV2.filter(
-                    (skill, index) => index !== skillId
+                    (skill: any, index: any) => index !== skillId
                   );
                   await updateProfile({
                     skillsV2: newSkills,

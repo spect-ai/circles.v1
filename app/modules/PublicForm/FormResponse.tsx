@@ -19,9 +19,10 @@ import mixpanel from "@/app/common/utils/mixpanel";
 import { useQuery } from "react-query";
 import { ethers } from "ethers";
 import { PassportStampIcons } from "@/app/assets";
-import { useGlobal } from "@/app/context/globalContext";
 import { useRouter } from "next/router";
 import _ from "lodash";
+import { useAtom } from "jotai";
+import { connectedUserAtom, socketAtom } from "@/app/state/global";
 
 type Props = {
   form: FormType;
@@ -91,7 +92,8 @@ export default function FormResponse({
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
-  const { connectedUser, socket } = useGlobal();
+  const [socket, setSocket] = useAtom(socketAtom);
+  const [connectedUser, setConnectedUser] = useAtom(connectedUserAtom);
 
   const [surveyTokenClaimTransactionHash, setSurveyTokenClaimTransactionHash] =
     useState(
@@ -99,7 +101,7 @@ export default function FormResponse({
     );
 
   useEffect(() => {
-    socket.on(
+    socket?.on(
       `${formId}:responseAddedOnChain`,
       _.debounce(async (event: { userAddress: string }) => {
         console.log({ event, connectedUser, currentUser });

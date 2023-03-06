@@ -16,13 +16,14 @@ import {
   TwitterOutlined,
 } from "@ant-design/icons";
 import { UserType } from "@/app/types";
-import { useGlobal } from "@/app/context/globalContext";
 import { useQuery } from "react-query";
 import React, { useEffect, useState } from "react";
 import ProfileModal from "../../ProfileSettings";
 import { AnimatePresence } from "framer-motion";
 import { smartTrim } from "@/app/common/utils/utils";
 import LensImportModal from "../LensImportModal";
+import { useAtom } from "jotai";
+import { userDataAtom } from "@/app/state/global";
 
 const Profile = styled(Box)<{ mode: string }>`
   @media (max-width: 768px) {
@@ -81,12 +82,11 @@ const Footer = styled(Box)`
 
 const ProfileCard = () => {
   const { mode } = useTheme();
-  const { isSidebarExpanded } = useGlobal();
   const [isOpen, setIsOpen] = useState(false);
   const [isLensProfileSelectModalOpen, setIsLensProfileSelectModalOpen] =
     useState(false);
   const [loading, setLoading] = useState(false);
-  const { userData: user } = useGlobal();
+  const [user, setUserData] = useAtom(userDataAtom);
 
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
@@ -205,7 +205,7 @@ const ProfileCard = () => {
         </InfoBox>
         <Text variant="label"> Skills </Text>
         <InfoBox gap="0.5" paddingTop="1">
-          {user?.skillsV2?.map((skill, index) => (
+          {user?.skillsV2?.map((skill: any, index: any) => (
             <Tag as="span" tone="accent" hover size="small" key={index}>
               {skill.title}
             </Tag>

@@ -9,7 +9,6 @@ import {
   Registry,
 } from "@/app/types";
 import { AbiCoder } from "ethers/lib/utils";
-import { useGlobal } from "@/app/context/globalContext";
 import { fetchSigner } from "@wagmi/core";
 
 export default function useDistributor() {

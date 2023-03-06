@@ -4,7 +4,6 @@ import MetaHead from "@/app/common/seo/MetaHead/MetaHead";
 import type { NextPage } from "next";
 import ProfileCard from "@/app/modules/Profile/ProfilePage/ProfileCard";
 import ProfileTabs from "@/app/modules/Profile/ProfilePage/Tabs";
-import { useGlobal } from "@/app/context/globalContext";
 import { useRouter } from "next/router";
 import { UserType } from "@/app/types";
 import { useQuery } from "react-query";
@@ -17,19 +16,26 @@ import { AnimatePresence } from "framer-motion";
 import FAQModal from "@/app/modules/Dashboard/FAQModal";
 import { QuestionCircleOutlined } from "@ant-design/icons";
 import Help from "@/app/common/components/Help";
+import { useAtom } from "jotai";
+import {
+  connectedUserAtom,
+  isProfilePanelExpandedAtom,
+  isSidebarExpandedAtom,
+  userDataAtom,
+} from "@/app/state/global";
 
 const ProfilePage: NextPage = () => {
   const router = useRouter();
   const [faqOpen, setFaqOpen] = useState(false);
   const username = router.query.user;
-  const {
-    isProfilePanelExpanded,
-    setIsSidebarExpanded,
-    connectedUser,
-    tab,
-    setUserData,
-    userData,
-  } = useGlobal();
+  const [connectedUser, setConnectedUser] = useAtom(connectedUserAtom);
+  const [isSidebarExpanded, setIsSidebarExpanded] = useAtom(
+    isSidebarExpandedAtom
+  );
+  const [isProfilePanelExpanded, setIsProfilePanelExpanded] = useAtom(
+    isProfilePanelExpandedAtom
+  );
+  const [userData, setUserData] = useAtom(userDataAtom);
 
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,

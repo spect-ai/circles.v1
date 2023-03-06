@@ -7,7 +7,6 @@ import Image from "next/image";
 import { Container, Row, Col } from "react-grid-system";
 import OpenseaIcon from "@/app/assets/icons/openseaLogo.svg";
 import RaribleIcon from "@/app/assets/icons/raribleLogo.svg";
-import { IconButton } from "../../../Project/ProjectHeading";
 import { ScrollContainer } from "./index";
 
 const KudoContainer = styled(Box)<{ mode: string }>`
@@ -133,5 +132,12 @@ const Kudos = ({ userData }: { userData: UserType }) => {
     </ScrollContainer>
   );
 };
+
+export const IconButton = styled(Box)`
+  cursor: pointer;
+  &:hover {
+    color: rgb(191, 90, 242, 1);
+  }
+`;
 
 export default memo(Kudos);

@@ -6,7 +6,6 @@ import { useRouter } from "next/router";
 import React, { memo, useState } from "react";
 import { useQuery } from "react-query";
 import SettingsModal from "../Circle/CircleSettingsModal";
-import { useGlobal } from "@/app/context/globalContext";
 import mixpanel from "@/app/common/utils/mixpanel";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 

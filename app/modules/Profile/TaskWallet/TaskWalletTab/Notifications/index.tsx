@@ -5,7 +5,6 @@ import Link from "next/link";
 import styled from "styled-components";
 import { useQuery } from "react-query";
 import { updateNotificationStatus } from "@/app/services/ProfileNotifications";
-import { useGlobal } from "@/app/context/globalContext";
 import { ScrollContainer } from "../index";
 import ReactPaginate from "react-paginate";
 
@@ -55,12 +54,10 @@ interface NotifProps {
 }
 
 const Notifications = ({ notifIds }: NotifProps) => {
-  const { setNotifSeen } = useGlobal();
   const { mode } = useTheme();
   const [pageCount, setPageCount] = useState(0);
   const [itemOffset, setItemOffset] = useState(0);
   const [endOffset, setEndOffset] = useState(0);
-  setNotifSeen(true);
 
   const { data: userData } = useQuery<UserType>("getMyUser", {
     enabled: false,

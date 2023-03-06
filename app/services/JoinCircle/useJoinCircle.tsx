@@ -1,4 +1,5 @@
-import { useGlobal } from "@/app/context/globalContext";
+import { connectedUserAtom } from "@/app/state/global";
+import { useAtom } from "jotai";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
@@ -7,7 +8,7 @@ import { joinCircleFromInvite } from ".";
 export default function useJoinCircle() {
   const router = useRouter();
   const { inviteCode, circleId } = router.query;
-  const { connectedUser } = useGlobal();
+  const [connectedUser, setConnectedUser] = useAtom(connectedUserAtom);
 
   useEffect(() => {
     if (inviteCode && connectedUser) {

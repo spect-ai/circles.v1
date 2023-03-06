@@ -1,6 +1,7 @@
 import queryClient from "@/app/common/utils/queryClient";
-import { useGlobal } from "@/app/context/globalContext";
+import { connectedUserAtom, socketAtom } from "@/app/state/global";
 import { CollectionType, Property } from "@/app/types";
+import { useAtom } from "jotai";
 import _ from "lodash";
 import { useRouter } from "next/router";
 import React, { createContext, useContext, useEffect, useState } from "react";
@@ -67,7 +68,8 @@ export function useProviderLocalCollection() {
   const [localCollection, setLocalCollection] = useState({} as CollectionType);
   const [error, setError] = useState(false);
   const [view, setView] = useState(0);
-  const { socket, connectedUser } = useGlobal();
+  const [socket, setSocket] = useAtom(socketAtom);
+  const [connectedUser, setConnectedUser] = useAtom(connectedUserAtom);
   const [projectViewId, setProjectViewId] = useState("");
   const [searchFilter, setSearchFilter] = useState("");
   const [showMyTasks, setShowMyTasks] = useState(false);

@@ -36,7 +36,6 @@ import "react-tippy/dist/tippy.css";
 import { AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
 import queryClient from "@/app/common/utils/queryClient";
-import GlobalContextProvider, { useGlobal } from "@/app/context/globalContext";
 import { useEffect, useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import ErrorFallBack from "@/app/common/components/Error";
@@ -62,97 +61,14 @@ import { flags } from "@/app/common/utils/featureFlags";
 import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
 import { useLocation } from "react-use";
 import ScribeEmbed from "@/app/common/components/Help/ScribeEmbed";
+import {
+  authStatusAtom,
+  connectedUserAtom,
+  scribeOpenAtom,
+  scribeUrlAtom,
+} from "@/app/state/global";
 
 const isProd = process.env.NODE_ENV === "production";
-
-const chainsObj = {
-  fuji: {
-    id: 43113,
-    name: "Fuji",
-    network: "fuji",
-    nativeCurrency: {
-      decimals: 18,
-      name: "Avalanche",
-      symbol: "AVAX",
-    },
-    rpcUrls: {
-      default: "https://api.avax-test.network/ext/bc/C/rpc",
-    },
-    blockExplorers: {
-      etherscan: { name: "SnowTrace", url: "https://testnet.snowtrace.io/" },
-      default: { name: "SnowTrace", url: "https://testnet.snowtrace.io/" },
-    },
-    contracts: {
-      multicall3: {
-        address: "0xca11bde05977b3631167028862be2a173976ca11",
-        blockCreated: 11907934,
-      },
-    },
-  },
-  avalanche: {
-    id: 43114,
-    name: "Avalanche",
-    network: "avalanche",
-    nativeCurrency: {
-      decimals: 18,
-      name: "Avalanche",
-      symbol: "AVAX",
-    },
-    rpcUrls: {
-      default: "https://api.avax.network/ext/bc/C/rpc",
-    },
-    blockExplorers: {
-      etherscan: { name: "SnowTrace", url: "https://snowtrace.io" },
-      default: { name: "SnowTrace", url: "https://snowtrace.io" },
-    },
-    contracts: {
-      multicall3: {
-        address: "0xca11bde05977b3631167028862be2a173976ca11",
-        blockCreated: 11907934,
-      },
-    },
-  },
-  bsc: {
-    id: 56,
-    name: "Binance Smart Chain",
-    network: "bsc",
-    nativeCurrency: {
-      decimals: 18,
-      name: "BNB",
-      symbol: "BNB",
-    },
-    rpcUrls: {
-      default: "https://rpc.ankr.com/bsc",
-    },
-    blockExplorers: {
-      etherscan: { name: "BscScan", url: "https://bscscan.com" },
-      default: { name: "BscScan", url: "https://bscscan.com" },
-    },
-    contracts: {
-      multicall3: {
-        address: "0xca11bde05977b3631167028862be2a173976ca11",
-        blockCreated: 15921452,
-      },
-    },
-  },
-  gnosis: {
-    id: 100,
-    name: "Gnosis",
-    network: "Gnosis",
-    nativeCurrency: {
-      decimals: 18,
-      name: "xDAI",
-      symbol: "xDAI",
-    },
-    rpcUrls: {
-      default: "https://rpc.gnosischain.com",
-    },
-    blockExplorers: {
-      etherscan: { name: "Gnosis Scan", url: "https://gnosisscan.io/" },
-      default: { name: "Gnosis Scan", url: "https://gnosisscan.io/" },
-    },
-  },
-};
 
 const { chains, provider } = configureChains(
   [
@@ -185,19 +101,13 @@ const wagmiClient = createClient({
   provider,
 });
 
-export const authStatusAtom =
-  atom<"loading" | "authenticated" | "unauthenticated">("loading");
-
-export const scribeOpenAtom = atom(false);
-export const scribeUrlAtom = atom("");
-
 function MyApp({ Component, pageProps }: AppProps) {
   const router = useRouter();
   const url = `https:/circles.spect.network/${router.route}`;
 
-  const { connectUser } = useGlobal();
   const [isScribeOpen, setIsScribeOpen] = useAtom(scribeOpenAtom);
   const [scribeUrl, setScribeUrl] = useAtom(scribeUrlAtom);
+  const [connectedUser, setConnectedUser] = useAtom(connectedUserAtom);
 
   const [authenticationStatus, setAuthenticationStatus] =
     useAtom(authStatusAtom);
@@ -225,19 +135,22 @@ function MyApp({ Component, pageProps }: AppProps) {
       return message.prepareMessage();
     },
     verify: async ({ message, signature }) => {
-      const verifyRes = await fetch(`${process.env.API_HOST}/auth/connect`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message, signature }),
-        credentials: "include",
-      });
+      const verifyRes: any = await fetch(
+        `${process.env.API_HOST}/auth/connect`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message, signature }),
+          credentials: "include",
+        }
+      );
       const res: UserType = await verifyRes.json();
       setAuthenticationStatus(
         verifyRes.ok ? "authenticated" : "unauthenticated"
       );
       queryClient.setQueryData("getMyUser", res);
       console.log("connect user", res.username);
-      connectUser(res.id);
+      setConnectedUser(res.id);
       process.env.NODE_ENV === "production" &&
         mixpanel.track("User Connected", {
           user: res.username,
@@ -285,7 +198,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         if (user.ethAddress) {
           queryClient.setQueryData("getMyUser", user);
           console.log("CONNECT USER");
-          connectUser && connectUser(user.id);
+          setConnectedUser(user.id);
         }
       } catch (e) {
         console.log({ e });
@@ -307,27 +220,25 @@ function MyApp({ Component, pageProps }: AppProps) {
           modalSize={"compact"}
         >
           <FlagsProvider value={flags}>
-            <GlobalContextProvider>
-              <ThemeProvider defaultAccent="purple" defaultMode="dark">
-                <QueryClientProvider client={queryClient}>
-                  <Hydrate state={pageProps}>
-                    <ErrorBoundary FallbackComponent={ErrorFallBack}>
-                      <ApolloProvider client={client}>
-                        <Component {...pageProps} canonical={url} key={url} />
-                        <AnimatePresence>
-                          {isScribeOpen && (
-                            <ScribeEmbed
-                              handleClose={() => setIsScribeOpen(false)}
-                              src={scribeUrl}
-                            />
-                          )}
-                        </AnimatePresence>
-                      </ApolloProvider>
-                    </ErrorBoundary>
-                  </Hydrate>
-                </QueryClientProvider>
-              </ThemeProvider>
-            </GlobalContextProvider>
+            <ThemeProvider defaultAccent="purple" defaultMode="dark">
+              <QueryClientProvider client={queryClient}>
+                <Hydrate state={pageProps}>
+                  <ErrorBoundary FallbackComponent={ErrorFallBack}>
+                    <ApolloProvider client={client}>
+                      <Component {...pageProps} canonical={url} key={url} />
+                      <AnimatePresence>
+                        {isScribeOpen && (
+                          <ScribeEmbed
+                            handleClose={() => setIsScribeOpen(false)}
+                            src={scribeUrl}
+                          />
+                        )}
+                      </AnimatePresence>
+                    </ApolloProvider>
+                  </ErrorBoundary>
+                </Hydrate>
+              </QueryClientProvider>
+            </ThemeProvider>
           </FlagsProvider>
         </RainbowKitProvider>
       </RainbowKitAuthenticationProvider>

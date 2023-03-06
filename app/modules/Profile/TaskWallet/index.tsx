@@ -1,5 +1,4 @@
 import { motion } from "framer-motion";
-import { useGlobal } from "@/app/context/globalContext";
 import { Box, Spinner } from "degen";
 import TaskWalletTabs from "./TaskWalletTab/index";
 import { useTheme } from "degen";
@@ -7,13 +6,17 @@ import { useEffect } from "react";
 import { UserType } from "@/app/types";
 import { useQuery } from "react-query";
 import TaskWalletHeader from "./TaskWalletHeader/index";
+import { useAtom } from "jotai";
+import {
+  isProfilePanelExpandedAtom,
+  quickProfileUserAtom,
+} from "@/app/state/global";
 
 const TaskWallet = ({ tab }: { tab: string }) => {
-  const {
-    isProfilePanelExpanded,
-    setIsProfilePanelExpanded,
-    quickProfileUser,
-  } = useGlobal();
+  const [isProfilePanelExpanded, setIsProfilePanelExpanded] = useAtom(
+    isProfilePanelExpandedAtom
+  );
+  const [quickProfileUser, setQuickProfileUser] = useAtom(quickProfileUserAtom);
   const { mode } = useTheme();
 
   const {
