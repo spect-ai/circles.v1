@@ -76,23 +76,7 @@ export function BasicInfo() {
           md: "horizontal",
         }}
       >
-        {!currentUser?.discordUsername && (
-          <ConnectDiscordButton state={router.asPath} width="full"/>
-        )}
-        {currentUser?.discordUsername && (
-          <Button
-            disabled
-            width="full"
-            size="small"
-            prefix={
-              <Box marginTop="1">
-                <DiscordIcon />
-              </Box>
-            }
-          >
-            Discord Connected
-          </Button>
-        )}
+        <ConnectDiscordButton state={router.asPath} width="full" />
         {!currentUser?.githubId && (
           <Link
             href={`https://github.com/login/oauth/authorize?client_id=4403e769e4d52b24eeab`}

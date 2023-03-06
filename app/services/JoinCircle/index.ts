@@ -121,6 +121,7 @@ export const joinCirclesFromDiscord = async (
     toast("You have joined circles successfully", {
       theme: "dark",
     });
+    return await res.json();
   } else {
     // toast.error(
     //   "Something went wrong, please ensure you have the required  Discord role"
