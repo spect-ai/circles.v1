@@ -92,7 +92,6 @@ export default function CircleIntegrations() {
               }}
             >
               <PrimaryButton
-                disabled={!!circle?.discordGuildId}
                 icon={
                   <Box marginTop="1">
                     <DiscordIcon />
