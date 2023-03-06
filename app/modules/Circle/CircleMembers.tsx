@@ -11,7 +11,7 @@ import { Tooltip } from "react-tippy";
 import { toast } from "react-toastify";
 import { useCircle } from "./CircleContext";
 import InviteMemberModal from "./ContributorsModal/InviteMembersModal";
-import ContributorTable from "./ContributorTable";
+// import ContributorTable from "./ContributorTable";
 
 function CircleMembers() {
   const { circle, memberDetails, setCircleData, fetchMemberDetails } =
@@ -105,7 +105,7 @@ function CircleMembers() {
           </Box>
         )}
       </Stack>
-      <ContributorTable filteredMembers={filteredMembers} />
+      {/* <ContributorTable filteredMembers={filteredMembers} /> */}
     </Stack>
   );
 }

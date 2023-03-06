@@ -1,7 +1,7 @@
 import Editor from "@/app/common/components/Editor";
 import Modal from "@/app/common/components/Modal";
 import CheckBox from "@/app/common/components/Table/Checkbox";
-import {} from "@/app/context/globalContext";
+
 import useProfileUpdate from "@/app/services/Profile/useProfileUpdate";
 import { userDataAtom } from "@/app/state/global";
 import { Credential } from "@/app/types";

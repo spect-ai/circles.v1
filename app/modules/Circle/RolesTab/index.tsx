@@ -1,6 +1,5 @@
 import { Box, Input, IconSearch, Stack } from "degen";
 import { useCircle } from "../CircleContext";
-import {} from "@/app/context/globalContext";
 import Loader from "@/app/common/components/Loader";
 
 import { matchSorter } from "match-sorter";

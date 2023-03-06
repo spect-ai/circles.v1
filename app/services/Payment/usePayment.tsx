@@ -7,7 +7,7 @@ import { useRouter } from "next/router";
 import { useQuery } from "react-query";
 import { toast } from "react-toastify";
 import { useAccount, useNetwork, useSwitchNetwork } from "wagmi";
-import { biconomyPayment } from "../Biconomy";
+// import { biconomyPayment } from "../Biconomy";
 import { gnosisPayment } from "../Gnosis";
 import useDistributor from "./useDistributor";
 import useERC20 from "./useERC20";
@@ -218,55 +218,55 @@ export default function usePaymentGateway(
     return false;
   }
 
-  async function payGasless({
-    paymentType,
-    batchPayType,
-    chainId,
-    amounts,
-    userAddresses,
-    tokenAddresses,
-    cardIds,
-    circleId,
-    circleRegistry,
-  }: BatchPayParams): Promise<boolean> {
-    if (paymentType === "tokens" && (registry || circleRegistry)) {
-      console.log({ tokenAddresses });
-      const {
-        filteredTokenAddresses,
-        filteredRecipients,
-        valuesInWei,
-        id,
-        overrides,
-      } = await distributeTokens({
-        contributors: userAddresses,
-        values: amounts,
-        chainId,
-        type: batchPayType,
-        cardIds,
-        circleId,
-        paymentMethod: "gasless",
-        callerId: connectedUser,
-        tokenAddresses,
-      });
-      console.log({ filteredTokenAddresses });
-      const addr = circleRegistry
-        ? circleRegistry[chainId].distributorAddress
-        : registry && registry[chainId].distributorAddress;
-      await biconomyPayment(address || "", addr as string, {
-        filteredTokenAddresses,
-        filteredRecipients,
-        valuesInWei,
-        id,
-        overrides,
-      });
-      toast.success("Transaction sent");
-    }
-    return false;
-  }
+  // async function payGasless({
+  //   paymentType,
+  //   batchPayType,
+  //   chainId,
+  //   amounts,
+  //   userAddresses,
+  //   tokenAddresses,
+  //   cardIds,
+  //   circleId,
+  //   circleRegistry,
+  // }: BatchPayParams): Promise<boolean> {
+  //   if (paymentType === "tokens" && (registry || circleRegistry)) {
+  //     console.log({ tokenAddresses });
+  //     const {
+  //       filteredTokenAddresses,
+  //       filteredRecipients,
+  //       valuesInWei,
+  //       id,
+  //       overrides,
+  //     } = await distributeTokens({
+  //       contributors: userAddresses,
+  //       values: amounts,
+  //       chainId,
+  //       type: batchPayType,
+  //       cardIds,
+  //       circleId,
+  //       paymentMethod: "gasless",
+  //       callerId: connectedUser,
+  //       tokenAddresses,
+  //     });
+  //     console.log({ filteredTokenAddresses });
+  //     const addr = circleRegistry
+  //       ? circleRegistry[chainId].distributorAddress
+  //       : registry && registry[chainId].distributorAddress;
+  //     await biconomyPayment(address || "", addr as string, {
+  //       filteredTokenAddresses,
+  //       filteredRecipients,
+  //       valuesInWei,
+  //       id,
+  //       overrides,
+  //     });
+  //     toast.success("Transaction sent");
+  //   }
+  //   return false;
+  // }
 
   return {
     batchPay,
     payUsingGnosis,
-    payGasless,
+    // payGasless,
   };
 }
