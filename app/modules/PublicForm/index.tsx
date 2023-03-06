@@ -27,6 +27,7 @@ import { useLocation } from "react-use";
 import SocialMedia from "@/app/common/components/SocialMedia";
 import { connectedUserAtom, socketAtom } from "@/app/state/global";
 import { useAtom } from "jotai";
+import { SkeletonLoader } from "./SkeletonLoader";
 
 function PublicForm() {
   const router = useRouter();
@@ -142,11 +143,6 @@ function PublicForm() {
       })();
     }
   }, [form, currentUser]);
-
-  if (loading) {
-    return <Loader loading text="Fetching form..." />;
-  }
-
   return (
     <ScrollContainer
       backgroundColor={
@@ -169,180 +165,124 @@ function PublicForm() {
           backgroundColor="accentSecondary"
         />
       )}
-      {form && (
-        <Container embed={route === "embed"}>
-          <FormContainer
-            backgroundColor={route === "embed" ? "transparent" : "background"}
-            borderRadius={route === "embed" ? "none" : "2xLarge"}
-            style={{
-              boxShadow: `0rem 0.2rem 0.5rem ${
-                mode === "dark" ? "rgba(0, 0, 0, 0.25)" : "rgba(0, 0, 0, 0.1)"
-              }`,
-            }}
-          >
-            <Box width="full" padding="4">
-              <Stack space="2">
-                {form.formMetadata.logo && (
-                  <Avatar src={form.formMetadata.logo} label="" size="20" />
-                )}
-                <NameInput
-                  autoFocus
-                  value={form.name}
-                  disabled
-                  rows={Math.floor(form.name?.length / 20) + 1}
-                />
-                {form.description && (
-                  <Editor value={form.description} isDirty={true} disabled />
-                )}
-              </Stack>
-            </Box>
-            {!form.formMetadata.active && (
+      <Container embed={route === "embed"}>
+        <FormContainer
+          backgroundColor={route === "embed" ? "transparent" : "background"}
+          borderRadius={route === "embed" ? "none" : "2xLarge"}
+          style={{
+            boxShadow: `0rem 0.2rem 0.5rem ${
+              mode === "dark" ? "rgba(0, 0, 0, 0.25)" : "rgba(0, 0, 0, 0.1)"
+            }`,
+          }}
+        >
+          {(loading || !form) && <SkeletonLoader />}
+          {!loading && form && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
+            >
               <Box width="full" padding="4">
-                <Text variant="large" weight="semiBold">
-                  This form is not active
-                </Text>
+                <Stack space="2">
+                  {form.formMetadata.logo && (
+                    <Avatar src={form.formMetadata.logo} label="" size="20" />
+                  )}
+                  <NameInput
+                    autoFocus
+                    value={form.name}
+                    disabled
+                    rows={Math.floor(form.name?.length / 20) + 1}
+                  />
+                  {form.description && (
+                    <Editor value={form.description} isDirty={true} disabled />
+                  )}
+                </Stack>
               </Box>
-            )}
-            {(form.formMetadata.walletConnectionRequired
-              ? currentUser?.id
-              : true) &&
-              canFillForm && (
-                <motion.div
-                  className="box"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                >
-                  <FormFields form={form} setForm={setForm} />
-                </motion.div>
+              {!form.formMetadata.active && (
+                <Box width="full" padding="4">
+                  <Text variant="large" weight="semiBold">
+                    This form is not active
+                  </Text>
+                </Box>
               )}
-            {form.formMetadata.walletConnectionRequired && !currentUser?.id && (
-              <Box
-                display="flex"
-                flexDirection="column"
-                padding="4"
-                marginTop="4"
-                gap="4"
-              >
-                {form.formMetadata.formRoleGating &&
-                  form.formMetadata.formRoleGating.length > 0 && (
+              {(form.formMetadata.walletConnectionRequired
+                ? currentUser?.id
+                : true) &&
+                canFillForm && <FormFields form={form} setForm={setForm} />}
+              {form.formMetadata.walletConnectionRequired && !currentUser?.id && (
+                <Box
+                  display="flex"
+                  flexDirection="column"
+                  padding="4"
+                  marginTop="4"
+                  gap="4"
+                >
+                  {form.formMetadata.formRoleGating &&
+                    form.formMetadata.formRoleGating.length > 0 && (
+                      <Text
+                        weight="semiBold"
+                        variant="large"
+                        color="textPrimary"
+                      >
+                        This form is role gated
+                      </Text>
+                    )}
+                  {form.formMetadata.mintkudosTokenId && (
                     <Text weight="semiBold" variant="large" color="textPrimary">
-                      This form is role gated
+                      This form distributes soulbound tokens to responders
                     </Text>
                   )}
-                {form.formMetadata.mintkudosTokenId && (
+                  {form.formMetadata.surveyTokenId && (
+                    <Text weight="semiBold" variant="large" color="textPrimary">
+                      This form distributes erc20 tokens to responders
+                    </Text>
+                  )}
+                  {form.formMetadata.sybilProtectionEnabled && (
+                    <Text weight="semiBold" variant="large" color="textPrimary">
+                      This form is Sybil protected
+                    </Text>
+                  )}
+                  {form.formMetadata.poapEventId && (
+                    <Text weight="semiBold" variant="large" color="textPrimary">
+                      This form distributes POAP tokens to responders
+                    </Text>
+                  )}
                   <Text weight="semiBold" variant="large" color="textPrimary">
-                    This form distributes soulbound tokens to responders
+                    This form requires you to connect your wallet
                   </Text>
-                )}
-                {form.formMetadata.surveyTokenId && (
-                  <Text weight="semiBold" variant="large" color="textPrimary">
-                    This form distributes erc20 tokens to responders
-                  </Text>
-                )}
-                {form.formMetadata.sybilProtectionEnabled && (
-                  <Text weight="semiBold" variant="large" color="textPrimary">
-                    This form is Sybil protected
-                  </Text>
-                )}
-                {form.formMetadata.poapEventId && (
-                  <Text weight="semiBold" variant="large" color="textPrimary">
-                    This form distributes POAP tokens to responders
-                  </Text>
-                )}
-                <Text weight="semiBold" variant="large" color="textPrimary">
-                  This form requires you to connect your wallet
-                </Text>
-                <Box
-                  width={{
-                    xs: "full",
-                    sm: "full",
-                    md: "1/4",
-                  }}
-                >
-                  <PrimaryButton
-                    onClick={() => {
-                      process.env.NODE_ENV === "production" &&
-                        mixpanel.track("Connect Wallet Form", {
-                          formId: form?.slug,
-                        });
-                      openConnectModal && openConnectModal();
+                  <Box
+                    width={{
+                      xs: "full",
+                      sm: "full",
+                      md: "1/4",
                     }}
                   >
-                    Connect Wallet
-                  </PrimaryButton>
-                </Box>
-              </Box>
-            )}
-            {!canFillForm && (
-              <motion.div
-                className="box"
-                initial={{ opacity: 0, scale: 0.5 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{
-                  duration: 0.8,
-                  delay: 0.5,
-                  ease: [0, 0.71, 0.2, 1.01],
-                }}
-              >
-                {!form.formMetadata.hasRole && (
-                  <Box
-                    display="flex"
-                    flexDirection="column"
-                    padding="4"
-                    marginTop="4"
-                    gap="4"
-                  >
-                    {" "}
-                    <Text weight="bold">
-                      You require one of the following roles to fill this form
-                    </Text>
-                    <Stack space="2">
-                      {form.formMetadata.formRoleGating?.map(
-                        (role: GuildRole) => (
-                          <Tag tone="accent" key={role.id}>
-                            {role.name}
-                          </Tag>
-                        )
-                      )}
-                    </Stack>
-                    <Text variant="label">
-                      You do not have the correct roles to access this form
-                    </Text>{" "}
-                    <Box display="flex" flexDirection="row" gap="4">
-                      <Button
-                        variant="tertiary"
-                        size="small"
-                        onClick={async () => {
-                          const externalCircleData = await (
-                            await fetch(
-                              `${process.env.API_HOST}/circle/external/v1/${form.parents[0].id}/guild`,
-                              {
-                                headers: {
-                                  Accept: "application/json",
-                                  "Content-Type": "application/json",
-                                },
-                                credentials: "include",
-                              }
-                            )
-                          ).json();
-                          if (!externalCircleData.urlName) {
-                            toast.error(
-                              "Error fetching guild, please visit guild.xyz and find the roles or contact support"
-                            );
-                          }
-                          window.open(
-                            `https://guild.xyz/${externalCircleData.urlName}`,
-                            "_blank"
-                          );
-                        }}
-                      >
-                        How do I get these roles?
-                      </Button>
-                    </Box>
+                    <PrimaryButton
+                      onClick={() => {
+                        process.env.NODE_ENV === "production" &&
+                          mixpanel.track("Connect Wallet Form", {
+                            formId: form?.slug,
+                          });
+                        openConnectModal && openConnectModal();
+                      }}
+                    >
+                      Connect Wallet
+                    </PrimaryButton>
                   </Box>
-                )}
-                {form.formMetadata.sybilProtectionEnabled &&
-                  !form.formMetadata.hasPassedSybilCheck && (
+                </Box>
+              )}
+              {!canFillForm && (
+                <motion.div
+                  className="box"
+                  initial={{ opacity: 0, scale: 0.5 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{
+                    duration: 0.8,
+                    delay: 0.5,
+                    ease: [0, 0.71, 0.2, 1.01],
+                  }}
+                >
+                  {!form.formMetadata.hasRole && (
                     <Box
                       display="flex"
                       flexDirection="column"
@@ -352,124 +292,183 @@ function PublicForm() {
                     >
                       {" "}
                       <Text weight="bold">
-                        This form is sybil protected. You must have a minimum
-                        score of 100% to fill this form. Please check the
-                        assigned scores below.
+                        You require one of the following roles to fill this form
                       </Text>
+                      <Stack space="2">
+                        {form.formMetadata.formRoleGating?.map(
+                          (role: GuildRole) => (
+                            <Tag tone="accent" key={role.id}>
+                              {role.name}
+                            </Tag>
+                          )
+                        )}
+                      </Stack>
                       <Text variant="label">
-                        Your current score: {currentScore}%
-                      </Text>
-                      <StampScrollContainer>
-                        {stamps?.map((stamp: Stamp, index: number) => {
-                          return (
-                            <StampCard mode={mode} key={index}>
-                              <Box
-                                display="flex"
-                                flexDirection="row"
-                                width="full"
-                                alignItems="center"
-                                gap="4"
-                              >
-                                <Box
-                                  display="flex"
-                                  flexDirection="row"
-                                  alignItems="center"
-                                  width="full"
-                                  paddingRight="4"
-                                >
-                                  <Box
-                                    width="8"
-                                    height="8"
-                                    flexDirection="row"
-                                    justifyContent="flex-start"
-                                    alignItems="center"
-                                    marginRight="4"
-                                  >
-                                    {mode === "dark"
-                                      ? PassportStampIcons[stamp.providerName]
-                                      : PassportStampIconsLightMode[
-                                          stamp.providerName
-                                        ]}
-                                  </Box>
-                                  <Box>
-                                    <Text as="h1">{stamp.stampName}</Text>
-                                    <Text variant="small">
-                                      {stamp.stampDescription}
-                                    </Text>
-                                  </Box>
-                                </Box>{" "}
-                                {hasStamps[stamp.id] && (
-                                  <Tag tone="green">Verified</Tag>
-                                )}
-                                <Text variant="large">{stamp.score}%</Text>
-                              </Box>
-                            </StampCard>
-                          );
-                        })}
-                      </StampScrollContainer>
+                        You do not have the correct roles to access this form
+                      </Text>{" "}
                       <Box display="flex" flexDirection="row" gap="4">
                         <Button
                           variant="tertiary"
                           size="small"
-                          onClick={() =>
+                          onClick={async () => {
+                            const externalCircleData = await (
+                              await fetch(
+                                `${process.env.API_HOST}/circle/external/v1/${form.parents[0].id}/guild`,
+                                {
+                                  headers: {
+                                    Accept: "application/json",
+                                    "Content-Type": "application/json",
+                                  },
+                                  credentials: "include",
+                                }
+                              )
+                            ).json();
+                            if (!externalCircleData.urlName) {
+                              toast.error(
+                                "Error fetching guild, please visit guild.xyz and find the roles or contact support"
+                              );
+                            }
                             window.open(
-                              "https://passport.gitcoin.co/",
+                              `https://guild.xyz/${externalCircleData.urlName}`,
                               "_blank"
-                            )
-                          }
+                            );
+                          }}
                         >
-                          Get Stamps
+                          How do I get these roles?
                         </Button>
                       </Box>
                     </Box>
                   )}
-              </motion.div>
-            )}
-            {form.formMetadata.previousResponses?.length > 0 && (
-              <DataActivity
-                activities={form.activity}
-                activityOrder={form.activityOrder}
-                getMemberDetails={getMemberDetails}
-                collectionId={form.id}
-                dataId={
-                  form.formMetadata.previousResponses[
-                    form.formMetadata.previousResponses?.length - 1
-                  ]?.slug
-                }
-                setForm={setForm}
-                dataOwner={currentUser as UserType}
-                collection={form}
-              />
-            )}
-          </FormContainer>
-          <Stack align={"center"}>
-            <Text variant="label">Powered By</Text>
-            <a
-              href="https://spect.network/"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {mode == "dark" ? (
-                <Image
-                  src={"/logo2.svg"}
-                  alt="dark-mode-logo"
-                  height={"35"}
-                  width="138"
-                />
-              ) : (
-                <Image
-                  src={"/logo1.svg"}
-                  alt="light-mode-logo"
-                  height={"35"}
-                  width="138"
+                  {form.formMetadata.sybilProtectionEnabled &&
+                    !form.formMetadata.hasPassedSybilCheck && (
+                      <Box
+                        display="flex"
+                        flexDirection="column"
+                        padding="4"
+                        marginTop="4"
+                        gap="4"
+                      >
+                        {" "}
+                        <Text weight="bold">
+                          This form is sybil protected. You must have a minimum
+                          score of 100% to fill this form. Please check the
+                          assigned scores below.
+                        </Text>
+                        <Text variant="label">
+                          Your current score: {currentScore}%
+                        </Text>
+                        <StampScrollContainer>
+                          {stamps?.map((stamp: Stamp, index: number) => {
+                            return (
+                              <StampCard mode={mode} key={index}>
+                                <Box
+                                  display="flex"
+                                  flexDirection="row"
+                                  width="full"
+                                  alignItems="center"
+                                  gap="4"
+                                >
+                                  <Box
+                                    display="flex"
+                                    flexDirection="row"
+                                    alignItems="center"
+                                    width="full"
+                                    paddingRight="4"
+                                  >
+                                    <Box
+                                      width="8"
+                                      height="8"
+                                      flexDirection="row"
+                                      justifyContent="flex-start"
+                                      alignItems="center"
+                                      marginRight="4"
+                                    >
+                                      {mode === "dark"
+                                        ? PassportStampIcons[stamp.providerName]
+                                        : PassportStampIconsLightMode[
+                                            stamp.providerName
+                                          ]}
+                                    </Box>
+                                    <Box>
+                                      <Text as="h1">{stamp.stampName}</Text>
+                                      <Text variant="small">
+                                        {stamp.stampDescription}
+                                      </Text>
+                                    </Box>
+                                  </Box>{" "}
+                                  {hasStamps[stamp.id] && (
+                                    <Tag tone="green">Verified</Tag>
+                                  )}
+                                  <Text variant="large">{stamp.score}%</Text>
+                                </Box>
+                              </StampCard>
+                            );
+                          })}
+                        </StampScrollContainer>
+                        <Box display="flex" flexDirection="row" gap="4">
+                          <Button
+                            variant="tertiary"
+                            size="small"
+                            onClick={() =>
+                              window.open(
+                                "https://passport.gitcoin.co/",
+                                "_blank"
+                              )
+                            }
+                          >
+                            Get Stamps
+                          </Button>
+                        </Box>
+                      </Box>
+                    )}
+                </motion.div>
+              )}
+              {form.formMetadata.previousResponses?.length > 0 && (
+                <DataActivity
+                  activities={form.activity}
+                  activityOrder={form.activityOrder}
+                  getMemberDetails={getMemberDetails}
+                  collectionId={form.id}
+                  dataId={
+                    form.formMetadata.previousResponses[
+                      form.formMetadata.previousResponses?.length - 1
+                    ]?.slug
+                  }
+                  setForm={setForm}
+                  dataOwner={currentUser as UserType}
+                  collection={form}
                 />
               )}
-            </a>
-            <SocialMedia />
-          </Stack>
-          <Box marginBottom="8" />
-        </Container>
-      )}
+            </motion.div>
+          )}
+        </FormContainer>
+        <Stack align={"center"}>
+          <Text variant="label">Powered By</Text>
+          <a
+            href="https://spect.network/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {mode == "dark" ? (
+              <Image
+                src={"/logo2.svg"}
+                alt="dark-mode-logo"
+                height={"35"}
+                width="138"
+              />
+            ) : (
+              <Image
+                src={"/logo1.svg"}
+                alt="light-mode-logo"
+                height={"35"}
+                width="138"
+              />
+            )}
+          </a>
+          <SocialMedia />
+        </Stack>
+        <Box marginBottom="8" />
+      </Container>
     </ScrollContainer>
   );
 }

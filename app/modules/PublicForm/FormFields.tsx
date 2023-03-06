@@ -258,9 +258,9 @@ function FormFields({ form, setForm }: Props) {
 
   useEffect(() => {
     if (form) {
-      setLoading(true);
       const tempData: any = {};
       if (updateResponse && form?.formMetadata.previousResponses?.length > 0) {
+        setLoading(true);
         const lastResponse =
           form.formMetadata.previousResponses[
             form.formMetadata.previousResponses.length - 1
