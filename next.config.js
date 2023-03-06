@@ -1,4 +1,5 @@
 /** @type {import('next').NextConfig} */
+const path = require("path");
 const nextConfig = {
   reactStrictMode: true,
   images: {
@@ -18,7 +19,7 @@ const nextConfig = {
     BICONOMY_API_KEY: process.env.BICONOMY_API_KEY,
     MIXPANEL_TOKEN: process.env.MIXPANEL_TOKEN,
   },
-  webpack(config) {
+  webpack(config, { dev, isServer }) {
     config.module.rules.push({
       test: /\.svg$/,
       use: ["@svgr/webpack"],
@@ -32,7 +33,18 @@ const nextConfig = {
       tls: require.resolve("tls"),
       "utf-8-validate": require.resolve("utf-8-validate"),
     };
+    if (dev && !isServer) {
+      const originalEntry = config.entry;
+      config.entry = async () => {
+        const wdrPath = path.resolve(__dirname, "./scripts/wdyr.ts");
+        const entries = await originalEntry();
 
+        if (entries["main.js"] && !entries["main.js"].includes(wdrPath)) {
+          entries["main.js"].push(wdrPath);
+        }
+        return entries;
+      };
+    }
     return config;
   },
 };

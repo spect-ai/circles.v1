@@ -284,7 +284,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         );
         if (user.ethAddress) {
           queryClient.setQueryData("getMyUser", user);
-          console.log("connectUser");
+          console.log("CONNECT USER");
           connectUser && connectUser(user.id);
         }
       } catch (e) {

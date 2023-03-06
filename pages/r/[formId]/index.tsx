@@ -10,11 +10,11 @@ import {
   useProviderLocalProfile,
 } from "@/app/modules/Profile/ProfileSettings/LocalProfileContext";
 import PublicForm from "@/app/modules/PublicForm";
-import useConnectDiscordServer from "@/app/services/Discord/useConnectDiscordServer";
 import { NextPage } from "next";
+import React from "react";
 
 const FormPage: NextPage = () => {
-  useConnectDiscordServer();
+  // useConnectDiscordServer();
   const context = useProviderCircleContext();
   const profileContext = useProviderLocalProfile();
   return (
@@ -39,4 +39,4 @@ const FormPage: NextPage = () => {
   );
 };
 
-export default FormPage;
+export default React.memo(FormPage);

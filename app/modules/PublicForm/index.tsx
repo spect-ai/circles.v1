@@ -26,10 +26,8 @@ import DataActivity from "../Collection/Form/DataDrawer/DataActivity";
 import _ from "lodash";
 import { useLocation } from "react-use";
 import SocialMedia from "@/app/common/components/SocialMedia";
-import Link from "next/link";
-import { CheckOutlined } from "@ant-design/icons";
 
-export default function PublicForm() {
+function PublicForm() {
   const router = useRouter();
   const { formId } = router.query;
   const [form, setForm] = useState<FormType>();
@@ -47,7 +45,7 @@ export default function PublicForm() {
   const [memberDetails, setMemberDetails] = useState({} as any);
   const [currentScore, setCurrentScore] = useState(0);
   const [hasStamps, setHasStamps] = useState({} as any);
-  const { pathname, hostname } = useLocation();
+  const { pathname } = useLocation();
   const route = pathname?.split("/")[3];
 
   const getMemberDetails = React.useCallback(
@@ -87,9 +85,8 @@ export default function PublicForm() {
   };
 
   useEffect(() => {
-    console.log({ formdata: form?.formMetadata.sybilProtectionScores });
     void (async () => {
-      if (formId) {
+      if (formId && connectedUser) {
         setLoading(true);
         const res: FormType = await getForm(formId as string);
         if (res.id) {
@@ -274,7 +271,7 @@ export default function PublicForm() {
                 </Box>
               </Box>
             )}
-            {!canFillForm && !loading && (
+            {!canFillForm && (
               <motion.div
                 className="box"
                 initial={{ opacity: 0, scale: 0.5 }}
@@ -568,3 +565,7 @@ export const StampCard = styled(Box)<{ mode: string }>`
     width: 100%;
   }
 `;
+
+PublicForm.whyDidYouRender = true;
+
+export default React.memo(PublicForm);

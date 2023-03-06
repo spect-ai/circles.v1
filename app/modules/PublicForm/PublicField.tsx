@@ -98,6 +98,8 @@ export default function PublicField({
           value={data && data[propertyName]}
           onChange={(e) => {
             setData({ ...data, [propertyName]: e.target.value });
+          }}
+          onBlur={(e) => {
             updateRequiredFieldNotSet(propertyName, e.target.value);
           }}
           disabled={disabled}
@@ -111,14 +113,16 @@ export default function PublicField({
           inputMode="email"
           onChange={(e) => {
             setData({ ...data, [propertyName]: e.target.value });
-            updateRequiredFieldNotSet(propertyName, e.target.value);
-            updateFieldHasInvalidType(propertyName, e.target.value);
           }}
           error={
             data && data[propertyName] && !isEmail(data[propertyName])
               ? "Invalid email"
               : undefined
           }
+          onBlur={(e) => {
+            updateRequiredFieldNotSet(propertyName, e.target.value);
+            updateFieldHasInvalidType(propertyName, e.target.value);
+          }}
           disabled={disabled}
         />
       )}
@@ -130,14 +134,16 @@ export default function PublicField({
           inputMode="text"
           onChange={(e) => {
             setData({ ...data, [propertyName]: e.target.value });
-            updateRequiredFieldNotSet(propertyName, e.target.value);
-            updateFieldHasInvalidType(propertyName, e.target.value);
           }}
           error={
             data && data[propertyName] && !isURL(data[propertyName])
               ? "Invalid URL"
               : undefined
           }
+          onBlur={(e) => {
+            updateRequiredFieldNotSet(propertyName, e.target.value);
+            updateFieldHasInvalidType(propertyName, e.target.value);
+          }}
           disabled={disabled}
         />
       )}
@@ -161,7 +167,6 @@ export default function PublicField({
           type="number"
           onChange={(e) => {
             setData({ ...data, [propertyName]: parseFloat(e.target.value) });
-            updateRequiredFieldNotSet(propertyName, e.target.value);
           }}
           onKeyDown={(e) => {
             if (
@@ -180,6 +185,9 @@ export default function PublicField({
               });
             }
           }}
+          onBlur={(e) => {
+            updateRequiredFieldNotSet(propertyName, e.target.value);
+          }}
           disabled={disabled}
         />
       )}
@@ -190,6 +198,8 @@ export default function PublicField({
           mode={mode}
           onChange={(e) => {
             setData({ ...data, [propertyName]: e.target.value });
+          }}
+          onBlur={(e) => {
             updateRequiredFieldNotSet(propertyName, e.target.value);
           }}
           disabled={disabled}
@@ -222,6 +232,7 @@ export default function PublicField({
           <Editor
             value={(data && data[propertyName]) || ""}
             onSave={(value) => {
+              if (!value) return;
               data[propertyName] = value;
               setData({ ...data });
               updateRequiredFieldNotSet(propertyName, value);

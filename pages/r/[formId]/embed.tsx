@@ -5,7 +5,6 @@ import {
   useProviderCircleContext,
 } from "@/app/modules/Circle/CircleContext";
 import PublicForm from "@/app/modules/PublicForm";
-import useConnectDiscordServer from "@/app/services/Discord/useConnectDiscordServer";
 import { NextPage } from "next";
 
 const EmbedPage: NextPage = () => {

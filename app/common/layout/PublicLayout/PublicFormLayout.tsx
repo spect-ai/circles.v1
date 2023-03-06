@@ -58,30 +58,25 @@ function PublicLayout(props: PublicLayoutProps) {
   // eslint-disable-next-line @typescript-eslint/unbound-method
   const { setMode } = useTheme();
 
-  const { data: currentUser, refetch } = useQuery<UserType>(
-    "getMyUser",
-    getUser,
-    {
-      enabled: false,
+  const { refetch } = useQuery<UserType>("getMyUser", getUser, {
+    enabled: false,
+  });
+
+  useEffect(() => {
+    if (!connectedUser) {
+      refetch()
+        .then((res) => {
+          const data = res.data;
+          if (data?.id) {
+            connectUser(data.id);
+            console.log("CONNECT USER");
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+          toast.error("Could not fetch user data");
+        });
     }
-  );
-
-  useEffect(() => {
-    if (!connectedUser && currentUser?.id) connectUser(currentUser.id);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentUser, connectedUser]);
-
-  useEffect(() => {
-    refetch()
-      .then((res) => {
-        const data = res.data;
-        if (data?.id) connectUser(data.id);
-      })
-      .catch((err) => {
-        console.log(err);
-        toast.error("Could not fetch user data");
-      });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -106,7 +101,7 @@ function PublicLayout(props: PublicLayoutProps) {
   }, []);
 
   useEffect(() => {
-    setIsSidebarExpanded(false);
+    isSidebarExpanded && setIsSidebarExpanded(false);
   }, [setIsSidebarExpanded]);
 
   return (

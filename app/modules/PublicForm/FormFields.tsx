@@ -17,7 +17,6 @@ import {
   UserType,
 } from "@/app/types";
 import { Box, Input, Stack, Text } from "degen";
-import { isAddress } from "ethers/lib/utils";
 import React, { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { toast } from "react-toastify";
@@ -41,12 +40,10 @@ import { useProfile } from "../Profile/ProfileSettings/LocalProfileContext";
 import { getPoap } from "@/app/services/Poap";
 import {
   getEscrowBalance,
-  getSurveyConditionInfo,
   getSurveyDistributionInfo,
   hasClaimedSurveyToken,
   isEligibleToClaimSurveyToken,
 } from "@/app/services/SurveyProtocol";
-import { getPassportScoreAndCredentials } from "@/app/services/Credentials/AggregatedCredentials";
 import { BigNumber } from "ethers";
 
 type Props = {
@@ -61,7 +58,7 @@ const getUser = async () => {
   return await res.json();
 };
 
-export default function FormFields({ form, setForm }: Props) {
+function FormFields({ form, setForm }: Props) {
   const [data, setData] = useState<any>({});
   const [memberOptions, setMemberOptions] = useState([]);
   const [updateResponse, setUpdateResponse] = useState(false);
@@ -70,7 +67,7 @@ export default function FormFields({ form, setForm }: Props) {
   const [submitAnotherResponse, setSubmitAnotherResponse] = useState(false);
   const [kudos, setKudos] = useState({} as KudosType);
   const [poap, setPoap] = useState({} as POAPEventType);
-  const { connectedUser, connectUser } = useGlobal();
+  const { connectedUser } = useGlobal();
   const [loading, setLoading] = useState(false);
   const [claimed, setClaimed] = useState(form.formMetadata.kudosClaimedByUser);
   const [surveyTokenClaimed, setSurveyTokenClaimed] = useState(false);
@@ -112,8 +109,6 @@ export default function FormFields({ form, setForm }: Props) {
       enabled: false,
     }
   );
-
-  console.log({ form });
 
   const { address, connector } = useAccount();
 
@@ -173,6 +168,7 @@ export default function FormFields({ form, setForm }: Props) {
             `${process.env.MINTKUDOS_HOST}/v1/tokens/${form.formMetadata.mintkudosTokenId}`
           )
         ).json();
+        console.log({ kudo });
         setKudos(kudo);
       })();
     }
@@ -188,17 +184,18 @@ export default function FormFields({ form, setForm }: Props) {
             `${process.env.API_HOST}/circle/${form.parents[0].id}/memberDetails?circleIds=${form.parents[0].id}`
           )
         ).json();
-        const memberOptions = res.members?.map((member: string) => ({
+        const fetchedMemberOptions = res.members?.map((member: string) => ({
           label: res.memberDetails && res.memberDetails[member]?.username,
           value: member,
         }));
-        setMemberOptions(memberOptions);
+        if (fetchedMemberOptions.length !== memberOptions.length) {
+          setMemberOptions(memberOptions);
+        }
       })();
     }
   }, [form]);
 
   useEffect(() => {
-    console.log({ f: form.formMetadata, registry });
     if (
       form?.formMetadata?.surveyTokenId ||
       form?.formMetadata?.surveyTokenId === 0
@@ -210,6 +207,7 @@ export default function FormFields({ form, setForm }: Props) {
           registry[form.formMetadata.surveyChain?.value || ""].surveyHubAddress,
           form.formMetadata.surveyTokenId as number
         )) as any;
+        console.log({ distributionInfo });
         setDistributionInfo(distributionInfo);
 
         if (
@@ -324,32 +322,13 @@ export default function FormFields({ form, setForm }: Props) {
           }
         });
       }
-      setData(tempData);
+      // only if tempdata is not an empty object
+      if (Object.keys(tempData).length > 0) setData(tempData);
       setTimeout(() => {
         setLoading(false);
       }, 100);
     }
   }, [form, updateResponse]);
-
-  useEffect(() => {
-    if (!connectedUser && currentUser?.id) {
-      connectUser(currentUser.id);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentUser, connectedUser]);
-
-  useEffect(() => {
-    refetch()
-      .then((res) => {
-        const data = res.data;
-        if (data?.id) connectUser(data.id);
-      })
-      .catch((err) => {
-        console.log(err);
-        toast.error("Could not fetch user data");
-      });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const onSubmit = async () => {
     if (
@@ -711,3 +690,7 @@ const Container = styled(Box)`
   padding: 0rem 1rem;
   padding-bottom: 1rem;
 `;
+
+export default React.memo(FormFields);
+
+FormFields.whyDidYouRender = true;
