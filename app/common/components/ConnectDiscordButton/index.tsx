@@ -2,6 +2,8 @@ import { Box, Button } from "degen";
 import Link from "next/link";
 import { useLocation } from "react-use";
 import DiscordIcon from "@/app/assets/icons/discordIcon.svg";
+import { useQuery } from "react-query";
+import { UserType } from "@/app/types";
 
 interface Props {
   state?: string;
@@ -11,6 +13,9 @@ interface Props {
 
 export default function ConnectDiscordButton({ state, width, type }: Props) {
   const { hostname } = useLocation();
+  const { data: currentUser } = useQuery<UserType>("getMyUser", {
+    enabled: false,
+  });
   return (
     <Link
       href={
@@ -27,14 +32,14 @@ export default function ConnectDiscordButton({ state, width, type }: Props) {
         data-tour="connect-discord-button"
         size="small"
         width={width}
-        variant="secondary"
+        variant={currentUser?.discordId ? "tertiary" : "secondary"}
         prefix={
           <Box marginTop="1">
             <DiscordIcon />
           </Box>
         }
       >
-        Connect Discord
+        {currentUser?.discordId ? "Reconnect" : "Connect"} Discord
       </Button>
     </Link>
   );
