@@ -28,7 +28,6 @@ import SocialMedia from "@/app/common/components/SocialMedia";
 import { connectedUserAtom, socketAtom } from "@/app/state/global";
 import { useAtom } from "jotai";
 import { SkeletonLoader } from "./SkeletonLoader";
-import Reaptcha from "reaptcha";
 
 function PublicForm() {
   const router = useRouter();
@@ -51,9 +50,6 @@ function PublicForm() {
   const [hasStamps, setHasStamps] = useState({} as any);
   const { pathname } = useLocation();
   const route = pathname?.split("/")[3];
-
-  const [captchaToken, setCaptchaToken] = useState(null);
-  const captchaRef = useRef<any>(null);
 
   const getMemberDetails = React.useCallback(
     (id: string) => {
@@ -179,25 +175,6 @@ function PublicForm() {
             }`,
           }}
         >
-          <Reaptcha
-            sitekey={process.env.NEXT_PUBLIC_CAPTCHA_SITE_KEY}
-            ref={captchaRef}
-            onVerify={() => {
-              captchaRef.current?.getResponse().then(async (res: any) => {
-                setCaptchaToken(res);
-                const verify = await fetch("/api/verifyCaptcha", {
-                  method: "POST",
-                  headers: {
-                    "Content-Type": "application/json",
-                  },
-                  body: JSON.stringify({ token: res }),
-                });
-                console.log({ verify });
-                const data = await verify.json();
-                console.log({ data });
-              });
-            }}
-          ></Reaptcha>
           {(loading || !form) && <SkeletonLoader />}
           {!loading && form && (
             <motion.div
