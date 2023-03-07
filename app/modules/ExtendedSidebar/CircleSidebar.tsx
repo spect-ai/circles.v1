@@ -29,7 +29,6 @@ import styled from "styled-components";
 import { useCircle } from "../Circle/CircleContext";
 import SettingsModal from "../Circle/CircleSettingsModal";
 import ContributorsModal from "../Circle/ContributorsModal";
-import CreateRetroModal from "../Retro/CreateRetro";
 import CircleOptions from "./CircleOptions";
 import { HeaderButton } from "./ExploreSidebar";
 import mixpanel from "@/app/common/utils/mixpanel";
@@ -63,7 +62,6 @@ function CircleSidebar() {
   const { setCircleData, setMemberDetailsData } = useCircle();
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [isContributorsModalOpen, setIsContributorsModalOpen] = useState(false);
-  const [isRetroModalOpen, setIsRetroModalOpen] = useState(false);
   const { mode } = useTheme();
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
@@ -118,9 +116,6 @@ function CircleSidebar() {
           <ContributorsModal
             handleClose={() => setIsContributorsModalOpen(false)}
           />
-        )}
-        {isRetroModalOpen && (
-          <CreateRetroModal handleClose={() => setIsRetroModalOpen(false)} />
         )}
       </AnimatePresence>
       <Stack space="3">

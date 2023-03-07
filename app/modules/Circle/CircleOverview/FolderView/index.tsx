@@ -17,9 +17,6 @@ interface Props {
   filteredProjects?: {
     [key: string]: ProjectType;
   };
-  filteredRetro?: {
-    [key: string]: RetroType;
-  };
   filteredWorkstreams?: {
     [key: string]: CircleType;
   };
@@ -33,7 +30,6 @@ interface Props {
       archived: boolean;
     };
   };
-  setIsRetroOpen: (isRetroOpen: boolean) => void;
 }
 
 const ScrollContainer = styled(Box)`
@@ -52,7 +48,6 @@ const ScrollContainer = styled(Box)`
 export const FolderView = ({
   filteredProjects,
   filteredWorkstreams,
-  filteredRetro,
   filteredCollections,
 }: Props) => {
   const { handleDrag } = useDragFolder();
@@ -83,13 +78,6 @@ export const FolderView = ({
         }
       });
 
-    filteredRetro &&
-      Object.values(filteredRetro)?.map((re) => {
-        if (!allContentIds.includes(re.id)) {
-          unclassifiedIds = unclassifiedIds.concat(re.id);
-        }
-      });
-
     filteredCollections &&
       Object.values(filteredCollections)?.map((collection) => {
         if (!allContentIds.includes(collection.id)) {
@@ -101,7 +89,6 @@ export const FolderView = ({
     circle?.folderDetails,
     filteredCollections,
     filteredProjects,
-    filteredRetro,
     filteredWorkstreams,
   ]);
 
@@ -132,7 +119,6 @@ export const FolderView = ({
             projects={filteredProjects}
             workstreams={filteredWorkstreams}
             collections={filteredCollections}
-            retros={filteredRetro}
           />
         );
       })}
@@ -144,7 +130,6 @@ export const FolderView = ({
     canDo,
     circle,
     filteredProjects,
-    filteredRetro,
     filteredWorkstreams,
   ]);
   return (

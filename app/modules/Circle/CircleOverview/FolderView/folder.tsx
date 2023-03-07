@@ -77,7 +77,6 @@ const Folder = ({
   index,
   projects,
   workstreams,
-  retros,
   collections,
 }: Props) => {
   const { canDo } = useRoleGate();
@@ -138,9 +137,6 @@ const Folder = ({
             <Card card={card} index={i} key={card} workstreams={workstreams} />
           );
         }
-        if (retros?.[card] && card) {
-          return <Card card={card} index={i} key={card} retros={retros} />;
-        }
         if (
           card &&
           collections?.[card] &&
@@ -157,7 +153,6 @@ const Folder = ({
 
   const CardDraggableCallback = useCallback(CardDraggable, [
     content,
-    retros,
     workstreams,
     circle,
     collections,

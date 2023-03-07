@@ -4,7 +4,6 @@ import { AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import styled from "styled-components";
-import RetroPage from "../Retro";
 import { useCircle } from "./CircleContext";
 import CircleDashboard from "./CircleOverview";
 import { useRouter } from "next/router";
@@ -156,7 +155,6 @@ export default function Circle() {
         }}
       />
       {page === "Overview" && <CircleDashboard />}
-      {page === "Retro" && <RetroPage />}
       <Help setFaqOpen={setFaqOpen} />
 
       <AnimatePresence>

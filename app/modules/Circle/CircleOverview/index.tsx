@@ -1,8 +1,6 @@
 import { Box, Stack } from "degen";
-import { AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
-import RetroModal from "../../Retro/RetroModal";
 import { useCircle } from "../CircleContext";
 import InviteMemberModal from "../ContributorsModal/InviteMembersModal";
 import { FolderView } from "./FolderView";
@@ -70,9 +68,7 @@ export default function CircleDashboard() {
     isSidebarExpandedAtom
   );
   const router = useRouter();
-  const { circle: cId, retroSlug } = router.query;
   const { circle, navigationBreadcrumbs } = useCircle();
-  const [isRetroOpen, setIsRetroOpen] = useState(false);
   const [filteredProjects, setFilteredProjects] = useState(circle?.projects);
   const [filteredCollections, setFilteredCollections] = useState(
     circle?.collections
@@ -80,33 +76,15 @@ export default function CircleDashboard() {
   const [filteredWorkstreams, setFilteredWorkstreams] = useState(
     circle?.children
   );
-  const [filteredRetro, setFilteredRetro] = useState(circle?.retro);
 
   useEffect(() => {
     setFilteredProjects(circle?.projects);
     setFilteredWorkstreams(circle?.children);
-    setFilteredRetro(circle?.retro);
     setFilteredCollections(circle?.collections);
   }, [circle]);
 
-  useEffect(() => {
-    if (retroSlug) {
-      setIsRetroOpen(true);
-    }
-  }, [retroSlug]);
-
   return (
     <Box>
-      <AnimatePresence>
-        {isRetroOpen && (
-          <RetroModal
-            handleClose={() => {
-              setIsRetroOpen(false);
-              void router.push(`/${cId}`);
-            }}
-          />
-        )}
-      </AnimatePresence>
       <Box marginBottom="-4">
         <Stack direction="horizontal" justify="space-between">
           <Hidden xs sm>
@@ -131,10 +109,8 @@ export default function CircleDashboard() {
         <Stack space="1">
           <FolderView
             filteredCollections={filteredCollections}
-            filteredRetro={filteredRetro}
             filteredProjects={filteredProjects}
             filteredWorkstreams={filteredWorkstreams}
-            setIsRetroOpen={setIsRetroOpen}
           />
         </Stack>
       </Box>
