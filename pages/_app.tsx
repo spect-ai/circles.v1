@@ -67,7 +67,6 @@ import {
   scribeOpenAtom,
   scribeUrlAtom,
 } from "@/app/state/global";
-import { GoogleReCaptchaProvider } from "react-google-recaptcha-v3";
 
 const isProd = process.env.NODE_ENV === "production";
 
@@ -222,27 +221,23 @@ function MyApp({ Component, pageProps }: AppProps) {
         >
           <FlagsProvider value={flags}>
             <ThemeProvider defaultAccent="purple" defaultMode="dark">
-              <GoogleReCaptchaProvider
-                reCaptchaKey={process.env.NEXT_PUBLIC_CAPTCHA_SITE_KEY || ""}
-              >
-                <QueryClientProvider client={queryClient}>
-                  <Hydrate state={pageProps}>
-                    <ErrorBoundary FallbackComponent={ErrorFallBack}>
-                      <ApolloProvider client={client}>
-                        <Component {...pageProps} canonical={url} key={url} />
-                        <AnimatePresence>
-                          {isScribeOpen && (
-                            <ScribeEmbed
-                              handleClose={() => setIsScribeOpen(false)}
-                              src={scribeUrl}
-                            />
-                          )}
-                        </AnimatePresence>
-                      </ApolloProvider>
-                    </ErrorBoundary>
-                  </Hydrate>
-                </QueryClientProvider>
-              </GoogleReCaptchaProvider>
+              <QueryClientProvider client={queryClient}>
+                <Hydrate state={pageProps}>
+                  <ErrorBoundary FallbackComponent={ErrorFallBack}>
+                    <ApolloProvider client={client}>
+                      <Component {...pageProps} canonical={url} key={url} />
+                      <AnimatePresence>
+                        {isScribeOpen && (
+                          <ScribeEmbed
+                            handleClose={() => setIsScribeOpen(false)}
+                            src={scribeUrl}
+                          />
+                        )}
+                      </AnimatePresence>
+                    </ApolloProvider>
+                  </ErrorBoundary>
+                </Hydrate>
+              </QueryClientProvider>
             </ThemeProvider>
           </FlagsProvider>
         </RainbowKitProvider>

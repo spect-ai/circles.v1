@@ -6,7 +6,7 @@ import { FormType, GuildRole, Stamp, UserType } from "@/app/types";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { Avatar, Box, Text, Stack, useTheme, Button, Tag } from "degen";
 import { useRouter } from "next/router";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useQuery } from "react-query";
 import { toast, ToastContainer } from "react-toastify";
 import styled from "styled-components";
@@ -28,7 +28,7 @@ import SocialMedia from "@/app/common/components/SocialMedia";
 import { connectedUserAtom, socketAtom } from "@/app/state/global";
 import { useAtom } from "jotai";
 import { SkeletonLoader } from "./SkeletonLoader";
-import { useGoogleReCaptcha } from "react-google-recaptcha-v3";
+import Reaptcha from "reaptcha";
 
 function PublicForm() {
   const router = useRouter();
@@ -52,19 +52,8 @@ function PublicForm() {
   const { pathname } = useLocation();
   const route = pathname?.split("/")[3];
 
-  const { executeRecaptcha } = useGoogleReCaptcha();
-
-  const handleReCaptchaVerify = useCallback(async () => {
-    console.log("Verifying recaptcha");
-    if (!executeRecaptcha) {
-      console.log("Execute recaptcha not yet available");
-      return;
-    }
-
-    const token = await executeRecaptcha("yourAction");
-    console.log({ token });
-    // Do whatever you want with the token
-  }, [executeRecaptcha]);
+  const [captchaToken, setCaptchaToken] = useState(null);
+  const captchaRef = useRef<any>(null);
 
   const getMemberDetails = React.useCallback(
     (id: string) => {
@@ -190,13 +179,25 @@ function PublicForm() {
             }`,
           }}
         >
-          <PrimaryButton
-            onClick={() => {
-              handleReCaptchaVerify();
+          <Reaptcha
+            sitekey={process.env.NEXT_PUBLIC_CAPTCHA_SITE_KEY}
+            ref={captchaRef}
+            onVerify={() => {
+              captchaRef.current?.getResponse().then(async (res: any) => {
+                setCaptchaToken(res);
+                const verify = await fetch("/api/verifyCaptcha", {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({ token: res }),
+                });
+                console.log({ verify });
+                const data = await verify.json();
+                console.log({ data });
+              });
             }}
-          >
-            Verify
-          </PrimaryButton>
+          ></Reaptcha>
           {(loading || !form) && <SkeletonLoader />}
           {!loading && form && (
             <motion.div
