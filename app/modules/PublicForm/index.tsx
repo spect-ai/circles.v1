@@ -244,7 +244,7 @@ function PublicForm() {
                   )}
                   {form.formMetadata.poapEventId && (
                     <Text weight="semiBold" variant="large" color="textPrimary">
-                      This form distributes POAP tokens to responders
+                      This form distributes a POAP to responders
                     </Text>
                   )}
                   <Text weight="semiBold" variant="large" color="textPrimary">

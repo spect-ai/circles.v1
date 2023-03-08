@@ -24,10 +24,19 @@ import { toast } from "react-toastify";
 import styled from "styled-components";
 import { useCircle } from "../../Circle/CircleContext";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
+import ImportClaimCodes from "./ImportClaimCodes";
+import ResponseMatchDistribution from "./ResponseMatchDistribution";
 
 type Props = {
   handleClose: () => void;
 };
+
+export const quizValidFieldTypes = [
+  "singleSelect",
+  "multiSelect",
+  "number",
+  "date",
+];
 
 export default function DistributePOAP({ handleClose }: Props) {
   const { mode } = useTheme();
@@ -35,7 +44,6 @@ export default function DistributePOAP({ handleClose }: Props) {
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
-  const {} = useCircle();
   const { localCollection: collection, updateCollection } =
     useLocalCollection();
   const [loading, setLoading] = useState(false);
@@ -60,118 +68,71 @@ export default function DistributePOAP({ handleClose }: Props) {
   const [virtual, setVirtual] = useState(true);
   const [city, setCity] = useState("");
   const [country, setCountry] = useState("");
-
-  const [uploading, setUploading] = useState(false);
-  const [image, setImage] = useState("" as any);
-  const [numberOfPoaps, setNumberOfPoaps] = useState(1000);
-  const [assetUrl, setAssetUrl] = useState("");
-  const [modalMode, setModalMode] =
-    useState<"createPoapFromScratch" | "importClaimCodes">("importClaimCodes");
-
-  const [errorMessage, setErrorMessage] = useState("");
   const [poapEventId, setPoapEventId] = useState(
     collection.formMetadata?.poapEventId || ""
   );
   const [poapEditCode, setPoapEditCode] = useState(
     collection.formMetadata?.poapEditCode || ""
   );
+  const [uploading, setUploading] = useState(false);
+  const [image, setImage] = useState("" as any);
+  const [numberOfPoaps, setNumberOfPoaps] = useState(1000);
+  const [assetUrl, setAssetUrl] = useState("");
+  const [modalMode, setModalMode] =
+    useState<
+      | "createPoapFromScratch"
+      | "importClaimCodes"
+      | "distributePoapWhenResponsesMatch"
+      | "distributePoapOnDiscordCallAttendance"
+    >("importClaimCodes");
+  const [
+    minimumNumberOfAnswersThatNeedToMatch,
+    setMinimumNumberOfAnswersThatNeedToMatch,
+  ] = useState(
+    collection.formMetadata?.minimumNumberOfAnswersThatNeedToMatch || 0
+  );
 
-  if (modalMode === "importClaimCodes") {
+  const [responseData, setResponseData] = useState(
+    collection.formMetadata?.responseData || {}
+  );
+  if (
+    ["importClaimCodes", "distributePoapWhenResponsesMatch"].includes(modalMode)
+  ) {
     return (
       <Modal
-        size="small"
+        size={modalMode === "importClaimCodes" ? "small" : "medium"}
         title="Import POAP Event 🏅"
         handleClose={handleClose}
         zIndex={2}
       >
         <Box padding="8">
-          <Stack direction="vertical" space="4">
-            <Stack direction="vertical" space="1">
-              <Text variant="label">Poap event id</Text>
-              <Input
-                label
-                value={poapEventId}
-                onChange={(e) => setPoapEventId(e.target.value)}
-              />
-            </Stack>
-            <Stack direction="vertical" space="1">
-              <Text variant="label">Poap edit code</Text>
-              <Input
-                label
-                value={poapEditCode}
-                onChange={(e) => setPoapEditCode(e.target.value)}
-              />
-            </Stack>
-          </Stack>
-          <Box display="flex" flexDirection="column" gap="2" marginTop="4">
-            <Box display="flex" flexDirection="row" justifyContent="flex-end">
-              <Text color="red">{errorMessage}</Text>
-            </Box>
-
-            <Box
-              display="flex"
-              flexDirection="row"
-              justifyContent="flex-end"
-              alignItems="flex-start"
-              gap="2"
-            >
-              {collection.formMetadata.poapEventId && (
-                <PrimaryButton
-                  variant="tertiary"
-                  loading={loading}
-                  onClick={async () => {
-                    setLoading(true);
-                    const res = await updateFormCollection(collection.id, {
-                      formMetadata: {
-                        ...collection.formMetadata,
-                        poapEventId: "",
-                        poapEditCode: "",
-                      },
-                    });
-                    if (!res) {
-                      toast.error("Something went wrong");
-                      setLoading(false);
-                      return;
-                    }
-
-                    updateCollection(res);
-                    setLoading(false);
-                    handleClose();
-                  }}
-                >
-                  Disable POAP
-                </PrimaryButton>
-              )}
-              {!collection.formMetadata.poapEventId && (
-                <PrimaryButton
-                  variant="secondary"
-                  loading={loading}
-                  onClick={async () => {
-                    setLoading(true);
-                    const res = await updateFormCollection(collection.id, {
-                      formMetadata: {
-                        ...collection.formMetadata,
-                        poapEventId,
-                        poapEditCode,
-                        walletConnectionRequired: true,
-                      },
-                    });
-                    if (!res?.formMetadata?.poapEventId) {
-                      toast.error("Something went wrong");
-                      setLoading(false);
-                      return;
-                    }
-
-                    updateCollection(res);
-                    setLoading(false);
-                    handleClose();
-                  }}
-                >
-                  Add Poap Event
-                </PrimaryButton>
-              )}
-            </Box>
-          </Box>
+          {modalMode === "importClaimCodes" && (
+            <ImportClaimCodes
+              handleClose={handleClose}
+              setModalMode={setModalMode}
+              poapEditCode={poapEditCode}
+              setPoapEditCode={setPoapEditCode}
+              poapEventId={poapEventId}
+              setPoapEventId={setPoapEventId}
+              minimumNumberOfAnswersThatNeedToMatch={
+                minimumNumberOfAnswersThatNeedToMatch
+              }
+              responseData={responseData}
+            />
+          )}
+          {modalMode === "distributePoapWhenResponsesMatch" && (
+            <ResponseMatchDistribution
+              setModalModal={setModalMode}
+              data={responseData}
+              setData={setResponseData}
+              minimumNumberOfAnswersThatNeedToMatch={
+                minimumNumberOfAnswersThatNeedToMatch
+              }
+              setMinimumNumberOfAnswersThatNeedToMatch={
+                setMinimumNumberOfAnswersThatNeedToMatch
+              }
+            />
+          )}
         </Box>
       </Modal>
     );
@@ -334,38 +295,11 @@ export default function DistributePOAP({ handleClose }: Props) {
                     </Stack>
                   </Stack>
                 )}
-                <Accordian name="Advanced Settings" defaultOpen={false}>
-                  <Stack direction="horizontal" space="1">
-                    <Stack direction="vertical" space="1">
-                      <Text variant="label">Start Date</Text>
-                      <DateInput
-                        placeholder={`Enter Start Date`}
-                        value={startDate}
-                        type="date"
-                        mode={mode}
-                        onChange={(e) => {
-                          setStartDate(e.target.value);
-                        }}
-                      />
-                    </Stack>
-                    <Stack direction="vertical" space="1">
-                      <Text variant="label">End Date</Text>
-                      <DateInput
-                        placeholder={`Enter End Date`}
-                        value={endDate}
-                        type="date"
-                        mode={mode}
-                        onChange={(e) => {
-                          setEndDate(e.target.value);
-                        }}
-                      />
-                    </Stack>
-                  </Stack>
-                </Accordian>
               </Stack>
             </Box>
           </Box>
         </Box>
+
         <Box
           display="flex"
           flexDirection="row"

@@ -78,7 +78,7 @@ function FormFields({ form, setForm }: Props) {
   const [submitting, setSubmitting] = useState(false);
   const [respondAsAnonymous, setRespondAsAnonymous] = useState(false);
   const [poapClaimed, setPoapClaimed] = useState(false);
-  const [poapClaimCode, setPoapClaimCode] = useState("");
+  const [canClaimPoap, setCanClaimPoap] = useState(false);
   const [distributionInfo, setDistributionInfo] = useState({} as any);
   const [escrowHasInsufficientBalance, setEscrowHasInsufficientBalance] =
     useState(false);
@@ -147,11 +147,11 @@ function FormFields({ form, setForm }: Props) {
 
   useEffect(() => {
     if (form.formMetadata.poapEventId) {
+      setCanClaimPoap(form.formMetadata.canClaimPoap);
       void (async () => {
         const res = await getPoap(
           form.formMetadata.poapEventId?.toString() || ""
         );
-        console.log({ res });
         setPoap(res);
         setPoapClaimed(res.claimed);
       })();
@@ -405,10 +405,7 @@ function FormFields({ form, setForm }: Props) {
       return;
     }
     if (!checkValue(data)) return;
-    if (!currentUser?.email && form?.isAnOpportunity) {
-      setNotificationPreferenceModalOpen(true);
-      return;
-    }
+
     setSubmitting(true);
 
     if (updateResponse) {
@@ -463,7 +460,7 @@ function FormFields({ form, setForm }: Props) {
         poap={poap}
         poapClaimed={poapClaimed}
         setPoapClaimed={setPoapClaimed}
-        poapClaimCode={poapClaimCode}
+        canClaimPoap={canClaimPoap}
         canClaimSurveyToken={canClaimSurveyToken}
         surveyDistributionInfo={distributionInfo}
         surveyIsLotteryYetToBeDrawn={surveyIsLotteryYetToBeDrawn}
