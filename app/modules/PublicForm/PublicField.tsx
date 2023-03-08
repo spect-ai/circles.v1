@@ -31,6 +31,7 @@ type Props = {
   fieldHasInvalidType: { [key: string]: boolean };
   updateFieldHasInvalidType: (key: string, value: any) => void;
   disabled: boolean;
+  blockCustomValues?: boolean;
 };
 
 export default function PublicField({
@@ -44,6 +45,7 @@ export default function PublicField({
   fieldHasInvalidType,
   updateFieldHasInvalidType,
   disabled,
+  blockCustomValues,
 }: Props) {
   const { mode } = useTheme();
 
@@ -196,6 +198,7 @@ export default function PublicField({
           placeholder={`Enter date`}
           type="date"
           mode={mode}
+          value={data && data[propertyName]?.toString()}
           onChange={(e) => {
             setData({ ...data, [propertyName]: e.target.value });
           }}
@@ -247,7 +250,11 @@ export default function PublicField({
         form.properties[propertyName]?.type === "user") && (
         <Box marginTop="4">
           <SingleSelect
-            allowCustom={form.properties[propertyName]?.allowCustom || false}
+            allowCustom={
+              blockCustomValues
+                ? !blockCustomValues
+                : form.properties[propertyName]?.allowCustom || false
+            }
             options={
               form.properties[propertyName]?.type === "user"
                 ? (memberOptions as any)
@@ -268,7 +275,11 @@ export default function PublicField({
         <Box marginTop="4">
           <MultiSelect
             disabled={disabled}
-            allowCustom={form.properties[propertyName]?.allowCustom || false}
+            allowCustom={
+              blockCustomValues
+                ? !blockCustomValues
+                : form.properties[propertyName]?.allowCustom || false
+            }
             options={
               form.properties[propertyName]?.type === "user[]"
                 ? (memberOptions as any)

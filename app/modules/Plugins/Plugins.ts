@@ -34,10 +34,10 @@ export const spectPlugins: { [key: string]: SpectPlugin } = {
   },
   poap: {
     id: "poap",
-    name: "Incentivize responders with POAPs",
+    name: "Create memorable events with POAPs",
     version: "1.0.0",
     description:
-      "Import a POAP event and get more responses by incentivizing responders with POAPs!",
+      "Commemorating something that matters to you and your frens? Distribute POAPs directly from forms & create a memory that lasts forever!",
     tags: "poap, poaps, poap event, poap events, poap import, poap imports, poap import event, poap import events, surveys, incentivization, incentivize, incentivize responders",
     docs: "https://poap.xyz/",
     image: "https://ik.imagekit.io/spectcdn/poap.png",

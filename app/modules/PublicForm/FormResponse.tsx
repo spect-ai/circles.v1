@@ -43,7 +43,7 @@ type Props = {
   poap: POAPEventType;
   poapClaimed: boolean;
   setPoapClaimed: (val: boolean) => void;
-  poapClaimCode: string;
+  canClaimPoap: boolean;
   registry?: Registry;
 };
 
@@ -81,7 +81,7 @@ export default function FormResponse({
   setViewResponse,
   poapClaimed,
   setPoapClaimed,
-  poapClaimCode,
+  canClaimPoap,
   registry,
 }: Props) {
   const { width, height } = useWindowSize();
@@ -152,21 +152,23 @@ export default function FormResponse({
           marginTop="8"
           padding="2"
         >
-          {poap?.image_url && (poapClaimed || form.formMetadata.poapEventId) && (
-            <Box
-              display="flex"
-              flexDirection="row"
-              justifyContent="center"
-              alignItems="center"
-              width={{
-                xs: "full",
-                xl: "1/2",
-              }}
-            >
-              {" "}
-              <CircularStyledImage src={`${poap?.image_url}`} alt="poap" />
-            </Box>
-          )}
+          {poap?.image_url &&
+            (poapClaimed ||
+              (form.formMetadata.poapEventId && canClaimPoap)) && (
+              <Box
+                display="flex"
+                flexDirection="row"
+                justifyContent="center"
+                alignItems="center"
+                width={{
+                  xs: "full",
+                  xl: "1/2",
+                }}
+              >
+                {" "}
+                <CircularStyledImage src={`${poap?.image_url}`} alt="poap" />
+              </Box>
+            )}
           {poapClaimed ? (
             <Stack>
               <Text variant="extraLarge" weight="bold">
@@ -236,7 +238,7 @@ export default function FormResponse({
                 xl: "1/2",
               }}
             >
-              {form.formMetadata.poapEventId && !poapClaimed && (
+              {form.formMetadata.poapEventId && !poapClaimed && canClaimPoap && (
                 <Stack direction="horizontal" align="flex-start">
                   <Box>
                     {" "}
@@ -269,9 +271,6 @@ export default function FormResponse({
                                     "Content-Type": "application/json",
                                   },
                                   credentials: "include",
-                                  body: JSON.stringify({
-                                    claimCode: poapClaimCode.toString(),
-                                  }),
                                 }
                               )
                             ).json();

@@ -797,6 +797,9 @@ export interface CollectionType {
   archived: boolean;
   circleRolesToNotifyUponUpdatedResponse?: string[];
   circleRolesToNotifyUponNewResponse?: string[];
+  activity: MappedItem<CollectionActivity>;
+  activityOrder: string[];
+  viewConditions: Condition[];
 }
 
 export type PaymentConfig = {
@@ -838,7 +841,7 @@ export type FormMetadata = {
   canFillForm: boolean;
   hasPassedSybilCheck: boolean;
   previousResponses: any[];
-  kudosClaimedByUser: boolean;
+  hasClaimedKudos: boolean;
   hasRole: boolean;
   discordConnectionRequired: boolean;
   canClaimKudos: boolean;
@@ -868,6 +871,11 @@ export type FormMetadata = {
   transactionHashesOfUser?: {
     [transactionType: string]: string;
   };
+  minimumNumberOfAnswersThatNeedToMatchForPoap: number;
+  responseDataForPoap: MappedItem<any>;
+  minimumNumberOfAnswersThatNeedToMatchForMintkudos: number;
+  responseDataForMintkudos: MappedItem<any>;
+  canClaimPoap: boolean;
 };
 
 export type ProjectMetadata = {
@@ -1004,7 +1012,6 @@ export interface FormType {
   activity: MappedItem<CollectionActivity>;
   activityOrder: string[];
   name: string;
-  circleId: string;
   slug: string;
   private: boolean;
   description: string;
@@ -1019,8 +1026,6 @@ export interface FormType {
     slug: string;
   }[];
   defaultView: string;
-  isAnOpportunity: boolean;
-  opportunityInfo: OpportunityInfoType;
   viewConditions: Condition[];
   createdAt: string;
   updatedAt: string;
