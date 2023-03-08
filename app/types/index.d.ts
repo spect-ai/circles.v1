@@ -855,6 +855,7 @@ export type FormMetadata = {
   surveyLotteryWinner?: number;
   surveyDistributionType?: number;
   ceramicEnabled?: boolean;
+  captchaEnabled?: boolean;
   claimCodes?: string[];
   claimCode?: string;
   poapEventId?: string;

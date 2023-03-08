@@ -92,9 +92,6 @@ export function useProviderLocalCollection() {
   };
 
   const getIfFieldNeedsAttention = (value: Property) => {
-    console.log({
-      value,
-    });
     let res = { needsAttention: false, reason: "" };
     if (value.viewConditions && value.viewConditions.length > 0) {
       for (const condition of value.viewConditions) {
