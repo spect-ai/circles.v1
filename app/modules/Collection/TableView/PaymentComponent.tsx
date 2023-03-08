@@ -4,7 +4,7 @@ import { CellProps } from "react-datasheet-grid";
 import { useCircle } from "../../Circle/CircleContext";
 
 const PaymentComponent = ({ rowData, columnData }: CellProps) => {
-  const payment = rowData[columnData.property.name];
+  const payment = rowData[columnData.property.id];
   const { registry } = useCircle();
   return (
     <Box

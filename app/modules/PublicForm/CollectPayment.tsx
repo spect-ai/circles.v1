@@ -4,8 +4,6 @@ import {
   getCurrencyPrice,
   getPlatformTokenPrice,
 } from "@/app/services/CoinGecko";
-import useERC20 from "@/app/services/Payment/useERC20";
-import usePaymentGateway from "@/app/services/Payment/usePayment";
 import {
   approveOneTokenUsingEOA,
   convertToWei,
@@ -13,7 +11,7 @@ import {
   distributeTokensUsingEOA,
   hasAllowance,
 } from "@/app/services/Paymentv2/utils";
-import { CollectionType, PaymentConfig, Registry } from "@/app/types";
+import { PaymentConfig, Registry } from "@/app/types";
 import { DollarCircleOutlined } from "@ant-design/icons";
 import { Box, Input, Stack, Text } from "degen";
 import { ethers } from "ethers";
@@ -56,7 +54,6 @@ export default function CollectPayment({
 
   const [tokenOptions, setTokenOptions] = useState(tokens);
   const [selectedToken, setSelectedToken] = useState(tokens[0]);
-
   const [amount, setAmount] = useState<string>();
 
   useEffect(() => {
@@ -64,7 +61,6 @@ export default function CollectPayment({
       const registry = await fetch(
         `${process.env.API_HOST}/circle/slug/${circleSlug}/getRegistry`
       ).then((res) => res.json());
-      console.log({ registry });
       setCircleRegistry(registry);
     })();
   }, []);
@@ -83,7 +79,6 @@ export default function CollectPayment({
   useEffect(() => {
     const token =
       paymentConfig.networks[selectedNetwork.value].tokens[selectedToken.value];
-    console.log({ token });
     if (
       token?.dollarAmount &&
       paymentConfig.type === "paywall" &&
@@ -307,9 +302,20 @@ export default function CollectPayment({
         </a>
       )}
       {!data["__payment__"] && (
-        <Stack>
-          <Stack direction="horizontal" align="center">
-            <Box width="1/3">
+        <Stack space="0">
+          <Stack
+            direction={{
+              xs: "vertical",
+              md: "horizontal",
+            }}
+            align="center"
+          >
+            <Box
+              width={{
+                xs: "full",
+                md: "1/3",
+              }}
+            >
               <Dropdown
                 options={networkOptions}
                 selected={selectedNetwork}
@@ -318,7 +324,12 @@ export default function CollectPayment({
                 isClearable={false}
               />
             </Box>
-            <Box width="1/3">
+            <Box
+              width={{
+                xs: "full",
+                md: "1/3",
+              }}
+            >
               <Dropdown
                 options={tokenOptions}
                 selected={selectedToken}

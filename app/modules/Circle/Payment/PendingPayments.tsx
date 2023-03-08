@@ -104,7 +104,7 @@ export default function PendingPayments() {
                   });
                 }}
               >
-                Create Payment
+                Create a new payment
               </PrimaryButton>
             </Box>
             <Box
@@ -156,7 +156,7 @@ export default function PendingPayments() {
                     circle.paymentDetails
                   );
                   console.log({ uniqueNetworks });
-                  for (const chainId of uniqueNetworks) {
+                  for await (const chainId of uniqueNetworks) {
                     await pay(chainId);
                   }
                   setIsPayLoading(false);
