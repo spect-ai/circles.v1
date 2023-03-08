@@ -16,7 +16,7 @@ import {
   UserType,
 } from "@/app/types";
 import { Box, Input, Stack, Text } from "degen";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useQuery } from "react-query";
 import { toast } from "react-toastify";
 import styled from "styled-components";
@@ -46,6 +46,7 @@ import {
 import { BigNumber } from "ethers";
 import { useAtom } from "jotai";
 import { connectedUserAtom } from "@/app/state/global";
+import Reaptcha from "reaptcha";
 
 type Props = {
   form: FormType;
@@ -101,6 +102,9 @@ function FormFields({ form, setForm }: Props) {
     {} as { [key: string]: boolean }
   );
 
+  const [captchaVerified, setCaptchaVerified] = useState(false);
+  const [verifyingCaptcha, setVerifyingCaptcha] = useState(false);
+
   const { data: registry, refetch: fetchRegistry } = useQuery<Registry>(
     ["registry", form.parents[0].slug],
     () =>
@@ -113,6 +117,7 @@ function FormFields({ form, setForm }: Props) {
   );
 
   const { address, connector } = useAccount();
+  const captchaRef = useRef<any>(null);
 
   const checkRequired = (data: any) => {
     const requiredFieldsNotSet = {} as { [key: string]: boolean };
@@ -333,6 +338,10 @@ function FormFields({ form, setForm }: Props) {
   }, [form, updateResponse]);
 
   const onSubmit = async () => {
+    if (!captchaVerified && form.formMetadata.captchaEnabled) {
+      toast.error("Please verify captcha");
+      return;
+    }
     if (
       !email &&
       (form.formMetadata.surveyTokenId ||
@@ -630,6 +639,41 @@ function FormFields({ form, setForm }: Props) {
           />
         </Box>
       )}
+      {form.formMetadata.captchaEnabled && (
+        <Reaptcha
+          sitekey={process.env.NEXT_PUBLIC_CAPTCHA_SITE_KEY}
+          ref={captchaRef}
+          onVerify={() => {
+            setVerifyingCaptcha(true);
+            captchaRef.current
+              ?.getResponse()
+              .then(async (res: any) => {
+                const verify = await fetch("/api/verifyCaptcha", {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({ token: res }),
+                });
+                console.log({ verify });
+                const data = await verify.json();
+                console.log({ data });
+                if (data.success) {
+                  setCaptchaVerified(true);
+                  setVerifyingCaptcha(false);
+                } else {
+                  toast.error("Captcha verification failed");
+                  setCaptchaVerified(false);
+                  setVerifyingCaptcha(false);
+                }
+              })
+              .catch((err: any) => {
+                console.log(err);
+                setVerifyingCaptcha(false);
+              });
+          }}
+        ></Reaptcha>
+      )}
       <Stack
         direction={{
           xs: "vertical",
@@ -646,7 +690,11 @@ function FormFields({ form, setForm }: Props) {
                 ).join(",")}`}{" "}
               </Text>
             )} */}
-            <PrimaryButton onClick={onSubmit} loading={submitting}>
+            <PrimaryButton
+              onClick={onSubmit}
+              loading={submitting || verifyingCaptcha}
+              disabled={verifyingCaptcha}
+            >
               Submit
             </PrimaryButton>
           </Box>

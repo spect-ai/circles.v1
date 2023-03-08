@@ -6,7 +6,7 @@ import { FormType, GuildRole, Stamp, UserType } from "@/app/types";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { Avatar, Box, Text, Stack, useTheme, Button, Tag } from "degen";
 import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useQuery } from "react-query";
 import { toast, ToastContainer } from "react-toastify";
 import styled from "styled-components";
