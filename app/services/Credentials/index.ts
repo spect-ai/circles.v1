@@ -1,7 +1,7 @@
 import { kudosTokenTypes, kudosTypes } from "@/app/common/utils/constants";
 import { useCircle } from "@/app/modules/Circle/CircleContext";
 import { useLocalCollection } from "@/app/modules/Collection/Context/LocalCollectionContext";
-import { KudosRequestType, KudosType } from "@/app/types";
+import { KudosRequestType, KudosType, MappedItem } from "@/app/types";
 import { useTheme } from "degen";
 import { ethers } from "ethers";
 import { toast } from "react-toastify";
@@ -169,7 +169,12 @@ export default function useCredentials() {
   //     }, 20000);
   //   };
 
-  const recordCollectionKudos = (operationId: string, numOfKudos?: number) => {
+  const recordCollectionKudos = (
+    operationId: string,
+    minimumNumberOfAnswersThatNeedToMatch: number,
+    responseData: MappedItem<any>,
+    numOfKudos?: number
+  ) => {
     let time = 1000;
     const intervalPromise = setInterval(() => {
       time += 1000;
@@ -188,6 +193,9 @@ export default function useCredentials() {
                     ...(collection.formMetadata || {}),
                     mintkudosTokenId: data.resourceId,
                     numOfKudos: numOfKudos || 10000,
+                    minimumNumberOfAnswersThatNeedToMatchForMintkudos:
+                      minimumNumberOfAnswersThatNeedToMatch,
+                    responseDataForMintkudos: responseData,
                   },
                 }),
                 headers: {

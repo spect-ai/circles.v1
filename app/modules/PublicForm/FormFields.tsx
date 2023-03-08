@@ -72,7 +72,7 @@ function FormFields({ form, setForm }: Props) {
   const [connectedUser, setConnectedUser] = useAtom(connectedUserAtom);
 
   const [loading, setLoading] = useState(false);
-  const [claimed, setClaimed] = useState(form.formMetadata.kudosClaimedByUser);
+  const [claimed, setClaimed] = useState(form.formMetadata.hasClaimedKudos);
   const [surveyTokenClaimed, setSurveyTokenClaimed] = useState(false);
   const { onSaveProfile, email, setEmail } = useProfile();
   const [emailModalOpen, setEmailModalOpen] = useState(false);
@@ -165,7 +165,6 @@ function FormFields({ form, setForm }: Props) {
 
   useEffect(() => {
     void fetchRegistry();
-    // setClaimed(form.kudosClaimedByUser);
     setSubmitted(form.formMetadata.previousResponses?.length > 0);
 
     if (form.formMetadata.mintkudosTokenId) {

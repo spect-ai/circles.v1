@@ -5,8 +5,8 @@ import { CheckCircleOutlined } from "@ant-design/icons";
 import { Box, Stack, useTheme, Text, Input, Button } from "degen";
 import { useState } from "react";
 import { toast } from "react-toastify";
-import { quizValidFieldTypes } from ".";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
+import { quizValidFieldTypes } from "../common/ResponseMatchDistribution";
 
 export type Props = {
   setModalMode: (
@@ -136,8 +136,8 @@ export default function ImportClaimCodes({
                     ...collection.formMetadata,
                     poapEventId: "",
                     poapEditCode: "",
-                    minimumNumberOfAnswersThatNeedToMatch: 0,
-                    responseData: {},
+                    minimumNumberOfAnswersThatNeedToMatchForPoap: 0,
+                    responseDataForPoap: {},
                   },
                 });
                 if (!res) {
@@ -166,8 +166,9 @@ export default function ImportClaimCodes({
                     ...collection.formMetadata,
                     poapEventId,
                     poapEditCode,
-                    minimumNumberOfAnswersThatNeedToMatch,
-                    responseData,
+                    minimumNumberOfAnswersThatNeedToMatchForPoap:
+                      minimumNumberOfAnswersThatNeedToMatch,
+                    responseDataForPoap: responseData,
                     walletConnectionRequired: true,
                   },
                 });

@@ -24,19 +24,12 @@ import { toast } from "react-toastify";
 import styled from "styled-components";
 import { useCircle } from "../../Circle/CircleContext";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
+import ResponseMatchDistribution from "../common/ResponseMatchDistribution";
 import ImportClaimCodes from "./ImportClaimCodes";
-import ResponseMatchDistribution from "./ResponseMatchDistribution";
 
 type Props = {
   handleClose: () => void;
 };
-
-export const quizValidFieldTypes = [
-  "singleSelect",
-  "multiSelect",
-  "number",
-  "date",
-];
 
 export default function DistributePOAP({ handleClose }: Props) {
   const { mode } = useTheme();
@@ -89,11 +82,11 @@ export default function DistributePOAP({ handleClose }: Props) {
     minimumNumberOfAnswersThatNeedToMatch,
     setMinimumNumberOfAnswersThatNeedToMatch,
   ] = useState(
-    collection.formMetadata?.minimumNumberOfAnswersThatNeedToMatch || 0
+    collection.formMetadata?.minimumNumberOfAnswersThatNeedToMatchForPoap || 0
   );
 
   const [responseData, setResponseData] = useState(
-    collection.formMetadata?.responseData || {}
+    collection.formMetadata?.responseDataForPoap || {}
   );
   if (
     ["importClaimCodes", "distributePoapWhenResponsesMatch"].includes(modalMode)
@@ -122,7 +115,7 @@ export default function DistributePOAP({ handleClose }: Props) {
           )}
           {modalMode === "distributePoapWhenResponsesMatch" && (
             <ResponseMatchDistribution
-              setModalModal={setModalMode}
+              setModalModal={setModalMode as any}
               data={responseData}
               setData={setResponseData}
               minimumNumberOfAnswersThatNeedToMatch={
@@ -131,6 +124,7 @@ export default function DistributePOAP({ handleClose }: Props) {
               setMinimumNumberOfAnswersThatNeedToMatch={
                 setMinimumNumberOfAnswersThatNeedToMatch
               }
+              responseMatchConditionForPlugin="poap"
             />
           )}
         </Box>

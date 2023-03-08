@@ -841,7 +841,7 @@ export type FormMetadata = {
   canFillForm: boolean;
   hasPassedSybilCheck: boolean;
   previousResponses: any[];
-  kudosClaimedByUser: boolean;
+  hasClaimedKudos: boolean;
   hasRole: boolean;
   discordConnectionRequired: boolean;
   canClaimKudos: boolean;
@@ -871,8 +871,10 @@ export type FormMetadata = {
   transactionHashesOfUser?: {
     [transactionType: string]: string;
   };
-  minimumNumberOfAnswersThatNeedToMatch: number;
-  responseData: MappedItem<any>;
+  minimumNumberOfAnswersThatNeedToMatchForPoap: number;
+  responseDataForPoap: MappedItem<any>;
+  minimumNumberOfAnswersThatNeedToMatchForMintkudos: number;
+  responseDataForMintkudos: MappedItem<any>;
   canClaimPoap: boolean;
 };
 

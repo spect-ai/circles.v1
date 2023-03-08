@@ -3,30 +3,31 @@ import { updateFormCollection } from "@/app/services/Collection";
 import { Box, Input, Text } from "degen";
 import { useState } from "react";
 import { toast } from "react-toastify";
-import { quizValidFieldTypes } from ".";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
 import PublicField from "../../PublicForm/PublicField";
 
 export type Props = {
-  setModalModal: (
-    mode:
-      | "createPoapFromScratch"
-      | "importClaimCodes"
-      | "distributePoapWhenResponsesMatch"
-      | "distributePoapOnDiscordCallAttendance"
-  ) => void;
+  setModalModal: (mode: string) => void;
   data: any;
   setData: (value: any) => void;
   minimumNumberOfAnswersThatNeedToMatch: number;
   setMinimumNumberOfAnswersThatNeedToMatch: (value: number) => void;
+  responseMatchConditionForPlugin: "poap" | "mintkudos" | "erc20";
 };
 
+export const quizValidFieldTypes = [
+  "singleSelect",
+  "multiSelect",
+  "number",
+  "date",
+];
 export default function ResponseMatchDistribution({
   setModalModal,
   data,
   setData,
   minimumNumberOfAnswersThatNeedToMatch,
   setMinimumNumberOfAnswersThatNeedToMatch,
+  responseMatchConditionForPlugin,
 }: Props) {
   const { localCollection: collection, updateCollection } =
     useLocalCollection();
@@ -41,8 +42,6 @@ export default function ResponseMatchDistribution({
     minimumNumberOfAnswersThatNeedToMatch
   );
   const [localData, setLocalData] = useState(data);
-
-  console.log({ localData, minNumOfAnswers });
 
   if (validFields.length === 0) {
     return (
@@ -123,7 +122,10 @@ export default function ResponseMatchDistribution({
           <PrimaryButton
             variant="tertiary"
             onClick={() => {
-              setModalModal("importClaimCodes");
+              if (responseMatchConditionForPlugin === "poap")
+                setModalModal("importClaimCodes");
+              else if (responseMatchConditionForPlugin === "mintkudos")
+                setModalModal("createKudos");
             }}
           >
             {"Back"}
@@ -140,22 +142,40 @@ export default function ResponseMatchDistribution({
                 return;
               }
               if (
-                collection.formMetadata?.minimumNumberOfAnswersThatNeedToMatch >
-                0
+                responseMatchConditionForPlugin === "poap" &&
+                collection.formMetadata?.poapEventId
               ) {
                 const res = await updateFormCollection(collection.id, {
                   formMetadata: {
                     ...collection.formMetadata,
-                    minimumNumberOfAnswersThatNeedToMatch: minNumOfAnswers,
-                    responseData: localData,
-                    walletConnectionRequired: true,
+                    minimumNumberOfAnswersThatNeedToMatchForPoap:
+                      minNumOfAnswers,
+                    responseDataForPoap: localData,
                   },
                 });
+
+                updateCollection(res);
+              } else if (
+                responseMatchConditionForPlugin === "mintkudos" &&
+                collection.formMetadata?.mintkudosTokenId
+              ) {
+                const res = await updateFormCollection(collection.id, {
+                  formMetadata: {
+                    ...collection.formMetadata,
+                    minimumNumberOfAnswersThatNeedToMatchForMintkudos:
+                      minNumOfAnswers,
+                    responseDataForMintkudos: localData,
+                  },
+                });
+
                 updateCollection(res);
               }
               setMinimumNumberOfAnswersThatNeedToMatch(minNumOfAnswers);
               setData(localData);
-              setModalModal("importClaimCodes");
+              if (responseMatchConditionForPlugin === "poap")
+                setModalModal("importClaimCodes");
+              else if (responseMatchConditionForPlugin === "mintkudos")
+                setModalModal("createKudos");
             }}
           >
             {"Save"}
