@@ -100,6 +100,8 @@ export default function FormResponse({
       form?.formMetadata?.transactionHashesOfUser?.surveyTokenClaim || ""
     );
 
+  console.log({ form });
+
   useEffect(() => {
     socket?.on(
       `${formId}:responseAddedOnChain`,
@@ -304,6 +306,32 @@ export default function FormResponse({
                   </Stack>
                 </Stack>
               )}
+              {(form.formMetadata.matchCountForPoap ||
+                form.formMetadata.matchCountForPoap === 0) &&
+                form.formMetadata
+                  .minimumNumberOfAnswersThatNeedToMatchForPoap &&
+                form.formMetadata.matchCountForPoap <
+                  form.formMetadata
+                    .minimumNumberOfAnswersThatNeedToMatchForPoap && (
+                  <Stack direction="horizontal" align="flex-start">
+                    <Box>
+                      <Text variant="extraLarge" weight="bold">
+                        👉
+                      </Text>
+                    </Box>
+                    <Stack>
+                      <Text weight="semiBold" variant="large">
+                        You received a score of{" "}
+                        {form.formMetadata.matchCountForPoap} out of{" "}
+                        {
+                          form.formMetadata
+                            .minimumNumberOfAnswersThatNeedToMatchForPoap
+                        }{" "}
+                        and therefore didn't qualify to claim the POAP 🙁
+                      </Text>
+                    </Stack>
+                  </Stack>
+                )}
             </Box>
           )}
         </Box>
@@ -340,15 +368,6 @@ export default function FormResponse({
                 }
                 alt="poap"
               />
-            </Box>
-          )}
-          {surveyIsLotteryYetToBeDrawn && (
-            <Box>
-              <Text variant="large" weight="bold">
-                Responders to this survey will automatically be added to a
-                lottery to win {form.formMetadata.surveyTotalValue}{" "}
-                {form.formMetadata?.surveyToken?.label}
-              </Text>
             </Box>
           )}
           {surveyTokenClaimed ? (
@@ -750,6 +769,33 @@ export default function FormResponse({
                   </Stack>
                 </Stack>
               )}
+              {(form.formMetadata.matchCountForKudos ||
+                form.formMetadata.matchCountForKudos === 0) &&
+                form.formMetadata
+                  .minimumNumberOfAnswersThatNeedToMatchForMintkudos &&
+                form.formMetadata.matchCountForKudos <
+                  form.formMetadata
+                    .minimumNumberOfAnswersThatNeedToMatchForMintkudos && (
+                  <Stack direction="horizontal" align="flex-start">
+                    <Box>
+                      <Text variant="extraLarge" weight="bold">
+                        👉
+                      </Text>
+                    </Box>
+                    <Stack>
+                      <Text weight="semiBold" variant="large">
+                        You received a score of{" "}
+                        {form.formMetadata.matchCountForKudos} out of{" "}
+                        {
+                          form.formMetadata
+                            .minimumNumberOfAnswersThatNeedToMatchForMintkudos
+                        }{" "}
+                        and therefore didn't qualify to claim the soulbound
+                        token 🙁
+                      </Text>
+                    </Stack>
+                  </Stack>
+                )}
             </Box>
           )}
         </Box>

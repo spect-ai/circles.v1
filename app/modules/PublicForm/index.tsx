@@ -28,6 +28,8 @@ import SocialMedia from "@/app/common/components/SocialMedia";
 import { connectedUserAtom, socketAtom } from "@/app/state/global";
 import { useAtom } from "jotai";
 import { SkeletonLoader } from "./SkeletonLoader";
+import { WalletFilled, WalletOutlined } from "@ant-design/icons";
+import { quizValidFieldTypes } from "../Plugins/common/ResponseMatchDistribution";
 
 function PublicForm() {
   const router = useRouter();
@@ -50,6 +52,14 @@ function PublicForm() {
   const [hasStamps, setHasStamps] = useState({} as any);
   const { pathname } = useLocation();
   const route = pathname?.split("/")[3];
+
+  const quizValidFields =
+    form?.propertyOrder &&
+    form.propertyOrder.filter(
+      (propertyName) =>
+        form.properties[propertyName].isPartOfFormView &&
+        quizValidFieldTypes.includes(form.properties[propertyName].type)
+    );
 
   const getMemberDetails = React.useCallback(
     (id: string) => {
@@ -219,37 +229,44 @@ function PublicForm() {
                 >
                   {form.formMetadata.formRoleGating &&
                     form.formMetadata.formRoleGating.length > 0 && (
-                      <Text
-                        weight="semiBold"
-                        variant="large"
-                        color="textPrimary"
-                      >
-                        This form is role gated
+                      <Text weight="semiBold" variant="large">
+                        ⛩️ This form is role gated
                       </Text>
                     )}
+                  {form.formMetadata.poapEventId && (
+                    <Text weight="semiBold" variant="large">
+                      🏅 This form distributes a POAP to responders{" "}
+                      {form.formMetadata
+                        .minimumNumberOfAnswersThatNeedToMatchForPoap &&
+                        `who get a score of ${form.formMetadata.minimumNumberOfAnswersThatNeedToMatchForPoap} / ${quizValidFields?.length}  or higher`}
+                    </Text>
+                  )}
                   {form.formMetadata.mintkudosTokenId && (
-                    <Text weight="semiBold" variant="large" color="textPrimary">
-                      This form distributes soulbound tokens to responders
+                    <Text weight="semiBold" variant="large">
+                      🎉 This form distributes soulbound tokens to responders{" "}
+                      {form.formMetadata
+                        .minimumNumberOfAnswersThatNeedToMatchForMintkudos &&
+                        `who get a score of ${form.formMetadata.minimumNumberOfAnswersThatNeedToMatchForMintkudos} / ${quizValidFields?.length} or higher`}
                     </Text>
                   )}
                   {form.formMetadata.surveyTokenId && (
-                    <Text weight="semiBold" variant="large" color="textPrimary">
-                      This form distributes erc20 tokens to responders
+                    <Text weight="semiBold" variant="large">
+                      💰 This form distributes erc20 tokens to responders
                     </Text>
                   )}
                   {form.formMetadata.sybilProtectionEnabled && (
-                    <Text weight="semiBold" variant="large" color="textPrimary">
-                      This form is Sybil protected
+                    <Text weight="semiBold" variant="large">
+                      ✋ This form is Sybil protected
                     </Text>
                   )}
-                  {form.formMetadata.poapEventId && (
-                    <Text weight="semiBold" variant="large" color="textPrimary">
-                      This form distributes a POAP to responders
+                  <Box display="flex" flexDirection="row" gap="2">
+                    <Text weight="semiBold" variant="large" color="accent">
+                      <WalletOutlined />
+                    </Text>{" "}
+                    <Text weight="semiBold" variant="large">
+                      This form requires you to connect your wallet
                     </Text>
-                  )}
-                  <Text weight="semiBold" variant="large" color="textPrimary">
-                    This form requires you to connect your wallet
-                  </Text>
+                  </Box>
                   <Box
                     width={{
                       xs: "full",

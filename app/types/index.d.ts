@@ -876,6 +876,8 @@ export type FormMetadata = {
   minimumNumberOfAnswersThatNeedToMatchForMintkudos: number;
   responseDataForMintkudos: MappedItem<any>;
   canClaimPoap: boolean;
+  matchCountForPoap?: number;
+  matchCountForKudos?: number;
 };
 
 export type ProjectMetadata = {
