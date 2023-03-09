@@ -84,8 +84,8 @@ const CircleCard: FC<Props> = ({ href, gradient, logo, name, description }) => {
           )}
         </LogoContainer>
         <Stack align="center">
-          <Text weight="semiBold" variant="large">
-            {name}
+          <Text weight="semiBold" variant="large" ellipsis>
+            {smartTrim(name, 18)}
           </Text>
           <Text align="center" variant="label">
             {smartTrim(description, 80)}

@@ -111,7 +111,7 @@ export default function ProjectTableView() {
         )}
       </Box>
       <Box paddingX="8" width="1/4">
-        <ImportTasks />
+        {Object.keys(collection?.data || {}).length === 0 && <ImportTasks />}
       </Box>
     </Box>
   );
