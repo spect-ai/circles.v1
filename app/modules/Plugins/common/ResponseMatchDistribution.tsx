@@ -80,7 +80,10 @@ export default function ResponseMatchDistribution({
               label
               type="number"
               value={minNumOfAnswers}
-              onChange={(e) => setMinNumOfAnswers(parseInt(e.target.value))}
+              onChange={(e) => {
+                if (parseInt(e.target.value) > validFields.length) return;
+                setMinNumOfAnswers(parseInt(e.target.value));
+              }}
               units={`/${validFields.length}`}
               max={validFields.length}
               min={0}
