@@ -299,7 +299,13 @@ const PluginCard = ({
 };
 
 const PluginContainer = styled(motion.div)`
-  width: calc(100% / 4 - 1rem);
+  @media (max-width: 768px) {
+    width: calc(100% / 2 - 1rem);
+  }
+  @media (max-width: 480px) {
+    width: 100%;
+  }
+  width: calc(100% / 3 - 1rem);
   border-radius: 1rem;
   border: 1px solid rgba(255, 255, 255, 0.1);
   cursor: pointer;
@@ -307,7 +313,7 @@ const PluginContainer = styled(motion.div)`
 
 const PluginImage = styled.img`
   width: 100%;
-  height: 10rem;
+  height: 14rem;
   object-fit: cover;
   border-radius: 1rem 1rem 0 0;
 `;
