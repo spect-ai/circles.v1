@@ -51,7 +51,7 @@ function URLInput({
     <Stack direction={"horizontal"} align="center">
       <Input
         label=""
-        placeholder="Enter URL Label"
+        placeholder="Label"
         value={tempLabel}
         inputMode="text"
         onChange={(e) => {

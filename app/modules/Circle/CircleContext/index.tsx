@@ -177,6 +177,7 @@ export function useProviderCircleContext() {
 
   useEffect(() => {
     if (socket && socket.on) {
+      console.log("SOCKET ON");
       socket.on(
         `${cId}:paymentUpdate`,
         (event: { data: any; user: string }) => {
@@ -193,8 +194,7 @@ export function useProviderCircleContext() {
         }
       );
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cId]);
+  }, [cId, socket]);
 
   return {
     page,

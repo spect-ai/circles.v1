@@ -222,7 +222,7 @@ export default function Automation({
         >
           {automationOrder?.length > 1 ||
           !automationId?.startsWith("automation") ? (
-            <IconPencil size={"3"} color="accent" />
+            <IconPencil size={"5"} color="accent" />
           ) : (
             `Add Automations`
           )}

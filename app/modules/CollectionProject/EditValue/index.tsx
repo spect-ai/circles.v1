@@ -331,7 +331,16 @@ function EditValue({ value, setValue, propertyName, dataId, disabled }: Props) {
               />
             </FieldInputContainer>
           ) : (
-            <FieldButton onClick={() => setIsEditing(true)} mode={mode}>
+            <FieldButton
+              onClick={() => {
+                if (disabled) {
+                  toast.error("You can't edit a closed card");
+                  return;
+                }
+                setIsEditing(true);
+              }}
+              mode={mode}
+            >
               {value ? (
                 <Text>
                   {property.type === "date"
@@ -366,6 +375,10 @@ function EditValue({ value, setValue, propertyName, dataId, disabled }: Props) {
           ) : (
             <FieldButton
               onClick={() => {
+                if (disabled) {
+                  toast.error("You can't edit a closed card");
+                  return;
+                }
                 if (Object.keys(value || {}).length === 0) {
                   setIsEditing(true);
                 }
@@ -398,7 +411,16 @@ function EditValue({ value, setValue, propertyName, dataId, disabled }: Props) {
               />
             )}
           </AnimatePresence>
-          <FieldButton onClick={() => setIsEditing(true)} mode={mode}>
+          <FieldButton
+            onClick={() => {
+              if (disabled) {
+                toast.error("You can't edit a closed card");
+                return;
+              }
+              setIsEditing(true);
+            }}
+            mode={mode}
+          >
             {value?.value ? (
               <Text>{`${value.value} ${value.token.label} on ${value.chain.label} network`}</Text>
             ) : (
@@ -423,7 +445,16 @@ function EditValue({ value, setValue, propertyName, dataId, disabled }: Props) {
               />
             )}
           </AnimatePresence>
-          <FieldButton onClick={() => setIsEditing(true)} mode={mode}>
+          <FieldButton
+            onClick={() => {
+              if (disabled) {
+                toast.error("You can't edit a closed card");
+                return;
+              }
+              setIsEditing(true);
+            }}
+            mode={mode}
+          >
             {value ? <Text>{`${value.length} Milestones`}</Text> : "Empty"}
           </FieldButton>
         </Box>
@@ -442,7 +473,16 @@ function EditValue({ value, setValue, propertyName, dataId, disabled }: Props) {
               />
             )}
           </AnimatePresence>
-          <FieldButton onClick={() => setIsEditing(true)} mode={mode}>
+          <FieldButton
+            onClick={() => {
+              if (disabled) {
+                toast.error("You can't edit a closed card");
+                return;
+              }
+              setIsEditing(true);
+            }}
+            mode={mode}
+          >
             {value ? <Text ellipsis>{value}</Text> : "Empty"}
           </FieldButton>
         </Box>
