@@ -96,10 +96,9 @@ function PublicForm() {
       setStamps(stampsWithScore.sort((a, b) => b.score - a.score));
     }
   };
-
   useEffect(() => {
     void (async () => {
-      if (formId && connectedUser) {
+      if (formId) {
         setLoading(true);
         const res: FormType = await getForm(formId as string);
         if (res.id) {
