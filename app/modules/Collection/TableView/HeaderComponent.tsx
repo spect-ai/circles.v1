@@ -1,4 +1,5 @@
 import Popover from "@/app/common/components/Popover";
+import { smartTrim } from "@/app/common/utils/utils";
 import { PropertyType } from "@/app/types";
 import {
   Box,
@@ -57,7 +58,7 @@ export default function HeaderComponent({
           <Stack direction="horizontal" justify="space-between">
             <Stack direction="horizontal" space="2">
               <Text variant="label">{getPropertyIcon(propertyType)}</Text>
-              <Text variant="label">{columnName}</Text>
+              <Text variant="label">{smartTrim(columnName, 17)}</Text>
             </Stack>
             <AnimatePresence>
               {showEdit && (
@@ -66,6 +67,7 @@ export default function HeaderComponent({
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.2 }}
+                  style={{ position: "absolute", right: 2 }}
                 >
                   <Box
                     cursor="pointer"
