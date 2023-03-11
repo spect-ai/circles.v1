@@ -52,7 +52,9 @@ export function useProviderLocalCollection() {
     ["collection", colId],
     () =>
       fetch(
-        `https://worker.spect.network/collection/f0217792-295f-4e0d-9317-80d932de22ba`,
+        process.env.NEXT_PUBLIC_USE_WORKER
+          ? `https://worker.spect.network/collection/${colId}`
+          : `${process.env.API_HOST}/collection/v1/slug/${colId as string}`,
         {
           credentials: "include",
         }
