@@ -51,9 +51,12 @@ export function useProviderLocalCollection() {
   const { refetch: fetchCollection, data } = useQuery<CollectionType>(
     ["collection", colId],
     () =>
-      fetch(`${process.env.API_HOST}/collection/v1/slug/${colId as string}`, {
-        credentials: "include",
-      }).then((res) => {
+      fetch(
+        `https://collection.spect.workers.dev/collection/f0217792-295f-4e0d-9317-80d932de22ba`,
+        {
+          credentials: "include",
+        }
+      ).then((res) => {
         if (res.status === 403) return { unauthorized: true };
         return res.json();
       }),
