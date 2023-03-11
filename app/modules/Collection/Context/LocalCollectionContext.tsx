@@ -52,7 +52,7 @@ export function useProviderLocalCollection() {
     ["collection", colId],
     () =>
       fetch(
-        `https://collection.spect.workers.dev/collection/f0217792-295f-4e0d-9317-80d932de22ba`,
+        `https://worker.spect.network/collection/f0217792-295f-4e0d-9317-80d932de22ba`,
         {
           credentials: "include",
         }
