@@ -52,7 +52,7 @@ export function useProviderLocalCollection() {
     ["collection", colId],
     () =>
       fetch(
-        process.env.NEXT_PUBLIC_USE_WORKER
+        process.env.NEXT_PUBLIC_USE_WORKER === "true"
           ? `https://worker.spect.network/collection/${colId}`
           : `${process.env.API_HOST}/collection/v1/slug/${colId as string}`,
         {
