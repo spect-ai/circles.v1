@@ -198,13 +198,13 @@ function MyApp({ Component, pageProps }: AppProps) {
       console.log("connector", connector?.id);
       localStorage.setItem("connectorId", connector?.id || "");
 
-      if (res.username.startsWith("fren") && connector?.id === "arcana-auth") {
+      if (res.username?.startsWith("fren") && connector?.id === "arcana-auth") {
         const user = await (connector as any).auth.getUser();
         console.log({ user });
         setTimeout(() => {
           updateProfile({
             email: user.email,
-            username: user.name,
+            username: user.name || res.username || "",
           });
         }, 1000);
       }
