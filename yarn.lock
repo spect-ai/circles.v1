@@ -52,9 +52,10 @@
     tslib "^2.3.0"
     zen-observable-ts "^1.2.5"
 
-"@arcana/auth-wagmi@https://github.com/spect-ai/auth-wagmi.git":
+"@arcana/auth-wagmi@^0.0.4":
   version "0.0.4"
-  resolved "https://github.com/spect-ai/auth-wagmi.git#1ee4b1c15258ff201f4f53489123f0130f0a6859"
+  resolved "https://registry.yarnpkg.com/@arcana/auth-wagmi/-/auth-wagmi-0.0.4.tgz#268c7db19c13d2d3d62abf06b9ce8b0aa34bd150"
+  integrity sha512-Mx22HmXNz54CVO+jWCoVSPRHT4Thz3d9ZngbGOAhW68Uqb6bPmUgterVn44VAJxlnBEUO2YOHyypCSpJ5qWX0w==
   dependencies:
     "@arcana/auth" "^1.0.3"
     "@wagmi/core" "0.9.5"
