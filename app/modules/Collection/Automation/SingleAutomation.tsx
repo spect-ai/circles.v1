@@ -286,7 +286,7 @@ export default function SingleAutomation({
       (c) => c.slug === automation.triggerCollectionSlug
     );
     setCollectionOption({
-      label: collection?.name || "Select collection",
+      label: collection?.name || "Select Project or Form",
       value: collection?.id || "selectCollection",
     });
   }, []);

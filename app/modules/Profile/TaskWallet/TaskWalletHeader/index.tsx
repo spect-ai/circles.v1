@@ -21,7 +21,10 @@ const TaskWalletHeader = () => {
       <Stack direction="horizontal" space="2">
         <Avatar
           label="profile-pic"
-          src={currentUser?.avatar}
+          src={
+            currentUser?.avatar ||
+            `https://api.dicebear.com/5.x/thumbs/svg?seed=${currentUser?.username}`
+          }
           size="16"
           address={currentUser?.ethAddress}
         />

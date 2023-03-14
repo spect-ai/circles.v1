@@ -1,11 +1,6 @@
-import Avatar from "@/app/common/components/Avatar";
-import { cancelPayments } from "@/app/services/Paymentv2";
-import { MemberDetails, PaymentDetails } from "@/app/types";
-import { Box, useTheme, Text, Stack, IconClose, Button, Tag } from "degen";
-import Link from "next/link";
+import { PaymentDetails } from "@/app/types";
+import { Box, Tag, Text, useTheme } from "degen";
 import { useRouter } from "next/router";
-import { useState } from "react";
-import { useQuery } from "react-query";
 import styled from "styled-components";
 import { useCircle } from "../CircleContext";
 import usePaymentViewCommon from "./Common/usePaymentCommon";

@@ -74,7 +74,10 @@ export default function DataActivity({
                 <Avatar
                   label=""
                   placeholder={!actor?.avatar}
-                  src={actor?.avatar}
+                  src={
+                    actor?.avatar ||
+                    `https://api.dicebear.com/5.x/thumbs/svg?seed=${actor.username}`
+                  }
                   address={actor?.ethAddress}
                   size="8"
                 />

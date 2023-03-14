@@ -151,7 +151,10 @@ function Dashboard() {
             <Stack direction="horizontal" align="center">
               <Avatar
                 label="profile-pic"
-                src={currentUser?.avatar}
+                src={
+                  currentUser?.avatar ||
+                  `https://api.dicebear.com/5.x/thumbs/svg?seed=${currentUser.username}`
+                }
                 size={{
                   xs: "14",
                   md: "20",

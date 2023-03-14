@@ -141,14 +141,6 @@ const Notifications = ({ notifIds }: NotifProps) => {
                     notif?.read == false ? "accentTertiary" : "transparent"
                   }
                 >
-                  {/* {notif?.actor && userData?.userDetails?.[notif?.actor] && (
-                    <Avatar
-                      label="profile-pic"
-                      src={userData?.userDetails[notif?.actor]?.avatar}
-                      address={userData?.userDetails[notif?.actor]?.ethAddress}
-                      size="5"
-                    />
-                  )} */}
                   <Text>{notif?.content}</Text>
                   <Text variant="label">
                     {new Date(notif?.timestamp).toLocaleDateString() ==

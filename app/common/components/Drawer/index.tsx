@@ -34,7 +34,7 @@ function Drawer({
   handleClose,
   children,
   header,
-  width = "70%",
+  width = "50%",
   closeOnOutsideClick,
 }: props) {
   return (

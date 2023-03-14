@@ -1,6 +1,5 @@
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { Avatar, Box, Stack, Text } from "degen";
-import React, { useEffect, useState } from "react";
+import { Box, Text } from "degen";
 import { FaTelegram } from "react-icons/fa";
 
 type Props = {

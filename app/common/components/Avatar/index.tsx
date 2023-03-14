@@ -56,7 +56,15 @@ export default function ClickableAvatar({
         onMouseLeave={() => setHover(false)}
         position="relative"
       >
-        <Avatar label={label} src={src} size={size} address={address} />
+        <Avatar
+          label={label}
+          src={
+            src ||
+            `https://api.dicebear.com/5.x/thumbs/svg?seed=${profile.username}`
+          }
+          size={size}
+          address={address}
+        />
         <AnimatePresence>
           {hover && (
             <motion.div
@@ -98,7 +106,10 @@ export default function ClickableAvatar({
                 <Box display="flex" flexDirection="row" gap="2" width="3/4">
                   <Avatar
                     label={userId}
-                    src={src}
+                    src={
+                      src ||
+                      `https://api.dicebear.com/5.x/thumbs/svg?seed=${profile.username}`
+                    }
                     size="20"
                     address={address}
                   />
@@ -115,7 +126,7 @@ export default function ClickableAvatar({
                     <InfoBox gap="1">
                       {profile?.githubId && !profile?.github && (
                         <a
-                          href={`https://github.com/${user?.githubId}`}
+                          href={`https://github.com/${profile?.githubId}`}
                           target="_blank"
                           rel="noreferrer noopener"
                         >

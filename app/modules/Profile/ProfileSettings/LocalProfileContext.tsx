@@ -31,6 +31,8 @@ type ProfileSettingsType = {
   github: string;
   behance: string;
   website: string;
+  usernameError: string;
+  setUsernameError: React.Dispatch<React.SetStateAction<string>>;
 };
 
 export const LocalProfileContext = createContext<ProfileSettingsType>(
@@ -52,6 +54,7 @@ export function useProviderLocalProfile() {
   const [github, setGithub] = useState("");
   const [behance, setBehance] = useState("");
   const [website, setWebsite] = useState("");
+  const [usernameError, setUsernameError] = useState("");
 
   const [isDirty, setIsDirty] = useState(false);
 
@@ -129,6 +132,8 @@ export function useProviderLocalProfile() {
     setIsDirty,
     uploadFile,
     onSaveProfile,
+    usernameError,
+    setUsernameError,
   };
 }
 export const useProfile = () => useContext(LocalProfileContext);

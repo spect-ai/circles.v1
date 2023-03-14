@@ -107,6 +107,7 @@ function Sidebar(): ReactElement {
               href={`/${circle?.slug}`}
               src={circle.avatar}
               gradient={circle.gradient}
+              name={circle.name}
             />
           ) : (
             <Logo
@@ -167,6 +168,7 @@ function Sidebar(): ReactElement {
                     href={`/${aCircle.slug}`}
                     src={aCircle.avatar}
                     gradient={aCircle.gradient}
+                    name={aCircle.name}
                   />
                 </Box>
               ))}
@@ -197,7 +199,10 @@ function Sidebar(): ReactElement {
               }}
             >
               <Avatar
-                src={currentUser?.avatar}
+                src={
+                  currentUser?.avatar ||
+                  `https://api.dicebear.com/5.x/thumbs/svg?seed=${currentUser?.username}`
+                }
                 address={currentUser.ethAddress}
                 label=""
                 size={{

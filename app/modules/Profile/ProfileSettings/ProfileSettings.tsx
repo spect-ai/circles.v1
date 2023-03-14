@@ -28,8 +28,15 @@ export default function ProfileSettings({ setIsOpen, openTab }: Props) {
   const [tab, setTab] = useState(openTab || 0);
   const onTabClick = (id: number) => setTab(id);
 
-  const { loading, username, isDirty, uploading, setIsDirty, onSaveProfile } =
-    useProfile();
+  const {
+    loading,
+    username,
+    isDirty,
+    uploading,
+    setIsDirty,
+    onSaveProfile,
+    usernameError,
+  } = useProfile();
 
   const handleClose = () => {
     setIsOpen(false);
@@ -70,7 +77,9 @@ export default function ProfileSettings({ setIsOpen, openTab }: Props) {
       </Box>
       <Box padding="3">
         <PrimaryButton
-          disabled={!isDirty || uploading || !username}
+          disabled={
+            !isDirty || uploading || !username || usernameError.length > 0
+          }
           loading={loading}
           icon={<SaveFilled style={{ fontSize: "1.3rem" }} />}
           onClick={() => {

@@ -19,6 +19,7 @@ import ClickableAvatar from "@/app/common/components/Avatar";
 import Loader from "@/app/common/components/Loader";
 import Link from "next/link";
 import ProposalDrawer from "./ProposalDrawer";
+import { UserType } from "@/app/types";
 
 export default function Governance() {
   const { mode } = useTheme();
@@ -119,6 +120,7 @@ export default function Governance() {
                           label={""}
                           src={author?.avatar || "0x0"}
                           size="6"
+                          profile={author as UserType}
                         />
                         <Tag hover tone="accent">
                           Snapshot

@@ -143,7 +143,10 @@ const ProfileCard = () => {
         <Box display="flex" flexDirection="row" gap="2" width="3/4">
           <Avatar
             label={user?.username}
-            src={user?.avatar}
+            src={
+              user?.avatar ||
+              `https://api.dicebear.com/5.x/thumbs/svg?seed=${user?.username}`
+            }
             size={{
               xs: "20",
               md: "28",

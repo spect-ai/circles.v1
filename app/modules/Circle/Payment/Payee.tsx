@@ -1,7 +1,7 @@
 import Avatar from "@/app/common/components/Avatar";
 import Dropdown from "@/app/common/components/Dropdown";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { Option, PaymentDetails } from "@/app/types";
+import { Option, PaymentDetails, UserType } from "@/app/types";
 import { Box, IconTrash, Input, Stack, Text } from "degen";
 import usePaymentViewCommon from "./Common/usePaymentCommon";
 import { ethers } from "ethers";
@@ -245,6 +245,9 @@ export default function Payee({
                           ?.username || ""
                       }
                       userId={p.value}
+                      profile={
+                        memberDetails?.memberDetails[p.value?.value] as UserType
+                      }
                     />
                     <Text color="white" weight="semiBold">
                       {memberDetails?.memberDetails[p.value?.value]?.username ||
