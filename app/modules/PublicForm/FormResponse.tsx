@@ -100,8 +100,6 @@ export default function FormResponse({
       form?.formMetadata?.transactionHashesOfUser?.surveyTokenClaim || ""
     );
 
-  console.log({ form });
-
   useEffect(() => {
     socket?.on(
       `${formId}:responseAddedOnChain`,

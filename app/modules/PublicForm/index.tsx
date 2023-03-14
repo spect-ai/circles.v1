@@ -30,6 +30,7 @@ import { useAtom } from "jotai";
 import { SkeletonLoader } from "./SkeletonLoader";
 import { WalletFilled, WalletOutlined } from "@ant-design/icons";
 import { quizValidFieldTypes } from "../Plugins/common/ResponseMatchDistribution";
+import Link from "next/link";
 
 function PublicForm() {
   const router = useRouter();
@@ -229,41 +230,61 @@ function PublicForm() {
                   {form.formMetadata.formRoleGating &&
                     form.formMetadata.formRoleGating.length > 0 && (
                       <Text weight="semiBold" variant="large">
-                        ⛩️ This form is role gated
+                        ⛩️ This form is role gated.
                       </Text>
                     )}
                   {form.formMetadata.poapEventId && (
                     <Text weight="semiBold" variant="large">
                       🏅 This form distributes a POAP to responders{" "}
                       {form.formMetadata
-                        .minimumNumberOfAnswersThatNeedToMatchForPoap &&
+                        .minimumNumberOfAnswersThatNeedToMatchForPoap > 0 &&
                         `who get a score of ${form.formMetadata.minimumNumberOfAnswersThatNeedToMatchForPoap} / ${quizValidFields?.length}  or higher`}
+                      .
                     </Text>
                   )}
                   {form.formMetadata.mintkudosTokenId && (
                     <Text weight="semiBold" variant="large">
                       🎉 This form distributes soulbound tokens to responders{" "}
                       {form.formMetadata
-                        .minimumNumberOfAnswersThatNeedToMatchForMintkudos &&
+                        .minimumNumberOfAnswersThatNeedToMatchForMintkudos >
+                        0 &&
                         `who get a score of ${form.formMetadata.minimumNumberOfAnswersThatNeedToMatchForMintkudos} / ${quizValidFields?.length} or higher`}
+                      .
                     </Text>
                   )}
                   {form.formMetadata.surveyTokenId && (
                     <Text weight="semiBold" variant="large">
-                      💰 This form distributes erc20 tokens to responders
+                      💰 This form distributes erc20 tokens to responders.
                     </Text>
                   )}
                   {form.formMetadata.sybilProtectionEnabled && (
                     <Text weight="semiBold" variant="large">
-                      ✋ This form is Sybil protected
+                      ✋ This form is Sybil protected.
                     </Text>
+                  )}
+                  {form.formMetadata.allowAnonymousResponses && (
+                    <Text weight="semiBold" variant="large">
+                      👤 Your identity is kept anonymous.
+                    </Text>
+                  )}
+                  {!form.formMetadata.allowAnonymousResponses && (
+                    <Stack direction="horizontal" space="1" align="center">
+                      <Text weight="semiBold" variant="large">
+                        🧙 Your profile information is collected with the
+                        response.
+                        {/* response. Setup your profile{" "} */}
+                      </Text>
+                      {/* <Text weight="semiBold" variant="large" color="accent">
+                        <a href="/profile">here.</a>
+                      </Text> */}
+                    </Stack>
                   )}
                   <Box display="flex" flexDirection="row" gap="2">
                     <Text weight="semiBold" variant="large" color="accent">
                       <WalletOutlined />
                     </Text>{" "}
                     <Text weight="semiBold" variant="large">
-                      This form requires you to connect your wallet
+                      This form requires you to sign in.
                     </Text>
                   </Box>
                   <Box
@@ -439,7 +460,7 @@ function PublicForm() {
                     )}
                 </motion.div>
               )}
-              {form.formMetadata.previousResponses?.length > 0 && (
+              {/* {form.formMetadata.previousResponses?.length > 0 && (
                 <DataActivity
                   activities={form.activity}
                   activityOrder={form.activityOrder}
@@ -454,7 +475,7 @@ function PublicForm() {
                   dataOwner={currentUser as UserType}
                   collection={form}
                 />
-              )}
+              )} */}
             </motion.div>
           )}
         </FormContainer>

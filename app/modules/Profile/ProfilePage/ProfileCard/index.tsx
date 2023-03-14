@@ -38,7 +38,7 @@ const Profile = styled(Box)<{ mode: string }>`
   width: 23vw;
   height: 90vh;
   margin: 2rem;
-  padding: 2rem;
+  padding: 1.3rem;
   border-radius: 1rem;
   box-shadow: 0px 1px 6px
     ${(props) =>
@@ -52,7 +52,7 @@ const Profile = styled(Box)<{ mode: string }>`
   display: flex;
   flex-direction: column;
   gap: 0.1rem;
-  align-items: center;
+  align-items: flex-start;
   position: relative;
   transition: all 0.5s ease-in-out;
 `;
@@ -63,7 +63,8 @@ const InfoBox = styled(Box)<{ gap: string }>`
   flex-wrap: wrap;
   gap: ${(props) => props.gap}rem;
   padding-bottom: 1rem;
-  justify-content: center;
+  justify-content: flex-start;
+  max-width: 100%;
 `;
 
 const TextInfo = styled(Box)`
@@ -71,13 +72,31 @@ const TextInfo = styled(Box)`
   flex-direction: column;
   flex-wrap: wrap;
   gap: 0.5rem;
-  align-items: center;
+  align-items: flex-start;
+  padding: 1rem 0rem;
 `;
 
 const Footer = styled(Box)`
   position: absolute;
   bottom: 1rem;
   width: 90%;
+`;
+
+export const SkillTag = styled(Box)<{ mode: string }>`
+  border-radius: 1.5rem;
+  border: solid 2px
+    ${(props) =>
+      props.mode === "dark"
+        ? "rgb(255, 255, 255, 0.05)"
+        : "rgb(20, 20, 20, 0.05)"};
+  &:hover {
+    border: solid 2px rgb(191, 90, 242);
+    transition-duration: 0.7s;
+  }
+  transition: all 0.3s ease-in-out;
+  padding: 0.1rem 0.5rem;
+  justify-content: center;
+  align-items: center;
 `;
 
 const ProfileCard = () => {
@@ -121,9 +140,9 @@ const ProfileCard = () => {
         />
       )}
       <Profile mode={mode}>
-        <Box cursor="pointer">
+        <Box display="flex" flexDirection="row" gap="2" width="3/4">
           <Avatar
-            label="profile-pic"
+            label={user?.username}
             src={user?.avatar}
             size={{
               xs: "20",
@@ -131,101 +150,122 @@ const ProfileCard = () => {
             }}
             address={user?.ethAddress}
           />
+          <Box>
+            <Box padding="0.5">
+              <Heading>{smartTrim(user?.username || "", 16)}</Heading>
+            </Box>
+            {user?.ethAddress && (
+              <Tag size="small" tone="accent" hover>
+                {smartTrim(user?.ethAddress, 12)}
+              </Tag>
+            )}
+            <InfoBox gap="1" marginTop="2">
+              {user?.githubId && !user?.github && (
+                <a
+                  href={`https://github.com/${user?.githubId}`}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                >
+                  <GithubOutlined
+                    style={{ color: "grey", fontSize: "1.2rem" }}
+                  />
+                </a>
+              )}
+              {user?.github && (
+                <a
+                  href={`${user.github}`}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                >
+                  <GithubOutlined
+                    style={{ color: "grey", fontSize: "1.2rem" }}
+                  />
+                </a>
+              )}
+              {user?.twitterId && !user?.twitter && (
+                <a
+                  href={`https://twitter.com/${user?.twitterId}`}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                >
+                  <TwitterOutlined
+                    style={{ color: "grey", fontSize: "1.2rem" }}
+                  />
+                </a>
+              )}
+              {user?.twitter && (
+                <a
+                  href={`${user.twitter}`}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                >
+                  <TwitterOutlined
+                    style={{ color: "grey", fontSize: "1.2rem" }}
+                  />
+                </a>
+              )}
+              {user?.behance && (
+                <a
+                  href={`${user.behance}`}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                >
+                  <BehanceOutlined
+                    style={{ color: "grey", fontSize: "1.2rem" }}
+                  />
+                </a>
+              )}
+              {user?.website && (
+                <a
+                  href={`${user.website}`}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                >
+                  <LinkOutlined style={{ color: "grey", fontSize: "1.2rem" }} />
+                </a>
+              )}
+            </InfoBox>
+          </Box>
         </Box>
-        <Box padding="0.5">
-          <Heading>{smartTrim(user?.username || "", 16)}</Heading>
-        </Box>
+
         {user?.lensHandle && (
           <Tag as="span" tone="purple" size="small">
             {user?.lensHandle}
           </Tag>
         )}
-        {user?.ethAddress && !user?.lensHandle && (
-          <Tag as="span" tone="purple" size="small">
-            {user?.ethAddress?.substring(0, 6) +
-              "..." +
-              user?.ethAddress?.substring(user?.ethAddress?.length - 6)}
-          </Tag>
-        )}
-        <InfoBox gap="1" marginTop="2">
-          {user?.githubId && !user?.github && (
-            <a
-              href={`https://github.com/${user?.githubId}`}
-              target="_blank"
-              rel="noreferrer noopener"
-            >
-              <GithubOutlined style={{ color: "grey", fontSize: "1.2rem" }} />
-            </a>
-          )}
-          {user?.github && (
-            <a
-              href={`${user.github}`}
-              target="_blank"
-              rel="noreferrer noopener"
-            >
-              <GithubOutlined style={{ color: "grey", fontSize: "1.2rem" }} />
-            </a>
-          )}
-          {user?.twitterId && !user?.twitter && (
-            <a
-              href={`https://twitter.com/${user?.twitterId}`}
-              target="_blank"
-              rel="noreferrer noopener"
-            >
-              <TwitterOutlined style={{ color: "grey", fontSize: "1.2rem" }} />
-            </a>
-          )}
-          {user?.twitter && (
-            <a
-              href={`${user.twitter}`}
-              target="_blank"
-              rel="noreferrer noopener"
-            >
-              <TwitterOutlined style={{ color: "grey", fontSize: "1.2rem" }} />
-            </a>
-          )}
-          {user?.behance && (
-            <a
-              href={`${user.behance}`}
-              target="_blank"
-              rel="noreferrer noopener"
-            >
-              <BehanceOutlined style={{ color: "grey", fontSize: "1.2rem" }} />
-            </a>
-          )}
-          {user?.website && (
-            <a
-              href={`${user.website}`}
-              target="_blank"
-              rel="noreferrer noopener"
-            >
-              <LinkOutlined style={{ color: "grey", fontSize: "1.2rem" }} />
-            </a>
-          )}
-        </InfoBox>
-        <Text variant="label"> Skills </Text>
-        <InfoBox gap="0.5" paddingTop="1">
-          {user?.skillsV2?.map((skill: any, index: any) => (
-            <Tag as="span" tone="accent" hover size="small" key={index}>
-              {skill.title}
-            </Tag>
-          ))}
-          {!user?.skillsV2?.length && (
-            <Text variant="small"> No skills added </Text>
-          )}
-        </InfoBox>
-        <TextInfo>
-          <Text variant="label"> Bio </Text>
-          <Text variant="small" align="center" as="div">
-            {user?.bio}
-          </Text>
-          {!user?.bio && <Text variant="small"> No bio added </Text>}
 
-          {/* <Text variant="label"> Circles </Text>
+        <Box paddingX="2" paddingY="1">
+          <TextInfo>
+            <Text variant="label"> About Me </Text>
+            <Text variant="base" as="div">
+              {user?.bio}
+            </Text>
+            {!user?.bio && <Text variant="small"> Not added </Text>}
+
+            {/* <Text variant="label"> Circles </Text>
           {circlesArray?.length > 0 && (
             <AvatarGroup limit={9} members={circlesArray as any} />
           )} */}
-        </TextInfo>
+          </TextInfo>
+          <Text variant="label"> Skills </Text>
+          <InfoBox gap="0.5" paddingTop="2">
+            {user?.skillsV2?.slice(0, 10).map((skill: any, index: any) => (
+              <SkillTag mode={mode} key={index}>
+                <Box
+                  display="flex"
+                  flexDirection="column"
+                  alignItems="center"
+                  justifyContent="center"
+                >
+                  <Text variant="small">{skill.title}</Text>
+                </Box>
+              </SkillTag>
+            ))}
+            {!user?.skillsV2?.length && (
+              <Text variant="small"> No skills added </Text>
+            )}
+          </InfoBox>
+        </Box>
         <Footer>
           {currentUser?.id == user?.id && (
             <Box display="flex" flexDirection="column" gap="4">

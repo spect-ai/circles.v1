@@ -55,7 +55,7 @@ export default function DataActivity({
     id: "anon",
     avatar: "",
     ethAddress: undefined,
-    username: "Anonymous User",
+    username: "Responder",
   };
 
   return (
@@ -70,7 +70,7 @@ export default function DataActivity({
               : getMemberDetails(activity.ref.actor?.id) || dataOwner;
           return (
             <Box key={activityId}>
-              <Stack direction="horizontal" align="flex-start" space="2">
+              <Stack direction="horizontal" align="center" space="2">
                 <Avatar
                   label=""
                   placeholder={!actor?.avatar}
@@ -85,7 +85,7 @@ export default function DataActivity({
                   <Stack direction="horizontal">
                     <Text color="accentText" weight="semiBold">
                       {actor?.id === "anon" ? (
-                        "Anonymous User"
+                        "Responder"
                       ) : (
                         <a
                           href={`/profile/${actor?.username}`}
@@ -116,13 +116,13 @@ export default function DataActivity({
           );
         })}
         <Stack direction="horizontal" space="2">
-          <Avatar
+          {/* <Avatar
             label=""
             placeholder={!currentUser?.avatar}
             src={currentUser?.avatar}
             address={currentUser?.ethAddress}
             size="8"
-          />
+          /> */}
           <Box
             width="full"
             gap="2"
@@ -130,7 +130,7 @@ export default function DataActivity({
             display="flex"
             flexDirection="row"
           >
-            {!sendingComment && (
+            {/* {!sendingComment && (
               <Box height="40" overflow="auto" width="full">
                 <Editor
                   placeholder="Write a reply..."
@@ -142,7 +142,7 @@ export default function DataActivity({
                   setIsDirty={setIsDirty}
                 />
               </Box>
-            )}
+            )} */}
             {isDirty && currentUser && (
               <Button
                 variant="secondary"

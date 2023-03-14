@@ -205,7 +205,7 @@ export function AdditionalSettings() {
             />
             <Text variant="base">Stop accepting responses on this form</Text>
           </Box>
-          <Box
+          {/* <Box
             display="flex"
             flexDirection="row"
             gap="2"
@@ -274,7 +274,7 @@ export function AdditionalSettings() {
             <Text variant="base">
               Require responders to connect wallet to fill the form
             </Text>
-          </Box>
+          </Box> */}
         </Box>
       </Stack>
     </>

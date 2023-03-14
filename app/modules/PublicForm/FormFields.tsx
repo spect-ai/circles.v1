@@ -269,7 +269,9 @@ function FormFields({ form, setForm }: Props) {
           form.formMetadata.previousResponses[
             form.formMetadata.previousResponses.length - 1
           ];
-        setRespondAsAnonymous(lastResponse["anonymous"]);
+        setRespondAsAnonymous(
+          lastResponse["anonymous"] || form.formMetadata.allowAnonymousResponses
+        );
         form.propertyOrder.forEach((propertyId) => {
           if (!form.properties[propertyId].isPartOfFormView) return;
           if (
@@ -306,6 +308,7 @@ function FormFields({ form, setForm }: Props) {
         });
       } else {
         const tempData: any = {};
+        setRespondAsAnonymous(form.formMetadata.allowAnonymousResponses);
         form.propertyOrder.forEach((propertyId) => {
           if (
             [
@@ -606,7 +609,7 @@ function FormFields({ form, setForm }: Props) {
               />
             );
         })}
-
+      {/* 
       {!viewResponse && form.formMetadata.allowAnonymousResponses && (
         <Box
           display="flex"
@@ -626,7 +629,7 @@ function FormFields({ form, setForm }: Props) {
           />
           <Text variant="base">Respond anonymously</Text>
         </Box>
-      )}
+      )} */}
       {form.formMetadata.paymentConfig && (
         <Box marginBottom="8">
           <CollectPayment

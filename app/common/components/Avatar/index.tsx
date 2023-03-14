@@ -1,9 +1,19 @@
-import { Avatar, Box, Tag, Text, useTheme } from "degen";
+import { Avatar, Box, Stack, Tag, Text, useTheme } from "degen";
 import Link from "next/link";
 import { useState } from "react";
 import PrimaryButton from "../PrimaryButton";
 import { AnimatePresence, motion } from "framer-motion";
 import { grow } from "@/app/common/components/Modal/index";
+import { UserType } from "@/app/types";
+import { smartTrim } from "../../utils/utils";
+import { BsArrowUpRight, BsArrowUpRightSquare } from "react-icons/bs";
+import styled from "styled-components";
+import {
+  BehanceOutlined,
+  GithubOutlined,
+  LinkOutlined,
+  TwitterOutlined,
+} from "@ant-design/icons";
 
 interface AvatarProps {
   username: string;
@@ -13,6 +23,7 @@ interface AvatarProps {
   size: "1" | "1.5" | "2" | "2.5" | "4" | "6" | "8" | "9" | "10" | "12";
   address?: string;
   placeholder?: boolean;
+  profile: UserType;
 }
 
 interface AvatarGroupProps {
@@ -33,6 +44,7 @@ export default function ClickableAvatar({
   size,
   address,
   placeholder,
+  profile,
 }: AvatarProps) {
   const [hover, setHover] = useState(false);
   const { mode } = useTheme();
@@ -70,6 +82,7 @@ export default function ClickableAvatar({
                 backgroundColor: `${
                   mode === "dark" ? "rgba(20, 20, 20, 1)" : "white"
                 }`,
+                width: "24rem",
               }}
             >
               <Box
@@ -77,26 +90,149 @@ export default function ClickableAvatar({
                   display: "flex",
                   flexDirection: "row",
                   gap: "0.5rem",
-                  alignItems: "center",
-                  margin: "0.5rem 0.5rem 0.5rem"
+                  alignItems: "flex-start",
+                  margin: "0.5rem 0.5rem 0.5rem",
+                  width: "100%",
                 }}
               >
-                <Avatar label={userId} src={src} size="12" address={address} />
-                <Box>
-                  <Text variant="base" weight="semiBold" whiteSpace="nowrap">
-                    {username}
-                  </Text>
-                  {address && (
-                    <Tag size="small" tone="accent" hover>
-                      {address.substring(0, 8) + "..."}
-                    </Tag>
-                  )}
+                <Box display="flex" flexDirection="row" gap="2" width="3/4">
+                  <Avatar
+                    label={userId}
+                    src={src}
+                    size="20"
+                    address={address}
+                  />
+                  <Box>
+                    <Text variant="base" weight="semiBold" whiteSpace="nowrap">
+                      {username}
+                    </Text>
+
+                    {address && (
+                      <Tag size="small" tone="accent" hover>
+                        {smartTrim(address, 12)}
+                      </Tag>
+                    )}
+                    <InfoBox gap="1">
+                      {profile?.githubId && !profile?.github && (
+                        <a
+                          href={`https://github.com/${user?.githubId}`}
+                          target="_blank"
+                          rel="noreferrer noopener"
+                        >
+                          <GithubOutlined
+                            style={{ color: "grey", fontSize: "1.2rem" }}
+                          />
+                        </a>
+                      )}
+                      {profile?.github && (
+                        <a
+                          href={`${profile.github}`}
+                          target="_blank"
+                          rel="noreferrer noopener"
+                        >
+                          <GithubOutlined
+                            style={{ color: "grey", fontSize: "1.2rem" }}
+                          />
+                        </a>
+                      )}
+                      {profile?.twitterId && !profile?.twitter && (
+                        <a
+                          href={`https://twitter.com/${profile?.twitterId}`}
+                          target="_blank"
+                          rel="noreferrer noopener"
+                        >
+                          <TwitterOutlined
+                            style={{ color: "grey", fontSize: "1.2rem" }}
+                          />
+                        </a>
+                      )}
+                      {profile?.twitter && (
+                        <a
+                          href={`${profile.twitter}`}
+                          target="_blank"
+                          rel="noreferrer noopener"
+                        >
+                          <TwitterOutlined
+                            style={{ color: "grey", fontSize: "1.2rem" }}
+                          />
+                        </a>
+                      )}
+                      {profile?.behance && (
+                        <a
+                          href={`${profile.behance}`}
+                          target="_blank"
+                          rel="noreferrer noopener"
+                        >
+                          <BehanceOutlined
+                            style={{ color: "grey", fontSize: "1.2rem" }}
+                          />
+                        </a>
+                      )}
+                      {profile?.website && (
+                        <a
+                          href={`${profile.website}`}
+                          target="_blank"
+                          rel="noreferrer noopener"
+                        >
+                          <LinkOutlined
+                            style={{ color: "grey", fontSize: "1.2rem" }}
+                          />
+                        </a>
+                      )}
+                    </InfoBox>
+                  </Box>
+                </Box>
+                <Box
+                  display="flex"
+                  flexDirection="row"
+                  justifyContent="flex-end"
+                >
+                  <a href={`/profile/${username}`} target="_blank">
+                    <PrimaryButton variant="transparent">
+                      <Stack direction="horizontal" space="1" align="center">
+                        View <BsArrowUpRight />
+                      </Stack>
+                    </PrimaryButton>
+                  </a>
                 </Box>
               </Box>
-
-              <Link href={`/profile/${username}`}>
-                <PrimaryButton>View Profile</PrimaryButton>
-              </Link>
+              <Box
+                borderColor="textSecondary"
+                style={{ margin: "0rem 0.5rem 0.5rem" }}
+              >
+                <Text variant="label" weight="bold">
+                  About Me
+                </Text>
+                {profile.bio && <Text variant="small">{profile.bio}</Text>}
+                {!profile.bio && <Text variant="small"> Not added </Text>}
+              </Box>
+              <Box
+                borderColor="textSecondary"
+                style={{ margin: "0rem 0.5rem 0.5rem" }}
+              >
+                <Text variant="label" weight="bold">
+                  Skills
+                </Text>
+                <InfoBox>
+                  {profile?.skillsV2
+                    ?.slice(0, 10)
+                    .map((skill: any, index: any) => (
+                      <SkillTag mode={mode} as="span" key={index}>
+                        <Box
+                          display="flex"
+                          flexDirection="column"
+                          alignItems="center"
+                          justifyContent="center"
+                        >
+                          <Text variant="small">{skill.title}</Text>
+                        </Box>
+                      </SkillTag>
+                    ))}
+                </InfoBox>
+                {!profile?.skillsV2?.length && (
+                  <Text variant="small"> Not added </Text>
+                )}
+              </Box>
             </motion.div>
           )}
         </AnimatePresence>
@@ -160,17 +296,44 @@ export function ClickableAvatarGroup({
             <Text variant="large" weight="semiBold" whiteSpace="nowrap">
               {username}
             </Text>
+            <Link href={`/profile/${username}`}>
+              <PrimaryButton>View</PrimaryButton>
+            </Link>
             {address && (
               <Tag size="medium" hover>
                 {address.substring(0, 5) + "..."}
               </Tag>
             )}
-            <Link href={`/profile/${username}`}>
-              <PrimaryButton>View Profile</PrimaryButton>
-            </Link>
           </motion.div>
         )}
       </AnimatePresence>
     </>
   );
 }
+
+export const SkillTag = styled(Box)<{ mode: string }>`
+  border-radius: 1.5rem;
+  border: solid 2px
+    ${(props) =>
+      props.mode === "dark"
+        ? "rgb(255, 255, 255, 0.05)"
+        : "rgb(20, 20, 20, 0.05)"};
+  &:hover {
+    border: solid 2px rgb(191, 90, 242);
+    transition-duration: 0.7s;
+  }
+  transition: all 0.3s ease-in-out;
+  padding: 0.1rem 0.5rem;
+  justify-content: center;
+  align-items: center;
+  overflow: auto;
+`;
+
+const InfoBox = styled(Box)`
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding-top: 0.5rem;
+  justify-content: flex-start;
+`;

@@ -17,7 +17,8 @@ export type PluginType =
   | "erc20"
   | "guildxyz"
   | "mintkudos"
-  | "googleCaptcha";
+  | "googleCaptcha"
+  | "responderProfile";
 
 export const spectPlugins: { [key: string]: SpectPlugin } = {
   gtcpassport: {
@@ -113,6 +114,17 @@ export const spectPlugins: { [key: string]: SpectPlugin } = {
     docs: "https://docs.guild.xyz",
     image:
       "https://ik.imagekit.io/spectcdn/google-android-apps-100705848-large.webp?ik-sdk-version=javascript-1.4.3&updatedAt=1678260406080",
+    premium: true,
+  },
+  responderProfile: {
+    id: "responderProfile",
+    name: "Responder Profile",
+    version: "1.0.0",
+    description:
+      "Collect information about the responder. Past experiences, educational achievments, skills along with linked NFTs & credentials!",
+    tags: "credential curation, responder info",
+    docs: "https://docs.guild.xyz",
+    image: "https://ik.imagekit.io/spectcdn/image.png?updatedAt=1678724185631",
     premium: true,
   },
 };

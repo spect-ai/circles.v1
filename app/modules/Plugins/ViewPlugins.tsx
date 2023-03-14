@@ -21,6 +21,7 @@ import {
 import Poap from "./poap";
 import GoogleCaptcha from "./captcha";
 import { matchSorter } from "match-sorter";
+import ResponderProfile from "./responderProfile";
 
 type Props = {};
 
@@ -41,6 +42,7 @@ export default function ViewPlugins({}: Props) {
     Object.keys(spectPlugins)
   );
   const [showAdded, setShowAdded] = useState(false);
+  const [numPluginsAdded, setNumPlugnsAdded] = useState(0);
 
   useEffect(() => {
     setFilteredPlugins(Object.keys(spectPlugins));
@@ -92,6 +94,7 @@ export default function ViewPlugins({}: Props) {
       case "erc20":
       case "ceramic":
       case "googleCaptcha":
+      case "responderProfile":
         setIsPluginOpen(true);
         setPluginOpen(pluginName);
         break;
@@ -121,20 +124,35 @@ export default function ViewPlugins({}: Props) {
         return !!collection.formMetadata.ceramicEnabled;
       case "googleCaptcha":
         return collection.formMetadata.captchaEnabled === true;
+      case "responderProfile":
+        return collection.formMetadata.allowAnonymousResponses === false;
       default:
         return false;
     }
   };
 
+  useEffect(() => {
+    setNumPlugnsAdded(
+      Object.keys(spectPlugins).filter((pluginName) =>
+        isPluginAdded(pluginName as PluginType)
+      )?.length
+    );
+  }, [collection.formMetadata]);
+
   return (
     <Box>
       <PrimaryButton
+        variant={numPluginsAdded > 0 ? "tertiary" : "secondary"}
         onClick={() => {
           setIsOpen(true);
         }}
-        icon={<IconPlug color="accent" />}
+        icon={
+          <IconPlug color={numPluginsAdded > 0 ? "textSecondary" : "accent"} />
+        }
       >
-        Add Plugins
+        {numPluginsAdded > 0
+          ? ` Plugins (${numPluginsAdded} added)`
+          : `Add Plugins`}
       </PrimaryButton>
       <AnimatePresence>
         {isOpen && (
@@ -182,7 +200,7 @@ export default function ViewPlugins({}: Props) {
                     }}
                   >
                     <Tag tone={showAdded ? "accent" : "secondary"} hover>
-                      {showAdded ? "Show All" : "Show Added"}
+                      {showAdded ? `Show All` : `Show Added`}
                     </Tag>
                   </Box>
                 </Stack>
@@ -254,6 +272,12 @@ export default function ViewPlugins({}: Props) {
           <GoogleCaptcha
             handleClose={() => setIsPluginOpen(false)}
             key="googleCaptcha"
+          />
+        )}
+        {isPluginOpen && pluginOpen === "responderProfile" && (
+          <ResponderProfile
+            handleClose={() => setIsPluginOpen(false)}
+            key="responderProfile"
           />
         )}
       </AnimatePresence>

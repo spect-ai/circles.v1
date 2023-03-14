@@ -106,9 +106,10 @@ export default function AddSkillModal({
             </Text>
           )}
           <Input
-            label=""
+            label
             placeholder={`Enter Skill`}
             value={title}
+            maxLength={50}
             onChange={(e) => {
               setTitle(e.target.value);
               setRequiredFieldsNotSet({

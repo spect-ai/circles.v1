@@ -4,7 +4,15 @@ import { OptionType } from "@/app/common/components/Dropdown";
 import Editor from "@/app/common/components/Editor";
 import { useCircle } from "@/app/modules/Circle/CircleContext";
 import { MemberDetails, UserType } from "@/app/types";
-import { Avatar, Box, Button, IconChevronRight, Stack, Tag, Text } from "degen";
+import {
+  Box,
+  Button,
+  IconChevronRight,
+  Stack,
+  Tag,
+  Text,
+  Avatar as DefaultAvatar,
+} from "degen";
 import { motion } from "framer-motion";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
@@ -15,6 +23,7 @@ import { useLocalCollection } from "../../Context/LocalCollectionContext";
 import DataActivity from "./DataActivity";
 import VotingActions from "./VotingActions";
 import SnapshotVoting from "./VotingOnSnapshot";
+import Avatar from "@/app/common/components/Avatar";
 
 type props = {
   expandedDataSlug: string;
@@ -33,12 +42,16 @@ export default function DataDrawer({
   const router = useRouter();
   const { dataId: dataSlug, circle: cId } = router.query;
   const [data, setData] = useState({} as any);
+  const [dataIdx, setDataIdx] = useState(0);
 
   useEffect(() => {
     if (dataId && collection.data) {
       setTimeout(() => {
         setData(collection?.data?.[dataId]);
       }, 0);
+
+      const idx = Object.keys(collection.data).indexOf(dataId);
+      setDataIdx(idx + 1);
     }
   }, [collection?.data, dataId]);
 
@@ -93,44 +106,15 @@ export default function DataDrawer({
         >
           <ScrollContainer paddingX="4" paddingY="2">
             <Stack space="5">
-              {collection.data?.[dataId]?.["anonymous"] === true ? (
-                <Stack direction="horizontal" align="center" space="2">
-                  <Avatar src="" label="" size="8" />
+              <Stack direction="horizontal" align="center" space="2">
+                <Box marginX="10" marginBottom="4">
+                  {" "}
                   <Text color="accentText" weight="semiBold">
-                    Anonymous user
+                    Response {dataIdx}
                   </Text>
-                </Stack>
-              ) : (
-                <a
-                  href={`/profile/${
-                    collection?.profiles?.[collection?.dataOwner[data?.slug]]
-                      ?.username
-                  }`}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  <Stack direction="horizontal" align="center" space="2">
-                    <Avatar
-                      src={
-                        collection.profiles[collection.dataOwner[data.slug]]
-                          .avatar
-                      }
-                      address={
-                        collection.profiles[collection.dataOwner[data.slug]]
-                          .ethAddress
-                      }
-                      label=""
-                      size="8"
-                    />
-                    <Text color="accentText" weight="semiBold">
-                      {
-                        collection.profiles[collection.dataOwner[data.slug]]
-                          .username
-                      }
-                    </Text>
-                  </Stack>
-                </a>
-              )}
+                </Box>
+              </Stack>
+
               <Box
                 display="flex"
                 flexDirection={{
@@ -153,6 +137,7 @@ export default function DataDrawer({
                 <Box display="flex" flexDirection="column" width="3/4" gap="4">
                   {collection.propertyOrder.map((propertyName: string) => {
                     const property = collection.properties[propertyName];
+                    if (property.isPartOfFormView === false) return null;
                     if (!data[property.id || property.name])
                       return (
                         <Stack key={property.name} space="1">
@@ -175,8 +160,8 @@ export default function DataDrawer({
                           align={"center"}
                         >
                           <Text
-                            weight="bold"
-                            variant="extraLarge"
+                            weight="semiBold"
+                            variant="large"
                             color="accent"
                           >
                             {property.name}
@@ -369,7 +354,7 @@ export default function DataDrawer({
                         {property?.type === "discord" && (
                           <Box padding="0">
                             <Stack direction="horizontal" align="center">
-                              <Avatar
+                              <DefaultAvatar
                                 label="Discord Avatar"
                                 src={`https://cdn.discordapp.com/avatars/${data[propertyName].id}/${data[propertyName].avatar}.png`}
                               />
@@ -393,7 +378,7 @@ export default function DataDrawer({
                           >
                             <Box padding="0">
                               <Stack direction="horizontal" align="center">
-                                <Avatar
+                                <DefaultAvatar
                                   label="Discord Avatar"
                                   src={data[propertyName].avatar_url}
                                 />
@@ -434,6 +419,61 @@ export default function DataDrawer({
                       </Stack>
                     );
                   })}
+                  {collection.data?.[dataId]?.["anonymous"] === false && (
+                    <Stack space="1">
+                      <Text weight="semiBold" variant="large" color="accent">
+                        Responder
+                      </Text>
+                      <a
+                        href={`/profile/${
+                          collection?.profiles?.[
+                            collection?.dataOwner[data?.slug]
+                          ]?.username
+                        }`}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        <Stack direction="horizontal" align="center" space="2">
+                          <Avatar
+                            src={
+                              collection.profiles[
+                                collection.dataOwner[data.slug]
+                              ].avatar
+                            }
+                            address={
+                              collection.profiles[
+                                collection.dataOwner[data.slug]
+                              ].ethAddress
+                            }
+                            label=""
+                            size="6"
+                            username={
+                              collection.profiles[
+                                collection.dataOwner[data.slug]
+                              ].username
+                            }
+                            userId={
+                              collection.profiles[
+                                collection.dataOwner[data.slug]
+                              ].id
+                            }
+                            profile={
+                              collection.profiles[
+                                collection.dataOwner[data.slug]
+                              ]
+                            }
+                          />
+                          <Text color="accentText" weight="semiBold">
+                            {
+                              collection.profiles[
+                                collection.dataOwner[data.slug]
+                              ].username
+                            }
+                          </Text>
+                        </Stack>
+                      </a>
+                    </Stack>
+                  )}
                 </Box>
                 {/* {!collection.voting?.periods?.[dataId]?.snapshot
                   ?.proposalId && <SpectVoting dataId={dataId} />} */}
@@ -447,7 +487,7 @@ export default function DataDrawer({
               borderTopWidth="0.375"
               marginY="4"
               borderRadius="full"
-              marginTop="8"
+              marginTop="24"
             />
             <Box paddingBottom="0">
               <DataActivity

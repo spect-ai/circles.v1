@@ -96,7 +96,7 @@ export default function PublicField({
       {form.properties[propertyName]?.type === "shortText" && (
         <Input
           label=""
-          placeholder={`Enter short text`}
+          placeholder={`Enter text`}
           value={data && data[propertyName]}
           onChange={(e) => {
             setData({ ...data, [propertyName]: e.target.value });
@@ -240,7 +240,7 @@ export default function PublicField({
               setData({ ...data });
               updateRequiredFieldNotSet(propertyName, value);
             }}
-            placeholder={`Enter long text, use / for commands`}
+            placeholder={`Enter text, use / for commands`}
             isDirty={true}
             disabled={disabled}
           />
