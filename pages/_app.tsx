@@ -76,9 +76,9 @@ import useProfileUpdate from "@/app/services/Profile/useProfileUpdate";
 const ArcanaRainbowConnector = ({ chains }: any) => {
   return {
     id: "arcana-auth",
-    name: "Arcana",
+    name: "Use Discord, Github or Email",
     iconUrl:
-      "https://uploads-ssl.webflow.com/63aa7f8ce3b3be42ed4f4a3f/63b0158fdd90445d4cd55778_Arcana.png",
+      "https://spect.infura-ipfs.io/ipfs/QmcBLdB23dQkXdMKFHAjVKMKBPJF82XkqR5ZkxyCk6aset",
     iconBackground: "",
     createConnector: () => {
       const connector = new ArcanaConnector({

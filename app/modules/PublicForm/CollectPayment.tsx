@@ -423,7 +423,7 @@ export default function CollectPayment({
                 }
               }}
             >
-              Pay
+              {paymentConfig.type === "paywall" ? "Pay" : "Donate"}
             </PrimaryButton>
           </Box>
         </Stack>
