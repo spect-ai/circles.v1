@@ -11,16 +11,20 @@ import { PassportStampIcons, PassportStampIconsLightMode } from "@/app/assets";
 import Image from "next/image";
 import { useAtom } from "jotai";
 import { userDataAtom } from "@/app/state/global";
+import { Mintkudos } from "./Credentials/Mintkudos";
+import { Poap } from "./Credentials/Poap";
+import { GitcoinPassport } from "./Credentials/GitcoinPassport";
 
 type Props = {
   credentials: Credential[];
   setCredentials: (credentials: Credential[]) => void;
+  allCredentials: { [id: string]: any[] };
 };
 
 const tabKeys = [
+  "poaps",
   "kudos",
-  "gitcoinPassport",
-  "poap",
+  "gitcoinPassports",
   "gitpoap",
   "sismo",
   "buildspace",
@@ -29,10 +33,10 @@ const tabKeys = [
 export default function LinkCredentialsModal({
   credentials,
   setCredentials,
+  allCredentials,
 }: Props) {
   const [tab, setTab] = useState(0);
 
-  const [credentialsShown, setCredentialsShown] = useState<Credential[]>([]);
   const [linkCredentialsOpen, setLinkCredentialsOpen] = useState(false);
 
   const [selectedCredentials, setSelectedCredentials] = useState<{
@@ -40,28 +44,6 @@ export default function LinkCredentialsModal({
   }>({});
   const [normalizedSelectedCredentials, setNormalizedSelectedCredentials] =
     useState<Credential[]>(credentials ? credentials : []);
-  const [loading, setLoading] = useState(false);
-  const [userData, setUserData] = useAtom(userDataAtom);
-  const { mode } = useTheme();
-
-  console.log({ normalizedSelectedCredentials });
-
-  const fetchCredentials = (id: number) => {
-    setLoading(true);
-    setTab(id);
-    getCredentialsByAddressAndIssuer(userData?.ethAddress, tabKeys[id])
-      .then((res) => {
-        console.log(res);
-        if (res?.length) setCredentialsShown(res);
-        else setCredentialsShown([]);
-      })
-      .catch((err) => console.log(err))
-      .finally(() => setLoading(false));
-  };
-
-  const onTabClick = (id: number) => {
-    void fetchCredentials(id);
-  };
 
   const onCredentialClick = (credential: Credential) => {
     const newSelectedCredentials = {
@@ -87,26 +69,6 @@ export default function LinkCredentialsModal({
 
     setSelectedCredentials(newSelectedCredentials);
   };
-
-  useEffect(() => {
-    if (linkCredentialsOpen) {
-      void fetchCredentials(0);
-      const selectedCredentials = {} as {
-        [tab: string]: { [id: string]: boolean };
-      };
-      credentials?.forEach((credential) => {
-        if (!selectedCredentials[credential.service])
-          selectedCredentials[credential.service] = {};
-        selectedCredentials[credential.service][credential.id.toString()] =
-          true;
-      });
-      setSelectedCredentials(selectedCredentials);
-    }
-  }, [linkCredentialsOpen]);
-
-  useEffect(() => {
-    setNormalizedSelectedCredentials(credentials);
-  }, [credentials]);
 
   return (
     <>
@@ -147,11 +109,12 @@ export default function LinkCredentialsModal({
             <Box width="1/4" paddingY="8" paddingRight="1">
               <Tabs
                 selectedTab={tab}
-                onTabClick={onTabClick}
+                onTabClick={(idx) => setTab(idx)}
                 tabs={[
+                  "POAP",
                   "Mintkudos",
                   "Gitcoin Passport",
-                  // "POAP",
+
                   // "GitPOAP",
                   // "Sismo",
                   // "Buildspace",
@@ -169,114 +132,39 @@ export default function LinkCredentialsModal({
               }}
               paddingY="4"
             >
-              {!credentialsShown?.length && !loading && (
-                <Box
-                  marginTop="8"
-                  display="flex"
-                  justifyContent="center"
-                  alignItems="center"
-                >
-                  <Text>No credentials found</Text>
-                </Box>
+              {tabKeys[tab] === "kudos" && (
+                <Mintkudos
+                  credentials={allCredentials["kudos"]}
+                  selectedCredentials={selectedCredentials["kudos"]}
+                  onCredentialClick={(credential: Credential) =>
+                    onCredentialClick(credential)
+                  }
+                />
               )}
-              {!loading &&
-                credentialsShown?.map((credential, index) => {
-                  let selected = false;
-                  if (
-                    selectedCredentials[tabKeys[tab]] &&
-                    selectedCredentials[tabKeys[tab]][credential.id]
-                  )
-                    selected = true;
-                  if (tabKeys[tab] === "gitcoinPassport")
-                    return (
-                      <CredentialCard
-                        key={index}
-                        mode={mode}
-                        selected={
-                          selectedCredentials[tabKeys[tab]] &&
-                          selectedCredentials[tabKeys[tab]][credential.id]
-                        }
-                        onClick={() => onCredentialClick(credential)}
-                      >
-                        <Box
-                          display="flex"
-                          flexDirection="row"
-                          gap="4"
-                          alignItems="center"
-                        >
-                          <Box
-                            width="8"
-                            height="8"
-                            flexDirection="row"
-                            justifyContent="flex-start"
-                            alignItems="center"
-                          >
-                            {mode === "dark"
-                              ? PassportStampIcons[
-                                  (credential?.metadata as VerifiableCredential)
-                                    ?.providerName as keyof typeof PassportStampIconsLightMode
-                                ]
-                              : PassportStampIconsLightMode[
-                                  (credential?.metadata as VerifiableCredential)
-                                    ?.providerName as keyof typeof PassportStampIconsLightMode
-                                ]}
-                          </Box>
-                          <Box display="flex" flexDirection="column">
-                            <Text variant="large" weight="bold">
-                              {credential.name}
-                            </Text>
-                            <Text variant="small">
-                              {credential.description}
-                            </Text>
-                          </Box>
-                        </Box>
-                      </CredentialCard>
-                    );
-                  else
-                    return (
-                      <CredentialCard
-                        key={index}
-                        mode={mode}
-                        selected={selected}
-                        onClick={() => onCredentialClick(credential)}
-                      >
-                        <Box
-                          display="flex"
-                          flexDirection="row"
-                          gap="4"
-                          alignItems="flex-start"
-                          justifyContent="center"
-                        >
-                          <Box width="1/4">
-                            <Image
-                              src={credential.imageUri}
-                              width="100%"
-                              height="100%"
-                              objectFit="contain"
-                              alt="img"
-                            />
-                          </Box>
-                          <Box
-                            display="flex"
-                            flexDirection="column"
-                            justifyContent="center"
-                            width="3/4"
-                          >
-                            <Text variant="large" weight="bold" align="left">
-                              {credential.name}
-                            </Text>
-                          </Box>
-                        </Box>
-                      </CredentialCard>
-                    );
-                })}
+              {tabKeys[tab] === "poaps" && (
+                <Poap
+                  credentials={allCredentials["poaps"]}
+                  selectedCredentials={selectedCredentials["poaps"]}
+                  onCredentialClick={(credential: Credential) =>
+                    onCredentialClick(credential)
+                  }
+                />
+              )}
+              {tabKeys[tab] === "gitcoinPassports" && (
+                <GitcoinPassport
+                  credentials={allCredentials["gitcoinPassports"]}
+                  selectedCredentials={selectedCredentials["gitcoinPassports"]}
+                  onCredentialClick={(credential: Credential) =>
+                    onCredentialClick(credential)
+                  }
+                />
+              )}
             </ScrollContainer>
           </Box>
           <Box padding="3">
             <PrimaryButton
               icon={<SaveFilled style={{ fontSize: "1.3rem" }} />}
               onClick={() => {
-                console.log({ normalizedSelectedCredentials });
                 setCredentials(normalizedSelectedCredentials);
                 setLinkCredentialsOpen(false);
               }}
@@ -320,4 +208,13 @@ export const CredentialCard = styled(Box)<{ mode: string; selected: boolean }>`
   position: relative;
   transition: all 0.3s ease-in-out;
   width: 80%;
+`;
+
+export const PluginAdded = styled.div`
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: rgba(20, 20, 20, 0.8);
+  padding: 0.5rem 1rem;
+  border-radius: 0 1rem 0 1rem;
 `;

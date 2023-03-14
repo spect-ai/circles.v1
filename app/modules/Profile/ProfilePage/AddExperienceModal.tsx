@@ -16,12 +16,14 @@ import { userDataAtom } from "@/app/state/global";
 type Props = {
   handleClose: () => void;
   modalMode: "add" | "edit";
+  allCredentials: { [id: string]: any[] };
   experienceId?: number;
 };
 
 export default function AddExperienceModal({
   handleClose,
   modalMode,
+  allCredentials,
   experienceId,
 }: Props) {
   const [userData, setUserData] = useAtom(userDataAtom);
@@ -297,6 +299,7 @@ export default function AddExperienceModal({
           <LinkCredentialsModal
             setCredentials={setLinkedCredentials}
             credentials={linkedCredentials}
+            allCredentials={allCredentials}
           />
         </Box>
         <Box

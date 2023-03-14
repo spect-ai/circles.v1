@@ -14,6 +14,7 @@ type Props = {
   handleClose: () => void;
   modalMode: "add" | "edit";
   skills: LensSkills[];
+  allCredentials: { [id: string]: any[] };
   skillId?: number;
 };
 
@@ -21,6 +22,7 @@ export default function AddSkillModal({
   handleClose,
   modalMode,
   skills,
+  allCredentials,
   skillId,
 }: Props) {
   const [userData, setUserData] = useAtom(userDataAtom);
@@ -151,6 +153,7 @@ export default function AddSkillModal({
           <LinkCredentialsModal
             credentials={linkedCredentials}
             setCredentials={setLinkedCredentials}
+            allCredentials={allCredentials}
           />
         </Box>
         <Box

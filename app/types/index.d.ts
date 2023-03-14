@@ -1245,9 +1245,17 @@ export type Credential = {
   name: string;
   description: string;
   imageUri: string;
-  type: "vc" | "soulbound";
+  type: "vc" | "soulbound" | "poap";
   service: string;
   metadata?: VerifiableCredential | SoulboundCredential;
+};
+
+export type PoapCredential = {
+  tokenId: string;
+  owner: string;
+  chain: string;
+  created: string;
+  event: POAPEventType;
 };
 
 export type Action = {

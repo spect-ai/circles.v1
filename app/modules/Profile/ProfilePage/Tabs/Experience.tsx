@@ -8,7 +8,13 @@ import LensImportModal from "../LensImportModal";
 import ViewExperienceModal from "../ViewExperienceModal";
 import { Card, ScrollContainer } from "./index";
 
-const Experience = ({ userData }: { userData: UserType }) => {
+const Experience = ({
+  userData,
+  allCredentials,
+}: {
+  userData: UserType;
+  allCredentials: { [id: string]: any[] };
+}) => {
   const { mode } = useTheme();
   const [addExperience, setAddExperience] = useState(false);
   const [addFromLens, setAddFromLens] = useState(false);
@@ -34,6 +40,7 @@ const Experience = ({ userData }: { userData: UserType }) => {
           modalMode={modalMode}
           experienceId={selectedExperienceId}
           handleClose={() => setAddExperience(false)}
+          allCredentials={allCredentials}
         />
       )}
       {openExperienceView && (

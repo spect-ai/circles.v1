@@ -14,12 +14,14 @@ import LinkCredentialsModal from "./LinkCredentialsModal";
 type Props = {
   handleClose: () => void;
   modalMode: "add" | "edit";
+  allCredentials: { [id: string]: any[] };
   educationId?: number;
 };
 
 export default function AddEducationModal({
   handleClose,
   modalMode,
+  allCredentials,
   educationId,
 }: Props) {
   const [userData] = useAtom<any>(userDataAtom);
@@ -284,6 +286,7 @@ export default function AddEducationModal({
           <LinkCredentialsModal
             credentials={linkedCredentials}
             setCredentials={setLinkedCredentials}
+            allCredentials={allCredentials}
           />
         </Box>
         <Box

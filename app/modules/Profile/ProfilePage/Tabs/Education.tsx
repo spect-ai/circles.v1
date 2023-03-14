@@ -7,7 +7,13 @@ import AddEducationModal from "../AddEducationModal";
 import ViewEducationModal from "../ViewEducationModal";
 import { Card, ScrollContainer } from "./index";
 
-const Education = ({ userData }: { userData: UserType }) => {
+const Education = ({
+  userData,
+  allCredentials,
+}: {
+  userData: UserType;
+  allCredentials: { [id: string]: any[] };
+}) => {
   const [openEducationModal, setOpenEducationModal] = useState(false);
   const [selectedEducationId, setSelectedEducationId] = useState<number>();
   const [openEducationView, setOpenEducationView] = useState(false);
@@ -43,6 +49,7 @@ const Education = ({ userData }: { userData: UserType }) => {
           modalMode={modalMode}
           handleClose={() => setOpenEducationModal(false)}
           educationId={selectedEducationId}
+          allCredentials={allCredentials}
         />
       )}
       <ScrollContainer>

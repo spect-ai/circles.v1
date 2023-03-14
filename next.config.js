@@ -7,6 +7,7 @@ const nextConfig = {
       "s3.amazonaws.com",
       "images.mintkudos.xyz",
       "spect.infura-ipfs.io",
+      "assets.poap.xyz",
     ],
   },
   env: {

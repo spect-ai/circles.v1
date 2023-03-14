@@ -8,7 +8,13 @@ import styled from "styled-components";
 import AddSkillModal from "../AddSkillModal";
 import ViewSkillModal from "../ViewSkillModal";
 
-const Skills = ({ userData }: { userData: UserType }) => {
+const Skills = ({
+  userData,
+  allCredentials,
+}: {
+  userData: UserType;
+  allCredentials: { [id: string]: any[] };
+}) => {
   const { mode } = useTheme();
   const [openSkillModal, setOpenSkillModal] = useState(false);
   const [selectedSkillId, setSelectedSkillId] = useState<number>();
@@ -39,6 +45,7 @@ const Skills = ({ userData }: { userData: UserType }) => {
           skills={skills}
           handleClose={() => setOpenSkillModal(false)}
           skillId={selectedSkillId}
+          allCredentials={allCredentials}
         />
       )}
       {!skills?.length && (
