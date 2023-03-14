@@ -25,7 +25,7 @@ const Experience = ({ userData }: { userData: UserType }) => {
   };
 
   return (
-    <Box>
+    <Box width="full">
       {addFromLens && (
         <LensImportModal handleClose={() => setAddFromLens(false)} />
       )}
@@ -70,7 +70,7 @@ const Experience = ({ userData }: { userData: UserType }) => {
           </Box>
         )}
         {experiences?.length > 0 && (
-          <>
+          <Box width="full">
             {currentUser?.id === userData.id && (
               <Box
                 width={{
@@ -170,7 +170,7 @@ const Experience = ({ userData }: { userData: UserType }) => {
                 </Card>
               );
             })}
-          </>
+          </Box>
         )}
       </ScrollContainer>
     </Box>

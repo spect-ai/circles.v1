@@ -33,10 +33,17 @@ const Profile = styled(Box)<{ mode: string }>`
     height: 55vh;
     margin-top: 0.5rem;
     align-items: center;
+    padding: 0.5rem 0rem;
   }
-
-  width: 23vw;
+  @media (max-width: 1028px) and (min-width: 768px) {
+    width: 100%;
+    padding: 1rem;
+    margin: 1rem;
+    height: 90vh;
+    align-items: center;
+  }
   height: 90vh;
+  width: 23vw;
   margin: 2rem;
   padding: 1.3rem;
   border-radius: 1rem;
@@ -140,7 +147,19 @@ const ProfileCard = () => {
         />
       )}
       <Profile mode={mode}>
-        <Box display="flex" flexDirection="row" gap="2" width="3/4">
+        <Box
+          display="flex"
+          flexDirection="row"
+          gap="2"
+          width={{
+            xs: "full",
+            lg: "full",
+          }}
+          marginLeft={{
+            xs: "8",
+            lg: "0",
+          }}
+        >
           <Avatar
             label={user?.username}
             src={
@@ -237,7 +256,17 @@ const ProfileCard = () => {
           </Tag>
         )}
 
-        <Box paddingX="2" paddingY="1">
+        <Box
+          display="flex"
+          flexDirection="column"
+          justifyContent="flex-start"
+          paddingY="1"
+          paddingX={{
+            xs: "4",
+            lg: "0",
+          }}
+          width="full"
+        >
           <TextInfo>
             <Text variant="label"> About Me </Text>
             <Text variant="base" as="div">

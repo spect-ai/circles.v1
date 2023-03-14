@@ -110,8 +110,6 @@ const ProfilePage: NextPage = () => {
             >
               <ProfileCard />
               <ProfileTabs />
-              {!userData?.email &&
-                profile?.username === currentUser?.username && <NotifCard />}
             </Stack>
           </ScrollContainer>
         )}
@@ -120,21 +118,18 @@ const ProfilePage: NextPage = () => {
           {faqOpen && <FAQModal handleClose={() => setFaqOpen(false)} />}
         </AnimatePresence>
       </PublicLayout>
-      {isProfilePanelExpanded && <NotificationPanel />}
     </>
   );
 };
 
 const ScrollContainer = styled(Box)<{ mode: string }>`
   ::-webkit-scrollbar {
-    width: 5px;
-    height: 2rem;
+    height: 0.5rem;
   }
   ::-webkit-scrollbar-thumb {
     background: ${(props) =>
       props.mode === "dark" ? "rgb(255, 255, 255, 0.3)" : "rgb(0, 0, 0, 0.2)"};
   }
-  max-height: 100vh;
   overflow-y: auto;
 `;
 

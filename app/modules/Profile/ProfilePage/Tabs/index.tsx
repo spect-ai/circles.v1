@@ -1,17 +1,13 @@
-import { Box } from "degen";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
+import { Box } from "degen";
+import { useState } from "react";
 import styled from "styled-components";
-import React, { useState, useEffect } from "react";
-import { UserType } from "@/app/types";
 
-import Activity from "./Activity";
-import Kudos from "./Kudos";
-import Retro from "./Retro";
-import Experience from "./Experience";
-import Education from "./Education";
-import Skills from "./Skills";
-import { useAtom } from "jotai";
 import { profileLoadingAtom, userDataAtom } from "@/app/state/global";
+import { useAtom } from "jotai";
+import Education from "./Education";
+import Experience from "./Experience";
+import Skills from "./Skills";
 
 export const Card = styled(Box)<{ mode: string }>`
   display: flex;
@@ -68,6 +64,9 @@ export const ScrollContainer = styled(Box)`
     padding: 0;
     margin: 0;
     padding-right: 1.2rem;
+  }
+  @media (max-width: 1028px) and (min-width: 768px) {
+    width: 100%;
   }
   overflow: auto;
   width: 50vw;
