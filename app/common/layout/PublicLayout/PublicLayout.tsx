@@ -22,6 +22,7 @@ import {
   profileLoadingAtom,
 } from "@/app/state/global";
 import { useAtom } from "jotai";
+import { useAccount, useConnect } from "wagmi";
 
 type PublicLayoutProps = {
   children: ReactNodeNoStrings;
@@ -104,6 +105,17 @@ function PublicLayout(props: PublicLayoutProps) {
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const { connect, connectors } = useConnect();
+  const { address } = useAccount();
+
+  useEffect(() => {
+    if (!address && connectedUser) {
+      const connectorId = localStorage.getItem("connectorId");
+      console.log({ connectorId, connectors });
+      connect({ connector: connectors.find((c) => c.id === connectorId) });
+    }
+  }, [address, connectedUser]);
 
   const router = useRouter();
   const { inviteCode, circle } = router.query;

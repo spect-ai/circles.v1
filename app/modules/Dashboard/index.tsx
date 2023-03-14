@@ -64,11 +64,6 @@ function Dashboard() {
 
   const { tab } = router.query;
 
-  useEffect(() => {
-    if (tab) setPanelTab(tab as string);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   if (isLoading || !currentUser?.id)
     return <Loader loading={isLoading} text="Fetching circles" />;
 

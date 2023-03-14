@@ -21,7 +21,7 @@ export default function useERC20() {
   const { data: registry } = useQuery<Registry>(["registry", cId], {
     enabled: false,
   });
-  const { data: signer, isLoading: signerLoading } = useSigner();
+  const { data: signer } = useSigner();
   const { chain } = useNetwork();
   const { address } = useAccount();
   const { data: balance } = useBalance({
@@ -34,7 +34,6 @@ export default function useERC20() {
   }
 
   function getERC20Contract(address: string) {
-    // const provider = new ethers.providers.Web3Provider(window.ethereum as any);
     if (signer) {
       return new ethers.Contract(address, erc20ABI, signer);
     }

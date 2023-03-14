@@ -49,8 +49,9 @@ import {
   darkTheme,
   createAuthenticationAdapter,
   RainbowKitAuthenticationProvider,
+  connectorsForWallets,
 } from "@rainbow-me/rainbowkit";
-import { configureChains, createClient, WagmiConfig } from "wagmi";
+import { configureChains, createClient, useAccount, WagmiConfig } from "wagmi";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { publicProvider } from "wagmi/providers/public";
 import { SiweMessage } from "siwe";
@@ -67,6 +68,32 @@ import {
   scribeOpenAtom,
   scribeUrlAtom,
 } from "@/app/state/global";
+
+import { ArcanaConnector } from "@arcana/auth-wagmi";
+import { metaMaskWallet, rainbowWallet } from "@rainbow-me/rainbowkit/wallets";
+import useProfileUpdate from "@/app/services/Profile/useProfileUpdate";
+
+const ArcanaRainbowConnector = ({ chains }: any) => {
+  return {
+    id: "arcana-auth",
+    name: "Arcana",
+    iconUrl:
+      "https://uploads-ssl.webflow.com/63aa7f8ce3b3be42ed4f4a3f/63b0158fdd90445d4cd55778_Arcana.png",
+    iconBackground: "",
+    createConnector: () => {
+      const connector = new ArcanaConnector({
+        chains,
+        options: {
+          //clientId : Arcana Unique App Identifier via Dashboard
+          clientId: process.env.NEXT_PUBLIC_ARCANA_CLIENT_ID,
+        },
+      });
+      return {
+        connector,
+      };
+    },
+  };
+};
 
 const isProd = process.env.NODE_ENV === "production";
 
@@ -90,14 +117,26 @@ const { chains, provider } = configureChains(
   ]
 );
 
-const { connectors } = getDefaultWallets({
-  appName: "Spect Circles",
-  chains,
-});
+// const { connectors } = getDefaultWallets({
+//   appName: "Spect Circles",
+//   chains,
+// });
+
+const connectors = (chains: any) =>
+  connectorsForWallets([
+    {
+      groupName: "Social Auth",
+      wallets: [ArcanaRainbowConnector({ chains })],
+    },
+    {
+      groupName: "Wallets",
+      wallets: [metaMaskWallet({ chains }), rainbowWallet({ chains })],
+    },
+  ]);
 
 const wagmiClient = createClient({
   autoConnect: true,
-  connectors,
+  connectors: connectors(chains),
   provider,
 });
 
@@ -108,9 +147,12 @@ function MyApp({ Component, pageProps }: AppProps) {
   const [isScribeOpen, setIsScribeOpen] = useAtom(scribeOpenAtom);
   const [scribeUrl, setScribeUrl] = useAtom(scribeUrlAtom);
   const [connectedUser, setConnectedUser] = useAtom(connectedUserAtom);
+  const { connector } = useAccount();
 
   const [authenticationStatus, setAuthenticationStatus] =
     useAtom(authStatusAtom);
+
+  const { updateProfile } = useProfileUpdate();
 
   const authenticationAdapter = createAuthenticationAdapter({
     getNonce: async () => {
@@ -144,6 +186,7 @@ function MyApp({ Component, pageProps }: AppProps) {
           credentials: "include",
         }
       );
+
       const res: UserType = await verifyRes.json();
       setAuthenticationStatus(
         verifyRes.ok ? "authenticated" : "unauthenticated"
@@ -151,6 +194,20 @@ function MyApp({ Component, pageProps }: AppProps) {
       queryClient.setQueryData("getMyUser", res);
       console.log("connect user", res.username);
       setConnectedUser(res.id);
+
+      console.log("connector", connector?.id);
+      localStorage.setItem("connectorId", connector?.id || "");
+
+      if (res.username.startsWith("fren") && connector?.id === "arcana-auth") {
+        const user = await (connector as any).auth.getUser();
+        console.log({ user });
+        setTimeout(() => {
+          updateProfile({
+            email: user.email,
+            username: user.name,
+          });
+        }, 1000);
+      }
       process.env.NODE_ENV === "production" &&
         mixpanel.track("User Connected", {
           user: res.username,

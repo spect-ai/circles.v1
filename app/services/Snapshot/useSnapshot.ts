@@ -1,6 +1,6 @@
 import snapshot from "@snapshot-labs/snapshot.js";
 import { ethers } from "ethers";
-import { useLocalCollection } from "@/app/modules/Collection/Context/LocalCollectionContext";
+import { getProvider } from "@wagmi/core";
 import { useLocation } from "react-use";
 import { useBlockNumber, useAccount, useProvider } from "wagmi";
 import { useCircle } from "@/app/modules/Circle/CircleContext";
@@ -37,8 +37,7 @@ export default function useSnapshot() {
     choices,
   }: createProposalDto) {
     try {
-      const window: any = globalThis;
-      const provider = new ethers.providers.Web3Provider(window?.ethereum);
+      const provider = await getProvider();
       const blockNumber = await refetchBlockNumber();
 
       const receipt = await client.proposal(
@@ -75,10 +74,8 @@ export default function useSnapshot() {
 
   async function castVote(proposal: string, choice: number) {
     try {
-      const window: any = globalThis;
-      const provider = new ethers.providers.Web3Provider(window?.ethereum);
-
-      const receipt = await client.vote(provider, address as string, {
+      const provider = await getProvider();
+      const receipt = await client.vote(provider as any, address as string, {
         space,
         proposal: proposal,
         type: "single-choice",

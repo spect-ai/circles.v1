@@ -126,7 +126,7 @@ export default function ExploreSidebar() {
             )}
             {!currentUser?.id && (
               <PrimaryButton onClick={openConnectModal}>
-                Connect Wallet
+                Sign In with Ethereum
               </PrimaryButton>
             )}
           </Box>

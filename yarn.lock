@@ -52,6 +52,22 @@
     tslib "^2.3.0"
     zen-observable-ts "^1.2.5"
 
+"@arcana/auth-wagmi@https://github.com/spect-ai/auth-wagmi.git":
+  version "0.0.4"
+  resolved "https://github.com/spect-ai/auth-wagmi.git#1ee4b1c15258ff201f4f53489123f0130f0a6859"
+  dependencies:
+    "@arcana/auth" "^1.0.3"
+    "@wagmi/core" "0.9.5"
+
+"@arcana/auth@^1.0.3":
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/@arcana/auth/-/auth-1.0.3.tgz#10008e95e9c43b5bafaf9a35ae8261c028975619"
+  integrity sha512-Ab6UoxqlsruzWZ3XPBL8jdfrW2GmU7F4dec7Qic/L6jePQTxjOkSkXqrTnZ8Zo4Ew3A/6r6j/8HcjbgFAyBoBQ==
+  dependencies:
+    "@metamask/safe-event-emitter" "^2.0.0"
+    eth-rpc-errors "^4.0.3"
+    penpal "^6.0.1"
+
 "@babel/code-frame@^7.0.0", "@babel/code-frame@^7.10.4", "@babel/code-frame@^7.16.7", "@babel/code-frame@^7.5.5", "@babel/code-frame@^7.8.3":
   version "7.16.7"
   resolved "https://registry.npmjs.org/@babel/code-frame/-/code-frame-7.16.7.tgz"
@@ -9534,7 +9550,7 @@ eth-rpc-errors@^3.0.0:
   dependencies:
     fast-safe-stringify "^2.0.6"
 
-eth-rpc-errors@^4.0.2:
+eth-rpc-errors@^4.0.2, eth-rpc-errors@^4.0.3:
   version "4.0.3"
   resolved "https://registry.npmjs.org/eth-rpc-errors/-/eth-rpc-errors-4.0.3.tgz"
   integrity sha512-Z3ymjopaoft7JDoxZcEb3pwdGh7yiYMhOwm2doUt6ASXlMavpNlK6Cre0+IMl2VSGyEU9rkiperQhp5iRxn5Pg==
@@ -14071,6 +14087,11 @@ pbkdf2@^3.0.17, pbkdf2@^3.0.3:
     ripemd160 "^2.0.1"
     safe-buffer "^5.0.1"
     sha.js "^2.4.8"
+
+penpal@^6.0.1:
+  version "6.2.2"
+  resolved "https://registry.yarnpkg.com/penpal/-/penpal-6.2.2.tgz#20a0a0592881a959e8c87116d854f9528b1aa601"
+  integrity sha512-RQD7hTx14/LY7QoS3tQYO3/fzVtwvZI+JeS5udgsu7FPaEDjlvfK9HBcme9/ipzSPKnrxSgacI9PI7154W62YQ==
 
 performance-now@^2.1.0:
   version "2.1.0"

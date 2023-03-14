@@ -25,6 +25,8 @@ export default function ConnectPage() {
           display: "flex",
           flexDirection: "column",
           gap: "2rem",
+          justifyContent: "center",
+          alignItems: "center",
         }}
       >
         <Stack
@@ -32,9 +34,9 @@ export default function ConnectPage() {
           direction={{ xs: "vertical", md: "horizontal", lg: "horizontal" }}
           align="center"
         >
-          <IconSparkles color="accent" size="8"/>
+          <IconSparkles color="accent" size="8" />
           <Heading responsive align={"center"}>
-            Connect your wallet to explore the world of Spect
+            It's time to explore the world of Spect
           </Heading>
         </Stack>
         <Connect />

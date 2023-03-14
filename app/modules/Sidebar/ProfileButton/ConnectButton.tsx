@@ -1,5 +1,6 @@
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { IconEth } from "degen";
 export const Connect = () => {
   return (
     <ConnectButton.Custom>
@@ -34,8 +35,8 @@ export const Connect = () => {
             {(() => {
               if (!connected) {
                 return (
-                  <PrimaryButton onClick={openConnectModal}>
-                    Connect Wallet
+                  <PrimaryButton onClick={openConnectModal} icon={<IconEth />}>
+                    Sign in with Ethereum
                   </PrimaryButton>
                 );
               }

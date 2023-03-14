@@ -15,6 +15,7 @@ import {
   socketAtom,
 } from "@/app/state/global";
 import { io } from "socket.io-client";
+import { useAccount, useConnect } from "wagmi";
 
 type PublicLayoutProps = {
   children: ReactNodeNoStrings;
@@ -128,6 +129,17 @@ function PublicLayout(props: PublicLayoutProps) {
       socket.emit("join", connectedUser);
     }
   }, [connectedUser, socket]);
+
+  const { connect, connectors } = useConnect();
+  const { address } = useAccount();
+
+  useEffect(() => {
+    if (!address && connectedUser) {
+      const connectorId = localStorage.getItem("connectorId");
+      console.log({ connectorId, connectors });
+      connect({ connector: connectors.find((c) => c.id === connectorId) });
+    }
+  }, [address, connectedUser]);
 
   return (
     <DesktopContainer backgroundColor="backgroundSecondary" id="public-layout">
