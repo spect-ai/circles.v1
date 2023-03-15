@@ -17,7 +17,7 @@ import { Box, Input, Stack, Text } from "degen";
 import { ethers } from "ethers";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { useAccount, useNetwork, useSwitchNetwork } from "wagmi";
+import { useAccount, useNetwork, useSigner, useSwitchNetwork } from "wagmi";
 
 type Props = {
   paymentConfig: PaymentConfig;
@@ -55,6 +55,9 @@ export default function CollectPayment({
   const [tokenOptions, setTokenOptions] = useState(tokens);
   const [selectedToken, setSelectedToken] = useState(tokens[0]);
   const [amount, setAmount] = useState<string>();
+
+  const { data: signer } = useSigner();
+  const { connector } = useAccount();
 
   useEffect(() => {
     (async () => {
@@ -196,7 +199,6 @@ export default function CollectPayment({
       circleId: circleId,
       circleRegistry: circleRegistry,
     };
-    console.log({ options });
     const currencyTxnHash = await toast
       .promise(
         distributeCurrencyUsingEOA(
@@ -421,7 +423,7 @@ export default function CollectPayment({
                 }
               }}
             >
-              Pay
+              {paymentConfig.type === "paywall" ? "Pay" : "Donate"}
             </PrimaryButton>
           </Box>
         </Stack>

@@ -6,6 +6,7 @@ import { useTheme } from "degen";
 import { ethers } from "ethers";
 import { toast } from "react-toastify";
 import { useNetwork, useSwitchNetwork } from "wagmi";
+import { signTypedData } from "@wagmi/core";
 
 const chainId = "137";
 const domainInfo = {
@@ -53,17 +54,12 @@ export default function useCredentials() {
         if (chain?.id.toString() !== chainId) {
           switchNetworkAsync && (await switchNetworkAsync(parseInt(chainId)));
         }
-        const provider = new ethers.providers.Web3Provider(
-          window.ethereum as any
-        );
-
-        const signer = provider.getSigner();
         // Obtain signature
-        const signature: string = await signer._signTypedData(
-          domainInfo,
-          kudosTypes,
-          value
-        );
+        const signature: string = await signTypedData({
+          domain: domainInfo as any,
+          types: kudosTypes,
+          value,
+        });
         const params = {
           creator: kudos.creator,
           headline: value.headline,
@@ -251,17 +247,11 @@ export default function useCredentials() {
         if (chain?.id.toString() !== chainId) {
           switchNetworkAsync && (await switchNetworkAsync(parseInt(chainId)));
         }
-        const provider = new ethers.providers.Web3Provider(
-          window.ethereum as any
-        );
-
-        const signer = provider.getSigner();
-        // Obtain signature
-        const signature: string = await signer._signTypedData(
-          domainInfo,
-          kudosTokenTypes,
-          value
-        );
+        const signature: string = await signTypedData({
+          domain: domainInfo as any,
+          types: kudosTypes,
+          value,
+        });
 
         toast("Claiming Kudos...", {
           theme: mode,

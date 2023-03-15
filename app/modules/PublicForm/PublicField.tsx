@@ -1,11 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import Dropdown from "@/app/common/components/Dropdown";
 import Editor from "@/app/common/components/Editor";
 import { isEmail, isURL } from "@/app/common/utils/utils";
 import { FormType, Option, Property, Registry, Reward } from "@/app/types";
 import { Box, Input, Stack, Tag, Text, useTheme } from "degen";
-import { ethers } from "ethers";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { toast } from "react-toastify";
 import { satisfiesConditions } from "../Collection/Common/SatisfiesFilter";
 import { DateInput } from "../Collection/Form/Field";
@@ -15,7 +13,6 @@ import GithubField from "./GithubField";
 import MilestoneField from "./MilestoneField";
 import MultiSelect from "./MultiSelect";
 import MultiURLField from "./MultiURLField";
-import PaywallField from "./PaywallField";
 import RewardField from "./RewardField";
 import SingleSelect from "./SingleSelect";
 import TelegramField from "./TelegramField";
@@ -375,21 +372,6 @@ export default function PublicField({
           setData={setData}
           propertyName={propertyName}
           updateRequiredFieldNotSet={updateRequiredFieldNotSet}
-          disabled={disabled}
-        />
-      )}
-      {form.properties[propertyName]?.type === "payWall" && (
-        <PaywallField
-          form={form}
-          data={data}
-          setData={(paywall) => {
-            setData({
-              ...data,
-              [propertyName]: paywall,
-            });
-            updateRequiredFieldNotSet(propertyName, paywall);
-          }}
-          propertyName={propertyName}
           disabled={disabled}
         />
       )}
