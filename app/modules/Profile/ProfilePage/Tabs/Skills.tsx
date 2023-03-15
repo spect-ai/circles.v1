@@ -1,6 +1,7 @@
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { LensSkills, UserType } from "@/app/types";
 import { Box, Text, useTheme } from "degen";
+import { AnimatePresence } from "framer-motion";
 import router from "next/router";
 import { memo, useState } from "react";
 import { useQuery } from "react-query";
@@ -27,27 +28,32 @@ const Skills = ({
 
   return (
     <Box width="full">
-      {openSkillView && (
-        <ViewSkillModal
-          skillId={selectedSkillId}
-          handleClose={() => setOpenSkillView(false)}
-          setEditSkill={(value) => {
-            if (value) {
-              setModalMode("edit");
-              setOpenSkillModal(value);
-            }
-          }}
-        />
-      )}
-      {openSkillModal && (
-        <AddSkillModal
-          modalMode={modalMode}
-          skills={skills}
-          handleClose={() => setOpenSkillModal(false)}
-          skillId={selectedSkillId}
-          allCredentials={allCredentials}
-        />
-      )}
+      <AnimatePresence>
+        {openSkillView && (
+          <ViewSkillModal
+            skillId={selectedSkillId}
+            handleClose={() => setOpenSkillView(false)}
+            setEditSkill={(value) => {
+              if (value) {
+                setModalMode("edit");
+                setOpenSkillModal(value);
+              }
+            }}
+          />
+        )}
+      </AnimatePresence>
+      <AnimatePresence>
+        {openSkillModal && (
+          <AddSkillModal
+            modalMode={modalMode}
+            skills={skills}
+            handleClose={() => setOpenSkillModal(false)}
+            skillId={selectedSkillId}
+            allCredentials={allCredentials}
+          />
+        )}
+      </AnimatePresence>
+
       {!skills?.length && (
         <Box style={{ margin: "35vh 15vw" }}>
           <Text color="accent" align="center">

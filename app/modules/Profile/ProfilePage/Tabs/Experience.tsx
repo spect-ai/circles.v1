@@ -1,6 +1,7 @@
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { LensDate, LensExperience, UserType } from "@/app/types";
 import { Box, Text, useTheme } from "degen";
+import { AnimatePresence, motion } from "framer-motion";
 import { memo, useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import AddExperienceModal from "../AddExperienceModal";
@@ -35,26 +36,32 @@ const Experience = ({
       {addFromLens && (
         <LensImportModal handleClose={() => setAddFromLens(false)} />
       )}
-      {addExperience && (
-        <AddExperienceModal
-          modalMode={modalMode}
-          experienceId={selectedExperienceId}
-          handleClose={() => setAddExperience(false)}
-          allCredentials={allCredentials}
-        />
-      )}
-      {openExperienceView && (
-        <ViewExperienceModal
-          experienceId={selectedExperienceId}
-          handleClose={() => setOpenExperienceView(false)}
-          setEditExperience={(value) => {
-            if (value) {
-              setModalMode("edit");
-              setAddExperience(true);
-            }
-          }}
-        />
-      )}
+      <AnimatePresence>
+        {addExperience && (
+          <AddExperienceModal
+            modalMode={modalMode}
+            experienceId={selectedExperienceId}
+            handleClose={() => setAddExperience(false)}
+            allCredentials={allCredentials}
+          />
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {openExperienceView && (
+          <ViewExperienceModal
+            experienceId={selectedExperienceId}
+            handleClose={() => setOpenExperienceView(false)}
+            setEditExperience={(value) => {
+              if (value) {
+                setModalMode("edit");
+                setAddExperience(true);
+              }
+            }}
+          />
+        )}
+      </AnimatePresence>
+
       <ScrollContainer>
         {!experiences?.length && (
           <Box style={{ margin: "35vh 15vw" }}>

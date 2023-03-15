@@ -11,6 +11,7 @@ import {
 import styled from "styled-components";
 import {
   BehanceOutlined,
+  CopyOutlined,
   GithubOutlined,
   LinkOutlined,
   TwitterOutlined,
@@ -24,6 +25,7 @@ import { smartTrim } from "@/app/common/utils/utils";
 import LensImportModal from "../LensImportModal";
 import { useAtom } from "jotai";
 import { userDataAtom } from "@/app/state/global";
+import { toast } from "react-toastify";
 
 const Profile = styled(Box)<{ mode: string }>`
   @media (max-width: 768px) {
@@ -172,81 +174,111 @@ const ProfileCard = () => {
             }}
             address={user?.ethAddress}
           />
-          <Box>
-            <Box padding="0.5">
-              <Heading>{smartTrim(user?.username || "", 16)}</Heading>
+          <Box
+            display="flex"
+            flexDirection="row"
+            width="full"
+            alignItems="flex-start"
+          >
+            <Box width="3/4">
+              <Box padding="0.5">
+                <Heading level="3">
+                  {smartTrim(user?.username || "", 16)}
+                </Heading>
+              </Box>
+              {user?.ethAddress && (
+                <Tag size="small" tone="accent" hover>
+                  {smartTrim(user?.ethAddress, 12)}
+                </Tag>
+              )}
+              <InfoBox gap="1" marginTop="2">
+                {user?.githubId && !user?.github && (
+                  <a
+                    href={`https://github.com/${user?.githubId}`}
+                    target="_blank"
+                    rel="noreferrer noopener"
+                  >
+                    <GithubOutlined
+                      style={{ color: "grey", fontSize: "1.2rem" }}
+                    />
+                  </a>
+                )}
+                {user?.github && (
+                  <a
+                    href={`${user.github}`}
+                    target="_blank"
+                    rel="noreferrer noopener"
+                  >
+                    <GithubOutlined
+                      style={{ color: "grey", fontSize: "1.2rem" }}
+                    />
+                  </a>
+                )}
+                {user?.twitterId && !user?.twitter && (
+                  <a
+                    href={`https://twitter.com/${user?.twitterId}`}
+                    target="_blank"
+                    rel="noreferrer noopener"
+                  >
+                    <TwitterOutlined
+                      style={{ color: "grey", fontSize: "1.2rem" }}
+                    />
+                  </a>
+                )}
+                {user?.twitter && (
+                  <a
+                    href={`${user.twitter}`}
+                    target="_blank"
+                    rel="noreferrer noopener"
+                  >
+                    <TwitterOutlined
+                      style={{ color: "grey", fontSize: "1.2rem" }}
+                    />
+                  </a>
+                )}
+                {user?.behance && (
+                  <a
+                    href={`${user.behance}`}
+                    target="_blank"
+                    rel="noreferrer noopener"
+                  >
+                    <BehanceOutlined
+                      style={{ color: "grey", fontSize: "1.2rem" }}
+                    />
+                  </a>
+                )}
+                {user?.website && (
+                  <a
+                    href={`${user.website}`}
+                    target="_blank"
+                    rel="noreferrer noopener"
+                  >
+                    <LinkOutlined
+                      style={{ color: "grey", fontSize: "1.2rem" }}
+                    />
+                  </a>
+                )}
+              </InfoBox>
             </Box>
-            {user?.ethAddress && (
-              <Tag size="small" tone="accent" hover>
-                {smartTrim(user?.ethAddress, 12)}
-              </Tag>
-            )}
-            <InfoBox gap="1" marginTop="2">
-              {user?.githubId && !user?.github && (
-                <a
-                  href={`https://github.com/${user?.githubId}`}
-                  target="_blank"
-                  rel="noreferrer noopener"
-                >
-                  <GithubOutlined
-                    style={{ color: "grey", fontSize: "1.2rem" }}
-                  />
-                </a>
-              )}
-              {user?.github && (
-                <a
-                  href={`${user.github}`}
-                  target="_blank"
-                  rel="noreferrer noopener"
-                >
-                  <GithubOutlined
-                    style={{ color: "grey", fontSize: "1.2rem" }}
-                  />
-                </a>
-              )}
-              {user?.twitterId && !user?.twitter && (
-                <a
-                  href={`https://twitter.com/${user?.twitterId}`}
-                  target="_blank"
-                  rel="noreferrer noopener"
-                >
-                  <TwitterOutlined
-                    style={{ color: "grey", fontSize: "1.2rem" }}
-                  />
-                </a>
-              )}
-              {user?.twitter && (
-                <a
-                  href={`${user.twitter}`}
-                  target="_blank"
-                  rel="noreferrer noopener"
-                >
-                  <TwitterOutlined
-                    style={{ color: "grey", fontSize: "1.2rem" }}
-                  />
-                </a>
-              )}
-              {user?.behance && (
-                <a
-                  href={`${user.behance}`}
-                  target="_blank"
-                  rel="noreferrer noopener"
-                >
-                  <BehanceOutlined
-                    style={{ color: "grey", fontSize: "1.2rem" }}
-                  />
-                </a>
-              )}
-              {user?.website && (
-                <a
-                  href={`${user.website}`}
-                  target="_blank"
-                  rel="noreferrer noopener"
-                >
-                  <LinkOutlined style={{ color: "grey", fontSize: "1.2rem" }} />
-                </a>
-              )}
-            </InfoBox>
+            <Box
+              display="flex"
+              flexDirection="row"
+              justifyContent="flex-end"
+              width="1/4"
+              cursor="pointer"
+            >
+              <Button
+                size="small"
+                variant="transparent"
+                shape="circle"
+                onClick={() => {
+                  void navigator.clipboard.writeText(user?.username);
+                  toast.success("Copied Username!");
+                }}
+              >
+                <CopyOutlined />
+              </Button>
+            </Box>
           </Box>
         </Box>
 
@@ -332,3 +364,10 @@ const ProfileCard = () => {
 };
 
 export default ProfileCard;
+
+export const IconButton = styled(Box)`
+  cursor: pointer;
+  color: rgb(191, 90, 242, 1);
+  &:hover {
+  }
+`;

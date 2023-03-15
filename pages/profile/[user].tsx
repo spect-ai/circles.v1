@@ -23,6 +23,7 @@ import {
   isSidebarExpandedAtom,
   userDataAtom,
 } from "@/app/state/global";
+import { ToastContainer } from "react-toastify";
 
 const ProfilePage: NextPage = () => {
   const router = useRouter();
@@ -102,6 +103,17 @@ const ProfilePage: NextPage = () => {
         )}
         {profile?.id && !isProfileLoading && (
           <ScrollContainer mode={mode}>
+            <ToastContainer
+              toastStyle={{
+                backgroundColor: `${
+                  mode === "dark" ? "rgb(20,20,20)" : "rgb(240,240,240)"
+                }`,
+                color: `${
+                  mode === "dark" ? "rgb(255,255,255,0.7)" : "rgb(20,20,20,0.7)"
+                }`,
+              }}
+            />
+
             <Stack
               direction={{
                 xs: "vertical",

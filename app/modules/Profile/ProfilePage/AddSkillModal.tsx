@@ -172,13 +172,17 @@ export default function AddSkillModal({
             variant="secondary"
             size="small"
             width="32"
+            loading={loading}
             onClick={async () => {
+              setLoading(true);
               if (!title || !category?.value) {
                 setRequiredFieldsNotSet({
                   ...requiredFieldsNotSet,
                   title: isEmpty("title", title),
                   category: isEmpty("category", category),
                 });
+                setLoading(false);
+
                 return;
               }
 
@@ -200,10 +204,14 @@ export default function AddSkillModal({
                 ];
               } else if (modalMode === "edit") {
                 if (!skillId && skillId !== 0) {
+                  setLoading(false);
+
                   return;
                 }
                 newSkills = skills.map((skill, index) => {
                   if (index === skillId) {
+                    setLoading(false);
+
                     return {
                       title,
                       category: category?.value,
@@ -213,12 +221,16 @@ export default function AddSkillModal({
                       icon: "",
                     };
                   }
+                  setLoading(false);
+
                   return skill;
                 });
               }
               const res = await updateProfile({
                 skillsV2: newSkills,
               });
+              setLoading(false);
+
               handleClose();
             }}
           >

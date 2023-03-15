@@ -1,29 +1,17 @@
-import Dropdown from "@/app/common/components/Dropdown";
+import { PassportStampIcons, PassportStampIconsLightMode } from "@/app/assets";
 import Editor from "@/app/common/components/Editor";
 import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import useProfileUpdate from "@/app/services/Profile/useProfileUpdate";
-import {
-  LensExperience,
-  Milestone,
-  Option,
-  Registry,
-  UserType,
-  VerifiableCredential,
-} from "@/app/types";
-import { Box, Button, Input, Stack, Tag, Text, useTheme } from "degen";
-import { useEffect, useState } from "react";
-import styled from "styled-components";
-import LinkCredentialsModal from "./LinkCredentialsModal";
-import { Credential } from "@/app/types";
-import { PassportStampIcons, PassportStampIconsLightMode } from "@/app/assets";
-import Image from "next/image";
-import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
-import AddExperienceModal from "./AddExperienceModal";
-import router from "next/router";
-import { useQuery } from "react-query";
-import { useAtom } from "jotai";
 import { userDataAtom } from "@/app/state/global";
+import { UserType, VerifiableCredential } from "@/app/types";
+import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
+import { Box, Text, useTheme } from "degen";
+import { useAtom } from "jotai";
+import Image from "next/image";
+import { useEffect, useState } from "react";
+import { useQuery } from "react-query";
+import styled from "styled-components";
 
 type Props = {
   handleClose: () => void;
@@ -79,17 +67,10 @@ export default function ViewExperienceModal({
     }
   }, [experience]);
 
-  console.log({ experience });
-
   return (
-    <>
+    <Box>
       {experience && (experienceId || experienceId === 0) && (
-        <Modal
-          handleClose={() => {
-            handleClose();
-          }}
-          title={experience?.jobTitle}
-        >
+        <Modal handleClose={handleClose} title={experience?.jobTitle}>
           <Box
             padding={{
               xs: "4",
@@ -275,7 +256,7 @@ export default function ViewExperienceModal({
           </Box>
         </Modal>
       )}
-    </>
+    </Box>
   );
 }
 export const DateInput = styled.input<{ mode: string }>`

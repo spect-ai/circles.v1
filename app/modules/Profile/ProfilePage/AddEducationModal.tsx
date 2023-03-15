@@ -305,19 +305,24 @@ export default function AddEducationModal({
             variant="secondary"
             size="small"
             width="32"
+            loading={loading}
             onClick={async () => {
-              console.log({ title, organization });
+              setLoading(true);
               if (!title || !organization) {
                 setRequiredFieldsNotSet({
                   ...requiredFieldsNotSet,
                   title: isEmpty("title", title),
                   organization: isEmpty("organization", organization),
                 });
+                setLoading(false);
+
                 return;
               }
               const dateIsInvalid = dateIsInvalidValid(startDate, endDate);
               if (dateIsInvalid) {
                 setDateError(true);
+                setLoading(false);
+
                 return;
               }
               if (modalMode === "add") {
@@ -333,6 +338,7 @@ export default function AddEducationModal({
                 });
               } else if (modalMode === "edit") {
                 if (!educationId && educationId !== 0) {
+                  setLoading(false);
                   return;
                 }
                 const res = await updateEducation(educationId?.toString(), {
@@ -346,6 +352,7 @@ export default function AddEducationModal({
                   linkedCredentials,
                 });
               }
+              setLoading(false);
               handleClose();
             }}
           >

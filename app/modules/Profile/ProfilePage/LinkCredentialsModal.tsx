@@ -14,6 +14,7 @@ import { userDataAtom } from "@/app/state/global";
 import { Mintkudos } from "./Credentials/Mintkudos";
 import { Poap } from "./Credentials/Poap";
 import { GitcoinPassport } from "./Credentials/GitcoinPassport";
+import { AnimatePresence } from "framer-motion";
 
 type Props = {
   credentials: Credential[];
@@ -98,82 +99,86 @@ export default function LinkCredentialsModal({
           </PrimaryButton>
         </Box>
       </Box>
-      {linkCredentialsOpen && (
-        <Modal
-          handleClose={() => {
-            setLinkCredentialsOpen(false);
-          }}
-          title={`Link Credentials`}
-        >
-          <Box display="flex">
-            <Box width="1/4" paddingY="8" paddingRight="1">
-              <Tabs
-                selectedTab={tab}
-                onTabClick={(idx) => setTab(idx)}
-                tabs={[
-                  "POAP",
-                  "Mintkudos",
-                  "Gitcoin Passport",
+      <AnimatePresence>
+        {linkCredentialsOpen && (
+          <Modal
+            handleClose={() => {
+              setLinkCredentialsOpen(false);
+            }}
+            title={`Link Credentials`}
+          >
+            <Box display="flex">
+              <Box width="1/4" paddingY="8" paddingRight="1">
+                <Tabs
+                  selectedTab={tab}
+                  onTabClick={(idx) => setTab(idx)}
+                  tabs={[
+                    "POAP",
+                    "Mintkudos",
+                    "Gitcoin Passport",
 
-                  // "GitPOAP",
-                  // "Sismo",
-                  // "Buildspace",
-                ]}
-                orientation="vertical"
-                unselectedColor="transparent"
-              />
+                    // "GitPOAP",
+                    // "Sismo",
+                    // "Buildspace",
+                  ]}
+                  orientation="vertical"
+                  unselectedColor="transparent"
+                />
+              </Box>
+              <ScrollContainer
+                width="3/4"
+                paddingX={{
+                  xs: "2",
+                  md: "4",
+                  lg: "8",
+                }}
+                paddingY="4"
+              >
+                {tabKeys[tab] === "kudos" && (
+                  <Mintkudos
+                    credentials={allCredentials["kudos"]}
+                    selectedCredentials={selectedCredentials["kudos"]}
+                    onCredentialClick={(credential: Credential) =>
+                      onCredentialClick(credential)
+                    }
+                  />
+                )}
+                {tabKeys[tab] === "poaps" && (
+                  <Poap
+                    credentials={allCredentials["poaps"]}
+                    selectedCredentials={selectedCredentials["poaps"]}
+                    onCredentialClick={(credential: Credential) =>
+                      onCredentialClick(credential)
+                    }
+                  />
+                )}
+                {tabKeys[tab] === "gitcoinPassports" && (
+                  <GitcoinPassport
+                    credentials={allCredentials["gitcoinPassports"]}
+                    selectedCredentials={
+                      selectedCredentials["gitcoinPassports"]
+                    }
+                    onCredentialClick={(credential: Credential) =>
+                      onCredentialClick(credential)
+                    }
+                  />
+                )}
+              </ScrollContainer>
             </Box>
-            <ScrollContainer
-              width="3/4"
-              paddingX={{
-                xs: "2",
-                md: "4",
-                lg: "8",
-              }}
-              paddingY="4"
-            >
-              {tabKeys[tab] === "kudos" && (
-                <Mintkudos
-                  credentials={allCredentials["kudos"]}
-                  selectedCredentials={selectedCredentials["kudos"]}
-                  onCredentialClick={(credential: Credential) =>
-                    onCredentialClick(credential)
-                  }
-                />
-              )}
-              {tabKeys[tab] === "poaps" && (
-                <Poap
-                  credentials={allCredentials["poaps"]}
-                  selectedCredentials={selectedCredentials["poaps"]}
-                  onCredentialClick={(credential: Credential) =>
-                    onCredentialClick(credential)
-                  }
-                />
-              )}
-              {tabKeys[tab] === "gitcoinPassports" && (
-                <GitcoinPassport
-                  credentials={allCredentials["gitcoinPassports"]}
-                  selectedCredentials={selectedCredentials["gitcoinPassports"]}
-                  onCredentialClick={(credential: Credential) =>
-                    onCredentialClick(credential)
-                  }
-                />
-              )}
-            </ScrollContainer>
-          </Box>
-          <Box padding="3">
-            <PrimaryButton
-              icon={<SaveFilled style={{ fontSize: "1.3rem" }} />}
-              onClick={() => {
-                setCredentials(normalizedSelectedCredentials);
-                setLinkCredentialsOpen(false);
-              }}
-            >
-              Link Credentials
-            </PrimaryButton>
-          </Box>
-        </Modal>
-      )}
+            <Box padding="3">
+              <PrimaryButton
+                icon={<SaveFilled style={{ fontSize: "1.3rem" }} />}
+                onClick={() => {
+                  setCredentials(normalizedSelectedCredentials);
+                  setLinkCredentialsOpen(false);
+                }}
+              >
+                Link Credentials
+              </PrimaryButton>
+            </Box>
+          </Modal>
+        )}
+      </AnimatePresence>
     </>
   );
 }

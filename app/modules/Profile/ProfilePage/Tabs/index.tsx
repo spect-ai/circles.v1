@@ -88,29 +88,27 @@ const ProfileTabs = () => {
   const [kudos, setKudos] = useState([]);
 
   const fetchAllCredentials = () => {
-    getCredentialsByAddressAndIssuer(userData?.ethAddress, "poap")
-      .then((res) => {
-        console.log({ res });
-        if (res?.length) setPoaps(res);
-        else setPoaps([]);
-      })
-      .catch((err) => console.log(err));
-
-    getCredentialsByAddressAndIssuer(userData?.ethAddress, "gitcoinPassport")
-      .then((res) => {
-        console.log({ res });
-        if (res?.length) setGitcoinPassports(res);
-        else setGitcoinPassports([]);
-      })
-      .catch((err) => console.log(err));
-
-    getCredentialsByAddressAndIssuer(userData?.ethAddress, "kudos")
-      .then((res) => {
-        console.log({ res });
-        if (res?.length) setKudos(res);
-        else setKudos([]);
-      })
-      .catch((err) => console.log(err));
+    // getCredentialsByAddressAndIssuer(userData?.ethAddress, "poap")
+    //   .then((res) => {
+    //     console.log({ res });
+    //     if (res?.length) setPoaps(res);
+    //     else setPoaps([]);
+    //   })
+    //   .catch((err) => console.log(err));
+    // getCredentialsByAddressAndIssuer(userData?.ethAddress, "gitcoinPassport")
+    //   .then((res) => {
+    //     console.log({ res });
+    //     if (res?.length) setGitcoinPassports(res);
+    //     else setGitcoinPassports([]);
+    //   })
+    //   .catch((err) => console.log(err));
+    // getCredentialsByAddressAndIssuer(userData?.ethAddress, "kudos")
+    //   .then((res) => {
+    //     console.log({ res });
+    //     if (res?.length) setKudos(res);
+    //     else setKudos([]);
+    //   })
+    //   .catch((err) => console.log(err));
   };
 
   useEffect(() => {
@@ -124,7 +122,7 @@ const ProfileTabs = () => {
 
       setCredentialLoading(false);
     }
-  }, [userData]);
+  }, []);
 
   return (
     <Box

@@ -319,19 +319,24 @@ export default function AddExperienceModal({
             size="small"
             width="32"
             disabled={dateError}
+            loading={loading}
             onClick={async () => {
-              console.log({ role, organization });
+              setLoading(true);
               if (!role || !organization) {
                 setRequiredFieldsNotSet({
                   ...requiredFieldsNotSet,
                   role: isEmpty("role", role),
                   organization: isEmpty("organization", organization),
                 });
+                setLoading(false);
+
                 return;
               }
               const dateIsInvalid = dateIsInvalidValid(startDate, endDate);
               if (dateIsInvalid) {
                 setDateError(true);
+                setLoading(false);
+
                 return;
               }
               if (modalMode === "add") {
@@ -348,6 +353,8 @@ export default function AddExperienceModal({
                 });
               } else if (modalMode === "edit") {
                 if (!experienceId && experienceId !== 0) {
+                  setLoading(false);
+
                   return;
                 }
                 const res = await updateExperience(experienceId?.toString(), {
@@ -361,6 +368,7 @@ export default function AddExperienceModal({
                   linkedCredentials: linkedCredentials,
                 });
               }
+              setLoading(false);
               handleClose();
             }}
           >
