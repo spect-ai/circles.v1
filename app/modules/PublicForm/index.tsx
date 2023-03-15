@@ -501,8 +501,24 @@ function PublicForm() {
                 width="138"
               />
             )}
+          </a>{" "}
+          <Text variant="large">
+            💪 Powerful Web3 Forms, Projects and Automations 🤝
+          </Text>
+          <a href="/" target="_blank">
+            <PrimaryButton
+              onClick={() => {
+                process.env.NODE_ENV === "production" &&
+                  mixpanel.track("Create your own form", {
+                    form: form?.name,
+                    sybilEnabled: form?.formMetadata.sybilProtectionEnabled,
+                    user: currentUser?.username,
+                  });
+              }}
+            >
+              Build With Spect
+            </PrimaryButton>
           </a>
-          <SocialMedia />
         </Stack>
         <Box marginBottom="8" />
       </Container>

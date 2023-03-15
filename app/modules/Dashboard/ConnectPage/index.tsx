@@ -29,6 +29,11 @@ export default function ConnectPage() {
           alignItems: "center",
         }}
       >
+        <Avatar
+          src="https://spect.infura-ipfs.io/ipfs/QmcBLdB23dQkXdMKFHAjVKMKBPJF82XkqR5ZkxyCk6aset"
+          label=""
+          size="16"
+        />
         <Stack
           justify={"center"}
           direction={{ xs: "vertical", md: "horizontal", lg: "horizontal" }}
@@ -40,11 +45,7 @@ export default function ConnectPage() {
             Explore the world of Spect
           </Heading>
         </Stack>
-        <Avatar
-          src="https://spect.infura-ipfs.io/ipfs/QmcBLdB23dQkXdMKFHAjVKMKBPJF82XkqR5ZkxyCk6aset"
-          label=""
-          size="16"
-        />
+
         <Connect />
         <SocialMedia />
       </Box>

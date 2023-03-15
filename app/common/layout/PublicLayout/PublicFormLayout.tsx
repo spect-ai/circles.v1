@@ -143,12 +143,6 @@ function PublicLayout(props: PublicLayoutProps) {
 
   return (
     <DesktopContainer backgroundColor="backgroundSecondary" id="public-layout">
-      <MobileContainer>
-        <Sidebar />
-        <AnimatePresence initial={false}>
-          {isSidebarExpanded && <ExtendedSidebar />}
-        </AnimatePresence>
-      </MobileContainer>
       <Box display="flex" flexDirection="column" width="full" overflow="hidden">
         <Container issidebarexpanded={isSidebarExpanded}>{children}</Container>
       </Box>
