@@ -23,7 +23,7 @@ const TaskWalletHeader = () => {
           label="profile-pic"
           src={
             currentUser?.avatar ||
-            `https://api.dicebear.com/5.x/thumbs/svg?seed=${currentUser?.username}`
+            `https://api.dicebear.com/5.x/thumbs/svg?seed=${currentUser?.id}`
           }
           size="16"
           address={currentUser?.ethAddress}

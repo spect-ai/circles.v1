@@ -55,7 +55,7 @@ export default function CardActivity({
                     placeholder={!actor?.avatar}
                     src={
                       actor?.avatar ||
-                      `https://api.dicebear.com/5.x/thumbs/svg?seed=${actor?.username}`
+                      `https://api.dicebear.com/5.x/thumbs/svg?seed=${actor?.id}`
                     }
                     username={actor?.username}
                     userId={actor?.id}
@@ -101,7 +101,7 @@ export default function CardActivity({
             placeholder={!currentUser?.avatar}
             src={
               currentUser?.avatar ||
-              `https://api.dicebear.com/5.x/thumbs/svg?seed=${currentUser?.username}`
+              `https://api.dicebear.com/5.x/thumbs/svg?seed=${currentUser?.id}`
             }
             address={currentUser?.ethAddress}
             size="8"

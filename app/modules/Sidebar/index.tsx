@@ -201,7 +201,7 @@ function Sidebar(): ReactElement {
               <Avatar
                 src={
                   currentUser?.avatar ||
-                  `https://api.dicebear.com/5.x/thumbs/svg?seed=${currentUser?.username}`
+                  `https://api.dicebear.com/5.x/thumbs/svg?seed=${currentUser?.id}`
                 }
                 address={currentUser.ethAddress}
                 label=""

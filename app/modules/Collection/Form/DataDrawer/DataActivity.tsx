@@ -57,6 +57,7 @@ export default function DataActivity({
     ethAddress: undefined,
     username: "Responder",
   };
+  console.log({ activities, activityOrder });
 
   return (
     <Box padding="4">
@@ -68,15 +69,16 @@ export default function DataActivity({
             dataOwner?.id === activity.ref?.actor?.id
               ? anonActor
               : getMemberDetails(activity.ref.actor?.id) || dataOwner;
+
+          console.log({ actor });
           return (
             <Box key={activityId}>
               <Stack direction="horizontal" align="center" space="2">
                 <Avatar
                   label=""
-                  placeholder={!actor?.avatar}
                   src={
                     actor?.avatar ||
-                    `https://api.dicebear.com/5.x/thumbs/svg?seed=${actor.username}`
+                    `https://api.dicebear.com/5.x/thumbs/svg?seed=${actor?.id}`
                   }
                   address={actor?.ethAddress}
                   size="8"
@@ -99,20 +101,23 @@ export default function DataActivity({
                         </a>
                       )}
                     </Text>
-                    <Box paddingTop="1">
+                    <Box>
+                      <Text variant="label">{activity.content}</Text>
+                    </Box>
+                    <Box>
                       <Text ellipsis size="label" color="textTertiary">
                         {timeSince(new Date(activity.timestamp))} ago
                       </Text>
                     </Box>
                   </Stack>
 
-                  {activity.comment ? (
+                  {/* {activity.comment ? (
                     <Editor value={activity.content} disabled />
                   ) : (
                     <Box marginTop="1">
                       <Text variant="label">{activity.content}</Text>
                     </Box>
-                  )}
+                  )} */}
                 </Stack>
               </Stack>
             </Box>

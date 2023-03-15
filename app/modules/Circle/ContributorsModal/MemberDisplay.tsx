@@ -82,7 +82,7 @@ export default function MemberDisplay({ member, memberDetails }: Props) {
           <Avatar
             src={
               memberDetails[member]?.avatar ||
-              `https://api.dicebear.com/5.x/thumbs/svg?seed=${memberDetails[member]?.username}`
+              `https://api.dicebear.com/5.x/thumbs/svg?seed=${memberDetails[member]?.id}`
             }
             placeholder={!memberDetails[member]?.avatar}
             label="Avatar"
@@ -109,7 +109,7 @@ export default function MemberDisplay({ member, memberDetails }: Props) {
             <Avatar
               src={
                 memberDetails[member]?.avatar ||
-                `https://api.dicebear.com/5.x/thumbs/svg?seed=${memberDetails[member]?.username}`
+                `https://api.dicebear.com/5.x/thumbs/svg?seed=${memberDetails[member]?.id}`
               }
               label=""
               placeholder={!memberDetails[member]?.avatar}

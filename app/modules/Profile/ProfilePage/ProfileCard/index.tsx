@@ -166,7 +166,7 @@ const ProfileCard = () => {
             label={user?.username}
             src={
               user?.avatar ||
-              `https://api.dicebear.com/5.x/thumbs/svg?seed=${user?.username}`
+              `https://api.dicebear.com/5.x/thumbs/svg?seed=${user?.id}`
             }
             size={{
               xs: "20",

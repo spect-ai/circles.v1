@@ -130,7 +130,7 @@ const Member = ({ member, roles }: MemberProps) => {
                 <Avatar
                   src={
                     member.avatar ||
-                    `https://api.dicebear.com/5.x/thumbs/svg?seed=${member.username}`
+                    `https://api.dicebear.com/5.x/thumbs/svg?seed=${member.id}`
                   }
                   address={member.ethAddress as `0x${string}`}
                   label={member.username}
