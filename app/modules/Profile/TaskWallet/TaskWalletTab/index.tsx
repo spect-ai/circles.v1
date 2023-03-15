@@ -4,7 +4,6 @@ import { ProjectOutlined, FieldTimeOutlined } from "@ant-design/icons";
 import styled from "styled-components";
 import { UserType } from "@/app/types";
 import { useQuery } from "react-query";
-import WorkCards, { Toggle } from "./Work";
 import Notifications from "./Notifications";
 
 interface UserProps {
@@ -108,34 +107,11 @@ const TaskWalletTabs = ({ userData, tab }: UserProps) => {
                 ? "(" + notifIds.length.toString() + ")"
                 : ""}
             </Button>
-            {/* <Button
-              size="small"
-              prefix={<StarOutlined />}
-              variant={panelTab === "Bookmarks" ? "tertiary" : "transparent"}
-              onClick={() => setPanelTab("Bookmarks")}
-            >
-              Bookmarks
-            </Button> */}
           </>
         )}
       </Box>
       <Box>
-        {panelTab === "Work" && (
-          <Box display={"flex"} flexDirection="column" marginTop={"4"}>
-            <Toggle toggle={toggle} setToggle={setToggle} />
-            <WorkCards
-              toggle={toggle}
-              setToggle={setToggle}
-              userData={userData}
-            />
-          </Box>
-        )}
         {panelTab == "Notifications" && <Notifications notifIds={notifIds} />}
-        {/* {panelTab == "Bookmarks" && (
-        <ScrollContainer overflow={"auto"}>
-          <BookMarks />
-        </ScrollContainer>
-      )} */}
       </Box>
     </>
   );
