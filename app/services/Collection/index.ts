@@ -1,24 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {
-  Condition,
-  FormUserType,
-  ProjectMetadata,
-  PayWallOptions,
-  Registry,
-  Voting,
-  FormPermissions,
-  MappedItem,
-  Property,
-  CollectionType,
-} from "@/app/types";
+import { Property, CollectionType } from "@/app/types";
 
 export const addField = async (
   collectionId: string,
-  createDto: Partial<Property>
+  createDto: Partial<Property>,
+  pageId?: string
 ) => {
   return await (
     await fetch(
-      `${process.env.API_HOST}/collection/v1/${collectionId}/addProperty`,
+      `${process.env.API_HOST}/collection/v1/${collectionId}/addProperty?pageId=${pageId}`,
       {
         method: "PATCH",
         headers: {

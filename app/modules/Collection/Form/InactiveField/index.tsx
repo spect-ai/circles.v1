@@ -57,7 +57,7 @@ function InactiveFieldComponent({
       borderRadius="2xLarge"
       isDragging={snapshot.isDragging}
       mode={mode}
-      padding="4"
+      padding="2"
       display="flex"
       justifyContent="center"
     >
@@ -65,7 +65,6 @@ function InactiveFieldComponent({
         <Text weight="semiBold">{id}</Text>
         <Box
           cursor="pointer"
-          backgroundColor="accentSecondary"
           borderRadius="full"
           paddingY="1"
           paddingX="2"
