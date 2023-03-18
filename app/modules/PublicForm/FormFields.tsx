@@ -50,6 +50,7 @@ import Reaptcha from "reaptcha";
 import Editor from "@/app/common/components/Editor";
 import { Connect } from "../Sidebar/ProfileButton/ConnectButton";
 import Stepper from "@/app/common/components/Stepper";
+import Image from "next/image";
 
 type Props = {
   form: FormType;
@@ -662,7 +663,14 @@ function FormFields({ form, setForm }: Props) {
                 </Text>
                 <Stack direction="horizontal" justify="space-between">
                   <Box paddingX="5" paddingBottom="4" width="1/2">
-                    <PrimaryButton variant="transparent">Back</PrimaryButton>
+                    <PrimaryButton
+                      variant="transparent"
+                      onClick={() => {
+                        setCurrentPage("start");
+                      }}
+                    >
+                      Back
+                    </PrimaryButton>
                   </Box>
                   <Box paddingX="5" paddingBottom="4" width="1/2">
                     <Connect />
@@ -687,37 +695,87 @@ function FormFields({ form, setForm }: Props) {
                 flexDirection="column"
                 justifyContent="space-between"
               >
-                <Box />
+                <Stack align="center">
+                  <Image src="/spectForm.gif" width="512" height="512" />
+                </Stack>
                 <Box
                   width="full"
                   display="flex"
                   flexDirection="column"
                   justifyContent="flex-start"
+                  padding="4"
                 >
-                  <Stack>
+                  <Box paddingX="5" paddingBottom="4">
+                    <a href="/" target="_blank">
+                      <PrimaryButton>Create your own form</PrimaryButton>
+                    </a>
+                  </Box>
+                  <Stack
+                    direction={{
+                      xs: "vertical",
+                      md: "horizontal",
+                    }}
+                    justify="center"
+                  >
                     {form.formMetadata.updatingResponseAllowed &&
                       form.formMetadata.active &&
                       form.formMetadata.walletConnectionRequired && (
-                        <PrimaryButton variant="transparent">
+                        <PrimaryButton
+                          variant="transparent"
+                          onClick={() => {
+                            setCurrentPage("start");
+                            setUpdateResponse(true);
+                          }}
+                        >
                           Update response
                         </PrimaryButton>
                       )}
-                    {form.formMetadata.walletConnectionRequired && (
-                      <PrimaryButton variant="transparent">
-                        View response
-                      </PrimaryButton>
-                    )}
                     {form.formMetadata.multipleResponsesAllowed &&
                       form.formMetadata.active && (
-                        <PrimaryButton variant="transparent">
+                        <PrimaryButton
+                          variant="transparent"
+                          onClick={() => {
+                            setCurrentPage("start");
+                            setUpdateResponse(false);
+                            setSubmitted(false);
+
+                            const tempData: any = {};
+                            setRespondAsAnonymous(
+                              form.formMetadata.allowAnonymousResponses
+                            );
+                            form.propertyOrder.forEach((propertyId) => {
+                              if (
+                                [
+                                  "longText",
+                                  "shortText",
+                                  "ethAddress",
+                                  "user",
+                                  "date",
+                                  "number",
+                                ].includes(form.properties[propertyId].type)
+                              ) {
+                                tempData[propertyId] = "";
+                              } else if (
+                                form.properties[propertyId].type ===
+                                "singleSelect"
+                              ) {
+                                // @ts-ignore
+                                tempData[propertyId] = {};
+                              } else if (
+                                ["multiSelect", "user[]"].includes(
+                                  form.properties[propertyId].type
+                                )
+                              ) {
+                                tempData[propertyId] = [];
+                              }
+                            });
+
+                            setData(tempData);
+                          }}
+                        >
                           Submit another response
                         </PrimaryButton>
                       )}
-                    <Box paddingX="5" paddingBottom="4" width="full">
-                      <a href="/" target="_blank">
-                        <PrimaryButton>Create your own form</PrimaryButton>
-                      </a>
-                    </Box>
                   </Stack>
                 </Box>
               </Box>
@@ -751,7 +809,7 @@ function FormFields({ form, setForm }: Props) {
                           updateRequiredFieldNotSet={updateRequiredFieldNotSet}
                           fieldHasInvalidType={fieldHasInvalidType}
                           updateFieldHasInvalidType={updateFieldHasInvalidType}
-                          disabled={submitted}
+                          disabled={submitted ? !updateResponse : false}
                         />
                       );
                     }
@@ -771,7 +829,8 @@ function FormFields({ form, setForm }: Props) {
                     </PrimaryButton>
                   </Box>
                   {pages[pageOrder[pageOrder.indexOf(currentPage) + 1]]
-                    .movable || submitted ? (
+                    .movable ||
+                  (submitted && !updateResponse) ? (
                     <Box paddingX="5" paddingBottom="4" width="1/2">
                       <PrimaryButton
                         onClick={() => {
@@ -805,7 +864,18 @@ function FormFields({ form, setForm }: Props) {
           steps={form.formMetadata.pageOrder.length}
           currentStep={form.formMetadata.pageOrder.indexOf(currentPage)}
           onStepChange={(step) => {
-            setCurrentPage(form.formMetadata.pageOrder[step]);
+            if (submitted) {
+              setCurrentPage(form.formMetadata.pageOrder[step]);
+            } else if (updateResponse || !submitted) {
+              // can only go back
+              if (step < form.formMetadata.pageOrder.indexOf(currentPage)) {
+                setCurrentPage(form.formMetadata.pageOrder[step]);
+              } else {
+                toast.error("You can only go back");
+              }
+            } else {
+              setCurrentPage(form.formMetadata.pageOrder[step]);
+            }
           }}
         />
       </Stack>

@@ -1,3 +1,4 @@
+import ViewPlugins from "@/app/modules/Plugins/ViewPlugins";
 import { Box, Stack } from "degen";
 import { AnimatePresence } from "framer-motion";
 import { memo, useState } from "react";
@@ -30,7 +31,10 @@ function InactiveFieldsColumnComponent() {
         )}
       </AnimatePresence>
       <Container>
-        <Stack space="4">
+        <Stack>
+          <Box marginTop="2">
+            <ViewPlugins />
+          </Box>
           <Pages />
         </Stack>
       </Container>

@@ -57,7 +57,6 @@ export default function DataActivity({
     ethAddress: undefined,
     username: "Responder",
   };
-  console.log({ activities, activityOrder });
 
   return (
     <Box padding="4">
@@ -69,8 +68,6 @@ export default function DataActivity({
             dataOwner?.id === activity.ref?.actor?.id
               ? anonActor
               : getMemberDetails(activity.ref.actor?.id) || dataOwner;
-
-          console.log({ actor });
           return (
             <Box key={activityId}>
               <Stack direction="horizontal" align="center" space="2">
