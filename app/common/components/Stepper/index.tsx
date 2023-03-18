@@ -16,12 +16,12 @@ const Stepper = ({ steps, currentStep, onStepChange }: Props) => {
           key={index}
           whileHover={{ scale: 1.2 }}
           whileTap={{ scale: 0.8 }}
-          onClick={() => onStepChange(index)}
         >
           <StepButton
             backgroundColor={
               index === currentStep ? "accent" : "foregroundSecondary"
             }
+            onClick={() => onStepChange(index)}
           />
         </motion.div>
       ))}

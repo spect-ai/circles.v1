@@ -2,7 +2,7 @@
 import ClickableTag from "@/app/common/components/EditTag/ClickableTag";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { storeImage } from "@/app/common/utils/ipfs";
-import { CoverImage, NameInput } from "@/app/modules/PublicForm";
+import { CoverImage } from "@/app/modules/PublicForm";
 import { updateFormCollection } from "@/app/services/Collection";
 import { Avatar, Box, FileInput, Stack, Text } from "degen";
 import { AnimatePresence } from "framer-motion";
@@ -17,6 +17,7 @@ import { useAtom } from "jotai";
 import { connectedUserAtom } from "@/app/state/global";
 import { Connect } from "@/app/modules/Sidebar/ProfileButton/ConnectButton";
 import Stepper from "@/app/common/components/Stepper";
+import { NameInput } from "@/app/modules/PublicForm/FormFields";
 
 function FormBuilder() {
   const {

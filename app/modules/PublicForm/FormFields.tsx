@@ -15,7 +15,7 @@ import {
   Registry,
   UserType,
 } from "@/app/types";
-import { Box, Input, Stack, Text } from "degen";
+import { Avatar, Box, Input, Stack, Text } from "degen";
 import React, { useEffect, useRef, useState } from "react";
 import { useQuery } from "react-query";
 import { toast } from "react-toastify";
@@ -47,6 +47,9 @@ import { BigNumber } from "ethers";
 import { useAtom } from "jotai";
 import { connectedUserAtom } from "@/app/state/global";
 import Reaptcha from "reaptcha";
+import Editor from "@/app/common/components/Editor";
+import { Connect } from "../Sidebar/ProfileButton/ConnectButton";
+import Stepper from "@/app/common/components/Stepper";
 
 type Props = {
   form: FormType;
@@ -103,7 +106,6 @@ function FormFields({ form, setForm }: Props) {
   );
 
   const [captchaVerified, setCaptchaVerified] = useState(false);
-  const [verifyingCaptcha, setVerifyingCaptcha] = useState(false);
 
   const { data: registry, refetch: fetchRegistry } = useQuery<Registry>(
     ["registry", form.parents[0].slug],
@@ -117,11 +119,17 @@ function FormFields({ form, setForm }: Props) {
   );
 
   const { address, connector } = useAccount();
-  const captchaRef = useRef<any>(null);
+
+  const [currentPage, setCurrentPage] = useState(
+    form.formMetadata.pageOrder[0]
+  );
 
   const checkRequired = (data: any) => {
     const requiredFieldsNotSet = {} as { [key: string]: boolean };
-    form.propertyOrder.forEach((propertyId) => {
+
+    const currentFields = form.formMetadata.pages[currentPage].properties;
+
+    currentFields.forEach((propertyId) => {
       const property = form.properties[propertyId];
       if (
         property.required &&
@@ -141,7 +149,8 @@ function FormFields({ form, setForm }: Props) {
 
   const checkValue = (data: any) => {
     const fieldHasInvalidType = {} as { [key: string]: boolean };
-    form.propertyOrder.forEach((propertyId) => {
+    const currentFields = form.formMetadata.pages[currentPage].properties;
+    currentFields.forEach((propertyId) => {
       if (isIncorrectType(propertyId, data[propertyId])) {
         fieldHasInvalidType[propertyId] = true;
       }
@@ -165,7 +174,10 @@ function FormFields({ form, setForm }: Props) {
 
   useEffect(() => {
     void fetchRegistry();
-    setSubmitted(form.formMetadata.previousResponses?.length > 0);
+    if (form.formMetadata.previousResponses?.length > 0) {
+      setSubmitted(true);
+      setCurrentPage("submitted");
+    }
 
     if (form.formMetadata.mintkudosTokenId) {
       void (async () => {
@@ -263,7 +275,7 @@ function FormFields({ form, setForm }: Props) {
   useEffect(() => {
     if (form) {
       const tempData: any = {};
-      if (updateResponse && form?.formMetadata.previousResponses?.length > 0) {
+      if (form?.formMetadata.previousResponses?.length > 0) {
         setLoading(true);
         const lastResponse =
           form.formMetadata.previousResponses[
@@ -440,6 +452,7 @@ function FormFields({ form, setForm }: Props) {
       toast.success("Form submitted successfully");
       setForm(resAfterSave);
       setSubmitted(true);
+      setCurrentPage("submitted");
       setSubmitAnotherResponse(false);
       setUpdateResponse(false);
     } else {
@@ -455,32 +468,32 @@ function FormFields({ form, setForm }: Props) {
     setSubmitting(false);
   };
 
-  if (submitted && !submitAnotherResponse && !updateResponse) {
-    return (
-      <FormResponse
-        form={form}
-        setSubmitAnotherResponse={setSubmitAnotherResponse}
-        setUpdateResponse={setUpdateResponse}
-        setSubmitted={setSubmitted}
-        kudos={kudos}
-        claimed={claimed}
-        setClaimed={setClaimed}
-        surveyTokenClaimed={surveyTokenClaimed}
-        setSurveyTokenClaimed={setSurveyTokenClaimed}
-        setViewResponse={setViewResponse}
-        poap={poap}
-        poapClaimed={poapClaimed}
-        setPoapClaimed={setPoapClaimed}
-        canClaimPoap={canClaimPoap}
-        canClaimSurveyToken={canClaimSurveyToken}
-        surveyDistributionInfo={distributionInfo}
-        surveyIsLotteryYetToBeDrawn={surveyIsLotteryYetToBeDrawn}
-        registry={registry}
-        setCanClaimSurveyToken={setCanClaimSurveyToken}
-        surveyHasInsufficientBalance={escrowHasInsufficientBalance}
-      />
-    );
-  }
+  // if (submitted && !submitAnotherResponse && !updateResponse) {
+  //   return (
+  //     <FormResponse
+  //       form={form}
+  //       setSubmitAnotherResponse={setSubmitAnotherResponse}
+  //       setUpdateResponse={setUpdateResponse}
+  //       setSubmitted={setSubmitted}
+  //       kudos={kudos}
+  //       claimed={claimed}
+  //       setClaimed={setClaimed}
+  //       surveyTokenClaimed={surveyTokenClaimed}
+  //       setSurveyTokenClaimed={setSurveyTokenClaimed}
+  //       setViewResponse={setViewResponse}
+  //       poap={poap}
+  //       poapClaimed={poapClaimed}
+  //       setPoapClaimed={setPoapClaimed}
+  //       canClaimPoap={canClaimPoap}
+  //       canClaimSurveyToken={canClaimSurveyToken}
+  //       surveyDistributionInfo={distributionInfo}
+  //       surveyIsLotteryYetToBeDrawn={surveyIsLotteryYetToBeDrawn}
+  //       registry={registry}
+  //       setCanClaimSurveyToken={setCanClaimSurveyToken}
+  //       surveyHasInsufficientBalance={escrowHasInsufficientBalance}
+  //     />
+  //   );
+  // }
 
   const isIncorrectType = (propertyName: string, value: any) => {
     switch (form.properties[propertyName]?.type) {
@@ -591,24 +604,211 @@ function FormFields({ form, setForm }: Props) {
         )}
       </AnimatePresence>
       {!loading &&
-        form.propertyOrder.map((propertyName) => {
-          if (form.properties[propertyName].isPartOfFormView)
+        Array.from({ length: 1 }).map((_, i) => {
+          if (currentPage === "start") {
             return (
-              <PublicField
-                form={form}
-                propertyName={propertyName}
-                data={data}
-                setData={setData}
-                memberOptions={memberOptions}
-                requiredFieldsNotSet={requiredFieldsNotSet}
-                key={propertyName}
-                updateRequiredFieldNotSet={updateRequiredFieldNotSet}
-                fieldHasInvalidType={fieldHasInvalidType}
-                updateFieldHasInvalidType={updateFieldHasInvalidType}
-                disabled={viewResponse}
-              />
+              <Box
+                style={{
+                  height: "calc(100vh - 20rem)",
+                }}
+                display="flex"
+                flexDirection="column"
+                justifyContent="space-between"
+              >
+                <Stack space="2">
+                  {form.formMetadata.logo && (
+                    <Avatar src={form.formMetadata.logo} label="" size="20" />
+                  )}
+                  <NameInput
+                    autoFocus
+                    value={form.name}
+                    disabled
+                    rows={Math.floor(form.name?.length / 20) + 1}
+                  />
+                  {form.description && (
+                    <Editor value={form.description} isDirty={true} disabled />
+                  )}
+                </Stack>
+                <Stack direction="horizontal" justify="space-between">
+                  <Box paddingX="5" paddingBottom="4" width="1/2" />
+                  <Box paddingX="5" paddingBottom="4" width="1/2">
+                    <PrimaryButton
+                      onClick={() => {
+                        if (connectedUser) {
+                          setCurrentPage(form.formMetadata.pageOrder[2]);
+                        } else {
+                          setCurrentPage("connect");
+                        }
+                      }}
+                    >
+                      Start
+                    </PrimaryButton>
+                  </Box>
+                </Stack>
+              </Box>
             );
+          } else if (currentPage === "connect") {
+            return (
+              <Box
+                style={{
+                  height: "calc(100vh - 20rem)",
+                }}
+                display="flex"
+                flexDirection="column"
+                justifyContent="space-between"
+              >
+                <Text>
+                  This form requires you to connect your wallet to continue.
+                </Text>
+                <Stack direction="horizontal" justify="space-between">
+                  <Box paddingX="5" paddingBottom="4" width="1/2">
+                    <PrimaryButton variant="transparent">Back</PrimaryButton>
+                  </Box>
+                  <Box paddingX="5" paddingBottom="4" width="1/2">
+                    <Connect />
+                  </Box>
+                </Stack>
+              </Box>
+            );
+          } else if (currentPage === "claimKudos") {
+            return (
+              <Stack>
+                <Text>You are eligible to receive kudos!</Text>
+                <PrimaryButton>Claim Kudos</PrimaryButton>
+              </Stack>
+            );
+          } else if (currentPage === "submitted") {
+            return (
+              <Box
+                style={{
+                  height: "calc(100vh - 20rem)",
+                }}
+                display="flex"
+                flexDirection="column"
+                justifyContent="space-between"
+              >
+                <Box />
+                <Box
+                  width="full"
+                  display="flex"
+                  flexDirection="column"
+                  justifyContent="flex-start"
+                >
+                  <Stack>
+                    {form.formMetadata.updatingResponseAllowed &&
+                      form.formMetadata.active &&
+                      form.formMetadata.walletConnectionRequired && (
+                        <PrimaryButton variant="transparent">
+                          Update response
+                        </PrimaryButton>
+                      )}
+                    {form.formMetadata.walletConnectionRequired && (
+                      <PrimaryButton variant="transparent">
+                        View response
+                      </PrimaryButton>
+                    )}
+                    {form.formMetadata.multipleResponsesAllowed &&
+                      form.formMetadata.active && (
+                        <PrimaryButton variant="transparent">
+                          Submit another response
+                        </PrimaryButton>
+                      )}
+                    <Box paddingX="5" paddingBottom="4" width="full">
+                      <a href="/" target="_blank">
+                        <PrimaryButton>Create your own form</PrimaryButton>
+                      </a>
+                    </Box>
+                  </Stack>
+                </Box>
+              </Box>
+            );
+          } else {
+            const pages = form.formMetadata.pages;
+            const pageOrder = form.formMetadata.pageOrder;
+            const fields = pages[currentPage]?.properties;
+            return (
+              <FormFieldContainer
+                style={{
+                  height: "calc(100vh - 20rem)",
+                }}
+                display="flex"
+                flexDirection="column"
+                justifyContent="space-between"
+                overflow="auto"
+              >
+                <Stack>
+                  {fields.map((field) => {
+                    if (form.properties[field].isPartOfFormView) {
+                      return (
+                        <PublicField
+                          form={form}
+                          propertyName={field}
+                          data={data}
+                          setData={setData}
+                          memberOptions={memberOptions}
+                          requiredFieldsNotSet={requiredFieldsNotSet}
+                          key={field}
+                          updateRequiredFieldNotSet={updateRequiredFieldNotSet}
+                          fieldHasInvalidType={fieldHasInvalidType}
+                          updateFieldHasInvalidType={updateFieldHasInvalidType}
+                          disabled={submitted}
+                        />
+                      );
+                    }
+                  })}
+                </Stack>
+                <Stack direction="horizontal" justify="space-between">
+                  <Box paddingX="5" paddingBottom="4" width="1/2">
+                    <PrimaryButton
+                      variant="transparent"
+                      onClick={() => {
+                        setCurrentPage(
+                          pageOrder[pageOrder.indexOf(currentPage) - 1]
+                        );
+                      }}
+                    >
+                      Back
+                    </PrimaryButton>
+                  </Box>
+                  {pages[pageOrder[pageOrder.indexOf(currentPage) + 1]]
+                    .movable || submitted ? (
+                    <Box paddingX="5" paddingBottom="4" width="1/2">
+                      <PrimaryButton
+                        onClick={() => {
+                          if (!checkRequired(data)) {
+                            toast.error("Please fill all required fields");
+                            return;
+                          }
+                          if (!checkValue(data)) return;
+                          setCurrentPage(
+                            pageOrder[pageOrder.indexOf(currentPage) + 1]
+                          );
+                        }}
+                      >
+                        Next
+                      </PrimaryButton>
+                    </Box>
+                  ) : (
+                    <Box paddingX="5" paddingBottom="4" width="1/2">
+                      <PrimaryButton onClick={onSubmit} loading={submitting}>
+                        Submit
+                      </PrimaryButton>
+                    </Box>
+                  )}
+                </Stack>
+              </FormFieldContainer>
+            );
+          }
         })}
+      <Stack align="center">
+        <Stepper
+          steps={form.formMetadata.pageOrder.length}
+          currentStep={form.formMetadata.pageOrder.indexOf(currentPage)}
+          onStepChange={(step) => {
+            setCurrentPage(form.formMetadata.pageOrder[step]);
+          }}
+        />
+      </Stack>
       {/* 
       {!viewResponse && form.formMetadata.allowAnonymousResponses && (
         <Box
@@ -630,7 +830,7 @@ function FormFields({ form, setForm }: Props) {
           <Text variant="base">Respond anonymously</Text>
         </Box>
       )} */}
-      {form.formMetadata.paymentConfig && (
+      {/* {form.formMetadata.paymentConfig && (
         <Box marginBottom="8">
           <CollectPayment
             paymentConfig={form.formMetadata.paymentConfig}
@@ -640,8 +840,8 @@ function FormFields({ form, setForm }: Props) {
             setData={setData}
           />
         </Box>
-      )}
-      {form.formMetadata.captchaEnabled && (
+      )} */}
+      {/* {form.formMetadata.captchaEnabled && (
         <Reaptcha
           sitekey={process.env.NEXT_PUBLIC_CAPTCHA_SITE_KEY}
           ref={captchaRef}
@@ -674,48 +874,8 @@ function FormFields({ form, setForm }: Props) {
                 setVerifyingCaptcha(false);
               });
           }}
-        ></Reaptcha>
-      )}
-      <Stack
-        direction={{
-          xs: "vertical",
-          md: "horizontal",
-        }}
-      >
-        {!viewResponse && (
-          <Box width="full" paddingX="5">
-            {/* {Object.keys(requiredFieldsNotSet).length > 0 && (
-              <Text color="red" variant="small">
-                {" "}
-                {`Required fields are empty: ${Object.keys(
-                  requiredFieldsNotSet
-                ).join(",")}`}{" "}
-              </Text>
-            )} */}
-            <PrimaryButton
-              onClick={onSubmit}
-              loading={submitting || verifyingCaptcha}
-              disabled={verifyingCaptcha}
-            >
-              Submit
-            </PrimaryButton>
-          </Box>
-        )}
-        {(submitAnotherResponse || updateResponse) && (
-          <Box width="full" paddingX="5">
-            <PrimaryButton
-              variant="tertiary"
-              onClick={() => {
-                setSubmitAnotherResponse(false);
-                setUpdateResponse(false);
-                setSubmitted(true);
-              }}
-            >
-              {viewResponse ? "Back" : "Nevermind"}
-            </PrimaryButton>
-          </Box>
-        )}
-      </Stack>
+        />
+      )} */}
     </Container>
   );
 }
@@ -728,16 +888,51 @@ const Container = styled(Box)`
   }
 
   @media (min-width: 768px) and (max-width: 1024px) {
-    padding: 0rem 1rem;
+    padding: 2rem;
     margin-bottom: 0.5rem;
   }
 
   @media (min-width: 1024px) and (max-width: 1280px) {
-    padding: 0rem 1rem;
+    padding: 2rem;
     margin-bottom: 0.5rem;
   }
-  padding: 0rem 1rem;
+  padding: 2rem;
   padding-bottom: 1rem;
+
+  height: calc(100vh - 15rem);
+
+  ::-webkit-scrollbar {
+    width: 0.5rem;
+  }
+
+  overflow-y: auto;
+`;
+
+const FormFieldContainer = styled(Box)`
+  height: calc(100vh - 15rem);
+
+  ::-webkit-scrollbar {
+    width: 0.5rem;
+  }
+
+  overflow-y: auto;
+`;
+
+export const NameInput = styled.textarea`
+  resize: none;
+  background: transparent;
+  border: 0;
+  border-style: none;
+  border-color: transparent;
+  outline: none;
+  outline-offset: 0;
+  box-shadow: none;
+  font-size: 1.8rem;
+  font-family: Inter;
+  caret-color: rgb(191, 90, 242);
+  color: rgb(191, 90, 242);
+  font-weight: 600;
+  overflow: hidden;
 `;
 
 export default React.memo(FormFields);
