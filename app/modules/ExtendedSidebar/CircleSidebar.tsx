@@ -166,7 +166,7 @@ function CircleSidebar() {
 
         <Container subH="9.5rem">
           <Stack direction="vertical" space="2">
-            <InviteMemberModal />
+            <InviteMemberModal buttonIsSmallTransparent={true} />
 
             <Link href={`/${cId}`}>
               <PrimaryButton
