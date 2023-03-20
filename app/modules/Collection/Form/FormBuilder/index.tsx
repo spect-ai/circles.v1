@@ -2,11 +2,20 @@
 import ClickableTag from "@/app/common/components/EditTag/ClickableTag";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { storeImage } from "@/app/common/utils/ipfs";
-import { CoverImage } from "@/app/modules/PublicForm";
+import { CoverImage, StampCard } from "@/app/modules/PublicForm";
 import { updateFormCollection } from "@/app/services/Collection";
-import { Avatar, Box, FileInput, Stack, Text } from "degen";
-import { AnimatePresence } from "framer-motion";
-import { memo, useCallback, useState } from "react";
+import {
+  Avatar,
+  Box,
+  Button,
+  FileInput,
+  Stack,
+  Tag,
+  Text,
+  useTheme,
+} from "degen";
+import { AnimatePresence, motion } from "framer-motion";
+import { memo, useCallback, useEffect, useState } from "react";
 import { Droppable, DroppableProvided } from "react-beautiful-dnd";
 import styled from "styled-components";
 import AddField from "../../AddField";
@@ -18,6 +27,11 @@ import { connectedUserAtom } from "@/app/state/global";
 import { Connect } from "@/app/modules/Sidebar/ProfileButton/ConnectButton";
 import Stepper from "@/app/common/components/Stepper";
 import { NameInput } from "@/app/modules/PublicForm/FormFields";
+import { quizValidFieldTypes } from "@/app/modules/Plugins/common/ResponseMatchDistribution";
+import { FormType, GuildRole, Stamp } from "@/app/types";
+import { toast } from "react-toastify";
+import { PassportStampIcons, PassportStampIconsLightMode } from "@/app/assets";
+import { getAllCredentials } from "@/app/services/Credentials/AggregatedCredentials";
 
 function FormBuilder() {
   const {
@@ -40,6 +54,47 @@ function FormBuilder() {
   const [formData, setFormData] = useState({} as any);
   const pages = collection.formMetadata.pages;
   const pageOrder = collection.formMetadata.pageOrder;
+
+  const [hasStamps, setHasStamps] = useState({} as any);
+  const [currentScore, setCurrentScore] = useState(0);
+  const [stamps, setStamps] = useState([] as Stamp[]);
+
+  const addStamps = async (form: FormType) => {
+    const stamps = await getAllCredentials();
+    const stampsWithScore = [];
+    if (
+      form.formMetadata.sybilProtectionEnabled &&
+      form.formMetadata.sybilProtectionScores
+    ) {
+      for (const stamp of stamps) {
+        if (form.formMetadata.sybilProtectionScores[stamp.id]) {
+          const stampWithScore = {
+            ...stamp,
+            score: form.formMetadata.sybilProtectionScores[stamp.id],
+          };
+          stampsWithScore.push(stampWithScore);
+        }
+      }
+      console.log({ stampsWithScore });
+      setStamps(stampsWithScore.sort((a, b) => b.score - a.score));
+    }
+  };
+
+  const { mode } = useTheme();
+
+  const quizValidFields =
+    collection.propertyOrder &&
+    collection.propertyOrder.filter(
+      (propertyName) =>
+        collection.properties[propertyName].isPartOfFormView &&
+        quizValidFieldTypes.includes(collection.properties[propertyName].type)
+    );
+
+  useEffect(() => {
+    if (connectedUser) {
+      addStamps(collection);
+    }
+  }, [connectedUser]);
 
   const FieldDraggable = (provided: DroppableProvided) => {
     if (currentPage === "start") {
@@ -124,7 +179,7 @@ function FormBuilder() {
             <Box paddingX="5" paddingBottom="4" width="1/2">
               <PrimaryButton
                 onClick={() => {
-                  setCurrentPage("connect");
+                  setCurrentPage(pageOrder[1]);
                 }}
               >
                 Start
@@ -143,12 +198,165 @@ function FormBuilder() {
           flexDirection="column"
           justifyContent="space-between"
         >
-          <Text>
-            This form requires you to connect your wallet to continue.
-          </Text>
+          <motion.div
+            className="box"
+            initial={{ opacity: 0, scale: 0.5 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{
+              duration: 0.8,
+              delay: 0.5,
+              ease: [0, 0.71, 0.2, 1.01],
+            }}
+          >
+            {!collection.formMetadata.hasRole &&
+              collection.formMetadata.formRoleGating && (
+                <Box
+                  display="flex"
+                  flexDirection="column"
+                  padding="4"
+                  marginTop="4"
+                  gap="4"
+                >
+                  {" "}
+                  <Text weight="bold">
+                    You require one of the following roles to fill this form
+                  </Text>
+                  <Stack space="2">
+                    {collection.formMetadata.formRoleGating?.map(
+                      (role: GuildRole) => (
+                        <Tag tone="accent" key={role.id}>
+                          {role.name}
+                        </Tag>
+                      )
+                    )}
+                  </Stack>
+                  <Text variant="label">
+                    You do not have the correct roles to access this form
+                  </Text>{" "}
+                  <Box display="flex" flexDirection="row" gap="4">
+                    <Button
+                      variant="tertiary"
+                      size="small"
+                      onClick={async () => {
+                        const externalCircleData = await (
+                          await fetch(
+                            `${process.env.API_HOST}/circle/external/v1/${collection.parents[0].id}/guild`,
+                            {
+                              headers: {
+                                Accept: "application/json",
+                                "Content-Type": "application/json",
+                              },
+                              credentials: "include",
+                            }
+                          )
+                        ).json();
+                        if (!externalCircleData.urlName) {
+                          toast.error(
+                            "Error fetching guild, please visit guild.xyz and find the roles or contact support"
+                          );
+                        }
+                        window.open(
+                          `https://guild.xyz/${externalCircleData.urlName}`,
+                          "_blank"
+                        );
+                      }}
+                    >
+                      How do I get these roles?
+                    </Button>
+                  </Box>
+                </Box>
+              )}
+            {collection.formMetadata.sybilProtectionEnabled &&
+              !collection.formMetadata.hasPassedSybilCheck && (
+                <Box
+                  display="flex"
+                  flexDirection="column"
+                  padding="4"
+                  marginTop="4"
+                  gap="4"
+                >
+                  {" "}
+                  <Text weight="bold">
+                    This form is sybil protected. You must have a minimum score
+                    of 100% to fill this collection. Please check the assigned
+                    scores below.
+                  </Text>
+                  <Text variant="label">
+                    Your current score: {currentScore}%
+                  </Text>
+                  <StampScrollContainer>
+                    {stamps?.map((stamp: Stamp, index: number) => {
+                      return (
+                        <StampCard mode={mode} key={index}>
+                          <Box
+                            display="flex"
+                            flexDirection="row"
+                            width="full"
+                            alignItems="center"
+                            gap="4"
+                          >
+                            <Box
+                              display="flex"
+                              flexDirection="row"
+                              alignItems="center"
+                              width="full"
+                              paddingRight="4"
+                            >
+                              <Box
+                                width="8"
+                                height="8"
+                                flexDirection="row"
+                                justifyContent="flex-start"
+                                alignItems="center"
+                                marginRight="4"
+                              >
+                                {mode === "dark"
+                                  ? PassportStampIcons[stamp.providerName]
+                                  : PassportStampIconsLightMode[
+                                      stamp.providerName
+                                    ]}
+                              </Box>
+                              <Box>
+                                <Text as="h1">{stamp.stampName}</Text>
+                                <Text variant="small">
+                                  {stamp.stampDescription}
+                                </Text>
+                              </Box>
+                            </Box>{" "}
+                            {hasStamps[stamp.id] && (
+                              <Tag tone="green">Verified</Tag>
+                            )}
+                            <Text variant="large">{stamp.score}%</Text>
+                          </Box>
+                        </StampCard>
+                      );
+                    })}
+                  </StampScrollContainer>
+                  <Box display="flex" flexDirection="row" gap="4">
+                    <Button
+                      variant="tertiary"
+                      size="small"
+                      onClick={() =>
+                        window.open("https://passport.gitcoin.co/", "_blank")
+                      }
+                    >
+                      Get Stamps
+                    </Button>
+                  </Box>
+                </Box>
+              )}
+          </motion.div>
+
           <Stack direction="horizontal" justify="space-between">
             <Box paddingX="5" paddingBottom="4" width="1/2">
-              <PrimaryButton variant="transparent">Back</PrimaryButton>
+              <PrimaryButton
+                variant="transparent"
+                onClick={() => {
+                  setCurrentPage(pageOrder[pageOrder.indexOf(currentPage) - 1]);
+                }}
+              >
+                Back
+              </PrimaryButton>
             </Box>
             <Box paddingX="5" paddingBottom="4" width="1/2">
               <Connect />
@@ -356,6 +564,14 @@ function FormBuilder() {
 }
 
 export default memo(FormBuilder);
+
+const StampScrollContainer = styled(Box)`
+  overflow-y: auto;
+  height: 10rem;
+  ::-webkit-scrollbar {
+    width: 5px;
+  }
+`;
 
 const Container = styled(Box)`
   overflow-y: auto;
