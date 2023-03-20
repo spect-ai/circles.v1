@@ -1,14 +1,12 @@
 import { reorder } from "@/app/common/utils/utils";
-import { updateField, updateFormCollection } from "@/app/services/Collection";
 import { Box } from "degen";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback } from "react";
 import {
   DragDropContext,
   Droppable,
   DroppableProvided,
   DropResult,
 } from "react-beautiful-dnd";
-import { toast } from "react-toastify";
 import styled from "styled-components";
 import { SkeletonLoader } from "../../Explore/SkeletonLoader";
 import { useLocalCollection } from "../Context/LocalCollectionContext";
@@ -18,15 +16,10 @@ import InactiveFieldsColumnComponent from "./InactiveFieldsColumn";
 export function Form() {
   const {
     localCollection: collection,
-    loading,
     updateCollection,
+    loading,
+    currentPage,
   } = useLocalCollection();
-
-  const [propertyOrder, setPropertyOrder] = useState(collection.propertyOrder);
-
-  useEffect(() => {
-    setPropertyOrder(collection.propertyOrder);
-  }, [collection]);
 
   const handleDragCollectionProperty = async (result: DropResult) => {
     const { destination, source, draggableId } = result;
@@ -36,69 +29,33 @@ export function Form() {
     }
 
     if (
-      destination?.droppableId === source.droppableId &&
-      destination?.index === source.index
+      destination.droppableId === source.droppableId &&
+      destination.index === source.index
     ) {
       return;
     }
 
-    if (destination?.droppableId === "activeFields") {
-      const newPropertyOrder = reorder(
-        propertyOrder,
-        source.index,
-        destination.index
-      );
-      setPropertyOrder(newPropertyOrder);
-      if (
-        collection.properties[draggableId].isPartOfFormView === false ||
-        !collection.properties[draggableId].isPartOfFormView
-      ) {
-        updateCollection({
-          ...collection,
-          properties: {
-            ...collection.properties,
-            [draggableId]: {
-              ...collection.properties[draggableId],
-              isPartOfFormView: true,
-            },
-          },
-        });
-        const res = await updateField(collection.id, draggableId, {
-          isPartOfFormView: true,
-        });
-        if (res.id) updateCollection(res);
-        else toast.error(`Request failed with error ${res.message}`);
-      } else {
-        updateCollection({
-          ...collection,
-          propertyOrder: newPropertyOrder,
-        });
-        const res = await updateFormCollection(collection.id, {
-          propertyOrder: newPropertyOrder,
-        });
-        if (res.id) updateCollection(res);
-        else toast.error(`Request failed with error ${res.message}`);
-      }
-    } else if (destination?.droppableId === "inactiveFields") {
-      // setPropertyOrder(reorder(propertyOrder, source.index, destination.index));
-      if (collection.properties[draggableId].isPartOfFormView === true) {
-        updateCollection({
-          ...collection,
-          properties: {
-            ...collection.properties,
-            [draggableId]: {
-              ...collection.properties[draggableId],
-              isPartOfFormView: false,
-            },
-          },
-        });
-        const res = await updateField(collection.id, draggableId, {
-          isPartOfFormView: false,
-        });
-        if (res.id) updateCollection(res);
-        else toast.error(`Request failed with error ${res.message}`);
-      }
-    }
+    const pages = collection.formMetadata.pages;
+
+    const sourcePage = pages[currentPage];
+    console.log({ sourcePage });
+    const newPage = {
+      ...sourcePage,
+      properties: Array.from(sourcePage.properties),
+    };
+    newPage.properties.splice(source.index, 1);
+    newPage.properties.splice(destination.index, 0, draggableId);
+    console.log({ newPage });
+    updateCollection({
+      ...collection,
+      formMetadata: {
+        ...collection.formMetadata,
+        pages: {
+          ...pages,
+          [currentPage]: newPage,
+        },
+      },
+    });
   };
 
   const DroppableContent = (provided: DroppableProvided) => {
@@ -106,18 +63,16 @@ export function Form() {
       <Box {...provided.droppableProps} ref={provided.innerRef}>
         <ScrollContainer>
           <FormContainer>
-            <FormBuilder fields={propertyOrder} />
+            <FormBuilder />
           </FormContainer>
-          <InactiveFieldsColumnComponent fields={propertyOrder} />
+          <InactiveFieldsColumnComponent />
         </ScrollContainer>
       </Box>
     );
   };
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const DroppableContentCallback = useCallback(DroppableContent, [
-    propertyOrder,
-  ]);
+  const DroppableContentCallback = useCallback(DroppableContent, [collection]);
 
   if (loading) {
     return <SkeletonLoader />;

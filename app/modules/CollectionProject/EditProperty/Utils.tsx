@@ -15,36 +15,36 @@ import {
   Users,
 } from "react-feather";
 
-export const getPropertyIcon = (type: PropertyType) => {
+export const getPropertyIcon = (type: PropertyType, size?: number) => {
   switch (type) {
     case "shortText":
-      return <Type size={18} />;
+      return <Type size={size || 18} />;
     case "longText":
-      return <AlignCenter size={18} />;
+      return <AlignCenter size={size || 18} />;
     case "number":
-      return <Hash size={18} />;
+      return <Hash size={size || 18} />;
     case "singleSelect":
-      return <Aperture size={18} />;
+      return <Aperture size={size || 18} />;
     case "multiSelect":
-      return <Tag size={18} />;
+      return <Tag size={size || 18} />;
     case "singleURL":
     case "multiURL":
-      return <Link size={18} />;
+      return <Link size={size || 18} />;
     case "user":
-      return <User size={18} />;
+      return <User size={size || 18} />;
     case "user[]":
-      return <Users size={18} />;
+      return <Users size={size || 18} />;
     case "email":
-      return <AtSign size={18} />;
+      return <AtSign size={size || 18} />;
     case "ethAddress":
       return <IconEth size="5" />;
     case "date":
-      return <Calendar size={18} />;
+      return <Calendar size={size || 18} />;
     case "reward":
-      return <DollarSign size={18} />;
+      return <DollarSign size={size || 18} />;
     case "milestone":
-      return <List size={18} />;
+      return <List size={size || 18} />;
     default:
-      return <Aperture size={18} />;
+      return <Aperture size={size || 18} />;
   }
 };

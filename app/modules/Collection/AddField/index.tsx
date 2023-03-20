@@ -39,10 +39,11 @@ import { Field } from "../Automation/Actions/Field";
 
 type Props = {
   propertyName?: string;
+  pageId?: string;
   handleClose: () => void;
 };
 
-export default function AddField({ propertyName, handleClose }: Props) {
+export default function AddField({ propertyName, pageId, handleClose }: Props) {
   const {
     localCollection: collection,
     updateCollection,
@@ -138,22 +139,26 @@ export default function AddField({ propertyName, handleClose }: Props) {
         });
       }
     } else {
-      res = await addField(collection.id, {
-        name: name.trim(),
-        type: type.value as PropertyType,
-        isPartOfFormView: false,
-        description,
-        options: fieldOptions,
-        rewardOptions,
-        userType: userType,
-        default: defaultValue,
-        required: required === 1,
-        milestoneFields,
-        viewConditions,
-        payWallOptions,
-        maxSelections,
-        allowCustom,
-      });
+      res = await addField(
+        collection.id,
+        {
+          name: name.trim(),
+          type: type.value as PropertyType,
+          isPartOfFormView: false,
+          description,
+          options: fieldOptions,
+          rewardOptions,
+          userType: userType,
+          default: defaultValue,
+          required: required === 1,
+          milestoneFields,
+          viewConditions,
+          payWallOptions,
+          maxSelections,
+          allowCustom,
+        },
+        pageId
+      );
     }
     setLoading(false);
     if (res.id) {

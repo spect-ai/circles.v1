@@ -192,7 +192,7 @@ function PublicForm() {
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5 }}
             >
-              <Box width="full" padding="4">
+              {/* <Box width="full" padding="4">
                 <Stack space="2">
                   {form.formMetadata.logo && (
                     <Avatar src={form.formMetadata.logo} label="" size="20" />
@@ -207,7 +207,7 @@ function PublicForm() {
                     <Editor value={form.description} isDirty={true} disabled />
                   )}
                 </Stack>
-              </Box>
+              </Box> */}
               {!form.formMetadata.active && (
                 <Box width="full" padding="4">
                   <Text variant="large" weight="semiBold">
@@ -460,22 +460,6 @@ function PublicForm() {
                     )}
                 </motion.div>
               )}
-              {/* {form.formMetadata.previousResponses?.length > 0 && (
-                <DataActivity
-                  activities={form.activity}
-                  activityOrder={form.activityOrder}
-                  getMemberDetails={getMemberDetails}
-                  collectionId={form.id}
-                  dataId={
-                    form.formMetadata.previousResponses[
-                      form.formMetadata.previousResponses?.length - 1
-                    ]?.slug
-                  }
-                  setForm={setForm}
-                  dataOwner={currentUser as UserType}
-                  collection={form}
-                />
-              )} */}
             </motion.div>
           )}
         </FormContainer>
@@ -547,23 +531,6 @@ const Container = styled(Box)<{ embed: boolean }>`
   z-index: 999;
   margin-top: ${(props) => (props.embed ? "0rem" : "-8rem")};
   padding: 0rem ${(props) => (props.embed ? "0rem" : "14rem")};
-`;
-
-export const NameInput = styled.textarea`
-  resize: none;
-  background: transparent;
-  border: 0;
-  border-style: none;
-  border-color: transparent;
-  outline: none;
-  outline-offset: 0;
-  box-shadow: none;
-  font-size: 1.8rem;
-  font-family: Inter;
-  caret-color: rgb(191, 90, 242);
-  color: rgb(191, 90, 242);
-  font-weight: 600;
-  overflow: hidden;
 `;
 
 export const CoverImage = styled(Box)<{ src: string }>`

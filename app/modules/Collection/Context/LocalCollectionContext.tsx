@@ -39,6 +39,8 @@ type LocalCollectionContextType = {
     needsAttention: boolean;
     reason: string;
   };
+  currentPage: string;
+  setCurrentPage: React.Dispatch<React.SetStateAction<string>>;
 };
 
 export const LocalCollectionContext = createContext<LocalCollectionContextType>(
@@ -90,6 +92,8 @@ export function useProviderLocalCollection() {
       [key: string]: string;
     }
   );
+
+  const [currentPage, setCurrentPage] = useState("start");
 
   const updateCollection = (collection: CollectionType) => {
     queryClient.setQueryData(["collection", colId], collection);
@@ -237,6 +241,8 @@ export function useProviderLocalCollection() {
     fieldNeedsAttention,
     reasonFieldNeedsAttention,
     getIfFieldNeedsAttention,
+    currentPage,
+    setCurrentPage,
   };
 }
 

@@ -886,6 +886,15 @@ export type FormMetadata = {
   canClaimPoap: boolean;
   matchCountForPoap?: number;
   matchCountForKudos?: number;
+  pages: {
+    [pageId: string]: {
+      id: string;
+      name: string;
+      properties: string[];
+      movable?: boolean;
+    };
+  };
+  pageOrder: string[];
 };
 
 export type ProjectMetadata = {
