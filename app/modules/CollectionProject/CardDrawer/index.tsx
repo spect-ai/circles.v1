@@ -507,7 +507,7 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
                 <Box
                   width={{
                     xs: "full",
-                    md: "1/3",
+                    md: "1/4",
                   }}
                 >
                   <PrimaryButton

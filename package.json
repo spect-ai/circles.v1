@@ -47,6 +47,7 @@
     "next-seo": "^5.4.0",
     "react": "^17",
     "react-beautiful-dnd": "^13.1.1",
+    "react-best-gradient-color-picker": "^2.1.13",
     "react-chartjs-2": "^4.3.1",
     "react-confetti": "^6.1.0",
     "react-contenteditable": "^3.3.6",

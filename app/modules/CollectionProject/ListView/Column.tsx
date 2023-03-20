@@ -20,6 +20,7 @@ import { Calendar, DollarSign } from "react-feather";
 import { toast } from "react-toastify";
 import styled from "styled-components";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
+import { CustomTag } from "../EditValue";
 
 type Props = {
   column: Option;
@@ -164,9 +165,13 @@ export default function Column({
                                 {/* <Text weight="semiBold">{property.name}</Text> */}
                                 <Stack direction="horizontal" wrap space="1">
                                   {value.map((value: Option) => (
-                                    <Tag key={value.value} tone="accent">
-                                      {value.label}
-                                    </Tag>
+                                    <CustomTag
+                                      key={value.value}
+                                      mode={mode}
+                                      borderCol={value.color}
+                                    >
+                                      <Text> {value.label}</Text>
+                                    </CustomTag>
                                   ))}
                                 </Stack>
                               </Box>

@@ -1000,6 +1000,7 @@ export type Option = {
   label: string;
   value: string;
   data?: any;
+  color?: string;
 };
 
 export type FormUserType = "assignee" | "reviewer" | "grantee" | "applicant";
