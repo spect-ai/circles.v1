@@ -14,7 +14,10 @@ export function validateAction(action: Action): boolean {
     return validateCreateDiscordChannel(action);
   } else if (action.type === "createCard") {
     return validateCreateCard(action);
+  } else if (action.type === "createDiscordThread") {
+    return validateCreateDiscordThread(action);
   }
+
   return true;
 }
 
@@ -49,5 +52,15 @@ export function validateCreateCard(action: Action): boolean {
   )
     return false;
   if (action.data?.values?.length === 0) return false;
+  return true;
+}
+
+export function validateCreateDiscordThread(action: Action): boolean {
+  if (
+    !action.data?.threadNameType ||
+    !action.data?.selectedChannel ||
+    !action.data.threadName
+  )
+    return false;
   return true;
 }

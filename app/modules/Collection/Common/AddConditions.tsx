@@ -22,7 +22,6 @@ export default function AddConditions({
   buttonText,
   collection,
 }: Props) {
-
   const fieldOptions = Object.entries(collection.properties)
     .filter((field) => !["multiURL"].includes(field[1].type))
     .map((field) => ({
@@ -125,7 +124,7 @@ export default function AddConditions({
           </Stack>
         </Box>
       ))}
-      <Box marginTop="8">
+      <Box marginTop="4">
         <PrimaryButton
           icon={<IconPlusSmall />}
           variant="tertiary"

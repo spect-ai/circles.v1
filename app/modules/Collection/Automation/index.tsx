@@ -235,7 +235,7 @@ export default function Automation({
             title="Automation"
             size="large"
             handleClose={() => setIsOpen(false)}
-            height="90vh"
+            height="85vh"
           >
             <Box
               display="flex"

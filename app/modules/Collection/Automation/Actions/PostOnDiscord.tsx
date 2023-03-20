@@ -153,7 +153,7 @@ export default function PostCardOnDiscord({
         hideLabel
         onChange={(e) => setMessage(e.target.value)}
         value={message}
-        placeholder="Yeah, welcome these guys !"
+        placeholder="A new fren has joined us. Let's welcome them!"
       />
     </Box>
   );

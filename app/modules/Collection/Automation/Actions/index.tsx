@@ -2,6 +2,7 @@ import { Action, CollectionType } from "@/app/types";
 import CloseCard from "./CloseCard";
 import CreateCard from "./CreateCard";
 import CreateDiscordChannel from "./CreateDiscordChannel";
+import CreateDiscordThread from "./CreateDiscordThread";
 import GiveDiscordRole from "./GiveDiscordRole";
 import GiveRole from "./GiveRole";
 import InitiatePendingPayment from "./InitiatePendingPayment";
@@ -48,6 +49,14 @@ export default function SingleAction({
           collection={collection}
         />
       )}
+      {actionType === "createDiscordThread" && (
+        <CreateDiscordThread
+          action={action}
+          actionMode={actionMode}
+          setAction={setAction}
+          collection={collection}
+        />
+      )}
       {actionType === "giveDiscordRole" && (
         <GiveDiscordRole
           action={action}
@@ -82,7 +91,7 @@ export default function SingleAction({
       )}
       {actionType === "initiatePendingPayment" && (
         <InitiatePendingPayment
-        action={action}
+          action={action}
           actionMode={actionMode}
           setAction={setAction}
           collection={collection}

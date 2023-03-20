@@ -200,7 +200,6 @@ function MyApp({ Component, pageProps }: AppProps) {
 
       if (res.username.startsWith("fren") && connector?.id === "arcana-auth") {
         const user = await (connector as any).auth.getUser();
-        console.log({ user });
         setTimeout(() => {
           updateProfile({
             email: user.email,

@@ -24,6 +24,7 @@ import {
   FaGithub,
   FaWallet,
 } from "react-icons/fa";
+import { Action } from "@/app/types";
 
 export const fields = [
   { label: "Short Text", value: "shortText" },
@@ -108,6 +109,118 @@ export const fieldOptionsDropdown = [
     options: [
       { label: "Number", value: "number", icon: <AiOutlineNumber /> },
       { label: "Date", value: "date", icon: <BsFillCalendarDateFill /> },
+    ],
+  },
+];
+
+export const automationActionOptions = [
+  {
+    label: "Project",
+    options: [
+      {
+        label: "Create Card",
+        value: "createCard",
+        id: "createCard",
+        name: "Create Card",
+        service: "collection",
+        type: "createCard",
+        data: {},
+      },
+      {
+        label: "Close Card",
+        value: "closeCard",
+        id: "closeCard",
+        name: "Close Card",
+        service: "collection",
+        type: "closeCard",
+        group: "Project",
+        data: {},
+      },
+    ],
+  },
+  {
+    label: "Discord",
+    options: [
+      {
+        label: "Give Discord Role",
+        value: "giveDiscordRole",
+        id: "giveDiscordRole",
+        name: "Give Discord Role",
+        service: "circle",
+        type: "giveDiscordRole",
+        group: "Discord",
+        data: {},
+      },
+      {
+        label: "Post in Discord Channel",
+        value: "postOnDiscord",
+        id: "postOnDiscord",
+        name: "Post in Discord Channel",
+        service: "discord",
+        type: "postOnDiscord",
+        group: "Discord",
+        data: {},
+      },
+      {
+        label: "Create Discord Channel",
+        value: "createDiscordChannel",
+        id: "createDiscordChannel",
+        name: "Create Discord Channel",
+        service: "discord",
+        type: "createDiscordChannel",
+        group: "Discord",
+        data: {},
+      },
+      {
+        label: "Create Discord Thread",
+        value: "createDiscordThread",
+        id: "createDiscordThread",
+        name: "Create Discord Thread",
+        service: "discord",
+        type: "createDiscordThread",
+        group: "Discord",
+        data: {},
+      },
+    ],
+  },
+  {
+    label: "Space & Workstream",
+    options: [
+      {
+        label: "Give Circle Role",
+        value: "giveRole",
+        id: "giveRole",
+        name: "Give Circle Role",
+        service: "circle",
+        type: "giveRole",
+        group: "Space & Workstream",
+        data: {},
+      },
+      {
+        label: "Initiate Pending Payment",
+        value: "initiatePendingPayment",
+        id: "initiatePendingPayment",
+        name: "Initiate Pending Payment",
+        service: "collection",
+        type: "initiatePendingPayment",
+        group: "Space & Workstream",
+        data: {},
+      },
+    ],
+  },
+  {
+    label: "Others",
+    options: [
+      {
+        label: "Send Email",
+        value: "sendEmail",
+        id: "sendEmail",
+        name: "Send Email",
+        service: "email",
+        type: "sendEmail",
+        group: "Others",
+        data: {},
+      },
     ],
   },
 ];

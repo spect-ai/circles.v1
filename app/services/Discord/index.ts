@@ -30,10 +30,12 @@ export const fetchGuildChannels = async (
 };
 
 export const createThread = async (
-  taskTitle: string,
+  guildId: string,
+  threadName: string,
   channelId: string,
-  userId: string,
-  guildId: string
+  isPrivate: boolean,
+  usersToAdd: string[],
+  rolesToAdd: string[]
 ) => {
   const res = await fetch(
     `${process.env.BOT_HOST}/api/createDiscussionThread?guildId=${guildId}`,
@@ -43,9 +45,11 @@ export const createThread = async (
       },
       method: "POST",
       body: JSON.stringify({
-        taskTitle,
+        threadName,
         channelId,
-        userId,
+        usersToAdd,
+        rolesToAdd,
+        isPrivate,
       }),
     }
   );
