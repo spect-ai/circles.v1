@@ -41,6 +41,7 @@ import {
 } from "react-beautiful-dnd";
 import ReactDOM from "react-dom";
 import { Save } from "react-feather";
+import { BsArrowUpRight } from "react-icons/bs";
 import { useQuery } from "react-query";
 import { toast } from "react-toastify";
 import styled from "styled-components";
@@ -411,6 +412,52 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
                   <Text variant="small">This card is closed</Text>
                 </Box>
               )}
+              {collection.discordThreadRef &&
+                collection.discordThreadRef[value.slug] && (
+                  <Box
+                    display="flex"
+                    flexDirection="row"
+                    justifyContent="flex-end"
+                    alignItems="center"
+                    width="full"
+                    marginRight="4"
+                  >
+                    <CircularBox
+                      display="flex"
+                      flexDirection="row"
+                      mode={mode}
+                      gap="2"
+                      onClick={() => {
+                        if (collection.discordThreadRef[value.slug].private)
+                          window.open(
+                            `https://discord.com/channels/${
+                              collection.discordThreadRef[value.slug].guildId
+                            }/${
+                              collection.discordThreadRef[value.slug].threadId
+                            }`,
+                            "_blank"
+                          );
+                        else {
+                          window.open(
+                            `https://discord.com/channels/${
+                              collection.discordThreadRef[value.slug].guildId
+                            }/${
+                              collection.discordThreadRef[value.slug].channelId
+                            }/threads/${
+                              collection.discordThreadRef[value.slug].threadId
+                            }`,
+                            "_blank"
+                          );
+                        }
+                      }}
+                    >
+                      <Text variant="small">Linked Discord thread</Text>
+                      <Text color="accent">
+                        <BsArrowUpRight />
+                      </Text>
+                    </CircularBox>
+                  </Box>
+                )}
               <Stack space="1">
                 <Stack
                   direction="horizontal"
@@ -564,4 +611,23 @@ const Container = styled(Box)`
   scrollbar-width: none;
 
   height: calc(100vh - 4rem);
+`;
+
+export const CircularBox = styled(Box)<{ mode: string }>`
+  border-radius: 1.5rem;
+  border: solid 2px
+    ${(props) =>
+      props.mode === "dark"
+        ? "rgb(255, 255, 255, 0.05)"
+        : "rgb(20, 20, 20, 0.05)"};
+  &:hover {
+    border: solid 2px rgb(191, 90, 242);
+    transition-duration: 0.7s;
+    cursor: pointer;
+  }
+  transition: all 0.3s ease-in-out;
+  padding: 0.5rem 0.5rem;
+  justify-content: center;
+  align-items: center;
+  width: 12rem;
 `;
