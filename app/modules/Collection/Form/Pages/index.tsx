@@ -43,14 +43,10 @@ export default function Pages({}: Props) {
             variant="transparent"
             onClick={async () => {
               const pageOrder = collection.formMetadata.pageOrder;
-              const lastFixedPage = pageOrder.reverse().map((pageId) => {
-                const page = collection.formMetadata.pages[pageId];
-                if (!page.movable) return page.id;
-              })[0];
-              const lastIndex = pageOrder
-                .reverse()
-                .indexOf(lastFixedPage || "");
-              console.log({ lastIndex });
+              const lastIndex = collection.formMetadata.pages["collect"]
+                ? pageOrder.length - 2
+                : pageOrder.length - 1;
+              console.log(lastIndex);
               const newPageId = `page-${lastIndex + 1}`;
               const res = await updateFormCollection(collection.id, {
                 ...collection,
@@ -156,6 +152,13 @@ const PageLine = () => {
             pageOrder: newPageOrder,
           },
         });
+        updateFormCollection(collection.id, {
+          ...collection,
+          formMetadata: {
+            ...collection.formMetadata,
+            pageOrder: newPageOrder,
+          },
+        });
       }
 
       if (type === "field") {
@@ -181,6 +184,16 @@ const PageLine = () => {
               },
             },
           });
+          updateFormCollection(collection.id, {
+            ...collection,
+            formMetadata: {
+              ...collection.formMetadata,
+              pages: {
+                ...pages,
+                [source.droppableId]: newPage,
+              },
+            },
+          });
           return;
         }
 
@@ -197,6 +210,17 @@ const PageLine = () => {
         newDestinationPage.properties.splice(destination.index, 0, draggableId);
 
         updateCollection({
+          ...collection,
+          formMetadata: {
+            ...collection.formMetadata,
+            pages: {
+              ...pages,
+              [source.droppableId]: newSourcePage,
+              [destination.droppableId]: newDestinationPage,
+            },
+          },
+        });
+        updateFormCollection(collection.id, {
           ...collection,
           formMetadata: {
             ...collection.formMetadata,

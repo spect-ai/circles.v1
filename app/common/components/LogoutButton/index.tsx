@@ -29,6 +29,7 @@ export default function Logout() {
         setAuthenticationStatus("unauthenticated");
         setConnectedUser("");
       }}
+      width="full"
     >
       Logout
     </Button>

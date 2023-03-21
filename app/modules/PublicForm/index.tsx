@@ -97,21 +97,21 @@ function PublicForm() {
       setStamps(stampsWithScore.sort((a, b) => b.score - a.score));
     }
   };
-  useEffect(() => {
-    void (async () => {
-      if (formId) {
-        setLoading(true);
-        const res: FormType = await getForm(formId as string);
-        if (res.id) {
-          await fetchMemberDetails(res.parents[0].slug);
-          setForm(res);
-          setCanFillForm(res.formMetadata.canFillForm);
-          await addStamps(res);
-        } else toast.error("Error fetching form");
-        setLoading(false);
-      }
-    })();
-  }, [connectedUser, formId]);
+  // useEffect(() => {
+  //   void (async () => {
+  //     if (formId) {
+  //       setLoading(true);
+  //       const res: FormType = await getForm(formId as string);
+  //       if (res.id) {
+  //         await fetchMemberDetails(res.parents[0].slug);
+  //         setForm(res);
+  //         setCanFillForm(res.formMetadata.canFillForm);
+  //         await addStamps(res);
+  //       } else toast.error("Error fetching form");
+  //       setLoading(false);
+  //     }
+  //   })();
+  // }, [connectedUser, formId]);
 
   useEffect(() => {
     if (socket && socket.on && formId) {
@@ -185,16 +185,16 @@ function PublicForm() {
             }`,
           }}
         >
-          {(loading || !form) && <SkeletonLoader />}
-          {!loading && form && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.5 }}
-            >
-              <FormFields form={form} setForm={setForm} />
-            </motion.div>
-          )}
+          {/* {(loading || !form) && <SkeletonLoader />} */}
+          {/* {!loading && form && ( */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+          >
+            <FormFields form={form} setForm={setForm} />
+          </motion.div>
+          {/* )} */}
         </FormContainer>
         <Stack align={"center"}>
           <Text variant="label">Powered By</Text>

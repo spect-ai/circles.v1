@@ -7,26 +7,16 @@ import {
   getForm,
   updateCollectionData,
 } from "@/app/services/Collection";
-import {
-  Condition,
-  FormType,
-  GuildRole,
-  KudosType,
-  POAPEventType,
-  Registry,
-  Stamp,
-  UserType,
-} from "@/app/types";
-import { Avatar, Box, Button, Input, Stack, Tag, Text, useTheme } from "degen";
-import React, { useEffect, useRef, useState } from "react";
+import { CollectionType, Condition, FormType, UserType } from "@/app/types";
+import { Box, Input, Stack, Text } from "degen";
+import React, { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { toast } from "react-toastify";
 import styled from "styled-components";
 import PublicField from "./PublicField";
 import mixpanel from "@/app/common/utils/mixpanel";
 import NotificationPreferenceModal from "./NotificationPreferenceModal";
-import { AnimatePresence, motion } from "framer-motion";
-import { satisfiesConditions } from "../Collection/Common/SatisfiesFilter";
+import { AnimatePresence } from "framer-motion";
 import {
   compose,
   createCeramicSession,
@@ -35,34 +25,21 @@ import {
 import { useAccount } from "wagmi";
 import Modal from "@/app/common/components/Modal";
 import { useProfile } from "../Profile/ProfileSettings/LocalProfileContext";
-import { getPoap } from "@/app/services/Poap";
-import {
-  getEscrowBalance,
-  getSurveyDistributionInfo,
-  hasClaimedSurveyToken,
-  isEligibleToClaimSurveyToken,
-} from "@/app/services/SurveyProtocol";
-import { BigNumber } from "ethers";
 import { useAtom } from "jotai";
 import { connectedUserAtom } from "@/app/state/global";
-import Editor from "@/app/common/components/Editor";
-import { Connect } from "../Sidebar/ProfileButton/ConnectButton";
 import Stepper from "@/app/common/components/Stepper";
 import Image from "next/image";
-import { StampCard } from ".";
-import { PassportStampIcons, PassportStampIconsLightMode } from "@/app/assets";
-import {
-  getAllCredentials,
-  getPassportScoreAndCredentials,
-} from "@/app/services/Credentials/AggregatedCredentials";
-import { useRouter } from "next/router";
+import StartPage from "../Collection/Form/FormBuilder/StartPage";
+import ConnectPage from "../Collection/Form/FormBuilder/ConnectPage";
+import { satisfiesConditions } from "../Collection/Common/SatisfiesFilter";
+import CollectPage from "../Collection/Form/FormBuilder/CollectPage";
 
 type Props = {
-  form: FormType;
+  form: FormType | undefined;
   setForm: (form: FormType) => void;
 };
 
-const getUser = async () => {
+export const getUser = async () => {
   const res = await fetch(`${process.env.API_HOST}/user/v1/me`, {
     credentials: "include",
   });
@@ -73,37 +50,19 @@ function FormFields({ form, setForm }: Props) {
   const [data, setData] = useState<any>({});
   const [memberOptions, setMemberOptions] = useState([]);
   const [updateResponse, setUpdateResponse] = useState(false);
-  const [viewResponse, setViewResponse] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  const [submitAnotherResponse, setSubmitAnotherResponse] = useState(false);
-  const [kudos, setKudos] = useState({} as KudosType);
-  const [poap, setPoap] = useState({} as POAPEventType);
-  const [connectedUser, setConnectedUser] = useAtom(connectedUserAtom);
-
+  const [connectedUser] = useAtom(connectedUserAtom);
   const [loading, setLoading] = useState(false);
-  const [claimed, setClaimed] = useState(form.formMetadata.hasClaimedKudos);
-  const [surveyTokenClaimed, setSurveyTokenClaimed] = useState(false);
+
   const { onSaveProfile, email, setEmail } = useProfile();
   const [emailModalOpen, setEmailModalOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [respondAsAnonymous, setRespondAsAnonymous] = useState(false);
-  const [poapClaimed, setPoapClaimed] = useState(false);
-  const [canClaimPoap, setCanClaimPoap] = useState(false);
-  const [distributionInfo, setDistributionInfo] = useState({} as any);
-  const [escrowHasInsufficientBalance, setEscrowHasInsufficientBalance] =
-    useState(false);
-  const [canClaimSurveyToken, setCanClaimSurveyToken] = useState(false);
   const [notificationPreferenceModalOpen, setNotificationPreferenceModalOpen] =
     useState(false);
-  const [surveyIsLotteryYetToBeDrawn, setSurveyIsLotteryYetToBeDrawn] =
-    useState(false);
-  const { data: currentUser, refetch } = useQuery<UserType>(
-    "getMyUser",
-    getUser,
-    {
-      enabled: false,
-    }
-  );
+  const { data: currentUser } = useQuery<UserType>("getMyUser", getUser, {
+    enabled: false,
+  });
   const [requiredFieldsNotSet, setRequiredFieldsNotSet] = useState(
     {} as { [key: string]: boolean }
   );
@@ -113,33 +72,23 @@ function FormFields({ form, setForm }: Props) {
 
   const [captchaVerified, setCaptchaVerified] = useState(false);
 
-  const { data: registry, refetch: fetchRegistry } = useQuery<Registry>(
-    ["registry", form.parents[0].slug],
-    () =>
-      fetch(
-        `${process.env.API_HOST}/circle/slug/${form.parents[0].slug}/getRegistry`
-      ).then((res) => res.json()),
-    {
-      enabled: false,
-    }
-  );
+  // const { data: registry, refetch: fetchRegistry } = useQuery<Registry>(
+  //   ["registry", form.parents[0].slug],
+  //   () =>
+  //     fetch(
+  //       `${process.env.API_HOST}/circle/slug/${form.parents[0].slug}/getRegistry`
+  //     ).then((res) => res.json()),
+  //   {
+  //     enabled: false,
+  //   }
+  // );
 
   const { address, connector } = useAccount();
 
-  const [currentPage, setCurrentPage] = useState(
-    form.formMetadata.pageOrder[0]
-  );
-
-  const [hasStamps, setHasStamps] = useState({} as any);
-  const [currentScore, setCurrentScore] = useState(0);
-  const [stamps, setStamps] = useState([] as Stamp[]);
-
-  const { mode } = useTheme();
-
-  const router = useRouter();
-  const { formId } = router.query;
+  const [currentPage, setCurrentPage] = useState("start");
 
   const checkRequired = (data: any) => {
+    if (!form) return false;
     const requiredFieldsNotSet = {} as { [key: string]: boolean };
 
     const currentFields = form.formMetadata.pages[currentPage].properties;
@@ -163,8 +112,9 @@ function FormFields({ form, setForm }: Props) {
   };
 
   const checkValue = (data: any) => {
+    if (!form) return false;
     const fieldHasInvalidType = {} as { [key: string]: boolean };
-    const currentFields = form.formMetadata.pages[currentPage].properties;
+    const currentFields = form.formMetadata.pages[currentPage || ""].properties;
     currentFields.forEach((propertyId) => {
       if (isIncorrectType(propertyId, data[propertyId])) {
         fieldHasInvalidType[propertyId] = true;
@@ -175,38 +125,10 @@ function FormFields({ form, setForm }: Props) {
   };
 
   useEffect(() => {
-    if (form.formMetadata.poapEventId) {
-      setCanClaimPoap(form.formMetadata.canClaimPoap);
-      void (async () => {
-        const res = await getPoap(
-          form.formMetadata.poapEventId?.toString() || ""
-        );
-        setPoap(res);
-        setPoapClaimed(res.claimed);
-      })();
-    }
-  }, [form]);
-
-  useEffect(() => {
-    void fetchRegistry();
-    if (form.formMetadata.previousResponses?.length > 0) {
+    if (form && form.formMetadata.previousResponses?.length > 0) {
       setSubmitted(true);
       setCurrentPage("submitted");
     }
-
-    if (form.formMetadata.mintkudosTokenId) {
-      void (async () => {
-        const kudo = await (
-          await fetch(
-            `${process.env.MINTKUDOS_HOST}/v1/tokens/${form.formMetadata.mintkudosTokenId}`
-          )
-        ).json();
-        console.log({ kudo });
-        setKudos(kudo);
-      })();
-    }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -228,64 +150,64 @@ function FormFields({ form, setForm }: Props) {
     }
   }, [form]);
 
-  useEffect(() => {
-    if (
-      form?.formMetadata?.surveyTokenId ||
-      form?.formMetadata?.surveyTokenId === 0
-    ) {
-      void (async () => {
-        if (!registry) return;
-        const distributionInfo = (await getSurveyDistributionInfo(
-          form.formMetadata.surveyChain?.value || "",
-          registry[form.formMetadata.surveyChain?.value || ""].surveyHubAddress,
-          form.formMetadata.surveyTokenId as number
-        )) as any;
-        console.log({ distributionInfo });
-        setDistributionInfo(distributionInfo);
+  // useEffect(() => {
+  //   if (
+  //     form?.formMetadata?.surveyTokenId ||
+  //     form?.formMetadata?.surveyTokenId === 0
+  //   ) {
+  //     void (async () => {
+  //       if (!registry) return;
+  //       const distributionInfo = (await getSurveyDistributionInfo(
+  //         form.formMetadata.surveyChain?.value || "",
+  //         registry[form.formMetadata.surveyChain?.value || ""].surveyHubAddress,
+  //         form.formMetadata.surveyTokenId as number
+  //       )) as any;
+  //       console.log({ distributionInfo });
+  //       setDistributionInfo(distributionInfo);
 
-        if (
-          distributionInfo?.distributionType === 0 &&
-          distributionInfo?.requestId?.toString() === "0"
-        ) {
-          setSurveyIsLotteryYetToBeDrawn(true);
-        }
+  //       if (
+  //         distributionInfo?.distributionType === 0 &&
+  //         distributionInfo?.requestId?.toString() === "0"
+  //       ) {
+  //         setSurveyIsLotteryYetToBeDrawn(true);
+  //       }
 
-        const surveyTokenClaimed = await hasClaimedSurveyToken(
-          form.formMetadata.surveyChain?.value || "",
-          registry[form.formMetadata.surveyChain?.value || ""].surveyHubAddress,
-          form.formMetadata.surveyTokenId as number,
-          address as string
-        );
-        setSurveyTokenClaimed(surveyTokenClaimed as boolean);
+  //       const surveyTokenClaimed = await hasClaimedSurveyToken(
+  //         form.formMetadata.surveyChain?.value || "",
+  //         registry[form.formMetadata.surveyChain?.value || ""].surveyHubAddress,
+  //         form.formMetadata.surveyTokenId as number,
+  //         address as string
+  //       );
+  //       setSurveyTokenClaimed(surveyTokenClaimed as boolean);
 
-        const balanceInEscrow = (await getEscrowBalance(
-          form.formMetadata.surveyChain?.value || "",
-          registry[form.formMetadata.surveyChain?.value || ""].surveyHubAddress,
-          form.formMetadata.surveyTokenId as number
-        )) as BigNumber;
-        const insufficientEscrowBalance =
-          distributionInfo?.distributionType === 0
-            ? balanceInEscrow.toString() === "0"
-            : balanceInEscrow.lt(distributionInfo?.amountPerResponse || 0);
-        console.log({ insufficientEscrowBalance });
-        setEscrowHasInsufficientBalance(insufficientEscrowBalance);
-        const canClaim =
-          !insufficientEscrowBalance &&
-          (await isEligibleToClaimSurveyToken(
-            form.formMetadata.surveyChain?.value || "",
-            registry[form.formMetadata.surveyChain?.value || ""]
-              .surveyHubAddress,
-            form.formMetadata.surveyTokenId as number,
-            address as string,
-            distributionInfo,
-            surveyTokenClaimed as boolean
-          ));
+  //       const balanceInEscrow = (await getEscrowBalance(
+  //         form.formMetadata.surveyChain?.value || "",
+  //         registry[form.formMetadata.surveyChain?.value || ""].surveyHubAddress,
+  //         form.formMetadata.surveyTokenId as number
+  //       )) as BigNumber;
+  //       const insufficientEscrowBalance =
+  //         distributionInfo?.distributionType === 0
+  //           ? balanceInEscrow.toString() === "0"
+  //           : balanceInEscrow.lt(distributionInfo?.amountPerResponse || 0);
+  //       console.log({ insufficientEscrowBalance });
+  //       setEscrowHasInsufficientBalance(insufficientEscrowBalance);
+  //       const canClaim =
+  //         !insufficientEscrowBalance &&
+  //         (await isEligibleToClaimSurveyToken(
+  //           form.formMetadata.surveyChain?.value || "",
+  //           registry[form.formMetadata.surveyChain?.value || ""]
+  //             .surveyHubAddress,
+  //           form.formMetadata.surveyTokenId as number,
+  //           address as string,
+  //           distributionInfo,
+  //           surveyTokenClaimed as boolean
+  //         ));
 
-        console.log({ canClaim });
-        setCanClaimSurveyToken(canClaim as boolean);
-      })();
-    }
-  }, [form, registry]);
+  //       console.log({ canClaim });
+  //       setCanClaimSurveyToken(canClaim as boolean);
+  //     })();
+  //   }
+  // }, [form, registry]);
 
   useEffect(() => {
     if (form) {
@@ -366,74 +288,7 @@ function FormFields({ form, setForm }: Props) {
     }
   }, [form, updateResponse]);
 
-  const addStamps = async (form: FormType) => {
-    const stamps = await getAllCredentials();
-    const stampsWithScore = [];
-    if (
-      form.formMetadata.sybilProtectionEnabled &&
-      form.formMetadata.sybilProtectionScores
-    ) {
-      for (const stamp of stamps) {
-        if (form.formMetadata.sybilProtectionScores[stamp.id]) {
-          const stampWithScore = {
-            ...stamp,
-            score: form.formMetadata.sybilProtectionScores[stamp.id],
-          };
-          stampsWithScore.push(stampWithScore);
-        }
-      }
-      console.log({ stampsWithScore });
-      setStamps(stampsWithScore.sort((a, b) => b.score - a.score));
-    }
-  };
-
-  useEffect(() => {
-    (async () => {
-      const res: FormType = await getForm(formId as string);
-      setForm(res);
-      addStamps(res);
-    })();
-  }, [connectedUser]);
-
-  useEffect(() => {
-    if (
-      form &&
-      form.formMetadata &&
-      form.formMetadata.sybilProtectionEnabled &&
-      form.formMetadata.sybilProtectionScores &&
-      currentUser
-    ) {
-      void (async () => {
-        const res = await getPassportScoreAndCredentials(
-          currentUser?.ethAddress,
-          form.formMetadata.sybilProtectionScores
-        );
-        console.log({ res });
-        setCurrentScore(res?.score);
-        setHasStamps(res?.mappedStampsWithCredentials);
-      })();
-    }
-  }, [form, currentUser]);
-
-  useEffect(() => {
-    if (currentPage === "connect") {
-      if (connectedUser) {
-        if (form.formMetadata.sybilProtectionEnabled) {
-          if (form.formMetadata.hasPassedSybilCheck) {
-            setCurrentPage(form.formMetadata.pageOrder[2]);
-          }
-        } else if (form.formMetadata.formRoleGating) {
-          if (form.formMetadata.hasRole) {
-            setCurrentPage(form.formMetadata.pageOrder[2]);
-          }
-        } else {
-          setCurrentPage(form.formMetadata.pageOrder[2]);
-        }
-      }
-    }
-  }, [currentPage]);
-
-  const onSubmit = async () => {
+  const onSubmit = async (form: CollectionType) => {
     if (!captchaVerified && form.formMetadata.captchaEnabled) {
       toast.error("Please verify captcha");
       return;
@@ -534,8 +389,9 @@ function FormFields({ form, setForm }: Props) {
       toast.success("Form submitted successfully");
       setForm(resAfterSave);
       setSubmitted(true);
-      setCurrentPage("submitted");
-      setSubmitAnotherResponse(false);
+      setCurrentPage(
+        form.formMetadata.pages["collect"] ? "collect" : "submitted"
+      );
       setUpdateResponse(false);
     } else {
       toast.error("Error adding data");
@@ -578,7 +434,7 @@ function FormFields({ form, setForm }: Props) {
   // }
 
   const isIncorrectType = (propertyName: string, value: any) => {
-    switch (form.properties[propertyName]?.type) {
+    switch (form?.properties[propertyName]?.type) {
       case "email":
         return value && !isEmail(value);
 
@@ -591,7 +447,7 @@ function FormFields({ form, setForm }: Props) {
   };
 
   const isEmpty = (propertyName: string, value: any) => {
-    switch (form.properties[propertyName].type) {
+    switch (form?.properties[propertyName].type) {
       case "longText":
       case "shortText":
       case "ethAddress":
@@ -644,10 +500,6 @@ function FormFields({ form, setForm }: Props) {
     }
   };
 
-  if (!form.formMetadata.active) {
-    return <Box />;
-  }
-
   return (
     <Container borderRadius="2xLarge">
       {emailModalOpen && (
@@ -685,404 +537,133 @@ function FormFields({ form, setForm }: Props) {
           />
         )}
       </AnimatePresence>
-      {!loading &&
-        Array.from({ length: 1 }).map((_, i) => {
-          if (currentPage === "start") {
-            return (
+      {Array.from({ length: 1 }).map((_, i) => {
+        if (currentPage === "start") {
+          return (
+            <StartPage
+              form={form as CollectionType}
+              setCurrentPage={setCurrentPage}
+              setForm={setForm}
+              setLoading={setLoading}
+            />
+          );
+        } else if (currentPage === "connect" && form) {
+          return (
+            <ConnectPage
+              form={form as CollectionType}
+              setForm={setForm}
+              currentPage={currentPage}
+              setCurrentPage={setCurrentPage}
+            />
+          );
+        } else if (currentPage === "collect") {
+          return (
+            <CollectPage
+              form={form as CollectionType}
+              currentPage={currentPage}
+              setCurrentPage={setCurrentPage}
+            />
+          );
+        } else if (currentPage === "submitted" && form) {
+          return (
+            <Box
+              style={{
+                height: "calc(100vh - 20rem)",
+              }}
+              display="flex"
+              flexDirection="column"
+              justifyContent="space-between"
+            >
+              <Stack align="center">
+                <Image src="/spectForm.gif" width="512" height="512" />
+              </Stack>
               <Box
-                style={{
-                  height: "calc(100vh - 20rem)",
-                }}
+                width="full"
                 display="flex"
                 flexDirection="column"
-                justifyContent="space-between"
+                justifyContent="flex-start"
+                padding="4"
               >
-                <Stack space="2">
-                  {form.formMetadata.logo && (
-                    <Avatar src={form.formMetadata.logo} label="" size="20" />
-                  )}
-                  <NameInput
-                    autoFocus
-                    value={form.name}
-                    disabled
-                    rows={Math.floor(form.name?.length / 20) + 1}
-                  />
-                  {form.description && (
-                    <Editor value={form.description} isDirty={true} disabled />
-                  )}
-                  <Box
-                    display="flex"
-                    flexDirection="column"
-                    padding="4"
-                    marginTop="4"
-                    gap="4"
-                  >
-                    {form.formMetadata.formRoleGating &&
-                      form.formMetadata.formRoleGating.length > 0 && (
-                        <Text
-                          weight="semiBold"
-                          variant="large"
-                          color="textPrimary"
-                        >
-                          This form is role gated
-                        </Text>
-                      )}
-                    {form.formMetadata.mintkudosTokenId && (
-                      <Text
-                        weight="semiBold"
-                        variant="large"
-                        color="textPrimary"
-                      >
-                        This form distributes soulbound tokens to responders
-                      </Text>
-                    )}
-                    {form.formMetadata.surveyTokenId && (
-                      <Text
-                        weight="semiBold"
-                        variant="large"
-                        color="textPrimary"
-                      >
-                        This form distributes erc20 tokens to responders
-                      </Text>
-                    )}
-                    {form.formMetadata.sybilProtectionEnabled && (
-                      <Text
-                        weight="semiBold"
-                        variant="large"
-                        color="textPrimary"
-                      >
-                        This form is Sybil protected
-                      </Text>
-                    )}
-                    {form.formMetadata.poapEventId && (
-                      <Text
-                        weight="semiBold"
-                        variant="large"
-                        color="textPrimary"
-                      >
-                        This form distributes POAP tokens to responders
-                      </Text>
-                    )}
-                    <Text weight="semiBold" variant="large" color="textPrimary">
-                      This form requires you to connect your wallet
-                    </Text>
-                  </Box>
-                </Stack>
-                <Stack direction="horizontal" justify="space-between">
-                  <Box paddingX="5" paddingBottom="4" width="1/2" />
-                  <Box paddingX="5" paddingBottom="4" width="1/2">
-                    <PrimaryButton
-                      onClick={() => {
-                        // if (connectedUser) {
-                        //   setCurrentPage(form.formMetadata.pageOrder[2]);
-                        // } else {
-                        //   setCurrentPage("connect");
-                        // }
-                        setCurrentPage(form.formMetadata.pageOrder[1]);
-                      }}
-                    >
-                      Start
-                    </PrimaryButton>
-                  </Box>
-                </Stack>
-              </Box>
-            );
-          } else if (currentPage === "connect") {
-            return (
-              <Box
-                style={{
-                  height: "calc(100vh - 20rem)",
-                }}
-                display="flex"
-                flexDirection="column"
-                justifyContent="space-between"
-              >
-                <motion.div
-                  className="box"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
+                <Box paddingX="5" paddingBottom="4">
+                  <a href="/" target="_blank">
+                    <PrimaryButton>Create your own form</PrimaryButton>
+                  </a>
+                </Box>
+                <Stack
+                  direction={{
+                    xs: "vertical",
+                    md: "horizontal",
+                  }}
+                  justify="center"
                 >
-                  {!form.formMetadata.hasRole &&
-                    form.formMetadata.formRoleGating && (
-                      <Box
-                        display="flex"
-                        flexDirection="column"
-                        padding="4"
-                        marginTop="4"
-                        gap="4"
-                      >
-                        {" "}
-                        <Text weight="bold">
-                          You require one of the following roles to fill this
-                          form
-                        </Text>
-                        <Stack space="2">
-                          {form.formMetadata.formRoleGating?.map(
-                            (role: GuildRole) => (
-                              <Tag tone="accent" key={role.id}>
-                                {role.name}
-                              </Tag>
-                            )
-                          )}
-                        </Stack>
-                        <Text variant="label">
-                          You do not have the correct roles to access this form
-                        </Text>{" "}
-                        <Box display="flex" flexDirection="row" gap="4">
-                          <Button
-                            variant="tertiary"
-                            size="small"
-                            onClick={async () => {
-                              const externalCircleData = await (
-                                await fetch(
-                                  `${process.env.API_HOST}/circle/external/v1/${form.parents[0].id}/guild`,
-                                  {
-                                    headers: {
-                                      Accept: "application/json",
-                                      "Content-Type": "application/json",
-                                    },
-                                    credentials: "include",
-                                  }
-                                )
-                              ).json();
-                              if (!externalCircleData.urlName) {
-                                toast.error(
-                                  "Error fetching guild, please visit guild.xyz and find the roles or contact support"
-                                );
-                              }
-                              window.open(
-                                `https://guild.xyz/${externalCircleData.urlName}`,
-                                "_blank"
-                              );
-                            }}
-                          >
-                            How do I get these roles?
-                          </Button>
-                        </Box>
-                      </Box>
-                    )}
-                  {form.formMetadata.sybilProtectionEnabled &&
-                    !form.formMetadata.hasPassedSybilCheck && (
-                      <Box
-                        display="flex"
-                        flexDirection="column"
-                        padding="4"
-                        marginTop="4"
-                        gap="4"
-                      >
-                        {" "}
-                        <Text weight="bold">
-                          This form is sybil protected. You must have a minimum
-                          score of 100% to fill this form. Please check the
-                          assigned scores below.
-                        </Text>
-                        <Text color="red" font="mono">
-                          Your current score: {currentScore}%
-                        </Text>
-                        <StampScrollContainer>
-                          {stamps?.map((stamp: Stamp, index: number) => {
-                            return (
-                              <StampCard mode={mode} key={index}>
-                                <Box
-                                  display="flex"
-                                  flexDirection="row"
-                                  width="full"
-                                  alignItems="center"
-                                  gap="4"
-                                >
-                                  <Box
-                                    display="flex"
-                                    flexDirection="row"
-                                    alignItems="center"
-                                    width="full"
-                                    paddingRight="4"
-                                  >
-                                    <Box
-                                      width="8"
-                                      height="8"
-                                      flexDirection="row"
-                                      justifyContent="flex-start"
-                                      alignItems="center"
-                                      marginRight="4"
-                                    >
-                                      {mode === "dark"
-                                        ? PassportStampIcons[stamp.providerName]
-                                        : PassportStampIconsLightMode[
-                                            stamp.providerName
-                                          ]}
-                                    </Box>
-                                    <Box>
-                                      <Text as="h1">{stamp.stampName}</Text>
-                                      <Text variant="small">
-                                        {stamp.stampDescription}
-                                      </Text>
-                                    </Box>
-                                  </Box>{" "}
-                                  {hasStamps[stamp.id] && (
-                                    <Tag tone="green">Verified</Tag>
-                                  )}
-                                  <Text variant="large">{stamp.score}%</Text>
-                                </Box>
-                              </StampCard>
-                            );
-                          })}
-                        </StampScrollContainer>
-                        <Box display="flex" flexDirection="row" gap="4">
-                          <Button
-                            variant="tertiary"
-                            size="small"
-                            onClick={() =>
-                              window.open(
-                                "https://passport.gitcoin.co/",
-                                "_blank"
-                              )
-                            }
-                          >
-                            Get Stamps
-                          </Button>
-                        </Box>
-                      </Box>
-                    )}
-                </motion.div>
-                <Stack direction="horizontal" justify="space-between">
-                  <Box paddingX="5" paddingBottom="4" width="1/2">
-                    <PrimaryButton
-                      variant="transparent"
-                      onClick={() => {
-                        setCurrentPage("start");
-                      }}
-                    >
-                      Back
-                    </PrimaryButton>
-                  </Box>
-                  <Box paddingX="5" paddingBottom="4" width="1/2">
-                    {connectedUser ? (
+                  {form.formMetadata.updatingResponseAllowed &&
+                    form.formMetadata.active &&
+                    form.formMetadata.walletConnectionRequired && (
                       <PrimaryButton
+                        variant="transparent"
                         onClick={() => {
-                          if (!form.formMetadata.hasPassedSybilCheck) {
-                            toast.error(
-                              "You must have a minimum score of 100% to fill this form"
-                            );
-                            return;
-                          }
-                          setCurrentPage(form.formMetadata.pageOrder[2]);
+                          setCurrentPage("start");
+                          setUpdateResponse(true);
                         }}
                       >
-                        Continue
+                        Update response
                       </PrimaryButton>
-                    ) : (
-                      <Connect />
                     )}
-                  </Box>
+                  {form.formMetadata.multipleResponsesAllowed &&
+                    form.formMetadata.active && (
+                      <PrimaryButton
+                        variant="transparent"
+                        onClick={() => {
+                          setCurrentPage("start");
+                          setUpdateResponse(false);
+                          setSubmitted(false);
+
+                          const tempData: any = {};
+                          setRespondAsAnonymous(
+                            form.formMetadata.allowAnonymousResponses
+                          );
+                          form.propertyOrder.forEach((propertyId) => {
+                            if (
+                              [
+                                "longText",
+                                "shortText",
+                                "ethAddress",
+                                "user",
+                                "date",
+                                "number",
+                              ].includes(form.properties[propertyId].type)
+                            ) {
+                              tempData[propertyId] = "";
+                            } else if (
+                              form.properties[propertyId].type ===
+                              "singleSelect"
+                            ) {
+                              // @ts-ignore
+                              tempData[propertyId] = {};
+                            } else if (
+                              ["multiSelect", "user[]"].includes(
+                                form.properties[propertyId].type
+                              )
+                            ) {
+                              tempData[propertyId] = [];
+                            }
+                          });
+
+                          setData(tempData);
+                        }}
+                      >
+                        Submit another response
+                      </PrimaryButton>
+                    )}
                 </Stack>
               </Box>
-            );
-          } else if (currentPage === "claimKudos") {
-            return (
-              <Stack>
-                <Text>You are eligible to receive kudos!</Text>
-                <PrimaryButton>Claim Kudos</PrimaryButton>
-              </Stack>
-            );
-          } else if (currentPage === "submitted") {
-            return (
-              <Box
-                style={{
-                  height: "calc(100vh - 20rem)",
-                }}
-                display="flex"
-                flexDirection="column"
-                justifyContent="space-between"
-              >
-                <Stack align="center">
-                  <Image src="/spectForm.gif" width="512" height="512" />
-                </Stack>
-                <Box
-                  width="full"
-                  display="flex"
-                  flexDirection="column"
-                  justifyContent="flex-start"
-                  padding="4"
-                >
-                  <Box paddingX="5" paddingBottom="4">
-                    <a href="/" target="_blank">
-                      <PrimaryButton>Create your own form</PrimaryButton>
-                    </a>
-                  </Box>
-                  <Stack
-                    direction={{
-                      xs: "vertical",
-                      md: "horizontal",
-                    }}
-                    justify="center"
-                  >
-                    {form.formMetadata.updatingResponseAllowed &&
-                      form.formMetadata.active &&
-                      form.formMetadata.walletConnectionRequired && (
-                        <PrimaryButton
-                          variant="transparent"
-                          onClick={() => {
-                            setCurrentPage("start");
-                            setUpdateResponse(true);
-                          }}
-                        >
-                          Update response
-                        </PrimaryButton>
-                      )}
-                    {form.formMetadata.multipleResponsesAllowed &&
-                      form.formMetadata.active && (
-                        <PrimaryButton
-                          variant="transparent"
-                          onClick={() => {
-                            setCurrentPage("start");
-                            setUpdateResponse(false);
-                            setSubmitted(false);
-
-                            const tempData: any = {};
-                            setRespondAsAnonymous(
-                              form.formMetadata.allowAnonymousResponses
-                            );
-                            form.propertyOrder.forEach((propertyId) => {
-                              if (
-                                [
-                                  "longText",
-                                  "shortText",
-                                  "ethAddress",
-                                  "user",
-                                  "date",
-                                  "number",
-                                ].includes(form.properties[propertyId].type)
-                              ) {
-                                tempData[propertyId] = "";
-                              } else if (
-                                form.properties[propertyId].type ===
-                                "singleSelect"
-                              ) {
-                                // @ts-ignore
-                                tempData[propertyId] = {};
-                              } else if (
-                                ["multiSelect", "user[]"].includes(
-                                  form.properties[propertyId].type
-                                )
-                              ) {
-                                tempData[propertyId] = [];
-                              }
-                            });
-
-                            setData(tempData);
-                          }}
-                        >
-                          Submit another response
-                        </PrimaryButton>
-                      )}
-                  </Stack>
-                </Box>
-              </Box>
-            );
-          } else {
+            </Box>
+          );
+        } else {
+          if (form) {
             const pages = form.formMetadata.pages;
             const pageOrder = form.formMetadata.pageOrder;
-            const fields = pages[currentPage]?.properties;
+            const fields = pages[currentPage || ""]?.properties;
             return (
               <FormFieldContainer
                 style={{
@@ -1120,14 +701,14 @@ function FormFields({ form, setForm }: Props) {
                       variant="transparent"
                       onClick={() => {
                         setCurrentPage(
-                          pageOrder[pageOrder.indexOf(currentPage) - 1]
+                          pageOrder[pageOrder.indexOf(currentPage || "") - 1]
                         );
                       }}
                     >
                       Back
                     </PrimaryButton>
                   </Box>
-                  {pages[pageOrder[pageOrder.indexOf(currentPage) + 1]]
+                  {pages[pageOrder[pageOrder.indexOf(currentPage || "") + 1]]
                     .movable ||
                   (submitted && !updateResponse) ? (
                     <Box paddingX="5" paddingBottom="4" width="1/2">
@@ -1148,7 +729,10 @@ function FormFields({ form, setForm }: Props) {
                     </Box>
                   ) : (
                     <Box paddingX="5" paddingBottom="4" width="1/2">
-                      <PrimaryButton onClick={onSubmit} loading={submitting}>
+                      <PrimaryButton
+                        onClick={() => form && onSubmit(form as CollectionType)}
+                        loading={submitting}
+                      >
                         Submit
                       </PrimaryButton>
                     </Box>
@@ -1157,26 +741,31 @@ function FormFields({ form, setForm }: Props) {
               </FormFieldContainer>
             );
           }
-        })}
+        }
+      })}
       <Stack align="center">
-        <Stepper
-          steps={form.formMetadata.pageOrder.length}
-          currentStep={form.formMetadata.pageOrder.indexOf(currentPage)}
-          onStepChange={(step) => {
-            if (submitted) {
-              setCurrentPage(form.formMetadata.pageOrder[step]);
-            } else if (updateResponse || !submitted) {
-              // can only go back
-              if (step < form.formMetadata.pageOrder.indexOf(currentPage)) {
+        {form && (
+          <Stepper
+            steps={form.formMetadata.pageOrder.length}
+            currentStep={form.formMetadata.pageOrder.indexOf(currentPage || "")}
+            onStepChange={(step) => {
+              if (submitted) {
                 setCurrentPage(form.formMetadata.pageOrder[step]);
+              } else if (updateResponse || !submitted) {
+                // can only go back
+                if (
+                  step < form.formMetadata.pageOrder.indexOf(currentPage || "")
+                ) {
+                  setCurrentPage(form.formMetadata.pageOrder[step]);
+                } else {
+                  toast.error("You can only go back");
+                }
               } else {
-                toast.error("You can only go back");
+                setCurrentPage(form.formMetadata.pageOrder[step]);
               }
-            } else {
-              setCurrentPage(form.formMetadata.pageOrder[step]);
-            }
-          }}
-        />
+            }}
+          />
+        )}
       </Stack>
       {/* 
       {!viewResponse && form.formMetadata.allowAnonymousResponses && (
@@ -1302,14 +891,6 @@ export const NameInput = styled.textarea`
   color: rgb(191, 90, 242);
   font-weight: 600;
   overflow: hidden;
-`;
-
-const StampScrollContainer = styled(Box)`
-  overflow-y: auto;
-  height: calc(100vh - 35rem);
-  ::-webkit-scrollbar {
-    width: 5px;
-  }
 `;
 
 export default React.memo(FormFields);

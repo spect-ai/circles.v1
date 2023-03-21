@@ -32,6 +32,8 @@ import { FormType, GuildRole, Stamp } from "@/app/types";
 import { toast } from "react-toastify";
 import { PassportStampIcons, PassportStampIconsLightMode } from "@/app/assets";
 import { getAllCredentials } from "@/app/services/Credentials/AggregatedCredentials";
+import CollectPage from "./CollectPage";
+import BuilderStartPage from "./StartPage/Builder";
 
 function FormBuilder() {
   const {
@@ -98,96 +100,7 @@ function FormBuilder() {
 
   const FieldDraggable = (provided: DroppableProvided) => {
     if (currentPage === "start") {
-      return (
-        <Box
-          style={{
-            height: "calc(100vh - 20rem)",
-          }}
-          display="flex"
-          flexDirection="column"
-          justifyContent="space-between"
-        >
-          <Stack space="2">
-            {logo && <Avatar src={logo} label="" size="20" />}
-            <FileInput
-              onChange={async (file) => {
-                const res = await storeImage(file);
-                setLogo(res.imageGatewayURL);
-                if (connectedUser) {
-                  const newCollection = await updateFormCollection(
-                    collection.id,
-                    {
-                      formMetadata: {
-                        ...collection.formMetadata,
-                        logo: res.imageGatewayURL,
-                      },
-                    }
-                  );
-                  newCollection.id && updateCollection(newCollection);
-                }
-              }}
-            >
-              {() => (
-                <ClickableTag
-                  onClick={() => {}}
-                  name={logo ? "Change logo" : "Add Logo"}
-                />
-              )}
-            </FileInput>
-            <NameInput
-              placeholder="Enter name"
-              autoFocus
-              value={name}
-              rows={Math.floor(name?.length / 60) + 1}
-              onChange={(e) => {
-                setName(e.target.value);
-              }}
-              onBlur={async () => {
-                if (connectedUser && name !== collection.name) {
-                  const res = await updateFormCollection(collection.id, {
-                    name,
-                  });
-                  res.id && updateCollection(res);
-                }
-              }}
-            />
-            <Box
-              width="full"
-              borderRadius="large"
-              maxHeight="56"
-              overflow="auto"
-              id="editorContainer"
-            >
-              <Editor
-                value={description}
-                onSave={async (value) => {
-                  setDescription(value);
-                  if (connectedUser) {
-                    const res = await updateFormCollection(collection.id, {
-                      description: value,
-                    });
-                    res.id && updateCollection(res);
-                  }
-                }}
-                placeholder={`Edit description`}
-                isDirty={true}
-              />
-            </Box>
-          </Stack>
-          <Stack direction="horizontal" justify="space-between">
-            <Box paddingX="5" paddingBottom="4" width="1/2" />
-            <Box paddingX="5" paddingBottom="4" width="1/2">
-              <PrimaryButton
-                onClick={() => {
-                  setCurrentPage(pageOrder[1]);
-                }}
-              >
-                Start
-              </PrimaryButton>
-            </Box>
-          </Stack>
-        </Box>
-      );
+      return <BuilderStartPage setCurrentPage={setCurrentPage} />;
     } else if (currentPage === "connect") {
       return (
         <Box
@@ -364,13 +277,8 @@ function FormBuilder() {
           </Stack>
         </Box>
       );
-    } else if (currentPage === "claimKudos") {
-      return (
-        <Stack>
-          <Text>You are eligible to receive kudos!</Text>
-          <PrimaryButton>Claim Kudos</PrimaryButton>
-        </Stack>
-      );
+    } else if (currentPage === "collect") {
+      return <CollectPage form={collection} preview />;
     } else if (currentPage === "submitted") {
       return (
         <Box
@@ -541,7 +449,7 @@ function FormBuilder() {
             display="flex"
             flexDirection="column"
             style={{
-              height: "calc(100vh - 20rem)",
+              minHeight: "calc(100vh - 20rem)",
             }}
           >
             <Droppable droppableId="activeFields" type="field">
