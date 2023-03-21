@@ -58,8 +58,9 @@ export default function AutomationCenter() {
             }`,
           }}
         />
-        <AutomationHeading />
-        <Box marginX={"4"}>
+        <Box marginX={"8"} marginTop="2">
+          <AutomationHeading />
+
           {(circle?.automations === undefined ||
             Object.entries(circle?.automations).length == 0) && (
             <Box

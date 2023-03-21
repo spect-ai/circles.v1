@@ -93,85 +93,88 @@ export default function Governance() {
           handleClose={() => setOpenDrawer(false)}
         />
       )}
-      <GovernanceHeading status={status as string} setStatus={setStatus} />
-      <ScrollContainer>
-        <Row id="row">
-          {!loading &&
-            !isLoading &&
-            proposals?.length > 0 &&
-            proposals?.map((proposal: any) => {
-              const author = getAuthorDetails(proposal.author);
-              return (
-                <Col md={5} style={{ padding: "0rem", marginLeft: "1rem" }}>
-                  <Link
-                    href={`/${cId}?tab=governance&proposalStatus=${status}&proposalHash=${proposal.id}`}
-                  >
-                    <Container
-                      mode={mode}
-                      onClick={() => {
-                        setProposalId(proposal.id);
-                        setOpenDrawer(true);
-                      }}
+      <Box marginX={"8"} marginTop="2">
+        <GovernanceHeading status={status as string} setStatus={setStatus} />
+
+        <ScrollContainer>
+          <Row id="row">
+            {!loading &&
+              !isLoading &&
+              proposals?.length > 0 &&
+              proposals?.map((proposal: any) => {
+                const author = getAuthorDetails(proposal.author);
+                return (
+                  <Col md={5} style={{ padding: "0rem", marginLeft: "1rem" }}>
+                    <Link
+                      href={`/${cId}?tab=governance&proposalStatus=${status}&proposalHash=${proposal.id}`}
                     >
-                      <Stack direction={"horizontal"} justify="space-between">
-                        <ClickableAvatar
-                          username={author?.username || "Fren"}
-                          userId={author?.id || ""}
-                          label={""}
-                          src={author?.avatar || "0x0"}
-                          size="6"
-                          profile={author as UserType}
-                        />
-                        <Tag hover tone="accent">
-                          Snapshot
-                        </Tag>
-                      </Stack>
-                      <Text
-                        variant="large"
-                        color="textPrimary"
-                        align="left"
-                        weight={"semiBold"}
-                        ellipsis
+                      <Container
+                        mode={mode}
+                        onClick={() => {
+                          setProposalId(proposal.id);
+                          setOpenDrawer(true);
+                        }}
                       >
-                        {proposal.title}
-                      </Text>
-                      <Stack direction={"horizontal"} justify="flex-end">
-                        <Tag hover>
-                          Started on{" "}
-                          {new Date(proposal.start * 1000).toDateString()}
-                        </Tag>
-                      </Stack>
-                    </Container>
-                  </Link>
-                </Col>
-              );
-            })}
-          {(!proposals || proposals?.length === 0) && (
-            <Box
-              style={{
-                margin: "20% 40%",
-                display: "flex",
-                flexDirection: "column",
-                gap: "1rem",
-                alignItems: "center",
-              }}
-            >
-              <Button shape="circle" variant="secondary" size="large">
-                <IconLightningBolt size={"8"} />
-              </Button>
-              <Text
-                variant="large"
-                color="accent"
-                align="left"
-                weight={"semiBold"}
-                ellipsis
+                        <Stack direction={"horizontal"} justify="space-between">
+                          <ClickableAvatar
+                            username={author?.username || "Fren"}
+                            userId={author?.id || ""}
+                            label={""}
+                            src={author?.avatar || "0x0"}
+                            size="6"
+                            profile={author as UserType}
+                          />
+                          <Tag hover tone="accent">
+                            Snapshot
+                          </Tag>
+                        </Stack>
+                        <Text
+                          variant="large"
+                          color="textPrimary"
+                          align="left"
+                          weight={"semiBold"}
+                          ellipsis
+                        >
+                          {proposal.title}
+                        </Text>
+                        <Stack direction={"horizontal"} justify="flex-end">
+                          <Tag hover>
+                            Started on{" "}
+                            {new Date(proposal.start * 1000).toDateString()}
+                          </Tag>
+                        </Stack>
+                      </Container>
+                    </Link>
+                  </Col>
+                );
+              })}
+            {(!proposals || proposals?.length === 0) && (
+              <Box
+                style={{
+                  margin: "20% 40%",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "1rem",
+                  alignItems: "center",
+                }}
               >
-                No {proposalStatus} proposals
-              </Text>
-            </Box>
-          )}
-        </Row>
-      </ScrollContainer>
+                <Button shape="circle" variant="secondary" size="large">
+                  <IconLightningBolt size={"8"} />
+                </Button>
+                <Text
+                  variant="large"
+                  color="accent"
+                  align="left"
+                  weight={"semiBold"}
+                  ellipsis
+                >
+                  No {proposalStatus} proposals
+                </Text>
+              </Box>
+            )}
+          </Row>
+        </ScrollContainer>
+      </Box>
     </>
   );
 }
@@ -184,7 +187,7 @@ const ScrollContainer = styled(Box)`
   -ms-overflow-style: none;
   scrollbar-width: none;
   height: calc(100vh - 9rem);
-  margin: 1rem 3rem;
+  margin: 1rem 0rem;
 `;
 
 const Container = styled(Box)<{ mode: string }>`

@@ -164,7 +164,7 @@ function CircleSidebar() {
           </PrimaryButton>
         )}
 
-        <Container subH="9.5rem">
+        <Container subH="8.1rem">
           <Stack direction="vertical" space="2">
             <InviteMemberModal buttonIsSmallTransparent={true} />
 

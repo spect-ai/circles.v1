@@ -34,11 +34,12 @@ export default function Payment() {
           }`,
         }}
       />
-      <PaymentCenterHeading
-        paymentViewId={paymentViewId}
-        setPaymentViewId={setPaymentViewId}
-      />
-      <Container marginX="8" paddingY="0">
+
+      <Container marginX="8" paddingY="0" marginTop="2">
+        <PaymentCenterHeading
+          paymentViewId={paymentViewId}
+          setPaymentViewId={setPaymentViewId}
+        />
         {paymentViewId === "Pending" && <PendingPayments />}
         {paymentViewId === "Pending Signature" && <PendingSignaturePayments />}
         {paymentViewId === "Completed" && <CompletedPayments />}
