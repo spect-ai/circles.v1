@@ -7,8 +7,9 @@ import { updateFormCollection } from "@/app/services/Collection";
 import { connectedUserAtom } from "@/app/state/global";
 import { Avatar, Box, FileInput, Stack, Text } from "degen";
 import { useAtom } from "jotai";
-import React, { useState } from "react";
+import { useState } from "react";
 import { useLocalCollection } from "../../../Context/LocalCollectionContext";
+import Messages from "./Messages";
 
 type Props = {
   setCurrentPage: (page: string) => void;
@@ -95,39 +96,7 @@ const BuilderStartPage = ({ setCurrentPage }: Props) => {
             isDirty={true}
           />
         </Box>
-        <Box display="flex" flexDirection="column" marginTop="4" gap="4">
-          {collection.formMetadata.formRoleGating &&
-            collection.formMetadata.formRoleGating.length > 0 && (
-              <Text weight="semiBold" variant="large">
-                This form is role gated
-              </Text>
-            )}
-          {collection.formMetadata.mintkudosTokenId && (
-            <Text weight="semiBold" variant="large">
-              This form distributes soulbound tokens to responders
-            </Text>
-          )}
-          {collection.formMetadata.surveyTokenId && (
-            <Text weight="semiBold" variant="large">
-              This form distributes erc20 tokens to responders
-            </Text>
-          )}
-          {collection.formMetadata.sybilProtectionEnabled && (
-            <Text weight="semiBold" variant="large">
-              This form is Sybil protected
-            </Text>
-          )}
-          {collection.formMetadata.poapEventId && (
-            <Text weight="semiBold" variant="large">
-              This form distributes POAP tokens to responders
-            </Text>
-          )}
-          {collection.formMetadata.walletConnectionRequired && (
-            <Text weight="semiBold" variant="large">
-              This form requires you to connect your wallet
-            </Text>
-          )}
-        </Box>
+        <Messages form={collection} />
       </Stack>
       <Stack direction="horizontal" justify="space-between">
         <Box paddingX="5" paddingBottom="4" width="1/2" />
