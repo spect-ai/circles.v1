@@ -278,7 +278,14 @@ function FormBuilder() {
         </Box>
       );
     } else if (currentPage === "collect") {
-      return <CollectPage form={collection} preview />;
+      return (
+        <CollectPage
+          form={collection}
+          preview
+          setCurrentPage={setCurrentPage}
+          currentPage={currentPage}
+        />
+      );
     } else if (currentPage === "submitted") {
       return (
         <Box
