@@ -23,6 +23,7 @@ import { smartTrim } from "@/app/common/utils/utils";
 import FormSettings from "../Form/FormSettings";
 import WarnConnectWallet from "./WarnConnectWallet";
 import { PopoverOption } from "../../Circle/CircleSettingsModal/DiscordRoleMapping/RolePopover";
+import ViewPlugins from "../../Plugins/ViewPlugins";
 
 export const IconButton = styled(Box)`
   cursor: pointer;
@@ -222,6 +223,8 @@ function CollectionHeading() {
                 }}
                 align="center"
               >
+                <ViewPlugins />
+
                 <Popover
                   butttonComponent={
                     <PrimaryButton

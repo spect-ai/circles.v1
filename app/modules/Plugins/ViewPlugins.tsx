@@ -142,13 +142,11 @@ export default function ViewPlugins({}: Props) {
   return (
     <Box>
       <PrimaryButton
-        variant={numPluginsAdded > 0 ? "tertiary" : "secondary"}
+        variant={"tertiary"}
         onClick={() => {
           setIsOpen(true);
         }}
-        icon={
-          <IconPlug color={numPluginsAdded > 0 ? "textSecondary" : "accent"} />
-        }
+        icon={<IconPlug color="text" />}
       >
         {numPluginsAdded > 0
           ? ` Plugins (${numPluginsAdded} added)`

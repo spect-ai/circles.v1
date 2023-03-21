@@ -32,10 +32,13 @@ function InactiveFieldsColumnComponent() {
       </AnimatePresence>
       <Container>
         <Stack>
-          <Box marginTop="2">
+          {/* <Box marginTop="2">
             <ViewPlugins />
+          </Box> */}
+          <Box marginTop="2">
+            {" "}
+            <Pages />
           </Box>
-          <Pages />
         </Stack>
       </Container>
     </>
