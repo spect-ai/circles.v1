@@ -127,6 +127,12 @@ function CreateCollectionModal({
                 placeholder="Name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
+                autoFocus
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    onSubmit();
+                  }
+                }}
               />
               <Stack>
                 <PrimaryButton

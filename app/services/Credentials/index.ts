@@ -192,6 +192,7 @@ export default function useCredentials() {
                     minimumNumberOfAnswersThatNeedToMatchForMintkudos:
                       minimumNumberOfAnswersThatNeedToMatch,
                     responseDataForMintkudos: responseData,
+                    walletConnectionRequired: true,
                   },
                 }),
                 headers: {

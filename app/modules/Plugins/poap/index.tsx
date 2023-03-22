@@ -1,28 +1,20 @@
-import Accordian from "@/app/common/components/Accordian";
 import Modal from "@/app/common/components/Modal";
-import PrimaryButton from "@/app/common/components/PrimaryButton";
 import CheckBox from "@/app/common/components/Table/Checkbox";
-import { updateFormCollection } from "@/app/services/Collection";
 import { createPoap } from "@/app/services/Poap";
 import { UserType } from "@/app/types";
 import {
   Box,
   Button,
-  FileInput,
-  IconClose,
   Input,
   MediaPicker,
   Stack,
   Text,
   Textarea,
   useTheme,
-  VisuallyHidden,
 } from "degen";
 import { useState } from "react";
 import { useQuery } from "react-query";
-import { toast } from "react-toastify";
 import styled from "styled-components";
-import { useCircle } from "../../Circle/CircleContext";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
 import ResponseMatchDistribution from "../common/ResponseMatchDistribution";
 import ImportClaimCodes from "./ImportClaimCodes";
@@ -32,8 +24,6 @@ type Props = {
 };
 
 export default function DistributePOAP({ handleClose }: Props) {
-  const { mode } = useTheme();
-
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
@@ -364,20 +354,20 @@ export const DateInput = styled.input<{ mode: string }>`
   transition: border-color 0.5s ease;
 `;
 
-const ClaimCodeContainer = styled.textarea<{ mode: string }>`
-  width: 100%;
-  border-radius: 1rem;
-  border 1px solid ${(props) =>
-    props.mode === "dark" ? "rgb(255, 255, 255,0.1)" : "rgb(20,20,20,0.1)"};
-  background-color: ${(props) =>
-    props.mode === "dark" ? "rgb(20,20,20)" : "rgb(255, 255, 255)"};
-  padding: 1rem;
-  caret-color: ${(props) =>
-    props.mode === "dark" ? "rgb(255, 255, 255, 0.7)" : "rgb(20, 20, 20, 0.7)"};
-  color: ${(props) =>
-    props.mode === "dark" ? "rgb(255, 255, 255, 0.7)" : "rgb(20, 20, 20, 0.7)"};
-    line-height: 1.5;
-    font-size: 1rem;
-  font-family: Inter;
-resize: none;
-`;
+// const ClaimCodeContainer = styled.textarea<{ mode: string }>`
+//   width: 100%;
+//   border-radius: 1rem;
+//   border 1px solid ${(props) =>
+//     props.mode === "dark" ? "rgb(255, 255, 255,0.1)" : "rgb(20,20,20,0.1)"};
+//   background-color: ${(props) =>
+//     props.mode === "dark" ? "rgb(20,20,20)" : "rgb(255, 255, 255)"};
+//   padding: 1rem;
+//   caret-color: ${(props) =>
+//     props.mode === "dark" ? "rgb(255, 255, 255, 0.7)" : "rgb(20, 20, 20, 0.7)"};
+//   color: ${(props) =>
+//     props.mode === "dark" ? "rgb(255, 255, 255, 0.7)" : "rgb(20, 20, 20, 0.7)"};
+//     line-height: 1.5;
+//     font-size: 1rem;
+//   font-family: Inter;
+// resize: none;
+// `;

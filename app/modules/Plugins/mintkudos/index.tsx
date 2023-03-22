@@ -38,8 +38,6 @@ type Props = {
 };
 
 export default function SendKudos({ handleClose }: Props) {
-  const [updateKudos, setUpdateKudos] = useState(false);
-
   const {
     circle,
     hasMintkudosCredentialsSetup,
