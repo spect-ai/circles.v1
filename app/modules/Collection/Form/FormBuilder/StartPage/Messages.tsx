@@ -24,16 +24,17 @@ export default function Messages({ form }: Props) {
       {form.formMetadata.poapEventId && (
         <Text weight="semiBold">
           🏅 This form distributes a POAP to responders{" "}
-          {form.formMetadata.minimumNumberOfAnswersThatNeedToMatchForPoap &&
-            `who get a score of ${form.formMetadata.minimumNumberOfAnswersThatNeedToMatchForPoap} / ${quizValidFields?.length}  or higher`}
+          {form.formMetadata.minimumNumberOfAnswersThatNeedToMatchForPoap
+            ? `who get a score of ${form.formMetadata.minimumNumberOfAnswersThatNeedToMatchForPoap} / ${quizValidFields?.length}  or higher`
+            : null}
         </Text>
       )}
       {form.formMetadata.mintkudosTokenId && (
         <Text weight="semiBold">
           🎉 This form distributes soulbound tokens to responders{" "}
-          {form.formMetadata
-            .minimumNumberOfAnswersThatNeedToMatchForMintkudos &&
-            `who get a score of ${form.formMetadata.minimumNumberOfAnswersThatNeedToMatchForMintkudos} / ${quizValidFields?.length} or higher`}
+          {form.formMetadata.minimumNumberOfAnswersThatNeedToMatchForMintkudos
+            ? `who get a score of ${form.formMetadata.minimumNumberOfAnswersThatNeedToMatchForMintkudos} / ${quizValidFields?.length} or higher`
+            : null}
         </Text>
       )}
       {form.formMetadata.surveyTokenId && (

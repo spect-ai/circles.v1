@@ -34,6 +34,7 @@ import { PassportStampIcons, PassportStampIconsLightMode } from "@/app/assets";
 import { getAllCredentials } from "@/app/services/Credentials/AggregatedCredentials";
 import CollectPage from "./CollectPage";
 import BuilderStartPage from "./StartPage/Builder";
+import CollectPayment from "@/app/modules/PublicForm/CollectPayment";
 
 function FormBuilder() {
   const {
@@ -42,8 +43,6 @@ function FormBuilder() {
     currentPage,
     setCurrentPage,
   } = useLocalCollection();
-  const [name, setName] = useState(collection.name);
-  const [description, setDescription] = useState(collection.description);
   const [isEditFieldOpen, setIsEditFieldOpen] = useState(false);
   const [propertyName, setPropertyName] = useState("");
   const [isAddFieldOpen, setIsAddFieldOpen] = useState(false);
@@ -83,14 +82,6 @@ function FormBuilder() {
   };
 
   const { mode } = useTheme();
-
-  const quizValidFields =
-    collection.propertyOrder &&
-    collection.propertyOrder.filter(
-      (propertyName) =>
-        collection.properties[propertyName].isPartOfFormView &&
-        quizValidFieldTypes.includes(collection.properties[propertyName].type)
-    );
 
   useEffect(() => {
     if (connectedUser) {
@@ -354,6 +345,18 @@ function FormBuilder() {
             <Box height="4" />
             {provided.placeholder}
           </Box>
+          {collection.formMetadata.paymentConfig &&
+            !pages[pageOrder[pageOrder.indexOf(currentPage) + 1]].movable && (
+              <Box marginBottom="8">
+                <CollectPayment
+                  paymentConfig={collection.formMetadata.paymentConfig}
+                  circleSlug={collection.parents[0].slug}
+                  circleId={collection.parents[0].id}
+                  data={formData}
+                  setData={setFormData}
+                />
+              </Box>
+            )}
           <Stack direction="horizontal" justify="space-between">
             <Box paddingX="5" paddingBottom="4" width="1/2">
               <PrimaryButton

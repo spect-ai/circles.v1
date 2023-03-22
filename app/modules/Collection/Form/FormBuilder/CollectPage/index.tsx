@@ -1,7 +1,9 @@
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { CollectionType } from "@/app/types";
 import { Box, Stack } from "degen";
+import CollectERC20 from "./CollectERC20";
 import CollectKudos from "./CollectKudos";
+import CollectPoap from "./CollectPoap";
 
 type Props = {
   form: CollectionType;
@@ -25,6 +27,8 @@ const CollectPage = ({ form, currentPage, setCurrentPage, preview }: Props) => {
       gap="2"
     >
       <CollectKudos form={form} preview={preview} />
+      <CollectPoap form={form} preview={preview} />
+      <CollectERC20 form={form} preview={preview} />
       <Stack direction="horizontal" justify="space-between">
         <Box paddingX="5" paddingBottom="4" width="1/2">
           <PrimaryButton

@@ -33,6 +33,8 @@ const CollectKudos = ({ form, preview }: Props) => {
     }
   }, []);
 
+  if (!form.formMetadata.mintkudosTokenId) return null;
+
   return (
     <Box
       display="flex"

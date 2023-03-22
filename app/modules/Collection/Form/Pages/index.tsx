@@ -26,10 +26,11 @@ type PageComponentProps = {
   onClick?: () => void;
   fields: string[];
   setAddFieldOpen: (value: boolean) => void;
+  setPropertyName: (value: string) => void;
   setActivePage: (value: string) => void;
 };
 
-export default function Pages({}: Props) {
+export default function Pages() {
   const { localCollection: collection, updateCollection } =
     useLocalCollection();
   return (
@@ -99,6 +100,7 @@ const PageLine = () => {
 
   const [addFieldOpen, setAddFieldOpen] = useState(false);
   const [activePage, setActivePage] = useState("");
+  const [propertyName, setPropertyName] = useState<string>();
 
   let i = 0;
   for (const pageId of pageOrder) {
@@ -127,6 +129,7 @@ const PageLine = () => {
             fields={pages[pageId].properties}
             setAddFieldOpen={setAddFieldOpen}
             setActivePage={setActivePage}
+            setPropertyName={setPropertyName}
           />
         ))}
       </div>
@@ -241,6 +244,7 @@ const PageLine = () => {
             <AddField
               handleClose={() => setAddFieldOpen(false)}
               pageId={activePage}
+              propertyName={propertyName}
             />
           )}
         </AnimatePresence>
@@ -255,6 +259,7 @@ const PageLine = () => {
               fields={pages[pageId].properties}
               setAddFieldOpen={setAddFieldOpen}
               setActivePage={setActivePage}
+              setPropertyName={setPropertyName}
             />
           ))}
           <DragDropContext onDragEnd={handleDragEnd}>
@@ -272,6 +277,7 @@ const PageLine = () => {
                         fields={pages[pageId].properties}
                         setAddFieldOpen={setAddFieldOpen}
                         setActivePage={setActivePage}
+                        setPropertyName={setPropertyName}
                       />
                     ))}
                   </Stack>
@@ -290,6 +296,7 @@ const PageLine = () => {
               fields={pages[pageId].properties}
               setAddFieldOpen={setAddFieldOpen}
               setActivePage={setActivePage}
+              setPropertyName={setPropertyName}
             />
           ))}
         </Stack>
@@ -306,6 +313,7 @@ const PageComponent = ({
   fields,
   setAddFieldOpen,
   setActivePage,
+  setPropertyName,
 }: PageComponentProps) => {
   const { localCollection: collection, updateCollection } =
     useLocalCollection();
@@ -408,6 +416,8 @@ const PageComponent = ({
                       field={field}
                       type={collection.properties[field].type}
                       index={index}
+                      setIsAddFieldOpen={setAddFieldOpen}
+                      setPropertyName={setPropertyName}
                     />
                   ))}
                   {provided.placeholder}
@@ -439,9 +449,17 @@ type FieldComponentProps = {
   field: string;
   type: PropertyType;
   index: number;
+  setIsAddFieldOpen: (open: boolean) => void;
+  setPropertyName: (name: string) => void;
 };
 
-const FieldComponent = ({ field, type, index }: FieldComponentProps) => {
+const FieldComponent = ({
+  field,
+  type,
+  index,
+  setIsAddFieldOpen,
+  setPropertyName,
+}: FieldComponentProps) => {
   const { localCollection: collection, updateCollection } =
     useLocalCollection();
 
@@ -477,12 +495,16 @@ const FieldComponent = ({ field, type, index }: FieldComponentProps) => {
               flexDirection="row"
               alignItems="center"
               gap="2"
+              onClick={() => {
+                setPropertyName(property.name);
+                setIsAddFieldOpen(true);
+              }}
             >
               <Text color="accent">{getPropertyIcon(type, 14)}</Text>
               <Text variant="label">{field}</Text>
             </PropertyButton>
             <Stack direction="horizontal" align="center" space="4">
-              <motion.div
+              {/* <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: hover ? 1 : 0 }}
                 transition={{ duration: 0.3 }}
@@ -492,12 +514,12 @@ const FieldComponent = ({ field, type, index }: FieldComponentProps) => {
                     <IconTrash size="4" />
                   </Text>
                 </Box>
-              </motion.div>
+              </motion.div> */}
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: hover ? 1 : 0 }}
                 transition={{ duration: 0.3 }}
-                style={{ marginRight: "10px" }}
+                style={{ marginLeft: "10px" }}
               >
                 {property.isPartOfFormView ? (
                   <Box
