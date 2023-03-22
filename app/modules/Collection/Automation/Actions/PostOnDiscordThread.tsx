@@ -1,7 +1,7 @@
 import Dropdown from "@/app/common/components/Dropdown";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { useCircle } from "@/app/modules/Circle/CircleContext";
-import { fetchGuildChannels } from "@/app/services/Discord";
+import { fetchGuildChannels, guildIsConnected } from "@/app/services/Discord";
 import { Action, CollectionType, Option } from "@/app/types";
 import { Box, Input, Text } from "degen";
 import { useEffect, useState } from "react";
@@ -28,29 +28,41 @@ export default function PostCardOnDiscordThread({
   );
   const [message, setMessage] = useState(action?.data?.message || "");
   const [fields, setFields] = useState(action?.data?.fields || "");
+  const [discordIsConnected, setDiscordIsConnected] = useState(false);
 
   const { circle } = useCircle();
   const { hostname } = useLocation();
+  const [messageError, setMessageError] = useState(false);
 
   useEffect(() => {
-    const getGuildChannels = async () => {
-      const data = await fetchGuildChannels(circle?.discordGuildId || "");
-      const categoryOptions = data.guildChannels?.map((channel: any) => ({
-        label: channel.name,
-        value: channel.id,
-      }));
-      setChannelOptions(categoryOptions);
-    };
-    if (circle?.discordGuildId) void getGuildChannels();
+    if (circle?.discordGuildId) {
+      const discordIsConnected = async () => {
+        const res = await guildIsConnected(circle?.discordGuildId);
+        setDiscordIsConnected(res);
+      };
+      void discordIsConnected();
+    }
   }, [circle?.discordGuildId]);
 
-  if (!circle?.discordGuildId)
+  useEffect(() => {
+    if (discordIsConnected && circle?.discordGuildId) {
+      const getGuildChannels = async () => {
+        const data = await fetchGuildChannels(circle?.discordGuildId || "");
+        const categoryOptions = data.guildChannels?.map((channel: any) => ({
+          label: channel.name,
+          value: channel.id,
+        }));
+        setChannelOptions(categoryOptions);
+      };
+      if (circle?.discordGuildId) void getGuildChannels();
+    }
+  }, [discordIsConnected]);
+
+  if (!discordIsConnected)
     return (
       <Box
-        width={{
-          xs: "full",
-          md: "1/2",
-        }}
+        width="48"
+        paddingTop="4"
         onClick={() => {
           window.open(
             `https://discord.com/oauth2/authorize?client_id=942494607239958609&permissions=17448306704&redirect_uri=${origin}/api/connectDiscord&response_type=code&scope=bot&state=${circle?.slug}/r/${collection.slug}`,
@@ -89,10 +101,21 @@ export default function PostCardOnDiscordThread({
       <Box marginY="2">
         <Text variant="label">Message</Text>
       </Box>
+      {messageError && (
+        <Box marginY="2">
+          <Text variant="small" color="red">
+            Message cannot be empty
+          </Text>
+        </Box>
+      )}
       <Input
         label
         hideLabel
-        onChange={(e) => setMessage(e.target.value)}
+        onChange={(e) => {
+          setMessage(e.target.value);
+          if (e.target.value?.length > 0) setMessageError(false);
+          else setMessageError(true);
+        }}
         value={message}
         placeholder="Card status has been updated."
       />

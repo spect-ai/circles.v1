@@ -1,6 +1,10 @@
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { useCircle } from "@/app/modules/Circle/CircleContext";
-import { fetchGuildChannels, getGuildRoles } from "@/app/services/Discord";
+import {
+  fetchGuildChannels,
+  getGuildRoles,
+  guildIsConnected,
+} from "@/app/services/Discord";
 import { Action, CollectionType, Option } from "@/app/types";
 import { Box, Stack, Tag, Text } from "degen";
 import { useEffect, useState } from "react";
@@ -57,6 +61,7 @@ export default function CreateDiscordThread({
   const [addDiscordRoles, setAddDiscordRoles] = useState(
     Object.values(action?.data?.rolesToAdd || {}).some((r) => r)
   );
+  const [discordIsConnected, setDiscordIsConnected] = useState(false);
 
   const { circle } = useCircle();
   const toggleSelectedRole = (roleId: string) => {
@@ -75,7 +80,18 @@ export default function CreateDiscordThread({
   };
 
   useEffect(() => {
-    if (circle) {
+    if (circle?.discordGuildId) {
+      const discordIsConnected = async () => {
+        const res = await guildIsConnected(circle?.discordGuildId);
+        console.log({ res });
+        setDiscordIsConnected(res);
+      };
+      void discordIsConnected();
+    }
+  }, [circle?.discordGuildId]);
+
+  useEffect(() => {
+    if (circle?.discordGuildId && discordIsConnected) {
       const getGuildChannels = async () => {
         const data = await fetchGuildChannels(circle?.discordGuildId);
         const channelOptions = data.guildChannels?.map((channel: any) => ({
@@ -84,24 +100,22 @@ export default function CreateDiscordThread({
         }));
         setChannelOptions(channelOptions);
       };
-      if (circle?.discordGuildId) void getGuildChannels();
+      void getGuildChannels();
 
       const fetchGuildRoles = async () => {
         const data = await getGuildRoles(circle?.discordGuildId);
         data && setDiscordRoles(data.roles);
         console.log({ data });
       };
-      if (circle?.discordGuildId) void fetchGuildRoles();
+      void fetchGuildRoles();
     }
-  }, [circle?.discordGuildId]);
+  }, [discordIsConnected]);
 
-  if (!circle?.discordGuildId)
+  if (!discordIsConnected)
     return (
       <Box
-        width={{
-          xs: "full",
-          md: "1/2",
-        }}
+        width="48"
+        paddingTop="4"
         onClick={() => {
           console.log({ origin });
           window.open(
@@ -136,7 +150,7 @@ export default function CreateDiscordThread({
             addResponder,
             addStakeholder,
             stakeholdersToAdd,
-            circleId: circle.id,
+            circleId: circle?.id,
           },
         });
       }}

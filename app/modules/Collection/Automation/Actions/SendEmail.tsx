@@ -20,7 +20,7 @@ export default function SendEmail({
   collection,
 }: Props) {
   const [propertyOptions, setPropertyOptions] = useState([] as Option[]);
-
+  const [messageError, setMessageError] = useState(false);
   const { circle } = useCircle();
 
   useEffect(() => {
@@ -71,6 +71,11 @@ export default function SendEmail({
           multiple={true}
         />
         <Text variant="label">With message</Text>
+        {messageError && (
+          <Text variant="small" color="red">
+            Message is required
+          </Text>
+        )}
         <Textarea
           label
           hideLabel
@@ -88,6 +93,9 @@ export default function SendEmail({
                 circleId: circle?.id || "",
               },
             });
+
+            if (e.target.value?.length > 0) setMessageError(false);
+            else setMessageError(true);
           }}
         />
       </Box>

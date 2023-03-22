@@ -1,5 +1,18 @@
 import { toast } from "react-toastify";
 
+export const guildIsConnected = async (guildId: string) => {
+  const res = await fetch(
+    `${process.env.BOT_HOST}/api/guildExists?guildId=${guildId}`,
+    {
+      method: "GET",
+    }
+  );
+  if (res.ok) {
+    return true;
+  }
+  return false;
+};
+
 export const getGuildRoles = async (guildId: string) => {
   const res = await fetch(
     `${process.env.BOT_HOST}/api/guildRoles?guildId=${guildId}`,
