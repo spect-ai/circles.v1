@@ -5,7 +5,7 @@ import { Action, CollectionType } from "@/app/types";
 import { Box, Stack, Tag, Text } from "degen";
 import { useEffect, useState } from "react";
 import DiscordIcon from "@/app/assets/icons/discordIcon.svg";
-import { getGuildRoles } from "@/app/services/Discord";
+import { getGuildRoles, guildIsConnected } from "@/app/services/Discord";
 import Editor from "@/app/common/components/Editor";
 import { useLocalCollection } from "../../Context/LocalCollectionContext";
 import { useLocation } from "react-use";
@@ -34,6 +34,7 @@ export default function GiveDiscordRole({
       [roleId]: !selectedRoles[roleId],
     });
   };
+  const [discordIsConnected, setDiscordIsConnected] = useState(false);
 
   useEffect(() => {
     setSelectedRoles(action.data?.roles || {});
@@ -49,22 +50,31 @@ export default function GiveDiscordRole({
     >();
 
   useEffect(() => {
-    if (!circle?.discordGuildId) return;
+    if (circle?.discordGuildId) {
+      const discordIsConnected = async () => {
+        const res = await guildIsConnected(circle?.discordGuildId);
+        console.log({ res });
+        setDiscordIsConnected(res);
+      };
+      void discordIsConnected();
+    }
+  }, [circle?.discordGuildId]);
+
+  useEffect(() => {
+    if (!discordIsConnected || !circle?.discordGuildId) return;
     const fetchGuildRoles = async () => {
       const data = await getGuildRoles(circle?.discordGuildId);
       data && setDiscordRoles(data.roles);
       console.log({ data });
     };
     if (circle?.discordGuildId) void fetchGuildRoles();
-  }, [circle?.discordGuildId]);
+  }, [discordIsConnected]);
 
-  if (!circle?.discordGuildId)
+  if (!discordIsConnected)
     return (
       <Box
-        width={{
-          xs: "full",
-          md: "1/2",
-        }}
+        width="48"
+        paddingTop="4"
         onClick={() => {
           window.open(
             `https://discord.com/oauth2/authorize?client_id=942494607239958609&permissions=17448306704&redirect_uri=${origin}/api/connectDiscord&response_type=code&scope=bot&state=${circle?.slug}/r/${collection.slug}`,
@@ -93,7 +103,7 @@ export default function GiveDiscordRole({
           data: {
             ...action.data,
             roles: selectedRoles,
-            circleId: circle.id,
+            circleId: circle?.id,
           },
         });
       }}

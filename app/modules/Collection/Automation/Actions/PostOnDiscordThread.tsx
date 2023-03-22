@@ -15,7 +15,7 @@ type Props = {
   collection: CollectionType;
 };
 
-export default function PostCardOnDiscord({
+export default function PostCardOnDiscordThread({
   setAction,
   actionMode,
   action,
@@ -27,18 +27,17 @@ export default function PostCardOnDiscord({
     action?.data?.channel || {}
   );
   const [message, setMessage] = useState(action?.data?.message || "");
-  const [title, setTitle] = useState(action?.data?.title || "");
   const [fields, setFields] = useState(action?.data?.fields || "");
   const [discordIsConnected, setDiscordIsConnected] = useState(false);
 
   const { circle } = useCircle();
   const { hostname } = useLocation();
+  const [messageError, setMessageError] = useState(false);
 
   useEffect(() => {
     if (circle?.discordGuildId) {
       const discordIsConnected = async () => {
         const res = await guildIsConnected(circle?.discordGuildId);
-        console.log({ res });
         setDiscordIsConnected(res);
       };
       void discordIsConnected();
@@ -90,9 +89,8 @@ export default function PostCardOnDiscord({
         setAction({
           ...action,
           data: {
-            url: `https://${hostname}/${circle?.slug}/r/${collection?.slug}?cardSlug=`,
+            circleId: circle?.id,
             channel: selectedChannel,
-            title,
             message,
             fields,
           },
@@ -100,34 +98,26 @@ export default function PostCardOnDiscord({
       }}
       width="full"
     >
-      <Box marginBottom="2">
-        <Text variant="label">Channel Name</Text>
-      </Box>
-      <Dropdown
-        options={channelOptions}
-        selected={selectedChannel}
-        onChange={(value) => {
-          setSelectedChannel(value);
-        }}
-        multiple={false}
-      />
       <Box marginY="2">
-        <Text variant="label">Post Title</Text>
+        <Text variant="label">Message</Text>
       </Box>
-      <Dropdown
-        options={
-          Object.entries(collection.properties)
-            .filter(([propertyId, property]) => property.type === "shortText")
-            .map(([propertyId, property]) => ({
-              label: `Map from value in "${property.name}"`,
-              value: property.name,
-            })) || []
-        }
-        selected={title}
-        onChange={(value) => {
-          setTitle(value);
+      {messageError && (
+        <Box marginY="2">
+          <Text variant="small" color="red">
+            Message cannot be empty
+          </Text>
+        </Box>
+      )}
+      <Input
+        label
+        hideLabel
+        onChange={(e) => {
+          setMessage(e.target.value);
+          if (e.target.value?.length > 0) setMessageError(false);
+          else setMessageError(true);
         }}
-        multiple={false}
+        value={message}
+        placeholder="Card status has been updated."
       />
       <Box marginY="2">
         <Text variant="label">
@@ -155,17 +145,6 @@ export default function PostCardOnDiscord({
           setFields(f);
         }}
         multiple={true}
-      />
-
-      <Box marginY="2">
-        <Text variant="label">Message</Text>
-      </Box>
-      <Input
-        label
-        hideLabel
-        onChange={(e) => setMessage(e.target.value)}
-        value={message}
-        placeholder="A new fren has joined us. Let's welcome them!"
       />
     </Box>
   );

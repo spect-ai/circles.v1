@@ -8,12 +8,9 @@ import Link from "next/link";
 import { useState } from "react";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { AnimatePresence } from "framer-motion";
-import Modal from "@/app/common/components/Modal";
-import { useQuery as useApolloQuery, gql } from "@apollo/client";
-import { Space } from "@/app/modules/Collection/VotingModule";
-import { updateCircle } from "@/app/services/UpdateCircle";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { toast } from "react-toastify";
+import IntegrateSnapshotModal from "./IntegrateSnapshotModal";
 
 type Props = {
   status: string;
@@ -26,87 +23,25 @@ export default function GovernanceHeading({ status, setStatus }: Props) {
   const { canDo } = useRoleGate();
   const { circle: cId } = router.query;
   const [snapshotModalOpen, setSnapshotModalOpen] = useState(false);
-  const [snapshotSpace, setSnapshotSpace] = useState("");
-
-  const { loading: isLoading, data } = useApolloQuery(Space, {
-    variables: { id: snapshotSpace },
-  });
-
-  const update = async () => {
-    await updateCircle(
-      {
-        snapshot: {
-          name: data?.space?.name || "",
-          id: snapshotSpace,
-          network: data?.space?.network || "",
-          symbol: data?.space?.symbol || "",
-        },
-      },
-      circle?.id as string
-    );
-  };
 
   return (
     <>
       <AnimatePresence>
         {snapshotModalOpen && (
-          <Modal
-            handleClose={() => {
-              setSnapshotModalOpen(false);
-              if (snapshotSpace && data?.space?.id) {
-                update();
-              }
-            }}
-            title="Integrate Snapshot"
-          >
-            <Box
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: "1rem",
-                width: "90%",
-                padding: "2rem",
-              }}
-            >
-              <Text variant="label">Enter your snapshot url</Text>
-              <Input
-                label
-                hideLabel
-                prefix="https://snapshot.org/#/"
-                value={snapshotSpace}
-                placeholder="your-space.eth"
-                onChange={(e) => {
-                  setSnapshotSpace(e.target.value);
-                }}
-              />
-              {snapshotSpace &&
-                !isLoading &&
-                (data?.space?.id ? (
-                  <Text size={"extraSmall"} color="accent">
-                    Snapshot Space - {data?.space?.name}
-                  </Text>
-                ) : (
-                  <Text color={"red"}>Incorrect URL</Text>
-                ))}
-            </Box>
-          </Modal>
+          <IntegrateSnapshotModal
+            handleClose={() => setSnapshotModalOpen(false)}
+          />
         )}
       </AnimatePresence>
-      <Box
-        width="full"
-        display="flex"
-        flexDirection="column"
-        paddingLeft="3"
-        paddingRight="5"
-      >
+      <Box width="full" display="flex" flexDirection="column">
         <Hidden xs sm>
-          <Box marginLeft="4" marginTop="2">
+          <Box>
             {navigationBreadcrumbs && (
               <Breadcrumbs crumbs={navigationBreadcrumbs} />
             )}
           </Box>
         </Hidden>
-        <Box paddingTop="2" display="flex" flexDirection="row" width="full">
+        <Box display="flex" flexDirection="row" width="full">
           <Box
             display="flex"
             flexDirection={{
@@ -117,31 +52,26 @@ export default function GovernanceHeading({ status, setStatus }: Props) {
             width="full"
           >
             <Stack direction="horizontal" align="center">
-              <Box
-                width="full"
-                paddingLeft={{
-                  xs: "0",
-                  md: "4",
-                }}
-              >
-                <Heading>Governance Center</Heading>
+              <Box width="full">
+                <Text size="headingThree" weight="semiBold" ellipsis>
+                  Governance Center
+                </Text>
               </Box>
             </Stack>
-            {!circle?.snapshot?.id && (
-              <PrimaryButton
-                onClick={() => {
-                  if (!canDo("manageCircleSettings")) {
-                    toast.error(
-                      "You don't have permission to connect Snapshot"
-                    );
-                    return;
-                  }
-                  setSnapshotModalOpen(true);
-                }}
-              >
-                Connect Snapshot
-              </PrimaryButton>
-            )}
+            <PrimaryButton
+              onClick={() => {
+                if (!canDo("manageCircleSettings")) {
+                  toast.error("You don't have permission to connect Snapshot");
+                  return;
+                }
+                setSnapshotModalOpen(true);
+              }}
+              variant={circle?.snapshot?.id ? "tertiary" : "secondary"}
+            >
+              {circle?.snapshot?.id
+                ? "Update Snapshot Connection"
+                : "Connect Snapshot"}
+            </PrimaryButton>
           </Box>
         </Box>
         <ViewTabsContainer

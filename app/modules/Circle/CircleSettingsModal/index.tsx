@@ -131,30 +131,39 @@ export default function SettingsModal({ handleClose, initialTab }: Props) {
         >
           {tab === 0 && (
             <Stack>
-              <Input
-                label=""
-                placeholder="Name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-              />
-              <Textarea
-                label=""
-                placeholder=" Description"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-              />
-              <MediaPicker
-                compact
-                defaultValue={{
-                  type: "image/png",
-                  url: logo,
-                }}
-                label="Choose or drag and drop media"
-                uploaded={!!logo}
-                onChange={uploadFile}
-                uploading={uploading}
-                maxSize={10}
-              />
+              <Stack space="0">
+                <Text variant="label">Name</Text>
+                <Input
+                  label
+                  placeholder="Name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                />
+              </Stack>
+              <Stack space="0">
+                <Text variant="label">About</Text>
+                <Textarea
+                  label
+                  placeholder=" Description"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                />
+              </Stack>
+              <Stack space="2">
+                <Text variant="label">Logo</Text>
+                <MediaPicker
+                  compact
+                  defaultValue={{
+                    type: "image/png",
+                    url: logo,
+                  }}
+                  label="Choose or drag and drop media"
+                  uploaded={!!logo}
+                  onChange={uploadFile}
+                  uploading={uploading}
+                  maxSize={10}
+                />
+              </Stack>
               {/* <Tabs
                 selectedTab={visibilityTab}
                 onTabClick={onVisibilityTabClick}

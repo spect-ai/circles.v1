@@ -36,8 +36,8 @@ export default function Pages() {
   return (
     <Box>
       <Stack>
-        <Stack direction="horizontal" space="4">
-          <Text size="headingTwo" weight="semiBold" ellipsis>
+        <Stack direction="horizontal" space="4" align="center">
+          <Text size="headingThree" weight="semiBold" ellipsis>
             Pages
           </Text>
           <PrimaryButton
@@ -74,7 +74,7 @@ export default function Pages() {
               }
             }}
           >
-            <Text color="accent">Add Page</Text>
+            <Text color="accent">Add</Text>
           </PrimaryButton>
         </Stack>
         <PagesContainer>
@@ -96,7 +96,7 @@ const PageLine = () => {
   let middleEndIndex = null;
 
   const pages = collection.formMetadata.pages;
-  const pageOrder = collection.formMetadata.pageOrder;
+  const pageOrder = collection.formMetadata.pageOrder || [];
 
   const [addFieldOpen, setAddFieldOpen] = useState(false);
   const [activePage, setActivePage] = useState("");

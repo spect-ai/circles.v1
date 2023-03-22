@@ -1,5 +1,18 @@
 import { toast } from "react-toastify";
 
+export const guildIsConnected = async (guildId: string) => {
+  const res = await fetch(
+    `${process.env.BOT_HOST}/api/guildExists?guildId=${guildId}`,
+    {
+      method: "GET",
+    }
+  );
+  if (res.ok) {
+    return true;
+  }
+  return false;
+};
+
 export const getGuildRoles = async (guildId: string) => {
   const res = await fetch(
     `${process.env.BOT_HOST}/api/guildRoles?guildId=${guildId}`,
@@ -30,10 +43,12 @@ export const fetchGuildChannels = async (
 };
 
 export const createThread = async (
-  taskTitle: string,
+  guildId: string,
+  threadName: string,
   channelId: string,
-  userId: string,
-  guildId: string
+  isPrivate: boolean,
+  usersToAdd: string[],
+  rolesToAdd: string[]
 ) => {
   const res = await fetch(
     `${process.env.BOT_HOST}/api/createDiscussionThread?guildId=${guildId}`,
@@ -43,9 +58,11 @@ export const createThread = async (
       },
       method: "POST",
       body: JSON.stringify({
-        taskTitle,
+        threadName,
         channelId,
-        userId,
+        usersToAdd,
+        rolesToAdd,
+        isPrivate,
       }),
     }
   );

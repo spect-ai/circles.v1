@@ -195,7 +195,7 @@ export default function Automation({
   if (!circle) return null;
 
   return (
-    <Box marginY="2">
+    <Box>
       <Stack direction="horizontal" space="3" align={"center"}>
         {(automationOrder?.length > 1 ||
           !automationId?.startsWith("automation")) && (
@@ -235,7 +235,7 @@ export default function Automation({
             title="Automation"
             size="large"
             handleClose={() => setIsOpen(false)}
-            height="90vh"
+            height="85vh"
           >
             <Box
               display="flex"

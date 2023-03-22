@@ -38,88 +38,9 @@ function CircleOptions() {
             width: "90%",
           }}
         >
-          <Text size="headingTwo" ellipsis>
+          <Text size="headingThree" weight="bold" ellipsis>
             {circle?.name || project?.parents[0].name}
           </Text>
-          {/* <Popover
-            data-tour="circle-options-popover"
-            butttonComponent={
-              <HeaderButton
-                data-tour="circle-options-button"
-                padding="1"
-                marginTop="0.5"
-                marginBottom="1"
-                borderRadius="large"
-                width="full"
-                onClick={() => {
-                  setIsOpen(!isOpen);
-                  process.env.NODE_ENV === "production" &&
-                    mixpanel.track("Sidebar header button", {
-                      circle: cId,
-                      user: currentUser?.username,
-                    });
-                }}
-                mode={mode}
-              >
-                <Stack direction="horizontal" align="center">
-                  <Text size="headingTwo" weight="semiBold" ellipsis>
-                    {circle?.name || project?.parents[0].name}
-                  </Text>
-                </Stack>
-              </HeaderButton>
-            }
-            isOpen={isOpen}
-            setIsOpen={setIsOpen}
-          >
-            <Box
-              backgroundColor="background"
-              borderWidth="0.5"
-              borderRadius="2xLarge"
-              width="44"
-            >
-              <PopoverOption
-                onClick={() => {
-                  setIsOpen(false);
-                  void router.push(`/${cId}`);
-                  setToggle(0);
-                }}
-              >
-                <Stack direction="horizontal" space="2">
-                  <AppstoreOutlined
-                    style={{
-                      fontSize: "1.3rem",
-                      marginLeft: "2px",
-                    }}
-                  />
-                  Overview
-                </Stack>
-              </PopoverOption>
-              <PopoverOption
-                onClick={() => {
-                  setIsOpen(false);
-                  void router.push(`/${cId}`);
-                  setToggle(1);
-                }}
-              >
-                <Stack direction="horizontal" space="2">
-                  <IconUsersSolid />
-                  Contributors
-                </Stack>
-              </PopoverOption>
-              <PopoverOption
-                onClick={() => {
-                  setIsOpen(false);
-                  void router.push(`/${cId}`);
-                  setToggle(2);
-                }}
-              >
-                <Stack direction="horizontal" space="2">
-                  <IconUserGroup />
-                  Roles
-                </Stack>
-              </PopoverOption>
-            </Box>
-          </Popover> */}
         </Box>
         <Box
           display="flex"

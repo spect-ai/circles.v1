@@ -38,9 +38,7 @@ const { Option } = components;
 const IconOption = (props: any) => (
   <Option {...props}>
     <Stack space="2" align="center" direction="horizontal">
-      <Box marginTop="1.5">
-        <Text color="accent">{props.data.icon}</Text>
-      </Box>
+      <Text color="accent">{props.data.icon}</Text>
       {props.data.label}
     </Stack>
   </Option>

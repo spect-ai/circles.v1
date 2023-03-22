@@ -1,7 +1,7 @@
 import Breadcrumbs from "@/app/common/components/Breadcrumbs";
 import Popover from "@/app/common/components/Popover";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { Box, Heading, IconDotsHorizontal, Stack, useTheme } from "degen";
+import { Box, Heading, IconDotsHorizontal, Stack, useTheme, Text } from "degen";
 import { AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
 import { memo, useEffect, useState } from "react";
@@ -23,6 +23,7 @@ import { smartTrim } from "@/app/common/utils/utils";
 import FormSettings from "../Form/FormSettings";
 import WarnConnectWallet from "./WarnConnectWallet";
 import { PopoverOption } from "../../Circle/CircleSettingsModal/DiscordRoleMapping/RolePopover";
+import ViewPlugins from "../../Plugins/ViewPlugins";
 
 export const IconButton = styled(Box)`
   cursor: pointer;
@@ -95,7 +96,9 @@ function CollectionHeading() {
                   md: "4",
                 }}
               >
-                <Heading>{smartTrim(collection?.name, 20)}</Heading>
+                <Text size="headingThree" weight="semiBold" ellipsis>
+                  {smartTrim(collection?.name, 20)}
+                </Text>
               </Box>
               <FormSettings />
               <Hidden xs sm>
@@ -222,6 +225,8 @@ function CollectionHeading() {
                 }}
                 align="center"
               >
+                <ViewPlugins />
+
                 <Popover
                   butttonComponent={
                     <PrimaryButton

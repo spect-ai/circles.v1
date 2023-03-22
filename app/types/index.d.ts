@@ -800,6 +800,14 @@ export interface CollectionType {
   activity: MappedItem<CollectionActivity>;
   activityOrder: string[];
   viewConditions: Condition[];
+  discordThreadRef: {
+    [key: string]: {
+      threadId: string;
+      channelId: string;
+      guildId: string;
+      private: boolean;
+    };
+  };
 }
 
 export type PaymentConfig = {
@@ -992,6 +1000,7 @@ export type Option = {
   label: string;
   value: string;
   data?: any;
+  color?: string;
 };
 
 export type FormUserType = "assignee" | "reviewer" | "grantee" | "applicant";
@@ -1273,7 +1282,11 @@ export type Action = {
   subType?: string;
   name: string;
   service: string;
+  group: string;
   data: any;
+  value: any;
+  icon: string;
+  label: string;
 };
 
 export type Trigger = {

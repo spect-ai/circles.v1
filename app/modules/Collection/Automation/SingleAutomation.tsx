@@ -7,14 +7,16 @@ import {
   Option,
   Trigger,
 } from "@/app/types";
-import { Box, Stack, Text, useTheme } from "degen";
+import { Box, IconPlusSmall, Stack, Text, useTheme } from "degen";
 import { useEffect, useState } from "react";
+import { Table } from "react-feather";
 import { useQuery } from "react-query";
 import { toast } from "react-toastify";
 import styled from "styled-components";
 import { useCircle } from "../../Circle/CircleContext";
+import { getViewIcon } from "../../CollectionProject/Heading";
 import AddConditions from "../Common/AddConditions";
-import { useLocalCollection } from "../Context/LocalCollectionContext";
+import { automationActionOptions } from "../Constants";
 import SingleAction from "./Actions";
 import SingleTrigger from "./Triggers";
 import { validateActions } from "./Validation/ActionValidations";
@@ -74,77 +76,20 @@ export default function SingleAutomation({
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [isDirty, setIsDirty] = useState(false);
-  const [allPossibleActions, setAllPossibleActions] = useState({
-    createCard: {
-      id: "createCard",
-      name: "Create Card",
-      service: "collection",
-      type: "createCard",
-      data: {},
-    },
-    giveRole: {
-      id: "giveRole",
-      name: "Give Circle Role",
-      service: "circle",
-      type: "giveRole",
-      data: {},
-    },
-    giveDiscordRole: {
-      id: "giveDiscordRole",
-      name: "Give Discord Role",
-      service: "circle",
-      type: "giveDiscordRole",
-      data: {},
-    },
-    createDiscordChannel: {
-      id: "createDiscordChannel",
-      name: "Create Discord Channel",
-      service: "discord",
-      type: "createDiscordChannel",
-      data: {},
-    },
-    sendEmail: {
-      id: "sendEmail",
-      name: "Send Email",
-      service: "email",
-      type: "sendEmail",
-      data: {},
-    },
-    postOnDiscord: {
-      id: "postOnDiscord",
-      name: "Post in Discord Channel",
-      service: "discord",
-      type: "postOnDiscord",
-      data: {},
-    },
-    closeCard: {
-      id: "closeCard",
-      name: "Close Card",
-      service: "collection",
-      type: "closeCard",
-      data: {},
-    },
-    initiatePendingPayment: {
-      id: "initiatePendingPayment",
-      name: "Initiate Pending Payment",
-      service: "collection",
-      type: "initiatePendingPayment",
-      data: {},
-    },
-    // startVotingPeriod: {
-    //   id: "startVotingPeriod",
-    //   name: "Start Voting Period",
-    //   service: "collection",
-    //   type: "startVotingPeriod",
-    //   data: {},
-    // },
-  } as { [id: string]: Action });
   const [canSave, setCanSave] = useState(false);
 
   const collectionOptions = Object.values(circle?.collections || {}).map(
     (c) => ({
       label: c.name,
       value: c.id,
+      icon: c.viewType ? (
+        <Text color="textSecondary"> {getViewIcon(c.viewType || "")} </Text>
+      ) : (
+        <Text color="inherit">
+          {" "}
+          <Table size={18} style={{ marginTop: 4 }} />
+        </Text>
+      ),
     })
   );
 
@@ -205,29 +150,47 @@ export default function SingleAutomation({
         },
         ...paymentOptions,
       ]);
-      console.log({ allPossibleActions });
-      const thenOptions = Object.entries(allPossibleActions)
-        .filter((a) =>
-          collection?.collectionType === 0
-            ? [
-                "createCard",
-                "createDiscordChannel",
-                "giveDiscordRole",
-                "giveRole",
-                "postOnDiscord",
-                "sendEmail",
-                "initiatePendingPayment",
-              ].includes(a[0])
-            : ["closeCard", "createCard", "postOnDiscord"].includes(a[0]) ||
-              (!["completedPayment", "cancelledPayment"].includes(
-                selectedWhenOption.value
-              ) &&
-                a[0] === "initiatePendingPayment")
-        )
-        .map((a) => ({
-          label: a[1].name,
-          value: a[0],
-        }));
+      //const thenOptions = [];
+      // for (const [type, action] of Object.entries(automationActions)) {
+      //   if (collection?.collectionType === 0) {
+      //     if (
+      //       [
+      //         "createCard",
+      //         "createDiscordChannel",
+      //         "giveDiscordRole",
+      //         "giveRole",
+      //         "postOnDiscord",
+      //         "sendEmail",
+      //         "initiatePendingPayment",
+      //         "createDiscordThread",
+      //       ].includes(type)
+      //     ) {
+      //       thenOptions.push({
+      //         label: action.group,
+      //         value: type,
+      //       });
+      //     }
+      //   } else {
+      //     if (
+      //       [
+      //         "closeCard",
+      //         "createCard",
+      //         "postOnDiscord",
+      //         "createDiscordThread",
+      //       ].includes(type) ||
+      //       (!["completedPayment", "cancelledPayment"].includes(
+      //         selectedWhenOption.value
+      //       ) &&
+      //         type === "initiatePendingPayment")
+      //     ) {
+      //       thenOptions.push({
+      //         label: action.label,
+      //         value: type,
+      //       });
+      //     }
+      //   }
+      // }
+
       console.log({ thenOptions });
 
       setThenOptions(thenOptions);
@@ -256,8 +219,6 @@ export default function SingleAutomation({
       }
     }
   }, [automation, collection, collectionOption]);
-
-  console.log({ act: actions });
 
   useEffect(() => {
     fetchCollection()
@@ -390,11 +351,19 @@ export default function SingleAutomation({
         paddingY="4"
       >
         <Box>
-          <Text variant="large" weight="semiBold" color="accent">
+          <Text variant="base" weight="semiBold" color="accent">
             Select Project Or Form
           </Text>
           <AutomationCard mode={mode} backgroundColor="foregroundTertiary">
-            <Box width="full">
+            <Box
+              width="full"
+              onClick={() => {
+                if (automationMode === "edit")
+                  toast.error(
+                    "Cannot edit the project or form field for already existing automations. Please create a new automation."
+                  );
+              }}
+            >
               <Dropdown
                 options={collectionOptions}
                 selected={collectionOption}
@@ -405,6 +374,7 @@ export default function SingleAutomation({
                 }}
                 multiple={false}
                 isClearable={false}
+                disabled={automationMode === "edit"}
               />
             </Box>
           </AutomationCard>
@@ -417,7 +387,7 @@ export default function SingleAutomation({
                   md: "4",
                 }}
               >
-                <Text variant="large" weight="semiBold" color="accent">
+                <Text variant="base" weight="semiBold" color="accent">
                   When
                 </Text>
                 <AutomationCard
@@ -469,7 +439,7 @@ export default function SingleAutomation({
                   md: "4",
                 }}
               >
-                <Text variant="large" weight="semiBold" color="accent">
+                <Text variant="base" weight="semiBold" color="accent">
                   Then
                 </Text>
                 <Stack>
@@ -481,23 +451,23 @@ export default function SingleAutomation({
                     >
                       <Box width="full">
                         <Dropdown
-                          options={thenOptions}
+                          options={automationActionOptions}
                           selected={selectedThenOptions[index]}
-                          onChange={(value) => {
+                          onChange={(action: any) => {
+                            console.log({ action });
                             const newActions = [...actions];
-                            newActions[index] =
-                              allPossibleActions[value?.value];
+                            newActions[index] = action;
                             setActions(newActions);
+
                             const newSelectedThenOptions = [
                               ...selectedThenOptions,
                             ];
-                            newSelectedThenOptions[index] = value;
+                            newSelectedThenOptions[index] = action;
                             setSelectedThenOptions(newSelectedThenOptions);
                             setIsDirty(true);
                           }}
                           multiple={false}
                           isClearable={false}
-                          placeholder={`Add action`}
                         />
                       </Box>
                       <SingleAction
@@ -541,9 +511,7 @@ export default function SingleAutomation({
                   ))}
                 </Stack>
                 <Box
-                  style={{
-                    width: "80%",
-                  }}
+                  width="64"
                   marginTop={{
                     xs: "0",
                     md: "4",
@@ -551,13 +519,12 @@ export default function SingleAutomation({
                 >
                   <PrimaryButton
                     variant="tertiary"
+                    icon={<IconPlusSmall />}
                     onClick={() => {
-                      console.log({ allPossibleActions, thenOptions, actions });
-                      if (allPossibleActions[thenOptions?.[0]?.value])
-                        setActions([
-                          ...actions,
-                          allPossibleActions[thenOptions?.[0]?.value],
-                        ]);
+                      setActions([
+                        ...actions,
+                        automationActionOptions[0].options[0] as Action,
+                      ]);
                       setSelectedThenOptions([
                         ...selectedThenOptions,
                         thenOptions?.[0],
@@ -575,8 +542,9 @@ export default function SingleAutomation({
                   xs: "4",
                   md: "8",
                 }}
+                width="64"
               >
-                <Text variant="large" weight="semiBold" color="accent">
+                <Text variant="base" weight="semiBold" color="accent">
                   Only If
                 </Text>
                 <AddConditions
@@ -655,7 +623,7 @@ export const NameInput = styled.input`
   outline: none;
   outline-offset: 0;
   box-shadow: none;
-  font-size: 1.8rem;
+  font-size: 1.4rem;
   caret-color: rgb(191, 90, 242);
   color: rgb(191, 90, 242);
   font-weight: 600;

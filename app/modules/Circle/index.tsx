@@ -141,7 +141,7 @@ export default function Circle() {
         xs: "2",
         md: "8",
       }}
-      paddingTop="4"
+      paddingTop="2"
       id="box-container"
     >
       <ToastContainer

@@ -37,6 +37,8 @@ function EditValue({ value, setValue, propertyName, dataId, disabled }: Props) {
 
   const { formActions } = useRoleGate();
 
+  console.log({ value });
+
   useEffect(() => {
     if (property) {
       if (property.type === "singleSelect" || property.type === "multiSelect") {
@@ -91,13 +93,17 @@ function EditValue({ value, setValue, propertyName, dataId, disabled }: Props) {
                   <Stack direction="horizontal" wrap space="2">
                     {["multiSelect", "user[]"].includes(property.type) &&
                       value?.map((val: any) => (
-                        <Tag tone="accent" hover key={val.value}>
+                        <CustomTag
+                          mode={mode}
+                          key={val.value}
+                          borderCol={val.color}
+                        >
                           <Stack
                             direction="horizontal"
                             space="1"
                             align="center"
                           >
-                            {val.label}
+                            <Text>{val.label}</Text>
                             <Box
                               cursor="pointer"
                               onClick={() => {
@@ -110,7 +116,7 @@ function EditValue({ value, setValue, propertyName, dataId, disabled }: Props) {
                               <IconClose size="4" color="red" />
                             </Box>
                           </Stack>
-                        </Tag>
+                        </CustomTag>
                       ))}
                     <FieldInput
                       mode={mode}
@@ -156,9 +162,14 @@ function EditValue({ value, setValue, propertyName, dataId, disabled }: Props) {
                             }
                           }}
                         >
-                          <Tag key={val.value} tone="accent" hover>
-                            {val.label}
-                          </Tag>
+                          <CustomTag
+                            mode={mode}
+                            key={val.value}
+                            borderCol={val.color}
+                          >
+                            {" "}
+                            <Text> {val.label}</Text>
+                          </CustomTag>
                         </Box>
                       ))
                     ) : (
@@ -175,9 +186,9 @@ function EditValue({ value, setValue, propertyName, dataId, disabled }: Props) {
                         }
                       }}
                     >
-                      <Tag tone="accent" hover>
-                        {value.label}
-                      </Tag>
+                      <CustomTag mode={mode} borderCol={value.color}>
+                        <Text>{value.label}</Text>
+                      </CustomTag>
                     </Box>
                   ) : (
                     "Empty"
@@ -560,4 +571,14 @@ export const MenuItem = styled(Box)`
     background: rgb(191, 90, 242, 0.1);
   }
   transition: background 0.2s ease;
+`;
+
+export const CustomTag = styled(Box)<{ mode: string; borderCol?: string }>`
+  border-radius: 1.5rem;
+  border: solid 2px ${(props) => props.borderCol || "rgb(191, 90, 242, 0.1)"};
+  transition: all 0.3s ease-in-out;
+  padding: 0.1rem 0.5rem;
+  justify-content: center;
+  align-items: center;
+  overflow: auto;
 `;

@@ -113,7 +113,7 @@ const Breadcrumbs: FC<Props> = ({ crumbs }) => {
       {crumbs.map((crumb, index) => (
         <Stack direction="horizontal" space="2" key={crumb.href}>
           <Container key={crumb.href}>
-            <Text>
+            <Text variant="small">
               {crumb.href ? (
                 <Link href={crumb.href}>{crumb.name}</Link>
               ) : (

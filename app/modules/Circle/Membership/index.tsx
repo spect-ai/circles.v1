@@ -48,7 +48,7 @@ export default function Membership({}: Props) {
   const route = pathname?.split("/")[2];
 
   return (
-    <Box paddingX="8" paddingY="4">
+    <Box marginX="8" marginTop="2">
       <AnimatePresence>
         {isEmebedOpen && (
           <Embed
@@ -60,18 +60,7 @@ export default function Membership({}: Props) {
         )}
       </AnimatePresence>
       {route !== "embed" && (
-        <Stack
-          space="1"
-          direction="horizontal"
-          align="center"
-          justify="space-between"
-        >
-          <Stack direction="horizontal" space="4" align="center">
-            <Heading>Membership Center</Heading>
-            <PrimaryButton onClick={() => setIsEmebedOpen(true)}>
-              Embed
-            </PrimaryButton>
-          </Stack>
+        <Stack space="0" direction="vertical" align="flex-start">
           <Hidden xs sm>
             <Box>
               {navigationBreadcrumbs && (
@@ -79,6 +68,26 @@ export default function Membership({}: Props) {
               )}
             </Box>
           </Hidden>
+          <Box display="flex" flexDirection="row" width="full">
+            <Box
+              display="flex"
+              flexDirection={{
+                xs: "column",
+                md: "row",
+              }}
+              justifyContent="space-between"
+              width="full"
+            >
+              <Stack direction="horizontal" space="4" align="center">
+                <Text size="headingThree" weight="semiBold" ellipsis>
+                  Membership Center
+                </Text>
+              </Stack>
+              <PrimaryButton onClick={() => setIsEmebedOpen(true)}>
+                Embed
+              </PrimaryButton>
+            </Box>
+          </Box>
         </Stack>
       )}
       <ScrollContainer>

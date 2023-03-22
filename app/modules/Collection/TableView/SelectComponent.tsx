@@ -52,6 +52,8 @@ export default function SelectComponent({
   }, [focus]);
 
   const { mode } = useTheme();
+
+  console.log({ columnData, rowData });
   return (
     <Select
       isDisabled={
@@ -115,13 +117,18 @@ export default function SelectComponent({
           ...provided,
           color: mode === "dark" ? "#FFFFFF" : "#000000",
         }),
-        multiValue: () => ({
-          backgroundColor: "rgb(191, 90, 242, 0.1)",
-          borderRadius: "12px",
-          display: "flex",
-          flexDirection: "row",
-          alignItems: "center",
-        }),
+        multiValue: (styles, { data }) => {
+          //const color = chroma(data.color);
+          console.log({ data });
+          return {
+            border: `solid 2px ${data.color || "rgb(191, 90, 242, 0.1)"}`,
+            borderRadius: "12px",
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+            padding: "0.1rem 0.5rem",
+          };
+        },
         valueContainer: (provided) => ({
           ...provided,
           whiteSpace: "nowrap",
@@ -131,7 +138,7 @@ export default function SelectComponent({
         }),
         multiValueLabel: (styles) => ({
           ...styles,
-          color: "rgb(191, 90, 242)",
+          color: "rgb(178,178,178)",
           padding: "0 8px",
         }),
         multiValueRemove: (styles) => ({

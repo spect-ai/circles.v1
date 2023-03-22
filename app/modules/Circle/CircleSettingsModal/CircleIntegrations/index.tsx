@@ -201,19 +201,6 @@ export default function CircleIntegrations() {
             <ConnectGnosis />
           </Box>
         </Stack>
-        <Stack space="1">
-          <Heading>Questbook</Heading>
-          <Text>Connect your Questbook workspace.</Text>
-          <Box
-            width={{
-              xs: "full",
-              md: "1/3",
-            }}
-            marginTop="6"
-          >
-            <ConnectQuestbook />
-          </Box>
-        </Stack>
       </Stack>
     </Box>
   );
