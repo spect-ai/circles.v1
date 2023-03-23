@@ -4,16 +4,7 @@ import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { storeImage } from "@/app/common/utils/ipfs";
 import { CoverImage, StampCard } from "@/app/modules/PublicForm";
 import { updateFormCollection } from "@/app/services/Collection";
-import {
-  Avatar,
-  Box,
-  Button,
-  FileInput,
-  Stack,
-  Tag,
-  Text,
-  useTheme,
-} from "degen";
+import { Box, Button, FileInput, Stack, Tag, Text, useTheme } from "degen";
 import { AnimatePresence, motion } from "framer-motion";
 import { memo, useCallback, useEffect, useState } from "react";
 import { Droppable, DroppableProvided } from "react-beautiful-dnd";
@@ -21,19 +12,17 @@ import styled from "styled-components";
 import AddField from "../../AddField";
 import { useLocalCollection } from "../../Context/LocalCollectionContext";
 import FieldComponent from "../Field";
-import Editor from "@/app/common/components/Editor";
 import { useAtom } from "jotai";
 import { connectedUserAtom } from "@/app/state/global";
 import { Connect } from "@/app/modules/Sidebar/ProfileButton/ConnectButton";
 import Stepper from "@/app/common/components/Stepper";
-import { NameInput } from "@/app/modules/PublicForm/FormFields";
-import { quizValidFieldTypes } from "@/app/modules/Plugins/common/ResponseMatchDistribution";
 import { FormType, GuildRole, Stamp } from "@/app/types";
 import { toast } from "react-toastify";
 import { PassportStampIcons, PassportStampIconsLightMode } from "@/app/assets";
 import { getAllCredentials } from "@/app/services/Credentials/AggregatedCredentials";
 import CollectPage from "./CollectPage";
 import BuilderStartPage from "./StartPage/Builder";
+import CollectPayment from "@/app/modules/PublicForm/CollectPayment";
 
 function FormBuilder() {
   const {
@@ -42,8 +31,6 @@ function FormBuilder() {
     currentPage,
     setCurrentPage,
   } = useLocalCollection();
-  const [name, setName] = useState(collection.name);
-  const [description, setDescription] = useState(collection.description);
   const [isEditFieldOpen, setIsEditFieldOpen] = useState(false);
   const [propertyName, setPropertyName] = useState("");
   const [isAddFieldOpen, setIsAddFieldOpen] = useState(false);
@@ -83,14 +70,6 @@ function FormBuilder() {
   };
 
   const { mode } = useTheme();
-
-  const quizValidFields =
-    collection.propertyOrder &&
-    collection.propertyOrder.filter(
-      (propertyName) =>
-        collection.properties[propertyName].isPartOfFormView &&
-        quizValidFieldTypes.includes(collection.properties[propertyName].type)
-    );
 
   useEffect(() => {
     if (connectedUser) {
@@ -354,6 +333,18 @@ function FormBuilder() {
             <Box height="4" />
             {provided.placeholder}
           </Box>
+          {collection.formMetadata.paymentConfig &&
+            !pages[pageOrder[pageOrder.indexOf(currentPage) + 1]].movable && (
+              <Box marginBottom="8">
+                <CollectPayment
+                  paymentConfig={collection.formMetadata.paymentConfig}
+                  circleSlug={collection.parents[0].slug}
+                  circleId={collection.parents[0].id}
+                  data={formData}
+                  setData={setFormData}
+                />
+              </Box>
+            )}
           <Stack direction="horizontal" justify="space-between">
             <Box paddingX="5" paddingBottom="4" width="1/2">
               <PrimaryButton

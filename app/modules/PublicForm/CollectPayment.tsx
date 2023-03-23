@@ -15,7 +15,7 @@ import { PaymentConfig, Registry } from "@/app/types";
 import { DollarCircleOutlined } from "@ant-design/icons";
 import { Box, Input, Stack, Text } from "degen";
 import { ethers } from "ethers";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useAccount, useNetwork, useSigner, useSwitchNetwork } from "wagmi";
 
@@ -55,9 +55,6 @@ export default function CollectPayment({
   const [tokenOptions, setTokenOptions] = useState(tokens);
   const [selectedToken, setSelectedToken] = useState(tokens[0]);
   const [amount, setAmount] = useState<string>();
-
-  const { data: signer } = useSigner();
-  const { connector } = useAccount();
 
   useEffect(() => {
     (async () => {

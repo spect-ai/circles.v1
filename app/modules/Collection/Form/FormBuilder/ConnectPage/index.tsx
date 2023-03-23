@@ -25,6 +25,7 @@ import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { toast } from "react-toastify";
 import styled from "styled-components";
+import ProfileInfo from "./ProfileInfo";
 
 type Props = {
   form: CollectionType;
@@ -264,9 +265,19 @@ const ConnectPage = ({ form, setForm, currentPage, setCurrentPage }: Props) => {
               </Box>
             </Box>
           )}
+        <Stack align="center">
+          {currentUser && <ProfileInfo member={currentUser} />}
+        </Stack>
       </motion.div>
       <Stack direction="horizontal" justify="space-between">
-        <Box paddingX="5" paddingBottom="4" width="1/2">
+        <Box
+          paddingX="5"
+          paddingBottom="4"
+          width={{
+            xs: "40",
+            md: "56",
+          }}
+        >
           <PrimaryButton
             variant="transparent"
             onClick={() => {
@@ -276,7 +287,14 @@ const ConnectPage = ({ form, setForm, currentPage, setCurrentPage }: Props) => {
             Back
           </PrimaryButton>
         </Box>
-        <Box paddingX="5" paddingBottom="4" width="1/2">
+        <Box
+          paddingX="5"
+          paddingBottom="4"
+          width={{
+            xs: "40",
+            md: "64",
+          }}
+        >
           <Stack direction="horizontal">
             {connectedUser && (
               <Box width="full">
@@ -296,7 +314,7 @@ const ConnectPage = ({ form, setForm, currentPage, setCurrentPage }: Props) => {
                     setCurrentPage(form.formMetadata.pageOrder[2]);
                   }}
                 >
-                  Continue as {currentUser?.username}
+                  Continue
                 </PrimaryButton>
               ) : (
                 <Box onClick={() => setSignedIn(true)}>

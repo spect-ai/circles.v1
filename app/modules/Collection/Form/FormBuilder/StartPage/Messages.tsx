@@ -24,16 +24,17 @@ export default function Messages({ form }: Props) {
       {form.formMetadata.poapEventId && (
         <Text weight="semiBold">
           🏅 This form distributes a POAP to responders{" "}
-          {form.formMetadata.minimumNumberOfAnswersThatNeedToMatchForPoap &&
-            `who get a score of ${form.formMetadata.minimumNumberOfAnswersThatNeedToMatchForPoap} / ${quizValidFields?.length}  or higher`}
+          {form.formMetadata.minimumNumberOfAnswersThatNeedToMatchForPoap
+            ? `who get a score of ${form.formMetadata.minimumNumberOfAnswersThatNeedToMatchForPoap} / ${quizValidFields?.length}  or higher`
+            : null}
         </Text>
       )}
       {form.formMetadata.mintkudosTokenId && (
         <Text weight="semiBold">
           🎉 This form distributes soulbound tokens to responders{" "}
-          {form.formMetadata
-            .minimumNumberOfAnswersThatNeedToMatchForMintkudos &&
-            `who get a score of ${form.formMetadata.minimumNumberOfAnswersThatNeedToMatchForMintkudos} / ${quizValidFields?.length} or higher`}
+          {form.formMetadata.minimumNumberOfAnswersThatNeedToMatchForMintkudos
+            ? `who get a score of ${form.formMetadata.minimumNumberOfAnswersThatNeedToMatchForMintkudos} / ${quizValidFields?.length} or higher`
+            : null}
         </Text>
       )}
       {form.formMetadata.surveyTokenId && (
@@ -44,14 +45,16 @@ export default function Messages({ form }: Props) {
       {form.formMetadata.sybilProtectionEnabled && (
         <Text weight="semiBold">✋ This form is Sybil protected</Text>
       )}
-      <Box display="flex" flexDirection="row" gap="2">
-        <Text weight="semiBold" color="accent">
-          <WalletOutlined />
-        </Text>{" "}
-        <Text weight="semiBold">
-          This form requires you to connect your wallet
-        </Text>
-      </Box>
+      {form.formMetadata.walletConnectionRequired && (
+        <Box display="flex" flexDirection="row" gap="2">
+          <Text weight="semiBold" color="accent">
+            <WalletOutlined />
+          </Text>{" "}
+          <Text weight="semiBold">
+            This form requires you to connect your wallet
+          </Text>
+        </Box>
+      )}
     </Box>
   );
 }

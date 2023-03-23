@@ -1,12 +1,12 @@
 import Editor from "@/app/common/components/Editor";
-import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { NameInput } from "@/app/modules/PublicForm/FormFields";
 import { getForm } from "@/app/services/Collection";
 import { CollectionType, FormType } from "@/app/types";
 import { Avatar, Box, Stack } from "degen";
 import { useRouter } from "next/router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import Footer from "./Footer";
 import Messages from "./Messages";
 
 type Props = {
@@ -19,6 +19,8 @@ type Props = {
 const StartPage = ({ form, setCurrentPage, setLoading, setForm }: Props) => {
   const router = useRouter();
   const { formId } = router.query;
+
+  const [captchaVerified, setCaptchaVerified] = useState(false);
 
   useEffect(() => {
     void (async () => {
@@ -59,23 +61,12 @@ const StartPage = ({ form, setCurrentPage, setLoading, setForm }: Props) => {
           )}
           <Messages form={form} />
         </Stack>
-        <Stack direction="horizontal" justify="space-between">
-          <Box paddingX="5" paddingBottom="4" width="1/2" />
-          <Box paddingX="5" paddingBottom="4" width="1/2">
-            <PrimaryButton
-              onClick={() => {
-                // if (connectedUser) {
-                //   setCurrentPage(form.formMetadata.pageOrder[2]);
-                // } else {
-                //   setCurrentPage("connect");
-                // }
-                setCurrentPage(form.formMetadata.pageOrder[1]);
-              }}
-            >
-              Start
-            </PrimaryButton>
-          </Box>
-        </Stack>
+        <Footer
+          collection={form}
+          setCaptchaVerified={setCaptchaVerified}
+          captchaVerified={captchaVerified}
+          setCurrentPage={setCurrentPage}
+        />
       </Box>
     );
   } else return null;

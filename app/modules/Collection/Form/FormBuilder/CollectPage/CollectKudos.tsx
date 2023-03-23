@@ -9,14 +9,14 @@ import styled from "styled-components";
 
 type Props = {
   form: CollectionType;
+  setClaimedJustNow: (claimed: boolean) => void;
   preview?: boolean;
 };
 
-const CollectKudos = ({ form, preview }: Props) => {
+const CollectKudos = ({ form, setClaimedJustNow, preview }: Props) => {
   const [kudos, setKudos] = useState({} as KudosType);
   const [claimed, setClaimed] = useState(form.formMetadata.hasClaimedKudos);
   const [claiming, setClaiming] = useState(false);
-  const [claimedJustNow, setClaimedJustNow] = useState(false);
 
   useEffect(() => {
     console.log({ form });
@@ -32,6 +32,8 @@ const CollectKudos = ({ form, preview }: Props) => {
       })();
     }
   }, []);
+
+  if (!form.formMetadata.mintkudosTokenId) return null;
 
   return (
     <Box

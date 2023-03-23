@@ -28,11 +28,12 @@ import { useProfile } from "../Profile/ProfileSettings/LocalProfileContext";
 import { useAtom } from "jotai";
 import { connectedUserAtom } from "@/app/state/global";
 import Stepper from "@/app/common/components/Stepper";
-import Image from "next/image";
 import StartPage from "../Collection/Form/FormBuilder/StartPage";
 import ConnectPage from "../Collection/Form/FormBuilder/ConnectPage";
 import { satisfiesConditions } from "../Collection/Common/SatisfiesFilter";
 import CollectPage from "../Collection/Form/FormBuilder/CollectPage";
+import CollectPayment from "./CollectPayment";
+import SubmittedPage from "../Collection/Form/FormBuilder/SubmittedPage";
 
 type Props = {
   form: FormType | undefined;
@@ -69,19 +70,6 @@ function FormFields({ form, setForm }: Props) {
   const [fieldHasInvalidType, setFieldHasInvalidType] = useState(
     {} as { [key: string]: boolean }
   );
-
-  const [captchaVerified, setCaptchaVerified] = useState(false);
-
-  // const { data: registry, refetch: fetchRegistry } = useQuery<Registry>(
-  //   ["registry", form.parents[0].slug],
-  //   () =>
-  //     fetch(
-  //       `${process.env.API_HOST}/circle/slug/${form.parents[0].slug}/getRegistry`
-  //     ).then((res) => res.json()),
-  //   {
-  //     enabled: false,
-  //   }
-  // );
 
   const { address, connector } = useAccount();
 
@@ -125,13 +113,6 @@ function FormFields({ form, setForm }: Props) {
   };
 
   useEffect(() => {
-    if (form && form.formMetadata.previousResponses?.length > 0) {
-      setSubmitted(true);
-      setCurrentPage("submitted");
-    }
-  }, []);
-
-  useEffect(() => {
     if (form?.parents) {
       void (async () => {
         const res = await (
@@ -149,65 +130,6 @@ function FormFields({ form, setForm }: Props) {
       })();
     }
   }, [form]);
-
-  // useEffect(() => {
-  //   if (
-  //     form?.formMetadata?.surveyTokenId ||
-  //     form?.formMetadata?.surveyTokenId === 0
-  //   ) {
-  //     void (async () => {
-  //       if (!registry) return;
-  //       const distributionInfo = (await getSurveyDistributionInfo(
-  //         form.formMetadata.surveyChain?.value || "",
-  //         registry[form.formMetadata.surveyChain?.value || ""].surveyHubAddress,
-  //         form.formMetadata.surveyTokenId as number
-  //       )) as any;
-  //       console.log({ distributionInfo });
-  //       setDistributionInfo(distributionInfo);
-
-  //       if (
-  //         distributionInfo?.distributionType === 0 &&
-  //         distributionInfo?.requestId?.toString() === "0"
-  //       ) {
-  //         setSurveyIsLotteryYetToBeDrawn(true);
-  //       }
-
-  //       const surveyTokenClaimed = await hasClaimedSurveyToken(
-  //         form.formMetadata.surveyChain?.value || "",
-  //         registry[form.formMetadata.surveyChain?.value || ""].surveyHubAddress,
-  //         form.formMetadata.surveyTokenId as number,
-  //         address as string
-  //       );
-  //       setSurveyTokenClaimed(surveyTokenClaimed as boolean);
-
-  //       const balanceInEscrow = (await getEscrowBalance(
-  //         form.formMetadata.surveyChain?.value || "",
-  //         registry[form.formMetadata.surveyChain?.value || ""].surveyHubAddress,
-  //         form.formMetadata.surveyTokenId as number
-  //       )) as BigNumber;
-  //       const insufficientEscrowBalance =
-  //         distributionInfo?.distributionType === 0
-  //           ? balanceInEscrow.toString() === "0"
-  //           : balanceInEscrow.lt(distributionInfo?.amountPerResponse || 0);
-  //       console.log({ insufficientEscrowBalance });
-  //       setEscrowHasInsufficientBalance(insufficientEscrowBalance);
-  //       const canClaim =
-  //         !insufficientEscrowBalance &&
-  //         (await isEligibleToClaimSurveyToken(
-  //           form.formMetadata.surveyChain?.value || "",
-  //           registry[form.formMetadata.surveyChain?.value || ""]
-  //             .surveyHubAddress,
-  //           form.formMetadata.surveyTokenId as number,
-  //           address as string,
-  //           distributionInfo,
-  //           surveyTokenClaimed as boolean
-  //         ));
-
-  //       console.log({ canClaim });
-  //       setCanClaimSurveyToken(canClaim as boolean);
-  //     })();
-  //   }
-  // }, [form, registry]);
 
   useEffect(() => {
     if (form) {
@@ -288,11 +210,14 @@ function FormFields({ form, setForm }: Props) {
     }
   }, [form, updateResponse]);
 
-  const onSubmit = async (form: CollectionType) => {
-    if (!captchaVerified && form.formMetadata.captchaEnabled) {
-      toast.error("Please verify captcha");
-      return;
+  useEffect(() => {
+    if (form && form.formMetadata.previousResponses?.length > 0) {
+      setSubmitted(true);
+      setCurrentPage("submitted");
     }
+  }, [form?.name]);
+
+  const onSubmit = async (form: CollectionType) => {
     if (
       !email &&
       (form.formMetadata.surveyTokenId ||
@@ -405,33 +330,6 @@ function FormFields({ form, setForm }: Props) {
       });
     setSubmitting(false);
   };
-
-  // if (submitted && !submitAnotherResponse && !updateResponse) {
-  //   return (
-  //     <FormResponse
-  //       form={form}
-  //       setSubmitAnotherResponse={setSubmitAnotherResponse}
-  //       setUpdateResponse={setUpdateResponse}
-  //       setSubmitted={setSubmitted}
-  //       kudos={kudos}
-  //       claimed={claimed}
-  //       setClaimed={setClaimed}
-  //       surveyTokenClaimed={surveyTokenClaimed}
-  //       setSurveyTokenClaimed={setSurveyTokenClaimed}
-  //       setViewResponse={setViewResponse}
-  //       poap={poap}
-  //       poapClaimed={poapClaimed}
-  //       setPoapClaimed={setPoapClaimed}
-  //       canClaimPoap={canClaimPoap}
-  //       canClaimSurveyToken={canClaimSurveyToken}
-  //       surveyDistributionInfo={distributionInfo}
-  //       surveyIsLotteryYetToBeDrawn={surveyIsLotteryYetToBeDrawn}
-  //       registry={registry}
-  //       setCanClaimSurveyToken={setCanClaimSurveyToken}
-  //       surveyHasInsufficientBalance={escrowHasInsufficientBalance}
-  //     />
-  //   );
-  // }
 
   const isIncorrectType = (propertyName: string, value: any) => {
     switch (form?.properties[propertyName]?.type) {
@@ -566,98 +464,13 @@ function FormFields({ form, setForm }: Props) {
           );
         } else if (currentPage === "submitted" && form) {
           return (
-            <Box
-              style={{
-                height: "calc(100vh - 20rem)",
-              }}
-              display="flex"
-              flexDirection="column"
-              justifyContent="space-between"
-            >
-              <Stack align="center">
-                <Image src="/spectForm.gif" width="512" height="512" />
-              </Stack>
-              <Box
-                width="full"
-                display="flex"
-                flexDirection="column"
-                justifyContent="flex-start"
-                padding="4"
-              >
-                <Box paddingX="5" paddingBottom="4">
-                  <a href="/" target="_blank">
-                    <PrimaryButton>Create your own form</PrimaryButton>
-                  </a>
-                </Box>
-                <Stack
-                  direction={{
-                    xs: "vertical",
-                    md: "horizontal",
-                  }}
-                  justify="center"
-                >
-                  {form.formMetadata.updatingResponseAllowed &&
-                    form.formMetadata.active &&
-                    form.formMetadata.walletConnectionRequired && (
-                      <PrimaryButton
-                        variant="transparent"
-                        onClick={() => {
-                          setCurrentPage("start");
-                          setUpdateResponse(true);
-                        }}
-                      >
-                        Update response
-                      </PrimaryButton>
-                    )}
-                  {form.formMetadata.multipleResponsesAllowed &&
-                    form.formMetadata.active && (
-                      <PrimaryButton
-                        variant="transparent"
-                        onClick={() => {
-                          setCurrentPage("start");
-                          setUpdateResponse(false);
-                          setSubmitted(false);
-
-                          const tempData: any = {};
-                          setRespondAsAnonymous(
-                            form.formMetadata.allowAnonymousResponses
-                          );
-                          form.propertyOrder.forEach((propertyId) => {
-                            if (
-                              [
-                                "longText",
-                                "shortText",
-                                "ethAddress",
-                                "user",
-                                "date",
-                                "number",
-                              ].includes(form.properties[propertyId].type)
-                            ) {
-                              tempData[propertyId] = "";
-                            } else if (
-                              form.properties[propertyId].type ===
-                              "singleSelect"
-                            ) {
-                              // @ts-ignore
-                              tempData[propertyId] = {};
-                            } else if (
-                              ["multiSelect", "user[]"].includes(
-                                form.properties[propertyId].type
-                              )
-                            ) {
-                              tempData[propertyId] = [];
-                            }
-                          });
-
-                          setData(tempData);
-                        }}
-                      >
-                        Submit another response
-                      </PrimaryButton>
-                    )}
-                </Stack>
-              </Box>
-            </Box>
+            <SubmittedPage
+              form={form as CollectionType}
+              setCurrentPage={setCurrentPage}
+              setUpdateResponse={setUpdateResponse}
+              setSubmitted={setSubmitted}
+              setData={setData}
+            />
           );
         } else {
           if (form) {
@@ -694,9 +507,30 @@ function FormFields({ form, setForm }: Props) {
                       );
                     }
                   })}
+
+                  {form.formMetadata.paymentConfig &&
+                    !pages[pageOrder[pageOrder.indexOf(currentPage || "") + 1]]
+                      .movable && (
+                      <Box marginBottom="8">
+                        <CollectPayment
+                          paymentConfig={form.formMetadata.paymentConfig}
+                          circleSlug={form.parents[0].slug}
+                          circleId={form.parents[0].id}
+                          data={data}
+                          setData={setData}
+                        />
+                      </Box>
+                    )}
                 </Stack>
                 <Stack direction="horizontal" justify="space-between">
-                  <Box paddingX="5" paddingBottom="4" width="1/2">
+                  <Box
+                    paddingX="5"
+                    paddingBottom="4"
+                    width={{
+                      xs: "40",
+                      md: "56",
+                    }}
+                  >
                     <PrimaryButton
                       variant="transparent"
                       onClick={() => {
@@ -711,7 +545,14 @@ function FormFields({ form, setForm }: Props) {
                   {pages[pageOrder[pageOrder.indexOf(currentPage || "") + 1]]
                     .movable ||
                   (submitted && !updateResponse) ? (
-                    <Box paddingX="5" paddingBottom="4" width="1/2">
+                    <Box
+                      paddingX="5"
+                      paddingBottom="4"
+                      width={{
+                        xs: "40",
+                        md: "56",
+                      }}
+                    >
                       <PrimaryButton
                         onClick={() => {
                           if (!checkRequired(data)) {
@@ -728,7 +569,14 @@ function FormFields({ form, setForm }: Props) {
                       </PrimaryButton>
                     </Box>
                   ) : (
-                    <Box paddingX="5" paddingBottom="4" width="1/2">
+                    <Box
+                      paddingX="5"
+                      paddingBottom="4"
+                      width={{
+                        xs: "40",
+                        md: "56",
+                      }}
+                    >
                       <PrimaryButton
                         onClick={() => form && onSubmit(form as CollectionType)}
                         loading={submitting}
@@ -767,73 +615,6 @@ function FormFields({ form, setForm }: Props) {
           />
         )}
       </Stack>
-      {/* 
-      {!viewResponse && form.formMetadata.allowAnonymousResponses && (
-        <Box
-          display="flex"
-          flexDirection="row"
-          gap="2"
-          justifyContent="flex-start"
-          alignItems="center"
-          marginY={"3"}
-        >
-          <CheckBox
-            isChecked={respondAsAnonymous}
-            onClick={() => {
-              if (connectedUser) {
-                setRespondAsAnonymous(!respondAsAnonymous);
-              }
-            }}
-          />
-          <Text variant="base">Respond anonymously</Text>
-        </Box>
-      )} */}
-      {/* {form.formMetadata.paymentConfig && (
-        <Box marginBottom="8">
-          <CollectPayment
-            paymentConfig={form.formMetadata.paymentConfig}
-            circleSlug={form.parents[0].slug}
-            circleId={form.parents[0].id}
-            data={data}
-            setData={setData}
-          />
-        </Box>
-      )} */}
-      {/* {form.formMetadata.captchaEnabled && (
-        <Reaptcha
-          sitekey={process.env.NEXT_PUBLIC_CAPTCHA_SITE_KEY}
-          ref={captchaRef}
-          onVerify={() => {
-            setVerifyingCaptcha(true);
-            captchaRef.current
-              ?.getResponse()
-              .then(async (res: any) => {
-                const verify = await fetch("/api/verifyCaptcha", {
-                  method: "POST",
-                  headers: {
-                    "Content-Type": "application/json",
-                  },
-                  body: JSON.stringify({ token: res }),
-                });
-                console.log({ verify });
-                const data = await verify.json();
-                console.log({ data });
-                if (data.success) {
-                  setCaptchaVerified(true);
-                  setVerifyingCaptcha(false);
-                } else {
-                  toast.error("Captcha verification failed");
-                  setCaptchaVerified(false);
-                  setVerifyingCaptcha(false);
-                }
-              })
-              .catch((err: any) => {
-                console.log(err);
-                setVerifyingCaptcha(false);
-              });
-          }}
-        />
-      )} */}
     </Container>
   );
 }
