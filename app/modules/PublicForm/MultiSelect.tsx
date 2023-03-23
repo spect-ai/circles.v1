@@ -42,7 +42,7 @@ const MultiSelect = ({
                 if (option.value === "__custom__") {
                   onSelect({ label: "", value: "__custom__" });
                   if (!selected?.some((o) => o.value === "__custom__")) {
-                    inputRef.current.focus();
+                    inputRef.current?.focus();
                   }
                 } else {
                   onSelect(option);
