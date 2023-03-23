@@ -23,6 +23,7 @@ import { getAllCredentials } from "@/app/services/Credentials/AggregatedCredenti
 import CollectPage from "./CollectPage";
 import BuilderStartPage from "./StartPage/Builder";
 import CollectPayment from "@/app/modules/PublicForm/CollectPayment";
+import SubmittedPage from "./SubmittedPage";
 
 function FormBuilder() {
   const {
@@ -267,48 +268,7 @@ function FormBuilder() {
       );
     } else if (currentPage === "submitted") {
       return (
-        <Box
-          style={{
-            height: "calc(100vh - 20rem)",
-          }}
-          display="flex"
-          flexDirection="column"
-          justifyContent="space-between"
-        >
-          <Box />
-          <Box
-            width="full"
-            display="flex"
-            flexDirection="column"
-            justifyContent="flex-start"
-          >
-            <Stack>
-              {collection.formMetadata.updatingResponseAllowed &&
-                collection.formMetadata.active &&
-                collection.formMetadata.walletConnectionRequired && (
-                  <PrimaryButton variant="transparent">
-                    Update response
-                  </PrimaryButton>
-                )}
-              {collection.formMetadata.walletConnectionRequired && (
-                <PrimaryButton variant="transparent">
-                  View response
-                </PrimaryButton>
-              )}
-              {collection.formMetadata.multipleResponsesAllowed &&
-                collection.formMetadata.active && (
-                  <PrimaryButton variant="transparent">
-                    Submit another response
-                  </PrimaryButton>
-                )}
-              <Box paddingX="5" paddingBottom="4" width="full">
-                <a href="/" target="_blank">
-                  <PrimaryButton>Create your own form</PrimaryButton>
-                </a>
-              </Box>
-            </Stack>
-          </Box>
-        </Box>
+        <SubmittedPage form={collection} setCurrentPage={setCurrentPage} />
       );
     } else {
       const fields = pages[currentPage]?.properties;

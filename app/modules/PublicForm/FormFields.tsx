@@ -134,7 +134,8 @@ function FormFields({ form, setForm }: Props) {
   useEffect(() => {
     if (form) {
       const tempData: any = {};
-      if (form?.formMetadata.previousResponses?.length > 0) {
+      console.log({ form: form.formMetadata, submitted });
+      if (form?.formMetadata.previousResponses?.length > 0 && submitted) {
         setLoading(true);
         const lastResponse =
           form.formMetadata.previousResponses[
@@ -177,38 +178,39 @@ function FormFields({ form, setForm }: Props) {
             tempData[propertyId] = lastResponse[propertyId] || "";
           }
         });
-      } else {
-        const tempData: any = {};
-        setRespondAsAnonymous(form.formMetadata.allowAnonymousResponses);
-        form.propertyOrder.forEach((propertyId) => {
-          if (
-            [
-              "longText",
-              "shortText",
-              "ethAddress",
-              "user",
-              "date",
-              "number",
-            ].includes(form.properties[propertyId].type)
-          ) {
-            tempData[propertyId] = "";
-          } else if (form.properties[propertyId].type === "singleSelect") {
-            // @ts-ignore
-            tempData[propertyId] = {};
-          } else if (
-            ["multiSelect", "user[]"].includes(form.properties[propertyId].type)
-          ) {
-            tempData[propertyId] = [];
-          }
-        });
       }
+      // else {
+      //   const tempData: any = {};
+      //   setRespondAsAnonymous(form.formMetadata.allowAnonymousResponses);
+      //   form.propertyOrder.forEach((propertyId) => {
+      //     if (
+      //       [
+      //         "longText",
+      //         "shortText",
+      //         "ethAddress",
+      //         "user",
+      //         "date",
+      //         "number",
+      //       ].includes(form.properties[propertyId].type)
+      //     ) {
+      //       tempData[propertyId] = "";
+      //     } else if (form.properties[propertyId].type === "singleSelect") {
+      //       // @ts-ignore
+      //       tempData[propertyId] = {};
+      //     } else if (
+      //       ["multiSelect", "user[]"].includes(form.properties[propertyId].type)
+      //     ) {
+      //       tempData[propertyId] = [];
+      //     }
+      //   });
+      // }
       // only if tempdata is not an empty object
       if (Object.keys(tempData).length > 0) setData(tempData);
       setTimeout(() => {
         setLoading(false);
       }, 100);
     }
-  }, [form, updateResponse]);
+  }, [form, updateResponse, submitted]);
 
   useEffect(() => {
     if (form && form.formMetadata.previousResponses?.length > 0) {
@@ -606,7 +608,13 @@ function FormFields({ form, setForm }: Props) {
                 ) {
                   setCurrentPage(form.formMetadata.pageOrder[step]);
                 } else {
-                  toast.error("You can only go back");
+                  if (currentPage === "start") {
+                    toast.error(
+                      "You can get started by clicking on the start button"
+                    );
+                  } else {
+                    toast.error("You can only go back");
+                  }
                 }
               } else {
                 setCurrentPage(form.formMetadata.pageOrder[step]);

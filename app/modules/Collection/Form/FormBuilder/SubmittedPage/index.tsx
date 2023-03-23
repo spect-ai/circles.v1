@@ -5,10 +5,10 @@ import Image from "next/image";
 
 type Props = {
   form: CollectionType;
-  setData: (data: any) => void;
+  setData?: (data: any) => void;
   setCurrentPage: (page: string) => void;
-  setUpdateResponse: (updateResponse: boolean) => void;
-  setSubmitted: (submitted: boolean) => void;
+  setUpdateResponse?: (updateResponse: boolean) => void;
+  setSubmitted?: (submitted: boolean) => void;
 };
 
 const SubmittedPage = ({
@@ -56,8 +56,55 @@ const SubmittedPage = ({
               <PrimaryButton
                 variant="transparent"
                 onClick={() => {
+                  const tempData: any = {};
+                  const lastResponse =
+                    form.formMetadata.previousResponses[
+                      form.formMetadata.previousResponses.length - 1
+                    ];
+                  form.propertyOrder.forEach((propertyId) => {
+                    if (!form.properties[propertyId].isPartOfFormView) return;
+                    if (
+                      [
+                        "longText",
+                        "shortText",
+                        "ethAddress",
+                        "user",
+                        "date",
+                        "number",
+                        "singleURL",
+                        "email",
+                      ].includes(form.properties[propertyId].type)
+                    ) {
+                      tempData[propertyId] = lastResponse[propertyId] || "";
+                    } else if (
+                      form.properties[propertyId].type === "singleSelect"
+                    ) {
+                      tempData[propertyId] =
+                        lastResponse[propertyId] ||
+                        // @ts-ignore
+                        {};
+                    } else if (
+                      [
+                        "multiSelect",
+                        "user[]",
+                        "milestone",
+                        "multiURL",
+                      ].includes(form.properties[propertyId].type)
+                    ) {
+                      tempData[propertyId] = lastResponse[propertyId] || [];
+                    } else if (
+                      ["reward", "payWall"].includes(
+                        form.properties[propertyId].type
+                      )
+                    ) {
+                      tempData[propertyId] = lastResponse[propertyId];
+                    } else {
+                      tempData[propertyId] = lastResponse[propertyId] || "";
+                    }
+                  });
+                  setData && setData(tempData);
                   setCurrentPage("start");
-                  setUpdateResponse(true);
+                  setUpdateResponse && setUpdateResponse(true);
                 }}
               >
                 Update response
@@ -69,8 +116,8 @@ const SubmittedPage = ({
                 variant="transparent"
                 onClick={() => {
                   setCurrentPage("start");
-                  setUpdateResponse(false);
-                  setSubmitted(false);
+                  setUpdateResponse && setUpdateResponse(false);
+                  setSubmitted && setSubmitted(false);
 
                   const tempData: any = {};
                   form.propertyOrder.forEach((propertyId) => {
@@ -99,7 +146,7 @@ const SubmittedPage = ({
                     }
                   });
 
-                  setData(tempData);
+                  setData && setData(tempData);
                 }}
               >
                 Submit another response

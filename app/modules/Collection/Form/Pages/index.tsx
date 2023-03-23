@@ -519,7 +519,7 @@ const FieldComponent = ({
                 initial={{ opacity: 0 }}
                 animate={{ opacity: hover ? 1 : 0 }}
                 transition={{ duration: 0.3 }}
-                style={{ marginLeft: "10px" }}
+                style={{ marginLeft: "10px", marginTop: "5px" }}
               >
                 {property.isPartOfFormView ? (
                   <Box
