@@ -22,6 +22,7 @@ import {
   IconChevronRight,
   IconClose,
   IconDotsVertical,
+  IconLockClosed,
   IconPlusSmall,
   Stack,
   Text,
@@ -343,121 +344,6 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
             exit={{ opacity: 0 }}
           >
             <Container paddingX="8" paddingY="4" overflow="auto">
-              {value.slug &&
-                ["pending", "pendingSignature"].includes(
-                  collection.projectMetadata?.paymentStatus?.[value.slug] || ""
-                ) && (
-                  <Box
-                    display="flex"
-                    flexDirection="row"
-                    justifyContent="flex-end"
-                    alignItems="center"
-                    marginRight="4"
-                    gap="2"
-                    cursor="pointer"
-                    onClick={() => {
-                      if (collection.projectMetadata?.paymentIds?.[value.slug])
-                        push({
-                          pathname: "/[circle]",
-                          query: {
-                            circle: query.circle,
-                            tab: "payment",
-                            status: "pending",
-                            paymentId:
-                              collection.projectMetadata?.paymentIds?.[
-                                value.slug
-                              ],
-                          },
-                        });
-                    }}
-                  >
-                    {" "}
-                    <Text color="yellow">
-                      <ClockCircleOutlined />
-                    </Text>
-                    <Text variant="small">Pending Payment</Text>
-                  </Box>
-                )}
-              {value.slug &&
-                collection.projectMetadata?.paymentStatus?.[value.slug] ===
-                  "completed" && (
-                  <Box
-                    display="flex"
-                    flexDirection="row"
-                    justifyContent="flex-end"
-                    alignItems="center"
-                    marginRight="4"
-                    gap="2"
-                  >
-                    <Text color="green">
-                      <CheckCircleOutlined />
-                    </Text>
-
-                    <Text variant="small">Payment Completed</Text>
-                  </Box>
-                )}
-              {collection.data?.[cardSlug as string]?.__cardStatus__ ===
-                "closed" && (
-                <Box
-                  display="flex"
-                  flexDirection="row"
-                  justifyContent="flex-end"
-                  alignItems="center"
-                  marginRight="4"
-                  gap="2"
-                >
-                  <Text color="red">
-                    <InfoCircleOutlined />
-                  </Text>
-                  <Text variant="small">This card is closed</Text>
-                </Box>
-              )}
-              {collection.discordThreadRef &&
-                collection.discordThreadRef[value.slug] && (
-                  <Box
-                    display="flex"
-                    flexDirection="row"
-                    justifyContent="flex-end"
-                    alignItems="center"
-                    width="full"
-                    marginRight="4"
-                  >
-                    <CircularBox
-                      display="flex"
-                      flexDirection="row"
-                      mode={mode}
-                      gap="2"
-                      onClick={() => {
-                        if (collection.discordThreadRef[value.slug].private)
-                          window.open(
-                            `https://discord.com/channels/${
-                              collection.discordThreadRef[value.slug].guildId
-                            }/${
-                              collection.discordThreadRef[value.slug].threadId
-                            }`,
-                            "_blank"
-                          );
-                        else {
-                          window.open(
-                            `https://discord.com/channels/${
-                              collection.discordThreadRef[value.slug].guildId
-                            }/${
-                              collection.discordThreadRef[value.slug].channelId
-                            }/threads/${
-                              collection.discordThreadRef[value.slug].threadId
-                            }`,
-                            "_blank"
-                          );
-                        }
-                      }}
-                    >
-                      <Text variant="small">Linked Discord thread</Text>
-                      <Text color="accent">
-                        <BsArrowUpRight />
-                      </Text>
-                    </CircularBox>
-                  </Box>
-                )}
               <Stack space="1">
                 <Stack
                   direction="horizontal"
@@ -483,6 +369,7 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
                       "closed"
                     }
                   />
+
                   {value.slug && (
                     <CardOptions
                       handleDrawerClose={closeCard}
@@ -491,6 +378,147 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
                       onChange={onChange}
                     />
                   )}
+                </Stack>
+                <Stack direction="horizontal" space="1">
+                  {collection.data?.[cardSlug as string]?.__cardStatus__ ===
+                    "closed" && (
+                    <Box
+                      display="flex"
+                      flexDirection="row"
+                      alignItems="center"
+                      gap="2"
+                    >
+                      <CircularBox
+                        display="flex"
+                        flexDirection="row"
+                        mode={mode}
+                        gap="2"
+                      >
+                        <Text color="accent">
+                          <IconLockClosed />
+                        </Text>
+                        <Text variant="small">This card is closed</Text>
+                      </CircularBox>
+                    </Box>
+                  )}
+
+                  {value.slug &&
+                    collection.projectMetadata?.paymentStatus?.[value.slug] ===
+                      "completed" && (
+                      <Box
+                        display="flex"
+                        flexDirection="row"
+                        alignItems="center"
+                        gap="2"
+                      >
+                        <CircularBox
+                          display="flex"
+                          flexDirection="row"
+                          mode={mode}
+                          gap="2"
+                        >
+                          <Text color="green">
+                            <CheckCircleOutlined />
+                          </Text>
+
+                          <Text variant="small">Payment Completed</Text>
+                        </CircularBox>
+                      </Box>
+                    )}
+
+                  {value.slug &&
+                    ["pending", "pendingSignature"].includes(
+                      collection.projectMetadata?.paymentStatus?.[value.slug] ||
+                        ""
+                    ) && (
+                      <Box
+                        display="flex"
+                        flexDirection="row"
+                        alignItems="center"
+                        gap="2"
+                        cursor="pointer"
+                        onClick={() => {
+                          if (
+                            collection.projectMetadata?.paymentIds?.[value.slug]
+                          )
+                            push({
+                              pathname: "/[circle]",
+                              query: {
+                                circle: query.circle,
+                                tab: "payment",
+                                status: "pending",
+                                paymentId:
+                                  collection.projectMetadata?.paymentIds?.[
+                                    value.slug
+                                  ],
+                              },
+                            });
+                        }}
+                      >
+                        <CircularBox
+                          display="flex"
+                          flexDirection="row"
+                          mode={mode}
+                          gap="2"
+                        >
+                          {" "}
+                          <Text color="yellow">
+                            <ClockCircleOutlined />
+                          </Text>
+                          <Text variant="small">Pending Payment</Text>
+                        </CircularBox>
+                      </Box>
+                    )}
+
+                  {collection.discordThreadRef &&
+                    collection.discordThreadRef[value.slug] && (
+                      <Box
+                        display="flex"
+                        flexDirection="row"
+                        alignItems="center"
+                        width="full"
+                      >
+                        <CircularBox
+                          display="flex"
+                          flexDirection="row"
+                          mode={mode}
+                          gap="2"
+                          onClick={() => {
+                            if (collection.discordThreadRef[value.slug].private)
+                              window.open(
+                                `https://discord.com/channels/${
+                                  collection.discordThreadRef[value.slug]
+                                    .guildId
+                                }/${
+                                  collection.discordThreadRef[value.slug]
+                                    .threadId
+                                }`,
+                                "_blank"
+                              );
+                            else {
+                              window.open(
+                                `https://discord.com/channels/${
+                                  collection.discordThreadRef[value.slug]
+                                    .guildId
+                                }/${
+                                  collection.discordThreadRef[value.slug]
+                                    .channelId
+                                }/threads/${
+                                  collection.discordThreadRef[value.slug]
+                                    .threadId
+                                }`,
+                                "_blank"
+                              );
+                            }
+                          }}
+                        >
+                          <Text variant="small">Linked Discord thread</Text>
+                          <Text color="accent">
+                            <BsArrowUpRight />
+                          </Text>
+                        </CircularBox>
+                      </Box>
+                    )}
                 </Stack>
                 <DragDropContext onDragEnd={handleDragEnd}>
                   <Droppable
@@ -626,7 +654,7 @@ export const CircularBox = styled(Box)<{ mode: string }>`
     cursor: pointer;
   }
   transition: all 0.3s ease-in-out;
-  padding: 0.5rem 0.5rem;
+  padding: 0.3rem 0.3rem;
   justify-content: center;
   align-items: center;
   width: 12rem;

@@ -5,6 +5,7 @@ import useModalOptions from "@/app/services/ModalOptions/useModalOptions";
 import { Option } from "@/app/types";
 import {
   Avatar,
+  AvatarGroup,
   Box,
   Button,
   IconPlusSmall,
@@ -190,7 +191,11 @@ export default function Column({
                                     <Avatar
                                       src={
                                         getMemberDetails(value.value || "")
-                                          ?.avatar
+                                          ?.avatar ||
+                                        `https://api.dicebear.com/5.x/thumbs/svg?seed=${
+                                          getMemberDetails(value.value || "")
+                                            ?.id
+                                        }`
                                       }
                                       label=""
                                       size="6"
@@ -211,18 +216,19 @@ export default function Column({
                               <Box key={propertyId}>
                                 {/* <Text weight="semiBold">{property.name}</Text> */}
                                 <Stack direction="horizontal" wrap space="1">
-                                  {value.map((value: Option) => (
-                                    <Box key={value.value}>
-                                      <Avatar
-                                        src={
-                                          getMemberDetails(value.value || "")
-                                            ?.avatar
-                                        }
-                                        label=""
-                                        size="6"
-                                      />
-                                    </Box>
-                                  ))}
+                                  <AvatarGroup
+                                    limit={3}
+                                    members={value.map((val: Option) => ({
+                                      label: getMemberDetails(val.value || "")
+                                        ?.username,
+                                      src:
+                                        getMemberDetails(val.value || "")
+                                          ?.avatar ||
+                                        `https://api.dicebear.com/5.x/thumbs/svg?seed=${
+                                          getMemberDetails(val.value || "")?.id
+                                        }`,
+                                    }))}
+                                  />
                                 </Stack>
                               </Box>
                             );

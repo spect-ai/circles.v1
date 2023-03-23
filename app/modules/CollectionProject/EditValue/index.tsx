@@ -2,11 +2,13 @@
 import Popover from "@/app/common/components/Popover";
 import { updateField } from "@/app/services/Collection";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
-import { Milestone } from "@/app/types";
-import { Box, IconClose, Stack, Tag, Text, useTheme } from "degen";
+import { MemberDetails, Milestone, UserType } from "@/app/types";
+import { Avatar, Box, IconClose, Stack, Tag, Text, useTheme } from "degen";
 import { AnimatePresence, motion } from "framer-motion";
 import { matchSorter } from "match-sorter";
+import { useRouter } from "next/router";
 import React, { useEffect, useRef, useState } from "react";
+import { useQuery } from "react-query";
 import { toast } from "react-toastify";
 import uuid from "react-uuid";
 import styled from "styled-components";
@@ -32,36 +34,38 @@ function EditValue({ value, setValue, propertyName, dataId, disabled }: Props) {
   const [options, setOptions] = useState<any>([]);
   const [filteredOptions, setFilteredOptions] = useState<any>([]);
   const [tempValue, setTempValue] = useState<any>();
+  const router = useRouter();
 
   const { mode } = useTheme();
+  const { circle: cId } = router.query;
 
   const { formActions } = useRoleGate();
+  const { data: memberDetails } = useQuery<MemberDetails>(
+    ["memberDetails", cId],
+    {
+      enabled: false,
+    }
+  );
 
-  console.log({ value });
-
+  // TODO: Too many calls for no reason, can we pass this instead?
   useEffect(() => {
     if (property) {
       if (property.type === "singleSelect" || property.type === "multiSelect") {
         setOptions(property.options);
         setFilteredOptions(property.options);
       } else if (property.type === "user" || property.type === "user[]") {
-        void (async () => {
-          const res = await (
-            await fetch(
-              `${process.env.API_HOST}/circle/${
-                collection.parents[0].id || collection.parents[0]
-              }/memberDetails?circleIds=${
-                collection.parents[0].id || collection.parents[0]
-              }`
-            )
-          ).json();
-          const memberOptions = res.members?.map((member: string) => ({
-            label: res.memberDetails && res.memberDetails[member]?.username,
-            value: member,
-          }));
+        if (memberDetails) {
+          const memberOptions = memberDetails.members?.map(
+            (member: string) => ({
+              label:
+                memberDetails.memberDetails &&
+                memberDetails.memberDetails[member]?.username,
+              value: member,
+            })
+          );
           setOptions(memberOptions);
           setFilteredOptions(memberOptions);
-        })();
+        }
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -168,7 +172,35 @@ function EditValue({ value, setValue, propertyName, dataId, disabled }: Props) {
                             borderCol={val.color}
                           >
                             {" "}
-                            <Text> {val.label}</Text>
+                            {property.type === "multiSelect" && (
+                              <Text> {val.label}</Text>
+                            )}
+                            {property.type === "user[]" && (
+                              <Stack
+                                direction="horizontal"
+                                space="1"
+                                align="center"
+                              >
+                                <Avatar
+                                  src={
+                                    memberDetails?.memberDetails?.[val.value]
+                                      ?.avatar ||
+                                    `https://api.dicebear.com/5.x/thumbs/svg?seed=${
+                                      memberDetails?.memberDetails?.[val.value]
+                                        ?.id
+                                    }`
+                                  }
+                                  label=""
+                                  size="5"
+                                />
+                                <Text weight="semiBold">
+                                  {
+                                    memberDetails?.memberDetails?.[val.value]
+                                      ?.username
+                                  }
+                                </Text>
+                              </Stack>
+                            )}
                           </CustomTag>
                         </Box>
                       ))
@@ -187,7 +219,35 @@ function EditValue({ value, setValue, propertyName, dataId, disabled }: Props) {
                       }}
                     >
                       <CustomTag mode={mode} borderCol={value.color}>
-                        <Text>{value.label}</Text>
+                        {property.type === "user" && (
+                          <Stack
+                            direction="horizontal"
+                            space="1"
+                            align="center"
+                          >
+                            <Avatar
+                              src={
+                                memberDetails?.memberDetails?.[value.value]
+                                  ?.avatar ||
+                                `https://api.dicebear.com/5.x/thumbs/svg?seed=${
+                                  memberDetails?.memberDetails?.[value.value]
+                                    ?.id
+                                }`
+                              }
+                              label=""
+                              size="5"
+                            />
+                            <Text weight="semiBold">
+                              {
+                                memberDetails?.memberDetails?.[value.value]
+                                  ?.username
+                              }
+                            </Text>
+                          </Stack>
+                        )}
+                        {property.type === "singleSelect" && (
+                          <Text>{value.label}</Text>
+                        )}
                       </CustomTag>
                     </Box>
                   ) : (
