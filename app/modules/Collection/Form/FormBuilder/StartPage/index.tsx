@@ -1,5 +1,4 @@
 import Editor from "@/app/common/components/Editor";
-import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { NameInput } from "@/app/modules/PublicForm/FormFields";
 import { getForm } from "@/app/services/Collection";
 import { CollectionType, FormType } from "@/app/types";
@@ -7,7 +6,7 @@ import { Avatar, Box, Stack } from "degen";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import Captcha from "./Captcha";
+import Footer from "./Footer";
 import Messages from "./Messages";
 
 type Props = {
@@ -22,7 +21,6 @@ const StartPage = ({ form, setCurrentPage, setLoading, setForm }: Props) => {
   const { formId } = router.query;
 
   const [captchaVerified, setCaptchaVerified] = useState(false);
-  const [verifyingCaptcha, setVerifyingCaptcha] = useState(false);
 
   useEffect(() => {
     void (async () => {
@@ -63,27 +61,12 @@ const StartPage = ({ form, setCurrentPage, setLoading, setForm }: Props) => {
           )}
           <Messages form={form} />
         </Stack>
-        <Stack direction="horizontal" justify="space-between">
-          <Box paddingX="5" paddingBottom="4" width="1/2" />
-          <Box paddingX="5" paddingBottom="4" width="1/2">
-            <Stack>
-              {form.formMetadata.captchaEnabled && (
-                <Captcha
-                  setCaptchaVerified={setCaptchaVerified}
-                  setVerifyingCaptcha={setVerifyingCaptcha}
-                />
-              )}
-              <PrimaryButton
-                disabled={form.formMetadata.captchaEnabled && !captchaVerified}
-                onClick={() => {
-                  setCurrentPage(form.formMetadata.pageOrder[1]);
-                }}
-              >
-                Start
-              </PrimaryButton>
-            </Stack>
-          </Box>
-        </Stack>
+        <Footer
+          collection={form}
+          setCaptchaVerified={setCaptchaVerified}
+          captchaVerified={captchaVerified}
+          setCurrentPage={setCurrentPage}
+        />
       </Box>
     );
   } else return null;

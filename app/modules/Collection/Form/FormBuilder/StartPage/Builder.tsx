@@ -1,6 +1,5 @@
 import Editor from "@/app/common/components/Editor";
 import ClickableTag from "@/app/common/components/EditTag/ClickableTag";
-import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { storeImage } from "@/app/common/utils/ipfs";
 import { NameInput } from "@/app/modules/PublicForm/FormFields";
 import { updateFormCollection } from "@/app/services/Collection";
@@ -9,7 +8,7 @@ import { Avatar, Box, FileInput, Stack, Text } from "degen";
 import { useAtom } from "jotai";
 import { useState } from "react";
 import { useLocalCollection } from "../../../Context/LocalCollectionContext";
-import Captcha from "./Captcha";
+import Footer from "./Footer";
 import Messages from "./Messages";
 
 type Props = {
@@ -102,29 +101,12 @@ const BuilderStartPage = ({ setCurrentPage }: Props) => {
         </Box>
         <Messages form={collection} />
       </Stack>
-      <Stack direction="horizontal" justify="space-between">
-        <Box paddingX="5" paddingBottom="4" width="1/2" />
-        <Box paddingX="5" paddingBottom="4" width="1/2">
-          <Stack>
-            {collection.formMetadata.captchaEnabled && (
-              <Captcha
-                setCaptchaVerified={setCaptchaVerified}
-                setVerifyingCaptcha={setVerifyingCaptcha}
-              />
-            )}
-            <PrimaryButton
-              disabled={
-                collection.formMetadata.captchaEnabled && !captchaVerified
-              }
-              onClick={() => {
-                setCurrentPage(collection.formMetadata.pageOrder[1]);
-              }}
-            >
-              Start
-            </PrimaryButton>
-          </Stack>
-        </Box>
-      </Stack>
+      <Footer
+        collection={collection}
+        setCaptchaVerified={setCaptchaVerified}
+        captchaVerified={captchaVerified}
+        setCurrentPage={setCurrentPage}
+      />
     </Box>
   );
 };

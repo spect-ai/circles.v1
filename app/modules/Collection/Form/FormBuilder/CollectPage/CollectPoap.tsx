@@ -11,16 +11,20 @@ import styled from "styled-components";
 
 type Props = {
   form: CollectionType;
+  setClaimedJustNow: (value: boolean) => void;
   preview?: boolean;
 };
 
-export default function CollectPoap({ form, preview }: Props) {
+export default function CollectPoap({
+  form,
+  setClaimedJustNow,
+  preview,
+}: Props) {
   const [poap, setPoap] = useState({} as POAPEventType);
   const [poapClaimed, setPoapClaimed] = useState(false);
   const [canClaimPoap, setCanClaimPoap] = useState(false);
 
   const [claiming, setClaiming] = useState(false);
-  const [claimedJustNow, setClaimedJustNow] = useState(false);
 
   useEffect(() => {
     if (form.formMetadata.poapEventId) {

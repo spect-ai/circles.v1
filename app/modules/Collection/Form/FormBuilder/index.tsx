@@ -4,16 +4,7 @@ import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { storeImage } from "@/app/common/utils/ipfs";
 import { CoverImage, StampCard } from "@/app/modules/PublicForm";
 import { updateFormCollection } from "@/app/services/Collection";
-import {
-  Avatar,
-  Box,
-  Button,
-  FileInput,
-  Stack,
-  Tag,
-  Text,
-  useTheme,
-} from "degen";
+import { Box, Button, FileInput, Stack, Tag, Text, useTheme } from "degen";
 import { AnimatePresence, motion } from "framer-motion";
 import { memo, useCallback, useEffect, useState } from "react";
 import { Droppable, DroppableProvided } from "react-beautiful-dnd";
@@ -21,13 +12,10 @@ import styled from "styled-components";
 import AddField from "../../AddField";
 import { useLocalCollection } from "../../Context/LocalCollectionContext";
 import FieldComponent from "../Field";
-import Editor from "@/app/common/components/Editor";
 import { useAtom } from "jotai";
 import { connectedUserAtom } from "@/app/state/global";
 import { Connect } from "@/app/modules/Sidebar/ProfileButton/ConnectButton";
 import Stepper from "@/app/common/components/Stepper";
-import { NameInput } from "@/app/modules/PublicForm/FormFields";
-import { quizValidFieldTypes } from "@/app/modules/Plugins/common/ResponseMatchDistribution";
 import { FormType, GuildRole, Stamp } from "@/app/types";
 import { toast } from "react-toastify";
 import { PassportStampIcons, PassportStampIconsLightMode } from "@/app/assets";

@@ -18,10 +18,11 @@ import { useAccount } from "wagmi";
 
 type Props = {
   form: CollectionType;
+  setClaimedJustNow: (value: boolean) => void;
   preview?: boolean;
 };
 
-const CollectERC20 = ({ form, preview }: Props) => {
+const CollectERC20 = ({ form, setClaimedJustNow, preview }: Props) => {
   const [distributionInfo, setDistributionInfo] = useState({} as any);
   const [escrowHasInsufficientBalance, setEscrowHasInsufficientBalance] =
     useState(false);
@@ -276,7 +277,7 @@ const CollectERC20 = ({ form, preview }: Props) => {
             form.formMetadata?.surveyTokenId &&
             !surveyIsLotteryYetToBeDrawn &&
             !escrowHasInsufficientBalance) ||
-            (preview && (
+            (form.formMetadata?.surveyTokenId && preview && (
               <Stack direction="horizontal" align="flex-start">
                 <Text variant="extraLarge" weight="bold">
                   👉
@@ -328,7 +329,7 @@ const CollectERC20 = ({ form, preview }: Props) => {
                           if (res.ok) {
                             const data = await res.json();
                             setSurveyTokenClaimed(true);
-                            // setClaimedJustNow(true);
+                            setClaimedJustNow(true);
                             setSurveyTokenClaimTransactionHash(
                               data.transactionHash
                             );

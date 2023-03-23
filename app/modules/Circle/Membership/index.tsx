@@ -1,22 +1,8 @@
 import Breadcrumbs from "@/app/common/components/Breadcrumbs";
 import { UserType } from "@/app/types";
-import {
-  GithubOutlined,
-  TwitterOutlined,
-  YoutubeFilled,
-} from "@ant-design/icons";
-import { fetchEnsAvatar, fetchEnsName } from "@wagmi/core";
-import {
-  Avatar,
-  Box,
-  Button,
-  Heading,
-  IconBookOpenSolid,
-  Stack,
-  Tag,
-  Text,
-} from "degen";
-import React, { useEffect, useState } from "react";
+import { GithubOutlined, TwitterOutlined } from "@ant-design/icons";
+import { Avatar, Box, Button, Stack, Tag, Text } from "degen";
+import { useState } from "react";
 import { Hidden } from "react-grid-system";
 import DiscordIcon from "@/app/assets/icons/discordIcon.svg";
 import { useCircle } from "../CircleContext";
@@ -25,7 +11,6 @@ import { Globe } from "react-feather";
 import { AnimatePresence, motion } from "framer-motion";
 import { Embed } from "../../Collection/Embed";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { useRouter } from "next/router";
 import { useLocation } from "react-use";
 import styled from "styled-components";
 

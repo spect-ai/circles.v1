@@ -28,12 +28,12 @@ import { useProfile } from "../Profile/ProfileSettings/LocalProfileContext";
 import { useAtom } from "jotai";
 import { connectedUserAtom } from "@/app/state/global";
 import Stepper from "@/app/common/components/Stepper";
-import Image from "next/image";
 import StartPage from "../Collection/Form/FormBuilder/StartPage";
 import ConnectPage from "../Collection/Form/FormBuilder/ConnectPage";
 import { satisfiesConditions } from "../Collection/Common/SatisfiesFilter";
 import CollectPage from "../Collection/Form/FormBuilder/CollectPage";
 import CollectPayment from "./CollectPayment";
+import SubmittedPage from "../Collection/Form/FormBuilder/SubmittedPage";
 
 type Props = {
   form: FormType | undefined;
@@ -111,13 +111,6 @@ function FormFields({ form, setForm }: Props) {
     setFieldHasInvalidType(fieldHasInvalidType);
     return Object.keys(fieldHasInvalidType).length === 0;
   };
-
-  useEffect(() => {
-    if (form && form.formMetadata.previousResponses?.length > 0) {
-      setSubmitted(true);
-      setCurrentPage("submitted");
-    }
-  }, []);
 
   useEffect(() => {
     if (form?.parents) {
@@ -216,6 +209,13 @@ function FormFields({ form, setForm }: Props) {
       }, 100);
     }
   }, [form, updateResponse]);
+
+  useEffect(() => {
+    if (form && form.formMetadata.previousResponses?.length > 0) {
+      setSubmitted(true);
+      setCurrentPage("submitted");
+    }
+  }, [form?.name]);
 
   const onSubmit = async (form: CollectionType) => {
     if (
@@ -464,98 +464,13 @@ function FormFields({ form, setForm }: Props) {
           );
         } else if (currentPage === "submitted" && form) {
           return (
-            <Box
-              style={{
-                height: "calc(100vh - 20rem)",
-              }}
-              display="flex"
-              flexDirection="column"
-              justifyContent="space-between"
-            >
-              <Stack align="center">
-                <Image src="/spectForm.gif" width="512" height="512" />
-              </Stack>
-              <Box
-                width="full"
-                display="flex"
-                flexDirection="column"
-                justifyContent="flex-start"
-                padding="4"
-              >
-                <Box paddingX="5" paddingBottom="4">
-                  <a href="/" target="_blank">
-                    <PrimaryButton>Create your own form</PrimaryButton>
-                  </a>
-                </Box>
-                <Stack
-                  direction={{
-                    xs: "vertical",
-                    md: "horizontal",
-                  }}
-                  justify="center"
-                >
-                  {form.formMetadata.updatingResponseAllowed &&
-                    form.formMetadata.active &&
-                    form.formMetadata.walletConnectionRequired && (
-                      <PrimaryButton
-                        variant="transparent"
-                        onClick={() => {
-                          setCurrentPage("start");
-                          setUpdateResponse(true);
-                        }}
-                      >
-                        Update response
-                      </PrimaryButton>
-                    )}
-                  {form.formMetadata.multipleResponsesAllowed &&
-                    form.formMetadata.active && (
-                      <PrimaryButton
-                        variant="transparent"
-                        onClick={() => {
-                          setCurrentPage("start");
-                          setUpdateResponse(false);
-                          setSubmitted(false);
-
-                          const tempData: any = {};
-                          setRespondAsAnonymous(
-                            form.formMetadata.allowAnonymousResponses
-                          );
-                          form.propertyOrder.forEach((propertyId) => {
-                            if (
-                              [
-                                "longText",
-                                "shortText",
-                                "ethAddress",
-                                "user",
-                                "date",
-                                "number",
-                              ].includes(form.properties[propertyId].type)
-                            ) {
-                              tempData[propertyId] = "";
-                            } else if (
-                              form.properties[propertyId].type ===
-                              "singleSelect"
-                            ) {
-                              // @ts-ignore
-                              tempData[propertyId] = {};
-                            } else if (
-                              ["multiSelect", "user[]"].includes(
-                                form.properties[propertyId].type
-                              )
-                            ) {
-                              tempData[propertyId] = [];
-                            }
-                          });
-
-                          setData(tempData);
-                        }}
-                      >
-                        Submit another response
-                      </PrimaryButton>
-                    )}
-                </Stack>
-              </Box>
-            </Box>
+            <SubmittedPage
+              form={form as CollectionType}
+              setCurrentPage={setCurrentPage}
+              setUpdateResponse={setUpdateResponse}
+              setSubmitted={setSubmitted}
+              setData={setData}
+            />
           );
         } else {
           if (form) {
@@ -594,7 +509,7 @@ function FormFields({ form, setForm }: Props) {
                   })}
 
                   {form.formMetadata.paymentConfig &&
-                    pages[pageOrder[pageOrder.indexOf(currentPage || "") + 1]]
+                    !pages[pageOrder[pageOrder.indexOf(currentPage || "") + 1]]
                       .movable && (
                       <Box marginBottom="8">
                         <CollectPayment
@@ -608,7 +523,14 @@ function FormFields({ form, setForm }: Props) {
                     )}
                 </Stack>
                 <Stack direction="horizontal" justify="space-between">
-                  <Box paddingX="5" paddingBottom="4" width="1/2">
+                  <Box
+                    paddingX="5"
+                    paddingBottom="4"
+                    width={{
+                      xs: "40",
+                      md: "56",
+                    }}
+                  >
                     <PrimaryButton
                       variant="transparent"
                       onClick={() => {
@@ -623,7 +545,14 @@ function FormFields({ form, setForm }: Props) {
                   {pages[pageOrder[pageOrder.indexOf(currentPage || "") + 1]]
                     .movable ||
                   (submitted && !updateResponse) ? (
-                    <Box paddingX="5" paddingBottom="4" width="1/2">
+                    <Box
+                      paddingX="5"
+                      paddingBottom="4"
+                      width={{
+                        xs: "40",
+                        md: "56",
+                      }}
+                    >
                       <PrimaryButton
                         onClick={() => {
                           if (!checkRequired(data)) {
@@ -640,7 +569,14 @@ function FormFields({ form, setForm }: Props) {
                       </PrimaryButton>
                     </Box>
                   ) : (
-                    <Box paddingX="5" paddingBottom="4" width="1/2">
+                    <Box
+                      paddingX="5"
+                      paddingBottom="4"
+                      width={{
+                        xs: "40",
+                        md: "56",
+                      }}
+                    >
                       <PrimaryButton
                         onClick={() => form && onSubmit(form as CollectionType)}
                         loading={submitting}

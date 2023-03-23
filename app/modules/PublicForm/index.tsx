@@ -1,158 +1,30 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { getForm } from "@/app/services/Collection";
-import { FormType, GuildRole, Stamp, UserType } from "@/app/types";
-import { useConnectModal } from "@rainbow-me/rainbowkit";
-import { Avatar, Box, Text, Stack, useTheme, Button, Tag } from "degen";
-import { useRouter } from "next/router";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import { FormType, UserType } from "@/app/types";
+import { Box, Text, Stack, useTheme } from "degen";
+import React, { useState } from "react";
 import { useQuery } from "react-query";
-import { toast, ToastContainer } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import styled from "styled-components";
 import FormFields from "./FormFields";
 import { motion } from "framer-motion";
-import Loader from "@/app/common/components/Loader";
-import {
-  getAllCredentials,
-  getPassportScoreAndCredentials,
-} from "@/app/services/Credentials/AggregatedCredentials";
-import { PassportStampIcons, PassportStampIconsLightMode } from "@/app/assets";
 import mixpanel from "@/app/common/utils/mixpanel";
 import Image from "next/image";
-import Editor from "@/app/common/components/Editor";
-import DataActivity from "../Collection/Form/DataDrawer/DataActivity";
+
 import _ from "lodash";
 import { useLocation } from "react-use";
-import SocialMedia from "@/app/common/components/SocialMedia";
-import { connectedUserAtom, socketAtom } from "@/app/state/global";
-import { useAtom } from "jotai";
-import { SkeletonLoader } from "./SkeletonLoader";
-import { WalletFilled, WalletOutlined } from "@ant-design/icons";
-import { quizValidFieldTypes } from "../Plugins/common/ResponseMatchDistribution";
-import Link from "next/link";
 
 function PublicForm() {
-  const router = useRouter();
-  const { formId } = router.query;
   const [form, setForm] = useState<FormType>();
   const { mode } = useTheme();
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
-  const { openConnectModal } = useConnectModal();
-  const [loading, setLoading] = useState(false);
-  const [canFillForm, setCanFillForm] = useState(
-    form?.formMetadata.canFillForm || false
-  );
-  const [stamps, setStamps] = useState([] as Stamp[]);
-  const [socket, setSocket] = useAtom(socketAtom);
-  const [connectedUser, setConnectedUser] = useAtom(connectedUserAtom);
-  const [memberDetails, setMemberDetails] = useState({} as any);
-  const [currentScore, setCurrentScore] = useState(0);
-  const [hasStamps, setHasStamps] = useState({} as any);
+
   const { pathname } = useLocation();
   const route = pathname?.split("/")[3];
 
-  const quizValidFields =
-    form?.propertyOrder &&
-    form.propertyOrder.filter(
-      (propertyName) =>
-        form.properties[propertyName].isPartOfFormView &&
-        quizValidFieldTypes.includes(form.properties[propertyName].type)
-    );
-
-  const getMemberDetails = React.useCallback(
-    (id: string) => {
-      return memberDetails?.memberDetails[id];
-    },
-    [memberDetails]
-  );
-  const fetchMemberDetails = async (cId: string) => {
-    const res = await (
-      await fetch(
-        `${process.env.API_HOST}/circle/${cId}/memberDetailsWithSlug?circleSlugs=${cId}`
-      )
-    ).json();
-    if (res.members) setMemberDetails(res);
-    else toast.error("Error fetching member details");
-  };
-
-  const addStamps = async (form: FormType) => {
-    const stamps = await getAllCredentials();
-    const stampsWithScore = [];
-    if (
-      form.formMetadata.sybilProtectionEnabled &&
-      form.formMetadata.sybilProtectionScores
-    ) {
-      for (const stamp of stamps) {
-        if (form.formMetadata.sybilProtectionScores[stamp.id]) {
-          const stampWithScore = {
-            ...stamp,
-            score: form.formMetadata.sybilProtectionScores[stamp.id],
-          };
-          stampsWithScore.push(stampWithScore);
-        }
-      }
-      setStamps(stampsWithScore.sort((a, b) => b.score - a.score));
-    }
-  };
-  // useEffect(() => {
-  //   void (async () => {
-  //     if (formId) {
-  //       setLoading(true);
-  //       const res: FormType = await getForm(formId as string);
-  //       if (res.id) {
-  //         await fetchMemberDetails(res.parents[0].slug);
-  //         setForm(res);
-  //         setCanFillForm(res.formMetadata.canFillForm);
-  //         await addStamps(res);
-  //       } else toast.error("Error fetching form");
-  //       setLoading(false);
-  //     }
-  //   })();
-  // }, [connectedUser, formId]);
-
-  useEffect(() => {
-    if (socket && socket.on && formId) {
-      socket.on(
-        `${formId}:newActivityPublic`,
-        _.debounce(async (event: { user: string }) => {
-          console.log({ event, connectedUser });
-          if (event.user !== connectedUser) {
-            const res: FormType = await getForm(formId as string);
-            setForm(res);
-          }
-        }, 2000)
-      );
-    }
-    return () => {
-      if (socket && socket.off) {
-        socket.off(`${formId}:newActivityPublic`);
-      }
-    };
-  }, [connectedUser, formId, socket]);
-
-  // useEffect(() => {
-  //   if (
-  //     form &&
-  //     form.formMetadata &&
-  //     form.formMetadata.sybilProtectionEnabled &&
-  //     form.formMetadata.sybilProtectionScores &&
-  //     currentUser
-  //   ) {
-  //     console.log("getting score");
-  //     void (async () => {
-  //       const res = await getPassportScoreAndCredentials(
-  //         currentUser?.ethAddress,
-  //         form.formMetadata.sybilProtectionScores
-  //       );
-  //       console.log({ result: res });
-  //       setCurrentScore(res?.score);
-  //       setHasStamps(res?.mappedStampsWithCredentials);
-  //     })();
-  //   }
-  // }, [form, currentUser]);
   return (
     <ScrollContainer
       backgroundColor={
@@ -185,8 +57,6 @@ function PublicForm() {
             }`,
           }}
         >
-          {/* {(loading || !form) && <SkeletonLoader />} */}
-          {/* {!loading && form && ( */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -194,7 +64,6 @@ function PublicForm() {
           >
             <FormFields form={form} setForm={setForm} />
           </motion.div>
-          {/* )} */}
         </FormContainer>
         <Stack align={"center"}>
           <Text variant="label">Powered By</Text>
@@ -286,14 +155,6 @@ const ScrollContainer = styled(Box)`
   }
   max-height: calc(100vh);
   overflow-y: auto;
-`;
-
-const StampScrollContainer = styled(Box)`
-  overflow-y: auto;
-  height: calc(100vh - 35rem);
-  ::-webkit-scrollbar {
-    width: 5px;
-  }
 `;
 
 export const StampCard = styled(Box)<{ mode: string }>`
