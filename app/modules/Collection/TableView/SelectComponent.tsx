@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { OptionType } from "@/app/common/components/Dropdown";
 import { MemberDetails } from "@/app/types";
 import { useTheme } from "degen";
 import { useRouter } from "next/router";
@@ -43,6 +44,24 @@ export default function SelectComponent({
     value: member,
   }));
 
+  rowData =
+    rowData && columnData.type === "user[]" && memberDetails
+      ? rowData.map((r: OptionType) => {
+          return {
+            label: memberDetails.memberDetails[r.value].username,
+            value: r.value,
+          };
+        })
+      : rowData;
+
+  rowData =
+    rowData && columnData.type === "user" && memberDetails
+      ? {
+          label: memberDetails.memberDetails[rowData.value].username,
+          value: rowData.value,
+        }
+      : rowData;
+
   useLayoutEffect(() => {
     if (focus) {
       ref.current?.focus();
@@ -53,7 +72,6 @@ export default function SelectComponent({
 
   const { mode } = useTheme();
 
-  console.log({ columnData, rowData });
   return (
     <Select
       isDisabled={
