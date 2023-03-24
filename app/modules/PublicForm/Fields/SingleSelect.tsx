@@ -1,17 +1,17 @@
 import { Option } from "@/app/types";
 import { Box, Input, Stack, Text } from "degen";
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 
 type Props = {
   options: Option[];
-  selected: Option[];
+  selected: Option;
   onSelect: (option: Option) => void;
   propertyName: string;
   allowCustom: boolean;
   disabled?: boolean;
 };
 
-const MultiSelect = ({
+const SingleSelect = ({
   options,
   selected,
   onSelect,
@@ -25,28 +25,21 @@ const MultiSelect = ({
     }
   }, []);
 
-  const [customValue, setCustomValue] = useState("");
-
   const inputRef: any = useRef();
+
   return (
     <Box>
       <Stack>
         {options.map((option) => (
           <Stack key={option.value} direction="horizontal" align="center">
             <input
-              type="checkbox"
+              type="radio"
               name={propertyName}
               value={option.value}
-              checked={selected?.some((o) => o.value === option.value)}
+              checked={selected?.value === option.value}
               onChange={() => {
-                if (option.value === "__custom__") {
-                  onSelect({ label: "", value: "__custom__" });
-                  if (!selected?.some((o) => o.value === "__custom__")) {
-                    inputRef.current.focus();
-                  }
-                } else {
-                  onSelect(option);
-                }
+                if (option.value === "__custom__") inputRef.current.focus();
+                onSelect(option);
               }}
               style={{
                 width: "20px",
@@ -64,19 +57,12 @@ const MultiSelect = ({
             ref={inputRef}
             label=""
             placeholder="Custom answer"
-            defaultValue={
-              selected?.find((o) => o.value === "__custom__")?.label
-            }
-            onChange={(e) => {
-              setCustomValue(e.target.value);
-            }}
+            defaultValue={selected?.label}
             onBlur={(e) => {
-              onSelect({ label: customValue, value: "__custom__" });
+              onSelect({ label: e.target.value, value: "__custom__" });
             }}
             onFocus={(e) => {
-              if (selected?.some((o) => o.value === "__custom__")) {
-                onSelect({ label: customValue, value: "__custom__" });
-              }
+              onSelect({ label: "", value: "__custom__" });
             }}
             disabled={disabled}
           />
@@ -86,4 +72,4 @@ const MultiSelect = ({
   );
 };
 
-export default MultiSelect;
+export default SingleSelect;

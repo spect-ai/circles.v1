@@ -7,13 +7,13 @@ import React, { useState } from "react";
 import { useQuery } from "react-query";
 import { ToastContainer } from "react-toastify";
 import styled from "styled-components";
-import FormFields from "./FormFields";
 import { motion } from "framer-motion";
 import mixpanel from "@/app/common/utils/mixpanel";
 import Image from "next/image";
 
 import _ from "lodash";
 import { useLocation } from "react-use";
+import FormFields from "./FormFields";
 
 function PublicForm() {
   const [form, setForm] = useState<FormType>();

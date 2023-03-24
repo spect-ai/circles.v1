@@ -1,5 +1,4 @@
-import { Box, Stack, useTheme } from "degen";
-import React from "react";
+import { Box, useTheme } from "degen";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 

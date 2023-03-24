@@ -3,7 +3,7 @@ import Modal from "@/app/common/components/Modal";
 import { Milestone } from "@/app/types";
 import { Box } from "degen";
 import { memo, useState } from "react";
-import MilestoneField from "../../PublicForm/MilestoneField";
+import MilestoneField from "../../PublicForm/Fields/MilestoneField";
 
 type Props = {
   form: any;

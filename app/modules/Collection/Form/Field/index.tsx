@@ -1,7 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import Dropdown from "@/app/common/components/Dropdown";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import RewardField from "@/app/modules/PublicForm/RewardField";
 import { MemberDetails, Registry, UserType } from "@/app/types";
 import {
   Box,
@@ -14,7 +12,7 @@ import {
   useTheme,
 } from "degen";
 import { useRouter } from "next/router";
-import React, { memo, useCallback, useEffect, useState } from "react";
+import { memo, useCallback, useState } from "react";
 import {
   Draggable,
   DraggableProvided,
@@ -31,8 +29,9 @@ import {
   FaTelegramPlane,
   FaTwitter,
 } from "react-icons/fa";
-import SingleSelect from "@/app/modules/PublicForm/SingleSelect";
-import MultiSelect from "@/app/modules/PublicForm/MultiSelect";
+import SingleSelect from "@/app/modules/PublicForm/Fields/SingleSelect";
+import MultiSelect from "@/app/modules/PublicForm/Fields/MultiSelect";
+import RewardField from "@/app/modules/PublicForm/Fields/RewardField";
 
 type Props = {
   id: string;
