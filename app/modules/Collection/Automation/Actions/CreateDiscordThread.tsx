@@ -63,7 +63,7 @@ export default function CreateDiscordThread({
   );
   const [discordIsConnected, setDiscordIsConnected] = useState(false);
 
-  const { circle } = useCircle();
+  const { circle, justAddedDiscordServer } = useCircle();
   const toggleSelectedRole = (roleId: string) => {
     setSelectedRoles({
       ...selectedRoles,
@@ -88,7 +88,7 @@ export default function CreateDiscordThread({
       };
       void discordIsConnected();
     }
-  }, [circle?.discordGuildId]);
+  }, [circle?.discordGuildId, justAddedDiscordServer]);
 
   useEffect(() => {
     if (circle?.discordGuildId && discordIsConnected) {
@@ -120,7 +120,8 @@ export default function CreateDiscordThread({
           console.log({ origin });
           window.open(
             `https://discord.com/oauth2/authorize?client_id=942494607239958609&permissions=17448306704&redirect_uri=${origin}/api/connectDiscord&response_type=code&scope=bot&state=${circle?.slug}/r/${collection.slug}`,
-            "_blank"
+            "popup",
+            "width=600,height=600"
           );
         }}
       >

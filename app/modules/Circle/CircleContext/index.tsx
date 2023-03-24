@@ -22,11 +22,9 @@ interface CircleContextType {
   circle: CircleType | undefined;
   memberDetails: MemberDetails | undefined;
   registry: Registry | undefined;
-  retro: RetroType | undefined;
   fetchCircle: () => void;
   fetchMemberDetails: () => void;
   fetchRegistry: () => void;
-  fetchRetro: () => void;
   setCircleData: (data: CircleType) => void;
   setMemberDetailsData: (data: MemberDetails) => void;
   setRegistryData: (data: Registry) => void;
@@ -39,6 +37,8 @@ interface CircleContextType {
   setLoading: (loading: boolean) => void;
   navigationBreadcrumbs: any;
   setNavigationBreadcrumbs: (data: any) => void;
+  justAddedDiscordServer: boolean;
+  setJustAddedDiscordServer: (data: boolean) => void;
 }
 
 export const CircleContext = React.createContext<CircleContextType>(
@@ -56,6 +56,7 @@ export function useProviderCircleContext() {
   const [loading, setLoading] = useState(false);
   const [isBatchPayOpen, setIsBatchPayOpen] = useState(false);
   const [socket, setSocket] = useAtom(socketAtom);
+  const [justAddedDiscordServer, setJustAddedDiscordServer] = useState(false);
 
   const {
     data: circle,
@@ -196,6 +197,22 @@ export function useProviderCircleContext() {
     }
   }, [cId, socket]);
 
+  useEffect(() => {
+    window.addEventListener(
+      "message",
+      (event) => {
+        if (event.data.discordGuildId) {
+          if (circle?.discordGuildId !== event.data.discordGuildId) {
+            void fetchCircle();
+          } else {
+            setJustAddedDiscordServer(true);
+          }
+        }
+      },
+      false
+    );
+  }, []);
+
   return {
     page,
     setPage,
@@ -222,6 +239,8 @@ export function useProviderCircleContext() {
     navigationBreadcrumbs,
     setNavigationBreadcrumbs,
     isLoading,
+    justAddedDiscordServer,
+    setJustAddedDiscordServer,
   };
 }
 

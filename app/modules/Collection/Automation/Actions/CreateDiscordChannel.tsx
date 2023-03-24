@@ -64,7 +64,7 @@ export default function CreateDiscordChannel({
       | undefined
     >();
 
-  const { circle } = useCircle();
+  const { circle, justAddedDiscordServer } = useCircle();
   const toggleSelectedRole = (roleId: string) => {
     setSelectedRoles({
       ...selectedRoles,
@@ -76,12 +76,11 @@ export default function CreateDiscordChannel({
     if (circle?.discordGuildId) {
       const discordIsConnected = async () => {
         const res = await guildIsConnected(circle?.discordGuildId);
-        console.log({ res });
         setDiscordIsConnected(res);
       };
       void discordIsConnected();
     }
-  }, [circle?.discordGuildId]);
+  }, [circle?.discordGuildId, justAddedDiscordServer]);
 
   useEffect(() => {
     if (!discordIsConnected || !circle?.discordGuildId) return;
@@ -120,10 +119,10 @@ export default function CreateDiscordChannel({
         width="48"
         paddingTop="4"
         onClick={() => {
-          console.log({ origin });
           window.open(
-            `https://discord.com/oauth2/authorize?client_id=942494607239958609&permissions=17448306704&redirect_uri=${origin}/api/connectDiscord&response_type=code&scope=bot&state=${circle?.slug}/r/${collection.slug}`,
-            "_blank"
+            `https://discord.com/oauth2/authorize?client_id=942494607239958609&permissions=17448306704&redirect_uri=${origin}/api/connectDiscord&response_type=code&scope=bot&state=${circle?.slug}`,
+            "popup",
+            "width=600,height=600"
           );
         }}
       >
