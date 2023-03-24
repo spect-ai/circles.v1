@@ -36,7 +36,7 @@ const Onboard = () => {
   );
   useEffect(() => {
     if (onboardType == "circle") {
-      if (currentUser && currentUser.username.startsWith("fren")) {
+      if (currentUser && currentUser.username?.startsWith("fren")) {
         setStep(0);
       } else if (currentUser && myCircles?.length == 0) {
         setStep(1);

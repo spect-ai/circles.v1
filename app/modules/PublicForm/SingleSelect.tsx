@@ -39,7 +39,7 @@ const SingleSelect = ({
               value={option.value}
               checked={selected?.value === option.value}
               onChange={() => {
-                if (option.value === "__custom__") inputRef.current.focus();
+                if (option.value === "__custom__") inputRef.current?.focus();
                 onSelect(option);
               }}
               style={{
