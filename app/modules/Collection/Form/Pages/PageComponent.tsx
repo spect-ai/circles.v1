@@ -1,3 +1,4 @@
+import { updateFormCollection } from "@/app/services/Collection";
 import { Box, IconPlusSmall, IconTrash, Stack, Text, useTheme } from "degen";
 import { motion } from "framer-motion";
 import { useState } from "react";
@@ -30,7 +31,6 @@ export const PageComponent = ({
 }: Props) => {
   const { localCollection: collection, updateCollection } =
     useLocalCollection();
-
   const { mode } = useTheme();
   const [pageName, setPageName] = useState(name);
 
@@ -63,6 +63,21 @@ export const PageComponent = ({
                   value={pageName}
                   onChange={(e) => setPageName(e.target.value)}
                   mode={mode}
+                  onBlur={() => {
+                    const newPages = { ...pages };
+                    newPages[id].name = pageName;
+                    const update = {
+                      formMetadata: {
+                        ...collection.formMetadata,
+                        pages: newPages,
+                      },
+                    };
+                    updateCollection({
+                      ...collection,
+                      ...update,
+                    });
+                    updateFormCollection(collection.id, update);
+                  }}
                 />
               </PageButton>
               <Stack direction="horizontal">

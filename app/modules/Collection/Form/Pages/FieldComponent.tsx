@@ -67,7 +67,13 @@ const FieldComponent = ({
               <Text color="accent">{getPropertyIcon(type, 14)}</Text>
               <Text variant="label">{field}</Text>
             </PropertyButton>
-            <Stack direction="horizontal" align="center" space="4">
+            <Stack direction="horizontal" align="center" space="2">
+              <Box />
+              {property.required && (
+                <Box marginTop="3">
+                  <Text color="red">*</Text>
+                </Box>
+              )}
               {/* <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: hover ? 1 : 0 }}
@@ -83,7 +89,7 @@ const FieldComponent = ({
                 initial={{ opacity: 0 }}
                 animate={{ opacity: hover ? 1 : 0 }}
                 transition={{ duration: 0.3 }}
-                style={{ marginLeft: "10px", marginTop: "5px" }}
+                style={{ marginTop: "5px" }}
               >
                 {property.isPartOfFormView ? (
                   <Box
