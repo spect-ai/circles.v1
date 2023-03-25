@@ -74,7 +74,17 @@ const ConnectPage = ({ form, setForm, currentPage, setCurrentPage }: Props) => {
   useEffect(() => {
     (async () => {
       if (connectedUser && signedIn) {
-        setCurrentPage(form.formMetadata.pageOrder[2]);
+        if (form.formMetadata.sybilProtectionEnabled) {
+          if (form.formMetadata.hasPassedSybilCheck) {
+            setCurrentPage(form.formMetadata.pageOrder[2]);
+          }
+        } else if (form.formMetadata.formRoleGating) {
+          if (form.formMetadata.hasRole) {
+            setCurrentPage(form.formMetadata.pageOrder[2]);
+          }
+        } else {
+          setCurrentPage(form.formMetadata.pageOrder[2]);
+        }
         setSignedIn(false);
       }
       const res: FormType = await getForm(formId as string);
@@ -305,9 +315,21 @@ const ConnectPage = ({ form, setForm, currentPage, setCurrentPage }: Props) => {
               {connectedUser ? (
                 <PrimaryButton
                   onClick={() => {
-                    if (!form.formMetadata.hasPassedSybilCheck) {
+                    if (
+                      form.formMetadata.sybilProtectionEnabled &&
+                      !form.formMetadata.hasPassedSybilCheck
+                    ) {
                       toast.error(
                         "You must have a minimum score of 100% to fill this form"
+                      );
+                      return;
+                    }
+                    if (
+                      form.formMetadata.hasRole &&
+                      form.formMetadata.formRoleGating
+                    ) {
+                      toast.error(
+                        "You do not have the correct roles to access this form"
                       );
                       return;
                     }

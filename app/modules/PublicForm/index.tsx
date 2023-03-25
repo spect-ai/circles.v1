@@ -1,27 +1,19 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { FormType, UserType } from "@/app/types";
-import { Box, Text, Stack, useTheme } from "degen";
+import { FormType } from "@/app/types";
+import { Box, useTheme } from "degen";
 import React, { useState } from "react";
-import { useQuery } from "react-query";
-import { ToastContainer } from "react-toastify";
 import styled from "styled-components";
 import { motion } from "framer-motion";
-import mixpanel from "@/app/common/utils/mixpanel";
-import Image from "next/image";
 
 import _ from "lodash";
 import { useLocation } from "react-use";
 import FormFields from "./FormFields";
+import { ToastContainer } from "react-toastify";
 
 function PublicForm() {
   const [form, setForm] = useState<FormType>();
   const { mode } = useTheme();
-  const { data: currentUser } = useQuery<UserType>("getMyUser", {
-    enabled: false,
-  });
-
   const { pathname } = useLocation();
   const route = pathname?.split("/")[3];
 
@@ -65,47 +57,6 @@ function PublicForm() {
             <FormFields form={form} setForm={setForm} />
           </motion.div>
         </FormContainer>
-        <Stack align={"center"}>
-          <Text variant="label">Powered By</Text>
-          <a
-            href="https://spect.network/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            {mode == "dark" ? (
-              <Image
-                src={"/logo2.svg"}
-                alt="dark-mode-logo"
-                height={"35"}
-                width="138"
-              />
-            ) : (
-              <Image
-                src={"/logo1.svg"}
-                alt="light-mode-logo"
-                height={"35"}
-                width="138"
-              />
-            )}
-          </a>{" "}
-          <Text variant="large">
-            💪 Powerful Web3 Forms, Projects and Automations 🤝
-          </Text>
-          <a href="/" target="_blank">
-            <PrimaryButton
-              onClick={() => {
-                process.env.NODE_ENV === "production" &&
-                  mixpanel.track("Create your own form", {
-                    form: form?.name,
-                    sybilEnabled: form?.formMetadata.sybilProtectionEnabled,
-                    user: currentUser?.username,
-                  });
-              }}
-            >
-              Build With Spect
-            </PrimaryButton>
-          </a>
-        </Stack>
         <Box marginBottom="8" />
       </Container>
     </ScrollContainer>

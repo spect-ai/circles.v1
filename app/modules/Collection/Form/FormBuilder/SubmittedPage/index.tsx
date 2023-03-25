@@ -1,7 +1,9 @@
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { CollectionType } from "@/app/types";
-import { Box, Stack, Text } from "degen";
+import { CollectionType, UserType } from "@/app/types";
+import { Box, Stack, Text, useTheme } from "degen";
+import mixpanel from "mixpanel-browser";
 import Image from "next/image";
+import { useQuery } from "react-query";
 
 type Props = {
   form: CollectionType;
@@ -18,6 +20,10 @@ const SubmittedPage = ({
   setData,
   setSubmitted,
 }: Props) => {
+  const { mode } = useTheme();
+  const { data: currentUser } = useQuery<UserType>("getMyUser", {
+    enabled: false,
+  });
   return (
     <Box
       style={{
@@ -27,9 +33,52 @@ const SubmittedPage = ({
       flexDirection="column"
       justifyContent="space-between"
     >
-      <Stack align="center">
-        <Image src="/spectForm.gif" width="512" height="512" />
-        <Text>{form.formMetadata.messageOnSubmission}</Text>
+      <Stack align="center" space="8">
+        <Text size="headingTwo">{form.formMetadata.messageOnSubmission}</Text>
+        <Stack direction="horizontal">
+          <Image src="/spectForm.gif" width="512" height="512" />
+          <Stack align={"center"}>
+            <Text variant="label">Powered By</Text>
+            <a
+              href="https://spect.network/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {mode == "dark" ? (
+                <Image
+                  src={"/logo2.svg"}
+                  alt="dark-mode-logo"
+                  height={"35"}
+                  width="138"
+                />
+              ) : (
+                <Image
+                  src={"/logo1.svg"}
+                  alt="light-mode-logo"
+                  height={"35"}
+                  width="138"
+                />
+              )}
+            </a>{" "}
+            <Text variant="large">
+              💪 Powerful Web3 Forms, Projects and Automations 🤝
+            </Text>
+            <a href="/" target="_blank">
+              <PrimaryButton
+                onClick={() => {
+                  process.env.NODE_ENV === "production" &&
+                    mixpanel.track("Create your own form", {
+                      form: form?.name,
+                      sybilEnabled: form?.formMetadata.sybilProtectionEnabled,
+                      user: currentUser?.username,
+                    });
+                }}
+              >
+                Build With Spect
+              </PrimaryButton>
+            </a>
+          </Stack>
+        </Stack>
       </Stack>
       <Box
         width="full"
@@ -38,11 +87,11 @@ const SubmittedPage = ({
         justifyContent="flex-start"
         padding="4"
       >
-        <Box paddingX="5" paddingBottom="4">
+        {/* <Box paddingX="5" paddingBottom="4">
           <a href="/" target="_blank">
             <PrimaryButton>Create your own form</PrimaryButton>
           </a>
-        </Box>
+        </Box> */}
         <Stack
           direction={{
             xs: "vertical",
