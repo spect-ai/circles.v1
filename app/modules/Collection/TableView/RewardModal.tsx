@@ -2,8 +2,8 @@
 import Modal from "@/app/common/components/Modal";
 import { Reward } from "@/app/types";
 import { Box } from "degen";
-import React, { memo, useState } from "react";
-import RewardField from "../../PublicForm/RewardField";
+import { memo, useState } from "react";
+import RewardField from "../../PublicForm/Fields/RewardField";
 
 type Props = {
   form: any;

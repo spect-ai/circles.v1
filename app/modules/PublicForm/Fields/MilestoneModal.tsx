@@ -5,7 +5,7 @@ import Modal from "@/app/common/components/Modal";
 import { Milestone, Option, Registry } from "@/app/types";
 import { Box, Button, Input, Stack, Tag, Text, useTheme } from "degen";
 import { useEffect, useState } from "react";
-import { DateInput } from "../Collection/Form/Field";
+import { DateInput } from "../../Collection/Form/Field";
 
 type Props = {
   form: any;

@@ -2,7 +2,7 @@ import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { Box, IconPlug, IconSearch, Input, Stack, Tag, Text } from "degen";
 import { AnimatePresence, motion } from "framer-motion";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { useCircle } from "../Circle/CircleContext";
 import { useLocalCollection } from "../Collection/Context/LocalCollectionContext";

@@ -17,7 +17,7 @@ import { Box, Input, Stack, Text } from "degen";
 import { ethers } from "ethers";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { useAccount, useNetwork, useSigner, useSwitchNetwork } from "wagmi";
+import { useAccount, useNetwork, useSwitchNetwork } from "wagmi";
 
 type Props = {
   paymentConfig: PaymentConfig;

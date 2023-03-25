@@ -1,7 +1,6 @@
 import { Option } from "@/app/types";
 import { Box, Input, Stack, Text } from "degen";
-import React, { useEffect, useRef, useState } from "react";
-import uuid from "react-uuid";
+import { useEffect, useRef } from "react";
 
 type Props = {
   options: Option[];

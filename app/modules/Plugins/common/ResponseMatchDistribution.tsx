@@ -4,7 +4,7 @@ import { Box, Input, Text } from "degen";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
-import PublicField from "../../PublicForm/PublicField";
+import PublicField from "../../PublicForm/Fields/PublicField";
 
 export type Props = {
   setModalModal: (mode: string) => void;

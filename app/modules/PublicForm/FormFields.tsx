@@ -7,15 +7,21 @@ import {
   getForm,
   updateCollectionData,
 } from "@/app/services/Collection";
-import { CollectionType, Condition, FormType, UserType } from "@/app/types";
+import {
+  CollectionType,
+  Condition,
+  FormType,
+  Property,
+  UserType,
+} from "@/app/types";
 import { Box, Input, Stack, Text } from "degen";
 import React, { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { toast } from "react-toastify";
 import styled from "styled-components";
-import PublicField from "./PublicField";
+import PublicField from "./Fields/PublicField";
 import mixpanel from "@/app/common/utils/mixpanel";
-import NotificationPreferenceModal from "./NotificationPreferenceModal";
+import NotificationPreferenceModal from "./Fields/NotificationPreferenceModal";
 import { AnimatePresence } from "framer-motion";
 import {
   compose,
@@ -32,7 +38,7 @@ import StartPage from "../Collection/Form/FormBuilder/StartPage";
 import ConnectPage from "../Collection/Form/FormBuilder/ConnectPage";
 import { satisfiesConditions } from "../Collection/Common/SatisfiesFilter";
 import CollectPage from "../Collection/Form/FormBuilder/CollectPage";
-import CollectPayment from "./CollectPayment";
+import CollectPayment from "./Fields/CollectPayment";
 import SubmittedPage from "../Collection/Form/FormBuilder/SubmittedPage";
 
 type Props = {
@@ -509,6 +515,19 @@ function FormFields({ form, setForm }: Props) {
                       );
                     }
                   })}
+                  {fields.every((field: string) => {
+                    return !satisfiesConditions(
+                      data,
+                      form.properties as { [propertyId: string]: Property },
+                      form.properties[field].viewConditions || []
+                    );
+                  }) && (
+                    <Box>
+                      <Text variant="label">
+                        No fields to display on this page
+                      </Text>
+                    </Box>
+                  )}
 
                   {form.formMetadata.paymentConfig &&
                     !pages[pageOrder[pageOrder.indexOf(currentPage || "") + 1]]

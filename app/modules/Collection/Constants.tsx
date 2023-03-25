@@ -1,30 +1,4 @@
-import React from "react";
-import { BiText } from "react-icons/bi";
-import {
-  BsTextParagraph,
-  BsFillCalendarDateFill,
-  BsUiRadiosGrid,
-  BsConeStriped,
-} from "react-icons/bs";
-import {
-  AiOutlineNumber,
-  AiOutlineMail,
-  AiOutlineLink,
-  AiOutlineCheckSquare,
-} from "react-icons/ai";
-import { MdAddLink, MdOutlineAttachMoney } from "react-icons/md";
-import { GoMilestone } from "react-icons/go";
-import {
-  FaEthereum,
-  FaUserFriends,
-  FaUser,
-  FaTwitter,
-  FaDiscord,
-  FaTelegram,
-  FaGithub,
-  FaWallet,
-} from "react-icons/fa";
-import { Action } from "@/app/types";
+import { getPropertyIcon } from "../CollectionProject/EditProperty/Utils";
 
 export const fields = [
   { label: "Short Text", value: "shortText" },
@@ -41,30 +15,42 @@ export const fields = [
   { label: "Multiple Select", value: "multiSelect" },
   { label: "Multiple Users", value: "user[]" },
   { label: "Single User", value: "user" },
-  { label: "Connect Wallet", value: "connectWallet", icon: <FaWallet /> },
-  { label: "Email", value: "email", icon: <AiOutlineMail /> },
-  { label: "Twitter", value: "twitter", icon: <FaTwitter /> },
-  { label: "Discord", value: "discord", icon: <FaDiscord /> },
-  { label: "Telegram", value: "telegram", icon: <FaTelegram /> },
-  { label: "Github", value: "github", icon: <FaGithub /> },
+  { label: "Connect Wallet", value: "connectWallet" },
+  { label: "Email", value: "email" },
+  { label: "Twitter", value: "twitter" },
+  { label: "Discord", value: "discord" },
+  { label: "Telegram", value: "telegram" },
+  { label: "Github", value: "github" },
 ];
 
 export const fieldOptionsDropdown = [
   {
     label: "Text",
     options: [
-      { label: "Short Text", value: "shortText", icon: <BiText /> },
-      { label: "Long Text", value: "longText", icon: <BsTextParagraph /> },
+      {
+        label: "Short Text",
+        value: "shortText",
+        icon: getPropertyIcon("shortText"),
+      },
+      {
+        label: "Long Text",
+        value: "longText",
+        icon: getPropertyIcon("longText"),
+      },
     ],
   },
   {
     label: "Contact Info",
     options: [
-      { label: "Email", value: "email", icon: <AiOutlineMail /> },
+      { label: "Email", value: "email", icon: getPropertyIcon("email") },
       // { label: "Twitter", value: "twitter", icon: <FaTwitter /> },
-      { label: "Discord", value: "discord", icon: <FaDiscord /> },
-      { label: "Telegram", value: "telegram", icon: <FaTelegram /> },
-      { label: "Github", value: "github", icon: <FaGithub /> },
+      { label: "Discord", value: "discord", icon: getPropertyIcon("discord") },
+      {
+        label: "Telegram",
+        value: "telegram",
+        icon: getPropertyIcon("telegram"),
+      },
+      { label: "Github", value: "github", icon: getPropertyIcon("github") },
     ],
   },
   {
@@ -73,42 +59,58 @@ export const fieldOptionsDropdown = [
       {
         label: "Single Select",
         value: "singleSelect",
-        icon: <BsUiRadiosGrid />,
+        icon: getPropertyIcon("singleSelect"),
       },
       {
         label: "Multiple Select",
         value: "multiSelect",
-        icon: <AiOutlineCheckSquare />,
+        icon: getPropertyIcon("multiSelect"),
       },
     ],
   },
   {
     label: "Links",
     options: [
-      { label: "URL", value: "singleURL", icon: <AiOutlineLink /> },
-      { label: "Multiple URL", value: "multiURL", icon: <MdAddLink /> },
+      { label: "URL", value: "singleURL", icon: getPropertyIcon("singleURL") },
+      {
+        label: "Multiple URL",
+        value: "multiURL",
+        icon: getPropertyIcon("multiURL"),
+      },
     ],
   },
   {
     label: "Web3 Input",
     options: [
-      { label: "Ethereum Address", value: "ethAddress", icon: <FaEthereum /> },
-      { label: "Reward", value: "reward", icon: <MdOutlineAttachMoney /> },
-      { label: "Milestone", value: "milestone", icon: <BsConeStriped /> },
+      {
+        label: "Ethereum Address",
+        value: "ethAddress",
+        icon: getPropertyIcon("ethAddress"),
+      },
+      { label: "Reward", value: "reward", icon: getPropertyIcon("reward") },
+      {
+        label: "Milestone",
+        value: "milestone",
+        icon: getPropertyIcon("milestone"),
+      },
     ],
   },
   {
     label: "Users",
     options: [
-      { label: "Multiple Users", value: "user[]", icon: <FaUserFriends /> },
-      { label: "Single User", value: "user", icon: <FaUser /> },
+      {
+        label: "Multiple Users",
+        value: "user[]",
+        icon: getPropertyIcon("user[]"),
+      },
+      { label: "Single User", value: "user", icon: getPropertyIcon("user") },
     ],
   },
   {
     label: "Other Input",
     options: [
-      { label: "Number", value: "number", icon: <AiOutlineNumber /> },
-      { label: "Date", value: "date", icon: <BsFillCalendarDateFill /> },
+      { label: "Number", value: "number", icon: getPropertyIcon("number") },
+      { label: "Date", value: "date", icon: getPropertyIcon("date") },
     ],
   },
 ];

@@ -22,7 +22,7 @@ import { PassportStampIcons, PassportStampIconsLightMode } from "@/app/assets";
 import { getAllCredentials } from "@/app/services/Credentials/AggregatedCredentials";
 import CollectPage from "./CollectPage";
 import BuilderStartPage from "./StartPage/Builder";
-import CollectPayment from "@/app/modules/PublicForm/CollectPayment";
+import CollectPayment from "@/app/modules/PublicForm/Fields/CollectPayment";
 import SubmittedPage from "./SubmittedPage";
 
 function FormBuilder() {

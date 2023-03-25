@@ -2,7 +2,7 @@
 import Dropdown from "@/app/common/components/Dropdown";
 import Editor from "@/app/common/components/Editor";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import RewardField from "@/app/modules/PublicForm/RewardField";
+import RewardField from "@/app/modules/PublicForm/Fields/RewardField";
 import { CollectionType, MemberDetails, Property, Registry } from "@/app/types";
 import { Box, IconPlusSmall, Input, useTheme } from "degen";
 import { useRouter } from "next/router";

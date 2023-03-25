@@ -1,8 +1,7 @@
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { Avatar, Box, Stack, Text } from "degen";
-import React, { useEffect, useState } from "react";
-import { FaDiscord } from "react-icons/fa";
-import { useLocation } from "react-use";
+import { useEffect, useState } from "react";
+import { FaGithub } from "react-icons/fa";
 
 type Props = {
   setData: (data: any) => void;
@@ -11,14 +10,14 @@ type Props = {
   updateRequiredFieldNotSet: (key: string, value: any) => void;
 };
 
-export default function DiscordField({
+export default function GithubField({
   data,
   setData,
   propertyName,
   updateRequiredFieldNotSet,
 }: Props) {
-  const { hostname } = useLocation();
   const [code, setCode] = useState("");
+
   useEffect(() => {
     window.addEventListener(
       "message",
@@ -38,10 +37,11 @@ export default function DiscordField({
       if (!code) return;
       console.log({ code });
       const res = await fetch(
-        `${process.env.BOT_HOST}/api/connectDiscord?code=${code}`
+        `${process.env.BOT_HOST}/connectGithub?code=${code}`
       );
       if (res.ok) {
         const data = await res.json();
+        console.log({ data });
         if (data.userData.id) {
           setData((d: any) => ({
             ...d,
@@ -58,13 +58,10 @@ export default function DiscordField({
       {data[propertyName] && data[propertyName].id ? (
         <Box borderWidth="0.375" borderRadius="2xLarge" padding="2">
           <Stack direction="horizontal" align="center">
-            <Avatar
-              label="Discord Avatar"
-              src={`https://cdn.discordapp.com/avatars/${data[propertyName].id}/${data[propertyName].avatar}.png`}
-            />
+            <Avatar label="Github Avatar" src={data[propertyName].avatar_url} />
             <Box>
               <Text size="extraSmall" font="mono" weight="bold">
-                {data[propertyName].username}
+                {data[propertyName].login}
               </Text>
             </Box>
           </Stack>
@@ -72,17 +69,13 @@ export default function DiscordField({
       ) : (
         <PrimaryButton
           variant="tertiary"
-          icon={<FaDiscord size={24} />}
+          icon={<FaGithub size={24} />}
           onClick={async () => {
-            const url = `https://discord.com/api/oauth2/authorize?client_id=942494607239958609&redirect_uri=${
-              process.env.NODE_ENV === "development"
-                ? "http%3A%2F%2Flocalhost%3A3000%2FlinkDiscord"
-                : `https%3A%2F%2F${hostname}%2FlinkDiscord`
-            }&response_type=code&scope=guilds%20identify`;
+            const url = `https://github.com/login/oauth/authorize?client_id=4403e769e4d52b24eeab`;
             window.open(url, "popup", "width=600,height=600");
           }}
         >
-          Connect Discord
+          Connect Github
         </PrimaryButton>
       )}
     </Box>
