@@ -82,6 +82,7 @@ export default function InitiatePendingPayment({
                 multiple={false}
                 isClearable={false}
                 placeholder={`Set reward field`}
+                portal={false}
               />
             </Box>
           </Stack>
@@ -98,6 +99,7 @@ export default function InitiatePendingPayment({
                 multiple={false}
                 isClearable={false}
                 placeholder={`Set reward field`}
+                portal={false}
               />
             </Box>
           </Stack>

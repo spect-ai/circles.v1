@@ -24,7 +24,6 @@ import { validateConditions } from "./Validation/ConditionValidations";
 import { validateTrigger } from "./Validation/TriggerValidations";
 
 type Props = {
-  col: CollectionType;
   automation: any;
   automationMode: string;
   onDelete: (automationId: string) => void;
@@ -38,25 +37,15 @@ type Props = {
     slug: string
   ) => void;
   onDisable: (automationId: string) => void;
-  onMouseLeave: (
-    name: string,
-    description: string,
-    trigger: Trigger,
-    action: Action[],
-    conditions: Condition[],
-    isDirty: boolean
-  ) => void;
 };
 
 export default function SingleAutomation({
-  col,
   automation,
   automationMode,
   onDelete,
   onSave,
   onDisable,
   handleClose,
-  onMouseLeave,
 }: Props) {
   const { mode } = useTheme();
   const { circle } = useCircle();
@@ -70,11 +59,12 @@ export default function SingleAutomation({
   const [selectedThenOptions, setSelectedThenOptions] = useState(
     [] as Option[]
   );
+
   const [trigger, setTrigger] = useState({} as Trigger);
   const [actions, setActions] = useState([] as Action[]);
   const [conditions, setConditions] = useState([] as Condition[]);
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
+  const [name, setName] = useState(automation?.name || "");
+  const [description, setDescription] = useState(automation?.description || "");
   const [isDirty, setIsDirty] = useState(false);
   const [canSave, setCanSave] = useState(false);
 
@@ -191,12 +181,8 @@ export default function SingleAutomation({
       //   }
       // }
 
-      console.log({ thenOptions });
-
       setThenOptions(thenOptions);
       if (automation) {
-        setName(automation.name);
-        setDescription(automation.description);
         const selectedWhenOption = whenOptions.find(
           (o) => o.data.fieldName === automation.trigger?.data?.fieldName
         ) as Option;
@@ -213,7 +199,6 @@ export default function SingleAutomation({
           }))
         );
         setTrigger(automation.trigger);
-        console.log({ actions: automation.actions });
         setActions(automation.actions);
         setConditions(automation.conditions || []);
       }
@@ -233,7 +218,6 @@ export default function SingleAutomation({
           theme: "dark",
         });
       });
-    console.log({ actions });
     setCanSave(
       validateActions(actions) &&
         validateTrigger(trigger) &&
@@ -243,6 +227,8 @@ export default function SingleAutomation({
   }, [actions, trigger, conditions, name, collectionOption]);
 
   useEffect(() => {
+    setName(automation?.name || "");
+    setDescription(automation?.description || "");
     const collection = Object.values(circle?.collections || {}).find(
       (c) => c.slug === automation.triggerCollectionSlug
     );
@@ -250,14 +236,10 @@ export default function SingleAutomation({
       label: collection?.name || "Select Project or Form",
       value: collection?.id || "selectCollection",
     });
-  }, []);
+  }, [automation]);
 
   return (
-    <Box
-      onMouseLeave={() =>
-        onMouseLeave(name, description, trigger, actions, conditions, isDirty)
-      }
-    >
+    <Box>
       {automation?.disabled && (
         <Box
           display="flex"
@@ -341,7 +323,6 @@ export default function SingleAutomation({
         )}
       </Box>
       <ScrollContainer
-        containerHeight={col?.id ? "65vh" : "70vh"}
         width="full"
         paddingRight={{
           xs: "2",
@@ -416,6 +397,7 @@ export default function SingleAutomation({
                       }}
                       multiple={false}
                       isClearable={false}
+                      portal={false}
                     />
                   </Box>
                   {selectedWhenOption && (
@@ -454,7 +436,6 @@ export default function SingleAutomation({
                           options={automationActionOptions}
                           selected={selectedThenOptions[index]}
                           onChange={(action: any) => {
-                            console.log({ action });
                             const newActions = [...actions];
                             newActions[index] = action;
                             setActions(newActions);
@@ -468,6 +449,7 @@ export default function SingleAutomation({
                           }}
                           multiple={false}
                           isClearable={false}
+                          portal={false}
                         />
                       </Box>
                       <SingleAction
@@ -529,7 +511,6 @@ export default function SingleAutomation({
                         ...selectedThenOptions,
                         thenOptions?.[0],
                       ]);
-                      console.log({ actions });
                       setIsDirty(true);
                     }}
                   >
@@ -571,7 +552,7 @@ const AutomationCard = styled(Box)<{
   width?: string;
   height?: string;
 }>`
-  @media (max-width: 768px) {
+  @media (max-width: 1420px) {
     width: 100%;
     padding: 0.5rem;
     margin: 0;
@@ -601,16 +582,13 @@ const AutomationCard = styled(Box)<{
   transition: all 0.5s ease-in-out;
 `;
 
-const ScrollContainer = styled(Box)<{
-  containerHeight?: string;
-}>`
+const ScrollContainer = styled(Box)<{}>`
   ::-webkit-scrollbar {
     width: 5px;
   }
   @media (max-width: 768px) {
     height: 25rem;
   }
-  height: ${(props) => props.containerHeight || "65vh"};
   overflow-y: auto;
 `;
 

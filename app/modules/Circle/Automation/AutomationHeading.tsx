@@ -1,11 +1,14 @@
 import Breadcrumbs from "@/app/common/components/Breadcrumbs";
+import PrimaryButton from "@/app/common/components/PrimaryButton";
+import { GatewayOutlined } from "@ant-design/icons";
 import { Box, Text, Heading, Stack } from "degen";
+import { useRouter } from "next/router";
 import { Hidden } from "react-grid-system";
 import { useCircle } from "../../Circle/CircleContext";
-import Automation from "../../Collection/Automation";
 
 export const AutomationHeading = () => {
   const { navigationBreadcrumbs } = useCircle();
+  const router = useRouter();
   return (
     <Box width="full" display="flex" flexDirection="column">
       <Hidden xs sm>
@@ -31,9 +34,24 @@ export const AutomationHeading = () => {
                 Automation Center
               </Text>
             </Box>
-          </Stack>{" "}
+          </Stack>
           <Box display="flex" flexDirection="column" justifyContent="flex-end">
-            <Automation collection={{} as any} />
+            <PrimaryButton
+              variant="secondary"
+              onClick={() => {
+                router.push({
+                  pathname: router.pathname,
+                  query: {
+                    circle: router.query.circle,
+                    tab: "automation",
+                    newAuto: true,
+                  },
+                });
+              }}
+              icon={<GatewayOutlined />}
+            >
+              Add Automation
+            </PrimaryButton>
           </Box>
         </Box>
       </Box>

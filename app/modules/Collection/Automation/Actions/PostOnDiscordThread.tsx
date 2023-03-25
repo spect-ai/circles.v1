@@ -146,6 +146,7 @@ export default function PostCardOnDiscordThread({
           setFields(f);
         }}
         multiple={true}
+        portal={false}
       />
     </Box>
   );

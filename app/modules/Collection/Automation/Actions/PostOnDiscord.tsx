@@ -111,6 +111,7 @@ export default function PostCardOnDiscord({
           setSelectedChannel(value);
         }}
         multiple={false}
+        portal={false}
       />
       <Box marginY="2">
         <Text variant="label">Post Title</Text>
@@ -129,6 +130,7 @@ export default function PostCardOnDiscord({
           setTitle(value);
         }}
         multiple={false}
+        portal={false}
       />
       <Box marginY="2">
         <Text variant="label">
@@ -156,6 +158,7 @@ export default function PostCardOnDiscord({
           setFields(f);
         }}
         multiple={true}
+        portal={false}
       />
 
       <Box marginY="2">

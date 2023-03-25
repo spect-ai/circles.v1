@@ -1,17 +1,13 @@
-import PrimaryButton from "@/app/common/components/PrimaryButton";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
-import { CollectionType } from "@/app/types";
 import { GatewayOutlined } from "@ant-design/icons";
 import { Box, Stack, Text, useTheme } from "degen";
-import { AnimatePresence } from "framer-motion";
-import { useState } from "react";
+import { useRouter } from "next/router";
+import { Col, Row } from "react-grid-system";
 import { ToastContainer } from "react-toastify";
-import Automation from "../../Collection/Automation";
+import styled from "styled-components";
+import AutomationModal from "../../Collection/Automation/AutomationDrawer";
 import { useCircle } from "../CircleContext";
 import { AutomationHeading } from "./AutomationHeading";
-import { Col, Row } from "react-grid-system";
-import styled from "styled-components";
-import { useRouter } from "next/router";
 
 const ScrollContainer = styled(Box)`
   overflow-y: auto;
@@ -57,7 +53,8 @@ export default function AutomationCenter() {
               mode === "dark" ? "rgb(255,255,255,0.7)" : "rgb(20,20,20,0.7)"
             }`,
           }}
-        />
+        />{" "}
+        <AutomationModal />
         <Box marginX={"8"} marginTop="2">
           <AutomationHeading />
 
@@ -101,7 +98,11 @@ export default function AutomationCenter() {
                   });
                   return (
                     <Box>
-                      <Automation collection={col as CollectionType} />
+                      <Stack direction="horizontal" space="3" align={"center"}>
+                        <Text variant="large" color={"accent"}>
+                          {col?.name}
+                        </Text>
+                      </Stack>
                       <Row id="row">
                         {automations?.map((auto, idx) => {
                           const automat = circle.automations[auto];
@@ -110,7 +111,21 @@ export default function AutomationCenter() {
                               md={3}
                               style={{ padding: "0rem", marginLeft: "1rem" }}
                             >
-                              <Container mode={mode}>
+                              <Container
+                                cursor="pointer"
+                                mode={mode}
+                                onClick={() => {
+                                  router.push({
+                                    pathname: router.pathname,
+                                    query: {
+                                      circle: router.query.circle,
+                                      tab: "automation",
+                                      autoId: automat.id,
+                                      cId: col?.slug,
+                                    },
+                                  });
+                                }}
+                              >
                                 <Text
                                   variant="base"
                                   color={"textTertiary"}

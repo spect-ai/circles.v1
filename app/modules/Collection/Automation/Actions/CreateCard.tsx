@@ -268,6 +268,7 @@ export default function CreateCard({
           }
         }}
         multiple={false}
+        portal={false}
       />
       {Object.keys(selectedCollection)?.length > 0 && (
         <Box width="full" marginTop="2">
@@ -331,6 +332,7 @@ export default function CreateCard({
                       }}
                       multiple={false}
                       isClearable={false}
+                      portal={false}
                     />
                   </Box>
                 </Box>
@@ -370,6 +372,7 @@ export default function CreateCard({
                         }}
                         multiple={false}
                         isClearable={false}
+                        portal={false}
                       />
                     </Box>
                   </Box>
@@ -406,6 +409,7 @@ export default function CreateCard({
                         }}
                         multiple={false}
                         isClearable={false}
+                        portal={false}
                       />
                     </Box>
                   </Box>
@@ -456,6 +460,7 @@ export default function CreateCard({
                             }}
                             multiple={false}
                             isClearable={false}
+                            portal={false}
                           />
                         </Box>
                       </Box>

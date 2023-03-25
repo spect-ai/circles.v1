@@ -167,6 +167,7 @@ export default function CreateDiscordChannel({
           setSelectedCategory(value);
         }}
         multiple={false}
+        portal={false}
       />
       <Box marginTop="2" marginBottom="2">
         <Text variant="label">Channel Name</Text>
@@ -187,6 +188,7 @@ export default function CreateDiscordChannel({
           setChannelName(value);
         }}
         multiple={false}
+        portal={false}
       />
       <Box
         display="flex"

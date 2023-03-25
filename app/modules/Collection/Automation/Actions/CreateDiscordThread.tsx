@@ -167,6 +167,7 @@ export default function CreateDiscordThread({
           setSelectedChannel(value);
         }}
         multiple={false}
+        portal={false}
       />
       <Box marginTop="2" marginBottom="2">
         <Text variant="label">Thread Name</Text>
@@ -187,6 +188,7 @@ export default function CreateDiscordThread({
           setThreadName(value);
         }}
         multiple={false}
+        portal={false}
       />
       <Box
         display="flex"

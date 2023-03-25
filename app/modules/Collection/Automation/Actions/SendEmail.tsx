@@ -69,6 +69,7 @@ export default function SendEmail({
             });
           }}
           multiple={true}
+          portal={false}
         />
         <Text variant="label">With message</Text>
         {messageError && (
