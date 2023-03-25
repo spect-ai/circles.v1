@@ -62,8 +62,6 @@ export const PageLine = () => {
     const secondHalf = pageOrder.slice(middleEndIndex);
     const handleDragEnd = (result: DropResult) => {
       const { destination, source, draggableId, type } = result;
-      console.log({ destination, source, draggableId, type });
-
       if (!destination) return;
 
       if (type === "page") {
