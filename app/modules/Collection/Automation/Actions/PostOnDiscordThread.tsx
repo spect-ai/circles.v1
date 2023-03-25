@@ -120,7 +120,7 @@ export default function PostCardOnDiscordThread({
         value={message}
         placeholder="Card status has been updated."
       />
-      <Box marginY="2">
+      <Box marginTop="2">
         <Text variant="label">
           Select the properties you'd like to add in the post
         </Text>

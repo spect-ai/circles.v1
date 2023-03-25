@@ -254,7 +254,7 @@ export default function CreateCard({
       width="full"
     >
       <Box marginBottom="2">
-        <Text variant="label">Pick Collection</Text>
+        <Text variant="label">Pick Project</Text>
       </Box>
       <Dropdown
         options={collectionOptions}

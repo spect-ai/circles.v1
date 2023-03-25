@@ -450,8 +450,9 @@ export default function AddField({ propertyName, pageId, handleClose }: Props) {
                 <AddConditions
                   viewConditions={viewConditions}
                   setViewConditions={setViewConditions}
-                  buttonText="Add Condition when field is visible"
+                  buttonText="Add Condition when Field is Visible"
                   collection={collection}
+                  buttonWidth="fit"
                 />
                 {/* {["shortText", "longText", "ethAddress"].includes(
                   type.value

@@ -29,40 +29,8 @@ export default function AutomationDrawer({}) {
   );
   const [automationId, setAutomationId] = useState(autoId as string);
 
-  const onSave = async (
-    name: string,
-    description: string,
-    trigger: Trigger,
-    actions: Action[],
-    conditions: Condition[],
-    slug: string
-  ) => {
-    if (!circle) return;
-    console.log(name, description, trigger, actions, conditions, slug);
-    const newAutomation = {
-      name,
-      description,
-      trigger,
-      actions,
-      conditions,
-    };
-    let res;
-    if (automationMode === "create") {
-      res = await addAutomation(circle?.id, {
-        ...newAutomation,
-        triggerCategory: "collection",
-        triggerCollectionSlug: slug,
-      });
-    } else {
-      res = await updateAutomation(circle?.id, automationId, newAutomation);
-    }
-    if (res) {
-      void fetchCircle();
-    }
-    setAutomationMode("edit");
-  };
-
   const handleClose = () => {
+    setIsOpen(false);
     router.push({
       pathname: router.pathname,
       query: {
@@ -150,33 +118,12 @@ export default function AutomationDrawer({}) {
                         actions: [] as Action[],
                         conditions: [] as Condition[],
                         triggerCategory: "collection",
+                        triggerCollectionSlug: cId as string,
                       }
                     : circle.automations[automationId]
                 }
                 automationMode={automationMode}
-                onDelete={async () => {
-                  const res = await removeAutomation(automationId, circle.id);
-                  if (res) {
-                    void fetchCircle();
-                  }
-
-                  router.push({
-                    pathname: router.pathname,
-                    query: {
-                      circle: router.query.circle,
-                      tab: "automation",
-                    },
-                  });
-                }}
-                onSave={onSave}
                 handleClose={handleClose}
-                onDisable={async () => {
-                  const res = await updateAutomation(circle?.id, automationId, {
-                    ...circle.automations[automationId],
-                    disabled: !circle.automations[automationId].disabled,
-                  });
-                  if (res) setCircleData(res);
-                }}
               />
             </Box>
           </Container>

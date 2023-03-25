@@ -157,18 +157,7 @@ export default function CreateDiscordThread({
       }}
       width="full"
     >
-      <Box>
-        <Text variant="label">Create Thread on this Channel</Text>
-      </Box>
-      <Dropdown
-        options={channelOptions}
-        selected={selectedChannel}
-        onChange={(value) => {
-          setSelectedChannel(value);
-        }}
-        multiple={false}
-        portal={false}
-      />
+      {" "}
       <Box marginTop="2" marginBottom="2">
         <Text variant="label">Thread Name</Text>
       </Box>
@@ -186,6 +175,18 @@ export default function CreateDiscordThread({
           if (collection.properties[value.value]) setThreadNameType("mapping");
           else setThreadNameType("value");
           setThreadName(value);
+        }}
+        multiple={false}
+        portal={false}
+      />
+      <Box marginTop="4">
+        <Text variant="label">Create Thread on this Channel</Text>
+      </Box>
+      <Dropdown
+        options={channelOptions}
+        selected={selectedChannel}
+        onChange={(value) => {
+          setSelectedChannel(value);
         }}
         multiple={false}
         portal={false}

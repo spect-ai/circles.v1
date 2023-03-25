@@ -55,7 +55,7 @@ export default function InitiatePendingPayment({
 
   return (
     <Box
-      margin={"2"}
+      marginTop="4"
       onMouseLeave={() => {
         setAction({
           ...action,
@@ -74,7 +74,7 @@ export default function InitiatePendingPayment({
               Payment amount will be taken from the following field (Only reward
               fields are shown)
             </Text>
-            <Box width="96">
+            <Box>
               <Dropdown
                 options={rewardOptions as any}
                 selected={rewardField}
@@ -91,7 +91,7 @@ export default function InitiatePendingPayment({
               Payee will be added from the following field (Only user &
               ethAddress fields are shown)
             </Text>
-            <Box width="96">
+            <Box>
               <Dropdown
                 options={payeeOptions as any}
                 selected={payeeField}

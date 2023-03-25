@@ -101,7 +101,7 @@ export default function PostCardOnDiscord({
       }}
       width="full"
     >
-      <Box marginBottom="2">
+      <Box>
         <Text variant="label">Channel Name</Text>
       </Box>
       <Dropdown
@@ -113,26 +113,17 @@ export default function PostCardOnDiscord({
         multiple={false}
         portal={false}
       />
-      <Box marginY="2">
-        <Text variant="label">Post Title</Text>
+      <Box marginTop="4" marginBottom="2">
+        <Text variant="label">Message</Text>
       </Box>
-      <Dropdown
-        options={
-          Object.entries(collection.properties)
-            .filter(([propertyId, property]) => property.type === "shortText")
-            .map(([propertyId, property]) => ({
-              label: `Map from value in "${property.name}"`,
-              value: property.name,
-            })) || []
-        }
-        selected={title}
-        onChange={(value) => {
-          setTitle(value);
-        }}
-        multiple={false}
-        portal={false}
+      <Input
+        label
+        hideLabel
+        onChange={(e) => setMessage(e.target.value)}
+        value={message}
+        placeholder="A new fren has joined us. Let's welcome them!"
       />
-      <Box marginY="2">
+      <Box marginTop="4">
         <Text variant="label">
           Select the properties you'd like to add in the post
         </Text>
@@ -159,17 +150,6 @@ export default function PostCardOnDiscord({
         }}
         multiple={true}
         portal={false}
-      />
-
-      <Box marginY="2">
-        <Text variant="label">Message</Text>
-      </Box>
-      <Input
-        label
-        hideLabel
-        onChange={(e) => setMessage(e.target.value)}
-        value={message}
-        placeholder="A new fren has joined us. Let's welcome them!"
       />
     </Box>
   );

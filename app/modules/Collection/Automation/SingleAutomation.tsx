@@ -1,6 +1,11 @@
 import Dropdown from "@/app/common/components/Dropdown";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import {
+  addAutomation,
+  removeAutomation,
+  updateAutomation,
+} from "@/app/services/UpdateCircle";
+import {
   Action,
   CollectionType,
   Condition,
@@ -8,6 +13,7 @@ import {
   Trigger,
 } from "@/app/types";
 import { Box, IconPlusSmall, Stack, Text, useTheme } from "degen";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { Table } from "react-feather";
 import { useQuery } from "react-query";
@@ -19,6 +25,7 @@ import AddConditions from "../Common/AddConditions";
 import { automationActionOptions } from "../Constants";
 import SingleAction from "./Actions";
 import SingleTrigger from "./Triggers";
+import { getAutomationActionOptions } from "./utils";
 import { validateActions } from "./Validation/ActionValidations";
 import { validateConditions } from "./Validation/ConditionValidations";
 import { validateTrigger } from "./Validation/TriggerValidations";
@@ -26,32 +33,19 @@ import { validateTrigger } from "./Validation/TriggerValidations";
 type Props = {
   automation: any;
   automationMode: string;
-  onDelete: (automationId: string) => void;
   handleClose: () => void;
-  onSave: (
-    name: string,
-    description: string,
-    trigger: Trigger,
-    action: Action[],
-    conditions: Condition[],
-    slug: string
-  ) => void;
-  onDisable: (automationId: string) => void;
 };
 
 export default function SingleAutomation({
   automation,
   automationMode,
-  onDelete,
-  onSave,
-  onDisable,
   handleClose,
 }: Props) {
   const { mode } = useTheme();
-  const { circle } = useCircle();
+  const { circle, setCircleData, fetchCircle } = useCircle();
+  const router = useRouter();
   const [whenOptions, setWhenOptions] = useState<Option[]>([]);
   const [collection, setCollection] = useState({} as CollectionType);
-  const [thenOptions, setThenOptions] = useState<Option[]>([]);
   const [collectionOption, setCollectionOption] = useState<Option>(
     {} as Option
   );
@@ -65,8 +59,29 @@ export default function SingleAutomation({
   const [conditions, setConditions] = useState([] as Condition[]);
   const [name, setName] = useState(automation?.name || "");
   const [description, setDescription] = useState(automation?.description || "");
-  const [isDirty, setIsDirty] = useState(false);
-  const [canSave, setCanSave] = useState(false);
+  const [actionValidationResults, setActionValidationResults] = useState({
+    isValid: true,
+    message: "",
+    invalidActions: {},
+  });
+  const [nameValidationResults, setNameValidationResults] = useState({
+    isValid: true,
+    message: "",
+  });
+  const [
+    collectionOptionValidationResults,
+    setCollectionOptionValidationResults,
+  ] = useState({
+    isValid: true,
+    message: "",
+  });
+  const [triggerValidationResults, setTriggerValidationResults] = useState({
+    isValid: true,
+    message: "",
+  });
+  const [saving, setSaving] = useState(false);
+  const [disabling, setDisabling] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   const collectionOptions = Object.values(circle?.collections || {}).map(
     (c) => ({
@@ -82,6 +97,46 @@ export default function SingleAutomation({
       ),
     })
   );
+
+  const onDisable = async () => {
+    if (!circle) return;
+    const res = await updateAutomation(circle.id as string, automation.id, {
+      ...circle.automations[automation.id],
+      disabled: !circle.automations[automation.id].disabled,
+    });
+    if (res) setCircleData(res);
+  };
+
+  const onSave = async (
+    name: string,
+    description: string,
+    trigger: Trigger,
+    actions: Action[],
+    conditions: Condition[],
+    slug: string
+  ) => {
+    if (!circle) return;
+    const newAutomation = {
+      name,
+      description,
+      trigger,
+      actions,
+      conditions,
+    };
+    let res;
+    if (automationMode === "create") {
+      res = await addAutomation(circle?.id, {
+        ...newAutomation,
+        triggerCategory: "collection",
+        triggerCollectionSlug: slug,
+      });
+    } else {
+      res = await updateAutomation(circle?.id, automation.id, newAutomation);
+    }
+    if (res) {
+      void fetchCircle();
+    }
+  };
 
   const { refetch: fetchCollection } = useQuery<CollectionType>(
     ["collection", collectionOption.value],
@@ -121,11 +176,11 @@ export default function SingleAutomation({
           ? []
           : [
               {
-                label: "Payment is Completed",
+                label: "Payment is Completed for a card",
                 value: "completedPayment",
               },
               {
-                label: "Payment is Cancelled",
+                label: "Payment is Cancelled for a card",
                 value: "cancelledPayment",
               },
             ];
@@ -140,48 +195,7 @@ export default function SingleAutomation({
         },
         ...paymentOptions,
       ]);
-      //const thenOptions = [];
-      // for (const [type, action] of Object.entries(automationActions)) {
-      //   if (collection?.collectionType === 0) {
-      //     if (
-      //       [
-      //         "createCard",
-      //         "createDiscordChannel",
-      //         "giveDiscordRole",
-      //         "giveRole",
-      //         "postOnDiscord",
-      //         "sendEmail",
-      //         "initiatePendingPayment",
-      //         "createDiscordThread",
-      //       ].includes(type)
-      //     ) {
-      //       thenOptions.push({
-      //         label: action.group,
-      //         value: type,
-      //       });
-      //     }
-      //   } else {
-      //     if (
-      //       [
-      //         "closeCard",
-      //         "createCard",
-      //         "postOnDiscord",
-      //         "createDiscordThread",
-      //       ].includes(type) ||
-      //       (!["completedPayment", "cancelledPayment"].includes(
-      //         selectedWhenOption.value
-      //       ) &&
-      //         type === "initiatePendingPayment")
-      //     ) {
-      //       thenOptions.push({
-      //         label: action.label,
-      //         value: type,
-      //       });
-      //     }
-      //   }
-      // }
 
-      setThenOptions(thenOptions);
       if (automation) {
         const selectedWhenOption = whenOptions.find(
           (o) => o.data.fieldName === automation.trigger?.data?.fieldName
@@ -206,24 +220,19 @@ export default function SingleAutomation({
   }, [automation, collection, collectionOption]);
 
   useEffect(() => {
-    fetchCollection()
-      .then((res) => {
-        if (res.data) {
-          setCollection(res.data);
-        }
-      })
-      .catch((err) => {
-        console.error(err);
-        toast.error("Something went wrong", {
-          theme: "dark",
+    if (collectionOption?.value)
+      fetchCollection()
+        .then((res) => {
+          if (res.data) {
+            setCollection(res.data);
+          }
+        })
+        .catch((err) => {
+          console.error(err);
+          toast.error("Something went wrong", {
+            theme: "dark",
+          });
         });
-      });
-    setCanSave(
-      validateActions(actions) &&
-        validateTrigger(trigger) &&
-        validateConditions(conditions) &&
-        name !== ""
-    );
   }, [actions, trigger, conditions, name, collectionOption]);
 
   useEffect(() => {
@@ -233,8 +242,8 @@ export default function SingleAutomation({
       (c) => c.slug === automation.triggerCollectionSlug
     );
     setCollectionOption({
-      label: collection?.name || "Select Project or Form",
-      value: collection?.id || "selectCollection",
+      label: collection?.name || "",
+      value: collection?.id || "",
     });
   }, [automation]);
 
@@ -253,7 +262,10 @@ export default function SingleAutomation({
       )}
       <Box
         display="flex"
-        flexDirection="row"
+        flexDirection={{
+          xs: "column",
+          lg: "row",
+        }}
         width="full"
         gap="2"
         marginTop="2"
@@ -266,13 +278,15 @@ export default function SingleAutomation({
           alignItems="flex-start"
           style={{ width: "80%" }}
         >
+          {!nameValidationResults.isValid && (
+            <Text color="red">{nameValidationResults.message}</Text>
+          )}
           <NameInput
             placeholder="Enter name"
             autoFocus
             value={name}
             onChange={(e) => {
               setName(e.target.value);
-              setIsDirty(true);
             }}
           />
           <DescriptionInput
@@ -282,33 +296,86 @@ export default function SingleAutomation({
             value={description}
             onChange={(e) => {
               setDescription(e.target.value);
-              setIsDirty(true);
             }}
           />
         </Box>
 
         <PrimaryButton
           variant="secondary"
-          onClick={() => {
-            onSave(
-              name,
-              description,
-              trigger,
-              actions,
-              conditions,
-              (collection as CollectionType)?.slug
-            );
-            if (automationMode === "create") handleClose();
-            setIsDirty(false);
+          loading={saving}
+          onClick={async () => {
+            try {
+              setSaving(true);
+              if (!name?.trim().length) {
+                setNameValidationResults({
+                  isValid: false,
+                  message: "Name is required",
+                });
+                return;
+              } else {
+                setNameValidationResults({
+                  isValid: true,
+                  message: "",
+                });
+              }
+
+              if (!collectionOption?.value) {
+                setCollectionOptionValidationResults({
+                  isValid: false,
+                  message: "Project or Form is required",
+                });
+                return;
+              } else {
+                setCollectionOptionValidationResults({
+                  isValid: true,
+                  message: "",
+                });
+              }
+
+              const triggerValidationResults = validateTrigger(trigger);
+              setTriggerValidationResults(triggerValidationResults);
+              if (!triggerValidationResults.isValid) return;
+
+              const actionValidationResults = validateActions(actions);
+              setActionValidationResults(actionValidationResults);
+              if (!actionValidationResults.isValid) return;
+
+              const res = await onSave(
+                name,
+                description,
+                trigger,
+                actions,
+                conditions,
+                (collection as CollectionType)?.slug
+              );
+              setSaving(false);
+              if (automationMode === "create") handleClose();
+            } catch (err) {
+              console.error(err);
+              toast.error("Something went wrong while saving automation");
+            } finally {
+              setSaving(false);
+            }
           }}
-          disabled={!canSave || !isDirty}
         >
           Save
         </PrimaryButton>
         {automationMode === "edit" && (
           <PrimaryButton
             variant="tertiary"
-            onClick={() => onDisable(automation.id)}
+            loading={disabling}
+            onClick={async () => {
+              try {
+                setDisabling(true);
+                const res = await onDisable();
+                setDisabling(false);
+              } catch (err) {
+                console.error(err);
+                toast.error("Something went wrong while disabling automation");
+              } finally {
+                setDisabling(false);
+              }
+            }}
           >
             {automation.disabled ? "Enable" : "Disable"}
           </PrimaryButton>
@@ -316,7 +383,33 @@ export default function SingleAutomation({
         {automationMode === "edit" && (
           <PrimaryButton
             variant="tertiary"
-            onClick={() => onDelete(automation.id)}
+            loading={deleting}
+            onClick={async () => {
+              setDeleting(true);
+              try {
+                const res = await removeAutomation(
+                  automation.id,
+                  circle?.id as string
+                );
+                if (res) {
+                  void fetchCircle();
+                }
+                setDeleting(false);
+
+                router.push({
+                  pathname: router.pathname,
+                  query: {
+                    circle: router.query.circle,
+                    tab: "automation",
+                  },
+                });
+              } catch (err) {
+                console.error(err);
+                toast.error("Something went wrong while deleting automation");
+              } finally {
+                setDeleting(false);
+              }
+            }}
           >
             Delete
           </PrimaryButton>
@@ -350,13 +443,20 @@ export default function SingleAutomation({
                 selected={collectionOption}
                 onChange={(value) => {
                   setCollectionOption(value);
-                  setIsDirty(true);
+
                   fetchCollection();
                 }}
                 multiple={false}
                 isClearable={false}
                 disabled={automationMode === "edit"}
               />
+              {!collectionOptionValidationResults.isValid && (
+                <Box marginTop="4">
+                  <Text color="red">
+                    {collectionOptionValidationResults.message}
+                  </Text>
+                </Box>
+              )}
             </Box>
           </AutomationCard>
 
@@ -393,7 +493,6 @@ export default function SingleAutomation({
                           service: "collection",
                         });
                         setSelectedWhenOption(value);
-                        setIsDirty(true);
                       }}
                       multiple={false}
                       isClearable={false}
@@ -408,8 +507,8 @@ export default function SingleAutomation({
                       collection={collection}
                       setTrigger={(trig) => {
                         setTrigger(trig);
-                        setIsDirty(true);
                       }}
+                      triggerValidationResults={triggerValidationResults}
                     />
                   )}{" "}
                 </AutomationCard>
@@ -424,6 +523,9 @@ export default function SingleAutomation({
                 <Text variant="base" weight="semiBold" color="accent">
                   Then
                 </Text>
+                {actionValidationResults?.isValid === false && (
+                  <Text color="red">{actionValidationResults?.message}</Text>
+                )}
                 <Stack>
                   {actions.map((action, index) => (
                     <AutomationCard
@@ -433,7 +535,10 @@ export default function SingleAutomation({
                     >
                       <Box width="full">
                         <Dropdown
-                          options={automationActionOptions}
+                          options={getAutomationActionOptions(
+                            collection,
+                            selectedWhenOption
+                          )}
                           selected={selectedThenOptions[index]}
                           onChange={(action: any) => {
                             const newActions = [...actions];
@@ -445,7 +550,6 @@ export default function SingleAutomation({
                             ];
                             newSelectedThenOptions[index] = action;
                             setSelectedThenOptions(newSelectedThenOptions);
-                            setIsDirty(true);
                           }}
                           multiple={false}
                           isClearable={false}
@@ -459,10 +563,12 @@ export default function SingleAutomation({
                           const newActions = [...actions];
                           newActions[index] = action;
                           setActions(newActions);
-                          setIsDirty(true);
                         }}
                         actionMode="edit"
                         collection={collection}
+                        invalidActions={
+                          actionValidationResults?.invalidActions || {}
+                        }
                       />
                       <Box
                         width="full"
@@ -482,8 +588,6 @@ export default function SingleAutomation({
                             ];
                             newSelectedThenOptions.splice(index, 1);
                             setSelectedThenOptions(newSelectedThenOptions);
-
-                            setIsDirty(true);
                           }}
                         >
                           Remove Action
@@ -492,13 +596,7 @@ export default function SingleAutomation({
                     </AutomationCard>
                   ))}
                 </Stack>
-                <Box
-                  width="64"
-                  marginTop={{
-                    xs: "0",
-                    md: "4",
-                  }}
-                >
+                <Box width="64" marginTop="4">
                   <PrimaryButton
                     variant="tertiary"
                     icon={<IconPlusSmall />}
@@ -507,11 +605,6 @@ export default function SingleAutomation({
                         ...actions,
                         automationActionOptions[0].options[0] as Action,
                       ]);
-                      setSelectedThenOptions([
-                        ...selectedThenOptions,
-                        thenOptions?.[0],
-                      ]);
-                      setIsDirty(true);
                     }}
                   >
                     Add Action
@@ -523,7 +616,7 @@ export default function SingleAutomation({
                   xs: "4",
                   md: "8",
                 }}
-                width="64"
+                width="full"
               >
                 <Text variant="base" weight="semiBold" color="accent">
                   Only If
@@ -532,7 +625,6 @@ export default function SingleAutomation({
                   viewConditions={conditions}
                   setViewConditions={(conditions) => {
                     setConditions(conditions);
-                    setIsDirty(true);
                   }}
                   firstRowMessage="It is true that"
                   buttonText="Add Condition"
@@ -586,9 +678,7 @@ const ScrollContainer = styled(Box)<{}>`
   ::-webkit-scrollbar {
     width: 5px;
   }
-  @media (max-width: 768px) {
-    height: 25rem;
-  }
+
   overflow-y: auto;
 `;
 

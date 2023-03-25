@@ -151,25 +151,15 @@ export default function CreateDiscordChannel({
             isPrivate: isPrivate,
             addResponder: addResponder,
             rolesToAdd: selectedRoles,
+            addStakeholder,
+            stakeholdersToAdd,
             circleId: circle?.id,
           },
         });
       }}
       width="full"
     >
-      <Box>
-        <Text variant="label">Channel Category</Text>
-      </Box>
-      <Dropdown
-        options={categoreyOptions}
-        selected={selectedCategory}
-        onChange={(value) => {
-          setSelectedCategory(value);
-        }}
-        multiple={false}
-        portal={false}
-      />
-      <Box marginTop="2" marginBottom="2">
+      <Box marginBottom="2">
         <Text variant="label">Channel Name</Text>
       </Box>
       <CreatableDropdown
@@ -183,9 +173,22 @@ export default function CreateDiscordChannel({
         }
         selected={channelName}
         onChange={(value) => {
-          if (collection.properties[value.value]) setChannelNameType("mapping");
+          if (collection.properties[value?.value])
+            setChannelNameType("mapping");
           else setChannelNameType("value");
           setChannelName(value);
+        }}
+        multiple={false}
+        portal={false}
+      />
+      <Box marginTop="2">
+        <Text variant="label">Channel Category</Text>
+      </Box>
+      <Dropdown
+        options={categoreyOptions}
+        selected={selectedCategory}
+        onChange={(value) => {
+          setSelectedCategory(value);
         }}
         multiple={false}
         portal={false}

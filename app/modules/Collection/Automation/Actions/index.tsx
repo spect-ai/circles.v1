@@ -1,4 +1,5 @@
 import { Action, CollectionType } from "@/app/types";
+import { Box, Text } from "degen";
 import CloseCard from "./CloseCard";
 import CreateCard from "./CreateCard";
 import CreateDiscordChannel from "./CreateDiscordChannel";
@@ -16,6 +17,12 @@ type Props = {
   action: Action;
   setAction: (action: Action) => void;
   collection: CollectionType;
+  invalidActions: {
+    [key: string]: {
+      isValid: boolean;
+      message: string;
+    };
+  };
 };
 
 export default function SingleAction({
@@ -24,9 +31,10 @@ export default function SingleAction({
   action,
   setAction,
   collection,
+  invalidActions,
 }: Props) {
   return (
-    <>
+    <Box paddingX="1" width="full">
       {actionType === "giveRole" && (
         <GiveRole
           action={action}
@@ -106,6 +114,11 @@ export default function SingleAction({
           collection={collection}
         />
       )}
-    </>
+      <Box marginTop="4">
+        {invalidActions[actionType]?.isValid === false && (
+          <Text color="red">{invalidActions[actionType].message}</Text>
+        )}
+      </Box>
+    </Box>
   );
 }

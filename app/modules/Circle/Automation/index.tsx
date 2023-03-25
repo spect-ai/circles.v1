@@ -1,6 +1,6 @@
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { GatewayOutlined } from "@ant-design/icons";
-import { Box, Stack, Text, useTheme } from "degen";
+import { Box, Button, IconPlus, Stack, Text, useTheme } from "degen";
 import { useRouter } from "next/router";
 import { Col, Row } from "react-grid-system";
 import { ToastContainer } from "react-toastify";
@@ -99,9 +99,35 @@ export default function AutomationCenter() {
                   return (
                     <Box>
                       <Stack direction="horizontal" space="3" align={"center"}>
-                        <Text variant="large" color={"accent"}>
+                        <Text variant="large" color={"text"}>
                           {col?.name}
                         </Text>
+                        <Stack
+                          direction="horizontal"
+                          space="1"
+                          align={"center"}
+                        >
+                          <Button
+                            shape="circle"
+                            variant="transparent"
+                            size="small"
+                            onClick={() => {
+                              router.push({
+                                pathname: router.pathname,
+                                query: {
+                                  circle: router.query.circle,
+                                  tab: "automation",
+                                  cId: col?.slug,
+                                  newAuto: true,
+                                },
+                              });
+                            }}
+                          >
+                            <Text>
+                              <IconPlus />
+                            </Text>
+                          </Button>
+                        </Stack>
                       </Stack>
                       <Row id="row">
                         {automations?.map((auto, idx) => {
