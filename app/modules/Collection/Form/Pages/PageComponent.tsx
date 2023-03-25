@@ -90,6 +90,7 @@ export const PageComponent = ({
                     cursor="pointer"
                     onClick={() => {
                       setActivePage(id);
+                      setPropertyName("");
                       setAddFieldOpen(true);
                     }}
                   >
