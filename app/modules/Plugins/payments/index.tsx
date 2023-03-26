@@ -522,7 +522,6 @@ export default function Payments({ handleClose }: Props) {
                       return acc;
                     }, {}),
                   };
-                  console.log({ payload });
                   setUpdateLoading(true);
                   const res = await updateFormCollection(collection.id, {
                     formMetadata: {
