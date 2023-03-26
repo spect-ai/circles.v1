@@ -30,9 +30,6 @@ export default function ViewPlugins({}: Props) {
   const [isOpen, setIsOpen] = useState(false);
   const [isPluginOpen, setIsPluginOpen] = useState(false);
   const [pluginOpen, setPluginOpen] = useState("");
-  const [isWhitelistedSurveyProtocol, setIsWhitelistedSurveyProtocol] =
-    useState(false);
-
   const [surveyConditions, setSurveyConditions] = useState<any>({});
   const [surveyDistributionInfo, setSurveyDistributionInfo] = useState<any>({});
   const { localCollection: collection } = useLocalCollection();
@@ -50,11 +47,6 @@ export default function ViewPlugins({}: Props) {
 
   useEffect(() => {
     if (isOpen) {
-      isWhitelisted("Survey Protocol").then((res) => {
-        if (res) {
-          setIsWhitelistedSurveyProtocol(true);
-        }
-      });
       if (
         (collection.formMetadata.surveyTokenId ||
           collection.formMetadata.surveyTokenId === 0) &&
@@ -65,21 +57,28 @@ export default function ViewPlugins({}: Props) {
           registry[collection.formMetadata.surveyChain?.value || "80001"]
             .surveyHubAddress,
           collection.formMetadata.surveyTokenId
-        ).then((res) => {
-          if (res) {
-            setSurveyConditions(res);
-          }
-        });
+        )
+          .then((res) => {
+            console.log({ res });
+            if (res) {
+              setSurveyConditions(res);
+            }
+          })
+          .catch((err) => console.log({ err }));
         getSurveyDistributionInfo(
           collection.formMetadata.surveyChain?.value || "80001",
           registry[collection.formMetadata.surveyChain?.value || "80001"]
             .surveyHubAddress,
           collection.formMetadata.surveyTokenId
-        ).then((res) => {
-          if (res) {
-            setSurveyDistributionInfo(res);
-          }
-        });
+        )
+          .then((res) => {
+            console.log({ res });
+
+            if (res) {
+              setSurveyDistributionInfo(res);
+            }
+          })
+          .catch((err) => console.log({ err }));
       }
     }
   }, [isOpen, collection]);
@@ -207,16 +206,9 @@ export default function ViewPlugins({}: Props) {
                     <PluginCard
                       key={pluginName}
                       plugin={spectPlugins[pluginName]}
-                      onClick={() => {
-                        console.log("pluginName", pluginName);
-                        console.log({
-                          pluginName,
-                          isWhitelistedSurveyProtocol,
-                        });
-                        if (
-                          pluginName === "erc20" &&
-                          !isWhitelistedSurveyProtocol
-                        ) {
+                      onClick={async () => {
+                        const res = await isWhitelisted("Survey Protocol");
+                        if (pluginName === "erc20" && !res) {
                           window.open(
                             "https://circles.spect.network/r/9991d6ed-f3c8-425a-8b9e-0f598514482c",
                             "_blank"

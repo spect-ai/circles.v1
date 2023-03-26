@@ -177,8 +177,6 @@ export const getLastSurveyId = async (
     functionName: "surveyCount",
     chainId: parseInt(chainId),
   });
-  // const surveyHub = await getContract(surveyHubAddress, SurveyABI.abi);
-  // const count = await surveyHub.surveyCount();
   console.log({ count });
   return parseInt(ethers.utils.formatUnits(count as any, 0)) - 1;
 };
