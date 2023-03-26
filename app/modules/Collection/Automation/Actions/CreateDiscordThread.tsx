@@ -6,7 +6,7 @@ import {
   guildIsConnected,
 } from "@/app/services/Discord";
 import { Action, CollectionType, Option } from "@/app/types";
-import { Box, Stack, Tag, Text } from "degen";
+import { Box, Input, Stack, Tag, Text } from "degen";
 import { useEffect, useState } from "react";
 import { useLocation } from "react-use";
 import DiscordIcon from "@/app/assets/icons/discordIcon.svg";
@@ -14,12 +14,18 @@ import Dropdown from "@/app/common/components/Dropdown";
 import CreatableDropdown from "@/app/common/components/CreatableDropdown";
 import Editor from "@/app/common/components/Editor";
 import CheckBox from "@/app/common/components/Table/Checkbox";
+import { linkDiscord } from "@/app/services/Collection";
+import { useLocalCollection } from "../../Context/LocalCollectionContext";
+import { toast } from "react-toastify";
+import { useRouter } from "next/router";
 
 type Props = {
   actionMode: "edit" | "create";
   action: Action;
   setAction: (action: Action) => void;
   collection: CollectionType;
+  manualAction?: boolean;
+  handleClose?: () => void;
 };
 
 export default function CreateDiscordThread({
@@ -27,8 +33,13 @@ export default function CreateDiscordThread({
   actionMode,
   action,
   collection,
+  manualAction,
+  handleClose,
 }: Props) {
   const { origin } = useLocation();
+  const { setLocalCollection, localCollection } = useLocalCollection();
+  const router = useRouter();
+  const [linking, setLinking] = useState(false);
   const [threadName, setThreadName] = useState(action?.data?.threadName || "");
   const [channelOptions, setChannelOptions] = useState<Option[]>([]);
   const [selectedChannel, setSelectedChannel] = useState<Option>(
@@ -161,24 +172,39 @@ export default function CreateDiscordThread({
       <Box marginTop="2" marginBottom="2">
         <Text variant="label">Thread Name</Text>
       </Box>
-      <CreatableDropdown
-        options={
-          Object.entries(collection.properties)
-            .filter(([propertyId, property]) => property.type === "shortText")
-            .map(([propertyId, property]) => ({
-              label: `Map from value in "${property.name}"`,
-              value: property.name,
-            })) || []
-        }
-        selected={threadName}
-        onChange={(value) => {
-          if (collection.properties[value.value]) setThreadNameType("mapping");
-          else setThreadNameType("value");
-          setThreadName(value);
-        }}
-        multiple={false}
-        portal={false}
-      />
+      {!manualAction && (
+        <CreatableDropdown
+          options={
+            Object.entries(collection.properties)
+              .filter(([propertyId, property]) => property.type === "shortText")
+              .map(([propertyId, property]) => ({
+                label: `Map from value in "${property.name}"`,
+                value: property.name,
+              })) || []
+          }
+          selected={threadName}
+          onChange={(value) => {
+            if (collection.properties[value.value])
+              setThreadNameType("mapping");
+            else setThreadNameType("value");
+            setThreadName(value);
+          }}
+          multiple={false}
+          portal={false}
+        />
+      )}
+      {manualAction && (
+        <Input
+          label
+          hideLabel
+          onChange={(e) => {
+            setThreadName(e.target.value);
+            setThreadNameType("value");
+          }}
+          value={threadName}
+          placeholder="Card Name or whatever else"
+        />
+      )}
       <Box marginTop="4">
         <Text variant="label">Create Thread on this Channel</Text>
       </Box>
@@ -301,7 +327,11 @@ export default function CreateDiscordThread({
                 setAddStakeholder(!addStakeholder);
               }}
             />
-            <Text variant="small">Add stakeholders from cards dynamically</Text>
+            <Text variant="small">
+              {manualAction
+                ? `Add stakeholders from this card`
+                : `Add stakeholders from cards dynamically`}
+            </Text>
           </Box>
         )}
         {addStakeholder &&
@@ -353,6 +383,50 @@ export default function CreateDiscordThread({
             </>
           )}
       </Box>
+      {manualAction && (
+        <Box
+          display="flex"
+          flexDirection="row"
+          gap="2"
+          justifyContent="flex-end"
+          alignItems="center"
+          marginTop="4"
+        >
+          {" "}
+          <Box width="48">
+            <PrimaryButton
+              loading={linking}
+              onClick={async () => {
+                setLinking(true);
+
+                try {
+                  const res = await linkDiscord(
+                    collection.id,
+                    router.query.cardSlug as string,
+                    {
+                      threadName,
+                      selectedChannel,
+                      isPrivate,
+                      rolesToAdd: selectedRoles,
+                      stakeholdersToAdd,
+                    }
+                  );
+                  if (!res.error) {
+                    setLocalCollection(res);
+                    if (handleClose) handleClose();
+                  }
+                } catch (e) {
+                  toast.error("Something went wrong while linking discord");
+                  console.log(e);
+                }
+                setLinking(false);
+              }}
+            >
+              Link Discord
+            </PrimaryButton>
+          </Box>
+        </Box>
+      )}
     </Box>
   );
 }

@@ -137,7 +137,6 @@ export default function SelectComponent({
         }),
         multiValue: (styles, { data }) => {
           //const color = chroma(data.color);
-          console.log({ data });
           return {
             border: `solid 2px ${data.color || "rgb(191, 90, 242, 0.1)"}`,
             borderRadius: "12px",

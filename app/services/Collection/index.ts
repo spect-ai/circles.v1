@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Property, CollectionType } from "@/app/types";
+import { Property, CollectionType, Option } from "@/app/types";
 
 export const addField = async (
   collectionId: string,
@@ -413,5 +413,31 @@ export const importFromCsv = async (payload: {
       credentials: "include",
       body: JSON.stringify(payload),
     })
+  ).json();
+};
+
+export const linkDiscord = async (
+  collectionId: string,
+  dataId: string,
+  payload: {
+    threadName: string;
+    selectedChannel: Option;
+    isPrivate: boolean;
+    rolesToAdd: { [key: string]: boolean };
+    stakeholdersToAdd: string[];
+  }
+) => {
+  return await (
+    await fetch(
+      `${process.env.API_HOST}/collection/v1/${collectionId}/linkDiscord?dataId=${dataId}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify(payload),
+      }
+    )
   ).json();
 };

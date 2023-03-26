@@ -2,6 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import Drawer from "@/app/common/components/Drawer";
 import Editor from "@/app/common/components/Editor";
+import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { reorder } from "@/app/common/utils/utils";
 import {
@@ -9,7 +10,7 @@ import {
   updateCollectionDataGuarded,
   updateFormCollection,
 } from "@/app/services/Collection";
-import { MemberDetails, Option } from "@/app/types";
+import { Action, MemberDetails, Option } from "@/app/types";
 import {
   CheckCircleOutlined,
   ClockCircleOutlined,
@@ -47,6 +48,7 @@ import { useQuery } from "react-query";
 import { toast } from "react-toastify";
 import styled from "styled-components";
 import AddField from "../../Collection/AddField";
+import CreateDiscordThread from "../../Collection/Automation/Actions/CreateDiscordThread";
 import { SnapshotModal } from "../../Collection/Common/SnapshotModal";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
 import SnapshotVoting from "../../Collection/Form/DataDrawer/VotingOnSnapshot";
@@ -67,6 +69,7 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
 
   const [value, setValue] = useState<any>(defaultValue || {});
   const [snapshotModal, setSnapshotModal] = useState(false);
+  const [discordThreadModal, setDiscordThreadModal] = useState(false);
 
   const [isAddFieldOpen, setIsAddFieldOpen] = useState(false);
   const [isDirty, setIsDirty] = useState(false);
@@ -376,6 +379,7 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
                       cardSlug={value.slug}
                       setSnapshotModal={setSnapshotModal}
                       onChange={onChange}
+                      setDiscordThreadModal={setDiscordThreadModal}
                     />
                   )}
                 </Stack>
@@ -601,6 +605,30 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
               dataId={value.slug}
               setSnapshotModal={setSnapshotModal}
             />
+          )}
+        </AnimatePresence>
+        <AnimatePresence>
+          {discordThreadModal && (
+            <Modal
+              title="Link Discord Thread"
+              handleClose={() => {
+                setDiscordThreadModal(false);
+              }}
+              size="small"
+            >
+              <Box paddingX="8" paddingY="4">
+                <CreateDiscordThread
+                  collection={collection}
+                  actionMode="create"
+                  action={{} as Action}
+                  setAction={() => {}}
+                  manualAction={true}
+                  handleClose={() => {
+                    setDiscordThreadModal(false);
+                  }}
+                />
+              </Box>
+            </Modal>
           )}
         </AnimatePresence>
       </Drawer>

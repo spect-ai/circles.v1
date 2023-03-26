@@ -4,6 +4,7 @@ import {
   IconCheck,
   IconClose,
   IconLightningBolt,
+  IconLockClosed,
   IconRefresh,
   Stack,
   Tag,
@@ -20,6 +21,7 @@ import {
   ClockCircleOutlined,
   DollarOutlined,
   IssuesCloseOutlined,
+  UnlockOutlined,
 } from "@ant-design/icons";
 import { addPendingPayment } from "@/app/services/Paymentv2";
 import { useCircle } from "../../Circle/CircleContext";
@@ -31,6 +33,7 @@ type Props = {
   handleDrawerClose: () => void;
   cardSlug: string;
   setSnapshotModal: (value: boolean) => void;
+  setDiscordThreadModal: (value: boolean) => void;
   onChange: (data: any, slug: string) => Promise<void>;
 };
 
@@ -38,6 +41,7 @@ export default function CardOptions({
   handleDrawerClose,
   cardSlug,
   setSnapshotModal,
+  setDiscordThreadModal,
   onChange,
 }: Props) {
   const { address } = useAccount();
@@ -131,7 +135,7 @@ export default function CardOptions({
                     );
                     return;
                   }
-                  setSnapshotModal(true);
+                  setDiscordThreadModal(true);
                 }}
               >
                 <Stack direction="horizontal" align="center" space="2">
@@ -248,14 +252,21 @@ export default function CardOptions({
               <Stack direction="horizontal" align="center" space="2">
                 {!(collection.data?.[cardSlug]?.__cardStatus__ === "closed") ? (
                   <>
-                    <IconCheck color={"accent"} size="5" />
+                    <IconLockClosed color={"accent"} size="5" />
                     <Text align={"left"}>Close Card</Text>
                   </>
                 ) : (
-                  <>
-                    <IconRefresh color={"accent"} size="5" />
-                    <Text align={"left"}>Re-open Card</Text>
-                  </>
+                  <Box
+                    marginLeft="0.5"
+                    display="flex"
+                    flexDirection="row"
+                    gap="2"
+                  >
+                    <Text color="accent">
+                      <UnlockOutlined />
+                    </Text>
+                    <Text>Re-open Card</Text>
+                  </Box>
                 )}
               </Stack>
             </MenuItem>
