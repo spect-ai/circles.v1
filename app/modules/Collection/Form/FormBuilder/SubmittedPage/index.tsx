@@ -38,7 +38,9 @@ const SubmittedPage = ({
         <Stack direction="horizontal">
           <Image src="/spectForm.gif" width="512" height="512" />
           <Stack align={"center"}>
-            <Text variant="label">Powered By</Text>
+            <Text variant="label" align="center">
+              Powered By
+            </Text>
             <a
               href="https://spect.network/"
               target="_blank"
@@ -60,7 +62,7 @@ const SubmittedPage = ({
                 />
               )}
             </a>{" "}
-            <Text variant="large">
+            <Text variant="large" align="center">
               💪 Powerful Web3 Forms, Projects and Automations 🤝
             </Text>
             <a href="/" target="_blank">
