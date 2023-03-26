@@ -1,15 +1,14 @@
 import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { Box, IconCheck, Input, MediaPicker, Stack, Text } from "degen";
+import { Box, IconCheck, MediaPicker, Stack, Text } from "degen";
 import { AnimatePresence } from "framer-motion";
-import React, { useState } from "react";
+import { useState } from "react";
 import csvToJson from "csvtojson";
 import MapField from "./MapField";
 import { Property } from "@/app/types";
 import Dropdown from "@/app/common/components/Dropdown";
 import { convertToId, isEmail, isURL } from "@/app/common/utils/utils";
 import { useCircle } from "../CircleContext";
-import { useRouter } from "next/router";
 import { toast } from "react-toastify";
 import { isAddress } from "ethers/lib/utils";
 import { importFromCsv } from "@/app/services/Collection";
@@ -116,7 +115,6 @@ export default function ImportTasks({}: Props) {
                       loading={loading}
                       onClick={() => {
                         setStep(step + 1);
-                        console.log({ properties });
                         // find a property called status or Status in the properties and set it as default group by column
                         const defaultGroupByColumn = Object.keys(
                           properties
