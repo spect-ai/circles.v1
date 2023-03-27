@@ -173,6 +173,12 @@ export function useProviderLocalCollection() {
           }
 
           if (res.data) {
+            res.data.parents = [
+              {
+                ...res.data.parents[0],
+                description: "",
+              },
+            ];
             setLocalCollection(res.data);
             if (res.data.collectionType === 1) {
               setProjectViewId(res.data.projectMetadata.viewOrder[0]);

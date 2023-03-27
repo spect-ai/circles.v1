@@ -125,7 +125,7 @@ const CollectERC20 = ({ form, setClaimedJustNow, preview }: Props) => {
       }}
       gap="4"
       marginTop="8"
-      padding="2"
+      padding="0"
     >
       {form.formMetadata?.surveyTokenId && (
         <Box
@@ -138,7 +138,6 @@ const CollectERC20 = ({ form, setClaimedJustNow, preview }: Props) => {
             xl: "1/2",
           }}
         >
-          {" "}
           <StyledImage
             src={
               "https://ik.imagekit.io/spectcdn/moneybagethereummb3dmodel001.jpg?ik-sdk-version=javascript-1.4.3&updatedAt=1676107655114"
@@ -273,83 +272,80 @@ const CollectERC20 = ({ form, setClaimedJustNow, preview }: Props) => {
                 </Text>
               </Stack>
             )}
-          {(form.formMetadata?.previousResponses?.length > 0 &&
-            form.formMetadata?.surveyTokenId &&
-            !surveyIsLotteryYetToBeDrawn &&
-            !escrowHasInsufficientBalance) ||
-            (form.formMetadata?.surveyTokenId && preview && (
-              <Stack direction="horizontal" align="flex-start">
-                <Text variant="extraLarge" weight="bold">
-                  👉
-                </Text>
-                <Stack>
-                  <Text weight="semiBold" variant="large">
-                    {form.formMetadata.surveyDistributionType === 1
-                      ? distributionInfo?.amountPerResponse
-                        ? `You are eligible to receive ${ethers.utils.formatEther(
-                            distributionInfo?.amountPerResponse?.toString()
-                          )} ${
-                            form.formMetadata.surveyToken?.label
-                          } for submitting a response
+          {(preview ||
+            (form.formMetadata?.previousResponses?.length > 0 &&
+              form.formMetadata?.surveyTokenId &&
+              !surveyIsLotteryYetToBeDrawn &&
+              !escrowHasInsufficientBalance)) && (
+            <Stack direction="horizontal" align="flex-start" wrap>
+              <Stack>
+                <Text weight="semiBold" variant="large">
+                  {form.formMetadata.surveyDistributionType === 1
+                    ? distributionInfo?.amountPerResponse
+                      ? `You are eligible to receive ${ethers.utils.formatEther(
+                          distributionInfo?.amountPerResponse?.toString()
+                        )} ${
+                          form.formMetadata.surveyToken?.label
+                        } for submitting a response
             💰`
-                        : `You are eligible to receive tokens 💰`
-                      : `You are eligible to receive ${form.formMetadata.surveyTotalValue} ${form.formMetadata.surveyToken?.label} for submitting a response 💰`}
+                      : `You are eligible to receive tokens 💰`
+                    : `You are eligible to receive ${form.formMetadata.surveyTotalValue} ${form.formMetadata.surveyToken?.label} for submitting a response 💰`}
+                </Text>
+                {!canClaimSurveyToken && (
+                  <Text variant="small">
+                    It takes a few seconds for your response to be processed
+                    after which you will be able to claim your tokens.
                   </Text>
-                  {!canClaimSurveyToken && (
-                    <Text variant="small">
-                      It takes a few seconds for your response to be processed,
-                      after which you will be able to claim your tokens.
-                    </Text>
-                  )}
-                  <Box
-                    width={{
-                      xs: "48",
-                      md: "72",
-                    }}
-                  >
-                    {" "}
-                    <PrimaryButton
-                      loading={claiming}
-                      disabled={canClaimSurveyToken ? false : true}
-                      onClick={async () => {
-                        setClaiming(true);
-                        try {
-                          const res = await fetch(
-                            `${process.env.API_HOST}/collection/v1/${form?.id}/claimSurveyTokens`,
-                            {
-                              method: "PATCH",
-                              headers: {
-                                "Content-Type": "application/json",
-                              },
-                              credentials: "include",
-                            }
-                          );
-
-                          console.log(res);
-                          if (res.ok) {
-                            const data = await res.json();
-                            setSurveyTokenClaimed(true);
-                            setClaimedJustNow(true);
-                            setSurveyTokenClaimTransactionHash(
-                              data.transactionHash
-                            );
+                )}
+                <Box
+                  width={{
+                    xs: "48",
+                    md: "72",
+                  }}
+                >
+                  {" "}
+                  <PrimaryButton
+                    loading={claiming}
+                    disabled={canClaimSurveyToken ? false : true}
+                    onClick={async () => {
+                      setClaiming(true);
+                      try {
+                        const res = await fetch(
+                          `${process.env.API_HOST}/collection/v1/${form?.id}/claimSurveyTokens`,
+                          {
+                            method: "PATCH",
+                            headers: {
+                              "Content-Type": "application/json",
+                            },
+                            credentials: "include",
                           }
-                        } catch (e) {
-                          console.log(e);
-                          toast.error(
-                            "Something went wrong, please try again later"
+                        );
+
+                        console.log(res);
+                        if (res.ok) {
+                          const data = await res.json();
+                          setSurveyTokenClaimed(true);
+                          setClaimedJustNow(true);
+                          setSurveyTokenClaimTransactionHash(
+                            data.transactionHash
                           );
                         }
+                      } catch (e) {
+                        console.log(e);
+                        toast.error(
+                          "Something went wrong, please try again later"
+                        );
+                      }
 
-                        setClaiming(false);
-                      }}
-                    >
-                      Claim Token
-                    </PrimaryButton>
-                  </Box>
-                </Stack>
+                      setClaiming(false);
+                    }}
+                  >
+                    Claim Token
+                  </PrimaryButton>
+                </Box>
               </Stack>
-            ))}
+            </Stack>
+          )}
         </Box>
       )}
     </Box>
@@ -360,7 +356,7 @@ const StyledImage = styled.img`
   @media (max-width: 768px) {
     width: 16rem;
   }
-  width: 20rem;
+  width: 100%;
 `;
 
 export default CollectERC20;
