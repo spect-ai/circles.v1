@@ -1,4 +1,4 @@
-import { Box, Button, Stack, useTheme } from "degen";
+import { Box, Stack, useTheme } from "degen";
 import { AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import { ToastContainer } from "react-toastify";
@@ -8,11 +8,11 @@ import { useLocalCollection } from "./Context/LocalCollectionContext";
 import { Form } from "./Form";
 import TableView from "./TableView";
 import FAQModal from "../Dashboard/FAQModal";
-import { QuestionCircleOutlined } from "@ant-design/icons";
 import { useRouter } from "next/router";
-import Loader from "@/app/common/components/Loader";
 import { SkeletonLoader } from "./SkeletonLoader";
 import Help from "@/app/common/components/Help";
+import PrimaryButton from "@/app/common/components/PrimaryButton";
+import { migrateAllCOllections } from "@/app/services/Collection";
 
 export function Collection() {
   const {

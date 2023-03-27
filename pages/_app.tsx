@@ -37,7 +37,7 @@ import "react-tippy/dist/tippy.css";
 import { AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
 import queryClient from "@/app/common/utils/queryClient";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import ErrorFallBack from "@/app/common/components/Error";
 import * as gtag from "../lib/gtag";
@@ -45,7 +45,6 @@ import * as gtag from "../lib/gtag";
 import "@rainbow-me/rainbowkit/styles.css";
 
 import {
-  getDefaultWallets,
   RainbowKitProvider,
   darkTheme,
   createAuthenticationAdapter,
@@ -53,11 +52,10 @@ import {
   connectorsForWallets,
 } from "@rainbow-me/rainbowkit";
 import { configureChains, createClient, useAccount, WagmiConfig } from "wagmi";
-import { alchemyProvider } from "wagmi/providers/alchemy";
 import { publicProvider } from "wagmi/providers/public";
 import { SiweMessage } from "siwe";
 import { UserType } from "@/app/types";
-import { atom, useAtom } from "jotai";
+import { useAtom } from "jotai";
 import { flags } from "@/app/common/utils/featureFlags";
 
 import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
@@ -152,7 +150,6 @@ const { chains, provider } = configureChains(
   [
     jsonRpcProvider({
       rpc: (chain) => {
-        console.log({ chain });
         return nodes[chain.id.toString()];
       },
     }),
@@ -276,7 +273,7 @@ function MyApp({ Component, pageProps }: AppProps) {
     };
   }, [router.events]);
 
-  const { hostname, pathname } = useLocation();
+  const { hostname } = useLocation();
 
   const client = new ApolloClient({
     uri: hostname?.startsWith("circles")

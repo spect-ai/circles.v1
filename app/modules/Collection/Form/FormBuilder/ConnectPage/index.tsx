@@ -327,8 +327,8 @@ const ConnectPage = ({ form, setForm, currentPage, setCurrentPage }: Props) => {
                       return;
                     }
                     if (
-                      form.formMetadata.hasRole &&
-                      form.formMetadata.formRoleGating
+                      form.formMetadata.formRoleGating &&
+                      !form.formMetadata.hasRole
                     ) {
                       toast.error(
                         "You do not have the correct roles to access this form"
