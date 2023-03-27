@@ -98,6 +98,43 @@ const ArcanaRainbowConnector = ({ chains }: any) => {
 
 const isProd = process.env.NODE_ENV === "production";
 
+const nodes = {
+  "1": {
+    http: `https://eth-mainnet.g.alchemy.com/v2/97jAndtiByElrpSUeLEP7oZsXl-1V675`,
+    webSocket: `wss://eth-mainnet.g.alchemy.com/v2/97jAndtiByElrpSUeLEP7oZsXl-1V675`,
+  },
+  "137": {
+    http: `https://rpc.ankr.com/polygon`,
+  },
+  "10": {
+    http: `https://rpc.ankr.com/optimism`,
+  },
+  "42161": {
+    http: `https://rpc.ankr.com/arbitrum`,
+  },
+  "5": {
+    http: `https://eth-goerli.g.alchemy.com/v2/0wWffTxNefWtkV482CskpmcyKsV1hZGs`,
+  },
+  "80001": {
+    http: `https://rpc.ankr.com/polygon_mumbai`,
+  },
+  "43114": {
+    http: `https://rpc.ankr.com/avalanche-c`,
+  },
+  "56": {
+    http: `https://rpc.ankr.com/bsc`,
+  },
+  "100": {
+    http: `https://rpc.ankr.com/gnosis`,
+  },
+  "43113": {
+    http: `https://api.avax-test.network/ext/bc/C/rpc`,
+  },
+  "250": {
+    http: `https://rpc.ankr.com/fantom`,
+  },
+} as { [key: string]: { http: string; webSocket?: string } };
+
 const { chains, provider } = configureChains(
   [
     mainnet,
@@ -114,40 +151,10 @@ const { chains, provider } = configureChains(
   ],
   [
     jsonRpcProvider({
-      rpc: (chain) => ({
-        http: `https://rpc.ankr.com/polygon_mumbai`,
-        //webSocket: `wss://${chain.id}.example.com`,
-      }),
-    }),
-    jsonRpcProvider({
-      rpc: (chain) => ({
-        http: `https://rpc.ankr.com/polygon`,
-        //webSocket: `wss://${chain.id}.example.com`,
-      }),
-    }),
-    jsonRpcProvider({
-      rpc: (chain) => ({
-        http: `https://rpc.ankr.com/eth_goerli`,
-        //webSocket: `wss://${chain.id}.example.com`,
-      }),
-    }),
-    jsonRpcProvider({
-      rpc: (chain) => ({
-        http: `https://polygon-mainnet.g.alchemy.com/v2/4-JPlsG4kwL1WlCm4d-kkSPk0jdpwnGe`,
-        webSocket: `wss://polygon-mainnet.g.alchemy.com/v2/4-JPlsG4kwL1WlCm4d-kkSPk0jdpwnGe`,
-      }),
-    }),
-    jsonRpcProvider({
-      rpc: (chain) => ({
-        http: `https://polygon-mumbai.g.alchemy.com/v2/baAogMeHa5t8CA6fsZZej2MIEnNfdUsv`,
-        webSocket: `wss://polygon-mumbai.g.alchemy.com/v2/baAogMeHa5t8CA6fsZZej2MIEnNfdUsv`,
-      }),
-    }),
-    jsonRpcProvider({
-      rpc: (chain) => ({
-        http: `https://eth-goerli.g.alchemy.com/v2/0wWffTxNefWtkV482CskpmcyKsV1hZGs`,
-        webSocket: `wss://eth-goerli.g.alchemy.com/v2/0wWffTxNefWtkV482CskpmcyKsV1hZGs`,
-      }),
+      rpc: (chain) => {
+        console.log({ chain });
+        return nodes[chain.id.toString()];
+      },
     }),
     publicProvider(),
   ]

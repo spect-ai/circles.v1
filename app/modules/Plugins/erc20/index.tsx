@@ -10,6 +10,7 @@ import { ethers } from "ethers";
 import { AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
+import { toast } from "react-toastify";
 import { useCircle } from "../../Circle/CircleContext";
 import AddToken from "../../Circle/CircleSettingsModal/CirclePayment/AddToken";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
@@ -355,52 +356,67 @@ export default function DistributeERC20({
                   valuePerResponse === 0)
               }
               onClick={async () => {
-                if (!registry) return;
-                if (
-                  selectedToken?.value !== "0x0" &&
-                  !currentUser?.ethAddress
-                ) {
-                  console.log("no eth address");
-                  return;
-                }
-                setIsLoading(true);
-                const tx = await createSurvey(
-                  selectedNetwork.value,
-                  registry[selectedNetwork.value].surveyHubAddress,
-                  selectedToken?.value,
-                  paymentType?.value === "payPerResponse" ? 1 : 0,
-                  value,
-                  currentUser?.ethAddress || "",
-                  valuePerResponse,
-                  minTimestamp,
-                  minResponses
-                );
-                if (!tx) {
+                try {
+                  if (!registry) return;
+                  if (
+                    selectedToken?.value !== "0x0" &&
+                    !currentUser?.ethAddress
+                  ) {
+                    console.log("no eth address");
+                    return;
+                  }
+
+                  const tx = await createSurvey(
+                    selectedNetwork.value,
+                    registry[selectedNetwork.value].surveyHubAddress,
+                    selectedToken?.value,
+                    paymentType?.value === "payPerResponse" ? 1 : 0,
+                    value,
+                    currentUser?.ethAddress || "",
+                    valuePerResponse,
+                    minTimestamp,
+                    minResponses
+                  );
+                  if (!tx) {
+                    setIsLoading(false);
+                    return;
+                  }
+                  console.log({ tx });
+                  let lastSurveyId;
+                  try {
+                    lastSurveyId = await getLastSurveyId(
+                      registry[selectedNetwork.value].surveyHubAddress,
+                      selectedNetwork?.value
+                    );
+                    console.log({ lastSurveyId });
+                  } catch (err) {
+                    console.log("Unable to fetch last survey with error", err);
+                    toast.error(
+                      "Plugin was added, but something went wrong while fetching the survey id. Please contact support."
+                    );
+                  }
+
+                  const res = await updateFormCollection(collection.id, {
+                    formMetadata: {
+                      ...collection.formMetadata,
+                      surveyTokenId: lastSurveyId,
+                      surveyChain: selectedNetwork,
+                      surveyToken: selectedToken,
+                      surveyTotalValue: value,
+                      surveyDistributionType:
+                        paymentType?.value === "payPerResponse" ? 1 : 0,
+                      walletConnectionRequired: true,
+                    },
+                  });
+                  updateCollection(res);
+                  console.log({ res });
                   setIsLoading(false);
-                  return;
+                  if (res) handleClose();
+                } catch (e) {
+                  console.log(e);
+                  setIsLoading(false);
+                  toast.error("Something went wrong");
                 }
-                console.log({ tx });
-                const lastSurveyId = await getLastSurveyId(
-                  registry[selectedNetwork.value].surveyHubAddress,
-                  selectedNetwork?.value
-                );
-                console.log({ lastSurveyId });
-                const res = await updateFormCollection(collection.id, {
-                  formMetadata: {
-                    ...collection.formMetadata,
-                    surveyTokenId: lastSurveyId,
-                    surveyChain: selectedNetwork,
-                    surveyToken: selectedToken,
-                    surveyTotalValue: value,
-                    surveyDistributionType:
-                      paymentType?.value === "payPerResponse" ? 1 : 0,
-                    walletConnectionRequired: true,
-                  },
-                });
-                updateCollection(res);
-                console.log({ res });
-                setIsLoading(false);
-                if (res) handleClose();
               }}
             >
               Confirm
