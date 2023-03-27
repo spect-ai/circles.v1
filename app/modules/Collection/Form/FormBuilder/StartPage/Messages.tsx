@@ -45,7 +45,7 @@ export default function Messages({ form }: Props) {
       {form.formMetadata.sybilProtectionEnabled && (
         <Text weight="semiBold">✋ This form is Sybil protected</Text>
       )}
-      {form.formMetadata.walletConnectionRequired && (
+      {form.formMetadata.pages["connect"] && (
         <Box display="flex" flexDirection="row" gap="2">
           <Text weight="semiBold" color="accent">
             <WalletOutlined />

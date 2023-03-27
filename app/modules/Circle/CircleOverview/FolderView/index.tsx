@@ -1,12 +1,12 @@
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
-import { CircleType, ProjectType, RetroType } from "@/app/types";
+import { CircleType, ProjectType } from "@/app/types";
 import {
   DragDropContext,
   Droppable,
   DroppableProvided,
 } from "react-beautiful-dnd";
 import { Box, Stack } from "degen";
-import React, { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useCircle } from "../../CircleContext";
 import Folder from "./folder";
 import useDragFolder from "./useDragHook";
@@ -42,7 +42,7 @@ const ScrollContainer = styled(Box)`
   @media (max-width: 768px) {
     height: calc(100vh - 12rem);
   }
-  height: calc(100vh - 10rem);
+  height: calc(100vh - 4rem);
 `;
 
 export const FolderView = ({

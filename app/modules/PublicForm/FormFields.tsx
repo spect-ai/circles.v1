@@ -59,12 +59,13 @@ function FormFields({ form, setForm }: Props) {
   const [updateResponse, setUpdateResponse] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [connectedUser] = useAtom(connectedUserAtom);
-  const [loading, setLoading] = useState(false);
 
   const { onSaveProfile, email, setEmail } = useProfile();
   const [emailModalOpen, setEmailModalOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [respondAsAnonymous, setRespondAsAnonymous] = useState(false);
+  const [respondAsAnonymous, setRespondAsAnonymous] = useState(
+    form?.formMetadata.allowAnonymousResponses || false
+  );
   const [notificationPreferenceModalOpen, setNotificationPreferenceModalOpen] =
     useState(false);
   const { data: currentUser } = useQuery<UserType>("getMyUser", getUser, {
@@ -142,7 +143,6 @@ function FormFields({ form, setForm }: Props) {
       const tempData: any = {};
       console.log({ form: form.formMetadata, submitted });
       if (form?.formMetadata.previousResponses?.length > 0 && submitted) {
-        setLoading(true);
         const lastResponse =
           form.formMetadata.previousResponses[
             form.formMetadata.previousResponses.length - 1
@@ -185,36 +185,7 @@ function FormFields({ form, setForm }: Props) {
           }
         });
       }
-      // else {
-      //   const tempData: any = {};
-      //   setRespondAsAnonymous(form.formMetadata.allowAnonymousResponses);
-      //   form.propertyOrder.forEach((propertyId) => {
-      //     if (
-      //       [
-      //         "longText",
-      //         "shortText",
-      //         "ethAddress",
-      //         "user",
-      //         "date",
-      //         "number",
-      //       ].includes(form.properties[propertyId].type)
-      //     ) {
-      //       tempData[propertyId] = "";
-      //     } else if (form.properties[propertyId].type === "singleSelect") {
-      //       // @ts-ignore
-      //       tempData[propertyId] = {};
-      //     } else if (
-      //       ["multiSelect", "user[]"].includes(form.properties[propertyId].type)
-      //     ) {
-      //       tempData[propertyId] = [];
-      //     }
-      //   });
-      // }
-      // only if tempdata is not an empty object
       if (Object.keys(tempData).length > 0) setData(tempData);
-      setTimeout(() => {
-        setLoading(false);
-      }, 100);
     }
   }, [form, updateResponse, submitted]);
 
@@ -298,7 +269,6 @@ function FormFields({ form, setForm }: Props) {
       return;
     }
     if (!checkValue(data)) return;
-
     setSubmitting(true);
 
     if (updateResponse) {
@@ -308,13 +278,13 @@ function FormFields({ form, setForm }: Props) {
         ];
       res = await updateCollectionData(form.id || "", lastResponse.slug, {
         ...data,
-        anonymous: respondAsAnonymous,
+        anonymous: form.formMetadata.allowAnonymousResponses,
       });
     } else {
       res = await addData(
         form.id || "",
         data,
-        !connectedUser ? true : respondAsAnonymous
+        !connectedUser ? true : form.formMetadata.allowAnonymousResponses
       );
     }
     const resAfterSave = await getForm(form.slug);
@@ -450,7 +420,6 @@ function FormFields({ form, setForm }: Props) {
               form={form as CollectionType}
               setCurrentPage={setCurrentPage}
               setForm={setForm}
-              setLoading={setLoading}
             />
           );
         } else if (currentPage === "connect" && form) {

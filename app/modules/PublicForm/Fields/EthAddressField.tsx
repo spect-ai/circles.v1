@@ -1,5 +1,5 @@
 import { Input } from "degen";
-import React, { useState } from "react";
+import { useState } from "react";
 import { fetchEnsAddress } from "@wagmi/core";
 import { ethers } from "ethers";
 
@@ -24,7 +24,7 @@ export default function EthAddressField({ value, onChange, disabled }: Props) {
             name: value,
             chainId: 1,
           }).then((address) => {
-            console.log(address);
+            console.log({ address });
             if (
               !address ||
               !ethers.utils.isAddress(address) ||

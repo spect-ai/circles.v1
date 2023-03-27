@@ -13,10 +13,9 @@ type Props = {
   form: CollectionType | undefined;
   setForm: (form: CollectionType | FormType) => void;
   setCurrentPage: (page: string) => void;
-  setLoading: (loading: boolean) => void;
 };
 
-const StartPage = ({ form, setCurrentPage, setLoading, setForm }: Props) => {
+const StartPage = ({ form, setCurrentPage, setForm }: Props) => {
   const router = useRouter();
   const { formId } = router.query;
 
@@ -26,12 +25,10 @@ const StartPage = ({ form, setCurrentPage, setLoading, setForm }: Props) => {
     void (async () => {
       console.log("formId", formId);
       if (formId) {
-        setLoading(true);
         const res: FormType = await getForm(formId as string);
         if (res.id) {
           setForm(res);
         } else toast.error("Error fetching form");
-        setLoading(false);
       }
     })();
   }, [formId]);
