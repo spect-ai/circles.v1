@@ -39,9 +39,11 @@ const SidebarConfig = (props: Props) => {
 
   if (!circle) return null;
   return (
-    <Box padding="8">
+    <Box>
       <Stack>
-        <Heading>Sidebar Config</Heading>
+        <Text variant="extraLarge" weight="bold">
+          Sidebar Config
+        </Text>
         <Stack direction="horizontal">
           <CheckBox
             isChecked={showPayment}

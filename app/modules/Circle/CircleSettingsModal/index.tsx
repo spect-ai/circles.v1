@@ -102,7 +102,6 @@ export default function SettingsModal({ handleClose, initialTab }: Props) {
               "Info",
               "Integrations",
               "Sidebar",
-              "Credentials",
               "Roles",
               "Payments",
               "Archive",
@@ -111,7 +110,6 @@ export default function SettingsModal({ handleClose, initialTab }: Props) {
               "circle-settings-info",
               "circle-settings-integrations",
               "circle-settings-sidebar",
-              "circle-settings-credentials",
               "circle-settings-roles",
               "circle-settings-payments",
               "circle-settings-delete",
@@ -185,10 +183,10 @@ export default function SettingsModal({ handleClose, initialTab }: Props) {
           )}
           {tab === 1 && <CircleIntegrations />}
           {tab === 2 && <SidebarConfig />}
-          {tab === 3 && <Credentials />}
-          {tab === 4 && <Roles />}
-          {tab === 5 && <DefaultPayment />}
-          {tab === 6 && (
+          {/* {tab === 3 && <Credentials />} */}
+          {tab === 3 && <Roles />}
+          {tab === 4 && <DefaultPayment />}
+          {tab === 5 && (
             <Box width="full">
               <Stack>
                 <Box>

@@ -110,7 +110,7 @@ export default function GuildRoleMapping() {
           else setIsOpen(true);
         }}
       >
-        Map guild.xyz Roles
+        Map Guild.xyz Roles
       </PrimaryButton>
       <AnimatePresence>
         {isOpen && (

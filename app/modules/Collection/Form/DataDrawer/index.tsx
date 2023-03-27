@@ -12,6 +12,7 @@ import {
   Tag,
   Text,
   Avatar as DefaultAvatar,
+  useTheme,
 } from "degen";
 import { motion } from "framer-motion";
 import { useRouter } from "next/router";
@@ -36,6 +37,7 @@ export default function DataDrawer({
 }: props) {
   const { localCollection: collection, updateCollection } =
     useLocalCollection();
+  const { mode } = useTheme();
 
   const { registry } = useCircle();
 
@@ -176,211 +178,206 @@ export default function DataDrawer({
                             </Text>
                           )}
                         </Stack>
-                        {[
-                          "shortText",
-                          "ethAddress",
-                          "email",
-                          "number",
-                        ].includes(property.type) && (
-                          <Text size="small">
-                            {data[property.id || property.name]}
-                          </Text>
-                        )}
-                        {property?.type === "longText" && (
-                          <Editor value={data[property.name]} disabled />
-                        )}
-                        {property?.type == "singleURL" && (
-                          <Box
-                            onClick={() =>
-                              window.open(data[property.name], "_blank")
-                            }
-                            cursor="pointer"
-                          >
-                            <Text>{data[property.name]}</Text>
-                          </Box>
-                        )}
-                        {property?.type == "multiURL" && (
-                          <Stack direction="vertical">
-                            {data[property.name]?.map((url: OptionType) => (
-                              <Box key={url.value}>
-                                <Stack direction={"horizontal"}>
-                                  <Text>{url.label}</Text>
-                                  <Text>-</Text>
-                                  <Box
-                                    key={url.value}
-                                    onClick={() =>
-                                      window.open(url.value, "_blank")
-                                    }
-                                    cursor="pointer"
-                                  >
-                                    <Text>{url.value}</Text>
-                                  </Box>
-                                </Stack>
-                              </Box>
-                            ))}
-                          </Stack>
-                        )}
-                        {property?.type === "singleSelect" && (
-                          <Text>{data[property.name]?.label}</Text>
-                        )}
-                        {property?.type === "multiSelect" && (
-                          <Stack space="2" direction="horizontal" wrap>
-                            {data[property.name]?.map((option: OptionType) => (
-                              <Tag key={option.value} tone="accent" hover>
-                                {option.label}
-                              </Tag>
-                            ))}
-                          </Stack>
-                        )}
-                        {property?.type === "user" && (
-                          <Text>{data[property.name]?.label}</Text>
-                        )}
-                        {property?.type === "user[]" && (
-                          <Stack
-                            space="2"
-                            direction="horizontal"
-                            align="baseline"
-                            wrap
-                          >
-                            {data[property.name]?.map((option: OptionType) => (
-                              <Tag key={option.value} tone="accent" hover>
-                                {option.label}
-                              </Tag>
-                            ))}
-                          </Stack>
-                        )}
-                        {property?.type === "date" && (
-                          <Text>{data[property.name]?.toString()}</Text>
-                        )}
-                        {property?.type === "reward" && (
-                          <Text>
-                            {data[property.name]?.value}{" "}
-                            {data[property.name]?.token?.label} on{" "}
-                            {data[property.name]?.chain?.label}
-                          </Text>
-                        )}
-                        {property?.type === "payWall" && (
-                          <Stack>
-                            {[data[property.id || property.name]]?.map(
-                              (payment: {
-                                token: OptionType;
-                                chain: OptionType;
-                                value: number;
-                                txnHash: string;
-                              }) => {
-                                return (
-                                  <Text key={payment.token.label}>
+                        <ResponseFieldCard
+                          mode={mode}
+                          backgroundColor="foregroundTertiary"
+                        >
+                          {[
+                            "shortText",
+                            "ethAddress",
+                            "email",
+                            "number",
+                          ].includes(property.type) && (
+                            <Text size="small">
+                              {data[property.id || property.name]}
+                            </Text>
+                          )}
+                          {property?.type === "longText" && (
+                            <Editor value={data[property.name]} disabled />
+                          )}
+                          {property?.type == "singleURL" && (
+                            <Box
+                              onClick={() =>
+                                window.open(data[property.name], "_blank")
+                              }
+                              cursor="pointer"
+                            >
+                              <Text>{data[property.name]}</Text>
+                            </Box>
+                          )}
+                          {property?.type == "multiURL" && (
+                            <Stack direction="vertical">
+                              {data[property.name]?.map((url: OptionType) => (
+                                <Box key={url.value}>
+                                  <Stack direction={"horizontal"}>
+                                    <Text>{url.label}</Text>
+                                    <Text>-</Text>
+                                    <Box
+                                      key={url.value}
+                                      onClick={() =>
+                                        window.open(url.value, "_blank")
+                                      }
+                                      cursor="pointer"
+                                    >
+                                      <Text>{url.value}</Text>
+                                    </Box>
+                                  </Stack>
+                                </Box>
+                              ))}
+                            </Stack>
+                          )}
+                          {property?.type === "singleSelect" && (
+                            <Text>{data[property.name]?.label}</Text>
+                          )}
+                          {property?.type === "multiSelect" && (
+                            <Stack space="2" direction="horizontal" wrap>
+                              {data[property.name]?.map(
+                                (option: OptionType) => (
+                                  <Tag key={option.value} tone="accent" hover>
+                                    {option.label}
+                                  </Tag>
+                                )
+                              )}
+                            </Stack>
+                          )}
+                          {property?.type === "user" && (
+                            <Text>{data[property.name]?.label}</Text>
+                          )}
+                          {property?.type === "user[]" && (
+                            <Stack
+                              space="2"
+                              direction="horizontal"
+                              align="baseline"
+                              wrap
+                            >
+                              {data[property.name]?.map(
+                                (option: OptionType) => (
+                                  <Tag key={option.value} tone="accent" hover>
+                                    {option.label}
+                                  </Tag>
+                                )
+                              )}
+                            </Stack>
+                          )}
+                          {property?.type === "date" && (
+                            <Text>{data[property.name]?.toString()}</Text>
+                          )}
+                          {property?.type === "reward" && (
+                            <Text>
+                              {data[property.name]?.value}{" "}
+                              {data[property.name]?.token?.label} on{" "}
+                              {data[property.name]?.chain?.label}
+                            </Text>
+                          )}
+                          {property?.type === "payWall" && (
+                            <Stack>
+                              {[data[property.id || property.name]]?.map(
+                                (payment: {
+                                  token: OptionType;
+                                  chain: OptionType;
+                                  value: number;
+                                  txnHash: string;
+                                }) => {
+                                  return (
+                                    <Text key={payment.token.label}>
+                                      <Stack
+                                        direction="horizontal"
+                                        align="center"
+                                        space="0"
+                                      >
+                                        Paid {payment.value}{" "}
+                                        {payment.token.label} on{" "}
+                                        {payment.chain.label}
+                                        <a
+                                          href={`${
+                                            registry?.[payment.chain.value]
+                                              .blockExplorer
+                                          }tx/${payment.txnHash}`}
+                                          target="_blank"
+                                          rel="noreferrer"
+                                          style={{
+                                            marginLeft: "8px",
+                                          }}
+                                        >
+                                          <ExternalLink size={20} />
+                                        </a>
+                                      </Stack>
+                                    </Text>
+                                  );
+                                }
+                              )}
+                              {data[propertyName].length == 0 && "Unpaid"}
+                            </Stack>
+                          )}
+                          {property?.type === "milestone" && (
+                            <Stack>
+                              {data[property.name]?.map(
+                                (milestone: any, index: number) => (
+                                  <Stack key={milestone.id} space="2">
                                     <Stack
                                       direction="horizontal"
-                                      align="center"
-                                      space="0"
+                                      align="baseline"
+                                      wrap
                                     >
-                                      Paid {payment.value} {payment.token.label}{" "}
-                                      on {payment.chain.label}
-                                      <a
-                                        href={`${
-                                          registry?.[payment.chain.value]
-                                            .blockExplorer
-                                        }tx/${payment.txnHash}`}
-                                        target="_blank"
-                                        rel="noreferrer"
-                                        style={{
-                                          marginLeft: "8px",
-                                        }}
+                                      <Text variant="label">
+                                        Milestone {index + 1}
+                                      </Text>
+                                      <Text
+                                        weight="semiBold"
+                                        color="textPrimary"
                                       >
-                                        <ExternalLink size={20} />
-                                      </a>
+                                        {milestone.title}
+                                      </Text>
                                     </Stack>
-                                  </Text>
-                                );
-                              }
-                            )}
-                            {data[propertyName].length == 0 && "Unpaid"}
-                          </Stack>
-                        )}
-                        {property?.type === "milestone" && (
-                          <Stack>
-                            {data[property.name]?.map(
-                              (milestone: any, index: number) => (
-                                <Stack key={milestone.id} space="2">
-                                  <Stack
-                                    direction="horizontal"
-                                    align="baseline"
-                                    wrap
-                                  >
-                                    <Text variant="label">
-                                      Milestone {index + 1}
-                                    </Text>
-                                    <Text weight="semiBold" color="textPrimary">
-                                      {milestone.title}
-                                    </Text>
+                                    <Editor
+                                      value={
+                                        milestone.description ||
+                                        "No description added"
+                                      }
+                                      disabled
+                                    />
+                                    <Stack
+                                      direction="horizontal"
+                                      align="baseline"
+                                      wrap
+                                    >
+                                      <Text variant="label">Reward</Text>
+                                      <Text
+                                        weight="semiBold"
+                                        color="textPrimary"
+                                      >
+                                        {milestone.reward?.value &&
+                                        milestone.reward?.token.label &&
+                                        milestone.reward?.chain.label
+                                          ? `${milestone.reward?.value} ${milestone.reward?.token.label} on ${milestone.reward?.chain.label}`
+                                          : "No reward added"}
+                                      </Text>
+                                    </Stack>
+                                    <Stack
+                                      direction="horizontal"
+                                      align="baseline"
+                                      wrap
+                                    >
+                                      <Text variant="label">Due date</Text>
+                                      <Text
+                                        weight="semiBold"
+                                        color="textPrimary"
+                                      >
+                                        {milestone.dueDate ||
+                                          "No due date added"}
+                                      </Text>
+                                    </Stack>
                                   </Stack>
-                                  <Editor
-                                    value={
-                                      milestone.description ||
-                                      "No description added"
-                                    }
-                                    disabled
-                                  />
-                                  <Stack
-                                    direction="horizontal"
-                                    align="baseline"
-                                    wrap
-                                  >
-                                    <Text variant="label">Reward</Text>
-                                    <Text weight="semiBold" color="textPrimary">
-                                      {milestone.reward?.value &&
-                                      milestone.reward?.token.label &&
-                                      milestone.reward?.chain.label
-                                        ? `${milestone.reward?.value} ${milestone.reward?.token.label} on ${milestone.reward?.chain.label}`
-                                        : "No reward added"}
-                                    </Text>
-                                  </Stack>
-                                  <Stack
-                                    direction="horizontal"
-                                    align="baseline"
-                                    wrap
-                                  >
-                                    <Text variant="label">Due date</Text>
-                                    <Text weight="semiBold" color="textPrimary">
-                                      {milestone.dueDate || "No due date added"}
-                                    </Text>
-                                  </Stack>
-                                </Stack>
-                              )
-                            )}
-                          </Stack>
-                        )}
-                        {property?.type === "discord" && (
-                          <Box padding="0">
-                            <Stack direction="horizontal" align="center">
-                              <DefaultAvatar
-                                label="Discord Avatar"
-                                src={`https://cdn.discordapp.com/avatars/${data[propertyName].id}/${data[propertyName].avatar}.png`}
-                              />
-                              <Box>
-                                <Text
-                                  size="extraSmall"
-                                  font="mono"
-                                  weight="bold"
-                                >
-                                  {data[propertyName].username}
-                                </Text>
-                              </Box>
+                                )
+                              )}
                             </Stack>
-                          </Box>
-                        )}
-                        {property?.type === "github" && (
-                          <a
-                            href={data[propertyName].html_url}
-                            target="_blank"
-                            rel="noreferrer"
-                          >
+                          )}
+                          {property?.type === "discord" && (
                             <Box padding="0">
                               <Stack direction="horizontal" align="center">
                                 <DefaultAvatar
                                   label="Discord Avatar"
-                                  src={data[propertyName].avatar_url}
+                                  src={`https://cdn.discordapp.com/avatars/${data[propertyName].id}/${data[propertyName].avatar}.png`}
                                 />
                                 <Box>
                                   <Text
@@ -388,34 +385,59 @@ export default function DataDrawer({
                                     font="mono"
                                     weight="bold"
                                   >
-                                    {data[propertyName].login}
+                                    {data[propertyName].username}
                                   </Text>
                                 </Box>
                               </Stack>
                             </Box>
-                          </a>
-                        )}
-                        {property?.type === "telegram" && (
-                          // <a
-                          //   href={data[propertyName].html_url}
-                          //   target="_blank"
-                          //   rel="noreferrer"
-                          // >
-                          <Box padding="0">
-                            <Stack direction="horizontal" align="center">
-                              <Box>
-                                <Text
-                                  size="extraSmall"
-                                  font="mono"
-                                  weight="bold"
-                                >
-                                  {data[propertyName].username}
-                                </Text>
+                          )}
+                          {property?.type === "github" && (
+                            <a
+                              href={data[propertyName].html_url}
+                              target="_blank"
+                              rel="noreferrer"
+                            >
+                              <Box padding="0">
+                                <Stack direction="horizontal" align="center">
+                                  <DefaultAvatar
+                                    label="Discord Avatar"
+                                    src={data[propertyName].avatar_url}
+                                  />
+                                  <Box>
+                                    <Text
+                                      size="extraSmall"
+                                      font="mono"
+                                      weight="bold"
+                                    >
+                                      {data[propertyName].login}
+                                    </Text>
+                                  </Box>
+                                </Stack>
                               </Box>
-                            </Stack>
-                          </Box>
-                          // </a>
-                        )}
+                            </a>
+                          )}
+                          {property?.type === "telegram" && (
+                            // <a
+                            //   href={data[propertyName].html_url}
+                            //   target="_blank"
+                            //   rel="noreferrer"
+                            // >
+                            <Box padding="0">
+                              <Stack direction="horizontal" align="center">
+                                <Box>
+                                  <Text
+                                    size="extraSmall"
+                                    font="mono"
+                                    weight="bold"
+                                  >
+                                    {data[propertyName].username}
+                                  </Text>
+                                </Box>
+                              </Stack>
+                            </Box>
+                            // </a>
+                          )}{" "}
+                        </ResponseFieldCard>
                       </Stack>
                     );
                   })}
@@ -516,4 +538,39 @@ const ScrollContainer = styled(Box)`
     width: 0.5rem;
     border-radius: 0rem;
   }
+`;
+
+const ResponseFieldCard = styled(Box)<{
+  mode: string;
+  width?: string;
+  height?: string;
+}>`
+  @media (max-width: 1420px) {
+    width: 100%;
+    padding: 0.5rem;
+    margin: 0;
+    height: auto;
+    margin-top: 0.5rem;
+    align-items: flex-start;
+  }
+
+  width: 80%;
+  height: ${(props) => props.height || "auto"};
+  border-radius: 1rem;
+  padding: 1rem;
+  box-shadow: 0px 1px 6px
+    ${(props) =>
+      props.mode === "dark" ? "rgba(0, 0, 0, 0.4)" : "rgba(0, 0, 0, 0.1)"};
+  &:hover {
+    box-shadow: 0px 3px 10px
+      ${(props) =>
+        props.mode === "dark" ? "rgba(0, 0, 0, 0.6)" : "rgba(0, 0, 0, 0.25)"};
+    transition-duration: 0.7s;
+  }
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  align-items: flex-start;
+  position: relative;
+  transition: all 0.5s ease-in-out;
 `;

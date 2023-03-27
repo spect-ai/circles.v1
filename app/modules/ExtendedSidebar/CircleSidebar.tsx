@@ -35,7 +35,10 @@ import mixpanel from "@/app/common/utils/mixpanel";
 import { smartTrim } from "@/app/common/utils/utils";
 import { getViewIcon } from "../CollectionProject/Heading";
 import { Table } from "react-feather";
-import InviteMemberModal from "../Circle/ContributorsModal/InviteMembersModal";
+import InviteMemberModal, {
+  CustomButton,
+} from "../Circle/ContributorsModal/InviteMembersModal";
+import { BiBot } from "react-icons/bi";
 
 export const Container = styled(Box)<{ subH?: string }>`
   ::-webkit-scrollbar {
@@ -61,6 +64,7 @@ function CircleSidebar() {
   });
   const { setCircleData, setMemberDetailsData } = useCircle();
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
+  const [settingsModalInitialTab, setSettingsModalInitialTab] = useState(0);
   const [isContributorsModalOpen, setIsContributorsModalOpen] = useState(false);
   const { mode } = useTheme();
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
@@ -110,7 +114,13 @@ function CircleSidebar() {
     <Box paddingY="2" paddingLeft="3" paddingRight="3">
       <AnimatePresence>
         {isSettingsModalOpen && (
-          <SettingsModal handleClose={() => setIsSettingsModalOpen(false)} />
+          <SettingsModal
+            handleClose={() => {
+              setIsSettingsModalOpen(false);
+              setSettingsModalInitialTab(0);
+            }}
+            initialTab={settingsModalInitialTab}
+          />
         )}
         {isContributorsModalOpen && (
           <ContributorsModal
@@ -166,8 +176,31 @@ function CircleSidebar() {
 
         <Container subH="8.1rem">
           <Stack direction="vertical" space="2">
-            <InviteMemberModal buttonIsSmallTransparent={true} />
+            <Stack direction="horizontal" space="2">
+              <Box width="1/2">
+                <CustomButton
+                  mode={mode}
+                  onClick={() => {
+                    setSettingsModalInitialTab(3);
+                    setIsSettingsModalOpen(true);
+                  }}
+                >
+                  <Box
+                    display="flex"
+                    flexDirection="row"
+                    alignItems="center"
+                    gap="2"
+                  >
+                    <Text>
+                      <IconUserGroup size="4" />{" "}
+                    </Text>
 
+                    <Text>Roles</Text>
+                  </Box>
+                </CustomButton>
+              </Box>
+              <InviteMemberModal buttonIsSmallTransparent={true} />
+            </Stack>
             <Link href={`/${cId}`}>
               <PrimaryButton
                 center
@@ -228,7 +261,7 @@ function CircleSidebar() {
                       ? "tertiary"
                       : "transparent"
                   }
-                  icon={<GatewayOutlined size={10} />}
+                  icon={<BiBot size={16} />}
                 >
                   Automation Center
                 </PrimaryButton>

@@ -125,9 +125,7 @@ export default function ExploreSidebar() {
               </Stack>
             )}
             {!currentUser?.id && (
-              <PrimaryButton onClick={openConnectModal}>
-                Sign In with Ethereum
-              </PrimaryButton>
+              <PrimaryButton onClick={openConnectModal}>Sign In</PrimaryButton>
             )}
           </Box>
           <Box display={"flex"} flexDirection="column" gap="2" paddingX={"2"}>

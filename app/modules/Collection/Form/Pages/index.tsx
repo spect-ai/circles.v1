@@ -4,6 +4,7 @@ import styled from "styled-components";
 import { useLocalCollection } from "../../Context/LocalCollectionContext";
 import { updateFormCollection } from "@/app/services/Collection";
 import { PageLine } from "./PageLine";
+import { BiPlus, BiPlusCircle } from "react-icons/bi";
 
 export default function Pages() {
   const { localCollection: collection, updateCollection } =
@@ -49,7 +50,13 @@ export default function Pages() {
               }
             }}
           >
-            <Text color="accent">Add</Text>
+            <Box display="flex" flexDirection="row" gap="1" alignItems="center">
+              <Text color="accent">
+                <BiPlusCircle size="22" />
+              </Text>
+
+              <Text color="accent">Add</Text>
+            </Box>
           </PrimaryButton>
         </Stack>
         <PagesContainer>

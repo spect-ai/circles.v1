@@ -35,8 +35,10 @@ export default function CircleIntegrations() {
     <Box>
       <Stack space="8">
         <Stack space="1">
-          <Heading>Guild.xyz</Heading>
-          <Text>Connect your guild and import roles</Text>
+          <Text variant="extraLarge" weight="bold">
+            Guild.xyz
+          </Text>
+          <Text variant="label">Connect your guild and import roles</Text>
           <Stack
             direction={{
               xs: "vertical",
@@ -70,8 +72,10 @@ export default function CircleIntegrations() {
           </Stack>
         </Stack>
         <Stack space="1">
-          <Heading>Discord</Heading>
-          <Text>
+          <Text variant="extraLarge" weight="bold">
+            Discord
+          </Text>
+          <Text variant="label">
             Setup integration with discord. Connect your discord server to setup
             role gating.
           </Text>
@@ -114,8 +118,10 @@ export default function CircleIntegrations() {
           </Box>
         </Stack>
         <Stack space="1">
-          <Heading>Snapshot</Heading>
-          <Text>
+          <Text variant="extraLarge" weight="bold">
+            Snapshot
+          </Text>
+          <Text variant="label">
             Enter your snapshot space to create and vote on proposals from Spect
           </Text>
           <Stack direction={"horizontal"} space="2" align={"center"}>
@@ -161,8 +167,8 @@ export default function CircleIntegrations() {
               <Text color={"red"}>Incorrect URL</Text>
             ))}
         </Stack>
-        <Stack space="1">
-          <Heading>Github</Heading>
+        {/* <Stack space="1">
+          <Text variant="extraLarge" weight="bold">Github</Text>
           <Text>Connect github to link PR to cards and more</Text>
           <Box
             width={{
@@ -187,10 +193,14 @@ export default function CircleIntegrations() {
               </PrimaryButton>
             </Link>
           </Box>
-        </Stack>
+        </Stack> */}
         <Stack space="1">
-          <Heading>Gnosis</Heading>
-          <Text>Connect your gnosis safe to pay out from your safe.</Text>
+          <Text variant="extraLarge" weight="bold">
+            Gnosis
+          </Text>
+          <Text variant="label">
+            Connect your gnosis safe to pay out from your safe.
+          </Text>
           <Box
             width={{
               xs: "full",

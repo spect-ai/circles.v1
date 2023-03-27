@@ -72,11 +72,13 @@ export default function DefaultPayment() {
     <Container>
       <Stack space="4">
         <Box>
-          <Heading>Circle Payments</Heading>
-          <Text>Add your whitelisted tokens</Text>
+          <Text variant="extraLarge" weight="bold">
+            Payments
+          </Text>
+          <Text variant="label">Add your whitelisted tokens</Text>
         </Box>
         <Stack>
-          <Text size="extraLarge">Chain</Text>
+          <Text weight="semiBold">Chain</Text>
           <Stack direction="horizontal" wrap>
             {getFlattenedNetworks(registry as Registry)?.map((aChain) => (
               <Box
@@ -104,7 +106,7 @@ export default function DefaultPayment() {
               </Box>
             ))}
           </Stack>
-          <Text size="extraLarge">Whitelisted Tokens</Text>
+          <Text weight="semiBold">Whitelisted Tokens</Text>
           <Stack direction="horizontal" wrap>
             {getFlattenedCurrencies(
               registry as Registry,

@@ -4,6 +4,7 @@ import { GatewayOutlined } from "@ant-design/icons";
 import { Box, Text, Heading, Stack } from "degen";
 import { useRouter } from "next/router";
 import { Hidden } from "react-grid-system";
+import { BiBot } from "react-icons/bi";
 import { useCircle } from "../../Circle/CircleContext";
 
 export const AutomationHeading = () => {
@@ -48,7 +49,7 @@ export const AutomationHeading = () => {
                   },
                 });
               }}
-              icon={<GatewayOutlined />}
+              icon={<BiBot size="20" />}
             >
               Add Automation
             </PrimaryButton>
