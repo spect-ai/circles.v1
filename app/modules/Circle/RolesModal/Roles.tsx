@@ -16,28 +16,19 @@ export default function Roles() {
   }, [circle?.roles]);
 
   return (
-    <Box padding="8">
+    <Box paddingX="8" paddingY="4">
       <Stack>
-        <Input
-          label=""
-          prefix={<IconSearch />}
-          placeholder="Search"
-          onChange={(e) => {
-            setRoles(
-              matchSorter(Object.keys(circle?.roles || {}), e.target.value)
-            );
-          }}
-        />
         <Stack
           direction={{
             xs: "vertical",
             md: "horizontal",
           }}
+          space="4"
         >
           <Box
             width={{
               xs: "full",
-              md: "1/3",
+              md: "56",
             }}
           >
             <AddRole />
@@ -45,7 +36,7 @@ export default function Roles() {
           <Box
             width={{
               xs: "full",
-              md: "1/3",
+              md: "56",
             }}
           >
             <GuildRoleMapping />
@@ -53,7 +44,7 @@ export default function Roles() {
           <Box
             width={{
               xs: "full",
-              md: "1/3",
+              md: "56",
             }}
           >
             <DiscordRoleMapping />

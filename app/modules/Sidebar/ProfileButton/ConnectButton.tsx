@@ -1,6 +1,7 @@
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { IconEth } from "degen";
+import { Box, Text } from "degen";
+import { BiLogIn } from "react-icons/bi";
 export const Connect = () => {
   return (
     <ConnectButton.Custom>
@@ -35,8 +36,11 @@ export const Connect = () => {
             {(() => {
               if (!connected) {
                 return (
-                  <PrimaryButton onClick={openConnectModal} icon={<IconEth />}>
-                    Sign in with Ethereum
+                  <PrimaryButton
+                    onClick={openConnectModal}
+                    icon={<BiLogIn size="16" />}
+                  >
+                    Sign In
                   </PrimaryButton>
                 );
               }

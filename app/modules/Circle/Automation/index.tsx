@@ -1,8 +1,8 @@
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
-import { GatewayOutlined } from "@ant-design/icons";
-import { Box, Button, IconPlus, Stack, Text, useTheme } from "degen";
+import { Box, Button, Stack, Text, useTheme } from "degen";
 import { useRouter } from "next/router";
 import { Col, Row } from "react-grid-system";
+import { BiBot, BiPlusCircle } from "react-icons/bi";
 import { ToastContainer } from "react-toastify";
 import styled from "styled-components";
 import AutomationModal from "../../Collection/Automation/AutomationDrawer";
@@ -69,7 +69,7 @@ export default function AutomationCenter() {
                 alignItems: "center",
               }}
             >
-              <GatewayOutlined
+              <BiBot
                 style={{ fontSize: "5rem", color: "rgb(191, 90, 242, 0.7)" }}
               />
               <Text variant="large" color={"textTertiary"} align="center">
@@ -98,7 +98,7 @@ export default function AutomationCenter() {
                   });
                   return (
                     <Box>
-                      <Stack direction="horizontal" space="3" align={"center"}>
+                      <Stack direction="horizontal" space="1" align={"center"}>
                         <Text variant="large" color={"text"}>
                           {col?.name}
                         </Text>
@@ -124,7 +124,7 @@ export default function AutomationCenter() {
                             }}
                           >
                             <Text>
-                              <IconPlus />
+                              <BiPlusCircle size="20" />
                             </Text>
                           </Button>
                         </Stack>

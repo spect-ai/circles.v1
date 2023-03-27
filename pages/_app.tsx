@@ -152,7 +152,6 @@ const { chains, provider } = configureChains(
   [
     jsonRpcProvider({
       rpc: (chain) => {
-        console.log({ chain });
         return nodes[chain.id.toString()];
       },
     }),
