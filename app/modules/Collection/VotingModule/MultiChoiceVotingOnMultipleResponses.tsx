@@ -20,6 +20,7 @@ export default function MultiChoiceVotingOnMultipleResponses() {
               firstRowMessage="Responses where"
               buttonText="Add Condition"
               collection={collection}
+              dropDownPortal={true}
             />
           </Stack>
         </Stack>

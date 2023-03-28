@@ -140,12 +140,11 @@ export default function ImportClaimCodes({
                     responseDataForPoap: {},
                   },
                 });
-                if (!res) {
-                  toast.error("Something went wrong");
+                if (!res?.id) {
+                  toast.error("Something went wrong, refresh and try again");
                   setLoading(false);
                   return;
                 }
-
                 updateCollection(res);
                 setLoading(false);
                 handleClose();
@@ -173,7 +172,7 @@ export default function ImportClaimCodes({
                   },
                 });
                 if (!res?.formMetadata?.poapEventId) {
-                  toast.error("Something went wrong");
+                  toast.error("Something went wrong,refresh and try again ");
                   setLoading(false);
                   return;
                 }

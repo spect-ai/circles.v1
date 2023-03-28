@@ -7,6 +7,7 @@ import { connectedUserAtom } from "@/app/state/global";
 import { Avatar, Box, FileInput, Stack, Text } from "degen";
 import { useAtom } from "jotai";
 import { useState } from "react";
+import { toast } from "react-toastify";
 import { useLocalCollection } from "../../../Context/LocalCollectionContext";
 import Footer from "./Footer";
 import Messages from "./Messages";
@@ -49,7 +50,9 @@ const BuilderStartPage = ({ setCurrentPage }: Props) => {
                   logo: res.imageGatewayURL,
                 },
               });
-              newCollection.id && updateCollection(newCollection);
+              if (!newCollection.id) {
+                toast.error("Error updating collection, refresh and try again");
+              } else updateCollection(newCollection);
             }
           }}
         >

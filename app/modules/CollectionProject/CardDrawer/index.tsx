@@ -133,6 +133,7 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
       res = await updateCollectionDataGuarded(collection.id, slug, update);
       if (!res) {
         updateCollection(tempColl);
+        return;
       }
       if (res.id) {
         updateCollection(res);

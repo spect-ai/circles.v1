@@ -37,8 +37,11 @@ export default function Column({
   setDefaultValue,
   cardIds,
 }: Props) {
-  const { localCollection: collection, updateCollection } =
-    useLocalCollection();
+  const {
+    localCollection: collection,
+    updateCollection,
+    colorMapping,
+  } = useLocalCollection();
   const { getMemberDetails } = useModalOptions();
 
   const [columnName, setColumnName] = useState(column.label);
@@ -158,8 +161,17 @@ export default function Column({
                         if (property.type === "singleSelect") {
                           return (
                             <Box key={propertyId}>
-                              {/* <Text weight="semiBold">{property.name}</Text> */}
-                              <Text variant="label">{value.label}</Text>
+                              <Stack direction="horizontal" wrap space="1">
+                                {" "}
+                                <CustomTag
+                                  key={propertyId}
+                                  mode={mode}
+                                  borderCol={colorMapping[value.value]}
+                                >
+                                  {/* <Text weight="semiBold">{property.name}</Text> */}
+                                  <Text variant="label">{value.label}</Text>
+                                </CustomTag>
+                              </Stack>
                             </Box>
                           );
                         }
@@ -172,7 +184,7 @@ export default function Column({
                                   <CustomTag
                                     key={value.value}
                                     mode={mode}
-                                    borderCol={value.color}
+                                    borderCol={colorMapping[value.value]}
                                   >
                                     <Text>{value.label}</Text>
                                   </CustomTag>

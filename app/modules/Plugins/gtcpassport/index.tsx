@@ -240,7 +240,8 @@ export default function SybilResistance({ handleClose }: Props) {
                     updateCollection(res);
                     handleClose();
                     setLoading(false);
-                  } else toast.error("Something went wrong");
+                  } else
+                    toast.error("Something went wrong, refresh and try again");
                 }}
               >
                 Disable Sybil Protection
@@ -271,7 +272,11 @@ export default function SybilResistance({ handleClose }: Props) {
                       walletConnectionRequired: true,
                     },
                   });
-                  updateCollection(res);
+                  if (res.id) {
+                    updateCollection(res);
+                  } else {
+                    toast.error("Something went wrong, refresh and try again");
+                  }
                   handleClose();
                   setLoading(false);
                 }}

@@ -13,6 +13,7 @@ type Props = {
   buttonText: string;
   firstRowMessage?: string;
   collection: CollectionType;
+  dropDownPortal: boolean;
   buttonWidth?: string;
 };
 
@@ -23,6 +24,7 @@ export default function AddConditions({
   buttonText,
   collection,
   buttonWidth,
+  dropDownPortal,
 }: Props) {
   const fieldOptions = Object.entries(collection.properties)
     .filter((field) => !["multiURL"].includes(field[1].type))
@@ -102,6 +104,7 @@ export default function AddConditions({
                   }}
                   multiple={false}
                   isClearable={false}
+                  portal={dropDownPortal}
                 />
               </Box>
               <Box
@@ -122,6 +125,7 @@ export default function AddConditions({
                   }}
                   multiple={false}
                   isClearable={false}
+                  portal={dropDownPortal}
                 />
               </Box>
               <Box
@@ -140,6 +144,7 @@ export default function AddConditions({
                   collection={collection}
                   propertyId={condition?.data?.field?.value}
                   comparatorValue={condition?.data?.comparator?.value}
+                  dropDownPortal={dropDownPortal}
                 />
               </Box>
             </Box>

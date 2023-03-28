@@ -121,7 +121,13 @@ const ConnectPage = ({ form, setForm, currentPage, setCurrentPage }: Props) => {
       display="flex"
       flexDirection="column"
       justifyContent="space-between"
+      overflow="auto"
     >
+      {currentUser?.id && (
+        <Stack align="center">
+          <ProfileInfo member={currentUser} />
+        </Stack>
+      )}
       <motion.div
         className="box"
         initial={{ opacity: 0 }}
@@ -259,11 +265,6 @@ const ConnectPage = ({ form, setForm, currentPage, setCurrentPage }: Props) => {
               </Box>
             </Box>
           )}
-        {currentUser?.id && (
-          <Stack align="center">
-            <ProfileInfo member={currentUser} />
-          </Stack>
-        )}
       </motion.div>
       <Stack direction="horizontal" justify="space-between">
         <Box

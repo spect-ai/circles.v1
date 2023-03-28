@@ -41,6 +41,9 @@ type LocalCollectionContextType = {
   };
   currentPage: string;
   setCurrentPage: React.Dispatch<React.SetStateAction<string>>;
+  colorMapping: {
+    [key: string]: string;
+  };
 };
 
 export const LocalCollectionContext = createContext<LocalCollectionContextType>(
@@ -91,6 +94,9 @@ export function useProviderLocalCollection() {
     {} as {
       [key: string]: string;
     }
+  );
+  const [colorMapping, setColorMapping] = useState(
+    {} as { [key: string]: string }
   );
 
   const [currentPage, setCurrentPage] = useState("start");
@@ -146,6 +152,23 @@ export function useProviderLocalCollection() {
     });
     setFieldNeedsAttention(fieldsThatNeedAttention);
     setReasonFieldNeedsAttention(reasonFieldNeedsAttention);
+
+    let colorMapping = {};
+    Object.entries(localCollection.properties || {}).forEach(([key, value]) => {
+      if (["singleSelect", "multiSelect"].includes(value.type)) {
+        if (value.options && value.options.length > 0) {
+          const colorMap = value.options.reduce((acc, option) => {
+            if (option.color) acc[option.value] = option.color;
+            return acc;
+          }, {} as { [key: string]: string });
+          colorMapping = {
+            ...colorMapping,
+            ...(colorMap || {}),
+          };
+        }
+      }
+    });
+    setColorMapping(colorMapping);
   }, [localCollection.properties]);
 
   useEffect(() => {
@@ -173,6 +196,12 @@ export function useProviderLocalCollection() {
           }
 
           if (res.data) {
+            res.data.parents = [
+              {
+                ...res.data.parents[0],
+                description: "",
+              },
+            ];
             setLocalCollection(res.data);
             if (res.data.collectionType === 1) {
               setProjectViewId(res.data.projectMetadata.viewOrder[0]);
@@ -243,6 +272,7 @@ export function useProviderLocalCollection() {
     getIfFieldNeedsAttention,
     currentPage,
     setCurrentPage,
+    colorMapping,
   };
 }
 

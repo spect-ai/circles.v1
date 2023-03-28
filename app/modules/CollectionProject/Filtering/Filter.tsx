@@ -102,6 +102,7 @@ function Filter() {
                   firstRowMessage="Add a filter"
                   buttonText="Add Filter"
                   collection={collection}
+                  dropDownPortal={true}
                 />
               </Stack>
             </Box>
