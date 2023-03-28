@@ -113,23 +113,6 @@ const ConnectPage = ({ form, setForm, currentPage, setCurrentPage }: Props) => {
     }
   }, [form, currentUser]);
 
-  // useEffect(() => {
-  //   if (currentPage === "connect") {
-  //     if (connectedUser) {
-  //       if (form.formMetadata.sybilProtectionEnabled) {
-  //         if (form.formMetadata.hasPassedSybilCheck) {
-  //           setCurrentPage(form.formMetadata.pageOrder[2]);
-  //         }
-  //       } else if (form.formMetadata.formRoleGating) {
-  //         if (form.formMetadata.hasRole) {
-  //           setCurrentPage(form.formMetadata.pageOrder[2]);
-  //         }
-  //       } else {
-  //         setCurrentPage(form.formMetadata.pageOrder[2]);
-  //       }
-  //     }
-  //   }
-  // }, [currentPage]);
   return (
     <Box
       style={{
@@ -187,6 +170,7 @@ const ConnectPage = ({ form, setForm, currentPage, setCurrentPage }: Props) => {
                     toast.error(
                       "Error fetching guild, please visit guild.xyz and find the roles or contact support"
                     );
+                    return;
                   }
                   window.open(
                     `https://guild.xyz/${externalCircleData.urlName}`,
