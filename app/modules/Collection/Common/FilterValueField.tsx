@@ -11,6 +11,8 @@ type Props = {
   onChange: (value: any) => void;
   collection: CollectionType;
   propertyId: string;
+  dropDownPortal: boolean;
+
   comparatorValue: string;
 };
 
@@ -20,6 +22,7 @@ export default function FilterValueField({
   collection,
   propertyId,
   comparatorValue,
+  dropDownPortal,
 }: Props) {
   const type = collection?.properties[propertyId]?.type;
   const [memberOptions, setMemberOptions] = useState<Option[]>([]);
@@ -91,6 +94,7 @@ export default function FilterValueField({
               }}
               multiple={false}
               isClearable={false}
+              portal={dropDownPortal}
             />
           );
         case "is not":
@@ -103,6 +107,7 @@ export default function FilterValueField({
               }}
               multiple={false}
               isClearable={false}
+              portal={dropDownPortal}
             />
           );
         case "is one of":
@@ -115,6 +120,7 @@ export default function FilterValueField({
               }}
               multiple={true}
               isClearable={false}
+              portal={dropDownPortal}
             />
           );
         default:
@@ -132,6 +138,7 @@ export default function FilterValueField({
               }}
               multiple={true}
               isClearable={false}
+              portal={dropDownPortal}
             />
           );
 
@@ -145,6 +152,7 @@ export default function FilterValueField({
               }}
               multiple={true}
               isClearable={false}
+              portal={dropDownPortal}
             />
           );
         case "includes one of":
@@ -157,6 +165,7 @@ export default function FilterValueField({
               }}
               multiple={true}
               isClearable={false}
+              portal={dropDownPortal}
             />
           );
         default:
@@ -173,6 +182,7 @@ export default function FilterValueField({
                 onChange(option);
               }}
               multiple={false}
+              portal={dropDownPortal}
             />
           );
         case "is not":
@@ -184,6 +194,7 @@ export default function FilterValueField({
                 onChange(option);
               }}
               multiple={false}
+              portal={dropDownPortal}
             />
           );
         case "is one of":
@@ -196,6 +207,7 @@ export default function FilterValueField({
               }}
               multiple={true}
               isClearable={false}
+              portal={dropDownPortal}
             />
           );
         default:
@@ -212,6 +224,7 @@ export default function FilterValueField({
                 onChange(option);
               }}
               multiple={true}
+              portal={dropDownPortal}
             />
           );
 
@@ -225,6 +238,7 @@ export default function FilterValueField({
               }}
               multiple={true}
               isClearable={false}
+              portal={dropDownPortal}
             />
           );
         case "includes one of":
@@ -237,6 +251,7 @@ export default function FilterValueField({
               }}
               multiple={true}
               isClearable={false}
+              portal={dropDownPortal}
             />
           );
         default:
@@ -277,6 +292,7 @@ export default function FilterValueField({
               }}
               multiple={false}
               isClearable={false}
+              portal={dropDownPortal}
             />
           );
         case "token is one of":
@@ -289,6 +305,7 @@ export default function FilterValueField({
               }}
               multiple={true}
               isClearable={false}
+              portal={dropDownPortal}
             />
           );
         default:

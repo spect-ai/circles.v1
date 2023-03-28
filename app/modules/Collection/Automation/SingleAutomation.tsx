@@ -629,6 +629,7 @@ export default function SingleAutomation({
                   firstRowMessage="It is true that"
                   buttonText="Add Condition"
                   collection={collection}
+                  dropDownPortal={false}
                 />
               </Box>
             </Box>

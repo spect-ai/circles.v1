@@ -28,8 +28,11 @@ type Props = {
 function EditValue({ value, setValue, propertyName, dataId, disabled }: Props) {
   const [isEditing, setIsEditing] = useState(false);
   const fieldInput = useRef<any>();
-  const { localCollection: collection, updateCollection } =
-    useLocalCollection();
+  const {
+    localCollection: collection,
+    updateCollection,
+    colorMapping,
+  } = useLocalCollection();
   const property = collection.properties[propertyName];
   const [options, setOptions] = useState<any>([]);
   const [filteredOptions, setFilteredOptions] = useState<any>([]);
@@ -100,7 +103,7 @@ function EditValue({ value, setValue, propertyName, dataId, disabled }: Props) {
                         <CustomTag
                           mode={mode}
                           key={val.value}
-                          borderCol={val.color}
+                          borderCol={colorMapping[val.value]}
                         >
                           <Stack
                             direction="horizontal"
@@ -169,7 +172,7 @@ function EditValue({ value, setValue, propertyName, dataId, disabled }: Props) {
                           <CustomTag
                             mode={mode}
                             key={val.value}
-                            borderCol={val.color}
+                            borderCol={colorMapping[val.value]}
                           >
                             {" "}
                             {property.type === "multiSelect" && (
@@ -218,7 +221,10 @@ function EditValue({ value, setValue, propertyName, dataId, disabled }: Props) {
                         }
                       }}
                     >
-                      <CustomTag mode={mode} borderCol={value.color}>
+                      <CustomTag
+                        mode={mode}
+                        borderCol={colorMapping[value.value]}
+                      >
                         {property.type === "user" && (
                           <Stack
                             direction="horizontal"
@@ -474,9 +480,17 @@ function EditValue({ value, setValue, propertyName, dataId, disabled }: Props) {
                 value={value}
                 propertyName={propertyName}
                 handleClose={(reward) => {
-                  console.log({ reward });
-                  setValue(reward);
                   setIsEditing(false);
+                  console.log({ reward });
+                  if (
+                    ((!reward.value && reward.value !== 0) ||
+                      !reward.token ||
+                      !reward.chain) &&
+                    dataId &&
+                    !collection.data?.[dataId]?.[propertyName]?.value
+                  )
+                    return;
+                  setValue(reward);
                 }}
                 dataId={dataId}
               />
