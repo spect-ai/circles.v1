@@ -32,7 +32,8 @@ export default function GoogleCaptcha({ handleClose }: Props) {
                 },
               });
               if (res.id) updateCollection(res);
-              else toast.error("Error updating collection");
+              else
+                toast.error("Error updating collection, refresh and try again");
               handleClose();
               setLoading(false);
             }}

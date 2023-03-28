@@ -21,6 +21,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { Tooltip } from "react-tippy";
+import { toast } from "react-toastify";
 import styled from "styled-components";
 import { useCircle } from "../../Circle/CircleContext";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
@@ -429,7 +430,13 @@ export default function SendKudos({ handleClose }: Props) {
                         }
                       )
                     ).json();
-                    updateCollection(res);
+                    if (res.id) {
+                      updateCollection(res);
+                    } else {
+                      toast.error(
+                        "Something went wrong, refresh and try again"
+                      );
+                    }
                     setLoading(false);
                     handleClose();
                   }}

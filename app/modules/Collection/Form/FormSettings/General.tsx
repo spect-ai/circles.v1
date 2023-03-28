@@ -41,7 +41,7 @@ export default function General() {
               },
             });
             if (res.id) updateCollection(res);
-            else toast.error("Something went wrong");
+            else toast.error("Something went wrong, refresh and try again");
           }}
         />
       </Stack>

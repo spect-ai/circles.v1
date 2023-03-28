@@ -156,8 +156,13 @@ export default function ResponseMatchDistribution({
                     responseDataForPoap: localData,
                   },
                 });
-
-                updateCollection(res);
+                if (res.id) {
+                  updateCollection(res);
+                } else {
+                  toast.error(
+                    "Error updating form collection, refresh and try again"
+                  );
+                }
               } else if (
                 responseMatchConditionForPlugin === "mintkudos" &&
                 collection.formMetadata?.mintkudosTokenId
@@ -170,8 +175,13 @@ export default function ResponseMatchDistribution({
                     responseDataForMintkudos: localData,
                   },
                 });
-
-                updateCollection(res);
+                if (res.id) {
+                  updateCollection(res);
+                } else {
+                  toast.error(
+                    "Error updating form collection, refresh and try again"
+                  );
+                }
               }
               setMinimumNumberOfAnswersThatNeedToMatch(minNumOfAnswers);
               setData(localData);

@@ -385,7 +385,11 @@ function FormBuilder() {
                     },
                   }
                 );
-                newCollection.id && updateCollection(newCollection);
+                if (!newCollection.id) {
+                  toast.error(
+                    "Error updating collection, refresh and try again"
+                  );
+                } else updateCollection(newCollection);
               }
             }}
           >

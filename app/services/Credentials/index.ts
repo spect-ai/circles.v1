@@ -213,6 +213,8 @@ export default function useCredentials() {
                     toast.success("Successfully created kudos!", {
                       theme: mode,
                     });
+                  } else {
+                    toast.error("Something went wrong, refresh and try again!");
                   }
                 })
                 .catch((err) => console.log(err));
