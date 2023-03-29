@@ -237,7 +237,7 @@ function CollectionHeading() {
                         />
                       }
                       onClick={() => {
-                        setIsWarningOpened(true);
+                        setIsShareOpen(!isShareOpen);
                       }}
                     >
                       Share
