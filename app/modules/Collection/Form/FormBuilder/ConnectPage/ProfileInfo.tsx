@@ -1,7 +1,6 @@
 import { UserType } from "@/app/types";
 import { GithubOutlined, TwitterOutlined } from "@ant-design/icons";
 import { Avatar, Box, Button, Stack, Tag, Text } from "degen";
-import { motion } from "framer-motion";
 import { Tooltip } from "react-tippy";
 import DiscordIcon from "@/app/assets/icons/discordIcon.svg";
 import { Globe } from "react-feather";

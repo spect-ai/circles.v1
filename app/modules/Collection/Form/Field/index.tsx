@@ -280,7 +280,7 @@ function FieldComponent({
         </Box>
       )}
       {collection.properties[id]?.type === "discord" && (
-        <Box marginTop="4" width="1/3">
+        <Box marginTop="4" width="64">
           <PrimaryButton
             variant="tertiary"
             icon={<FaDiscord size={24} />}
@@ -291,7 +291,7 @@ function FieldComponent({
         </Box>
       )}
       {collection.properties[id]?.type === "twitter" && (
-        <Box marginTop="4" width="1/3">
+        <Box marginTop="4" width="64">
           <PrimaryButton
             variant="tertiary"
             icon={<FaTwitter size={24} />}
@@ -302,7 +302,7 @@ function FieldComponent({
         </Box>
       )}
       {collection.properties[id]?.type === "telegram" && (
-        <Box marginTop="4" width="1/3">
+        <Box marginTop="4" width="64">
           <PrimaryButton
             variant="tertiary"
             icon={<FaTelegramPlane size={24} />}
@@ -313,7 +313,7 @@ function FieldComponent({
         </Box>
       )}
       {collection.properties[id]?.type === "github" && (
-        <Box marginTop="4" width="1/3">
+        <Box marginTop="4" width="64">
           <PrimaryButton
             variant="tertiary"
             icon={<FaGithub size={24} />}

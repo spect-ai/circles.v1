@@ -414,9 +414,6 @@ function FormBuilder() {
               minHeight: "calc(100vh - 20rem)",
             }}
           >
-            <Droppable droppableId="activeFields" type="field">
-              {FieldDraggableCallback}
-            </Droppable>
             <Stack align="center">
               <Stepper
                 steps={pageOrder.length}
@@ -425,7 +422,11 @@ function FormBuilder() {
                   setCurrentPage(pageOrder[step]);
                 }}
               />
+              <Box marginBottom="4" />
             </Stack>
+            <Droppable droppableId="activeFields" type="field">
+              {FieldDraggableCallback}
+            </Droppable>
           </FormContainer>
         </Container>
       </Box>
@@ -474,7 +475,7 @@ const CoverImageButtonContainer = styled(Box)`
 `;
 
 const FormBuilderContainer = styled(Box)`
-  height: calc(100vh - 20rem);
+  min-height: calc(100vh - 20rem);
   display: flex;
   flex-direction: column;
   justify-content: space-between;

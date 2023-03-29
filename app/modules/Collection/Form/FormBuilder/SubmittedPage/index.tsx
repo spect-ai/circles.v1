@@ -27,21 +27,24 @@ const SubmittedPage = ({
   return (
     <Box
       style={{
-        height: "calc(100vh - 20rem)",
+        minHeight: "calc(100vh - 20rem)",
       }}
       display="flex"
       flexDirection="column"
       justifyContent="space-between"
     >
       <Stack align="center" space="8">
-        <Text size="headingTwo">{form.formMetadata.messageOnSubmission}</Text>
-        <Stack direction="horizontal">
+        <Text size="headingTwo" align="center">
+          {form.formMetadata.messageOnSubmission}
+        </Text>
+        <Box marginBottom="8" />
+        <Stack>
           {/* <Image src="/spectDemo.gif" width="1727" height="1082" /> */}
           <img
             src="https://bafybeicot4vgylc7gimu5bzo7megpeo5po3ybp6lov3wft24b666wxzfh4.ipfs.w3s.link/spectDemoCompressed.gif"
             style={{
-              width: "80%",
-              height: "80%",
+              width: "100%",
+              height: "100%",
             }}
           />
           <Stack align={"center"}>
