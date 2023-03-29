@@ -484,6 +484,7 @@ function FormFields({ form, setForm }: Props) {
             const pages = form.formMetadata.pages;
             const pageOrder = form.formMetadata.pageOrder;
             const fields = pages[currentPage || ""]?.properties;
+
             return (
               <FormFieldContainer
                 display="flex"
@@ -493,7 +494,7 @@ function FormFields({ form, setForm }: Props) {
               >
                 <Stack>
                   {fields.map((field) => {
-                    if (form.properties[field].isPartOfFormView) {
+                    if (form.properties[field]?.isPartOfFormView) {
                       return (
                         <PublicField
                           form={form}
