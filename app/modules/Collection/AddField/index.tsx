@@ -453,6 +453,7 @@ export default function AddField({ propertyName, pageId, handleClose }: Props) {
                   buttonText="Add Condition when Field is Visible"
                   collection={collection}
                   buttonWidth="fit"
+                  dropDownPortal={true}
                 />
                 {/* {["shortText", "longText", "ethAddress"].includes(
                   type.value

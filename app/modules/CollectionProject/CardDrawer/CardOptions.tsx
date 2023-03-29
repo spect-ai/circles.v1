@@ -128,13 +128,6 @@ export default function CardOptions({
                 }}
                 onClick={() => {
                   setIsOpen(false);
-
-                  if (!circle?.snapshot?.id) {
-                    toast.error(
-                      "Please integrate your Snapshot in the Governance Center first"
-                    );
-                    return;
-                  }
                   setDiscordThreadModal(true);
                 }}
               >
