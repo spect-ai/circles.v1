@@ -22,6 +22,9 @@ import Poap from "./poap";
 import GoogleCaptcha from "./captcha";
 import { matchSorter } from "match-sorter";
 import ResponderProfile from "./responderProfile";
+import mixpanel from "mixpanel-browser";
+import { useQuery } from "react-query";
+import { UserType } from "@/app/types";
 
 type Props = {};
 
@@ -40,6 +43,13 @@ export default function ViewPlugins({}: Props) {
   );
   const [showAdded, setShowAdded] = useState(false);
   const [numPluginsAdded, setNumPlugnsAdded] = useState(0);
+
+  const { data: currentUser, refetch: fetchUser } = useQuery<UserType>(
+    "getMyUser",
+    {
+      enabled: false,
+    }
+  );
 
   useEffect(() => {
     setFilteredPlugins(Object.keys(spectPlugins));
@@ -143,6 +153,13 @@ export default function ViewPlugins({}: Props) {
       <PrimaryButton
         variant={"tertiary"}
         onClick={() => {
+          process.env.NODE_ENV === "production" &&
+            mixpanel.track("Add Plugins", {
+              collection: collection.slug,
+              circle: collection.parents[0].slug,
+              user: currentUser?.username,
+            });
+
           setIsOpen(true);
         }}
         icon={<IconPlug color="text" />}
@@ -207,6 +224,12 @@ export default function ViewPlugins({}: Props) {
                       key={pluginName}
                       plugin={spectPlugins[pluginName]}
                       onClick={async () => {
+                        process.env.NODE_ENV === "production" &&
+                          mixpanel.track(`${pluginName} plugin open`, {
+                            collection: collection.slug,
+                            circle: collection.parents[0].slug,
+                            user: currentUser?.username,
+                          });
                         const res = await isWhitelisted("Survey Protocol");
                         if (pluginName === "erc20" && !res) {
                           window.open(

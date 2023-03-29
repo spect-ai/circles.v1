@@ -1,18 +1,20 @@
 import { createFolder } from "@/app/services/Folders";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
+import { UserType } from "@/app/types";
 import { Box, Stack, Text } from "degen";
 import { AnimatePresence, motion } from "framer-motion";
-import React, { useCallback, useState } from "react";
+import mixpanel from "mixpanel-browser";
+import { useCallback, useState } from "react";
 import { Trello } from "react-feather";
 import { AiFillFolderAdd } from "react-icons/ai";
 import { FaWpforms } from "react-icons/fa";
 import { MdGroupWork } from "react-icons/md";
+import { useQuery } from "react-query";
 import { toast } from "react-toastify";
 import styled from "styled-components";
 import { useCircle } from "../../CircleContext";
 import CreateCollectionModal from "../../CreateCollectionModal";
 import CreateSpaceModal from "../../CreateSpaceModal";
-import TemplateModal from "./TemplateModal";
 
 type Props = {};
 
@@ -26,6 +28,10 @@ export default function CreateItems({}: Props) {
   const { circle, setCircleData } = useCircle();
 
   const [loading, setLoading] = useState(false);
+
+  const { data: currentUser } = useQuery<UserType>("getMyUser", {
+    enabled: false,
+  });
 
   const createNewFolder = useCallback(async () => {
     setLoading(true);
@@ -77,17 +83,27 @@ export default function CreateItems({}: Props) {
               Icon={item.icon}
               description={item.description}
               onClick={() => {
+                let modalName = "";
                 if (item.component === "form") {
+                  modalName = "Create Form";
                   setCollectionType(0);
                   setCreateCollectionModalOpen(true);
                 } else if (item.component === "project") {
+                  modalName = "Create Project";
                   setCollectionType(1);
                   setCreateCollectionModalOpen(true);
                 } else if (item.component === "workstream") {
+                  modalName = "Create Workstream";
                   setCreateWorkstreamModalOpen(true);
                 } else if (item.component === "folder") {
+                  modalName = "Create Folder";
                   createNewFolder();
                 }
+                process.env.NODE_ENV === "production" &&
+                  mixpanel.track(`${modalName} modal opened`, {
+                    circle: circle?.slug,
+                    user: currentUser?.username,
+                  });
               }}
             />
           ))}

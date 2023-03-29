@@ -106,6 +106,12 @@ function CollectionHeading() {
                   // icon={<IconPencil />}
                   variant={view === 0 ? "tertiary" : "transparent"}
                   onClick={() => {
+                    process.env.NODE_ENV === "production" &&
+                      mixpanel.track("Form Edit", {
+                        collection: collection?.slug,
+                        circle: collection?.parents[0].slug,
+                        user: currentUser?.username,
+                      });
                     void router.push(location.pathname as string);
                     setView(0);
                   }}
@@ -115,6 +121,12 @@ function CollectionHeading() {
                 <PrimaryButton
                   variant={view === 1 ? "tertiary" : "transparent"}
                   onClick={() => {
+                    process.env.NODE_ENV === "production" &&
+                      mixpanel.track("Form Responses", {
+                        collection: collection?.slug,
+                        circle: collection?.parents[0].slug,
+                        user: currentUser?.username,
+                      });
                     if (!formActions("viewResponses")) {
                       toast.error(
                         "Your role(s) doesn't have permissions to view responses of this form"
@@ -226,7 +238,6 @@ function CollectionHeading() {
                 align="center"
               >
                 <ViewPlugins />
-
                 <Popover
                   butttonComponent={
                     <PrimaryButton
@@ -237,6 +248,12 @@ function CollectionHeading() {
                         />
                       }
                       onClick={() => {
+                        process.env.NODE_ENV === "production" &&
+                          mixpanel.track("Share popover open", {
+                            collection: collection?.slug,
+                            circle: collection?.parents[0].slug,
+                            user: currentUser?.username,
+                          });
                         setIsShareOpen(!isShareOpen);
                       }}
                     >
@@ -269,6 +286,12 @@ function CollectionHeading() {
                     </PopoverOption>
                     <PopoverOption
                       onClick={() => {
+                        process.env.NODE_ENV === "production" &&
+                          mixpanel.track("Form Embed", {
+                            collection: collection?.slug,
+                            circle: collection?.parents[0].slug,
+                            user: currentUser?.username,
+                          });
                         setIsShareOpen(false);
                         setIsEmbedModalOpen(true);
                       }}
@@ -282,6 +305,12 @@ function CollectionHeading() {
                     >
                       <PopoverOption
                         onClick={() => {
+                          process.env.NODE_ENV === "production" &&
+                            mixpanel.track("Form Preview", {
+                              collection: collection?.slug,
+                              circle: collection?.parents[0].slug,
+                              user: currentUser?.username,
+                            });
                           setIsShareOpen(false);
                         }}
                       >

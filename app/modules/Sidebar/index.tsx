@@ -1,5 +1,5 @@
 import Link from "next/link";
-import React, { ReactElement, useEffect, useState } from "react";
+import { ReactElement, useEffect, useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import { Avatar, Box, Button, Stack, Text, IconMenu } from "degen";
 import { useRouter } from "next/router";
@@ -181,6 +181,11 @@ function Sidebar(): ReactElement {
               shape="circle"
               variant="transparent"
               onClick={() => {
+                process.env.NODE_ENV === "production" &&
+                  mixpanel.track("Notification Panel Open", {
+                    circle: circle?.slug,
+                    user: currentUser?.username,
+                  });
                 setIsProfilePanelExpanded(true);
                 setQuickProfileUser(connectedUser);
                 (async () => {
