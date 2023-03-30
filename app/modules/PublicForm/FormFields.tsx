@@ -191,7 +191,10 @@ function FormFields({ form, setForm }: Props) {
   useEffect(() => {
     if (form && form.formMetadata.previousResponses?.length > 0) {
       setSubmitted(true);
-      setCurrentPage("submitted");
+
+      if (form.formMetadata.surveyTokenId) {
+        setCurrentPage("collect");
+      } else setCurrentPage("submitted");
     }
   }, [form?.name]);
 

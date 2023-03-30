@@ -5,10 +5,13 @@ import {
   hasClaimedSurveyToken,
   isEligibleToClaimSurveyToken,
 } from "@/app/services/SurveyProtocol";
+import { socketAtom } from "@/app/state/global";
 import { CollectionType, Registry } from "@/app/types";
 import { TwitterOutlined } from "@ant-design/icons";
 import { Box, IconDocumentsSolid, Stack, Text } from "degen";
 import { BigNumber, ethers } from "ethers";
+import { useAtom } from "jotai";
+import _ from "lodash";
 import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { TwitterShareButton } from "react-share";
@@ -35,6 +38,7 @@ const CollectERC20 = ({ form, setClaimedJustNow, preview }: Props) => {
     useState(
       form?.formMetadata?.transactionHashesOfUser?.surveyTokenClaim || ""
     );
+  const [socket, setSocket] = useAtom(socketAtom);
 
   const { address } = useAccount();
 
@@ -48,6 +52,24 @@ const CollectERC20 = ({ form, setClaimedJustNow, preview }: Props) => {
       enabled: false,
     }
   );
+
+  // useEffect(() => {
+  //   console.log("on");
+  //   if (socket)
+  //   socket?.on(
+  //     `${form.id}:responseAddedOnChain`,
+  //     _.debounce(async (event: { userAddress: string }) => {
+  //       if (event.userAddress === address) {
+  //         setCanClaimSurveyToken(true);
+  //       }
+  //     }, 2000)
+  //   );
+  //   return () => {
+  //     if (socket && socket.off) {
+  //       socket.off(`${form.id}:responseAddedOnChain`);
+  //     }
+  //   };
+  // }, [socket]);
 
   useEffect(() => {
     fetchRegistry();
@@ -343,6 +365,21 @@ const CollectERC20 = ({ form, setClaimedJustNow, preview }: Props) => {
                     Claim Token
                   </PrimaryButton>
                 </Box>
+              </Stack>
+            </Stack>
+          )}
+          {(preview ||
+            (form.formMetadata?.previousResponses?.length > 0 &&
+              form.formMetadata?.surveyTokenId &&
+              surveyIsLotteryYetToBeDrawn &&
+              !escrowHasInsufficientBalance)) && (
+            <Stack direction="horizontal" align="flex-start" wrap>
+              <Stack>
+                <Text weight="semiBold" variant="large">
+                  You have been automatically entered into a lottery for
+                  responding to this form. You'll be notified via email if you
+                  win.
+                </Text>
               </Stack>
             </Stack>
           )}
