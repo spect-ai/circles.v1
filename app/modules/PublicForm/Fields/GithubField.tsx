@@ -71,7 +71,7 @@ export default function GithubField({
           variant="tertiary"
           icon={<FaGithub size={24} />}
           onClick={async () => {
-            const url = `https://github.com/login/oauth/authorize?client_id=4403e769e4d52b24eeab`;
+            const url = `https://github.com/login/oauth/authorize?client_id=${process.env.DISCORD_CLIENT_ID}`;
             window.open(url, "popup", "width=600,height=600");
           }}
         >

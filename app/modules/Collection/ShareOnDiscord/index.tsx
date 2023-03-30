@@ -50,28 +50,35 @@ export const ShareOnDiscord = ({ isOpen, setIsOpen }: EmbedProps) => {
 
   if (!discordIsConnected)
     return (
-      <Box
-        width="48"
-        paddingTop="4"
-        onClick={() => {
-          console.log({ origin });
-          window.open(
-            `https://discord.com/oauth2/authorize?client_id=942494607239958609&permissions=17448306704&redirect_uri=${origin}/api/connectDiscord&response_type=code&scope=bot&state=${circle?.slug}/r/${collection.slug}`,
-            "popup",
-            "width=600,height=600"
-          );
-        }}
+      <Modal
+        title={`Share on Discord`}
+        handleClose={() => setIsOpen(false)}
+        size="small"
       >
-        <PrimaryButton
-          icon={
-            <Box marginTop="1">
-              <DiscordIcon />
-            </Box>
-          }
-        >
-          Connect Discord
-        </PrimaryButton>
-      </Box>
+        <Box paddingX="8" paddingY="4">
+          <Box
+            width="48"
+            paddingTop="4"
+            onClick={() => {
+              window.open(
+                `https://discord.com/oauth2/authorize?client_id=${process.env.DISCORD_CLIENT_ID}&permissions=17448306704&redirect_uri=${origin}/api/connectDiscord&response_type=code&scope=bot&state=${circle?.slug}/r/${collection.slug}`,
+                "popup",
+                "width=600,height=600"
+              );
+            }}
+          >
+            <PrimaryButton
+              icon={
+                <Box marginTop="1">
+                  <DiscordIcon />
+                </Box>
+              }
+            >
+              Connect Discord
+            </PrimaryButton>
+          </Box>
+        </Box>
+      </Modal>
     );
   return (
     <Modal
@@ -120,6 +127,7 @@ export const ShareOnDiscord = ({ isOpen, setIsOpen }: EmbedProps) => {
                 selectedChannel: selectedChannel,
               });
               setLoading(false);
+              setIsOpen(false);
               console.log({ res });
             }}
             loading={loading}
