@@ -1,14 +1,15 @@
-import { Box, Input, Stack, useTheme } from "degen";
-import React, { useState } from "react";
+import { Box, Input, Stack } from "degen";
+import { useState } from "react";
 import { useRouter } from "next/router";
-import Loader from "@/app/common/components/Loader";
 import Modal from "@/app/common/components/Modal";
-import { useMutation } from "react-query";
+import { useMutation, useQuery } from "react-query";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { useCircle } from "./CircleContext";
 import { updateFolder } from "@/app/services/Folders";
 import { AnimatePresence } from "framer-motion";
 import TemplateModal from "./CircleOverview/FolderView/TemplateModal";
+import mixpanel from "mixpanel-browser";
+import { UserType } from "@/app/types";
 
 type CreateCollectionDto = {
   name: string;
@@ -37,6 +38,10 @@ function CreateCollectionModal({
   const router = useRouter();
   const { circle, fetchCircle } = useCircle();
   const [loading, setLoading] = useState(false);
+
+  const { data: currentUser } = useQuery<UserType>("getMyUser", {
+    enabled: false,
+  });
 
   const { mutateAsync, isLoading } = useMutation(
     (createDto: CreateCollectionDto) => {
@@ -92,6 +97,19 @@ function CreateCollectionModal({
             void updateFolder(payload, circle?.id, folder?.[0] as string).then(
               () => void fetchCircle()
             );
+            if (collectionType === 0) {
+              process.env.NODE_ENV === "production" &&
+                mixpanel.track("Form Created", {
+                  circle: circle?.slug,
+                  user: currentUser?.username,
+                });
+            } else {
+              process.env.NODE_ENV === "production" &&
+                mixpanel.track("Project Created", {
+                  circle: circle?.slug,
+                  user: currentUser?.username,
+                });
+            }
           }
           setLoading(false);
         })
@@ -146,6 +164,11 @@ function CreateCollectionModal({
                 </PrimaryButton>
                 <PrimaryButton
                   onClick={() => {
+                    process.env.NODE_ENV === "production" &&
+                      mixpanel.track("Use template", {
+                        circle: circle?.slug,
+                        user: currentUser?.username,
+                      });
                     setTemplateModalOpen(true);
                   }}
                 >

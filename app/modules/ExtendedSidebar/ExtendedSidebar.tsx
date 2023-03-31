@@ -1,4 +1,4 @@
-import React, { memo, ReactElement } from "react";
+import { memo, ReactElement } from "react";
 import { Box } from "degen";
 import { motion } from "framer-motion";
 import { useRouter } from "next/router";

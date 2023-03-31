@@ -1,4 +1,4 @@
-import React, { memo, useCallback } from "react";
+import { memo, useCallback } from "react";
 import {
   Draggable,
   DraggableProvided,
@@ -11,19 +11,16 @@ import {
   Stack,
   IconUserGroup,
   IconLightningBolt,
-  IconCollection,
 } from "degen";
-import {
-  CircleType,
-  CollectionType,
-  ProjectType,
-  RetroType,
-} from "@/app/types";
+import { CircleType, ProjectType, RetroType, UserType } from "@/app/types";
 import styled from "styled-components";
 import { ProjectOutlined } from "@ant-design/icons";
 import { useRouter } from "next/router";
 import { getViewIcon } from "@/app/modules/CollectionProject/Heading";
 import { Table } from "react-feather";
+import mixpanel from "mixpanel-browser";
+import { useCircle } from "../../CircleContext";
+import { useQuery } from "react-query";
 
 interface Props {
   card: string;
@@ -80,6 +77,12 @@ const Card = ({
   const router = useRouter();
   const { circle: cId } = router.query;
 
+  const { circle } = useCircle();
+
+  const { data: currentUser } = useQuery<UserType>("getMyUser", {
+    enabled: false,
+  });
+
   const DraggableContent = (
     provided: DraggableProvided,
     snapshot: DraggableStateSnapshot
@@ -103,6 +106,12 @@ const Card = ({
           void router.push(`/${cId}?retroSlug=${retros?.[card]?.slug}`);
         }
         if (collections?.[card]?.slug) {
+          process.env.NODE_ENV === "production" &&
+            mixpanel.track(`Collection clicked`, {
+              circle: circle?.slug,
+              form: collections?.[card]?.slug,
+              user: currentUser?.username,
+            });
           void router.push(`/${cId}/r/${collections?.[card]?.slug}`);
         }
       }}

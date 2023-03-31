@@ -66,7 +66,6 @@ const ConnectPage = ({ form, setForm, currentPage, setCurrentPage }: Props) => {
           stampsWithScore.push(stampWithScore);
         }
       }
-      console.log({ stampsWithScore });
       setStamps(stampsWithScore.sort((a, b) => b.score - a.score));
     }
   };
@@ -116,7 +115,7 @@ const ConnectPage = ({ form, setForm, currentPage, setCurrentPage }: Props) => {
   return (
     <Box
       style={{
-        height: "calc(100vh - 20rem)",
+        minHeight: "calc(100vh - 20rem)",
       }}
       display="flex"
       flexDirection="column"
@@ -292,7 +291,12 @@ const ConnectPage = ({ form, setForm, currentPage, setCurrentPage }: Props) => {
             md: "64",
           }}
         >
-          <Stack direction="horizontal">
+          <Stack
+            direction={{
+              xs: "vertical",
+              md: "horizontal",
+            }}
+          >
             {connectedUser && (
               <Box width="full">
                 <Logout />
@@ -340,7 +344,7 @@ const ConnectPage = ({ form, setForm, currentPage, setCurrentPage }: Props) => {
 
 const StampScrollContainer = styled(Box)`
   overflow-y: auto;
-  height: calc(100vh - 35rem);
+  height: 20rem;
   ::-webkit-scrollbar {
     width: 5px;
   }

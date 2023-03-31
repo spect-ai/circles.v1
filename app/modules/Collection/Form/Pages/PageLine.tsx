@@ -1,8 +1,11 @@
 import { updateFormCollection } from "@/app/services/Collection";
+import { UserType } from "@/app/types";
 import { Box, Stack } from "degen";
 import { AnimatePresence } from "framer-motion";
+import mixpanel from "mixpanel-browser";
 import { useState } from "react";
 import { DragDropContext, Droppable, DropResult } from "react-beautiful-dnd";
+import { useQuery } from "react-query";
 import AddField from "../../AddField";
 import { useLocalCollection } from "../../Context/LocalCollectionContext";
 import { PageComponent } from "./PageComponent";
@@ -14,6 +17,14 @@ export const PageLine = () => {
     localCollection: collection,
     updateCollection,
   } = useLocalCollection();
+
+  const { data: currentUser, refetch: fetchUser } = useQuery<UserType>(
+    "getMyUser",
+    {
+      enabled: false,
+    }
+  );
+
   let middleStartIndex = null;
   let middleEndIndex = null;
 
@@ -61,6 +72,12 @@ export const PageLine = () => {
     const middleSection = pageOrder.slice(middleStartIndex, middleEndIndex);
     const secondHalf = pageOrder.slice(middleEndIndex);
     const handleDragEnd = (result: DropResult) => {
+      process.env.NODE_ENV === "production" &&
+        mixpanel.track("Drag/Drop field", {
+          form: collection.slug,
+          circle: collection.parents[0].slug,
+          user: currentUser?.username,
+        });
       const { destination, source, draggableId, type } = result;
       if (!destination) return;
 

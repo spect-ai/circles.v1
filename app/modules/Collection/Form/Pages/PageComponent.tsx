@@ -1,8 +1,11 @@
 import { updateFormCollection } from "@/app/services/Collection";
+import { UserType } from "@/app/types";
 import { Box, IconPlusSmall, IconTrash, Stack, Text, useTheme } from "degen";
 import { motion } from "framer-motion";
+import mixpanel from "mixpanel-browser";
 import { useState } from "react";
 import { Draggable, Droppable } from "react-beautiful-dnd";
+import { useQuery } from "react-query";
 import { toast } from "react-toastify";
 import styled from "styled-components";
 import { useLocalCollection } from "../../Context/LocalCollectionContext";
@@ -38,6 +41,13 @@ export const PageComponent = ({
 
   const pages = collection.formMetadata.pages;
   const pageOrder = collection.formMetadata.pageOrder;
+
+  const { data: currentUser, refetch: fetchUser } = useQuery<UserType>(
+    "getMyUser",
+    {
+      enabled: false,
+    }
+  );
 
   if (pages[id].movable) {
     return (
@@ -89,6 +99,13 @@ export const PageComponent = ({
                   <Box
                     cursor="pointer"
                     onClick={() => {
+                      process.env.NODE_ENV === "production" &&
+                        mixpanel.track("Add field on page", {
+                          collection: collection.slug,
+                          circle: collection.parents[0].slug,
+                          page: id,
+                          user: currentUser?.username,
+                        });
                       setActivePage(id);
                       setPropertyName("");
                       setAddFieldOpen(true);

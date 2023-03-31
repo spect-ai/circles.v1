@@ -4,7 +4,6 @@ import { CircleType, UserType } from "@/app/types";
 import {
   BankOutlined,
   DollarOutlined,
-  GatewayOutlined,
   ProjectOutlined,
 } from "@ant-design/icons";
 import {
@@ -181,6 +180,11 @@ function CircleSidebar() {
                 <CustomButton
                   mode={mode}
                   onClick={() => {
+                    process.env.NODE_ENV === "production" &&
+                      mixpanel.track("Sidebar roles", {
+                        circle: circle?.slug,
+                        user: currentUser?.username,
+                      });
                     setSettingsModalInitialTab(3);
                     setIsSettingsModalOpen(true);
                   }}
@@ -262,6 +266,13 @@ function CircleSidebar() {
                       : "transparent"
                   }
                   icon={<BiBot size={16} />}
+                  onClick={() => {
+                    process.env.NODE_ENV === "production" &&
+                      mixpanel.track("Automation Center Button", {
+                        user: currentUser?.username,
+                        url: window.location.href,
+                      });
+                  }}
                 >
                   Automation Center
                 </PrimaryButton>
@@ -281,6 +292,13 @@ function CircleSidebar() {
                         : "transparent"
                     }
                     icon={<BankOutlined />}
+                    onClick={() => {
+                      process.env.NODE_ENV === "production" &&
+                        mixpanel.track("Governance Center Button", {
+                          user: currentUser?.username,
+                          url: window.location.href,
+                        });
+                    }}
                   >
                     Governance Center
                   </PrimaryButton>
@@ -306,6 +324,13 @@ function CircleSidebar() {
                         : "transparent"
                     }
                     icon={<IconUserGroupSolid size="4" />}
+                    onClick={() => {
+                      process.env.NODE_ENV === "production" &&
+                        mixpanel.track("Membership Center Button", {
+                          user: currentUser?.username,
+                          url: window.location.href,
+                        });
+                    }}
                   >
                     Membership Center
                   </PrimaryButton>

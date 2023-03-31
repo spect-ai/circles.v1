@@ -1,9 +1,8 @@
 import Modal from "@/app/common/components/Modal";
-import PrimaryButton from "@/app/common/components/PrimaryButton";
 import Tabs from "@/app/common/components/Tabs";
 import { Box, Button, IconCog, Stack } from "degen";
 import { AnimatePresence } from "framer-motion";
-import React, { useState } from "react";
+import { useState } from "react";
 import styled from "styled-components";
 import Access from "./Access";
 import General from "./General";

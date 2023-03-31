@@ -2,7 +2,7 @@ import { smartTrim } from "@/app/common/utils/utils";
 import { UserType } from "@/app/types";
 import { Box, Button, Stack, Text, useTheme } from "degen";
 import { AnimatePresence } from "framer-motion";
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "react-query";
 import styled from "styled-components";
 import { SettingOutlined } from "@ant-design/icons";
@@ -69,6 +69,10 @@ export default function ProfileButton() {
       >
         <Container
           onClick={() => {
+            process.env.NODE_ENV === "production" &&
+              mixpanel.track("Notification Panel Open", {
+                user: currentUser?.username,
+              });
             // openQuickProfile((currentUser as UserType).id);
             setIsProfilePanelExpanded(true);
             setQuickProfileUser(currentUser?.id || "");

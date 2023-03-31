@@ -3,7 +3,7 @@ import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { getPoap } from "@/app/services/Poap";
 import { CollectionType, POAPEventType } from "@/app/types";
 import { TwitterOutlined } from "@ant-design/icons";
-import { Box, Stack, Text } from "degen";
+import { Box, Spinner, Stack, Text } from "degen";
 import { useEffect, useState } from "react";
 import { TwitterShareButton } from "react-share";
 import { toast } from "react-toastify";
@@ -23,16 +23,18 @@ export default function CollectPoap({
   const [poap, setPoap] = useState({} as POAPEventType);
   const [poapClaimed, setPoapClaimed] = useState(false);
   const [canClaimPoap, setCanClaimPoap] = useState(false);
-
   const [claiming, setClaiming] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (form.formMetadata.poapEventId) {
       setCanClaimPoap(form.formMetadata.canClaimPoap);
       void (async () => {
+        setLoading(true);
         const res = await getPoap(
           form.formMetadata.poapEventId?.toString() || ""
         );
+        setLoading(false);
         setPoap(res);
         setPoapClaimed(res.claimed);
       })();
@@ -40,6 +42,14 @@ export default function CollectPoap({
   }, [form]);
 
   if (!form.formMetadata.poapEventId) return null;
+
+  if (loading) {
+    return (
+      <Stack align="center">
+        <Spinner size="large" />
+      </Stack>
+    );
+  }
 
   return (
     <Box

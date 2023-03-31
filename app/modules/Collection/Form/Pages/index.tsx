@@ -4,12 +4,22 @@ import styled from "styled-components";
 import { useLocalCollection } from "../../Context/LocalCollectionContext";
 import { updateFormCollection } from "@/app/services/Collection";
 import { PageLine } from "./PageLine";
-import { BiPlus, BiPlusCircle } from "react-icons/bi";
+import { BiPlusCircle } from "react-icons/bi";
 import { toast } from "react-toastify";
+import mixpanel from "mixpanel-browser";
+import { useQuery } from "react-query";
+import { UserType } from "@/app/types";
 
 export default function Pages() {
   const { localCollection: collection, updateCollection } =
     useLocalCollection();
+
+  const { data: currentUser, refetch: fetchUser } = useQuery<UserType>(
+    "getMyUser",
+    {
+      enabled: false,
+    }
+  );
   return (
     <Box>
       <Stack>
@@ -20,6 +30,12 @@ export default function Pages() {
           <PrimaryButton
             variant="transparent"
             onClick={async () => {
+              process.env.NODE_ENV === "production" &&
+                mixpanel.track("Add Page", {
+                  collection: collection.slug,
+                  circle: collection.parents[0].slug,
+                  user: currentUser?.username,
+                });
               const pageOrder = collection.formMetadata.pageOrder;
               const lastIndex = collection.formMetadata.pages["collect"]
                 ? pageOrder.length - 2
@@ -55,9 +71,8 @@ export default function Pages() {
           >
             <Box display="flex" flexDirection="row" gap="1" alignItems="center">
               <Text color="accent">
-                <BiPlusCircle size="22" />
+                <BiPlusCircle size="20" />
               </Text>
-
               <Text color="accent">Add</Text>
             </Box>
           </PrimaryButton>

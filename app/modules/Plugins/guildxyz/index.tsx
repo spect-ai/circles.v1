@@ -209,7 +209,7 @@ export default function RoleGate({ handleClose }: Props) {
               >
                 Save
               </PrimaryButton>
-              {collection.formMetadata?.formRoleGating?.length && (
+              {(collection.formMetadata?.formRoleGating?.length || 0) > 0 && (
                 <PrimaryButton
                   loading={loading}
                   variant="tertiary"

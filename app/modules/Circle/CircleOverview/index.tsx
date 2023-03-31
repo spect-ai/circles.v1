@@ -1,6 +1,5 @@
 import { Box, Stack } from "degen";
-import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useCircle } from "../CircleContext";
 import InviteMemberModal from "../ContributorsModal/InviteMembersModal";
 import { FolderView } from "./FolderView";
@@ -67,7 +66,6 @@ export default function CircleDashboard() {
   const [isSidebarExpanded, setIsSidebarExpanded] = useAtom(
     isSidebarExpandedAtom
   );
-  const router = useRouter();
   const { circle, navigationBreadcrumbs } = useCircle();
   const [filteredProjects, setFilteredProjects] = useState(circle?.projects);
   const [filteredCollections, setFilteredCollections] = useState(

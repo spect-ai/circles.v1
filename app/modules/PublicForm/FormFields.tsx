@@ -141,7 +141,6 @@ function FormFields({ form, setForm }: Props) {
   useEffect(() => {
     if (form) {
       const tempData: any = {};
-      console.log({ form: form.formMetadata, submitted });
       if (form?.formMetadata.previousResponses?.length > 0 && submitted) {
         const lastResponse =
           form.formMetadata.previousResponses[
@@ -378,6 +377,37 @@ function FormFields({ form, setForm }: Props) {
 
   return (
     <Container borderRadius="2xLarge">
+      <Stack align="center">
+        {form && (
+          <Stepper
+            steps={form.formMetadata.pageOrder.length}
+            currentStep={form.formMetadata.pageOrder.indexOf(currentPage || "")}
+            onStepChange={(step) => {
+              if (submitted) {
+                setCurrentPage(form.formMetadata.pageOrder[step]);
+              } else if (updateResponse || !submitted) {
+                // can only go back
+                if (
+                  step < form.formMetadata.pageOrder.indexOf(currentPage || "")
+                ) {
+                  setCurrentPage(form.formMetadata.pageOrder[step]);
+                } else {
+                  if (currentPage === "start") {
+                    toast.error(
+                      "You can get started by clicking on the start button"
+                    );
+                  } else {
+                    toast.error("You can only go back");
+                  }
+                }
+              } else {
+                setCurrentPage(form.formMetadata.pageOrder[step]);
+              }
+            }}
+          />
+        )}
+        <Box marginBottom="4" />
+      </Stack>
       {emailModalOpen && (
         <Modal
           title="Please enter email"
@@ -456,9 +486,6 @@ function FormFields({ form, setForm }: Props) {
             const fields = pages[currentPage || ""]?.properties;
             return (
               <FormFieldContainer
-                style={{
-                  height: "calc(100vh - 20rem)",
-                }}
                 display="flex"
                 flexDirection="column"
                 justifyContent="space-between"
@@ -581,36 +608,6 @@ function FormFields({ form, setForm }: Props) {
           }
         }
       })}
-      <Stack align="center">
-        {form && (
-          <Stepper
-            steps={form.formMetadata.pageOrder.length}
-            currentStep={form.formMetadata.pageOrder.indexOf(currentPage || "")}
-            onStepChange={(step) => {
-              if (submitted) {
-                setCurrentPage(form.formMetadata.pageOrder[step]);
-              } else if (updateResponse || !submitted) {
-                // can only go back
-                if (
-                  step < form.formMetadata.pageOrder.indexOf(currentPage || "")
-                ) {
-                  setCurrentPage(form.formMetadata.pageOrder[step]);
-                } else {
-                  if (currentPage === "start") {
-                    toast.error(
-                      "You can get started by clicking on the start button"
-                    );
-                  } else {
-                    toast.error("You can only go back");
-                  }
-                }
-              } else {
-                setCurrentPage(form.formMetadata.pageOrder[step]);
-              }
-            }}
-          />
-        )}
-      </Stack>
     </Container>
   );
 }
@@ -634,7 +631,7 @@ const Container = styled(Box)`
   padding: 2rem;
   padding-bottom: 1rem;
 
-  height: calc(100vh - 15rem);
+  min-height: calc(100vh - 15rem);
 
   ::-webkit-scrollbar {
     width: 0.5rem;
@@ -644,7 +641,7 @@ const Container = styled(Box)`
 `;
 
 const FormFieldContainer = styled(Box)`
-  height: calc(100vh - 15rem);
+  min-height: calc(100vh - 15rem);
 
   ::-webkit-scrollbar {
     width: 0.5rem;
