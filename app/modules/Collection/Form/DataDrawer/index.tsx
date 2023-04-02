@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import Drawer, { slideHorizontal } from "@/app/common/components/Drawer";
+import Drawer from "@/app/common/components/Drawer";
 import { OptionType } from "@/app/common/components/Dropdown";
 import Editor from "@/app/common/components/Editor";
 import { useCircle } from "@/app/modules/Circle/CircleContext";
-import { MemberDetails, UserType } from "@/app/types";
+import { MemberDetails } from "@/app/types";
 import {
   Box,
   Button,
@@ -13,6 +13,7 @@ import {
   Text,
   Avatar as DefaultAvatar,
   useTheme,
+  Avatar as DegenAvatar,
 } from "degen";
 import { motion } from "framer-motion";
 import { useRouter } from "next/router";
@@ -22,9 +23,9 @@ import { useQuery } from "react-query";
 import styled from "styled-components";
 import { useLocalCollection } from "../../Context/LocalCollectionContext";
 import DataActivity from "./DataActivity";
-import VotingActions from "./VotingActions";
 import SnapshotVoting from "./VotingOnSnapshot";
 import Avatar from "@/app/common/components/Avatar";
+import { smartTrim } from "@/app/common/utils/utils";
 
 type props = {
   expandedDataSlug: string;
@@ -494,6 +495,44 @@ export default function DataDrawer({
                           </Text>
                         </Stack>
                       </a>
+                    </Stack>
+                  )}
+                  {collection.data?.[dataId]?.["__lookup__"] && (
+                    <Stack space="1">
+                      <Text weight="semiBold" variant="large" color="accent">
+                        Lookup
+                      </Text>
+                      <Stack direction="horizontal" wrap space="2">
+                        {collection.data?.[dataId]?.["__lookup__"].map(
+                          (token: any) => (
+                            <Box
+                              key={token.contractAddress}
+                              borderWidth="0.375"
+                              borderRadius="2xLarge"
+                              cursor="pointer"
+                              padding="2"
+                              style={{
+                                width: "32%",
+                              }}
+                            >
+                              <Stack align="center" space="2">
+                                <DegenAvatar
+                                  src={
+                                    token.metadata.image ||
+                                    `https://api.dicebear.com/5.x/initials/svg?seed=${token.metadata.name}`
+                                  }
+                                  label=""
+                                  shape="square"
+                                />
+                                <Text align="center">
+                                  {smartTrim(token.metadata.name, 20)}
+                                </Text>
+                                <Text align="center">{token.balance}</Text>
+                              </Stack>
+                            </Box>
+                          )
+                        )}
+                      </Stack>
                     </Stack>
                   )}
                 </Box>
