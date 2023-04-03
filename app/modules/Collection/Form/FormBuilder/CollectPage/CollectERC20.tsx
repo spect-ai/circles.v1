@@ -58,17 +58,17 @@ const CollectERC20 = ({ form, setClaimedJustNow, preview }: Props) => {
   useEffect(() => {
     if (socket)
       socket?.on(
-        `${form.id}:responseAddedOnChain`,
+        `${form.slug}:responseAddedOnChain`,
         _.debounce(async (event: { userAddress: string }) => {
           console.log({ event });
-          if (event.userAddress === address) {
+          if (event.userAddress.toLowerCase() === address?.toLowerCase()) {
             setCanClaimSurveyToken(true);
           }
         }, 2000)
       );
     return () => {
       if (socket && socket.off) {
-        socket.off(`${form.id}:responseAddedOnChain`);
+        socket.off(`${form.slug}:responseAddedOnChain`);
       }
     };
   }, [socket]);
@@ -330,7 +330,7 @@ const CollectERC20 = ({ form, setClaimedJustNow, preview }: Props) => {
                   {" "}
                   <PrimaryButton
                     loading={claiming}
-                    disabled={canClaimSurveyToken ? false : true}
+                    disabled={!canClaimSurveyToken}
                     onClick={async () => {
                       setClaiming(true);
                       try {
