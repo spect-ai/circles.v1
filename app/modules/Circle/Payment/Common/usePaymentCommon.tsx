@@ -294,7 +294,9 @@ export default function usePaymentViewCommon() {
           toast.error("You rejected requested action");
         else if (e.name === "ConnectorNotFoundError") {
           openConnectModal && openConnectModal();
-          toast.error("Please login to your wallet and connect it to Spect");
+          toast.error(
+            "Please login to your wallet and connect it to Spect, wallet might be locked"
+          );
         } else toast.error("Something went wrong");
       }
     }

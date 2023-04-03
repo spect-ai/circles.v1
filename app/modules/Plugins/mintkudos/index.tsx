@@ -493,7 +493,7 @@ export default function SendKudos({ handleClose }: Props) {
                       }
                       setLoading(false);
                       res && handleClose();
-                    } catch (err: unknown) {
+                    } catch (err: any) {
                       setLoading(false);
                       console.log(err);
                     }

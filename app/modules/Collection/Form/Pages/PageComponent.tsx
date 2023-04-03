@@ -99,31 +99,6 @@ export const PageComponent = ({
                   <Box
                     cursor="pointer"
                     onClick={() => {
-                      process.env.NODE_ENV === "production" &&
-                        mixpanel.track("Add field on page", {
-                          collection: collection.slug,
-                          circle: collection.parents[0].slug,
-                          page: id,
-                          user: currentUser?.username,
-                        });
-                      setActivePage(id);
-                      setPropertyName("");
-                      setAddFieldOpen(true);
-                    }}
-                  >
-                    <Text color="accent">
-                      <IconPlusSmall size="4" />
-                    </Text>
-                  </Box>
-                </motion.div>
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: hover ? 1 : 0 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <Box
-                    cursor="pointer"
-                    onClick={() => {
                       const newPages = { ...pages };
                       const page = newPages[id];
                       if (page.properties.length > 0) {
@@ -135,14 +110,18 @@ export const PageComponent = ({
                       const newPageOrder = [...pageOrder];
                       newPageOrder.splice(pageIndex, 1);
 
-                      updateCollection({
-                        ...collection,
+                      const update = {
                         formMetadata: {
                           ...collection.formMetadata,
                           pages: newPages,
                           pageOrder: newPageOrder,
                         },
+                      };
+                      updateCollection({
+                        ...collection,
+                        ...update,
                       });
+                      updateFormCollection(collection.id, update);
                     }}
                   >
                     <Text color="red">
@@ -155,7 +134,11 @@ export const PageComponent = ({
 
             <Droppable droppableId={id} type="field">
               {(provided) => (
-                <Box {...provided.droppableProps} ref={provided.innerRef}>
+                <Box
+                  {...provided.droppableProps}
+                  ref={provided.innerRef}
+                  onClick={onClick}
+                >
                   {fields.map((field, index) => (
                     <FieldComponent
                       key={field}
@@ -168,6 +151,31 @@ export const PageComponent = ({
                   ))}
                   {provided.placeholder}
                   {!fields.length && <Box height="4" />}
+                  <Box
+                    marginTop="2"
+                    marginLeft="6"
+                    cursor="pointer"
+                    onClick={() => {
+                      process.env.NODE_ENV === "production" &&
+                        mixpanel.track("Add field on page", {
+                          collection: collection.slug,
+                          circle: collection.parents[0].slug,
+                          page: id,
+                          user: currentUser?.username,
+                        });
+                      setActivePage(id);
+                      onClick && onClick();
+                      setPropertyName("");
+                      setAddFieldOpen(true);
+                    }}
+                  >
+                    <Stack direction="horizontal" space="2">
+                      <Text color="accent">
+                        <IconPlusSmall size="4" />
+                      </Text>
+                      <Text color="accent">Add field</Text>
+                    </Stack>
+                  </Box>
                 </Box>
               )}
             </Droppable>

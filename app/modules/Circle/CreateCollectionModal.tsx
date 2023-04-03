@@ -32,9 +32,7 @@ function CreateCollectionModal({
 }: Props) {
   const close = () => setCollectionModal(false);
   const [templateModalOpen, setTemplateModalOpen] = useState(false);
-
   const [name, setName] = useState("");
-
   const router = useRouter();
   const { circle, fetchCircle } = useCircle();
   const [loading, setLoading] = useState(false);

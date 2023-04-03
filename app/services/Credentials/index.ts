@@ -107,8 +107,14 @@ export default function useCredentials() {
           return false;
         }
       } catch (error: any) {
+        if (error.name === "ConnectorNotFoundError") {
+          toast.error(
+            "Please login to your wallet and connect it to Spect, wallet might be locked"
+          );
+          return;
+        }
         toast.error(error.message);
-        console.log(error);
+        console.log({ error });
         return;
       }
     }
@@ -171,6 +177,7 @@ export default function useCredentials() {
     responseData: MappedItem<any>,
     numOfKudos?: number
   ) => {
+    console.log({ operationId });
     let time = 1000;
     const intervalPromise = setInterval(() => {
       time += 1000;

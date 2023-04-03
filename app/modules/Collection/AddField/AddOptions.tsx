@@ -1,4 +1,3 @@
-import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { Box, Button, IconClose, Input, Stack, Text, useTheme } from "degen";
 import React, { useState } from "react";
 import styled from "styled-components";
@@ -22,6 +21,7 @@ type Props = {
   allowCustom: boolean;
   setAllowCustom: (allowCustom: boolean) => void;
   multiSelect?: boolean;
+  setIsDirty?: (isDirty: boolean) => void;
 };
 
 export default function AddOptions({
@@ -36,6 +36,7 @@ export default function AddOptions({
   allowCustom,
   setAllowCustom,
   multiSelect,
+  setIsDirty,
 }: Props) {
   const { mode } = useTheme();
   const { localCollection: collection } = useLocalCollection();
@@ -55,6 +56,7 @@ export default function AddOptions({
                 name={"Settings"}
                 checked={allowCustom}
                 onChange={() => {
+                  setIsDirty && setIsDirty(true);
                   setAllowCustom(!allowCustom);
                 }}
                 style={{
@@ -74,6 +76,7 @@ export default function AddOptions({
                   type="number"
                   value={maxSelections}
                   onChange={(e) => {
+                    setIsDirty && setIsDirty(true);
                     setMaxSelections(parseInt(e.target.value));
                   }}
                   placeholder="Max number of selections allowed"
@@ -109,8 +112,10 @@ export default function AddOptions({
                   )}
 
                   <OptionInput
+                    autoFocus={index === fieldOptions.length - 1}
                     value={option.label}
                     onChange={(e) => {
+                      setIsDirty && setIsDirty(true);
                       const newOptions = [...fieldOptions];
                       newOptions[index].label = e.target.value;
                       setFieldOptions(newOptions);
@@ -121,6 +126,7 @@ export default function AddOptions({
                     <Box
                       cursor="pointer"
                       onClick={() => {
+                        setIsDirty && setIsDirty(true);
                         if (cardOrder && setCardOrder) {
                           const newCardOrder = [...cardOrder];
                           // apend all the elements from the array index to the 0th index
@@ -170,7 +176,7 @@ export default function AddOptions({
                     value={colorPickerColor}
                     onChange={(color: string) => {
                       setColorPickerColor(color);
-
+                      setIsDirty && setIsDirty(true);
                       const newOptions = [...fieldOptions];
                       newOptions[editColorForOption].color = color;
                       setFieldOptions(newOptions);
@@ -190,6 +196,7 @@ export default function AddOptions({
               variant="tertiary"
               size="small"
               onClick={() => {
+                setIsDirty && setIsDirty(true);
                 const newOptions = [...fieldOptions];
                 newOptions.push({
                   label: `Option ${fieldOptions.length + 1}`,
@@ -227,4 +234,11 @@ const OptionInput = styled.input<{ mode: string }>`
   color: ${(props) =>
     props.mode === "dark" ? "rgb(255, 255, 255, 0.8)" : "rgb(20, 20, 20, 0.8)"};
   font-weight: 500;
+  padding: 0.1rem;
+
+  :focus {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    transition: background 0.2s ease;
+  }
 `;

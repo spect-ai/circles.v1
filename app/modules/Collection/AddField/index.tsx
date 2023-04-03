@@ -36,6 +36,7 @@ import AddConditions from "../Common/AddConditions";
 import PayWall from "./PayWallOptions";
 import RewardTokenOptions from "./RewardTokenOptions";
 import { Field } from "../Automation/Actions/Field";
+import { useKeyPressEvent } from "react-use";
 
 type Props = {
   propertyName?: string;
@@ -78,6 +79,8 @@ export default function AddField({ propertyName, pageId, handleClose }: Props) {
   const [showSlugNameError, setShowSlugNameError] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [showConfirmOnDelete, setShowConfirmOnDelete] = useState(false);
+  const [showConfirmOnClose, setShowConfirmOnClose] = useState(false);
+
   const [viewConditions, setViewConditions] = useState<Condition[]>(
     (propertyName && collection.properties[propertyName]?.viewConditions) || []
   );
@@ -91,9 +94,25 @@ export default function AddField({ propertyName, pageId, handleClose }: Props) {
     useState(propertyName ? reasonFieldNeedsAttention[propertyName] : "");
 
   const [cardOrder, setCardOrder] = useState<any>();
-
   const [maxSelections, setMaxSelections] = useState<number>();
-  const [allowCustom, setAllowCustom] = useState(true);
+  const [allowCustom, setAllowCustom] = useState(false);
+
+  const [isDirty, setIsDirty] = useState(false);
+
+  useKeyPressEvent("Enter", () => {
+    if (name.trim() !== "" && !loading && !showNameCollissionError) {
+      if (
+        propertyName &&
+        !prevPropertyTypeToNewPropertyTypeThatDoesntRequiresClarance[
+          collection.properties[propertyName].type
+        ].includes(type.value)
+      ) {
+        setShowConfirm(true);
+      } else {
+        onSave();
+      }
+    }
+  });
 
   const onSave = async () => {
     setLoading(true);
@@ -139,6 +158,10 @@ export default function AddField({ propertyName, pageId, handleClose }: Props) {
         });
       }
     } else {
+      if (!pageId) {
+        toast.error("Pageid is missing, try again");
+        return;
+      }
       res = await addField(
         collection.id,
         {
@@ -160,6 +183,7 @@ export default function AddField({ propertyName, pageId, handleClose }: Props) {
         pageId
       );
     }
+    setIsDirty(false);
     setLoading(false);
     if (res.id) {
       handleClose();
@@ -306,10 +330,27 @@ export default function AddField({ propertyName, pageId, handleClose }: Props) {
             onCancel={() => setShowConfirmOnDelete(false)}
           />
         )}
+        {showConfirmOnClose && (
+          <ConfirmModal
+            title="You have unsaved changes. Are you sure you want to close?"
+            handleClose={() => setShowConfirmOnClose(false)}
+            onConfirm={() => {
+              setShowConfirmOnClose(false);
+              handleClose();
+            }}
+            onCancel={() => setShowConfirmOnClose(false)}
+          />
+        )}
       </AnimatePresence>
       <Modal
         title={propertyName ? "Edit Field" : "Add Field"}
-        handleClose={handleClose}
+        handleClose={() => {
+          if (isDirty) {
+            setShowConfirmOnClose(true);
+          } else {
+            handleClose();
+          }
+        }}
         size={modalSize}
       >
         <Box padding="8">
@@ -319,6 +360,7 @@ export default function AddField({ propertyName, pageId, handleClose }: Props) {
               placeholder="Field Name"
               value={name}
               onChange={(e) => {
+                setIsDirty(true);
                 setName(e.target.value);
                 if (
                   collection.properties &&
@@ -351,6 +393,7 @@ export default function AddField({ propertyName, pageId, handleClose }: Props) {
                 rows={2}
                 value={description}
                 onChange={(e) => {
+                  setIsDirty(true);
                   setDescription(e.target.value);
                 }}
               />
@@ -368,6 +411,7 @@ export default function AddField({ propertyName, pageId, handleClose }: Props) {
               options={fieldOptionsDropdown}
               selected={type}
               onChange={(type) => {
+                setIsDirty(true);
                 setType(type);
               }}
               multiple={false}
@@ -385,6 +429,7 @@ export default function AddField({ propertyName, pageId, handleClose }: Props) {
                 setMaxSelections={setMaxSelections}
                 setAllowCustom={setAllowCustom}
                 multiSelect={type.value === "multiSelect"}
+                setIsDirty={setIsDirty}
               />
             ) : null}
             {type.value === "user" || type.value === "user[]" ? (
@@ -487,7 +532,7 @@ export default function AddField({ propertyName, pageId, handleClose }: Props) {
               <PrimaryButton
                 icon={<SaveFilled style={{ fontSize: "1.3rem" }} />}
                 loading={loading}
-                disabled={showNameCollissionError || !name}
+                disabled={showNameCollissionError || !name || !isDirty}
                 onClick={async () => {
                   if (
                     propertyName &&

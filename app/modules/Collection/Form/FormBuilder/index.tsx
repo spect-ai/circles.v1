@@ -24,6 +24,7 @@ import CollectPage from "./CollectPage";
 import BuilderStartPage from "./StartPage/Builder";
 import CollectPayment from "@/app/modules/PublicForm/Fields/CollectPayment";
 import SubmittedPage from "./SubmittedPage";
+import { BiLogIn } from "react-icons/bi";
 
 function FormBuilder() {
   const {
@@ -252,7 +253,14 @@ function FormBuilder() {
               </PrimaryButton>
             </Box>
             <Box paddingX="5" paddingBottom="4" width="1/2">
-              <Connect />
+              <PrimaryButton
+                icon={<BiLogIn size="16" />}
+                onClick={() => {
+                  setCurrentPage(pageOrder[pageOrder.indexOf(currentPage) + 1]);
+                }}
+              >
+                Sign In
+              </PrimaryButton>
             </Box>
           </Stack>
         </Box>
