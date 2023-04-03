@@ -42,6 +42,8 @@ const CollectERC20 = ({ form, setClaimedJustNow, preview }: Props) => {
 
   const { address } = useAccount();
 
+  const [loading, setLoading] = useState(true);
+
   const { data: registry, refetch: fetchRegistry } = useQuery<Registry>(
     ["registry", form.parents[0].slug],
     () =>
@@ -53,23 +55,23 @@ const CollectERC20 = ({ form, setClaimedJustNow, preview }: Props) => {
     }
   );
 
-  // useEffect(() => {
-  //   console.log("on");
-  //   if (socket)
-  //   socket?.on(
-  //     `${form.id}:responseAddedOnChain`,
-  //     _.debounce(async (event: { userAddress: string }) => {
-  //       if (event.userAddress === address) {
-  //         setCanClaimSurveyToken(true);
-  //       }
-  //     }, 2000)
-  //   );
-  //   return () => {
-  //     if (socket && socket.off) {
-  //       socket.off(`${form.id}:responseAddedOnChain`);
-  //     }
-  //   };
-  // }, [socket]);
+  useEffect(() => {
+    if (socket)
+      socket?.on(
+        `${form.id}:responseAddedOnChain`,
+        _.debounce(async (event: { userAddress: string }) => {
+          console.log({ event });
+          if (event.userAddress === address) {
+            setCanClaimSurveyToken(true);
+          }
+        }, 2000)
+      );
+    return () => {
+      if (socket && socket.off) {
+        socket.off(`${form.id}:responseAddedOnChain`);
+      }
+    };
+  }, [socket]);
 
   useEffect(() => {
     fetchRegistry();
