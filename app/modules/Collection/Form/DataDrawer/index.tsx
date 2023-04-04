@@ -499,9 +499,9 @@ export default function DataDrawer({
                   )}
                   {collection.data?.[dataId]?.["__lookup__"] && (
                     <Stack space="1">
-                      <Text weight="semiBold" variant="large" color="accent">
-                        Lookup
-                      </Text>
+                      {/* <Text weight="semiBold" variant="large" color="accent">
+                        On Chain token balance
+                      </Text> */}
                       <Stack direction="horizontal" wrap space="2">
                         {collection.data?.[dataId]?.["__lookup__"].map(
                           (token: any) => (

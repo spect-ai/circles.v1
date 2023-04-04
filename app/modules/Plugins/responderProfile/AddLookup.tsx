@@ -178,14 +178,9 @@ const AddLookup = ({ lookupTokens, setLookupTokens }: Props) => {
 
   return (
     <Box>
-      <Box width="40">
+      <Box width="44">
         <PrimaryButton variant="tertiary" onClick={() => setOpen(true)}>
-          <Text color="accent">
-            <Stack direction="horizontal" align="center" space="2">
-              <IconPlusSmall size="4" />
-              Add lookup
-            </Stack>
-          </Text>
+          <Text color="accent">Add token lookup</Text>
         </PrimaryButton>
       </Box>
       <AnimatePresence>

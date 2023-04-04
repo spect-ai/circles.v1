@@ -25,13 +25,17 @@ export default function ResponderProfile({ handleClose }: Props) {
   return (
     <Modal title="Responder Profile" handleClose={handleClose}>
       <Box padding="8">
-        <Box marginBottom="4">
+        <Box marginBottom="16">
           {/* <Text variant="base">
             Enabling this plugin will automatically collect responders'
             profiles.{" "}
           </Text> */}
-          <Stack>
+          <Stack space="2">
             <Text variant="label">On Chain data lookup</Text>
+            <Text size="extraSmall">
+              You can optionally get the on chain token balance of the responder
+              along with their profile
+            </Text>
             <Stack direction="horizontal" wrap space="2">
               {lookupTokens.map((token, i) => (
                 <Box
