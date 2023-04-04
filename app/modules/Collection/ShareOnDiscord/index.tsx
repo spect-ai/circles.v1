@@ -2,7 +2,10 @@ import DiscordIcon from "@/app/assets/icons/discordIcon.svg";
 import Dropdown from "@/app/common/components/Dropdown";
 import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { linkDiscordToCollection } from "@/app/services/Collection";
+import {
+  linkDiscordToCollection,
+  postFormMessage,
+} from "@/app/services/Collection";
 import { fetchGuildChannels, guildIsConnected } from "@/app/services/Discord";
 import { Option } from "@/app/types";
 import { Box, Input, Text } from "degen";
@@ -18,7 +21,6 @@ type EmbedProps = {
 export const ShareOnDiscord = ({ isOpen, setIsOpen }: EmbedProps) => {
   const { localCollection: collection } = useLocalCollection();
   const { circle, justAddedDiscordServer } = useCircle();
-  const [threadName, setThreadName] = useState(collection.name);
   const [channelOptions, setChannelOptions] = useState([]);
   const [selectedChannel, setSelectedChannel] = useState({} as Option);
   const [discordIsConnected, setDiscordIsConnected] = useState(false);
@@ -61,7 +63,7 @@ export const ShareOnDiscord = ({ isOpen, setIsOpen }: EmbedProps) => {
             paddingTop="4"
             onClick={() => {
               window.open(
-                `https://discord.com/oauth2/authorize?client_id=${process.env.DISCORD_CLIENT_ID}&permissions=17448306704&redirect_uri=${origin}/api/connectDiscord&response_type=code&scope=bot&state=${circle?.slug}/r/${collection.slug}`,
+                `https://discord.com/oauth2/authorize?client_id=${process.env.NEXT_PUBLIC_DISCORD_CLIENT_ID}&permissions=17448306704&redirect_uri=${origin}/api/connectDiscord&response_type=code&scope=bot&state=${circle?.slug}/r/${collection.slug}`,
                 "popup",
                 "width=600,height=600"
               );
@@ -89,18 +91,6 @@ export const ShareOnDiscord = ({ isOpen, setIsOpen }: EmbedProps) => {
       <Box paddingX="8" paddingY="4">
         <Box marginTop="2" width="full">
           {" "}
-          <Box marginTop="2" marginBottom="2">
-            <Text variant="label">Thread Name</Text>
-          </Box>
-          <Input
-            label
-            hideLabel
-            onChange={(e) => {
-              setThreadName(e.target.value);
-            }}
-            value={threadName}
-            placeholder=""
-          />
           <Box marginTop="4">
             <Text variant="label">Create Thread on this Channel</Text>
           </Box>
@@ -122,9 +112,8 @@ export const ShareOnDiscord = ({ isOpen, setIsOpen }: EmbedProps) => {
           <PrimaryButton
             onClick={async () => {
               setLoading(true);
-              const res = await linkDiscordToCollection(collection.id, {
-                threadName,
-                selectedChannel: selectedChannel,
+              const res = await postFormMessage(collection.id, {
+                channelId: selectedChannel.value,
               });
               setLoading(false);
               setIsOpen(false);

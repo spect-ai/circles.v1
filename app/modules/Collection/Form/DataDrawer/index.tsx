@@ -25,6 +25,7 @@ import DataActivity from "./DataActivity";
 import VotingActions from "./VotingActions";
 import SnapshotVoting from "./VotingOnSnapshot";
 import Avatar from "@/app/common/components/Avatar";
+import { timeSince } from "@/app/common/utils/utils";
 
 type props = {
   expandedDataSlug: string;
@@ -109,11 +110,32 @@ export default function DataDrawer({
           <ScrollContainer paddingX="4" paddingY="2">
             <Stack space="5">
               <Stack direction="horizontal" align="center" space="2">
-                <Box marginX="10" marginBottom="4">
+                <Box
+                  display="flex"
+                  flexDirection="column"
+                  marginX="10"
+                  marginBottom="4"
+                  gap="2"
+                >
                   {" "}
                   <Text color="accentText" weight="semiBold">
                     Response {dataIdx}
                   </Text>
+                  {collection.dataActivities[dataId]?.[
+                    collection.dataActivityOrder?.[dataId]?.[0]
+                  ]?.timestamp && (
+                    <Text ellipsis size="label" color="textTertiary">
+                      Added{" "}
+                      {timeSince(
+                        new Date(
+                          collection.dataActivities[dataId][
+                            collection.dataActivityOrder?.[dataId]?.[0]
+                          ].timestamp
+                        )
+                      )}{" "}
+                      ago
+                    </Text>
+                  )}
                 </Box>
               </Stack>
 
@@ -512,7 +534,7 @@ export default function DataDrawer({
               marginTop="24"
             />
             <Box paddingBottom="0">
-              <DataActivity
+              {/* <DataActivity
                 activities={collection.dataActivities[dataId]}
                 activityOrder={collection.dataActivityOrder[dataId]}
                 getMemberDetails={getMemberDetails}
@@ -521,7 +543,7 @@ export default function DataDrawer({
                 dataOwner={collection.profiles[collection.dataOwner[data.slug]]}
                 setForm={updateCollection}
                 collection={collection}
-              />
+              /> */}
             </Box>
           </ScrollContainer>
         </motion.div>
