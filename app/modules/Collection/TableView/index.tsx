@@ -8,7 +8,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import _ from "lodash";
 import { matchSorter } from "match-sorter";
 import { useRouter } from "next/router";
-import React, { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   Column,
   DataSheetGrid,
@@ -662,17 +662,38 @@ export default function TableView() {
           <PrimaryButton
             variant="tertiary"
             onClick={() => {
-              let out = [] as any[];
               const d = data?.map((da) => {
                 const csvData: {
                   [key: string]: string;
                 } = {};
                 Object.entries(da)
-                  .filter(
-                    ([key, value]) =>
-                      key !== "slug" && key !== "id" && key !== "anonymous"
-                  )
+                  .filter(([key, value]) => key !== "id")
                   .forEach(([key, value]: [string, any]) => {
+                    if (key === "slug") {
+                      csvData["Data Slug"] = value;
+                      return;
+                    }
+                    if (key === "__lookup__") {
+                      value = value.map((v: any) => ({
+                        contractAddress: undefined,
+                        tokenType: undefined,
+                        metadata: undefined,
+                        token: v.metadata?.name,
+                        balance: v.balance,
+                        chainId: v.chainId,
+                      }));
+                      csvData["Tokens Lookup"] = JSON.stringify(value);
+                      return;
+                    }
+                    if (key === "anonymous") {
+                      const value =
+                        collection?.profiles?.[collection?.dataOwner[da.slug]];
+                      csvData["Responder Profile"] = JSON.stringify({
+                        username: value?.username,
+                        ethAddress: value?.ethAddress,
+                      });
+                      return;
+                    }
                     if (!collection.properties[key]) return;
                     if (collection.properties[key].type === "reward") {
                       csvData[key] = JSON.stringify({
@@ -716,8 +737,6 @@ export default function TableView() {
                       csvData[key] = value;
                     }
                   });
-                // delete csvData["id"] && delete csvData["anonymous"];
-                csvData["slug"] = da.slug;
                 return csvData;
               });
               console.log({ d });
