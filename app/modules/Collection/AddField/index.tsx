@@ -64,7 +64,7 @@ export default function AddField({ propertyName, pageId, handleClose }: Props) {
   const [description, setDescription] = useState("");
   const [type, setType] = useState({ label: "Short Text", value: "shortText" });
   const [required, setRequired] = useState(0);
-  const onRequiredTabClick = (id: number) => setRequired(id);
+
   const [defaultValue, setDefaultValue] = useState<any>();
   const [loading, setLoading] = useState(false);
   const [fieldOptions, setFieldOptions] = useState([
@@ -98,6 +98,11 @@ export default function AddField({ propertyName, pageId, handleClose }: Props) {
   const [allowCustom, setAllowCustom] = useState(false);
 
   const [isDirty, setIsDirty] = useState(false);
+
+  const onRequiredTabClick = (id: number) => {
+    setIsDirty(true);
+    setRequired(id);
+  };
 
   useKeyPressEvent("Enter", () => {
     if (name.trim() !== "" && !loading && !showNameCollissionError) {
@@ -485,7 +490,10 @@ export default function AddField({ propertyName, pageId, handleClose }: Props) {
                   }}
                   type={type.value}
                   data={defaultValue}
-                  setData={setDefaultValue}
+                  setData={(data) => {
+                    setIsDirty(true);
+                    setDefaultValue(data);
+                  }}
                 />
               </Accordian>
             )}
@@ -494,7 +502,10 @@ export default function AddField({ propertyName, pageId, handleClose }: Props) {
               <Accordian name="Advanced" defaultOpen={advancedDefaultOpen}>
                 <AddConditions
                   viewConditions={viewConditions}
-                  setViewConditions={setViewConditions}
+                  setViewConditions={(conditions) => {
+                    setIsDirty(true);
+                    setViewConditions(conditions);
+                  }}
                   buttonText="Add Condition when Field is Visible"
                   collection={collection}
                   buttonWidth="fit"
