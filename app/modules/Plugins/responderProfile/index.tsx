@@ -21,9 +21,35 @@ export default function ResponderProfile({ handleClose }: Props) {
   const [lookupTokens, setLookupTokens] = useState<LookupToken[]>(
     collection.formMetadata.lookup?.tokens || []
   );
+  const [updated, setUpdated] = useState(false);
 
   return (
-    <Modal title="Responder Profile" handleClose={handleClose}>
+    <Modal
+      title="Responder Profile"
+      handleClose={async () => {
+        if (!updated && lookupTokens.length) {
+          setLoading(true);
+          const res = await updateFormCollection(collection.id, {
+            formMetadata: {
+              ...collection.formMetadata,
+              lookup: {
+                tokens:
+                  collection.formMetadata.allowAnonymousResponses === true
+                    ? []
+                    : lookupTokens,
+                snapshot: 0,
+              },
+            },
+          });
+          if (res.id) updateCollection(res);
+          else toast.error("Error updating collection, refresh and try again");
+          handleClose();
+          setLoading(false);
+        } else {
+          handleClose();
+        }
+      }}
+    >
       <Box padding="8">
         <Box marginBottom="16">
           {/* <Text variant="base">
@@ -109,6 +135,7 @@ export default function ResponderProfile({ handleClose }: Props) {
                   },
                 },
               });
+              setUpdated(true);
               if (res.id) updateCollection(res);
               else
                 toast.error("Error updating collection, refresh and try again");
