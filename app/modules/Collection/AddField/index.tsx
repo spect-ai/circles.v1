@@ -158,7 +158,7 @@ export default function AddField({ propertyName, pageId, handleClose }: Props) {
         });
       }
     } else {
-      if (!pageId) {
+      if (!pageId && collection.collectionType === 0) {
         toast.error("Pageid is missing, try again");
         return;
       }
