@@ -64,7 +64,6 @@ function CircleSidebar() {
   const { setCircleData, setMemberDetailsData } = useCircle();
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [settingsModalInitialTab, setSettingsModalInitialTab] = useState(0);
-  const [isContributorsModalOpen, setIsContributorsModalOpen] = useState(false);
   const { mode } = useTheme();
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
@@ -119,11 +118,6 @@ function CircleSidebar() {
               setSettingsModalInitialTab(0);
             }}
             initialTab={settingsModalInitialTab}
-          />
-        )}
-        {isContributorsModalOpen && (
-          <ContributorsModal
-            handleClose={() => setIsContributorsModalOpen(false)}
           />
         )}
       </AnimatePresence>

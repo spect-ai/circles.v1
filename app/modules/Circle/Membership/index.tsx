@@ -13,6 +13,9 @@ import { Embed } from "../../Collection/Embed";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { useLocation } from "react-use";
 import styled from "styled-components";
+import ContributorsModal from "../ContributorsModal";
+import mixpanel from "mixpanel-browser";
+import { useQuery } from "react-query";
 
 type Props = {};
 
@@ -32,6 +35,11 @@ export default function Membership({}: Props) {
   const { pathname, hostname } = useLocation();
   const route = pathname?.split("/")[2];
 
+  const [isContributorsModalOpen, setIsContributorsModalOpen] = useState(false);
+  const { data: currentUser } = useQuery<UserType>("getMyUser", {
+    enabled: false,
+  });
+
   return (
     <Box marginX="8" marginTop="2">
       <AnimatePresence>
@@ -41,6 +49,11 @@ export default function Membership({}: Props) {
             setIsOpen={setIsEmebedOpen}
             component="members"
             routeId={circle?.slug || ""}
+          />
+        )}
+        {isContributorsModalOpen && (
+          <ContributorsModal
+            handleClose={() => setIsContributorsModalOpen(false)}
           />
         )}
       </AnimatePresence>
@@ -67,6 +80,19 @@ export default function Membership({}: Props) {
                 <Text size="headingThree" weight="semiBold" ellipsis>
                   Membership Center
                 </Text>
+                <PrimaryButton
+                  variant="tertiary"
+                  onClick={() => {
+                    setIsContributorsModalOpen(true);
+                    process.env.NODE_ENV === "production" &&
+                      mixpanel.track("Circle edit roles", {
+                        circle: circle?.slug,
+                        user: currentUser?.username,
+                      });
+                  }}
+                >
+                  <Text color="accent">Edit Roles</Text>
+                </PrimaryButton>
               </Stack>
               <PrimaryButton onClick={() => setIsEmebedOpen(true)}>
                 Embed

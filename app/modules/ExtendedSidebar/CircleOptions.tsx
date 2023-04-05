@@ -1,9 +1,9 @@
 import { CircleType, ProjectType, UserType } from "@/app/types";
 import { SettingOutlined } from "@ant-design/icons";
-import { Box, Button, Heading, Text, useTheme } from "degen";
+import { Box, Button, Text } from "degen";
 import { AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
-import React, { memo, useState } from "react";
+import { memo, useState } from "react";
 import { useQuery } from "react-query";
 import SettingsModal from "../Circle/CircleSettingsModal";
 import mixpanel from "@/app/common/utils/mixpanel";
