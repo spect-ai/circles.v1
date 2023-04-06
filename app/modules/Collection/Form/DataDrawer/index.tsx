@@ -613,8 +613,6 @@ const ResponseFieldCard = styled(Box)<{
     margin-top: 0.5rem;
     align-items: flex-start;
   }
-
-  width: 80%;
   height: ${(props) => props.height || "auto"};
   border-radius: 1rem;
   padding: 1rem;
