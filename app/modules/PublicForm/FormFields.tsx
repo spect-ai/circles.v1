@@ -191,7 +191,10 @@ function FormFields({ form, setForm }: Props) {
   useEffect(() => {
     if (form && form.formMetadata.previousResponses?.length > 0) {
       setSubmitted(true);
-      setCurrentPage("submitted");
+
+      if (form.formMetadata.surveyTokenId) {
+        setCurrentPage("collect");
+      } else setCurrentPage("submitted");
     }
   }, [form?.name]);
 
@@ -484,6 +487,7 @@ function FormFields({ form, setForm }: Props) {
             const pages = form.formMetadata.pages;
             const pageOrder = form.formMetadata.pageOrder;
             const fields = pages[currentPage || ""]?.properties;
+
             return (
               <FormFieldContainer
                 display="flex"
@@ -493,7 +497,7 @@ function FormFields({ form, setForm }: Props) {
               >
                 <Stack>
                   {fields.map((field) => {
-                    if (form.properties[field].isPartOfFormView) {
+                    if (form.properties[field]?.isPartOfFormView) {
                       return (
                         <PublicField
                           form={form}

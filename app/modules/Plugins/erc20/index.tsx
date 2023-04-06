@@ -357,12 +357,14 @@ export default function DistributeERC20({
               }
               onClick={async () => {
                 try {
+                  setIsLoading(true);
                   if (!registry) return;
                   if (
                     selectedToken?.value !== "0x0" &&
                     !currentUser?.ethAddress
                   ) {
                     console.log("no eth address");
+                    setIsLoading(false);
                     return;
                   }
 

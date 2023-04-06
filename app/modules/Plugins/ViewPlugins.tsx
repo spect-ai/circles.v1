@@ -230,12 +230,16 @@ export default function ViewPlugins({}: Props) {
                             circle: collection.parents[0].slug,
                             user: currentUser?.username,
                           });
-                        const res = await isWhitelisted("Survey Protocol");
-                        if (pluginName === "erc20" && !res) {
-                          window.open(
-                            "https://circles.spect.network/r/9991d6ed-f3c8-425a-8b9e-0f598514482c",
-                            "_blank"
-                          );
+                        if (pluginName === "erc20") {
+                          const res = await isWhitelisted("Survey Protocol");
+                          if (!res) {
+                            window.open(
+                              "https://circles.spect.network/r/9991d6ed-f3c8-425a-8b9e-0f598514482c",
+                              "_blank"
+                            );
+                          } else {
+                            onClick(pluginName as PluginType);
+                          }
                         } else {
                           onClick(pluginName as PluginType);
                         }

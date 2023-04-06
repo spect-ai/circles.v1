@@ -4,7 +4,6 @@ import styled from "styled-components";
 import { useLocalCollection } from "../../Context/LocalCollectionContext";
 import { updateFormCollection } from "@/app/services/Collection";
 import { PageLine } from "./PageLine";
-import { BiPlusCircle } from "react-icons/bi";
 import { toast } from "react-toastify";
 import mixpanel from "mixpanel-browser";
 import { useQuery } from "react-query";
@@ -28,7 +27,7 @@ export default function Pages() {
             Pages
           </Text>
           <PrimaryButton
-            variant="transparent"
+            variant="tertiary"
             onClick={async () => {
               process.env.NODE_ENV === "production" &&
                 mixpanel.track("Add Page", {
@@ -70,10 +69,7 @@ export default function Pages() {
             }}
           >
             <Box display="flex" flexDirection="row" gap="1" alignItems="center">
-              <Text color="accent">
-                <BiPlusCircle size="20" />
-              </Text>
-              <Text color="accent">Add</Text>
+              <Text color="accent">Add Page</Text>
             </Box>
           </PrimaryButton>
         </Stack>

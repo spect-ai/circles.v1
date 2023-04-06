@@ -18,7 +18,7 @@ import { useQuery } from "react-query";
 import { UserType } from "@/app/types";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { Embed } from "../Embed";
-import { EyeOutlined, SendOutlined, ShareAltOutlined } from "@ant-design/icons";
+import { SendOutlined } from "@ant-design/icons";
 import { smartTrim } from "@/app/common/utils/utils";
 import FormSettings from "../Form/FormSettings";
 import WarnConnectWallet from "./WarnConnectWallet";

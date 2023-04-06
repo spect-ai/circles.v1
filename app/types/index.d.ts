@@ -899,6 +899,21 @@ export type FormMetadata = {
     };
   };
   pageOrder: string[];
+  lookup?: {
+    tokens: LookupToken[];
+    snapshot: number;
+  };
+};
+
+export type LookupToken = {
+  tokenType: "erc20" | "erc721" | "erc1155" | "kudos" | "poap";
+  contractAddress: string;
+  metadata: {
+    name: string;
+    image: string;
+  };
+  chainId: number;
+  tokenId?: string;
 };
 
 export type ProjectMetadata = {
