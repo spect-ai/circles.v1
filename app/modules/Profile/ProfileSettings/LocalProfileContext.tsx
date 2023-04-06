@@ -52,6 +52,13 @@ export function useProviderLocalProfile() {
   const [skills, setSkills] = useState([] as string[]);
   const [twitter, setTwitter] = useState("");
   const [github, setGithub] = useState("");
+  const [githubId, setGithubId] = useState("");
+  const [githubUsername, setGithubUsername] = useState("");
+  const [discordId, setDiscordId] = useState("");
+  const [discordUsername, setDiscordUsername] = useState("");
+  const [telegramId, setTelegramId] = useState("");
+  const [telegramUsername, setTelegramUsername] = useState("");
+
   const [behance, setBehance] = useState("");
   const [website, setWebsite] = useState("");
   const [usernameError, setUsernameError] = useState("");
@@ -101,6 +108,12 @@ export function useProviderLocalProfile() {
     setGithub(currentUser?.github || "");
     setBehance(currentUser?.behance || "");
     setWebsite(currentUser?.website || "");
+    setDiscordId(currentUser?.discordId || "");
+    setDiscordUsername(currentUser?.discordUsername || "");
+    setTelegramUsername(currentUser?.telegramUsername || "");
+    setTelegramId(currentUser?.telegramId || "");
+    setGithubId(currentUser?.githubId || "");
+    setGithubUsername(currentUser?.githubUsername || "");
     setLoading(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentUser, isLoading]);
@@ -134,6 +147,18 @@ export function useProviderLocalProfile() {
     onSaveProfile,
     usernameError,
     setUsernameError,
+    setDiscordId,
+    discordId,
+    setDiscordUsername,
+    discordUsername,
+    setTelegramId,
+    telegramId,
+    setTelegramUsername,
+    telegramUsername,
+    githubId,
+    setGithubId,
+    githubUsername,
+    setGithubUsername,
   };
 }
 export const useProfile = () => useContext(LocalProfileContext);

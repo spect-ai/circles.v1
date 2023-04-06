@@ -466,3 +466,54 @@ export const linkDiscordToCollection = async (
     )
   ).json();
 };
+
+export const postFormMessage = async (
+  collectionId: string,
+  payload: {
+    channelId: string;
+  }
+) => {
+  return await (
+    await fetch(
+      `${process.env.API_HOST}/collection/v1/${collectionId}/postFormMessage`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify(payload),
+      }
+    )
+  ).json();
+};
+
+export type PostSocialsPayload = {
+  discordId?: string;
+  discordUsername?: string;
+  githubId?: string;
+  githubUsername?: string;
+  telegramId?: string;
+  telegramUsername?: string;
+  ethAddress?: string;
+};
+
+export const postSocials = async (
+  channelId: string,
+  payload: PostSocialsPayload
+) => {
+  console.log({ payload });
+  return await (
+    await fetch(
+      `${process.env.API_HOST}/collection/v1/${channelId}/saveAndPostSocials`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify(payload),
+      }
+    )
+  ).json();
+};
