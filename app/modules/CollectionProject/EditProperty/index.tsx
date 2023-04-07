@@ -11,7 +11,7 @@ import { toast } from "react-toastify";
 import styled from "styled-components";
 import AddField from "../../Collection/AddField";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
-import { getPropertyIcon } from "./Utils";
+import getPropertyIcon from "./Utils";
 
 type Props = {
   propertyName: string;

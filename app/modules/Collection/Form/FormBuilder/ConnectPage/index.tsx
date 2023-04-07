@@ -2,7 +2,6 @@
 import { PassportStampIcons, PassportStampIconsLightMode } from "@/app/assets";
 import Logout from "@/app/common/components/LogoutButton";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { Connect } from "@/app/modules/Sidebar/ProfileButton/ConnectButton";
 import { getForm } from "@/app/services/Collection";
 import {
   getAllCredentials,
@@ -24,6 +23,7 @@ import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { toast } from "react-toastify";
 import styled from "styled-components";
+import Connect from "@/app/modules/Sidebar/ProfileButton/ConnectButton";
 import ProfileInfo from "./ProfileInfo";
 
 type Props = {

@@ -3,9 +3,9 @@ import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { Box, IconCheck, MediaPicker, Stack, Text } from "degen";
 import { AnimatePresence } from "framer-motion";
-import { useState } from "react";
+import React, { useState } from "react";
 import csvToJson from "csvtojson";
-import { Property } from "@/app/types";
+import { Option, Property } from "@/app/types";
 import Dropdown from "@/app/common/components/Dropdown";
 import { convertToId, isEmail, isURL } from "@/app/common/utils/utils";
 import { toast } from "react-toastify";
@@ -22,7 +22,7 @@ const ImportTasks = () => {
 
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<Record<string, unknown>[]>([]);
-  const [userMapping, setUserMapping] = useState();
+  const [userMapping, setUserMapping] = useState<Record<string, Option>>();
   const [properties, setProperties] = useState<{
     [key: string]: Property;
   }>({});
@@ -93,16 +93,21 @@ const ImportTasks = () => {
               )}
               {step === 1 && (
                 <Stack>
-                  {Object.keys(properties).map((propertyName) => (
-                    <MapField
-                      propertyName={propertyName}
-                      properties={properties}
-                      setNewProperties={setProperties}
-                      data={data}
-                      userMapping={userMapping}
-                      setUserMapping={setUserMapping}
-                    />
-                  ))}
+                  {userMapping &&
+                    Object.keys(properties).map((propertyName) => (
+                      <MapField
+                        propertyName={propertyName}
+                        properties={properties}
+                        setNewProperties={setProperties}
+                        data={data}
+                        userMapping={userMapping}
+                        setUserMapping={
+                          setUserMapping as React.Dispatch<
+                            React.SetStateAction<Record<string, unknown>>
+                          >
+                        }
+                      />
+                    ))}
                   <Stack direction="horizontal" justify="space-between">
                     <PrimaryButton
                       variant="tertiary"

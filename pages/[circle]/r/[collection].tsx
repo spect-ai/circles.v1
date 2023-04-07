@@ -4,7 +4,7 @@ import {
   CircleContext,
   useProviderCircleContext,
 } from "@/app/modules/Circle/CircleContext";
-import { Collection } from "@/app/modules/Collection";
+import Collection from "@/app/modules/Collection";
 import {
   LocalCollectionContext,
   useProviderLocalCollection,

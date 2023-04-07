@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Breadcrumbs from "@/app/common/components/Breadcrumbs";
 import { UserType } from "@/app/types";
 import { GithubOutlined, TwitterOutlined } from "@ant-design/icons";
@@ -188,8 +189,8 @@ const Membership = () => {
         <Stack space="0" direction="vertical" align="flex-start">
           <Hidden xs sm>
             <Box>
-              {navigationBreadcrumbs && (
-                <Breadcrumbs crumbs={navigationBreadcrumbs} />
+              {(navigationBreadcrumbs as any) && (
+                <Breadcrumbs crumbs={navigationBreadcrumbs as any} />
               )}
             </Box>
           </Hidden>

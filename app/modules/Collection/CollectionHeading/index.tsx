@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Breadcrumbs from "@/app/common/components/Breadcrumbs";
 import Popover from "@/app/common/components/Popover";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
@@ -74,8 +75,8 @@ const CollectionHeading = () => {
     >
       <Hidden xs sm>
         <Box marginLeft="4" marginTop="2">
-          {navigationBreadcrumbs && (
-            <Breadcrumbs crumbs={navigationBreadcrumbs} />
+          {(navigationBreadcrumbs as any) && (
+            <Breadcrumbs crumbs={navigationBreadcrumbs as any} />
           )}
         </Box>
       </Hidden>

@@ -1,7 +1,7 @@
 import { Box, Stack, IconSparkles, Heading, Avatar } from "degen";
-import { Connect } from "@/app/modules/Sidebar/ProfileButton/ConnectButton";
 import styled from "styled-components";
 import SocialMedia from "@/app/common/components/SocialMedia";
+import Connect from "../../Sidebar/ProfileButton/ConnectButton";
 
 export const VioletBlur = styled.div`
   filter: blur(150px);

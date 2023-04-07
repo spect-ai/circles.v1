@@ -418,8 +418,7 @@ const CardDrawer = ({ handleClose, defaultValue }: Props) => {
                       "closed"
                     }
                   />
-
-                  {value.slug && (
+                  {(value.slug as string) && (
                     <CardOptions
                       handleDrawerClose={closeCard}
                       cardSlug={value.slug as string}
@@ -452,7 +451,7 @@ const CardDrawer = ({ handleClose, defaultValue }: Props) => {
                     </Box>
                   )}
 
-                  {value.slug &&
+                  {(value.slug as string) &&
                     collection.projectMetadata?.paymentStatus?.[
                       value.slug as string
                     ] === "completed" && (
@@ -477,7 +476,7 @@ const CardDrawer = ({ handleClose, defaultValue }: Props) => {
                       </Box>
                     )}
 
-                  {value.slug &&
+                  {(value.slug as string) &&
                     ["pending", "pendingSignature"].includes(
                       collection.projectMetadata?.paymentStatus?.[
                         value.slug as string
@@ -712,7 +711,6 @@ const CardDrawer = ({ handleClose, defaultValue }: Props) => {
               <Box paddingX="8" paddingY="4">
                 <CreateDiscordThread
                   collection={collection}
-                  actionMode="create"
                   action={{} as Action}
                   setAction={() => {}}
                   manualAction

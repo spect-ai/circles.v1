@@ -3,8 +3,8 @@ import { Stack, Text, Textarea } from "degen";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useLocalCollection } from "../../Context/LocalCollectionContext";
-import { AdditionalSettings } from "../AdditionalSettings";
 import Notifications from "../Notifications";
+import AdditionalSettings from "../AdditionalSettings";
 
 const General = () => {
   const { localCollection: collection, updateCollection } =

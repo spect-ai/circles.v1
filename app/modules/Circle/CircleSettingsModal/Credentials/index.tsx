@@ -79,7 +79,7 @@ const Credentials = () => {
         />
 
         <Box marginTop="4" width="full">
-          <PrimaryButton onClick={onSubmit} loading={isLoading} shape="circle">
+          <PrimaryButton onClick={onSubmit} loading={isLoading}>
             Update Mintkudos Credentials
           </PrimaryButton>
           <Box display="flex" flexDirection="row" justifyContent="flex-end">

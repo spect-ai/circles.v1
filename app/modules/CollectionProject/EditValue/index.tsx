@@ -403,7 +403,7 @@ const EditValue = ({
                       <Text>{option.label}</Text>
                     </MenuItem>
                   ))}
-                  {tempValue && property.type === "multiSelect" && (
+                  {(tempValue as string) && property.type === "multiSelect" && (
                     <MenuItem
                       padding="2"
                       onClick={async () => {
@@ -524,11 +524,11 @@ const EditValue = ({
               }}
               mode={mode}
             >
-              {value ? (
+              {(value as string) ? (
                 <Text>
                   {property.type === "date"
                     ? new Date(value as string).toDateString()
-                    : value}
+                    : (value as string)}
                 </Text>
               ) : (
                 "Empty"
@@ -566,7 +566,10 @@ const EditValue = ({
                   toast.error("You can't edit a closed card");
                   return;
                 }
-                if (Object.keys(value || {}).length === 0) {
+                if (
+                  Object.keys((value as Record<string, unknown>) || {})
+                    .length === 0
+                ) {
                   setIsEditing(true);
                 }
               }}
@@ -576,7 +579,7 @@ const EditValue = ({
                 <Text>
                   {(value as Credential).username ||
                     (value as Credential).login ||
-                    value}
+                    (value as string)}
                 </Text>
               ) : (
                 "Empty"
@@ -687,7 +690,7 @@ const EditValue = ({
             }}
             mode={mode}
           >
-            {value ? <Text ellipsis>{value}</Text> : "Empty"}
+            {value ? <Text ellipsis>{value as string}</Text> : "Empty"}
           </FieldButton>
         </Box>
       )}

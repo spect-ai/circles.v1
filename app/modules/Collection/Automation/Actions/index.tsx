@@ -1,6 +1,5 @@
 import { Action, CollectionType } from "@/app/types";
 import { Box, Text } from "degen";
-import CloseCard from "./CloseCard";
 import CreateCard from "./CreateCard";
 import CreateDiscordChannel from "./CreateDiscordChannel";
 import CreateDiscordThread from "./CreateDiscordThread";
@@ -13,7 +12,6 @@ import SendEmail from "./SendEmail";
 
 type Props = {
   actionType: string;
-  actionMode: "edit" | "create";
   action: Action;
   setAction: (action: Action) => void;
   collection: CollectionType;
@@ -27,7 +25,6 @@ type Props = {
 
 const SingleAction = ({
   actionType,
-  actionMode,
   action,
   setAction,
   collection,
@@ -47,7 +44,6 @@ const SingleAction = ({
     {actionType === "createDiscordChannel" && (
       <CreateDiscordChannel
         action={action}
-        actionMode={actionMode}
         setAction={setAction}
         collection={collection}
       />
@@ -69,7 +65,6 @@ const SingleAction = ({
     {actionType === "createCard" && (
       <CreateCard
         action={action}
-        actionMode={actionMode}
         setAction={setAction}
         collection={collection}
       />
@@ -77,14 +72,6 @@ const SingleAction = ({
     {actionType === "postOnDiscord" && (
       <PostCardOnDiscord
         action={action}
-        setAction={setAction}
-        collection={collection}
-      />
-    )}
-    {actionType === "closeCard" && (
-      <CloseCard
-        action={action}
-        actionMode={actionMode}
         setAction={setAction}
         collection={collection}
       />

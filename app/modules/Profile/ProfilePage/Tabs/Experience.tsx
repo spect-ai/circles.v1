@@ -1,5 +1,11 @@
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { LensDate, LensExperience, UserType } from "@/app/types";
+import {
+  Credential,
+  LensDate,
+  LensExperience,
+  PoapCredential,
+  UserType,
+} from "@/app/types";
 import { Box, Text, useTheme } from "degen";
 import { AnimatePresence } from "framer-motion";
 import { memo, useState } from "react";
@@ -58,7 +64,11 @@ const Experience = ({
   allCredentials,
 }: {
   userData: UserType;
-  allCredentials: { [id: string]: unknown[] };
+  allCredentials: {
+    poaps: PoapCredential[];
+    kudos: Credential[];
+    gitcoinPassports: Credential[];
+  };
 }) => {
   const { mode } = useTheme();
   const [addExperience, setAddExperience] = useState(false);

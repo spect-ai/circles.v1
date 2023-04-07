@@ -7,15 +7,14 @@ import useConnectDiscord from "@/app/services/Discord/useConnectDiscord";
 import { ToastContainer } from "react-toastify";
 import { useAtom } from "jotai";
 import { connectedUserAtom } from "@/app/state/global";
-import { SetUpProfile } from "./SetupProfile";
-import { CreateCircle } from "./CreateCircle";
 import { BasicProfile } from "./BasicProfile";
 import { VioletBlur } from "../ConnectPage";
+import CreateCircle from "./CreateCircle";
+import SetUpProfile from "./SetupProfile";
 
 const Onboard = () => {
   useConnectDiscord();
-  const [onboardType, setOnboardType] =
-    useState<"circle" | "profile">("circle");
+  const [onboardType] = useState<"circle" | "profile">("circle");
   const [step, setStep] = useState(1);
   const { mode } = useTheme();
   const [connectedUser] = useAtom(connectedUserAtom);
@@ -78,9 +77,7 @@ const Onboard = () => {
         {onboardType === "circle" && step === 0 && (
           <BasicProfile setStep={setStep} />
         )}
-        {onboardType === "circle" && step === 1 && (
-          <CreateCircle setStep={setStep} setOnboardType={setOnboardType} />
-        )}
+        {onboardType === "circle" && step === 1 && <CreateCircle />}
         {onboardType === "profile" && <SetUpProfile />}
       </Box>
     </Box>

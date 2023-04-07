@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Breadcrumbs from "@/app/common/components/Breadcrumbs";
 import { Box, Stack, Text } from "degen";
 import Link from "next/link";
@@ -46,8 +47,8 @@ const PaymentCenterHeading = ({ paymentViewId, setPaymentViewId }: Props) => {
     <Box width="full" display="flex" flexDirection="column">
       <Hidden xs sm>
         <Box>
-          {navigationBreadcrumbs && (
-            <Breadcrumbs crumbs={navigationBreadcrumbs} />
+          {(navigationBreadcrumbs as any) && (
+            <Breadcrumbs crumbs={navigationBreadcrumbs as any} />
           )}
         </Box>
       </Hidden>

@@ -150,7 +150,7 @@ const AddConditions = ({
           </Stack>
         </Box>
       ))}
-      <Box marginTop="4" width={(buttonWidth as unknown) || "64"}>
+      <Box marginTop="4" width={(buttonWidth as "full") || "64"}>
         <PrimaryButton
           icon={<IconPlusSmall />}
           variant="tertiary"

@@ -2,7 +2,7 @@ import { Box, Button, Input, Stack, Text, useTheme } from "degen";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Modal from "@/app/common/components/Modal";
-import Select, { option } from "@/app/common/components/Select";
+import Select, { Option } from "@/app/common/components/Select";
 import { useQuery } from "react-query";
 import { Template } from "@/app/types";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
@@ -32,7 +32,7 @@ const CreateProjectModal = ({ folderId, setModalOpen }: Props) => {
   const { circle: cId } = router.query;
   const { circle, fetchCircle } = useCircle();
 
-  const [template, setTemplate] = useState({} as option);
+  const [template, setTemplate] = useState({} as Option);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const { mode } = useTheme();
@@ -42,7 +42,7 @@ const CreateProjectModal = ({ folderId, setModalOpen }: Props) => {
     value: "trello",
   });
 
-  const { data: templates, refetch: fetchTemplate } = useQuery<option[]>(
+  const { data: templates, refetch: fetchTemplate } = useQuery<Option[]>(
     ["projectTemplates", cId],
     () =>
       fetch(
@@ -50,7 +50,7 @@ const CreateProjectModal = ({ folderId, setModalOpen }: Props) => {
       ).then(async (res) => {
         const data = await res.json();
         const filteredData = data.map((t: Template) => {
-          const rt: option = {
+          const rt: Option = {
             label: t.name,
             value: t._id,
           };
@@ -59,7 +59,7 @@ const CreateProjectModal = ({ folderId, setModalOpen }: Props) => {
         return filteredData;
       }),
     {
-      onSuccess: (res: option[]) => {
+      onSuccess: (res: Option[]) => {
         setTemplate(res[0]);
       },
       enabled: false,

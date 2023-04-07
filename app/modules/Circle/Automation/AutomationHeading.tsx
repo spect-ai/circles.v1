@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Breadcrumbs from "@/app/common/components/Breadcrumbs";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { Box, Text, Stack } from "degen";
@@ -13,8 +14,7 @@ const AutomationHeading = () => {
     <Box width="full" display="flex" flexDirection="column">
       <Hidden xs sm>
         <Box>
-          {navigationBreadcrumbs && (
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          {(navigationBreadcrumbs as any) && (
             <Breadcrumbs crumbs={navigationBreadcrumbs as any} />
           )}
         </Box>

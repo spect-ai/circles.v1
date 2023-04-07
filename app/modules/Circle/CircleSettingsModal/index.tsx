@@ -171,7 +171,6 @@ const SettingsModal = ({ handleClose, initialTab }: Props) => {
                   onClick={onSubmit}
                   loading={isLoading}
                   disabled={uploading}
-                  shape="circle"
                 >
                   Update Space
                 </PrimaryButton>

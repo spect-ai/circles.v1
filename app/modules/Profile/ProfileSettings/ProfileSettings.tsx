@@ -5,11 +5,11 @@ import { Box } from "degen";
 import { useState } from "react";
 import Tabs from "@/app/common/components/Tabs";
 import styled from "styled-components";
-import { About } from "./About";
 import { useProfile } from "./LocalProfileContext";
 import Notification from "./Notificaton";
 import Socials from "./Socials";
 import BasicInfo from "./Basic";
+import About from "./About";
 
 const ScrollContainer = styled(Box)`
   ::-webkit-scrollbar {

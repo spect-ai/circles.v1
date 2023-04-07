@@ -142,9 +142,6 @@ const CompletedPayments = () => {
             key={paymentId}
             index={index}
             paymentDetails={circle.paymentDetails[paymentId]}
-            handleClick={() => {
-              setIsCardDrawerOpen(true);
-            }}
           />
         ))}
       </ScrollContainer>

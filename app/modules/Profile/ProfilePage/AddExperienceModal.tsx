@@ -1,7 +1,7 @@
 import Editor from "@/app/common/components/Editor";
 import Modal from "@/app/common/components/Modal";
 import useProfileUpdate from "@/app/services/Profile/useProfileUpdate";
-import { Credential } from "@/app/types";
+import { Credential, PoapCredential } from "@/app/types";
 import { Box, Button, Input, Tag, Text, useTheme } from "degen";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
@@ -13,7 +13,11 @@ import LinkCredentialsModal from "./LinkCredentialsModal";
 type Props = {
   handleClose: () => void;
   modalMode: "add" | "edit";
-  allCredentials: { [id: string]: unknown[] };
+  allCredentials: {
+    poaps: PoapCredential[];
+    kudos: Credential[];
+    gitcoinPassports: Credential[];
+  };
   experienceId?: number;
 };
 

@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Portal } from "@/app/common/components/Portal/portal";
 import { PropertyType } from "@/app/types";
 import { Box, IconClose, Stack, Text } from "degen";
 import { useRef, useState } from "react";
 import { CellProps } from "react-datasheet-grid";
 import { usePopper } from "react-popper";
 import styled from "styled-components";
+import Portal from "@/app/common/components/Portal/portal";
 import LongTextComponent from "../../TableView/LongTextComponent";
 import SelectComponent from "../../TableView/SelectComponent";
 

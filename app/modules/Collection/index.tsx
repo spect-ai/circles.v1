@@ -7,10 +7,10 @@ import Help from "@/app/common/components/Help";
 import CollectionProject from "../CollectionProject";
 import CollectionHeading from "./CollectionHeading";
 import { useLocalCollection } from "./Context/LocalCollectionContext";
-import { Form } from "./Form";
 import TableView from "./TableView";
 import FAQModal from "../Dashboard/FAQModal";
 import { SkeletonLoader } from "./SkeletonLoader";
+import Form from "./Form";
 
 const Collection = () => {
   const {
@@ -46,13 +46,6 @@ const Collection = () => {
           }`,
         }}
       />
-      {/* <PrimaryButton
-        onClick={() => {
-          void migrateAllCOllections();
-        }}
-      >
-        Migrate
-      </PrimaryButton> */}
       <AnimatePresence>
         {faqOpen && <FAQModal handleClose={() => setFaqOpen(false)} />}
       </AnimatePresence>

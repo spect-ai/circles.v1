@@ -184,11 +184,7 @@ const ConnectQuestbook = () => {
                   />
                 </Box>
 
-                <PrimaryButton
-                  shape="circle"
-                  onClick={onSubmit}
-                  loading={isLoading}
-                >
+                <PrimaryButton onClick={onSubmit} loading={isLoading}>
                   Save
                 </PrimaryButton>
               </Stack>

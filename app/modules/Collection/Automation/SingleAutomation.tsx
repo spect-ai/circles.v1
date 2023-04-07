@@ -646,7 +646,6 @@ const SingleAutomation = ({
                           newActions[index] = action2;
                           setActions(newActions);
                         }}
-                        actionMode="edit"
                         collection={collection}
                         invalidActions={
                           actionValidationResults?.invalidActions || {}

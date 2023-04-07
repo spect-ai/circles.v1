@@ -51,7 +51,6 @@ const CardActivity = ({
                 <Stack direction="horizontal" align="center" space="2">
                   <Avatar
                     label=""
-                    placeholder={!actor?.avatar}
                     src={
                       actor?.avatar ||
                       `https://api.dicebear.com/5.x/thumbs/svg?seed=${actor?.id}`
@@ -97,7 +96,6 @@ const CardActivity = ({
         <Stack direction="horizontal" space="2">
           <Avatar
             label=""
-            placeholder={!currentUser?.avatar}
             src={
               currentUser?.avatar ||
               `https://api.dicebear.com/5.x/thumbs/svg?seed=${currentUser?.id}`

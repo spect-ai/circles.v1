@@ -293,7 +293,9 @@ const CollectPayment = ({
           ? "This form is paywalled. You need to pay the required amount before submitting the form"
           : "This form allows donation, you can donate any amount from any of the tokens"}
       </Text>
-      {data.__payment__ && (
+      {(data.__payment__ as {
+        txnHash: string;
+      }) && (
         <a
           href={`${circleRegistry?.[selectedNetwork.value].blockExplorer}tx/${
             (

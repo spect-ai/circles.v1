@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Box, Stack } from "degen";
 import { useEffect, useState } from "react";
 import Breadcrumbs from "@/app/common/components/Breadcrumbs";
@@ -5,9 +6,9 @@ import { Hidden } from "react-grid-system";
 import styled from "styled-components";
 import { useAtom } from "jotai";
 import { isSidebarExpandedAtom } from "@/app/state/global";
-import { FolderView } from "./FolderView";
 import InviteMemberModal from "../ContributorsModal/InviteMembersModal";
 import { useCircle } from "../CircleContext";
+import FolderView from "./FolderView";
 
 interface Props {
   toggle: number;
@@ -73,8 +74,8 @@ const CircleDashboard = () => {
       <Box marginBottom="-4">
         <Stack direction="horizontal" justify="space-between">
           <Hidden xs sm>
-            {navigationBreadcrumbs && (
-              <Breadcrumbs crumbs={navigationBreadcrumbs} />
+            {(navigationBreadcrumbs as any) && (
+              <Breadcrumbs crumbs={navigationBreadcrumbs as any} />
             )}
           </Hidden>
           <Hidden xs sm>

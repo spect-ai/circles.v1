@@ -1,5 +1,11 @@
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { LensDate, LensEducation, UserType } from "@/app/types";
+import {
+  Credential,
+  LensDate,
+  LensEducation,
+  PoapCredential,
+  UserType,
+} from "@/app/types";
 import { Box, Text, useTheme } from "degen";
 import { AnimatePresence } from "framer-motion";
 import { memo, useState } from "react";
@@ -57,7 +63,11 @@ const Education = ({
   allCredentials,
 }: {
   userData: UserType;
-  allCredentials: { [id: string]: unknown[] };
+  allCredentials: {
+    poaps: PoapCredential[];
+    kudos: Credential[];
+    gitcoinPassports: Credential[];
+  };
 }) => {
   const [openEducationModal, setOpenEducationModal] = useState(false);
   const [selectedEducationId, setSelectedEducationId] = useState<number>();

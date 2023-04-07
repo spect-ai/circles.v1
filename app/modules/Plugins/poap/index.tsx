@@ -57,6 +57,7 @@ const DistributePOAP = ({ handleClose }: Props) => {
       | "distributePoapWhenResponsesMatch"
       | "distributePoapOnDiscordCallAttendance"
       | "createKudos"
+      | "distributeKudosWhenResponsesMatch"
     >("importClaimCodes");
   const [
     minimumNumberOfAnswersThatNeedToMatch,

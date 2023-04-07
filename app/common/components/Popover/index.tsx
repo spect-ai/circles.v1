@@ -1,11 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {
-  FC, ReactNode, useEffect, useRef, useState,
-} from "react";
+import { FC, ReactNode, useEffect, useRef, useState } from "react";
 import { Box } from "degen";
 import { usePopper } from "react-popper";
 import { AnimatePresence } from "framer-motion";
-import { Portal } from "../Portal/portal";
+import Portal from "../Portal/portal";
 
 interface Props {
   isOpen: boolean;
@@ -25,7 +23,7 @@ export function useOutsideAlerter(
   ref: any,
   setIsOpen: (isOpen: boolean) => void,
   disabled?: boolean,
-  dependentRef?: any,
+  dependentRef?: any
 ) {
   useEffect(() => {
     /**
@@ -33,11 +31,11 @@ export function useOutsideAlerter(
      */
     function handleClickOutside(event: any) {
       if (
-        !disabled
-        && ref.current
-        && !(
-          ref.current.contains(event.target)
-          || dependentRef?.current?.contains(event.target)
+        !disabled &&
+        ref.current &&
+        !(
+          ref.current.contains(event.target) ||
+          dependentRef?.current?.contains(event.target)
         )
       ) {
         // alert("You clicked outside of me!");

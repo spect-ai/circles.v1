@@ -4,7 +4,7 @@ import CheckBox from "@/app/common/components/Table/Checkbox";
 
 import useProfileUpdate from "@/app/services/Profile/useProfileUpdate";
 import { userDataAtom } from "@/app/state/global";
-import { Credential } from "@/app/types";
+import { Credential, PoapCredential } from "@/app/types";
 import { Box, Button, Input, Tag, Text, useTheme } from "degen";
 import { useAtom } from "jotai";
 import { useEffect, useState } from "react";
@@ -14,7 +14,11 @@ import LinkCredentialsModal from "./LinkCredentialsModal";
 type Props = {
   handleClose: () => void;
   modalMode: "add" | "edit";
-  allCredentials: { [id: string]: unknown[] };
+  allCredentials: {
+    poaps: PoapCredential[];
+    kudos: Credential[];
+    gitcoinPassports: Credential[];
+  };
   educationId?: number;
 };
 

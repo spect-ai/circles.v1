@@ -41,9 +41,7 @@ import queryClient from "@/app/common/utils/queryClient";
 import { useEffect } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import ErrorFallBack from "@/app/common/components/Error";
-
 import "@rainbow-me/rainbowkit/styles.css";
-
 import {
   RainbowKitProvider,
   darkTheme,
@@ -62,8 +60,6 @@ import { publicProvider } from "wagmi/providers/public";
 import { SiweMessage } from "siwe";
 import { UserType } from "@/app/types";
 import { useAtom } from "jotai";
-import { flags } from "@/app/common/utils/featureFlags";
-
 import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
 import { useLocation } from "react-use";
 import ScribeEmbed from "@/app/common/components/Help/ScribeEmbed";
@@ -73,11 +69,10 @@ import {
   scribeOpenAtom,
   scribeUrlAtom,
 } from "@/app/state/global";
-
 import { ArcanaConnector } from "@arcana/auth-wagmi";
 import { metaMaskWallet, rainbowWallet } from "@rainbow-me/rainbowkit/wallets";
 import useProfileUpdate from "@/app/services/Profile/useProfileUpdate";
-
+import flags from "@/app/common/utils/featureFlags";
 import * as gtag from "../lib/gtag";
 
 const ArcanaRainbowConnector = ({ chains }: { chains: Chain[] }) => ({

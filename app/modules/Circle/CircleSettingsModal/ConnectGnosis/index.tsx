@@ -8,7 +8,7 @@ import { Registry } from "@/app/types";
 import { DeleteOutlined } from "@ant-design/icons";
 import { Box, Button, Stack, Tag, Text } from "degen";
 import { AnimatePresence } from "framer-motion";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { getAccount } from "@wagmi/core";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { OwnerResponse } from "@gnosis.pm/safe-service-client";
@@ -238,7 +238,6 @@ const ConnectGnosis = () => {
                     portal
                   />
                   <PrimaryButton
-                    shape="circle"
                     onClick={onSubmit}
                     loading={isLoading}
                     disabled={

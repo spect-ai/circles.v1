@@ -47,7 +47,9 @@ export const getBodyOfProposal = (
       response = response.concat(` ${data[property.name]} \n`);
     }
     if (property.type === "date") {
-      response = response.concat(` ${data[property.name]?.toString()} \n`);
+      response = response.concat(
+        ` ${(data[property.name] as number)?.toString()} \n`
+      );
     }
     if (property.type === "user") {
       response = response.concat(
