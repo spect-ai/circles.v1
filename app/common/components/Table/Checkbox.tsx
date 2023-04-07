@@ -16,23 +16,23 @@ const Container = styled(Box)`
   }
 `;
 
-export default function CheckBox({ isChecked, onClick, disabled }: Props) {
-  return (
-    <Container
-      backgroundColor={isChecked ? "accentSecondary" : "transparent"}
-      borderRadius="medium"
-      borderWidth="0.375"
-      paddingY="0"
-      paddingX="1"
-      fontWeight="medium"
-      fontSize="small"
-      display="flex"
-      alignItems="center"
-      width="fit"
-      transitionDuration="300"
-      onClick={disabled ? undefined : onClick}
-    >
-      <IconCheck size="4" color={isChecked ? "accent" : "transparent"} />
-    </Container>
-  );
-}
+const CheckBox = ({ isChecked, onClick, disabled }: Props) => (
+  <Container
+    backgroundColor={isChecked ? "accentSecondary" : "transparent"}
+    borderRadius="medium"
+    borderWidth="0.375"
+    paddingY="0"
+    paddingX="1"
+    fontWeight="medium"
+    fontSize="small"
+    display="flex"
+    alignItems="center"
+    width="fit"
+    transitionDuration="300"
+    onClick={disabled ? undefined : onClick}
+  >
+    <IconCheck size="4" color={isChecked ? "accent" : "transparent"} />
+  </Container>
+);
+
+export default CheckBox;

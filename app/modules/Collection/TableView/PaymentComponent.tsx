@@ -30,7 +30,11 @@ const PaymentComponent = ({ rowData, columnData }: CellProps) => {
             justifyContent="flex-start"
           >
             <Text variant="small">
-              Paid {payment.value} {payment.token.label}
+              Paid
+              {" "}
+              {payment.value}
+              {" "}
+              {payment.token.label}
             </Text>
           </Button>
         </a>

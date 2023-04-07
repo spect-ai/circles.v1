@@ -2,14 +2,14 @@ import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { SaveFilled } from "@ant-design/icons";
 import { Box } from "degen";
-import React, { useState } from "react";
+import { useState } from "react";
 import Tabs from "@/app/common/components/Tabs";
 import styled from "styled-components";
-import { BasicInfo } from "./Basic";
 import { About } from "./About";
 import { useProfile } from "./LocalProfileContext";
-import { Notification } from "./Notificaton";
-import { Socials } from "./Socials";
+import Notification from "./Notificaton";
+import Socials from "./Socials";
+import BasicInfo from "./Basic";
 
 const ScrollContainer = styled(Box)`
   ::-webkit-scrollbar {
@@ -24,7 +24,7 @@ interface Props {
   openTab?: number;
 }
 
-export default function ProfileSettings({ setIsOpen, openTab }: Props) {
+const ProfileSettings = ({ setIsOpen, openTab }: Props) => {
   const [tab, setTab] = useState(openTab || 0);
   const onTabClick = (id: number) => setTab(id);
 
@@ -69,10 +69,10 @@ export default function ProfileSettings({ setIsOpen, openTab }: Props) {
           }}
           paddingY="4"
         >
-          {tab == 0 && <BasicInfo />}
-          {tab == 1 && <About />}
-          {tab == 2 && <Notification />}
-          {tab == 3 && <Socials />}
+          {tab === 0 && <BasicInfo />}
+          {tab === 1 && <About />}
+          {tab === 2 && <Notification />}
+          {tab === 3 && <Socials />}
         </ScrollContainer>
       </Box>
       <Box padding="3">
@@ -93,4 +93,10 @@ export default function ProfileSettings({ setIsOpen, openTab }: Props) {
       </Box>
     </Modal>
   );
-}
+};
+
+ProfileSettings.defaultProps = {
+  openTab: 0,
+};
+
+export default ProfileSettings;

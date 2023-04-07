@@ -1,15 +1,28 @@
 import { CollectionType, Option } from "@/app/types";
 import { automationActionOptions } from "../Constants";
 
-export const getAutomationActionOptions = (
+type AutomationActionOption = {
+  label: string;
+  value: string;
+  id: string;
+  name: string;
+  service: string;
+  type: string;
+  group?: string;
+  data: Record<string, unknown>;
+};
+
+const getAutomationActionOptions = (
   collection: CollectionType,
   trigger: Option
 ) => {
-  const thenOptions = [];
-
-  for (const group of automationActionOptions) {
-    const groupOptions = [];
-    for (const option of group.options) {
+  const thenOptions: {
+    label: string;
+    options: AutomationActionOption[];
+  }[] = [];
+  automationActionOptions.forEach((group) => {
+    const groupOptions: AutomationActionOption[] = [];
+    group.options.forEach((option) => {
       if (collection?.collectionType === 0) {
         if (
           [
@@ -41,12 +54,14 @@ export const getAutomationActionOptions = (
           groupOptions.push(option);
         }
       }
-    }
+    });
 
     if (groupOptions.length > 0) {
       thenOptions.push({ label: group.label, options: groupOptions });
     }
-  }
+  });
 
   return thenOptions;
 };
+
+export default getAutomationActionOptions;

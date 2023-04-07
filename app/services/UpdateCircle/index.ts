@@ -77,12 +77,11 @@ export const updateCircle = async (
       theme: "dark",
     });
     return data;
-  } else {
-    toast("Error updating", {
-      theme: "dark",
-    });
-    return false;
   }
+  toast("Error updating", {
+    theme: "dark",
+  });
+  return false;
 };
 
 export const deleteCircle = async (circleId: string) => {
@@ -103,12 +102,11 @@ export const deleteCircle = async (circleId: string) => {
       theme: "dark",
     });
     return data;
-  } else {
-    toast("Error deleting circle", {
-      theme: "dark",
-    });
-    return false;
   }
+  toast("Error deleting circle", {
+    theme: "dark",
+  });
+  return false;
 };
 
 type SafeDto = {
@@ -135,12 +133,11 @@ export const addSafe = async (safeDto: SafeDto, circleId: string) => {
       theme: "dark",
     });
     return data;
-  } else {
-    toast("Error updating circle", {
-      theme: "dark",
-    });
-    return false;
   }
+  toast("Error updating circle", {
+    theme: "dark",
+  });
+  return false;
 };
 
 export const removeSafe = async (safeDto: SafeDto, circleId: string) => {
@@ -162,19 +159,17 @@ export const removeSafe = async (safeDto: SafeDto, circleId: string) => {
       theme: "dark",
     });
     return data;
-  } else {
-    toast("Error updating circle", {
-      theme: "dark",
-    });
-    return false;
   }
+  toast("Error updating circle", {
+    theme: "dark",
+  });
+  return false;
 };
 
 export const addAutomation = async (
   circleId: string,
   automation: AddAutomationDto
 ) => {
-  console.log({ automation });
   const res = await fetch(
     `${process.env.API_HOST}/circle/v1/${circleId}/addAutomation`,
     {
@@ -191,12 +186,11 @@ export const addAutomation = async (
     const data = await res.json();
 
     return data;
-  } else {
-    toast.error("Error adding automation", {
-      theme: "dark",
-    });
-    return false;
   }
+  toast.error("Error adding automation", {
+    theme: "dark",
+  });
+  return false;
 };
 
 export const updateAutomation = async (
@@ -220,12 +214,11 @@ export const updateAutomation = async (
     const data = await res.json();
 
     return data;
-  } else {
-    toast.error("Error updating automation", {
-      theme: "dark",
-    });
-    return false;
   }
+  toast.error("Error updating automation", {
+    theme: "dark",
+  });
+  return false;
 };
 
 export const removeAutomation = async (
@@ -247,10 +240,9 @@ export const removeAutomation = async (
     const data = await res.json();
 
     return data;
-  } else {
-    toast.error("Error removing automation", {
-      theme: "dark",
-    });
-    return false;
   }
+  toast.error("Error removing automation", {
+    theme: "dark",
+  });
+  return false;
 };

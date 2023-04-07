@@ -1,5 +1,7 @@
 /** @type {import('next').NextConfig} */
-const path = require("path");
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const { resolve } = require("path");
+
 const nextConfig = {
   reactStrictMode: true,
   images: {
@@ -25,6 +27,7 @@ const nextConfig = {
       test: /\.svg$/,
       use: ["@svgr/webpack"],
     });
+    // eslint-disable-next-line no-param-reassign
     config.resolve.fallback = {
       ...config.resolve.fallback,
       fs: false,
@@ -36,8 +39,9 @@ const nextConfig = {
     };
     if (dev && !isServer) {
       const originalEntry = config.entry;
+      // eslint-disable-next-line no-param-reassign
       config.entry = async () => {
-        const wdrPath = path.resolve(__dirname, "./scripts/wdyr.ts");
+        const wdrPath = resolve(__dirname, "./scripts/wdyr.ts");
         const entries = await originalEntry();
 
         if (entries["main.js"] && !entries["main.js"].includes(wdrPath)) {

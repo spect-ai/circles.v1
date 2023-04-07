@@ -1,4 +1,4 @@
-import { Box, Button, IconPlus, Input, MediaPicker, Stack, Text } from "degen";
+import { Box, Button, IconPlus, Input, MediaPicker, Stack } from "degen";
 import React, { useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
@@ -17,7 +17,7 @@ type CreateCircleDto = {
   gradient: string;
 };
 
-function CreateCircle({ size }: { size: "small" | "large" }) {
+const CreateCircle = ({ size }: { size: "small" | "large" }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [visibilityTab, setVisibilityTab] = useState(0);
   const onVisibilityTabClick = (id: number) => setVisibilityTab(id);
@@ -30,8 +30,8 @@ function CreateCircle({ size }: { size: "small" | "large" }) {
   const [uploading, setUploading] = useState(false);
   const router = useRouter();
 
-  const { mutateAsync, isLoading } = useMutation((circle: CreateCircleDto) => {
-    return fetch(`${process.env.API_HOST}/circle/v1`, {
+  const { mutateAsync, isLoading } = useMutation((circle: CreateCircleDto) =>
+    fetch(`${process.env.API_HOST}/circle/v1`, {
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
@@ -39,14 +39,13 @@ function CreateCircle({ size }: { size: "small" | "large" }) {
       method: "POST",
       body: JSON.stringify(circle),
       credentials: "include",
-    });
-  });
+    })
+  );
 
   const uploadFile = async (file: File) => {
     if (file) {
       setUploading(true);
       const { imageGatewayURL } = await storeImage(file);
-      console.log({ imageGatewayURL });
       setLogo(imageGatewayURL);
       setUploading(false);
     }
@@ -63,7 +62,7 @@ function CreateCircle({ size }: { size: "small" | "large" }) {
           onClick={open}
           data-tour="create-circle-sidebar-button"
         >
-          <IconPlus color={"accent"} size={size == "large" ? "6" : "4"} />
+          <IconPlus color="accent" size={size === "large" ? "6" : "4"} />
         </Button>
       </Box>
       <AnimatePresence
@@ -126,11 +125,10 @@ function CreateCircle({ size }: { size: "small" | "large" }) {
                       })
                         .then(async (res) => {
                           const resJson = await res.json();
-                          console.log({ resJson });
-                          void router.push(`/${resJson.slug}`);
+                          router.push(`/${resJson.slug}`);
                           close();
                         })
-                        .catch((err) => console.log({ err }));
+                        .catch((err) => console.error({ err }));
                     }}
                   >
                     Create Circle
@@ -143,6 +141,6 @@ function CreateCircle({ size }: { size: "small" | "large" }) {
       </AnimatePresence>
     </>
   );
-}
+};
 
 export default CreateCircle;

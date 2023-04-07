@@ -1,4 +1,3 @@
-import ViewPlugins from "@/app/modules/Plugins/ViewPlugins";
 import { Box, Stack } from "degen";
 import { AnimatePresence } from "framer-motion";
 import { memo, useState } from "react";
@@ -16,9 +15,9 @@ const Container = styled(Box)`
   margin-top: -1rem;
 `;
 
-function InactiveFieldsColumnComponent() {
+const InactiveFieldsColumnComponent = () => {
   const [isEditFieldOpen, setIsEditFieldOpen] = useState(false);
-  const [propertyName, setPropertyName] = useState("");
+  const [propertyName] = useState("");
 
   return (
     <>
@@ -43,6 +42,6 @@ function InactiveFieldsColumnComponent() {
       </Container>
     </>
   );
-}
+};
 
 export default memo(InactiveFieldsColumnComponent);

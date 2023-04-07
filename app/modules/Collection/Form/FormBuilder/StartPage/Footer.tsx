@@ -15,36 +15,34 @@ const Footer = ({
   setCaptchaVerified,
   captchaVerified,
   setCurrentPage,
-}: Props) => {
-  return (
-    <Stack direction="horizontal" justify="space-between">
-      <Box paddingX="5" paddingBottom="4" width="1/2" />
-      <Box
-        paddingX="5"
-        paddingBottom="4"
-        width={{
-          xs: "40",
-          md: "56",
-        }}
-      >
-        <Stack>
-          {collection.formMetadata.captchaEnabled && (
-            <Captcha setCaptchaVerified={setCaptchaVerified} />
-          )}
-          <PrimaryButton
-            disabled={
+}: Props) => (
+  <Stack direction="horizontal" justify="space-between">
+    <Box paddingX="5" paddingBottom="4" width="1/2" />
+    <Box
+      paddingX="5"
+      paddingBottom="4"
+      width={{
+        xs: "40",
+        md: "56",
+      }}
+    >
+      <Stack>
+        {collection.formMetadata.captchaEnabled && (
+        <Captcha setCaptchaVerified={setCaptchaVerified} />
+        )}
+        <PrimaryButton
+          disabled={
               collection.formMetadata.captchaEnabled && !captchaVerified
             }
-            onClick={() => {
-              setCurrentPage(collection.formMetadata.pageOrder[1]);
-            }}
-          >
-            Start
-          </PrimaryButton>
-        </Stack>
-      </Box>
-    </Stack>
-  );
-};
+          onClick={() => {
+            setCurrentPage(collection.formMetadata.pageOrder[1]);
+          }}
+        >
+          Start
+        </PrimaryButton>
+      </Stack>
+    </Box>
+  </Stack>
+);
 
 export default Footer;

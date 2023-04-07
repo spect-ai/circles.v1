@@ -1,22 +1,21 @@
 import { motion } from "framer-motion";
-import { Box, Spinner } from "degen";
-import TaskWalletTabs from "./TaskWalletTab/index";
-import { useTheme } from "degen";
+import { Box, Spinner, useTheme } from "degen";
 import { useEffect } from "react";
 import { UserType } from "@/app/types";
 import { useQuery } from "react-query";
-import TaskWalletHeader from "./TaskWalletHeader/index";
 import { useAtom } from "jotai";
 import {
   isProfilePanelExpandedAtom,
   quickProfileUserAtom,
 } from "@/app/state/global";
+import TaskWalletTabs from "./TaskWalletTab/index";
+import TaskWalletHeader from "./TaskWalletHeader/index";
 
 const TaskWallet = ({ tab }: { tab: string }) => {
   const [isProfilePanelExpanded, setIsProfilePanelExpanded] = useAtom(
     isProfilePanelExpandedAtom
   );
-  const [quickProfileUser, setQuickProfileUser] = useAtom(quickProfileUserAtom);
+  const [quickProfileUser] = useAtom(quickProfileUserAtom);
   const { mode } = useTheme();
 
   const {
@@ -26,7 +25,7 @@ const TaskWallet = ({ tab }: { tab: string }) => {
   } = useQuery<UserType>(
     ["user", quickProfileUser],
     async () =>
-      await fetch(`${process.env.API_HOST}/user/${quickProfileUser}`, {
+      fetch(`${process.env.API_HOST}/user/${quickProfileUser}`, {
         credentials: "include",
       }).then((res) => res.json()),
     {
@@ -35,7 +34,7 @@ const TaskWallet = ({ tab }: { tab: string }) => {
   );
 
   useEffect(() => {
-    void fetchUser();
+    fetchUser();
   }, [userData, quickProfileUser, isProfilePanelExpanded, fetchUser]);
 
   return (

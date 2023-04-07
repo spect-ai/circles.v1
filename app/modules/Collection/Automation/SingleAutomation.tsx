@@ -7,6 +7,7 @@ import {
 } from "@/app/services/UpdateCircle";
 import {
   Action,
+  Automation,
   CollectionType,
   Condition,
   Option,
@@ -25,22 +26,95 @@ import AddConditions from "../Common/AddConditions";
 import { automationActionOptions } from "../Constants";
 import SingleAction from "./Actions";
 import SingleTrigger from "./Triggers";
-import { getAutomationActionOptions } from "./utils";
 import { validateActions } from "./Validation/ActionValidations";
-import { validateConditions } from "./Validation/ConditionValidations";
 import { validateTrigger } from "./Validation/TriggerValidations";
+import getAutomationActionOptions from "./utils";
 
 type Props = {
-  automation: any;
+  automation: Automation;
   automationMode: string;
   handleClose: () => void;
 };
 
-export default function SingleAutomation({
+const AutomationCard = styled(Box)<{
+  mode: string;
+  width?: string;
+  height?: string;
+}>`
+  @media (max-width: 1420px) {
+    width: 100%;
+    padding: 0.5rem;
+    margin: 0;
+    height: auto;
+    margin-top: 0.5rem;
+    align-items: flex-start;
+  }
+
+  width: 80%;
+  height: ${(props) => props.height || "auto"};
+  border-radius: 1rem;
+  padding: 1rem;
+  box-shadow: 0px 1px 6px
+    ${(props) =>
+      props.mode === "dark" ? "rgba(0, 0, 0, 0.4)" : "rgba(0, 0, 0, 0.1)"};
+  &:hover {
+    box-shadow: 0px 3px 10px
+      ${(props) =>
+        props.mode === "dark" ? "rgba(0, 0, 0, 0.6)" : "rgba(0, 0, 0, 0.25)"};
+    transition-duration: 0.7s;
+  }
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  align-items: flex-start;
+  position: relative;
+  transition: all 0.5s ease-in-out;
+`;
+
+const ScrollContainer = styled(Box)`
+  ::-webkit-scrollbar {
+    width: 5px;
+  }
+
+  overflow-y: auto;
+`;
+
+export const NameInput = styled.input`
+  width: 100%;
+  background: transparent;
+  border: 0;
+  border-style: none;
+  border-color: transparent;
+  outline: none;
+  outline-offset: 0;
+  box-shadow: none;
+  font-size: 1.4rem;
+  caret-color: rgb(191, 90, 242);
+  color: rgb(191, 90, 242);
+  font-weight: 600;
+`;
+
+export const DescriptionInput = styled.input<{ mode: string }>`
+  width: 100%;
+  background: transparent;
+  border: 0;
+  border-style: none;
+  border-color: transparent;
+  outline: none;
+  outline-offset: 0;
+  box-shadow: none;
+  font-size: 1.2rem;
+  caret-color: ${(props) =>
+    props.mode === "dark" ? "rgb(255, 255, 255, 0.7)" : "rgb(20, 20, 20, 0.7)"};
+  color: ${(props) =>
+    props.mode === "dark" ? "rgb(255, 255, 255, 0.7)" : "rgb(20, 20, 20, 0.7)"};
+`;
+
+const SingleAutomation = ({
   automation,
   automationMode,
   handleClose,
-}: Props) {
+}: Props) => {
   const { mode } = useTheme();
   const { circle, setCircleData, fetchCircle } = useCircle();
   const router = useRouter();
@@ -108,20 +182,20 @@ export default function SingleAutomation({
   };
 
   const onSave = async (
-    name: string,
-    description: string,
-    trigger: Trigger,
-    actions: Action[],
-    conditions: Condition[],
+    name2: string,
+    description2: string,
+    trigger2: Trigger,
+    actions2: Action[],
+    conditions2: Condition[],
     slug: string
   ) => {
     if (!circle) return;
     const newAutomation = {
-      name,
-      description,
-      trigger,
-      actions,
-      conditions,
+      name: name2,
+      description: description2,
+      trigger: trigger2,
+      actions: actions2,
+      conditions: conditions2,
     };
     let res;
     if (automationMode === "create") {
@@ -134,7 +208,7 @@ export default function SingleAutomation({
       res = await updateAutomation(circle?.id, automation.id, newAutomation);
     }
     if (res) {
-      void fetchCircle();
+      fetchCircle();
     }
   };
 
@@ -159,7 +233,7 @@ export default function SingleAutomation({
 
   useEffect(() => {
     if (collection?.id) {
-      const whenOptions = Object.entries(
+      const whenOptions2 = Object.entries(
         (collection as CollectionType)?.properties
       )
         .filter((p) => p[1].type === "singleSelect")
@@ -197,11 +271,11 @@ export default function SingleAutomation({
       ]);
 
       if (automation) {
-        const selectedWhenOption = whenOptions.find(
+        const selectedWhenOption2 = whenOptions2.find(
           (o) => o.data.fieldName === automation.trigger?.data?.fieldName
         ) as Option;
         setSelectedWhenOption(
-          selectedWhenOption || {
+          selectedWhenOption2 || {
             label: automation.trigger?.name || "Select trigger",
             value: automation.trigger?.type || "selectTrigger",
           }
@@ -220,7 +294,7 @@ export default function SingleAutomation({
   }, [automation, collection, collectionOption]);
 
   useEffect(() => {
-    if (collectionOption?.value)
+    if (collectionOption?.value) {
       fetchCollection()
         .then((res) => {
           if (res.data) {
@@ -233,17 +307,18 @@ export default function SingleAutomation({
             theme: "dark",
           });
         });
+    }
   }, [actions, trigger, conditions, name, collectionOption]);
 
   useEffect(() => {
     setName(automation?.name || "");
     setDescription(automation?.description || "");
-    const collection = Object.values(circle?.collections || {}).find(
+    const collection2 = Object.values(circle?.collections || {}).find(
       (c) => c.slug === automation.triggerCollectionSlug
     );
     setCollectionOption({
-      label: collection?.name || "",
-      value: collection?.id || "",
+      label: collection2?.name || "",
+      value: collection2?.id || "",
     });
   }, [automation]);
 
@@ -312,12 +387,11 @@ export default function SingleAutomation({
                   message: "Name is required",
                 });
                 return;
-              } else {
-                setNameValidationResults({
-                  isValid: true,
-                  message: "",
-                });
               }
+              setNameValidationResults({
+                isValid: true,
+                message: "",
+              });
 
               if (!collectionOption?.value) {
                 setCollectionOptionValidationResults({
@@ -325,22 +399,21 @@ export default function SingleAutomation({
                   message: "Project or Form is required",
                 });
                 return;
-              } else {
-                setCollectionOptionValidationResults({
-                  isValid: true,
-                  message: "",
-                });
               }
+              setCollectionOptionValidationResults({
+                isValid: true,
+                message: "",
+              });
 
-              const triggerValidationResults = validateTrigger(trigger);
-              setTriggerValidationResults(triggerValidationResults);
+              const triggerValidationResults2 = validateTrigger(trigger);
+              setTriggerValidationResults(triggerValidationResults2);
               if (!triggerValidationResults.isValid) return;
 
-              const actionValidationResults = validateActions(actions);
-              setActionValidationResults(actionValidationResults);
+              const actionValidationResults2 = validateActions(actions);
+              setActionValidationResults(actionValidationResults2);
               if (!actionValidationResults.isValid) return;
 
-              const res = await onSave(
+              await onSave(
                 name,
                 description,
                 trigger,
@@ -367,7 +440,7 @@ export default function SingleAutomation({
             onClick={async () => {
               try {
                 setDisabling(true);
-                const res = await onDisable();
+                await onDisable();
                 setDisabling(false);
               } catch (err) {
                 console.error(err);
@@ -392,7 +465,7 @@ export default function SingleAutomation({
                   circle?.id as string
                 );
                 if (res) {
-                  void fetchCircle();
+                  fetchCircle();
                 }
                 setDeleting(false);
 
@@ -432,10 +505,11 @@ export default function SingleAutomation({
             <Box
               width="full"
               onClick={() => {
-                if (automationMode === "edit")
+                if (automationMode === "edit") {
                   toast.error(
                     "Cannot edit the project or form field for already existing automations. Please create a new automation."
                   );
+                }
               }}
             >
               <Dropdown
@@ -501,7 +575,6 @@ export default function SingleAutomation({
                   </Box>
                   {selectedWhenOption && (
                     <SingleTrigger
-                      triggerMode="edit"
                       triggerType={selectedWhenOption.value}
                       trigger={trigger}
                       collection={collection}
@@ -530,7 +603,7 @@ export default function SingleAutomation({
                   {actions.map((action, index) => (
                     <AutomationCard
                       mode={mode}
-                      key={index}
+                      key={action.id}
                       backgroundColor="foregroundTertiary"
                     >
                       <Box width="full">
@@ -540,15 +613,24 @@ export default function SingleAutomation({
                             selectedWhenOption
                           )}
                           selected={selectedThenOptions[index]}
-                          onChange={(action: any) => {
+                          onChange={(action2) => {
                             const newActions = [...actions];
-                            newActions[index] = action;
+                            newActions[index] = {
+                              ...action2,
+                              id: action.id,
+                              name: action2.label,
+                              type: action2.value,
+                              data: action2.data,
+                              service: "collection",
+                              group: "action",
+                              icon: "",
+                            };
                             setActions(newActions);
 
                             const newSelectedThenOptions = [
                               ...selectedThenOptions,
                             ];
-                            newSelectedThenOptions[index] = action;
+                            newSelectedThenOptions[index] = action2;
                             setSelectedThenOptions(newSelectedThenOptions);
                           }}
                           multiple={false}
@@ -559,9 +641,9 @@ export default function SingleAutomation({
                       <SingleAction
                         actionType={selectedThenOptions[index]?.value}
                         action={action}
-                        setAction={(action) => {
+                        setAction={(action2) => {
                           const newActions = [...actions];
-                          newActions[index] = action;
+                          newActions[index] = action2;
                           setActions(newActions);
                         }}
                         actionMode="edit"
@@ -623,8 +705,8 @@ export default function SingleAutomation({
                 </Text>
                 <AddConditions
                   viewConditions={conditions}
-                  setViewConditions={(conditions) => {
-                    setConditions(conditions);
+                  setViewConditions={(conditions2) => {
+                    setConditions(conditions2);
                   }}
                   firstRowMessage="It is true that"
                   buttonText="Add Condition"
@@ -638,78 +720,6 @@ export default function SingleAutomation({
       </ScrollContainer>
     </Box>
   );
-}
+};
 
-const AutomationCard = styled(Box)<{
-  mode: string;
-  width?: string;
-  height?: string;
-}>`
-  @media (max-width: 1420px) {
-    width: 100%;
-    padding: 0.5rem;
-    margin: 0;
-    height: auto;
-    margin-top: 0.5rem;
-    align-items: flex-start;
-  }
-
-  width: 80%;
-  height: ${(props) => props.height || "auto"};
-  border-radius: 1rem;
-  padding: 1rem;
-  box-shadow: 0px 1px 6px
-    ${(props) =>
-      props.mode === "dark" ? "rgba(0, 0, 0, 0.4)" : "rgba(0, 0, 0, 0.1)"};
-  &:hover {
-    box-shadow: 0px 3px 10px
-      ${(props) =>
-        props.mode === "dark" ? "rgba(0, 0, 0, 0.6)" : "rgba(0, 0, 0, 0.25)"};
-    transition-duration: 0.7s;
-  }
-  display: flex;
-  flex-direction: column;
-  gap: 0.1rem;
-  align-items: flex-start;
-  position: relative;
-  transition: all 0.5s ease-in-out;
-`;
-
-const ScrollContainer = styled(Box)<{}>`
-  ::-webkit-scrollbar {
-    width: 5px;
-  }
-
-  overflow-y: auto;
-`;
-
-export const NameInput = styled.input`
-  width: 100%;
-  background: transparent;
-  border: 0;
-  border-style: none;
-  border-color: transparent;
-  outline: none;
-  outline-offset: 0;
-  box-shadow: none;
-  font-size: 1.4rem;
-  caret-color: rgb(191, 90, 242);
-  color: rgb(191, 90, 242);
-  font-weight: 600;
-`;
-
-export const DescriptionInput = styled.input<{ mode: string }>`
-  width: 100%;
-  background: transparent;
-  border: 0;
-  border-style: none;
-  border-color: transparent;
-  outline: none;
-  outline-offset: 0;
-  box-shadow: none;
-  font-size: 1.2rem;
-  caret-color: ${(props) =>
-    props.mode === "dark" ? "rgb(255, 255, 255, 0.7)" : "rgb(20, 20, 20, 0.7)"};
-  color: ${(props) =>
-    props.mode === "dark" ? "rgb(255, 255, 255, 0.7)" : "rgb(20, 20, 20, 0.7)"};
-`;
+export default SingleAutomation;

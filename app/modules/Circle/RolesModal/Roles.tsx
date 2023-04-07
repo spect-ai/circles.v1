@@ -1,13 +1,12 @@
-import { Box, IconSearch, IconUserSolid, Input, Stack, Text } from "degen";
-import { matchSorter } from "match-sorter";
+import { Box, IconUserSolid, Stack, Text } from "degen";
+import React, { useEffect, useState } from "react";
 import AddRole from "../ContributorsModal/AddRoleModal";
 
-import React, { useEffect, useState } from "react";
 import { useCircle } from "../CircleContext";
 import GuildRoleMapping from "../CircleSettingsModal/GuildIntegration/GuildRoleMapping";
 import DiscordRoleMapping from "../CircleSettingsModal/DiscordRoleMapping";
 
-export default function Roles() {
+const Roles = () => {
   const { circle } = useCircle();
   const [roles, setRoles] = useState(Object.keys(circle?.roles || {}) || []);
 
@@ -82,4 +81,6 @@ export default function Roles() {
       </Stack>
     </Box>
   );
-}
+};
+
+export default Roles;

@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 
 interface Props {
   onClick: () => void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   height: string | any;
   children: React.ReactNode;
   dashed?: boolean;
@@ -26,38 +27,36 @@ const Card: FC<Props> = ({
   children,
   dashed = false,
   tourId,
-}) => {
-  return (
-    <motion.div
-      whileHover={{
-        translateY: -4,
-      }}
-      whileTap={{
-        scale: 0.98,
-        translateY: -4,
-      }}
+}) => (
+  <motion.div
+    whileHover={{
+      translateY: -4,
+    }}
+    whileTap={{
+      scale: 0.98,
+      translateY: -4,
+    }}
+  >
+    <Container
+      data-tour={tourId}
+      borderWidth="0.5"
+      padding={{ xs: "2", md: "4" }}
+      borderRadius="2xLarge"
+      display="flex"
+      flexDirection="column"
+      alignItems="center"
+      justifyContent="center"
+      marginBottom={{ xs: "4", md: "8" }}
+      height={height}
+      transitionDuration="700"
+      dashed={dashed}
+      onClick={onClick}
+      backgroundColor="background"
     >
-      <Container
-        data-tour={tourId}
-        borderWidth="0.5"
-        padding={{ xs: "2", md: "4" }}
-        borderRadius="2xLarge"
-        display="flex"
-        flexDirection="column"
-        alignItems="center"
-        justifyContent="center"
-        marginBottom={{ xs: "4", md: "8" }}
-        height={height}
-        transitionDuration="700"
-        dashed={dashed}
-        onClick={onClick}
-        backgroundColor="background"
-      >
-        {children}
-      </Container>
-    </motion.div>
-  );
-};
+      {children}
+    </Container>
+  </motion.div>
+);
 
 export default Card;
 

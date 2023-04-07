@@ -1,18 +1,18 @@
 import Popover from "@/app/common/components/Popover";
 import { IconEth, Stack, Tag, Text, Box } from "degen";
 import { motion } from "framer-motion";
-import React, { useState } from "react";
+import { useState } from "react";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
 import { MenuContainer, MenuItem } from "../EditValue";
 
-function PaymentFilter() {
+const PaymentFilter = () => {
   const { paymentFilter, setPaymentFilter } = useLocalCollection();
   const [isOpen, setIsOpen] = useState(false);
 
   const paymentOptions = ["none", "Paid", "Pending", "Pending Signature"];
   return (
-    <Stack direction={"horizontal"} space="1" align={"center"}>
-      <IconEth size={"5"} color="accent" />
+    <Stack direction="horizontal" space="1" align="center">
+      <IconEth size="5" color="accent" />
       <Popover
         width="fit"
         butttonComponent={
@@ -36,12 +36,18 @@ function PaymentFilter() {
           <Box backgroundColor="background">
             <MenuContainer borderRadius="2xLarge" cWidth="10rem">
               <Stack space="0">
-                {paymentOptions.map((option: any) => (
+                {paymentOptions.map((option: string) => (
                   <MenuItem
                     padding="2"
                     key={option}
                     onClick={() => {
-                      setPaymentFilter(option);
+                      setPaymentFilter(
+                        option as
+                          | "none"
+                          | "Paid"
+                          | "Pending"
+                          | "Pending Signature"
+                      );
                       setIsOpen(false);
                     }}
                   >
@@ -55,6 +61,6 @@ function PaymentFilter() {
       </Popover>
     </Stack>
   );
-}
+};
 
 export default PaymentFilter;

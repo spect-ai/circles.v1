@@ -1,20 +1,12 @@
 import Modal from "@/app/common/components/Modal";
 import CheckBox from "@/app/common/components/Table/Checkbox";
 import { createPoap } from "@/app/services/Poap";
-import { UserType } from "@/app/types";
-import {
-  Box,
-  Button,
-  Input,
-  MediaPicker,
-  Stack,
-  Text,
-  Textarea,
-  useTheme,
-} from "degen";
+import { Box, Button, Input, MediaPicker, Stack, Text, Textarea } from "degen";
 import { useState } from "react";
 import { useQuery } from "react-query";
-import styled from "styled-components";
+import { UserType } from "@/app/types";
+import { toast } from "react-toastify";
+
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
 import ResponseMatchDistribution from "../common/ResponseMatchDistribution";
 import ImportClaimCodes from "./ImportClaimCodes";
@@ -23,12 +15,11 @@ type Props = {
   handleClose: () => void;
 };
 
-export default function DistributePOAP({ handleClose }: Props) {
+const DistributePOAP = ({ handleClose }: Props) => {
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
-  const { localCollection: collection, updateCollection } =
-    useLocalCollection();
+  const { localCollection: collection } = useLocalCollection();
   const [loading, setLoading] = useState(false);
   const [name, setName] = useState(
     `Responded to ${collection.name}`.slice(0, 256)
@@ -37,17 +28,15 @@ export default function DistributePOAP({ handleClose }: Props) {
   const [eventUrl, setEventUrl] = useState(
     `https://circles.spect.network/r/${collection.slug}`
   );
-  const [email, setEmail] = useState(currentUser?.email || "");
-  let today = new Date();
-  let fromNow2Days = new Date();
+  const [email] = useState(currentUser?.email || "");
+  const today = new Date();
+  const fromNow2Days = new Date();
   fromNow2Days.setDate(today.getDate() + 2);
-  let fromNow10Days = new Date();
+  const fromNow10Days = new Date();
   fromNow10Days.setDate(today.getDate() + 10);
 
-  const [startDate, setStartDate] = useState(
-    fromNow2Days.toJSON().slice(0, 10)
-  );
-  const [endDate, setEndDate] = useState(fromNow10Days.toJSON().slice(0, 10));
+  const [startDate] = useState(fromNow2Days.toJSON().slice(0, 10));
+  const [endDate] = useState(fromNow10Days.toJSON().slice(0, 10));
   const [virtual, setVirtual] = useState(true);
   const [city, setCity] = useState("");
   const [country, setCountry] = useState("");
@@ -57,16 +46,17 @@ export default function DistributePOAP({ handleClose }: Props) {
   const [poapEditCode, setPoapEditCode] = useState(
     collection.formMetadata?.poapEditCode || ""
   );
-  const [uploading, setUploading] = useState(false);
-  const [image, setImage] = useState("" as any);
+  const [uploading] = useState(false);
+  const [image, setImage] = useState<File>();
   const [numberOfPoaps, setNumberOfPoaps] = useState(1000);
-  const [assetUrl, setAssetUrl] = useState("");
+  const [assetUrl] = useState("");
   const [modalMode, setModalMode] =
     useState<
       | "createPoapFromScratch"
       | "importClaimCodes"
       | "distributePoapWhenResponsesMatch"
       | "distributePoapOnDiscordCallAttendance"
+      | "createKudos"
     >("importClaimCodes");
   const [
     minimumNumberOfAnswersThatNeedToMatch,
@@ -105,7 +95,7 @@ export default function DistributePOAP({ handleClose }: Props) {
           )}
           {modalMode === "distributePoapWhenResponsesMatch" && (
             <ResponseMatchDistribution
-              setModalModal={setModalMode as any}
+              setModalModal={setModalMode}
               data={responseData}
               setData={setResponseData}
               minimumNumberOfAnswersThatNeedToMatch={
@@ -169,20 +159,15 @@ export default function DistributePOAP({ handleClose }: Props) {
                 }}
                 label="Drop your design here 😊"
                 onChange={async (f) => {
-                  console.log({ f });
                   const reader = new FileReader();
                   reader.readAsDataURL(f);
-                  reader.onload = function () {
-                    console.log({ lll: reader.result });
-                    //setImage(reader.result as string);
-                  };
                   reader.onerror = function (error) {
-                    console.log("Error: ", error);
+                    console.error("Error: ", error);
                   };
                   setImage(f);
                 }}
                 onReset={() => {
-                  setImage("");
+                  setImage(undefined);
                 }}
                 uploading={uploading}
                 maxSize={4}
@@ -231,7 +216,7 @@ export default function DistributePOAP({ handleClose }: Props) {
                     type="number"
                     min={1}
                     max={1000}
-                    required={true}
+                    required
                     onChange={(e) => setNumberOfPoaps(parseInt(e.target.value))}
                   />
                 </Stack>
@@ -240,7 +225,7 @@ export default function DistributePOAP({ handleClose }: Props) {
                   <Input
                     label
                     value={eventUrl}
-                    required={true}
+                    required
                     inputMode="url"
                     onChange={(e) => setEventUrl(e.target.value)}
                   />
@@ -263,7 +248,7 @@ export default function DistributePOAP({ handleClose }: Props) {
                       <Input
                         label
                         value={country}
-                        required={true}
+                        required
                         onChange={(e) => setCountry(e.target.value)}
                       />
                     </Stack>
@@ -273,7 +258,7 @@ export default function DistributePOAP({ handleClose }: Props) {
                       <Input
                         label
                         value={city}
-                        required={true}
+                        required
                         onChange={(e) => setCity(e.target.value)}
                       />
                     </Stack>
@@ -307,7 +292,12 @@ export default function DistributePOAP({ handleClose }: Props) {
               onClick={async () => {
                 setLoading(true);
                 try {
-                  const res = await createPoap(collection.id, {
+                  if (!image) {
+                    toast.error("Please upload an image");
+                    setLoading(false);
+                    return;
+                  }
+                  await createPoap(collection.id, {
                     name,
                     description,
                     requestedCodes: numberOfPoaps,
@@ -320,11 +310,10 @@ export default function DistributePOAP({ handleClose }: Props) {
                     virtual,
                     email,
                   });
-                  console.log({ res });
                   setLoading(false);
                 } catch (err: unknown) {
                   setLoading(false);
-                  console.log(err);
+                  console.error(err);
                 }
               }}
             >
@@ -335,39 +324,6 @@ export default function DistributePOAP({ handleClose }: Props) {
       </Box>
     </Modal>
   );
-}
+};
 
-export const DateInput = styled.input<{ mode: string }>`
-  padding: 0.7rem;
-  border-radius: 0.55rem;
-  border 1px solid ${(props) =>
-    props.mode === "dark" ? "rgb(255, 255, 255,0.1)" : "rgb(20,20,20,0.1)"};
-  background-color: ${(props) =>
-    props.mode === "dark" ? "rgb(20,20,20)" : "rgb(255, 255, 255)"};
-  width: 100%;
-  color: ${(props) =>
-    props.mode === "dark" ? "rgb(255, 255, 255,0.7)" : "rgb(20,20,20,0.7)"};
-  outline: none;
-  &:focus {
-    border-color: rgb(191, 90, 242, 1);
-  }
-  transition: border-color 0.5s ease;
-`;
-
-// const ClaimCodeContainer = styled.textarea<{ mode: string }>`
-//   width: 100%;
-//   border-radius: 1rem;
-//   border 1px solid ${(props) =>
-//     props.mode === "dark" ? "rgb(255, 255, 255,0.1)" : "rgb(20,20,20,0.1)"};
-//   background-color: ${(props) =>
-//     props.mode === "dark" ? "rgb(20,20,20)" : "rgb(255, 255, 255)"};
-//   padding: 1rem;
-//   caret-color: ${(props) =>
-//     props.mode === "dark" ? "rgb(255, 255, 255, 0.7)" : "rgb(20, 20, 20, 0.7)"};
-//   color: ${(props) =>
-//     props.mode === "dark" ? "rgb(255, 255, 255, 0.7)" : "rgb(20, 20, 20, 0.7)"};
-//     line-height: 1.5;
-//     font-size: 1rem;
-//   font-family: Inter;
-// resize: none;
-// `;
+export default DistributePOAP;

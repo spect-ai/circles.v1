@@ -5,7 +5,6 @@ import { useState } from "react";
 import { removeMember, updateMemberRole } from "@/app/services/CircleRoles";
 import { useRouter } from "next/router";
 import queryClient from "@/app/common/utils/queryClient";
-import { CircleType } from "@/app/types";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 
 interface Props {
@@ -13,7 +12,7 @@ interface Props {
   user: string;
 }
 
-export function RolesModal({ handleClose, user }: Props) {
+const RolesModal = ({ handleClose, user }: Props) => {
   const { circle } = useCircle();
   const router = useRouter();
   const { circle: cId } = router.query;
@@ -31,7 +30,7 @@ export function RolesModal({ handleClose, user }: Props) {
             gap="2"
             alignItems="center"
             margin="auto"
-            flexWrap={"wrap"}
+            flexWrap="wrap"
             justifyContent="center"
           >
             {userRoles?.map &&
@@ -52,7 +51,6 @@ export function RolesModal({ handleClose, user }: Props) {
                       }
                     }
                     if (userRoles && !userRoles.includes(role)) {
-                      console.log("add role");
                       // add user role if not already present
                       const newUserRoles = [...userRoles, role];
                       setUserRoles(newUserRoles);
@@ -102,4 +100,6 @@ export function RolesModal({ handleClose, user }: Props) {
       </Box>
     </Modal>
   );
-}
+};
+
+export default RolesModal;

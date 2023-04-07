@@ -14,17 +14,35 @@ import LinkCredentialsModal from "./LinkCredentialsModal";
 type Props = {
   handleClose: () => void;
   modalMode: "add" | "edit";
-  allCredentials: { [id: string]: any[] };
+  allCredentials: { [id: string]: unknown[] };
   educationId?: number;
 };
 
-export default function AddEducationModal({
+export const DateInput = styled.input<{ mode: string }>`
+  padding: 1rem;
+  border-radius: 0.55rem;
+  border 1px solid ${(props) =>
+    props.mode === "dark" ? "rgb(255, 255, 255,0.1)" : "rgb(20,20,20,0.1)"};
+  background-color: ${(props) =>
+    props.mode === "dark" ? "rgb(20,20,20)" : "rgb(255, 255, 255)"};
+  width: 100%;
+  color: ${(props) =>
+    props.mode === "dark" ? "rgb(255, 255, 255,0.7)" : "rgb(20,20,20,0.7)"};
+  margin-top: 10px;
+  outline: none;
+  &:focus {
+    border-color: rgb(191, 90, 242, 1);
+  }
+  transition: border-color 0.5s ease;
+`;
+
+const AddEducationModal = ({
   handleClose,
   modalMode,
   allCredentials,
   educationId,
-}: Props) {
-  const [userData] = useAtom<any>(userDataAtom);
+}: Props) => {
+  const [userData] = useAtom(userDataAtom);
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState(
@@ -51,7 +69,7 @@ export default function AddEducationModal({
 
   const { mode } = useTheme();
 
-  const isEmpty = (fieldName: string, value: any) => {
+  const isEmpty = (fieldName: string, value: unknown) => {
     switch (fieldName) {
       case "title":
       case "organization":
@@ -62,10 +80,10 @@ export default function AddEducationModal({
     }
   };
 
-  const dateIsInvalidValid = (startDate: string, endDate: string) => {
+  const dateIsInvalidValid = (startD: string, endD: string) => {
     if (startDate && endDate) {
-      const start = new Date(startDate);
-      const end = new Date(endDate);
+      const start = new Date(startD);
+      const end = new Date(endD);
       return start > end;
     }
     return false;
@@ -75,25 +93,28 @@ export default function AddEducationModal({
     if (modalMode === "edit" && (educationId || educationId === 0)) {
       setLoading(true);
       const education = userData.education[educationId];
-      console.log({ education });
       setTitle(education.courseDegree);
       setOrganization(education.school);
       setDescription(education.description);
       setCurrentlyStudying(education.currentlyStudying);
 
       setStartDate(
-        education.start_date?.year?.toString().padStart(2, "0") +
-          "-" +
-          education.start_date?.month?.toString().padStart(2, "0") +
-          "-" +
-          education.start_date?.day?.toString().padStart(2, "0")
+        `${education.start_date?.year
+          ?.toString()
+          .padStart(2, "0")}-${education.start_date?.month
+          ?.toString()
+          .padStart(2, "0")}-${education.start_date?.day
+          ?.toString()
+          .padStart(2, "0")}`
       );
       setEndDate(
-        education.end_date?.year?.toString().padStart(2, "0") +
-          "-" +
-          education.end_date?.month?.toString().padStart(2, "0") +
-          "-" +
-          education.end_date?.day?.toString().padStart(2, "0")
+        `${education.end_date?.year
+          ?.toString()
+          .padStart(2, "0")}-${education.end_date?.month
+          ?.toString()
+          .padStart(2, "0")}-${education.end_date?.day
+          ?.toString()
+          .padStart(2, "0")}`
       );
       setLinkedCredentials(education.linkedCredentials);
       setLoading(false);
@@ -125,14 +146,14 @@ export default function AddEducationModal({
               Required
             </Tag>
           </Box>
-          {requiredFieldsNotSet["title"] && (
+          {requiredFieldsNotSet.title && (
             <Text color="red" variant="small">
               This is a required field and cannot be empty
             </Text>
           )}
           <Input
             label=""
-            placeholder={`Enter Title`}
+            placeholder="Enter Title"
             value={title}
             onChange={(e) => {
               setTitle(e.target.value);
@@ -150,14 +171,14 @@ export default function AddEducationModal({
               Required
             </Tag>
           </Box>
-          {requiredFieldsNotSet["organization"] && (
+          {requiredFieldsNotSet.organization && (
             <Text color="red" variant="small">
               This is a required field and cannot be empty
             </Text>
           )}
           <Input
             label=""
-            placeholder={`Enter Organization`}
+            placeholder="Enter Organization"
             value={organization}
             onChange={(e) => {
               setOrganization(e.target.value);
@@ -186,8 +207,8 @@ export default function AddEducationModal({
               onSave={(value) => {
                 setDescription(value);
               }}
-              placeholder={`Enter Description, press / for commands`}
-              isDirty={true}
+              placeholder="Enter Description, press / for commands"
+              isDirty
             />
           </Box>
         </Box>
@@ -212,7 +233,7 @@ export default function AddEducationModal({
               <Text variant="label">Start Date</Text>
 
               <DateInput
-                placeholder={`Enter Start Date`}
+                placeholder="Enter Start Date"
                 value={startDate}
                 type="date"
                 mode={mode}
@@ -235,7 +256,7 @@ export default function AddEducationModal({
               <Text variant="label">End Date</Text>
 
               <DateInput
-                placeholder={`Enter End Date`}
+                placeholder="Enter End Date"
                 value={endDate}
                 type="date"
                 mode={mode}
@@ -300,7 +321,7 @@ export default function AddEducationModal({
         >
           <Button
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            //@ts-ignore
+            // @ts-ignore
             marginRight="2"
             variant="secondary"
             size="small"
@@ -326,7 +347,7 @@ export default function AddEducationModal({
                 return;
               }
               if (modalMode === "add") {
-                const res = await createEducation({
+                await createEducation({
                   courseDegree: title,
                   school: organization,
                   schoolLogo: "",
@@ -341,7 +362,7 @@ export default function AddEducationModal({
                   setLoading(false);
                   return;
                 }
-                const res = await updateEducation(educationId?.toString(), {
+                await updateEducation(educationId?.toString(), {
                   courseDegree: title,
                   school: organization,
                   schoolLogo: "",
@@ -362,21 +383,9 @@ export default function AddEducationModal({
       </Box>
     </Modal>
   );
-}
-export const DateInput = styled.input<{ mode: string }>`
-  padding: 1rem;
-  border-radius: 0.55rem;
-  border 1px solid ${(props) =>
-    props.mode === "dark" ? "rgb(255, 255, 255,0.1)" : "rgb(20,20,20,0.1)"};
-  background-color: ${(props) =>
-    props.mode === "dark" ? "rgb(20,20,20)" : "rgb(255, 255, 255)"};
-  width: 100%;
-  color: ${(props) =>
-    props.mode === "dark" ? "rgb(255, 255, 255,0.7)" : "rgb(20,20,20,0.7)"};
-  margin-top: 10px;
-  outline: none;
-  &:focus {
-    border-color: rgb(191, 90, 242, 1);
-  }
-  transition: border-color 0.5s ease;
-`;
+};
+AddEducationModal.defaultProps = {
+  educationId: undefined,
+};
+
+export default AddEducationModal;

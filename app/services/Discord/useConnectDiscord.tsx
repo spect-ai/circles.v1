@@ -1,8 +1,6 @@
 import queryClient from "@/app/common/utils/queryClient";
-import { CircleType } from "@/app/types";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
-import { useQuery } from "react-query";
 import { toast } from "react-toastify";
 import { joinCirclesFromDiscord } from "../JoinCircle";
 import useProfileUpdate from "../Profile/useProfileUpdate";
@@ -25,21 +23,18 @@ export default function useConnectDiscord() {
         discordUsername:
           data.userData.username === undefined
             ? undefined
-            : data.userData.username + "#" + data.userData.discriminator,
+            : `${data.userData.username}#${data.userData.discriminator}`,
       });
-      const circles = await joinCirclesFromDiscord(
-        data.guildData,
-        data.userData.id
-      );
+      await joinCirclesFromDiscord(data.guildData, data.userData.id);
       queryClient.refetchQueries("dashboardCircles");
       if (profileRes) {
         toast("Successfully linked your Discord account", {
           theme: "dark",
         });
         if (state) {
-          void router.push(state as string);
+          router.push(state as string);
         } else {
-          void router.push("/");
+          router.push("/");
         }
       }
     } else {
@@ -56,7 +51,7 @@ export default function useConnectDiscord() {
         window.close();
         return;
       }
-      void fetchDiscordUser();
+      fetchDiscordUser();
     }
   }, [code]);
 }

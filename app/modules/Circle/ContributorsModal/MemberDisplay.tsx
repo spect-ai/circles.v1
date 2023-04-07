@@ -43,7 +43,7 @@ const RoleOption = styled(Box)<{ mode: string }>`
   }
 `;
 
-export default function MemberDisplay({ member, memberDetails }: Props) {
+const MemberDisplay = ({ member, memberDetails }: Props) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isRolePopoverOpen, setIsRolePopoverOpen] = useState(false);
   const router = useRouter();
@@ -185,11 +185,8 @@ export default function MemberDisplay({ member, memberDetails }: Props) {
                           : "none"
                       }
                       mode={mode}
-                      onClick={async (e) => {
-                        console.log("click");
+                      onClick={async () => {
                         if (userRoles && !userRoles.includes(role)) {
-                          console.log("add role");
-                          // add user role if not already present
                           const newUserRoles = [...userRoles, role];
                           setUserRoles(newUserRoles);
                           const data = await updateMemberRole(
@@ -229,4 +226,6 @@ export default function MemberDisplay({ member, memberDetails }: Props) {
       </Box>
     </Popover>
   );
-}
+};
+
+export default MemberDisplay;

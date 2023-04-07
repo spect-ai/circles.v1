@@ -2,7 +2,27 @@ import { Box, IconSearch, Tag } from "degen";
 import styled from "styled-components";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
 
-export function SearchCard() {
+const Input = styled.input`
+  background-color: transparent;
+  border: none;
+  margin: 0.4rem;
+  padding: 0.4rem;
+  display: flex;
+  border-style: none;
+  border-color: transparent;
+  border-radius: 0.4rem;
+  outline: none;
+  outline-offset: 0;
+  box-shadow: none;
+  font-size: 1rem;
+  caret-color: rgb(191, 90, 242);
+  color: rgb(191, 90, 242);
+  font-weight: 400;
+  opacity: "40%";
+  width: 100%;
+`;
+
+const SearchCard = () => {
   const {
     searchFilter,
     setSearchFilter,
@@ -19,7 +39,7 @@ export function SearchCard() {
       <IconSearch size="4" color="foreground" />
       <Input
         placeholder={
-          collection?.collectionType == 1 ? "Search Card" : "Search Response"
+          collection?.collectionType === 1 ? "Search Card" : "Search Response"
         }
         value={searchFilter}
         onChange={(e) => {
@@ -40,24 +60,6 @@ export function SearchCard() {
       )}
     </Box>
   );
-}
+};
 
-const Input = styled.input`
-  background-color: transparent;
-  border: none;
-  margin: 0.4rem;
-  padding: 0.4rem;
-  display: flex;
-  border-style: none;
-  border-color: transparent;
-  border-radius: 0.4rem;
-  outline: none;
-  outline-offset: 0;
-  box-shadow: none;
-  font-size: 1rem;
-  caret-color: rgb(191, 90, 242);
-  color: rgb(191, 90, 242);
-  font-weight: 400;
-  opacity: "40%";
-  width: 100%;
-`;
+export default SearchCard;

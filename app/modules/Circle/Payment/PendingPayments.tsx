@@ -11,8 +11,21 @@ import usePaymentViewCommon from "./Common/usePaymentCommon";
 import PaymentCard from "./PaymentCard";
 import PaymentCardDrawer from "./PaymentCardDrawer";
 
-export default function PendingPayments() {
-  const [selectedPaymentIds, setSelectedPaymentIds] = useState<string[]>([]);
+const ScrollContainer = styled(Box)`
+  overflow-y: auto;
+  ::-webkit-scrollbar {
+    width: 4px;
+  }
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  @media (max-width: 768px) {
+    height: calc(100vh - 12rem);
+  }
+  height: calc(100vh - 12rem);
+`;
+
+const PendingPayments = () => {
+  const [selectedPaymentIds] = useState<string[]>([]);
   const [isPayLoading, setIsPayLoading] = useState(false);
   const [isGnosisPayLoading, setIsGnosisPayLoading] = useState(false);
   const { mode } = useTheme();
@@ -49,7 +62,7 @@ export default function PendingPayments() {
             <PrimaryButton
               variant="tertiary"
               onClick={() => {
-                void router.push({
+                router.push({
                   pathname: router.pathname,
                   query: {
                     circle: router.query.circle,
@@ -93,7 +106,7 @@ export default function PendingPayments() {
               <PrimaryButton
                 variant="tertiary"
                 onClick={() => {
-                  void router.push({
+                  router.push({
                     pathname: router.pathname,
                     query: {
                       circle: router.query.circle,
@@ -116,7 +129,7 @@ export default function PendingPayments() {
             >
               {circle?.safeAddresses &&
                 Object.entries(circle?.safeAddresses).some(
-                  ([aChain, aSafes]) => aSafes?.length > 0
+                  ([, aSafes]) => aSafes?.length > 0
                 ) && (
                   <Tooltip
                     title="Gnosis safe will be used to pay on networks which have a connected safe"
@@ -131,14 +144,13 @@ export default function PendingPayments() {
                           circle.pendingPayments,
                           circle.paymentDetails
                         );
-                        console.log({ uniqueNetworks });
-                        for (const chainId of uniqueNetworks) {
-                          if (!circle.safeAddresses?.[chainId]?.length)
+                        uniqueNetworks.forEach(async (chainId) => {
+                          if (!circle.safeAddresses?.[chainId]?.length) {
                             await pay(chainId);
-                          else {
+                          } else {
                             await pay(chainId, true);
                           }
-                        }
+                        });
                         setIsGnosisPayLoading(false);
                       }}
                       loading={isGnosisPayLoading}
@@ -155,10 +167,9 @@ export default function PendingPayments() {
                     circle.pendingPayments,
                     circle.paymentDetails
                   );
-                  console.log({ uniqueNetworks });
-                  for await (const chainId of uniqueNetworks) {
+                  uniqueNetworks.forEach(async (chainId) => {
                     await pay(chainId);
-                  }
+                  });
                   setIsPayLoading(false);
                 }}
                 loading={isPayLoading}
@@ -171,32 +182,19 @@ export default function PendingPayments() {
         )}
       </Box>
       <ScrollContainer>
-        {circle.pendingPayments?.map((paymentId, index) => {
-          return (
-            <PaymentCard
-              key={index}
-              index={index}
-              paymentDetails={circle.paymentDetails[paymentId]}
-              handleClick={() => {
-                setIsCardDrawerOpen(true);
-              }}
-            />
-          );
-        })}
+        {circle.pendingPayments?.map((paymentId, index) => (
+          <PaymentCard
+            key={paymentId}
+            index={index}
+            paymentDetails={circle.paymentDetails[paymentId]}
+            handleClick={() => {
+              setIsCardDrawerOpen(true);
+            }}
+          />
+        ))}
       </ScrollContainer>
     </Stack>
   );
-}
+};
 
-const ScrollContainer = styled(Box)`
-  overflow-y: auto;
-  ::-webkit-scrollbar {
-    width: 4px;
-  }
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-  @media (max-width: 768px) {
-    height: calc(100vh - 12rem);
-  }
-  height: calc(100vh - 12rem);
-`;
+export default PendingPayments;

@@ -26,7 +26,8 @@
     "**/*.tsx",
     "**/*.js",
     "pages/[circle]/[project]",
-    "pages/[circle]/r"
+    "pages/[circle]/r",
+    "pages/_document.jsx"
   ],
   "exclude": ["node_modules"]
 }

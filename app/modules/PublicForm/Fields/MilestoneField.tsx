@@ -9,7 +9,6 @@ import MilestoneModal from "./MilestoneModal";
 
 type Props = {
   form: any;
-  dataId?: string;
   propertyName: string;
   data: any;
   setData: (value: any) => void;
@@ -18,7 +17,7 @@ type Props = {
   disabled?: boolean;
 };
 
-export default function MilestoneField({
+const MilestoneField = ({
   form,
   propertyName,
   data,
@@ -26,7 +25,7 @@ export default function MilestoneField({
   showDescription,
   updateRequiredFieldNotSet,
   disabled,
-}: Props) {
+}: Props) => {
   const [isMilestoneModalOpen, setIsMilestoneModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<"create" | "edit">("create");
   const [milestoneIndex, setMilestoneIndex] = useState<number>(0);
@@ -56,9 +55,10 @@ export default function MilestoneField({
                       : [value]
                   );
               } else {
-                data[propertyName][milestoneIndex] = value;
+                const newData = data[propertyName];
+                newData[milestoneIndex] = value;
                 setData({
-                  ...data,
+                  ...newData,
                 });
               }
 
@@ -76,69 +76,67 @@ export default function MilestoneField({
         <Stack direction="vertical" space="2">
           {data &&
             data[propertyName]?.length &&
-            data[propertyName].map((milestone: Milestone, index: number) => {
-              return (
+            data[propertyName].map((milestone: Milestone, index: number) => (
+              <Box
+                key={milestone.id}
+                display="flex"
+                flexDirection="row"
+                gap="4"
+                alignItems="flex-start"
+                borderRadius="large"
+                marginBottom="4"
+                width="full"
+              >
                 <Box
-                  key={index}
                   display="flex"
-                  flexDirection="row"
-                  gap="4"
-                  alignItems="flex-start"
-                  borderRadius="large"
+                  flexDirection="column"
+                  width="128"
                   marginBottom="4"
-                  width="full"
                 >
-                  <Box
-                    display="flex"
-                    flexDirection="column"
-                    width="128"
-                    marginBottom="4"
-                  >
-                    <Text variant="extraLarge" weight="semiBold">
-                      {milestone.title}
+                  <Text variant="extraLarge" weight="semiBold">
+                    {milestone.title}
+                  </Text>
+                  {milestone.reward?.value && (
+                    <Text variant="small" weight="light">
+                      {`${milestone.reward?.value} ${milestone.reward?.token.label}`}
                     </Text>
-                    {milestone.reward?.value && (
-                      <Text variant="small" weight="light">
-                        {`${milestone.reward?.value} ${milestone.reward?.token.label}`}
-                      </Text>
-                    )}
-                    {milestone.dueDate && (
-                      <Text variant="small" weight="light">
-                        {`Due on ${milestone.dueDate}`}
-                      </Text>
-                    )}
-                    {showDescription && milestone.description && (
-                      <Editor value={milestone.description} disabled={true} />
-                    )}
-                  </Box>
-                  {!disabled && (
-                    <Box display="flex" flexDirection="row" gap="2">
-                      <Button
-                        variant="tertiary"
-                        size="small"
-                        onClick={() => {
-                          setModalMode("edit");
-                          setMilestoneIndex(index);
-                          setIsMilestoneModalOpen(true);
-                        }}
-                      >
-                        Edit
-                      </Button>
-                      <PrimaryButton
-                        onClick={() => {
-                          const newMilestones = data[propertyName].filter(
-                            (milestone: Milestone, i: number) => i !== index
-                          );
-                          setData({ ...data, [propertyName]: newMilestones });
-                        }}
-                      >
-                        Remove
-                      </PrimaryButton>
-                    </Box>
+                  )}
+                  {milestone.dueDate && (
+                    <Text variant="small" weight="light">
+                      {`Due on ${milestone.dueDate}`}
+                    </Text>
+                  )}
+                  {showDescription && milestone.description && (
+                    <Editor value={milestone.description} disabled />
                   )}
                 </Box>
-              );
-            })}
+                {!disabled && (
+                  <Box display="flex" flexDirection="row" gap="2">
+                    <Button
+                      variant="tertiary"
+                      size="small"
+                      onClick={() => {
+                        setModalMode("edit");
+                        setMilestoneIndex(index);
+                        setIsMilestoneModalOpen(true);
+                      }}
+                    >
+                      Edit
+                    </Button>
+                    <PrimaryButton
+                      onClick={() => {
+                        const newMilestones = data[propertyName].filter(
+                          (mStone: Milestone, i: number) => i !== index
+                        );
+                        setData({ ...data, [propertyName]: newMilestones });
+                      }}
+                    >
+                      Remove
+                    </PrimaryButton>
+                  </Box>
+                )}
+              </Box>
+            ))}
         </Stack>
         {((form.collectionType === 0 &&
           form?.properties[propertyName].isPartOfFormView) ||
@@ -157,4 +155,12 @@ export default function MilestoneField({
       </Box>
     </>
   );
-}
+};
+
+MilestoneField.defaultProps = {
+  showDescription: false,
+  updateRequiredFieldNotSet: () => {},
+  disabled: false,
+};
+
+export default MilestoneField;

@@ -1,5 +1,7 @@
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { Box, Stack, useTheme, Text } from "degen";
+import {
+  Box, Stack, useTheme, Text,
+} from "degen";
 import { useState } from "react";
 import styled from "styled-components";
 import ProfileModal from "../../ProfileSettings";
@@ -20,12 +22,10 @@ const Notif = styled(Box)<{ mode: string }>`
   padding: 2rem;
   border-radius: 1rem;
   box-shadow: 0px 1px 6px
-    ${(props) =>
-      props.mode === "dark" ? "rgba(0, 0, 0, 0.4)" : "rgba(0, 0, 0, 0.1)"};
+    ${(props) => (props.mode === "dark" ? "rgba(0, 0, 0, 0.4)" : "rgba(0, 0, 0, 0.1)")};
   &:hover {
     box-shadow: 0px 3px 10px
-      ${(props) =>
-        props.mode === "dark" ? "rgba(0, 0, 0, 0.6)" : "rgba(0, 0, 0, 0.25)"};
+      ${(props) => (props.mode === "dark" ? "rgba(0, 0, 0, 0.6)" : "rgba(0, 0, 0, 0.25)")};
     transition-duration: 0.7s;
   }
   display: flex;

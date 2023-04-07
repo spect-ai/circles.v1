@@ -1,7 +1,7 @@
 type CreatePoapDto = {
   name: string;
   description: string;
-  image: string;
+  image: File;
   eventUrl: string;
   startDate: string;
   endDate: string;
@@ -29,7 +29,7 @@ export const createPoap = async (
   formData.append("email", creatrePoapDto.email);
   formData.append("requestedCodes", creatrePoapDto.requestedCodes.toString());
 
-  return await (
+  return (
     await fetch(
       `${process.env.API_HOST}/collection/v1/${collectionId}/createPoap`,
       {
@@ -41,11 +41,10 @@ export const createPoap = async (
   ).json();
 };
 
-export const getPoap = async (poapId: string) => {
-  return await (
+export const getPoap = async (poapId: string) =>
+  (
     await fetch(`${process.env.API_HOST}/credentials/v1/poap/${poapId}`, {
       method: "GET",
       credentials: "include",
     })
   ).json();
-};

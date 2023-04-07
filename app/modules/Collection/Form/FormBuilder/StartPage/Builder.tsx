@@ -1,13 +1,13 @@
 import Editor from "@/app/common/components/Editor";
 import ClickableTag from "@/app/common/components/EditTag/ClickableTag";
 import { storeImage } from "@/app/common/utils/ipfs";
-import { NameInput } from "@/app/modules/PublicForm/FormFields";
 import { updateFormCollection } from "@/app/services/Collection";
 import { connectedUserAtom } from "@/app/state/global";
-import { Avatar, Box, FileInput, Stack, Text } from "degen";
+import { Avatar, Box, FileInput, Stack } from "degen";
 import { useAtom } from "jotai";
 import { useState } from "react";
 import { toast } from "react-toastify";
+import styled from "styled-components";
 import { useLocalCollection } from "../../../Context/LocalCollectionContext";
 import Footer from "./Footer";
 import Messages from "./Messages";
@@ -15,6 +15,23 @@ import Messages from "./Messages";
 type Props = {
   setCurrentPage: (page: string) => void;
 };
+
+const NameInput = styled.textarea`
+  resize: none;
+  background: transparent;
+  border: 0;
+  border-style: none;
+  border-color: transparent;
+  outline: none;
+  outline-offset: 0;
+  box-shadow: none;
+  font-size: 1.8rem;
+  font-family: Inter;
+  caret-color: rgb(191, 90, 242);
+  color: rgb(191, 90, 242);
+  font-weight: 600;
+  overflow: hidden;
+`;
 
 const BuilderStartPage = ({ setCurrentPage }: Props) => {
   const [connectedUser] = useAtom(connectedUserAtom);
@@ -26,7 +43,6 @@ const BuilderStartPage = ({ setCurrentPage }: Props) => {
   const [description, setDescription] = useState(collection.description);
 
   const [captchaVerified, setCaptchaVerified] = useState(false);
-  const [verifyingCaptcha, setVerifyingCaptcha] = useState(false);
 
   return (
     <Box
@@ -67,7 +83,7 @@ const BuilderStartPage = ({ setCurrentPage }: Props) => {
           placeholder="Enter name"
           autoFocus
           value={name}
-          rows={Math.floor(name?.length / 60) + 1}
+          rows={Math.floor((name?.length || 60) / 60) + 1}
           onChange={(e) => {
             setName(e.target.value);
           }}
@@ -98,8 +114,8 @@ const BuilderStartPage = ({ setCurrentPage }: Props) => {
                 res.id && updateCollection(res);
               }
             }}
-            placeholder={`Edit description`}
-            isDirty={true}
+            placeholder="Edit description"
+            isDirty
           />
         </Box>
         <Messages form={collection} />

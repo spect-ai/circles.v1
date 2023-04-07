@@ -12,7 +12,7 @@ type GrantWorkflowDto = {
   registry?: Registry;
 };
 
-export async function createTemplateFlow(
+async function createTemplateFlow(
   circleId: string,
   template: GrantWorkflowDto,
   templateId: 1 | 2 | 3
@@ -33,4 +33,7 @@ export async function createTemplateFlow(
     toast.success("Created from template successfully!");
     return res.json();
   }
+  return false;
 }
+
+export default createTemplateFlow;

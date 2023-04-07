@@ -27,6 +27,7 @@ const MultiSelect = ({
 
   const [customValue, setCustomValue] = useState("");
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const inputRef: any = useRef();
   return (
     <Box>
@@ -70,10 +71,10 @@ const MultiSelect = ({
             onChange={(e) => {
               setCustomValue(e.target.value);
             }}
-            onBlur={(e) => {
+            onBlur={() => {
               onSelect({ label: customValue, value: "__custom__" });
             }}
-            onFocus={(e) => {
+            onFocus={() => {
               if (selected?.some((o) => o.value === "__custom__")) {
                 onSelect({ label: customValue, value: "__custom__" });
               }
@@ -84,6 +85,10 @@ const MultiSelect = ({
       </Stack>
     </Box>
   );
+};
+
+MultiSelect.defaultProps = {
+  disabled: false,
 };
 
 export default MultiSelect;

@@ -1,5 +1,5 @@
-export const isWhitelisted = async (whitelistedFor: string) => {
-  return await (
+const isWhitelisted = async (whitelistedFor: string) =>
+  (
     await fetch(
       `${process.env.API_HOST}/collection/v1/isWhitelisted?for=${whitelistedFor}`,
       {
@@ -11,4 +11,5 @@ export const isWhitelisted = async (whitelistedFor: string) => {
       }
     )
   ).json();
-};
+
+export default isWhitelisted;

@@ -1,19 +1,31 @@
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { exportToCsv } from "@/app/services/CsvExport";
 import { MemberDetails } from "@/app/types";
 import { Box, Stack, Text } from "degen";
 import { AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
-import { useState } from "react";
 import { useQuery } from "react-query";
 import styled from "styled-components";
+import exportToCsv from "@/app/services/CsvExport";
 import { useCircle } from "../CircleContext";
 import usePaymentViewCommon from "./Common/usePaymentCommon";
 import PaymentCard from "./PaymentCard";
 import PaymentCardDrawer from "./PaymentCardDrawer";
 
-export default function CompletedPayments() {
-  const { circle, setCircleData } = useCircle();
+const ScrollContainer = styled(Box)`
+  overflow-y: auto;
+  ::-webkit-scrollbar {
+    width: 4px;
+  }
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  @media (max-width: 768px) {
+    height: calc(100vh - 12rem);
+  }
+  height: calc(100vh - 12rem);
+`;
+
+const CompletedPayments = () => {
+  const { circle } = useCircle();
   const router = useRouter();
   const { isCardDrawerOpen, setIsCardDrawerOpen } = usePaymentViewCommon();
 
@@ -51,27 +63,39 @@ export default function CompletedPayments() {
             <PrimaryButton
               variant="tertiary"
               onClick={() => {
-                const data = [] as any[];
+                const data = [] as {
+                  "Payment ID": string;
+                  "Total Payment Amount": number;
+                  "Paid on Network": string;
+                  "Paid with Token": string;
+                  "Paid to": string;
+                  "Payment Status": string;
+                  "Paid on": Date | undefined;
+                  "Transaction Hash": string | undefined;
+                }[];
                 circle.completedPayments?.forEach((paymentId) => {
                   const paymentDetails = circle.paymentDetails[paymentId];
-                  const paidTo = paymentDetails.paidTo?.map((paidTo) => {
-                    if (paidTo.propertyType === "user")
+                  const paidTo = paymentDetails.paidTo?.map((paidTo2) => {
+                    if (paidTo2.propertyType === "user") {
                       return {
                         username:
                           memberDetails?.memberDetails[
-                            paidTo.value?.value as string
+                            paidTo2.value?.value as string
                           ].username,
                         ethAddress:
                           memberDetails?.memberDetails[
-                            paidTo.value?.value as string
+                            paidTo2.value?.value as string
                           ].ethAddress,
-                        reward: paidTo.reward,
+                        reward: paidTo2.reward,
                       };
-                    else if (paidTo.propertyType === "ethAddress")
+                    }
+                    if (paidTo2.propertyType === "ethAddress") {
                       return {
-                        ethAddress: paidTo.value,
-                        reward: paidTo.reward,
+                        ethAddress: paidTo2.value,
+                        reward: paidTo2.reward,
                       };
+                    }
+                    return null;
                   });
 
                   data.push({
@@ -113,32 +137,19 @@ export default function CompletedPayments() {
         </Box>
       )}
       <ScrollContainer>
-        {circle.completedPayments?.map((paymentId, index) => {
-          return (
-            <PaymentCard
-              key={index}
-              index={index}
-              paymentDetails={circle.paymentDetails[paymentId]}
-              handleClick={() => {
-                setIsCardDrawerOpen(true);
-              }}
-            />
-          );
-        })}
+        {circle.completedPayments?.map((paymentId, index) => (
+          <PaymentCard
+            key={paymentId}
+            index={index}
+            paymentDetails={circle.paymentDetails[paymentId]}
+            handleClick={() => {
+              setIsCardDrawerOpen(true);
+            }}
+          />
+        ))}
       </ScrollContainer>
     </Stack>
   );
-}
+};
 
-const ScrollContainer = styled(Box)`
-  overflow-y: auto;
-  ::-webkit-scrollbar {
-    width: 4px;
-  }
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-  @media (max-width: 768px) {
-    height: calc(100vh - 12rem);
-  }
-  height: calc(100vh - 12rem);
-`;
+export default CompletedPayments;

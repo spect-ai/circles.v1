@@ -2,10 +2,10 @@ import { Box, Tag, Text, IconUserGroupSolid, Stack } from "degen";
 import { useState, useEffect } from "react";
 import Modal from "@/app/common/components/Modal";
 import { useCircle } from "@/app/modules/Circle/CircleContext";
-import { useLocalCollection } from "../../Context/LocalCollectionContext";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { toast } from "react-toastify";
 import { AnimatePresence } from "framer-motion";
+import { useLocalCollection } from "../../Context/LocalCollectionContext";
 
 interface Props {
   permissions: string[];
@@ -14,12 +14,12 @@ interface Props {
   setIsDirty: (dirty: boolean) => void;
 }
 
-function RoleChunks({
+const RoleChunks = ({
   permissions,
   setPermissions,
   permissionText,
   setIsDirty,
-}: Props) {
+}: Props) => {
   const { circle } = useCircle();
   const [circleRoles, setCircleRoles] = useState(circle?.roles || {});
 
@@ -27,42 +27,40 @@ function RoleChunks({
     setCircleRoles(circle?.roles || {});
   }, [circle?.roles]);
   return (
-    <Stack space={"4"}>
+    <Stack space="4">
       <Text variant="large">{permissionText}</Text>
-      <Box display={"flex"} flexDirection="row" gap={"2"}>
-        {Object.keys(circleRoles)?.map((role) => {
-          return (
-            <Box
-              key={role}
-              onClick={() => {
-                if (permissions.includes(role)) {
-                  setPermissions(permissions.filter((item) => item !== role));
-                } else {
-                  setPermissions([...permissions, role]);
-                }
-                setIsDirty(true);
-              }}
-              style={{
-                cursor: "pointer",
-              }}
+      <Box display="flex" flexDirection="row" gap="2">
+        {Object.keys(circleRoles)?.map((role) => (
+          <Box
+            key={role}
+            onClick={() => {
+              if (permissions.includes(role)) {
+                setPermissions(permissions.filter((item) => item !== role));
+              } else {
+                setPermissions([...permissions, role]);
+              }
+              setIsDirty(true);
+            }}
+            style={{
+              cursor: "pointer",
+            }}
+          >
+            <Tag
+              hover
+              size="medium"
+              as="span"
+              tone={permissions.includes(role) ? "accent" : "secondary"}
             >
-              <Tag
-                hover
-                size="medium"
-                as="span"
-                tone={permissions.includes(role) ? "accent" : "secondary"}
-              >
-                {role}
-              </Tag>
-            </Box>
-          );
-        })}
+              {role}
+            </Tag>
+          </Box>
+        ))}
       </Box>
     </Stack>
   );
-}
+};
 
-export default function FormRoles() {
+const FormRoles = () => {
   const { localCollection: collection, updateCollection } =
     useLocalCollection();
 
@@ -85,8 +83,10 @@ export default function FormRoles() {
 
   return (
     <>
-      <Box width="full" display="flex" flexDirection={"column"} gap="4">
-        <Text variant="label">Configure granular permissions using Circle Roles</Text>
+      <Box width="full" display="flex" flexDirection="column" gap="4">
+        <Text variant="label">
+          Configure granular permissions using Circle Roles
+        </Text>
         <PrimaryButton
           icon={<IconUserGroupSolid />}
           onClick={() => setRoleModal(true)}
@@ -100,7 +100,7 @@ export default function FormRoles() {
             title="Granular Access"
             handleClose={() => setRoleModal(false)}
           >
-            <Box padding="6" display={"flex"} flexDirection="column" gap={"4"}>
+            <Box padding="6" display="flex" flexDirection="column" gap="4">
               <RoleChunks
                 permissionText={
                   collection?.collectionType === 0
@@ -148,10 +148,10 @@ export default function FormRoles() {
                         method: "PATCH",
                         body: JSON.stringify({
                           permissions: {
-                            manageSettings: manageSettings,
+                            manageSettings,
                             updateResponsesManually: updateResponses,
-                            viewResponses: viewResponses,
-                            addComments: addComments,
+                            viewResponses,
+                            addComments,
                           },
                         }),
                         headers: {
@@ -176,4 +176,6 @@ export default function FormRoles() {
       </AnimatePresence>
     </>
   );
-}
+};
+
+export default FormRoles;

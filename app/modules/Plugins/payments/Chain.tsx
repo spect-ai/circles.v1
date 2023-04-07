@@ -3,9 +3,8 @@ import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { Registry } from "@/app/types";
 import { Box, Button, IconPlusSmall, IconTrash, Input, Stack } from "degen";
 import { AnimatePresence, motion } from "framer-motion";
-import React, { useEffect, useState } from "react";
+import { useState } from "react";
 import { ChevronRight } from "react-feather";
-import { useCircle } from "../../Circle/CircleContext";
 import Token from "./Token";
 
 export type Option = {
@@ -35,7 +34,7 @@ type Props = {
   onTokenAmountChange: (token: Option, amount: string) => void;
   onDollarAmountChange: (token: Option, amount: string) => void;
 };
-export default function Chain({
+const Chain = ({
   paymentType,
   registry,
   networkOptions,
@@ -52,7 +51,7 @@ export default function Chain({
   onUpdateReceiverAddress,
   onTokenAmountChange,
   onDollarAmountChange,
-}: Props) {
+}: Props) => {
   const tokenOptions =
     registry &&
     Object.values(registry[network.value]?.tokenDetails || {}).map((token) => ({
@@ -137,7 +136,7 @@ export default function Chain({
                   onRemoveToken={() => onRemoveToken(token, index)}
                   onTokenAmountChange={onTokenAmountChange}
                   onDollarAmountChange={onDollarAmountChange}
-                  onUpdateToken={(token) => onUpdateToken(token, index)}
+                  onUpdateToken={(tkn) => onUpdateToken(tkn, index)}
                   paymentType={paymentType}
                 />
               ))}
@@ -158,4 +157,6 @@ export default function Chain({
       </Stack>
     </Box>
   );
-}
+};
+
+export default Chain;

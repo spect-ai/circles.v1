@@ -1,4 +1,4 @@
-import { getPropertyIcon } from "../CollectionProject/EditProperty/Utils";
+import getPropertyIcon from "../CollectionProject/EditProperty/Utils";
 
 export const fields = [
   { label: "Short Text", value: "shortText" },

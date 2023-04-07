@@ -1,7 +1,6 @@
 import queryClient from "@/app/common/utils/queryClient";
-import { LensDate, LensSkills, NFT, VerifiableCredential } from "@/app/types";
+import { LensDate, LensSkills, NFT, Credential } from "@/app/types";
 import { toast } from "react-toastify";
-import { Credential } from "@/app/types";
 import { useAtom } from "jotai";
 import { userDataAtom } from "@/app/state/global";
 
@@ -75,7 +74,7 @@ interface UpdateEducationDTO {
 }
 
 export default function useProfileUpdate() {
-  const [userData, setUserData] = useAtom(userDataAtom);
+  const [, setUserData] = useAtom(userDataAtom);
 
   const preprocessDate = (date: string) => {
     if (!date) return {};
@@ -107,6 +106,10 @@ export default function useProfileUpdate() {
 
         return true;
       }
+      toast.error("Error updating profile", {
+        theme: "dark",
+      });
+      return false;
     } catch (error) {
       toast.error(`Error updating profile ${error}`, {
         theme: "dark",
@@ -116,7 +119,6 @@ export default function useProfileUpdate() {
   };
 
   const addExperience = async (body: AddExperienceDTO) => {
-    console.log(body);
     const res = await fetch(`${process.env.API_HOST}/user/me/addExperience`, {
       headers: {
         Accept: "application/json",
@@ -133,12 +135,11 @@ export default function useProfileUpdate() {
       setUserData(data);
 
       return true;
-    } else {
-      toast.error("Error updating profile", {
-        theme: "dark",
-      });
-      return false;
     }
+    toast.error("Error updating profile", {
+      theme: "dark",
+    });
+    return false;
   };
 
   const updateExperience = async (
@@ -163,12 +164,11 @@ export default function useProfileUpdate() {
       queryClient.setQueryData("getMyUser", data);
       setUserData(data);
       return true;
-    } else {
-      toast.error("Error updating profile", {
-        theme: "dark",
-      });
-      return false;
     }
+    toast.error("Error updating profile", {
+      theme: "dark",
+    });
+    return false;
   };
 
   const removeExperience = async (experienceId: string) => {
@@ -190,12 +190,11 @@ export default function useProfileUpdate() {
       setUserData(data);
 
       return true;
-    } else {
-      toast.error("Error updating profile", {
-        theme: "dark",
-      });
-      return false;
     }
+    toast.error("Error updating profile", {
+      theme: "dark",
+    });
+    return false;
   };
 
   const addEducation = async (body: AddEducationDTO) => {
@@ -215,12 +214,11 @@ export default function useProfileUpdate() {
       setUserData(data);
 
       return true;
-    } else {
-      toast.error("Error updating profile", {
-        theme: "dark",
-      });
-      return false;
     }
+    toast.error("Error updating profile", {
+      theme: "dark",
+    });
+    return false;
   };
 
   const updateEducation = async (
@@ -246,12 +244,11 @@ export default function useProfileUpdate() {
       setUserData(data);
 
       return true;
-    } else {
-      toast.error("Error updating profile", {
-        theme: "dark",
-      });
-      return false;
     }
+    toast.error("Error updating profile", {
+      theme: "dark",
+    });
+    return false;
   };
 
   const removeEducation = async (educationId: string) => {
@@ -273,12 +270,11 @@ export default function useProfileUpdate() {
       setUserData(data);
 
       return true;
-    } else {
-      toast.error("Error updating profile", {
-        theme: "dark",
-      });
-      return false;
     }
+    toast.error("Error updating profile", {
+      theme: "dark",
+    });
+    return false;
   };
 
   return {

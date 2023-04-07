@@ -5,7 +5,7 @@ import { useLocalCollection } from "../Context/LocalCollectionContext";
 
 const RewardComponent = ({ rowData, columnData }: CellProps) => {
   const reward = rowData[columnData.property.name];
-  const id = rowData.id;
+  const { id } = rowData;
 
   const { localCollection: collection } = useLocalCollection();
   return (
@@ -26,8 +26,7 @@ const RewardComponent = ({ rowData, columnData }: CellProps) => {
             collection.collectionType === 0
               ? columnData.isPartOfFormView
               : false
-          )
-            return;
+          ) return;
           columnData.setPropertyName(columnData.property.name);
           columnData.setDataId(id);
           columnData.setIsRewardFieldOpen(true);
@@ -36,7 +35,7 @@ const RewardComponent = ({ rowData, columnData }: CellProps) => {
         {reward?.value ? (
           <Text variant="small">{`${reward.value} ${reward.token?.label}`}</Text>
         ) : (
-          <Text variant="small">{"No reward"}</Text>
+          <Text variant="small">No reward</Text>
         )}
       </Button>
     </Box>

@@ -1,17 +1,15 @@
 import Popover from "@/app/common/components/Popover";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { IconEth, Stack, Tag, Text, Box } from "degen";
+import { Stack, Text, Box } from "degen";
 import { motion } from "framer-motion";
 import React, { useState } from "react";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
 import { MenuContainer, MenuItem } from "../EditValue";
 
-function IncentiveFilter() {
+const IncentiveFilter = () => {
   const { localCollection: collection } = useLocalCollection();
   const [isOpen, setIsOpen] = useState(false);
-  const [poapClaimee, setPoapClaimee] = useState(false);
   const [erc20Claimee, setErc20Claimee] = useState(false);
-  const [kudosClaimee, setKudosClaimee] = useState(false);
 
   if (
     !collection.formMetadata.mintkudosTokenId &&
@@ -88,6 +86,6 @@ function IncentiveFilter() {
       </Popover>
     </Stack>
   );
-}
+};
 
 export default IncentiveFilter;

@@ -1,20 +1,19 @@
 import { Box, Input, IconSearch, Stack } from "degen";
-import { useCircle } from "../CircleContext";
 import Loader from "@/app/common/components/Loader";
-
 import { matchSorter } from "match-sorter";
-import React, { useState, useEffect } from "react";
-import InviteMemberModal from "../ContributorsModal/InviteMembersModal";
+import { useState, useEffect } from "react";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
-import AddRole from "../ContributorsModal/AddRoleModal";
-import GuildRoleMapping from "../CircleSettingsModal/GuildIntegration/GuildRoleMapping";
-import DiscordRoleMapping from "../CircleSettingsModal/DiscordRoleMapping";
-import RoleCard from "./RolesCard";
 import { Row, Col, Hidden, Visible } from "react-grid-system";
 import { useRouter } from "next/router";
 import styled from "styled-components";
 import { isSidebarExpandedAtom } from "@/app/state/global";
 import { useAtom } from "jotai";
+import RoleCard from "./RolesCard";
+import DiscordRoleMapping from "../CircleSettingsModal/DiscordRoleMapping";
+import GuildRoleMapping from "../CircleSettingsModal/GuildIntegration/GuildRoleMapping";
+import AddRole from "../ContributorsModal/AddRoleModal";
+import InviteMemberModal from "../ContributorsModal/InviteMembersModal";
+import { useCircle } from "../CircleContext";
 
 const ScrollContainer = styled(Box)`
   overflow-y: auto;
@@ -26,13 +25,11 @@ const ScrollContainer = styled(Box)`
   height: calc(100vh - 13rem);
 `;
 
-function Roles() {
+const Roles = () => {
   const router = useRouter();
   const { circle: cId } = router.query;
   const { circle, loading, isLoading } = useCircle();
-  const [isSidebarExpanded, setIsSidebarExpanded] = useAtom(
-    isSidebarExpandedAtom
-  );
+  const [isSidebarExpanded] = useAtom(isSidebarExpandedAtom);
   const { canDo } = useRoleGate();
   const [circleRoles, setCircleRoles] = useState(circle?.roles || {});
   useEffect(() => {
@@ -178,6 +175,6 @@ function Roles() {
       </ScrollContainer>
     </Stack>
   );
-}
+};
 
 export default Roles;

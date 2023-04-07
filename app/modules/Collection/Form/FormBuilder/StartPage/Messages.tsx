@@ -7,7 +7,7 @@ type Props = {
   form: CollectionType;
 };
 
-export default function Messages({ form }: Props) {
+const Messages = ({ form }: Props) => {
   const quizValidFields =
     form?.propertyOrder &&
     form.propertyOrder.filter(
@@ -45,7 +45,7 @@ export default function Messages({ form }: Props) {
       {form.formMetadata.sybilProtectionEnabled && (
         <Text weight="semiBold">✋ This form is Sybil protected</Text>
       )}
-      {form.formMetadata.pages["connect"] && (
+      {form.formMetadata.pages.connect && (
         <Box display="flex" flexDirection="row" gap="2">
           <Text weight="semiBold" color="accent">
             <WalletOutlined />
@@ -57,4 +57,6 @@ export default function Messages({ form }: Props) {
       )}
     </Box>
   );
-}
+};
+
+export default Messages;

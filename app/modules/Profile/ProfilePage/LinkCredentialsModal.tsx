@@ -1,21 +1,33 @@
 import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { Credential } from "@/app/types";
+import { Credential, PoapCredential } from "@/app/types";
 import { SaveFilled } from "@ant-design/icons";
 import { Box, Text } from "degen";
 import { useState } from "react";
 import styled from "styled-components";
 import Tabs from "@/app/common/components/Tabs";
-import { Mintkudos } from "./Credentials/Mintkudos";
-import { Poap } from "./Credentials/Poap";
-import { GitcoinPassport } from "./Credentials/GitcoinPassport";
 import { AnimatePresence } from "framer-motion";
+import Mintkudos from "./Credentials/Mintkudos";
+import Poap from "./Credentials/Poap";
+import GitcoinPassport from "./Credentials/GitcoinPassport";
 
 type Props = {
   credentials: Credential[];
   setCredentials: (credentials: Credential[]) => void;
-  allCredentials: { [id: string]: any[] };
+  allCredentials: {
+    poaps: PoapCredential[];
+    kudos: Credential[];
+    gitcoinPassports: Credential[];
+  };
 };
+
+const ScrollContainer = styled(Box)`
+  ::-webkit-scrollbar {
+    width: 5px;
+  }
+  height: 35rem;
+  overflow-y: auto;
+`;
 
 const tabKeys = [
   "poaps",
@@ -26,11 +38,11 @@ const tabKeys = [
   "buildspace",
 ];
 
-export default function LinkCredentialsModal({
+const LinkCredentialsModal = ({
   credentials,
   setCredentials,
   allCredentials,
-}: Props) {
+}: Props) => {
   const [tab, setTab] = useState(0);
 
   const [linkCredentialsOpen, setLinkCredentialsOpen] = useState(false);
@@ -39,14 +51,15 @@ export default function LinkCredentialsModal({
     [tab: string]: { [id: string]: boolean };
   }>({});
   const [normalizedSelectedCredentials, setNormalizedSelectedCredentials] =
-    useState<Credential[]>(credentials ? credentials : []);
+    useState<Credential[]>(credentials || []);
 
   const onCredentialClick = (credential: Credential) => {
     const newSelectedCredentials = {
       ...selectedCredentials,
     };
-    if (!newSelectedCredentials[tabKeys[tab]])
+    if (!newSelectedCredentials[tabKeys[tab]]) {
       newSelectedCredentials[tabKeys[tab]] = {};
+    }
     newSelectedCredentials[tabKeys[tab]][credential.id] =
       !newSelectedCredentials[tabKeys[tab]][credential.id];
     if (newSelectedCredentials[tabKeys[tab]][credential.id]) {
@@ -89,8 +102,8 @@ export default function LinkCredentialsModal({
             }}
           >
             {normalizedSelectedCredentials?.length
-              ? `Update Linked Credentials`
-              : `Link Credentials`}
+              ? "Update Linked Credentials"
+              : "Link Credentials"}
           </PrimaryButton>
         </Box>
       </Box>
@@ -100,7 +113,7 @@ export default function LinkCredentialsModal({
             handleClose={() => {
               setLinkCredentialsOpen(false);
             }}
-            title={`Link Credentials`}
+            title="Link Credentials"
           >
             <Box display="flex">
               <Box width="1/4" paddingY="8" paddingRight="1">
@@ -131,8 +144,8 @@ export default function LinkCredentialsModal({
               >
                 {tabKeys[tab] === "kudos" && (
                   <Mintkudos
-                    credentials={allCredentials["kudos"]}
-                    selectedCredentials={selectedCredentials["kudos"]}
+                    credentials={allCredentials.kudos}
+                    selectedCredentials={selectedCredentials.kudos}
                     onCredentialClick={(credential: Credential) =>
                       onCredentialClick(credential)
                     }
@@ -140,8 +153,8 @@ export default function LinkCredentialsModal({
                 )}
                 {tabKeys[tab] === "poaps" && (
                   <Poap
-                    credentials={allCredentials["poaps"]}
-                    selectedCredentials={selectedCredentials["poaps"]}
+                    credentials={allCredentials.poaps}
+                    selectedCredentials={selectedCredentials.poaps}
                     onCredentialClick={(credential: Credential) =>
                       onCredentialClick(credential)
                     }
@@ -149,10 +162,8 @@ export default function LinkCredentialsModal({
                 )}
                 {tabKeys[tab] === "gitcoinPassports" && (
                   <GitcoinPassport
-                    credentials={allCredentials["gitcoinPassports"]}
-                    selectedCredentials={
-                      selectedCredentials["gitcoinPassports"]
-                    }
+                    credentials={allCredentials.gitcoinPassports}
+                    selectedCredentials={selectedCredentials.gitcoinPassports}
                     onCredentialClick={(credential: Credential) =>
                       onCredentialClick(credential)
                     }
@@ -176,45 +187,6 @@ export default function LinkCredentialsModal({
       </AnimatePresence>
     </>
   );
-}
+};
 
-const ScrollContainer = styled(Box)`
-  ::-webkit-scrollbar {
-    width: 5px;
-  }
-  height: 35rem;
-  overflow-y: auto;
-`;
-
-export const CredentialCard = styled(Box)<{ mode: string; selected: boolean }>`
-  display: flex;
-  flex-direction: column;
-  min-height: 12vh;
-  margin-top: 1rem;
-  padding: 0.4rem 1rem 0;
-  border-radius: 0.5rem;
-  border: solid 2px
-    ${(props) =>
-      props.selected
-        ? "rgb(191, 90, 242, 1)"
-        : props.mode === "dark"
-        ? "rgb(255, 255, 255, 0.05)"
-        : "rgb(20, 20, 20, 0.05)"};
-  &:hover {
-    border: solid 2px rgb(191, 90, 242);
-    transition-duration: 0.7s;
-    cursor: pointer;
-  }
-  position: relative;
-  transition: all 0.3s ease-in-out;
-  width: 80%;
-`;
-
-export const PluginAdded = styled.div`
-  position: absolute;
-  top: 0;
-  right: 0;
-  background: rgba(20, 20, 20, 0.8);
-  padding: 0.5rem 1rem;
-  border-radius: 0 1rem 0 1rem;
-`;
+export default LinkCredentialsModal;

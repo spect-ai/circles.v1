@@ -15,12 +15,11 @@ import CreatableDropdown from "@/app/common/components/CreatableDropdown";
 import Editor from "@/app/common/components/Editor";
 import CheckBox from "@/app/common/components/Table/Checkbox";
 import { linkDiscord } from "@/app/services/Collection";
-import { useLocalCollection } from "../../Context/LocalCollectionContext";
 import { toast } from "react-toastify";
 import { useRouter } from "next/router";
+import { useLocalCollection } from "../../Context/LocalCollectionContext";
 
 type Props = {
-  actionMode: "edit" | "create";
   action: Action;
   setAction: (action: Action) => void;
   collection: CollectionType;
@@ -28,16 +27,15 @@ type Props = {
   handleClose?: () => void;
 };
 
-export default function CreateDiscordThread({
+const CreateDiscordThread = ({
   setAction,
-  actionMode,
   action,
   collection,
   manualAction,
   handleClose,
-}: Props) {
+}: Props) => {
   const { origin } = useLocation();
-  const { setLocalCollection, localCollection } = useLocalCollection();
+  const { setLocalCollection } = useLocalCollection();
   const router = useRouter();
   const [linking, setLinking] = useState(false);
   const [threadName, setThreadName] = useState(action?.data?.threadName || "");
@@ -92,12 +90,11 @@ export default function CreateDiscordThread({
 
   useEffect(() => {
     if (circle?.discordGuildId) {
-      const discordIsConnected = async () => {
+      const discordIsConnected2 = async () => {
         const res = await guildIsConnected(circle?.discordGuildId);
-        console.log({ res });
         setDiscordIsConnected(res);
       };
-      void discordIsConnected();
+      discordIsConnected2();
     }
   }, [circle?.discordGuildId, justAddedDiscordServer]);
 
@@ -105,30 +102,30 @@ export default function CreateDiscordThread({
     if (circle?.discordGuildId && discordIsConnected) {
       const getGuildChannels = async () => {
         const data = await fetchGuildChannels(circle?.discordGuildId);
-        const channelOptions = data.guildChannels?.map((channel: any) => ({
-          label: channel.name,
-          value: channel.id,
-        }));
-        setChannelOptions(channelOptions);
+        const channelOptions2 = data.guildChannels?.map(
+          (channel: { id: string; name: string }) => ({
+            label: channel.name,
+            value: channel.id,
+          })
+        );
+        setChannelOptions(channelOptions2);
       };
-      void getGuildChannels();
+      getGuildChannels();
 
       const fetchGuildRoles = async () => {
         const data = await getGuildRoles(circle?.discordGuildId);
         data && setDiscordRoles(data.roles);
-        console.log({ data });
       };
-      void fetchGuildRoles();
+      fetchGuildRoles();
     }
   }, [discordIsConnected]);
 
-  if (!discordIsConnected)
+  if (!discordIsConnected) {
     return (
       <Box
         width="48"
         paddingTop="4"
         onClick={() => {
-          console.log({ origin });
           window.open(
             `https://discord.com/oauth2/authorize?client_id=942494607239958609&permissions=17448306704&redirect_uri=${origin}/api/connectDiscord&response_type=code&scope=bot&state=${circle?.slug}/r/${collection.slug}`,
             "popup",
@@ -147,6 +144,7 @@ export default function CreateDiscordThread({
         </PrimaryButton>
       </Box>
     );
+  }
   return (
     <Box
       marginTop="2"
@@ -176,17 +174,17 @@ export default function CreateDiscordThread({
         <CreatableDropdown
           options={
             Object.entries(collection.properties)
-              .filter(([propertyId, property]) => property.type === "shortText")
-              .map(([propertyId, property]) => ({
+              .filter(([, property]) => property.type === "shortText")
+              .map(([, property]) => ({
                 label: `Map from value in "${property.name}"`,
                 value: property.name,
               })) || []
           }
           selected={threadName}
           onChange={(value) => {
-            if (collection.properties[value.value])
+            if (collection.properties[value.value]) {
               setThreadNameType("mapping");
-            else setThreadNameType("value");
+            } else setThreadNameType("value");
             setThreadName(value);
           }}
           multiple={false}
@@ -262,25 +260,23 @@ export default function CreateDiscordThread({
               <Text variant="label">Pick who to add to private thread</Text>
             </Box>
             <Stack direction="horizontal" wrap>
-              {discordRoles?.map((role) => {
-                return (
-                  <Box
-                    key={role.id}
-                    cursor="pointer"
-                    onClick={() => toggleSelectedRole(role.id)}
-                  >
-                    {selectedRoles[role.id] ? (
-                      <Tag tone={"accent"} hover>
-                        <Box paddingX="2">{role.name}</Box>
-                      </Tag>
-                    ) : (
-                      <Tag hover>
-                        <Box paddingX="2">{role.name}</Box>
-                      </Tag>
-                    )}
-                  </Box>
-                );
-              })}
+              {discordRoles?.map((role) => (
+                <Box
+                  key={role.id}
+                  cursor="pointer"
+                  onClick={() => toggleSelectedRole(role.id)}
+                >
+                  {selectedRoles[role.id] ? (
+                    <Tag tone="accent" hover>
+                      <Box paddingX="2">{role.name}</Box>
+                    </Tag>
+                  ) : (
+                    <Tag hover>
+                      <Box paddingX="2">{role.name}</Box>
+                    </Tag>
+                  )}
+                </Box>
+              ))}
             </Stack>
           </>
         )}
@@ -308,7 +304,7 @@ export default function CreateDiscordThread({
               value={
                 ":::tip\nEnsure you have a discord field in your form which the user will use to connect their discord account."
               }
-              disabled={true}
+              disabled
             />
           </Box>
         )}
@@ -329,8 +325,8 @@ export default function CreateDiscordThread({
             />
             <Text variant="small">
               {manualAction
-                ? `Add stakeholders from this card`
-                : `Add stakeholders from cards dynamically`}
+                ? "Add stakeholders from this card"
+                : "Add stakeholders from cards dynamically"}
             </Text>
           </Box>
         )}
@@ -360,25 +356,23 @@ export default function CreateDiscordThread({
               <Stack direction="horizontal" wrap>
                 {Object.values(collection.properties)
                   ?.filter((p) => ["user", "user[]"].includes(p.type))
-                  ?.map((p) => {
-                    return (
-                      <Box
-                        key={p.name}
-                        cursor="pointer"
-                        onClick={() => toggleSelectedProperty(p.name)}
-                      >
-                        {stakeholdersToAdd.includes(p.name) ? (
-                          <Tag tone={"accent"} hover>
-                            <Box paddingX="2">{p.name}</Box>
-                          </Tag>
-                        ) : (
-                          <Tag hover>
-                            <Box paddingX="2">{p.name}</Box>
-                          </Tag>
-                        )}
-                      </Box>
-                    );
-                  })}
+                  ?.map((p) => (
+                    <Box
+                      key={p.name}
+                      cursor="pointer"
+                      onClick={() => toggleSelectedProperty(p.name)}
+                    >
+                      {stakeholdersToAdd.includes(p.name) ? (
+                        <Tag tone="accent" hover>
+                          <Box paddingX="2">{p.name}</Box>
+                        </Tag>
+                      ) : (
+                        <Tag hover>
+                          <Box paddingX="2">{p.name}</Box>
+                        </Tag>
+                      )}
+                    </Box>
+                  ))}
               </Stack>
             </>
           )}
@@ -417,7 +411,7 @@ export default function CreateDiscordThread({
                   }
                 } catch (e) {
                   toast.error("Something went wrong while linking discord");
-                  console.log(e);
+                  console.error(e);
                 }
                 setLinking(false);
               }}
@@ -429,4 +423,6 @@ export default function CreateDiscordThread({
       )}
     </Box>
   );
-}
+};
+
+export default CreateDiscordThread;

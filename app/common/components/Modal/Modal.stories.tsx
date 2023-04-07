@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Story, Meta } from "@storybook/react";
-import Modal, { ModalProps } from ".";
 import { Box, Button } from "degen";
 import { AnimatePresence } from "framer-motion";
+import Modal, { ModalProps } from ".";
 
 // import * as DependentStories from './Dependent.stories'
 

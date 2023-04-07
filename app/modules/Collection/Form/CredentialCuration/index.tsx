@@ -2,12 +2,12 @@ import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { Box, Stack, Text } from "degen";
 import React from "react";
 import { toast } from "react-toastify";
-import { useLocalCollection } from "../../Context/LocalCollectionContext";
 import mixpanel from "@/app/common/utils/mixpanel";
 import { useQuery } from "react-query";
 import { UserType } from "@/app/types";
+import { useLocalCollection } from "../../Context/LocalCollectionContext";
 
-export default function CredentialCuration() {
+const CredentialCuration = () => {
   const { localCollection: collection, updateCollection } =
     useLocalCollection();
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
@@ -22,10 +22,13 @@ export default function CredentialCuration() {
     >
       <Stack direction="vertical">
         {collection.formMetadata.isAnOpportunity && (
-          <Text variant="small">{`Credential curation is enabled`}</Text>
+          <Text variant="small">Credential curation is enabled</Text>
         )}
         {!collection.formMetadata.isAnOpportunity && (
-          <Text variant="small">{`Receive responders previous work, education and credentials with the form response`}</Text>
+          <Text variant="small">
+            Receive responders previous work, education and credentials with the
+            form response
+          </Text>
         )}
       </Stack>
       <Box marginTop="4">
@@ -62,10 +65,12 @@ export default function CredentialCuration() {
           }}
         >
           {collection.formMetadata.credentialCurationEnabled
-            ? `Disable Credential Curation`
-            : `Enable Credential Curation`}
+            ? "Disable Credential Curation"
+            : "Enable Credential Curation"}
         </PrimaryButton>
       </Box>
     </Box>
   );
-}
+};
+
+export default CredentialCuration;

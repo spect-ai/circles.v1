@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Story, Meta } from "@storybook/react";
 
-import Dropdown, { DropdownProps } from ".";
 import { Box } from "degen";
+import Dropdown, { DropdownProps } from ".";
 // import * as DependentStories from './Dependent.stories'
 
 export default {
@@ -17,7 +17,6 @@ const Template: Story<DropdownProps> = (args) => {
       <Dropdown
         {...args}
         onChange={(option) => {
-          console.log({ option });
           setSelected(option);
         }}
         selected={selected}

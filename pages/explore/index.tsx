@@ -1,11 +1,9 @@
 import { PublicLayout } from "@/app/common/layout";
-import Dashboard from "@/app/modules/Dashboard";
-import { BucketizedCircleType, CircleType } from "@/app/types";
+import { BucketizedCircleType } from "@/app/types";
 import type { NextPage } from "next";
 import { useQuery } from "react-query";
 import MetaHead from "@/app/common/seo/MetaHead/MetaHead";
 import Explore from "@/app/modules/Explore";
-
 
 const ExplorePage: NextPage = () => {
   useQuery<BucketizedCircleType>("exploreCircles", () =>

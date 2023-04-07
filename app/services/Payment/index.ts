@@ -21,13 +21,11 @@ export const getAgregatedPaymentInfo = async (
 ): Promise<BatchPayInfo | undefined> => {
   // convert cards to query params
   const cardIds = cards.map((cardId) => `cardIds=${cardId}`).join("&");
-  console.log({ cardIds });
   const res = await fetch(
     `${process.env.API_HOST}/card/aggregatedPaymentInfo?${cardIds}&chainId=${chainId}&payCircle=${payCircle}`
   );
   if (res.ok) {
     const data = await res.json();
-    console.log(data);
     return data;
   }
   return undefined;
@@ -78,7 +76,6 @@ export const addToken = async (circleId: string, body: AddTokenDTO) => {
   );
   if (res.ok) {
     const data = await res.json();
-    console.log({ data });
     return data;
   }
   toast.error("Error updating adding token", {

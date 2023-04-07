@@ -1,32 +1,24 @@
 import Popover from "@/app/common/components/Popover";
 import {
   Box,
-  IconCheck,
-  IconClose,
   IconLightningBolt,
   IconLockClosed,
-  IconRefresh,
   Stack,
   Tag,
   Text,
 } from "degen";
 import React, { useMemo, useState } from "react";
 import { Archive, MoreHorizontal } from "react-feather";
-import { MenuContainer, MenuItem } from "../EditValue";
 import { motion } from "framer-motion";
 import { updateFormCollection } from "@/app/services/Collection";
-import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
 import { toast } from "react-toastify";
-import {
-  ClockCircleOutlined,
-  DollarOutlined,
-  IssuesCloseOutlined,
-  UnlockOutlined,
-} from "@ant-design/icons";
+import { DollarOutlined, UnlockOutlined } from "@ant-design/icons";
 import { addPendingPayment } from "@/app/services/Paymentv2";
-import { useCircle } from "../../Circle/CircleContext";
 import { useAccount } from "wagmi";
 import DiscordIcon from "@/app/assets/icons/discordIcon.svg";
+import { useCircle } from "../../Circle/CircleContext";
+import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
+import { MenuContainer, MenuItem } from "../EditValue";
 import IntegrateSnapshotModal from "../../Circle/Governance/IntegrateSnapshotModal";
 
 type Props = {
@@ -34,16 +26,16 @@ type Props = {
   cardSlug: string;
   setSnapshotModal: (value: boolean) => void;
   setDiscordThreadModal: (value: boolean) => void;
-  onChange: (data: any, slug: string) => Promise<void>;
+  onChange: (data: Record<string, unknown>, slug: string) => Promise<void>;
 };
 
-export default function CardOptions({
+const CardOptions = ({
   handleDrawerClose,
   cardSlug,
   setSnapshotModal,
   setDiscordThreadModal,
   onChange,
-}: Props) {
+}: Props) => {
   const { address } = useAccount();
   const { localCollection: collection, updateCollection } =
     useLocalCollection();
@@ -136,7 +128,7 @@ export default function CardOptions({
                     {" "}
                     <DiscordIcon />
                   </Text>
-                  <Text align={"left"}>Link Discord Thread</Text>
+                  <Text align="left">Link Discord Thread</Text>
                 </Stack>
               </MenuItem>
             )}
@@ -159,8 +151,8 @@ export default function CardOptions({
                 }}
               >
                 <Stack direction="horizontal" align="center" space="2">
-                  <IconLightningBolt color={"accent"} size="5" />
-                  <Text align={"left"}>Create Snapshot Proposal</Text>
+                  <IconLightningBolt color="accent" size="5" />
+                  <Text align="left">Create Snapshot Proposal</Text>
                 </Stack>
               </MenuItem>
             )}
@@ -207,11 +199,11 @@ export default function CardOptions({
                     dataSlugs: [cardSlug],
                   });
                   updateCollection(res);
-                  if (res.id)
+                  if (res.id) {
                     toast.success(
                       "Added to pending payments, you can view it in the payments center"
                     );
-                  else toast.error("Error adding to pending payments");
+                  } else toast.error("Error adding to pending payments");
                 }}
               >
                 <Stack direction="horizontal" align="center" space="2">
@@ -231,7 +223,7 @@ export default function CardOptions({
                 handleDrawerClose();
                 await onChange(
                   {
-                    ["__cardStatus__"]:
+                    __cardStatus__:
                       collection.data?.[cardSlug]?.__cardStatus__ ===
                         undefined ||
                       collection.data?.[cardSlug]?.__cardStatus__ === "active"
@@ -245,8 +237,8 @@ export default function CardOptions({
               <Stack direction="horizontal" align="center" space="2">
                 {!(collection.data?.[cardSlug]?.__cardStatus__ === "closed") ? (
                   <>
-                    <IconLockClosed color={"accent"} size="5" />
-                    <Text align={"left"}>Close Card</Text>
+                    <IconLockClosed color="accent" size="5" />
+                    <Text align="left">Close Card</Text>
                   </>
                 ) : (
                   <Box
@@ -274,9 +266,8 @@ export default function CardOptions({
                   (key) => {
                     newCardOrders[key] = collection.projectMetadata.cardOrders[
                       key
-                    ].map((group) => {
-                      return group.filter((slug) => slug !== cardSlug);
-                    });
+                    ].map((group) => group.filter((slug) => slug !== cardSlug));
+                    return null;
                   }
                 );
                 const res = await updateFormCollection(collection.id, {
@@ -317,4 +308,6 @@ export default function CardOptions({
       </Popover>
     </Box>
   );
-}
+};
+
+export default CardOptions;

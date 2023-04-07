@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 export interface SpectPlugin {
   id: string;
   name: string;

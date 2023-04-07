@@ -7,10 +7,10 @@ import { useQuery } from "react-query";
 
 type Props = {
   form: CollectionType;
-  setData?: (data: any) => void;
   setCurrentPage: (page: string) => void;
   setUpdateResponse?: (updateResponse: boolean) => void;
   setSubmitted?: (submitted: boolean) => void;
+  setData?: (data: Record<string, unknown>) => void;
 };
 
 const SubmittedPage = ({
@@ -39,15 +39,15 @@ const SubmittedPage = ({
         </Text>
         <Box marginBottom="8" />
         <Stack>
-          {/* <Image src="/spectDemo.gif" width="1727" height="1082" /> */}
           <img
             src="https://bafybeicot4vgylc7gimu5bzo7megpeo5po3ybp6lov3wft24b666wxzfh4.ipfs.w3s.link/spectDemoCompressed.gif"
             style={{
               width: "100%",
               height: "100%",
             }}
+            alt="demo"
           />
-          <Stack align={"center"}>
+          <Stack align="center">
             <Text variant="label" align="center">
               Powered By
             </Text>
@@ -56,18 +56,18 @@ const SubmittedPage = ({
               target="_blank"
               rel="noopener noreferrer"
             >
-              {mode == "dark" ? (
+              {mode === "dark" ? (
                 <Image
-                  src={"/logo2.svg"}
+                  src="/logo2.svg"
                   alt="dark-mode-logo"
-                  height={"35"}
+                  height="35"
                   width="138"
                 />
               ) : (
                 <Image
-                  src={"/logo1.svg"}
+                  src="/logo1.svg"
                   alt="light-mode-logo"
-                  height={"35"}
+                  height="35"
                   width="138"
                 />
               )}
@@ -117,7 +117,7 @@ const SubmittedPage = ({
               <PrimaryButton
                 variant="transparent"
                 onClick={() => {
-                  const tempData: any = {};
+                  const tempData: Record<string, unknown> = {};
                   const lastResponse =
                     form.formMetadata.previousResponses[
                       form.formMetadata.previousResponses.length - 1
@@ -140,10 +140,7 @@ const SubmittedPage = ({
                     } else if (
                       form.properties[propertyId].type === "singleSelect"
                     ) {
-                      tempData[propertyId] =
-                        lastResponse[propertyId] ||
-                        // @ts-ignore
-                        {};
+                      tempData[propertyId] = lastResponse[propertyId] || {};
                     } else if (
                       [
                         "multiSelect",
@@ -180,7 +177,7 @@ const SubmittedPage = ({
                   setUpdateResponse && setUpdateResponse(false);
                   setSubmitted && setSubmitted(false);
 
-                  const tempData: any = {};
+                  const tempData: Record<string, unknown> = {};
                   form.propertyOrder.forEach((propertyId) => {
                     if (
                       [
@@ -196,7 +193,6 @@ const SubmittedPage = ({
                     } else if (
                       form.properties[propertyId].type === "singleSelect"
                     ) {
-                      // @ts-ignore
                       tempData[propertyId] = {};
                     } else if (
                       ["multiSelect", "user[]"].includes(
@@ -217,6 +213,12 @@ const SubmittedPage = ({
       </Box>
     </Box>
   );
+};
+
+SubmittedPage.defaultProps = {
+  setUpdateResponse: () => {},
+  setSubmitted: () => {},
+  setData: () => {},
 };
 
 export default SubmittedPage;

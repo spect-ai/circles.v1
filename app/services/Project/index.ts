@@ -28,7 +28,7 @@ export const createProject = async (body: CreateProjectDto) => {
 
 export const patchProject = async (
   projectId: string,
-  body: Partial<ProjectType>
+  body: Partial<ProjectType>,
 ) => {
   const res = await fetch(`${process.env.API_HOST}/project/${projectId}`, {
     method: "PATCH",
@@ -55,7 +55,7 @@ export const archiveProject = async (projectId: string) => {
         "Content-Type": "application/json",
       },
       credentials: "include",
-    }
+    },
   );
   if (res.ok) {
     const data = await res.json();

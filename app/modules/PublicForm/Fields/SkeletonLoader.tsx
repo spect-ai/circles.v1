@@ -2,19 +2,7 @@ import { Box, useTheme } from "degen";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 
-const Skelitem = () => (
-  <Skeleton
-    enableAnimation
-    style={{
-      height: "2rem",
-      width: "14rem",
-      borderRadius: "0.5rem",
-      marginRight: "1rem",
-    }}
-  />
-);
-
-export const SkeletonLoader = () => {
+const SkeletonLoader = () => {
   const { mode } = useTheme();
 
   return (
@@ -154,3 +142,5 @@ export const SkeletonLoader = () => {
     </SkeletonTheme>
   );
 };
+
+export default SkeletonLoader;

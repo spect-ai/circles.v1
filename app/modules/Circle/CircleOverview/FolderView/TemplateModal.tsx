@@ -1,5 +1,4 @@
 import Modal from "@/app/common/components/Modal";
-import { createTemplateFlow } from "@/app/services/Templates";
 import { Registry } from "@/app/types";
 import {
   Box,
@@ -11,30 +10,31 @@ import {
 } from "degen";
 import { useState } from "react";
 import { HelpCircle, Trello } from "react-feather";
+import createTemplateFlow from "@/app/services/Templates";
 import { useCircle } from "../../CircleContext";
 import GrantTemplate from "../../Templates/GrantTemplate";
 import KanbanProject from "../../Templates/KanbanProject";
 import OnboardingTemplate from "../../Templates/OnboardingTemplate";
+
 interface Props {
   handleClose: (close: boolean) => void;
 }
 
-export default function TemplateModal({ handleClose }: Props) {
+const TemplateModal = ({ handleClose }: Props) => {
   const { circle, registry, setCircleData } = useCircle();
   const [template, setTemplate] = useState(0);
 
-  const useTemplate = async () => {
+  const createTemplate = async () => {
     handleClose(false);
     const res = await createTemplateFlow(
       circle?.id || "",
       {
         registry: {
-          "137": registry?.["137"],
+          137: registry?.["137"],
         } as Registry,
       },
       3
     );
-    console.log(res);
     if (res?.id) {
       setCircleData(res);
     }
@@ -59,6 +59,7 @@ export default function TemplateModal({ handleClose }: Props) {
                 <a
                   href="https://scribehow.com/shared/Create_a_Grants_Workflow_on_Spect__Of7YjSwlRhW8ZiYbjgkO3g"
                   target="_blank"
+                  rel="noreferrer"
                 >
                   <Box cursor="pointer">
                     <Text variant="label">
@@ -86,6 +87,7 @@ export default function TemplateModal({ handleClose }: Props) {
                 <a
                   href="https://scribehow.com/shared/Run_a_onboarding_program__SxE6ihIxQzKbePZ8yVFu6A"
                   target="_blank"
+                  rel="noreferrer"
                 >
                   <Box cursor="pointer">
                     <Text variant="label">
@@ -110,17 +112,9 @@ export default function TemplateModal({ handleClose }: Props) {
                 </Text>
               }
               width="full"
-              onClick={async () => {
-                await useTemplate();
-                // setTemplate(3);
+              onClick={() => {
+                createTemplate();
               }}
-              // suffix={
-              //   <Box cursor="pointer">
-              //     <Text variant="label">
-              //       <HelpCircle size={20} />
-              //     </Text>
-              //   </Box>
-              // }
             >
               <Box height="28">
                 <Text>Create a new kanban project management board</Text>
@@ -131,10 +125,12 @@ export default function TemplateModal({ handleClose }: Props) {
             </ButtonCard>
           </Stack>
         )}
-        {template == 1 && <GrantTemplate handleClose={handleClose} />}
+        {template === 1 && <GrantTemplate handleClose={handleClose} />}
         {template === 2 && <OnboardingTemplate handleClose={handleClose} />}
         {template === 3 && <KanbanProject handleClose={handleClose} />}
       </Box>
     </Modal>
   );
-}
+};
+
+export default TemplateModal;

@@ -1,7 +1,7 @@
 import Editor from "@/app/common/components/Editor";
 import Modal from "@/app/common/components/Modal";
 import { Box, Stack } from "degen";
-import React, { useState } from "react";
+import { useState } from "react";
 
 type Props = {
   propertyName: string;
@@ -9,11 +9,7 @@ type Props = {
   value: string;
 };
 
-export default function LongTextModal({
-  propertyName,
-  handleClose,
-  value,
-}: Props) {
+const LongTextModal = ({ propertyName, handleClose, value }: Props) => {
   const [isDirty, setIsDirty] = useState(false);
   const [tempValue, setTempValue] = useState(value);
   return (
@@ -38,4 +34,6 @@ export default function LongTextModal({
       </Box>
     </Modal>
   );
-}
+};
+
+export default LongTextModal;

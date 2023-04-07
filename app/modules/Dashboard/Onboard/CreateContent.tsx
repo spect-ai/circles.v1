@@ -6,13 +6,13 @@ import {
   RocketOutlined,
   ProjectOutlined,
 } from "@ant-design/icons";
-import { NameInput } from "./BasicProfile";
 import { createFolder } from "@/app/services/Folders";
 import { useRouter } from "next/router";
 import { useMutation, useQuery } from "react-query";
 import { CircleType, UserType } from "@/app/types";
 import mixpanel from "@/app/common/utils/mixpanel";
 import { Hidden } from "react-grid-system";
+import { NameInput } from "./BasicProfile";
 
 const Card = styled(Box)<{ border: boolean }>`
   max-width: 18rem;
@@ -41,7 +41,7 @@ type CreateCollectionDto = {
   collectionType: 0 | 1;
 };
 
-export function CreateContent() {
+const CreateContent = () => {
   const router = useRouter();
   const [itemName, setItemName] = useState("");
   const [loading, setIsLoading] = useState(false);
@@ -62,8 +62,8 @@ export function CreateContent() {
     }
   );
 
-  const { mutateAsync } = useMutation((circle: CreateCollectionDto) => {
-    return fetch(`${process.env.API_HOST}/collection/v1`, {
+  const { mutateAsync } = useMutation((circle: CreateCollectionDto) =>
+    fetch(`${process.env.API_HOST}/collection/v1`, {
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
@@ -71,8 +71,8 @@ export function CreateContent() {
       method: "POST",
       body: JSON.stringify(circle),
       credentials: "include",
-    });
-  });
+    })
+  );
 
   const createSorm = (type: 0 | 1) => {
     mutateAsync({
@@ -90,28 +90,31 @@ export function CreateContent() {
             avatar: "All",
             contentIds: [resJson.id],
           };
-          const res = await createFolder(payload, myCircles?.[0]?.id as string);
+          const resCreate = await createFolder(
+            payload,
+            myCircles?.[0]?.id as string
+          );
           process.env.NODE_ENV === "production" &&
             mixpanel.track("Onboard sorms", {
               user: currentUser?.username,
             });
-          if (res) {
-            void router.push(`/${res.slug}/r/${resJson.slug}`);
+          if (resCreate) {
+            router.push(`/${resCreate.slug}/r/${resJson.slug}`);
           }
         }
       })
-      .catch((err) => console.log({ err }));
+      .catch((err) => console.error({ err }));
   };
 
   useEffect(() => {
-    void refetch();
+    refetch();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  if (loading)
+  if (loading) {
     return (
       <Box
-        marginTop={"40"}
+        marginTop="40"
         display="flex"
         flexDirection="column"
         gap={{ xs: "10", md: "10", lg: "5" }}
@@ -120,17 +123,18 @@ export function CreateContent() {
           style={{ fontSize: "5rem", color: "rgb(191, 90, 242, 1)" }}
           rotate={30}
         />
-        <Heading align={"center"}>Boosting up your Spect experience</Heading>
+        <Heading align="center">Boosting up your Spect experience</Heading>
       </Box>
     );
+  }
 
   return (
     <Box
-      display={"flex"}
+      display="flex"
       flexDirection="column"
-      gap={"5"}
+      gap="5"
       alignItems="center"
-      marginTop={"20"}
+      marginTop="20"
     >
       <Stack
         direction={{ xs: "vertical", md: "horizontal", lg: "horizontal" }}
@@ -140,19 +144,19 @@ export function CreateContent() {
           style={{ fontSize: "2.5rem", color: "rgb(191, 90, 242, 1)" }}
           rotate={30}
         />
-        <Heading align={"center"}>All set ! This is the final step</Heading>
+        <Heading align="center">All set ! This is the final step</Heading>
       </Stack>
       <Text>What would you like to create ?</Text>
       <Stack direction={{ xs: "vertical", md: "horizontal", lg: "horizontal" }}>
-        <Card border={itemType == "Form"} onClick={() => setItemType("Form")}>
-          <Stack direction={"horizontal"} align="center" space={"2"}>
+        <Card border={itemType === "Form"} onClick={() => setItemType("Form")}>
+          <Stack direction="horizontal" align="center" space="2">
             <ProfileOutlined
               style={{ fontSize: "1.1rem", color: "rgb(191, 90, 242, 1)" }}
             />
             <Text
-              size={"extraLarge"}
+              size="extraLarge"
               variant="extraLarge"
-              color={"textPrimary"}
+              color="textPrimary"
               align="center"
             >
               Spect Form
@@ -165,17 +169,17 @@ export function CreateContent() {
         </Card>
         <Hidden xs sm>
           <Card
-            border={itemType == "Collection"}
+            border={itemType === "Collection"}
             onClick={() => setItemType("Collection")}
           >
-            <Stack direction={"horizontal"} align="center" space={"2"}>
+            <Stack direction="horizontal" align="center" space="2">
               <ProjectOutlined
                 style={{ fontSize: "1.1rem", color: "rgb(191, 90, 242, 1)" }}
               />
               <Text
-                size={"extraLarge"}
+                size="extraLarge"
                 variant="extraLarge"
-                color={"textPrimary"}
+                color="textPrimary"
                 align="center"
               >
                 Collection
@@ -188,10 +192,13 @@ export function CreateContent() {
           </Card>
         </Hidden>
       </Stack>
-      <Text>Give your {itemType} a name </Text>
+      <Text>
+        Give your
+        {itemType} a name{" "}
+      </Text>
       <NameInput
         placeholder={
-          itemType == "Collection"
+          itemType === "Collection"
             ? "Grant Milestones"
             : "Onboarding Interest Form"
         }
@@ -203,23 +210,24 @@ export function CreateContent() {
       <Button
         onClick={() => {
           setIsLoading(true);
-          void refetch();
-          if (itemType == "Form") {
+          refetch();
+          if (itemType === "Form") {
             createSorm(0);
             return;
           }
-          if (itemType == "Collection" && myCircles?.[0]?.id) {
+          if (itemType === "Collection" && myCircles?.[0]?.id) {
             createSorm(1);
-            return;
           }
         }}
         prefix={<IconSparkles size="5" />}
         variant="secondary"
         size="small"
-        disabled={itemName.length == 0}
+        disabled={itemName.length === 0}
       >
         Create {itemType}
       </Button>
     </Box>
   );
-}
+};
+
+export default CreateContent;

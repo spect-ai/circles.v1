@@ -17,13 +17,13 @@ type Props = {
   disabled?: boolean;
 };
 
-function MultiMilestoneModal({
+const MultiMilestoneModal = ({
   propertyName,
   dataId,
   form,
   handleClose,
   disabled,
-}: Props) {
+}: Props) => {
   console;
   const [value, setValue] = useState(form.data[dataId]);
 
@@ -46,16 +46,19 @@ function MultiMilestoneModal({
       >
         <MilestoneField
           form={form}
-          dataId={dataId}
           propertyName={propertyName}
           data={value}
           setData={setValue}
-          showDescription={true}
+          showDescription
           disabled={disabled}
         />
       </Box>
     </Modal>
   );
-}
+};
+
+MultiMilestoneModal.defaultProps = {
+  disabled: false,
+};
 
 export default memo(MultiMilestoneModal);

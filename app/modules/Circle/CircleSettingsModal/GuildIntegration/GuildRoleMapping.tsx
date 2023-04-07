@@ -7,10 +7,73 @@ import { Box, IconClose, Stack, Tag, Text } from "degen";
 import { AnimatePresence } from "framer-motion";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import { GuildxyzToCircleRoles } from "@/app/types";
 import { useCircle } from "../../CircleContext";
 import RolePopover from "../DiscordRoleMapping/RolePopover";
 
-export default function GuildRoleMapping() {
+type Props = {
+  roleName: string;
+  guildRoles: {
+    id: string;
+    name: string;
+  }[];
+  roleMap: GuildxyzToCircleRoles;
+  setRoleMap: React.Dispatch<React.SetStateAction<GuildxyzToCircleRoles>>;
+};
+
+const RoleSection = ({ roleName, guildRoles, setRoleMap, roleMap }: Props) => (
+  <Box>
+    <Text size="headingTwo" weight="semiBold">
+      {roleName}
+    </Text>
+    <Stack direction="horizontal" wrap align="center">
+      <RolePopover
+        roles={guildRoles}
+        setRoleMap={setRoleMap}
+        roleMap={roleMap}
+        circleRole={roleName}
+      />
+      {roleMap &&
+        Object.values(roleMap).map((role) => {
+          if (role.circleRole.includes(roleName)) {
+            return (
+              <Box
+                key={role.id}
+                cursor="pointer"
+                onClick={() => {
+                  if (role.circleRole.length > 1) {
+                    setRoleMap({
+                      ...roleMap,
+                      [role.id]: {
+                        ...role,
+                        circleRole: role.circleRole.filter(
+                          (r) => r !== roleName
+                        ),
+                      },
+                    });
+                  } else {
+                    // eslint-disable-next-line no-param-reassign
+                    delete roleMap[role.id];
+                    setRoleMap({ ...roleMap });
+                  }
+                }}
+              >
+                <Tag hover tone="accent">
+                  <Stack direction="horizontal" space="1" align="center">
+                    <IconClose size="5" />
+                    <Text>{role.name}</Text>
+                  </Stack>
+                </Tag>
+              </Box>
+            );
+          }
+          return null;
+        })}
+    </Stack>
+  </Box>
+);
+
+const GuildRoleMapping = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { circle } = useCircle();
   const [roleMap, setRoleMap] = useState(circle?.guildxyzToCircleRoles || {});
@@ -19,7 +82,7 @@ export default function GuildRoleMapping() {
   const [guildRoles, setGuildRoles] =
     useState<
       | {
-          id: number;
+          id: string;
           name: string;
         }[]
       | undefined
@@ -27,12 +90,14 @@ export default function GuildRoleMapping() {
 
   useEffect(() => {
     if (isOpen) {
-      void (async () => {
+      (async () => {
         setLoading(true);
         const guildServer = await guild.get(circle?.guildxyzId || "");
-        console.log({ guildServer });
         setGuildRoles(
-          guildServer.roles.map((role) => ({ id: role.id, name: role.name }))
+          guildServer.roles.map((role) => ({
+            id: role.id.toString(),
+            name: role.name,
+          }))
         );
         setLoading(false);
       })();
@@ -42,54 +107,6 @@ export default function GuildRoleMapping() {
   if (loading && isOpen) {
     return <Loader loading text="Fetching Roles" />;
   }
-  const RoleSection = ({ roleName }: { roleName: string }) => (
-    <Box>
-      <Text size="headingTwo" weight="semiBold">
-        {roleName}
-      </Text>
-      <Stack direction="horizontal" wrap align="center">
-        <RolePopover
-          roles={guildRoles as any}
-          setRoleMap={setRoleMap}
-          roleMap={roleMap}
-          circleRole={roleName}
-        />
-        {roleMap &&
-          Object.keys(roleMap).map((role) => {
-            if (roleMap[role as any].circleRole.includes(roleName))
-              return (
-                <Box
-                  key={role}
-                  cursor="pointer"
-                  onClick={() => {
-                    if (roleMap[role as any].circleRole.length > 1) {
-                      setRoleMap({
-                        ...roleMap,
-                        [role]: {
-                          ...roleMap[role as any],
-                          circleRole: roleMap[role as any].circleRole.filter(
-                            (r) => r !== roleName
-                          ),
-                        },
-                      });
-                    } else {
-                      delete roleMap[role as any];
-                      setRoleMap({ ...roleMap });
-                    }
-                  }}
-                >
-                  <Tag hover tone="accent">
-                    <Stack direction="horizontal" space="1" align="center">
-                      <IconClose size="5" />
-                      <Text>{roleMap[role as any].name}</Text>
-                    </Stack>
-                  </Tag>
-                </Box>
-              );
-          })}
-      </Stack>
-    </Box>
-  );
 
   if (!circle) {
     return <Loader loading text="Loading Roles" />;
@@ -100,14 +117,14 @@ export default function GuildRoleMapping() {
       <PrimaryButton
         variant="tertiary"
         onClick={() => {
-          if (!circle.guildxyzId)
+          if (!circle.guildxyzId) {
             toast.error(
               "You must have a guild.xyz server connected to use this feature",
               {
                 theme: "dark",
               }
             );
-          else setIsOpen(true);
+          } else setIsOpen(true);
         }}
       >
         Map Guild.xyz Roles
@@ -118,13 +135,18 @@ export default function GuildRoleMapping() {
             <Box paddingX="8" paddingY="4">
               <Stack>
                 {Object.keys(circle.roles).map((role) => (
-                  <RoleSection key={role} roleName={circle.roles[role].name} />
+                  <RoleSection
+                    key={role}
+                    roleName={circle.roles[role].name}
+                    guildRoles={guildRoles || []}
+                    roleMap={roleMap}
+                    setRoleMap={setRoleMap}
+                  />
                 ))}
                 <PrimaryButton
                   loading={loading}
                   onClick={async () => {
                     setLoading(true);
-                    console.log({ roleMap });
                     await updateCircle(
                       {
                         guildxyzToCircleRoles: roleMap,
@@ -144,4 +166,6 @@ export default function GuildRoleMapping() {
       </AnimatePresence>
     </>
   );
-}
+};
+
+export default GuildRoleMapping;

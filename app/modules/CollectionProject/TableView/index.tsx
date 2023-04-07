@@ -1,18 +1,76 @@
 import { Box, IconPlusSmall, Stack, Text, useTheme } from "degen";
-import React, { useEffect, useState } from "react";
-import TableView from "../../Collection/TableView";
+import { useEffect, useState } from "react";
 import mixpanel from "@/app/common/utils/mixpanel";
 import { useQuery } from "react-query";
 import { UserType } from "@/app/types";
-import AddField from "../../Collection/AddField";
 import { AnimatePresence } from "framer-motion";
 import styled from "styled-components";
-import CardDrawer from "../CardDrawer";
 import { useRouter } from "next/router";
+import CardDrawer from "../CardDrawer";
+import AddField from "../../Collection/AddField";
+import TableView from "../../Collection/TableView";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
 import ImportTasks from "../../Circle/ImportTasks";
 
-export default function ProjectTableView() {
+const AddFieldButton = styled.div<{ mode: string }>`
+  background: ${(props) =>
+    props.mode === "dark" ? "rgb(20, 20, 20)" : "rgb(255, 255, 255)"};
+  border-right: 1px solid
+    ${(props) =>
+      props.mode === "dark" ? "rgb(40, 40, 40)" : "rgb(240, 240, 240)"};
+
+  border-top: 1px solid
+    ${(props) =>
+      props.mode === "dark" ? "rgb(40, 40, 40)" : "rgb(240, 240, 240)"};
+
+  border-bottom: 1px solid
+    ${(props) =>
+      props.mode === "dark" ? "rgb(40, 40, 40)" : "rgb(240, 240, 240)"};
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 8px;
+  cursor: pointer;
+  &:hover {
+    background: ${(props) =>
+      props.mode === "dark" ? "rgb(40, 40, 40)" : "rgb(240, 240, 240)"};
+  }
+  transition: background 0.2s ease;
+  width: 120px;
+  height: 42px;
+  margin-right: 2px;
+`;
+
+const AddRowButton = styled.div<{ mode: string }>`
+  background: ${(props) =>
+    props.mode === "dark" ? "rgb(20, 20, 20)" : "rgb(255, 255, 255)"};
+  border-right: 1px solid
+    ${(props) =>
+      props.mode === "dark" ? "rgb(40, 40, 40)" : "rgb(240, 240, 240)"};
+
+  border-left: 1px solid
+    ${(props) =>
+      props.mode === "dark" ? "rgb(40, 40, 40)" : "rgb(240, 240, 240)"};
+
+  border-bottom: 1px solid
+    ${(props) =>
+      props.mode === "dark" ? "rgb(40, 40, 40)" : "rgb(240, 240, 240)"};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 8px;
+  cursor: pointer;
+  &:hover {
+    background: ${(props) =>
+      props.mode === "dark" ? "rgb(40, 40, 40)" : "rgb(240, 240, 240)"};
+  }
+  transition: background 0.2s ease;
+  width: 251px;
+  height: 41px;
+`;
+
+const ProjectTableView = () => {
   const [isAddFieldOpen, setIsAddFieldOpen] = useState(false);
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
@@ -87,7 +145,7 @@ export default function ProjectTableView() {
                   setIsCardDrawerOpen(true);
                 }, 1000);
               }
-              void router.push({
+              router.push({
                 pathname: router.pathname,
                 query: {
                   circle: router.query.circle,
@@ -115,62 +173,6 @@ export default function ProjectTableView() {
       </Box>
     </Box>
   );
-}
+};
 
-const AddFieldButton = styled.div<{ mode: string }>`
-  background: ${(props) =>
-    props.mode === "dark" ? "rgb(20, 20, 20)" : "rgb(255, 255, 255)"};
-  border-right: 1px solid
-    ${(props) =>
-      props.mode === "dark" ? "rgb(40, 40, 40)" : "rgb(240, 240, 240)"};
-
-  border-top: 1px solid
-    ${(props) =>
-      props.mode === "dark" ? "rgb(40, 40, 40)" : "rgb(240, 240, 240)"};
-
-  border-bottom: 1px solid
-    ${(props) =>
-      props.mode === "dark" ? "rgb(40, 40, 40)" : "rgb(240, 240, 240)"};
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 8px;
-  cursor: pointer;
-  &:hover {
-    background: ${(props) =>
-      props.mode === "dark" ? "rgb(40, 40, 40)" : "rgb(240, 240, 240)"};
-  }
-  transition: background 0.2s ease;
-  width: 120px;
-  height: 42px;
-  margin-right: 2px;
-`;
-
-const AddRowButton = styled.div<{ mode: string }>`
-  background: ${(props) =>
-    props.mode === "dark" ? "rgb(20, 20, 20)" : "rgb(255, 255, 255)"};
-  border-right: 1px solid
-    ${(props) =>
-      props.mode === "dark" ? "rgb(40, 40, 40)" : "rgb(240, 240, 240)"};
-
-  border-left: 1px solid
-    ${(props) =>
-      props.mode === "dark" ? "rgb(40, 40, 40)" : "rgb(240, 240, 240)"};
-
-  border-bottom: 1px solid
-    ${(props) =>
-      props.mode === "dark" ? "rgb(40, 40, 40)" : "rgb(240, 240, 240)"};
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 8px;
-  cursor: pointer;
-  &:hover {
-    background: ${(props) =>
-      props.mode === "dark" ? "rgb(40, 40, 40)" : "rgb(240, 240, 240)"};
-  }
-  transition: background 0.2s ease;
-  width: 251px;
-  height: 41px;
-`;
+export default ProjectTableView;

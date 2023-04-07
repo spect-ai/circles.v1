@@ -1,10 +1,10 @@
+/* eslint-disable no-param-reassign */
 import Dropdown from "@/app/common/components/Dropdown";
-import Select from "@/app/common/components/Select";
 import { convertToId } from "@/app/common/utils/utils";
 import { MemberDetails, Option, Property, PropertyType } from "@/app/types";
 import { Box, IconTrash, Stack, Text } from "degen";
 import { useRouter } from "next/router";
-import React, { useState } from "react";
+import { useState } from "react";
 import { useQuery } from "react-query";
 import AddOptions from "../../Collection/AddField/AddOptions";
 import { fields } from "../../Collection/Constants";
@@ -15,19 +15,19 @@ type Props = {
     [key: string]: Property;
   };
   setNewProperties: (newProperties: { [key: string]: Property }) => void;
-  data: any[];
-  userMapping: any;
-  setUserMapping: (userMapping: any) => void;
+  data: Record<string, unknown>[];
+  userMapping: Record<string, Option>;
+  setUserMapping: (userMapping: Record<string, unknown>) => void;
 };
 
-export default function MapField({
+const MapField = ({
   propertyName,
   setNewProperties,
   properties,
   data,
   userMapping,
   setUserMapping,
-}: Props) {
+}: Props) => {
   const [fieldOptions, setFieldOptions] = useState(
     properties[propertyName].options || []
   );
@@ -39,7 +39,7 @@ export default function MapField({
     }
   );
 
-  let circleMembers = memberDetails?.members?.map((member: string) => ({
+  const circleMembers = memberDetails?.members?.map((member: string) => ({
     label: memberDetails && memberDetails.memberDetails[member]?.username,
     value: member,
   }));
@@ -79,17 +79,18 @@ export default function MapField({
                 type.value === "user" ||
                 type.value === "user[]"
               ) {
-                // go through the json data and find all the unique values and add them to the fieldOptions, but if the value has a comma, split it and add each value to the fieldOptions
                 const uniqueValues = new Set();
                 data.forEach((d) => {
                   // if it has square bracktets, remove em
                   if (
-                    d[properties[propertyName].name].startsWith("[") &&
-                    d[properties[propertyName].name].endsWith("]")
+                    (d[properties[propertyName].name] as string).startsWith(
+                      "["
+                    ) &&
+                    (d[properties[propertyName].name] as string).endsWith("]")
                   ) {
-                    d[properties[propertyName].name] = d[
-                      properties[propertyName].name
-                    ].slice(1, -1);
+                    d[properties[propertyName].name] = (
+                      d[properties[propertyName].name] as string
+                    ).slice(1, -1);
                   }
                   const values = (
                     d[properties[propertyName].name] as string
@@ -172,4 +173,6 @@ export default function MapField({
       </Stack>
     </Box>
   );
-}
+};
+
+export default MapField;

@@ -1,9 +1,6 @@
 import React, { memo, useEffect } from "react";
 import { ReactNodeNoStrings } from "degen/dist/types/types";
 import { Box, useTheme } from "degen";
-import { AnimatePresence } from "framer-motion";
-import ExtendedSidebar from "../../../modules/ExtendedSidebar/ExtendedSidebar";
-import Sidebar from "@/app/modules/Sidebar";
 import styled from "styled-components";
 import { useQuery } from "react-query";
 import { UserType } from "@/app/types";
@@ -35,25 +32,14 @@ const DesktopContainer = styled(Box)`
   overflowx: hidden;
 `;
 
-const MobileContainer = styled(Box)`
-  display: none;
-  @media (min-width: 768px) {
-    display: flex;
-    flexdirection: row;
-    height: 100vh;
-  }
-  overflowy: auto;
-  overflowx: hidden;
-`;
-
 const getUser = async () => {
   const res = await fetch(`${process.env.API_HOST}/user/v1/me`, {
     credentials: "include",
   });
-  return await res.json();
+  return res.json();
 };
 
-function PublicLayout(props: PublicLayoutProps) {
+const PublicLayout = (props: PublicLayoutProps) => {
   const { children } = props;
   const [socket, setSocket] = useAtom(socketAtom);
   const [connectedUser, setConnectedUser] = useAtom(connectedUserAtom);
@@ -71,14 +57,13 @@ function PublicLayout(props: PublicLayoutProps) {
     if (!connectedUser) {
       refetch()
         .then((res) => {
-          const data = res.data;
+          const { data } = res;
           if (data?.id) {
             setConnectedUser(data.id);
-            console.log("CONNECT USER");
           }
         })
         .catch((err) => {
-          console.log(err);
+          console.error(err);
           toast.error("Could not fetch user data");
         });
     }
@@ -110,17 +95,17 @@ function PublicLayout(props: PublicLayoutProps) {
   }, [setIsSidebarExpanded]);
 
   useEffect(() => {
-    const socket = io(process.env.API_HOST || "");
-    socket.on("connect", function () {
+    const socket2 = io(process.env.API_HOST || "");
+    socket2.on("connect", () => {
       setSocket(socket);
     });
 
-    socket.on("disconnect", function () {
-      console.log("Disconnected");
+    socket2.on("disconnect", () => {
+      console.warn("Disconnected");
     });
 
     return () => {
-      socket.disconnect();
+      socket2.disconnect();
     };
   }, []);
 
@@ -136,7 +121,6 @@ function PublicLayout(props: PublicLayoutProps) {
   useEffect(() => {
     if (!address && connectedUser) {
       const connectorId = localStorage.getItem("connectorId");
-      console.log({ connectorId, connectors });
       connect({ connector: connectors.find((c) => c.id === connectorId) });
     }
   }, [address, connectedUser]);
@@ -148,6 +132,6 @@ function PublicLayout(props: PublicLayoutProps) {
       </Box>
     </DesktopContainer>
   );
-}
+};
 
 export default memo(PublicLayout);

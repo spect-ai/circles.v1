@@ -6,28 +6,28 @@ import {
   skills,
   tags,
 } from "@/app/common/utils/constants";
-import { Box, IconTrendingUp, Stack, Tag, Text } from "degen";
+import { Box, Stack, Tag, Text } from "degen";
 import { AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useLocalCollection } from "../Context/LocalCollectionContext";
 
-export default function OpportunityMode() {
+const OpportunityMode = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { localCollection: collection, updateCollection } =
     useLocalCollection();
   const [loading, setLoading] = useState(false);
-  const [tagOptions, setTagOptions] = useState([] as string[]);
+  const [, setTagOptions] = useState([] as string[]);
   const [selectedTags, setSelectedTags] = useState([] as string[]);
   const [selectedOpportunityType, setSelectedOpportunityType] = useState("");
   const [selectedExperienceLevel, setSelectedExperienceLevel] = useState("");
   const [selectedSkills, setSelectedSkills] = useState([] as string[]);
 
   useEffect(() => {
-    const tagOptions = [];
-    for (const skill of selectedSkills) {
-      tagOptions.push(...tags[skill as keyof typeof tags]);
-    }
-    setTagOptions(tagOptions);
+    const tagOptions2: string[] = [];
+    selectedSkills.forEach((skill) => {
+      tagOptions2.push(...tags[skill as keyof typeof tags]);
+    });
+    setTagOptions(tagOptions2);
   }, [selectedSkills]);
 
   useEffect(() => {
@@ -85,7 +85,9 @@ export default function OpportunityMode() {
               width="full"
             >
               <Text variant="small">
-                {`Boosting form helps you get opportunities in front of opportunity seekers! Fill up the following fields to get it in front of the right people.`}{" "}
+                Boosting form helps you get opportunities in front of
+                opportunity seekers! Fill up the following fields to get it in
+                front of the right people.{" "}
               </Text>
             </Box>
             <Box
@@ -338,4 +340,6 @@ export default function OpportunityMode() {
       </AnimatePresence>
     </>
   );
-}
+};
+
+export default OpportunityMode;

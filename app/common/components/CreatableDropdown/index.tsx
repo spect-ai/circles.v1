@@ -85,13 +85,11 @@ const CreatableDropdown: FC<Props> = ({
           ...provided,
           color: mode === "dark" ? "#FFFFFF" : "#000000",
         }),
-        multiValue: (styles) => {
-          return {
-            ...styles,
-            backgroundColor: "rgb(191, 90, 242, 0.1)",
-            borderRadius: "12px",
-          };
-        },
+        multiValue: (styles) => ({
+          ...styles,
+          backgroundColor: "rgb(191, 90, 242, 0.1)",
+          borderRadius: "12px",
+        }),
         multiValueLabel: (styles) => ({
           ...styles,
           color: "rgb(191, 90, 242)",
@@ -123,15 +121,6 @@ const CreatableDropdown: FC<Props> = ({
           color: mode === "dark" ? "#FFFFFF" : "#000000",
           cursor: "pointer",
         }),
-
-        // indicatorsContainer: (provided) => ({
-        //   ...provided,
-        //   opacity: active ? 1 : 0,
-        // }),
-        // placeholder: (provided) => ({
-        //   ...provided,
-        //   opacity: active ? 1 : 0,
-        // }),
       }}
     />
   );

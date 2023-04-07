@@ -1,17 +1,16 @@
 import { Box, useTheme } from "degen";
-import { VioletBlur } from "../ConnectPage";
 import Logout from "@/app/common/components/LogoutButton";
-import { BasicProfile } from "./BasicProfile";
 import { useQuery } from "react-query";
 import { CircleType, UserType } from "@/app/types";
 import { useState, useEffect } from "react";
-import { CreateCircle } from "./CreateCircle";
-import { CreateContent } from "./CreateContent";
-import { SetUpProfile } from "./SetupProfile";
 import useConnectDiscord from "@/app/services/Discord/useConnectDiscord";
 import { ToastContainer } from "react-toastify";
 import { useAtom } from "jotai";
 import { connectedUserAtom } from "@/app/state/global";
+import { SetUpProfile } from "./SetupProfile";
+import { CreateCircle } from "./CreateCircle";
+import { BasicProfile } from "./BasicProfile";
+import { VioletBlur } from "../ConnectPage";
 
 const Onboard = () => {
   useConnectDiscord();
@@ -19,7 +18,7 @@ const Onboard = () => {
     useState<"circle" | "profile">("circle");
   const [step, setStep] = useState(1);
   const { mode } = useTheme();
-  const [connectedUser, setConnectedUser] = useAtom(connectedUserAtom);
+  const [connectedUser] = useAtom(connectedUserAtom);
 
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
@@ -35,18 +34,18 @@ const Onboard = () => {
     }
   );
   useEffect(() => {
-    if (onboardType == "circle") {
+    if (onboardType === "circle") {
       if (currentUser && currentUser.username?.startsWith("fren")) {
         setStep(0);
-      } else if (currentUser && myCircles?.length == 0) {
+      } else if (currentUser && myCircles?.length === 0) {
         setStep(1);
       }
     }
-    void refetch();
+    refetch();
   }, [currentUser, connectedUser, onboardType, refetch, myCircles?.length]);
 
   return (
-    <Box position={"relative"} display="flex" width={"full"} gap="11">
+    <Box position="relative" display="flex" width="full" gap="11">
       <ToastContainer
         toastStyle={{
           backgroundColor: `${
@@ -76,14 +75,13 @@ const Onboard = () => {
           zIndex: "1",
         }}
       >
-        {onboardType == "circle" && step == 0 && (
+        {onboardType === "circle" && step === 0 && (
           <BasicProfile setStep={setStep} />
         )}
-        {onboardType == "circle" && step == 1 && (
+        {onboardType === "circle" && step === 1 && (
           <CreateCircle setStep={setStep} setOnboardType={setOnboardType} />
         )}
-        {/* {onboardType == "circle" && step == 2 && <CreateContent />} */}
-        {onboardType == "profile" && <SetUpProfile />}
+        {onboardType === "profile" && <SetUpProfile />}
       </Box>
     </Box>
   );

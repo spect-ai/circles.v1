@@ -1,12 +1,11 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Property, CollectionType, Option } from "@/app/types";
 
 export const addField = async (
   collectionId: string,
   createDto: Partial<Property>,
   pageId?: string
-) => {
-  return await (
+) =>
+  (
     await fetch(
       `${process.env.API_HOST}/collection/v1/${collectionId}/addProperty?pageId=${pageId}`,
       {
@@ -19,14 +18,13 @@ export const addField = async (
       }
     )
   ).json();
-};
 
 export const updateField = async (
   collectionId: string,
   name: string,
   update: Partial<Property>
-) => {
-  return await (
+) =>
+  (
     await fetch(
       `${process.env.API_HOST}/collection/v1/${collectionId}/updateProperty`,
       {
@@ -43,10 +41,9 @@ export const updateField = async (
       }
     )
   ).json();
-};
 
-export const deleteField = async (collectionId: string, name: string) => {
-  return await (
+export const deleteField = async (collectionId: string, name: string) =>
+  (
     await fetch(
       `${process.env.API_HOST}/collection/v1/${collectionId}/removeProperty`,
       {
@@ -61,13 +58,12 @@ export const deleteField = async (collectionId: string, name: string) => {
       }
     )
   ).json();
-};
 
 export const updateFormCollection = async (
   collectionId: string,
   update: Partial<CollectionType>
-) => {
-  return await (
+) =>
+  (
     await fetch(`${process.env.API_HOST}/collection/v1/${collectionId}`, {
       method: "PATCH",
       headers: {
@@ -77,10 +73,9 @@ export const updateFormCollection = async (
       body: JSON.stringify(update),
     })
   ).json();
-};
 
-export const deleteCollection = async (collectionId: string) => {
-  return await (
+export const deleteCollection = async (collectionId: string) =>
+  (
     await fetch(`${process.env.API_HOST}/collection/v1/${collectionId}`, {
       method: "DELETE",
       headers: {
@@ -89,13 +84,12 @@ export const deleteCollection = async (collectionId: string) => {
       credentials: "include",
     })
   ).json();
-};
 
 export const migrateToCollection = async (
   projectId: string,
   circleId: string
-) => {
-  return await (
+) =>
+  (
     await fetch(`${process.env.API_HOST}/collection/v1/migrateFromProject`, {
       method: "POST",
       headers: {
@@ -108,10 +102,9 @@ export const migrateToCollection = async (
       }),
     })
   ).json();
-};
 
-export const migrateAllCOllections = async () => {
-  return await (
+export const migrateAllCOllections = async () =>
+  (
     await fetch(`${process.env.API_HOST}/collection/v1/migrateAllCollections`, {
       method: "PATCH",
       headers: {
@@ -120,10 +113,9 @@ export const migrateAllCOllections = async () => {
       credentials: "include",
     })
   ).json();
-};
 
-export const addCollectionData = async (collectionId: string, data: object) => {
-  return await (
+export const addCollectionData = async (collectionId: string, data: object) =>
+  (
     await fetch(
       `${process.env.API_HOST}/collection/v1/${collectionId}/addDataGuarded`,
       {
@@ -138,15 +130,16 @@ export const addCollectionData = async (collectionId: string, data: object) => {
       }
     )
   ).json();
-};
 
 export const updateCollectionData = async (
   collectionId: string,
   dataId: string,
-  update: any
+  update: {
+    [key: string]: unknown;
+  }
 ) => {
-  delete update.slug;
-  return await (
+  const newUpdate = { ...update, slug: undefined, id: undefined };
+  return (
     await fetch(
       `${process.env.API_HOST}/collection/v1/${collectionId}/updateData?dataId=${dataId}`,
       {
@@ -156,7 +149,7 @@ export const updateCollectionData = async (
         },
         credentials: "include",
         body: JSON.stringify({
-          data: update,
+          data: newUpdate,
         }),
       }
     )
@@ -166,10 +159,11 @@ export const updateCollectionData = async (
 export const updateCollectionDataGuarded = async (
   collectionId: string,
   dataId: string,
-  update: any
+  update: {
+    [key: string]: unknown;
+  }
 ) => {
-  delete update.slug;
-  delete update.id;
+  const newUpdate = { ...update, slug: undefined, id: undefined };
   try {
     return await (
       await fetch(
@@ -181,13 +175,14 @@ export const updateCollectionDataGuarded = async (
           },
           credentials: "include",
           body: JSON.stringify({
-            data: update,
+            data: newUpdate,
           }),
         }
       )
     ).json();
   } catch (e) {
     console.error(e);
+    return false;
   }
 };
 
@@ -196,7 +191,7 @@ export const deleteCollectionData = async (
   dataIds: string[]
 ) => {
   if (dataIds.length > 1) {
-    return await (
+    return (
       await fetch(
         `${process.env.API_HOST}/collection/v1/${collectionId}/removeMultipleDataGuarded`,
         {
@@ -212,7 +207,7 @@ export const deleteCollectionData = async (
       )
     ).json();
   }
-  return await (
+  return (
     await fetch(
       `${process.env.API_HOST}/collection/v1/${collectionId}/removeDataGuarded?dataId=${dataIds[0]}`,
       {
@@ -226,8 +221,8 @@ export const deleteCollectionData = async (
   ).json();
 };
 
-export const getForm = async (formId: string) => {
-  return await (
+export const getForm = async (formId: string) =>
+  (
     await fetch(`${process.env.API_HOST}/collection/v1/public/slug/${formId}`, {
       method: "GET",
       headers: {
@@ -236,14 +231,13 @@ export const getForm = async (formId: string) => {
       credentials: "include",
     })
   ).json();
-};
 
 export const addData = async (
   collectionId: string,
-  data: any,
+  data: unknown,
   anon: boolean
-) => {
-  return await (
+) =>
+  (
     await fetch(
       `${process.env.API_HOST}/collection/v1/${collectionId}/addData`,
       {
@@ -259,7 +253,6 @@ export const addData = async (
       }
     )
   ).json();
-};
 
 export const startVotingPeriod = async (
   collectionId: string,
@@ -270,8 +263,8 @@ export const startVotingPeriod = async (
     space?: string;
     proposalId?: string;
   }
-) => {
-  return await (
+) =>
+  (
     await fetch(
       `${process.env.API_HOST}/collection/v1/${collectionId}/startVotingPeriod?dataId=${dataId}`,
       {
@@ -284,10 +277,9 @@ export const startVotingPeriod = async (
       }
     )
   ).json();
-};
 
-export const endVotingPeriod = async (collectionId: string, dataId: string) => {
-  return await (
+export const endVotingPeriod = async (collectionId: string, dataId: string) =>
+  (
     await fetch(
       `${process.env.API_HOST}/collection/v1/${collectionId}/endVotingPeriod?dataId=${dataId}`,
       {
@@ -299,7 +291,6 @@ export const endVotingPeriod = async (collectionId: string, dataId: string) => {
       }
     )
   ).json();
-};
 
 export const recordSnapshotProposal = async (
   collectionId: string,
@@ -308,8 +299,8 @@ export const recordSnapshotProposal = async (
     snapshotSpace: string;
     proposalId: string;
   }
-) => {
-  return await (
+) =>
+  (
     await fetch(
       `${process.env.API_HOST}/collection/v1/${collectionId}/snapshotProposal?dataId=${dataId}`,
       {
@@ -322,14 +313,13 @@ export const recordSnapshotProposal = async (
       }
     )
   ).json();
-};
 
 export const voteCollectionData = async (
   collectionId: string,
   dataId: string,
   vote: number
-) => {
-  return await (
+) =>
+  (
     await fetch(
       `${process.env.API_HOST}/collection/v1/${collectionId}/voteOnData?dataId=${dataId}`,
       {
@@ -344,7 +334,6 @@ export const voteCollectionData = async (
       }
     )
   ).json();
-};
 
 export const sendFormComment = async (
   collectionId: string,
@@ -359,7 +348,7 @@ export const sendFormComment = async (
   isPublic: boolean
 ) => {
   if (!isPublic) {
-    return await (
+    return (
       await fetch(
         `${process.env.API_HOST}/collection/v1/${collectionId}/addComment?dataId=${dataId}`,
         {
@@ -375,36 +364,35 @@ export const sendFormComment = async (
         }
       )
     ).json();
-  } else {
-    return await (
-      await fetch(
-        `${process.env.API_HOST}/collection/v1/${collectionId}/addCommentPublic?dataId=${dataId}`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-          body: JSON.stringify({
-            content,
-            ref,
-          }),
-        }
-      )
-    ).json();
   }
+  return (
+    await fetch(
+      `${process.env.API_HOST}/collection/v1/${collectionId}/addCommentPublic?dataId=${dataId}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          content,
+          ref,
+        }),
+      }
+    )
+  ).json();
 };
 
 export const importFromCsv = async (payload: {
-  data: any;
+  data: unknown;
   collectionId: string;
   collectionProperties: {
     [key: string]: Property;
   };
   groupByColumn: string;
   circleId: string;
-}) => {
-  return await (
+}) =>
+  (
     await fetch(`${process.env.API_HOST}/collection/v1/importfromcsv`, {
       method: "POST",
       headers: {
@@ -414,7 +402,6 @@ export const importFromCsv = async (payload: {
       body: JSON.stringify(payload),
     })
   ).json();
-};
 
 export const linkDiscord = async (
   collectionId: string,
@@ -426,8 +413,8 @@ export const linkDiscord = async (
     rolesToAdd: { [key: string]: boolean };
     stakeholdersToAdd: string[];
   }
-) => {
-  return await (
+) =>
+  (
     await fetch(
       `${process.env.API_HOST}/collection/v1/${collectionId}/linkDiscord?dataId=${dataId}`,
       {
@@ -440,4 +427,3 @@ export const linkDiscord = async (
       }
     )
   ).json();
-};

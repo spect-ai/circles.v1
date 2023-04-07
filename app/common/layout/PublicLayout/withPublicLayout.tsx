@@ -1,15 +1,12 @@
-import React from 'react';
-
-import PublicLayout from './PublicLayout';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import PublicLayout from "./PublicLayout";
 
 function withPublicLayout(WrappedComponent: any) {
-  function WithPublicLayout(props: any) {
-    return <WrappedComponent {...props} />;
-  }
+  const WithPublicLayout = (props: any) => <WrappedComponent {...props} />;
 
-  WithPublicLayout.getLayout = (page: any) => {
-    return <PublicLayout>{page}</PublicLayout>;
-  };
+  WithPublicLayout.getLayout = (page: any) => (
+    <PublicLayout>{page}</PublicLayout>
+  );
 
   return WithPublicLayout;
 }

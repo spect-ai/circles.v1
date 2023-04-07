@@ -1,8 +1,6 @@
 import { CircleType, ProjectType } from "@/app/types";
 import { Box, Stack, Text, useTheme } from "degen";
-import React from "react";
 import { Row, Col } from "react-grid-system";
-
 import styled from "styled-components";
 import Link from "next/link";
 import { ProjectOutlined } from "@ant-design/icons";
@@ -22,7 +20,7 @@ const Card = styled(Box)<{ mode: string }>`
   border-width: 2px;
   cursor: pointer;
   border-color: border-color: ${(props) =>
-    props.mode == "dark" ? "rgb(255, 255, 255, 0.1)" : "rgb(20,20,20,0.1)"};
+    props.mode === "dark" ? "rgb(255, 255, 255, 0.1)" : "rgb(20,20,20,0.1)"};
   &:hover {
     border-color: rgb(191, 90, 242, 0.7);
   }
@@ -41,14 +39,14 @@ const ProjectCards = ({
 }) => {
   const { mode } = useTheme();
   return (
-    <>
+    <Box>
       {projects?.map((project: ProjectType) => (
         <Col key={project.id} xs={10} sm={6} md={3}>
           <Link href={`/${circle.slug}/${project?.slug}`}>
             <Card padding="4" marginBottom="2" borderRadius="large" mode={mode}>
-              <Stack direction={"horizontal"} align="center">
+              <Stack direction="horizontal" align="center">
                 <ProjectOutlined style={{ fontSize: "1.1rem" }} />
-                <Text ellipsis variant="base" weight={"semiBold"}>
+                <Text ellipsis variant="base" weight="semiBold">
                   {project?.name}
                 </Text>
               </Stack>
@@ -56,34 +54,30 @@ const ProjectCards = ({
           </Link>
         </Col>
       ))}
-    </>
+    </Box>
   );
 };
 
-function YourProjects({
+const YourProjects = ({
   circles,
   isLoading,
 }: {
   circles: CircleType[];
   isLoading: boolean;
-}) {
-  return (
-    <ScrollContainer>
-      <Row gutterWidth={10}>
-        {!isLoading &&
-          circles?.map &&
-          circles?.map((circle: CircleType) => {
-            return (
-              <ProjectCards
-                projects={circle?.projects as any}
-                circle={circle}
-                key={circle.id}
-              />
-            );
-          })}
-      </Row>
-    </ScrollContainer>
-  );
-}
+}) => (
+  <ScrollContainer>
+    <Row gutterWidth={10}>
+      {!isLoading &&
+        circles?.map &&
+        circles?.map((circle: CircleType) => (
+          <ProjectCards
+            projects={Object.values(circle?.projects)}
+            circle={circle}
+            key={circle.id}
+          />
+        ))}
+    </Row>
+  </ScrollContainer>
+);
 
 export default YourProjects;

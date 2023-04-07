@@ -1,3 +1,3 @@
-export { default as PublicLayout } from './PublicLayout/PublicLayout';
+export { default as PublicLayout } from "./PublicLayout/PublicLayout";
 
-export { default as withPublicLayout } from './PublicLayout/withPublicLayout';
+export { default as withPublicLayout } from "./PublicLayout/withPublicLayout";

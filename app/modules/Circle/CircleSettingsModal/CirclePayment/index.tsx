@@ -6,7 +6,7 @@ import {
 import { updateCircle } from "@/app/services/UpdateCircle";
 import { Registry } from "@/app/types";
 import { SaveOutlined } from "@ant-design/icons";
-import { Box, Heading, Input, Stack, Tag, Text } from "degen";
+import { Box, Stack, Tag, Text } from "degen";
 import { AnimatePresence } from "framer-motion";
 import React, { useState } from "react";
 import { toast } from "react-toastify";
@@ -23,7 +23,7 @@ const Container = styled(Box)`
   overflow-x: hidden;
 `;
 
-export default function DefaultPayment() {
+const DefaultPayment = () => {
   const { circle, registry, setCircleData } = useCircle();
 
   const [chain, setChain] = useState(circle?.defaultPayment.chain);
@@ -34,9 +34,7 @@ export default function DefaultPayment() {
 
   const [isAddTokenModalOpen, setIsAddTokenModalOpen] = useState(false);
 
-  const [circleAddress, setCircleAddress] = useState(
-    circle?.paymentAddress || ""
-  );
+  const [circleAddress] = useState(circle?.paymentAddress || "");
 
   const onSubmit = async () => {
     // validate if circle address is a valid ethereum address
@@ -54,8 +52,8 @@ export default function DefaultPayment() {
     const res = await updateCircle(
       {
         defaultPayment: {
-          chain: chain,
-          token: token,
+          chain,
+          token,
         },
         paymentAddress: circleAddress,
       },
@@ -144,29 +142,6 @@ export default function DefaultPayment() {
           </Stack>
         </Stack>
         <Box marginTop="4" />
-        {/* <Box>
-          <Heading>Circle Address</Heading>
-          <Text>
-            Set ethereum address where circle should receieve the payments.
-            Please ensure that the ethereum address added is NOT a gnosis safe
-            address.
-          </Text>
-        </Box>
-        <Stack>
-          <Input
-            label=""
-            placeholder="Address"
-            width={{
-              xs: "full",
-              md: "1/2",
-            }}
-            value={circleAddress}
-            onChange={(e) => {
-              setIsDirty(true);
-              setCircleAddress(e.target.value);
-            }}
-          />
-        </Stack> */}
         <Box width="1/3" marginTop="2" paddingLeft="1">
           {isDirty && (
             <PrimaryButton
@@ -182,4 +157,6 @@ export default function DefaultPayment() {
       </Stack>
     </Container>
   );
-}
+};
+
+export default DefaultPayment;

@@ -141,7 +141,9 @@ export function satisfiesConditions(
           case "token is one of":
             if (!value || !Array.isArray(value)) return false;
             // eslint-disable-next-line no-case-declarations
-            const tokens = value.map((v: any) => v?.value.split(":"));
+            const tokens = value.map((v2: { value: string }) =>
+              v2?.value.split(":")
+            );
             if (!tokens || tokens.length === 0) return false;
             return tokens.some(
               (t: any) =>
@@ -175,6 +177,8 @@ export function satisfiesConditions(
               return false;
             }
             return true;
+          default:
+            return false;
         }
       case "cardStatus":
         switch (comparatorValue) {
@@ -205,7 +209,8 @@ export const isMyCard = (
     const property = properties[propertyId];
     if (property.type === "user") {
       return data[propertyId]?.value === currentUser;
-    } else if (property.type === "user[]") {
+    }
+    if (property.type === "user[]") {
       return data[propertyId]?.some((user: any) => user.value === currentUser);
     }
     return false;
@@ -215,9 +220,11 @@ export const isMyCard = (
 export const paymentStatus = (filter: string, id: string, status: any) => {
   if (filter === "Paid") {
     return status?.[id] === "completed";
-  } else if (filter === "Pending") {
+  }
+  if (filter === "Pending") {
     return status?.[id] === "pending";
-  } else if (filter === "Pending Signature") {
+  }
+  if (filter === "Pending Signature") {
     return status?.[id] === "pendingSignature";
   }
   return true;

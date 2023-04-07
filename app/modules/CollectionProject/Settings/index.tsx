@@ -2,9 +2,9 @@ import Modal from "@/app/common/components/Modal";
 import Tabs from "@/app/common/components/Tabs";
 import { updateFormCollection } from "@/app/services/Collection";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
-import { Box, Button, IconCog, Input, Stack, Text } from "degen";
+import { Box, Button, IconCog, Stack, Text } from "degen";
 import { AnimatePresence } from "framer-motion";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import styled from "styled-components";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
@@ -12,7 +12,15 @@ import Archive from "./Archive";
 import General from "./General";
 import Payments from "./Payments";
 
-export default function Settings() {
+const ScrollContainer = styled(Box)`
+  ::-webkit-scrollbar {
+    width: 5px;
+  }
+  height: 20rem;
+  overflow-y: auto;
+`;
+
+const Settings = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedTab, setSelectedTab] = useState(0);
 
@@ -21,26 +29,26 @@ export default function Settings() {
 
   const [name, setName] = useState(collection.name);
   const [rewardField, setRewardField] = useState({
-    value: collection.projectMetadata.payments?.rewardField,
-    label: collection.projectMetadata.payments?.rewardField,
-  } as any);
+    value: collection.projectMetadata.payments?.rewardField || "",
+    label: collection.projectMetadata.payments?.rewardField || "",
+  });
   const [payeeField, setPayeeField] = useState({
-    value: collection.projectMetadata.payments?.payeeField,
-    label: collection.projectMetadata.payments?.payeeField,
-  } as any);
+    value: collection.projectMetadata.payments?.payeeField || "",
+    label: collection.projectMetadata.payments?.payeeField || "",
+  });
 
   const { formActions } = useRoleGate();
 
   useEffect(() => {
     setName(collection.name);
     setRewardField({
-      value: collection.projectMetadata.payments?.rewardField,
-      label: collection.projectMetadata.payments?.rewardField,
-    } as any);
+      value: collection.projectMetadata.payments?.rewardField || "",
+      label: collection.projectMetadata.payments?.rewardField || "",
+    });
     setPayeeField({
-      value: collection.projectMetadata.payments?.payeeField,
-      label: collection.projectMetadata.payments?.payeeField,
-    } as any);
+      value: collection.projectMetadata.payments?.payeeField || "",
+      label: collection.projectMetadata.payments?.payeeField || "",
+    });
   }, [collection]);
 
   return (
@@ -79,7 +87,6 @@ export default function Settings() {
                 },
               })
                 .then((res) => {
-                  console.log({ res });
                   if (res.id) updateCollection(res);
                   else toast.error("Error updating collection name");
                 })
@@ -134,12 +141,6 @@ export default function Settings() {
       </AnimatePresence>
     </Box>
   );
-}
+};
 
-const ScrollContainer = styled(Box)`
-  ::-webkit-scrollbar {
-    width: 5px;
-  }
-  height: 20rem;
-  overflow-y: auto;
-`;
+export default Settings;

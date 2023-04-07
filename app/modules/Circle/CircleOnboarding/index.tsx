@@ -16,19 +16,17 @@ import { AnimatePresence } from "framer-motion";
 import { useAtom } from "jotai";
 import dynamic from "next/dynamic";
 import React, { useState } from "react";
-import { tourConfig } from "./tourConfig";
+import tourConfig from "./tourConfig";
 
 const Tour = dynamic(() => import("reactour"), {
   ssr: false,
 });
 
-export default function Onboarding() {
+const Onboarding = () => {
   const [isOpen, setIsOpen] = useState(true);
   const [isTourOpen, setIsTourOpen] = useState(false);
 
-  const [isSidebarExpanded, setIsSidebarExpanded] = useAtom(
-    isSidebarExpandedAtom
-  );
+  const [, setIsSidebarExpanded] = useAtom(isSidebarExpandedAtom);
   const { finishOnboarding } = useCircleOnboarding();
 
   return (
@@ -87,7 +85,7 @@ export default function Onboarding() {
       </AnimatePresence>
       <Tour
         accentColor="rgb(191, 90, 242, 0.6)"
-        steps={tourConfig as any}
+        steps={tourConfig}
         isOpen={isTourOpen}
         onRequestClose={() => {
           setIsTourOpen(false);
@@ -114,4 +112,6 @@ export default function Onboarding() {
       />
     </>
   );
-}
+};
+
+export default Onboarding;

@@ -1,5 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import Drawer from "@/app/common/components/Drawer";
 import Editor from "@/app/common/components/Editor";
 import Modal from "@/app/common/components/Modal";
@@ -10,18 +8,12 @@ import {
   updateCollectionDataGuarded,
   updateFormCollection,
 } from "@/app/services/Collection";
-import { Action, MemberDetails, Option } from "@/app/types";
-import {
-  CheckCircleOutlined,
-  ClockCircleOutlined,
-  InfoCircleOutlined,
-  InfoOutlined,
-} from "@ant-design/icons";
+import { Action, MemberDetails } from "@/app/types";
+import { CheckCircleOutlined, ClockCircleOutlined } from "@ant-design/icons";
 import {
   Box,
   Button,
   IconChevronRight,
-  IconClose,
   IconDotsVertical,
   IconLockClosed,
   IconPlusSmall,
@@ -38,7 +30,6 @@ import {
   DraggableProvided,
   DraggableStateSnapshot,
   Droppable,
-  DroppableProvided,
   DropResult,
 } from "react-beautiful-dnd";
 import ReactDOM from "react-dom";
@@ -59,15 +50,169 @@ import CardOptions from "./CardOptions";
 
 type Props = {
   handleClose: () => void;
-  defaultValue?: any;
+  defaultValue?: Record<string, unknown>;
 };
 
-export default function CardDrawer({ handleClose, defaultValue }: Props) {
+const NameInput = styled.input<{ mode: string }>`
+  width: 100%;
+  background: transparent;
+  padding: 8px;
+  border: 0;
+  border-style: none;
+  border-color: transparent;
+  outline: none;
+  outline-offset: 0;
+  box-shadow: none;
+  font-size: 1.9rem;
+  caret-color: rgb(191, 90, 242);
+  color: rgb(191, 90, 242);
+  font-weight: 700;
+  ::placeholder {
+    color: ${(props) =>
+      props.mode === "dark"
+        ? "rgb(255, 255, 255, 0.1)"
+        : "rgb(20, 20, 20, 0.5)"};
+  }
+  letter-spacing: 0.05rem;
+`;
+
+const Container = styled(Box)`
+  ::-webkit-scrollbar {
+    display: none;
+  }
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+
+  height: calc(100vh - 4rem);
+`;
+
+export const CircularBox = styled(Box)<{ mode: string }>`
+  border-radius: 1.5rem;
+  border: solid 2px
+    ${(props) =>
+      props.mode === "dark"
+        ? "rgb(255, 255, 255, 0.05)"
+        : "rgb(20, 20, 20, 0.05)"};
+  &:hover {
+    border: solid 2px rgb(191, 90, 242);
+    transition-duration: 0.7s;
+    cursor: pointer;
+  }
+  transition: all 0.3s ease-in-out;
+  padding: 0.3rem 0.3rem;
+  justify-content: center;
+  align-items: center;
+  width: 12rem;
+`;
+
+const PropertyDraggable = ({
+  provided,
+  snapshot,
+  property,
+  value,
+  setValue,
+}: {
+  provided: DraggableProvided;
+  snapshot: DraggableStateSnapshot;
+  property: string;
+  value: Record<string, unknown>;
+  setValue: (val: Record<string, unknown>) => void;
+}) => {
+  const [hover, setHover] = useState(false);
+  const { localCollection: collection, updateCollection } =
+    useLocalCollection();
+  const { query } = useRouter();
+  const { cardSlug } = query;
+  const usePortal = snapshot.isDragging;
+
+  const onChange = async (update: Record<string, unknown>, slug: string) => {
+    if (slug) {
+      // update collection locally
+      const tempColl = { ...collection };
+      updateCollection({
+        ...collection,
+        data: {
+          ...collection.data,
+          [slug]: {
+            ...collection.data[slug],
+            ...update,
+          },
+        },
+      });
+      const res = await updateCollectionDataGuarded(
+        collection.id,
+        slug,
+        update
+      );
+      if (!res) {
+        updateCollection(tempColl);
+        return;
+      }
+      if (res.id) {
+        updateCollection(res);
+      } else toast.error(res.error || "Error updating card");
+    }
+  };
+  const child = (
+    <Box
+      key={property}
+      marginY="1"
+      ref={provided.innerRef}
+      {...provided.draggableProps}
+      onMouseOver={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+    >
+      <Stack direction="horizontal" align="center" space="0">
+        <Box
+          style={{
+            marginLeft: "-1rem",
+          }}
+          marginTop="1"
+          {...provided.dragHandleProps}
+          display={snapshot.isDragging ? "none" : hover ? "block" : "none"}
+        >
+          <Text variant="label">
+            <IconDotsVertical size="4" />
+          </Text>
+        </Box>
+        <EditProperty
+          propertyName={property}
+          disabled={
+            collection.data?.[cardSlug as string]?.__cardStatus__ === "closed"
+          }
+        />
+        <EditValue
+          propertyName={property}
+          value={value[property]}
+          setValue={(val) => {
+            setValue({ ...value, [property]: val });
+            onChange({ [property]: val }, value.slug as string);
+          }}
+          dataId={value.slug as string}
+          disabled={
+            collection.data?.[cardSlug as string]?.__cardStatus__ === "closed"
+          }
+        />
+        {/* </Box> */}
+      </Stack>
+    </Box>
+  );
+
+  return usePortal ? ReactDOM.createPortal(child, document.body) : child;
+};
+
+const CardDrawer = ({ handleClose, defaultValue }: Props) => {
   const { mode } = useTheme();
   const { localCollection: collection, updateCollection } =
     useLocalCollection();
 
-  const [value, setValue] = useState<any>(defaultValue || {});
+  const [value, setValue] = useState<Record<string, unknown>>(
+    defaultValue || {
+      Title: "",
+      Description: "",
+      slug: "",
+    }
+  );
   const [snapshotModal, setSnapshotModal] = useState(false);
   const [discordThreadModal, setDiscordThreadModal] = useState(false);
 
@@ -87,37 +232,12 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
   );
 
   const getMemberDetails = React.useCallback(
-    (id: string) => {
-      return memberDetails?.memberDetails[id];
-    },
+    (id: string) => memberDetails?.memberDetails[id],
     [memberDetails]
   );
 
-  useEffect(() => {
-    setPropertyOrder(collection.propertyOrder);
-  }, [collection.propertyOrder]);
-
-  useEffect(() => {
-    if (cardSlug) {
-      if (isDirty) {
-        void onChange(
-          {
-            Description: value.Description,
-            Title: value.Title,
-          },
-          value.slug
-        );
-      }
-      setValue({});
-      setTimeout(() => {
-        setValue(collection.data[cardSlug as string]);
-      }, 100);
-    }
-  }, [defaultValue?.id, cardSlug, newCard]);
-
-  const onChange = async (update: any, slug: string) => {
+  const onChange = async (update: Record<string, unknown>, slug: string) => {
     if (slug) {
-      let res;
       // update collection locally
       const tempColl = { ...collection };
       updateCollection({
@@ -130,7 +250,11 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
           },
         },
       });
-      res = await updateCollectionDataGuarded(collection.id, slug, update);
+      const res = await updateCollectionDataGuarded(
+        collection.id,
+        slug,
+        update
+      );
       if (!res) {
         updateCollection(tempColl);
         return;
@@ -141,8 +265,31 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
     }
   };
 
+  useEffect(() => {
+    setPropertyOrder(collection.propertyOrder);
+  }, [collection.propertyOrder]);
+
+  useEffect(() => {
+    if (cardSlug) {
+      if (isDirty) {
+        onChange(
+          {
+            Description: value.Description,
+            Title: value.Title,
+          },
+          value.slug as string
+        );
+      }
+      setValue({});
+      setTimeout(() => {
+        setValue(collection.data[cardSlug as string]);
+      }, 100);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [defaultValue?.id, cardSlug, newCard]);
+
   const closeCard = () => {
-    void push({
+    push({
       pathname,
       query: {
         circle: query.circle,
@@ -176,112 +323,7 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
     else toast.error("Something went wrong while updating property order");
   };
 
-  const PropertyDraggable = ({
-    provided,
-    snapshot,
-    property,
-    value,
-  }: {
-    provided: DraggableProvided;
-    snapshot: DraggableStateSnapshot;
-    property: string;
-    value: any;
-  }) => {
-    const [hover, setHover] = useState(false);
-    const usePortal = snapshot.isDragging;
-    const child = (
-      <Box
-        key={property}
-        marginY="1"
-        ref={provided.innerRef}
-        {...provided.draggableProps}
-        onMouseOver={() => setHover(true)}
-        onMouseLeave={() => setHover(false)}
-      >
-        <Stack direction="horizontal" align="center" space="0">
-          <Box
-            style={{
-              marginLeft: "-1rem",
-            }}
-            marginTop="1"
-            {...provided.dragHandleProps}
-            display={snapshot.isDragging ? "none" : hover ? "block" : "none"}
-          >
-            <Text variant="label">
-              <IconDotsVertical size="4" />
-            </Text>
-          </Box>
-          {/* <Box
-            display="flex"
-            flexDirection={{
-              xs: "row",
-              md: "column",
-              lg: "row",
-            }}
-            width="full"
-          > */}
-          <EditProperty
-            propertyName={property}
-            disabled={
-              collection.data?.[cardSlug as string]?.__cardStatus__ === "closed"
-            }
-          />
-          <EditValue
-            propertyName={property}
-            value={value[property]}
-            setValue={(val) => {
-              setValue({ ...value, [property]: val });
-              void onChange({ [property]: val }, value.slug);
-            }}
-            dataId={value.slug}
-            disabled={
-              collection.data?.[cardSlug as string]?.__cardStatus__ === "closed"
-            }
-          />
-          {/* </Box> */}
-        </Stack>
-      </Box>
-    );
-
-    return usePortal ? ReactDOM.createPortal(child, document.body) : child;
-  };
-
   const PropertyDraggableCallback = useCallback(PropertyDraggable, [
-    collection,
-  ]);
-
-  const PropertyList = (provided: DroppableProvided) => (
-    <Box ref={provided.innerRef} {...provided.droppableProps}>
-      {propertyOrder.map((property, index) => {
-        if (
-          property !== "Title" &&
-          property !== "Description" &&
-          property !== "__cardStatus__"
-        ) {
-          return (
-            <Draggable key={property} draggableId={property} index={index}>
-              {(provided, snapshot) => {
-                return (
-                  <PropertyDraggableCallback
-                    provided={provided}
-                    property={property}
-                    snapshot={snapshot}
-                    value={value}
-                  />
-                );
-              }}
-            </Draggable>
-          );
-        }
-      })}
-      {provided.placeholder}
-    </Box>
-  );
-
-  const ProperyListCallback = useCallback(PropertyList, [
-    PropertyDraggableCallback,
-    propertyOrder,
-    value,
     collection,
   ]);
 
@@ -357,14 +399,17 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
                   <NameInput
                     mode={mode}
                     placeholder="Untitled"
-                    value={value.Title}
+                    value={value.Title as string}
                     onChange={(e) => {
                       setIsDirty(true);
                       setValue({ ...value, Title: e.target.value || "" });
                     }}
                     onBlur={async () => {
                       if (isDirty) {
-                        await onChange({ Title: value.Title }, value.slug);
+                        await onChange(
+                          { Title: value.Title },
+                          value.slug as string
+                        );
                         setIsDirty(false);
                       }
                     }}
@@ -377,7 +422,7 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
                   {value.slug && (
                     <CardOptions
                       handleDrawerClose={closeCard}
-                      cardSlug={value.slug}
+                      cardSlug={value.slug as string}
                       setSnapshotModal={setSnapshotModal}
                       onChange={onChange}
                       setDiscordThreadModal={setDiscordThreadModal}
@@ -408,8 +453,9 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
                   )}
 
                   {value.slug &&
-                    collection.projectMetadata?.paymentStatus?.[value.slug] ===
-                      "completed" && (
+                    collection.projectMetadata?.paymentStatus?.[
+                      value.slug as string
+                    ] === "completed" && (
                       <Box
                         display="flex"
                         flexDirection="row"
@@ -433,8 +479,9 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
 
                   {value.slug &&
                     ["pending", "pendingSignature"].includes(
-                      collection.projectMetadata?.paymentStatus?.[value.slug] ||
-                        ""
+                      collection.projectMetadata?.paymentStatus?.[
+                        value.slug as string
+                      ] || ""
                     ) && (
                       <Box
                         display="flex"
@@ -444,8 +491,10 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
                         cursor="pointer"
                         onClick={() => {
                           if (
-                            collection.projectMetadata?.paymentIds?.[value.slug]
-                          )
+                            collection.projectMetadata?.paymentIds?.[
+                              value.slug as string
+                            ]
+                          ) {
                             push({
                               pathname: "/[circle]",
                               query: {
@@ -454,10 +503,11 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
                                 status: "pending",
                                 paymentId:
                                   collection.projectMetadata?.paymentIds?.[
-                                    value.slug
+                                    value.slug as string
                                   ],
                               },
                             });
+                          }
                         }}
                       >
                         <CircularBox
@@ -476,7 +526,7 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
                     )}
 
                   {collection.discordThreadRef &&
-                    collection.discordThreadRef[value.slug] && (
+                    collection.discordThreadRef[value.slug as string] && (
                       <Box
                         display="flex"
                         flexDirection="row"
@@ -489,28 +539,36 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
                           mode={mode}
                           gap="2"
                           onClick={() => {
-                            if (collection.discordThreadRef[value.slug].private)
+                            if (
+                              collection.discordThreadRef[value.slug as string]
+                                .private
+                            ) {
                               window.open(
                                 `https://discord.com/channels/${
-                                  collection.discordThreadRef[value.slug]
-                                    .guildId
+                                  collection.discordThreadRef[
+                                    value.slug as string
+                                  ].guildId
                                 }/${
-                                  collection.discordThreadRef[value.slug]
-                                    .threadId
+                                  collection.discordThreadRef[
+                                    value.slug as string
+                                  ].threadId
                                 }`,
                                 "_blank"
                               );
-                            else {
+                            } else {
                               window.open(
                                 `https://discord.com/channels/${
-                                  collection.discordThreadRef[value.slug]
-                                    .guildId
+                                  collection.discordThreadRef[
+                                    value.slug as string
+                                  ].guildId
                                 }/${
-                                  collection.discordThreadRef[value.slug]
-                                    .channelId
+                                  collection.discordThreadRef[
+                                    value.slug as string
+                                  ].channelId
                                 }/threads/${
-                                  collection.discordThreadRef[value.slug]
-                                    .threadId
+                                  collection.discordThreadRef[
+                                    value.slug as string
+                                  ].threadId
                                 }`,
                                 "_blank"
                               );
@@ -534,7 +592,37 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
                       "closed"
                     }
                   >
-                    {ProperyListCallback}
+                    {(provided) => (
+                      <Box ref={provided.innerRef} {...provided.droppableProps}>
+                        {propertyOrder.map((property, index) => {
+                          if (
+                            property !== "Title" &&
+                            property !== "Description" &&
+                            property !== "__cardStatus__"
+                          ) {
+                            return (
+                              <Draggable
+                                key={property}
+                                draggableId={property}
+                                index={index}
+                              >
+                                {(provided2, snapshot) => (
+                                  <PropertyDraggableCallback
+                                    provided={provided2}
+                                    property={property}
+                                    snapshot={snapshot}
+                                    value={value}
+                                    setValue={setValue}
+                                  />
+                                )}
+                              </Draggable>
+                            );
+                          }
+                          return null;
+                        })}
+                        {provided.placeholder}
+                      </Box>
+                    )}
                   </Droppable>
                 </DragDropContext>
                 <Box
@@ -545,7 +633,7 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
                 >
                   <PrimaryButton
                     variant="tertiary"
-                    icon={<IconPlusSmall size={"5"} />}
+                    icon={<IconPlusSmall size="5" />}
                     onClick={() => setIsAddFieldOpen(true)}
                     disabled={
                       collection.data?.[cardSlug as string]?.__cardStatus__ ===
@@ -558,9 +646,9 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
                 <Box padding="2" borderBottomWidth="0.375" marginTop="4">
                   <Editor
                     placeholder="Describe your card here...."
-                    value={value.Description}
+                    value={value.Description as string}
                     onSave={(val) => {
-                      void onChange({ Description: val }, value.slug);
+                      onChange({ Description: val }, value.slug as string);
                     }}
                     onChange={(val) => {
                       setIsDirty(true);
@@ -574,7 +662,7 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
                     }
                   />
                 </Box>
-                <Box marginY={"3"}>
+                <Box marginY="3">
                   {/* {!collection.voting?.periods?.[cardSlug as string]?.snapshot
                     ?.onSnapshot && <SpectVoting dataId={cardSlug as string} />} */}
                   {collection.voting?.snapshot?.[cardSlug as string]
@@ -585,12 +673,16 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
 
                 {!newCard && (
                   <CardActivity
-                    activities={collection.dataActivities[value.slug]}
-                    activityOrder={collection.dataActivityOrder[value.slug]}
-                    dataId={value.slug}
+                    activities={collection.dataActivities[value.slug as string]}
+                    activityOrder={
+                      collection.dataActivityOrder[value.slug as string]
+                    }
+                    dataId={value.slug as string}
                     collectionId={collection.id}
                     dataOwner={
-                      collection.profiles[collection.dataOwner[value.slug]]
+                      collection.profiles[
+                        collection.dataOwner[value.slug as string]
+                      ]
                     }
                     getMemberDetails={getMemberDetails}
                   />
@@ -602,8 +694,8 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
         <AnimatePresence>
           {snapshotModal && (
             <SnapshotModal
-              data={collection.data?.[value.slug]}
-              dataId={value.slug}
+              data={collection.data?.[value.slug as string]}
+              dataId={value.slug as string}
               setSnapshotModal={setSnapshotModal}
             />
           )}
@@ -623,7 +715,7 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
                   actionMode="create"
                   action={{} as Action}
                   setAction={() => {}}
-                  manualAction={true}
+                  manualAction
                   handleClose={() => {
                     setDiscordThreadModal(false);
                   }}
@@ -635,56 +727,10 @@ export default function CardDrawer({ handleClose, defaultValue }: Props) {
       </Drawer>
     </Box>
   );
-}
+};
 
-const NameInput = styled.input<{ mode: string }>`
-  width: 100%;
-  background: transparent;
-  padding: 8px;
-  border: 0;
-  border-style: none;
-  border-color: transparent;
-  outline: none;
-  outline-offset: 0;
-  box-shadow: none;
-  font-size: 1.9rem;
-  caret-color: rgb(191, 90, 242);
-  color: rgb(191, 90, 242);
-  font-weight: 700;
-  ::placeholder {
-    color: ${(props) =>
-      props.mode === "dark"
-        ? "rgb(255, 255, 255, 0.1)"
-        : "rgb(20, 20, 20, 0.5)"};
-  }
-  letter-spacing: 0.05rem;
-`;
+CardDrawer.defaultProps = {
+  defaultValue: null,
+};
 
-const Container = styled(Box)`
-  ::-webkit-scrollbar {
-    display: none;
-  }
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-
-  height: calc(100vh - 4rem);
-`;
-
-export const CircularBox = styled(Box)<{ mode: string }>`
-  border-radius: 1.5rem;
-  border: solid 2px
-    ${(props) =>
-      props.mode === "dark"
-        ? "rgb(255, 255, 255, 0.05)"
-        : "rgb(20, 20, 20, 0.05)"};
-  &:hover {
-    border: solid 2px rgb(191, 90, 242);
-    transition-duration: 0.7s;
-    cursor: pointer;
-  }
-  transition: all 0.3s ease-in-out;
-  padding: 0.3rem 0.3rem;
-  justify-content: center;
-  align-items: center;
-  width: 12rem;
-`;
+export default CardDrawer;

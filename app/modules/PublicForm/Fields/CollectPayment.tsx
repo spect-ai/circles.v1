@@ -23,17 +23,17 @@ type Props = {
   paymentConfig: PaymentConfig;
   circleSlug: string;
   circleId: string;
-  data: any;
-  setData: (data: any) => void;
+  data: Record<string, unknown>;
+  setData: (data: Record<string, unknown>) => void;
 };
 
-export default function CollectPayment({
+const CollectPayment = ({
   paymentConfig,
   circleSlug,
   circleId,
   data,
   setData,
-}: Props) {
+}: Props) => {
   const [circleRegistry, setCircleRegistry] = useState<Registry>();
   const { address } = useAccount();
 
@@ -42,7 +42,7 @@ export default function CollectPayment({
     value: key,
   }));
 
-  const [networkOptions, setNetworkOptions] = useState(networks);
+  const [networkOptions] = useState(networks);
   const [selectedNetwork, setSelectedNetwork] = useState(networks[0]);
 
   const tokens = Object.keys(
@@ -66,14 +66,14 @@ export default function CollectPayment({
   }, []);
 
   useEffect(() => {
-    const tokens = Object.keys(
+    const tkns = Object.keys(
       paymentConfig.networks[selectedNetwork.value].tokens
     ).map((key) => ({
       label: paymentConfig.networks[selectedNetwork.value].tokens[key].symbol,
       value: paymentConfig.networks[selectedNetwork.value].tokens[key].address,
     }));
-    setTokenOptions(tokens);
-    setSelectedToken(tokens[0]);
+    setTokenOptions(tkns);
+    setSelectedToken(tkns[0]);
   }, [selectedNetwork]);
 
   useEffect(() => {
@@ -84,27 +84,30 @@ export default function CollectPayment({
       paymentConfig.type === "paywall" &&
       circleRegistry
     ) {
-      console.log("here");
       if (token.address === "0x0") {
         const coinGeckoTokenId =
           circleRegistry[selectedNetwork.value].coinGeckoCurrencyId;
         getCurrencyPrice(coinGeckoTokenId).then((price) => {
-          if (!price)
+          if (!price) {
             return toast.error("Coingecko price not found for this token");
+          }
           setAmount(
             (parseFloat(token.dollarAmount || "") / price).toFixed(4).toString()
           );
+          return price;
         });
       } else {
         getPlatformTokenPrice(
           token.address,
           circleRegistry[selectedNetwork.value].coinGeckoPlatformId
         ).then((price) => {
-          if (!price)
+          if (!price) {
             return toast.error("Coingecko price not found for this token");
+          }
           setAmount(
             (parseFloat(token.dollarAmount || "") / price).toFixed(4).toString()
           );
+          return price;
         });
       }
     } else if (
@@ -122,23 +125,27 @@ export default function CollectPayment({
   // const { batchPay } = usePaymentGateway();
 
   const checkNetwork = async () => {
-    if (!(chain?.id.toString() == selectedNetwork.value)) {
+    if (!(chain?.id.toString() === selectedNetwork.value)) {
       try {
         switchNetworkAsync &&
           (await switchNetworkAsync(parseInt(selectedNetwork.value)).catch(
-            (err: any) => {
-              console.log(err.message);
+            (err: unknown) => {
+              if (err instanceof Error) {
+                console.error(err.message);
+              }
             }
           ));
-      } catch (err: any) {
-        console.log(err.message);
-        toast.error(err.message);
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          console.error(err.message);
+          toast.error(err.message);
+        }
       }
     }
   };
 
   const recordPayment = (txnHash: string) => {
-    console.log({ txnHash });
+    console.warn({ txnHash });
     const paymentInfo = {
       chain: selectedNetwork,
       token: selectedToken,
@@ -146,17 +153,17 @@ export default function CollectPayment({
       paid: true,
       txnHash,
     };
-    if (txnHash)
+    if (txnHash) {
       setData({
         ...data,
         __payment__: paymentInfo,
       });
+    }
   };
 
   const approval = async () => {
     setLoading(true);
-    console.log({ chain: selectedNetwork.value, token: selectedToken });
-    const approvalStatus: any = await toast
+    const approvalStatus = (await toast
       .promise(
         hasAllowance(
           circleRegistry as Registry,
@@ -174,8 +181,7 @@ export default function CollectPayment({
           position: "top-center",
         }
       )
-      .catch((err) => console.log(err));
-    console.log({ approvalStatus });
+      .catch((err) => console.error(err))) as Record<string, unknown>;
 
     setLoading(false);
     return approvalStatus[selectedToken.value];
@@ -193,8 +199,8 @@ export default function CollectPayment({
       amounts: [parseFloat(amount || "0")],
       tokenAddresses: [selectedToken.value],
       cardIds: [""],
-      circleId: circleId,
-      circleRegistry: circleRegistry,
+      circleId,
+      circleRegistry,
     };
     const currencyTxnHash = await toast
       .promise(
@@ -220,18 +226,17 @@ export default function CollectPayment({
             "Network Gas Token"
           }`,
           error: {
-            render: ({ data }: { data: string }) => data.toString(),
+            render: ({ d }: { d: string }) => d.toString(),
           },
         },
         {
           position: "top-center",
         }
       )
-      .catch((err) => console.log(err));
+      .catch((err) => console.error(err));
 
     recordPayment(currencyTxnHash?.transactionHash);
     setLoading(false);
-    return;
   };
 
   const tokenPayment = async () => {
@@ -246,8 +251,8 @@ export default function CollectPayment({
       amounts: [parseFloat(amount || "0")],
       tokenAddresses: [selectedToken.value],
       cardIds: [""],
-      circleId: circleId,
-      circleRegistry: circleRegistry,
+      circleId,
+      circleRegistry,
     };
     setLoading(true);
     const payload = await convertToWei([
@@ -268,16 +273,15 @@ export default function CollectPayment({
         {
           pending: `Sending ${selectedToken.label}`,
           error: {
-            render: ({ data }) => {
-              return "Cannot proceed with the transaction, check if you have enough balance";
-            },
+            render: () =>
+              "Cannot proceed with the transaction, check if you have enough balance",
           },
         },
         {
           position: "top-center",
         }
       )
-      .catch((err) => console.log(err));
+      .catch((err) => console.error(err));
     recordPayment(tokenTxnHash?.transactionHash);
     setLoading(false);
   };
@@ -289,10 +293,14 @@ export default function CollectPayment({
           ? "This form is paywalled. You need to pay the required amount before submitting the form"
           : "This form allows donation, you can donate any amount from any of the tokens"}
       </Text>
-      {data["__payment__"] && (
+      {data.__payment__ && (
         <a
           href={`${circleRegistry?.[selectedNetwork.value].blockExplorer}tx/${
-            data["__payment__"].txnHash
+            (
+              data.__payment__ as {
+                txnHash: string;
+              }
+            ).txnHash
           }`}
           target="_blank"
           rel="noreferrer"
@@ -300,7 +308,7 @@ export default function CollectPayment({
           <Text underline>View Transaction</Text>
         </a>
       )}
-      {!data["__payment__"] && (
+      {!data.__payment__ && (
         <Stack space="0">
           <Stack
             direction={{
@@ -358,7 +366,7 @@ export default function CollectPayment({
                     : "Token Amount"
                 }
               />
-              <Text variant="label"></Text>
+              <Text variant="label" />
             </Stack>
           </Stack>
           <Box width="1/3">
@@ -372,7 +380,7 @@ export default function CollectPayment({
                 // Paying via Native Currency
                 if (
                   circleRegistry &&
-                  selectedToken.label ==
+                  selectedToken.label ===
                     circleRegistry[selectedNetwork.value]?.nativeCurrency
                 ) {
                   await currencyPayment();
@@ -394,7 +402,7 @@ export default function CollectPayment({
                         selectedNetwork.value,
                         selectedToken.value,
                         circleRegistry
-                      ).then((res: any) => {
+                      ).then((res: unknown) => {
                         if (res) {
                           const pay = async () => {
                             await tokenPayment();
@@ -405,7 +413,7 @@ export default function CollectPayment({
                       {
                         pending: `Approving ${selectedToken.label} Token`,
                         error: {
-                          render: ({ data }: { data: any }) => data.toString(),
+                          render: ({ d }: { d: number }) => d.toString(),
                         },
                       },
                       {
@@ -427,4 +435,6 @@ export default function CollectPayment({
       )}
     </Stack>
   );
-}
+};
+
+export default CollectPayment;

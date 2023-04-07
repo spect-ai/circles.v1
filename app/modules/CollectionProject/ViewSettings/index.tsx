@@ -2,7 +2,7 @@ import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { updateFormCollection } from "@/app/services/Collection";
 import { Box, Input, Stack, Text } from "degen";
-import React, { useState } from "react";
+import { useState } from "react";
 import { Archive } from "react-feather";
 import { toast } from "react-toastify";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
@@ -11,7 +11,7 @@ type Props = {
   handleClose: () => void;
 };
 
-export default function ViewSettings({ handleClose }: Props) {
+const ViewSettings = ({ handleClose }: Props) => {
   const {
     localCollection: collection,
     updateCollection,
@@ -70,11 +70,13 @@ export default function ViewSettings({ handleClose }: Props) {
                   }
 
                   if (
+                    // eslint-disable-next-line no-restricted-globals
                     !confirm(
                       "Are you sure you want to delete this view? This cannot be undone."
                     )
-                  )
+                  ) {
                     return;
+                  }
                   setLoading(true);
                   delete collection.projectMetadata.views[projectViewId];
                   collection.projectMetadata.viewOrder =
@@ -106,4 +108,6 @@ export default function ViewSettings({ handleClose }: Props) {
       </Box>
     </Modal>
   );
-}
+};
+
+export default ViewSettings;

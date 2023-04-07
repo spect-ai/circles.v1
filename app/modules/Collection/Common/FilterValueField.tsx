@@ -7,8 +7,8 @@ import { useCircle } from "../../Circle/CircleContext";
 import { DateInput } from "../Form/Field";
 
 type Props = {
-  value: any;
-  onChange: (value: any) => void;
+  value: unknown;
+  onChange: (value: unknown) => void;
   collection: CollectionType;
   propertyId: string;
   dropDownPortal: boolean;
@@ -16,14 +16,14 @@ type Props = {
   comparatorValue: string;
 };
 
-export default function FilterValueField({
+const FilterValueField = ({
   value,
   onChange,
   collection,
   propertyId,
   comparatorValue,
   dropDownPortal,
-}: Props) {
+}: Props) => {
   const type = collection?.properties[propertyId]?.type;
   const [memberOptions, setMemberOptions] = useState<Option[]>([]);
   const [rewardTokenOptions, setRewardTokenOptions] = useState<Option[]>([]);
@@ -32,28 +32,30 @@ export default function FilterValueField({
 
   useEffect(() => {
     if (["user", "user[]"].includes(collection?.properties[propertyId]?.type)) {
-      void (async () => {
+      (async () => {
         const res = await (
           await fetch(
             `${process.env.API_HOST}/circle/${circle?.id}/memberDetails?circleIds=${circle?.id}`
           )
         ).json();
-        const memberOptions = res.members?.map((member: string) => ({
+        const memberOptions2 = res.members?.map((member: string) => ({
           label: res.memberDetails && res.memberDetails[member]?.username,
           value: member,
         }));
-        setMemberOptions(memberOptions);
+        setMemberOptions(memberOptions2);
       })();
     }
-    if ("reward" === collection?.properties[propertyId]?.type) {
+    if (collection?.properties[propertyId]?.type === "reward") {
       const tokenOptions = Object.entries(
         collection?.properties[propertyId]?.rewardOptions || {}
-      )?.map(([key, value]) => {
-        return Object.entries(value.tokenDetails)?.map((token) => ({
-          label: `${token[1].symbol} on ${value.name}`,
-          value: `${key}:${token[0]}`,
-        }));
-      });
+      )?.map(([key, value2]) =>
+        Object.entries((value as any).tokenDetails as any)?.map(
+          (token: any) => ({
+            label: `${token[1].symbol} on ${value2.name}`,
+            value: `${key}:${token[0]}`,
+          })
+        )
+      );
       setRewardTokenOptions(tokenOptions.flat());
     }
   }, [circle?.id, collection?.properties, propertyId]);
@@ -67,8 +69,8 @@ export default function FilterValueField({
       return (
         <Input
           label=""
-          placeholder={`Enter text`}
-          value={value}
+          placeholder="Enter text"
+          value={value as string}
           onChange={(e) => onChange(e.target.value)}
         />
       );
@@ -77,8 +79,8 @@ export default function FilterValueField({
         <Input
           label=""
           type="number"
-          placeholder={`Enter number`}
-          value={value}
+          placeholder="Enter number"
+          value={value as number}
           onChange={(e) => onChange(e.target.value)}
         />
       );
@@ -88,7 +90,7 @@ export default function FilterValueField({
           return (
             <Dropdown
               options={collection.properties[propertyId]?.options || []}
-              selected={value}
+              selected={value as Option}
               onChange={(option) => {
                 onChange(option);
               }}
@@ -101,7 +103,7 @@ export default function FilterValueField({
           return (
             <Dropdown
               options={collection.properties[propertyId]?.options || []}
-              selected={value}
+              selected={value as Option}
               onChange={(option) => {
                 onChange(option);
               }}
@@ -114,11 +116,11 @@ export default function FilterValueField({
           return (
             <Dropdown
               options={collection.properties[propertyId]?.options || []}
-              selected={value}
+              selected={value as Option[]}
               onChange={(option) => {
                 onChange(option);
               }}
-              multiple={true}
+              multiple
               isClearable={false}
               portal={dropDownPortal}
             />
@@ -132,11 +134,11 @@ export default function FilterValueField({
           return (
             <Dropdown
               options={collection.properties[propertyId]?.options || []}
-              selected={value}
+              selected={value as Option[]}
               onChange={(option) => {
                 onChange(option);
               }}
-              multiple={true}
+              multiple
               isClearable={false}
               portal={dropDownPortal}
             />
@@ -146,11 +148,11 @@ export default function FilterValueField({
           return (
             <Dropdown
               options={collection.properties[propertyId]?.options || []}
-              selected={value}
+              selected={value as Option[]}
               onChange={(option) => {
                 onChange(option);
               }}
-              multiple={true}
+              multiple
               isClearable={false}
               portal={dropDownPortal}
             />
@@ -159,11 +161,11 @@ export default function FilterValueField({
           return (
             <Dropdown
               options={collection.properties[propertyId]?.options || []}
-              selected={value}
+              selected={value as Option[]}
               onChange={(option) => {
                 onChange(option);
               }}
-              multiple={true}
+              multiple
               isClearable={false}
               portal={dropDownPortal}
             />
@@ -177,7 +179,7 @@ export default function FilterValueField({
           return (
             <Dropdown
               options={memberOptions || []}
-              selected={value}
+              selected={value as Option}
               onChange={(option) => {
                 onChange(option);
               }}
@@ -189,7 +191,7 @@ export default function FilterValueField({
           return (
             <Dropdown
               options={memberOptions || []}
-              selected={value}
+              selected={value as Option}
               onChange={(option) => {
                 onChange(option);
               }}
@@ -201,11 +203,11 @@ export default function FilterValueField({
           return (
             <Dropdown
               options={memberOptions || []}
-              selected={value}
+              selected={value as Option[]}
               onChange={(option) => {
                 onChange(option);
               }}
-              multiple={true}
+              multiple
               isClearable={false}
               portal={dropDownPortal}
             />
@@ -219,11 +221,11 @@ export default function FilterValueField({
           return (
             <Dropdown
               options={memberOptions || []}
-              selected={value}
+              selected={value as Option[]}
               onChange={(option) => {
                 onChange(option);
               }}
-              multiple={true}
+              multiple
               portal={dropDownPortal}
             />
           );
@@ -232,11 +234,11 @@ export default function FilterValueField({
           return (
             <Dropdown
               options={memberOptions || []}
-              selected={value}
+              selected={value as Option[]}
               onChange={(option) => {
                 onChange(option);
               }}
-              multiple={true}
+              multiple
               isClearable={false}
               portal={dropDownPortal}
             />
@@ -245,11 +247,11 @@ export default function FilterValueField({
           return (
             <Dropdown
               options={memberOptions || []}
-              selected={value}
+              selected={value as Option[]}
               onChange={(option) => {
                 onChange(option);
               }}
-              multiple={true}
+              multiple
               isClearable={false}
               portal={dropDownPortal}
             />
@@ -260,8 +262,8 @@ export default function FilterValueField({
     case "date":
       return (
         <DateInput
-          placeholder={`Enter date`}
-          value={value}
+          placeholder="Enter date"
+          value={value as string}
           onChange={(e) => onChange(e.target.value)}
           type="date"
           mode={mode}
@@ -277,8 +279,8 @@ export default function FilterValueField({
             <Input
               label=""
               type="number"
-              placeholder={`Enter number`}
-              value={value}
+              placeholder="Enter number"
+              value={value as number}
               onChange={(e) => onChange(e.target.value)}
             />
           );
@@ -286,7 +288,7 @@ export default function FilterValueField({
           return (
             <Dropdown
               options={rewardTokenOptions || []}
-              selected={value}
+              selected={value as Option}
               onChange={(option) => {
                 onChange(option);
               }}
@@ -299,11 +301,11 @@ export default function FilterValueField({
           return (
             <Dropdown
               options={rewardTokenOptions || []}
-              selected={value}
+              selected={value as Option[]}
               onChange={(option) => {
                 onChange(option);
               }}
-              multiple={true}
+              multiple
               isClearable={false}
               portal={dropDownPortal}
             />
@@ -316,8 +318,8 @@ export default function FilterValueField({
         <Input
           label=""
           type="number"
-          placeholder={`Enter number`}
-          value={value}
+          placeholder="Enter number"
+          value={value as number}
           onChange={(e) => onChange(e.target.value)}
         />
       );
@@ -325,4 +327,6 @@ export default function FilterValueField({
     default:
       return null;
   }
-}
+};
+
+export default FilterValueField;

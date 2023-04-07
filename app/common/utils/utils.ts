@@ -11,6 +11,7 @@ export const reorder = (
   return result;
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function downloadCSV(content: Array<Array<any>>, filename: string) {
   const csvContent = `data:text/csv;charset=utf-8,${content
     .map((e) => e.join(","))
@@ -28,29 +29,17 @@ export function toIsoString(date: Date) {
   if (!date?.getDate) {
     return "";
   }
-  const tzo = -date.getTimezoneOffset(),
-    dif = tzo >= 0 ? "+" : "-",
-    pad = function (num: any) {
-      return (num < 10 ? "0" : "") + num;
-    };
+  const tzo = -date.getTimezoneOffset();
+  const dif = tzo >= 0 ? "+" : "-";
+  const pad = function (num: number) {
+    return (num < 10 ? "0" : "") + num;
+  };
 
-  return (
-    date.getFullYear() +
-    "-" +
-    pad(date.getMonth() + 1) +
-    "-" +
-    pad(date.getDate()) +
-    "T" +
-    pad(date.getHours()) +
-    ":" +
-    pad(date.getMinutes()) +
-    ":" +
-    pad(date.getSeconds()) +
-    dif +
-    pad(Math.floor(Math.abs(tzo) / 60)) +
-    ":" +
-    pad(Math.abs(tzo) % 60)
-  );
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(
+    date.getDate()
+  )}T${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(
+    date.getSeconds()
+  )}${dif}${pad(Math.floor(Math.abs(tzo) / 60))}:${pad(Math.abs(tzo) % 60)}`;
 }
 
 export const dateIsInvalid = (startDate: string, endDate: string) => {
@@ -70,25 +59,25 @@ export function timeSince(date: Date) {
   let interval = seconds / 31536000;
 
   if (interval > 1) {
-    return Math.floor(interval) + " years";
+    return `${Math.floor(interval)} years`;
   }
   interval = seconds / 2592000;
   if (interval > 1) {
-    return Math.floor(interval) + " months";
+    return `${Math.floor(interval)} months`;
   }
   interval = seconds / 86400;
   if (interval > 1) {
-    return Math.floor(interval) + " days";
+    return `${Math.floor(interval)} days`;
   }
   interval = seconds / 3600;
   if (interval > 1) {
-    return Math.floor(interval) + " hours";
+    return `${Math.floor(interval)} hours`;
   }
   interval = seconds / 60;
   if (interval > 1) {
-    return Math.floor(interval) + " minutes";
+    return `${Math.floor(interval)} minutes`;
   }
-  return Math.floor(seconds) + " seconds";
+  return `${Math.floor(seconds)} seconds`;
 }
 
 export const smartTrim = (string: string, maxLength: number) => {
@@ -111,13 +100,12 @@ export const smartTrim = (string: string, maxLength: number) => {
 const getRgb = () => Math.floor(Math.random() * 256);
 
 const rgbToHex = (r: number, g: number, b: number) =>
-  "#" +
-  [r, g, b]
+  `#${[r, g, b]
     .map((x) => {
       const hex = x.toString(16);
-      return hex.length === 1 ? "0" + hex : hex;
+      return hex.length === 1 ? `0${hex}` : hex;
     })
-    .join("");
+    .join("")}`;
 
 export const generateColorHEX = () => {
   const color = {
@@ -128,24 +116,21 @@ export const generateColorHEX = () => {
   return rgbToHex(color.r, color.g, color.b);
 };
 
-export const isEmail = (email: string) => {
-  return String(email)
+export const isEmail = (email: string) =>
+  String(email)
     .toLowerCase()
     .match(
       /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
     );
-};
 
-export const isURL = (url: string) => {
-  return String(url)
+export const isURL = (url: string) =>
+  String(url)
     .toLowerCase()
     .match(/((?:https?:\/\/|www\.)(?:[-a-z0-9]+\.)*[-a-z0-9]+.*)/i);
-};
 
-export const convertToId = (text: string) => {
+export const convertToId = (text: string) =>
   // lowercase and replace spaces with underscores
-  return text
+  text
     .toLowerCase()
     .replace(/ /g, "_")
     .replace(/[^\w-]+/g, "");
-};

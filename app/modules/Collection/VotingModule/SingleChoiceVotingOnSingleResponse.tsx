@@ -1,9 +1,8 @@
 import { Option } from "@/app/types";
-import { Box, Input, Stack, Text } from "degen";
+import { Box, Stack } from "degen";
 import { SetStateAction } from "jotai";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import AddOptions from "../AddField/AddOptions";
-import { useLocalCollection } from "../Context/LocalCollectionContext";
 
 type Props = {
   options: Option[];
@@ -11,31 +10,35 @@ type Props = {
   disabled?: boolean;
 };
 
-export default function SingleChoiceVotingOnSingleResponse({
+const SingleChoiceVotingOnSingleResponse = ({
   options,
   setOptions,
   disabled,
-}: Props) {
+}: Props) => {
   const [maxSelections, setMaxSelections] = useState<number>();
   const [allowCustom, setAllowCustom] = useState(true);
   return (
-    <>
-      <Box>
-        <Stack>
-          <Stack space="1">
-            <AddOptions
-              fieldOptions={options}
-              setFieldOptions={setOptions}
-              label="Voting Options"
-              disabled={disabled}
-              maxSelections={maxSelections}
-              allowCustom={allowCustom}
-              setAllowCustom={setAllowCustom}
-              setMaxSelections={setMaxSelections}
-            />
-          </Stack>
+    <Box>
+      <Stack>
+        <Stack space="1">
+          <AddOptions
+            fieldOptions={options}
+            setFieldOptions={setOptions}
+            label="Voting Options"
+            disabled={disabled}
+            maxSelections={maxSelections}
+            allowCustom={allowCustom}
+            setAllowCustom={setAllowCustom}
+            setMaxSelections={setMaxSelections}
+          />
         </Stack>
-      </Box>
-    </>
+      </Stack>
+    </Box>
   );
-}
+};
+
+SingleChoiceVotingOnSingleResponse.defaultProps = {
+  disabled: false,
+};
+
+export default SingleChoiceVotingOnSingleResponse;

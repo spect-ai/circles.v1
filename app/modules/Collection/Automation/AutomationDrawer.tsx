@@ -1,9 +1,4 @@
 import Drawer from "@/app/common/components/Drawer";
-import {
-  addAutomation,
-  removeAutomation,
-  updateAutomation,
-} from "@/app/services/UpdateCircle";
 import { Action, Condition, Trigger } from "@/app/types";
 import { Box, Button, IconChevronRight, Stack } from "degen";
 import { AnimatePresence } from "framer-motion";
@@ -13,11 +8,20 @@ import styled from "styled-components";
 import { useCircle } from "../../Circle/CircleContext";
 import SingleAutomation from "./SingleAutomation";
 
-export default function AutomationDrawer({}) {
+const Container = styled(Box)`
+  ::-webkit-scrollbar {
+    display: none;
+  }
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+
+  height: calc(100vh - 4rem);
+`;
+
+const AutomationDrawer = () => {
   const router = useRouter();
   const { autoId, cId, newAuto } = router.query;
-  const { circle, setCircleData, fetchCircle } = useCircle();
-  if (!circle) return null;
+  const { circle } = useCircle();
   const [isOpen, setIsOpen] = useState(false);
 
   const [automationMode, setAutomationMode] = useState("create");
@@ -41,30 +45,34 @@ export default function AutomationDrawer({}) {
   };
 
   useEffect(() => {
-    if (newAuto === "true") {
-      setAutomationMode("create");
-      setAutomationId(`automation-${circle.automationCount + 1}`);
+    if (circle) {
+      if (newAuto === "true") {
+        setAutomationMode("create");
+        setAutomationId(`automation-${circle.automationCount + 1}`);
 
-      setAutomationOrder([
-        ...(automationOrder || []),
-        `automation-${circle.automationCount + 1}`,
-      ]);
-    } else if (autoId) {
-      setAutomationMode("edit");
-      setAutomationId(autoId as string);
+        setAutomationOrder([
+          ...(automationOrder || []),
+          `automation-${circle.automationCount + 1}`,
+        ]);
+      } else if (autoId) {
+        setAutomationMode("edit");
+        setAutomationId(autoId as string);
 
-      setAutomationOrder(
-        circle?.automationsIndexedByCollection &&
-          circle?.automationsIndexedByCollection[cId as string]
-      );
+        setAutomationOrder(
+          circle?.automationsIndexedByCollection &&
+            circle?.automationsIndexedByCollection[cId as string]
+        );
+      }
+
+      if (newAuto || autoId) {
+        setIsOpen(true);
+      } else {
+        setIsOpen(false);
+      }
     }
+  }, [circle, newAuto, router.query]);
 
-    if (newAuto || autoId) {
-      setIsOpen(true);
-    } else {
-      setIsOpen(false);
-    }
-  }, [router.query]);
+  if (!circle) return null;
 
   return (
     <AnimatePresence>
@@ -131,14 +139,6 @@ export default function AutomationDrawer({}) {
       )}
     </AnimatePresence>
   );
-}
+};
 
-const Container = styled(Box)`
-  ::-webkit-scrollbar {
-    display: none;
-  }
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-
-  height: calc(100vh - 4rem);
-`;
+export default AutomationDrawer;

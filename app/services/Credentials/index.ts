@@ -1,9 +1,8 @@
-import { kudosTokenTypes, kudosTypes } from "@/app/common/utils/constants";
+import { kudosTypes } from "@/app/common/utils/constants";
 import { useCircle } from "@/app/modules/Circle/CircleContext";
 import { useLocalCollection } from "@/app/modules/Collection/Context/LocalCollectionContext";
-import { KudosRequestType, KudosType, MappedItem } from "@/app/types";
+import { KudosRequestType, MappedItem } from "@/app/types";
 import { useTheme } from "degen";
-import { ethers } from "ethers";
 import { toast } from "react-toastify";
 import { useNetwork, useSwitchNetwork } from "wagmi";
 import { signTypedData } from "@wagmi/core";
@@ -12,7 +11,8 @@ const chainId = "137";
 const domainInfo = {
   name: "Kudos",
   chainId,
-  verifyingContract: "0x60576A64851C5B42e8c57E3E4A5cF3CF4eEb2ED6",
+  verifyingContract:
+    "0x60576A64851C5B42e8c57E3E4A5cF3CF4eEb2ED6" as `0x${string}`,
 };
 
 export default function useCredentials() {
@@ -56,7 +56,7 @@ export default function useCredentials() {
         }
         // Obtain signature
         const signature: string = await signTypedData({
-          domain: domainInfo as any,
+          domain: domainInfo,
           types: kudosTypes,
           value,
         });
@@ -70,14 +70,15 @@ export default function useCredentials() {
           links: value.links,
           isSignatureRequired: value.isSignatureRequired,
           isAllowlistRequired: value.isAllowlistRequired,
-          communityId: communityId,
+          communityId,
           nftTypeId: nftTypeId || "defaultOrangeRed",
           contributors: kudos.contributors,
           customAttributes: value.customAttributes,
-          signature: signature,
+          signature,
         } as KudosRequestType;
-        if (kudos.totalClaimCount)
+        if (kudos.totalClaimCount) {
           params.totalClaimCount = value.totalClaimCount;
+        }
 
         const body = JSON.stringify(params);
         toast(
@@ -100,93 +101,40 @@ export default function useCredentials() {
         if (res.ok) {
           const data = await res.json();
           return data;
-        } else {
-          toast.error("Error creating kudos", {
-            theme: mode,
-          });
-          return false;
         }
-      } catch (error: any) {
-        if (error.name === "ConnectorNotFoundError") {
-          toast.error(
-            "Please login to your wallet and connect it to Spect, wallet might be locked"
-          );
-          return;
+        toast.error("Error creating kudos", {
+          theme: mode,
+        });
+        return false;
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          if (error.name === "ConnectorNotFoundError") {
+            toast.error(
+              "Please login to your wallet and connect it to Spect, wallet might be locked"
+            );
+            return false;
+          }
+          toast.error(error.message);
         }
-        toast.error(error.message);
-        console.log({ error });
-        return;
+        console.warn({ error });
+        return false;
       }
     }
 
     return null;
   };
 
-  //   const recordTokenId = (operationId: string, kudosFor?: string) => {
-  //     let time = 1000;
-  //     const intervalPromise = setInterval(() => {
-  //       time += 1000;
-  //       fetch(`${process.env.MINTKUDOS_HOST}${operationId}`)
-  //         .then(async (res) => {
-  //           if (res.ok) {
-  //             const data = await res.json();
-  //             if (data.status === "success") {
-  //               clearInterval(intervalPromise);
-  //               const kudosForUsers = kudosFor || "assignee";
-  //               fetch(`${process.env.API_HOST}/card/v1/${cardId}/recordKudos`, {
-  //                 method: "PATCH",
-  //                 body: JSON.stringify({
-  //                   for: kudosForUsers,
-  //                   tokenId: data.resourceId,
-  //                   contributors:
-  //                     kudosForUsers === "assignee" ? assignees : reviewers,
-  //                 }),
-  //                 headers: {
-  //                   "Content-Type": "application/json",
-  //                 },
-  //                 credentials: "include",
-  //               })
-  //                 .then((res) => {
-  //                   if (res.ok) {
-  //                     res
-  //                       .json()
-  //                       .then((res2) => {
-  //                         // Only update state if user is on same card
-  //                         if (cardId === res2.id) setCard(res2);
-  //                       })
-  //                       .catch((err) => console.log(err));
-  //                     toast.success("Successfully created kudos!", {
-  //                       theme: mode,
-  //                     });
-  //                   }
-  //                 })
-  //                 .catch((err) => console.log(err));
-  //             }
-  //           }
-  //         })
-  //         .catch((err) => console.log(err));
-  //     }, 1000);
-  //     setTimeout(() => {
-  //       clearInterval(intervalPromise);
-  //     }, 20000);
-  //   };
-
   const recordCollectionKudos = (
     operationId: string,
     minimumNumberOfAnswersThatNeedToMatch: number,
-    responseData: MappedItem<any>,
+    responseData: MappedItem<unknown>,
     numOfKudos?: number
   ) => {
-    console.log({ operationId });
-    let time = 1000;
     const intervalPromise = setInterval(() => {
-      time += 1000;
-      console.log(time);
       fetch(`${process.env.MINTKUDOS_HOST}${operationId}`)
         .then(async (res) => {
           if (res.ok) {
             const data = await res.json();
-            console.log(data);
             if (data.status === "success") {
               clearInterval(intervalPromise);
               fetch(`${process.env.API_HOST}/collection/v1/${collection.id}`, {
@@ -207,16 +155,17 @@ export default function useCredentials() {
                 },
                 credentials: "include",
               })
-                .then((res) => {
-                  if (res.ok) {
-                    res
+                .then((newRes) => {
+                  if (newRes.ok) {
+                    newRes
                       .json()
                       .then((res2) => {
                         // Only update state if user is on same card
-                        if (collection.slug === res2.slug)
+                        if (collection.slug === res2.slug) {
                           setLocalCollection(res2);
+                        }
                       })
-                      .catch((err) => console.log(err));
+                      .catch((err) => console.error(err));
                     toast.success("Successfully created kudos!", {
                       theme: mode,
                     });
@@ -224,7 +173,7 @@ export default function useCredentials() {
                     toast.error("Something went wrong, refresh and try again!");
                   }
                 })
-                .catch((err) => console.log(err));
+                .catch((err) => console.error(err));
             }
           }
         })
@@ -235,22 +184,9 @@ export default function useCredentials() {
     }, 120000);
   };
 
-  //   const viewKudos = async (): Promise<KudosType[]> => {
-  //     const kudos = [];
-  //     for (const [role, tokenId] of Object.entries(kudosMinted)) {
-  //       const res = await fetch(
-  //         `${process.env.MINTKUDOS_HOST}/v1/tokens/${tokenId}`
-  //       );
-  //       if (res.ok) {
-  //         kudos.push(await res.json());
-  //       }
-  //     }
-  //     return kudos;
-  //   };
-
   const claimKudos = async (tokenId: number, claimingAddress: string) => {
     const value = {
-      tokenId: tokenId, // mandatory
+      tokenId, // mandatory
     };
     if (registry) {
       try {
@@ -258,7 +194,7 @@ export default function useCredentials() {
           switchNetworkAsync && (await switchNetworkAsync(parseInt(chainId)));
         }
         const signature: string = await signTypedData({
-          domain: domainInfo as any,
+          domain: domainInfo,
           types: kudosTypes,
           value,
         });
@@ -272,9 +208,9 @@ export default function useCredentials() {
             credentials: "include",
             method: "PATCH",
             body: JSON.stringify({
-              claimingAddress: claimingAddress,
-              signature: signature,
-              tokenId: tokenId,
+              claimingAddress,
+              signature,
+              tokenId,
             }),
             headers: {
               "Content-Type": "application/json",
@@ -283,79 +219,28 @@ export default function useCredentials() {
         );
         if (res.ok) {
           const data = await res.json();
-          console.log(data);
-
           return data;
         }
-      } catch (error: any) {
-        toast.error(error.message);
-        console.log(error);
-        return;
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          toast.error(error.message);
+        }
+        console.error(error);
+        return false;
       }
     }
+    return null;
   };
-
-  //   const recordClaimInfo = (operationId: string, kudosFor?: string) => {
-  //     let time = 1000;
-  //     const intervalPromise = setInterval(() => {
-  //       time += 1000;
-  //       console.log(time);
-  //       fetch(`${process.env.MINTKUDOS_HOST}${operationId}`)
-  //         .then(async (res) => {
-  //           if (res.ok) {
-  //             const data = await res.json();
-  //             console.log(data);
-  //             if (data.status === "success") {
-  //               clearInterval(intervalPromise);
-  //               fetch(
-  //                 `${process.env.API_HOST}/card/v1/${cardId}/recordClaimInfo`,
-  //                 {
-  //                   method: "PATCH",
-  //                   body: JSON.stringify({
-  //                     for: kudosFor || "assignee",
-  //                     tokenId: data.resourceId,
-  //                   }),
-  //                   headers: {
-  //                     "Content-Type": "application/json",
-  //                   },
-  //                   credentials: "include",
-  //                 }
-  //               )
-  //                 .then((res2) => {
-  //                   if (res2.ok)
-  //                     res2
-  //                       .json()
-  //                       .then((res2) => {
-  //                         // Only update state if user is on same card
-  //                         if (cardId === res2.id) setCard(res2);
-  //                       })
-  //                       .catch((err) => console.log(err));
-  //                   toast.success("Successfully claimed kudos!", {
-  //                     theme: mode,
-  //                   });
-  //                 })
-  //                 .catch((err) => console.log(err));
-  //             }
-  //           }
-  //         })
-  //         .catch((err) => console.log(err));
-  //     }, 1000);
-  //     setTimeout(() => {
-  //       clearInterval(intervalPromise);
-  //     }, 120000);
-  //   };
 
   const getKudosOfUser = async (ethAddress: string) => {
     const res = await fetch(
       `${process.env.MINTKUDOS_HOST}/v1/wallets/${ethAddress}/tokens`
     );
     if (res.ok) {
-      return await res.json();
-    } else {
-      toast.error("Something went wrong while fetching your kudos");
-      console.log(res);
-      return [];
+      return res.json();
     }
+    toast.error("Something went wrong while fetching your kudos");
+    return [];
   };
 
   const getKudos = async (tokenId: number) => {
@@ -363,12 +248,10 @@ export default function useCredentials() {
       `${process.env.MINTKUDOS_HOST}/v1/tokens/${tokenId}`
     );
     if (res.ok) {
-      return await res.json();
-    } else {
-      toast.error("Something went wrong while fetching your kudos");
-      console.log(res);
-      return [];
+      return res.json();
     }
+    toast.error("Something went wrong while fetching your kudos");
+    return [];
   };
 
   const addCustomKudosDesign = async (name: string, file: File) => {
@@ -384,12 +267,10 @@ export default function useCredentials() {
       }
     );
     if (res.ok) {
-      return await res.json();
-    } else {
-      toast.error("Something went wrong while adding custom design");
-      console.log(res);
-      return [];
+      return res.json();
     }
+    toast.error("Something went wrong while adding custom design");
+    return [];
   };
 
   const getCommunityKudosDesigns = async () => {
@@ -397,22 +278,15 @@ export default function useCredentials() {
       `${process.env.API_HOST}/circle/v1/${circle?.id}/communityKudosDesigns`
     );
     if (res.ok) {
-      return await res.json();
-    } else {
-      toast.error(
-        "Something went wrong while fetching community kudos designs"
-      );
-      console.log(res);
-      return [];
+      return res.json();
     }
+    toast.error("Something went wrong while fetching community kudos designs");
+    return [];
   };
 
   return {
     mintKudos,
-    // recordTokenId,
     claimKudos,
-    // viewKudos,
-    // recordClaimInfo,
     getKudosOfUser,
     recordCollectionKudos,
     getKudos,

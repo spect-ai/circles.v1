@@ -5,10 +5,10 @@ type Props = {
   handleClose: () => void;
 };
 
-export default function RolesModal({ handleClose }: Props) {
-  return (
-    <Modal title="Roles" handleClose={handleClose} zIndex={2}>
-      <Roles />
-    </Modal>
-  );
-}
+const RolesModal = ({ handleClose }: Props) => (
+  <Modal title="Roles" handleClose={handleClose} zIndex={2}>
+    <Roles />
+  </Modal>
+);
+
+export default RolesModal;

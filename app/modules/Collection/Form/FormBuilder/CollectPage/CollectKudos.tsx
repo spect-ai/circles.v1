@@ -13,21 +13,26 @@ type Props = {
   preview?: boolean;
 };
 
+const StyledImage = styled.img`
+  @media (max-width: 768px) {
+    width: 16rem;
+  }
+  width: 20rem;
+`;
+
 const CollectKudos = ({ form, setClaimedJustNow, preview }: Props) => {
   const [kudos, setKudos] = useState({} as KudosType);
   const [claimed, setClaimed] = useState(form.formMetadata.hasClaimedKudos);
   const [claiming, setClaiming] = useState(false);
 
   useEffect(() => {
-    console.log({ form });
     if (form.formMetadata.mintkudosTokenId) {
-      void (async () => {
+      (async () => {
         const kudo = await (
           await fetch(
             `${process.env.MINTKUDOS_HOST}/v1/tokens/${form.formMetadata.mintkudosTokenId}`
           )
         ).json();
-        console.log({ kudo });
         setKudos(kudo);
       })();
     }
@@ -87,10 +92,8 @@ const CollectKudos = ({ form, setClaimedJustNow, preview }: Props) => {
           <Box>
             <Stack direction="vertical">
               <TwitterShareButton
-                url={`https://circles.spect.network/`}
-                title={
-                  "I just filled out a web3 enabled form and claimed my Kudos on @JoinSpect via @mintkudosXYZ 🎉"
-                }
+                url="https://circles.spect.network/"
+                title="I just filled out a web3 enabled form and claimed my Kudos on @JoinSpect via @mintkudosXYZ 🎉"
               >
                 <Box
                   width={{
@@ -200,14 +203,11 @@ const CollectKudos = ({ form, setClaimedJustNow, preview }: Props) => {
                             credentials: "include",
                           }
                         );
-
-                        console.log(res);
                         if (res.ok) {
                           setClaimed(true);
                           setClaimedJustNow(true);
                         }
                       } catch (e) {
-                        console.log(e);
                         toast.error(
                           "Something went wrong, please try again later"
                         );
@@ -254,11 +254,8 @@ const CollectKudos = ({ form, setClaimedJustNow, preview }: Props) => {
   );
 };
 
-const StyledImage = styled.img`
-  @media (max-width: 768px) {
-    width: 16rem;
-  }
-  width: 20rem;
-`;
+CollectKudos.defaultProps = {
+  preview: false,
+};
 
 export default CollectKudos;

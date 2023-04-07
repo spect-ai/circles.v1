@@ -1,38 +1,42 @@
-import Dropdown from "@/app/common/components/Dropdown";
-import Editor from "@/app/common/components/Editor";
 import Modal from "@/app/common/components/Modal";
 import ConfirmModal from "@/app/common/components/Modal/ConfirmModal";
-import { getLensProfileHandles, updateProfileData } from "@/app/services/Lens";
+import { getLensProfileHandles } from "@/app/services/Lens";
 import useProfileUpdate from "@/app/services/Profile/useProfileUpdate";
 import { profileLoadingAtom, userDataAtom } from "@/app/state/global";
-import { Milestone, Option, Registry, UserType } from "@/app/types";
-import { Box, Button, Input, Stack, Tag, Text, useTheme } from "degen";
+import { Box, Text } from "degen";
 import { useAtom } from "jotai";
 import router from "next/router";
 import { useEffect, useState } from "react";
-import { useQuery } from "react-query";
 import styled from "styled-components";
 
 type Props = {
   handleClose: () => void;
 };
 
-export default function LensImportModal({ handleClose }: Props) {
+const Container = styled(Box)`
+  border: 0.1rem solid transparent;
+  cursor: pointer;
+  &:hover {
+    border-color: rgb(191, 90, 242, 1);
+  }
+`;
+const ScrollContainer = styled(Box)`
+  overflow-y: auto;
+  max-height: 24rem;
+  ::-webkit-scrollbar {
+    width: 3px;
+  }
+`;
+
+const LensImportModal = ({ handleClose }: Props) => {
   const [lensProfiles, setLensProfiles] = useState([] as string[]);
   const [selectedHandle, setSelectedHandle] = useState("");
-  const [attributes, setAttributes] = useState({
-    experience: [],
-    education: [],
-  });
+
   const [loading, setLoading] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
-  const { mode } = useTheme();
-  const { data: currentUser } = useQuery<UserType>("getMyUser", {
-    enabled: false,
-  });
   const { updateProfile } = useProfileUpdate();
-  const [userData, setUserData] = useAtom(userDataAtom);
-  const [profileLoading, setProfileLoading] = useAtom(profileLoadingAtom);
+  const [, setUserData] = useAtom(userDataAtom);
+  const [, setProfileLoading] = useAtom(profileLoadingAtom);
 
   const username = router.query.user;
 
@@ -49,22 +53,20 @@ export default function LensImportModal({ handleClose }: Props) {
       setUserData(data);
       setProfileLoading(false);
       return data;
-    } else {
-      setProfileLoading(false);
-      return false;
     }
+    setProfileLoading(false);
+    return false;
   };
 
   useEffect(() => {
     setLoading(true);
     getLensProfileHandles()
       .then((res) => {
-        console.log(res);
         setLensProfiles(res);
         setLoading(false);
       })
       .catch((err) => {
-        console.log(err);
+        console.error(err);
         setLoading(false);
       });
   }, []);
@@ -74,7 +76,7 @@ export default function LensImportModal({ handleClose }: Props) {
       handleClose={() => {
         handleClose();
       }}
-      title={`Import from Lens`}
+      title="Import from Lens"
       size="small"
     >
       {confirmOpen && (
@@ -86,7 +88,7 @@ export default function LensImportModal({ handleClose }: Props) {
               lensHandle: selectedHandle,
             });
             if (res) {
-              void fetchUser();
+              fetchUser();
               handleClose();
             }
           }}
@@ -109,7 +111,7 @@ export default function LensImportModal({ handleClose }: Props) {
             <Text variant="label">Pick a Lens Handle</Text>
             <ScrollContainer>
               {lensProfiles?.length &&
-                lensProfiles.map((profile: any) => (
+                lensProfiles.map((profile) => (
                   <Container
                     borderRadius="large"
                     display="flex"
@@ -119,14 +121,14 @@ export default function LensImportModal({ handleClose }: Props) {
                     transitionDuration="700"
                     backgroundColor="background"
                     height="12"
-                    key={profile.handle}
+                    key={profile}
                     onClick={() => {
-                      setSelectedHandle(profile.handle);
+                      setSelectedHandle(profile);
                       setConfirmOpen(true);
                     }}
                   >
                     <Box padding="1" paddingLeft="2">
-                      <Text variant="large">{profile.handle}</Text>
+                      <Text variant="large">{profile}</Text>
                     </Box>
                   </Container>
                 ))}
@@ -139,18 +141,6 @@ export default function LensImportModal({ handleClose }: Props) {
       </Box>
     </Modal>
   );
-}
-const Container = styled(Box)`
-  border: 0.1rem solid transparent;
-  cursor: pointer;
-  &:hover {
-    border-color: rgb(191, 90, 242, 1);
-  }
-`;
-const ScrollContainer = styled(Box)`
-  overflow-y: auto;
-  max-height: 24rem;
-  ::-webkit-scrollbar {
-    width: 3px;
-  }
-`;
+};
+
+export default LensImportModal;

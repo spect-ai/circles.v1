@@ -1,44 +1,36 @@
 import { Box, IconLightningBolt, Stack, Tag, Text } from "degen";
-import React, { useState } from "react";
+import { useState } from "react";
 import { toast } from "react-toastify";
-import { useLocalCollection } from "../../Context/LocalCollectionContext";
-
-import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { AnimatePresence, motion } from "framer-motion";
-import { Proposal } from "./VotingOnSnapshot";
 import { useQuery as useApolloQuery } from "@apollo/client";
 import { useAccount } from "wagmi";
-import { useRouter } from "next/router";
 import { useCircle } from "@/app/modules/Circle/CircleContext";
-import { SnapshotModal } from "../../Common/SnapshotModal";
 import {
   MenuContainer,
   MenuItem,
 } from "@/app/modules/CollectionProject/EditValue";
 import { MoreHorizontal } from "react-feather";
 import Popover from "@/app/common/components/Popover";
+import { SnapshotModal } from "../../Common/SnapshotModal";
+import { Proposal } from "./VotingOnSnapshot";
+import { useLocalCollection } from "../../Context/LocalCollectionContext";
 
-export default function VotingActions({
+const VotingActions = ({
   dataId,
   data,
-  col,
 }: {
   dataId: string;
-  data: any;
-  col: boolean;
-}) {
-  const { localCollection: collection, updateCollection } =
-    useLocalCollection();
+  data: Record<string, unknown>;
+}) => {
+  const { localCollection: collection } = useLocalCollection();
   const { circle } = useCircle();
   const { address } = useAccount();
-  const router = useRouter();
-
   const [snapshotModal, setSnapshotModal] = useState(false);
 
   const proposal = collection?.voting?.snapshot?.[dataId]?.proposalId;
 
   const { data: proposalData } = useApolloQuery(Proposal, {
-    variables: { proposal: proposal },
+    variables: { proposal },
   });
   const [isOpen, setIsOpen] = useState(false);
   return (
@@ -107,8 +99,8 @@ export default function VotingActions({
                       }}
                     >
                       <Stack direction="horizontal" align="center" space="2">
-                        <IconLightningBolt color={"accent"} size="5" />
-                        <Text align={"left"}>Create Snapshot Proposal</Text>
+                        <IconLightningBolt color="accent" size="5" />
+                        <Text align="left">Create Snapshot Proposal</Text>
                       </Stack>
                     </MenuItem>
                   )}
@@ -133,4 +125,6 @@ export default function VotingActions({
       </AnimatePresence>
     </>
   );
-}
+};
+
+export default VotingActions;

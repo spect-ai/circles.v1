@@ -3,7 +3,6 @@ import { DoubleRightOutlined } from "@ant-design/icons";
 import { Box, Button } from "degen";
 import { AnimatePresence, motion } from "framer-motion";
 import { useAtom } from "jotai";
-import React from "react";
 
 type Props = {
   show: boolean;
@@ -12,12 +11,7 @@ type Props = {
   left: string;
 };
 
-export default function CollapseButton({
-  show,
-  setShowCollapseButton,
-  top,
-  left,
-}: Props) {
+const CollapseButton = ({ show, setShowCollapseButton, top, left }: Props) => {
   const [isSidebarExpanded, setIsSidebarExpanded] = useAtom(
     isSidebarExpandedAtom
   );
@@ -34,8 +28,8 @@ export default function CollapseButton({
             transitionDuration="300"
             style={{
               transform: isSidebarExpanded ? "rotate(180deg)" : "rotate(0deg)",
-              top: top,
-              left: left,
+              top,
+              left,
             }}
             position="absolute"
           >
@@ -55,4 +49,6 @@ export default function CollapseButton({
       )}
     </AnimatePresence>
   );
-}
+};
+
+export default CollapseButton;

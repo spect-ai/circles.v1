@@ -1,32 +1,46 @@
-import Dropdown from "@/app/common/components/Dropdown";
 import Editor from "@/app/common/components/Editor";
 import Modal from "@/app/common/components/Modal";
-import PrimaryButton from "@/app/common/components/PrimaryButton";
 import useProfileUpdate from "@/app/services/Profile/useProfileUpdate";
-import { Milestone, Option, Registry, VerifiableCredential } from "@/app/types";
-import { Box, Button, Input, Stack, Tag, Text, useTheme } from "degen";
+import { Credential } from "@/app/types";
+import { Box, Button, Input, Tag, Text, useTheme } from "degen";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
-import LinkCredentialsModal from "./LinkCredentialsModal";
-import { Credential } from "@/app/types";
 import CheckBox from "@/app/common/components/Table/Checkbox";
 import { useAtom } from "jotai";
 import { userDataAtom } from "@/app/state/global";
+import LinkCredentialsModal from "./LinkCredentialsModal";
 
 type Props = {
   handleClose: () => void;
   modalMode: "add" | "edit";
-  allCredentials: { [id: string]: any[] };
+  allCredentials: { [id: string]: unknown[] };
   experienceId?: number;
 };
 
-export default function AddExperienceModal({
+export const DateInput = styled.input<{ mode: string }>`
+  padding: 1rem;
+  border-radius: 0.55rem;
+  border 1px solid ${(props) =>
+    props.mode === "dark" ? "rgb(255, 255, 255,0.1)" : "rgb(20,20,20,0.1)"};
+  background-color: ${(props) =>
+    props.mode === "dark" ? "rgb(20,20,20)" : "rgb(255, 255, 255)"};
+  width: 100%;
+  color: ${(props) =>
+    props.mode === "dark" ? "rgb(255, 255, 255,0.7)" : "rgb(20,20,20,0.7)"};
+  outline: none;
+  &:focus {
+    border-color: rgb(191, 90, 242, 1);
+  }
+  transition: border-color 0.5s ease;
+`;
+
+const AddExperienceModal = ({
   handleClose,
   modalMode,
   allCredentials,
   experienceId,
-}: Props) {
-  const [userData, setUserData] = useAtom(userDataAtom);
+}: Props) => {
+  const [userData] = useAtom(userDataAtom);
 
   const [role, setRole] = useState("");
   const [description, setDescription] = useState(
@@ -55,7 +69,7 @@ export default function AddExperienceModal({
 
   const { mode } = useTheme();
 
-  const isEmpty = (fieldName: string, value: any) => {
+  const isEmpty = (fieldName: string, value: unknown) => {
     switch (fieldName) {
       case "role":
       case "organization":
@@ -66,10 +80,10 @@ export default function AddExperienceModal({
     }
   };
 
-  const dateIsInvalidValid = (startDate: string, endDate: string) => {
+  const dateIsInvalidValid = (startD: string, endD: string) => {
     if (startDate && endDate) {
-      const start = new Date(startDate);
-      const end = new Date(endDate);
+      const start = new Date(startD);
+      const end = new Date(endD);
       return start > end;
     }
     return false;
@@ -88,11 +102,13 @@ export default function AddExperienceModal({
         experience.start_date?.day
       ) {
         setStartDate(
-          experience.start_date?.year?.toString().padStart(2, "0") +
-            "-" +
-            experience.start_date?.month?.toString().padStart(2, "0") +
-            "-" +
-            experience.start_date?.day?.toString().padStart(2, "0")
+          `${experience.start_date?.year
+            ?.toString()
+            .padStart(2, "0")}-${experience.start_date?.month
+            ?.toString()
+            .padStart(2, "0")}-${experience.start_date?.day
+            ?.toString()
+            .padStart(2, "0")}`
         );
       }
       if (
@@ -101,14 +117,15 @@ export default function AddExperienceModal({
         experience.end_date?.day
       ) {
         setEndDate(
-          experience.end_date?.year?.toString().padStart(2, "0") +
-            "-" +
-            experience.end_date?.month?.toString().padStart(2, "0") +
-            "-" +
-            experience.end_date?.day?.toString().padStart(2, "0")
+          `${experience.end_date?.year
+            ?.toString()
+            .padStart(2, "0")}-${experience.end_date?.month
+            ?.toString()
+            .padStart(2, "0")}-${experience.end_date?.day
+            ?.toString()
+            .padStart(2, "0")}`
         );
       }
-      console.log({ experience });
       setLinkedCredentials(experience.linkedCredentials);
       setLoading(false);
     }
@@ -139,14 +156,14 @@ export default function AddExperienceModal({
               Required
             </Tag>
           </Box>
-          {requiredFieldsNotSet["role"] && (
+          {requiredFieldsNotSet.role && (
             <Text color="red" variant="small">
               This is a required field and cannot be empty
             </Text>
           )}
           <Input
             label=""
-            placeholder={`Enter Role`}
+            placeholder="Enter Role"
             value={role}
             onChange={(e) => {
               setRole(e.target.value);
@@ -164,14 +181,14 @@ export default function AddExperienceModal({
               Required
             </Tag>
           </Box>
-          {requiredFieldsNotSet["organization"] && (
+          {requiredFieldsNotSet.organization && (
             <Text color="red" variant="small">
               This is a required field and cannot be empty
             </Text>
           )}
           <Input
             label=""
-            placeholder={`Enter Organization`}
+            placeholder="Enter Organization"
             value={organization}
             onChange={(e) => {
               setOrganization(e.target.value);
@@ -199,8 +216,8 @@ export default function AddExperienceModal({
               onSave={(value) => {
                 setDescription(value);
               }}
-              placeholder={`Enter Description, press / for commands`}
-              isDirty={true}
+              placeholder="Enter Description, press / for commands"
+              isDirty
             />
           </Box>
         </Box>
@@ -225,7 +242,7 @@ export default function AddExperienceModal({
               <Text variant="label">Start Date</Text>
 
               <DateInput
-                placeholder={`Enter Start Date`}
+                placeholder="Enter Start Date"
                 value={startDate}
                 type="date"
                 mode={mode}
@@ -248,7 +265,7 @@ export default function AddExperienceModal({
               <Text variant="label">End Date</Text>
 
               <DateInput
-                placeholder={`Enter End Date`}
+                placeholder="Enter End Date"
                 value={endDate}
                 type="date"
                 mode={mode}
@@ -313,7 +330,7 @@ export default function AddExperienceModal({
         >
           <Button
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            //@ts-ignore
+            // @ts-ignore
             marginRight="2"
             variant="secondary"
             size="small"
@@ -340,8 +357,7 @@ export default function AddExperienceModal({
                 return;
               }
               if (modalMode === "add") {
-                console.log("add");
-                const res = await createExperience({
+                await createExperience({
                   jobTitle: role,
                   company: organization,
                   companyLogo: "",
@@ -349,7 +365,7 @@ export default function AddExperienceModal({
                   start_date: preprocessDate(startDate),
                   end_date: preprocessDate(endDate),
                   currentlyWorking,
-                  linkedCredentials: linkedCredentials,
+                  linkedCredentials,
                 });
               } else if (modalMode === "edit") {
                 if (!experienceId && experienceId !== 0) {
@@ -357,7 +373,7 @@ export default function AddExperienceModal({
 
                   return;
                 }
-                const res = await updateExperience(experienceId?.toString(), {
+                await updateExperience(experienceId?.toString(), {
                   jobTitle: role,
                   company: organization,
                   companyLogo: "",
@@ -365,7 +381,7 @@ export default function AddExperienceModal({
                   start_date: preprocessDate(startDate),
                   end_date: preprocessDate(endDate),
                   currentlyWorking,
-                  linkedCredentials: linkedCredentials,
+                  linkedCredentials,
                 });
               }
               setLoading(false);
@@ -378,20 +394,11 @@ export default function AddExperienceModal({
       </Box>
     </Modal>
   );
-}
-export const DateInput = styled.input<{ mode: string }>`
-  padding: 1rem;
-  border-radius: 0.55rem;
-  border 1px solid ${(props) =>
-    props.mode === "dark" ? "rgb(255, 255, 255,0.1)" : "rgb(20,20,20,0.1)"};
-  background-color: ${(props) =>
-    props.mode === "dark" ? "rgb(20,20,20)" : "rgb(255, 255, 255)"};
-  width: 100%;
-  color: ${(props) =>
-    props.mode === "dark" ? "rgb(255, 255, 255,0.7)" : "rgb(20,20,20,0.7)"};
-  outline: none;
-  &:focus {
-    border-color: rgb(191, 90, 242, 1);
-  }
-  transition: border-color 0.5s ease;
-`;
+};
+
+// default props declaration
+AddExperienceModal.defaultProps = {
+  experienceId: undefined,
+};
+
+export default AddExperienceModal;

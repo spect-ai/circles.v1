@@ -7,13 +7,13 @@ import { useRouter } from "next/router";
 import { useQuery } from "react-query";
 import { toast } from "react-toastify";
 import { useAccount, useNetwork, useSwitchNetwork } from "wagmi";
-// import { biconomyPayment } from "../Biconomy";
 import { gnosisPayment } from "../Gnosis";
 import useDistributor from "./useDistributor";
 import useERC20 from "./useERC20";
 
-declare let window: any;
-
+declare let window: {
+  open: (url: string, target: string) => void;
+};
 interface BatchPayParams {
   paymentType: string;
   batchPayType: string;
@@ -32,21 +32,21 @@ interface PayUsingGnosisParams extends BatchPayParams {
 }
 
 export default function usePaymentGateway(
-  handleStatusUpdate?: (status: any, txHash: string) => Promise<void>
+  handleStatusUpdate?: (status: unknown, txHash: string) => Promise<void>
 ) {
   const { distributeEther, distributeTokens } = useDistributor();
   const { hasBalances } = useERC20();
   const { address } = useAccount();
   const { chain } = useNetwork();
   const { switchNetworkAsync } = useSwitchNetwork();
-  const [connectedUser, setConnectedUser] = useAtom(connectedUserAtom);
+  const [connectedUser] = useAtom(connectedUserAtom);
   const router = useRouter();
   const { circle: cId } = router.query;
   const { data: registry } = useQuery<Registry>(["registry", cId], {
     enabled: false,
   });
   async function handlePaymentError(
-    err: any,
+    err: unknown,
     expectedNetwork: string,
     tokenAddresses: Array<string>,
     tokenValues: Array<number>
@@ -54,10 +54,10 @@ export default function usePaymentGateway(
     if (!address) {
       return;
     }
-    if (chain?.id.toString() !== expectedNetwork) console.log("Wrong Network");
-    else {
-      const [sufficientBalance, insufficientBalanceTokenAddress] =
-        await hasBalances(tokenAddresses, tokenValues, address);
+    if (chain?.id.toString() !== expectedNetwork) {
+      console.error("Wrong Network");
+    } else {
+      await hasBalances(tokenAddresses, tokenValues, address);
     }
   }
 
@@ -87,7 +87,6 @@ export default function usePaymentGateway(
         circleRegistry,
       });
     } else if (paymentType === "currency") {
-      console.log({ userAddresses });
       tx = await distributeEther({
         contributors: userAddresses,
         values: amounts,
@@ -143,9 +142,7 @@ export default function usePaymentGateway(
                 ? `${circleRegistry[chainId].blockExplorer}tx/${tx.transactionHash}`
                 : registry &&
                   `${registry[chainId].blockExplorer}tx/${tx.transactionHash}`;
-              console.log(url);
-
-              window.open(url, "_blank");
+              window.open(url || "", "_blank");
             }}
           >
             View Transaction
@@ -156,14 +153,10 @@ export default function usePaymentGateway(
         }
       );
       return tx.transactionHash;
-    } catch (err: any) {
-      void handlePaymentError(err, chainId, tokenAddresses, amounts);
-      console.log(err);
-      // toast.error(err.message, {
-      //   theme: "dark",
-      // });
-      throw err.message;
-      return false;
+    } catch (err: unknown) {
+      handlePaymentError(err, chainId, tokenAddresses, amounts);
+      console.warn(err);
+      throw err;
     }
   }
 
@@ -193,11 +186,14 @@ export default function usePaymentGateway(
         nonce,
       });
       const res = await gnosisPayment(safeAddress, data, chainId);
-      if (res)
+      if (res) {
         toast.success("Transaction sent to your safe", { theme: "dark" });
-      else toast.error("Error Occurred while sending your transation to safe");
+      } else {
+        toast.error("Error Occurred while sending your transation to safe");
+      }
       return res;
-    } else if (paymentType === "currency") {
+    }
+    if (paymentType === "currency") {
       const contractdata = await distributeEther({
         contributors: userAddresses,
         values: amounts,
@@ -210,63 +206,18 @@ export default function usePaymentGateway(
         nonce,
       });
       const res = await gnosisPayment(safeAddress, contractdata, chainId);
-      if (res)
+      if (res) {
         toast.success("Transaction sent to your safe", { theme: "dark" });
-      else toast.error("Error Occurred while sending your transation to safe");
+      } else {
+        toast.error("Error Occurred while sending your transation to safe");
+      }
       return res;
     }
     return false;
   }
 
-  // async function payGasless({
-  //   paymentType,
-  //   batchPayType,
-  //   chainId,
-  //   amounts,
-  //   userAddresses,
-  //   tokenAddresses,
-  //   cardIds,
-  //   circleId,
-  //   circleRegistry,
-  // }: BatchPayParams): Promise<boolean> {
-  //   if (paymentType === "tokens" && (registry || circleRegistry)) {
-  //     console.log({ tokenAddresses });
-  //     const {
-  //       filteredTokenAddresses,
-  //       filteredRecipients,
-  //       valuesInWei,
-  //       id,
-  //       overrides,
-  //     } = await distributeTokens({
-  //       contributors: userAddresses,
-  //       values: amounts,
-  //       chainId,
-  //       type: batchPayType,
-  //       cardIds,
-  //       circleId,
-  //       paymentMethod: "gasless",
-  //       callerId: connectedUser,
-  //       tokenAddresses,
-  //     });
-  //     console.log({ filteredTokenAddresses });
-  //     const addr = circleRegistry
-  //       ? circleRegistry[chainId].distributorAddress
-  //       : registry && registry[chainId].distributorAddress;
-  //     await biconomyPayment(address || "", addr as string, {
-  //       filteredTokenAddresses,
-  //       filteredRecipients,
-  //       valuesInWei,
-  //       id,
-  //       overrides,
-  //     });
-  //     toast.success("Transaction sent");
-  //   }
-  //   return false;
-  // }
-
   return {
     batchPay,
     payUsingGnosis,
-    // payGasless,
   };
 }

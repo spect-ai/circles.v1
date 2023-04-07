@@ -2,7 +2,7 @@ import Accordian from "@/app/common/components/Accordian";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { updateFormCollection } from "@/app/services/Collection";
 import { CheckCircleOutlined } from "@ant-design/icons";
-import { Box, Stack, useTheme, Text, Input, Button } from "degen";
+import { Box, Stack, Text, Input, Button } from "degen";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
@@ -22,10 +22,10 @@ export type Props = {
   poapEditCode: string;
   setPoapEditCode: (value: string) => void;
   minimumNumberOfAnswersThatNeedToMatch: number;
-  responseData: any;
+  responseData: Record<string, unknown>;
 };
 
-export default function ImportClaimCodes({
+const ImportClaimCodes = ({
   setModalMode,
   handleClose,
   poapEventId,
@@ -34,11 +34,10 @@ export default function ImportClaimCodes({
   setPoapEditCode,
   minimumNumberOfAnswersThatNeedToMatch,
   responseData,
-}: Props) {
-  const { mode } = useTheme();
+}: Props) => {
   const { localCollection: collection, updateCollection } =
     useLocalCollection();
-  const [errorMessage, setErrorMessage] = useState("");
+  const [errorMessage] = useState("");
 
   const [loading, setLoading] = useState(false);
 
@@ -70,7 +69,7 @@ export default function ImportClaimCodes({
       </Stack>
       <Accordian
         name="Set Conditions"
-        defaultOpen={minimumNumberOfAnswersThatNeedToMatch > 0 ? true : false}
+        defaultOpen={minimumNumberOfAnswersThatNeedToMatch > 0}
       >
         <Stack direction="vertical" space="1">
           {!minimumNumberOfAnswersThatNeedToMatch && (
@@ -189,4 +188,6 @@ export default function ImportClaimCodes({
       </Box>
     </Box>
   );
-}
+};
+
+export default ImportClaimCodes;

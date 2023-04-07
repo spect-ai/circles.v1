@@ -67,7 +67,6 @@ export function useProviderLocalProfile() {
     if (file) {
       setUploading(true);
       const { imageGatewayURL } = await storeImage(file);
-      console.log({ imageGatewayURL });
       setAvatar(imageGatewayURL);
       setUploading(false);
     }
@@ -75,7 +74,7 @@ export function useProviderLocalProfile() {
 
   const onSaveProfile = async () => {
     setLoading(true);
-    const res = await updateProfile({
+    await updateProfile({
       username,
       avatar,
       bio,
@@ -86,7 +85,6 @@ export function useProviderLocalProfile() {
       behance,
       website,
     });
-    console.log(res);
     setLoading(false);
     setIsDirty(false);
   };

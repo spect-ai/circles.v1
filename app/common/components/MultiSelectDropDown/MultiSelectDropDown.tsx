@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   Box,
   Button,
@@ -124,7 +125,8 @@ const MultiSelectDropdown: FC<Props> = ({
     setFilteredOptions(options);
     if (value?.length > 0) {
       options.map((option, idx) => {
-        if (option.id == value[idx]) setSaved([...saved, option.name]);
+        if (option.id === value[idx]) setSaved([...saved, option.name]);
+        return null;
       });
     }
   }, [options]);
@@ -156,7 +158,7 @@ const MultiSelectDropdown: FC<Props> = ({
           style={{ width: "92%" }}
         >
           {value?.map((item) => {
-            const selectedOption = options.filter((i) => i.id == item);
+            const selectedOption = options.filter((i) => i.id === item);
             return (
               <Box
                 cursor="pointer"
@@ -256,12 +258,10 @@ const MultiSelectDropdown: FC<Props> = ({
                       }
                       if (value?.includes(option.id)) {
                         setValue(value.filter((i) => i !== option.id));
+                      } else if (value?.length) {
+                        setValue([...value, option.id]);
                       } else {
-                        if (value?.length) {
-                          setValue([...value, option.id]);
-                        } else {
-                          setValue([option.id]);
-                        }
+                        setValue([option.id]);
                       }
 
                       if (option.name === "") {
@@ -272,16 +272,14 @@ const MultiSelectDropdown: FC<Props> = ({
                         setInputValue(
                           inputValue.filter((i) => i !== option.name)
                         );
+                      } else if (inputValue.length) {
+                        setInputValue([...inputValue, option.name]);
                       } else {
-                        if (inputValue.length) {
-                          setInputValue([...inputValue, option.name]);
-                        } else {
-                          setInputValue([option.name]);
-                        }
+                        setInputValue([option.name]);
                       }
                       setIsExpanded(false);
                     }}
-                    isselected={inputValue.includes(option.name) ? true : false}
+                    isselected={!!inputValue.includes(option.name)}
                   >
                     <Stack align="center">
                       <Text

@@ -31,7 +31,7 @@ type Props = {
   blockCustomValues?: boolean;
 };
 
-export default function PublicField({
+const PublicField = ({
   form,
   propertyName,
   data,
@@ -43,7 +43,7 @@ export default function PublicField({
   updateFieldHasInvalidType,
   disabled,
   blockCustomValues,
-}: Props) {
+}: Props) => {
   const { mode } = useTheme();
 
   const [invalidNumberCharEntered, setInvalidNumberCharEntered] = useState(
@@ -93,7 +93,7 @@ export default function PublicField({
       {form.properties[propertyName]?.type === "shortText" && (
         <Input
           label=""
-          placeholder={`Enter text`}
+          placeholder="Enter text"
           value={data && data[propertyName]}
           onChange={(e) => {
             setData({ ...data, [propertyName]: e.target.value });
@@ -107,7 +107,7 @@ export default function PublicField({
       {form.properties[propertyName]?.type === "email" && (
         <Input
           label=""
-          placeholder={`Enter email`}
+          placeholder="Enter email"
           value={data && data[propertyName]}
           inputMode="email"
           onChange={(e) => {
@@ -128,7 +128,7 @@ export default function PublicField({
       {form.properties[propertyName]?.type === "singleURL" && (
         <Input
           label=""
-          placeholder={`Enter URL`}
+          placeholder="Enter URL"
           value={data && data[propertyName]}
           inputMode="text"
           onChange={(e) => {
@@ -148,11 +148,10 @@ export default function PublicField({
       )}
       {form.properties[propertyName]?.type === "multiURL" && (
         <MultiURLField
-          placeholder={`Enter URL`}
+          placeholder="Enter URL"
           value={data && data[propertyName]}
           disabled={disabled}
           updateFieldHasInvalidType={updateFieldHasInvalidType}
-          updateRequiredFieldNotSet={updateRequiredFieldNotSet}
           data={data}
           setData={setData}
           propertyName={propertyName}
@@ -161,7 +160,7 @@ export default function PublicField({
       {form.properties[propertyName]?.type === "number" && (
         <Input
           label=""
-          placeholder={`Enter number`}
+          placeholder="Enter number"
           value={data && data[propertyName]?.toString()}
           type="number"
           onChange={(e) => {
@@ -169,9 +168,9 @@ export default function PublicField({
           }}
           onKeyDown={(e) => {
             if (
-              isNaN(e.key as any) &&
+              Number.isNaN(e.key as any) &&
               data[propertyName] &&
-              isNaN(data[propertyName])
+              Number.isNaN(data[propertyName])
             ) {
               setInvalidNumberCharEntered({
                 ...invalidNumberCharEntered,
@@ -192,7 +191,7 @@ export default function PublicField({
       )}
       {form.properties[propertyName]?.type === "date" && (
         <DateInput
-          placeholder={`Enter date`}
+          placeholder="Enter date"
           type="date"
           mode={mode}
           value={data && data[propertyName]?.toString()}
@@ -233,12 +232,13 @@ export default function PublicField({
             value={(data && data[propertyName]) || ""}
             onSave={(value) => {
               if (!value) return;
-              data[propertyName] = value;
-              setData({ ...data });
+              const newData = { ...data };
+              newData[propertyName] = value;
+              setData({ ...newData });
               updateRequiredFieldNotSet(propertyName, value);
             }}
-            placeholder={`Enter text, use / for commands`}
-            isDirty={true}
+            placeholder="Enter text, use / for commands"
+            isDirty
             disabled={disabled}
           />
         </Box>
@@ -287,47 +287,43 @@ export default function PublicField({
               if (disabled) return;
               if (!data[propertyName]) {
                 setData({ ...data, [propertyName]: [value] });
+              } else if (
+                data[propertyName].some(
+                  (item: any) => item.value === value.value
+                )
+              ) {
+                if (value.value === "__custom__" && value.label !== "") {
+                  // change value of custom option
+                  setData({
+                    ...data,
+                    [propertyName]: data[propertyName].map((item: any) => {
+                      if (item.value === "__custom__") {
+                        return value;
+                      }
+                      return item;
+                    }),
+                  });
+                  return;
+                }
+                setData({
+                  ...data,
+                  [propertyName]: data[propertyName].filter(
+                    (item: any) => item.value !== value.value
+                  ),
+                });
               } else {
-                if (
-                  data[propertyName].some(
-                    (item: any) => item.value === value.value
-                  )
-                ) {
-                  if (value.value === "__custom__" && value.label !== "") {
-                    // change value of custom option
-                    setData({
-                      ...data,
-                      [propertyName]: data[propertyName].map((item: any) => {
-                        if (item.value === "__custom__") {
-                          return value;
-                        }
-                        return item;
-                      }),
-                    });
+                const maxSelections =
+                  form.properties[propertyName]?.maxSelections;
+                if (maxSelections && data[propertyName]) {
+                  if (data[propertyName].length >= maxSelections) {
+                    toast.error(`You can only select ${maxSelections} options`);
                     return;
                   }
-                  setData({
-                    ...data,
-                    [propertyName]: data[propertyName].filter(
-                      (item: any) => item.value !== value.value
-                    ),
-                  });
-                } else {
-                  const maxSelections =
-                    form.properties[propertyName]?.maxSelections;
-                  if (maxSelections && data[propertyName]) {
-                    if (data[propertyName].length >= maxSelections) {
-                      toast.error(
-                        `You can only select ${maxSelections} options`
-                      );
-                      return;
-                    }
-                  }
-                  setData({
-                    ...data,
-                    [propertyName]: [...data[propertyName], value],
-                  });
                 }
+                setData({
+                  ...data,
+                  [propertyName]: [...data[propertyName], value],
+                });
               }
             }}
             propertyName={propertyName}
@@ -350,7 +346,7 @@ export default function PublicField({
               updateRequiredFieldNotSet(propertyName, reward);
             }}
             onValueKeyDown={(e: any) => {
-              if (isNaN(e.key)) {
+              if (Number.isNaN(e.key)) {
                 setInvalidNumberCharEntered({
                   ...invalidNumberCharEntered,
                   [propertyName]: true,
@@ -402,9 +398,15 @@ export default function PublicField({
 
       {invalidNumberCharEntered[propertyName] && (
         <Text variant="label" size="small">
-          Please enter a number{" "}
+          Please enter a number
         </Text>
       )}
     </Box>
   );
-}
+};
+
+PublicField.defaultProps = {
+  blockCustomValues: false,
+};
+
+export default PublicField;

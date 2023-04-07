@@ -23,8 +23,9 @@ const SingleSelect = ({
     if (allowCustom && !options.some((o) => o.value === "__custom__")) {
       options.push({ label: "Other", value: "__custom__" });
     }
-  }, []);
+  }, [allowCustom, options]);
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const inputRef: any = useRef();
 
   return (
@@ -61,7 +62,7 @@ const SingleSelect = ({
             onBlur={(e) => {
               onSelect({ label: e.target.value, value: "__custom__" });
             }}
-            onFocus={(e) => {
+            onFocus={() => {
               onSelect({ label: "", value: "__custom__" });
             }}
             disabled={disabled}
@@ -70,6 +71,10 @@ const SingleSelect = ({
       </Stack>
     </Box>
   );
+};
+
+SingleSelect.defaultProps = {
+  disabled: false,
 };
 
 export default SingleSelect;

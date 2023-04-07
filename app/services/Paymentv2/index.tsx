@@ -9,8 +9,8 @@ type AddPaymentsRequestDto = {
 export const addPendingPayment = async (
   circleId: string,
   body: AddPaymentsRequestDto
-) => {
-  return await (
+) =>
+  (
     await fetch(
       `${process.env.API_HOST}/circle/v1/${circleId}/addPendingPayment`,
       {
@@ -23,7 +23,6 @@ export const addPendingPayment = async (
       }
     )
   ).json();
-};
 
 type UpdatePaymentsRequestDto = {
   type: "Manually Added" | "Added From Card";
@@ -38,7 +37,7 @@ type UpdatePaymentsRequestDto = {
   value: number;
   paidTo: {
     propertyType: string;
-    value: any;
+    value: unknown;
   }[];
   labels?: Option[];
   transactionHash?: string;
@@ -56,8 +55,8 @@ export const updatePayment = async (
   circleId: string,
   paymentId: string,
   body: UpdatePaymentsRequestDto
-) => {
-  return await (
+) =>
+  (
     await fetch(
       `${process.env.API_HOST}/circle/v1/${circleId}/updatePayment?paymentId=${paymentId}`,
       {
@@ -70,7 +69,6 @@ export const updatePayment = async (
       }
     )
   ).json();
-};
 
 type UpdateMultiplePaymentsRequestDto = {
   type?: "Manually Added" | "Added From Card";
@@ -85,7 +83,7 @@ type UpdateMultiplePaymentsRequestDto = {
   value?: number;
   paidTo?: {
     propertyType: string;
-    value: any;
+    value: unknown;
   }[];
   labels?: Option[];
   transactionHash?: string;
@@ -98,8 +96,8 @@ type UpdateMultiplePaymentsRequestDto = {
 export const updateMultiplePayments = async (
   circleId: string,
   body: UpdateMultiplePaymentsRequestDto
-) => {
-  return await (
+) =>
+  (
     await fetch(
       `${process.env.API_HOST}/circle/v1/${circleId}/updateMultiplePayments`,
       {
@@ -112,7 +110,6 @@ export const updateMultiplePayments = async (
       }
     )
   ).json();
-};
 
 type AddManualPaymentsRequestDto = {
   title: string;
@@ -137,7 +134,7 @@ type AddManualPaymentsRequestDto = {
 
   paidTo: {
     propertyType: string;
-    value: any;
+    value: unknown;
   }[];
   labels?: Option[];
 };
@@ -145,8 +142,8 @@ type AddManualPaymentsRequestDto = {
 export const addManualPayment = async (
   circleId: string,
   body: AddManualPaymentsRequestDto
-) => {
-  return await (
+) =>
+  (
     await fetch(
       `${process.env.API_HOST}/circle/v1/${circleId}/addManualPayment`,
       {
@@ -159,7 +156,6 @@ export const addManualPayment = async (
       }
     )
   ).json();
-};
 
 type PaymentIdsDto = {
   paymentIds: string[];
@@ -178,10 +174,8 @@ export const makePayments = async (circleId: string, body: PaymentIdsDto) => {
       credentials: "include",
     }
   );
-  console.log({ res });
   if (res.ok) {
     const data = await res.json();
-    console.log({ data });
     return data;
   }
   toast.error("Error updating payment status", {
@@ -191,7 +185,6 @@ export const makePayments = async (circleId: string, body: PaymentIdsDto) => {
 };
 
 export const cancelPayments = async (circleId: string, body: PaymentIdsDto) => {
-  console.log({ body });
   const res = await fetch(
     `${process.env.API_HOST}/circle/v1/${circleId}/cancelPayments`,
     {
@@ -203,10 +196,8 @@ export const cancelPayments = async (circleId: string, body: PaymentIdsDto) => {
       credentials: "include",
     }
   );
-  console.log({ res });
   if (res.ok) {
     const data = await res.json();
-    console.log({ data });
     return data;
   }
   toast.error("Error updating payment status", {

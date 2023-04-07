@@ -1,19 +1,19 @@
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { Box, Button, Heading, Stack, Tag, Text } from "degen";
-import React, { useEffect, useState } from "react";
-import { useCircle } from "../CircleContext";
+import { useEffect, useState } from "react";
 import DiscordIcon from "@/app/assets/icons/discordIcon.svg";
-import { createTemplateFlow } from "@/app/services/Templates";
 import { getGuildRoles } from "@/app/services/Discord";
 import { useAtom } from "jotai";
 import { Scribes } from "@/app/common/utils/constants";
 import { scribeOpenAtom, scribeUrlAtom } from "@/app/state/global";
+import createTemplateFlow from "@/app/services/Templates";
+import { useCircle } from "../CircleContext";
 
 type Props = {
   handleClose: (close: boolean) => void;
 };
 
-export default function OnboardingTemplate({ handleClose }: Props) {
+const OnboardingTemplate = ({ handleClose }: Props) => {
   const { circle, fetchCircle, setCircleData } = useCircle();
   const [step, setStep] = useState(0);
   const [selectedRoles, setSelectedRoles] = useState([] as string[]);
@@ -42,12 +42,12 @@ export default function OnboardingTemplate({ handleClose }: Props) {
   const createFlow = async () => {
     setLoading(true);
     let roles = {};
-    for (const i in selectedRoles) {
+    selectedRoles.forEach((role) => {
       roles = {
         ...roles,
-        [selectedRoles[i]]: true,
+        [role]: true,
       };
-    }
+    });
     const res = await createTemplateFlow(
       circle?.id || "",
       {
@@ -55,7 +55,6 @@ export default function OnboardingTemplate({ handleClose }: Props) {
       },
       2
     );
-    console.log({ res });
     if (res?.id) {
       setScribeUrl(Scribes.onboarding.using);
       setIsScribeOpen(true);
@@ -69,17 +68,16 @@ export default function OnboardingTemplate({ handleClose }: Props) {
     const fetchGuildRoles = async () => {
       const data = await getGuildRoles(circle?.discordGuildId || "");
       data && setDiscordRoles(data.roles);
-      console.log({ data });
     };
-    if (circle?.discordGuildId) void fetchGuildRoles();
+    if (circle?.discordGuildId) fetchGuildRoles();
   }, [circle?.discordGuildId]);
 
   return (
-    <Box padding={"0"}>
-      <Stack direction={"vertical"} space="5">
-        {step == 0 && (
+    <Box padding="0">
+      <Stack direction="vertical" space="5">
+        {step === 0 && (
           <Stack>
-            <Heading color={"accent"} align="left">
+            <Heading color="accent" align="left">
               Integrate Discord
             </Heading>
             <Box width="1/3">
@@ -113,7 +111,7 @@ export default function OnboardingTemplate({ handleClose }: Props) {
                 <Button
                   variant="tertiary"
                   size="small"
-                  width={"full"}
+                  width="full"
                   onClick={createFlow}
                   loading={loading}
                 >
@@ -123,15 +121,15 @@ export default function OnboardingTemplate({ handleClose }: Props) {
             </Box>
           </Stack>
         )}
-        {step == 1 && (
+        {step === 1 && (
           <>
-            <Heading color={"accent"} align="left">
+            <Heading color="accent" align="left">
               Integrate Discord
             </Heading>
             <Text variant="label">
               Which Discord role would you like to assign to the contributors ?
             </Text>
-            <Stack direction={"horizontal"} space={"4"} wrap>
+            <Stack direction="horizontal" space="4" wrap>
               {discordRoles?.map((role) => (
                 <Box
                   onClick={() => {
@@ -156,7 +154,7 @@ export default function OnboardingTemplate({ handleClose }: Props) {
                 </Box>
               ))}
             </Stack>
-            <Stack direction={"horizontal"}>
+            <Stack direction="horizontal">
               {/* <Button
                 variant="tertiary"
                 size="small"
@@ -182,4 +180,6 @@ export default function OnboardingTemplate({ handleClose }: Props) {
       </Stack>
     </Box>
   );
-}
+};
+
+export default OnboardingTemplate;

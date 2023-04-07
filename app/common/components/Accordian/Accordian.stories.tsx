@@ -1,8 +1,8 @@
 import React from "react";
 import { Story, Meta } from "@storybook/react";
 
+import { Button, IconEth, Stack } from "degen";
 import Accordian, { AccordianProps } from ".";
-import { Box, Button, IconEth, Stack } from "degen";
 // import * as DependentStories from './Dependent.stories'
 
 export default {

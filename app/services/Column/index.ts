@@ -1,7 +1,7 @@
 export async function updateColumnDetails(
   projectId: string,
   columnId: string,
-  body: any
+  body: unknown
 ) {
   const response = await fetch(
     `${process.env.API_HOST}/project/${projectId}/column/${columnId}`,
@@ -17,9 +17,8 @@ export async function updateColumnDetails(
   const data = await response.json();
   if (data.id) {
     return data;
-  } else {
-    return false;
   }
+  return false;
 }
 
 export async function addColumn(projectId: string) {
@@ -36,9 +35,8 @@ export async function addColumn(projectId: string) {
   const data = await response.json();
   if (data.id) {
     return data;
-  } else {
-    return false;
   }
+  return false;
 }
 
 export async function deleteColumn(projectId: string, columnId: string) {
@@ -55,7 +53,6 @@ export async function deleteColumn(projectId: string, columnId: string) {
   const data = await response.json();
   if (data.id) {
     return data;
-  } else {
-    return false;
   }
+  return false;
 }

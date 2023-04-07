@@ -1,4 +1,6 @@
-import { Box, IconChevronRight, Stack, Text } from "degen";
+import {
+  Box, IconChevronRight, Stack, Text,
+} from "degen";
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -9,7 +11,9 @@ type Props = {
   icon?: React.ReactNode;
 };
 
-function Accordian({ name, children, defaultOpen, icon }: Props) {
+const Accordian = ({
+  name, children, defaultOpen, icon,
+}: Props) => {
   const [isExpanded, setIsExpanded] = useState(defaultOpen);
   return (
     <Box>
@@ -58,7 +62,7 @@ function Accordian({ name, children, defaultOpen, icon }: Props) {
       </AnimatePresence>
     </Box>
   );
-}
+};
 
 export default Accordian;
 

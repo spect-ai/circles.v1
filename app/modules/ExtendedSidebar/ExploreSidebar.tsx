@@ -3,7 +3,6 @@ import { Box, Heading, Stack, useTheme, Text } from "degen";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import styled from "styled-components";
-import { Container } from "./CircleSidebar";
 import { useQuery } from "react-query";
 import { UserType } from "@/app/types";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
@@ -16,17 +15,23 @@ const PopoverOptionContainer = styled(Box)<{ mode: string }>`
   }
 `;
 
+const Container = styled(Box)<{ subH?: string }>`
+  ::-webkit-scrollbar {
+    display: none;
+  }
+  height: ${({ subH }) =>
+    subH ? `calc(100vh - ${subH})` : "calc(100vh - 9.1rem)"};
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  overflow-y: auto;
+`;
+
 type PopoverOptionProps = {
   onClick: (e?: React.MouseEvent<HTMLElement>) => void;
   children: React.ReactNode;
-  tourId?: string;
 };
 
-export const PopoverOption = ({
-  children,
-  onClick,
-  tourId,
-}: PopoverOptionProps) => {
+export const PopoverOption = ({ children, onClick }: PopoverOptionProps) => {
   const { mode } = useTheme();
 
   return (
@@ -36,7 +41,6 @@ export const PopoverOption = ({
       cursor="pointer"
       onClick={onClick}
       borderRadius="2xLarge"
-      data-tour={tourId}
       mode={mode}
     >
       <Text variant="small" weight="semiBold" ellipsis color="textSecondary">
@@ -46,7 +50,7 @@ export const PopoverOption = ({
   );
 };
 
-export const HeaderButton = styled(Box)<{ mode: string }>`
+const HeaderButton = styled(Box)<{ mode: string }>`
   cursor: pointer;
   transition: all 0.2s ease-in-out;
   &:hover {
@@ -55,7 +59,7 @@ export const HeaderButton = styled(Box)<{ mode: string }>`
   }
 `;
 
-export default function ExploreSidebar() {
+const ExploreSidebar = () => {
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
@@ -73,9 +77,9 @@ export default function ExploreSidebar() {
         </HeaderButton>
 
         <Container
-          justifyContent={"space-between"}
+          justifyContent="space-between"
           subH="9.2rem"
-          display={"flex"}
+          display="flex"
           flexDirection="column"
         >
           {/* <CollapseButton
@@ -89,7 +93,7 @@ export default function ExploreSidebar() {
               <Stack key="Dashboard" direction="horizontal" space="0">
                 {/* <Box borderRightWidth="0.5" /> */}
                 <Box width="full" padding="1">
-                  <Link href={`/`} key="Dashboard">
+                  <Link href="/" key="Dashboard">
                     <PrimaryButton
                       variant={
                         Object.keys(router.query)?.length === 0
@@ -128,7 +132,7 @@ export default function ExploreSidebar() {
               <PrimaryButton onClick={openConnectModal}>Sign In</PrimaryButton>
             )}
           </Box>
-          <Box display={"flex"} flexDirection="column" gap="2" paddingX={"2"}>
+          <Box display="flex" flexDirection="column" gap="2" paddingX="2">
             <PrimaryButton
               variant="transparent"
               onClick={() => {
@@ -155,4 +159,6 @@ export default function ExploreSidebar() {
       </Stack>
     </Box>
   );
-}
+};
+
+export default ExploreSidebar;

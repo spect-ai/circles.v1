@@ -1,24 +1,18 @@
+/* eslint-disable no-nested-ternary */
+/* eslint-disable react/jsx-wrap-multilines */
 /* eslint-disable @next/next/no-img-element */
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import {
-  FormType,
-  KudosType,
-  POAPEventType,
-  Registry,
-  UserType,
-} from "@/app/types";
+import { FormType, Registry, UserType } from "@/app/types";
 import { TwitterOutlined } from "@ant-design/icons";
-import { Box, Heading, IconDocumentsSolid, Stack, Text } from "degen";
-import React, { useEffect, useState } from "react";
+import { Box, IconDocumentsSolid, Stack, Text } from "degen";
+import { useEffect, useState } from "react";
 import Confetti from "react-confetti";
 import { TwitterShareButton } from "react-share";
 import { toast } from "react-toastify";
 import { useWindowSize } from "react-use";
 import styled from "styled-components";
-import mixpanel from "@/app/common/utils/mixpanel";
 import { useQuery } from "react-query";
 import { ethers } from "ethers";
-import { PassportStampIcons } from "@/app/assets";
 import { useRouter } from "next/router";
 import _ from "lodash";
 import { useAtom } from "jotai";
@@ -26,24 +20,18 @@ import { connectedUserAtom, socketAtom } from "@/app/state/global";
 
 type Props = {
   form: FormType;
-  kudos: KudosType;
   setSubmitAnotherResponse: (val: boolean) => void;
   setSubmitted: (val: boolean) => void;
   setUpdateResponse: (val: boolean) => void;
-  claimed: boolean;
-  setClaimed: (val: boolean) => void;
   surveyTokenClaimed: boolean;
   setSurveyTokenClaimed: (val: boolean) => void;
-  surveyDistributionInfo: any;
+  surveyDistributionInfo: {
+    amountPerResponse: ethers.BigNumber;
+  };
   surveyIsLotteryYetToBeDrawn: boolean;
   surveyHasInsufficientBalance: boolean;
   canClaimSurveyToken: boolean;
   setCanClaimSurveyToken: (val: boolean) => void;
-  setViewResponse: (val: boolean) => void;
-  poap: POAPEventType;
-  poapClaimed: boolean;
-  setPoapClaimed: (val: boolean) => void;
-  canClaimPoap: boolean;
   registry?: Registry;
 };
 
@@ -54,23 +42,11 @@ const StyledImage = styled.img`
   width: 24rem;
 `;
 
-const CircularStyledImage = styled.img`
-  @media (max-width: 768px) {
-    width: 18rem;
-  }
-  width: 24rem;
-  border-radius: 20rem;
-`;
-
-export default function FormResponse({
+const FormResponse = ({
   form,
-  kudos,
-  poap,
   setSubmitAnotherResponse,
   setSubmitted,
   setUpdateResponse,
-  claimed,
-  setClaimed,
   surveyTokenClaimed,
   setSurveyTokenClaimed,
   surveyDistributionInfo,
@@ -78,12 +54,8 @@ export default function FormResponse({
   surveyHasInsufficientBalance,
   canClaimSurveyToken,
   setCanClaimSurveyToken,
-  setViewResponse,
-  poapClaimed,
-  setPoapClaimed,
-  canClaimPoap,
   registry,
-}: Props) {
+}: Props) => {
   const { width, height } = useWindowSize();
   const [claiming, setClaiming] = useState(false);
   const [claimedJustNow, setClaimedJustNow] = useState(false);
@@ -92,8 +64,8 @@ export default function FormResponse({
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
-  const [socket, setSocket] = useAtom(socketAtom);
-  const [connectedUser, setConnectedUser] = useAtom(connectedUserAtom);
+  const [socket] = useAtom(socketAtom);
+  const [connectedUser] = useAtom(connectedUserAtom);
 
   const [surveyTokenClaimTransactionHash, setSurveyTokenClaimTransactionHash] =
     useState(
@@ -104,7 +76,6 @@ export default function FormResponse({
     socket?.on(
       `${formId}:responseAddedOnChain`,
       _.debounce(async (event: { userAddress: string }) => {
-        console.log({ event, connectedUser, currentUser });
         if (event.userAddress === currentUser?.ethAddress) {
           setCanClaimSurveyToken(true);
         }
@@ -120,10 +91,12 @@ export default function FormResponse({
   return (
     <Box>
       <Box paddingLeft="6">
-        <Text variant="large" align="left">{`${
-          form?.formMetadata.messageOnSubmission ||
-          "Your response has been submitted!"
-        }`}</Text>
+        <Text variant="large" align="left">
+          {`${
+            form?.formMetadata.messageOnSubmission ||
+            "Your response has been submitted!"
+          }`}
+        </Text>
       </Box>
       <Box
         padding={{
@@ -168,9 +141,7 @@ export default function FormResponse({
               >
                 {" "}
                 <StyledImage
-                  src={
-                    "https://ik.imagekit.io/spectcdn/moneybagethereummb3dmodel001.jpg?ik-sdk-version=javascript-1.4.3&updatedAt=1676107655114"
-                  }
+                  src="https://ik.imagekit.io/spectcdn/moneybagethereummb3dmodel001.jpg?ik-sdk-version=javascript-1.4.3&updatedAt=1676107655114"
                   alt="poap"
                 />
               </Box>
@@ -220,10 +191,8 @@ export default function FormResponse({
                     space="2"
                   >
                     <TwitterShareButton
-                      url={`https://circles.spect.network/`}
-                      title={
-                        "I just filled out a web3 form and claimed some tokens on @JoinSpect 💰"
-                      }
+                      url="https://circles.spect.network/"
+                      title="I just filled out a web3 form and claimed some tokens on @JoinSpect 💰"
                     >
                       <Box
                         width={{
@@ -296,10 +265,8 @@ export default function FormResponse({
                         👉
                       </Text>
                       <Text weight="bold" variant="large">
-                        {" "}
-                        Looks like all {
-                          form.formMetadata.surveyToken?.label
-                        }{" "}
+                        Looks like all
+                        {form.formMetadata.surveyToken?.label}
                         for this form have been claimed, please reach out to
                         form creator
                       </Text>
@@ -323,7 +290,7 @@ export default function FormResponse({
                                   form.formMetadata.surveyToken?.label
                                 } for submitting a response
                     💰`
-                              : `You are eligible to receive tokens 💰`
+                              : "You are eligible to receive tokens 💰"
                             : `You are eligible to receive ${form.formMetadata.surveyTotalValue} ${form.formMetadata.surveyToken?.label} for submitting a response 💰`}
                         </Text>
                         {!canClaimSurveyToken && (
@@ -342,7 +309,7 @@ export default function FormResponse({
                           {" "}
                           <PrimaryButton
                             loading={claiming}
-                            disabled={canClaimSurveyToken ? false : true}
+                            disabled={!canClaimSurveyToken}
                             onClick={async () => {
                               setClaiming(true);
                               try {
@@ -356,8 +323,6 @@ export default function FormResponse({
                                     credentials: "include",
                                   }
                                 );
-
-                                console.log(res);
                                 if (res.ok) {
                                   const data = await res.json();
                                   setSurveyTokenClaimed(true);
@@ -367,7 +332,7 @@ export default function FormResponse({
                                   );
                                 }
                               } catch (e) {
-                                console.log(e);
+                                console.error(e);
                                 toast.error(
                                   "Something went wrong, please try again later"
                                 );
@@ -442,4 +407,10 @@ export default function FormResponse({
       </Box>
     </Box>
   );
-}
+};
+
+FormResponse.defaultProps = {
+  registry: {},
+};
+
+export default FormResponse;

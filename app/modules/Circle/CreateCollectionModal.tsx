@@ -4,12 +4,12 @@ import { useRouter } from "next/router";
 import Modal from "@/app/common/components/Modal";
 import { useMutation, useQuery } from "react-query";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { useCircle } from "./CircleContext";
 import { updateFolder } from "@/app/services/Folders";
 import { AnimatePresence } from "framer-motion";
-import TemplateModal from "./CircleOverview/FolderView/TemplateModal";
 import mixpanel from "mixpanel-browser";
 import { UserType } from "@/app/types";
+import TemplateModal from "./CircleOverview/FolderView/TemplateModal";
+import { useCircle } from "./CircleContext";
 
 type CreateCollectionDto = {
   name: string;
@@ -25,11 +25,11 @@ interface Props {
   collectionType: 0 | 1;
 }
 
-function CreateCollectionModal({
+const CreateCollectionModal = ({
   folderId,
   setCollectionModal,
   collectionType,
-}: Props) {
+}: Props) => {
   const close = () => setCollectionModal(false);
   const [templateModalOpen, setTemplateModalOpen] = useState(false);
   const [name, setName] = useState("");
@@ -41,18 +41,16 @@ function CreateCollectionModal({
     enabled: false,
   });
 
-  const { mutateAsync, isLoading } = useMutation(
-    (createDto: CreateCollectionDto) => {
-      return fetch(`${process.env.API_HOST}/collection/v1`, {
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        method: "POST",
-        body: JSON.stringify(createDto),
-        credentials: "include",
-      });
-    }
+  const { mutateAsync } = useMutation((createDto: CreateCollectionDto) =>
+    fetch(`${process.env.API_HOST}/collection/v1`, {
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      method: "POST",
+      body: JSON.stringify(createDto),
+      credentials: "include",
+    })
   );
 
   const onSubmit = () => {
@@ -67,9 +65,8 @@ function CreateCollectionModal({
       })
         .then(async (res) => {
           const resJson = await res.json();
-          console.log({ resJson });
-          void router.push(`/${circle?.slug}/r/${resJson.slug}`);
-          void close();
+          router.push(`/${circle?.slug}/r/${resJson.slug}`);
+          close();
           if (folderId) {
             const prev = Array.from(
               circle?.folderDetails[folderId]?.contentIds
@@ -78,8 +75,8 @@ function CreateCollectionModal({
             const payload = {
               contentIds: prev,
             };
-            void updateFolder(payload, circle?.id, folderId).then(
-              () => void fetchCircle()
+            updateFolder(payload, circle?.id, folderId).then(() =>
+              fetchCircle()
             );
           } else if (circle?.folderOrder.length !== 0) {
             const folder = Object.entries(circle?.folderDetails)?.find(
@@ -92,8 +89,8 @@ function CreateCollectionModal({
             const payload = {
               contentIds: prev,
             };
-            void updateFolder(payload, circle?.id, folder?.[0] as string).then(
-              () => void fetchCircle()
+            updateFolder(payload, circle?.id, folder?.[0] as string).then(() =>
+              fetchCircle()
             );
             if (collectionType === 0) {
               process.env.NODE_ENV === "production" &&
@@ -112,7 +109,7 @@ function CreateCollectionModal({
           setLoading(false);
         })
         .catch((err) => {
-          console.log(err);
+          console.error(err);
           setLoading(false);
         });
     }
@@ -179,6 +176,6 @@ function CreateCollectionModal({
       )}
     </Box>
   );
-}
+};
 
 export default CreateCollectionModal;

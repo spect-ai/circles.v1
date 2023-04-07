@@ -63,10 +63,11 @@ const Container = styled(Box)<{
   max-height: 90vh;
 `;
 
-type props = {
+type Props = {
   children: React.ReactNode;
   title: string;
   // function with any arguments
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   handleClose: (...args: any[]) => void;
   height?: string;
   size?: "small" | "medium" | "large";
@@ -86,68 +87,66 @@ const getResponsiveWidth = (size: "small" | "medium" | "large") => {
   }
 };
 
-function Modal({
+const Modal = ({
   handleClose,
   title,
   children,
   height,
   size = "medium",
   zIndex,
-}: props) {
-  return (
-    <Backdrop onClick={handleClose} zIndex={zIndex}>
-      <motion.div
-        onClick={(e) => e.stopPropagation()}
-        variants={slideUp}
-        initial="hidden"
-        animate="visible"
-        exit="exit"
-        style={{ display: "flex", justifyContent: "center" }}
+}: Props) => (
+  <Backdrop onClick={handleClose} zIndex={zIndex}>
+    <motion.div
+      onClick={(e) => e.stopPropagation()}
+      variants={slideUp}
+      initial="hidden"
+      animate="visible"
+      exit="exit"
+      style={{ display: "flex", justifyContent: "center" }}
+    >
+      <Container
+        position="relative"
+        backgroundColor="background"
+        borderRadius={{
+          xs: "none",
+          md: "2xLarge",
+        }}
+        borderTopRadius="2xLarge"
+        width={{
+          xs: "full",
+          md: size ? getResponsiveWidth(size) : "192",
+        }}
+        minHeight="48"
+        modalHeight={height}
       >
-        <Container
-          position="relative"
-          backgroundColor="background"
-          borderRadius={{
-            xs: "none",
-            md: "2xLarge",
+        <Box
+          paddingX={{
+            xs: "4",
+            md: "8",
           }}
-          borderTopRadius="2xLarge"
-          width={{
-            xs: "full",
-            md: size ? getResponsiveWidth(size) : "192",
+          paddingTop={{
+            xs: "2",
+            md: "5",
           }}
-          minHeight="48"
-          modalHeight={height}
         >
-          <Box
-            paddingX={{
-              xs: "4",
-              md: "8",
-            }}
-            paddingTop={{
-              xs: "2",
-              md: "5",
-            }}
-          >
-            <Stack direction="horizontal" justify="space-between">
-              <Heading>{title}</Heading>
-              <Button
-                shape="circle"
-                size="small"
-                variant="transparent"
-                onClick={() => handleClose()}
-              >
-                <IconClose />
-              </Button>
-            </Stack>
-          </Box>
-          {children}
-        </Container>
-      </motion.div>
-    </Backdrop>
-  );
-}
+          <Stack direction="horizontal" justify="space-between">
+            <Heading>{title}</Heading>
+            <Button
+              shape="circle"
+              size="small"
+              variant="transparent"
+              onClick={() => handleClose()}
+            >
+              <IconClose />
+            </Button>
+          </Stack>
+        </Box>
+        {children}
+      </Container>
+    </motion.div>
+  </Backdrop>
+);
 
 export default Modal;
 
-export type { props as ModalProps };
+export type { Props as ModalProps };

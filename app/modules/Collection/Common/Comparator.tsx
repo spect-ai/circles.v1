@@ -1,6 +1,6 @@
 import { Option } from "@/app/types";
 
-export function getComparators(propertyType: string): Option[] {
+const getComparators = (propertyType: string): Option[] => {
   switch (propertyType) {
     case "shortText":
     case "longText":
@@ -76,4 +76,6 @@ export function getComparators(propertyType: string): Option[] {
     default:
       return [];
   }
-}
+};
+
+export default getComparators;

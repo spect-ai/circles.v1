@@ -1,11 +1,13 @@
 import snapshot from "@snapshot-labs/snapshot.js";
-import { ethers } from "ethers";
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { getProvider } from "@wagmi/core";
 import { useLocation } from "react-use";
-import { useBlockNumber, useAccount, useProvider } from "wagmi";
+import { useBlockNumber, useAccount } from "wagmi";
 import { useCircle } from "@/app/modules/Circle/CircleContext";
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { Web3Provider } from "@ethersproject/providers";
 
-interface createProposalDto {
+interface CreateProposalDto {
   title: string;
   body: string;
   start?: number;
@@ -35,19 +37,19 @@ export default function useSnapshot() {
     start,
     end,
     choices,
-  }: createProposalDto) {
+  }: CreateProposalDto) {
     try {
-      const provider = await getProvider();
+      const provider: unknown = await getProvider();
       const blockNumber = await refetchBlockNumber();
 
       const receipt = await client.proposal(
-        provider as any,
+        provider as Web3Provider,
         address as string,
         {
           space,
           type: "single-choice",
-          title: title,
-          body: body,
+          title,
+          body,
           choices: choices || ["Yes", "No"],
           start: start || Math.floor(new Date().getTime() / 1000),
           end:
@@ -58,35 +60,37 @@ export default function useSnapshot() {
                 1000
             ),
           snapshot: (blockNumber?.data as number) - 1,
-          network: circle?.snapshot?.network,
           plugins: JSON.stringify({}),
           app: "Spect",
-        } as any
+          discussion: "",
+        }
       );
 
-      console.log(receipt);
       return receipt;
     } catch (error) {
-      console.log(error);
+      console.error(error);
       return error;
     }
   }
 
   async function castVote(proposal: string, choice: number) {
     try {
-      const provider = await getProvider();
-      const receipt = await client.vote(provider as any, address as string, {
-        space,
-        proposal: proposal,
-        type: "single-choice",
-        choice: choice,
-        app: "Spect",
-      });
+      const provider: unknown = await getProvider();
+      const receipt = await client.vote(
+        provider as Web3Provider,
+        address as string,
+        {
+          space,
+          proposal,
+          type: "single-choice",
+          choice,
+          app: "Spect",
+        }
+      );
 
-      console.log(receipt);
       return receipt;
     } catch (error) {
-      console.log(error);
+      console.error(error);
       return error;
     }
   }

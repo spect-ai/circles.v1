@@ -1,4 +1,4 @@
-export const flags = [
+const flags = [
   {
     name: "ProjectV2",
     isActive: process.env.NEXT_PUBLIC_PROJECT_V2 === "true",
@@ -8,3 +8,5 @@ export const flags = [
     isActive: process.env.NEXT_PUBLIC_PROJECT_V1 === "true",
   },
 ];
+
+export default flags;

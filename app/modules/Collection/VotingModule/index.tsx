@@ -3,18 +3,17 @@ import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import CheckBox from "@/app/common/components/Table/Checkbox";
 import { updateFormCollection } from "@/app/services/Collection";
-import { Option } from "@/app/types";
-import { Box, IconUserGroup, Input, Stack, Tag, Text, useTheme } from "degen";
+import { Box, IconUserGroup, Input, Stack, Tag, Text } from "degen";
 import { AnimatePresence } from "framer-motion";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import uuid from "react-uuid";
-import { useLocalCollection } from "../Context/LocalCollectionContext";
-import MultiChoiceVotingOnMultipleResponses from "./MultiChoiceVotingOnMultipleResponses";
-import SingleChoiceVotingOnSingleResponse from "./SingleChoiceVotingOnSingleResponse";
 import { useQuery, gql } from "@apollo/client";
 import { useCircle } from "@/app/modules/Circle/CircleContext";
 import { updateCircle } from "@/app/services/UpdateCircle";
+import { useLocalCollection } from "../Context/LocalCollectionContext";
+import MultiChoiceVotingOnMultipleResponses from "./MultiChoiceVotingOnMultipleResponses";
+import SingleChoiceVotingOnSingleResponse from "./SingleChoiceVotingOnSingleResponse";
 
 export const Space = gql`
   query Space($id: String!) {
@@ -29,12 +28,12 @@ export const Space = gql`
   }
 `;
 
-export default function VotingModule() {
+const VotingModule = () => {
   const { localCollection: collection, setLocalCollection } =
     useLocalCollection();
 
   const { circle, setCircleData } = useCircle();
-  const [circleRoles, setCircleRoles] = useState(circle?.roles || {});
+  const [circleRoles] = useState(circle?.roles || {});
 
   const [permissions, setPermissions] = useState<string[]>(
     collection?.permissions?.viewResponses || []
@@ -67,7 +66,7 @@ export default function VotingModule() {
   ]);
   const [message, setMessage] = useState("Please vote");
   const [loading, setLoading] = useState(false);
-  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+  const [, setIsConfirmModalOpen] = useState(false);
 
   useEffect(() => {
     if (
@@ -90,15 +89,13 @@ export default function VotingModule() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [collection]);
 
-  const {
-    loading: isLoading,
-    error,
-    data,
-  } = useQuery(Space, { variables: { id: snapshotSpace } });
+  const { loading: isLoading, data } = useQuery(Space, {
+    variables: { id: snapshotSpace },
+  });
 
   return (
     <>
-      <Stack space={"4"}>
+      <Stack space="4">
         <Text variant="label">Allow members to vote on responses</Text>
         <PrimaryButton
           onClick={() => setIsOpen(true)}
@@ -211,46 +208,44 @@ export default function VotingModule() {
                     {snapshotSpace &&
                       !isLoading &&
                       (data?.space?.id ? (
-                        <Text size={"extraSmall"} color="accent">
+                        <Text size="extraSmall" color="accent">
                           Snapshot Space - {data?.space?.name}
                         </Text>
                       ) : (
-                        <Text color={"red"}>Incorrect URL</Text>
+                        <Text color="red">Incorrect URL</Text>
                       ))}
                   </>
                 )}
                 <Text variant="label">Notifications</Text>
-                <Box display={"flex"} flexDirection="row" gap={"2"}>
-                  {Object.keys(circleRoles)?.map((role) => {
-                    return (
-                      <Box
-                        key={role}
-                        onClick={() => {
-                          if (permissions.includes(role)) {
-                            setPermissions(
-                              permissions.filter((item) => item !== role)
-                            );
-                          } else {
-                            setPermissions([...permissions, role]);
-                          }
-                        }}
-                        style={{
-                          cursor: "pointer",
-                        }}
+                <Box display="flex" flexDirection="row" gap="2">
+                  {Object.keys(circleRoles)?.map((role) => (
+                    <Box
+                      key={role}
+                      onClick={() => {
+                        if (permissions.includes(role)) {
+                          setPermissions(
+                            permissions.filter((item) => item !== role)
+                          );
+                        } else {
+                          setPermissions([...permissions, role]);
+                        }
+                      }}
+                      style={{
+                        cursor: "pointer",
+                      }}
+                    >
+                      <Tag
+                        hover
+                        size="medium"
+                        as="span"
+                        tone={
+                          permissions.includes(role) ? "accent" : "secondary"
+                        }
                       >
-                        <Tag
-                          hover
-                          size="medium"
-                          as="span"
-                          tone={
-                            permissions.includes(role) ? "accent" : "secondary"
-                          }
-                        >
-                          {role}
-                        </Tag>
-                      </Box>
-                    );
-                  })}
+                        {role}
+                      </Tag>
+                    </Box>
+                  ))}
                 </Box>
                 <Text>
                   These roles will be notified when a voting period starts and
@@ -357,4 +352,6 @@ export default function VotingModule() {
       </AnimatePresence>
     </>
   );
-}
+};
+
+export default VotingModule;

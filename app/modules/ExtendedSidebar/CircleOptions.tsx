@@ -5,11 +5,11 @@ import { AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
 import { memo, useState } from "react";
 import { useQuery } from "react-query";
-import SettingsModal from "../Circle/CircleSettingsModal";
 import mixpanel from "@/app/common/utils/mixpanel";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
+import SettingsModal from "../Circle/CircleSettingsModal";
 
-function CircleOptions() {
+const CircleOptions = () => {
   const router = useRouter();
   const { circle: cId, project: pId } = router.query;
   const { data: circle } = useQuery<CircleType>(["circle", cId], {
@@ -58,8 +58,8 @@ function CircleOptions() {
               variant="transparent"
               onClick={() => {
                 setSettingsModalOpen(true);
-                process.env.NODE_ENV === "production" &&
-                  mixpanel.track("Sidebar circle settings", {
+                process.env.NODE_ENV === "production"
+                  && mixpanel.track("Sidebar circle settings", {
                     circle: cId,
                     user: currentUser?.username,
                   });
@@ -77,6 +77,6 @@ function CircleOptions() {
       </Box>
     </Box>
   );
-}
+};
 
 export default memo(CircleOptions);

@@ -4,27 +4,26 @@ import { AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import styled from "styled-components";
-import { useCircle } from "./CircleContext";
-import CircleDashboard from "./CircleOverview";
 import { useRouter } from "next/router";
 import { joinCircle } from "@/app/services/JoinCircle";
+import Help from "@/app/common/components/Help";
+import { useAtom } from "jotai";
+import { connectedUserAtom } from "@/app/state/global";
+import { useCircle } from "./CircleContext";
+import CircleDashboard from "./CircleOverview";
 import Roles from "./RolesTab";
 import FAQModal from "../Dashboard/FAQModal";
 import Payment from "./Payment";
-import { QuestionCircleOutlined } from "@ant-design/icons";
 import Credential from "./Credential";
 import AutomationCenter from "./Automation";
-import Help from "@/app/common/components/Help";
 import Governance from "./Governance";
 import Membership from "./Membership";
-import { useAtom } from "jotai";
-import { connectedUserAtom } from "@/app/state/global";
 
 const BoxContainer = styled(Box)`
   width: calc(100vw - 3.5rem);
 `;
 
-export default function Circle() {
+const Circle = () => {
   const {
     circle,
     isLoading,
@@ -36,10 +35,10 @@ export default function Circle() {
   const { mode } = useTheme();
   const [faqOpen, setFaqOpen] = useState(false);
   const router = useRouter();
-  const [connectedUser, setConnectedUser] = useAtom(connectedUserAtom);
+  const [connectedUser] = useAtom(connectedUserAtom);
 
   useEffect(() => {
-    void fetchCircle();
+    fetchCircle();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [connectedUser]);
 
@@ -67,7 +66,7 @@ export default function Circle() {
     return <Membership />;
   }
 
-  if (circle?.unauthorized && !isLoading && circle?.id)
+  if (circle?.unauthorized && !isLoading && circle?.id) {
     return (
       <Box marginX="6">
         <ToastContainer
@@ -90,7 +89,7 @@ export default function Circle() {
           }}
         >
           <Button shape="circle" variant="secondary" size="large">
-            <IconLockClosed color={"accent"} size="6" />
+            <IconLockClosed color="accent" size="6" />
           </Button>
 
           <Text size="headingTwo" weight="semiBold" ellipsis>
@@ -125,7 +124,7 @@ export default function Circle() {
                 );
               }}
             >
-              <Text size="base" color={"accent"}>
+              <Text size="base" color="accent">
                 Get Role
               </Text>
             </Button>
@@ -134,6 +133,7 @@ export default function Circle() {
         <Roles />
       </Box>
     );
+  }
 
   return (
     <BoxContainer
@@ -162,4 +162,6 @@ export default function Circle() {
       </AnimatePresence>
     </BoxContainer>
   );
-}
+};
+
+export default Circle;

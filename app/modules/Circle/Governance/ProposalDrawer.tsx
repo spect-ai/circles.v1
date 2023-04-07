@@ -1,11 +1,11 @@
 import Drawer from "@/app/common/components/Drawer";
-import { Box, Button, Heading, IconChevronRight, Stack, Tag } from "degen";
+import { Box, Button, Heading, IconChevronRight, Stack } from "degen";
 import { useRouter } from "next/router";
-import SnapshotVoting from "../../Collection/Form/DataDrawer/VotingOnSnapshot";
 import { useQuery as useApolloQuery, gql } from "@apollo/client";
 import Editor from "@/app/common/components/Editor";
 import Loader from "@/app/common/components/Loader";
 import styled from "styled-components";
+import SnapshotVoting from "../../Collection/Form/DataDrawer/VotingOnSnapshot";
 
 interface ProposalDrawerProps {
   handleClose: () => void;
@@ -37,13 +37,10 @@ export const Proposal = gql`
   }
 `;
 
-export default function ProposalDrawer({
-  handleClose,
-  proposalId,
-}: ProposalDrawerProps) {
+const ProposalDrawer = ({ handleClose, proposalId }: ProposalDrawerProps) => {
   const { push, pathname, query } = useRouter();
   const closeCard = () => {
-    void push({
+    push({
       pathname,
       query: {
         circle: query.circle,
@@ -91,25 +88,30 @@ export default function ProposalDrawer({
                   </Box>
                 </Stack>
               </Button>
-              <Box width="56"></Box>
+              <Box width="56" />
             </Stack>
           </Box>
         }
       >
         {proposalData && (
           <ScrollContainer>
-            <Stack space="2" direction={"horizontal"} align="flex-start" justify={"space-between"}>
+            <Stack
+              space="2"
+              direction="horizontal"
+              align="flex-start"
+              justify="space-between"
+            >
               <Stack space="8">
                 <Heading wordBreak="break-word">
                   {proposalData?.proposal?.title}
                 </Heading>
                 <Editor
                   value={proposalData?.proposal?.body as string}
-                  disabled={true}
+                  disabled
                 />
               </Stack>
 
-              <Box width={"96"}>
+              <Box width="96">
                 <SnapshotVoting proposalId={proposalId} />
               </Box>
             </Stack>
@@ -118,4 +120,6 @@ export default function ProposalDrawer({
       </Drawer>
     </Box>
   );
-}
+};
+
+export default ProposalDrawer;

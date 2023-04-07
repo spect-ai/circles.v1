@@ -1,5 +1,4 @@
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { storeImage } from "@/app/common/utils/ipfs";
 import {
   getPrivateCircleCredentials,
   GetPrivateCirclePropertiesDto,
@@ -12,7 +11,7 @@ import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { useCircle } from "../../CircleContext";
 
-export default function Credentials() {
+const Credentials = () => {
   const router = useRouter();
   const { circle: cId } = router.query;
   const { data: circle } = useQuery<CircleType>(["circle", cId], {
@@ -45,7 +44,6 @@ export default function Credentials() {
       setIsLoading(true);
       getPrivateCircleCredentials(circle.id)
         .then((res) => {
-          console.log(res);
           if (res) {
             const properties = res as GetPrivateCirclePropertiesDto;
             setApiKey(properties.mintkudosApiKey || "");
@@ -58,7 +56,7 @@ export default function Credentials() {
           setIsLoading(false);
         })
         .catch((err) => {
-          console.log(err);
+          console.error(err);
           setIsLoading(false);
         });
     }
@@ -110,4 +108,6 @@ export default function Credentials() {
       </Stack>
     </Box>
   );
-}
+};
+
+export default Credentials;

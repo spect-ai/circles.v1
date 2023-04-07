@@ -1,53 +1,44 @@
 {
-  "root": true,
-  "env": {
-    "browser": true,
-    "es6": true,
-    "node": true
-  },
-  "settings": {
-    // to support @/ path
-    "import/resolver": {
-      "typescript": {} // this loads <rootdir>/tsconfig.json to eslint
-    },
-    "react": {
-      "version": "detect"
-    }
-  },
-  "parser": "@typescript-eslint/parser",
-  "parserOptions": {
-    "project": "./tsconfig.json", // tells parser relative path of tsconfig.json
-    "ecmaFeatures": {
-      "jsx": true
-    },
-    "ecmaVersion": 12,
-    "sourceType": "module"
-  },
-
-  // all plugins (eslint-plugin-xxx) go here:
-  "plugins": ["@typescript-eslint", "@next/eslint-plugin-next"],
-
-  // all configs (eslint-config-xxx) go here:
+  "plugins": ["@typescript-eslint"],
   "extends": [
-    "eslint:recommended",
-    "plugin:react/recommended",
+    "next/core-web-vitals",
     "plugin:@typescript-eslint/recommended",
-    "plugin:@typescript-eslint/recommended-requiring-type-checking",
-    "plugin:import/typescript",
-    "plugin:@next/next/recommended"
-    // "next"
-    // "next/core-web-vitals"
+    "next",
+    "airbnb",
+    "airbnb-typescript"
   ],
+  "parserOptions": {
+    "project": "./tsconfig.json"
+  },
   "rules": {
-    // ...add rules which you'd like to disable
-    "@typescript-eslint/no-unsafe-return": "off",
-    "@typescript-eslint/no-unsafe-assignment": "off",
-    "@typescript-eslint/no-unsafe-member-access": "off",
-    "@typescript-eslint/no-unsafe-call": "off",
-    "@typescript-eslint/no-misused-promises": "off",
-    "@typescript-eslint/no-unsafe-argument": "off",
-    "@typescript-eslint/no-empty-function": "off",
-    "@typescript-eslint/restrict-template-expressions": "off",
-    "@typescript-eslint/restrict-plus-operands": "off"
+    "@typescript-eslint/quotes": ["error", "double"],
+    "react/function-component-definition": [
+      "error",
+      {
+        "namedComponents": "arrow-function"
+      }
+    ],
+    "react/react-in-jsx-scope": "off",
+    "implicit-arrow-linebreak": "off",
+    "@typescript-eslint/comma-dangle": "off",
+    "function-paren-newline": "off",
+    "no-confusing-arrow": "off",
+    "@typescript-eslint/indent": "off",
+    "object-curly-newline": "off",
+    "radix": "off",
+    "no-console": ["error", { "allow": ["warn", "error"] }],
+    "react/jsx-props-no-spreading": "off",
+    "@typescript-eslint/no-unused-expressions": "off",
+    "operator-linebreak": "off",
+    "@typescript-eslint/no-explicit-any": "error",
+    "import/no-extraneous-dependencies": "off",
+    "no-underscore-dangle": "off",
+    "react/jsx-wrap-multilines": "off",
+    "no-nested-ternary": "off",
+    "react/jsx-one-expression-per-line": "off",
+    "react/jsx-curly-newline": "off",
+    "react/no-unescaped-entities": "off",
+    "react/jsx-indent": "off",
+    "react/require-default-props": "off"
   }
 }

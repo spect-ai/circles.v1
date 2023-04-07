@@ -13,7 +13,7 @@ type Props = {
   handleClose: () => void;
 };
 
-export default function ResponderProfile({ handleClose }: Props) {
+const ResponderProfile = ({ handleClose }: Props) => {
   const { localCollection: collection, updateCollection } =
     useLocalCollection();
   const [loading, setLoading] = useState(false);
@@ -63,7 +63,7 @@ export default function ResponderProfile({ handleClose }: Props) {
               along with their profile
             </Text>
             <Stack direction="horizontal" wrap space="2">
-              {lookupTokens.map((token, i) => (
+              {lookupTokens.map((token) => (
                 <Box
                   key={token.contractAddress}
                   borderWidth="0.375"
@@ -137,8 +137,9 @@ export default function ResponderProfile({ handleClose }: Props) {
               });
               setUpdated(true);
               if (res.id) updateCollection(res);
-              else
+              else {
                 toast.error("Error updating collection, refresh and try again");
+              }
               handleClose();
               setLoading(false);
             }}
@@ -151,4 +152,6 @@ export default function ResponderProfile({ handleClose }: Props) {
       </Box>
     </Modal>
   );
-}
+};
+
+export default ResponderProfile;

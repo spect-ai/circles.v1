@@ -6,7 +6,6 @@ import React, { useEffect, useState } from "react";
 import { Bar } from "react-chartjs-2";
 import { useQuery } from "react-query";
 import { toast } from "react-toastify";
-import { useLocalCollection } from "../../Context/LocalCollectionContext";
 import { useQuery as useApolloQuery, gql } from "@apollo/client";
 import { useAccount } from "wagmi";
 
@@ -24,6 +23,7 @@ import { useLocation } from "react-use";
 import { smartTrim } from "@/app/common/utils/utils";
 import { ArrowUpOutlined } from "@ant-design/icons";
 import { useCircle } from "@/app/modules/Circle/CircleContext";
+import { useLocalCollection } from "../../Context/LocalCollectionContext";
 
 ChartJS.register(
   CategoryScale,
@@ -76,15 +76,14 @@ export const Proposal = gql`
   }
 `;
 
-export default function SnapshotVoting({
+const SnapshotVoting = ({
   dataId,
   proposalId,
 }: {
   dataId?: string;
   proposalId?: string;
-}) {
-  const { localCollection: collection, updateCollection } =
-    useLocalCollection();
+}) => {
+  const { localCollection: collection } = useLocalCollection();
   const { address } = useAccount();
   const { circle } = useCircle();
 
@@ -92,22 +91,21 @@ export default function SnapshotVoting({
   const { hostname } = useLocation();
 
   const router = useRouter();
-  const { dataId: dataSlug, circle: cId } = router.query;
+  const { circle: cId } = router.query;
 
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
 
-  const proposal = proposalId
-    ? proposalId
-    : collection?.voting?.snapshot?.[dataId as string]?.proposalId;
+  const proposal =
+    proposalId || collection?.voting?.snapshot?.[dataId as string]?.proposalId;
 
   const {
     data: votesData,
     refetch: refetchVotes,
     loading: votesLoading,
   } = useApolloQuery(Votes, {
-    variables: { proposal: proposal },
+    variables: { proposal },
   });
 
   const {
@@ -115,7 +113,7 @@ export default function SnapshotVoting({
     refetch: refetchProposal,
     loading: proposalLoading,
   } = useApolloQuery(Proposal, {
-    variables: { proposal: proposal },
+    variables: { proposal },
   });
 
   const {
@@ -123,10 +121,10 @@ export default function SnapshotVoting({
     refetch: refetchUserChoices,
     loading: userVotesLoading,
   } = useApolloQuery(UserVote, {
-    variables: { proposal: proposal, voter: currentUser?.ethAddress },
+    variables: { proposal, voter: currentUser?.ethAddress },
   });
 
-  const [data, setData] = useState({} as any);
+  const [data, setData] = useState<Record<string, unknown>>();
   const [vote, setVote] = useState(-1);
 
   useEffect(() => {
@@ -148,17 +146,18 @@ export default function SnapshotVoting({
       userVotes?.votes?.[0]?.voter.toLowerCase() ===
         currentUser?.ethAddress.toLowerCase()
     ) {
-      setVote(userVotes?.votes?.[0]?.choice - 1);
+      setVote((userVotes?.votes?.[0]?.choice || 1) - 1);
     } else setVote(-1);
   }, [userVotes, currentUser?.id, data, dataId, vote]);
 
   const getVotes = () => {
     const res =
-      proposalData.proposal.choices.map((choices: string, index: number) => {
-        return votesData?.votes?.filter(
-          (vote: any) => vote.choice - 1 === index
-        ).length;
-      }) || [];
+      proposalData.proposal.choices.map(
+        (choices: string, index: number) =>
+          votesData?.votes?.filter(
+            (vote2: { choice: number }) => vote2.choice - 1 === index
+          ).length
+      ) || [];
     return res;
   };
 
@@ -170,14 +169,11 @@ export default function SnapshotVoting({
   );
 
   const getMemberDetailsUsingEthAddress = React.useCallback(
-    (ethAddress: string) => {
-      return Object.values(
-        (memberDetails as MemberDetails)?.memberDetails as any
-      )?.filter(
-        (member: any) =>
+    (ethAddress: string) =>
+      Object.values((memberDetails as MemberDetails)?.memberDetails)?.filter(
+        (member) =>
           member?.ethAddress.toLowerCase() === ethAddress.toLowerCase()
-      );
-    },
+      ),
     [memberDetails]
   );
 
@@ -193,11 +189,11 @@ export default function SnapshotVoting({
         }}
         cursor="pointer"
         display="flex"
-        flexDirection={"row"}
-        alignItems={"center"}
+        flexDirection="row"
+        alignItems="center"
         gap="2"
       >
-        <Text variant="large" color={"accent"} weight={"semiBold"}>
+        <Text variant="large" color="accent" weight="semiBold">
           Go to Snapshot
         </Text>
         <ArrowUpOutlined
@@ -205,12 +201,14 @@ export default function SnapshotVoting({
           style={{ color: "rgb(191, 90, 242, 1)", fontSize: "1rem" }}
         />
       </Box>
-      {!votesLoading &&
+      {data &&
+        !votesLoading &&
         !proposalLoading &&
         !userVotesLoading &&
         (proposalId ||
           (collection.voting?.snapshot &&
-            collection.voting?.snapshot?.[data.slug]?.proposalId)) && (
+            collection.voting?.snapshot?.[data.slug as string]
+              ?.proposalId)) && (
           <>
             {(proposalData?.proposal?.state !== "closed" ||
               votesData?.votes?.length > 0) && (
@@ -220,7 +218,7 @@ export default function SnapshotVoting({
                   borderWidth="0.375"
                   padding="2"
                   borderRadius="medium"
-                  width={"80"}
+                  width="80"
                 >
                   <Text weight="semiBold" variant="large" color="accent">
                     Your Vote
@@ -244,30 +242,32 @@ export default function SnapshotVoting({
                           return;
                         }
                         if (
-                          !collection?.voting?.snapshot?.[data.slug]
+                          !collection?.voting?.snapshot?.[data.slug as string]
                             ?.proposalId &&
                           !proposalId
-                        )
+                        ) {
                           return;
-                        if (proposalData?.proposal?.state == "closed") {
+                        }
+                        if (proposalData?.proposal?.state === "closed") {
                           toast.error("Voting window is closed");
                           return;
                         }
                         const tempTab = tab;
-                        const res: any = await castVote(
-                          collection?.voting?.snapshot?.[data.slug]
+                        const res = (await castVote(
+                          collection?.voting?.snapshot?.[data.slug as string]
                             ?.proposalId || (proposalId as string),
                           tempTab + 1
-                        );
+                        )) as {
+                          id: string;
+                          error: string;
+                          error_description: string;
+                        };
                         if (res.id) {
                           setVote(tempTab);
                           toast.success("Vote casted successfully");
                         } else {
                           toast.error(
-                            "Couldn't cast vote : " +
-                              res?.error +
-                              " " +
-                              res?.error_description
+                            `Couldn't cast vote : ${res?.error} ${res?.error_description}`
                           );
                         }
                       }}
@@ -359,16 +359,16 @@ export default function SnapshotVoting({
                   Votes
                 </Text>
 
-                {votesData?.votes?.map((vote: Vote) => {
-                  const user: any = getMemberDetailsUsingEthAddress(
-                    vote.voter
-                  )?.[0];
+                {votesData?.votes?.map((vote2: Vote) => {
+                  const user: UserType = getMemberDetailsUsingEthAddress(
+                    vote2.voter
+                  )?.[0] as UserType;
 
                   return (
                     <Box
                       display="flex"
                       flexDirection="row"
-                      key={vote.voter}
+                      key={vote2.voter}
                       marginTop="4"
                       gap="4"
                     >
@@ -380,7 +380,7 @@ export default function SnapshotVoting({
                       >
                         <a
                           href={`/profile/${
-                            user?.username == undefined
+                            user?.username === undefined
                               ? "fren"
                               : user?.username
                           }`}
@@ -394,13 +394,13 @@ export default function SnapshotVoting({
                           >
                             <Avatar
                               src={user?.avatar}
-                              address={vote.voter}
+                              address={vote2.voter}
                               label=""
                               size="8"
                             />
                             <Text color="accentText" weight="semiBold">
-                              {user?.username == undefined
-                                ? smartTrim(vote.voter, 5)
+                              {user?.username === undefined
+                                ? smartTrim(vote2.voter, 5)
                                 : user?.username}
                             </Text>
                           </Stack>
@@ -413,7 +413,7 @@ export default function SnapshotVoting({
                         alignItems="center"
                       >
                         <Text variant="base" weight="semiBold">
-                          {proposalData.proposal.choices?.[vote.choice - 1] ||
+                          {proposalData.proposal.choices?.[vote2.choice - 1] ||
                             "No vote"}
                         </Text>
                       </Box>
@@ -424,7 +424,7 @@ export default function SnapshotVoting({
                         alignItems="center"
                       >
                         <Text variant="base" weight="semiBold">
-                          {vote.vp.toFixed(1) + " " + circle?.snapshot?.symbol}
+                          {`${vote2.vp.toFixed(1)} ${circle?.snapshot?.symbol}`}
                         </Text>
                       </Box>
                     </Box>
@@ -436,4 +436,6 @@ export default function SnapshotVoting({
         )}
     </Box>
   );
-}
+};
+
+export default SnapshotVoting;

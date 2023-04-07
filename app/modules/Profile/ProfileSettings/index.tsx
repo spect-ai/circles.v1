@@ -1,4 +1,3 @@
-import React from "react";
 import {
   useProviderLocalProfile,
   LocalProfileContext,
@@ -10,7 +9,7 @@ interface Props {
   openTab?: number;
 }
 
-export default function ProfileModal({ setIsOpen, openTab }: Props) {
+const ProfileModal = ({ setIsOpen, openTab }: Props) => {
   const context = useProviderLocalProfile();
 
   return (
@@ -18,4 +17,10 @@ export default function ProfileModal({ setIsOpen, openTab }: Props) {
       <ProfileSettings setIsOpen={setIsOpen} openTab={openTab} />
     </LocalProfileContext.Provider>
   );
-}
+};
+
+ProfileModal.defaultProps = {
+  openTab: 0,
+};
+
+export default ProfileModal;

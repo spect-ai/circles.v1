@@ -5,7 +5,7 @@ import { deleteField } from "@/app/services/Collection";
 import { CollectionType } from "@/app/types";
 import { Box, Stack, Text, useTheme } from "degen";
 import { AnimatePresence, motion } from "framer-motion";
-import React, { useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { Delete, Edit } from "react-feather";
 import { toast } from "react-toastify";
 import styled from "styled-components";
@@ -18,7 +18,44 @@ type Props = {
   disabled?: boolean;
 };
 
-function EditProperty({ propertyName, disabled }: Props) {
+const PropertyButton = styled.div<{ mode: string }>`
+  color: ${({ mode }) =>
+    mode === "dark" ? "rgb(255, 255, 255, 0.65)" : "rgb(0, 0, 0, 0.65)"};
+  padding: 0.5rem 0.5rem;
+  border-radius: 0.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  text-overflow: ellipsis;
+
+  &:hover {
+    cursor: pointer;
+    background: rgb(191, 90, 242, 0.1);
+  }
+
+  transition: background 0.2s ease;
+
+  @media (max-width: 768px) {
+    gap: 0.3rem;
+  }
+`;
+
+const MenuContainer = styled(Box)`
+  width: 15.5rem;
+  background: rgb(191, 90, 242, 0.05);
+  transition: all 0.15s ease-out;
+`;
+
+const MenuItem = styled(Box)`
+  width: 100%;
+  &:hover {
+    cursor: pointer;
+    background: rgb(191, 90, 242, 0.1);
+  }
+  transition: background 0.2s ease;
+`;
+
+const EditProperty = ({ propertyName, disabled }: Props) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const fieldInput = useRef<any>();
   const {
@@ -73,7 +110,7 @@ function EditProperty({ propertyName, disabled }: Props) {
               <PropertyButton
                 onClick={() => {
                   if (disabled) {
-                    toast.error("You can't edit a closed card")
+                    toast.error("You can't edit a closed card");
                     return;
                   }
                   setIsMenuOpen(true);
@@ -134,44 +171,12 @@ function EditProperty({ propertyName, disabled }: Props) {
         </Popover>
       </Box>
     );
-  } else return null;
-}
+  }
+  return null;
+};
+
+EditProperty.defaultProps = {
+  disabled: false,
+};
 
 export default EditProperty;
-
-const PropertyButton = styled.div<{ mode: string }>`
-  color: ${({ mode }) =>
-    mode === "dark" ? "rgb(255, 255, 255, 0.65)" : "rgb(0, 0, 0, 0.65)"};
-  padding: 0.5rem 0.5rem;
-  border-radius: 0.25rem;
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  text-overflow: ellipsis;
-
-  &:hover {
-    cursor: pointer;
-    background: rgb(191, 90, 242, 0.1);
-  }
-
-  transition: background 0.2s ease;
-
-  @media (max-width: 768px) {
-    gap: 0.3rem;
-  }
-`;
-
-const MenuContainer = styled(Box)`
-  width: 15.5rem;
-  background: rgb(191, 90, 242, 0.05);
-  transition: all 0.15s ease-out;
-`;
-
-const MenuItem = styled(Box)`
-  width: 100%;
-  &:hover {
-    cursor: pointer;
-    background: rgb(191, 90, 242, 0.1);
-  }
-  transition: background 0.2s ease;
-`;

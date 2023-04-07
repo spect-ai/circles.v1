@@ -1,7 +1,7 @@
-import { CollectionType, GuildRole } from "@/app/types";
+import { CollectionType } from "@/app/types";
 import { toast } from "react-toastify";
 
-export const updateCollection = async (
+const updateCollection = async (
   collectionUpdate: Partial<CollectionType>,
   collectionId: string
 ) => {
@@ -23,10 +23,11 @@ export const updateCollection = async (
       theme: "dark",
     });
     return data;
-  } else {
-    toast("Error updating, please refresh and try again", {
-      theme: "dark",
-    });
-    return false;
   }
+  toast("Error updating, please refresh and try again", {
+    theme: "dark",
+  });
+  return false;
 };
+
+export default updateCollection;

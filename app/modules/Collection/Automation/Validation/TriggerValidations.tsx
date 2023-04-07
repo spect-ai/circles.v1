@@ -1,5 +1,22 @@
 import { Trigger } from "@/app/types";
 
+export function validateSelectTrigger(trigger: Trigger): {
+  isValid: boolean;
+  message: string;
+} {
+  if (!trigger?.data?.to?.length && !trigger?.data?.from?.length) {
+    return {
+      isValid: false,
+      message: "Either to or from value is required",
+    };
+  }
+
+  return {
+    isValid: true,
+    message: "",
+  };
+}
+
 export function validateTrigger(trigger: Trigger): {
   isValid: boolean;
   message: string;
@@ -21,23 +38,6 @@ export function validateTrigger(trigger: Trigger): {
     if (["singleSelect", "multiSelect"].includes(trigger.subType)) {
       return validateSelectTrigger(trigger);
     }
-  }
-
-  return {
-    isValid: true,
-    message: "",
-  };
-}
-
-export function validateSelectTrigger(trigger: Trigger): {
-  isValid: boolean;
-  message: string;
-} {
-  if (!trigger?.data?.to?.length && !trigger?.data?.from?.length) {
-    return {
-      isValid: false,
-      message: "Either to or from value is required",
-    };
   }
 
   return {

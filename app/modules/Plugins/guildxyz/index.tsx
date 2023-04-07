@@ -1,22 +1,23 @@
+/* eslint-disable react/no-unescaped-entities */
 import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { updateCircle } from "@/app/services/UpdateCircle";
-import { updateCollection } from "@/app/services/UpdateCollection";
 import { UserType } from "@/app/types";
 import { guild } from "@guildxyz/sdk";
 import { Box, Input, Stack, Tag, Text } from "degen";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { useCircle } from "../../Circle/CircleContext";
+import updateCollection from "@/app/services/UpdateCollection";
 import mixpanel from "@/app/common/utils/mixpanel";
 import { useQuery } from "react-query";
+import { useCircle } from "../../Circle/CircleContext";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
 
 type Props = {
   handleClose: () => void;
 };
 
-export default function RoleGate({ handleClose }: Props) {
+const RoleGate = ({ handleClose }: Props) => {
   const { circle, setCircleData } = useCircle();
   const { localCollection: collection, setLocalCollection } =
     useLocalCollection();
@@ -36,14 +37,14 @@ export default function RoleGate({ handleClose }: Props) {
       | undefined
     >();
 
-  const getGuildId = (guildUrl: string) => {
+  const getGuildId = (gldUrl: string) => {
     try {
-      const url = new URL(guildUrl);
-      const pathname = url.pathname;
+      const url = new URL(gldUrl);
+      const { pathname } = url;
       const guildPath = pathname.split("/");
       if (guildPath.length !== 2 || !guildPath[1]) {
         toast.error("Invalid Guild Url");
-        return;
+        return null;
       }
       return guildPath[1];
     } catch (err) {
@@ -59,10 +60,10 @@ export default function RoleGate({ handleClose }: Props) {
 
   useEffect(() => {
     if (circle?.guildxyzId) {
-      void (async () => {
+      (async () => {
         setLoading(true);
         const guildServer = await guild.get(circle?.guildxyzId || "");
-        const guildRoles = guildServer.roles.map((role) => ({
+        const gldRoles = guildServer.roles.map((role) => ({
           id: role.id,
           name: role.name,
         }));
@@ -72,9 +73,9 @@ export default function RoleGate({ handleClose }: Props) {
         const currentlySelectedRoles = new Set([
           ...(collection.formMetadata.formRoleGating?.map((r) => r.id) || []),
         ]);
-        const initSelectedRoles = Array(guildRoles?.length).fill(false);
+        const initSelectedRoles = Array(gldRoles?.length).fill(false);
 
-        guildRoles?.forEach((role, index) => {
+        gldRoles?.forEach((role, index) => {
           if (currentlySelectedRoles.has(role.id)) {
             initSelectedRoles[index] = true;
           }
@@ -121,7 +122,6 @@ export default function RoleGate({ handleClose }: Props) {
                       },
                       circle?.id || ""
                     );
-                    console.log({ res });
                     setCircleData(res);
                   }
 
@@ -144,7 +144,7 @@ export default function RoleGate({ handleClose }: Props) {
                     window.open("https://guild.xyz/explorer", "_blank");
                   }}
                 >
-                  <Text color="accent">{`I haven't setup my guild yet`}</Text>
+                  <Text color="accent">I haven't setup my guild yet</Text>
                 </Box>
               </Box>
             </Box>
@@ -153,7 +153,9 @@ export default function RoleGate({ handleClose }: Props) {
           <Stack>
             <Box>
               {" "}
-              <Text variant="label">{`Pick guild.xyz roles that can submit a response to this form`}</Text>
+              <Text variant="label">
+                Pick guild.xyz roles that can submit a response to this form
+              </Text>
             </Box>
 
             <Stack direction="horizontal" wrap>
@@ -164,7 +166,7 @@ export default function RoleGate({ handleClose }: Props) {
                   onClick={() => toggleSelectedRole(index)}
                 >
                   {selectedRoles[index] ? (
-                    <Tag tone={"accent"} hover>
+                    <Tag tone="accent" hover>
                       <Box paddingX="2">{option.name}</Box>
                     </Tag>
                   ) : (
@@ -240,4 +242,6 @@ export default function RoleGate({ handleClose }: Props) {
       </Box>
     </Modal>
   );
-}
+};
+
+export default RoleGate;

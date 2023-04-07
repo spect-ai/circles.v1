@@ -6,7 +6,8 @@ type Props = {
   setCaptchaVerified: (value: boolean) => void;
 };
 
-function Captcha({ setCaptchaVerified }: Props) {
+const Captcha = ({ setCaptchaVerified }: Props) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const captchaRef = useRef<any>(null);
 
   return (
@@ -16,7 +17,7 @@ function Captcha({ setCaptchaVerified }: Props) {
       onVerify={() => {
         captchaRef.current
           ?.getResponse()
-          .then(async (res: any) => {
+          .then(async (res: string) => {
             const verify = await fetch("/api/verifyCaptcha", {
               method: "POST",
               headers: {
@@ -24,9 +25,7 @@ function Captcha({ setCaptchaVerified }: Props) {
               },
               body: JSON.stringify({ token: res }),
             });
-            console.log({ verify });
             const data = await verify.json();
-            console.log({ data });
             if (data.success) {
               setCaptchaVerified(true);
             } else {
@@ -34,12 +33,12 @@ function Captcha({ setCaptchaVerified }: Props) {
               setCaptchaVerified(false);
             }
           })
-          .catch((err: any) => {
-            console.log(err);
+          .catch((err: unknown) => {
+            console.error(err);
           });
       }}
     />
   );
-}
+};
 
 export default Captcha;

@@ -17,7 +17,7 @@ export default function useRoleGate() {
   const { data: circle } = useQuery<CircleType>(["circle", cId], {
     enabled: false,
   });
-  const [connectedUser, setConnectedUser] = useAtom(connectedUserAtom);
+  const [connectedUser] = useAtom(connectedUserAtom);
 
   const { localCollection: collection } = useLocalCollection();
 
@@ -27,16 +27,19 @@ export default function useRoleGate() {
     }
     const userRoles = circle?.memberRoles[connectedUser];
     if (userRoles) {
-      for (const role of userRoles) {
-        if (
-          circle.roles[role].permissions[roleAction as NonCardPermissions] ===
-            true ||
-          circle.roles[role].permissions[roleAction as CardPermissions]
-            ?.Task === true
-        ) {
-          return true;
+      Object.keys(circle.roles).forEach((role) => {
+        if (userRoles.includes(role)) {
+          if (
+            circle.roles[role].permissions[roleAction as NonCardPermissions] ===
+              true ||
+            circle.roles[role].permissions[roleAction as CardPermissions]
+              ?.Task === true
+          ) {
+            return true;
+          }
         }
-      }
+        return false;
+      });
     }
     return false;
   };
@@ -47,11 +50,12 @@ export default function useRoleGate() {
     }
     const userRoles = circle?.memberRoles[connectedUser];
     if (userRoles) {
-      for (const role of userRoles) {
+      Object.keys(userRoles).forEach((role) => {
         if (circle.roles[role].permissions.manageCardProperties) {
           return true;
         }
-      }
+        return false;
+      });
     }
 
     return (
@@ -69,36 +73,46 @@ export default function useRoleGate() {
     if (!userRoles) return false;
     switch (permission) {
       case "manageSettings":
-        if (connectedUser == collection.creator) return true;
+        if (connectedUser === collection.creator) return true;
         if (collection?.permissions?.manageSettings?.length > 0) {
-          for (const role of userRoles) {
-            if (collection?.permissions?.manageSettings?.includes(role))
+          // for (const role of userRoles) {
+          //   if (collection?.permissions?.manageSettings?.includes(role))
+          //     return true;
+          // }
+          Object.keys(userRoles).forEach((role) => {
+            if (collection?.permissions?.manageSettings?.includes(role)) {
               return true;
-          }
+            }
+            return false;
+          });
         }
         return false;
 
       case "updateResponsesManually":
-        if (connectedUser == collection.creator) return true;
+        if (connectedUser === collection.creator) return true;
         if (collection?.permissions?.updateResponsesManually?.length > 0) {
-          for (const role of userRoles) {
+          Object.keys(userRoles).forEach((role) => {
             if (
               collection?.permissions?.updateResponsesManually?.includes(role)
-            )
+            ) {
               return true;
-          }
+            }
+            return false;
+          });
         }
         return false;
 
       case "addComments":
-        if (connectedUser == collection.creator) return true;
+        if (connectedUser === collection.creator) return true;
         if (collection?.permissions?.addComments?.length > 0) {
-          for (const role of userRoles) {
-            if (collection?.permissions?.addComments.includes(role))
+          Object.keys(userRoles).forEach((role) => {
+            if (collection?.permissions?.addComments?.includes(role)) {
               return true;
-          }
+            }
+            return false;
+          });
         } else if (
-          collection?.permissions?.addComments?.length == 0 &&
+          collection?.permissions?.addComments?.length === 0 &&
           circle?.members?.includes(connectedUser)
         ) {
           return true;
@@ -106,14 +120,16 @@ export default function useRoleGate() {
         return false;
 
       case "viewResponses":
-        if (connectedUser == collection.creator) return true;
+        if (connectedUser === collection.creator) return true;
         if (collection?.permissions?.viewResponses?.length > 0) {
-          for (const role of userRoles) {
-            if (collection?.permissions?.viewResponses?.includes(role))
+          Object.keys(userRoles).forEach((role) => {
+            if (collection?.permissions?.viewResponses?.includes(role)) {
               return true;
-          }
+            }
+            return false;
+          });
         } else if (
-          collection?.permissions?.viewResponses?.length == 0 &&
+          collection?.permissions?.viewResponses?.length === 0 &&
           circle?.members?.includes(connectedUser)
         ) {
           return true;

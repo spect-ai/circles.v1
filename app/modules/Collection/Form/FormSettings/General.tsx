@@ -1,12 +1,12 @@
 import { updateFormCollection } from "@/app/services/Collection";
 import { Stack, Text, Textarea } from "degen";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useLocalCollection } from "../../Context/LocalCollectionContext";
 import { AdditionalSettings } from "../AdditionalSettings";
-import { Notifications } from "../Notifications";
+import Notifications from "../Notifications";
 
-export default function General() {
+const General = () => {
   const { localCollection: collection, updateCollection } =
     useLocalCollection();
 
@@ -49,4 +49,6 @@ export default function General() {
       <Notifications />
     </Stack>
   );
-}
+};
+
+export default General;

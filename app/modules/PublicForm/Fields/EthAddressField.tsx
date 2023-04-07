@@ -9,7 +9,7 @@ type Props = {
   disabled?: boolean;
 };
 
-export default function EthAddressField({ value, onChange, disabled }: Props) {
+const EthAddressField = ({ value, onChange, disabled }: Props) => {
   const [error, setError] = useState("");
   const [tempValue, setTempValue] = useState(value || "");
   return (
@@ -17,14 +17,13 @@ export default function EthAddressField({ value, onChange, disabled }: Props) {
       label=""
       value={tempValue}
       onChange={(e) => {
-        const value = e.target.value as `0x${string}`;
-        setTempValue(value);
+        const tempVal = e.target.value as `0x${string}`;
+        setTempValue(tempVal);
         if (value.endsWith(".eth")) {
           fetchEnsAddress({
             name: value,
             chainId: 1,
           }).then((address) => {
-            console.log({ address });
             if (
               !address ||
               !ethers.utils.isAddress(address) ||
@@ -36,13 +35,11 @@ export default function EthAddressField({ value, onChange, disabled }: Props) {
               onChange(value);
             }
           });
+        } else if (!ethers.utils.isAddress(value)) {
+          setError("Invalid address or ENS name");
         } else {
-          if (!ethers.utils.isAddress(value)) {
-            setError("Invalid address or ENS name");
-          } else {
-            setError("");
-            onChange(value);
-          }
+          setError("");
+          onChange(value);
         }
       }}
       disabled={disabled}
@@ -50,4 +47,10 @@ export default function EthAddressField({ value, onChange, disabled }: Props) {
       error={error}
     />
   );
-}
+};
+
+EthAddressField.defaultProps = {
+  disabled: false,
+};
+
+export default EthAddressField;

@@ -1,19 +1,12 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { Registry } from "@/app/types";
-import { BigNumber, BigNumberish, ethers, Signer } from "ethers";
+import { BigNumberish, ethers, Signer } from "ethers";
 import { useRouter } from "next/router";
 import { useQuery } from "react-query";
 import { toast } from "react-toastify";
-import { erc20ABI, useSwitchNetwork } from "wagmi";
-import { gnosisPayment } from "../Gnosis";
-import {
-  useSigner,
-  useBalance,
-  useNetwork,
-  useAccount,
-  useProvider,
-} from "wagmi";
+import { erc20ABI, useSigner, useBalance, useNetwork, useAccount } from "wagmi";
 import { fetchSigner } from "@wagmi/core";
+import { gnosisPayment } from "../Gnosis";
 
 export default function useERC20() {
   const router = useRouter();
@@ -29,38 +22,38 @@ export default function useERC20() {
     chainId: chain?.id,
   });
 
-  function isCurrency(address: string) {
-    return address === "0x0";
+  function isCurrency(addr: string) {
+    return addr === "0x0";
   }
 
-  function getERC20Contract(address: string) {
+  function getERC20Contract(addr: string) {
     if (signer) {
-      return new ethers.Contract(address, erc20ABI, signer);
+      return new ethers.Contract(addr, erc20ABI, signer);
     }
+    return null;
   }
 
   function getERC20ContractWithCustomProvider(
-    address: string,
+    addr: string,
     web3providerUrl: string
   ) {
     const provider = new ethers.providers.JsonRpcProvider(
       web3providerUrl,
       "any"
     );
-    return new ethers.Contract(address, erc20ABI, provider);
+    return new ethers.Contract(addr, erc20ABI, provider);
   }
 
-  async function getERC20ContractDynamicSigner(address: string) {
-    const signer = await fetchSigner();
-    return new ethers.Contract(address, erc20ABI, signer as unknown as Signer);
+  async function getERC20ContractDynamicSigner(addr: string) {
+    const cSigner = await fetchSigner();
+    return new ethers.Contract(addr, erc20ABI, cSigner as unknown as Signer);
   }
 
   async function approve(
     chainId: string,
     erc20Address: string,
     circleRegistry?: Registry,
-    safeAddress?: string,
-    nonce?: number
+    safeAddress?: string
   ) {
     const contract = getERC20Contract(erc20Address);
     if (!registry && !circleRegistry) return false;
@@ -73,12 +66,8 @@ export default function useERC20() {
       );
       if (!gasEstimate) {
         console.error("gas estimation failed");
-        return;
+        return false;
       }
-      const overrides: any = {
-        gasLimit: Math.ceil(gasEstimate.toNumber() * 1.2),
-        nonce,
-      };
       if (safeAddress) {
         const data = await contract?.populateTransaction.approve(
           circleRegistry && circleRegistry[chainId]
@@ -87,12 +76,13 @@ export default function useERC20() {
           ethers.constants.MaxInt256
         );
         const res = await gnosisPayment(safeAddress, data, chainId);
-        if (res)
+        if (res) {
           toast.success("Transaction sent to your safe", { theme: "dark" });
-        else
+        } else {
           toast.error("Error Occurred while sending your transation to safe");
+        }
 
-        return;
+        return res;
       }
 
       const tx = await contract?.approve(
@@ -103,11 +93,13 @@ export default function useERC20() {
       );
       await tx.wait();
       return true;
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
-      toast.error(err.message, {
-        theme: "dark",
-      });
+      if (err instanceof Error) {
+        toast.error(err.message, {
+          theme: "dark",
+        });
+      }
       return false;
     }
   }
@@ -123,25 +115,26 @@ export default function useERC20() {
       toast.error("Please connect your safe in circle settings");
     }
     if (approveOnSafe) {
-      for (const erc20Address of erc20Addresses) {
+      erc20Addresses.forEach((erc20Address) => {
         approve(chainId, erc20Address, {}, safeAddress)
-          .then((res: any) => {
-            console.log(res);
+          .then((res: unknown) => {
+            console.warn(res);
           })
-          .catch((err: any) => {
-            console.log(err);
+          .catch((err: unknown) => {
+            console.error(err);
           });
-      }
-    } else
-      for (const erc20Address of erc20Addresses) {
+      });
+    } else {
+      erc20Addresses.forEach((erc20Address) => {
         approve(chainId, erc20Address)
-          .then((res: any) => {
-            console.log(res);
+          .then((res: unknown) => {
+            console.warn(res);
           })
-          .catch((err: any) => {
-            console.log(err);
+          .catch((err: unknown) => {
+            console.error(err);
           });
-      }
+      });
+    }
     return true;
   }
 
@@ -149,7 +142,9 @@ export default function useERC20() {
     erc20Addresses: Array<string>,
     values: Array<number>
   ) {
-    const addressToValue: any = {};
+    const addressToValue: {
+      [key: string]: number;
+    } = {};
     if (!erc20Addresses || !values) return addressToValue;
     // eslint-disable-next-line no-plusplus
     for (let i = 0; i < erc20Addresses.length; i++) {
@@ -182,7 +177,7 @@ export default function useERC20() {
     const ceilVal = Math.ceil(value).toFixed();
     return (
       allowance >=
-      //ethers.BigNumber.from((value * 10 ** numDecimals).toFixed(0).toString())
+      // ethers.BigNumber.from((value * 10 ** numDecimals).toFixed(0).toString())
       ethers.BigNumber.from(ceilVal).mul(
         ethers.BigNumber.from(10).pow(numDecimals)
       )
@@ -196,12 +191,10 @@ export default function useERC20() {
     ethAddress: string
   ) {
     const aggregateValues = aggregateBalances(erc20Addresses, values);
-    const uniqueTokenAddresses = [];
-    const aggregatedTokenValues = [];
+    const uniqueTokenAddresses: string[] = [];
+    const aggregatedTokenValues: number[] = [];
 
-    // eslint-disable-next-line no-restricted-syntax
-    for (const [erc20Address, value] of Object.entries(aggregateValues)) {
-      // eslint-disable-next-line no-await-in-loop
+    Object.entries(aggregateValues).forEach(async ([erc20Address, value]) => {
       if ((value as number) > 0) {
         const tokenIsApproved = await isApproved(
           erc20Address,
@@ -212,10 +205,10 @@ export default function useERC20() {
 
         if (!tokenIsApproved) {
           uniqueTokenAddresses.push(erc20Address);
-          aggregatedTokenValues.push(value);
+          aggregatedTokenValues.push(value as number);
         }
       }
-    }
+    });
     return [uniqueTokenAddresses, aggregatedTokenValues];
   }
 
@@ -228,6 +221,7 @@ export default function useERC20() {
   ) {
     if (isCurrency(erc20Address)) {
       const formattedBalance = parseFloat(
+        // eslint-disable-next-line no-underscore-dangle
         ethers.utils.formatEther(balance?.value?._hex as BigNumberish)
       );
       return formattedBalance >= value;
@@ -239,12 +233,12 @@ export default function useERC20() {
       } else contract = await getERC20ContractDynamicSigner(erc20Address);
 
       const numDecimals = await contract.decimals();
-      const balance = await contract.balanceOf(ethAddress);
+      const cBalance = await contract.balanceOf(ethAddress);
       if (!value) return false;
       const ceilVal = Math.ceil(value).toFixed();
       return (
-        balance >=
-        //ethers.BigNumber.from((value * 10 ** numDecimals).toFixed(0).toString())
+        cBalance >=
+        // ethers.BigNumber.from((value * 10 ** numDecimals).toFixed(0).toString())
         ethers.BigNumber.from(ceilVal).mul(
           ethers.BigNumber.from(10).pow(numDecimals)
         )
@@ -276,13 +270,12 @@ export default function useERC20() {
     if (isCurrency(erc20Address)) {
       return 18;
     }
-    console.log({ erc20Address });
     let contract;
     if (rpcNode) {
       contract = getERC20ContractWithCustomProvider(erc20Address, rpcNode);
     } else contract = await getERC20ContractDynamicSigner(erc20Address);
     // eslint-disable-next-line no-return-await
-    return await contract.decimals();
+    return contract.decimals();
   }
 
   async function symbol(
@@ -297,7 +290,7 @@ export default function useERC20() {
         erc20Address,
         registry[networkVersion].provider
       );
-      return await contract.symbol();
+      return contract.symbol();
     } catch (err) {
       console.error(err);
       return null;
@@ -316,8 +309,7 @@ export default function useERC20() {
         erc20Address,
         registry[networkVersion].provider
       );
-      // eslint-disable-next-line no-return-await
-      return await contract.name();
+      return contract.name();
     } catch (err) {
       console.error(err);
       return null;
@@ -326,8 +318,7 @@ export default function useERC20() {
 
   async function balanceOf(erc20Address: string, ethAddress: string) {
     const contract = getERC20Contract(erc20Address);
-    // eslint-disable-next-line no-return-await
-    return await contract?.balanceOf(ethAddress);
+    return contract?.balanceOf(ethAddress);
   }
 
   return {

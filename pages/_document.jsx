@@ -32,13 +32,10 @@ export default class MyDocument extends Document {
               <script
                 src="//code.tidio.co/x1bt9qhixmj7iqkf50xb9bjc4zstsuws.js"
                 async
-              ></script>
+              />
             </>
           )}
-          <script
-            async
-            src="https://telegram.org/js/telegram-widget.js"
-          ></script>
+          <script async src="https://telegram.org/js/telegram-widget.js" />
         </Head>
         <body>
           <Main />
@@ -56,6 +53,7 @@ export default class MyDocument extends Document {
       ctx.renderPage = () =>
         originalRenderPage({
           enhanceApp: (App) => (props) =>
+            // eslint-disable-next-line react/jsx-props-no-spreading
             sheet.collectStyles(<App {...props} />),
         });
 

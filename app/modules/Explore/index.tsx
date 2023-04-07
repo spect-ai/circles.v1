@@ -24,7 +24,7 @@ import CircleCard from "./CircleCard";
 import CreateCircleCard from "./CircleCard/CreateCircleCard";
 import Onboarding from "./ExploreOnboarding";
 import ExploreOptions from "./ExploreOptions";
-import { SkeletonLoader } from "./SkeletonLoader";
+import SkeletonLoader from "./SkeletonLoader";
 
 const ScrollContainer = styled(Box)`
   ::-webkit-scrollbar {
@@ -66,14 +66,9 @@ const PopoverOptionContainer = styled(Box)<{ mode: string }>`
 type PopoverOptionProps = {
   onClick: (e?: React.MouseEvent<HTMLElement>) => void;
   children: React.ReactNode;
-  tourId?: string;
 };
 
-export const PopoverOption = ({
-  children,
-  onClick,
-  tourId,
-}: PopoverOptionProps) => {
+export const PopoverOption = ({ children, onClick }: PopoverOptionProps) => {
   const { mode } = useTheme();
 
   return (
@@ -83,7 +78,6 @@ export const PopoverOption = ({
       cursor="pointer"
       onClick={onClick}
       borderRadius="2xLarge"
-      data-tour={tourId}
       mode={mode}
     >
       <Text variant="small" weight="semiBold" ellipsis color="textSecondary">
@@ -93,25 +87,23 @@ export const PopoverOption = ({
   );
 };
 
-export default function Explore() {
+const Explore = () => {
   const { data: circles, isLoading } = useQuery<BucketizedCircleType>(
     "exploreCircles",
     {
       enabled: false,
     }
   );
-  const [connectedUser, setConnectedUser] = useAtom(connectedUserAtom);
+  const [connectedUser] = useAtom(connectedUserAtom);
 
   useJoinCircle();
   const { onboarded } = useExploreOnboarding();
 
   const [filteredCircles, setFilteredCircles] = useState<CircleType[]>([]);
   const [joinableCircles, setJoinableCircles] = useState<CircleType[]>([]);
-  const [claimableCircles, setClaimableCircles] = useState<CircleType[]>([]);
+  const [, setClaimableCircles] = useState<CircleType[]>([]);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
-  const [isSidebarExpanded, setIsSidebarExpanded] = useAtom(
-    isSidebarExpandedAtom
-  );
+  const [, setIsSidebarExpanded] = useAtom(isSidebarExpandedAtom);
   const { mode } = useTheme();
 
   useEffect(() => {
@@ -124,9 +116,6 @@ export default function Explore() {
       setClaimableCircles(circles.claimable);
       setIsSidebarExpanded(true);
     }
-    // TODODODO: Fix this bandage solution. Currently, the connected user state is updated multiple times
-    //            causing 'Your Circles' to re-render multiple times when user connects wallet with the last render having an empty array
-    // @avp pls halppppp
     if (circles && connectedUser && circles.memberOf?.length !== 0) {
       setFilteredCircles(circles.memberOf);
     }
@@ -318,7 +307,7 @@ export default function Explore() {
                       />
                     </Col>
                   ))}
-                <Col key={"createCircle"} xs={10} sm={6} md={3}>
+                <Col key="createCircle" xs={10} sm={6} md={3}>
                   <CreateCircleCard />
                 </Col>
               </Row>
@@ -345,21 +334,19 @@ export default function Explore() {
             </Box>
             <Row>
               {joinableCircles?.map &&
-                joinableCircles?.map((circle: CircleType) => {
-                  return (
-                    <Col key={circle.id} xs={10} sm={6} md={3}>
-                      <CircleCard
-                        href={`/${circle.slug}`}
-                        name={circle.name}
-                        description={circle.description}
-                        gradient={circle.gradient}
-                        logo={circle.avatar}
-                      />
-                    </Col>
-                  );
-                })}
+                joinableCircles?.map((circle: CircleType) => (
+                  <Col key={circle.id} xs={10} sm={6} md={3}>
+                    <CircleCard
+                      href={`/${circle.slug}`}
+                      name={circle.name}
+                      description={circle.description}
+                      gradient={circle.gradient}
+                      logo={circle.avatar}
+                    />
+                  </Col>
+                ))}
               {connectedUser && (
-                <Col key={"createCircle"} xs={10} sm={6} md={3}>
+                <Col key="createCircle" xs={10} sm={6} md={3}>
                   <CreateCircleCard />
                 </Col>
               )}
@@ -369,4 +356,6 @@ export default function Explore() {
       </GridContainer>
     </ScrollContainer>
   );
-}
+};
+
+export default Explore;

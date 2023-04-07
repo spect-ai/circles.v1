@@ -2,12 +2,12 @@ import { memo, ReactElement } from "react";
 import { Box } from "degen";
 import { motion } from "framer-motion";
 import { useRouter } from "next/router";
+import { useAtom } from "jotai";
+import { connectedUserAtom } from "@/app/state/global";
 import ExploreSidebar from "./ExploreSidebar";
 import CircleSidebar from "./CircleSidebar";
 import ProfileButton from "../Sidebar/ProfileButton";
-import { Connect } from "../Sidebar/ProfileButton/ConnectButton";
-import { useAtom } from "jotai";
-import { connectedUserAtom } from "@/app/state/global";
+import Connect from "../Sidebar/ProfileButton/ConnectButton";
 
 const slide = {
   hidden: {
@@ -33,10 +33,10 @@ const slide = {
   },
 };
 
-function ExtendedSidebar(): ReactElement {
+const ExtendedSidebar = (): ReactElement => {
   const router = useRouter();
   const { circle: cId } = router.query;
-  const [connectedUser, setConnectedUser] = useAtom(connectedUserAtom);
+  const [connectedUser] = useAtom(connectedUserAtom);
 
   return (
     <motion.div
@@ -60,6 +60,6 @@ function ExtendedSidebar(): ReactElement {
       </Box>
     </motion.div>
   );
-}
+};
 
 export default memo(ExtendedSidebar);

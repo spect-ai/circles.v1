@@ -7,8 +7,6 @@ import React, { useEffect, useState } from "react";
 import { Bar } from "react-chartjs-2";
 import { useQuery } from "react-query";
 import { toast } from "react-toastify";
-import { useLocalCollection } from "../../Context/LocalCollectionContext";
-
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -18,6 +16,7 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
+import { useLocalCollection } from "../../Context/LocalCollectionContext";
 
 ChartJS.register(
   CategoryScale,
@@ -28,25 +27,25 @@ ChartJS.register(
   Legend
 );
 
-export default function SpectVoting({
+const SpectVoting = ({
   dataId,
   col,
 }: {
   dataId: string;
   col?: CollectionType;
-}) {
+}) => {
   const { localCollection, updateCollection } = useLocalCollection();
 
-  const [collection, setCollection] = useState(col ? col : localCollection);
+  const [collection, setCollection] = useState(col || localCollection);
 
   const router = useRouter();
-  const { dataId: dataSlug, circle: cId } = router.query;
+  const { circle: cId } = router.query;
 
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
 
-  const [data, setData] = useState({} as any);
+  const [data, setData] = useState<Record<string, unknown>>();
   const [vote, setVote] = useState(-1);
 
   useEffect(() => {
@@ -77,12 +76,12 @@ export default function SpectVoting({
   const getVotes = () => {
     const dataVotes =
       collection.voting?.periods && collection.voting?.periods?.[dataId]?.votes;
-    // sump up all the votes for each option
     return (
-      collection.voting?.periods?.[dataId]?.options?.map((option, index) => {
-        return Object.values(dataVotes || {}).filter((vote) => vote === index)
-          .length;
-      }) || []
+      collection.voting?.periods?.[dataId]?.options?.map(
+        (option, index) =>
+          Object.values(dataVotes || {}).filter((vote2) => vote2 === index)
+            .length
+      ) || []
     );
   };
 
@@ -94,20 +93,19 @@ export default function SpectVoting({
   );
 
   const getMemberDetails = React.useCallback(
-    (id: string) => {
-      return memberDetails?.memberDetails[id];
-    },
+    (id: string) => memberDetails?.memberDetails[id],
     [memberDetails]
   );
 
   return (
     <Box display="flex" flexDirection="column" gap="2">
-      {collection.voting?.periods &&
-        collection.voting?.periods[data.slug] &&
-        (collection.voting?.periods[data.slug].active ||
+      {data &&
+        collection.voting?.periods &&
+        collection.voting?.periods[data.slug as string] &&
+        (collection.voting?.periods[data.slug as string].active ||
           Object.keys(collection.voting?.periods[dataId]?.votes || {})?.length >
             0) &&
-        collection.voting?.periods[data.slug].options && (
+        collection.voting?.periods[data.slug as string].options && (
           <Stack space="1">
             <Box
               borderColor="foregroundSecondary"
@@ -122,13 +120,16 @@ export default function SpectVoting({
               <Box marginTop="4">
                 <Tabs
                   tabs={
-                    collection.voting?.periods[data.slug].options?.map(
-                      (option) => option.label
-                    ) || []
+                    collection.voting?.periods[
+                      data.slug as string
+                    ].options?.map((option) => option.label) || []
                   }
                   selectedTab={vote}
                   onTabClick={async (tab) => {
-                    if (!collection?.voting?.periods?.[data.slug]?.active) {
+                    if (
+                      !collection?.voting?.periods?.[data.slug as string]
+                        ?.active
+                    ) {
                       toast.error("Voting is not active");
                       return;
                     }
@@ -155,12 +156,14 @@ export default function SpectVoting({
           </Stack>
         )}
 
-      {collection.voting?.periods &&
-        collection.voting?.periods[data.slug] &&
-        collection.voting?.periods[data.slug].options &&
-        collection.voting?.periods[data.slug].votes &&
-        collection.voting?.periods[data.slug].votes?.[currentUser?.id || ""] !==
-          undefined && (
+      {data &&
+        collection.voting?.periods &&
+        collection.voting?.periods[data.slug as string] &&
+        collection.voting?.periods[data.slug as string].options &&
+        collection.voting?.periods[data.slug as string].votes &&
+        collection.voting?.periods[data.slug as string].votes?.[
+          currentUser?.id || ""
+        ] !== undefined && (
           <Box
             width={{
               xs: "full",
@@ -211,9 +214,9 @@ export default function SpectVoting({
                 },
               }}
               data={{
-                labels: collection.voting?.periods[data.slug]?.options?.map(
-                  (option) => option.label
-                ),
+                labels: collection.voting?.periods[
+                  data.slug as string
+                ]?.options?.map((option) => option.label),
                 datasets: [
                   {
                     label: "Votes",
@@ -229,10 +232,12 @@ export default function SpectVoting({
             />
           </Box>
         )}
-      {collection.voting?.periods &&
-        Object.keys(collection.voting?.periods[data.slug]?.votes || {}).length >
-          0 &&
-        collection.voting?.periods[data.slug]?.votesArePublic && (
+      {data &&
+        collection.voting?.periods &&
+        Object.keys(
+          collection.voting?.periods[data.slug as string]?.votes || {}
+        ).length > 0 &&
+        collection.voting?.periods[data.slug as string]?.votesArePublic && (
           <Box
             borderColor="foregroundSecondary"
             borderWidth="0.375"
@@ -244,75 +249,75 @@ export default function SpectVoting({
               Votes
             </Text>
 
-            {collection.voting?.periods &&
-              collection.voting?.periods[data.slug] &&
+            {data &&
+              collection.voting?.periods &&
+              collection.voting?.periods[data.slug as string] &&
               Object.entries(
-                collection.voting?.periods[data.slug]?.votes || {}
-              ).map(([voterId, vote]) => {
-                return (
+                collection.voting?.periods[data.slug as string]?.votes || {}
+              ).map(([voterId, vote2]) => (
+                <Box
+                  display="flex"
+                  flexDirection="row"
+                  key={voterId}
+                  marginTop="4"
+                  gap="4"
+                >
                   <Box
                     display="flex"
                     flexDirection="row"
-                    key={voterId}
-                    marginTop="4"
-                    gap="4"
+                    width="1/3"
+                    alignItems="center"
                   >
-                    <Box
-                      display="flex"
-                      flexDirection="row"
-                      width="1/3"
-                      alignItems="center"
+                    <a
+                      href={`/profile/${getMemberDetails(voterId)?.username}`}
+                      target="_blank"
+                      rel="noreferrer"
                     >
-                      <a
-                        href={`/profile/${getMemberDetails(voterId)?.username}`}
-                        target="_blank"
-                        rel="noreferrer"
-                      >
-                        <Stack direction="horizontal" align="center" space="2">
-                          <Avatar
-                            src={getMemberDetails(voterId)?.avatar}
-                            address={getMemberDetails(voterId)?.ethAddress}
-                            label=""
-                            size="8"
-                          />
-                          <Text color="accentText" weight="semiBold">
-                            {getMemberDetails(voterId)?.username}
-                          </Text>
-                        </Stack>
-                      </a>
-                    </Box>
-                    <Box
-                      display="flex"
-                      flexDirection="row"
-                      width="1/3"
-                      alignItems="center"
-                    >
-                      <Text variant="base" weight="semiBold">
-                        {collection?.voting?.periods &&
-                        collection?.voting?.periods[data.slug]
-                          ? collection?.voting?.periods[data.slug]?.options?.[
-                              vote
-                            ]?.label
-                          : "No vote"}
-                      </Text>
-                    </Box>
-                    <Box
-                      display="flex"
-                      flexDirection="row"
-                      width="1/3"
-                      alignItems="center"
-                    >
-                      <Text variant="base" weight="semiBold">
-                        {collection?.voting?.votesAreWeightedByTokens
-                          ? `${1} votes`
-                          : `1 vote`}
-                      </Text>
-                    </Box>
+                      <Stack direction="horizontal" align="center" space="2">
+                        <Avatar
+                          src={getMemberDetails(voterId)?.avatar}
+                          address={getMemberDetails(voterId)?.ethAddress}
+                          label=""
+                          size="8"
+                        />
+                        <Text color="accentText" weight="semiBold">
+                          {getMemberDetails(voterId)?.username}
+                        </Text>
+                      </Stack>
+                    </a>
                   </Box>
-                );
-              })}
+                  <Box
+                    display="flex"
+                    flexDirection="row"
+                    width="1/3"
+                    alignItems="center"
+                  >
+                    <Text variant="base" weight="semiBold">
+                      {collection?.voting?.periods &&
+                      collection?.voting?.periods[data.slug as string]
+                        ? collection?.voting?.periods[data.slug as string]
+                            ?.options?.[vote2]?.label
+                        : "No vote"}
+                    </Text>
+                  </Box>
+                  <Box
+                    display="flex"
+                    flexDirection="row"
+                    width="1/3"
+                    alignItems="center"
+                  >
+                    <Text variant="base" weight="semiBold">
+                      {collection?.voting?.votesAreWeightedByTokens
+                        ? `${1} votes`
+                        : "1 vote"}
+                    </Text>
+                  </Box>
+                </Box>
+              ))}
           </Box>
         )}
     </Box>
   );
-}
+};
+
+export default SpectVoting;

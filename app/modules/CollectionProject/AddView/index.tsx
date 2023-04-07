@@ -6,16 +6,16 @@ import { updateFormCollection } from "@/app/services/Collection";
 import { Option } from "@/app/types";
 import { Box, IconPlusSmall, Input, Stack } from "degen";
 import React, { useEffect, useState } from "react";
-import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
 import uuid from "react-uuid";
 import { toast } from "react-toastify";
+import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
 
 type Props = {
   viewType: "kanban" | "list" | "grid";
   handleClose: () => void;
 };
 
-export default function AddView({ viewType, handleClose }: Props) {
+const AddView = ({ viewType, handleClose }: Props) => {
   const { localCollection: collection, updateCollection } =
     useLocalCollection();
 
@@ -33,6 +33,7 @@ export default function AddView({ viewType, handleClose }: Props) {
             value: key,
           };
         }
+        return undefined;
       });
       setColumnOptions(
         options.filter((option) => option !== undefined) as Option[]
@@ -117,7 +118,6 @@ export default function AddView({ viewType, handleClose }: Props) {
                   collection.projectMetadata.cardOrders[groupByColumn.value]
                 )
               ) {
-                // filter collection data based on group by column options and add it to a 2 dimensional array
                 collection.data &&
                   Object.keys(collection.data).forEach((key) => {
                     const data = collection.data[key];
@@ -151,7 +151,6 @@ export default function AddView({ viewType, handleClose }: Props) {
                   cardOrders,
                 },
               });
-              console.log({ res });
               if (res.id) {
                 updateCollection(res);
                 handleClose();
@@ -168,4 +167,6 @@ export default function AddView({ viewType, handleClose }: Props) {
       </Box>
     </Modal>
   );
-}
+};
+
+export default AddView;

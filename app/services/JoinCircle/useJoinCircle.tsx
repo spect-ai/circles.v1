@@ -8,11 +8,10 @@ import { joinCircleFromInvite } from ".";
 export default function useJoinCircle() {
   const router = useRouter();
   const { inviteCode, circleId } = router.query;
-  const [connectedUser, setConnectedUser] = useAtom(connectedUserAtom);
+  const [connectedUser] = useAtom(connectedUserAtom);
 
   useEffect(() => {
     if (inviteCode && connectedUser) {
-      console.log({ inviteCode, circleId });
       const asyncJoin = async () => {
         const res = await joinCircleFromInvite(
           circleId as string,
@@ -29,7 +28,7 @@ export default function useJoinCircle() {
           });
         }
       };
-      void asyncJoin();
+      asyncJoin();
     }
     if (inviteCode && connectedUser === undefined) {
       toast.error("You must connect your wallet to join a circle");

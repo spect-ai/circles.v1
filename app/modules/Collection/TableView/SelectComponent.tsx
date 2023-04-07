@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { OptionType } from "@/app/common/components/Dropdown";
 import { MemberDetails } from "@/app/types";
@@ -18,7 +19,7 @@ type Props = {
   isModalOpen?: boolean;
 };
 
-export default function SelectComponent({
+const SelectComponent = ({
   focus,
   active,
   rowData,
@@ -26,7 +27,7 @@ export default function SelectComponent({
   setRowData,
   stopEditing,
   isModalOpen,
-}: Props) {
+}: Props) => {
   const { localCollection: collection } = useLocalCollection();
 
   const ref: any = useRef<Select>(null);
@@ -46,12 +47,10 @@ export default function SelectComponent({
 
   rowData =
     rowData && columnData.type === "user[]" && memberDetails
-      ? rowData.map((r: OptionType) => {
-          return {
-            label: memberDetails.memberDetails[r.value].username,
-            value: r.value,
-          };
-        })
+      ? rowData.map((r: OptionType) => ({
+          label: memberDetails.memberDetails[r.value].username,
+          value: r.value,
+        }))
       : rowData;
 
   rowData =
@@ -98,8 +97,9 @@ export default function SelectComponent({
       onChange={(option) => {
         if (
           collection.collectionType === 0 ? columnData.isPartOfFormView : false
-        )
+        ) {
           return;
+        }
         setRowData(option);
         setTimeout(() => {
           stopEditing();
@@ -135,17 +135,16 @@ export default function SelectComponent({
           ...provided,
           color: mode === "dark" ? "#FFFFFF" : "#000000",
         }),
-        multiValue: (styles, { data }) => {
-          //const color = chroma(data.color);
-          return {
+        multiValue: (styles, { data }) =>
+          // const color = chroma(data.color);
+          ({
             border: `solid 2px ${data.color || "rgb(191, 90, 242, 0.1)"}`,
             borderRadius: "12px",
             display: "flex",
             flexDirection: "row",
             alignItems: "center",
             padding: "0.1rem 0.5rem",
-          };
-        },
+          }),
         valueContainer: (provided) => ({
           ...provided,
           whiteSpace: "nowrap",
@@ -197,4 +196,10 @@ export default function SelectComponent({
       }}
     />
   );
-}
+};
+
+SelectComponent.defaultProps = {
+  isModalOpen: false,
+};
+
+export default SelectComponent;

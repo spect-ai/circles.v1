@@ -4,10 +4,10 @@ import { updateCircle } from "@/app/services/UpdateCircle";
 import { guild } from "@guildxyz/sdk";
 import { Box, Input, Stack } from "degen";
 import { AnimatePresence } from "framer-motion";
-import React, { useState } from "react";
+import { useState } from "react";
 import { useCircle } from "../../CircleContext";
 
-export default function GuildIntegration() {
+const GuildIntegration = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [guildUrl, setGuildUrl] = useState("");
   const { circle, setCircleData } = useCircle();
@@ -50,7 +50,6 @@ export default function GuildIntegration() {
                         },
                         circle?.id || ""
                       );
-                      console.log({ res });
                       setLoading(false);
                       setCircleData(res);
                       setIsOpen(false);
@@ -66,4 +65,6 @@ export default function GuildIntegration() {
       </AnimatePresence>
     </>
   );
-}
+};
+
+export default GuildIntegration;

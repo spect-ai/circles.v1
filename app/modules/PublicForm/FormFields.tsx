@@ -1,7 +1,8 @@
+/* eslint-disable @typescript-eslint/quotes */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { isEmail, isURL } from "@/app/common/utils/utils";
+import { isEmail } from "@/app/common/utils/utils";
 import {
   addData,
   getForm,
@@ -19,9 +20,7 @@ import React, { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { toast } from "react-toastify";
 import styled from "styled-components";
-import PublicField from "./Fields/PublicField";
 import mixpanel from "@/app/common/utils/mixpanel";
-import NotificationPreferenceModal from "./Fields/NotificationPreferenceModal";
 import { AnimatePresence } from "framer-motion";
 import {
   compose,
@@ -30,30 +29,71 @@ import {
 } from "@/app/services/Ceramic";
 import { useAccount } from "wagmi";
 import Modal from "@/app/common/components/Modal";
-import { useProfile } from "../Profile/ProfileSettings/LocalProfileContext";
 import { useAtom } from "jotai";
 import { connectedUserAtom } from "@/app/state/global";
 import Stepper from "@/app/common/components/Stepper";
+import { useProfile } from "../Profile/ProfileSettings/LocalProfileContext";
+import NotificationPreferenceModal from "./Fields/NotificationPreferenceModal";
+import PublicField from "./Fields/PublicField";
 import StartPage from "../Collection/Form/FormBuilder/StartPage";
 import ConnectPage from "../Collection/Form/FormBuilder/ConnectPage";
 import { satisfiesConditions } from "../Collection/Common/SatisfiesFilter";
 import CollectPage from "../Collection/Form/FormBuilder/CollectPage";
 import CollectPayment from "./Fields/CollectPayment";
 import SubmittedPage from "../Collection/Form/FormBuilder/SubmittedPage";
+import { isEmpty, isIncorrectType } from "./utils";
 
 type Props = {
   form: FormType | undefined;
   setForm: (form: FormType) => void;
 };
 
-export const getUser = async () => {
+const getUser = async () => {
   const res = await fetch(`${process.env.API_HOST}/user/v1/me`, {
     credentials: "include",
   });
-  return await res.json();
+  return res.json();
 };
 
-function FormFields({ form, setForm }: Props) {
+const Container = styled(Box)`
+  @media (max-width: 768px) {
+    padding: 0rem;
+    margin-right: 0rem;
+    margin-bottom: 0.5rem;
+  }
+
+  @media (min-width: 768px) and (max-width: 1024px) {
+    padding: 2rem;
+    margin-bottom: 0.5rem;
+  }
+
+  @media (min-width: 1024px) and (max-width: 1280px) {
+    padding: 2rem;
+    margin-bottom: 0.5rem;
+  }
+  padding: 2rem;
+  padding-bottom: 1rem;
+
+  min-height: calc(100vh - 15rem);
+
+  ::-webkit-scrollbar {
+    width: 0.5rem;
+  }
+
+  overflow-y: auto;
+`;
+
+const FormFieldContainer = styled(Box)`
+  min-height: calc(100vh - 15rem);
+
+  ::-webkit-scrollbar {
+    width: 0.5rem;
+  }
+
+  overflow-y: auto;
+`;
+
+const FormFields = ({ form, setForm }: Props) => {
   const [data, setData] = useState<any>({});
   const [memberOptions, setMemberOptions] = useState([]);
   const [updateResponse, setUpdateResponse] = useState(false);
@@ -63,7 +103,7 @@ function FormFields({ form, setForm }: Props) {
   const { onSaveProfile, email, setEmail } = useProfile();
   const [emailModalOpen, setEmailModalOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [respondAsAnonymous, setRespondAsAnonymous] = useState(
+  const [, setRespondAsAnonymous] = useState(
     form?.formMetadata.allowAnonymousResponses || false
   );
   const [notificationPreferenceModalOpen, setNotificationPreferenceModalOpen] =
@@ -82,9 +122,11 @@ function FormFields({ form, setForm }: Props) {
 
   const [currentPage, setCurrentPage] = useState("start");
 
-  const checkRequired = (data: any) => {
+  const checkRequired = (cData: {
+    [key: string]: string | string[] | number | boolean;
+  }) => {
     if (!form) return false;
-    const requiredFieldsNotSet = {} as { [key: string]: boolean };
+    const cRequiredFieldsNotSet = {} as { [key: string]: boolean };
 
     const currentFields = form.formMetadata.pages[currentPage].properties;
 
@@ -92,36 +134,38 @@ function FormFields({ form, setForm }: Props) {
       const property = form.properties[propertyId];
       if (
         property.required &&
-        isEmpty(propertyId, data[propertyId]) &&
+        isEmpty(propertyId, cData[propertyId], form) &&
         satisfiesConditions(
           data,
           form.properties,
           form.properties[propertyId].viewConditions as Condition[]
         )
       ) {
-        requiredFieldsNotSet[propertyId] = true;
+        cRequiredFieldsNotSet[propertyId] = true;
       }
     });
-    setRequiredFieldsNotSet(requiredFieldsNotSet);
-    return Object.keys(requiredFieldsNotSet).length === 0;
+    setRequiredFieldsNotSet(cRequiredFieldsNotSet);
+    return Object.keys(cRequiredFieldsNotSet).length === 0;
   };
 
-  const checkValue = (data: any) => {
+  const checkValue = (cData: {
+    [key: string]: string | string[] | number | boolean;
+  }) => {
     if (!form) return false;
-    const fieldHasInvalidType = {} as { [key: string]: boolean };
+    const cFieldHasInvalidType = {} as { [key: string]: boolean };
     const currentFields = form.formMetadata.pages[currentPage || ""].properties;
     currentFields.forEach((propertyId) => {
-      if (isIncorrectType(propertyId, data[propertyId])) {
-        fieldHasInvalidType[propertyId] = true;
+      if (isIncorrectType(propertyId, cData[propertyId], form)) {
+        cFieldHasInvalidType[propertyId] = true;
       }
     });
-    setFieldHasInvalidType(fieldHasInvalidType);
-    return Object.keys(fieldHasInvalidType).length === 0;
+    setFieldHasInvalidType(cFieldHasInvalidType);
+    return Object.keys(cFieldHasInvalidType).length === 0;
   };
 
   useEffect(() => {
     if (form?.parents) {
-      void (async () => {
+      (async () => {
         const res = await (
           await fetch(
             `${process.env.API_HOST}/circle/${form.parents[0].id}/memberDetails?circleIds=${form.parents[0].id}`
@@ -147,7 +191,7 @@ function FormFields({ form, setForm }: Props) {
             form.formMetadata.previousResponses.length - 1
           ];
         setRespondAsAnonymous(
-          lastResponse["anonymous"] || form.formMetadata.allowAnonymousResponses
+          lastResponse.anonymous || form.formMetadata.allowAnonymousResponses
         );
         form.propertyOrder.forEach((propertyId) => {
           if (!form.properties[propertyId].isPartOfFormView) return;
@@ -198,28 +242,26 @@ function FormFields({ form, setForm }: Props) {
     }
   }, [form?.name]);
 
-  const onSubmit = async (form: CollectionType) => {
+  const onSubmit = async (cForm: CollectionType) => {
     if (
       !email &&
-      (form.formMetadata.surveyTokenId ||
-        form.formMetadata.surveyTokenId === 0) &&
-      form.formMetadata.surveyDistributionType === 0
+      (cForm.formMetadata.surveyTokenId ||
+        cForm.formMetadata.surveyTokenId === 0) &&
+      cForm.formMetadata.surveyDistributionType === 0
     ) {
       setEmailModalOpen(true);
       return;
     }
-    if (form.formMetadata.ceramicEnabled) {
+    if (cForm.formMetadata.ceramicEnabled) {
       let session: any;
       setSubmitting(true);
       try {
         const loadedSession = await loadCeramicSession(address as string);
-        console.log({ loadedSession });
-        if (!loadedSession) {
+        if (!loadedSession && connector) {
           const newSession = await createCeramicSession(
             address as string,
             connector
           );
-          console.log({ newSession });
           session = newSession;
         } else {
           session = loadedSession;
@@ -229,10 +271,10 @@ function FormFields({ form, setForm }: Props) {
           `
       mutation {
         createSpectForm(input: {content: {
-          formId: "${form.slug}",
+          formId: "${cForm.slug}",
           data: "${JSON.stringify(data).replace(/"/g, '\\"')}",
           createdAt: "${new Date().toISOString()}",
-          link: "https://circles.spect.network/r/${form.id}",
+          link: "https://circles.spect.network/r/${cForm.id}",
           origin: "https://circles.spect.network",
         }}) {
           document {
@@ -243,9 +285,10 @@ function FormFields({ form, setForm }: Props) {
       `
         );
         const streamId = result.data.createSpectForm.document.id;
-        data["__ceramic__"] = streamId;
+        // eslint-disable-next-line no-underscore-dangle
+        data.__ceramic__ = streamId;
       } catch (err) {
-        console.log(err);
+        console.error(err);
         toast.error("Could not upload data to Ceramic");
         setSubmitting(false);
         return;
@@ -253,15 +296,15 @@ function FormFields({ form, setForm }: Props) {
     }
     let res;
     if (
-      form.formMetadata.paymentConfig?.type === "paywall" &&
-      form.formMetadata.paymentConfig?.required &&
-      !data["__payment__"]
+      cForm.formMetadata.paymentConfig?.type === "paywall" &&
+      cForm.formMetadata.paymentConfig?.required &&
+      !data.__payment__
     ) {
       toast.error("This form is paywalled, please pay to submit this form");
       return;
     }
 
-    if (!form.formMetadata.active) {
+    if (!cForm.formMetadata.active) {
       toast.error("This form is not accepting responses");
       return;
     }
@@ -275,27 +318,27 @@ function FormFields({ form, setForm }: Props) {
 
     if (updateResponse) {
       const lastResponse =
-        form.formMetadata.previousResponses[
-          form.formMetadata.previousResponses.length - 1
+        cForm.formMetadata.previousResponses[
+          cForm.formMetadata.previousResponses.length - 1
         ];
-      res = await updateCollectionData(form.id || "", lastResponse.slug, {
+      res = await updateCollectionData(cForm.id || "", lastResponse.slug, {
         ...data,
-        anonymous: form.formMetadata.allowAnonymousResponses,
+        anonymous: cForm.formMetadata.allowAnonymousResponses,
       });
     } else {
       res = await addData(
-        form.id || "",
+        cForm.id || "",
         data,
-        !connectedUser ? true : form.formMetadata.allowAnonymousResponses
+        !connectedUser ? true : cForm.formMetadata.allowAnonymousResponses
       );
     }
-    const resAfterSave = await getForm(form.slug);
+    const resAfterSave = await getForm(cForm.slug);
     if (res.id) {
       toast.success("Form submitted successfully");
       setForm(resAfterSave);
       setSubmitted(true);
       setCurrentPage(
-        form.formMetadata.pages["collect"] ? "collect" : "submitted"
+        cForm.formMetadata.pages.collect ? "collect" : "submitted"
       );
       setUpdateResponse(false);
     } else {
@@ -303,63 +346,16 @@ function FormFields({ form, setForm }: Props) {
     }
     process.env.NODE_ENV === "production" &&
       mixpanel.track("Form Submit", {
-        form: form.name,
-        sybilEnabled: form.formMetadata.sybilProtectionEnabled,
+        form: cForm.name,
+        sybilEnabled: cForm.formMetadata.sybilProtectionEnabled,
         user: currentUser?.username,
-        circle: form.parents[0].slug,
+        circle: cForm.parents[0].slug,
       });
     setSubmitting(false);
   };
 
-  const isIncorrectType = (propertyName: string, value: any) => {
-    switch (form?.properties[propertyName]?.type) {
-      case "email":
-        return value && !isEmail(value);
-
-      case "singleURL":
-        return value && !isURL(value);
-
-      default:
-        return false;
-    }
-  };
-
-  const isEmpty = (propertyName: string, value: any) => {
-    switch (form?.properties[propertyName].type) {
-      case "longText":
-      case "shortText":
-      case "ethAddress":
-      case "user":
-      case "date":
-      case "singleURL":
-      case "email":
-        return !value;
-      case "singleSelect":
-        return !value || !value.value || !value.label;
-      case "multiURL":
-      case "multiSelect":
-      case "milestone":
-      case "user[]":
-        return !value || value.length === 0;
-      case "reward":
-        return !value?.value;
-      case "payWall":
-        return !value?.some((v: any) => v.txnHash);
-      case "discord":
-        return !value?.id;
-      case "github":
-        return !value?.id;
-      case "twitter":
-        return !value?.id;
-      case "telegram":
-        return !value?.id;
-      default:
-        return false;
-    }
-  };
-
   const updateRequiredFieldNotSet = (propertyName: string, value: any) => {
-    if (!isEmpty(propertyName, value)) {
+    if (form && !isEmpty(propertyName, value, form)) {
       setRequiredFieldsNotSet((prev) => {
         const temp = { ...prev };
         delete temp[propertyName];
@@ -369,7 +365,7 @@ function FormFields({ form, setForm }: Props) {
   };
 
   const updateFieldHasInvalidType = (propertyName: string, value: any) => {
-    if (!isIncorrectType(propertyName, value)) {
+    if (form && !isIncorrectType(propertyName, value, form)) {
       setFieldHasInvalidType((prev) => {
         const temp = { ...prev };
         delete temp[propertyName];
@@ -394,14 +390,12 @@ function FormFields({ form, setForm }: Props) {
                   step < form.formMetadata.pageOrder.indexOf(currentPage || "")
                 ) {
                   setCurrentPage(form.formMetadata.pageOrder[step]);
+                } else if (currentPage === "start") {
+                  toast.error(
+                    "You can get started by clicking on the start button"
+                  );
                 } else {
-                  if (currentPage === "start") {
-                    toast.error(
-                      "You can get started by clicking on the start button"
-                    );
-                  } else {
-                    toast.error("You can only go back");
-                  }
+                  toast.error("You can only go back");
                 }
               } else {
                 setCurrentPage(form.formMetadata.pageOrder[step]);
@@ -446,7 +440,7 @@ function FormFields({ form, setForm }: Props) {
           />
         )}
       </AnimatePresence>
-      {Array.from({ length: 1 }).map((_, i) => {
+      {Array.from({ length: 1 }).map(() => {
         if (currentPage === "start") {
           return (
             <StartPage
@@ -455,16 +449,17 @@ function FormFields({ form, setForm }: Props) {
               setForm={setForm}
             />
           );
-        } else if (currentPage === "connect" && form) {
+        }
+        if (currentPage === "connect" && form) {
           return (
             <ConnectPage
               form={form as CollectionType}
               setForm={setForm}
-              currentPage={currentPage}
               setCurrentPage={setCurrentPage}
             />
           );
-        } else if (currentPage === "collect") {
+        }
+        if (currentPage === "collect") {
           return (
             <CollectPage
               form={form as CollectionType}
@@ -472,7 +467,8 @@ function FormFields({ form, setForm }: Props) {
               setCurrentPage={setCurrentPage}
             />
           );
-        } else if (currentPage === "submitted" && form) {
+        }
+        if (currentPage === "submitted" && form) {
           return (
             <SubmittedPage
               form={form as CollectionType}
@@ -482,68 +478,92 @@ function FormFields({ form, setForm }: Props) {
               setData={setData}
             />
           );
-        } else {
-          if (form) {
-            const pages = form.formMetadata.pages;
-            const pageOrder = form.formMetadata.pageOrder;
-            const fields = pages[currentPage || ""]?.properties;
+        }
+        if (form) {
+          const { pages } = form.formMetadata;
+          const { pageOrder } = form.formMetadata;
+          const fields = pages[currentPage || ""]?.properties;
 
-            return (
-              <FormFieldContainer
-                display="flex"
-                flexDirection="column"
-                justifyContent="space-between"
-                overflow="auto"
-              >
-                <Stack>
-                  {fields.map((field) => {
-                    if (form.properties[field]?.isPartOfFormView) {
-                      return (
-                        <PublicField
-                          form={form}
-                          propertyName={field}
-                          data={data}
-                          setData={setData}
-                          memberOptions={memberOptions}
-                          requiredFieldsNotSet={requiredFieldsNotSet}
-                          key={field}
-                          updateRequiredFieldNotSet={updateRequiredFieldNotSet}
-                          fieldHasInvalidType={fieldHasInvalidType}
-                          updateFieldHasInvalidType={updateFieldHasInvalidType}
-                          disabled={submitted ? !updateResponse : false}
-                        />
-                      );
-                    }
-                  })}
-                  {fields.every((field: string) => {
-                    return !satisfiesConditions(
+          return (
+            <FormFieldContainer
+              display="flex"
+              flexDirection="column"
+              justifyContent="space-between"
+              overflow="auto"
+            >
+              <Stack>
+                {fields.map((field) => {
+                  if (form.properties[field]?.isPartOfFormView) {
+                    return (
+                      <PublicField
+                        form={form}
+                        propertyName={field}
+                        data={data}
+                        setData={setData}
+                        memberOptions={memberOptions}
+                        requiredFieldsNotSet={requiredFieldsNotSet}
+                        key={field}
+                        updateRequiredFieldNotSet={updateRequiredFieldNotSet}
+                        fieldHasInvalidType={fieldHasInvalidType}
+                        updateFieldHasInvalidType={updateFieldHasInvalidType}
+                        disabled={submitted ? !updateResponse : false}
+                      />
+                    );
+                  }
+                  return null;
+                })}
+                {fields.every(
+                  (field: string) =>
+                    !satisfiesConditions(
                       data,
                       form.properties as { [propertyId: string]: Property },
                       form.properties[field].viewConditions || []
-                    );
-                  }) && (
-                    <Box>
-                      <Text variant="label">
-                        No fields to display on this page
-                      </Text>
+                    )
+                ) && (
+                  <Box>
+                    <Text variant="label">
+                      No fields to display on this page
+                    </Text>
+                  </Box>
+                )}
+
+                {form.formMetadata.paymentConfig &&
+                  !pages[pageOrder[pageOrder.indexOf(currentPage || "") + 1]]
+                    .movable && (
+                    <Box marginBottom="8">
+                      <CollectPayment
+                        paymentConfig={form.formMetadata.paymentConfig}
+                        circleSlug={form.parents[0].slug}
+                        circleId={form.parents[0].id}
+                        data={data}
+                        setData={setData}
+                      />
                     </Box>
                   )}
-
-                  {form.formMetadata.paymentConfig &&
-                    !pages[pageOrder[pageOrder.indexOf(currentPage || "") + 1]]
-                      .movable && (
-                      <Box marginBottom="8">
-                        <CollectPayment
-                          paymentConfig={form.formMetadata.paymentConfig}
-                          circleSlug={form.parents[0].slug}
-                          circleId={form.parents[0].id}
-                          data={data}
-                          setData={setData}
-                        />
-                      </Box>
-                    )}
-                </Stack>
-                <Stack direction="horizontal" justify="space-between">
+              </Stack>
+              <Stack direction="horizontal" justify="space-between">
+                <Box
+                  paddingX="5"
+                  paddingBottom="4"
+                  width={{
+                    xs: "40",
+                    md: "56",
+                  }}
+                >
+                  <PrimaryButton
+                    variant="transparent"
+                    onClick={() => {
+                      setCurrentPage(
+                        pageOrder[pageOrder.indexOf(currentPage || "") - 1]
+                      );
+                    }}
+                  >
+                    Back
+                  </PrimaryButton>
+                </Box>
+                {pages[pageOrder[pageOrder.indexOf(currentPage || "") + 1]]
+                  .movable ||
+                (submitted && !updateResponse) ? (
                   <Box
                     paddingX="5"
                     paddingBottom="4"
@@ -553,123 +573,46 @@ function FormFields({ form, setForm }: Props) {
                     }}
                   >
                     <PrimaryButton
-                      variant="transparent"
                       onClick={() => {
+                        if (!checkRequired(data)) {
+                          toast.error("Please fill all required fields");
+                          return;
+                        }
+                        if (!checkValue(data)) return;
                         setCurrentPage(
-                          pageOrder[pageOrder.indexOf(currentPage || "") - 1]
+                          pageOrder[pageOrder.indexOf(currentPage) + 1]
                         );
                       }}
                     >
-                      Back
+                      Next
                     </PrimaryButton>
                   </Box>
-                  {pages[pageOrder[pageOrder.indexOf(currentPage || "") + 1]]
-                    .movable ||
-                  (submitted && !updateResponse) ? (
-                    <Box
-                      paddingX="5"
-                      paddingBottom="4"
-                      width={{
-                        xs: "40",
-                        md: "56",
-                      }}
+                ) : (
+                  <Box
+                    paddingX="5"
+                    paddingBottom="4"
+                    width={{
+                      xs: "40",
+                      md: "56",
+                    }}
+                  >
+                    <PrimaryButton
+                      onClick={() => form && onSubmit(form as CollectionType)}
+                      loading={submitting}
                     >
-                      <PrimaryButton
-                        onClick={() => {
-                          if (!checkRequired(data)) {
-                            toast.error("Please fill all required fields");
-                            return;
-                          }
-                          if (!checkValue(data)) return;
-                          setCurrentPage(
-                            pageOrder[pageOrder.indexOf(currentPage) + 1]
-                          );
-                        }}
-                      >
-                        Next
-                      </PrimaryButton>
-                    </Box>
-                  ) : (
-                    <Box
-                      paddingX="5"
-                      paddingBottom="4"
-                      width={{
-                        xs: "40",
-                        md: "56",
-                      }}
-                    >
-                      <PrimaryButton
-                        onClick={() => form && onSubmit(form as CollectionType)}
-                        loading={submitting}
-                      >
-                        Submit
-                      </PrimaryButton>
-                    </Box>
-                  )}
-                </Stack>
-              </FormFieldContainer>
-            );
-          }
+                      Submit
+                    </PrimaryButton>
+                  </Box>
+                )}
+              </Stack>
+            </FormFieldContainer>
+          );
         }
+        return null;
       })}
     </Container>
   );
-}
-
-const Container = styled(Box)`
-  @media (max-width: 768px) {
-    padding: 0rem;
-    margin-right: 0rem;
-    margin-bottom: 0.5rem;
-  }
-
-  @media (min-width: 768px) and (max-width: 1024px) {
-    padding: 2rem;
-    margin-bottom: 0.5rem;
-  }
-
-  @media (min-width: 1024px) and (max-width: 1280px) {
-    padding: 2rem;
-    margin-bottom: 0.5rem;
-  }
-  padding: 2rem;
-  padding-bottom: 1rem;
-
-  min-height: calc(100vh - 15rem);
-
-  ::-webkit-scrollbar {
-    width: 0.5rem;
-  }
-
-  overflow-y: auto;
-`;
-
-const FormFieldContainer = styled(Box)`
-  min-height: calc(100vh - 15rem);
-
-  ::-webkit-scrollbar {
-    width: 0.5rem;
-  }
-
-  overflow-y: auto;
-`;
-
-export const NameInput = styled.textarea`
-  resize: none;
-  background: transparent;
-  border: 0;
-  border-style: none;
-  border-color: transparent;
-  outline: none;
-  outline-offset: 0;
-  box-shadow: none;
-  font-size: 1.8rem;
-  font-family: Inter;
-  caret-color: rgb(191, 90, 242);
-  color: rgb(191, 90, 242);
-  font-weight: 600;
-  overflow: hidden;
-`;
+};
 
 export default React.memo(FormFields);
 

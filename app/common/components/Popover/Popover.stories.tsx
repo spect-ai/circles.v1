@@ -1,9 +1,11 @@
 import React from "react";
 import { Story, Meta } from "@storybook/react";
 
-import Popover, { PopoverProps } from ".";
-import { Box, IconDotsHorizontal, Stack, Text } from "degen";
+import {
+  Box, IconDotsHorizontal, Stack, Text,
+} from "degen";
 import styled from "styled-components";
+import Popover, { PopoverProps } from ".";
 // import * as DependentStories from './Dependent.stories'
 
 export default {

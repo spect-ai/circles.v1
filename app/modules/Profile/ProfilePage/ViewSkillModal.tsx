@@ -8,24 +8,26 @@ import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import { Box, Text, useTheme } from "degen";
 import { useAtom } from "jotai";
 import Image from "next/image";
-import router from "next/router";
 import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import styled from "styled-components";
-import AddSkillModal from "./AddSkillModal";
 
 type Props = {
   handleClose: () => void;
-  skillId?: number;
   setEditSkill: (value: boolean) => void;
+  skillId?: number;
 };
 
-export default function ViewSkillModal({
-  handleClose,
-  skillId,
-  setEditSkill,
-}: Props) {
-  const [userData, setUserData] = useAtom(userDataAtom);
+const ScrollContainer = styled(Box)`
+  ::-webkit-scrollbar {
+    width: 5px;
+  }
+  overflow-y: auto;
+  max-height: 35rem;
+`;
+
+const ViewSkillModal = ({ handleClose, skillId, setEditSkill }: Props) => {
+  const [userData] = useAtom(userDataAtom);
 
   const [title, setTitle] = useState("");
   const [linkedCredentials, setLinkedCredentials] = useState<Credential[]>([]);
@@ -66,11 +68,11 @@ export default function ViewSkillModal({
             <Box>
               <Text variant="label">Linked Credentials</Text>
               <Box marginTop="4">
-                {linkedCredentials?.map((credential, index) => {
+                {linkedCredentials?.map((credential) => {
                   if (credential.service === "gitcoinPassport") {
                     return (
                       <Box
-                        key={index}
+                        key={credential.id}
                         display="flex"
                         flexDirection="row"
                         gap="2"
@@ -116,37 +118,36 @@ export default function ViewSkillModal({
                         </Box>
                       </Box>
                     );
-                  } else {
-                    return (
-                      <Box
-                        key={index}
-                        display="flex"
-                        flexDirection="row"
-                        gap="2"
-                      >
-                        <Box width="1/4" padding="2">
-                          <Image
-                            src={credential.imageUri}
-                            width="100%"
-                            height="100%"
-                            objectFit="contain"
-                            layout="responsive"
-                            alt="img"
-                          />
-                        </Box>
-                        <Box
-                          display="flex"
-                          flexDirection="column"
-                          justifyContent="center"
-                          width="3/4"
-                        >
-                          <Text variant="large" weight="bold" align="left">
-                            {credential.name}
-                          </Text>
-                        </Box>
-                      </Box>
-                    );
                   }
+                  return (
+                    <Box
+                      key={credential.id}
+                      display="flex"
+                      flexDirection="row"
+                      gap="2"
+                    >
+                      <Box width="1/4" padding="2">
+                        <Image
+                          src={credential.imageUri}
+                          width="100%"
+                          height="100%"
+                          objectFit="contain"
+                          layout="responsive"
+                          alt="img"
+                        />
+                      </Box>
+                      <Box
+                        display="flex"
+                        flexDirection="column"
+                        justifyContent="center"
+                        width="3/4"
+                      >
+                        <Text variant="large" weight="bold" align="left">
+                          {credential.name}
+                        </Text>
+                      </Box>
+                    </Box>
+                  );
                 })}
               </Box>
             </Box>
@@ -190,12 +191,14 @@ export default function ViewSkillModal({
                 icon={<DeleteOutlined style={{ fontSize: "1.3rem" }} />}
                 onClick={async () => {
                   handleClose();
-                  const newSkills = userData.skillsV2.filter(
-                    (skill: any, index: any) => index !== skillId
-                  );
-                  await updateProfile({
-                    skillsV2: newSkills,
-                  });
+                  if (skillId) {
+                    const newSkills = userData.skillsV2.filter(
+                      (skill, index) => index !== skillId
+                    );
+                    await updateProfile({
+                      skillsV2: newSkills,
+                    });
+                  }
                 }}
               >
                 Delete Skill
@@ -206,11 +209,10 @@ export default function ViewSkillModal({
       </Box>
     </Modal>
   );
-}
-const ScrollContainer = styled(Box)`
-  ::-webkit-scrollbar {
-    width: 5px;
-  }
-  overflow-y: auto;
-  max-height: 35rem;
-`;
+};
+
+ViewSkillModal.defaultProps = {
+  skillId: 0,
+};
+
+export default ViewSkillModal;

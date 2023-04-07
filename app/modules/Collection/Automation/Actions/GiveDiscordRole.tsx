@@ -1,4 +1,3 @@
-import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { useCircle } from "@/app/modules/Circle/CircleContext";
 import { Action, CollectionType } from "@/app/types";
@@ -7,22 +6,15 @@ import { useEffect, useState } from "react";
 import DiscordIcon from "@/app/assets/icons/discordIcon.svg";
 import { getGuildRoles, guildIsConnected } from "@/app/services/Discord";
 import Editor from "@/app/common/components/Editor";
-import { useLocalCollection } from "../../Context/LocalCollectionContext";
 import { useLocation } from "react-use";
 
 type Props = {
-  actionMode: "edit" | "create";
   action: Action;
   setAction: (action: Action) => void;
   collection: CollectionType;
 };
 
-export default function GiveDiscordRole({
-  setAction,
-  actionMode,
-  action,
-  collection,
-}: Props) {
+const GiveDiscordRole = ({ setAction, action, collection }: Props) => {
   const [selectedRoles, setSelectedRoles] = useState(
     (action.data?.roles || {}) as { [roleId: string]: boolean }
   );
@@ -51,12 +43,11 @@ export default function GiveDiscordRole({
 
   useEffect(() => {
     if (circle?.discordGuildId) {
-      const discordIsConnected = async () => {
+      const discordIsConnected2 = async () => {
         const res = await guildIsConnected(circle?.discordGuildId);
-        console.log({ res });
         setDiscordIsConnected(res);
       };
-      void discordIsConnected();
+      discordIsConnected2();
     }
   }, [circle?.discordGuildId, justAddedDiscordServer]);
 
@@ -65,12 +56,11 @@ export default function GiveDiscordRole({
     const fetchGuildRoles = async () => {
       const data = await getGuildRoles(circle?.discordGuildId);
       data && setDiscordRoles(data.roles);
-      console.log({ data });
     };
-    if (circle?.discordGuildId) void fetchGuildRoles();
+    if (circle?.discordGuildId) fetchGuildRoles();
   }, [discordIsConnected]);
 
-  if (!discordIsConnected)
+  if (!discordIsConnected) {
     return (
       <Box
         width="48"
@@ -94,6 +84,7 @@ export default function GiveDiscordRole({
         </PrimaryButton>
       </Box>
     );
+  }
 
   return (
     <Box
@@ -113,34 +104,34 @@ export default function GiveDiscordRole({
         <Text variant="label">Pick the roles to give</Text>
       </Box>
       <Stack direction="horizontal" wrap>
-        {discordRoles?.map((role) => {
-          return (
-            <Box
-              key={role.id}
-              cursor="pointer"
-              onClick={() => toggleSelectedRole(role.id)}
-            >
-              {selectedRoles[role.id] ? (
-                <Tag tone={"accent"} hover>
-                  <Box paddingX="2">{role.name}</Box>
-                </Tag>
-              ) : (
-                <Tag hover>
-                  <Box paddingX="2">{role.name}</Box>
-                </Tag>
-              )}
-            </Box>
-          );
-        })}{" "}
+        {discordRoles?.map((role) => (
+          <Box
+            key={role.id}
+            cursor="pointer"
+            onClick={() => toggleSelectedRole(role.id)}
+          >
+            {selectedRoles[role.id] ? (
+              <Tag tone="accent" hover>
+                <Box paddingX="2">{role.name}</Box>
+              </Tag>
+            ) : (
+              <Tag hover>
+                <Box paddingX="2">{role.name}</Box>
+              </Tag>
+            )}
+          </Box>
+        ))}{" "}
       </Stack>
       <Box marginTop="4" marginBottom="-4">
         <Editor
           value={
             ":::tip\nEnsure you have a discord field added to your form which the user will use to connect their discord account. Also, make sure the spect bot's role in your server is placed above the roles you are giving.\n:::"
           }
-          disabled={true}
+          disabled
         />
       </Box>
     </Box>
   );
-}
+};
+
+export default GiveDiscordRole;

@@ -1,6 +1,5 @@
 // create a nextjs api to verufy gogle captcha token
 import { NextApiRequest, NextApiResponse } from "next";
-import axios from "axios";
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   const { token } = req.body;
@@ -8,9 +7,11 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   const url = `https://www.google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${token}`;
 
   try {
-    const response = await axios.post(url);
-    const data = response.data;
-    res.status(200).json(data);
+    const response = await fetch(url, {
+      method: "POST",
+    });
+    const data = await response.json();
+    res.status(200).json({ data });
   } catch (error) {
     res.status(500).json({ error });
   }

@@ -1,3 +1,4 @@
+/* eslint-disable import/no-cycle */
 import { useState, useEffect } from "react";
 import { Box, Button } from "degen";
 import { ProjectOutlined, FieldTimeOutlined } from "@ant-design/icons";
@@ -60,12 +61,12 @@ export const TextBox = styled(Box)`
 const TaskWalletTabs = ({ userData, tab }: UserProps) => {
   const [notifIds, setNotifIds] = useState([] as string[]);
   const [panelTab, setPanelTab] = useState(tab);
-  const [toggle, setToggle] = useState("Assignee");
 
   useEffect(() => {
     if (userData?.notifications?.length > 0) {
       userData?.notifications?.map((notif) => {
-        if (notif.read == false) setNotifIds([...notifIds, notif.timestamp]);
+        if (notif.read === false) setNotifIds([...notifIds, notif.timestamp]);
+        return null;
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -92,26 +93,20 @@ const TaskWalletTabs = ({ userData, tab }: UserProps) => {
         >
           Work
         </Button>
-        {currentUser?.id == userData?.id && (
-          <>
-            <Button
-              size="small"
-              prefix={<FieldTimeOutlined />}
-              variant={
-                panelTab === "Notifications" ? "tertiary" : "transparent"
-              }
-              onClick={() => setPanelTab("Notifications")}
-            >
-              Notifications{" "}
-              {notifIds.length > 0
-                ? "(" + notifIds.length.toString() + ")"
-                : ""}
-            </Button>
-          </>
+        {currentUser?.id === userData?.id && (
+          <Button
+            size="small"
+            prefix={<FieldTimeOutlined />}
+            variant={panelTab === "Notifications" ? "tertiary" : "transparent"}
+            onClick={() => setPanelTab("Notifications")}
+          >
+            Notifications
+            {notifIds.length > 0 ? `(${notifIds.length.toString()})` : ""}
+          </Button>
         )}
       </Box>
       <Box>
-        {panelTab == "Notifications" && <Notifications notifIds={notifIds} />}
+        {panelTab === "Notifications" && <Notifications notifIds={notifIds} />}
       </Box>
     </>
   );

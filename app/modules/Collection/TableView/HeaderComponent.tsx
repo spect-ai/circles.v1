@@ -1,20 +1,13 @@
 import Popover from "@/app/common/components/Popover";
 import { smartTrim } from "@/app/common/utils/utils";
 import { PropertyType } from "@/app/types";
-import {
-  Box,
-  IconDotsHorizontal,
-  IconPencil,
-  Stack,
-  Text,
-  useTheme,
-} from "degen";
+import { Box, IconPencil, Stack, Text, useTheme } from "degen";
 import { AnimatePresence, motion } from "framer-motion";
 import React, { useState } from "react";
 import { toast } from "react-toastify";
 import styled from "styled-components";
-import { getPropertyIcon } from "../../CollectionProject/EditProperty/Utils";
 import { useLocalCollection } from "../Context/LocalCollectionContext";
+import getPropertyIcon from "../../CollectionProject/EditProperty/Utils";
 
 type Props = {
   columnName: string;
@@ -26,7 +19,32 @@ type Props = {
 type PopoverOptionProps = {
   onClick: (e?: React.MouseEvent<HTMLElement>) => void;
   children: React.ReactNode;
-  tourId?: string;
+};
+
+const PopoverOptionContainer = styled(Box)<{ mode: string }>`
+  &:hover {
+    background-color: ${({ mode }) =>
+      mode === "dark" ? "rgba(255, 255, 255, 0.1)" : "rgba(20, 20, 20, 0.1)"};
+  }
+`;
+
+const PopoverOption = ({ children, onClick }: PopoverOptionProps) => {
+  const { mode } = useTheme();
+
+  return (
+    <PopoverOptionContainer
+      padding="4"
+      overflow="hidden"
+      cursor="pointer"
+      onClick={onClick}
+      borderRadius="large"
+      mode={mode}
+    >
+      <Text variant="small" weight="semiBold" ellipsis color="textSecondary">
+        {children}
+      </Text>
+    </PopoverOptionContainer>
+  );
 };
 
 const ScrollContainer = styled(Box)`
@@ -39,12 +57,12 @@ const ScrollContainer = styled(Box)`
   width: 30rem;
 `;
 
-export default function HeaderComponent({
+const HeaderComponent = ({
   columnName,
   setIsEditFieldOpen,
   setPropertyName,
   propertyType,
-}: Props) {
+}: Props) => {
   const [isOpen, setIsOpen] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
   const { localCollection: collection } = useLocalCollection();
@@ -124,71 +142,9 @@ export default function HeaderComponent({
             </Text>
           </Stack>
         </PopoverOption>
-
-        {/* <PopoverOption
-          onClick={() => {
-            sortData(columnName, true);
-            setIsOpen(false);
-          }}
-        >
-          <Stack direction="horizontal" space="2" align="center">
-            <Text>▲</Text>
-            <Text
-              variant="small"
-              weight="semiBold"
-              ellipsis
-              color="textSecondary"
-            >
-              Sort Ascending
-            </Text>
-          </Stack>
-        </PopoverOption>
-        <PopoverOption
-          onClick={() => {
-            sortData(columnName, false);
-            setIsOpen(false);
-          }}
-        >
-          <Stack direction="horizontal" space="2" align="center">
-            <Text>▼</Text>
-            <Text
-              variant="small"
-              weight="semiBold"
-              ellipsis
-              color="textSecondary"
-            >
-              Sort Descending
-            </Text>
-          </Stack>
-        </PopoverOption> */}
       </ScrollContainer>
     </Popover>
   );
-}
-
-const PopoverOption = ({ children, onClick, tourId }: PopoverOptionProps) => {
-  const { mode } = useTheme();
-
-  return (
-    <PopoverOptionContainer
-      padding="4"
-      overflow="hidden"
-      cursor="pointer"
-      onClick={onClick}
-      borderRadius="large"
-      data-tour={tourId}
-      mode={mode}
-    >
-      <Text variant="small" weight="semiBold" ellipsis color="textSecondary">
-        {children}
-      </Text>
-    </PopoverOptionContainer>
-  );
 };
 
-const PopoverOptionContainer = styled(Box)<{ mode: string }>`
-  &:hover {
-    background-color: ${({ mode }) =>
-      mode === "dark" ? "rgba(255, 255, 255, 0.1)" : "rgba(20, 20, 20, 0.1)"};
-  }
-`;
+export default HeaderComponent;

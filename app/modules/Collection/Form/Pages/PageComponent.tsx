@@ -14,15 +14,51 @@ import FieldComponent from "./FieldComponent";
 type Props = {
   id: string;
   name: string;
-  selected?: boolean;
-  onClick?: () => void;
   fields: string[];
   setAddFieldOpen: (value: boolean) => void;
   setPropertyName: (value: string) => void;
   setActivePage: (value: string) => void;
+  selected?: boolean;
+  onClick?: () => void;
 };
 
-export const PageComponent = ({
+const PageButton = styled(Box)<{ selected?: boolean }>`
+  background: ${(props) =>
+    props.selected ? "rgb(255,255,255,0.1)" : "transparent"};
+  &:hover {
+    background: rgb(255, 255, 255, 0.1);
+  }
+  width: fit-content;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+`;
+
+const NameInput = styled.input<{ mode: string }>`
+  background: transparent;
+  border: 0;
+  border-style: none;
+  border-color: transparent;
+  outline: none;
+  outline-offset: 0;
+  box-shadow: none;
+  font-size: 0.75rem;
+  caret-color: ${(props) =>
+    props.mode === "dark" ? "rgb(255, 255, 255, 0.7)" : "rgb(20, 20, 20, 0.7)"};
+  color: ${(props) =>
+    props.mode === "dark"
+      ? "rgb(255, 255, 255, 0.35)"
+      : "rgb(20, 20, 20, 0.35)"};
+  font-weight: 600;
+  text-transform: uppercase;
+  width: fit-content;
+  letter-spacing: 0.02rem;
+  margin-top: 0.03rem;
+`;
+
+const PageComponent = ({
   id,
   name,
   selected,
@@ -39,15 +75,12 @@ export const PageComponent = ({
 
   const [hover, setHover] = useState(false);
 
-  const pages = collection.formMetadata.pages;
-  const pageOrder = collection.formMetadata.pageOrder;
+  const { pages } = collection.formMetadata;
+  const { pageOrder } = collection.formMetadata;
 
-  const { data: currentUser, refetch: fetchUser } = useQuery<UserType>(
-    "getMyUser",
-    {
-      enabled: false,
-    }
-  );
+  const { data: currentUser } = useQuery<UserType>("getMyUser", {
+    enabled: false,
+  });
 
   if (pages[id].movable) {
     return (
@@ -133,10 +166,10 @@ export const PageComponent = ({
             </Stack>
 
             <Droppable droppableId={id} type="field">
-              {(provided) => (
+              {(provided2) => (
                 <Box
-                  {...provided.droppableProps}
-                  ref={provided.innerRef}
+                  {...provided2.droppableProps}
+                  ref={provided2.innerRef}
                   onClick={onClick}
                 >
                   {fields.map((field, index) => (
@@ -149,7 +182,7 @@ export const PageComponent = ({
                       setPropertyName={setPropertyName}
                     />
                   ))}
-                  {provided.placeholder}
+                  {provided2.placeholder}
                   {!fields.length && <Box height="4" />}
                   <Box
                     marginTop="2"
@@ -183,54 +216,24 @@ export const PageComponent = ({
         )}
       </Draggable>
     );
-  } else {
-    return (
-      <PageButton
-        selected={selected}
-        onClick={onClick}
-        paddingX="4"
-        paddingY="1"
-        borderWidth="0.375"
-        borderRadius="medium"
-      >
-        <Text variant="label">{name}</Text>
-      </PageButton>
-    );
   }
+  return (
+    <PageButton
+      selected={selected}
+      onClick={onClick}
+      paddingX="4"
+      paddingY="1"
+      borderWidth="0.375"
+      borderRadius="medium"
+    >
+      <Text variant="label">{name}</Text>
+    </PageButton>
+  );
 };
 
-const PageButton = styled(Box)<{ selected?: boolean }>`
-  background: ${(props) =>
-    props.selected ? "rgb(255,255,255,0.1)" : "transparent"};
-  &:hover {
-    background: rgb(255, 255, 255, 0.1);
-  }
-  width: fit-content;
-  cursor: pointer;
-  transition: background 0.2s ease;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-`;
+PageComponent.defaultProps = {
+  onClick: () => {},
+  selected: false,
+};
 
-const NameInput = styled.input<{ mode: string }>`
-  background: transparent;
-  border: 0;
-  border-style: none;
-  border-color: transparent;
-  outline: none;
-  outline-offset: 0;
-  box-shadow: none;
-  font-size: 0.75rem;
-  caret-color: ${(props) =>
-    props.mode === "dark" ? "rgb(255, 255, 255, 0.7)" : "rgb(20, 20, 20, 0.7)"};
-  color: ${(props) =>
-    props.mode === "dark"
-      ? "rgb(255, 255, 255, 0.35)"
-      : "rgb(20, 20, 20, 0.35)"};
-  font-weight: 600;
-  text-transform: uppercase;
-  width: fit-content;
-  letter-spacing: 0.02rem;
-  margin-top: 0.03rem;
-`;
+export default PageComponent;

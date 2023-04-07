@@ -1,9 +1,9 @@
 import RichMarkdownEditor from "rich-markdown-editor";
 import { toast } from "react-toastify";
-import dark, { light } from "./styles/theme";
-import { storeImage } from "../../utils/ipfs";
-import React, { memo, useState } from "react";
+import { memo, useState } from "react";
 import { useTheme } from "degen";
+import { dark, light } from "./styles/theme";
+import { storeImage } from "../../utils/ipfs";
 
 type Props = {
   value?: string;
@@ -16,7 +16,7 @@ type Props = {
   isDirty?: boolean;
 };
 
-function Editor({
+const Editor = ({
   value,
   placeholder,
   disabled,
@@ -25,7 +25,7 @@ function Editor({
   onChange,
   isDirty,
   setIsDirty,
-}: Props) {
+}: Props) => {
   const [content, setcontent] = useState(value);
   const { mode } = useTheme();
 
@@ -43,7 +43,6 @@ function Editor({
       }}
       placeholder={placeholder}
       uploadImage={async (file) => {
-        console.log({ file });
         const { imageGatewayURL } = await toast.promise(storeImage(file), {
           pending: "Upload is pending",
           success: {
@@ -51,7 +50,6 @@ function Editor({
           },
           error: "Some error occured🤯",
         });
-        console.log({ imageGatewayURL });
         return imageGatewayURL;
       }}
       readOnly={disabled || false}
@@ -62,7 +60,7 @@ function Editor({
       }}
     />
   );
-}
+};
 
 export default memo(Editor);
 

@@ -25,100 +25,90 @@ type Props = {
   };
 };
 
-export default function SingleAction({
+const SingleAction = ({
   actionType,
   actionMode,
   action,
   setAction,
   collection,
   invalidActions,
-}: Props) {
-  return (
-    <Box paddingX="1" width="full">
-      {actionType === "giveRole" && (
-        <GiveRole
-          action={action}
-          actionMode={actionMode}
-          setAction={setAction}
-        />
+}: Props) => (
+  <Box paddingX="1" width="full">
+    {actionType === "giveRole" && (
+      <GiveRole action={action} setAction={setAction} />
+    )}
+    {actionType === "sendEmail" && (
+      <SendEmail
+        action={action}
+        setAction={setAction}
+        collection={collection}
+      />
+    )}
+    {actionType === "createDiscordChannel" && (
+      <CreateDiscordChannel
+        action={action}
+        actionMode={actionMode}
+        setAction={setAction}
+        collection={collection}
+      />
+    )}
+    {actionType === "createDiscordThread" && (
+      <CreateDiscordThread
+        action={action}
+        setAction={setAction}
+        collection={collection}
+      />
+    )}
+    {actionType === "giveDiscordRole" && (
+      <GiveDiscordRole
+        action={action}
+        setAction={setAction}
+        collection={collection}
+      />
+    )}
+    {actionType === "createCard" && (
+      <CreateCard
+        action={action}
+        actionMode={actionMode}
+        setAction={setAction}
+        collection={collection}
+      />
+    )}
+    {actionType === "postOnDiscord" && (
+      <PostCardOnDiscord
+        action={action}
+        setAction={setAction}
+        collection={collection}
+      />
+    )}
+    {actionType === "closeCard" && (
+      <CloseCard
+        action={action}
+        actionMode={actionMode}
+        setAction={setAction}
+        collection={collection}
+      />
+    )}
+    {actionType === "initiatePendingPayment" && (
+      <InitiatePendingPayment
+        action={action}
+        setAction={setAction}
+        collection={collection}
+      />
+    )}
+    {actionType === "postOnDiscordThread" && (
+      <PostCardOnDiscordThread
+        action={action}
+        setAction={setAction}
+        collection={collection}
+      />
+    )}
+    <Box marginTop="4">
+      {invalidActions[actionType]?.isValid === false && (
+        <Text color="red">{invalidActions[actionType].message}</Text>
       )}
-      {actionType === "sendEmail" && (
-        <SendEmail
-          action={action}
-          actionMode={actionMode}
-          setAction={setAction}
-          collection={collection}
-        />
-      )}
-      {actionType === "createDiscordChannel" && (
-        <CreateDiscordChannel
-          action={action}
-          actionMode={actionMode}
-          setAction={setAction}
-          collection={collection}
-        />
-      )}
-      {actionType === "createDiscordThread" && (
-        <CreateDiscordThread
-          action={action}
-          actionMode={actionMode}
-          setAction={setAction}
-          collection={collection}
-        />
-      )}
-      {actionType === "giveDiscordRole" && (
-        <GiveDiscordRole
-          action={action}
-          actionMode={actionMode}
-          setAction={setAction}
-          collection={collection}
-        />
-      )}
-      {actionType === "createCard" && (
-        <CreateCard
-          action={action}
-          actionMode={actionMode}
-          setAction={setAction}
-          collection={collection}
-        />
-      )}
-      {actionType === "postOnDiscord" && (
-        <PostCardOnDiscord
-          action={action}
-          actionMode={actionMode}
-          setAction={setAction}
-          collection={collection}
-        />
-      )}
-      {actionType === "closeCard" && (
-        <CloseCard
-          action={action}
-          actionMode={actionMode}
-          setAction={setAction}
-          collection={collection}
-        />
-      )}
-      {actionType === "initiatePendingPayment" && (
-        <InitiatePendingPayment
-          action={action}
-          actionMode={actionMode}
-          setAction={setAction}
-          collection={collection}
-        />
-      )}
-      {actionType === "postOnDiscordThread" && (
-        <PostCardOnDiscordThread
-          action={action}
-          actionMode={actionMode}
-          setAction={setAction}
-          collection={collection}
-        />
-      )}
-      <Box marginTop="4">
-        {invalidActions[actionType]?.isValid === false && (
-          <Text color="red">{invalidActions[actionType].message}</Text>
-        )}
-      </Box>
     </Box>
-  );
-}
+  </Box>
+);
+
+export default SingleAction;

@@ -2,13 +2,12 @@ import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { Box } from "degen";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
 import Filter from "./Filter";
-import IncentiveFilter from "./IncentiveFilter";
 import MyTasks from "./MyTasks";
 import PaymentFilter from "./PaymentFilter";
-import { SearchCard } from "./Search";
 import Sort from "./Sort";
+import SearchCard from "./Search";
 
-export default function Filtering() {
+const Filtering = () => {
   const { localCollection: collection } = useLocalCollection();
 
   const { formActions } = useRoleGate();
@@ -45,4 +44,6 @@ export default function Filtering() {
       </Box>
     </Box>
   );
-}
+};
+
+export default Filtering;

@@ -1,28 +1,28 @@
+/* eslint-disable no-param-reassign */
 import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { Box, IconCheck, MediaPicker, Stack, Text } from "degen";
 import { AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import csvToJson from "csvtojson";
-import MapField from "./MapField";
 import { Property } from "@/app/types";
 import Dropdown from "@/app/common/components/Dropdown";
 import { convertToId, isEmail, isURL } from "@/app/common/utils/utils";
-import { useCircle } from "../CircleContext";
 import { toast } from "react-toastify";
 import { isAddress } from "ethers/lib/utils";
 import { importFromCsv } from "@/app/services/Collection";
+import { Accept } from "degen/dist/types/components/MediaPicker/MediaPicker";
+import { useCircle } from "../CircleContext";
+import MapField from "./MapField";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
 
-type Props = {};
-
-export default function ImportTasks({}: Props) {
+const ImportTasks = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [step, setStep] = useState(0);
 
   const [loading, setLoading] = useState(false);
-  const [data, setData] = useState([]);
-  const [userMapping, setUserMapping] = useState({} as any);
+  const [data, setData] = useState<Record<string, unknown>[]>([]);
+  const [userMapping, setUserMapping] = useState();
   const [properties, setProperties] = useState<{
     [key: string]: Property;
   }>({});
@@ -49,7 +49,7 @@ export default function ImportTasks({}: Props) {
                   <Text variant="label">Upload csv</Text>
                   <MediaPicker
                     label="Choose or drag and drop csv"
-                    accept={".csv" as any}
+                    accept={".csv" as unknown as Accept}
                     onChange={(file) => {
                       const reader = new FileReader();
                       reader.readAsText(file);
@@ -57,12 +57,11 @@ export default function ImportTasks({}: Props) {
                         const text = (e.target?.result as string) || "";
                         csvToJson()
                           .fromString(text)
-                          .then((json) => {
-                            console.log({ json });
-                            setData(json as any);
+                          .then((json: Record<string, unknown>[]) => {
+                            setData(json);
                             setProperties(
-                              Object.keys(json[0]).reduce((prev, curr) => {
-                                return {
+                              Object.keys(json[0]).reduce(
+                                (prev, curr) => ({
                                   ...prev,
                                   [curr]: {
                                     name: curr,
@@ -70,8 +69,9 @@ export default function ImportTasks({}: Props) {
                                     required: false,
                                     isPartOfFormView: false,
                                   },
-                                };
-                              }, {})
+                                }),
+                                {}
+                              )
                             );
                           });
                       };
@@ -115,7 +115,6 @@ export default function ImportTasks({}: Props) {
                       loading={loading}
                       onClick={() => {
                         setStep(step + 1);
-                        // find a property called status or Status in the properties and set it as default group by column
                         const defaultGroupByColumn = Object.keys(
                           properties
                         ).find((key) => key.toLowerCase() === "status");
@@ -123,7 +122,6 @@ export default function ImportTasks({}: Props) {
                           setGroupByColumn(defaultGroupByColumn);
                         }
 
-                        // find a property called title or Title in the properties and set it as default title column or name or Name
                         const defaultTitleColumn = Object.keys(properties).find(
                           (key) =>
                             key.toLowerCase() === "title" ||
@@ -133,7 +131,6 @@ export default function ImportTasks({}: Props) {
                           setTitleColumn(defaultTitleColumn);
                         }
 
-                        // find a property called description or Description in the properties and set it as default description column
                         const defaultDescriptionColumn = Object.keys(
                           properties
                         ).find((key) => key.toLowerCase() === "description");
@@ -221,131 +218,127 @@ export default function ImportTasks({}: Props) {
                         setLoading(true);
                         // duplicate the data
                         const formattedData = JSON.parse(JSON.stringify(data));
-                        console.log({ data });
                         let shouldBreak = false;
-                        formattedData.map((item: any) => {
+                        formattedData.map((item: Record<string, unknown>) => {
                           if (shouldBreak) {
-                            return;
+                            return null;
                           }
                           return Object.keys(item).forEach((key) => {
-                            console.log({ key });
                             if (!properties[key] || !item[key]) {
                               delete item[key];
-                            } else {
-                              if (properties[key].type === "singleSelect") {
-                                // if it has square brackets, remove them
-                                if (
-                                  item[key].startsWith("[") &&
-                                  item[key].endsWith("]")
-                                ) {
-                                  item[key] = item[key].slice(1, -1);
-                                }
-                                if (item[key].split(",").length > 1) {
-                                  toast.error(
-                                    `Invalid value in ${key} column. Only one value is allowed. Please check if the field type is correct.`
-                                  );
-                                  shouldBreak = true;
-                                  return;
-                                }
-                                item[key] = {
-                                  label: item[key],
-                                  value: convertToId(item[key]),
-                                };
-                              } else if (
-                                properties[key].type === "multiSelect"
+                            } else if (
+                              properties[key].type === "singleSelect"
+                            ) {
+                              // if it has square brackets, remove them
+                              if (
+                                (item[key] as string).startsWith("[") &&
+                                (item[key] as string).endsWith("]")
                               ) {
-                                // if it has square brackets, remove them
-                                if (
-                                  item[key].startsWith("[") &&
-                                  item[key].endsWith("]")
-                                ) {
-                                  item[key] = item[key].slice(1, -1);
-                                }
-                                item[key] = item[key]
-                                  ?.split(",")
-                                  .map((label: string) => ({
-                                    label,
-                                    value: convertToId(label),
-                                  }));
-                              } else if (properties[key].type === "date") {
-                                if (isNaN(Date.parse(item[key]))) {
-                                  toast.error(
-                                    `Invalid date in ${key} column. Please check if the field type is correct.`
-                                  );
-                                  setLoading(false);
-                                  shouldBreak = true;
-                                }
+                                item[key] = (item[key] as string).slice(1, -1);
+                              }
+                              if ((item[key] as string).split(",").length > 1) {
+                                toast.error(
+                                  `Invalid value in ${key} column. Only one value is allowed. Please check if the field type is correct.`
+                                );
+                                shouldBreak = true;
+                                return;
+                              }
+                              item[key] = {
+                                label: item[key],
+                                value: convertToId(item[key] as string),
+                              };
+                            } else if (properties[key].type === "multiSelect") {
+                              // if it has square brackets, remove them
+                              if (
+                                (item[key] as string).startsWith("[") &&
+                                (item[key] as string).endsWith("]")
+                              ) {
+                                item[key] = (item[key] as string).slice(1, -1);
+                              }
+                              item[key] = (item[key] as string)
+                                ?.split(",")
+                                .map((label: string) => ({
+                                  label,
+                                  value: convertToId(label),
+                                }));
+                            } else if (properties[key].type === "date") {
+                              if (
+                                Number.isNaN(Date.parse(item[key] as string))
+                              ) {
+                                toast.error(
+                                  `Invalid date in ${key} column. Please check if the field type is correct.`
+                                );
+                                setLoading(false);
+                                shouldBreak = true;
+                              }
 
-                                item[key] = new Date(item[key]);
-                                console.log({ item });
-                              } else if (properties[key].type === "number") {
-                                console.log({ item: item[key] });
-                                item[key] = Number(item[key]);
-                                console.log("hidsjfisf");
-                                if (isNaN(item[key])) {
-                                  toast.error(
-                                    `Invalid number in ${key} column. Please check if the field type is correct.`
-                                  );
-                                  setLoading(false);
-                                  shouldBreak = true;
-                                }
-                              } else if (properties[key].type === "user") {
-                                item[key] = userMapping[item[key]];
-                              } else if (
-                                properties[key].type === "ethAddress"
-                              ) {
-                                console.log(isAddress(item[key]));
-                                if (!isAddress(item[key])) {
-                                  toast.error(
-                                    `Invalid address in ${key} column. Please check if the field type is correct.`
-                                  );
-                                  setLoading(false);
-                                  shouldBreak = true;
-                                }
-                              } else if (properties[key].type === "email") {
-                                if (!isEmail(item[key])) {
-                                  toast.error(
-                                    `Invalid email in ${key} column. Please check if the field type is correct.`
-                                  );
-                                  setLoading(false);
-                                  shouldBreak = true;
-                                }
-                              } else if (properties[key].type === "singleURL") {
-                                if (!isURL(item[key])) {
-                                  toast.error(
-                                    `Invalid url in ${key} column. Please check if the field type is correct.`
-                                  );
-                                  setLoading(false);
-                                  shouldBreak = true;
-                                }
+                              item[key] = new Date(item[key] as string);
+                            } else if (properties[key].type === "number") {
+                              item[key] = Number(item[key]);
+                              if (Number.isNaN(item[key])) {
+                                toast.error(
+                                  `Invalid number in ${key} column. Please check if the field type is correct.`
+                                );
+                                setLoading(false);
+                                shouldBreak = true;
+                              }
+                            } else if (properties[key].type === "user") {
+                              item[key] = (
+                                userMapping as unknown as Record<
+                                  string,
+                                  unknown
+                                >
+                              )[item[key] as string];
+                            } else if (properties[key].type === "ethAddress") {
+                              if (!isAddress(item[key] as string)) {
+                                toast.error(
+                                  `Invalid address in ${key} column. Please check if the field type is correct.`
+                                );
+                                setLoading(false);
+                                shouldBreak = true;
+                              }
+                            } else if (properties[key].type === "email") {
+                              if (!isEmail(item[key] as string)) {
+                                toast.error(
+                                  `Invalid email in ${key} column. Please check if the field type is correct.`
+                                );
+                                setLoading(false);
+                                shouldBreak = true;
+                              }
+                            } else if (properties[key].type === "singleURL") {
+                              if (!isURL(item[key] as string)) {
+                                toast.error(
+                                  `Invalid url in ${key} column. Please check if the field type is correct.`
+                                );
+                                setLoading(false);
+                                shouldBreak = true;
                               }
                             }
                             if (key === titleColumn) {
-                              item["Title"] = item[key];
+                              item.Title = item[key];
                               titleColumn !== "Title" && delete item[key];
                             }
                             if (key === descriptionColumn) {
-                              item["Description"] = item[key];
+                              item.Description = item[key];
                               descriptionColumn !== "Description" &&
                                 delete item[key];
                             }
                           });
                         });
                         // rename title and description columns
-                        properties["Title"] = {
+                        properties.Title = {
                           ...properties[titleColumn],
                           name: "Title",
                         };
                         titleColumn !== "Title" &&
                           delete properties[titleColumn];
-                        properties["Description"] = {
+                        properties.Description = {
                           ...properties[descriptionColumn],
                           name: "Description",
                         };
                         descriptionColumn !== "Description" &&
                           delete properties[descriptionColumn];
 
-                        console.log({ formattedData, properties });
                         const res = await importFromCsv({
                           data: formattedData,
                           collectionId: collection.id,
@@ -353,7 +346,6 @@ export default function ImportTasks({}: Props) {
                           collectionProperties: properties,
                           circleId: circle?.id || "",
                         });
-                        console.log({ res });
                         updateCollection(res.collection);
                         setLoading(false);
                         setIsOpen(false);
@@ -370,4 +362,6 @@ export default function ImportTasks({}: Props) {
       </AnimatePresence>
     </Box>
   );
-}
+};
+
+export default ImportTasks;

@@ -1,31 +1,16 @@
-import { Chain, Registry, Token } from "@/app/types";
-import { id } from "ethers/lib/utils";
+import { Chain, Registry } from "@/app/types";
 
 export function getFlattenedNetworks(registry: Registry) {
   if (!registry) return null;
   const networks: Array<Chain> = [];
-  for (const networkId of Object.keys(registry)) {
+  Object.keys(registry).forEach((networkId) => {
     networks.push({
       name: registry[networkId].name,
       chainId: networkId,
     } as Chain);
-  }
+  });
   return networks;
 }
-
-// export function getFlattenedTokens(registry: Registry, chainId: string) {
-//   const tokens: Array<Token> = [];
-//     for (const tokenAddress of Object.keys(registry[chainId].tokenDetails)) {
-//       console.log({ tokenAddress });
-//       tokens.push({
-//         address: tokenAddress,
-//         symbol: registry[chainId].tokenDetails[tokenAddress].symbol,
-//         name: registry[chainId].tokenDetails[tokenAddress].name,
-//       });
-//     }
-//   }
-//   return tokens;
-// }
 
 export function getFlattenedCurrencies(registry: Registry, chainId: string) {
   if (!chainId || !registry) {

@@ -2,19 +2,17 @@ import { Box, Stack, useTheme } from "degen";
 import { AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import { ToastContainer } from "react-toastify";
+import { useRouter } from "next/router";
+import Help from "@/app/common/components/Help";
 import CollectionProject from "../CollectionProject";
 import CollectionHeading from "./CollectionHeading";
 import { useLocalCollection } from "./Context/LocalCollectionContext";
 import { Form } from "./Form";
 import TableView from "./TableView";
 import FAQModal from "../Dashboard/FAQModal";
-import { useRouter } from "next/router";
 import { SkeletonLoader } from "./SkeletonLoader";
-import Help from "@/app/common/components/Help";
-import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { migrateAllCOllections } from "@/app/services/Collection";
 
-export function Collection() {
+const Collection = () => {
   const {
     view,
     setView,
@@ -59,7 +57,7 @@ export function Collection() {
         {faqOpen && <FAQModal handleClose={() => setFaqOpen(false)} />}
       </AnimatePresence>
       {collection.collectionType === 0 && (
-        <Stack space={"0"}>
+        <Stack space="0">
           <CollectionHeading />
           {view === 0 && <Form />}
           <Box
@@ -73,11 +71,7 @@ export function Collection() {
             }}
             marginTop="4"
           >
-            {view === 1 && (
-              <>
-                <TableView />
-              </>
-            )}
+            {view === 1 && <TableView />}
           </Box>
         </Stack>
       )}
@@ -85,4 +79,6 @@ export function Collection() {
       <Help setFaqOpen={setFaqOpen} />
     </>
   );
-}
+};
+
+export default Collection;

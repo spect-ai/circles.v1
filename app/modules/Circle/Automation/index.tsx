@@ -7,7 +7,7 @@ import { ToastContainer } from "react-toastify";
 import styled from "styled-components";
 import AutomationModal from "../../Collection/Automation/AutomationDrawer";
 import { useCircle } from "../CircleContext";
-import { AutomationHeading } from "./AutomationHeading";
+import AutomationHeading from "./AutomationHeading";
 
 const ScrollContainer = styled(Box)`
   overflow-y: auto;
@@ -35,7 +35,7 @@ const Container = styled(Box)<{ mode: string }>`
   height: 4rem;
 `;
 
-export default function AutomationCenter() {
+const AutomationCenter = () => {
   const { circle } = useCircle();
   const { canDo } = useRoleGate();
   const router = useRouter();
@@ -55,11 +55,11 @@ export default function AutomationCenter() {
           }}
         />{" "}
         <AutomationModal />
-        <Box marginX={"8"} marginTop="2">
+        <Box marginX="8" marginTop="2">
           <AutomationHeading />
 
           {(circle?.automations === undefined ||
-            Object.entries(circle?.automations).length == 0) && (
+            Object.entries(circle?.automations).length === 0) && (
             <Box
               style={{
                 margin: "12% 20%",
@@ -72,10 +72,10 @@ export default function AutomationCenter() {
               <BiBot
                 style={{ fontSize: "5rem", color: "rgb(191, 90, 242, 0.7)" }}
               />
-              <Text variant="large" color={"textTertiary"} align="center">
+              <Text variant="large" color="textTertiary" align="center">
                 {canDo("manageCircleSettings")
-                  ? `Create Automations to reduce repetitive tasks.`
-                  : `Ouch ! This Circle doesnot have automations. And You do not have permission to create new automations.`}
+                  ? "Create Automations to reduce repetitive tasks."
+                  : "Ouch ! This Circle doesnot have automations. And You do not have permission to create new automations."}
               </Text>
             </Box>
           )}
@@ -93,20 +93,16 @@ export default function AutomationCenter() {
                   const automations =
                     circle.automationsIndexedByCollection[collection];
                   if (automations.length === 0) return null;
-                  const col = Object.values(circle.collections).find((col) => {
-                    return col.slug === collection;
-                  });
+                  const col = Object.values(circle.collections).find(
+                    (col2) => col2.slug === collection
+                  );
                   return (
                     <Box>
-                      <Stack direction="horizontal" space="1" align={"center"}>
-                        <Text variant="large" color={"text"}>
+                      <Stack direction="horizontal" space="1" align="center">
+                        <Text variant="large" color="text">
                           {col?.name}
                         </Text>
-                        <Stack
-                          direction="horizontal"
-                          space="1"
-                          align={"center"}
-                        >
+                        <Stack direction="horizontal" space="1" align="center">
                           <Button
                             shape="circle"
                             variant="transparent"
@@ -130,7 +126,7 @@ export default function AutomationCenter() {
                         </Stack>
                       </Stack>
                       <Row id="row">
-                        {automations?.map((auto, idx) => {
+                        {automations?.map((auto) => {
                           const automat = circle.automations[auto];
                           return (
                             <Col
@@ -154,7 +150,7 @@ export default function AutomationCenter() {
                               >
                                 <Text
                                   variant="base"
-                                  color={"textTertiary"}
+                                  color="textTertiary"
                                   align="center"
                                   ellipsis
                                 >
@@ -173,7 +169,8 @@ export default function AutomationCenter() {
         </Box>
       </>
     );
-  } else {
-    return null;
   }
-}
+  return null;
+};
+
+export default AutomationCenter;

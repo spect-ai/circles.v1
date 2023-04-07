@@ -1,4 +1,3 @@
-import { CardType } from "@/app/types";
 import { toast } from "react-toastify";
 
 export const getLensProfileHandles = async () => {
@@ -13,12 +12,11 @@ export const getLensProfileHandles = async () => {
   return null;
 };
 
-export const updateProfileData = async (body: object) => {
+export const updateProfileData = async () => {
   const res = await fetch(`${process.env.API_HOST}/user/lensHandles`, {
     credentials: "include",
     method: "PATCH",
   });
-  console.log(res);
   if (res.ok) {
     const data = await res.json();
     return data;

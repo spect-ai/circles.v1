@@ -5,7 +5,34 @@ import { AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import styled from "styled-components";
 
-export default function CreateCredentials() {
+export const CredentialTypeCard = styled(Box)<{
+  mode: string;
+  selected: boolean;
+}>`
+  display: flex;
+  flex-direction: column;
+  min-height: 6vh;
+  margin-top: 0.5rem;
+  padding: 0.4rem 1rem 0;
+  border-radius: 0.5rem;
+  border: solid 2px
+    ${(props) =>
+      props.selected
+        ? "rgb(191, 90, 242)"
+        : props.mode === "dark"
+        ? "rgb(255, 255, 255, 0.05)"
+        : "rgb(20, 20, 20, 0.05)"};
+  &:hover {
+    border: solid 2px rgb(191, 90, 242);
+    transition-duration: 0.7s;
+    cursor: pointer;
+  }
+  position: relative;
+  transition: all 0.3s ease-in-out;
+  width: 100%;
+`;
+
+const CreateCredentials = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [modalMode, setModalMode] =
     useState<"pickType" | "pickReceipient" | "create">("create");
@@ -102,9 +129,6 @@ export default function CreateCredentials() {
                       POAP{" "}
                     </Text>
                   </CredentialTypeCard>
-                  {/* <CredentialTypeCard mode={mode}>
-                    <Text variant="large" weight="semiBold"> Zk-badges </Text>
-                    </CredentialTypeCard> */}
                 </Box>
               </Box>
             </Modal>
@@ -161,31 +185,6 @@ export default function CreateCredentials() {
       )}
     </Box>
   );
-}
+};
 
-export const CredentialTypeCard = styled(Box)<{
-  mode: string;
-  selected: boolean;
-}>`
-  display: flex;
-  flex-direction: column;
-  min-height: 6vh;
-  margin-top: 0.5rem;
-  padding: 0.4rem 1rem 0;
-  border-radius: 0.5rem;
-  border: solid 2px
-    ${(props) =>
-      props.selected
-        ? "rgb(191, 90, 242)"
-        : props.mode === "dark"
-        ? "rgb(255, 255, 255, 0.05)"
-        : "rgb(20, 20, 20, 0.05)"};
-  &:hover {
-    border: solid 2px rgb(191, 90, 242);
-    transition-duration: 0.7s;
-    cursor: pointer;
-  }
-  position: relative;
-  transition: all 0.3s ease-in-out;
-  width: 100%;
-`;
+export default CreateCredentials;

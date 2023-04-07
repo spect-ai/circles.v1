@@ -7,7 +7,6 @@ import Image from "next/image";
 import { Container, Row, Col } from "react-grid-system";
 import OpenseaIcon from "@/app/assets/icons/openseaLogo.svg";
 import RaribleIcon from "@/app/assets/icons/raribleLogo.svg";
-import { ScrollContainer } from "./index";
 
 const KudoContainer = styled(Box)<{ mode: string }>`
   margin-top: 1rem;
@@ -27,6 +26,32 @@ const KudoContainer = styled(Box)<{ mode: string }>`
   transition: all 0.3s ease-in-out;
 `;
 
+const ScrollContainer = styled(Box)`
+  @media (max-width: 768px) {
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    padding-right: 1.2rem;
+  }
+  @media (max-width: 1028px) and (min-width: 768px) {
+    width: 100%;
+  }
+  overflow: auto;
+  width: 50vw;
+  height: 80vh;
+  padding-right: 2rem;
+  ::-webkit-scrollbar {
+    display: none;
+  }
+`;
+
+export const IconButton = styled(Box)`
+  cursor: pointer;
+  &:hover {
+    color: rgb(191, 90, 242, 1);
+  }
+`;
+
 const Kudos = ({ userData }: { userData: UserType }) => {
   const { mode } = useTheme();
   const { getKudosOfUser } = useCredentials();
@@ -38,12 +63,11 @@ const Kudos = ({ userData }: { userData: UserType }) => {
       setLoading(true);
       getKudosOfUser(userData.ethAddress)
         .then((res) => {
-          console.log(res);
           setKudos(res.data);
           setLoading(false);
         })
         .catch((err) => {
-          console.log(err);
+          console.error(err);
           setLoading(false);
         });
     }
@@ -51,7 +75,7 @@ const Kudos = ({ userData }: { userData: UserType }) => {
 
   return (
     <ScrollContainer>
-      {kudos?.length == 0 && !loading && (
+      {kudos?.length === 0 && !loading && (
         <Box style={{ margin: "35vh 15vw" }}>
           <Text color="accent" align="center">
             No Kudos to show.
@@ -62,10 +86,10 @@ const Kudos = ({ userData }: { userData: UserType }) => {
         <Row>
           {!loading &&
             kudos?.length > 0 &&
-            kudos?.map((kudo, index) => {
-              if (kudo.claimStatus === "claimed")
+            kudos?.map((kudo) => {
+              if (kudo.claimStatus === "claimed") {
                 return (
-                  <Col key={index} xs={12} sm={6} md={6} lg={4}>
+                  <Col key={kudo.assetUrl} xs={12} sm={6} md={6} lg={4}>
                     <KudoContainer mode={mode}>
                       <Box
                         display="flex"
@@ -126,18 +150,13 @@ const Kudos = ({ userData }: { userData: UserType }) => {
                     </KudoContainer>
                   </Col>
                 );
+              }
+              return null;
             })}
         </Row>
       </Container>
     </ScrollContainer>
   );
 };
-
-export const IconButton = styled(Box)`
-  cursor: pointer;
-  &:hover {
-    color: rgb(191, 90, 242, 1);
-  }
-`;
 
 export default memo(Kudos);

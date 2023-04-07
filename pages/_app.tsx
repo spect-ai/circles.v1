@@ -4,6 +4,7 @@ import type { AppProps } from "next/app";
 import { Hydrate, QueryClientProvider } from "react-query";
 import mixpanel from "@/app/common/utils/mixpanel";
 import { FlagsProvider } from "react-feature-flags";
+// eslint-disable-next-line import/no-extraneous-dependencies
 import {
   avalanche,
   bsc,
@@ -40,7 +41,6 @@ import queryClient from "@/app/common/utils/queryClient";
 import { useEffect } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import ErrorFallBack from "@/app/common/components/Error";
-import * as gtag from "../lib/gtag";
 
 import "@rainbow-me/rainbowkit/styles.css";
 
@@ -51,7 +51,13 @@ import {
   RainbowKitAuthenticationProvider,
   connectorsForWallets,
 } from "@rainbow-me/rainbowkit";
-import { configureChains, createClient, useAccount, WagmiConfig } from "wagmi";
+import {
+  configureChains,
+  createClient,
+  useAccount,
+  WagmiConfig,
+  Chain,
+} from "wagmi";
 import { publicProvider } from "wagmi/providers/public";
 import { SiweMessage } from "siwe";
 import { UserType } from "@/app/types";
@@ -72,64 +78,65 @@ import { ArcanaConnector } from "@arcana/auth-wagmi";
 import { metaMaskWallet, rainbowWallet } from "@rainbow-me/rainbowkit/wallets";
 import useProfileUpdate from "@/app/services/Profile/useProfileUpdate";
 
-const ArcanaRainbowConnector = ({ chains }: any) => {
-  return {
-    id: "arcana-auth",
-    name: "Use Discord, Github or Email",
-    iconUrl:
-      "https://spect.infura-ipfs.io/ipfs/QmcBLdB23dQkXdMKFHAjVKMKBPJF82XkqR5ZkxyCk6aset",
-    iconBackground: "",
-    createConnector: () => {
-      const connector = new ArcanaConnector({
-        chains,
-        options: {
-          //clientId : Arcana Unique App Identifier via Dashboard
-          clientId: process.env.NEXT_PUBLIC_ARCANA_CLIENT_ID,
-        },
-      });
-      return {
-        connector,
-      };
-    },
-  };
-};
+import * as gtag from "../lib/gtag";
+
+const ArcanaRainbowConnector = ({ chains }: { chains: Chain[] }) => ({
+  id: "arcana-auth",
+  name: "Use Discord, Github or Email",
+  iconUrl:
+    "https://spect.infura-ipfs.io/ipfs/QmcBLdB23dQkXdMKFHAjVKMKBPJF82XkqR5ZkxyCk6aset",
+  iconBackground: "",
+  createConnector: () => {
+    const connector = new ArcanaConnector({
+      chains,
+      options: {
+        // clientId : Arcana Unique App Identifier via Dashboard
+        clientId: process.env.NEXT_PUBLIC_ARCANA_CLIENT_ID,
+      },
+    });
+    return {
+      connector,
+    };
+  },
+});
 
 const isProd = process.env.NODE_ENV === "production";
 
 const nodes = {
-  "1": {
-    http: `https://eth-mainnet.g.alchemy.com/v2/97jAndtiByElrpSUeLEP7oZsXl-1V675`,
-    webSocket: `wss://eth-mainnet.g.alchemy.com/v2/97jAndtiByElrpSUeLEP7oZsXl-1V675`,
+  1: {
+    http: "https://eth-mainnet.g.alchemy.com/v2/97jAndtiByElrpSUeLEP7oZsXl-1V675",
+    webSocket:
+      "wss://eth-mainnet.g.alchemy.com/v2/97jAndtiByElrpSUeLEP7oZsXl-1V675",
   },
-  "137": {
-    http: `https://rpc.ankr.com/polygon`,
+  137: {
+    http: "https://rpc.ankr.com/polygon",
   },
-  "10": {
-    http: `https://rpc.ankr.com/optimism`,
+  10: {
+    http: "https://rpc.ankr.com/optimism",
   },
-  "42161": {
-    http: `https://rpc.ankr.com/arbitrum`,
+  42161: {
+    http: "https://rpc.ankr.com/arbitrum",
   },
-  "5": {
-    http: `https://eth-goerli.g.alchemy.com/v2/0wWffTxNefWtkV482CskpmcyKsV1hZGs`,
+  5: {
+    http: "https://eth-goerli.g.alchemy.com/v2/0wWffTxNefWtkV482CskpmcyKsV1hZGs",
   },
-  "80001": {
-    http: `https://rpc.ankr.com/polygon_mumbai`,
+  80001: {
+    http: "https://rpc.ankr.com/polygon_mumbai",
   },
-  "43114": {
-    http: `https://rpc.ankr.com/avalanche-c`,
+  43114: {
+    http: "https://rpc.ankr.com/avalanche-c",
   },
-  "56": {
-    http: `https://rpc.ankr.com/bsc`,
+  56: {
+    http: "https://rpc.ankr.com/bsc",
   },
-  "100": {
-    http: `https://rpc.ankr.com/gnosis`,
+  100: {
+    http: "https://rpc.ankr.com/gnosis",
   },
-  "43113": {
-    http: `https://api.avax-test.network/ext/bc/C/rpc`,
+  43113: {
+    http: "https://api.avax-test.network/ext/bc/C/rpc",
   },
-  "250": {
-    http: `https://rpc.ankr.com/fantom`,
+  250: {
+    http: "https://rpc.ankr.com/fantom",
   },
 } as { [key: string]: { http: string; webSocket?: string } };
 
@@ -149,9 +156,7 @@ const { chains, provider } = configureChains(
   ],
   [
     jsonRpcProvider({
-      rpc: (chain) => {
-        return nodes[chain.id.toString()];
-      },
+      rpc: (chain) => nodes[chain.id.toString()],
     }),
     publicProvider(),
   ]
@@ -162,15 +167,18 @@ const { chains, provider } = configureChains(
 //   chains,
 // });
 
-const connectors = (chains: any) =>
+const connectors = (connectorChains: Chain[]) =>
   connectorsForWallets([
     {
       groupName: "Social Auth",
-      wallets: [ArcanaRainbowConnector({ chains })],
+      wallets: [ArcanaRainbowConnector({ chains: connectorChains })],
     },
     {
       groupName: "Wallets",
-      wallets: [metaMaskWallet({ chains }), rainbowWallet({ chains })],
+      wallets: [
+        metaMaskWallet({ chains: connectorChains }),
+        rainbowWallet({ chains: connectorChains }),
+      ],
     },
   ]);
 
@@ -180,13 +188,13 @@ const wagmiClient = createClient({
   provider,
 });
 
-function MyApp({ Component, pageProps }: AppProps) {
+const MyApp = ({ Component, pageProps }: AppProps) => {
   const router = useRouter();
   const url = `https:/circles.spect.network/${router.route}`;
 
   const [isScribeOpen, setIsScribeOpen] = useAtom(scribeOpenAtom);
-  const [scribeUrl, setScribeUrl] = useAtom(scribeUrlAtom);
-  const [connectedUser, setConnectedUser] = useAtom(connectedUserAtom);
+  const [scribeUrl] = useAtom(scribeUrlAtom);
+  const [, setConnectedUser] = useAtom(connectedUserAtom);
   const { connector } = useAccount();
 
   const [authenticationStatus, setAuthenticationStatus] =
@@ -202,8 +210,8 @@ function MyApp({ Component, pageProps }: AppProps) {
       const res = await response.text();
       return res;
     },
-    createMessage: ({ nonce, address, chainId }) => {
-      return new SiweMessage({
+    createMessage: ({ nonce, address, chainId }) =>
+      new SiweMessage({
         domain: window.location.host,
         address,
         statement: "Sign in with Ethereum to the app.",
@@ -211,34 +219,26 @@ function MyApp({ Component, pageProps }: AppProps) {
         version: "1",
         chainId,
         nonce,
-      });
-    },
-    getMessageBody: ({ message }) => {
-      return message.prepareMessage();
-    },
+      }),
+    getMessageBody: ({ message }) => message.prepareMessage(),
     verify: async ({ message, signature }) => {
-      const verifyRes: any = await fetch(
-        `${process.env.API_HOST}/auth/connect`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ message, signature }),
-          credentials: "include",
-        }
-      );
+      const verifyRes = await fetch(`${process.env.API_HOST}/auth/connect`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message, signature }),
+        credentials: "include",
+      });
 
       const res: UserType = await verifyRes.json();
       setAuthenticationStatus(
         verifyRes.ok ? "authenticated" : "unauthenticated"
       );
       queryClient.setQueryData("getMyUser", res);
-      console.log("connect user", res.username);
       setConnectedUser(res.id);
-
-      console.log("connector", connector?.id);
       localStorage.setItem("connectorId", connector?.id || "");
 
       if (res.username?.startsWith("fren") && connector?.id === "arcana-auth") {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const user = await (connector as any).auth.getUser();
         setTimeout(() => {
           updateProfile({
@@ -263,9 +263,9 @@ function MyApp({ Component, pageProps }: AppProps) {
   });
 
   useEffect(() => {
-    const handleRouteChange = (url: URL) => {
+    const handleRouteChange = (routeUrl: URL) => {
       /* invoke analytics function only for production */
-      if (isProd) gtag.pageview(url);
+      if (isProd) gtag.pageview(routeUrl);
     };
     router.events.on("routeChangeComplete", handleRouteChange);
     return () => {
@@ -283,7 +283,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   });
 
   useEffect(() => {
-    void (async () => {
+    (async () => {
       try {
         const user: UserType = await (
           await fetch(`${process.env.API_HOST}/user/v1/me`)
@@ -293,11 +293,10 @@ function MyApp({ Component, pageProps }: AppProps) {
         );
         if (user.ethAddress) {
           queryClient.setQueryData("getMyUser", user);
-          console.log("CONNECT USER");
           setConnectedUser(user.id);
         }
       } catch (e) {
-        console.log({ e });
+        console.error({ e });
         setAuthenticationStatus("unauthenticated");
       }
     })();
@@ -313,7 +312,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         <RainbowKitProvider
           chains={chains}
           theme={darkTheme()}
-          modalSize={"compact"}
+          modalSize="compact"
         >
           <FlagsProvider value={flags}>
             <ThemeProvider defaultAccent="purple" defaultMode="dark">
@@ -340,6 +339,6 @@ function MyApp({ Component, pageProps }: AppProps) {
       </RainbowKitAuthenticationProvider>
     </WagmiConfig>
   );
-}
+};
 
 export default MyApp;

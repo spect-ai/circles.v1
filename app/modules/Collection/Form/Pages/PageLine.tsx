@@ -8,9 +8,9 @@ import { DragDropContext, Droppable, DropResult } from "react-beautiful-dnd";
 import { useQuery } from "react-query";
 import AddField from "../../AddField";
 import { useLocalCollection } from "../../Context/LocalCollectionContext";
-import { PageComponent } from "./PageComponent";
+import PageComponent from "./PageComponent";
 
-export const PageLine = () => {
+const PageLine = () => {
   const {
     currentPage,
     setCurrentPage,
@@ -18,17 +18,14 @@ export const PageLine = () => {
     updateCollection,
   } = useLocalCollection();
 
-  const { data: currentUser, refetch: fetchUser } = useQuery<UserType>(
-    "getMyUser",
-    {
-      enabled: false,
-    }
-  );
+  const { data: currentUser } = useQuery<UserType>("getMyUser", {
+    enabled: false,
+  });
 
-  let middleStartIndex = null;
-  let middleEndIndex = null;
+  let middleStartIndex: number | null = null;
+  let middleEndIndex: number | null = null;
 
-  const pages = collection.formMetadata.pages;
+  const { pages } = collection.formMetadata;
   const pageOrder = collection.formMetadata.pageOrder || [];
 
   const [addFieldOpen, setAddFieldOpen] = useState(false);
@@ -36,17 +33,18 @@ export const PageLine = () => {
   const [propertyName, setPropertyName] = useState<string>();
 
   let i = 0;
-  for (const pageId of pageOrder) {
+  pageOrder.forEach((pageId) => {
     if (!pages[pageId]) return null;
     if (pages[pageId].movable && middleStartIndex === null) {
       middleStartIndex = i;
     }
     if (!pages[pageId].movable && middleStartIndex !== null) {
       middleEndIndex = i;
-      break;
+      return null;
     }
-    i++;
-  }
+    i += 1;
+    return null;
+  });
 
   if (middleStartIndex === null || middleEndIndex === null) {
     // No movable element found, render all elements as normal
@@ -67,96 +65,60 @@ export const PageLine = () => {
         ))}
       </div>
     );
-  } else {
-    const firstHalf = pageOrder.slice(0, middleStartIndex);
-    const middleSection = pageOrder.slice(middleStartIndex, middleEndIndex);
-    const secondHalf = pageOrder.slice(middleEndIndex);
-    const handleDragEnd = (result: DropResult) => {
-      process.env.NODE_ENV === "production" &&
-        mixpanel.track("Drag/Drop field", {
-          form: collection.slug,
-          circle: collection.parents[0].slug,
-          user: currentUser?.username,
-        });
-      const { destination, source, draggableId, type } = result;
-      if (!destination) return;
+  }
+  const firstHalf = pageOrder.slice(0, middleStartIndex);
+  const middleSection = pageOrder.slice(middleStartIndex, middleEndIndex);
+  const secondHalf = pageOrder.slice(middleEndIndex);
+  const handleDragEnd = (result: DropResult) => {
+    process.env.NODE_ENV === "production" &&
+      mixpanel.track("Drag/Drop field", {
+        form: collection.slug,
+        circle: collection.parents[0].slug,
+        user: currentUser?.username,
+      });
+    const { destination, source, draggableId, type } = result;
+    if (!destination) return;
 
-      if (type === "page") {
-        const newPageOrder = Array.from(pageOrder);
-        newPageOrder.splice(source.index, 1);
-        newPageOrder.splice(destination.index, 0, draggableId);
-        updateCollection({
-          ...collection,
-          formMetadata: {
-            ...collection.formMetadata,
-            pageOrder: newPageOrder,
-          },
-        });
-        updateFormCollection(collection.id, {
-          ...collection,
-          formMetadata: {
-            ...collection.formMetadata,
-            pageOrder: newPageOrder,
-          },
-        });
-      }
+    if (type === "page") {
+      const newPageOrder = Array.from(pageOrder);
+      newPageOrder.splice(source.index, 1);
+      newPageOrder.splice(destination.index, 0, draggableId);
+      updateCollection({
+        ...collection,
+        formMetadata: {
+          ...collection.formMetadata,
+          pageOrder: newPageOrder,
+        },
+      });
+      updateFormCollection(collection.id, {
+        ...collection,
+        formMetadata: {
+          ...collection.formMetadata,
+          pageOrder: newPageOrder,
+        },
+      });
+    }
 
-      if (type === "field") {
-        const sourcePage = pages[source.droppableId];
-        const destinationPage = pages[destination.droppableId];
+    if (type === "field") {
+      const sourcePage = pages[source.droppableId];
+      const destinationPage = pages[destination.droppableId];
 
-        if (sourcePage === destinationPage) {
-          if (source.index === destination.index) return;
+      if (sourcePage === destinationPage) {
+        if (source.index === destination.index) return;
 
-          const newPage = {
-            ...sourcePage,
-            properties: Array.from(sourcePage.properties),
-          };
-          newPage.properties.splice(source.index, 1);
-          newPage.properties.splice(destination.index, 0, draggableId);
-          updateCollection({
-            ...collection,
-            formMetadata: {
-              ...collection.formMetadata,
-              pages: {
-                ...pages,
-                [source.droppableId]: newPage,
-              },
-            },
-          });
-          updateFormCollection(collection.id, {
-            ...collection,
-            formMetadata: {
-              ...collection.formMetadata,
-              pages: {
-                ...pages,
-                [source.droppableId]: newPage,
-              },
-            },
-          });
-          return;
-        }
-
-        const newSourcePage = {
+        const newPage = {
           ...sourcePage,
           properties: Array.from(sourcePage.properties),
         };
-        const newDestinationPage = {
-          ...destinationPage,
-          properties: Array.from(destinationPage.properties),
-        };
-
-        newSourcePage.properties.splice(source.index, 1);
-        newDestinationPage.properties.splice(destination.index, 0, draggableId);
-
+        newPage.properties.splice(source.index, 1);
+        newPage.properties.splice(destination.index, 0, draggableId);
         updateCollection({
           ...collection,
           formMetadata: {
             ...collection.formMetadata,
             pages: {
               ...pages,
-              [source.droppableId]: newSourcePage,
-              [destination.droppableId]: newDestinationPage,
+              [source.droppableId]: newPage,
             },
           },
         });
@@ -166,78 +128,115 @@ export const PageLine = () => {
             ...collection.formMetadata,
             pages: {
               ...pages,
-              [source.droppableId]: newSourcePage,
-              [destination.droppableId]: newDestinationPage,
+              [source.droppableId]: newPage,
             },
           },
         });
+        return;
       }
-    };
 
-    return (
-      <Box>
-        <AnimatePresence>
-          {addFieldOpen && (
-            <AddField
-              handleClose={() => setAddFieldOpen(false)}
-              pageId={activePage}
-              propertyName={propertyName}
-            />
-          )}
-        </AnimatePresence>
-        <Stack>
-          {firstHalf.map((pageId) => (
-            <PageComponent
-              id={pageId}
-              name={pages[pageId].name}
-              key={pageId}
-              selected={currentPage === pageId}
-              onClick={() => setCurrentPage(pageId)}
-              fields={pages[pageId].properties}
-              setAddFieldOpen={setAddFieldOpen}
-              setActivePage={setActivePage}
-              setPropertyName={setPropertyName}
-            />
-          ))}
-          <DragDropContext onDragEnd={handleDragEnd}>
-            <Droppable droppableId="page-zone" direction="vertical" type="page">
-              {(provided) => (
-                <Box {...provided.droppableProps} ref={provided.innerRef}>
-                  <Stack>
-                    {middleSection.map((pageId) => (
-                      <PageComponent
-                        id={pageId}
-                        name={pages[pageId].name}
-                        key={pageId}
-                        selected={currentPage === pageId}
-                        onClick={() => setCurrentPage(pageId)}
-                        fields={pages[pageId].properties}
-                        setAddFieldOpen={setAddFieldOpen}
-                        setActivePage={setActivePage}
-                        setPropertyName={setPropertyName}
-                      />
-                    ))}
-                  </Stack>
-                  {provided.placeholder}
-                </Box>
-              )}
-            </Droppable>
-          </DragDropContext>
-          {secondHalf.map((pageId) => (
-            <PageComponent
-              id={pageId}
-              name={pages[pageId].name}
-              key={pageId}
-              selected={currentPage === pageId}
-              onClick={() => setCurrentPage(pageId)}
-              fields={pages[pageId].properties}
-              setAddFieldOpen={setAddFieldOpen}
-              setActivePage={setActivePage}
-              setPropertyName={setPropertyName}
-            />
-          ))}
-        </Stack>
-      </Box>
-    );
-  }
+      const newSourcePage = {
+        ...sourcePage,
+        properties: Array.from(sourcePage.properties),
+      };
+      const newDestinationPage = {
+        ...destinationPage,
+        properties: Array.from(destinationPage.properties),
+      };
+
+      newSourcePage.properties.splice(source.index, 1);
+      newDestinationPage.properties.splice(destination.index, 0, draggableId);
+
+      updateCollection({
+        ...collection,
+        formMetadata: {
+          ...collection.formMetadata,
+          pages: {
+            ...pages,
+            [source.droppableId]: newSourcePage,
+            [destination.droppableId]: newDestinationPage,
+          },
+        },
+      });
+      updateFormCollection(collection.id, {
+        ...collection,
+        formMetadata: {
+          ...collection.formMetadata,
+          pages: {
+            ...pages,
+            [source.droppableId]: newSourcePage,
+            [destination.droppableId]: newDestinationPage,
+          },
+        },
+      });
+    }
+  };
+
+  return (
+    <Box>
+      <AnimatePresence>
+        {addFieldOpen && (
+          <AddField
+            handleClose={() => setAddFieldOpen(false)}
+            pageId={activePage}
+            propertyName={propertyName}
+          />
+        )}
+      </AnimatePresence>
+      <Stack>
+        {firstHalf.map((pageId) => (
+          <PageComponent
+            id={pageId}
+            name={pages[pageId].name}
+            key={pageId}
+            selected={currentPage === pageId}
+            onClick={() => setCurrentPage(pageId)}
+            fields={pages[pageId].properties}
+            setAddFieldOpen={setAddFieldOpen}
+            setActivePage={setActivePage}
+            setPropertyName={setPropertyName}
+          />
+        ))}
+        <DragDropContext onDragEnd={handleDragEnd}>
+          <Droppable droppableId="page-zone" direction="vertical" type="page">
+            {(provided) => (
+              <Box {...provided.droppableProps} ref={provided.innerRef}>
+                <Stack>
+                  {middleSection.map((pageId) => (
+                    <PageComponent
+                      id={pageId}
+                      name={pages[pageId].name}
+                      key={pageId}
+                      selected={currentPage === pageId}
+                      onClick={() => setCurrentPage(pageId)}
+                      fields={pages[pageId].properties}
+                      setAddFieldOpen={setAddFieldOpen}
+                      setActivePage={setActivePage}
+                      setPropertyName={setPropertyName}
+                    />
+                  ))}
+                </Stack>
+                {provided.placeholder}
+              </Box>
+            )}
+          </Droppable>
+        </DragDropContext>
+        {secondHalf.map((pageId) => (
+          <PageComponent
+            id={pageId}
+            name={pages[pageId].name}
+            key={pageId}
+            selected={currentPage === pageId}
+            onClick={() => setCurrentPage(pageId)}
+            fields={pages[pageId].properties}
+            setAddFieldOpen={setAddFieldOpen}
+            setActivePage={setActivePage}
+            setPropertyName={setPropertyName}
+          />
+        ))}
+      </Stack>
+    </Box>
+  );
 };
+
+export default PageLine;

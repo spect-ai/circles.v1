@@ -12,141 +12,10 @@ import { MdGroupWork } from "react-icons/md";
 import { useQuery } from "react-query";
 import { toast } from "react-toastify";
 import styled from "styled-components";
+import { IconType } from "react-icons";
 import { useCircle } from "../../CircleContext";
 import CreateCollectionModal from "../../CreateCollectionModal";
 import CreateSpaceModal from "../../CreateSpaceModal";
-
-type Props = {};
-
-export default function CreateItems({}: Props) {
-  const [createCollectionModalOpen, setCreateCollectionModalOpen] =
-    useState(false);
-  const [createWorkstreamModalOpen, setCreateWorkstreamModalOpen] =
-    useState(false);
-  const [collectionType, setCollectionType] = useState<0 | 1>(0);
-  const { canDo } = useRoleGate();
-  const { circle, setCircleData } = useCircle();
-
-  const [loading, setLoading] = useState(false);
-
-  const { data: currentUser } = useQuery<UserType>("getMyUser", {
-    enabled: false,
-  });
-
-  const createNewFolder = useCallback(async () => {
-    setLoading(true);
-    if (circle) {
-      const payload = {
-        name: `Folder-${circle?.folderOrder?.length + 1}`,
-        avatar: "New Avatar",
-        contentIds: [],
-      };
-      const res = await toast.promise(createFolder(payload, circle?.id), {
-        pending: "Creating a new folder...",
-        success: {
-          render: "Folder created successfully",
-        },
-        error: "Some error occured🤯",
-      });
-      console.log({ res });
-      if (res?.id) {
-        setCircleData(res);
-      } else {
-        toast.error("Something went wrong while creating a new folder");
-      }
-      setLoading(false);
-    }
-  }, [circle?.folderOrder?.length, circle?.id]);
-  return (
-    <Box paddingX="2">
-      <AnimatePresence>
-        {createCollectionModalOpen && (
-          <CreateCollectionModal
-            setCollectionModal={setCreateCollectionModalOpen}
-            collectionType={collectionType}
-            folderId={circle?.folderOrder[0]}
-          />
-        )}
-        {createWorkstreamModalOpen && (
-          <CreateSpaceModal
-            setWorkstreamModal={setCreateWorkstreamModalOpen}
-            folderId={circle?.folderOrder[0]}
-          />
-        )}
-      </AnimatePresence>
-      {canDo("createNewForm") && (
-        <Grid>
-          {Items.map((item, index) => (
-            <Item
-              key={index}
-              name={item.name}
-              Icon={item.icon}
-              description={item.description}
-              onClick={() => {
-                let modalName = "";
-                if (item.component === "form") {
-                  modalName = "Create Form";
-                  setCollectionType(0);
-                  setCreateCollectionModalOpen(true);
-                } else if (item.component === "project") {
-                  modalName = "Create Project";
-                  setCollectionType(1);
-                  setCreateCollectionModalOpen(true);
-                } else if (item.component === "workstream") {
-                  modalName = "Create Workstream";
-                  setCreateWorkstreamModalOpen(true);
-                } else if (item.component === "folder") {
-                  modalName = "Create Folder";
-                  createNewFolder();
-                }
-                process.env.NODE_ENV === "production" &&
-                  mixpanel.track(`${modalName} modal opened`, {
-                    circle: circle?.slug,
-                    user: currentUser?.username,
-                  });
-              }}
-            />
-          ))}
-        </Grid>
-      )}
-    </Box>
-  );
-}
-
-const Item = ({ name, Icon, description, onClick }: any) => {
-  return (
-    <Stack>
-      <motion.div
-        whileHover={{
-          scale: 1.02,
-          transition: { duration: 0.1 },
-        }}
-        whileTap={{ scale: 0.97 }}
-        onClick={onClick}
-        style={{ height: "100%" }}
-      >
-        <Box
-          padding="4"
-          borderWidth="0.375"
-          borderRadius="large"
-          cursor="pointer"
-          height="full"
-          backgroundColor="foregroundTertiary"
-        >
-          <Stack align="center" space="2">
-            <Text color="accent">
-              <Icon size={32} />
-            </Text>
-            <Text>{name}</Text>
-            <Text variant="label" align="center">
-              {description}
-            </Text>
-          </Stack>
-        </Box>
-      </motion.div>
-    </Stack>
-  );
-};
 
 const Items = [
   {
@@ -186,3 +55,139 @@ export const Grid = styled.div`
     grid-template-columns: repeat(2, 1fr);
   }
 `;
+
+type Props = {
+  name: string;
+  Icon: IconType;
+  description: string;
+  onClick: () => void;
+};
+
+const Item = ({ name, Icon, description, onClick }: Props) => (
+  <Stack>
+    <motion.div
+      whileHover={{
+        scale: 1.02,
+        transition: { duration: 0.1 },
+      }}
+      whileTap={{ scale: 0.97 }}
+      onClick={onClick}
+      style={{ height: "100%" }}
+    >
+      <Box
+        padding="4"
+        borderWidth="0.375"
+        borderRadius="large"
+        cursor="pointer"
+        height="full"
+        backgroundColor="foregroundTertiary"
+      >
+        <Stack align="center" space="2">
+          <Text color="accent">
+            <Icon />
+          </Text>
+          <Text>{name}</Text>
+          <Text variant="label" align="center">
+            {description}
+          </Text>
+        </Stack>
+      </Box>
+    </motion.div>
+  </Stack>
+);
+
+const CreateItems = () => {
+  const [createCollectionModalOpen, setCreateCollectionModalOpen] =
+    useState(false);
+  const [createWorkstreamModalOpen, setCreateWorkstreamModalOpen] =
+    useState(false);
+  const [collectionType, setCollectionType] = useState<0 | 1>(0);
+  const { canDo } = useRoleGate();
+  const { circle, setCircleData } = useCircle();
+
+  const [, setLoading] = useState(false);
+
+  const { data: currentUser } = useQuery<UserType>("getMyUser", {
+    enabled: false,
+  });
+
+  const createNewFolder = useCallback(async () => {
+    setLoading(true);
+    if (circle) {
+      const payload = {
+        name: `Folder-${(circle?.folderOrder?.length || 0) + 1}`,
+        avatar: "New Avatar",
+        contentIds: [],
+      };
+      const res = await toast.promise(createFolder(payload, circle?.id), {
+        pending: "Creating a new folder...",
+        success: {
+          render: "Folder created successfully",
+        },
+        error: "Some error occured🤯",
+      });
+      if (res?.id) {
+        setCircleData(res);
+      } else {
+        toast.error("Something went wrong while creating a new folder");
+      }
+      setLoading(false);
+    }
+  }, [circle?.folderOrder?.length, circle?.id]);
+  return (
+    <Box paddingX="2">
+      <AnimatePresence>
+        {createCollectionModalOpen && (
+          <CreateCollectionModal
+            setCollectionModal={setCreateCollectionModalOpen}
+            collectionType={collectionType}
+            folderId={circle?.folderOrder[0]}
+          />
+        )}
+        {createWorkstreamModalOpen && (
+          <CreateSpaceModal
+            setWorkstreamModal={setCreateWorkstreamModalOpen}
+            folderId={circle?.folderOrder[0]}
+          />
+        )}
+      </AnimatePresence>
+      {canDo("createNewForm") && (
+        <Grid>
+          {Items.map((item) => (
+            <Item
+              key={item.name}
+              name={item.name}
+              Icon={item.icon as unknown as IconType}
+              description={item.description}
+              onClick={() => {
+                let modalName = "";
+                if (item.component === "form") {
+                  modalName = "Create Form";
+                  setCollectionType(0);
+                  setCreateCollectionModalOpen(true);
+                } else if (item.component === "project") {
+                  modalName = "Create Project";
+                  setCollectionType(1);
+                  setCreateCollectionModalOpen(true);
+                } else if (item.component === "workstream") {
+                  modalName = "Create Workstream";
+                  setCreateWorkstreamModalOpen(true);
+                } else if (item.component === "folder") {
+                  modalName = "Create Folder";
+                  createNewFolder();
+                }
+                process.env.NODE_ENV === "production" &&
+                  mixpanel.track(`${modalName} modal opened`, {
+                    circle: circle?.slug,
+                    user: currentUser?.username,
+                  });
+              }}
+            />
+          ))}
+        </Grid>
+      )}
+    </Box>
+  );
+};
+
+export default CreateItems;

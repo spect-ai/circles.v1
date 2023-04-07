@@ -1,16 +1,14 @@
-import { Box, Stack, Text, Tag, Textarea } from "degen";
-import { skillsArray } from "../ProfilePage/constants";
-import React from "react";
+import { Stack, Text, Tag, Textarea } from "degen";
 
 import { useProfile } from "./LocalProfileContext";
 
-export function About() {
-  const { bio, setBio, setIsDirty, skills, setSkills } = useProfile();
+const About = () => {
+  const { bio, setBio, setIsDirty } = useProfile();
   return (
     <Stack>
       <Stack direction="horizontal" justify="space-between">
         <Text variant="label">Bio</Text>
-        <Tag>{100 - bio?.length}</Tag>
+        {bio && <Tag>{100 - bio.length}</Tag>}
       </Stack>
       <Textarea
         label
@@ -26,4 +24,6 @@ export function About() {
       />
     </Stack>
   );
-}
+};
+
+export default About;

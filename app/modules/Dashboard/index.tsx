@@ -15,35 +15,87 @@ import {
 import { UserType, CircleType } from "@/app/types";
 import Link from "next/link";
 import { useQuery } from "react-query";
-import React, { memo, useEffect, useState } from "react";
+import { memo, useState } from "react";
 import Logout from "@/app/common/components/LogoutButton";
-import { QuestionCircleOutlined, SettingOutlined } from "@ant-design/icons";
-import YourCircles from "./CirclesTab";
+import { SettingOutlined } from "@ant-design/icons";
 import { AnimatePresence } from "framer-motion";
 import Loader from "@/app/common/components/Loader";
 import useJoinCircle from "@/app/services/JoinCircle/useJoinCircle";
-import ProfileModal from "../Profile/ProfileSettings";
 import { Hidden, Visible } from "react-grid-system";
 import { smartTrim } from "@/app/common/utils/utils";
 import Popover from "@/app/common/components/Popover";
 import { useRouter } from "next/router";
-import ResponsesTab from "./ResponsesTab";
-import FAQModal from "./FAQModal";
-import { toast, ToastContainer } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import { Grid } from "react-feather";
-import styled from "styled-components";
-import DiscordIcon from "@/app/assets/icons/discordIcon.svg";
-import { useLocation } from "react-use";
 import ConnectDiscordButton from "@/app/common/components/ConnectDiscordButton";
 import Help from "@/app/common/components/Help";
 import { isProfilePanelExpandedAtom } from "@/app/state/global";
 import { useAtom } from "jotai";
+import FAQModal from "./FAQModal";
+import ResponsesTab from "./ResponsesTab";
+import ProfileModal from "../Profile/ProfileSettings";
+import YourCircles from "./CirclesTab";
 import { PopoverOption } from "../Circle/CircleSettingsModal/DiscordRoleMapping/RolePopover";
 
-function Dashboard() {
-  const [isProfilePanelExpanded, setIsProfilePanelExpanded] = useAtom(
-    isProfilePanelExpandedAtom
+const SetModeButton = () => {
+  const { mode, setMode } = useTheme();
+
+  if (mode === "dark") {
+    return (
+      <Button
+        shape="circle"
+        variant="secondary"
+        size="small"
+        onClick={() => {
+          localStorage.setItem("lightMode", "true");
+          document.documentElement.style.setProperty(
+            "--dsg-cell-background-color",
+            "rgb(255, 255, 255)"
+          );
+          document.documentElement.style.setProperty(
+            "--dsg-border-color",
+            "rgb(20,20,20,0.1)"
+          );
+          document.documentElement.style.setProperty(
+            "--dsg-cell-text-color",
+            "rgb(20,20,20,0.9)"
+          );
+          setMode("light");
+        }}
+      >
+        <IconSun size="5" />
+      </Button>
+    );
+  }
+  return (
+    <Button
+      shape="circle"
+      variant="secondary"
+      size="small"
+      onClick={() => {
+        localStorage.removeItem("lightMode");
+        document.documentElement.style.setProperty(
+          "--dsg-cell-background-color",
+          "rgb(20,20,20)"
+        );
+        document.documentElement.style.setProperty(
+          "--dsg-border-color",
+          "rgb(255,255,255,0.1)"
+        );
+        document.documentElement.style.setProperty(
+          "--dsg-cell-text-color",
+          "rgb(255,255,255,0.9)"
+        );
+        setMode("dark");
+      }}
+    >
+      <IconMoon size="5" />
+    </Button>
   );
+};
+
+const Dashboard = () => {
+  const [, setIsProfilePanelExpanded] = useAtom(isProfilePanelExpandedAtom);
   useJoinCircle();
   const [isOpen, setIsOpen] = useState(false);
   const [faqOpen, setFaqOpen] = useState(false);
@@ -58,69 +110,12 @@ function Dashboard() {
     }
   );
   const [panelTab, setPanelTab] = useState("circles");
-  // eslint-disable-next-line @typescript-eslint/unbound-method
-  const { mode, setMode } = useTheme();
+  const { mode } = useTheme();
   const router = useRouter();
 
-  const { tab } = router.query;
-
-  if (isLoading || !currentUser?.id)
+  if (isLoading || !currentUser?.id) {
     return <Loader loading={isLoading} text="Fetching circles" />;
-
-  const SetModeButton = () => {
-    if (mode === "dark") {
-      return (
-        <Button
-          shape="circle"
-          variant="secondary"
-          size="small"
-          onClick={() => {
-            localStorage.setItem("lightMode", "true");
-            document.documentElement.style.setProperty(
-              "--dsg-cell-background-color",
-              "rgb(255, 255, 255)"
-            );
-            document.documentElement.style.setProperty(
-              "--dsg-border-color",
-              "rgb(20,20,20,0.1)"
-            );
-            document.documentElement.style.setProperty(
-              "--dsg-cell-text-color",
-              "rgb(20,20,20,0.9)"
-            );
-            setMode("light");
-          }}
-        >
-          <IconSun size="5" />
-        </Button>
-      );
-    }
-    return (
-      <Button
-        shape="circle"
-        variant="secondary"
-        size="small"
-        onClick={() => {
-          localStorage.removeItem("lightMode");
-          document.documentElement.style.setProperty(
-            "--dsg-cell-background-color",
-            "rgb(20,20,20)"
-          );
-          document.documentElement.style.setProperty(
-            "--dsg-border-color",
-            "rgb(255,255,255,0.1)"
-          );
-          document.documentElement.style.setProperty(
-            "--dsg-cell-text-color",
-            "rgb(255,255,255,0.9)"
-          );
-          setMode("dark");
-        }}
-      >
-        <IconMoon size="5" />
-      </Button>
-    );
-  };
+  }
 
   if (circles) {
     return (
@@ -201,7 +196,7 @@ function Dashboard() {
                     <PopoverOption
                       onClick={() => {
                         setIsPopoverOpen(false);
-                        void router.push(`/profile/${currentUser?.username}`);
+                        router.push(`/profile/${currentUser?.username}`);
                       }}
                     >
                       View Profile
@@ -252,8 +247,8 @@ function Dashboard() {
           {(!currentUser.discordUsername ||
             currentUser.discordUsername === "undefined#undefined") && (
             <Box
-              marginY={"3"}
-              padding={"3"}
+              marginY="3"
+              padding="3"
               display="flex"
               flexDirection={{
                 lg: "row",
@@ -263,9 +258,9 @@ function Dashboard() {
               }}
               gap="3"
               justifyContent="space-between"
-              alignItems={"center"}
+              alignItems="center"
               boxShadow="0.5"
-              borderRadius={"large"}
+              borderRadius="large"
             >
               <Text>
                 {!currentUser.discordUsername
@@ -287,7 +282,7 @@ function Dashboard() {
               prefix={<IconTokens />}
               variant={panelTab === "circles" ? "tertiary" : "transparent"}
               onClick={() => {
-                void router.push("/");
+                router.push("/");
                 setPanelTab("circles");
               }}
             >
@@ -305,7 +300,7 @@ function Dashboard() {
               }
               variant={panelTab === "responses" ? "tertiary" : "transparent"}
               onClick={() => {
-                void router.push("?tab=responses");
+                router.push("?tab=responses");
                 setPanelTab("responses");
               }}
             >
@@ -351,10 +346,5 @@ function Dashboard() {
   }
 
   return <Loader loading={isLoading} text="Fetching circles" />;
-}
-
-const UnderlinedText = styled(Box)`
-  text-decoration: underline;
-`;
-
+};
 export default memo(Dashboard);

@@ -1,14 +1,12 @@
 import { Box, Input, MediaPicker, Stack } from "degen";
-import React, { useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/router";
-import Loader from "@/app/common/components/Loader";
 import Modal from "@/app/common/components/Modal";
-import Tabs from "@/app/common/components/Tabs";
 import { useMutation } from "react-query";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { storeImage } from "@/app/common/utils/ipfs";
-import { useCircle } from "./CircleContext";
 import { updateFolder } from "@/app/services/Folders";
+import { useCircle } from "./CircleContext";
 
 type CreateWorkspaceDto = {
   name: string;
@@ -23,8 +21,8 @@ interface Props {
   folderId?: string;
 }
 
-function CreateSpaceModal({ setWorkstreamModal, folderId }: Props) {
-  const [visibilityTab, setVisibilityTab] = useState(0);
+const CreateSpaceModal = ({ setWorkstreamModal, folderId }: Props) => {
+  const [visibilityTab] = useState(0);
   const close = () => setWorkstreamModal(false);
 
   const [name, setName] = useState("");
@@ -38,18 +36,16 @@ function CreateSpaceModal({ setWorkstreamModal, folderId }: Props) {
 
   const [loading, setLoading] = useState(false);
 
-  const { mutateAsync, isLoading } = useMutation(
-    (circle: CreateWorkspaceDto) => {
-      return fetch(`${process.env.API_HOST}/circle/v1`, {
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        method: "POST",
-        body: JSON.stringify(circle),
-        credentials: "include",
-      });
-    }
+  const { mutateAsync } = useMutation((circle2: CreateWorkspaceDto) =>
+    fetch(`${process.env.API_HOST}/circle/v1`, {
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      method: "POST",
+      body: JSON.stringify(circle2),
+      credentials: "include",
+    })
   );
 
   const onSubmit = () => {
@@ -64,9 +60,8 @@ function CreateSpaceModal({ setWorkstreamModal, folderId }: Props) {
       })
         .then(async (res) => {
           const resJson = await res.json();
-          console.log({ resJson });
-          void router.push(`/${resJson.slug}`);
-          void close();
+          router.push(`/${resJson.slug}`);
+          close();
           if (resJson.id && folderId) {
             const prev = Array.from(
               circle?.folderDetails[folderId]?.contentIds
@@ -75,7 +70,6 @@ function CreateSpaceModal({ setWorkstreamModal, folderId }: Props) {
             const payload = {
               contentIds: prev,
             };
-            console.log(payload);
             await updateFolder(payload, circle?.id, folderId);
           }
 
@@ -90,14 +84,13 @@ function CreateSpaceModal({ setWorkstreamModal, folderId }: Props) {
             const payload = {
               contentIds: prev,
             };
-            console.log(payload);
             await updateFolder(payload, circle?.id, folder?.[0] as string);
           }
           fetchCircle();
           setLoading(false);
         })
         .catch((err) => {
-          console.log({ err });
+          console.error({ err });
           setLoading(false);
         });
     }
@@ -107,7 +100,6 @@ function CreateSpaceModal({ setWorkstreamModal, folderId }: Props) {
     if (file) {
       setUploading(true);
       const { imageGatewayURL } = await storeImage(file);
-      console.log({ imageGatewayURL });
       setLogo(imageGatewayURL);
       setUploading(false);
     }
@@ -154,6 +146,6 @@ function CreateSpaceModal({ setWorkstreamModal, folderId }: Props) {
       </Box>
     </Modal>
   );
-}
+};
 
 export default CreateSpaceModal;

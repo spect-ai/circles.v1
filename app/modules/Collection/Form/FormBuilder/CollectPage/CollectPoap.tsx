@@ -15,11 +15,14 @@ type Props = {
   preview?: boolean;
 };
 
-export default function CollectPoap({
-  form,
-  setClaimedJustNow,
-  preview,
-}: Props) {
+const CircularStyledImage = styled.img`
+  @media (max-width: 768px) {
+    width: 18rem;
+  }
+  width: 24rem;
+  border-radius: 20rem;
+`;
+const CollectPoap = ({ form, setClaimedJustNow, preview }: Props) => {
   const [poap, setPoap] = useState({} as POAPEventType);
   const [poapClaimed, setPoapClaimed] = useState(false);
   const [canClaimPoap, setCanClaimPoap] = useState(false);
@@ -29,7 +32,7 @@ export default function CollectPoap({
   useEffect(() => {
     if (form.formMetadata.poapEventId) {
       setCanClaimPoap(form.formMetadata.canClaimPoap);
-      void (async () => {
+      (async () => {
         setLoading(true);
         const res = await getPoap(
           form.formMetadata.poapEventId?.toString() || ""
@@ -92,10 +95,8 @@ export default function CollectPoap({
           <Box>
             <Stack direction="vertical">
               <TwitterShareButton
-                url={`https://circles.spect.network/`}
-                title={
-                  "I just filled out a web3 form and claimed my @poapxyz on @JoinSpect!"
-                }
+                url="https://circles.spect.network/"
+                title="I just filled out a web3 form and claimed my @poapxyz on @JoinSpect!"
               >
                 <Box
                   width={{
@@ -127,9 +128,9 @@ export default function CollectPoap({
               >
                 <PrimaryButton
                   variant="transparent"
-                  icon={PassportStampIcons["POAP"]}
+                  icon={PassportStampIcons.POAP}
                   onClick={() => {
-                    window.open(`https://app.poap.xyz/`, "_blank");
+                    window.open("https://app.poap.xyz/", "_blank");
                   }}
                 >
                   {" "}
@@ -190,26 +191,25 @@ export default function CollectPoap({
                           )
                         ).json();
 
-                        console.log(res);
                         if (res.claimed) {
                           setPoapClaimed(true);
                           setClaimedJustNow(true);
                         } else if (res.statusCode === 500) {
-                          if (res.message.includes("dssd"))
+                          if (res.message.includes("dssd")) {
                             toast.error(
                               "All POAPs have been claimed for this form, please ask the form creator to request more"
                             );
-                          else
+                          } else {
                             toast.error(
                               "Something went wrong, please try again later"
                             );
+                          }
                         }
-                      } catch (e: any) {
+                      } catch (err: unknown) {
                         toast.error(
                           "Something went wrong, please try again later"
                         );
                       }
-
                       setClaiming(false);
                     }}
                   >
@@ -248,12 +248,10 @@ export default function CollectPoap({
       )}
     </Box>
   );
-}
+};
 
-const CircularStyledImage = styled.img`
-  @media (max-width: 768px) {
-    width: 18rem;
-  }
-  width: 24rem;
-  border-radius: 20rem;
-`;
+CollectPoap.defaultProps = {
+  preview: false,
+};
+
+export default CollectPoap;

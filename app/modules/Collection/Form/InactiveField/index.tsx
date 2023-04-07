@@ -1,5 +1,5 @@
 import { Box, IconPencil, Text, useTheme } from "degen";
-import React, { memo, useCallback } from "react";
+import { memo } from "react";
 import {
   Draggable,
   DraggableProvided,
@@ -34,64 +34,56 @@ const Container = styled(Box)<{ isDragging: boolean; mode: string }>`
   }
 `;
 
-function InactiveFieldComponent({
+const InactiveFieldComponent = ({
   id,
   index,
   setIsEditFieldOpen,
   setPropertyName,
-}: Props) {
+}: Props) => {
   const { mode } = useTheme();
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
   const { localCollection: collection } = useLocalCollection();
 
-  const DraggableContent = (
-    provided: DraggableProvided,
-    snapshot: DraggableStateSnapshot
-  ) => (
-    <Container
-      {...provided.draggableProps}
-      {...provided.dragHandleProps}
-      ref={provided.innerRef}
-      borderRadius="2xLarge"
-      isDragging={snapshot.isDragging}
-      mode={mode}
-      padding="2"
-      display="flex"
-      justifyContent="center"
-    >
-      <Box display="flex" flexDirection="row" alignItems="center" gap="4">
-        <Text weight="semiBold">{id}</Text>
-        <Box
-          cursor="pointer"
-          borderRadius="full"
-          paddingY="1"
-          paddingX="2"
-          onClick={() => {
-            setPropertyName(id);
-            setIsEditFieldOpen(true);
-            process.env.NODE_ENV === "production" &&
-              mixpanel.track("Edit Field Button", {
-                user: currentUser?.username,
-                field: collection.properties[id]?.name,
-              });
-          }}
-        >
-          <IconPencil color="accent" size="4" />
-        </Box>
-      </Box>
-    </Container>
-  );
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const DraggableContentCallback = useCallback(DraggableContent, [mode]);
-
   return (
     <Draggable draggableId={id} index={index}>
-      {DraggableContentCallback}
+      {(provided: DraggableProvided, snapshot: DraggableStateSnapshot) => (
+        <Container
+          {...provided.draggableProps}
+          {...provided.dragHandleProps}
+          ref={provided.innerRef}
+          borderRadius="2xLarge"
+          isDragging={snapshot.isDragging}
+          mode={mode}
+          padding="2"
+          display="flex"
+          justifyContent="center"
+        >
+          <Box display="flex" flexDirection="row" alignItems="center" gap="4">
+            <Text weight="semiBold">{id}</Text>
+            <Box
+              cursor="pointer"
+              borderRadius="full"
+              paddingY="1"
+              paddingX="2"
+              onClick={() => {
+                setPropertyName(id);
+                setIsEditFieldOpen(true);
+                process.env.NODE_ENV === "production" &&
+                  mixpanel.track("Edit Field Button", {
+                    user: currentUser?.username,
+                    field: collection.properties[id]?.name,
+                  });
+              }}
+            >
+              <IconPencil color="accent" size="4" />
+            </Box>
+          </Box>
+        </Container>
+      )}
     </Draggable>
   );
-}
+};
 
 export default memo(InactiveFieldComponent);

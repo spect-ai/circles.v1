@@ -1,8 +1,9 @@
 import { ExportToCsv } from "export-to-csv";
 
-export const exportToCsv = (data: any[], filename: string) => {
+const exportToCsv = (data: unknown[], filename: string) => {
   const options = {
     fieldSeparator: ",",
+    // eslint-disable-next-line @typescript-eslint/quotes
     quoteStrings: '"',
     decimalSeparator: ".",
     showLabels: true,
@@ -12,21 +13,8 @@ export const exportToCsv = (data: any[], filename: string) => {
     useBom: true,
     useKeysAsHeaders: true,
   };
-  console.log({ options });
   const csvExporter = new ExportToCsv(options);
   csvExporter.generateCsv(data);
 };
 
-const exportTableToCsv = (filename: string, rows: Array<Array<any>>) => {
-  let csvContent = "data:text/csv;charset=utf-8,";
-  rows.forEach(function (rowArray) {
-    let row = rowArray.join(",");
-    csvContent += row + "\r\n";
-  });
-  var encodedUri = encodeURI(csvContent);
-  var link = document.createElement("a");
-  link.setAttribute("href", encodedUri);
-  link.setAttribute("download", filename);
-  document.body.appendChild(link);
-  link.click();
-};
+export default exportToCsv;

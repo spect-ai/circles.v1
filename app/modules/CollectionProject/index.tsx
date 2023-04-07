@@ -1,13 +1,12 @@
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { Box, Stack, Text } from "degen";
-import React from "react";
 import { useLocalCollection } from "../Collection/Context/LocalCollectionContext";
 import ProjectHeading from "./Heading";
 import KanbanView from "./KanbanView";
 import ListView from "./ListView";
 import ProjectTableView from "./TableView";
 
-export default function CollectionProject() {
+const CollectionProject = () => {
   const { projectViewId, localCollection: collection } = useLocalCollection();
   const { formActions } = useRoleGate();
   return (
@@ -39,4 +38,6 @@ export default function CollectionProject() {
       )}
     </Box>
   );
-}
+};
+
+export default CollectionProject;

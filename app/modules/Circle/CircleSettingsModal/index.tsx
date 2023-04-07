@@ -6,14 +6,13 @@ import { deleteCircle, updateCircle } from "@/app/services/UpdateCircle";
 import { Box, Input, MediaPicker, Stack, Text, Textarea } from "degen";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
+import styled from "styled-components";
 import CircleIntegrations from "./CircleIntegrations";
 import DefaultPayment from "./CirclePayment";
-import Contributors from "../ContributorsModal/Contributors";
 import { useCircle } from "../CircleContext";
-import Credentials from "./Credentials";
-import styled from "styled-components";
 import Roles from "../RolesModal/Roles";
 import SidebarConfig from "./SidebarConfig";
+
 interface Props {
   handleClose: () => void;
   initialTab?: number;
@@ -27,13 +26,12 @@ const ScrollContainer = styled(Box)`
   overflow-y: auto;
 `;
 
-export default function SettingsModal({ handleClose, initialTab }: Props) {
+const SettingsModal = ({ handleClose, initialTab }: Props) => {
   const { circle, setCircleData } = useCircle();
 
   const [tab, setTab] = useState(initialTab || 0);
-  const [visibilityTab, setVisibilityTab] = useState(circle?.private ? 1 : 0);
+  const [visibilityTab] = useState(circle?.private ? 1 : 0);
   const onTabClick = (id: number) => setTab(id);
-  const onVisibilityTabClick = (id: number) => setVisibilityTab(id);
 
   const [name, setName] = useState(circle?.name || "");
   const [uploading, setUploading] = useState(false);
@@ -66,7 +64,7 @@ export default function SettingsModal({ handleClose, initialTab }: Props) {
     const res = await deleteCircle(circle?.id || "");
     if (res) {
       handleClose();
-      void router.push("/");
+      router.push("/");
     }
   };
 
@@ -74,7 +72,6 @@ export default function SettingsModal({ handleClose, initialTab }: Props) {
     if (file) {
       setUploading(true);
       const { imageGatewayURL } = await storeImage(file);
-      console.log({ imageGatewayURL });
       setLogo(imageGatewayURL);
       setUploading(false);
     }
@@ -208,4 +205,6 @@ export default function SettingsModal({ handleClose, initialTab }: Props) {
       </Box>
     </Modal>
   );
-}
+};
+
+export default SettingsModal;

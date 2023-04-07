@@ -9,7 +9,7 @@ import PrimaryButton from "@/app/common/components/PrimaryButton";
 import useProfileUpdate from "@/app/services/Profile/useProfileUpdate";
 import { skills as skillsArray } from "@/app/common/utils/constants";
 
-export function SetUpProfile() {
+const SetUpProfile = () => {
   const router = useRouter();
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
@@ -32,18 +32,17 @@ export function SetUpProfile() {
       poaps: [],
       icon: "",
     }));
-    const res = await updateProfile({
+    await updateProfile({
       email,
       skillsV2: [...(skills as LensSkills[]), ...newSkills],
     });
-    console.log(res);
     setIsLoading(false);
   };
 
-  if (loading)
+  if (loading) {
     return (
       <Box
-        marginTop={"40"}
+        marginTop="40"
         display="flex"
         flexDirection="column"
         gap={{ xs: "10", md: "10", lg: "5" }}
@@ -52,17 +51,18 @@ export function SetUpProfile() {
           style={{ fontSize: "5rem", color: "rgb(191, 90, 242, 1)" }}
           rotate={30}
         />
-        <Heading align={"center"}>Boosting up your Spect experience</Heading>
+        <Heading align="center">Boosting up your Spect experience</Heading>
       </Box>
     );
+  }
 
   return (
     <Box
-      display={"flex"}
+      display="flex"
       flexDirection="column"
-      gap={"5"}
+      gap="5"
       alignItems="center"
-      marginTop={"24"}
+      marginTop="24"
     >
       <Stack
         direction={{ xs: "vertical", md: "horizontal", lg: "horizontal" }}
@@ -72,9 +72,9 @@ export function SetUpProfile() {
           style={{ fontSize: "2.5rem", color: "rgb(191, 90, 242, 1)" }}
           rotate={30}
         />
-        <Heading align={"center"}>All set ! This is the final step</Heading>
+        <Heading align="center">All set ! This is the final step</Heading>
       </Stack>
-      {(currentUser?.email?.length == 0 || !currentUser?.email) && (
+      {(currentUser?.email?.length === 0 || !currentUser?.email) && (
         <Box
           style={{
             display: "flex",
@@ -99,13 +99,13 @@ export function SetUpProfile() {
               setEmail(e.target.value);
             }}
             onBlur={() => {
-              if (currentUser?.skillsV2.length != 0) void onSaveProfile();
+              if (currentUser?.skillsV2.length !== 0) onSaveProfile();
             }}
           />
         </Box>
       )}
 
-      {currentUser?.skillsV2?.length == 0 && (
+      {currentUser?.skillsV2?.length === 0 && (
         <>
           <Text>Select your Skills</Text>
           <Box
@@ -120,44 +120,42 @@ export function SetUpProfile() {
               lg: "1/2",
             }}
           >
-            {skillsArray?.map((s) => {
-              return (
-                <Box
-                  key={s}
-                  onClick={() => {
-                    if (skill.includes(s)) {
-                      setSkill(skill.filter((item) => item !== s));
-                    } else {
-                      setSkill([...skill, s]);
-                    }
-                  }}
-                  style={{
-                    cursor: "pointer",
-                  }}
+            {skillsArray?.map((s) => (
+              <Box
+                key={s}
+                onClick={() => {
+                  if (skill.includes(s)) {
+                    setSkill(skill.filter((item) => item !== s));
+                  } else {
+                    setSkill([...skill, s]);
+                  }
+                }}
+                style={{
+                  cursor: "pointer",
+                }}
+              >
+                <Tag
+                  as="span"
+                  tone={skill.includes(s) ? "accent" : "secondary"}
+                  hover
+                  size="medium"
                 >
-                  <Tag
-                    as="span"
-                    tone={skill.includes(s) ? "accent" : "secondary"}
-                    hover
-                    size="medium"
-                  >
-                    {s}
-                  </Tag>
-                </Box>
-              );
-            })}
+                  {s}
+                </Tag>
+              </Box>
+            ))}
           </Box>
         </>
       )}
 
       <PrimaryButton
         onClick={() => {
-          void onSaveProfile();
-          void router.push(`/profile/${currentUser?.username}`);
+          onSaveProfile();
+          router.push(`/profile/${currentUser?.username}`);
         }}
         disabled={
-          (skill.length == 0 && skills?.length == 0) ||
-          email?.length == 0 ||
+          (skill.length === 0 && skills?.length === 0) ||
+          email?.length === 0 ||
           !isEmail(email || "")
         }
       >
@@ -165,4 +163,6 @@ export function SetUpProfile() {
       </PrimaryButton>
     </Box>
   );
-}
+};
+
+export default SetUpProfile;

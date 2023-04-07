@@ -2,21 +2,14 @@ import Dropdown from "@/app/common/components/Dropdown";
 import { Option, Trigger, CollectionType } from "@/app/types";
 import { Box, Text } from "degen";
 import { useEffect, useState } from "react";
-import { useLocalCollection } from "../../../Context/LocalCollectionContext";
 
 type Props = {
-  triggerMode: "edit" | "create";
   trigger: Trigger;
   setTrigger: (trigger: Trigger) => void;
   collection: CollectionType;
 };
 
-export default function SingleSelectTrigger({
-  setTrigger,
-  triggerMode,
-  trigger,
-  collection,
-}: Props) {
+const SingleSelectTrigger = ({ setTrigger, trigger, collection }: Props) => {
   const [options, setOptions] = useState([] as Option[]);
 
   useEffect(() => {
@@ -52,7 +45,7 @@ export default function SingleSelectTrigger({
                 },
               });
             }}
-            multiple={true}
+            multiple
           />
         </Box>
       </Box>
@@ -79,10 +72,12 @@ export default function SingleSelectTrigger({
                 },
               });
             }}
-            multiple={true}
+            multiple
           />
         </Box>
       </Box>
     </Box>
   );
-}
+};
+
+export default SingleSelectTrigger;

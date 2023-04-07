@@ -35,8 +35,8 @@ interface CircleContextType {
   setMintkudosCommunityId: (isBatchPayOpen: string) => void;
   loading: boolean;
   setLoading: (loading: boolean) => void;
-  navigationBreadcrumbs: any;
-  setNavigationBreadcrumbs: (data: any) => void;
+  navigationBreadcrumbs: unknown;
+  setNavigationBreadcrumbs: (data: unknown) => void;
   justAddedDiscordServer: boolean;
   setJustAddedDiscordServer: (data: boolean) => void;
 }
@@ -55,7 +55,7 @@ export function useProviderCircleContext() {
   const [mintkudosCommunityId, setMintkudosCommunityId] = useState("");
   const [loading, setLoading] = useState(false);
   const [isBatchPayOpen, setIsBatchPayOpen] = useState(false);
-  const [socket, setSocket] = useAtom(socketAtom);
+  const [socket] = useAtom(socketAtom);
   const [justAddedDiscordServer, setJustAddedDiscordServer] = useState(false);
 
   const {
@@ -67,9 +67,7 @@ export function useProviderCircleContext() {
     () =>
       fetch(`${process.env.API_HOST}/circle/v1/slug/${cId as string}`, {
         credentials: "include",
-      }).then((res) => {
-        return res.json();
-      }),
+      }).then((res) => res.json()),
     {
       enabled: false,
     }
@@ -147,21 +145,19 @@ export function useProviderCircleContext() {
     queryClient.setQueryData(["retro", retroSlug], data);
   };
 
-  const setNavigationBreadcrumbs = (data: any) => {
+  const setNavigationBreadcrumbs = (data: unknown) => {
     queryClient.setQueryData(["navigationBreadcrumbs", cId], data);
   };
 
   useEffect(() => {
     if (cId) {
-      void fetchCircle();
-      void fetchRegistry();
-      void fetchMemberDetails();
+      fetchCircle();
+      fetchRegistry();
+      fetchMemberDetails();
     }
-    console.log("STARTED TRACKING SESSION FOR CIRCLE" + cId);
     process.env.NODE_ENV === "production" &&
       mixpanel.time_event("Circle Session");
     return () => {
-      console.log("ENDED TRACKING SESSION FOR CIRCLE" + cId);
       process.env.NODE_ENV === "production" &&
         mixpanel.track("Circle Session", {
           circle: cId,
@@ -172,18 +168,17 @@ export function useProviderCircleContext() {
 
   useEffect(() => {
     if (circle?.id) {
-      void fetchNavigationBreadcrumbs();
+      fetchNavigationBreadcrumbs();
     }
   }, [circle?.id]);
 
   useEffect(() => {
     if (socket && socket.on) {
-      console.log("SOCKET ON");
       socket.on(
         `${cId}:paymentUpdate`,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (event: { data: any; user: string }) => {
-          console.log({ event, cId });
-          if (circle && cId === event.data.circleSlug)
+          if (circle && cId === event.data.circleSlug) {
             setCircleData({
               ...circle,
               pendingPayments: event.data.pendingPayments,
@@ -192,6 +187,7 @@ export function useProviderCircleContext() {
               cancelledPayments: event.data.cancelledPayments,
               pendingSignaturePayments: event.data.pendingSignaturePayments,
             });
+          }
         }
       );
     }
@@ -203,7 +199,7 @@ export function useProviderCircleContext() {
       (event) => {
         if (event.data.discordGuildId) {
           if (circle?.discordGuildId !== event.data.discordGuildId) {
-            void fetchCircle();
+            fetchCircle();
           } else {
             setJustAddedDiscordServer(true);
           }

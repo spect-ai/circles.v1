@@ -1,10 +1,10 @@
 import Editor from "@/app/common/components/Editor";
-import { NameInput } from "@/app/modules/PublicForm/FormFields";
 import { getForm } from "@/app/services/Collection";
 import { CollectionType, FormType } from "@/app/types";
 import { Avatar, Box, Stack } from "degen";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import styled from "styled-components";
 import { toast } from "react-toastify";
 import Footer from "./Footer";
 import Messages from "./Messages";
@@ -15,6 +15,23 @@ type Props = {
   setCurrentPage: (page: string) => void;
 };
 
+const NameInput = styled.textarea`
+  resize: none;
+  background: transparent;
+  border: 0;
+  border-style: none;
+  border-color: transparent;
+  outline: none;
+  outline-offset: 0;
+  box-shadow: none;
+  font-size: 1.8rem;
+  font-family: Inter;
+  caret-color: rgb(191, 90, 242);
+  color: rgb(191, 90, 242);
+  font-weight: 600;
+  overflow: hidden;
+`;
+
 const StartPage = ({ form, setCurrentPage, setForm }: Props) => {
   const router = useRouter();
   const { formId } = router.query;
@@ -22,8 +39,7 @@ const StartPage = ({ form, setCurrentPage, setForm }: Props) => {
   const [captchaVerified, setCaptchaVerified] = useState(false);
 
   useEffect(() => {
-    void (async () => {
-      console.log("formId", formId);
+    (async () => {
       if (formId) {
         const res: FormType = await getForm(formId as string);
         if (res.id) {
@@ -51,10 +67,10 @@ const StartPage = ({ form, setCurrentPage, setForm }: Props) => {
             autoFocus
             value={form.name}
             disabled
-            rows={Math.floor(form.name?.length / 20) + 1}
+            rows={Math.floor((form.name?.length || 1) / 20) + 1}
           />
           {form.description && (
-            <Editor value={form.description} isDirty={true} disabled />
+            <Editor value={form.description} isDirty disabled />
           )}
           <Messages form={form} />
         </Stack>
@@ -66,7 +82,8 @@ const StartPage = ({ form, setCurrentPage, setForm }: Props) => {
         />
       </Box>
     );
-  } else return null;
+  }
+  return null;
 };
 
 export default StartPage;

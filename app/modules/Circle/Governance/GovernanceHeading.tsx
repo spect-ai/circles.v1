@@ -1,15 +1,15 @@
 import Breadcrumbs from "@/app/common/components/Breadcrumbs";
-import { Box, Heading, Input, Stack, Text } from "degen";
+import { Box, Stack, Text } from "degen";
 import { Hidden } from "react-grid-system";
-import { useCircle } from "../../Circle/CircleContext";
 import { useRouter } from "next/router";
-import { ViewTab, ViewTabsContainer } from "../Payment/PaymentCenterHeading";
 import Link from "next/link";
 import { useState } from "react";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { AnimatePresence } from "framer-motion";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { toast } from "react-toastify";
+import { ViewTab, ViewTabsContainer } from "../Payment/PaymentCenterHeading";
+import { useCircle } from "../CircleContext";
 import IntegrateSnapshotModal from "./IntegrateSnapshotModal";
 
 type Props = {
@@ -17,7 +17,7 @@ type Props = {
   setStatus: (id: "Active" | "Completed") => void;
 };
 
-export default function GovernanceHeading({ status, setStatus }: Props) {
+const GovernanceHeading = ({ status, setStatus }: Props) => {
   const { navigationBreadcrumbs, circle } = useCircle();
   const router = useRouter();
   const { canDo } = useRoleGate();
@@ -90,7 +90,7 @@ export default function GovernanceHeading({ status, setStatus }: Props) {
               borderTopWidth={status === "Active" ? "0.375" : "0"}
               borderRightWidth={status === "Active" ? "0.375" : "0"}
               borderLeftWidth={status === "Active" ? "0.375" : "0"}
-              key={"active"}
+              key="active"
               onClick={() => setStatus("Active")}
             >
               <Text variant="small" weight="semiBold">
@@ -107,7 +107,7 @@ export default function GovernanceHeading({ status, setStatus }: Props) {
               borderTopWidth={status === "Completed" ? "0.375" : "0"}
               borderRightWidth={status === "Completed" ? "0.375" : "0"}
               borderLeftWidth={status === "Completed" ? "0.375" : "0"}
-              key={"completed"}
+              key="completed"
               onClick={() => setStatus("Completed")}
             >
               <Text variant="small" weight="semiBold">
@@ -119,4 +119,6 @@ export default function GovernanceHeading({ status, setStatus }: Props) {
       </Box>
     </>
   );
-}
+};
+
+export default GovernanceHeading;

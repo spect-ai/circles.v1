@@ -12,13 +12,13 @@ type Props = {
   disabled?: boolean;
 };
 
-export default function RewardField({
+const RewardField = ({
   rewardOptions,
   value,
   updateData,
   onValueKeyDown,
   disabled,
-}: Props) {
+}: Props) => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const firstChainName =
     Object.values(rewardOptions).length > 0
@@ -47,12 +47,10 @@ export default function RewardField({
     if (rewardOptions && selectedChain) {
       const tokens = Object.entries(
         rewardOptions[selectedChain.value].tokenDetails
-      ).map(([address, token]) => {
-        return {
-          label: token.symbol,
-          value: address,
-        };
-      });
+      ).map(([address, token]) => ({
+        label: token.symbol,
+        value: address,
+      }));
       setSelectedToken(tokens[0]);
       updateData({
         chain: selectedChain,
@@ -80,12 +78,10 @@ export default function RewardField({
         <Dropdown
           options={
             rewardOptions
-              ? Object.entries(rewardOptions).map(([chainId, network]) => {
-                  return {
-                    label: network.name,
-                    value: chainId,
-                  };
-                })
+              ? Object.entries(rewardOptions).map(([chainId, network]) => ({
+                  label: network.name,
+                  value: chainId,
+                }))
               : []
           }
           selected={selectedChain}
@@ -132,7 +128,7 @@ export default function RewardField({
       >
         <Input
           label=""
-          placeholder={`Enter Reward Amount`}
+          placeholder="Enter Reward Amount"
           value={value?.value}
           onChange={(e) => {
             updateData({
@@ -149,4 +145,11 @@ export default function RewardField({
       </Box>
     </Stack>
   );
-}
+};
+
+RewardField.defaultProps = {
+  onValueKeyDown: () => {},
+  disabled: false,
+};
+
+export default RewardField;

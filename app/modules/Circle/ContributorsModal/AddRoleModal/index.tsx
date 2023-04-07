@@ -16,16 +16,16 @@ import {
   Text,
 } from "degen";
 import { AnimatePresence } from "framer-motion";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { useCircle } from "../../CircleContext";
 import { defaultPermissions, permissionText } from "./contants";
-import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 
-type props = {
+type Props = {
   role?: string;
 };
 
-export default function AddRole({ role }: props) {
+const AddRole = ({ role }: Props) => {
   const [name, setName] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [permissions, setPermissions] = useState(defaultPermissions);
@@ -63,7 +63,7 @@ export default function AddRole({ role }: props) {
             }
             onClick={() => setIsOpen(true)}
             variant="transparent"
-            width={"full"}
+            width="full"
             size="small"
           >
             {circle.roles[role]?.mutable && canDo("manageRoles")
@@ -109,7 +109,7 @@ export default function AddRole({ role }: props) {
                 )}
                 {role && !circle.roles[role]?.mutable && (
                   <Box marginLeft="4">
-                    <Text weight="semiBold" align={"center"}>
+                    <Text weight="semiBold" align="center">
                       This role is immutable
                     </Text>
                   </Box>
@@ -197,28 +197,25 @@ export default function AddRole({ role }: props) {
                           let res;
                           if (role) {
                             const payload = {
-                              name: name,
+                              name,
                               description: role
                                 ? circle.roles[role]?.description
                                 : `${name} role`,
                               selfAssignable: false,
                               permissions,
                             };
-                            console.log({ payload });
                             res = await updateRole(circle?.id, role, payload);
                           } else {
                             const payload = {
-                              name: name,
+                              name,
                               description: role
                                 ? circle.roles[role]?.description
                                 : `${name} role`,
                               selfAssignable: false,
                               permissions,
                             };
-                            console.log({ payload });
                             res = await addRole(circle?.id, payload);
                           }
-                          console.log({ res });
                           fetchCircle();
                           setLoading(false);
 
@@ -240,4 +237,6 @@ export default function AddRole({ role }: props) {
       </AnimatePresence>
     </Box>
   );
-}
+};
+
+export default AddRole;

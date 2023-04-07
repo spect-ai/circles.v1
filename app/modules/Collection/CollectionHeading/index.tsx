@@ -10,20 +10,20 @@ import Skeleton from "react-loading-skeleton";
 import { toast } from "react-toastify";
 import { useLocation } from "react-use";
 import styled from "styled-components";
-import { useCircle } from "../../Circle/CircleContext";
-import AddField from "../AddField";
-import { useLocalCollection } from "../Context/LocalCollectionContext";
 import mixpanel from "@/app/common/utils/mixpanel";
 import { useQuery } from "react-query";
 import { UserType } from "@/app/types";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
-import { Embed } from "../Embed";
 import { SendOutlined } from "@ant-design/icons";
 import { smartTrim } from "@/app/common/utils/utils";
+import { useLocalCollection } from "../Context/LocalCollectionContext";
+import AddField from "../AddField";
+import { useCircle } from "../../Circle/CircleContext";
 import FormSettings from "../Form/FormSettings";
 import WarnConnectWallet from "./WarnConnectWallet";
 import { PopoverOption } from "../../Circle/CircleSettingsModal/DiscordRoleMapping/RolePopover";
 import ViewPlugins from "../../Plugins/ViewPlugins";
+import Embed from "../Embed";
 
 export const IconButton = styled(Box)`
   cursor: pointer;
@@ -32,7 +32,7 @@ export const IconButton = styled(Box)`
   }
 `;
 
-function CollectionHeading() {
+const CollectionHeading = () => {
   const {
     localCollection: collection,
     loading,
@@ -112,7 +112,7 @@ function CollectionHeading() {
                         circle: collection?.parents[0].slug,
                         user: currentUser?.username,
                       });
-                    void router.push(location.pathname as string);
+                    router.push(location.pathname as string);
                     setView(0);
                   }}
                 >
@@ -167,7 +167,7 @@ function CollectionHeading() {
                       <PopoverOption onClick={() => {}}>
                         <PrimaryButton
                           onClick={() => {
-                            void navigator.clipboard.writeText(
+                            navigator.clipboard.writeText(
                               `https://circles.spect.network/r/${collection?.slug}`
                             );
                             toast.success("Copied to clipboard");
@@ -270,7 +270,7 @@ function CollectionHeading() {
                   >
                     <PopoverOption
                       onClick={() => {
-                        void navigator.clipboard.writeText(
+                        navigator.clipboard.writeText(
                           `https://circles.spect.network/r/${collection?.slug}`
                         );
                         toast.success("Copied to clipboard");
@@ -344,7 +344,6 @@ function CollectionHeading() {
         )}
         {isEmbedModalOpen && (
           <Embed
-            isOpen={isEmbedModalOpen}
             setIsOpen={setIsEmbedModalOpen}
             component="form"
             routeId={collection.slug}
@@ -364,6 +363,6 @@ function CollectionHeading() {
       </AnimatePresence>
     </Box>
   );
-}
+};
 
 export default memo(CollectionHeading);

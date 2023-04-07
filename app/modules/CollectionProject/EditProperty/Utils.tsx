@@ -22,7 +22,7 @@ import {
 } from "react-icons/fa";
 import { MdAddLink, MdOutlineAttachMoney } from "react-icons/md";
 
-export const getPropertyIcon = (type: PropertyType, size?: number) => {
+const getPropertyIcon = (type: PropertyType, size?: number) => {
   switch (type) {
     case "shortText":
       return <BiText size={size || 18} />;
@@ -62,3 +62,5 @@ export const getPropertyIcon = (type: PropertyType, size?: number) => {
       return <BiAperture size={size || 18} />;
   }
 };
+
+export default getPropertyIcon;

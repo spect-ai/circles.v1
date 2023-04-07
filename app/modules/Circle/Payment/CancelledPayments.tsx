@@ -6,7 +6,20 @@ import usePaymentViewCommon from "./Common/usePaymentCommon";
 import PaymentCard from "./PaymentCard";
 import PaymentCardDrawer from "./PaymentCardDrawer";
 
-export default function CompletedPayments() {
+const ScrollContainer = styled(Box)`
+  overflow-y: auto;
+  ::-webkit-scrollbar {
+    width: 4px;
+  }
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  @media (max-width: 768px) {
+    height: calc(100vh - 12rem);
+  }
+  height: calc(100vh - 12rem);
+`;
+
+const CompletedPayments = () => {
   const { circle } = useCircle();
   const { isCardDrawerOpen, setIsCardDrawerOpen } = usePaymentViewCommon();
 
@@ -39,33 +52,20 @@ export default function CompletedPayments() {
           </Box>
         )}
         <ScrollContainer>
-          {circle.cancelledPayments?.map((paymentId, index) => {
-            return (
-              <PaymentCard
-                key={index}
-                index={index}
-                paymentDetails={circle.paymentDetails[paymentId]}
-                handleClick={() => {
-                  setIsCardDrawerOpen(true);
-                }}
-              />
-            );
-          })}
+          {circle.cancelledPayments?.map((paymentId, index) => (
+            <PaymentCard
+              key={paymentId}
+              index={index}
+              paymentDetails={circle.paymentDetails[paymentId]}
+              handleClick={() => {
+                setIsCardDrawerOpen(true);
+              }}
+            />
+          ))}
         </ScrollContainer>
       </Box>
     </Stack>
   );
-}
+};
 
-const ScrollContainer = styled(Box)`
-  overflow-y: auto;
-  ::-webkit-scrollbar {
-    width: 4px;
-  }
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-  @media (max-width: 768px) {
-    height: calc(100vh - 12rem);
-  }
-  height: calc(100vh - 12rem);
-`;
+export default CompletedPayments;

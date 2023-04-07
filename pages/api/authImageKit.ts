@@ -9,7 +9,6 @@ const imagekit = new ImageKit({
 });
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
-  console.log("auth image kit");
   try {
     const signatureObj = imagekit.getAuthenticationParameters(
       req.query.token as string,

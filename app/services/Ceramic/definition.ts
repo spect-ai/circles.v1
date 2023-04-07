@@ -1,4 +1,4 @@
-export const definition = {
+const definition = {
   models: {
     SpectForm: {
       id: "kjzl6hvfrbw6c5iv52dc4niy6m90mzouxdnp2l1vhk4dghp25uixmcf2wuj3zjt",
@@ -18,3 +18,5 @@ export const definition = {
   enums: {},
   accountData: { spectFormList: { type: "connection", name: "SpectForm" } },
 };
+
+export default definition;

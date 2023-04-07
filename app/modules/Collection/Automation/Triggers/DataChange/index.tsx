@@ -2,28 +2,22 @@ import { Trigger, CollectionType } from "@/app/types";
 import SingleSelectTrigger from "./SingleSelectTrigger";
 
 type Props = {
-  triggerMode: "edit" | "create";
   trigger: Trigger;
   setTrigger: (trigger: Trigger) => void;
   collection: CollectionType;
 };
 
-export default function DataChange({
-  setTrigger,
-  triggerMode,
-  trigger,
-  collection,
-}: Props) {
-  return (
-    <>
-      {trigger?.data?.fieldType === "singleSelect" && (
-        <SingleSelectTrigger
-          trigger={trigger}
-          triggerMode={triggerMode}
-          setTrigger={setTrigger}
-          collection={collection}
-        />
-      )}
-    </>
-  );
-}
+const DataChange = ({ setTrigger, trigger, collection }: Props) => {
+  if (trigger?.data?.fieldType === "singleSelect") {
+    return (
+      <SingleSelectTrigger
+        trigger={trigger}
+        setTrigger={setTrigger}
+        collection={collection}
+      />
+    );
+  }
+  return null;
+};
+
+export default DataChange;

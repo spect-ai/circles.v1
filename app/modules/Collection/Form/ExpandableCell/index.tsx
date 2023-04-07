@@ -2,7 +2,7 @@
 import { Portal } from "@/app/common/components/Portal/portal";
 import { PropertyType } from "@/app/types";
 import { Box, IconClose, Stack, Text } from "degen";
-import React, { useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { CellProps } from "react-datasheet-grid";
 import { usePopper } from "react-popper";
 import styled from "styled-components";
@@ -22,14 +22,24 @@ const getComponent = (type: PropertyType) => {
   }
 };
 
-export default function ExpandableCell({
+const Container = styled(Box)`
+  height: 7rem;
+  width: 24rem;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.5);
+  overflow-y: auto;
+`;
+
+const ExpandableCell = ({
   focus,
   active,
   rowData,
   columnData,
   setRowData,
   stopEditing,
-}: CellProps) {
+}: CellProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const [referenceElement, setReferenceElement] = useState<any>();
@@ -109,7 +119,7 @@ export default function ExpandableCell({
                 active={active}
                 rowData={rowData}
                 columnData={columnData}
-                isModalOpen={true}
+                isModalOpen
                 setRowData={setRowData}
                 stopEditing={stopEditing}
               />
@@ -147,14 +157,6 @@ export default function ExpandableCell({
       />
     </Box>
   );
-}
+};
 
-const Container = styled(Box)`
-  height: 7rem;
-  width: 24rem;
-  border-radius: 0.5rem;
-  padding: 1rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.5);
-  overflow-y: auto;
-`;
+export default ExpandableCell;

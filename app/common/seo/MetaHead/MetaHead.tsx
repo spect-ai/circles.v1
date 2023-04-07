@@ -1,20 +1,16 @@
 import { NextSeo } from "next-seo";
 import { useRouter } from "next/router";
 
-type props = {
+type Props = {
   title: string;
   description: string;
   image: string;
 };
-export default function MetaHead({
-  title,
-  description,
-  image,
-}: props): JSX.Element {
-  const ogImgRelativePath = "/og.jpg";
+const MetaHead = ({ title, description, image }: Props) => {
+  // const ogImgRelativePath = "/og.jpg";
 
   const siteURL = "https://circles.spect.network";
-  const ogImageURL = `${ogImgRelativePath}`;
+  // const ogImageURL = `${ogImgRelativePath}`;
   const pathName = useRouter().pathname;
   const pageURL = pathName === "/" ? siteURL : siteURL + pathName;
   const twitterHandle = "@JoinSpect";
@@ -30,7 +26,7 @@ export default function MetaHead({
         locale: "en_US", //  Default is en_US
         url: pageURL,
         title,
-        description: description,
+        description,
         images: [
           {
             url: image,
@@ -55,7 +51,7 @@ export default function MetaHead({
       additionalLinkTags={[
         {
           rel: "icon",
-          href: `/favicon.ico`,
+          href: "/favicon.ico",
         },
         // {
         //   rel: "manifest",
@@ -64,4 +60,6 @@ export default function MetaHead({
       ]}
     />
   );
-}
+};
+
+export default MetaHead;

@@ -1,22 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import Editor from "@/app/common/components/Editor";
-import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { timeSince } from "@/app/common/utils/utils";
 import { sendFormComment } from "@/app/services/Collection";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
-import {
-  CollectionActivity,
-  CollectionType,
-  MappedItem,
-  UserType,
-} from "@/app/types";
+import { CollectionActivity, MappedItem, UserType } from "@/app/types";
 import { SendOutlined } from "@ant-design/icons";
 import { Avatar, Box, Button, Stack, Text } from "degen";
 import { useRouter } from "next/router";
-import React, { useState } from "react";
+import { useState } from "react";
 import { useQuery } from "react-query";
 import { toast } from "react-toastify";
-import { useLocalCollection } from "../../Context/LocalCollectionContext";
 
 type Props = {
   activities: MappedItem<CollectionActivity>;
@@ -29,7 +21,7 @@ type Props = {
   collection: any;
 };
 
-export default function DataActivity({
+const DataActivity = ({
   activities,
   activityOrder,
   getMemberDetails,
@@ -38,7 +30,7 @@ export default function DataActivity({
   setForm,
   dataOwner,
   collection,
-}: Props) {
+}: Props) => {
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
@@ -64,7 +56,7 @@ export default function DataActivity({
         {activityOrder?.map((activityId) => {
           const activity = activities[activityId];
           const actor =
-            collection.data?.[dataId]?.["anonymous"] === true &&
+            collection.data?.[dataId]?.anonymous === true &&
             dataOwner?.id === activity.ref?.actor?.id
               ? anonActor
               : getMemberDetails(activity.ref.actor?.id) || dataOwner;
@@ -135,19 +127,6 @@ export default function DataActivity({
             display="flex"
             flexDirection="row"
           >
-            {/* {!sendingComment && (
-              <Box height="40" overflow="auto" width="full">
-                <Editor
-                  placeholder="Write a reply..."
-                  value={comment}
-                  onSave={(value) => {
-                    setComment(value);
-                  }}
-                  isDirty={isDirty}
-                  setIsDirty={setIsDirty}
-                />
-              </Box>
-            )} */}
             {isDirty && currentUser && (
               <Button
                 variant="secondary"
@@ -158,7 +137,7 @@ export default function DataActivity({
                   if (
                     !(
                       formActions("addComments") ||
-                      currentUser.id == dataOwner.id
+                      currentUser.id === dataOwner.id
                     )
                   ) {
                     toast.error(
@@ -177,7 +156,7 @@ export default function DataActivity({
                         refType: "user",
                       },
                     },
-                    circle ? false : true
+                    !circle
                   );
                   if (res.id) {
                     setForm(res);
@@ -195,4 +174,6 @@ export default function DataActivity({
       </Stack>
     </Box>
   );
-}
+};
+
+export default DataActivity;

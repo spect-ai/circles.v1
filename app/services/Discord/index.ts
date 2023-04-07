@@ -40,4 +40,5 @@ export const fetchGuildChannels = async (
     return data;
   }
   toast.error("Error getting guild channels");
+  return null;
 };

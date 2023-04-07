@@ -9,16 +9,14 @@ import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { Tooltip } from "react-tippy";
 import { QuestionCircleFilled } from "@ant-design/icons";
 import { createProject } from "@/app/services/Project";
-import { useCircle } from "./CircleContext";
 import Dropdown from "@/app/common/components/Dropdown";
 import { toast } from "react-toastify";
 import { updateFolder } from "@/app/services/Folders";
+import { useCircle } from "./CircleContext";
 
 const getPlaceholder: {
   [key: string]: string;
 } = {
-  // notion: "Notion URL",
-  // github: "Github URL",
   trello: "Trello URL",
 };
 
@@ -27,12 +25,23 @@ interface Props {
   setModalOpen: (modal: boolean) => void;
 }
 
-function CreateProjectModal({ folderId, setModalOpen }: Props) {
+const CreateProjectModal = ({ folderId, setModalOpen }: Props) => {
   const [isLoading, setIsLoading] = useState(false);
   const close = () => setModalOpen(false);
   const router = useRouter();
   const { circle: cId } = router.query;
   const { circle, fetchCircle } = useCircle();
+
+  const [template, setTemplate] = useState({} as option);
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const { mode } = useTheme();
+
+  const [importType, setImportType] = useState({
+    label: "Trello",
+    value: "trello",
+  });
+
   const { data: templates, refetch: fetchTemplate } = useQuery<option[]>(
     ["projectTemplates", cId],
     () =>
@@ -56,15 +65,6 @@ function CreateProjectModal({ folderId, setModalOpen }: Props) {
       enabled: false,
     }
   );
-  const [template, setTemplate] = useState({} as option);
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const { mode } = useTheme();
-
-  const [importType, setImportType] = useState({
-    label: "Trello",
-    value: "trello",
-  });
 
   const [importURL, setImportURL] = useState("");
 
@@ -72,8 +72,7 @@ function CreateProjectModal({ folderId, setModalOpen }: Props) {
     // get board id from trello url
     let importId;
     if (importURL) {
-      importId = importURL.split("/")[4];
-      console.log({ importId });
+      [, , , importId] = importURL.split("/");
       const trelloRes = await fetch(
         `https://api.trello.com/1/boards/${importId}`
       );
@@ -96,8 +95,8 @@ function CreateProjectModal({ folderId, setModalOpen }: Props) {
     });
     setIsLoading(false);
     if (data) {
-      void router.push(`/${cId}/${data.slug}`);
-      void close();
+      router.push(`/${cId}/${data.slug}`);
+      close();
       if (folderId) {
         const prev = Array.from(circle?.folderDetails[folderId]?.contentIds);
         prev.push(data.id);
@@ -123,7 +122,7 @@ function CreateProjectModal({ folderId, setModalOpen }: Props) {
   };
 
   useEffect(() => {
-    void fetchTemplate();
+    fetchTemplate();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -212,6 +211,6 @@ function CreateProjectModal({ folderId, setModalOpen }: Props) {
       </Box>
     </Modal>
   );
-}
+};
 
 export default CreateProjectModal;

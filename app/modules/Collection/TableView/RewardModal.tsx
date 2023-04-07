@@ -8,18 +8,18 @@ import RewardField from "../../PublicForm/Fields/RewardField";
 type Props = {
   form: any;
   value: any | undefined;
-  dataId?: string;
   propertyName: string;
   handleClose: (reward: Reward, dataId: string, propertyName: string) => void;
+  dataId?: string;
 };
 
-function RewardModal({
+const RewardModal = ({
   propertyName,
-  dataId,
   handleClose,
   form,
   value,
-}: Props) {
+  dataId,
+}: Props) => {
   const [data, setData] = useState(value);
 
   return (
@@ -48,6 +48,10 @@ function RewardModal({
       </Box>
     </Modal>
   );
-}
+};
+
+RewardModal.defaultProps = {
+  dataId: "",
+};
 
 export default memo(RewardModal);

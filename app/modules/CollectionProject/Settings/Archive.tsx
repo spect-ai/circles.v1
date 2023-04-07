@@ -4,14 +4,12 @@ import { updateFormCollection } from "@/app/services/Collection";
 import { Box, Stack, Text } from "degen";
 import { AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
-import React, { useState } from "react";
+import { useState } from "react";
 import { Archive as ArchiveIcon } from "react-feather";
 import { toast } from "react-toastify";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
 
-type Props = {};
-
-export default function Archive({}: Props) {
+const Archive = () => {
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const { localCollection: collection } = useLocalCollection();
   const router = useRouter();
@@ -26,18 +24,17 @@ export default function Archive({}: Props) {
                 : "Are you sure you want to archive this project?"
             }
             onConfirm={() => {
-              void updateFormCollection(collection.id, {
+              updateFormCollection(collection.id, {
                 archived: true,
                 formMetadata: {
                   ...collection.formMetadata,
                   active: false,
                 },
               }).then((res) => {
-                console.log({ res });
                 if (res.id) {
                   toast.success("Archived successfully");
                   setIsConfirmOpen(false);
-                  void router.push(`/${router.query.circle}`);
+                  router.push(`/${router.query.circle}`);
                 } else {
                   toast.error("Error archiving");
                 }
@@ -64,4 +61,6 @@ export default function Archive({}: Props) {
       </Stack>
     </Box>
   );
-}
+};
+
+export default Archive;

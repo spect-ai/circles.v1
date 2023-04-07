@@ -1,31 +1,53 @@
 import Dropdown from "@/app/common/components/Dropdown";
 import Modal from "@/app/common/components/Modal";
 import useProfileUpdate from "@/app/services/Profile/useProfileUpdate";
-import { Credential, LensSkills, Option } from "@/app/types";
+import { Credential, LensSkills, Option, PoapCredential } from "@/app/types";
 import { Box, Button, Input, Tag, Text } from "degen";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
-import LinkCredentialsModal from "./LinkCredentialsModal";
 import { skills as skillsList } from "@/app/common/utils/constants";
 import { useAtom } from "jotai";
 import { userDataAtom } from "@/app/state/global";
+import LinkCredentialsModal from "./LinkCredentialsModal";
 
 type Props = {
   handleClose: () => void;
   modalMode: "add" | "edit";
   skills: LensSkills[];
-  allCredentials: { [id: string]: any[] };
+  allCredentials: {
+    poaps: PoapCredential[];
+    kudos: Credential[];
+    gitcoinPassports: Credential[];
+  };
   skillId?: number;
 };
 
-export default function AddSkillModal({
+export const DateInput = styled.input<{ mode: string }>`
+  padding: 1rem;
+  border-radius: 0.55rem;
+  border 1px solid ${(props) =>
+    props.mode === "dark" ? "rgb(255, 255, 255,0.1)" : "rgb(20,20,20,0.1)"};
+  background-color: ${(props) =>
+    props.mode === "dark" ? "rgb(20,20,20)" : "rgb(255, 255, 255)"};
+  width: 100%;
+  color: ${(props) =>
+    props.mode === "dark" ? "rgb(255, 255, 255,0.7)" : "rgb(20,20,20,0.7)"};
+  margin-top: 10px;
+  outline: none;
+  &:focus {
+    border-color: rgb(191, 90, 242, 1);
+  }
+  transition: border-color 0.5s ease;
+`;
+
+const AddSkillModal = ({
   handleClose,
   modalMode,
   skills,
   allCredentials,
   skillId,
-}: Props) {
-  const [userData, setUserData] = useAtom(userDataAtom);
+}: Props) => {
+  const [userData] = useAtom(userDataAtom);
 
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState({} as Option);
@@ -40,12 +62,23 @@ export default function AddSkillModal({
     category: false,
   });
 
-  const isEmpty = (fieldName: string, value: any) => {
+  const isEmpty = (
+    fieldName: string,
+    value:
+      | {
+          value: string;
+          label: string;
+        }
+      | string
+  ) => {
     switch (fieldName) {
       case "title":
         return !value;
       case "category":
-        return !value?.value;
+        if (typeof value !== "string") {
+          return !value.value;
+        }
+        return !value;
       default:
         return false;
     }
@@ -55,12 +88,10 @@ export default function AddSkillModal({
     setCategoryOptions(
       skillsList
         .filter((skill) => skill !== "None")
-        .map((skill) => {
-          return {
-            label: skill,
-            value: skill,
-          };
-        })
+        .map((skill) => ({
+          label: skill,
+          value: skill,
+        }))
     );
     if (modalMode === "edit" && (skillId || skillId === 0)) {
       setLoading(true);
@@ -102,14 +133,14 @@ export default function AddSkillModal({
               Required
             </Tag>
           </Box>
-          {requiredFieldsNotSet["title"] && (
+          {requiredFieldsNotSet.title && (
             <Text color="red" variant="small">
               This is a required field and cannot be empty
             </Text>
           )}
           <Input
             label
-            placeholder={`Enter Skill`}
+            placeholder="Enter Skill"
             value={title}
             maxLength={50}
             onChange={(e) => {
@@ -128,18 +159,27 @@ export default function AddSkillModal({
               Required
             </Tag>
           </Box>
-          {requiredFieldsNotSet["category"] && (
+          {requiredFieldsNotSet.category && (
             <Text color="red" variant="small">
               This is a required field and cannot be empty
             </Text>
           )}
           <Dropdown
-            placeholder={`Select Skill Category`}
+            placeholder="Select Skill Category"
             options={categoryOptions}
             multiple={false}
             selected={category}
-            onChange={(value: any) => {
-              setCategory(value);
+            onChange={(
+              value:
+                | {
+                    value: string;
+                    label: string;
+                  }
+                | string
+            ) => {
+              if (typeof value !== "string") {
+                setCategory(value);
+              }
               setRequiredFieldsNotSet({
                 ...requiredFieldsNotSet,
                 category: isEmpty("category", value),
@@ -167,7 +207,7 @@ export default function AddSkillModal({
         >
           <Button
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            //@ts-ignore
+            // @ts-ignore
             marginRight="2"
             variant="secondary"
             size="small"
@@ -189,6 +229,7 @@ export default function AddSkillModal({
               let newSkills;
               if (modalMode === "add") {
                 if (!skills) {
+                  // eslint-disable-next-line no-param-reassign
                   skills = [];
                 }
                 newSkills = [
@@ -205,7 +246,6 @@ export default function AddSkillModal({
               } else if (modalMode === "edit") {
                 if (!skillId && skillId !== 0) {
                   setLoading(false);
-
                   return;
                 }
                 newSkills = skills.map((skill, index) => {
@@ -226,11 +266,10 @@ export default function AddSkillModal({
                   return skill;
                 });
               }
-              const res = await updateProfile({
+              await updateProfile({
                 skillsV2: newSkills,
               });
               setLoading(false);
-
               handleClose();
             }}
           >
@@ -240,21 +279,10 @@ export default function AddSkillModal({
       </Box>
     </Modal>
   );
-}
-export const DateInput = styled.input<{ mode: string }>`
-  padding: 1rem;
-  border-radius: 0.55rem;
-  border 1px solid ${(props) =>
-    props.mode === "dark" ? "rgb(255, 255, 255,0.1)" : "rgb(20,20,20,0.1)"};
-  background-color: ${(props) =>
-    props.mode === "dark" ? "rgb(20,20,20)" : "rgb(255, 255, 255)"};
-  width: 100%;
-  color: ${(props) =>
-    props.mode === "dark" ? "rgb(255, 255, 255,0.7)" : "rgb(20,20,20,0.7)"};
-  margin-top: 10px;
-  outline: none;
-  &:focus {
-    border-color: rgb(191, 90, 242, 1);
-  }
-  transition: border-color 0.5s ease;
-`;
+};
+
+AddSkillModal.defaultProps = {
+  skillId: null,
+};
+
+export default AddSkillModal;

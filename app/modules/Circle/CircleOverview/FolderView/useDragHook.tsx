@@ -1,8 +1,8 @@
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { DropResult } from "react-beautiful-dnd";
 import { toast } from "react-toastify";
-import { useCircle } from "../../CircleContext";
 import { updateFolderDetails, updateFolder } from "@/app/services/Folders";
+import { useCircle } from "../../CircleContext";
 
 export default function useDragFolder() {
   const { circle, setCircleData } = useCircle();
@@ -61,7 +61,7 @@ export default function useDragFolder() {
             }
           })
           .catch((err) => {
-            console.log({ err });
+            console.error({ err });
           });
         return;
       }
@@ -97,8 +97,7 @@ export default function useDragFolder() {
             setCircleData(res);
           }
         };
-        void update();
-        return;
+        update();
       } else {
         const startContentIds = Array.from(start.contentIds);
         startContentIds.splice(source.index, 1);
@@ -134,8 +133,7 @@ export default function useDragFolder() {
             setCircleData(res);
           }
         };
-        void update();
-        return;
+        update();
       }
     }
   };

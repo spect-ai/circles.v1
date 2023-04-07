@@ -21,21 +21,66 @@ import React, { useEffect, useState } from "react";
 import { ExternalLink } from "react-feather";
 import { useQuery } from "react-query";
 import styled from "styled-components";
+import Avatar from "@/app/common/components/Avatar";
+import { smartTrim } from "@/app/common/utils/utils";
 import { useLocalCollection } from "../../Context/LocalCollectionContext";
 import DataActivity from "./DataActivity";
 import SnapshotVoting from "./VotingOnSnapshot";
-import Avatar from "@/app/common/components/Avatar";
-import { smartTrim } from "@/app/common/utils/utils";
 
-type props = {
+type Props = {
   expandedDataSlug: string;
   setExpandedDataSlug: React.Dispatch<React.SetStateAction<string>>;
 };
 
-export default function DataDrawer({
+const ScrollContainer = styled(Box)`
+  height: calc(100vh - 4rem);
+  overflow-y: auto;
+
+  ::-webkit-scrollbar {
+    width: 0.5rem;
+    border-radius: 0rem;
+  }
+`;
+
+const ResponseFieldCard = styled(Box)<{
+  mode: string;
+  width?: string;
+  height?: string;
+}>`
+  @media (max-width: 1420px) {
+    width: 100%;
+    padding: 0.5rem;
+    margin: 0;
+    height: auto;
+    margin-top: 0.5rem;
+    align-items: flex-start;
+  }
+
+  width: 80%;
+  height: ${(props) => props.height || "auto"};
+  border-radius: 1rem;
+  padding: 1rem;
+  box-shadow: 0px 1px 6px
+    ${(props) =>
+      props.mode === "dark" ? "rgba(0, 0, 0, 0.4)" : "rgba(0, 0, 0, 0.1)"};
+  &:hover {
+    box-shadow: 0px 3px 10px
+      ${(props) =>
+        props.mode === "dark" ? "rgba(0, 0, 0, 0.6)" : "rgba(0, 0, 0, 0.25)"};
+    transition-duration: 0.7s;
+  }
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  align-items: flex-start;
+  position: relative;
+  transition: all 0.5s ease-in-out;
+`;
+
+const DataDrawer = ({
   expandedDataSlug: dataId,
   setExpandedDataSlug,
-}: props) {
+}: Props) => {
   const { localCollection: collection, updateCollection } =
     useLocalCollection();
   const { mode } = useTheme();
@@ -43,7 +88,7 @@ export default function DataDrawer({
   const { registry } = useCircle();
 
   const router = useRouter();
-  const { dataId: dataSlug, circle: cId } = router.query;
+  const { circle: cId } = router.query;
   const [data, setData] = useState({} as any);
   const [dataIdx, setDataIdx] = useState(0);
 
@@ -66,9 +111,7 @@ export default function DataDrawer({
   );
 
   const getMemberDetails = React.useCallback(
-    (id: string) => {
-      return memberDetails?.memberDetails[id];
-    },
+    (id: string) => memberDetails?.memberDetails[id],
     [memberDetails]
   );
 
@@ -141,7 +184,7 @@ export default function DataDrawer({
                   {collection.propertyOrder.map((propertyName: string) => {
                     const property = collection.properties[propertyName];
                     if (property.isPartOfFormView === false) return null;
-                    if (!data[property.id || property.name])
+                    if (!data[property.id || property.name]) {
                       return (
                         <Stack key={property.name} space="1">
                           <Text
@@ -154,13 +197,14 @@ export default function DataDrawer({
                           <Text variant="label">No value added</Text>
                         </Stack>
                       );
+                    }
                     return (
                       <Stack key={property.name} space="1">
                         <Stack
-                          space={"2"}
+                          space="2"
                           direction="horizontal"
                           wrap
-                          align={"center"}
+                          align="center"
                         >
                           <Text
                             weight="semiBold"
@@ -173,7 +217,7 @@ export default function DataDrawer({
                             <Text
                               weight="medium"
                               variant="small"
-                              color={"textTertiary"}
+                              color="textTertiary"
                             >
                               {property.description}
                             </Text>
@@ -196,7 +240,7 @@ export default function DataDrawer({
                           {property?.type === "longText" && (
                             <Editor value={data[property.name]} disabled />
                           )}
-                          {property?.type == "singleURL" && (
+                          {property?.type === "singleURL" && (
                             <Box
                               onClick={() =>
                                 window.open(data[property.name], "_blank")
@@ -206,11 +250,11 @@ export default function DataDrawer({
                               <Text>{data[property.name]}</Text>
                             </Box>
                           )}
-                          {property?.type == "multiURL" && (
+                          {property?.type === "multiURL" && (
                             <Stack direction="vertical">
                               {data[property.name]?.map((url: OptionType) => (
                                 <Box key={url.value}>
-                                  <Stack direction={"horizontal"}>
+                                  <Stack direction="horizontal">
                                     <Text>{url.label}</Text>
                                     <Text>-</Text>
                                     <Box
@@ -278,36 +322,33 @@ export default function DataDrawer({
                                   chain: OptionType;
                                   value: number;
                                   txnHash: string;
-                                }) => {
-                                  return (
-                                    <Text key={payment.token.label}>
-                                      <Stack
-                                        direction="horizontal"
-                                        align="center"
-                                        space="0"
+                                }) => (
+                                  <Text key={payment.token.label}>
+                                    <Stack
+                                      direction="horizontal"
+                                      align="center"
+                                      space="0"
+                                    >
+                                      Paid {payment.value} {payment.token.label}{" "}
+                                      on {payment.chain.label}
+                                      <a
+                                        href={`${
+                                          registry?.[payment.chain.value]
+                                            .blockExplorer
+                                        }tx/${payment.txnHash}`}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        style={{
+                                          marginLeft: "8px",
+                                        }}
                                       >
-                                        Paid {payment.value}{" "}
-                                        {payment.token.label} on{" "}
-                                        {payment.chain.label}
-                                        <a
-                                          href={`${
-                                            registry?.[payment.chain.value]
-                                              .blockExplorer
-                                          }tx/${payment.txnHash}`}
-                                          target="_blank"
-                                          rel="noreferrer"
-                                          style={{
-                                            marginLeft: "8px",
-                                          }}
-                                        >
-                                          <ExternalLink size={20} />
-                                        </a>
-                                      </Stack>
-                                    </Text>
-                                  );
-                                }
+                                        <ExternalLink size={20} />
+                                      </a>
+                                    </Stack>
+                                  </Text>
+                                )
                               )}
-                              {data[propertyName].length == 0 && "Unpaid"}
+                              {data[propertyName].length === 0 && "Unpaid"}
                             </Stack>
                           )}
                           {property?.type === "milestone" && (
@@ -442,7 +483,7 @@ export default function DataDrawer({
                       </Stack>
                     );
                   })}
-                  {collection.data?.[dataId]?.["anonymous"] === false && (
+                  {collection.data?.[dataId]?.anonymous === false && (
                     <Stack space="1">
                       <Text weight="semiBold" variant="large" color="accent">
                         Responder
@@ -497,13 +538,13 @@ export default function DataDrawer({
                       </a>
                     </Stack>
                   )}
-                  {collection.data?.[dataId]?.["__lookup__"] && (
+                  {collection.data?.[dataId]?.__lookup__ && (
                     <Stack space="1">
                       {/* <Text weight="semiBold" variant="large" color="accent">
                         On Chain token balance
                       </Text> */}
                       <Stack direction="horizontal" wrap space="2">
-                        {collection.data?.[dataId]?.["__lookup__"].map(
+                        {collection.data?.[dataId]?.__lookup__.map(
                           (token: any) => (
                             <Box
                               key={token.contractAddress}
@@ -567,49 +608,6 @@ export default function DataDrawer({
       )}
     </Drawer>
   );
-}
+};
 
-const ScrollContainer = styled(Box)`
-  height: calc(100vh - 4rem);
-  overflow-y: auto;
-
-  ::-webkit-scrollbar {
-    width: 0.5rem;
-    border-radius: 0rem;
-  }
-`;
-
-const ResponseFieldCard = styled(Box)<{
-  mode: string;
-  width?: string;
-  height?: string;
-}>`
-  @media (max-width: 1420px) {
-    width: 100%;
-    padding: 0.5rem;
-    margin: 0;
-    height: auto;
-    margin-top: 0.5rem;
-    align-items: flex-start;
-  }
-
-  width: 80%;
-  height: ${(props) => props.height || "auto"};
-  border-radius: 1rem;
-  padding: 1rem;
-  box-shadow: 0px 1px 6px
-    ${(props) =>
-      props.mode === "dark" ? "rgba(0, 0, 0, 0.4)" : "rgba(0, 0, 0, 0.1)"};
-  &:hover {
-    box-shadow: 0px 3px 10px
-      ${(props) =>
-        props.mode === "dark" ? "rgba(0, 0, 0, 0.6)" : "rgba(0, 0, 0, 0.25)"};
-    transition-duration: 0.7s;
-  }
-  display: flex;
-  flex-direction: column;
-  gap: 0.1rem;
-  align-items: flex-start;
-  position: relative;
-  transition: all 0.5s ease-in-out;
-`;
+export default DataDrawer;

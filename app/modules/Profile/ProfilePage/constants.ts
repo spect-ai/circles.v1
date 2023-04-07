@@ -1,4 +1,4 @@
-export const skillsArray = [
+const skillsArray = [
   "Design",
   "Sales",
   "Marketing",
@@ -17,3 +17,5 @@ export const skillsArray = [
   "Solidity",
   "Rust",
 ];
+
+export default skillsArray;

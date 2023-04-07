@@ -1,8 +1,8 @@
 import React from "react";
 import { Story, Meta } from "@storybook/react";
 
-import EditTag, { EditTagProps } from ".";
 import { Box, Heading } from "degen";
+import EditTag, { EditTagProps } from ".";
 // import * as DependentStories from './Dependent.stories'
 
 export default {

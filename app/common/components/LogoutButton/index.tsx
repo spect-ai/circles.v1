@@ -8,7 +8,7 @@ import {
   isProfilePanelExpandedAtom,
 } from "@/app/state/global";
 
-export default function Logout() {
+const Logout = () => {
   const { disconnect } = useDisconnect();
   const [, setAuthenticationStatus] = useAtom(authStatusAtom);
   const [, setConnectedUser] = useAtom(connectedUserAtom);
@@ -25,7 +25,7 @@ export default function Logout() {
         });
         disconnect();
         queryClient.setQueryData("getMyUser", null);
-        void queryClient.invalidateQueries("getMyUser");
+        queryClient.invalidateQueries("getMyUser");
         setAuthenticationStatus("unauthenticated");
         setConnectedUser("");
       }}
@@ -34,4 +34,6 @@ export default function Logout() {
       Logout
     </Button>
   );
-}
+};
+
+export default Logout;

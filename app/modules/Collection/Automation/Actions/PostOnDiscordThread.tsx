@@ -9,38 +9,29 @@ import DiscordIcon from "@/app/assets/icons/discordIcon.svg";
 import { useLocation } from "react-use";
 
 type Props = {
-  actionMode: "edit" | "create";
   action: Action;
   setAction: (action: Action) => void;
   collection: CollectionType;
 };
 
-export default function PostCardOnDiscordThread({
-  setAction,
-  actionMode,
-  action,
-  collection,
-}: Props) {
+const PostCardOnDiscordThread = ({ setAction, action, collection }: Props) => {
   const { origin } = useLocation();
-  const [channelOptions, setChannelOptions] = useState<Option[]>([]);
-  const [selectedChannel, setSelectedChannel] = useState<Option>(
-    action?.data?.channel || {}
-  );
+  const [, setChannelOptions] = useState<Option[]>([]);
+  const [selectedChannel] = useState<Option>(action?.data?.channel || {});
   const [message, setMessage] = useState(action?.data?.message || "");
   const [fields, setFields] = useState(action?.data?.fields || "");
   const [discordIsConnected, setDiscordIsConnected] = useState(false);
 
   const { circle, justAddedDiscordServer } = useCircle();
-  const { hostname } = useLocation();
   const [messageError, setMessageError] = useState(false);
 
   useEffect(() => {
     if (circle?.discordGuildId) {
-      const discordIsConnected = async () => {
+      const discordIsConnected2 = async () => {
         const res = await guildIsConnected(circle?.discordGuildId);
         setDiscordIsConnected(res);
       };
-      void discordIsConnected();
+      discordIsConnected2();
     }
   }, [circle?.discordGuildId, justAddedDiscordServer]);
 
@@ -48,17 +39,19 @@ export default function PostCardOnDiscordThread({
     if (discordIsConnected && circle?.discordGuildId) {
       const getGuildChannels = async () => {
         const data = await fetchGuildChannels(circle?.discordGuildId || "");
-        const categoryOptions = data.guildChannels?.map((channel: any) => ({
-          label: channel.name,
-          value: channel.id,
-        }));
+        const categoryOptions = data.guildChannels?.map(
+          (channel: { id: string; name: string }) => ({
+            label: channel.name,
+            value: channel.id,
+          })
+        );
         setChannelOptions(categoryOptions);
       };
-      if (circle?.discordGuildId) void getGuildChannels();
+      if (circle?.discordGuildId) getGuildChannels();
     }
   }, [discordIsConnected]);
 
-  if (!discordIsConnected)
+  if (!discordIsConnected) {
     return (
       <Box
         width="48"
@@ -82,6 +75,7 @@ export default function PostCardOnDiscordThread({
         </PrimaryButton>
       </Box>
     );
+  }
 
   return (
     <Box
@@ -129,14 +123,14 @@ export default function PostCardOnDiscordThread({
         options={
           Object.entries(collection.properties)
             .filter(
-              ([propertyId, property]) =>
+              ([, property]) =>
                 property.type === "shortText" ||
                 property.type === "singleSelect" ||
                 property.type === "email" ||
                 property.type === "date" ||
                 property.type === "ethAddress"
             )
-            .map(([propertyId, property]) => ({
+            .map(([, property]) => ({
               label: property.name,
               value: property.name,
             })) || []
@@ -145,9 +139,11 @@ export default function PostCardOnDiscordThread({
         onChange={(f) => {
           setFields(f);
         }}
-        multiple={true}
+        multiple
         portal={false}
       />
     </Box>
   );
-}
+};
+
+export default PostCardOnDiscordThread;

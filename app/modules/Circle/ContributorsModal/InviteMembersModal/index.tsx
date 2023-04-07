@@ -2,22 +2,42 @@ import Accordian from "@/app/common/components/Accordian";
 import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { CircleType, UserType } from "@/app/types";
-import { SendOutlined, UserAddOutlined } from "@ant-design/icons";
+import { UserAddOutlined } from "@ant-design/icons";
 import { Box, Stack, Tag, Text, useTheme } from "degen";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
 import { useQuery } from "react-query";
 import { toast } from "react-toastify";
-import { expiryOptions, usesOptions } from "./constants";
 import mixpanel from "@/app/common/utils/mixpanel";
 import styled from "styled-components";
+import { expiryOptions, usesOptions } from "./constants";
 
-function InviteMemberModal({
+export const CustomButton = styled(Box)<{ mode: string }>`
+  border-radius: 0.5rem;
+  border: solid 2px
+    ${(props) =>
+      props.mode === "dark"
+        ? "rgb(255, 255, 255, 0.05)"
+        : "rgb(20, 20, 20, 0.05)"};
+  &:hover {
+    border: solid 2px rgb(191, 90, 242);
+    transition-duration: 0.7s;
+    cursor: pointer;
+  }
+  transition: all 0.3s ease-in-out;
+  padding: 0.5rem 0.5rem;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+`;
+
+const InviteMemberModal = ({
   buttonIsSmallTransparent,
 }: {
   buttonIsSmallTransparent?: boolean;
-}) {
+}) => {
   const router = useRouter();
   const { mode } = useTheme();
   const { circle: cId } = router.query;
@@ -46,9 +66,9 @@ function InviteMemberModal({
 
   const roleOptions =
     circle &&
-    Object.keys(circle.roles).map((role) => ({
-      name: role,
-      role: role,
+    Object.keys(circle.roles).map((role2) => ({
+      name: role2,
+      role: role2,
     }));
   return (
     <>
@@ -59,7 +79,6 @@ function InviteMemberModal({
             mode={mode}
             onClick={() => {
               setIsOpen(true);
-              console.log(process.env.NODE_ENV);
               process.env.NODE_ENV === "production" &&
                 mixpanel.track("Invite Open", {
                   circle: cId,
@@ -83,7 +102,6 @@ function InviteMemberModal({
             tourId="invite-member-button"
             onClick={() => {
               setIsOpen(true);
-              console.log(process.env.NODE_ENV);
               process.env.NODE_ENV === "production" &&
                 mixpanel.track("Invite Open", {
                   circle: cId,
@@ -233,12 +251,10 @@ function InviteMemberModal({
                         }
                       )
                         .then(async (res) => {
-                          console.log({ res });
                           const invite = await res.text();
-                          console.log({ invite });
                           if (res.ok) {
                             const link = `${window.location.origin}?inviteCode=${invite}&circleId=${circle?.id}`;
-                            void navigator.clipboard.writeText(link);
+                            navigator.clipboard.writeText(link);
                             toast("Invite link copied", {
                               theme: "dark",
                             });
@@ -252,7 +268,7 @@ function InviteMemberModal({
                           }
                         })
                         .catch((err) => {
-                          console.log({ err });
+                          console.error({ err });
                           setIsLoading(false);
                         });
                     }}
@@ -267,26 +283,6 @@ function InviteMemberModal({
       </AnimatePresence>
     </>
   );
-}
+};
 
 export default InviteMemberModal;
-
-export const CustomButton = styled(Box)<{ mode: string }>`
-  border-radius: 0.5rem;
-  border: solid 2px
-    ${(props) =>
-      props.mode === "dark"
-        ? "rgb(255, 255, 255, 0.05)"
-        : "rgb(20, 20, 20, 0.05)"};
-  &:hover {
-    border: solid 2px rgb(191, 90, 242);
-    transition-duration: 0.7s;
-    cursor: pointer;
-  }
-  transition: all 0.3s ease-in-out;
-  padding: 0.5rem 0.5rem;
-  justify-content: center;
-  align-items: center;
-  display: flex;
-  flex-direction: row;
-`;

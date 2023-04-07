@@ -1,6 +1,6 @@
 import Modal from "@/app/common/components/Modal";
 import { isURL } from "@/app/common/utils/utils";
-import { Option } from "@/app/types";
+import { CollectionType, Option } from "@/app/types";
 import {
   Button,
   Input,
@@ -10,10 +10,10 @@ import {
   Tag,
   IconPlusSmall,
 } from "degen";
-import { useRef, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 
 interface Props {
-  form: any;
+  form: CollectionType;
   propertyName: string;
   handleClose: (urls: Option[], dataId: string, propertyName: string) => void;
   dataId: string;
@@ -22,11 +22,10 @@ interface Props {
 interface InputProps {
   val: Option;
   updateData: (i: number, lab: string, val: string) => void;
-  propertyName: string;
   i: number;
 }
 
-function URLInput({ val, updateData, i }: InputProps) {
+const URLInput = ({ val, updateData, i }: InputProps) => {
   const [tempLabel, setTempLabel] = useState("");
   const [tempValue, setTempValue] = useState("");
 
@@ -35,7 +34,7 @@ function URLInput({ val, updateData, i }: InputProps) {
     setTempLabel(val.label);
   }, [val]);
   return (
-    <Stack direction={"horizontal"} align="center">
+    <Stack direction="horizontal" align="center">
       <Input
         label=""
         placeholder="Enter URL Label"
@@ -65,18 +64,13 @@ function URLInput({ val, updateData, i }: InputProps) {
           updateData(i, "", "");
         }}
       >
-        <IconClose size={"4"} color="accent" />
+        <IconClose size="4" color="accent" />
       </Button>
     </Stack>
   );
-}
+};
 
-export default function MultiURLModal({
-  form,
-  propertyName,
-  handleClose,
-  dataId,
-}: Props) {
+const MultiURLModal = ({ form, propertyName, handleClose, dataId }: Props) => {
   const [urlArray, setUrlArray] = useState<Option[]>(
     dataId ? form?.data[dataId]?.[propertyName] : undefined
   );
@@ -85,7 +79,7 @@ export default function MultiURLModal({
     let urls = Array.from(urlArray);
     urls[index].label = label;
     urls[index].value = value;
-    urls = urls.filter((i) => i.value != "" || i.label != "");
+    urls = urls.filter((i) => i.value !== "" || i.label !== "");
     setUrlArray(urls);
   };
 
@@ -97,19 +91,16 @@ export default function MultiURLModal({
       title="Multiple URLs"
     >
       <Box padding="8">
-        <Stack direction={"vertical"}>
+        <Stack direction="vertical">
           {urlArray &&
-            urlArray?.map((val, i) => {
-              return (
-                <URLInput
-                  key={i}
-                  val={val}
-                  updateData={updateData}
-                  propertyName={propertyName}
-                  i={i}
-                />
-              );
-            })}
+            urlArray?.map((val, i) => (
+              <URLInput
+                key={val.label + val.value}
+                val={val}
+                updateData={updateData}
+                i={i}
+              />
+            ))}
           <Tag tone="accent" size="medium" hover>
             <Box
               onClick={() => {
@@ -122,11 +113,11 @@ export default function MultiURLModal({
                 }
               }}
               display="flex"
-              flexDirection={"row"}
+              flexDirection="row"
               gap="1"
               cursor="pointer"
             >
-              <IconPlusSmall size={"4"} color="accent" />
+              <IconPlusSmall size="4" color="accent" />
               Add URL
             </Box>
           </Tag>
@@ -134,4 +125,6 @@ export default function MultiURLModal({
       </Box>
     </Modal>
   );
-}
+};
+
+export default MultiURLModal;

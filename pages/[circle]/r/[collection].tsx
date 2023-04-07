@@ -5,20 +5,16 @@ import {
   useProviderCircleContext,
 } from "@/app/modules/Circle/CircleContext";
 import { Collection } from "@/app/modules/Collection";
-import CollectionHeading from "@/app/modules/Collection/CollectionHeading";
 import {
   LocalCollectionContext,
   useProviderLocalCollection,
 } from "@/app/modules/Collection/Context/LocalCollectionContext";
 import useConnectDiscordServer from "@/app/services/Discord/useConnectDiscordServer";
 import { CircleType, MemberDetails, Registry } from "@/app/types";
-import { AnimatePresence } from "framer-motion";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { useQuery } from "react-query";
-import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
-import { useLocation } from "react-use";
 
 const CollectionPage: NextPage = () => {
   const router = useRouter();
@@ -63,15 +59,15 @@ const CollectionPage: NextPage = () => {
 
   useEffect(() => {
     if (!circle && cId) {
-      void fetchCircle();
-      void fetchRegistry();
+      fetchCircle();
+      fetchRegistry();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [circle, cId]);
 
   useEffect(() => {
     if (circle?.id) {
-      void fetchMemberDetails();
+      fetchMemberDetails();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [circle]);

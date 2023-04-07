@@ -78,8 +78,8 @@ export function useProviderLocalCollection() {
   const [localCollection, setLocalCollection] = useState({} as CollectionType);
   const [error, setError] = useState(false);
   const [view, setView] = useState(0);
-  const [socket, setSocket] = useAtom(socketAtom);
-  const [connectedUser, setConnectedUser] = useAtom(connectedUserAtom);
+  const [socket] = useAtom(socketAtom);
+  const [connectedUser] = useAtom(connectedUserAtom);
   const [projectViewId, setProjectViewId] = useState("");
   const [searchFilter, setSearchFilter] = useState("");
   const [showMyTasks, setShowMyTasks] = useState(false);
@@ -109,7 +109,7 @@ export function useProviderLocalCollection() {
   const getIfFieldNeedsAttention = (value: Property) => {
     let res = { needsAttention: false, reason: "" };
     if (value.viewConditions && value.viewConditions.length > 0) {
-      for (const condition of value.viewConditions) {
+      value.viewConditions.forEach((condition) => {
         if (condition.type === "data") {
           if (
             condition.data?.field &&
@@ -119,7 +119,6 @@ export function useProviderLocalCollection() {
               needsAttention: true,
               reason: `"${condition.data?.field?.label}" field has been added to visibility conditions but doesn't exist on the form`,
             };
-            break;
           }
           if (
             condition.data?.field &&
@@ -130,45 +129,45 @@ export function useProviderLocalCollection() {
               needsAttention: true,
               reason: `"${condition.data?.field?.label}" field has been added to visibility conditions but is an internal field`,
             };
-            break;
           }
         }
-      }
+      });
     }
+
     return res;
   };
 
   useEffect(() => {
-    let fieldsThatNeedAttention = {} as {
+    const fieldsThatNeedAttention = {} as {
       [key: string]: boolean;
     };
-    let reasonFieldNeedsAttention = {} as {
+    const reasonFieldNeedsAttention2 = {} as {
       [key: string]: string;
     };
     Object.entries(localCollection.properties || {}).forEach(([key, value]) => {
       const res = getIfFieldNeedsAttention(value);
       fieldsThatNeedAttention[key] = res?.needsAttention;
-      reasonFieldNeedsAttention[key] = res?.reason;
+      reasonFieldNeedsAttention2[key] = res?.reason;
     });
     setFieldNeedsAttention(fieldsThatNeedAttention);
-    setReasonFieldNeedsAttention(reasonFieldNeedsAttention);
+    setReasonFieldNeedsAttention(reasonFieldNeedsAttention2);
 
-    let colorMapping = {};
-    Object.entries(localCollection.properties || {}).forEach(([key, value]) => {
+    let colorMapping2 = {};
+    Object.entries(localCollection.properties || {}).forEach(([, value]) => {
       if (["singleSelect", "multiSelect"].includes(value.type)) {
         if (value.options && value.options.length > 0) {
           const colorMap = value.options.reduce((acc, option) => {
             if (option.color) acc[option.value] = option.color;
             return acc;
           }, {} as { [key: string]: string });
-          colorMapping = {
-            ...colorMapping,
+          colorMapping2 = {
+            ...colorMapping2,
             ...(colorMap || {}),
           };
         }
       }
     });
-    setColorMapping(colorMapping);
+    setColorMapping(colorMapping2);
   }, [localCollection.properties]);
 
   useEffect(() => {
@@ -184,7 +183,6 @@ export function useProviderLocalCollection() {
         .then((res) => {
           if (res.data?.unauthorized) {
             setLoading(false);
-            console.log("failed");
             setTimeout(() => {
               toast.error(
                 "You are not authorized to view this collection, either you are not part of the circle or you dont have the required role",
@@ -225,7 +223,6 @@ export function useProviderLocalCollection() {
       socket.on(
         `${localCollection.slug}:dataAdded`,
         (collection: CollectionType) => {
-          console.log("data added event");
           updateCollection(collection);
         }
       );
@@ -233,7 +230,6 @@ export function useProviderLocalCollection() {
         `${localCollection.slug}:newActivityPrivate`,
         _.debounce((event: { data: CollectionType; user: string }) => {
           if (event.user !== connectedUser) {
-            console.log("update event");
             updateCollection(event.data);
           }
         }, 2000)

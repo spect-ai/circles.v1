@@ -38,7 +38,7 @@ type Props = {
   handleClose: () => void;
 };
 
-export default function SendKudos({ handleClose }: Props) {
+const SendKudos = ({ handleClose }: Props) => {
   const {
     circle,
     hasMintkudosCredentialsSetup,
@@ -81,9 +81,12 @@ export default function SendKudos({ handleClose }: Props) {
   );
   const [modalMode, setModalMode] =
     useState<
+      | "createPoapFromScratch"
+      | "importClaimCodes"
+      | "distributePoapWhenResponsesMatch"
+      | "distributePoapOnDiscordCallAttendance"
       | "createKudos"
       | "distributeKudosWhenResponsesMatch"
-      | "distributeKudosOnDiscordCallAttendance"
     >("createKudos");
   const [
     minimumNumberOfAnswersThatNeedToMatch,
@@ -139,9 +142,9 @@ export default function SendKudos({ handleClose }: Props) {
                 .catch((err) => console.error(err));
             }
           })
-          .catch((err) => console.log(err));
+          .catch((err) => console.error(err));
       })
-      .catch((err) => console.log(err));
+      .catch((err) => console.error(err));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [circle?.id]);
 
@@ -154,7 +157,7 @@ export default function SendKudos({ handleClose }: Props) {
           setLoading(false);
         })
         .catch((err) => {
-          console.log(err);
+          console.error(err);
           setLoading(false);
         });
     } else {
@@ -262,7 +265,7 @@ export default function SendKudos({ handleClose }: Props) {
                     <Input
                       label=""
                       value={issuingCommunity}
-                      required={true}
+                      required
                       onChange={(e) => setIssuingCommunity(e.target.value)}
                       disabled={!!kudos.imageUrl}
                     />
@@ -278,7 +281,7 @@ export default function SendKudos({ handleClose }: Props) {
                       </Tooltip>
                     </Stack>
                     <Textarea
-                      label={""}
+                      label=""
                       value={headlineContent}
                       onChange={(e) => setHeadlineContent(e.target.value)}
                       maxLength={50}
@@ -298,7 +301,8 @@ export default function SendKudos({ handleClose }: Props) {
                         if (f.name?.length > 20) {
                           setFilenameExceedsLimit(true);
                           return;
-                        } else setFilenameExceedsLimit(false);
+                        }
+                        setFilenameExceedsLimit(false);
                         await uploadFile(f);
                         setAsset(f);
                         setAssetToUse("custom");
@@ -324,7 +328,7 @@ export default function SendKudos({ handleClose }: Props) {
                       type="number"
                       min={1}
                       max={10000}
-                      required={true}
+                      required
                       onChange={(e) =>
                         setNumberOfKudosToMint(parseInt(e.target.value))
                       }
@@ -341,9 +345,7 @@ export default function SendKudos({ handleClose }: Props) {
               </Box>
               <Accordian
                 name="Set Conditions"
-                defaultOpen={
-                  minimumNumberOfAnswersThatNeedToMatch > 0 ? true : false
-                }
+                defaultOpen={minimumNumberOfAnswersThatNeedToMatch > 0}
               >
                 <Stack direction="vertical" space="1">
                   {!minimumNumberOfAnswersThatNeedToMatch && (
@@ -493,9 +495,9 @@ export default function SendKudos({ handleClose }: Props) {
                       }
                       setLoading(false);
                       res && handleClose();
-                    } catch (err: any) {
+                    } catch (err: unknown) {
                       setLoading(false);
-                      console.log(err);
+                      console.error(err);
                     }
                   }}
                 >
@@ -515,7 +517,7 @@ export default function SendKudos({ handleClose }: Props) {
           width="full"
         >
           <ResponseMatchDistribution
-            setModalModal={setModalMode as any}
+            setModalModal={setModalMode}
             data={responseData}
             setData={setResponseData}
             minimumNumberOfAnswersThatNeedToMatch={
@@ -524,10 +526,12 @@ export default function SendKudos({ handleClose }: Props) {
             setMinimumNumberOfAnswersThatNeedToMatch={
               setMinimumNumberOfAnswersThatNeedToMatch
             }
-            responseMatchConditionForPlugin={"mintkudos"}
+            responseMatchConditionForPlugin="mintkudos"
           />
         </Box>
       )}
     </Modal>
   );
-}
+};
+
+export default SendKudos;

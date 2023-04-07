@@ -149,14 +149,15 @@ export interface DiscordRoleMappingType {
   [roleId: string]: {
     circleRole: string[];
     name: string;
+    id: string;
   };
 }
 
 export type GuildxyzToCircleRoles = {
-  [role: number]: {
+  [roleId: string]: {
     circleRole: string[];
     name: string;
-    id: number;
+    id: string;
   };
 };
 
@@ -659,20 +660,6 @@ export type KudosRequestType = {
   customAttributes?: KudosAttribute[];
 };
 
-export type KudosType = {
-  tokenId: number;
-  headline: string;
-  description: string;
-  startDateTimestamp?: number;
-  endDateTimestamp?: number;
-  links: string[];
-  communityId?: string;
-  createdByAddress?: boolean;
-  createdAtTimestamp?: boolean;
-  imageUrl: string;
-  claimabilityAttributes: ClaimabilityAttributes;
-};
-
 export type POAPEventType = {
   id: number;
   fancey_id: string;
@@ -698,14 +685,6 @@ export type KudosForType = {
 
 export type KudosClaimedType = {
   [tokenId: string]: string[];
-};
-
-type ClaimabilityAttributes = {
-  isSignatureRequired: boolean;
-  isAllowlistRequired: boolean;
-  totalClaimCount: number;
-  remainingClaimCount?: number;
-  expirationTimestamp?: number;
 };
 
 export type KudoOfUserType = {
@@ -1036,6 +1015,7 @@ export type Milestone = {
     token: Option;
     value: number;
   };
+  paid?: boolean;
 };
 
 export type GuildRole = {
@@ -1122,7 +1102,7 @@ export type Stamp = {
   defaultScore: number;
   stampName: string;
   stampDescription: string;
-  score?: number;
+  score: number;
 };
 
 export interface MappedItem<T> {
@@ -1373,4 +1353,18 @@ export type PaymentDetails = {
   labels?: Option[];
   collection?: Option;
   data?: Option;
+};
+
+export type DistributionInfo = {
+  distributionType: 0 | 1 | null;
+  tokenAddress: string;
+  amountPerResponse: number;
+  requestId: string;
+  supplySnapshot: number;
+};
+
+export type ConditionInfo = {
+  timestamp: number;
+  minTotalSupply: number;
+  tokenId: string;
 };

@@ -8,7 +8,7 @@ import { useEffect } from "react";
 import { useQuery } from "react-query";
 import { useProfile } from "./LocalProfileContext";
 
-export function BasicInfo() {
+const BasicInfo = () => {
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
@@ -25,6 +25,7 @@ export function BasicInfo() {
     usernameError,
     setUsernameError,
   } = useProfile();
+  // eslint-disable-next-line no-useless-escape
   const specialChars = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;
   useEffect(() => {
     if (username.length === 0) {
@@ -84,7 +85,7 @@ export function BasicInfo() {
         label
         hideLabel
         placeholder={currentUser?.ethAddress}
-        value={""}
+        value=""
         disabled
       />
       <Stack
@@ -95,9 +96,7 @@ export function BasicInfo() {
       >
         <ConnectDiscordButton state={router.asPath} width="full" />
         {!currentUser?.githubId && (
-          <Link
-            href={`https://github.com/login/oauth/authorize?client_id=4403e769e4d52b24eeab`}
-          >
+          <Link href="https://github.com/login/oauth/authorize?client_id=4403e769e4d52b24eeab">
             <Button
               data-tour="connect-github-button"
               width="full"
@@ -134,4 +133,6 @@ export function BasicInfo() {
       </Stack>
     </Stack>
   );
-}
+};
+
+export default BasicInfo;

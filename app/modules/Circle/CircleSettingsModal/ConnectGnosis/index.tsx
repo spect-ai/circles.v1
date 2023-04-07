@@ -9,11 +9,12 @@ import { DeleteOutlined } from "@ant-design/icons";
 import { Box, Button, Stack, Tag, Text } from "degen";
 import { AnimatePresence } from "framer-motion";
 import React, { useEffect, useState } from "react";
-import { useCircle } from "../../CircleContext";
 import { getAccount } from "@wagmi/core";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
+import { OwnerResponse } from "@gnosis.pm/safe-service-client";
+import { useCircle } from "../../CircleContext";
 
-export default function ConnectGnosis() {
+const ConnectGnosis = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { circle, registry, fetchCircle } = useCircle();
   const [chain, setChain] = useState(
@@ -37,7 +38,6 @@ export default function ConnectGnosis() {
 
   const onSubmit = async () => {
     setIsLoading(true);
-    console.log({ chain, selectedSafe });
     const res = await addSafe(
       {
         chainId: chain,
@@ -45,7 +45,6 @@ export default function ConnectGnosis() {
       },
       circle?.id || ""
     );
-    console.log({ res });
     setIsLoading(false);
     if (res) {
       fetchCircle();
@@ -61,7 +60,6 @@ export default function ConnectGnosis() {
       },
       circle?.id || ""
     );
-    console.log({ res });
     setIsLoading(false);
     if (res) {
       fetchCircle();
@@ -70,23 +68,22 @@ export default function ConnectGnosis() {
 
   useEffect(() => {
     const getSafes = async () => {
-      const safes = await getUserSafes(chain || "137");
-      console.log({ safes });
-      if (safes) {
+      const safes2 = await getUserSafes(chain || "137");
+      if (safes2) {
         setSafes(
-          safes.safes.map((safe) => ({
+          (safes2 as OwnerResponse).safes.map((safe) => ({
             label: safe,
             value: safe,
           }))
         );
         setselectedSafe({
-          label: safes.safes[0],
-          value: safes.safes[0],
+          label: (safes2 as OwnerResponse).safes[0],
+          value: (safes2 as OwnerResponse).safes[0],
         });
       }
     };
     if (isOpen) {
-      void getSafes();
+      getSafes();
     }
   }, [chain, isOpen]);
 
@@ -97,7 +94,7 @@ export default function ConnectGnosis() {
           variant={
             circle?.safeAddresses &&
             Object.entries(circle?.safeAddresses).some(
-              ([aChain, aSafes]) => aSafes?.length > 0
+              ([, aSafes]) => aSafes?.length > 0
             )
               ? "tertiary"
               : "secondary"
@@ -108,13 +105,13 @@ export default function ConnectGnosis() {
               const account = getAccount();
               if (!account?.isConnected) openConnectModal && openConnectModal();
             } catch (e) {
-              console.log(e);
+              console.error(e);
             }
           }}
         >
           {circle?.safeAddresses &&
           Object.entries(circle?.safeAddresses).some(
-            ([aChain, aSafes]) => aSafes?.length > 0
+            ([, aSafes]) => aSafes?.length > 0
           )
             ? "Gnosis Safe Connected"
             : "Connect Gnosis Safe"}
@@ -134,7 +131,7 @@ export default function ConnectGnosis() {
               >
                 <Text variant="label">Your Gnosis Safe addressses</Text>
                 {Object.keys(circle?.safeAddresses || {}).map((aChain) => {
-                  if (circle?.safeAddresses[aChain].length > 0)
+                  if (circle?.safeAddresses[aChain].length > 0) {
                     return (
                       <Box
                         key={aChain}
@@ -172,6 +169,8 @@ export default function ConnectGnosis() {
                         </Stack>
                       </Box>
                     );
+                  }
+                  return null;
                 })}
                 {!Object.keys(circle?.safeAddresses || {}).some(
                   (aChain) => circle?.safeAddresses[aChain].length > 0
@@ -194,7 +193,7 @@ export default function ConnectGnosis() {
                           aChain.chainId !== "56" &&
                           aChain.chainId !== "43114" &&
                           aChain.chainId !== "100"
-                        )
+                        ) {
                           return (
                             <Box
                               cursor="pointer"
@@ -223,6 +222,8 @@ export default function ConnectGnosis() {
                               </Tag>
                             </Box>
                           );
+                        }
+                        return null;
                       }
                     )}
                   </Stack>
@@ -257,4 +258,6 @@ export default function ConnectGnosis() {
     );
   }
   return null;
-}
+};
+
+export default ConnectGnosis;

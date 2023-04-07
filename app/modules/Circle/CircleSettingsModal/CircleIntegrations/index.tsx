@@ -1,24 +1,20 @@
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { CircleType } from "@/app/types";
-import { GithubOutlined } from "@ant-design/icons";
-import { Box, Heading, Input, Stack, Text } from "degen";
+import { Box, Input, Stack, Text } from "degen";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
-import { useQuery } from "react-query";
-import DiscordRoleMapping from "../DiscordRoleMapping";
 import DiscordIcon from "@/app/assets/icons/discordIcon.svg";
+import { useLocation } from "react-use";
+import { useQuery as useApolloQuery } from "@apollo/client";
+import { Space } from "@/app/modules/Collection/VotingModule";
+import { updateCircle } from "@/app/services/UpdateCircle";
+import DiscordRoleMapping from "../DiscordRoleMapping";
 import ConnectGnosis from "../ConnectGnosis";
 import GuildIntegration from "../GuildIntegration";
 import GuildRoleMapping from "../GuildIntegration/GuildRoleMapping";
-import ConnectQuestbook from "../QuestbookIntegration";
-import { useLocation } from "react-use";
-import { useQuery as useApolloQuery, gql } from "@apollo/client";
-import { Space } from "@/app/modules/Collection/VotingModule";
-import { updateCircle } from "@/app/services/UpdateCircle";
 import { useCircle } from "../../CircleContext";
 
-export default function CircleIntegrations() {
+const CircleIntegrations = () => {
   const router = useRouter();
   const { circle: cId } = router.query;
   const { circle } = useCircle();
@@ -124,7 +120,7 @@ export default function CircleIntegrations() {
           <Text variant="label">
             Enter your snapshot space to create and vote on proposals from Spect
           </Text>
-          <Stack direction={"horizontal"} space="2" align={"center"}>
+          <Stack direction="horizontal" space="2" align="center">
             <Box width="1/2" marginTop="1">
               <Input
                 label
@@ -160,40 +156,13 @@ export default function CircleIntegrations() {
           {snapshotSpace &&
             !isLoading &&
             (data?.space?.id ? (
-              <Text size={"extraSmall"} color="accent">
+              <Text size="extraSmall" color="accent">
                 Snapshot Space - {data?.space?.name}
               </Text>
             ) : (
-              <Text color={"red"}>Incorrect URL</Text>
+              <Text color="red">Incorrect URL</Text>
             ))}
         </Stack>
-        {/* <Stack space="1">
-          <Text variant="extraLarge" weight="bold">Github</Text>
-          <Text>Connect github to link PR to cards and more</Text>
-          <Box
-            width={{
-              xs: "full",
-              md: "1/3",
-            }}
-            marginTop="6"
-          >
-            <Link
-              href={`https://github.com/apps/spect-github-bot/installations/new?state=${circle?.id}`}
-            >
-              <PrimaryButton
-                icon={
-                  <GithubOutlined
-                    style={{
-                      fontSize: "1.3rem",
-                    }}
-                  />
-                }
-              >
-                {circle?.githubRepos ? `Configure Github` : "Connect Github"}
-              </PrimaryButton>
-            </Link>
-          </Box>
-        </Stack> */}
         <Stack space="1">
           <Text variant="extraLarge" weight="bold">
             Gnosis
@@ -214,4 +183,6 @@ export default function CircleIntegrations() {
       </Stack>
     </Box>
   );
-}
+};
+
+export default CircleIntegrations;

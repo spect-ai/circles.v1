@@ -1,18 +1,35 @@
-import { Box, Stack, Text, useTheme } from "degen";
-import { AnimatePresence } from "framer-motion";
+import { Box, useTheme } from "degen";
 import { useEffect, useState } from "react";
 import { ToastContainer } from "react-toastify";
 import styled from "styled-components";
-import CardDrawer from "../../CollectionProject/CardDrawer";
-import { useCircle } from "../CircleContext";
 import CancelledPayments from "./CancelledPayments";
 import CompletedPayments from "./CompletedPayments";
-import PaymentCard from "./PaymentCard";
 import PaymentCenterHeading from "./PaymentCenterHeading";
 import PendingPayments from "./PendingPayments";
 import PendingSignaturePayments from "./PendingSignaturePayments";
 
-export default function Payment() {
+const Container = styled(Box)`
+  &::-webkit-scrollbar {
+    width: 0.5rem;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: linear-gradient(
+        180deg,
+        rgba(191, 90, 242, 0.4) 50%,
+        rgba(191, 90, 242, 0.1) 100%
+        )
+        0% 0% / 100% 100% no-repeat padding-box;
+    }
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background: rgba(191, 90, 242, 0.8);
+  }
+`;
+
+const Payment = () => {
   const [paymentViewId, setPaymentViewId] =
     useState<"Pending" | "Pending Signature" | "Completed" | "Cancelled">(
       "Pending"
@@ -47,27 +64,6 @@ export default function Payment() {
       </Container>
     </Box>
   );
-}
+};
 
-const Container = styled(Box)`
-  &::-webkit-scrollbar {
-    width: 0.5rem;
-  }
-  &::-webkit-scrollbar-track {
-    background: transparent;
-  }
-  &::-webkit-scrollbar-thumb {
-    background: linear-gradient(
-        180deg,
-        rgba(191, 90, 242, 0.4) 50%,
-        rgba(191, 90, 242, 0.1) 100%
-        )
-        0% 0% / 100% 100% no-repeat padding-box;
-    }
-  }
-  &::-webkit-scrollbar-thumb:hover {
-    background: rgba(191, 90, 242, 0.8);
-  }
-
-  
-`;
+export default Payment;

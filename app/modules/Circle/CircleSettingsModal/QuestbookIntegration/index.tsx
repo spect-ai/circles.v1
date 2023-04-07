@@ -11,7 +11,7 @@ import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useCircle } from "../../CircleContext";
 
-export default function ConnectQuestbook() {
+const ConnectQuestbook = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { circle, setCircleData } = useCircle();
 
@@ -53,7 +53,6 @@ export default function ConnectQuestbook() {
       },
       circle?.id || ""
     );
-    console.log({ res });
     setIsLoading(false);
     if (res) {
       setCircleData(res);
@@ -64,16 +63,18 @@ export default function ConnectQuestbook() {
   useEffect(() => {
     if (circle?.projects) {
       const options = Object.values(circle?.projects).map((p) => {
-        if (circle.grantApplicantProject === p.id)
+        if (circle.grantApplicantProject === p.id) {
           setApplicantProject({
             label: p.name,
             value: p.id,
           });
-        if (circle.grantMilestoneProject === p.id)
+        }
+        if (circle.grantMilestoneProject === p.id) {
           setMilestoneProject({
             label: p.name,
             value: p.id,
           });
+        }
         return {
           label: p.name,
           value: p.id,
@@ -95,7 +96,7 @@ export default function ConnectQuestbook() {
       );
     };
     if (circle?.discordGuildId) {
-      void getGuildChannels();
+      getGuildChannels();
     }
     setDiscordGrantNotifChannel(
       circle?.grantNotificationChannel || ({} as DiscordChannel)
@@ -197,4 +198,6 @@ export default function ConnectQuestbook() {
       </AnimatePresence>
     </>
   );
-}
+};
+
+export default ConnectQuestbook;

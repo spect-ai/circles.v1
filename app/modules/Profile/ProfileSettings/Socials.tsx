@@ -3,7 +3,7 @@ import { useState } from "react";
 
 import { useProfile } from "./LocalProfileContext";
 
-export function Socials() {
+const Socials = () => {
   const {
     setIsDirty,
     twitter,
@@ -23,7 +23,7 @@ export function Socials() {
     website: false,
   });
 
-  const isInvalid = (fieldName: string, value: any) => {
+  const isInvalid = (fieldName: string, value: string) => {
     switch (fieldName) {
       case "twitter":
         return value.length > 0 && !value.startsWith("https://twitter.com/");
@@ -90,7 +90,7 @@ export function Socials() {
             setIsDirty(false);
           }
         }}
-      />{" "}
+      />
       {isInvalidValue.github && (
         <Text variant="small" color="red">
           Invalid Github URL, must start with https://github.com/
@@ -115,7 +115,7 @@ export function Socials() {
             setIsDirty(false);
           }
         }}
-      />{" "}
+      />
       {isInvalidValue.behance && (
         <Text variant="small" color="red">
           Invalid Behance URL, must start with https://www.behance.net/
@@ -148,4 +148,6 @@ export function Socials() {
       )}
     </Stack>
   );
-}
+};
+
+export default Socials;

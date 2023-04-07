@@ -1,22 +1,12 @@
 import { Box, useTheme } from "degen";
-import { motion } from "framer-motion";
 import React from "react";
 import styled from "styled-components";
 
-type props = {
+type Props = {
   children: React.ReactNode;
   onClick?: () => void;
   zIndex?: number;
 };
-
-function Backdrop({ children, onClick, zIndex }: props) {
-  const { mode } = useTheme();
-  return (
-    <Container zindex={zIndex as number} mode={mode} onClick={onClick}>
-      {children}
-    </Container>
-  );
-}
 
 const Container = styled(Box)<{ zindex: number; mode: string }>`
   position: fixed;
@@ -36,5 +26,14 @@ const Container = styled(Box)<{ zindex: number; mode: string }>`
   justify-content: center;
   align-items: center;
 `;
+
+const Backdrop = ({ children, onClick, zIndex }: Props) => {
+  const { mode } = useTheme();
+  return (
+    <Container zindex={zIndex as number} mode={mode} onClick={onClick}>
+      {children}
+    </Container>
+  );
+};
 
 export default Backdrop;

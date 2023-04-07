@@ -27,10 +27,61 @@ import PaymentDropdown from "./PaymentDropdown";
 
 type Props = {
   handleClose: () => void;
-  paymentId?: string;
 };
 
-export default function PaymentCardDrawer({ handleClose }: Props) {
+const NameInput = styled.input<{ mode: string }>`
+  width: 100%;
+  background: transparent;
+  padding: 8px;
+  border: 0;
+  border-style: none;
+  border-color: transparent;
+  outline: none;
+  outline-offset: 0;
+  box-shadow: none;
+  font-size: 1.9rem;
+  caret-color: rgb(191, 90, 242);
+  color: rgb(191, 90, 242);
+  font-weight: 700;
+  ::placeholder {
+    color: ${(props) =>
+      props.mode === "dark"
+        ? "rgb(255, 255, 255, 0.1)"
+        : "rgb(20, 20, 20, 0.5)"};
+  }
+  letter-spacing: 0.05rem;
+`;
+
+const Container = styled(Box)`
+  ::-webkit-scrollbar {
+    display: none;
+  }
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+
+  height: calc(100vh - 4rem);
+`;
+
+const FieldButton = styled.div<{ mode: string }>`
+  width: 25rem;
+  color: ${({ mode }) =>
+    mode === "dark" ? "rgb(255, 255, 255, 0.25)" : "rgb(0, 0, 0, 0.25)"};
+  padding: 0.5rem 0.5rem;
+  border-radius: 0.25rem;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+
+  &:hover {
+    cursor: pointer;
+    background: rgb(191, 90, 242, 0.1);
+  }
+
+  transition: background 0.2s ease;
+`;
+
+const PaymentCardDrawer = ({ handleClose }: Props) => {
   const { mode } = useTheme();
   const { circle, fetchCircle, setCircleData, registry } = useCircle();
   const { push, pathname, query } = useRouter();
@@ -81,7 +132,7 @@ export default function PaymentCardDrawer({ handleClose }: Props) {
     if (!payeeType || !payee || !reward) return;
     const paidTo = [];
     if (payeeType === "user[]") {
-      for (const user of payee) {
+      payee.forEach((user: unknown) => {
         paidTo.push({
           propertyType: "user",
           value: user,
@@ -98,7 +149,7 @@ export default function PaymentCardDrawer({ handleClose }: Props) {
                   value: 0,
                 },
         });
-      }
+      });
     } else {
       paidTo.push({
         propertyType: payeeType,
@@ -138,7 +189,7 @@ export default function PaymentCardDrawer({ handleClose }: Props) {
       },
     });
     if (query.paymentId) {
-      const res = await updatePayment(circle.id, query.paymentId as string, {
+      await updatePayment(circle.id, query.paymentId as string, {
         type: "Added From Card",
         paidTo,
         ...reward,
@@ -149,7 +200,6 @@ export default function PaymentCardDrawer({ handleClose }: Props) {
 
   const onChange = async (update: any, labelOptions?: Option[]) => {
     if (query.paymentId && circle) {
-      let res;
       setCircleData({
         ...circle,
         paymentDetails: {
@@ -161,8 +211,7 @@ export default function PaymentCardDrawer({ handleClose }: Props) {
         },
         paymentLabelOptions: labelOptions || circle.paymentLabelOptions,
       });
-      res = await updatePayment(circle.id, query.paymentId as string, update);
-      if (!res) return;
+      await updatePayment(circle.id, query.paymentId as string, update);
     } else if (newCard) {
       setValue({
         ...value,
@@ -171,7 +220,7 @@ export default function PaymentCardDrawer({ handleClose }: Props) {
     }
   };
   const closeCard = () => {
-    void push({
+    push({
       pathname,
       query: {
         circle: query.circle,
@@ -184,12 +233,9 @@ export default function PaymentCardDrawer({ handleClose }: Props) {
 
   useEffect(() => {
     if (value.collection?.value) {
-      console.log({ v: value.collection?.value });
-
       fetchCollection()
         .then((res) => {
           if (res.data) {
-            console.log({ d: res.data?.data });
             const options = Object.values(res.data?.data)
               ?.filter(
                 (card) =>
@@ -394,10 +440,8 @@ export default function PaymentCardDrawer({ handleClose }: Props) {
                     if (value.paidTo?.length > 0) {
                       setOpenPayeeModal(false);
                       onChange(value);
-                    } else {
-                      if (newCard) setOpenPayeeModal(false);
-                      else setCancelPaymentConfirmModal(true);
-                    }
+                    } else if (newCard) setOpenPayeeModal(false);
+                    else setCancelPaymentConfirmModal(true);
                   }}
                 >
                   <Box padding="8" paddingTop="4">
@@ -441,7 +485,7 @@ export default function PaymentCardDrawer({ handleClose }: Props) {
                   </Box>
                   <Box width="3/4">
                     <FieldButton onClick={() => {}} mode={mode}>
-                      <Box cursor="pointer" onClick={(e) => {}}>
+                      <Box cursor="pointer">
                         {value.type ? <Text>{value.type}</Text> : "Empty"}
                       </Box>
                     </FieldButton>
@@ -454,8 +498,8 @@ export default function PaymentCardDrawer({ handleClose }: Props) {
                     </Text>
                   </Box>
                   <Box width="3/4">
-                    <FieldButton onClick={() => {}} mode={mode}>
-                      <Box cursor="pointer" onClick={(e) => {}}>
+                    <FieldButton mode={mode}>
+                      <Box cursor="pointer">
                         <Text> {circle.name} </Text>
                       </Box>
                     </FieldButton>
@@ -470,16 +514,17 @@ export default function PaymentCardDrawer({ handleClose }: Props) {
                       value={value.collection}
                       setValue={(v, opts) => {
                         const updates = { collection: v } as any;
-                        if (!v) updates["data"] = null;
+                        if (!v) updates.data = null;
                         setValue({ ...value, ...updates });
                         onChange(updates, opts);
                       }}
                       options={projectOptions}
-                      setOptions={(v) => {}}
-                      paymentId={value.id}
+                      setOptions={(v) => {
+                        console.warn("setOptions", v);
+                      }}
                       multiple={false}
                       disabled={value.status !== "Pending" && !newCard}
-                      clearable={true}
+                      clearable
                       goToLink={
                         value?.collection?.value &&
                         `/${circle?.slug}/r/${value?.collection?.value}`
@@ -496,22 +541,23 @@ export default function PaymentCardDrawer({ handleClose }: Props) {
                       <PaymentDropdown
                         value={value.data}
                         setValue={(v, opts) => {
-                          setValue({ ...value, data: v });
+                          setValue({ ...value, data: v as Option });
                           onChange({ data: v }, opts);
                           if (
                             value.paidTo?.length > 0 &&
-                            v.data?.payee &&
-                            v.data?.reward
+                            (v as Option).data?.payee &&
+                            (v as Option).data?.reward
                           ) {
                             setConfirmRewardUpdate(true);
-                          } else updateRewardFromCard(v);
+                          } else updateRewardFromCard(v as Option);
                         }}
                         options={cardOptions}
-                        setOptions={(v) => {}}
-                        paymentId={value.id}
+                        setOptions={(v) => {
+                          console.warn("setOptions", v);
+                        }}
                         multiple={false}
                         disabled={value.status !== "Pending" && !newCard}
-                        clearable={true}
+                        clearable
                         goToLink={
                           value?.data?.value &&
                           `/${circle?.slug}/r/${value?.collection?.value}?cardSlug=${value?.data?.value}`
@@ -532,14 +578,15 @@ export default function PaymentCardDrawer({ handleClose }: Props) {
                           ...circle,
                           paymentLabelOptions: opts || [],
                         });
-                        setValue({ ...value, labels: v });
+                        setValue({ ...value, labels: v as Option[] });
                         onChange({ labels: v }, opts);
                       }}
                       options={circle.paymentLabelOptions}
-                      setOptions={(v) => {}}
-                      paymentId={value.id}
-                      multiple={true}
-                      clearable={true}
+                      setOptions={(v) => {
+                        console.warn("setOptions", v);
+                      }}
+                      multiple
+                      clearable
                     />
                   </Box>
                 </Stack>
@@ -559,7 +606,6 @@ export default function PaymentCardDrawer({ handleClose }: Props) {
                         flexDirection="column"
                         gap="2"
                         cursor="pointer"
-                        onClick={(e) => {}}
                       >
                         {value.chain?.value &&
                         value.token?.value &&
@@ -582,8 +628,9 @@ export default function PaymentCardDrawer({ handleClose }: Props) {
                   <Box width="3/4">
                     <FieldButton
                       onClick={() => {
-                        if (value.status === "Pending" || newCard)
+                        if (value.status === "Pending" || newCard) {
                           setOpenPayeeModal(true);
+                        }
                       }}
                       mode={mode}
                     >
@@ -661,7 +708,7 @@ export default function PaymentCardDrawer({ handleClose }: Props) {
                       ?.description
                   }
                   onSave={(val) => {
-                    void onChange({ description: val });
+                    onChange({ description: val });
                   }}
                   onChange={(val) => {
                     setIsDirty(true);
@@ -678,56 +725,6 @@ export default function PaymentCardDrawer({ handleClose }: Props) {
       )}
     </Drawer>
   );
-}
+};
 
-const NameInput = styled.input<{ mode: string }>`
-  width: 100%;
-  background: transparent;
-  padding: 8px;
-  border: 0;
-  border-style: none;
-  border-color: transparent;
-  outline: none;
-  outline-offset: 0;
-  box-shadow: none;
-  font-size: 1.9rem;
-  caret-color: rgb(191, 90, 242);
-  color: rgb(191, 90, 242);
-  font-weight: 700;
-  ::placeholder {
-    color: ${(props) =>
-      props.mode === "dark"
-        ? "rgb(255, 255, 255, 0.1)"
-        : "rgb(20, 20, 20, 0.5)"};
-  }
-  letter-spacing: 0.05rem;
-`;
-
-const Container = styled(Box)`
-  ::-webkit-scrollbar {
-    display: none;
-  }
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-
-  height: calc(100vh - 4rem);
-`;
-
-const FieldButton = styled.div<{ mode: string }>`
-  width: 25rem;
-  color: ${({ mode }) =>
-    mode === "dark" ? "rgb(255, 255, 255, 0.25)" : "rgb(0, 0, 0, 0.25)"};
-  padding: 0.5rem 0.5rem;
-  border-radius: 0.25rem;
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-
-  &:hover {
-    cursor: pointer;
-    background: rgb(191, 90, 242, 0.1);
-  }
-
-  transition: background 0.2s ease;
-`;
+export default PaymentCardDrawer;

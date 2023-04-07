@@ -1,9 +1,9 @@
 import Popover from "@/app/common/components/Popover";
 import { Box, Text } from "degen";
-import React, { useState } from "react";
+import { useState } from "react";
 import { PopoverOption } from "../Circle/CircleSettingsModal/DiscordRoleMapping/RolePopover";
 
-export default function ExploreOptions() {
+const ExploreOptions = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [type, setType] = useState("Circles");
   return (
@@ -36,23 +36,9 @@ export default function ExploreOptions() {
         >
           Circles
         </PopoverOption>
-        {/* <PopoverOption
-          onClick={() => {
-            setIsOpen(false);
-            setType("Workstreams");
-          }}
-        >
-          Workstreams
-        </PopoverOption>
-        <PopoverOption
-          onClick={() => {
-            setIsOpen(false);
-            setType("Projects");
-          }}
-        >
-          Projects
-        </PopoverOption> */}
       </Box>
     </Popover>
   );
-}
+};
+
+export default ExploreOptions;

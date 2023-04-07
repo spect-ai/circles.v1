@@ -1,5 +1,4 @@
-import { Box, Button, Stack, Text } from "degen";
-import React from "react";
+import { Box, Button } from "degen";
 
 type Props = {
   selectedTab: number;
@@ -14,7 +13,7 @@ type Props = {
   width?: string;
 };
 
-export default function Tabs({
+const Tabs = ({
   selectedTab,
   onTabClick,
   tabs,
@@ -25,34 +24,34 @@ export default function Tabs({
   shape = "square",
   border = false,
   width = "full",
-}: Props) {
-  return (
-    <Box
-      display="flex"
-      width={width as any}
-      flexDirection={orientation === "horizontal" ? "row" : "column"}
-      borderWidth={border ? "0.5" : "0"}
-      borderRadius="3xLarge"
-      gap={"2"}
-      padding="1"
-    >
-      {tabs.map((tab, index) => (
-        <Box width="full" marginX="0.5" key={tab}>
-          <Button
-            data-tour={tabTourIds?.[index]}
-            variant={selectedTab === index ? selectedColor : unselectedColor}
-            center
-            shape={shape as any}
-            width="full"
-            onClick={() => onTabClick(index)}
-            size="small"
-          >
-            {tab}
-          </Button>
-        </Box>
-      ))}
-    </Box>
-  );
-}
+}: Props) => (
+  <Box
+    display="flex"
+    width={width as unknown as "full"}
+    flexDirection={orientation === "horizontal" ? "row" : "column"}
+    borderWidth={border ? "0.5" : "0"}
+    borderRadius="3xLarge"
+    gap="2"
+    padding="1"
+  >
+    {tabs.map((tab, index) => (
+      <Box width="full" marginX="0.5" key={tab}>
+        <Button
+          data-tour={tabTourIds?.[index]}
+          variant={selectedTab === index ? selectedColor : unselectedColor}
+          center
+          shape={shape as unknown as "square"}
+          width="full"
+          onClick={() => onTabClick(index)}
+          size="small"
+        >
+          {tab}
+        </Button>
+      </Box>
+    ))}
+  </Box>
+);
+
+export default Tabs;
 
 export type { Props as TabsProps };

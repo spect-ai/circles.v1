@@ -1,20 +1,64 @@
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { LensDate, LensExperience, UserType } from "@/app/types";
 import { Box, Text, useTheme } from "degen";
-import { AnimatePresence, motion } from "framer-motion";
-import { memo, useEffect, useState } from "react";
+import { AnimatePresence } from "framer-motion";
+import { memo, useState } from "react";
 import { useQuery } from "react-query";
+import styled from "styled-components";
 import AddExperienceModal from "../AddExperienceModal";
 import LensImportModal from "../LensImportModal";
 import ViewExperienceModal from "../ViewExperienceModal";
-import { Card, ScrollContainer } from "./index";
+
+const Card = styled(Box)<{ mode: string }>`
+  display: flex;
+  flex-direction: column;
+  min-height: 12vh;
+  margin-top: 1rem;
+  padding: 0.4rem 1rem 0;
+  border-radius: 0.5rem;
+  border: solid 2px
+    ${(props) =>
+      props.mode === "dark"
+        ? "rgb(255, 255, 255, 0.05)"
+        : "rgb(20, 20, 20, 0.05)"};
+  &:hover {
+    border: solid 2px rgb(191, 90, 242);
+    transition-duration: 0.7s;
+    cursor: pointer;
+  }
+  position: relative;
+  transition: all 0.3s ease-in-out;
+  width: 80%;
+  @media (max-width: 768px) {
+    width: 100%;
+  }
+`;
+
+const ScrollContainer = styled(Box)`
+  @media (max-width: 768px) {
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    padding-right: 1.2rem;
+  }
+  @media (max-width: 1028px) and (min-width: 768px) {
+    width: 100%;
+  }
+  overflow: auto;
+  width: 50vw;
+  height: 80vh;
+  padding-right: 2rem;
+  ::-webkit-scrollbar {
+    display: none;
+  }
+`;
 
 const Experience = ({
   userData,
   allCredentials,
 }: {
   userData: UserType;
-  allCredentials: { [id: string]: any[] };
+  allCredentials: { [id: string]: unknown[] };
 }) => {
   const { mode } = useTheme();
   const [addExperience, setAddExperience] = useState(false);
@@ -25,11 +69,9 @@ const Experience = ({
   });
   const [modalMode, setModalMode] = useState<"add" | "edit">("add");
   const [openExperienceView, setOpenExperienceView] = useState(false);
-  const experiences = userData.experiences;
+  const { experiences } = userData;
 
-  const dateExists = (date: LensDate) => {
-    return date.day && date.month && date.year;
-  };
+  const dateExists = (date: LensDate) => date.day && date.month && date.year;
 
   return (
     <Box width="full">
@@ -103,87 +145,85 @@ const Experience = ({
                 </PrimaryButton>
               </Box>
             )}
-            {experiences.map((experience: LensExperience, index) => {
-              return (
-                <Card
-                  mode={mode}
-                  key={index}
-                  onClick={() => {
-                    setSelectedExperienceId(index);
-                    setOpenExperienceView(true);
+            {experiences.map((experience: LensExperience, index) => (
+              <Card
+                mode={mode}
+                key={experience.jobTitle}
+                onClick={() => {
+                  setSelectedExperienceId(index);
+                  setOpenExperienceView(true);
+                }}
+              >
+                <Box
+                  display="flex"
+                  flexDirection={{
+                    xs: "column",
+                    md: "row",
                   }}
+                  gap="4"
                 >
                   <Box
                     display="flex"
-                    flexDirection={{
-                      xs: "column",
-                      md: "row",
+                    flexDirection="column"
+                    width={{
+                      xs: "full",
+                      md: "1/2",
                     }}
-                    gap="4"
+                    marginBottom={{
+                      xs: "0",
+                      md: "2",
+                    }}
                   >
-                    <Box
-                      display="flex"
-                      flexDirection="column"
-                      width={{
-                        xs: "full",
-                        md: "1/2",
-                      }}
-                      marginBottom={{
-                        xs: "0",
-                        md: "2",
-                      }}
-                    >
-                      <Text variant="extraLarge" weight="semiBold">
-                        {experience.jobTitle}
+                    <Text variant="extraLarge" weight="semiBold">
+                      {experience.jobTitle}
+                    </Text>
+                    <Text variant="small" weight="light">
+                      {experience.company}
+                    </Text>
+                    {experience.linkedCredentials?.length > 0 && (
+                      <Text variant="label">
+                        {experience.linkedCredentials?.length} Credentials
+                        Linked
                       </Text>
-                      <Text variant="small" weight="light">
-                        {experience.company}
-                      </Text>
-                      {experience.linkedCredentials?.length > 0 && (
-                        <Text variant="label">
-                          {experience.linkedCredentials?.length} Credentials
-                          Linked
+                    )}
+                  </Box>
+                  <Box
+                    display="flex"
+                    flexDirection="column"
+                    width={{
+                      xs: "full",
+                      md: "1/2",
+                    }}
+                    alignItems={{
+                      xs: "flex-start",
+                      md: "flex-end",
+                    }}
+                    marginTop={{
+                      xs: "0",
+                      md: "1",
+                    }}
+                    marginBottom={{
+                      xs: "2",
+                      md: "0",
+                    }}
+                  >
+                    {dateExists(experience.start_date) &&
+                      dateExists(experience.end_date) &&
+                      !experience.currentlyWorking && (
+                        <Text variant="label" weight="light">
+                          {`${experience.start_date.month}/${experience.start_date.day}/${experience.start_date.year} - ${experience.end_date.month}/${experience.end_date.day}/${experience.end_date.year}`}
                         </Text>
                       )}
-                    </Box>
-                    <Box
-                      display="flex"
-                      flexDirection="column"
-                      width={{
-                        xs: "full",
-                        md: "1/2",
-                      }}
-                      alignItems={{
-                        xs: "flex-start",
-                        md: "flex-end",
-                      }}
-                      marginTop={{
-                        xs: "0",
-                        md: "1",
-                      }}
-                      marginBottom={{
-                        xs: "2",
-                        md: "0",
-                      }}
-                    >
-                      {dateExists(experience.start_date) &&
-                        dateExists(experience.end_date) &&
-                        !experience.currentlyWorking && (
-                          <Text variant="label" weight="light">
-                            {`${experience.start_date.month}/${experience.start_date.day}/${experience.start_date.year} - ${experience.end_date.month}/${experience.end_date.day}/${experience.end_date.year}`}
-                          </Text>
-                        )}
-                      {dateExists(experience.start_date) &&
-                        experience.currentlyWorking && (
-                          <Text variant="label" weight="light">
-                            {`${experience.start_date.month}/${experience.start_date.day}/${experience.start_date.year} - Present`}
-                          </Text>
-                        )}
-                    </Box>
+                    {dateExists(experience.start_date) &&
+                      experience.currentlyWorking && (
+                        <Text variant="label" weight="light">
+                          {`${experience.start_date.month}/${experience.start_date.day}/${experience.start_date.year} - Present`}
+                        </Text>
+                      )}
                   </Box>
-                </Card>
-              );
-            })}
+                </Box>
+              </Card>
+            ))}
           </Box>
         )}
       </ScrollContainer>

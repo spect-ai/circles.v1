@@ -1,18 +1,7 @@
 import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import {
-  Box,
-  Button,
-  IconUserSolid,
-  Input,
-  Stack,
-  Text,
-  useTheme,
-} from "degen";
-import { AnimatePresence } from "framer-motion";
+import { Box, Button, Input, Text, useTheme } from "degen";
 import { useEffect, useState } from "react";
-import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
-import styled from "styled-components";
 import { getAllCredentials } from "@/app/services/Credentials/AggregatedCredentials";
 import { Stamp, UserType } from "@/app/types";
 import { PassportStampIcons, PassportStampIconsLightMode } from "@/app/assets";
@@ -21,12 +10,13 @@ import mixpanel from "@/app/common/utils/mixpanel";
 import { useQuery } from "react-query";
 import Editor from "@/app/common/components/Editor";
 import { updateFormCollection } from "@/app/services/Collection";
+import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
 
 type Props = {
   handleClose: () => void;
 };
 
-export default function SybilResistance({ handleClose }: Props) {
+const SybilResistance = ({ handleClose }: Props) => {
   const { localCollection: collection, updateCollection } =
     useLocalCollection();
   const [loading, setLoading] = useState(false);
@@ -46,24 +36,36 @@ export default function SybilResistance({ handleClose }: Props) {
   useEffect(() => {
     if (collection) {
       getAllCredentials()
-        .then((res) => {
+        .then((res: Stamp[]) => {
           setStamps(res);
-          const allocs = [];
-          if (!collection.formMetadata.sybilProtectionScores)
+          const allocs: number[] = [];
+          if (!collection.formMetadata.sybilProtectionScores) {
             collection.formMetadata.sybilProtectionScores = {};
-          for (const stamp of res) {
+          }
+          // for (const stamp of res) {
+          //   if (
+          //     collection.formMetadata.sybilProtectionScores[stamp.id] ||
+          //     collection.formMetadata.sybilProtectionScores[stamp.id] === 0
+          //   ) {
+          //     allocs.push(
+          //       collection.formMetadata.sybilProtectionScores[stamp.id]
+          //     );
+          //   } else allocs.push(stamp.defaultScore * 100);
+          // }
+          res.forEach((stamp) => {
             if (
-              collection.formMetadata.sybilProtectionScores[stamp.id] ||
-              collection.formMetadata.sybilProtectionScores[stamp.id] === 0
-            )
+              collection.formMetadata.sybilProtectionScores &&
+              (collection.formMetadata.sybilProtectionScores[stamp.id] ||
+                collection.formMetadata.sybilProtectionScores[stamp.id] === 0)
+            ) {
               allocs.push(
                 collection.formMetadata.sybilProtectionScores[stamp.id]
               );
-            else allocs.push(stamp.defaultScore * 100);
-          }
-          setAllocations(allocs as number[]);
+            } else allocs.push(stamp.defaultScore * 100);
+          });
+          setAllocations(allocs);
         })
-        .catch((err) => console.log(err));
+        .catch((err) => console.error(err));
     }
   }, [collection]);
 
@@ -82,17 +84,12 @@ export default function SybilResistance({ handleClose }: Props) {
     >
       <Box padding="8" width="full">
         <Box width="full">
-          {/* <Box display="flex" flexDirection="row" alignItems="center">
-                  <Text>
-                    {`Add scores to the following stamps. A responder to this form would require a total score of 100% to fill out the form.`}{" "}
-                  </Text>
-                </Box> */}
           <Box marginTop="-4" marginBottom="-4">
             <Editor
               value={
                 ":::tip\nAdd scores to the following stamps. A responder to this form would require a total score of 100% to fill out the form"
               }
-              disabled={true}
+              disabled
             />
           </Box>
           <Box
@@ -118,98 +115,92 @@ export default function SybilResistance({ handleClose }: Props) {
             justifyContent="flex-end"
             marginRight="4"
           >
-            <Button
-              variant="tertiary"
-              size="small"
-              onClick={useDefaults}
-            >{`Use Defaults`}</Button>
+            <Button variant="tertiary" size="small" onClick={useDefaults}>
+              Use Defaults
+            </Button>
           </Box>
         </Box>
-        <ScrollContainer>
-          {stamps?.map((stamp, index) => {
-            return (
+        <Box>
+          {stamps?.map((stamp, index) => (
+            <Box
+              display="flex"
+              flexDirection="row"
+              alignItems="center"
+              padding="4"
+              width="full"
+            >
               <Box
                 display="flex"
                 flexDirection="row"
-                alignItems="center"
-                padding="4"
                 width="full"
-                key={index}
+                alignItems="center"
               >
                 <Box
                   display="flex"
-                  flexDirection="row"
+                  flexDirection={{
+                    xs: "column",
+                    md: "row",
+                  }}
+                  alignItems={{
+                    md: "center",
+                  }}
                   width="full"
-                  alignItems="center"
+                  paddingRight={{
+                    xs: "1",
+                    md: "4",
+                  }}
+                  justifyContent="flex-start"
                 >
                   <Box
+                    paddingRight="4"
                     display="flex"
-                    flexDirection={{
-                      xs: "column",
-                      md: "row",
-                    }}
-                    alignItems={{
-                      md: "center",
-                    }}
-                    width="full"
-                    paddingRight={{
-                      xs: "1",
-                      md: "4",
-                    }}
+                    flexDirection="row"
                     justifyContent="flex-start"
+                    alignItems="center"
                   >
                     <Box
-                      paddingRight="4"
-                      display="flex"
+                      width="8"
+                      height="8"
                       flexDirection="row"
                       justifyContent="flex-start"
                       alignItems="center"
                     >
-                      <Box
-                        width="8"
-                        height="8"
-                        flexDirection="row"
-                        justifyContent="flex-start"
-                        alignItems="center"
-                      >
-                        {mode === "dark"
-                          ? PassportStampIcons[stamp.providerName]
-                          : PassportStampIconsLightMode[stamp.providerName]}
-                      </Box>
-                    </Box>
-                    <Box>
-                      <Text as="h1">{stamp.stampName}</Text>
-                      <Text variant="small">{stamp.stampDescription}</Text>
+                      {mode === "dark"
+                        ? PassportStampIcons[stamp.providerName]
+                        : PassportStampIconsLightMode[stamp.providerName]}
                     </Box>
                   </Box>
-                  <Input
-                    label=""
-                    type="number"
-                    units="%"
-                    placeholder="0"
-                    width={{
-                      xs: "3/4",
-                      md: "1/4",
-                    }}
-                    max={100}
-                    min={0}
-                    value={allocations[index]}
-                    onChange={(e) => {
-                      const newAllocations = [...allocations];
-                      newAllocations[index] = parseInt(e.target.value);
-                      setAllocations(newAllocations);
-                    }}
-                  />
+                  <Box>
+                    <Text as="h1">{stamp.stampName}</Text>
+                    <Text variant="small">{stamp.stampDescription}</Text>
+                  </Box>
                 </Box>
+                <Input
+                  label=""
+                  type="number"
+                  units="%"
+                  placeholder="0"
+                  width={{
+                    xs: "3/4",
+                    md: "1/4",
+                  }}
+                  max={100}
+                  min={0}
+                  value={allocations[index]}
+                  onChange={(e) => {
+                    const newAllocations = [...allocations];
+                    newAllocations[index] = parseInt(e.target.value);
+                    setAllocations(newAllocations);
+                  }}
+                />
               </Box>
-            );
-          })}
-        </ScrollContainer>
+            </Box>
+          ))}
+        </Box>
 
         <Box width="full" paddingTop="8">
           {minAllocationNotMet && (
             <Text color="red" variant="base">
-              {" "}
               Total allocated score must be higher than 100%{" "}
             </Text>
           )}
@@ -240,8 +231,9 @@ export default function SybilResistance({ handleClose }: Props) {
                     updateCollection(res);
                     handleClose();
                     setLoading(false);
-                  } else
+                  } else {
                     toast.error("Something went wrong, refresh and try again");
+                  }
                 }}
               >
                 Disable Sybil Protection
@@ -261,7 +253,7 @@ export default function SybilResistance({ handleClose }: Props) {
                   const sybilProtectionScores = {} as {
                     [id: string]: number;
                   };
-                  for (let i = 0; i < stamps.length; i++) {
+                  for (let i = 0; i < stamps.length; i += 1) {
                     sybilProtectionScores[stamps[i].id] = allocations[i];
                   }
                   const res = await updateFormCollection(collection.id, {
@@ -289,6 +281,6 @@ export default function SybilResistance({ handleClose }: Props) {
       </Box>
     </Modal>
   );
-}
+};
 
-const ScrollContainer = styled(Box)``;
+export default SybilResistance;

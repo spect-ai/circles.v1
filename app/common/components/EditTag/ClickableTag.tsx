@@ -8,6 +8,7 @@ type Props = {
   name: string;
   icon?: React.ReactNode;
   tourId?: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   style?: any;
 };
 
@@ -23,7 +24,7 @@ const TagContainer = styled(Box)<{ mode: string }>`
   }
 `;
 
-export default function ClickableTag({ name, icon, onClick, tourId, style }: Props) {
+const ClickableTag = ({ name, icon, onClick, tourId, style }: Props) => {
   const [hover, setHover] = useState(false);
   const { mode } = useTheme();
   return (
@@ -49,4 +50,6 @@ export default function ClickableTag({ name, icon, onClick, tourId, style }: Pro
       <Text ellipsis>{smartTrim(name, 18)}</Text>
     </TagContainer>
   );
-}
+};
+
+export default ClickableTag;

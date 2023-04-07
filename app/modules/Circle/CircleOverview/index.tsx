@@ -1,13 +1,13 @@
 import { Box, Stack } from "degen";
 import { useEffect, useState } from "react";
-import { useCircle } from "../CircleContext";
-import InviteMemberModal from "../ContributorsModal/InviteMembersModal";
-import { FolderView } from "./FolderView";
 import Breadcrumbs from "@/app/common/components/Breadcrumbs";
 import { Hidden } from "react-grid-system";
 import styled from "styled-components";
 import { useAtom } from "jotai";
 import { isSidebarExpandedAtom } from "@/app/state/global";
+import { FolderView } from "./FolderView";
+import InviteMemberModal from "../ContributorsModal/InviteMembersModal";
+import { useCircle } from "../CircleContext";
 
 interface Props {
   toggle: number;
@@ -29,43 +29,30 @@ const ToggleButton = styled.button<{ bgcolor: boolean }>`
     props.bgcolor ? "rgb(191,90,242,0.1)" : "transparent"};
 `;
 
-export const Toggle = ({ toggle, setToggle }: Props) => {
-  return (
-    <Box
-      backgroundColor="backgroundSecondary"
-      style={{
-        borderRadius: "2rem",
-        boxShadow: "0px 1px 3px rgba(0, 0, 0, 0.2)",
-        width: "fit-content",
-        margin: "0 auto",
-      }}
-    >
-      <ToggleButton
-        onClick={() => setToggle(0)}
-        bgcolor={toggle == 0 ? true : false}
-      >
-        Overview
-      </ToggleButton>
-      <ToggleButton
-        onClick={() => setToggle(1)}
-        bgcolor={toggle == 1 ? true : false}
-      >
-        Contributors
-      </ToggleButton>
-      <ToggleButton
-        onClick={() => setToggle(2)}
-        bgcolor={toggle == 2 ? true : false}
-      >
-        Roles
-      </ToggleButton>
-    </Box>
-  );
-};
+export const Toggle = ({ toggle, setToggle }: Props) => (
+  <Box
+    backgroundColor="backgroundSecondary"
+    style={{
+      borderRadius: "2rem",
+      boxShadow: "0px 1px 3px rgba(0, 0, 0, 0.2)",
+      width: "fit-content",
+      margin: "0 auto",
+    }}
+  >
+    <ToggleButton onClick={() => setToggle(0)} bgcolor={toggle === 0}>
+      Overview
+    </ToggleButton>
+    <ToggleButton onClick={() => setToggle(1)} bgcolor={toggle === 1}>
+      Contributors
+    </ToggleButton>
+    <ToggleButton onClick={() => setToggle(2)} bgcolor={toggle === 2}>
+      Roles
+    </ToggleButton>
+  </Box>
+);
 
-export default function CircleDashboard() {
-  const [isSidebarExpanded, setIsSidebarExpanded] = useAtom(
-    isSidebarExpandedAtom
-  );
+const CircleDashboard = () => {
+  const [isSidebarExpanded] = useAtom(isSidebarExpandedAtom);
   const { circle, navigationBreadcrumbs } = useCircle();
   const [filteredProjects, setFilteredProjects] = useState(circle?.projects);
   const [filteredCollections, setFilteredCollections] = useState(
@@ -114,4 +101,6 @@ export default function CircleDashboard() {
       </Box>
     </Box>
   );
-}
+};
+
+export default CircleDashboard;

@@ -12,7 +12,7 @@ import CardDrawer from "../CardDrawer";
 import useViewCommon from "../Common/useViewCommon";
 import Column from "./Column";
 
-export default function KanbanView() {
+const KanbanView = () => {
   const {
     setIsCardDrawerOpen,
     isCardDrawerOpen,
@@ -53,10 +53,15 @@ export default function KanbanView() {
       <DragDropContext onDragEnd={handleDragEnd}>
         <Stack direction="horizontal" align="flex-start">
           {columns?.map((column, index) => {
-            if (index === 0 && (!cardOrders[0] || cardOrders[0]?.length === 0))
+            if (
+              index === 0 &&
+              (!cardOrders[0] || cardOrders[0]?.length === 0)
+            ) {
               return null;
-            if (filteredOnGroupByColumn && cardOrders[index]?.length === 0)
+            }
+            if (filteredOnGroupByColumn && cardOrders[index]?.length === 0) {
               return null;
+            }
             return (
               <Column
                 key={column.value}
@@ -110,4 +115,6 @@ export default function KanbanView() {
       </DragDropContext>
     </Box>
   );
-}
+};
+
+export default KanbanView;

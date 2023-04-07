@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { updateFormCollection } from "@/app/services/Collection";
 import { Box, Input, Text } from "degen";
@@ -7,9 +8,17 @@ import { useLocalCollection } from "../../Collection/Context/LocalCollectionCont
 import PublicField from "../../PublicForm/Fields/PublicField";
 
 export type Props = {
-  setModalModal: (mode: string) => void;
-  data: any;
-  setData: (value: any) => void;
+  setModalModal: (
+    mode:
+      | "createPoapFromScratch"
+      | "importClaimCodes"
+      | "distributePoapWhenResponsesMatch"
+      | "distributePoapOnDiscordCallAttendance"
+      | "createKudos"
+      | "distributeKudosWhenResponsesMatch"
+  ) => void;
+  data: Record<string, unknown>;
+  setData: (value: Record<string, unknown>) => void;
   minimumNumberOfAnswersThatNeedToMatch: number;
   setMinimumNumberOfAnswersThatNeedToMatch: (value: number) => void;
   responseMatchConditionForPlugin: "poap" | "mintkudos" | "erc20";
@@ -21,17 +30,17 @@ export const quizValidFieldTypes = [
   "number",
   "date",
 ];
-export default function ResponseMatchDistribution({
+const ResponseMatchDistribution = ({
   setModalModal,
   data,
   setData,
   minimumNumberOfAnswersThatNeedToMatch,
   setMinimumNumberOfAnswersThatNeedToMatch,
   responseMatchConditionForPlugin,
-}: Props) {
+}: Props) => {
   const { localCollection: collection, updateCollection } =
     useLocalCollection();
-  const [loading, setLoading] = useState(false);
+  const [loading] = useState(false);
   const validFields = collection.propertyOrder.filter(
     (propertyName) =>
       collection.properties[propertyName].isPartOfFormView &&
@@ -47,18 +56,17 @@ export default function ResponseMatchDistribution({
     return (
       <Box display="flex" flexDirection="column" gap="4">
         <Text variant="large">
-          {
-            "No valid fields found. Please add at least one valid field to your form. Valid fields are: single select, multi select, date, and number."
-          }
+          No valid fields found. Please add at least one valid field to your
+          form. Valid fields are: single select, multi select, date, and number.
         </Text>
-        <Box width={"1/2"}>
+        <Box width="1/2">
           <PrimaryButton
             variant="tertiary"
             onClick={() => {
               setModalModal("importClaimCodes");
             }}
           >
-            {"Back"}
+            Back
           </PrimaryButton>
         </Box>
       </Box>
@@ -68,7 +76,7 @@ export default function ResponseMatchDistribution({
     <Box>
       <Box marginBottom="4">
         <Text variant="label">
-          {"Minimum Number of Answers that Need to Match"}
+          Minimum Number of Answers that Need to Match
           <Box
             width={{
               xs: "full",
@@ -92,27 +100,25 @@ export default function ResponseMatchDistribution({
         </Text>
       </Box>
       <Box>
-        <Text variant="label">{"Pick Responses"}</Text>
+        <Text variant="label">Pick Responses</Text>
         {!loading &&
           validFields &&
-          validFields.map((propertyName) => {
-            return (
-              <PublicField
-                form={collection}
-                propertyName={propertyName}
-                data={localData}
-                setData={setLocalData}
-                memberOptions={[]}
-                requiredFieldsNotSet={{}}
-                key={propertyName}
-                updateRequiredFieldNotSet={() => {}}
-                fieldHasInvalidType={{}}
-                updateFieldHasInvalidType={() => {}}
-                disabled={false}
-                blockCustomValues={true}
-              />
-            );
-          })}
+          validFields.map((propertyName) => (
+            <PublicField
+              form={collection}
+              propertyName={propertyName}
+              data={localData}
+              setData={setLocalData}
+              memberOptions={[]}
+              requiredFieldsNotSet={{}}
+              key={propertyName}
+              updateRequiredFieldNotSet={() => {}}
+              fieldHasInvalidType={{}}
+              updateFieldHasInvalidType={() => {}}
+              disabled={false}
+              blockCustomValues
+            />
+          ))}
       </Box>
       <Box
         marginTop="4"
@@ -121,20 +127,21 @@ export default function ResponseMatchDistribution({
         gap="2"
         width="full"
       >
-        <Box width={"1/2"}>
+        <Box width="1/2">
           <PrimaryButton
             variant="tertiary"
             onClick={() => {
-              if (responseMatchConditionForPlugin === "poap")
+              if (responseMatchConditionForPlugin === "poap") {
                 setModalModal("importClaimCodes");
-              else if (responseMatchConditionForPlugin === "mintkudos")
+              } else if (responseMatchConditionForPlugin === "mintkudos") {
                 setModalModal("createKudos");
+              }
             }}
           >
-            {"Back"}
+            Back
           </PrimaryButton>
         </Box>
-        <Box width={"1/2"}>
+        <Box width="1/2">
           <PrimaryButton
             variant="secondary"
             onClick={async () => {
@@ -185,16 +192,19 @@ export default function ResponseMatchDistribution({
               }
               setMinimumNumberOfAnswersThatNeedToMatch(minNumOfAnswers);
               setData(localData);
-              if (responseMatchConditionForPlugin === "poap")
+              if (responseMatchConditionForPlugin === "poap") {
                 setModalModal("importClaimCodes");
-              else if (responseMatchConditionForPlugin === "mintkudos")
+              } else if (responseMatchConditionForPlugin === "mintkudos") {
                 setModalModal("createKudos");
+              }
             }}
           >
-            {"Save"}
+            Save
           </PrimaryButton>
         </Box>
       </Box>
     </Box>
   );
-}
+};
+
+export default ResponseMatchDistribution;

@@ -3,12 +3,12 @@ import { updateFormCollection } from "@/app/services/Collection";
 import { CollectionType, Option } from "@/app/types";
 import { Box, Stack, Tag, Text } from "degen";
 import { motion } from "framer-motion";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
 import { MenuContainer, MenuItem } from "../EditValue";
 
-export default function Sort() {
+const Sort = () => {
   const {
     localCollection: collection,
     projectViewId: viewId,
@@ -51,6 +51,7 @@ export default function Sort() {
           value: property,
         };
       }
+      return undefined;
     });
     options = options.filter((option) => option !== undefined);
     setSortOptions([noneOption, ...(options as Option[])]);
@@ -117,19 +118,12 @@ export default function Sort() {
                           },
                         })
                           .then((collectionRes: CollectionType) => {
-                            console.log({
-                              res: collectionRes?.projectMetadata?.cardOrders?.[
-                                collection.projectMetadata.views?.[
-                                  projectViewId
-                                ]?.groupByColumn
-                              ],
-                            });
-                            if (collectionRes.id)
+                            if (collectionRes.id) {
                               updateCollection(collectionRes);
-                            else throw new Error("Error updating collection");
+                            } else throw new Error("Error updating collection");
                           })
                           .catch((err) => {
-                            console.log(err);
+                            console.error(err);
                             toast.error("Error updating collection");
                           });
                       }}
@@ -163,16 +157,13 @@ export default function Sort() {
                 },
               })
                 .then((res) => {
-                  console.log({
-                    res: collection?.projectMetadata?.views?.[projectViewId],
-                  });
                   if (res.id) {
                     updateCollection(res);
                   } else {
                     throw new Error("Error updating collection");
                   }
                 })
-                .catch((err) => {
+                .catch(() => {
                   toast.error("Error updating collection");
                 });
             }}
@@ -185,4 +176,6 @@ export default function Sort() {
       </Stack>
     </Box>
   );
-}
+};
+
+export default Sort;

@@ -2,19 +2,45 @@ import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { LensSkills, UserType } from "@/app/types";
 import { Box, Text, useTheme } from "degen";
 import { AnimatePresence } from "framer-motion";
-import router from "next/router";
 import { memo, useState } from "react";
 import { useQuery } from "react-query";
 import styled from "styled-components";
 import AddSkillModal from "../AddSkillModal";
 import ViewSkillModal from "../ViewSkillModal";
 
+export const SkillTag = styled(Box)<{ mode: string }>`
+  border-radius: 1.5rem;
+  border: solid 2px
+    ${(props) =>
+      props.mode === "dark"
+        ? "rgb(255, 255, 255, 0.05)"
+        : "rgb(20, 20, 20, 0.05)"};
+  &:hover {
+    border: solid 2px rgb(191, 90, 242);
+    transition-duration: 0.7s;
+    cursor: pointer;
+  }
+  transition: all 0.3s ease-in-out;
+  padding: 0.1rem 1.5rem;
+  justify-content: center;
+  align-items: center;
+`;
+
+const InfoBox = styled(Box)`
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding-top: 1rem;
+  justify-content: flex-start;
+`;
+
 const Skills = ({
   userData,
   allCredentials,
 }: {
   userData: UserType;
-  allCredentials: { [id: string]: any[] };
+  allCredentials: { [id: string]: unknown[] };
 }) => {
   const { mode } = useTheme();
   const [openSkillModal, setOpenSkillModal] = useState(false);
@@ -89,34 +115,32 @@ const Skills = ({
             </Box>
           )}
           <InfoBox>
-            {skills.map((skill: LensSkills, index) => {
-              return (
-                <SkillTag
-                  key={index}
-                  mode={mode}
-                  onClick={() => {
-                    setSelectedSkillId(index);
-                    setOpenSkillView(true);
-                  }}
+            {skills.map((skill: LensSkills, index) => (
+              <SkillTag
+                key={skill.icon}
+                mode={mode}
+                onClick={() => {
+                  setSelectedSkillId(index);
+                  setOpenSkillView(true);
+                }}
+              >
+                <Box
+                  display="flex"
+                  flexDirection="column"
+                  alignItems="center"
+                  justifyContent="center"
                 >
-                  <Box
-                    display="flex"
-                    flexDirection="column"
-                    alignItems="center"
-                    justifyContent="center"
-                  >
-                    <Text variant="extraLarge" weight="semiBold">
-                      {skill.title}
+                  <Text variant="extraLarge" weight="semiBold">
+                    {skill.title}
+                  </Text>
+                  {skill.linkedCredentials?.length > 0 && (
+                    <Text variant="label">
+                      {skill.linkedCredentials?.length} Credentials Linked
                     </Text>
-                    {skill.linkedCredentials?.length > 0 && (
-                      <Text variant="label">
-                        {skill.linkedCredentials?.length} Credentials Linked
-                      </Text>
-                    )}
-                  </Box>
-                </SkillTag>
-              );
-            })}{" "}
+                  )}
+                </Box>
+              </SkillTag>
+            ))}
           </InfoBox>
         </>
       )}
@@ -125,30 +149,3 @@ const Skills = ({
 };
 
 export default memo(Skills);
-
-export const SkillTag = styled(Box)<{ mode: string }>`
-  border-radius: 1.5rem;
-  border: solid 2px
-    ${(props) =>
-      props.mode === "dark"
-        ? "rgb(255, 255, 255, 0.05)"
-        : "rgb(20, 20, 20, 0.05)"};
-  &:hover {
-    border: solid 2px rgb(191, 90, 242);
-    transition-duration: 0.7s;
-    cursor: pointer;
-  }
-  transition: all 0.3s ease-in-out;
-  padding: 0.1rem 1.5rem;
-  justify-content: center;
-  align-items: center;
-`;
-
-const InfoBox = styled(Box)`
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  padding-top: 1rem;
-  justify-content: flex-start;
-`;

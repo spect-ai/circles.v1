@@ -21,7 +21,8 @@ export const joinCircleFromInvite = async (
     const data = await response.json();
     return data;
   } catch (err) {
-    console.log(err);
+    console.error(err);
+    return null;
   }
 };
 
@@ -41,14 +42,9 @@ export const joinCircleFromDiscord = async (circleId: string) => {
     toast("You have joined circle successfully", {
       theme: "dark",
     });
-    console.log({ data });
     return data;
-  } else {
-    // toast.error(
-    //   "Something went wrong, please ensure you have the required role"
-    // );
-    return null;
   }
+  return null;
 };
 
 export const joinCircleFromGuildxyz = async (circleId: string) => {
@@ -67,14 +63,10 @@ export const joinCircleFromGuildxyz = async (circleId: string) => {
     toast("You have joined circle successfully", {
       theme: "dark",
     });
-    console.log({ data });
     return data;
-  } else {
-    // toast.error(
-    //   "Something went wrong, please ensure you have the required role"
-    // );
-    return null;
   }
+
+  return null;
 };
 
 export const joinCirclesFromGuildxyz = async (ethAddress: string) => {
@@ -89,19 +81,13 @@ export const joinCirclesFromGuildxyz = async (ethAddress: string) => {
     }
   );
   if (res.ok) {
-    // toast("You have joined circles successfully", {
-    //   theme: "dark",
-    // });
-  } else {
-    // toast.error(
-    //   "Something went wrong, please ensure you have the required Guild role"
-    // );
-    return null;
+    return true;
   }
+  return null;
 };
 
 export const joinCirclesFromDiscord = async (
-  guildData: any,
+  guildData: unknown,
   userId: string
 ) => {
   const res = await fetch(
@@ -112,7 +98,7 @@ export const joinCirclesFromDiscord = async (
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        guildData: guildData,
+        guildData,
       }),
       credentials: "include",
     }
@@ -121,13 +107,12 @@ export const joinCirclesFromDiscord = async (
     toast("You have joined circles successfully", {
       theme: "dark",
     });
-    return await res.json();
-  } else {
-    // toast.error(
-    //   "Something went wrong, please ensure you have the required  Discord role"
-    // );
-    return null;
+    return res.json();
   }
+  // toast.error(
+  //   "Something went wrong, please ensure you have the required  Discord role"
+  // );
+  return null;
 };
 
 export const joinCircle = async (circleId: string) => {
@@ -143,10 +128,8 @@ export const joinCircle = async (circleId: string) => {
   );
   if (res.ok) {
     const data = await res.json();
-    console.log({ data });
     return data;
-  } else {
-    console.log("Error joining circle");
-    return null;
   }
+  console.error("Error joining circle");
+  return null;
 };

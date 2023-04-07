@@ -6,7 +6,7 @@ import {
   isEligibleToClaimSurveyToken,
 } from "@/app/services/SurveyProtocol";
 import { socketAtom } from "@/app/state/global";
-import { CollectionType, Registry } from "@/app/types";
+import { CollectionType, DistributionInfo, Registry } from "@/app/types";
 import { TwitterOutlined } from "@ant-design/icons";
 import { Box, IconDocumentsSolid, Stack, Text } from "degen";
 import { BigNumber, ethers } from "ethers";
@@ -25,8 +25,15 @@ type Props = {
   preview?: boolean;
 };
 
+const StyledImage = styled.img`
+  @media (max-width: 768px) {
+    width: 16rem;
+  }
+  width: 100%;
+`;
+
 const CollectERC20 = ({ form, setClaimedJustNow, preview }: Props) => {
-  const [distributionInfo, setDistributionInfo] = useState({} as any);
+  const [distributionInfo, setDistributionInfo] = useState<DistributionInfo>();
   const [escrowHasInsufficientBalance, setEscrowHasInsufficientBalance] =
     useState(false);
   const [canClaimSurveyToken, setCanClaimSurveyToken] = useState(false);
@@ -38,11 +45,9 @@ const CollectERC20 = ({ form, setClaimedJustNow, preview }: Props) => {
     useState(
       form?.formMetadata?.transactionHashesOfUser?.surveyTokenClaim || ""
     );
-  const [socket, setSocket] = useAtom(socketAtom);
+  const [socket] = useAtom(socketAtom);
 
   const { address } = useAccount();
-
-  const [loading, setLoading] = useState(true);
 
   const { data: registry, refetch: fetchRegistry } = useQuery<Registry>(
     ["registry", form.parents[0].slug],
@@ -56,16 +61,16 @@ const CollectERC20 = ({ form, setClaimedJustNow, preview }: Props) => {
   );
 
   useEffect(() => {
-    if (socket)
+    if (socket) {
       socket?.on(
         `${form.slug}:responseAddedOnChain`,
         _.debounce(async (event: { userAddress: string }) => {
-          console.log({ event });
           if (event.userAddress.toLowerCase() === address?.toLowerCase()) {
             setCanClaimSurveyToken(true);
           }
         }, 2000)
       );
+    }
     return () => {
       if (socket && socket.off) {
         socket.off(`${form.slug}:responseAddedOnChain`);
@@ -82,15 +87,14 @@ const CollectERC20 = ({ form, setClaimedJustNow, preview }: Props) => {
       form?.formMetadata?.surveyTokenId ||
       form?.formMetadata?.surveyTokenId === 0
     ) {
-      void (async () => {
+      (async () => {
         if (!registry) return;
-        const distributionInfo = (await getSurveyDistributionInfo(
+        const distributionInfo2 = await getSurveyDistributionInfo(
           form.formMetadata.surveyChain?.value || "",
           registry[form.formMetadata.surveyChain?.value || ""].surveyHubAddress,
           form.formMetadata.surveyTokenId as number
-        )) as any;
-        console.log({ distributionInfo });
-        setDistributionInfo(distributionInfo);
+        );
+        setDistributionInfo(distributionInfo2);
 
         if (
           distributionInfo?.distributionType === 0 &&
@@ -99,13 +103,13 @@ const CollectERC20 = ({ form, setClaimedJustNow, preview }: Props) => {
           setSurveyIsLotteryYetToBeDrawn(true);
         }
 
-        const surveyTokenClaimed = await hasClaimedSurveyToken(
+        const surveyTokenClaimed2 = await hasClaimedSurveyToken(
           form.formMetadata.surveyChain?.value || "",
           registry[form.formMetadata.surveyChain?.value || ""].surveyHubAddress,
           form.formMetadata.surveyTokenId as number,
           address as string
         );
-        setSurveyTokenClaimed(surveyTokenClaimed as boolean);
+        setSurveyTokenClaimed(surveyTokenClaimed2 as boolean);
 
         const balanceInEscrow = (await getEscrowBalance(
           form.formMetadata.surveyChain?.value || "",
@@ -116,10 +120,10 @@ const CollectERC20 = ({ form, setClaimedJustNow, preview }: Props) => {
           distributionInfo?.distributionType === 0
             ? balanceInEscrow.toString() === "0"
             : balanceInEscrow.lt(distributionInfo?.amountPerResponse || 0);
-        console.log({ insufficientEscrowBalance });
         setEscrowHasInsufficientBalance(insufficientEscrowBalance);
         const canClaim =
           !insufficientEscrowBalance &&
+          distributionInfo &&
           (await isEligibleToClaimSurveyToken(
             form.formMetadata.surveyChain?.value || "",
             registry[form.formMetadata.surveyChain?.value || ""]
@@ -130,7 +134,6 @@ const CollectERC20 = ({ form, setClaimedJustNow, preview }: Props) => {
             surveyTokenClaimed as boolean
           ));
 
-        console.log({ canClaim });
         setCanClaimSurveyToken(canClaim as boolean);
       })();
     }
@@ -163,9 +166,7 @@ const CollectERC20 = ({ form, setClaimedJustNow, preview }: Props) => {
           }}
         >
           <StyledImage
-            src={
-              "https://ik.imagekit.io/spectcdn/moneybagethereummb3dmodel001.jpg?ik-sdk-version=javascript-1.4.3&updatedAt=1676107655114"
-            }
+            src="https://ik.imagekit.io/spectcdn/moneybagethereummb3dmodel001.jpg?ik-sdk-version=javascript-1.4.3&updatedAt=1676107655114"
             alt="poap"
           />
         </Box>
@@ -215,10 +216,8 @@ const CollectERC20 = ({ form, setClaimedJustNow, preview }: Props) => {
               space="2"
             >
               <TwitterShareButton
-                url={`https://circles.spect.network/`}
-                title={
-                  "I just filled out a web3 form and claimed some tokens on @JoinSpect 💰"
-                }
+                url="https://circles.spect.network/"
+                title="I just filled out a web3 form and claimed some tokens on @JoinSpect 💰"
               >
                 <Box
                   width={{
@@ -312,7 +311,7 @@ const CollectERC20 = ({ form, setClaimedJustNow, preview }: Props) => {
                           form.formMetadata.surveyToken?.label
                         } for submitting a response
             💰`
-                      : `You are eligible to receive tokens 💰`
+                      : "You are eligible to receive tokens 💰"
                     : `You are eligible to receive ${form.formMetadata.surveyTotalValue} ${form.formMetadata.surveyToken?.label} for submitting a response 💰`}
                 </Text>
                 {!canClaimSurveyToken && (
@@ -345,7 +344,6 @@ const CollectERC20 = ({ form, setClaimedJustNow, preview }: Props) => {
                           }
                         );
 
-                        console.log(res);
                         if (res.ok) {
                           const data = await res.json();
                           setSurveyTokenClaimed(true);
@@ -355,7 +353,7 @@ const CollectERC20 = ({ form, setClaimedJustNow, preview }: Props) => {
                           );
                         }
                       } catch (e) {
-                        console.log(e);
+                        console.error(e);
                         toast.error(
                           "Something went wrong, please try again later"
                         );
@@ -391,11 +389,8 @@ const CollectERC20 = ({ form, setClaimedJustNow, preview }: Props) => {
   );
 };
 
-const StyledImage = styled.img`
-  @media (max-width: 768px) {
-    width: 16rem;
-  }
-  width: 100%;
-`;
+CollectERC20.defaultProps = {
+  preview: false,
+};
 
 export default CollectERC20;

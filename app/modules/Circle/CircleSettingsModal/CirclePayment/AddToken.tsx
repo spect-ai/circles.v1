@@ -1,14 +1,13 @@
 import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { Box, Input, Stack, Tag, Text } from "degen";
-import React, { useState } from "react";
+import { Box, Input, Stack, Text } from "degen";
+import { useState } from "react";
 import useERC20 from "@/app/services/Payment/useERC20";
-import { Chain, Option, Registry } from "@/app/types";
-import { AnimatePresence } from "framer-motion";
+import { Option, Registry } from "@/app/types";
 import { addToken } from "@/app/services/Payment";
 import Loader from "@/app/common/components/Loader";
-import { useCircle } from "../../CircleContext";
 import Dropdown from "@/app/common/components/Dropdown";
+import { useCircle } from "../../CircleContext";
 
 interface Props {
   chainName: string;
@@ -16,7 +15,7 @@ interface Props {
   handleClose: () => void;
 }
 
-export default function AddToken({ chainName, chainId, handleClose }: Props) {
+const AddToken = ({ chainName, chainId, handleClose }: Props) => {
   const [network, setNetwork] = useState({
     label: chainName,
     value: chainId,
@@ -55,13 +54,11 @@ export default function AddToken({ chainName, chainId, handleClose }: Props) {
             onChange={async (e) => {
               setAddress(e.target.value);
               setTokenLoading(true);
-              console.log({ chainName });
               try {
-                console.log(await symbol(e.target.value, network?.value));
                 setTokenSymbol(await symbol(e.target.value, network?.value));
                 setTokenName(await name(e.target.value, network?.value));
-              } catch (e) {
-                console.log(e);
+              } catch (err) {
+                console.error(err);
                 setTokenLoading(false);
               }
               setTokenLoading(false);
@@ -81,7 +78,6 @@ export default function AddToken({ chainName, chainId, handleClose }: Props) {
                 symbol: tokenSymbol,
                 name: tokenName,
               });
-              console.log({ res });
               setLoading(false);
               setRegistryData(res as Registry);
               res && handleClose();
@@ -93,4 +89,6 @@ export default function AddToken({ chainName, chainId, handleClose }: Props) {
       </Box>
     </Modal>
   );
-}
+};
+
+export default AddToken;

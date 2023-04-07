@@ -1,13 +1,12 @@
 import Breadcrumbs from "@/app/common/components/Breadcrumbs";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { GatewayOutlined } from "@ant-design/icons";
-import { Box, Text, Heading, Stack } from "degen";
+import { Box, Text, Stack } from "degen";
 import { useRouter } from "next/router";
 import { Hidden } from "react-grid-system";
 import { BiBot } from "react-icons/bi";
-import { useCircle } from "../../Circle/CircleContext";
+import { useCircle } from "../CircleContext";
 
-export const AutomationHeading = () => {
+const AutomationHeading = () => {
   const { navigationBreadcrumbs } = useCircle();
   const router = useRouter();
   return (
@@ -15,7 +14,8 @@ export const AutomationHeading = () => {
       <Hidden xs sm>
         <Box>
           {navigationBreadcrumbs && (
-            <Breadcrumbs crumbs={navigationBreadcrumbs} />
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            <Breadcrumbs crumbs={navigationBreadcrumbs as any} />
           )}
         </Box>
       </Hidden>
@@ -59,3 +59,5 @@ export const AutomationHeading = () => {
     </Box>
   );
 };
+
+export default AutomationHeading;

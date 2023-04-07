@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import { CellProps } from "react-datasheet-grid";
 import { Maximize2 } from "react-feather";
 
-export default function GutterColumnComponent({ rowData }: CellProps) {
+const GutterColumnComponent = ({ rowData }: CellProps) => {
   const router = useRouter();
   return (
     <Box cursor="pointer" width="full">
@@ -12,7 +12,7 @@ export default function GutterColumnComponent({ rowData }: CellProps) {
         size="small"
         variant="transparent"
         onClick={() => {
-          void router.push({
+          router.push({
             pathname: router.pathname,
             query: {
               circle: router.query.circle,
@@ -28,4 +28,6 @@ export default function GutterColumnComponent({ rowData }: CellProps) {
       </Button>
     </Box>
   );
-}
+};
+
+export default GutterColumnComponent;

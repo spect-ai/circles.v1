@@ -11,7 +11,7 @@ interface Props {
   width: "fit" | "full";
 }
 
-export default function ConnectDiscordButton({ state, width, type }: Props) {
+const ConnectDiscordButton = ({ state, width, type }: Props) => {
   const { hostname } = useLocation();
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
@@ -24,8 +24,8 @@ export default function ConnectDiscordButton({ state, width, type }: Props) {
             ? "http%3A%2F%2Flocalhost%3A3000%2FlinkDiscord"
             : `https%3A%2F%2F${hostname}%2FlinkDiscord`
         }&response_type=code&scope=guilds%20identify` +
-        `${type ? "&type=" + type : ``}` +
-        `${state ? "&state=" + state : ``}`
+        `${type ? `&type=${type}` : ""}` +
+        `${state ? `&state=${state}` : ""}`
       }
     >
       <Button
@@ -43,4 +43,6 @@ export default function ConnectDiscordButton({ state, width, type }: Props) {
       </Button>
     </Link>
   );
-}
+};
+
+export default ConnectDiscordButton;

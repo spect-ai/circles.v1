@@ -1,4 +1,3 @@
-import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { CircleType, ProjectType } from "@/app/types";
 import {
   DragDropContext,
@@ -7,10 +6,10 @@ import {
 } from "react-beautiful-dnd";
 import { Box, Stack } from "degen";
 import { useCallback, useEffect, useState } from "react";
+import styled from "styled-components";
 import { useCircle } from "../../CircleContext";
 import Folder from "./folder";
 import useDragFolder from "./useDragHook";
-import styled from "styled-components";
 import CreateItems from "./CreateItems";
 
 interface Props {
@@ -45,7 +44,7 @@ const ScrollContainer = styled(Box)`
   height: calc(100vh - 4rem);
 `;
 
-export const FolderView = ({
+const FolderView = ({
   filteredProjects,
   filteredWorkstreams,
   filteredCollections,
@@ -53,13 +52,13 @@ export const FolderView = ({
   const { handleDrag } = useDragFolder();
   const { circle } = useCircle();
   const [allContentIds, setAllContentIds] = useState([] as string[]);
-  const { canDo } = useRoleGate();
 
   const getFormattedData = useCallback(() => {
     let ids = [] as string[];
     circle?.folderDetails &&
       Object.values(circle?.folderDetails)?.map((folder) => {
         ids = ids.concat(folder?.contentIds);
+        return null;
       });
     setAllContentIds(ids);
 
@@ -69,6 +68,7 @@ export const FolderView = ({
         if (!ids.includes(project.id)) {
           unclassifiedIds = unclassifiedIds.concat(project.id);
         }
+        return null;
       });
 
     filteredWorkstreams &&
@@ -76,6 +76,7 @@ export const FolderView = ({
         if (!allContentIds.includes(child.id)) {
           unclassifiedIds = unclassifiedIds.concat(child.id);
         }
+        return null;
       });
 
     filteredCollections &&
@@ -83,6 +84,7 @@ export const FolderView = ({
         if (!allContentIds.includes(collection.id)) {
           unclassifiedIds = unclassifiedIds.concat(collection.id);
         }
+        return null;
       });
   }, [
     allContentIds,
@@ -97,46 +99,39 @@ export const FolderView = ({
     getFormattedData();
   }, [circle]);
 
-  const DroppableContent = (provided: DroppableProvided) => (
-    <ScrollContainer
-      {...provided.droppableProps}
-      ref={provided.innerRef}
-      paddingTop="4"
-    >
-      <Stack direction="horizontal" align="baseline">
-        <CreateItems />
-      </Stack>
-      {circle?.folderOrder?.map((folder, i) => {
-        const folderDetail = circle?.folderDetails?.[folder];
-        return (
-          <Folder
-            key={folder}
-            content={folderDetail?.contentIds}
-            avatar={folderDetail?.avatar}
-            id={folder}
-            name={folderDetail?.name}
-            index={i}
-            projects={filteredProjects}
-            workstreams={filteredWorkstreams}
-            collections={filteredCollections}
-          />
-        );
-      })}
-      {provided.placeholder}
-    </ScrollContainer>
-  );
-
-  const DroppableContentCallback = useCallback(DroppableContent, [
-    canDo,
-    circle,
-    filteredProjects,
-    filteredWorkstreams,
-  ]);
   return (
     <DragDropContext onDragEnd={handleDrag}>
       <Droppable droppableId="all-folders" direction="vertical" type="folder">
-        {DroppableContentCallback}
+        {(provided: DroppableProvided) => (
+          <ScrollContainer
+            {...provided.droppableProps}
+            ref={provided.innerRef}
+            paddingTop="4"
+          >
+            <Stack direction="horizontal" align="baseline">
+              <CreateItems />
+            </Stack>
+            {circle?.folderOrder?.map((folder, i) => {
+              const folderDetail = circle?.folderDetails?.[folder];
+              return (
+                <Folder
+                  key={folder}
+                  content={folderDetail?.contentIds}
+                  id={folder}
+                  name={folderDetail?.name}
+                  index={i}
+                  projects={filteredProjects}
+                  workstreams={filteredWorkstreams}
+                  collections={filteredCollections}
+                />
+              );
+            })}
+            {provided.placeholder}
+          </ScrollContainer>
+        )}
       </Droppable>
     </DragDropContext>
   );
 };
+
+export default FolderView;

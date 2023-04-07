@@ -17,7 +17,7 @@ type Props = {
   milestoneIndex?: number;
 };
 
-export default function MilestoneModal({
+const MilestoneModal = ({
   form,
   propertyName,
   data,
@@ -25,7 +25,7 @@ export default function MilestoneModal({
   addMilestone,
   modalMode,
   milestoneIndex,
-}: Props) {
+}: Props) => {
   const [value, setValue] = useState("");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState(
@@ -71,13 +71,13 @@ export default function MilestoneModal({
 
   const { mode } = useTheme();
 
-  const isEmpty = (fieldName: string, value: any) => {
+  const isEmpty = (fieldName: string, val: any) => {
     switch (fieldName) {
       case "title":
       case "description":
       case "dueDate":
       case "reward":
-        return !value;
+        return !val;
       default:
         return false;
     }
@@ -87,12 +87,10 @@ export default function MilestoneModal({
     if (form.properties[propertyName]?.rewardOptions && selectedChain) {
       const tokens = Object.entries(
         rewardOptions[selectedChain.value].tokenDetails
-      ).map(([address, token]) => {
-        return {
-          label: token.symbol,
-          value: address,
-        };
-      });
+      ).map(([address, token]) => ({
+        label: token.symbol,
+        value: address,
+      }));
       data && setSelectedToken(tokens[0]);
       setTokenOptions(tokens);
     }
@@ -101,7 +99,6 @@ export default function MilestoneModal({
   useEffect(() => {
     if (modalMode === "edit" && (milestoneIndex || milestoneIndex === 0)) {
       const milestone = data[propertyName][milestoneIndex];
-      console.log(milestone.description);
       if (milestone) {
         setTitle(milestone.title);
         setDescription(milestone.description);
@@ -123,7 +120,7 @@ export default function MilestoneModal({
       handleClose={() => {
         handleClose();
       }}
-      title={`Add Milestone`}
+      title="Add Milestone"
     >
       <Box
         padding={{
@@ -143,14 +140,14 @@ export default function MilestoneModal({
               Required
             </Tag>
           </Box>
-          {requiredFieldsNotSet["title"] && (
+          {requiredFieldsNotSet.title && (
             <Text color="red" variant="small">
               This is a required field and cannot be empty
             </Text>
           )}
           <Input
             label=""
-            placeholder={`Enter Milestone Title`}
+            placeholder="Enter Milestone Title"
             value={title}
             onChange={(e) => {
               setTitle(e.target.value);
@@ -175,11 +172,11 @@ export default function MilestoneModal({
           >
             <Editor
               value={description}
-              onSave={(value) => {
-                setDescription(value);
+              onSave={(val) => {
+                setDescription(val);
               }}
-              placeholder={`Enter Description, press / for commands`}
-              isDirty={true}
+              placeholder="Enter Description, press / for commands"
+              isDirty
             />
           </Box>
         </Box>
@@ -203,12 +200,10 @@ export default function MilestoneModal({
                   form.properties[propertyName]?.rewardOptions
                     ? Object.entries(
                         form.properties[propertyName].rewardOptions as Registry
-                      ).map(([chainId, network]) => {
-                        return {
-                          label: network.name,
-                          value: chainId,
-                        };
-                      })
+                      ).map(([chainId, network]) => ({
+                        label: network.name,
+                        value: chainId,
+                      }))
                     : []
                 }
                 selected={selectedChain}
@@ -247,7 +242,7 @@ export default function MilestoneModal({
             >
               <Input
                 label=""
-                placeholder={`Enter Reward Amount`}
+                placeholder="Enter Reward Amount"
                 value={value}
                 onChange={(e) => {
                   setValue(e.target.value);
@@ -267,7 +262,7 @@ export default function MilestoneModal({
             }}
           >
             <DateInput
-              placeholder={`Enter Milestone Due Date`}
+              placeholder="Enter Milestone Due Date"
               value={date}
               type="date"
               mode={mode}
@@ -285,7 +280,7 @@ export default function MilestoneModal({
         >
           <Button
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            //@ts-ignore
+            // @ts-ignore
             marginRight="2"
             variant="secondary"
             size="small"
@@ -317,4 +312,10 @@ export default function MilestoneModal({
       </Box>
     </Modal>
   );
-}
+};
+
+MilestoneModal.defaultProps = {
+  milestoneIndex: undefined,
+};
+
+export default MilestoneModal;

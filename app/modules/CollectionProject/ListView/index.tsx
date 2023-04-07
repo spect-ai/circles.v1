@@ -2,7 +2,7 @@
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { updateField, updateFormCollection } from "@/app/services/Collection";
 import { Option } from "@/app/types";
-import { Box, IconPlusSmall, Stack } from "degen";
+import { Box, Stack } from "degen";
 import { AnimatePresence } from "framer-motion";
 import { DragDropContext } from "react-beautiful-dnd";
 import { toast } from "react-toastify";
@@ -13,7 +13,13 @@ import CardDrawer from "../CardDrawer";
 import useViewCommon from "../Common/useViewCommon";
 import Column from "./Column";
 
-export default function ListView() {
+const Container = styled(Box)`
+  &::-webkit-scrollbar {
+    width: 0.5rem;
+  }
+`;
+
+const ListView = () => {
   const {
     setIsCardDrawerOpen,
     isCardDrawerOpen,
@@ -50,17 +56,21 @@ export default function ListView() {
       <DragDropContext onDragEnd={handleDragEnd}>
         <Stack>
           {columns?.map((column, index) => {
-            if (index === 0 && (!cardOrders[0] || cardOrders[0]?.length === 0))
+            if (
+              index === 0 &&
+              (!cardOrders[0] || cardOrders[0]?.length === 0)
+            ) {
               return null;
-            if (filteredOnGroupByColumn && cardOrders[index]?.length === 0)
+            }
+            if (filteredOnGroupByColumn && cardOrders[index]?.length === 0) {
               return null;
+            }
             return (
               <Column
                 key={column.value}
                 column={column}
                 groupByColumn={view.groupByColumn}
                 setDefaultValue={setDefaultValue}
-                setIsCardDrawerOpen={setIsCardDrawerOpen}
                 cardIds={cardOrders[index]}
               />
             );
@@ -109,10 +119,6 @@ export default function ListView() {
       </DragDropContext>
     </Container>
   );
-}
+};
 
-const Container = styled(Box)`
-  &::-webkit-scrollbar {
-    width: 0.5rem;
-  }
-`;
+export default ListView;

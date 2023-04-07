@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { updateCollectionDataGuarded } from "@/app/services/Collection";
-import { exportToCsv } from "@/app/services/CsvExport";
 import { Milestone, Option, PropertyType, Reward, UserType } from "@/app/types";
 import { Box, Spinner } from "degen";
 import { motion, AnimatePresence } from "framer-motion";
@@ -20,6 +19,7 @@ import {
 import { useScreenClass } from "react-grid-system";
 import { useQuery } from "react-query";
 import { toast } from "react-toastify";
+import exportToCsv from "@/app/services/CsvExport";
 import CardDrawer from "../../CollectionProject/CardDrawer";
 import Filtering from "../../CollectionProject/Filtering";
 import IncentiveFilter from "../../CollectionProject/Filtering/IncentiveFilter";
@@ -48,7 +48,7 @@ import RewardModal from "./RewardModal";
 import SelectComponent from "./SelectComponent";
 import TelegramComponent from "./TelegramComponent";
 
-export default function TableView() {
+const TableView = () => {
   const [isEditFieldOpen, setIsEditFieldOpen] = useState(false);
   const [isRewardFieldOpen, setIsRewardFieldOpen] = useState(false);
   const [isURLFieldOpen, setIsURLFieldOpen] = useState(false);
@@ -66,7 +66,7 @@ export default function TableView() {
     paymentFilter,
   } = useLocalCollection();
 
-  const { data: currentUser, refetch } = useQuery<UserType>("getMyUser", {
+  const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
 
@@ -95,13 +95,11 @@ export default function TableView() {
     const res = await updateCollectionDataGuarded(collection.id, row.id, row);
     if (!res) return false;
     if (res.id) {
-      console.log("update success!!");
       updateCollection(res);
       return true;
-    } else {
-      toast.error(res.error || "Error updating data");
-      return false;
     }
+    toast.error(res.error || "Error updating data");
+    return false;
   }, []);
 
   const debouncedOnChange = _.debounce(async (newData, operations) => {
@@ -120,16 +118,18 @@ export default function TableView() {
 
   useEffect(() => {
     if (collection.data) {
-      // for each date property in the data, convert the date string to a date object for all the rows
       const dateProperties = collection.propertyOrder.map((property) => {
-        if (collection.properties[property]?.type === "date")
+        if (collection.properties[property]?.type === "date") {
           return collection.properties[property].name;
+        }
+        return null;
       });
-      const data = Object.keys(collection.data).map((key) => {
+      const cData = Object.keys(collection.data).map((key) => {
         const row = collection.data[key];
         dateProperties.forEach((property) => {
-          if (row[property as string])
+          if (row[property as string]) {
             row[property as string] = new Date(row[property as string]);
+          }
         });
         return {
           id: key,
@@ -138,21 +138,19 @@ export default function TableView() {
       });
 
       // filter the data based on the search filter
-      let filteredData = matchSorter(Object.values(data), searchFilter, {
-        keys: Object.keys(data[0] || {}).map((key) => {
-          return (item: any) => {
-            if (key === "id") return item.id;
-            if (collection.properties[key]?.type === "date") {
-              if (typeof item[key] === "string") {
-                return new Date(item[key]).toLocaleDateString();
-              }
-              return item[key]?.toLocaleDateString();
+      let filteredData = matchSorter(Object.values(cData), searchFilter, {
+        keys: Object.keys(cData[0] || {}).map((key) => (item: any) => {
+          if (key === "id") return item.id;
+          if (collection.properties[key]?.type === "date") {
+            if (typeof item[key] === "string") {
+              return new Date(item[key]).toLocaleDateString();
             }
-            if (collection.properties[key]?.type === "multiSelect") {
-              return item[key]?.map((option: Option) => option.label);
-            }
-            return item[key]?.label || item[key];
-          };
+            return item[key]?.toLocaleDateString();
+          }
+          if (collection.properties[key]?.type === "multiSelect") {
+            return item[key]?.map((option: Option) => option.label);
+          }
+          return item[key]?.label || item[key];
         }),
       });
 
@@ -162,35 +160,35 @@ export default function TableView() {
         (collection.collectionType === 1 &&
           collection.projectMetadata.views[projectViewId].filters)
       ) {
-        filteredData = filteredData.filter((row) => {
-          return satisfiesConditions(
+        filteredData = filteredData.filter((row) =>
+          satisfiesConditions(
             collection.data[row.id],
             collection.properties,
             collection.projectMetadata.views[
               collection.collectionType === 0 ? "0x0" : projectViewId
             ].filters || []
-          );
-        });
+          )
+        );
       }
 
       if (showMyTasks) {
-        filteredData = filteredData.filter((row) => {
-          return isMyCard(
+        filteredData = filteredData.filter((row) =>
+          isMyCard(
             collection.data[row.id],
             collection.properties,
             currentUser?.id || ""
-          );
-        });
+          )
+        );
       }
 
       if (paymentFilter) {
-        filteredData = filteredData.filter((row) => {
-          return paymentStatus(
+        filteredData = filteredData.filter((row) =>
+          paymentStatus(
             paymentFilter,
             row.id,
             collection.projectMetadata.paymentStatus
-          );
-        });
+          )
+        );
       }
 
       if (
@@ -211,14 +209,14 @@ export default function TableView() {
           collection.projectMetadata.views[
             collection.collectionType === 0 ? "0x0" : projectViewId
           ].sort?.direction || "asc";
-        const propertyName = property.name;
+        const propName = property.name;
         filteredData = filteredData.sort((a: any, b: any) => {
           if (propertyType === "singleSelect") {
             const aIndex = propertyOptions.findIndex(
-              (option) => option.value === a[propertyName]?.value
+              (option) => option.value === a[propName]?.value
             );
             const bIndex = propertyOptions.findIndex(
-              (option) => option.value === b[propertyName]?.value
+              (option) => option.value === b[propName]?.value
             );
             if (direction === "asc") {
               return aIndex - bIndex;
@@ -227,42 +225,37 @@ export default function TableView() {
           }
           if (propertyType === "user") {
             if (direction === "asc") {
-              return a[propertyName]?.label?.localeCompare(
-                b[propertyName]?.label
-              );
+              return a[propName]?.label?.localeCompare(b[propName]?.label);
             }
-            return b[propertyName]?.label?.localeCompare(
-              a[propertyName]?.label
-            );
+            return b[propName]?.label?.localeCompare(a[propName]?.label);
           }
           if (propertyType === "date") {
-            const aDate = new Date(a[propertyName]);
-            const bDate = new Date(b[propertyName]);
+            const aDate = new Date(a[propName]);
+            const bDate = new Date(b[propName]);
             if (direction === "asc") {
               return aDate.getTime() - bDate.getTime();
             }
             return bDate.getTime() - aDate.getTime();
           }
           if (propertyType === "reward") {
-            // property has chain, token and value, need to sort it based on chain first, then token and then value
-            const aChain = a[propertyName]?.chain.label;
-            const bChain = b[propertyName]?.chain.label;
+            const aChain = a[propName]?.chain.label;
+            const bChain = b[propName]?.chain.label;
             if (aChain !== bChain) {
               if (direction === "asc") {
                 return aChain?.localeCompare(bChain);
               }
               return bChain?.localeCompare(aChain);
             }
-            const aToken = a[propertyName]?.token.label;
-            const bToken = b[propertyName]?.token.label;
+            const aToken = a[propName]?.token.label;
+            const bToken = b[propName]?.token.label;
             if (aToken !== bToken) {
               if (direction === "asc") {
                 return aToken.localeCompare(bToken);
               }
               return bToken.localeCompare(aToken);
             }
-            const aValue = a[propertyName]?.value;
-            const bValue = b[propertyName]?.value;
+            const aValue = a[propName]?.value;
+            const bValue = b[propName]?.value;
             if (direction === "asc") {
               return aValue - bValue;
             }
@@ -274,13 +267,13 @@ export default function TableView() {
             propertyType === "user[]" ||
             propertyType === "payWall" ||
             propertyType === "multiURL"
-          )
-            return;
-
-          if (direction === "asc") {
-            return a[propertyName]?.localeCompare(b[propertyName]);
+          ) {
+            return null;
           }
-          return b[propertyName]?.localeCompare(a[propertyName]);
+          if (direction === "asc") {
+            return a[propName]?.localeCompare(b[propName]);
+          }
+          return b[propName]?.localeCompare(a[propName]);
         });
       } else {
         // sort the data based on the timestamp of their first activity
@@ -303,13 +296,17 @@ export default function TableView() {
   }, [
     collection.collectionType,
     collection.data,
-    collection.projectMetadata?.views,
+    collection.projectMetadata.views,
     collection.properties,
     collection.propertyOrder,
     projectViewId,
     searchFilter,
     showMyTasks,
     paymentFilter,
+    collection.projectMetadata.paymentStatus,
+    collection.dataActivities,
+    collection.dataActivityOrder,
+    currentUser?.id,
   ]);
 
   // refresh table if new property is added
@@ -365,8 +362,8 @@ export default function TableView() {
     collection.propertyOrder
       .filter((prop) => prop !== "__cardStatus__")
       .filter((prop) => !!collection.properties[prop])
-      .map((propertyName: string) => {
-        const property = collection.properties[propertyName];
+      .map((propName: string) => {
+        const property = collection.properties[propName];
         if (property.id === "__ceramic__") {
           return {
             ...keyColumn(property.id, {
@@ -383,7 +380,8 @@ export default function TableView() {
             ),
             minWidth: 200,
           };
-        } else if (
+        }
+        if (
           [
             "singleSelect",
             "multiSelect",
@@ -411,7 +409,8 @@ export default function TableView() {
             ),
             minWidth: 200,
           };
-        } else if (["reward"].includes(property.type)) {
+        }
+        if (["reward"].includes(property.type)) {
           return {
             component: getCellComponent(property.type) as any,
             columnData: {
@@ -430,7 +429,8 @@ export default function TableView() {
             ),
             minWidth: 200,
           };
-        } else if (["milestone"].includes(property.type)) {
+        }
+        if (["milestone"].includes(property.type)) {
           return {
             component: getCellComponent(property.type) as any,
             columnData: {
@@ -449,7 +449,8 @@ export default function TableView() {
             ),
             minWidth: 200,
           };
-        } else if (["payWall"].includes(property.type)) {
+        }
+        if (["payWall"].includes(property.type)) {
           return {
             component: getCellComponent(property.type) as any,
             columnData: {
@@ -467,7 +468,8 @@ export default function TableView() {
             ),
             minWidth: 200,
           };
-        } else if (["multiURL"].includes(property.type)) {
+        }
+        if (["multiURL"].includes(property.type)) {
           return {
             component: getCellComponent(property.type) as any,
             columnData: {
@@ -486,24 +488,21 @@ export default function TableView() {
             ),
             minWidth: 200,
           };
-        } else {
-          return {
-            ...keyColumn(property.name, getCellComponent(property.type) as any),
-            disabled:
-              collection.collectionType === 0
-                ? property.isPartOfFormView
-                : false,
-            title: (
-              <HeaderComponent
-                columnName={property.name}
-                setIsEditFieldOpen={setIsEditFieldOpen}
-                setPropertyName={setPropertyName}
-                propertyType={property.type}
-              />
-            ),
-            minWidth: 200,
-          };
         }
+        return {
+          ...keyColumn(property.name, getCellComponent(property.type) as any),
+          disabled:
+            collection.collectionType === 0 ? property.isPartOfFormView : false,
+          title: (
+            <HeaderComponent
+              columnName={property.name}
+              setIsEditFieldOpen={setIsEditFieldOpen}
+              setPropertyName={setPropertyName}
+              propertyType={property.type}
+            />
+          ),
+          minWidth: 200,
+        };
       });
 
   const columnsWithCredentials = collection.formMetadata
@@ -514,10 +513,10 @@ export default function TableView() {
           columnData: {},
           title: (
             <HeaderComponent
-              columnName={"Responder"}
+              columnName="Responder"
               setIsEditFieldOpen={setIsEditFieldOpen}
               setPropertyName={setPropertyName}
-              propertyType={"user"}
+              propertyType="user"
             />
           ),
           minWidth: 150,
@@ -542,21 +541,19 @@ export default function TableView() {
             propertyName={propertyName}
             handleClose={async (
               reward: Reward,
-              dataId: string,
-              propertyName: string
+              dId: string,
+              propName: string
             ) => {
               if (data) {
-                const row = data.findIndex((row) => row.id === dataId);
+                const row = data.findIndex((r) => r.id === dId);
                 if (data[row] && (row === 0 || row)) {
                   const tempData = [...data];
-                  tempData[row][propertyName] = reward;
-                  console.log({ tempdata: tempData[row][propertyName] });
+                  tempData[row][propName] = reward;
                   setData(tempData);
                   setIsRewardFieldOpen(false);
                   await updateData({
                     row: tempData[row],
                   });
-                  console.log({ updatedData: data[row][propertyName] });
                 }
                 setIsRewardFieldOpen(false);
               }
@@ -570,14 +567,14 @@ export default function TableView() {
             propertyName={propertyName}
             handleClose={async (
               payment: Option[],
-              dataId: string,
-              propertyName: string
+              dId: string,
+              propName: string
             ) => {
               if (data) {
-                const row = data.findIndex((row) => row.id === dataId);
+                const row = data.findIndex((r) => r.id === dId);
                 if (row === 0 || row) {
                   const tempData = [...data];
-                  tempData[row][propertyName] = payment;
+                  tempData[row][propName] = payment;
                   setData(tempData);
                   setIsURLFieldOpen(false);
                   await updateData({
@@ -602,12 +599,12 @@ export default function TableView() {
             }
             handleClose={async (
               value: Milestone[],
-              dataId: string,
-              propertyName: string
+              dId: string,
+              propName: string
             ) => {
               if (
                 collection.collectionType === 0
-                  ? collection.properties[propertyName].isPartOfFormView
+                  ? collection.properties[propName].isPartOfFormView
                   : false
               ) {
                 setMultipleMilestoneModalOpen(false);
@@ -618,14 +615,12 @@ export default function TableView() {
                 return;
               }
               if (data) {
-                const row = data.findIndex((row) => row.id === dataId);
-                console.log({ value });
+                const row = data.findIndex((r) => r.id === dId);
                 if (row === 0 || row) {
                   const tempData = [...data];
                   tempData[row][propertyName] = value;
                   setData(tempData);
                   setMultipleMilestoneModalOpen(false);
-                  console.log({ tempData });
                   await updateData({
                     row: tempData[row],
                   });
@@ -652,7 +647,7 @@ export default function TableView() {
         <Box
           display="flex"
           flexDirection="row"
-          gap={"2"}
+          gap="2"
           justifyContent="flex-end"
           width="full"
           marginBottom="4"
@@ -667,14 +662,14 @@ export default function TableView() {
                   [key: string]: string;
                 } = {};
                 Object.entries(da)
-                  .filter(([key, value]) => key !== "id")
+                  .filter(([key]) => key !== "id")
                   .forEach(([key, value]: [string, any]) => {
                     if (key === "slug") {
                       csvData["Data Slug"] = value;
                       return;
                     }
                     if (key === "__lookup__") {
-                      value = value.map((v: any) => ({
+                      const nValue = value.map((v: any) => ({
                         contractAddress: undefined,
                         tokenType: undefined,
                         metadata: undefined,
@@ -682,15 +677,15 @@ export default function TableView() {
                         balance: v.balance,
                         chainId: v.chainId,
                       }));
-                      csvData["Tokens Lookup"] = JSON.stringify(value);
+                      csvData["Tokens Lookup"] = JSON.stringify(nValue);
                       return;
                     }
                     if (key === "anonymous") {
-                      const value =
+                      const nValue =
                         collection?.profiles?.[collection?.dataOwner[da.slug]];
                       csvData["Responder Profile"] = JSON.stringify({
-                        username: value?.username,
-                        ethAddress: value?.ethAddress,
+                        username: nValue?.username,
+                        ethAddress: nValue.ethAddress,
                       });
                       return;
                     }
@@ -739,7 +734,6 @@ export default function TableView() {
                   });
                 return csvData;
               });
-              console.log({ d });
               exportToCsv((d as []).reverse(), collection.name);
             }}
           >
@@ -785,4 +779,6 @@ export default function TableView() {
       </AnimatePresence>
     </Box>
   );
-}
+};
+
+export default TableView;

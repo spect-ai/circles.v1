@@ -1,15 +1,12 @@
-import React, { memo, useEffect, useState } from "react";
+import React, { memo, useEffect } from "react";
 import { ReactNodeNoStrings } from "degen/dist/types/types";
 import { Box, useTheme } from "degen";
 import { AnimatePresence } from "framer-motion";
-import ExtendedSidebar from "../../../modules/ExtendedSidebar/ExtendedSidebar";
 import Sidebar from "@/app/modules/Sidebar";
 import styled from "styled-components";
 import { useQuery } from "react-query";
 import { CircleType, UserType } from "@/app/types";
 import { toast } from "react-toastify";
-import ConnectPage from "../../../modules/Dashboard/ConnectPage";
-import Onboard from "../../../modules/Dashboard/Onboard";
 import Loader from "@/app/common/components/Loader";
 import { useRouter } from "next/router";
 import { io } from "socket.io-client";
@@ -17,12 +14,12 @@ import {
   socketAtom,
   connectedUserAtom,
   isSidebarExpandedAtom,
-  isProfilePanelExpandedAtom,
-  userDataAtom,
-  profileLoadingAtom,
 } from "@/app/state/global";
 import { useAtom } from "jotai";
 import { useAccount, useConnect } from "wagmi";
+import Onboard from "../../../modules/Dashboard/Onboard";
+import ConnectPage from "../../../modules/Dashboard/ConnectPage";
+import ExtendedSidebar from "../../../modules/ExtendedSidebar/ExtendedSidebar";
 
 type PublicLayoutProps = {
   children: ReactNodeNoStrings;
@@ -47,23 +44,15 @@ const getUser = async () => {
   const res = await fetch(`${process.env.API_HOST}/user/v1/me`, {
     credentials: "include",
   });
-  return await res.json();
+  return res.json();
 };
 
-function PublicLayout(props: PublicLayoutProps) {
+const PublicLayout = (props: PublicLayoutProps) => {
   const { children } = props;
-  // eslint-disable-next-line @typescript-eslint/unbound-method
   const { setMode } = useTheme();
   const [socket, setSocket] = useAtom(socketAtom);
   const [connectedUser, setConnectedUser] = useAtom(connectedUserAtom);
-  const [isSidebarExpanded, setIsSidebarExpanded] = useAtom(
-    isSidebarExpandedAtom
-  );
-  const [isProfilePanelExpanded, setIsProfilePanelExpanded] = useAtom(
-    isProfilePanelExpandedAtom
-  );
-  const [userData, setUserData] = useAtom(userDataAtom);
-  const [profileLoading, setProfileLoading] = useAtom(profileLoadingAtom);
+  const [isSidebarExpanded] = useAtom(isSidebarExpandedAtom);
 
   const {
     data: myCircles,
@@ -95,15 +84,14 @@ function PublicLayout(props: PublicLayoutProps) {
   useEffect(() => {
     refetch()
       .then((res) => {
-        const data = res.data;
+        const { data } = res;
 
         if (data?.id) setConnectedUser(data.id);
       })
       .catch((err) => {
-        console.log(err);
+        console.error(err);
         toast.error("Could not fetch user data");
       });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const { connect, connectors } = useConnect();
@@ -112,7 +100,6 @@ function PublicLayout(props: PublicLayoutProps) {
   useEffect(() => {
     if (!address && connectedUser) {
       const connectorId = localStorage.getItem("connectorId");
-      console.log({ connectorId, connectors });
       connect({ connector: connectors.find((c) => c.id === connectorId) });
     }
   }, [address, connectedUser]);
@@ -121,14 +108,13 @@ function PublicLayout(props: PublicLayoutProps) {
   const { inviteCode, circle } = router.query;
 
   const onboard =
-    (currentUser?.skillsV2?.length == 0 || currentUser?.email?.length == 0) &&
-    myCircles?.length == 0 &&
+    (currentUser?.skillsV2?.length === 0 || currentUser?.email?.length === 0) &&
+    myCircles?.length === 0 &&
     !inviteCode;
 
   useEffect(() => {
-    void fetchCircles();
+    fetchCircles();
     // void fetchNotifications();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentUser, connectedUser, circle]);
 
   useEffect(() => {
@@ -153,17 +139,17 @@ function PublicLayout(props: PublicLayoutProps) {
   }, []);
 
   useEffect(() => {
-    const socket = io(process.env.API_HOST || "");
-    socket.on("connect", function () {
+    const socket2 = io(process.env.API_HOST || "");
+    socket2.on("connect", () => {
       setSocket(socket);
     });
 
-    socket.on("disconnect", function () {
-      console.log("Disconnected");
+    socket2.on("disconnect", () => {
+      console.warn("Disconnected");
     });
 
     return () => {
-      socket.disconnect();
+      socket2.disconnect();
     };
   }, []);
 
@@ -173,12 +159,13 @@ function PublicLayout(props: PublicLayoutProps) {
     }
   }, [connectedUser, socket]);
 
-  if (isLoading || loading)
+  if (isLoading || loading) {
     return (
       <DesktopContainer backgroundColor="backgroundSecondary" id="Load screen">
         <Loader loading text="Launching Spect .." />
       </DesktopContainer>
     );
+  }
 
   return (
     <DesktopContainer backgroundColor="backgroundSecondary">
@@ -208,6 +195,6 @@ function PublicLayout(props: PublicLayoutProps) {
       )}
     </DesktopContainer>
   );
-}
+};
 
 export default memo(PublicLayout);

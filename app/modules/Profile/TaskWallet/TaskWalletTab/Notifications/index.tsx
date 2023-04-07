@@ -4,9 +4,8 @@ import { UserType } from "@/app/types";
 import Link from "next/link";
 import styled from "styled-components";
 import { useQuery } from "react-query";
-import { updateNotificationStatus } from "@/app/services/ProfileNotifications";
-import { ScrollContainer } from "../index";
 import ReactPaginate from "react-paginate";
+import updateNotificationStatus from "@/app/services/ProfileNotifications";
 
 export const Paginate = styled(ReactPaginate)<{ mode: string }>`
   display: flex;
@@ -49,6 +48,15 @@ export const Paginate = styled(ReactPaginate)<{ mode: string }>`
   }
 `;
 
+const ScrollContainer = styled(Box)`
+  overflow: auto;
+  height: 60vh;
+  padding-right: 1rem;
+  ::-webkit-scrollbar {
+    width: 5px;
+  }
+`;
+
 interface NotifProps {
   notifIds: string[];
 }
@@ -67,10 +75,8 @@ const Notifications = ({ notifIds }: NotifProps) => {
     const update = async () => {
       await updateNotificationStatus({ notificationIds: notifIds });
     };
-    void update();
+    update();
   }
-
-  console.log({ userDataInNotif: userData });
 
   useEffect(() => {
     setEndOffset(itemOffset + 8);
@@ -83,7 +89,8 @@ const Notifications = ({ notifIds }: NotifProps) => {
 
   const handlePageClick = (event: { selected: number }) => {
     const newOffset =
-      (event.selected * 8) % (userData as UserType)?.notifications?.length;
+      (event.selected * 8) %
+      ((userData as UserType)?.notifications?.length || 1);
     setItemOffset(newOffset);
   };
 
@@ -99,7 +106,7 @@ const Notifications = ({ notifIds }: NotifProps) => {
         alignItems: "center",
       }}
     >
-      {userData?.notifications?.length == 0 && (
+      {userData?.notifications?.length === 0 && (
         <Box style={{ margin: "14rem 14rem" }}>
           <Text color="accent" align="center">
             No Notifications as of now.
@@ -111,7 +118,7 @@ const Notifications = ({ notifIds }: NotifProps) => {
           ?.slice(0)
           .reverse()
           .slice(itemOffset, endOffset)
-          .map((notif) => {
+          .map((notif) => (
             // let link = "";
             // if (notif.type == "circle") {
             //   link = `/${notif?.linkPath?.[0]}`;
@@ -123,35 +130,33 @@ const Notifications = ({ notifIds }: NotifProps) => {
             // } else if (notif.type == "retro") {
             //   link = `/${notif?.linkPath?.[0]}?retroSlug=${notif?.linkPath?.[1]}`;
             // }
-            return (
-              <Link href={"/"} key={notif?.timestamp}>
-                <Box
-                  style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    flexWrap: "wrap",
-                    gap: "0.4rem",
-                    alignItems: "center",
-                    cursor: "pointer",
-                    padding: "1rem",
-                    width: "39rem",
-                    borderRadius: "0.5rem",
-                  }}
-                  backgroundColor={
-                    notif?.read == false ? "accentTertiary" : "transparent"
-                  }
-                >
-                  <Text>{notif?.content}</Text>
-                  <Text variant="label">
-                    {new Date(notif?.timestamp).toLocaleDateString() ==
-                    new Date().toLocaleDateString()
-                      ? new Date(notif?.timestamp).toLocaleTimeString()
-                      : new Date(notif?.timestamp).toLocaleDateString()}
-                  </Text>
-                </Box>
-              </Link>
-            );
-          })}
+            <Link href="/" key={notif?.timestamp}>
+              <Box
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  flexWrap: "wrap",
+                  gap: "0.4rem",
+                  alignItems: "center",
+                  cursor: "pointer",
+                  padding: "1rem",
+                  width: "39rem",
+                  borderRadius: "0.5rem",
+                }}
+                backgroundColor={
+                  notif?.read === false ? "accentTertiary" : "transparent"
+                }
+              >
+                <Text>{notif?.content}</Text>
+                <Text variant="label">
+                  {new Date(notif?.timestamp).toLocaleDateString() ===
+                  new Date().toLocaleDateString()
+                    ? new Date(notif?.timestamp).toLocaleTimeString()
+                    : new Date(notif?.timestamp).toLocaleDateString()}
+                </Text>
+              </Box>
+            </Link>
+          ))}
       </ScrollContainer>
       <Box position="absolute" bottom="2">
         <Paginate

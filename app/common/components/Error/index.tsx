@@ -2,14 +2,8 @@ import React from "react";
 import { Box, Heading, useTheme } from "degen";
 import styled from "styled-components";
 import { VioletBlur } from "@/app/modules/Dashboard/ConnectPage";
-import PrimaryButton from "../PrimaryButton";
 import { FrownOutlined } from "@ant-design/icons";
-
-interface Props {
-  error: {
-    message: string;
-  };
-}
+import PrimaryButton from "../PrimaryButton";
 
 const DesktopContainer = styled(Box)`
   display: flex;
@@ -19,18 +13,17 @@ const DesktopContainer = styled(Box)`
   overflow-x: hidden;
 `;
 
-export default function ErrorFallBack({ error }: Props) {
+const ErrorFallBack = () => {
   const { mode } = useTheme();
   const href =
     process.env.NODE_ENV === "production"
       ? "https://circles.spect.network"
       : "http://localhost:3000/";
-  console.log(error.message);
   return (
     <DesktopContainer
       backgroundColor={mode === "dark" ? "background" : "backgroundSecondary"}
       id="Error screen"
-      position={"relative"}
+      position="relative"
     >
       <VioletBlur style={{ top: "0px", left: "0rem" }} />
       <Box
@@ -57,4 +50,6 @@ export default function ErrorFallBack({ error }: Props) {
       </Box>
     </DesktopContainer>
   );
-}
+};
+
+export default ErrorFallBack;

@@ -22,79 +22,13 @@ export const slideHorizontal = {
   },
 };
 
-type props = {
+type Props = {
   children: React.ReactNode;
   handleClose: (...args: any[]) => void;
   header?: React.ReactNode;
   width?: string;
   closeOnOutsideClick?: boolean;
 };
-
-function Drawer({
-  handleClose,
-  children,
-  header,
-  width = "50%",
-  closeOnOutsideClick,
-}: props) {
-  return (
-    <Box
-      style={{
-        top: 0,
-        right: 0,
-        width: `${closeOnOutsideClick ? "100%" : width}`,
-        height: "100%",
-        position: "fixed",
-        alignItems: "flex-end",
-        zIndex: 2,
-      }}
-      onClick={() => {
-        closeOnOutsideClick && handleClose();
-      }}
-    >
-      <MotionContainer
-        variants={slideHorizontal}
-        initial="hidden"
-        animate="visible"
-        exit="exit"
-        width={width}
-        onClick={(e) => {
-          e.stopPropagation();
-        }}
-      >
-        <Container backgroundColor="background">
-          <Box
-            paddingX={{
-              xs: "4",
-              md: "8",
-            }}
-          >
-            {header ? (
-              header
-            ) : (
-              <Box marginLeft="-4">
-                <Button
-                  shape="circle"
-                  size="small"
-                  variant="transparent"
-                  onClick={() => handleClose()}
-                >
-                  <Stack direction="horizontal" align="center" space="0">
-                    <IconChevronRight />
-                    <Box marginLeft="-4">
-                      <IconChevronRight />
-                    </Box>
-                  </Stack>
-                </Button>
-              </Box>
-            )}
-          </Box>
-          {children}
-        </Container>
-      </MotionContainer>
-    </Box>
-  );
-}
 
 const Container = styled(Box)`
   height: 100%;
@@ -129,6 +63,68 @@ export const MotionContainer = styled(motion.div)<{ width?: string }>`
   }
 `;
 
+const Drawer = ({
+  handleClose,
+  children,
+  header,
+  width = "50%",
+  closeOnOutsideClick,
+}: Props) => (
+  <Box
+    style={{
+      top: 0,
+      right: 0,
+      width: `${closeOnOutsideClick ? "100%" : width}`,
+      height: "100%",
+      position: "fixed",
+      alignItems: "flex-end",
+      zIndex: 2,
+    }}
+    onClick={() => {
+      closeOnOutsideClick && handleClose();
+    }}
+  >
+    <MotionContainer
+      variants={slideHorizontal}
+      initial="hidden"
+      animate="visible"
+      exit="exit"
+      width={width}
+      onClick={(e) => {
+        e.stopPropagation();
+      }}
+    >
+      <Container backgroundColor="background">
+        <Box
+          paddingX={{
+            xs: "4",
+            md: "8",
+          }}
+        >
+          {header || (
+            <Box marginLeft="-4">
+              <Button
+                shape="circle"
+                size="small"
+                variant="transparent"
+                onClick={() => handleClose()}
+              >
+                <Stack direction="horizontal" align="center" space="0">
+                  <IconChevronRight />
+                  <Box marginLeft="-4">
+                    <IconChevronRight />
+                  </Box>
+                </Stack>
+              </Button>
+            </Box>
+          )}
+        </Box>
+        {children}
+      </Container>
+    </MotionContainer>
+  </Box>
+);
+
 export default Drawer;
 
-export type { props as DrawerProps };
+export type { Props as DrawerProps };

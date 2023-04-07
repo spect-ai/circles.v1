@@ -1,36 +1,33 @@
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { Option, Registry } from "@/app/types";
 import { Box, Button, Heading, Input, Stack, Tag, Text } from "degen";
-import React, { useEffect, useState } from "react";
-import { useCircle } from "../CircleContext";
-
+import { useEffect, useState } from "react";
 import DiscordIcon from "@/app/assets/icons/discordIcon.svg";
-import Dropdown from "@/app/common/components/Dropdown";
 import { RocketOutlined } from "@ant-design/icons";
 import { fetchGuildChannels, getGuildRoles } from "@/app/services/Discord";
-import { createTemplateFlow } from "@/app/services/Templates";
-import { useRouter } from "next/router";
-import RewardTokenOptions from "../../Collection/AddField/RewardTokenOptions";
 import { useAtom } from "jotai";
 import { Scribes } from "@/app/common/utils/constants";
 import { Space } from "@/app/modules/Collection/VotingModule";
 import { useQuery } from "@apollo/client";
 import { updateCircle } from "@/app/services/UpdateCircle";
 import { scribeOpenAtom, scribeUrlAtom } from "@/app/state/global";
+import createTemplateFlow from "@/app/services/Templates";
+import RewardTokenOptions from "../../Collection/AddField/RewardTokenOptions";
+import { useCircle } from "../CircleContext";
 
 interface Props {
   handleClose: (close: boolean) => void;
 }
 
-export default function GrantTemplate({ handleClose }: Props) {
+const GrantTemplate = ({ handleClose }: Props) => {
   const { circle, registry, fetchCircle, setCircleData } = useCircle();
   const [step, setStep] = useState(0);
   const [snapshotSpace, setSnapshotSpace] = useState("");
   const [selectedRoles, setSelectedRoles] = useState([] as string[]);
-  const [categoryOptions, setCategoryOptions] = useState<Option[]>([]);
+  const [, setCategoryOptions] = useState<Option[]>([]);
 
   const [networks, setNetworks] = useState<Registry | undefined>({
-    "137": registry?.["137"],
+    137: registry?.["137"],
   } as Registry);
 
   const [, setIsScribeOpen] = useAtom(scribeOpenAtom);
@@ -63,35 +60,36 @@ export default function GrantTemplate({ handleClose }: Props) {
   useEffect(() => {
     if (circle) {
       const getGuildChannels = async () => {
-        const data = await fetchGuildChannels(
+        const data2 = await fetchGuildChannels(
           circle?.discordGuildId,
           "GUILD_CATEGORY"
         );
-        const categoryOptions = data.guildChannels?.map((channel: any) => ({
-          label: channel.name,
-          value: channel.id,
-        }));
+        const categoryOptions = data2.guildChannels?.map(
+          (channel: { name: string; id: string }) => ({
+            label: channel.name,
+            value: channel.id,
+          })
+        );
         setCategoryOptions(categoryOptions);
       };
-      if (circle?.discordGuildId) void getGuildChannels();
+      if (circle?.discordGuildId) getGuildChannels();
       const fetchGuildRoles = async () => {
-        const data = await getGuildRoles(circle?.discordGuildId);
-        data && setDiscordRoles(data.roles);
-        console.log({ data });
+        const data2 = await getGuildRoles(circle?.discordGuildId);
+        data2 && setDiscordRoles(data2.roles);
       };
-      if (circle?.discordGuildId) void fetchGuildRoles();
+      if (circle?.discordGuildId) fetchGuildRoles();
     }
   }, [circle?.discordGuildId]);
 
   const useTemplate = async () => {
     setLoading(true);
     let roles = {};
-    for (const i in selectedRoles) {
+    selectedRoles.forEach((role) => {
       roles = {
         ...roles,
-        [selectedRoles[i]]: true,
+        [role]: true,
       };
-    }
+    });
     const res = await createTemplateFlow(
       circle?.id || "",
       {
@@ -100,11 +98,9 @@ export default function GrantTemplate({ handleClose }: Props) {
       },
       1
     );
-    console.log(res);
     if (res?.id) {
       setScribeUrl(Scribes.grants.using);
       setIsScribeOpen(true);
-      console.log("here");
       setCircleData(res);
     }
     handleClose(false);
@@ -113,10 +109,10 @@ export default function GrantTemplate({ handleClose }: Props) {
 
   return (
     <Box padding="0">
-      <Stack direction={"vertical"} space="5">
-        {step == 0 && (
+      <Stack direction="vertical" space="5">
+        {step === 0 && (
           <Stack>
-            <Heading color={"accent"} align="left">
+            <Heading color="accent" align="left">
               Integrate Discord
             </Heading>
             <Box width="1/3">
@@ -163,15 +159,15 @@ export default function GrantTemplate({ handleClose }: Props) {
             </Box>
           </Stack>
         )}
-        {step == 1 && (
+        {step === 1 && (
           <>
-            <Heading color={"accent"} align="left">
+            <Heading color="accent" align="left">
               Integrate Discord
             </Heading>
             <Text variant="label">
               Which Discord role would you like to assign to the grantees ?
             </Text>
-            <Stack direction={"horizontal"} space={"4"} wrap>
+            <Stack direction="horizontal" space="4" wrap>
               {discordRoles?.map((role) => (
                 <Box
                   onClick={() => {
@@ -197,11 +193,11 @@ export default function GrantTemplate({ handleClose }: Props) {
               ))}
             </Stack>
 
-            <Stack direction={"horizontal"}>
+            <Stack direction="horizontal">
               <Button
                 variant="tertiary"
                 size="small"
-                width={"fit"}
+                width="fit"
                 onClick={() => {
                   if (!circle?.snapshot?.id) {
                     setStep(2);
@@ -214,7 +210,7 @@ export default function GrantTemplate({ handleClose }: Props) {
                 Skip
               </Button>
               <Button
-                width={"fit"}
+                width="fit"
                 onClick={() => {
                   if (!circle?.snapshot?.id) {
                     setStep(2);
@@ -231,16 +227,16 @@ export default function GrantTemplate({ handleClose }: Props) {
             </Stack>
           </>
         )}
-        {step == 2 && (
+        {step === 2 && (
           <>
-            <Heading color={"accent"} align="left">
+            <Heading color="accent" align="left">
               Enable Snapshot voting on Spect
             </Heading>
             <Text variant="label">Integrate Snapshot</Text>
             <Input
               label
               hideLabel
-              width={"1/2"}
+              width="1/2"
               prefix="https://snapshot.org/#/"
               value={snapshotSpace}
               placeholder="your-space.eth"
@@ -251,13 +247,13 @@ export default function GrantTemplate({ handleClose }: Props) {
             {snapshotSpace &&
               !isLoading &&
               (data?.space?.id ? (
-                <Text size={"extraSmall"} color="accent">
+                <Text size="extraSmall" color="accent">
                   Snapshot Space - {data?.space?.name}
                 </Text>
               ) : (
-                <Text color={"red"}>Incorrect URL</Text>
+                <Text color="red">Incorrect URL</Text>
               ))}
-            <Stack direction={"horizontal"}>
+            <Stack direction="horizontal">
               <Button
                 variant="transparent"
                 size="small"
@@ -311,9 +307,9 @@ export default function GrantTemplate({ handleClose }: Props) {
             </Stack>
           </>
         )}
-        {step == 3 && (
+        {step === 3 && (
           <>
-            <Heading color={"accent"} align="left">
+            <Heading color="accent" align="left">
               Add Custom Token
             </Heading>
             <RewardTokenOptions
@@ -325,9 +321,9 @@ export default function GrantTemplate({ handleClose }: Props) {
               customTooltip={
                 "Add the tokens you'd want to use when paying grantees"
               }
-              newTokenOpen={true}
+              newTokenOpen
             />
-            <Box display={"flex"} flexDirection="row" gap={"2"} marginTop="8">
+            <Box display="flex" flexDirection="row" gap="2" marginTop="8">
               <Button
                 variant="transparent"
                 size="small"
@@ -357,4 +353,6 @@ export default function GrantTemplate({ handleClose }: Props) {
       </Stack>
     </Box>
   );
-}
+};
+
+export default GrantTemplate;

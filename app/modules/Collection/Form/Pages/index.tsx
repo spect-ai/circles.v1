@@ -1,24 +1,34 @@
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { Box, Stack, Text } from "degen";
 import styled from "styled-components";
-import { useLocalCollection } from "../../Context/LocalCollectionContext";
 import { updateFormCollection } from "@/app/services/Collection";
-import { PageLine } from "./PageLine";
 import { toast } from "react-toastify";
 import mixpanel from "mixpanel-browser";
 import { useQuery } from "react-query";
 import { UserType } from "@/app/types";
+import { useLocalCollection } from "../../Context/LocalCollectionContext";
+import PageLine from "./PageLine";
 
-export default function Pages() {
+const PagesContainer = styled(Box)`
+  height: calc(100vh - 15rem);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  ::-webkit-scrollbar {
+    width: 0.5rem;
+  }
+
+  overflow-y: auto;
+`;
+
+const Pages = () => {
   const { localCollection: collection, updateCollection } =
     useLocalCollection();
 
-  const { data: currentUser, refetch: fetchUser } = useQuery<UserType>(
-    "getMyUser",
-    {
-      enabled: false,
-    }
-  );
+  const { data: currentUser } = useQuery<UserType>("getMyUser", {
+    enabled: false,
+  });
   return (
     <Box>
       <Stack>
@@ -35,11 +45,10 @@ export default function Pages() {
                   circle: collection.parents[0].slug,
                   user: currentUser?.username,
                 });
-              const pageOrder = collection.formMetadata.pageOrder;
-              const lastIndex = collection.formMetadata.pages["collect"]
+              const { pageOrder } = collection.formMetadata;
+              const lastIndex = collection.formMetadata.pages.collect
                 ? pageOrder.length - 2
                 : pageOrder.length - 1;
-              console.log(lastIndex);
               const newPageId = `page-${lastIndex + 1}`;
               const res = await updateFormCollection(collection.id, {
                 ...collection,
@@ -79,17 +88,6 @@ export default function Pages() {
       </Stack>
     </Box>
   );
-}
+};
 
-const PagesContainer = styled(Box)`
-  height: calc(100vh - 15rem);
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-
-  ::-webkit-scrollbar {
-    width: 0.5rem;
-  }
-
-  overflow-y: auto;
-`;
+export default Pages;

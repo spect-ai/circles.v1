@@ -36,16 +36,14 @@ const getUser = async () => {
   const res = await fetch(`${process.env.API_HOST}/user/v1/me`, {
     credentials: "include",
   });
-  return await res.json();
+  return res.json();
 };
 
-function EmbedLayout(props: PublicLayoutProps) {
+const EmbedLayout = (props: PublicLayoutProps) => {
   const { children } = props;
   const [socket, setSocket] = useAtom(socketAtom);
   const [connectedUser, setConnectedUser] = useAtom(connectedUserAtom);
-  const [isSidebarExpanded, setIsSidebarExpanded] = useAtom(
-    isSidebarExpandedAtom
-  );
+  const [, setIsSidebarExpanded] = useAtom(isSidebarExpandedAtom);
   // eslint-disable-next-line @typescript-eslint/unbound-method
   const { setMode } = useTheme();
 
@@ -68,11 +66,11 @@ function EmbedLayout(props: PublicLayoutProps) {
   useEffect(() => {
     refetch()
       .then((res) => {
-        const data = res.data;
+        const { data } = res;
         if (data?.id) setConnectedUser(currentUser?.id || "");
       })
       .catch((err) => {
-        console.log(err);
+        console.error(err);
         toast.error("Could not fetch user data");
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -104,17 +102,17 @@ function EmbedLayout(props: PublicLayoutProps) {
   }, [setIsSidebarExpanded]);
 
   useEffect(() => {
-    const socket = io(process.env.API_HOST || "");
-    socket.on("connect", function () {
+    const socket2 = io(process.env.API_HOST || "");
+    socket2.on("connect", () => {
       setSocket(socket);
     });
 
-    socket.on("disconnect", function () {
-      console.log("Disconnected");
+    socket2.on("disconnect", () => {
+      console.warn("Disconnected");
     });
 
     return () => {
-      socket.disconnect();
+      socket2.disconnect();
     };
   }, []);
 
@@ -131,6 +129,6 @@ function EmbedLayout(props: PublicLayoutProps) {
       </Box>
     </DesktopContainer>
   );
-}
+};
 
 export default memo(EmbedLayout);

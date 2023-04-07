@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/quotes */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-export const tourConfig = [
+const tourConfig = [
   {
     selector: '[data-tour="create-circle-sidebar-button"]',
     content: "You can create your circle from here",
@@ -26,7 +27,7 @@ export const tourConfig = [
     action: () => {
       // by using this, focus trap is temporary disabled
       // @ts-ignore
-      document.querySelector(`[data-tour="profile-settings-button"]`)?.click();
+      document.querySelector('[data-tour="profile-settings-button"]')?.click();
       // node.click();
     },
   },
@@ -57,3 +58,5 @@ export const tourConfig = [
   //   },
   // },
 ];
+
+export default tourConfig;

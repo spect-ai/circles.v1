@@ -2,7 +2,7 @@ import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { updateFormCollection } from "@/app/services/Collection";
 import { Box } from "degen";
-import React, { useState } from "react";
+import { useState } from "react";
 import { toast } from "react-toastify";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
 
@@ -10,7 +10,7 @@ type Props = {
   handleClose: () => void;
 };
 
-export default function GoogleCaptcha({ handleClose }: Props) {
+const GoogleCaptcha = ({ handleClose }: Props) => {
   const { localCollection: collection, updateCollection } =
     useLocalCollection();
   const [loading, setLoading] = useState(false);
@@ -32,8 +32,9 @@ export default function GoogleCaptcha({ handleClose }: Props) {
                 },
               });
               if (res.id) updateCollection(res);
-              else
+              else {
                 toast.error("Error updating collection, refresh and try again");
+              }
               handleClose();
               setLoading(false);
             }}
@@ -46,4 +47,6 @@ export default function GoogleCaptcha({ handleClose }: Props) {
       </Box>
     </Modal>
   );
-}
+};
+
+export default GoogleCaptcha;

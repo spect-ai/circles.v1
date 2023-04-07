@@ -7,10 +7,9 @@ import { Box, Button, IconClose, Text } from "degen";
 import { useEffect, useState } from "react";
 import { Tooltip } from "react-tippy";
 import { toast } from "react-toastify";
-import { Field } from "./Field";
+import Field from "./Field";
 
 type Props = {
-  actionMode: "edit" | "create";
   action: Action;
   setAction: (action: Action) => void;
   collection: CollectionType;
@@ -23,7 +22,7 @@ type Mapping = {
 
 type Default = {
   field?: Option;
-  value?: any;
+  value?: unknown;
 };
 
 type Value = {
@@ -36,19 +35,14 @@ type UsedProperty = {
   [propertyId: string]: boolean;
 };
 
-export default function CreateCard({
-  setAction,
-  actionMode,
-  action,
-  collection,
-}: Props) {
+const CreateCard = ({ setAction, action, collection }: Props) => {
   const [collectionOptions, setCollectionOptions] = useState<Option[]>([]);
   const [selectedCollection, setSelectedCollection] = useState<Option>(
     action?.data?.selectedCollection || ({} as Option)
   );
   const [fromPropertyOptions, setFromPropertyOptions] = useState<Option[]>([]);
   const [values, setValues] = useState<Value[]>(action?.data.values || []);
-  const [fieldType, setFieldType] =
+  const [, setFieldType] =
     useState<"mapping" | "default" | "responder">("default");
   const [usedProperty, setUsedProperty] = useState<UsedProperty>({});
 
@@ -59,7 +53,7 @@ export default function CreateCard({
     fieldType: string,
     fromPropertyOptionType?: string
   ) => {
-    if (mappedCollection)
+    if (mappedCollection) {
       if (fieldType === "mapping" && fromPropertyOptionType) {
         return Object.entries(mappedCollection?.properties)
           .filter(
@@ -74,9 +68,10 @@ export default function CreateCard({
               type: (property as Property).type,
             },
           }));
-      } else if (fieldType === "default") {
+      }
+      if (fieldType === "default") {
         return Object.entries(mappedCollection?.properties)
-          .filter(([propertyId, property]) => !usedProperty[propertyId])
+          .filter(([propertyId]) => !usedProperty[propertyId])
           .map(([propertyId, property]) => ({
             label: (property as Property).name,
             value: propertyId,
@@ -84,7 +79,8 @@ export default function CreateCard({
               type: (property as Property).type,
             },
           }));
-      } else if (fieldType === "responder") {
+      }
+      if (fieldType === "responder") {
         return Object.entries(mappedCollection?.properties)
           .filter(
             ([propertyId, property]) =>
@@ -99,6 +95,7 @@ export default function CreateCard({
             },
           }));
       }
+    }
 
     return [];
   };
@@ -116,14 +113,14 @@ export default function CreateCard({
             (collect) =>
               collect.collectionType === 1 && collection.id !== collect.id
           )
-          .map((collection) => ({
-            label: collection.name,
-            value: collection.id,
-            data: collection,
+          .map((coll) => ({
+            label: coll.name,
+            value: coll.id,
+            data: coll,
           }))
       );
     } catch (e) {
-      console.log(e);
+      console.error(e);
     }
   };
 
@@ -143,19 +140,19 @@ export default function CreateCard({
         setMappedCollection(data);
       }
     } catch (e) {
-      console.log(e);
+      console.error(e);
     }
   };
 
   useEffect(() => {
-    void fetchCollectionOptions();
-    void fetchCollection();
+    fetchCollectionOptions();
+    fetchCollection();
 
     const milestoneFields = Object.entries(collection.properties).filter(
-      ([propertyId, property]) => property.type === "milestone"
+      ([, property]) => property.type === "milestone"
     );
     const notMilestoneFields = Object.entries(collection.properties).filter(
-      ([propertyId, property]) => property.type !== "milestone"
+      ([, property]) => property.type !== "milestone"
     );
     let propOptions = notMilestoneFields.map(([propertyId, property]) => ({
       label: property.name,
@@ -215,7 +212,7 @@ export default function CreateCard({
   }, []);
 
   useEffect(() => {
-    void fetchCollection();
+    fetchCollection();
   }, [selectedCollection]);
 
   useEffect(() => {
@@ -274,7 +271,7 @@ export default function CreateCard({
         <Box width="full" marginTop="2">
           {values.map((value, index) => (
             <Box
-              key={index}
+              key={value.type}
               borderColor="foregroundSecondary"
               borderRadius="medium"
               borderWidth="0.375"
@@ -320,12 +317,12 @@ export default function CreateCard({
                     <Dropdown
                       options={getToPropertyOption("responder")}
                       selected={value.mapping?.to}
-                      onChange={(value) => {
+                      onChange={(val) => {
                         const newValues = [...values];
                         newValues[index] = {
                           type: "responder",
                           mapping: {
-                            to: value,
+                            to: val,
                           },
                         };
                         setValues(newValues);
@@ -396,12 +393,12 @@ export default function CreateCard({
                             ]?.type
                         )}
                         selected={value.mapping?.to}
-                        onChange={(value) => {
+                        onChange={(val) => {
                           const newValues = [...values];
                           newValues[index] = {
                             type: "mapping",
                             mapping: {
-                              to: value,
+                              to: val,
                               from: newValues[index].mapping?.from,
                             },
                           };
@@ -416,84 +413,80 @@ export default function CreateCard({
                 </>
               )}
               {value.type === "default" && (
-                <>
+                <Box
+                  display="flex"
+                  flexDirection="row"
+                  gap="2"
+                  width="full"
+                  alignItems="center"
+                  marginBottom="2"
+                >
                   <Box
                     display="flex"
-                    flexDirection="row"
+                    flexDirection="column"
                     gap="2"
                     width="full"
-                    alignItems="center"
+                    alignItems="flex-start"
                     marginBottom="2"
                   >
                     <Box
                       display="flex"
-                      flexDirection="column"
+                      flexDirection="row"
                       gap="2"
                       width="full"
-                      alignItems="flex-start"
+                      alignItems="center"
                       marginBottom="2"
                     >
-                      <Box
-                        display="flex"
-                        flexDirection="row"
-                        gap="2"
-                        width="full"
-                        alignItems="center"
-                        marginBottom="2"
-                      >
-                        <Box width="1/4">
-                          <Text variant="label">Collection Field</Text>
-                        </Box>
-                        <Box width="3/4">
-                          <Dropdown
-                            options={getToPropertyOption("default")}
-                            selected={value.default?.field}
-                            onChange={(v) => {
-                              const newValues = [...values];
-                              newValues[index] = {
-                                type: "default",
-                                default: {
-                                  field: v,
-                                },
-                              };
-                              setValues(newValues);
-                            }}
-                            multiple={false}
-                            isClearable={false}
-                            portal={false}
-                          />
-                        </Box>
+                      <Box width="1/4">
+                        <Text variant="label">Collection Field</Text>
                       </Box>
-                      {value.default?.field?.value && (
-                        <>
-                          <Box width="full">
-                            <Text variant="label">Value</Text>
-                          </Box>
-
-                          <Field
-                            collection={
-                              selectedCollection.data as CollectionType
-                            }
-                            propertyId={value.default?.field?.value}
-                            type={value.default?.field?.data?.type}
-                            data={value.default?.value}
-                            setData={(v) => {
-                              const newValues = [...values];
-                              newValues[index] = {
-                                type: "default",
-                                default: {
-                                  field: value.default?.field,
-                                  value: v,
-                                },
-                              };
-                              setValues(newValues);
-                            }}
-                          />
-                        </>
-                      )}
+                      <Box width="3/4">
+                        <Dropdown
+                          options={getToPropertyOption("default")}
+                          selected={value.default?.field}
+                          onChange={(v) => {
+                            const newValues = [...values];
+                            newValues[index] = {
+                              type: "default",
+                              default: {
+                                field: v,
+                              },
+                            };
+                            setValues(newValues);
+                          }}
+                          multiple={false}
+                          isClearable={false}
+                          portal={false}
+                        />
+                      </Box>
                     </Box>
+                    {value.default?.field?.value && (
+                      <>
+                        <Box width="full">
+                          <Text variant="label">Value</Text>
+                        </Box>
+
+                        <Field
+                          collection={selectedCollection.data as CollectionType}
+                          propertyId={value.default?.field?.value}
+                          type={value.default?.field?.data?.type}
+                          data={value.default?.value}
+                          setData={(v) => {
+                            const newValues = [...values];
+                            newValues[index] = {
+                              type: "default",
+                              default: {
+                                field: value.default?.field,
+                                value: v,
+                              },
+                            };
+                            setValues(newValues);
+                          }}
+                        />
+                      </>
+                    )}
                   </Box>
-                </>
+                </Box>
               )}
             </Box>
           ))}
@@ -504,7 +497,7 @@ export default function CreateCard({
             flexDirection="row"
             justifyContent="flex-start"
             gap="2"
-            alignItems={"center"}
+            alignItems="center"
           >
             <PrimaryButton
               variant="tertiary"
@@ -602,4 +595,6 @@ export default function CreateCard({
       )}
     </Box>
   );
-}
+};
+
+export default CreateCard;

@@ -4,6 +4,15 @@ import { Box, IconPlug, IconSearch, Input, Stack, Tag, Text } from "degen";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
+import {
+  getSurveyConditionInfo,
+  getSurveyDistributionInfo,
+} from "@/app/services/SurveyProtocol";
+import { matchSorter } from "match-sorter";
+import mixpanel from "mixpanel-browser";
+import { useQuery } from "react-query";
+import { ConditionInfo, DistributionInfo, UserType } from "@/app/types";
+import isWhitelisted from "@/app/services/Whitelist";
 import { useCircle } from "../Circle/CircleContext";
 import { useLocalCollection } from "../Collection/Context/LocalCollectionContext";
 import DistributeERC20 from "./erc20";
@@ -13,28 +22,86 @@ import RoleGate from "./guildxyz";
 import SendKudos from "./mintkudos";
 import Payments from "./payments";
 import { PluginType, SpectPlugin, spectPlugins } from "./Plugins";
-import { isWhitelisted } from "@/app/services/Whitelist";
-import {
-  getSurveyConditionInfo,
-  getSurveyDistributionInfo,
-} from "@/app/services/SurveyProtocol";
 import Poap from "./poap";
 import GoogleCaptcha from "./captcha";
-import { matchSorter } from "match-sorter";
 import ResponderProfile from "./responderProfile";
-import mixpanel from "mixpanel-browser";
-import { useQuery } from "react-query";
-import { UserType } from "@/app/types";
 
-type Props = {};
+const PluginContainer = styled(motion.div)`
+  @media (max-width: 768px) {
+    width: calc(100% / 2 - 1rem);
+  }
+  @media (max-width: 480px) {
+    width: 100%;
+  }
+  width: calc(100% / 3 - 1rem);
+  border-radius: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+`;
 
-export default function ViewPlugins({}: Props) {
+const PluginImage = styled.img`
+  width: 100%;
+  height: 14rem;
+  object-fit: cover;
+  border-radius: 1rem 1rem 0 0;
+`;
+
+const PluginAdded = styled.div`
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: rgba(20, 20, 20, 0.8);
+  padding: 0.5rem 1rem;
+  border-radius: 0 1rem 0 1rem;
+`;
+
+const PluginCard = ({
+  plugin,
+  onClick,
+  added,
+}: {
+  plugin: SpectPlugin;
+  onClick: () => void;
+  added?: boolean;
+}) => (
+  <PluginContainer
+    whileHover={{ scale: 1.05 }}
+    whileTap={{ scale: 0.95 }}
+    onClick={onClick}
+    style={{ position: "relative" }}
+  >
+    {added && (
+      <PluginAdded>
+        <Text color="accent" size="large" weight="semiBold">
+          Added
+        </Text>
+      </PluginAdded>
+    )}
+    <PluginImage src={plugin.image} />
+    <Box padding="4">
+      <Stack>
+        <Text weight="bold">{plugin.name}</Text>
+        <Text size="extraSmall">{plugin.description}</Text>
+        {/* <a href={plugin.docs} target="_blank">
+            <Text color="accent">View Docs</Text>
+          </a> */}
+      </Stack>
+    </Box>
+  </PluginContainer>
+);
+
+PluginCard.defaultProps = {
+  added: false,
+};
+
+const ViewPlugins = () => {
   const { registry } = useCircle();
   const [isOpen, setIsOpen] = useState(false);
   const [isPluginOpen, setIsPluginOpen] = useState(false);
   const [pluginOpen, setPluginOpen] = useState("");
-  const [surveyConditions, setSurveyConditions] = useState<any>({});
-  const [surveyDistributionInfo, setSurveyDistributionInfo] = useState<any>({});
+  const [surveyConditions, setSurveyConditions] = useState<ConditionInfo>();
+  const [surveyDistributionInfo, setSurveyDistributionInfo] =
+    useState<DistributionInfo>();
   const { localCollection: collection } = useLocalCollection();
 
   const [searchText, setSearchText] = useState("");
@@ -44,12 +111,9 @@ export default function ViewPlugins({}: Props) {
   const [showAdded, setShowAdded] = useState(false);
   const [numPluginsAdded, setNumPlugnsAdded] = useState(0);
 
-  const { data: currentUser, refetch: fetchUser } = useQuery<UserType>(
-    "getMyUser",
-    {
-      enabled: false,
-    }
-  );
+  const { data: currentUser } = useQuery<UserType>("getMyUser", {
+    enabled: false,
+  });
 
   useEffect(() => {
     setFilteredPlugins(Object.keys(spectPlugins));
@@ -69,12 +133,11 @@ export default function ViewPlugins({}: Props) {
           collection.formMetadata.surveyTokenId
         )
           .then((res) => {
-            console.log({ res });
             if (res) {
               setSurveyConditions(res);
             }
           })
-          .catch((err) => console.log({ err }));
+          .catch((err) => console.error({ err }));
         getSurveyDistributionInfo(
           collection.formMetadata.surveyChain?.value || "80001",
           registry[collection.formMetadata.surveyChain?.value || "80001"]
@@ -82,13 +145,11 @@ export default function ViewPlugins({}: Props) {
           collection.formMetadata.surveyTokenId
         )
           .then((res) => {
-            console.log({ res });
-
             if (res) {
               setSurveyDistributionInfo(res);
             }
           })
-          .catch((err) => console.log({ err }));
+          .catch((err) => console.error({ err }));
       }
     }
   }, [isOpen, collection]);
@@ -151,7 +212,7 @@ export default function ViewPlugins({}: Props) {
   return (
     <Box>
       <PrimaryButton
-        variant={"tertiary"}
+        variant="tertiary"
         onClick={() => {
           process.env.NODE_ENV === "production" &&
             mixpanel.track("Add Plugins", {
@@ -166,7 +227,7 @@ export default function ViewPlugins({}: Props) {
       >
         {numPluginsAdded > 0
           ? ` Plugins (${numPluginsAdded} added)`
-          : `Add Plugins`}
+          : "Add Plugins"}
       </PrimaryButton>
       <AnimatePresence>
         {isOpen && (
@@ -178,7 +239,7 @@ export default function ViewPlugins({}: Props) {
           >
             <Box padding="8">
               <Stack>
-                <Stack direction={"horizontal"} space="4" align="center">
+                <Stack direction="horizontal" space="4" align="center">
                   <Input
                     placeholder="Search"
                     value={searchText}
@@ -191,7 +252,6 @@ export default function ViewPlugins({}: Props) {
                           keys: ["name", "id", "tags"],
                         }
                       );
-                      console.log({ filtered });
                       setFilteredPlugins(filtered.map((p) => p.id));
                     }}
                     label=""
@@ -214,7 +274,7 @@ export default function ViewPlugins({}: Props) {
                     }}
                   >
                     <Tag tone={showAdded ? "accent" : "secondary"} hover>
-                      {showAdded ? `Show All` : `Show Added`}
+                      {showAdded ? "Show All" : "Show Added"}
                     </Tag>
                   </Box>
                 </Stack>
@@ -300,70 +360,6 @@ export default function ViewPlugins({}: Props) {
       </AnimatePresence>
     </Box>
   );
-}
-
-const PluginCard = ({
-  plugin,
-  onClick,
-  added,
-}: {
-  plugin: SpectPlugin;
-  onClick: () => void;
-  added?: boolean;
-}) => {
-  return (
-    <PluginContainer
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
-      onClick={onClick}
-      style={{ position: "relative" }}
-    >
-      {added && (
-        <PluginAdded>
-          <Text color="accent" size="large" weight="semiBold">
-            Added
-          </Text>
-        </PluginAdded>
-      )}
-      <PluginImage src={plugin.image} />
-      <Box padding="4">
-        <Stack>
-          <Text weight="bold">{plugin.name}</Text>
-          <Text size="extraSmall">{plugin.description}</Text>
-          {/* <a href={plugin.docs} target="_blank">
-            <Text color="accent">View Docs</Text>
-          </a> */}
-        </Stack>
-      </Box>
-    </PluginContainer>
-  );
 };
 
-const PluginContainer = styled(motion.div)`
-  @media (max-width: 768px) {
-    width: calc(100% / 2 - 1rem);
-  }
-  @media (max-width: 480px) {
-    width: 100%;
-  }
-  width: calc(100% / 3 - 1rem);
-  border-radius: 1rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  cursor: pointer;
-`;
-
-const PluginImage = styled.img`
-  width: 100%;
-  height: 14rem;
-  object-fit: cover;
-  border-radius: 1rem 1rem 0 0;
-`;
-
-const PluginAdded = styled.div`
-  position: absolute;
-  top: 0;
-  right: 0;
-  background: rgba(20, 20, 20, 0.8);
-  padding: 0.5rem 1rem;
-  border-radius: 0 1rem 0 1rem;
-`;
+export default ViewPlugins;

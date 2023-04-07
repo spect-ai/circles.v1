@@ -1,25 +1,22 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useState } from "react";
+import { useState } from "react";
 import Editor from "@/app/common/components/Editor";
 import { Box } from "degen";
 import { useLocalCollection } from "../Context/LocalCollectionContext";
 
 type Props = {
-  focus: boolean;
-  active: boolean;
   rowData: any;
   columnData: any;
   setRowData: any;
   stopEditing: any;
-  isModalOpen?: boolean;
 };
 
-export default function LongTextComponent({
+const LongTextComponent = ({
   rowData,
   columnData,
   setRowData,
   stopEditing,
-}: Props) {
+}: Props) => {
   const { localCollection: collection } = useLocalCollection();
   const [dirty, setDirty] = useState(false);
 
@@ -31,7 +28,7 @@ export default function LongTextComponent({
           setRowData(value);
           stopEditing();
         }}
-        placeholder={``}
+        placeholder=""
         isDirty={dirty}
         setIsDirty={setDirty}
         disabled={
@@ -40,4 +37,6 @@ export default function LongTextComponent({
       />
     </Box>
   );
-}
+};
+
+export default LongTextComponent;

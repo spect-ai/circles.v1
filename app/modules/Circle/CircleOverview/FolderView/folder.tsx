@@ -6,25 +6,21 @@ import {
   DroppableProvided,
 } from "react-beautiful-dnd";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
-import { Box, IconTrash, Stack, useTheme, Button, Text } from "degen";
+import { Box, IconTrash, Stack, useTheme, Text } from "degen";
 import styled from "styled-components";
-import Card from "./card";
-import { CircleType, ProjectType, RetroType } from "@/app/types";
+import { CircleType, ProjectType } from "@/app/types";
 import { deleteFolder, updateFolder } from "@/app/services/Folders";
-import { useCircle } from "../../CircleContext";
 import { toast } from "react-toastify";
+import { useCircle } from "../../CircleContext";
+import Card from "./card";
 
 interface Props {
   content: string[];
-  avatar: string;
   name: string;
   id: string;
   index: number;
   projects?: { [key: string]: ProjectType };
   workstreams?: { [key: string]: CircleType };
-  retros?: {
-    [key: string]: RetroType;
-  };
   collections?: {
     [key: string]: {
       id: string;
@@ -71,7 +67,6 @@ const ScrollContainer = styled(Box)<{ mode: string }>`
 
 const Folder = ({
   content,
-  avatar,
   id,
   name,
   index,
@@ -98,16 +93,14 @@ const Folder = ({
       return;
     }
     const res = await deleteFolder(circle?.id || "", id);
-    console.log({ res });
 
     if (res?.id) {
-      console.log("Folder deleted successfully");
       setCircleData(res);
     }
   };
 
   const updateTitle = useCallback(async () => {
-    if (folderTitle.length == 0) {
+    if (folderTitle.length === 0) {
       setFolderTitle(name);
       return;
     }
@@ -121,87 +114,80 @@ const Folder = ({
     }
   }, [folderTitle]);
 
-  const CardDraggable = (provided: DroppableProvided) => (
-    <ScrollContainer
-      {...provided.droppableProps}
-      ref={provided.innerRef}
-      mode={mode}
-      id="scroll-container"
-    >
-      {content?.map((card, i) => {
-        if (projects?.[card] && card) {
-          return <Card card={card} index={i} projects={projects} />;
-        }
-        if (workstreams?.[card] && card) {
-          return (
-            <Card card={card} index={i} key={card} workstreams={workstreams} />
-          );
-        }
-        if (
-          card &&
-          collections?.[card] &&
-          collections?.[card].archived !== true
-        ) {
-          return (
-            <Card card={card} index={i} key={card} collections={collections} />
-          );
-        }
-      })}
-      {provided.placeholder}
-    </ScrollContainer>
-  );
-
-  const CardDraggableCallback = useCallback(CardDraggable, [
-    content,
-    workstreams,
-    circle,
-    collections,
-  ]);
-
-  function DraggableContent(provided: DraggableProvided) {
-    return (
-      <Box
-        display="flex"
-        flexDirection="column"
-        justifyContent="space-between"
-        {...provided.draggableProps}
-        {...provided.dragHandleProps}
-        ref={provided.innerRef}
-        onMouseEnter={() => setHover(true)}
-        onMouseLeave={() => setHover(false)}
-      >
-        <Stack direction={"horizontal"} align={"center"} space="1">
-          <NameInput
-            placeholder="Add Title"
-            value={folderTitle}
-            onChange={(e) => setFolderTitle(e.target.value)}
-            onBlur={() => updateTitle()}
-            mode={mode}
-            maxLength={20}
-          />
-          {canDo("manageCircleSettings") && hover && (
-            <Box onClick={ondeleteFolder} cursor="pointer">
-              <Text variant="label">
-                <IconTrash size={"5"} />
-              </Text>
-            </Box>
-          )}
-        </Stack>
-        <Droppable droppableId={id} type="content" direction="horizontal">
-          {CardDraggableCallback}
-        </Droppable>
-      </Box>
-    );
-  }
-  const DraggableContentCallback = useCallback(DraggableContent, [
-    CardDraggableCallback,
-    canDo,
-    circle,
-  ]);
-
   return (
     <Draggable draggableId={id} index={index}>
-      {DraggableContentCallback}
+      {(provided: DraggableProvided) => (
+        <Box
+          display="flex"
+          flexDirection="column"
+          justifyContent="space-between"
+          {...provided.draggableProps}
+          {...provided.dragHandleProps}
+          ref={provided.innerRef}
+          onMouseEnter={() => setHover(true)}
+          onMouseLeave={() => setHover(false)}
+        >
+          <Stack direction="horizontal" align="center" space="1">
+            <NameInput
+              placeholder="Add Title"
+              value={folderTitle}
+              onChange={(e) => setFolderTitle(e.target.value)}
+              onBlur={() => updateTitle()}
+              mode={mode}
+              maxLength={20}
+            />
+            {canDo("manageCircleSettings") && hover && (
+              <Box onClick={ondeleteFolder} cursor="pointer">
+                <Text variant="label">
+                  <IconTrash size="5" />
+                </Text>
+              </Box>
+            )}
+          </Stack>
+          <Droppable droppableId={id} type="content" direction="horizontal">
+            {(provided2: DroppableProvided) => (
+              <ScrollContainer
+                {...provided2.droppableProps}
+                ref={provided2.innerRef}
+                mode={mode}
+                id="scroll-container"
+              >
+                {content?.map((card, i) => {
+                  if (projects?.[card] && card) {
+                    return <Card card={card} index={i} projects={projects} />;
+                  }
+                  if (workstreams?.[card] && card) {
+                    return (
+                      <Card
+                        card={card}
+                        index={i}
+                        key={card}
+                        workstreams={workstreams}
+                      />
+                    );
+                  }
+                  if (
+                    card &&
+                    collections?.[card] &&
+                    collections?.[card].archived !== true
+                  ) {
+                    return (
+                      <Card
+                        card={card}
+                        index={i}
+                        key={card}
+                        collections={collections}
+                      />
+                    );
+                  }
+                  return null;
+                })}
+                {provided2.placeholder}
+              </ScrollContainer>
+            )}
+          </Droppable>
+        </Box>
+      )}
     </Draggable>
   );
 };

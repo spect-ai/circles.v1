@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { Box, Button, Stack, Text, useTheme } from "degen";
+import { useEffect, useState } from "react";
+import { Box, Stack, Text, useTheme } from "degen";
 import MetaHead from "@/app/common/seo/MetaHead/MetaHead";
 import type { NextPage } from "next";
 import ProfileCard from "@/app/modules/Profile/ProfilePage/ProfileCard";
@@ -10,38 +10,35 @@ import { useQuery } from "react-query";
 import Loader from "@/app/common/components/Loader";
 import { PublicLayout } from "@/app/common/layout";
 import styled from "styled-components";
-import NotifCard from "@/app/modules/Profile/ProfilePage/Notif";
-import NotificationPanel from "@/app/modules/Profile/NotificationPanel";
 import { AnimatePresence } from "framer-motion";
 import FAQModal from "@/app/modules/Dashboard/FAQModal";
-import { QuestionCircleOutlined } from "@ant-design/icons";
 import Help from "@/app/common/components/Help";
 import { useAtom } from "jotai";
 import {
   connectedUserAtom,
-  isProfilePanelExpandedAtom,
   isSidebarExpandedAtom,
   userDataAtom,
 } from "@/app/state/global";
 import { ToastContainer } from "react-toastify";
 
+const ScrollContainer = styled(Box)<{ mode: string }>`
+  ::-webkit-scrollbar {
+    height: 0.5rem;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: ${(props) =>
+      props.mode === "dark" ? "rgb(255, 255, 255, 0.3)" : "rgb(0, 0, 0, 0.2)"};
+  }
+  overflow-y: auto;
+`;
+
 const ProfilePage: NextPage = () => {
   const router = useRouter();
   const [faqOpen, setFaqOpen] = useState(false);
   const username = router.query.user;
-  const [connectedUser, setConnectedUser] = useAtom(connectedUserAtom);
-  const [isSidebarExpanded, setIsSidebarExpanded] = useAtom(
-    isSidebarExpandedAtom
-  );
-  const [isProfilePanelExpanded, setIsProfilePanelExpanded] = useAtom(
-    isProfilePanelExpandedAtom
-  );
-  const [userData, setUserData] = useAtom(userDataAtom);
-
-  const { data: currentUser } = useQuery<UserType>("getMyUser", {
-    enabled: false,
-  });
-
+  const [connectedUser] = useAtom(connectedUserAtom);
+  const [, setIsSidebarExpanded] = useAtom(isSidebarExpandedAtom);
+  const [, setUserData] = useAtom(userDataAtom);
   const { mode } = useTheme();
 
   const {
@@ -51,12 +48,9 @@ const ProfilePage: NextPage = () => {
   } = useQuery<UserType>(
     ["user", username],
     async () =>
-      await fetch(
-        `${process.env.API_HOST}/user/v1/username/${username}/profile`,
-        {
-          credentials: "include",
-        }
-      ).then((res) =>
+      fetch(`${process.env.API_HOST}/user/v1/username/${username}/profile`, {
+        credentials: "include",
+      }).then((res) =>
         res.json().then((data) => {
           setUserData(data);
           return data;
@@ -71,7 +65,7 @@ const ProfilePage: NextPage = () => {
 
   useEffect(() => {
     if (username) {
-      void fetchProfile();
+      fetchProfile();
     }
     setIsSidebarExpanded(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -133,16 +127,5 @@ const ProfilePage: NextPage = () => {
     </>
   );
 };
-
-const ScrollContainer = styled(Box)<{ mode: string }>`
-  ::-webkit-scrollbar {
-    height: 0.5rem;
-  }
-  ::-webkit-scrollbar-thumb {
-    background: ${(props) =>
-      props.mode === "dark" ? "rgb(255, 255, 255, 0.3)" : "rgb(0, 0, 0, 0.2)"};
-  }
-  overflow-y: auto;
-`;
 
 export default ProfilePage;

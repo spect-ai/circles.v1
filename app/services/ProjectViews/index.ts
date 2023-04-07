@@ -16,7 +16,7 @@ export const createViews = async (body: Views, projectId: string) => {
   }
   toast.error("Error creating views");
   return null;
-}
+};
 
 export const editViews = async (body: Views, projectId: string, viewId: string) => {
   const res = await fetch(`${process.env.API_HOST}/project/${projectId}/view/${viewId}/update`, {
@@ -33,7 +33,7 @@ export const editViews = async (body: Views, projectId: string, viewId: string) 
   }
   toast.error("Error updating views");
   return null;
-}
+};
 
 export const deleteViews = async (projectId: string, viewId: string) => {
   const res = await fetch(`${process.env.API_HOST}/project/${projectId}/view/${viewId}/delete`, {
@@ -49,4 +49,4 @@ export const deleteViews = async (projectId: string, viewId: string) => {
   }
   toast.error("Error deleting views");
   return null;
-}
+};

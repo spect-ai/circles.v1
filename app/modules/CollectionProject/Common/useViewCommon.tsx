@@ -41,7 +41,7 @@ export default function useViewCommon() {
 
   const [filteredOnGroupByColumn, setFilteredOnGroupByColumn] = useState(false);
 
-  const { data: currentUser, refetch } = useQuery<UserType>("getMyUser", {
+  const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
 
@@ -62,84 +62,78 @@ export default function useViewCommon() {
         view.groupByColumn
       ].map((group) =>
         matchSorter(group, searchFilter, {
-          keys: collection.propertyOrder.map((property) => {
-            if (collection.properties[property].type === "user") {
+          keys: collection.propertyOrder.map((prop) => {
+            if (collection.properties[prop].type === "user") {
               return (item: string) => {
-                const member = collection.data[item][property]?.value;
+                const member = collection.data[item][prop]?.value;
                 return memberDetails?.memberDetails[member]?.username;
               };
             }
-            if (collection.properties[property].type === "multiSelect") {
-              return (item: string) => {
-                return collection.data[item][property]?.map(
+            if (collection.properties[prop].type === "multiSelect") {
+              return (item: string) =>
+                collection.data[item][prop]?.map(
                   (option: Option) => option.label
                 );
-              };
             }
 
-            return (item: string) => {
-              return (
-                collection.data[item][property]?.label ||
-                collection.data[item][property]
-              );
-            };
+            return (item: string) =>
+              collection.data[item][prop]?.label || collection.data[item][prop];
           }),
         })
       );
     }
     if (view.filters?.length) {
-      newCardOrder = newCardOrder.map((group) => {
-        return group.filter((cardId) => {
-          return satisfiesConditions(
+      newCardOrder = newCardOrder.map((group) =>
+        group.filter((cardId) =>
+          satisfiesConditions(
             collection.data[cardId],
             collection.properties,
             view.filters || []
-          );
-        });
-      });
+          )
+        )
+      );
       // check if the filters are on the groupByColumn
-      const filteredOnGroupByColumn = view.filters.some(
+      const filteredOnGroupByColumn2 = view.filters.some(
         (filter) => filter.data.field.value === view.groupByColumn
       );
-      setFilteredOnGroupByColumn(filteredOnGroupByColumn);
+      setFilteredOnGroupByColumn(filteredOnGroupByColumn2);
     }
     if (showMyTasks) {
-      newCardOrder = newCardOrder.map((group) => {
-        return group.filter((cardId) => {
-          return isMyCard(
+      newCardOrder = newCardOrder.map((group) =>
+        group.filter((cardId) =>
+          isMyCard(
             collection.data[cardId],
             collection.properties,
             currentUser?.id || ""
-          );
-        });
-      });
+          )
+        )
+      );
     }
 
     if (paymentFilter) {
-      newCardOrder = newCardOrder.map((group) => {
-        return group.filter((cardId) => {
-          return paymentStatus(
+      newCardOrder = newCardOrder.map((group) =>
+        group.filter((cardId) =>
+          paymentStatus(
             paymentFilter,
             cardId,
             collection.projectMetadata.paymentStatus
-          );
-        });
-      });
+          )
+        )
+      );
     }
 
     if (view.sort?.property) {
-      const { property, direction } = view.sort;
-      const propertyType = collection.properties[property].type;
-      const propertyOptions = collection.properties[property]
-        .options as Option[];
-      newCardOrder = newCardOrder.map((group) => {
-        return group?.sort((a, b) => {
+      const { property: prop, direction } = view.sort;
+      const propertyType = collection.properties[prop].type;
+      const propertyOptions = collection.properties[prop].options as Option[];
+      newCardOrder = newCardOrder.map((group) =>
+        group?.sort((a, b) => {
           if (propertyType === "singleSelect") {
             const aIndex = propertyOptions.findIndex(
-              (option) => option.value === collection.data[a][property]?.value
+              (option) => option.value === collection.data[a][prop]?.value
             );
             const bIndex = propertyOptions.findIndex(
-              (option) => option.value === collection.data[b][property]?.value
+              (option) => option.value === collection.data[b][prop]?.value
             );
             if (direction === "asc") {
               return aIndex - bIndex;
@@ -148,42 +142,41 @@ export default function useViewCommon() {
           }
           if (propertyType === "user") {
             if (direction === "asc") {
-              return collection.data[a][property]?.label?.localeCompare(
-                collection.data[b][property]?.label
+              return collection.data[a][prop]?.label?.localeCompare(
+                collection.data[b][prop]?.label
               );
             }
-            return collection.data[b][property]?.label?.localeCompare(
-              collection.data[a][property]?.label
+            return collection.data[b][prop]?.label?.localeCompare(
+              collection.data[a][prop]?.label
             );
           }
           if (propertyType === "date") {
-            const aDate = new Date(collection.data[a][property]);
-            const bDate = new Date(collection.data[b][property]);
+            const aDate = new Date(collection.data[a][prop]);
+            const bDate = new Date(collection.data[b][prop]);
             if (direction === "asc") {
               return aDate.getTime() - bDate.getTime();
             }
             return bDate.getTime() - aDate.getTime();
           }
           if (propertyType === "reward") {
-            // property has chain, token and value, need to sort it based on chain first, then token and then value
-            const aChain = collection.data[a][property]?.chain.label;
-            const bChain = collection.data[b][property]?.chain.label;
+            const aChain = collection.data[a][prop]?.chain.label;
+            const bChain = collection.data[b][prop]?.chain.label;
             if (aChain !== bChain) {
               if (direction === "asc") {
                 return aChain?.localeCompare(bChain);
               }
               return bChain?.localeCompare(aChain);
             }
-            const aToken = collection.data[a][property]?.token.label;
-            const bToken = collection.data[b][property]?.token.label;
+            const aToken = collection.data[a][prop]?.token.label;
+            const bToken = collection.data[b][prop]?.token.label;
             if (aToken !== bToken) {
               if (direction === "asc") {
                 return aToken.localeCompare(bToken);
               }
               return bToken.localeCompare(aToken);
             }
-            const aValue = collection.data[a][property]?.value;
-            const bValue = collection.data[b][property]?.value;
+            const aValue = collection.data[a][prop]?.value;
+            const bValue = collection.data[b][prop]?.value;
             if (direction === "asc") {
               return aValue - bValue;
             }
@@ -191,15 +184,15 @@ export default function useViewCommon() {
           }
 
           if (direction === "asc") {
-            return collection.data[a][property]?.localeCompare(
-              collection.data[b][property]
+            return collection.data[a][prop]?.localeCompare(
+              collection.data[b][prop]
             );
           }
-          return collection.data[b][property]?.localeCompare(
-            collection.data[a][property]
+          return collection.data[b][prop]?.localeCompare(
+            collection.data[a][prop]
           );
-        });
-      });
+        })
+      );
     }
     setCardOrders(newCardOrder);
   }, [
@@ -258,8 +251,9 @@ export default function useViewCommon() {
     if (
       source.droppableId === destination.droppableId &&
       source.index === destination.index
-    )
+    ) {
       return;
+    }
 
     if (source.droppableId === destination.droppableId) {
       const columnIndex = columns.findIndex(
@@ -285,7 +279,7 @@ export default function useViewCommon() {
           },
         },
       });
-      void updateFormCollection(collection.id, {
+      updateFormCollection(collection.id, {
         projectMetadata: {
           ...collection.projectMetadata,
           cardOrders: {

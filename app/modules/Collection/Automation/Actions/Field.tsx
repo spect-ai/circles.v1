@@ -19,14 +19,14 @@ type Props = {
   property?: Property;
 };
 
-export function Field({
+const Field = ({
   collection,
   propertyId,
   type,
   data,
   setData,
   property,
-}: Props) {
+}: Props) => {
   const { mode } = useTheme();
   const router = useRouter();
   const { circle: cId } = router.query;
@@ -49,10 +49,10 @@ export function Field({
         credentials: "include",
       })
         .then(async (res) => {
-          const data = await res.json();
-          setCol(data);
+          const data2 = await res.json();
+          setCol(data2);
         })
-        .catch((err) => console.log(err));
+        .catch((err) => console.error(err));
     }
   }, [type]);
 
@@ -61,7 +61,7 @@ export function Field({
       {type === "shortText" && (
         <Input
           label=""
-          placeholder={`Enter text`}
+          placeholder="Enter text"
           value={data}
           onChange={(e) => setData(e.target.value)}
         />
@@ -69,7 +69,7 @@ export function Field({
       {type === "email" && (
         <Input
           label=""
-          placeholder={`Enter email`}
+          placeholder="Enter email"
           value={data}
           inputMode="email"
           onChange={(e) => setData(e.target.value)}
@@ -78,7 +78,7 @@ export function Field({
       {type === "singleURL" && (
         <Input
           label=""
-          placeholder={`Enter url`}
+          placeholder="Enter url"
           value={data}
           inputMode="text"
           onChange={(e) => setData(e.target.value)}
@@ -87,7 +87,7 @@ export function Field({
       {type === "multiURL" && (
         <Input
           label=""
-          placeholder={`Enter url`}
+          placeholder="Enter url"
           value={data?.[0]}
           inputMode="text"
           onChange={(e) => setData(e.target.value)}
@@ -96,7 +96,7 @@ export function Field({
       {type === "number" && (
         <Input
           label=""
-          placeholder={`Enter number`}
+          placeholder="Enter number"
           value={data}
           onChange={(e) => setData(e.target.value)}
           type="number"
@@ -104,7 +104,7 @@ export function Field({
       )}
       {type === "date" && (
         <DateInput
-          placeholder={`Enter date`}
+          placeholder="Enter date"
           value={data}
           onChange={(e) => setData(e.target.value)}
           type="date"
@@ -114,7 +114,7 @@ export function Field({
       {type === "ethAddress" && (
         <Input
           label=""
-          placeholder={`Enter eth address`}
+          placeholder="Enter eth address"
           value={data}
           onChange={(e) => setData(e.target.value)}
         />
@@ -130,8 +130,8 @@ export function Field({
           id="editorContainer"
         >
           <Editor
-            placeholder={`Enter text`}
-            isDirty={true}
+            placeholder="Enter text"
+            isDirty
             onChange={(v) => setData(v)}
             value={data}
           />
@@ -143,7 +143,7 @@ export function Field({
         type === "user[]") && (
         <Box width="full">
           <Dropdown
-            placeholder={`Select option`}
+            placeholder="Select option"
             multiple={type === "multiSelect" || type === "user[]"}
             options={
               type === "user" || type === "user[]"
@@ -188,4 +188,6 @@ export function Field({
       )}
     </>
   );
-}
+};
+
+export default Field;

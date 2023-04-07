@@ -3,9 +3,8 @@ import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { CollectionType, Condition } from "@/app/types";
 import { DeleteOutlined } from "@ant-design/icons";
 import { Box, Button, IconPlusSmall, Stack, Text } from "degen";
-import { getComparators } from "./Comparator";
 import FilterValueField from "./FilterValueField";
-import { useLocalCollection } from "../Context/LocalCollectionContext";
+import getComparators from "./Comparator";
 
 type Props = {
   viewConditions: Condition[];
@@ -17,7 +16,7 @@ type Props = {
   buttonWidth?: string;
 };
 
-export default function AddConditions({
+const AddConditions = ({
   viewConditions,
   setViewConditions,
   firstRowMessage,
@@ -25,7 +24,7 @@ export default function AddConditions({
   collection,
   buttonWidth,
   dropDownPortal,
-}: Props) {
+}: Props) => {
   const fieldOptions = Object.entries(collection.properties)
     .filter((field) => !["multiURL"].includes(field[1].type))
     .map((field) => ({
@@ -35,7 +34,7 @@ export default function AddConditions({
   return (
     <Box>
       {viewConditions?.map((condition, index) => (
-        <Box key={index} marginBottom="2">
+        <Box key={condition.id} marginBottom="2">
           <Stack
             direction="horizontal"
             align={{
@@ -96,9 +95,9 @@ export default function AddConditions({
                   onChange={(option) => {
                     const newConditions = [...viewConditions];
                     newConditions[index].data.field = option;
-                    newConditions[index].data.comparator = getComparators(
+                    [newConditions[index].data.comparator] = getComparators(
                       collection.properties[option.value]?.type
-                    )[0];
+                    );
                     newConditions[index].data.value = "";
                     setViewConditions(newConditions);
                   }}
@@ -151,7 +150,7 @@ export default function AddConditions({
           </Stack>
         </Box>
       ))}
-      <Box marginTop="4" width={(buttonWidth as any) || "64"}>
+      <Box marginTop="4" width={(buttonWidth as unknown) || "64"}>
         <PrimaryButton
           icon={<IconPlusSmall />}
           variant="tertiary"
@@ -175,4 +174,6 @@ export default function AddConditions({
       </Box>
     </Box>
   );
-}
+};
+
+export default AddConditions;

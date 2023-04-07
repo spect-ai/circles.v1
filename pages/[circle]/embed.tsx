@@ -12,13 +12,9 @@ const EmbedCirclePage: NextPage = () => {
   return (
     <>
       <MetaHead
-        title={"Spect Space"}
-        description={
-          "A place for you and your frens to coordinate and build the next big thing."
-        }
-        image={
-          "https://spect.infura-ipfs.io/ipfs/QmcBLdB23dQkXdMKFHAjVKMKBPJF82XkqR5ZkxyCk6aset"
-        }
+        title="Spect Space"
+        description="A place for you and your frens to coordinate and build the next big thing."
+        image="https://spect.infura-ipfs.io/ipfs/QmcBLdB23dQkXdMKFHAjVKMKBPJF82XkqR5ZkxyCk6aset"
       />
       <CircleContext.Provider value={context}>
         <EmbedFormLayout>

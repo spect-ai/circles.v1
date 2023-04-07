@@ -1,8 +1,8 @@
 import React from "react";
 import { Story, Meta } from "@storybook/react";
 
+import { Avatar, Box, Stack, Text } from "degen";
 import Card, { CardProps } from ".";
-import { Avatar, Box, Button, Stack, Text } from "degen";
 import PrimaryButton from "../PrimaryButton";
 // import * as DependentStories from './Dependent.stories'
 
@@ -21,17 +21,13 @@ Default.args = {
       <Stack align="center">
         <Avatar
           label="Remy Sharp"
-          src={
-            "https://ipfs.moralis.io:2053/ipfs/QmVYsa4KQyRwBSJxQCmD1rDjyqYd1HJKrDfqLk3KMKLEhn"
-          }
+          src="https://ipfs.moralis.io:2053/ipfs/QmVYsa4KQyRwBSJxQCmD1rDjyqYd1HJKrDfqLk3KMKLEhn"
           size="20"
         />
         <Text color="textPrimary" size="large" letterSpacing="0.03" ellipsis>
-          {"Spect Circle"}
+          Spect Circle
         </Text>
-        <PrimaryButton onClick={() => console.log("follow")} variant="tertiary">
-          Follow
-        </PrimaryButton>
+        <PrimaryButton variant="tertiary">Follow</PrimaryButton>
       </Stack>
     </Box>
   ),

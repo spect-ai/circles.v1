@@ -4,7 +4,7 @@ import PrimaryButton from "@/app/common/components/PrimaryButton";
 import Select from "@/app/common/components/Select";
 import { updateFormCollection } from "@/app/services/Collection";
 import { createSurvey, getLastSurveyId } from "@/app/services/SurveyProtocol";
-import { Option, UserType } from "@/app/types";
+import { ConditionInfo, DistributionInfo, Option, UserType } from "@/app/types";
 import { Box, Input, Stack, Text } from "degen";
 import { ethers } from "ethers";
 import { AnimatePresence } from "framer-motion";
@@ -15,31 +15,17 @@ import { useCircle } from "../../Circle/CircleContext";
 import AddToken from "../../Circle/CircleSettingsModal/CirclePayment/AddToken";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
 
-export type DistributionInfo = {
-  distributionType: 0 | 1 | null;
-  tokenAddress: string;
-  amountPerResponse: number;
-  requestId: string;
-  supplySnapshot: number;
-};
-
-export type ConditionInfo = {
-  timestamp: number;
-  minTotalSupply: number;
-  tokenId: string;
-};
-
 type Props = {
   handleClose: () => void;
   distributionInfo?: DistributionInfo;
   conditionInfo?: ConditionInfo;
 };
 
-export default function DistributeERC20({
+const DistributeERC20 = ({
   handleClose,
   distributionInfo,
   conditionInfo,
-}: Props) {
+}: Props) => {
   const { registry } = useCircle();
   const { localCollection: collection, updateCollection } =
     useLocalCollection();
@@ -61,12 +47,10 @@ export default function DistributeERC20({
   });
   const networks = Object.keys(registry || {})
     .filter((key) => ["137", "43113", "80001", "5"].includes(key))
-    .map((key) => {
-      return {
-        label: (registry && registry[key].name) || "",
-        value: key,
-      };
-    });
+    .map((key) => ({
+      label: (registry && registry[key].name) || "",
+      value: key,
+    }));
   const [selectedNetwork, setSelectedNetwork] = useState(
     collection?.formMetadata?.surveyChain || networks[0]
   );
@@ -84,9 +68,7 @@ export default function DistributeERC20({
   const [minTimestamp, setMinTimestamp] = useState(
     conditionInfo?.timestamp || 0
   );
-  const [lotteryClaimOptions, setLotteryClaimOptions] = useState<
-    "minDays" | "minResponses"
-  >(
+  const [lotteryClaimOptions] = useState<"minDays" | "minResponses">(
     conditionInfo?.timestamp && conditionInfo?.timestamp > 0
       ? "minDays"
       : "minResponses"
@@ -101,12 +83,10 @@ export default function DistributeERC20({
     if (registry && selectedNetwork) {
       const tokens = Object.entries(
         registry[selectedNetwork.value].tokenDetails
-      ).map(([address, token]) => {
-        return {
-          label: token.symbol,
-          value: address,
-        };
-      });
+      ).map(([address, token]) => ({
+        label: token.symbol,
+        value: address,
+      }));
       tokens.unshift({
         label: "Add Token from address",
         value: "__custom__",
@@ -211,7 +191,7 @@ export default function DistributeERC20({
               <Box width="1/3">
                 <Input
                   label=""
-                  placeholder={`Enter Total Amount in`}
+                  placeholder="Enter Total Amount in"
                   value={value}
                   onChange={(e) => {
                     setValue(parseFloat(e.target.value));
@@ -220,7 +200,7 @@ export default function DistributeERC20({
                   units={selectedToken?.label}
                 />
               </Box>
-              {isError["totalAmount"] && (
+              {isError.totalAmount && (
                 <Text variant="small" color="red">
                   Amount To Pay Per Response cannot be greater than Total Amount
                 </Text>
@@ -249,7 +229,7 @@ export default function DistributeERC20({
                 <Box width="1/3">
                   <Input
                     label=""
-                    placeholder={`Enter Amount in`}
+                    placeholder="Enter Amount in"
                     value={valuePerResponse}
                     onChange={(e) => {
                       setValuePerResponse(parseFloat(e.target.value));
@@ -259,7 +239,7 @@ export default function DistributeERC20({
                     error={valuePerResponse > value}
                   />
                 </Box>
-                {isError["amountPerResponse"] && (
+                {isError.amountPerResponse && (
                   <Text variant="small" color="red">
                     Amount To Pay Per Response cannot be greater than Total
                     Amount
@@ -277,14 +257,14 @@ export default function DistributeERC20({
                     <Box width="1/3">
                       <Input
                         label=""
-                        placeholder={`Min `}
+                        placeholder="Min "
                         value={minTimestamp}
                         onChange={(e) => {
                           setMinTimestamp(parseInt(e.target.value));
                           setMinResponses(0);
                         }}
                         type="number"
-                        units={"days"}
+                        units="days"
                       />
                     </Box>
                   </Stack>
@@ -298,14 +278,14 @@ export default function DistributeERC20({
                     <Box width="1/3">
                       <Input
                         label=""
-                        placeholder={``}
+                        placeholder=""
                         value={minResponses}
                         onChange={(e) => {
                           setMinResponses(parseInt(e.target.value));
                           setMinTimestamp(0);
                         }}
                         type="number"
-                        units={"responses"}
+                        units="responses"
                       />
                     </Box>
                   </Stack>
@@ -350,8 +330,8 @@ export default function DistributeERC20({
               disabled={
                 isLoading ||
                 value === 0 ||
-                isError["totalAmount"] ||
-                isError["amountPerResponse"] ||
+                isError.totalAmount ||
+                isError.amountPerResponse ||
                 (paymentType?.value === "payPerResponse" &&
                   valuePerResponse === 0)
               }
@@ -363,7 +343,6 @@ export default function DistributeERC20({
                     selectedToken?.value !== "0x0" &&
                     !currentUser?.ethAddress
                   ) {
-                    console.log("no eth address");
                     setIsLoading(false);
                     return;
                   }
@@ -372,9 +351,9 @@ export default function DistributeERC20({
                     selectedNetwork.value,
                     registry[selectedNetwork.value].surveyHubAddress,
                     selectedToken?.value,
-                    paymentType?.value === "payPerResponse" ? 1 : 0,
                     value,
                     currentUser?.ethAddress || "",
+                    paymentType?.value === "payPerResponse" ? 1 : 0,
                     valuePerResponse,
                     minTimestamp,
                     minResponses
@@ -383,16 +362,17 @@ export default function DistributeERC20({
                     setIsLoading(false);
                     return;
                   }
-                  console.log({ tx });
                   let lastSurveyId;
                   try {
                     lastSurveyId = await getLastSurveyId(
                       registry[selectedNetwork.value].surveyHubAddress,
                       selectedNetwork?.value
                     );
-                    console.log({ lastSurveyId });
                   } catch (err) {
-                    console.log("Unable to fetch last survey with error", err);
+                    console.error(
+                      "Unable to fetch last survey with error",
+                      err
+                    );
                     toast.error(
                       "Plugin was added, but something went wrong while fetching the survey id. Please contact support."
                     );
@@ -411,11 +391,10 @@ export default function DistributeERC20({
                     },
                   });
                   updateCollection(res);
-                  console.log({ res });
                   setIsLoading(false);
                   if (res) handleClose();
                 } catch (e) {
-                  console.log(e);
+                  console.error(e);
                   setIsLoading(false);
                   toast.error("Something went wrong");
                 }
@@ -428,4 +407,11 @@ export default function DistributeERC20({
       </Box>
     </Modal>
   );
-}
+};
+
+DistributeERC20.defaultProps = {
+  distributionInfo: {},
+  conditionInfo: {},
+};
+
+export default DistributeERC20;

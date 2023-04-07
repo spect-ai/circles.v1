@@ -4,7 +4,7 @@ type UpdateRoleDTO = {
   roles: string[];
 };
 
-export async function addRole(circleId: string, body: any) {
+export async function addRole(circleId: string, body: unknown) {
   try {
     const res = await fetch(
       `${process.env.API_HOST}/circle/v1/${circleId}/addRole`,
@@ -21,16 +21,20 @@ export async function addRole(circleId: string, body: any) {
       const response = await res.json();
       toast("Role added successfully", { theme: "dark" });
       return response;
-    } else {
-      toast.error("Error adding role", { theme: "dark" });
     }
+    toast.error("Error adding role", { theme: "dark" });
+    return false;
   } catch (error) {
     toast.error("Error adding role", { theme: "dark" });
     return error;
   }
 }
 
-export async function updateRole(circleId: string, role: string, body: any) {
+export async function updateRole(
+  circleId: string,
+  role: string,
+  body: unknown
+) {
   try {
     const res = await fetch(
       `${process.env.API_HOST}/circle/v1/${circleId}/updateRole?role=${role}`,
@@ -46,9 +50,9 @@ export async function updateRole(circleId: string, role: string, body: any) {
     if (res.ok) {
       const response = await res.json();
       return response;
-    } else {
-      toast.error("Error updating role", { theme: "dark" });
     }
+    toast.error("Error updating role", { theme: "dark" });
+    return false;
   } catch (error) {
     toast.error("Error updating role", { theme: "dark" });
     return error;
@@ -73,12 +77,10 @@ export async function updateMemberRole(
   );
   if (res.ok) {
     const data = await res.json();
-    console.log({ data });
     return data;
-  } else {
-    toast.error("Something went wrong updating the member role");
-    return null;
   }
+  toast.error("Something went wrong updating the member role");
+  return null;
 }
 
 export async function removeMember(circleId: string, member: string) {
@@ -94,10 +96,8 @@ export async function removeMember(circleId: string, member: string) {
   );
   if (res.ok) {
     const data = await res.json();
-    console.log({ data });
     return data;
-  } else {
-    toast.error("Something went wrong removing the member");
-    return null;
   }
+  toast.error("Something went wrong removing the member");
+  return null;
 }

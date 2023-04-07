@@ -5,7 +5,7 @@ import { Box, Stack, Tag, Text } from "degen";
 import { useEffect, useState } from "react";
 import { useLocalCollection } from "../../Context/LocalCollectionContext";
 
-export function Notifications() {
+const Notifications = () => {
   const { circle } = useCircle();
   const [notifOnNewResponses, setNotifOnNewResponses] = useState(false);
   const [circleRoles, setCircleRoles] = useState([] as string[]);
@@ -25,16 +25,16 @@ export function Notifications() {
       const updatedResponseRolesToEmail = new Set(
         collection.circleRolesToNotifyUponUpdatedResponse || []
       );
-      const circleRolesToNotifyUponNewResponse = [] as boolean[];
+      const tCircleRolesToNotifyUponNewResponse = [] as boolean[];
       const circleRolesToNotifyUponUpdatedResponse = [] as boolean[];
-      for (const role of circleRoles) {
-        circleRolesToNotifyUponNewResponse.push(
+      circleRoles.forEach((role) => {
+        tCircleRolesToNotifyUponNewResponse.push(
           newResponseRolesToEmail.has(role)
         );
         circleRolesToNotifyUponUpdatedResponse.push(
           updatedResponseRolesToEmail.has(role)
         );
-      }
+      });
 
       setCircleRolesToNotifyUponNewResponse(circleRolesToNotifyUponNewResponse);
       if (collection.circleRolesToNotifyUponNewResponse) {
@@ -78,7 +78,7 @@ export function Notifications() {
               <Stack direction="horizontal" space="2" wrap>
                 {circleRoles?.map((role, index) => (
                   <Box
-                    key={index}
+                    key={role}
                     cursor="pointer"
                     onClick={async () => {
                       circleRolesToNotifyUponNewResponse[index] =
@@ -102,7 +102,7 @@ export function Notifications() {
                     }}
                   >
                     {circleRolesToNotifyUponNewResponse[index] ? (
-                      <Tag tone={"accent"} hover>
+                      <Tag tone="accent" hover>
                         <Box paddingX="2">{role}</Box>
                       </Tag>
                     ) : (
@@ -118,7 +118,7 @@ export function Notifications() {
               <Text variant="small">
                 {" "}
                 Pick the roles that get notified. Notifications are currently
-                sent via email. Please make sure to add your email.{" "}
+                sent via email. Please make sure to add your email
               </Text>
             )}
           </Box>
@@ -126,4 +126,6 @@ export function Notifications() {
       </Stack>
     </>
   );
-}
+};
+
+export default Notifications;

@@ -124,5 +124,3 @@ export const dark = {
   scrollbarBackground: colors.black,
   scrollbarThumb: colors.black,
 };
-
-export default dark;

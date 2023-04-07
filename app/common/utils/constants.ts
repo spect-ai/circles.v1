@@ -55,9 +55,9 @@ export const Priority = {
 };
 
 export const gasLimits = {
-  "1": 30000000,
-  "137": 30000000,
-  "4": 30000000,
+  1: 30000000,
+  137: 30000000,
+  4: 30000000,
 } as { [chainId: string]: number };
 
 // export const kudosTypes = {

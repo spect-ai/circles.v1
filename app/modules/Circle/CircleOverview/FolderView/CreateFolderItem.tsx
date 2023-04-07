@@ -5,8 +5,6 @@ import {
   Text,
   useTheme,
   IconUserGroup,
-  IconLightningBolt,
-  IconCollection,
   Stack,
 } from "degen";
 import { ProjectOutlined, TableOutlined } from "@ant-design/icons";
@@ -14,22 +12,21 @@ import { Tooltip } from "react-tippy";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { toast } from "react-toastify";
 import { Flags } from "react-feature-flags";
-import { Grid, Table } from "react-feather";
+import { Table } from "react-feather";
+
 interface Props {
   setProjectModal: (a: boolean) => void;
   setWorkstreamModal: (a: boolean) => void;
-  setRetroOpen: (a: boolean) => void;
   setCollectionModal: (a: boolean) => void;
   setCollectionProjectModal: (a: boolean) => void;
 }
 
-export default function CreateFolderItem({
+const CreateFolderItem = ({
   setProjectModal,
   setWorkstreamModal,
-  setRetroOpen,
   setCollectionModal,
   setCollectionProjectModal,
-}: Props) {
+}: Props) => {
   const { mode } = useTheme();
   const { canDo } = useRoleGate();
 
@@ -38,9 +35,9 @@ export default function CreateFolderItem({
       <Stack direction="horizontal" space="1" align="center">
         <IconPlusSmall size="5" color="textSecondary" />
         <Box
-          transitionDuration={"700"}
-          display={"flex"}
-          flexDirection={"row"}
+          transitionDuration="700"
+          display="flex"
+          flexDirection="row"
           gap={{
             xs: "0",
             md: "3",
@@ -135,30 +132,13 @@ export default function CreateFolderItem({
                 }
               }}
             >
-              <IconUserGroup size={"5"} color="accent" />
+              <IconUserGroup size="5" color="accent" />
             </Button>
           </Tooltip>
-          {/* <Tooltip html={<Text>Create Retro</Text>} theme={mode}>
-            <Button
-              size="small"
-              variant="transparent"
-              shape="circle"
-              onClick={(e) => {
-                if (canDo("createNewRetro")) {
-                  e.stopPropagation();
-                  setRetroOpen(true);
-                } else {
-                  toast.error(
-                    "You don't have the permission to create a new Retro"
-                  );
-                }
-              }}
-            >
-              <IconLightningBolt size={"4"} color="accent" />
-            </Button>
-          </Tooltip> */}
         </Box>
       </Stack>
     </Box>
   );
-}
+};
+
+export default CreateFolderItem;

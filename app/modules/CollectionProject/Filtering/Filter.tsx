@@ -3,14 +3,14 @@ import { updateFormCollection } from "@/app/services/Collection";
 import { CollectionType, Condition } from "@/app/types";
 import { Box, Button, Stack, Text } from "degen";
 import { AnimatePresence } from "framer-motion";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Filter as FilterIcon } from "react-feather";
 import { Hidden } from "react-grid-system";
 import { toast } from "react-toastify";
 import AddConditions from "../../Collection/Common/AddConditions";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
 
-function Filter() {
+const Filter = () => {
   const {
     localCollection: collection,
     projectViewId: viewId,
@@ -86,7 +86,6 @@ function Filter() {
                   if (!res.id) {
                     throw new Error("Error updating filters");
                   }
-                  console.log({ res });
                   updateCollection(res);
                 })
                 .catch(() => {
@@ -102,7 +101,7 @@ function Filter() {
                   firstRowMessage="Add a filter"
                   buttonText="Add Filter"
                   collection={collection}
-                  dropDownPortal={true}
+                  dropDownPortal
                 />
               </Stack>
             </Box>
@@ -111,6 +110,6 @@ function Filter() {
       </AnimatePresence>
     </Box>
   );
-}
+};
 
 export default Filter;

@@ -4,19 +4,28 @@ import { useEffect, useState } from "react";
 import { FaDiscord } from "react-icons/fa";
 import { useLocation } from "react-use";
 
-type Props = {
-  setData: (data: any) => void;
-  data: any;
-  propertyName: string;
-  updateRequiredFieldNotSet: (key: string, value: any) => void;
+type DiscordCredentials = {
+  id: string;
+  username: string;
+  avatar: string;
 };
 
-export default function DiscordField({
+type Props = {
+  setData: (data: Record<string, DiscordCredentials>) => void;
+  data: Record<string, DiscordCredentials>;
+  propertyName: string;
+  updateRequiredFieldNotSet: (
+    key: string,
+    value: Record<string, DiscordCredentials>
+  ) => void;
+};
+
+const DiscordField = ({
   data,
   setData,
   propertyName,
   updateRequiredFieldNotSet,
-}: Props) {
+}: Props) => {
   const { hostname } = useLocation();
   const [code, setCode] = useState("");
   useEffect(() => {
@@ -36,18 +45,22 @@ export default function DiscordField({
   useEffect(() => {
     (async () => {
       if (!code) return;
-      console.log({ code });
       const res = await fetch(
         `${process.env.BOT_HOST}/api/connectDiscord?code=${code}`
       );
       if (res.ok) {
-        const data = await res.json();
-        if (data.userData.id) {
-          setData((d: any) => ({
-            ...d,
-            [propertyName]: data.userData,
-          }));
-          updateRequiredFieldNotSet(propertyName, data.userData);
+        const d = await res.json();
+        if (d.userData.id) {
+          // setData((d: any) => ({
+          //   ...d,
+          //   [propertyName]: data.userData,
+          // }));
+          const newData = {
+            ...data,
+            [propertyName]: d.userData,
+          };
+          setData(newData);
+          updateRequiredFieldNotSet(propertyName, d.userData);
         }
       }
     })();
@@ -87,4 +100,6 @@ export default function DiscordField({
       )}
     </Box>
   );
-}
+};
+
+export default DiscordField;

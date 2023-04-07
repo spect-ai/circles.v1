@@ -1,8 +1,7 @@
+/* eslint-disable react/jsx-one-expression-per-line */
 import { PassportStampIcons, PassportStampIconsLightMode } from "@/app/assets";
 import Logout from "@/app/common/components/LogoutButton";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { StampCard } from "@/app/modules/PublicForm";
-import { getUser } from "@/app/modules/PublicForm/FormFields";
 import { Connect } from "@/app/modules/Sidebar/ProfileButton/ConnectButton";
 import { getForm } from "@/app/services/Collection";
 import {
@@ -30,12 +29,56 @@ import ProfileInfo from "./ProfileInfo";
 type Props = {
   form: CollectionType;
   setForm: (form: CollectionType | FormType) => void;
-  currentPage: string;
   setCurrentPage: (page: string) => void;
 };
 
-const ConnectPage = ({ form, setForm, currentPage, setCurrentPage }: Props) => {
-  const [hasStamps, setHasStamps] = useState({} as any);
+const StampScrollContainer = styled(Box)`
+  overflow-y: auto;
+  height: 20rem;
+  ::-webkit-scrollbar {
+    width: 5px;
+  }
+`;
+
+const StampCard = styled(Box)<{ mode: string }>`
+  display: flex;
+  flex-direction: column;
+  margin-top: 0.5rem;
+  padding: 1rem 1rem;
+  border-radius: 0.5rem;
+  border: solid 2px
+    ${(props) =>
+      props.mode === "dark"
+        ? "rgb(255, 255, 255, 0.05)"
+        : "rgb(20, 20, 20, 0.05)"};
+  &:hover {
+    border: solid 2px rgb(191, 90, 242);
+    transition-duration: 0.7s;
+    cursor: pointer;
+  }
+  position: relative;
+  transition: all 0.3s ease-in-out;
+  width: 80%;
+  @media (max-width: 768px) {
+    width: 100%;
+  }
+`;
+
+const getUser = async () => {
+  const res = await fetch(`${process.env.API_HOST}/user/v1/me`, {
+    credentials: "include",
+  });
+  return res.json();
+};
+
+type StampsWithScore = Stamp & {
+  score: number;
+};
+
+const ConnectPage = ({ form, setForm, setCurrentPage }: Props) => {
+  const [hasStamps, setHasStamps] = useState<{
+    [key: string]: boolean;
+  }>({});
   const [currentScore, setCurrentScore] = useState(0);
   const [stamps, setStamps] = useState([] as Stamp[]);
 
@@ -50,22 +93,26 @@ const ConnectPage = ({ form, setForm, currentPage, setCurrentPage }: Props) => {
     enabled: false,
   });
 
-  const addStamps = async (form: FormType) => {
-    const stamps = await getAllCredentials();
-    const stampsWithScore = [];
+  const addStamps = async (cForm: FormType) => {
+    const allStamps = await getAllCredentials();
+
+    const stampsWithScore: StampsWithScore[] = [];
     if (
-      form.formMetadata.sybilProtectionEnabled &&
-      form.formMetadata.sybilProtectionScores
+      cForm.formMetadata.sybilProtectionEnabled &&
+      cForm.formMetadata.sybilProtectionScores
     ) {
-      for (const stamp of stamps) {
-        if (form.formMetadata.sybilProtectionScores[stamp.id]) {
+      allStamps.forEach((stamp: Stamp) => {
+        if (
+          cForm.formMetadata.sybilProtectionScores &&
+          cForm.formMetadata.sybilProtectionScores[stamp.id]
+        ) {
           const stampWithScore = {
             ...stamp,
-            score: form.formMetadata.sybilProtectionScores[stamp.id],
+            score: cForm.formMetadata.sybilProtectionScores[stamp.id],
           };
           stampsWithScore.push(stampWithScore);
         }
-      }
+      });
       setStamps(stampsWithScore.sort((a, b) => b.score - a.score));
     }
   };
@@ -100,12 +147,11 @@ const ConnectPage = ({ form, setForm, currentPage, setCurrentPage }: Props) => {
       form.formMetadata.sybilProtectionScores &&
       currentUser
     ) {
-      void (async () => {
+      (async () => {
         const res = await getPassportScoreAndCredentials(
           currentUser?.ethAddress,
           form.formMetadata.sybilProtectionScores
         );
-        console.log({ res });
         setCurrentScore(res?.score);
         setHasStamps(res?.mappedStampsWithCredentials);
       })();
@@ -170,7 +216,7 @@ const ConnectPage = ({ form, setForm, currentPage, setCurrentPage }: Props) => {
             </Stack>
             <Text variant="label">
               You do not have the correct roles to access this form
-            </Text>{" "}
+            </Text>
             <Box display="flex" flexDirection="row" gap="4">
               <Button
                 variant="tertiary"
@@ -222,58 +268,52 @@ const ConnectPage = ({ form, setForm, currentPage, setCurrentPage }: Props) => {
                 Your current score: {currentScore}%
               </Text>
               <StampScrollContainer>
-                {stamps?.map((stamp: Stamp, index: number) => {
-                  return (
-                    <StampCard mode={mode} key={index}>
+                {stamps?.map((stamp: Stamp) => (
+                  <StampCard mode={mode} key={stamp.id}>
+                    <Box
+                      display="flex"
+                      flexDirection="row"
+                      width="full"
+                      alignItems="center"
+                      gap="4"
+                    >
                       <Box
                         display="flex"
                         flexDirection="row"
-                        width="full"
                         alignItems="center"
-                        gap="4"
+                        width="full"
+                        paddingRight="4"
                       >
                         <Box
-                          display="flex"
+                          width="8"
+                          height="8"
                           flexDirection="row"
+                          justifyContent="flex-start"
                           alignItems="center"
-                          width="full"
-                          paddingRight="4"
+                          marginRight="4"
                         >
-                          <Box
-                            width="8"
-                            height="8"
-                            flexDirection="row"
-                            justifyContent="flex-start"
-                            alignItems="center"
-                            marginRight="4"
-                          >
-                            {mode === "dark"
-                              ? PassportStampIcons[stamp.providerName]
-                              : PassportStampIconsLightMode[stamp.providerName]}
-                          </Box>
-                          <Box>
-                            <Text as="h1">{stamp.stampName}</Text>
-                            <Text variant="small">
-                              {stamp.stampDescription}
-                            </Text>
-                          </Box>
-                        </Box>{" "}
-                        {hasStamps[stamp.id] && (
-                          <Tag tone="green">Verified</Tag>
-                        )}
-                        <Text variant="large">{stamp.score}%</Text>
-                      </Box>
-                    </StampCard>
-                  );
-                })}
+                          {mode === "dark"
+                            ? PassportStampIcons[stamp.providerName]
+                            : PassportStampIconsLightMode[stamp.providerName]}
+                        </Box>
+                        <Box>
+                          <Text as="h1">{stamp.stampName}</Text>
+                          <Text variant="small">{stamp.stampDescription}</Text>
+                        </Box>
+                      </Box>{" "}
+                      {hasStamps[stamp.id] && <Tag tone="green">Verified</Tag>}
+                      <Text variant="large">{stamp.score}%</Text>
+                    </Box>
+                  </StampCard>
+                ))}
               </StampScrollContainer>
               <Box display="flex" flexDirection="row" gap="4">
                 <Button
                   variant="tertiary"
                   size="small"
-                  onClick={() =>
-                    window.open("https://passport.gitcoin.co/", "_blank")
-                  }
+                  onClick={() => {
+                    window.open("https://passport.gitcoin.co/", "_blank");
+                  }}
                 >
                   Get Stamps
                 </Button>
@@ -357,13 +397,5 @@ const ConnectPage = ({ form, setForm, currentPage, setCurrentPage }: Props) => {
     </Box>
   );
 };
-
-const StampScrollContainer = styled(Box)`
-  overflow-y: auto;
-  height: 20rem;
-  ::-webkit-scrollbar {
-    width: 5px;
-  }
-`;
 
 export default ConnectPage;

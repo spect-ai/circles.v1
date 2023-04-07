@@ -1,13 +1,11 @@
 import CheckBox from "@/app/common/components/Table/Checkbox";
 import { updateCircle } from "@/app/services/UpdateCircle";
 import { SidebarConfig } from "@/app/types";
-import { Box, Heading, Stack, Text } from "degen";
-import React, { useEffect, useState } from "react";
+import { Box, Stack, Text } from "degen";
+import { useEffect, useState } from "react";
 import { useCircle } from "../../CircleContext";
 
-type Props = {};
-
-const SidebarConfig = (props: Props) => {
+const SidebarConfigComponent = () => {
   const [showPayment, setShowPayment] = useState(false);
   const [showAutomation, setShowAutomation] = useState(false);
   const [showGovernance, setShowGovernance] = useState(false);
@@ -34,7 +32,7 @@ const SidebarConfig = (props: Props) => {
           setCircleData(res);
         }
       })
-      .catch((err) => console.log(err));
+      .catch((err) => console.error(err));
   };
 
   if (!circle) return null;
@@ -98,4 +96,4 @@ const SidebarConfig = (props: Props) => {
   );
 };
 
-export default SidebarConfig;
+export default SidebarConfigComponent;

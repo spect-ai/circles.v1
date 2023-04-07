@@ -15,13 +15,7 @@ import {
   payUsingGnosis,
   switchNetwork,
 } from "@/app/services/Paymentv2/utils";
-import {
-  MemberDetails,
-  Option,
-  PaymentDetails,
-  Registry,
-  UserType,
-} from "@/app/types";
+import { MemberDetails, PaymentDetails, Registry, UserType } from "@/app/types";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { AbiCoder } from "ethers/lib/utils";
 import { useRouter } from "next/router";
@@ -62,17 +56,14 @@ export default function usePaymentViewCommon() {
             circle.pendingPayments,
             circle.paymentDetails
           );
-        console.log({ pendingPayments });
         const amounts = flattenAmountByEachUniqueTokenAndUser(
           pendingPayments,
           circle.paymentDetails,
           memberDetails as MemberDetails
         );
-        console.log({ amounts });
         if (amounts.length === 0) return;
 
         const aggregatedAmounts = findAggregatedAmountForEachToken(amounts);
-        console.log({ aggregatedAmounts });
         const hasRequiredBalances = await hasBalances(
           chainId,
           gnosisPayment
@@ -80,7 +71,6 @@ export default function usePaymentViewCommon() {
             : (currentUser?.ethAddress as string),
           aggregatedAmounts
         );
-        console.log({ hasRequiredBalances });
 
         const hasRequiredAllowances = await hasAllowance(
           registry as Registry,
@@ -90,7 +80,6 @@ export default function usePaymentViewCommon() {
             : (currentUser?.ethAddress as string),
           aggregatedAmounts
         );
-        console.log({ hasRequiredAllowances });
 
         const tokensWithInsufficientBalance = filterTokensByAllowanceOrBalance(
           chainId,
@@ -98,7 +87,6 @@ export default function usePaymentViewCommon() {
           registry as Registry,
           false
         );
-        console.log({ tokensWithInsufficientBalance });
 
         if (tokensWithInsufficientBalance.length > 0) {
           toast.error(
@@ -114,7 +102,6 @@ export default function usePaymentViewCommon() {
           registry as Registry,
           true
         );
-        console.log({ tokensWithSufficientBalance });
         if (tokensWithSufficientBalance.length === 0) return;
 
         await toast.promise(
@@ -142,11 +129,8 @@ export default function usePaymentViewCommon() {
         );
 
         if (gnosisPayment) {
-          console.log("Gnosis payment");
           const safeAddress = circle.safeAddresses[chainId][0];
           const startNonce = await getNonce(safeAddress);
-          console.log({ startNonce });
-          console.log("Approving ...");
           const { tokensApproved, nonce } = await approveUsingGnosis(
             chainId,
             tokensWithInsufficientAllowance.map((token) => token.tokenAddress),
@@ -155,7 +139,6 @@ export default function usePaymentViewCommon() {
             safeAddress
           );
 
-          console.log("Distributing ...");
           const tokensApprvoedSet = new Set(tokensApproved);
           const tokenAddressesBeingDistributed = new Set([
             ...tokensWithSufficientAllowance.map((token) => token.tokenAddress),
@@ -169,27 +152,26 @@ export default function usePaymentViewCommon() {
             pendingPayments,
             circle.paymentDetails
           );
-          console.log({ paymentIdsBeingDistributed });
           const encoder = new AbiCoder();
-          let id = { token: "", currency: "" };
-          id["token"] = encoder.encode(
+          const id = { token: "", currency: "" };
+          id.token = encoder.encode(
             ["string", "string", "string[]"],
             [
               currentUser?._id.toString(),
               circle.id,
               paymentIdsBeingDistributed.filter(
-                (id) => circle.paymentDetails[id].token.value !== "0x0"
+                (id2) => circle.paymentDetails[id2].token.value !== "0x0"
               ),
             ]
           );
 
-          id["currency"] = encoder.encode(
+          id.currency = encoder.encode(
             ["string", "string", "string[]"],
             [
               currentUser?._id.toString(),
               circle.id,
               paymentIdsBeingDistributed.filter(
-                (id) => circle.paymentDetails[id].token.value === "0x0"
+                (id2) => circle.paymentDetails[id2].token.value === "0x0"
               ),
             ]
           );
@@ -206,7 +188,7 @@ export default function usePaymentViewCommon() {
             id
           );
 
-          const res = await findAndUpdatePaymentIdsPendingSignature(
+          await findAndUpdatePaymentIdsPendingSignature(
             circle.id,
             chainId,
             tokensDistributed,
@@ -215,15 +197,12 @@ export default function usePaymentViewCommon() {
             txHash
           );
         } else {
-          console.log("EOA payment");
-          console.log("Approving ...");
           const tokensApproved = await approveUsingEOA(
             chainId,
             tokensWithInsufficientAllowance.map((token) => token.tokenAddress),
             registry as Registry
           );
 
-          console.log("Distributing ...");
           const tokensApprvoedSet = new Set(tokensApproved);
           const tokenAddressesBeingDistributed = new Set([
             ...tokensWithSufficientAllowance.map((token) => token.tokenAddress),
@@ -237,31 +216,25 @@ export default function usePaymentViewCommon() {
             pendingPayments,
             circle.paymentDetails
           );
-          console.log({ paymentIdsBeingDistributed });
-          console.log({
-            user: currentUser?._id.toString(),
-            circle: circle.id,
-            paymentIdsBeingDistributed,
-          });
           const encoder = new AbiCoder();
-          let id = { token: "", currency: "" };
-          id["token"] = encoder.encode(
+          const id = { token: "", currency: "" };
+          id.token = encoder.encode(
             ["string", "string", "string[]"],
             [
               currentUser?._id.toString(),
               circle.id,
               paymentIdsBeingDistributed.filter(
-                (id) => circle.paymentDetails[id].token.value !== "0x0"
+                (id2) => circle.paymentDetails[id2].token.value !== "0x0"
               ),
             ]
           );
-          id["currency"] = encoder.encode(
+          id.currency = encoder.encode(
             ["string", "string", "string[]"],
             [
               currentUser?._id.toString(),
               circle.id,
               paymentIdsBeingDistributed.filter(
-                (id) => circle.paymentDetails[id].token.value === "0x0"
+                (id2) => circle.paymentDetails[id2].token.value === "0x0"
               ),
             ]
           );
@@ -277,8 +250,7 @@ export default function usePaymentViewCommon() {
             id
           );
           if (tokensDistributed?.length) {
-            console.log({ tokensDistributed, txHash });
-            const res = await findAndUpdateCompletedPaymentIds(
+            await findAndUpdateCompletedPaymentIds(
               circle.id,
               chainId,
               tokensDistributed,
@@ -288,11 +260,15 @@ export default function usePaymentViewCommon() {
             );
           }
         }
-      } catch (e: any) {
-        console.log({ e });
-        if (e.code === "ACTION_REJECTED")
+      } catch (e: unknown) {
+        console.error({ e });
+        const err = e as {
+          code?: string;
+          name?: string;
+        };
+        if (err.code === "ACTION_REJECTED") {
           toast.error("You rejected requested action");
-        else if (e.name === "ConnectorNotFoundError") {
+        } else if (err.name === "ConnectorNotFoundError") {
           openConnectModal && openConnectModal();
           toast.error(
             "Please login to your wallet and connect it to Spect, wallet might be locked"

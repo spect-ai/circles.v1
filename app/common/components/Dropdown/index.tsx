@@ -35,15 +35,19 @@ type Props =
     };
 
 const { Option } = components;
-const IconOption = (props: any) => (
-  <Option {...props}>
-    <Stack space="2" align="center" direction="horizontal">
-      <Text color="accent">{props.data.icon}</Text>
-      {props.data.label}
-    </Stack>
-  </Option>
-);
-
+const IconOption = (props: any) => {
+  const {
+    data: { icon, label },
+  } = props;
+  return (
+    <Option {...props}>
+      <Stack space="2" align="center" direction="horizontal">
+        <Text color="accent">{icon}</Text>
+        {label}
+      </Stack>
+    </Option>
+  );
+};
 const Dropdown: FC<Props> = ({
   options,
   selected,
@@ -106,13 +110,11 @@ const Dropdown: FC<Props> = ({
             ...provided,
             color: mode === "dark" ? "#FFFFFF" : "#000000",
           }),
-          multiValue: (styles) => {
-            return {
-              ...styles,
-              backgroundColor: "rgb(191, 90, 242, 0.1)",
-              borderRadius: "12px",
-            };
-          },
+          multiValue: (styles) => ({
+            ...styles,
+            backgroundColor: "rgb(191, 90, 242, 0.1)",
+            borderRadius: "12px",
+          }),
           multiValueLabel: (styles) => ({
             ...styles,
             color: "rgb(191, 90, 242)",
@@ -144,15 +146,6 @@ const Dropdown: FC<Props> = ({
             color: mode === "dark" ? "#FFFFFF" : "#000000",
             cursor: "pointer",
           }),
-
-          // indicatorsContainer: (provided) => ({
-          //   ...provided,
-          //   opacity: active ? 1 : 0,
-          // }),
-          // placeholder: (provided) => ({
-          //   ...provided,
-          //   opacity: active ? 1 : 0,
-          // }),
         }}
       />
     </Stack>

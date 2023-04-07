@@ -1,14 +1,25 @@
-import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { Box, Stack, Text } from "degen";
 import { AnimatePresence } from "framer-motion";
-import { useState } from "react";
 import styled from "styled-components";
 import { useCircle } from "../CircleContext";
 import usePaymentViewCommon from "./Common/usePaymentCommon";
 import PaymentCard from "./PaymentCard";
 import PaymentCardDrawer from "./PaymentCardDrawer";
 
-export default function PendingSignaturePayments() {
+const ScrollContainer = styled(Box)`
+  overflow-y: auto;
+  ::-webkit-scrollbar {
+    width: 4px;
+  }
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  @media (max-width: 768px) {
+    height: calc(100vh - 12rem);
+  }
+  height: calc(100vh - 12rem);
+`;
+
+const PendingSignaturePayments = () => {
   const { circle } = useCircle();
   const { isCardDrawerOpen, setIsCardDrawerOpen } = usePaymentViewCommon();
 
@@ -43,33 +54,20 @@ export default function PendingSignaturePayments() {
           </Box>
         )}
         <ScrollContainer>
-          {circle.pendingSignaturePayments?.map((paymentId, index) => {
-            return (
-              <PaymentCard
-                key={index}
-                index={index}
-                paymentDetails={circle.paymentDetails[paymentId]}
-                handleClick={() => {
-                  setIsCardDrawerOpen(true);
-                }}
-              />
-            );
-          })}
+          {circle.pendingSignaturePayments?.map((paymentId, index) => (
+            <PaymentCard
+              key={paymentId}
+              index={index}
+              paymentDetails={circle.paymentDetails[paymentId]}
+              handleClick={() => {
+                setIsCardDrawerOpen(true);
+              }}
+            />
+          ))}
         </ScrollContainer>
       </Box>
     </Stack>
   );
-}
+};
 
-const ScrollContainer = styled(Box)`
-  overflow-y: auto;
-  ::-webkit-scrollbar {
-    width: 4px;
-  }
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-  @media (max-width: 768px) {
-    height: calc(100vh - 12rem);
-  }
-  height: calc(100vh - 12rem);
-`;
+export default PendingSignaturePayments;

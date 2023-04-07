@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { FC } from "react";
 
-import { Box, Text } from "degen";
+import { Box } from "degen";
 import styled from "styled-components";
 
 interface Props {
@@ -20,26 +21,24 @@ const ModalOption: FC<Props> = ({
   onClick,
   item,
   children,
-}: Props) => {
-  return (
-    <Container
-      borderBottomWidth="0.375"
-      paddingY="3"
-      paddingX="8"
-      cursor="pointer"
-      transitionDuration="700"
-      display="flex"
-      flexDirection="row"
-      alignItems="center"
-      backgroundColor={isSelected ? "accentSecondary" : "transparent"}
-      onClick={() => {
-        onClick(item);
-      }}
-    >
-      {children}
-    </Container>
-  );
-};
+}: Props) => (
+  <Container
+    borderBottomWidth="0.375"
+    paddingY="3"
+    paddingX="8"
+    cursor="pointer"
+    transitionDuration="700"
+    display="flex"
+    flexDirection="row"
+    alignItems="center"
+    backgroundColor={isSelected ? "accentSecondary" : "transparent"}
+    onClick={() => {
+      onClick(item);
+    }}
+  >
+    {children}
+  </Container>
+);
 
 export default ModalOption;
 

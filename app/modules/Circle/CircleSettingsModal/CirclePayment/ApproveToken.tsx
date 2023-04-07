@@ -9,7 +9,7 @@ import { AnimatePresence } from "framer-motion";
 import React, { useState } from "react";
 import { useCircle } from "../../CircleContext";
 
-export default function ApproveToken() {
+const ApproveToken = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { circle, registry } = useCircle();
 
@@ -98,4 +98,6 @@ export default function ApproveToken() {
       </AnimatePresence>
     </>
   );
-}
+};
+
+export default ApproveToken;

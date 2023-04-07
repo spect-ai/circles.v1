@@ -5,13 +5,55 @@ import { Box, useTheme } from "degen";
 import React, { useState } from "react";
 import styled from "styled-components";
 import { motion } from "framer-motion";
-
-import _ from "lodash";
 import { useLocation } from "react-use";
-import FormFields from "./FormFields";
 import { ToastContainer } from "react-toastify";
+import FormFields from "./FormFields";
 
-function PublicForm() {
+const Container = styled(Box)<{ embed: boolean }>`
+  @media (max-width: 768px) {
+    padding: 0rem ${(props) => (props.embed ? "0rem" : "1rem")};
+  }
+
+  @media (min-width: 768px) and (max-width: 1024px) {
+    padding: ${(props) => (props.embed ? "0rem" : "2rem")}
+      ${(props) => (props.embed ? "0rem" : "4rem")};
+  }
+
+  @media (min-width: 1024px) and (max-width: 1280px) {
+    padding: ${(props) => (props.embed ? "0rem" : "2rem")}
+      ${(props) => (props.embed ? "0rem" : "14rem")};
+  }
+
+  &::-webkit-scrollbar {
+    width: 0.5rem;
+  }
+  z-index: 999;
+  margin-top: ${(props) => (props.embed ? "0rem" : "-8rem")};
+  padding: 0rem ${(props) => (props.embed ? "0rem" : "14rem")};
+`;
+
+export const CoverImage = styled(Box)<{ src: string }>`
+  width: 100%;
+  height: 18rem;
+  background-image: url(${(props) => props.src});
+  background-size: cover;
+  z-index: -1;
+`;
+
+const FormContainer = styled(Box)`
+  padding: 0.5rem;
+  margin-bottom: 2rem;
+`;
+
+const ScrollContainer = styled(Box)`
+  &::-webkit-scrollbar {
+    width: 0.2rem;
+  }
+  max-height: calc(100vh);
+  overflow-y: auto;
+`;
+
+const PublicForm = () => {
   const [form, setForm] = useState<FormType>();
   const { mode } = useTheme();
   const { pathname } = useLocation();
@@ -61,75 +103,7 @@ function PublicForm() {
       </Container>
     </ScrollContainer>
   );
-}
-
-const Container = styled(Box)<{ embed: boolean }>`
-  @media (max-width: 768px) {
-    padding: 0rem ${(props) => (props.embed ? "0rem" : "1rem")};
-  }
-
-  @media (min-width: 768px) and (max-width: 1024px) {
-    padding: ${(props) => (props.embed ? "0rem" : "2rem")}
-      ${(props) => (props.embed ? "0rem" : "4rem")};
-  }
-
-  @media (min-width: 1024px) and (max-width: 1280px) {
-    padding: ${(props) => (props.embed ? "0rem" : "2rem")}
-      ${(props) => (props.embed ? "0rem" : "14rem")};
-  }
-
-  &::-webkit-scrollbar {
-    width: 0.5rem;
-  }
-  z-index: 999;
-  margin-top: ${(props) => (props.embed ? "0rem" : "-8rem")};
-  padding: 0rem ${(props) => (props.embed ? "0rem" : "14rem")};
-`;
-
-export const CoverImage = styled(Box)<{ src: string }>`
-  width: 100%;
-  height: 18rem;
-  background-image: url(${(props) => props.src});
-  background-size: cover;
-  z-index: -1;
-`;
-
-const FormContainer = styled(Box)`
-  padding: 0.5rem;
-  margin-bottom: 2rem;
-`;
-
-const ScrollContainer = styled(Box)`
-  &::-webkit-scrollbar {
-    width: 0.2rem;
-  }
-  max-height: calc(100vh);
-  overflow-y: auto;
-`;
-
-export const StampCard = styled(Box)<{ mode: string }>`
-  display: flex;
-  flex-direction: column;
-  margin-top: 0.5rem;
-  padding: 1rem 1rem;
-  border-radius: 0.5rem;
-  border: solid 2px
-    ${(props) =>
-      props.mode === "dark"
-        ? "rgb(255, 255, 255, 0.05)"
-        : "rgb(20, 20, 20, 0.05)"};
-  &:hover {
-    border: solid 2px rgb(191, 90, 242);
-    transition-duration: 0.7s;
-    cursor: pointer;
-  }
-  position: relative;
-  transition: all 0.3s ease-in-out;
-  width: 80%;
-  @media (max-width: 768px) {
-    width: 100%;
-  }
-`;
+};
 
 PublicForm.whyDidYouRender = true;
 

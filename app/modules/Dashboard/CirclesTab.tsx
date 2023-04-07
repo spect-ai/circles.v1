@@ -5,7 +5,6 @@ import CreateCircleCard from "@/app/modules/Explore/CircleCard/CreateCircleCard"
 import styled from "styled-components";
 import { Col, Row } from "react-grid-system";
 import { memo, useEffect, useState } from "react";
-import Dropdown from "@/app/common/components/Dropdown";
 
 const ScrollContainer = styled(Box)<{ height: boolean }>`
   ::-webkit-scrollbar {
@@ -22,7 +21,7 @@ const ScrollContainer = styled(Box)<{ height: boolean }>`
   height: calc(100vh - ${(props) => (props.height ? "11" : "14")}rem);
 `;
 
-function YourCircles({
+const YourCircles = ({
   circles,
   isLoading,
   height,
@@ -30,7 +29,7 @@ function YourCircles({
   circles: CircleType[];
   isLoading: boolean;
   height?: string;
-}) {
+}) => {
   const [circlesToShow, setCirclesToShow] = useState<CircleType[]>(circles);
   const [selectedFilter, setSelectedFilter] = useState<Option>({
     label: "Only show spaces",
@@ -63,7 +62,7 @@ function YourCircles({
         marginBottom="4"
       >
         <Box
-          marginRight={"4"}
+          marginRight="4"
           cursor="pointer"
           onClick={() => {
             if (selectedFilter.value === "all") {
@@ -92,12 +91,16 @@ function YourCircles({
               />
             </Col>
           ))}
-        <Col key={"createCircle"} xs={12} sm={6} md={3}>
+        <Col key="createCircle" xs={12} sm={6} md={3}>
           <CreateCircleCard />
         </Col>
       </Row>
     </ScrollContainer>
   );
-}
+};
+
+YourCircles.defaultProps = {
+  height: "",
+};
 
 export default memo(YourCircles);

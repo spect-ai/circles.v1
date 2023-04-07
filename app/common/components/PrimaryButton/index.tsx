@@ -12,7 +12,6 @@ interface Props {
   disabled?: boolean;
   loading?: boolean;
   animation?: "fade" | "slide" | "none";
-  shape?: "circle" | "square";
   tone?: "red" | "accent" | "green" | "blue";
   type?: "button" | "submit" | "reset";
   tourId?: string;
@@ -44,8 +43,8 @@ export const fade = {
 };
 
 const animationMapping = {
-  slide: slide,
-  fade: fade,
+  slide,
+  fade,
   none: {},
 };
 
@@ -62,36 +61,34 @@ const PrimaryButton: FC<Props> = ({
   suffix,
   tourId,
   center = false,
-}) => {
-  return (
-    <motion.div
-      key="content"
-      initial="hidden"
-      animate="open"
-      exit="collapsed"
-      variants={animationMapping[animation]}
-      transition={{ duration: 0.3 }}
+}) => (
+  <motion.div
+    key="content"
+    initial="hidden"
+    animate="open"
+    exit="collapsed"
+    variants={animationMapping[animation]}
+    transition={{ duration: 0.3 }}
+  >
+    <Button
+      data-tour={tourId}
+      disabled={disabled}
+      loading={loading}
+      width="full"
+      size="small"
+      variant={variant}
+      prefix={icon}
+      onClick={onClick}
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      tone={tone as any}
+      type={type}
+      suffix={suffix}
+      center={center}
     >
-      <Button
-        data-tour={tourId}
-        disabled={disabled}
-        loading={loading}
-        width="full"
-        size="small"
-        variant={variant}
-        prefix={icon}
-        onClick={onClick}
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        tone={tone as any}
-        type={type}
-        suffix={suffix}
-        center={center}
-      >
-        {children}
-      </Button>
-    </motion.div>
-  );
-};
+      {children}
+    </Button>
+  </motion.div>
+);
 
 export default PrimaryButton;
 

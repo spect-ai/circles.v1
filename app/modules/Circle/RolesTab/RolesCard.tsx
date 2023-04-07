@@ -1,12 +1,12 @@
 import Editor from "@/app/common/components/Editor";
 import { Box, useTheme, Text, IconUserSolid, Stack, Tag } from "degen";
-import React, { useState } from "react";
+import { useState } from "react";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import styled from "styled-components";
 import { Permissions } from "@/app/types";
+import { updateRole } from "@/app/services/CircleRoles";
 import { useCircle } from "../CircleContext";
 import AddRole from "../ContributorsModal/AddRoleModal";
-import { updateRole } from "@/app/services/CircleRoles";
 
 const Container = styled(Box)<{ mode: string }>`
   border-width: 2px;
@@ -34,7 +34,7 @@ interface Props {
   };
 }
 
-function RoleCard({ roleKey, role }: Props) {
+const RoleCard = ({ roleKey, role }: Props) => {
   const { circle, setCircleData } = useCircle();
   const { mode } = useTheme();
   const { canDo } = useRoleGate();
@@ -45,17 +45,15 @@ function RoleCard({ roleKey, role }: Props) {
     if (circle?.id === undefined) return;
     const payload = {
       ...role,
-      description: description,
+      description,
     };
-    console.log({ payload });
     const res = await updateRole(circle?.id, roleKey, payload);
     if (res) setCircleData(res);
-    console.log({ res });
   };
 
   return (
     <Container key={role.name} mode={mode}>
-      <Stack direction={"horizontal"} align="center" justify={"space-between"}>
+      <Stack direction="horizontal" align="center" justify="space-between">
         <Text variant="extraLarge" weight="semiBold">
           {role.name}
         </Text>
@@ -82,7 +80,7 @@ function RoleCard({ roleKey, role }: Props) {
           setDescription(txt);
         }}
         onSave={() => {
-          void onSaveDescription();
+          onSaveDescription();
           setIsDirty(false);
         }}
         isDirty={isDirty}
@@ -91,6 +89,6 @@ function RoleCard({ roleKey, role }: Props) {
       <AddRole role={roleKey} />
     </Container>
   );
-}
+};
 
 export default RoleCard;

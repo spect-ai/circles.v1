@@ -3,16 +3,8 @@ import Popover from "@/app/common/components/Popover";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { updateFormCollection } from "@/app/services/Collection";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
-import { SendOutlined, TableOutlined } from "@ant-design/icons";
-import {
-  Box,
-  Heading,
-  IconCog,
-  IconCollection,
-  IconPlusSmall,
-  Stack,
-  Text,
-} from "degen";
+import { TableOutlined } from "@ant-design/icons";
+import { Box, IconCog, IconPlusSmall, Stack, Text } from "degen";
 import { AnimatePresence, motion } from "framer-motion";
 import React, { useState } from "react";
 import {
@@ -26,7 +18,6 @@ import { Hidden, Visible } from "react-grid-system";
 import { toast } from "react-toastify";
 import styled from "styled-components";
 import { useCircle } from "../../Circle/CircleContext";
-import InviteMemberModal from "../../Circle/ContributorsModal/InviteMembersModal";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
 import AddView from "../AddView";
 import Filtering from "../Filtering";
@@ -36,7 +27,80 @@ import Sort from "../Filtering/Sort";
 import Settings from "../Settings";
 import ViewSettings from "../ViewSettings";
 
-export default function ProjectHeading() {
+export const getViewIcon = (viewType: string) => {
+  switch (viewType) {
+    case "grid":
+      return (
+        <TableOutlined
+          style={{
+            fontSize: "1.1rem",
+            marginTop: 2,
+          }}
+        />
+      );
+    case "kanban":
+      return (
+        <Trello
+          size={18}
+          style={{
+            marginTop: "4px",
+          }}
+        />
+      );
+    case "list":
+      return (
+        <List
+          size={18}
+          style={{
+            marginTop: "4px",
+          }}
+        />
+      );
+    case "gantt":
+      return (
+        <Clock
+          size={18}
+          style={{
+            marginTop: "4px",
+          }}
+        />
+      );
+    default:
+      return <Table size={18} style={{ marginTop: 4 }} />;
+  }
+};
+
+export const ViewTab = styled(Box)`
+  max-width: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  cursor: pointer;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+`;
+
+const AddViewButton = styled(Box)`
+  cursor: pointer;
+  transition: background 0.4s ease;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+  margin-top: 4px;
+`;
+
+export const MenuItem = styled(Box)`
+  display: flex;
+  gap: 8px;
+  &:hover {
+    background: rgb(191, 90, 242, 0.1);
+  }
+  cursor: pointer;
+  transition: background 0.4s ease;
+  align-items: center;
+`;
+
+const ProjectHeading = () => {
   const { navigationBreadcrumbs } = useCircle();
   const {
     localCollection: collection,
@@ -58,8 +122,9 @@ export default function ProjectHeading() {
     if (
       destination.droppableId === source.droppableId &&
       destination.index === source.index
-    )
+    ) {
       return;
+    }
 
     const newViewOrder = Array.from(collection.projectMetadata.viewOrder);
     newViewOrder.splice(source.index, 1);
@@ -132,26 +197,6 @@ export default function ProjectHeading() {
             </Text>
             <Settings />
           </Stack>
-          {/* <Hidden xs sm>
-            <Box width="32">
-              <PrimaryButton
-                icon={
-                  <SendOutlined
-                    rotate={-40}
-                    style={{ marginBottom: "0.3rem" }}
-                  />
-                }
-                onClick={() => {
-                  void navigator.clipboard.writeText(
-                    `https://circles.spect.network/r/${collection?.slug}`
-                  );
-                  toast.success("Copied to clipboard");
-                }}
-              >
-                Share
-              </PrimaryButton>
-            </Box>
-          </Hidden> */}
         </Stack>
         <Box marginBottom="1" />
         <Hidden xs sm>
@@ -180,11 +225,11 @@ export default function ProjectHeading() {
                           draggableId={viewId}
                           index={index}
                         >
-                          {(provided) => (
+                          {(provided2) => (
                             <div
-                              ref={provided.innerRef}
-                              {...provided.draggableProps}
-                              {...provided.dragHandleProps}
+                              ref={provided2.innerRef}
+                              {...provided2.draggableProps}
+                              {...provided2.dragHandleProps}
                             >
                               <ViewTab
                                 paddingX="4"
@@ -222,11 +267,11 @@ export default function ProjectHeading() {
                                     cursor="pointer"
                                     marginLeft="2"
                                     onClick={() => {
-                                      if (!formActions("manageSettings"))
+                                      if (!formActions("manageSettings")) {
                                         toast.error(
                                           "Your role(s) doen't have permission to manage settings"
                                         );
-                                      else setIsViewSettingsOpen(true);
+                                      } else setIsViewSettingsOpen(true);
                                     }}
                                   >
                                     <Text variant="label">
@@ -253,11 +298,11 @@ export default function ProjectHeading() {
                   <AddViewButton
                     paddingX="8"
                     onClick={() => {
-                      if (!formActions("manageSettings"))
+                      if (!formActions("manageSettings")) {
                         toast.error(
                           "Your role(s) doen't have permission to manage this collection's settings"
                         );
-                      else setIsAddViewPopupOpen(true);
+                      } else setIsAddViewPopupOpen(true);
                     }}
                   >
                     <Text>
@@ -430,11 +475,11 @@ export default function ProjectHeading() {
                       md: "8",
                     }}
                     onClick={() => {
-                      if (!formActions("manageSettings"))
+                      if (!formActions("manageSettings")) {
                         toast.error(
                           "Your role(s) doen't have permission to manage this collection's settings"
                         );
-                      else setIsAddViewPopupOpen(true);
+                      } else setIsAddViewPopupOpen(true);
                     }}
                   >
                     <Text>
@@ -529,77 +574,6 @@ export default function ProjectHeading() {
       </Stack>
     </Box>
   );
-}
-
-export const getViewIcon = (viewType: string) => {
-  switch (viewType) {
-    case "grid":
-      return (
-        <TableOutlined
-          style={{
-            fontSize: "1.1rem",
-            marginTop: 2,
-          }}
-        />
-      );
-    case "kanban":
-      return (
-        <Trello
-          size={18}
-          style={{
-            marginTop: "4px",
-          }}
-        />
-      );
-    case "list":
-      return (
-        <List
-          size={18}
-          style={{
-            marginTop: "4px",
-          }}
-        />
-      );
-    case "gantt":
-      return (
-        <Clock
-          size={18}
-          style={{
-            marginTop: "4px",
-          }}
-        />
-      );
-    default:
-      return <Table size={18} style={{ marginTop: 4 }} />;
-  }
 };
 
-export const ViewTab = styled(Box)`
-  max-width: 200px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  cursor: pointer;
-  border-top-left-radius: 4px;
-  border-top-right-radius: 4px;
-`;
-
-const AddViewButton = styled(Box)`
-  cursor: pointer;
-  transition: background 0.4s ease;
-  border-top-left-radius: 4px;
-  border-top-right-radius: 4px;
-  margin-top: 4px;
-`;
-
-export const MenuItem = styled(Box)`
-  display: flex;
-  gap: 8px;
-  &:hover {
-    background: rgb(191, 90, 242, 0.1);
-  }
-  cursor: pointer;
-  transition: background 0.4s ease;
-  align-items: center;
-`;
+export default ProjectHeading;

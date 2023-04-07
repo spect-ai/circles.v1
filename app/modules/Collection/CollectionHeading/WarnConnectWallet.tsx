@@ -2,7 +2,7 @@ import PrimaryButton from "@/app/common/components/PrimaryButton";
 import CheckBox from "@/app/common/components/Table/Checkbox";
 import { Box, Stack, Text } from "degen";
 import { motion } from "framer-motion";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { useLocalCollection } from "../Context/LocalCollectionContext";
 
@@ -10,6 +10,15 @@ type Props = {
   onYes: () => void;
   onNo: () => void;
 };
+
+// position it top right like a sticky toast
+const Container = styled(Box)`
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 1000;
+  margin: 2rem;
+`;
 
 const WarnConnectWallet = ({ onYes, onNo }: Props) => {
   const [checkboxState, setCheckboxState] = useState(false);
@@ -19,7 +28,7 @@ const WarnConnectWallet = ({ onYes, onNo }: Props) => {
       onYes();
       return;
     }
-    const slug = collection.slug;
+    const { slug } = collection;
     const dontShow = localStorage.getItem(
       `dontShowConnectWalletWarning-${slug}`
     );
@@ -57,7 +66,7 @@ const WarnConnectWallet = ({ onYes, onNo }: Props) => {
               isChecked={checkboxState}
               onClick={() => {
                 setCheckboxState(!checkboxState);
-                const slug = collection.slug;
+                const { slug } = collection;
                 localStorage.setItem(
                   `dontShowConnectWalletWarning-${slug}`,
                   "true"
@@ -71,14 +80,5 @@ const WarnConnectWallet = ({ onYes, onNo }: Props) => {
     </motion.div>
   );
 };
-
-// position it top right like a sticky toast
-const Container = styled(Box)`
-  position: absolute;
-  top: 0;
-  right: 0;
-  z-index: 1000;
-  margin: 2rem;
-`;
 
 export default WarnConnectWallet;

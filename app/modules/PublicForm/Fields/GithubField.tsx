@@ -3,19 +3,28 @@ import { Avatar, Box, Stack, Text } from "degen";
 import { useEffect, useState } from "react";
 import { FaGithub } from "react-icons/fa";
 
-type Props = {
-  setData: (data: any) => void;
-  data: any;
-  propertyName: string;
-  updateRequiredFieldNotSet: (key: string, value: any) => void;
+type GithubCredentials = {
+  id: string;
+  avatar_url: string;
+  login: string;
 };
 
-export default function GithubField({
+type Props = {
+  setData: (data: Record<string, GithubCredentials>) => void;
+  data: Record<string, GithubCredentials>;
+  propertyName: string;
+  updateRequiredFieldNotSet: (
+    key: string,
+    value: Record<string, unknown | GithubCredentials>
+  ) => void;
+};
+
+const GithubField = ({
   data,
   setData,
   propertyName,
   updateRequiredFieldNotSet,
-}: Props) {
+}: Props) => {
   const [code, setCode] = useState("");
 
   useEffect(() => {
@@ -35,23 +44,26 @@ export default function GithubField({
   useEffect(() => {
     (async () => {
       if (!code) return;
-      console.log({ code });
       const res = await fetch(
         `${process.env.BOT_HOST}/connectGithub?code=${code}`
       );
       if (res.ok) {
-        const data = await res.json();
-        console.log({ data });
-        if (data.userData.id) {
-          setData((d: any) => ({
-            ...d,
-            [propertyName]: data.userData,
-          }));
-          updateRequiredFieldNotSet(propertyName, data.userData);
+        const resData = await res.json();
+        if (resData.userData.id) {
+          // setData((d: any) => ({
+          //   ...d,
+          //   [propertyName]: resData.userData,
+          // }));
+          const newData = {
+            ...data,
+            [propertyName]: resData.userData,
+          };
+          setData(newData);
+          updateRequiredFieldNotSet(propertyName, resData.userData);
         }
       }
     })();
-  }, [code]);
+  }, [code, data, propertyName]);
 
   return (
     <Box marginTop="4" width="64">
@@ -71,7 +83,8 @@ export default function GithubField({
           variant="tertiary"
           icon={<FaGithub size={24} />}
           onClick={async () => {
-            const url = `https://github.com/login/oauth/authorize?client_id=4403e769e4d52b24eeab`;
+            const url =
+              "https://github.com/login/oauth/authorize?client_id=4403e769e4d52b24eeab";
             window.open(url, "popup", "width=600,height=600");
           }}
         >
@@ -80,4 +93,6 @@ export default function GithubField({
       )}
     </Box>
   );
-}
+};
+
+export default GithubField;

@@ -9,27 +9,43 @@ import Payee from "./Payee";
 type Props = {
   index: number;
   paymentDetails: PaymentDetails;
-  handleClick: (index: number) => void;
 };
 
-export default function PaymentCard({
-  index,
-  paymentDetails,
-  handleClick,
-}: Props) {
+export const Card = styled(Box)<{ mode: string }>`
+  display: flex;
+  flex-direction: column;
+  min-height: 12vh;
+  margin-top: 0.5rem;
+  padding: 0.4rem 1rem;
+  border-radius: 0.5rem;
+  border: solid 2px
+    ${(props) =>
+      props.mode === "dark"
+        ? "rgb(255, 255, 255, 0.05)"
+        : "rgb(20, 20, 20, 0.05)"};
+
+  position: relative;
+  transition: all 0.3s ease-in-out;
+  width: 80%;
+  @media (max-width: 768px) {
+    width: 100%;
+  }
+`;
+
+const PaymentCard = ({ index, paymentDetails }: Props) => {
   const router = useRouter();
   const { mode } = useTheme();
-  const { circle: cId, status, tab, paymentId } = router.query;
+  const { circle: cId, status } = router.query;
   const { registry } = useCircle();
   const { loading } = usePaymentViewCommon();
 
-  if (loading) return <Box></Box>;
+  if (loading) return <Box />;
   return (
     <Card
       mode={mode}
       key={index}
       onClick={() => {
-        void router.push({
+        router.push({
           pathname: router.pathname,
           query: {
             circle: router.query.circle,
@@ -112,8 +128,8 @@ export default function PaymentCard({
               gap="2"
               flexWrap="wrap"
             >
-              {paymentDetails.labels.map((label, index) => (
-                <Tag key={index} tone="accent" size="small">
+              {paymentDetails.labels.map((label) => (
+                <Tag key={label.value} tone="accent" size="small">
                   {label.label}
                 </Tag>
               ))}
@@ -155,25 +171,6 @@ export default function PaymentCard({
       )}
     </Card>
   );
-}
+};
 
-export const Card = styled(Box)<{ mode: string }>`
-  display: flex;
-  flex-direction: column;
-  min-height: 12vh;
-  margin-top: 0.5rem;
-  padding: 0.4rem 1rem;
-  border-radius: 0.5rem;
-  border: solid 2px
-    ${(props) =>
-      props.mode === "dark"
-        ? "rgb(255, 255, 255, 0.05)"
-        : "rgb(20, 20, 20, 0.05)"};
-
-  position: relative;
-  transition: all 0.3s ease-in-out;
-  width: 80%;
-  @media (max-width: 768px) {
-    width: 100%;
-  }
-`;
+export default PaymentCard;

@@ -4,17 +4,25 @@ import { Box, Button, IconCog, Stack } from "degen";
 import { AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import styled from "styled-components";
-import Access from "./Access";
-import General from "./General";
 import mixpanel from "@/app/common/utils/mixpanel";
 import { useQuery } from "react-query";
 import { UserType } from "@/app/types";
-import { useLocalCollection } from "../../Context/LocalCollectionContext";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { toast } from "react-toastify";
 import Archive from "@/app/modules/CollectionProject/Settings/Archive";
+import { useLocalCollection } from "../../Context/LocalCollectionContext";
+import General from "./General";
+import Access from "./Access";
 
-function FormSettings() {
+const ScrollContainer = styled(Box)`
+  ::-webkit-scrollbar {
+    width: 5px;
+  }
+  height: 32rem;
+  overflow-y: auto;
+`;
+
+const FormSettings = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedTab, setSelectedTab] = useState(0);
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
@@ -89,14 +97,6 @@ function FormSettings() {
       </AnimatePresence>
     </Box>
   );
-}
-
-const ScrollContainer = styled(Box)`
-  ::-webkit-scrollbar {
-    width: 5px;
-  }
-  height: 32rem;
-  overflow-y: auto;
-`;
+};
 
 export default FormSettings;

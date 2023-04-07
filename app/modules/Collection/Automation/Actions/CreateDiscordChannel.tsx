@@ -1,5 +1,4 @@
 import Dropdown from "@/app/common/components/Dropdown";
-import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { useCircle } from "@/app/modules/Circle/CircleContext";
 import {
@@ -8,9 +7,8 @@ import {
   guildIsConnected,
 } from "@/app/services/Discord";
 import { Action, CollectionType, Option } from "@/app/types";
-import { Box, Input, Stack, Tag, Text } from "degen";
+import { Box, Stack, Tag, Text } from "degen";
 import { useEffect, useState } from "react";
-import { useLocalCollection } from "../../Context/LocalCollectionContext";
 import DiscordIcon from "@/app/assets/icons/discordIcon.svg";
 import CheckBox from "@/app/common/components/Table/Checkbox";
 import CreatableDropdown from "@/app/common/components/CreatableDropdown";
@@ -18,18 +16,12 @@ import Editor from "@/app/common/components/Editor";
 import { useLocation } from "react-use";
 
 type Props = {
-  actionMode: "edit" | "create";
   action: Action;
   setAction: (action: Action) => void;
   collection: CollectionType;
 };
 
-export default function CreateDiscordChannel({
-  setAction,
-  actionMode,
-  action,
-  collection,
-}: Props) {
+const CreateDiscordChannel = ({ setAction, action, collection }: Props) => {
   const { origin } = useLocation();
   const [channelName, setChannelName] = useState(
     action?.data?.channelName || ""
@@ -74,11 +66,11 @@ export default function CreateDiscordChannel({
 
   useEffect(() => {
     if (circle?.discordGuildId) {
-      const discordIsConnected = async () => {
+      const discordIsConnected2 = async () => {
         const res = await guildIsConnected(circle?.discordGuildId);
         setDiscordIsConnected(res);
       };
-      void discordIsConnected();
+      discordIsConnected2();
     }
   }, [circle?.discordGuildId, justAddedDiscordServer]);
 
@@ -89,20 +81,21 @@ export default function CreateDiscordChannel({
         circle?.discordGuildId,
         "GUILD_CATEGORY"
       );
-      const categoryOptions = data.guildChannels?.map((channel: any) => ({
-        label: channel.name,
-        value: channel.id,
-      }));
+      const categoryOptions = data.guildChannels?.map(
+        (channel: { id: string; name: string }) => ({
+          label: channel.name,
+          value: channel.id,
+        })
+      );
       setCategoryOptions(categoryOptions);
     };
-    void getGuildChannels();
+    getGuildChannels();
 
     const fetchGuildRoles = async () => {
       const data = await getGuildRoles(circle?.discordGuildId);
       data && setDiscordRoles(data.roles);
-      console.log({ data });
     };
-    void fetchGuildRoles();
+    fetchGuildRoles();
   }, [discordIsConnected]);
 
   const toggleSelectedProperty = (propertyName: string) => {
@@ -113,7 +106,7 @@ export default function CreateDiscordChannel({
     );
   };
 
-  if (!discordIsConnected)
+  if (!discordIsConnected) {
     return (
       <Box
         width="48"
@@ -137,6 +130,7 @@ export default function CreateDiscordChannel({
         </PrimaryButton>
       </Box>
     );
+  }
 
   return (
     <Box
@@ -148,8 +142,8 @@ export default function CreateDiscordChannel({
             channelName,
             channelCategory: selectedCategory,
             channelNameType,
-            isPrivate: isPrivate,
-            addResponder: addResponder,
+            isPrivate,
+            addResponder,
             rolesToAdd: selectedRoles,
             addStakeholder,
             stakeholdersToAdd,
@@ -165,17 +159,17 @@ export default function CreateDiscordChannel({
       <CreatableDropdown
         options={
           Object.entries(collection.properties)
-            .filter(([propertyId, property]) => property.type === "shortText")
-            .map(([propertyId, property]) => ({
+            .filter(([, property]) => property.type === "shortText")
+            .map(([, property]) => ({
               label: `Map from value in "${property.name}"`,
               value: property.name,
             })) || []
         }
         selected={channelName}
         onChange={(value) => {
-          if (collection.properties[value?.value])
+          if (collection.properties[value?.value]) {
             setChannelNameType("mapping");
-          else setChannelNameType("value");
+          } else setChannelNameType("value");
           setChannelName(value);
         }}
         multiple={false}
@@ -215,25 +209,23 @@ export default function CreateDiscordChannel({
             <Text variant="label">Pick who to add to private channel</Text>
           </Box>
           <Stack direction="horizontal" wrap>
-            {discordRoles?.map((role) => {
-              return (
-                <Box
-                  key={role.id}
-                  cursor="pointer"
-                  onClick={() => toggleSelectedRole(role.id)}
-                >
-                  {selectedRoles[role.id] ? (
-                    <Tag tone={"accent"} hover>
-                      <Box paddingX="2">{role.name}</Box>
-                    </Tag>
-                  ) : (
-                    <Tag hover>
-                      <Box paddingX="2">{role.name}</Box>
-                    </Tag>
-                  )}
-                </Box>
-              );
-            })}{" "}
+            {discordRoles?.map((role) => (
+              <Box
+                key={role.id}
+                cursor="pointer"
+                onClick={() => toggleSelectedRole(role.id)}
+              >
+                {selectedRoles[role.id] ? (
+                  <Tag tone="accent" hover>
+                    <Box paddingX="2">{role.name}</Box>
+                  </Tag>
+                ) : (
+                  <Tag hover>
+                    <Box paddingX="2">{role.name}</Box>
+                  </Tag>
+                )}
+              </Box>
+            ))}{" "}
           </Stack>
           {collection.collectionType === 0 && (
             <Box
@@ -260,7 +252,7 @@ export default function CreateDiscordChannel({
                 value={
                   ":::tip\nEnsure you have a discord field in your form which the user will use to connect their discord account."
                 }
-                disabled={true}
+                disabled
               />
             </Box>
           )}
@@ -311,25 +303,23 @@ export default function CreateDiscordChannel({
                 <Stack direction="horizontal" wrap>
                   {Object.values(collection.properties)
                     ?.filter((p) => ["user", "user[]"].includes(p.type))
-                    ?.map((p) => {
-                      return (
-                        <Box
-                          key={p.name}
-                          cursor="pointer"
-                          onClick={() => toggleSelectedProperty(p.name)}
-                        >
-                          {stakeholdersToAdd.includes(p.name) ? (
-                            <Tag tone={"accent"} hover>
-                              <Box paddingX="2">{p.name}</Box>
-                            </Tag>
-                          ) : (
-                            <Tag hover>
-                              <Box paddingX="2">{p.name}</Box>
-                            </Tag>
-                          )}
-                        </Box>
-                      );
-                    })}
+                    ?.map((p) => (
+                      <Box
+                        key={p.name}
+                        cursor="pointer"
+                        onClick={() => toggleSelectedProperty(p.name)}
+                      >
+                        {stakeholdersToAdd.includes(p.name) ? (
+                          <Tag tone="accent" hover>
+                            <Box paddingX="2">{p.name}</Box>
+                          </Tag>
+                        ) : (
+                          <Tag hover>
+                            <Box paddingX="2">{p.name}</Box>
+                          </Tag>
+                        )}
+                      </Box>
+                    ))}
                 </Stack>
               </>
             )}
@@ -337,4 +327,6 @@ export default function CreateDiscordChannel({
       )}
     </Box>
   );
-}
+};
+
+export default CreateDiscordChannel;

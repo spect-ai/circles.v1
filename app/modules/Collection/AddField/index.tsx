@@ -22,21 +22,21 @@ import { SaveFilled } from "@ant-design/icons";
 import { Box, IconTrash, Input, Stack, Text, Textarea } from "degen";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { useCircle } from "../../Circle/CircleContext";
-import { fieldOptionsDropdown, fields } from "../Constants";
-import { useLocalCollection } from "../Context/LocalCollectionContext";
-import AddOptions from "./AddOptions";
-import MilestoneOptions from "./MilestoneOptions";
 import uuid from "react-uuid";
 import { prevPropertyTypeToNewPropertyTypeThatDoesntRequiresClarance } from "@/app/common/utils/constants";
 import { AnimatePresence } from "framer-motion";
 import ConfirmModal from "@/app/common/components/Modal/ConfirmModal";
 import Accordian from "@/app/common/components/Accordian";
+import { useKeyPressEvent } from "react-use";
+import { useCircle } from "../../Circle/CircleContext";
+import { fieldOptionsDropdown, fields } from "../Constants";
+import { useLocalCollection } from "../Context/LocalCollectionContext";
+import AddOptions from "./AddOptions";
+import MilestoneOptions from "./MilestoneOptions";
 import AddConditions from "../Common/AddConditions";
 import PayWall from "./PayWallOptions";
 import RewardTokenOptions from "./RewardTokenOptions";
-import { Field } from "../Automation/Actions/Field";
-import { useKeyPressEvent } from "react-use";
+import Field from "../Automation/Actions/Field";
 
 type Props = {
   propertyName?: string;
@@ -44,7 +44,7 @@ type Props = {
   handleClose: () => void;
 };
 
-export default function AddField({ propertyName, pageId, handleClose }: Props) {
+const AddField = ({ propertyName, pageId, handleClose }: Props) => {
   const {
     localCollection: collection,
     updateCollection,
@@ -88,7 +88,7 @@ export default function AddField({ propertyName, pageId, handleClose }: Props) {
     viewConditions?.length > 0 ? "large" : "small"
   );
   const [advancedDefaultOpen, setAdvancedDefaultOpen] = useState(
-    viewConditions?.length > 0 ? true : false
+    viewConditions?.length > 0
   );
   const [reasonFieldNeedsUserAttention, setReasonFieldNeedsUserAttention] =
     useState(propertyName ? reasonFieldNeedsAttention[propertyName] : "");
@@ -103,21 +103,6 @@ export default function AddField({ propertyName, pageId, handleClose }: Props) {
     setIsDirty(true);
     setRequired(id);
   };
-
-  useKeyPressEvent("Enter", () => {
-    if (name.trim() !== "" && !loading && !showNameCollissionError) {
-      if (
-        propertyName &&
-        !prevPropertyTypeToNewPropertyTypeThatDoesntRequiresClarance[
-          collection.properties[propertyName].type
-        ].includes(type.value)
-      ) {
-        setShowConfirm(true);
-      } else {
-        onSave();
-      }
-    }
-  });
 
   const onSave = async () => {
     setLoading(true);
@@ -176,7 +161,7 @@ export default function AddField({ propertyName, pageId, handleClose }: Props) {
           description,
           options: fieldOptions,
           rewardOptions,
-          userType: userType,
+          userType,
           default: defaultValue,
           required: required === 1,
           milestoneFields,
@@ -198,27 +183,40 @@ export default function AddField({ propertyName, pageId, handleClose }: Props) {
     }
   };
 
+  useKeyPressEvent("Enter", () => {
+    if (name.trim() !== "" && !loading && !showNameCollissionError) {
+      if (
+        propertyName &&
+        !prevPropertyTypeToNewPropertyTypeThatDoesntRequiresClarance[
+          collection.properties[propertyName].type
+        ].includes(type.value)
+      ) {
+        setShowConfirm(true);
+      } else {
+        onSave();
+      }
+    }
+  });
+
   const updateRewardOptions = (property: Property) => {
     if (circle) {
       if (property?.rewardOptions) {
         setNetworks(property.rewardOptions);
-      } else {
-        if (
-          circle.defaultPayment?.chain?.chainId &&
-          circle.defaultPayment?.token?.address &&
-          registry
-        ) {
-          const chainId = circle.defaultPayment?.chain?.chainId;
-          const tokenAddress = circle.defaultPayment?.token?.address;
-          setNetworks({
-            [chainId]: {
-              ...(registry[chainId] || {}),
-              [tokenAddress]: {
-                ...(registry[chainId].tokenDetails[tokenAddress] || {}),
-              },
+      } else if (
+        circle.defaultPayment?.chain?.chainId &&
+        circle.defaultPayment?.token?.address &&
+        registry
+      ) {
+        const chainId = circle.defaultPayment?.chain?.chainId;
+        const tokenAddress = circle.defaultPayment?.token?.address;
+        setNetworks({
+          [chainId]: {
+            ...(registry[chainId] || {}),
+            [tokenAddress]: {
+              ...(registry[chainId].tokenDetails[tokenAddress] || {}),
             },
-          });
-        }
+          },
+        });
       }
     }
   };
@@ -271,7 +269,7 @@ export default function AddField({ propertyName, pageId, handleClose }: Props) {
 
   useEffect(() => {
     setModalSize(viewConditions?.length > 0 ? "large" : "small");
-    setAdvancedDefaultOpen(viewConditions?.length > 0 ? true : false);
+    setAdvancedDefaultOpen(viewConditions?.length > 0);
   }, [viewConditions]);
 
   useEffect(() => {
@@ -288,7 +286,7 @@ export default function AddField({ propertyName, pageId, handleClose }: Props) {
         isPartOfFormView: false,
         description,
         options: fieldOptions,
-        userType: userType,
+        userType,
         default: defaultValue,
         required: required === 1,
         viewConditions,
@@ -308,7 +306,7 @@ export default function AddField({ propertyName, pageId, handleClose }: Props) {
             handleClose={() => setShowConfirm(false)}
             onConfirm={() => {
               setShowConfirm(false);
-              void onSave();
+              onSave();
             }}
             onCancel={() => setShowConfirm(false)}
           />
@@ -415,9 +413,9 @@ export default function AddField({ propertyName, pageId, handleClose }: Props) {
             <Dropdown
               options={fieldOptionsDropdown}
               selected={type}
-              onChange={(type) => {
+              onChange={(type2) => {
                 setIsDirty(true);
-                setType(type);
+                setType(type2);
               }}
               multiple={false}
               isClearable={false}
@@ -483,7 +481,7 @@ export default function AddField({ propertyName, pageId, handleClose }: Props) {
                     name: name.trim(),
                     options: fieldOptions,
                     rewardOptions: networks,
-                    userType: userType,
+                    userType,
                     default: defaultValue,
                     type: type.value as PropertyType,
                     isPartOfFormView: true,
@@ -509,27 +507,8 @@ export default function AddField({ propertyName, pageId, handleClose }: Props) {
                   buttonText="Add Condition when Field is Visible"
                   collection={collection}
                   buttonWidth="fit"
-                  dropDownPortal={true}
+                  dropDownPortal
                 />
-                {/* {["shortText", "longText", "ethAddress"].includes(
-                  type.value
-                ) && <Input label="" placeholder="Default Value" />}
-
-                <Text>Notify User Type on Changes</Text>
-                <Dropdown
-                  placeholder="Select User Types"
-                  options={[
-                    { label: "Assignee", value: "assignee" },
-                    { label: "Reviewer", value: "reviewer" },
-                    { label: "Grantee", value: "grantee" },
-                    { label: "Applicant", value: "applicant" },
-                  ]}
-                  selected={notifyUserType}
-                  onChange={(type: Option[]) => {
-                    setNotifyUserType(type);
-                  }}
-                  multiple={true}
-                /> */}
               </Accordian>
             )}
 
@@ -576,4 +555,6 @@ export default function AddField({ propertyName, pageId, handleClose }: Props) {
       </Modal>
     </Box>
   );
-}
+};
+
+export default AddField;

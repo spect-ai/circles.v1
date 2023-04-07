@@ -2,10 +2,10 @@ import { Box, Button, IconClose, Input, Stack, Text, useTheme } from "degen";
 import React, { useState } from "react";
 import styled from "styled-components";
 import uuid from "react-uuid";
-import { useLocalCollection } from "../Context/LocalCollectionContext";
 import ColorPicker from "react-best-gradient-color-picker";
 import Popover from "@/app/common/components/Popover";
 import { motion } from "framer-motion";
+import { useLocalCollection } from "../Context/LocalCollectionContext";
 
 type Props = {
   fieldOptions: { label: string; value: string; color?: string }[];
@@ -24,7 +24,30 @@ type Props = {
   setIsDirty?: (isDirty: boolean) => void;
 };
 
-export default function AddOptions({
+const OptionInput = styled.input<{ mode: string }>`
+  width: 100%;
+  background: transparent;
+  border: 0;
+  border-style: none;
+  border-color: transparent;
+  outline: none;
+  outline-offset: 0;
+  box-shadow: none;
+  font-size: 1rem;
+  caret-color: rgb(255, 255, 255, 0.85);
+  color: ${(props) =>
+    props.mode === "dark" ? "rgb(255, 255, 255, 0.8)" : "rgb(20, 20, 20, 0.8)"};
+  font-weight: 500;
+  padding: 0.1rem;
+
+  :focus {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    transition: background 0.2s ease;
+  }
+`;
+
+const AddOptions = ({
   fieldOptions,
   setFieldOptions,
   label = "Options",
@@ -37,7 +60,7 @@ export default function AddOptions({
   setAllowCustom,
   multiSelect,
   setIsDirty,
-}: Props) {
+}: Props) => {
   const { mode } = useTheme();
   const { localCollection: collection } = useLocalCollection();
   const [openColorPicker, setOpenColorPicker] = useState(false);
@@ -53,7 +76,7 @@ export default function AddOptions({
             <Stack direction="horizontal" align="center" space="2">
               <input
                 type="checkbox"
-                name={"Settings"}
+                name="Settings"
                 checked={allowCustom}
                 onChange={() => {
                   setIsDirty && setIsDirty(true);
@@ -91,7 +114,7 @@ export default function AddOptions({
         <Box display="flex" flexDirection="row" gap="4" width="full">
           <Box display="flex" flexDirection="column" gap="4" width="2/3">
             {fieldOptions.map((option, index) => (
-              <Box key={index}>
+              <Box key={option.value}>
                 <Stack direction="horizontal" align="center">
                   {collection.collectionType === 1 && (
                     <Box
@@ -154,10 +177,9 @@ export default function AddOptions({
             <Popover
               isOpen={openColorPicker}
               setIsOpen={(isOpen) => {
-                console.log({ isOpen });
                 setOpenColorPicker(isOpen);
               }}
-              butttonComponent={<Box></Box>}
+              butttonComponent={<Box />}
             >
               <motion.div
                 initial={{ height: 0 }}
@@ -169,10 +191,10 @@ export default function AddOptions({
               >
                 <Box backgroundColor="background" padding="2">
                   <ColorPicker
-                    hideInputs={true}
-                    hideControls={true}
-                    hideColorGuide={true}
-                    hideInputType={true}
+                    hideInputs
+                    hideControls
+                    hideColorGuide
+                    hideInputType
                     value={colorPickerColor}
                     onChange={(color: string) => {
                       setColorPickerColor(color);
@@ -218,27 +240,6 @@ export default function AddOptions({
       </Stack>
     </Box>
   );
-}
+};
 
-const OptionInput = styled.input<{ mode: string }>`
-  width: 100%;
-  background: transparent;
-  border: 0;
-  border-style: none;
-  border-color: transparent;
-  outline: none;
-  outline-offset: 0;
-  box-shadow: none;
-  font-size: 1rem;
-  caret-color: rgb(255, 255, 255, 0.85);
-  color: ${(props) =>
-    props.mode === "dark" ? "rgb(255, 255, 255, 0.8)" : "rgb(20, 20, 20, 0.8)"};
-  font-weight: 500;
-  padding: 0.1rem;
-
-  :focus {
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 4px;
-    transition: background 0.2s ease;
-  }
-`;
+export default AddOptions;

@@ -1,4 +1,3 @@
-import { getPropertyIcon } from "@/app/modules/CollectionProject/EditProperty/Utils";
 import { updateField } from "@/app/services/Collection";
 import { PropertyType } from "@/app/types";
 import { EyeFilled, EyeInvisibleFilled } from "@ant-design/icons";
@@ -7,6 +6,7 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import { Draggable } from "react-beautiful-dnd";
 import styled from "styled-components";
+import getPropertyIcon from "@/app/modules/CollectionProject/EditProperty/Utils";
 import { useLocalCollection } from "../../Context/LocalCollectionContext";
 
 type Props = {
@@ -16,6 +16,20 @@ type Props = {
   setIsAddFieldOpen: (open: boolean) => void;
   setPropertyName: (name: string) => void;
 };
+
+const PropertyButton = styled(Box)`
+  &:hover {
+    background: rgb(255, 255, 255, 0.1);
+  }
+  width: fit-content;
+  cursor: pointer;
+  transition: background 0.2s ease;
+`;
+
+const ConnectorLine = styled(Box)`
+  margin-top: -10px;
+  margin-left: 8px;
+`;
 
 const FieldComponent = ({
   field,
@@ -74,17 +88,6 @@ const FieldComponent = ({
                   <Text color="red">*</Text>
                 </Box>
               )}
-              {/* <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: hover ? 1 : 0 }}
-                transition={{ duration: 0.3 }}
-              >
-                <Box cursor="pointer" marginLeft="2">
-                  <Text color="red">
-                    <IconTrash size="4" />
-                  </Text>
-                </Box>
-              </motion.div> */}
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: hover ? 1 : 0 }}
@@ -128,19 +131,5 @@ const FieldComponent = ({
     </Draggable>
   );
 };
-
-const PropertyButton = styled(Box)<{}>`
-  &:hover {
-    background: rgb(255, 255, 255, 0.1);
-  }
-  width: fit-content;
-  cursor: pointer;
-  transition: background 0.2s ease;
-`;
-
-const ConnectorLine = styled(Box)<{}>`
-  margin-top: -10px;
-  margin-left: 8px;
-`;
 
 export default FieldComponent;

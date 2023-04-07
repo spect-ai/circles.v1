@@ -9,37 +9,35 @@ import {
   Tag,
   IconPlusSmall,
 } from "degen";
-import { useRef, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 
 interface Props {
   disabled: boolean;
-  updateFieldHasInvalidType: (key: string, value: any) => void;
+  updateFieldHasInvalidType: (key: string, value: unknown) => void;
   placeholder: string;
   value: Option[];
-  data: any;
-  setData: (value: any) => void;
-  updateRequiredFieldNotSet: (key: string, value: any) => void;
+  data: unknown;
+  setData: (value: unknown) => void;
   propertyName: string;
 }
 
 interface InputProps {
   disabled: boolean;
-  updateFieldHasInvalidType: (key: string, value: any) => void;
+  updateFieldHasInvalidType: (key: string, value: unknown) => void;
   placeholder: string;
   val: Option;
   updateData: (i: number, lab: string, val: string) => void;
-  propertyName: string;
   i: number;
 }
 
-function URLInput({
+const URLInput = ({
   val,
   updateFieldHasInvalidType,
   disabled,
   placeholder,
   updateData,
   i,
-}: InputProps) {
+}: InputProps) => {
   const [tempLabel, setTempLabel] = useState("");
   const [tempValue, setTempValue] = useState("");
 
@@ -48,7 +46,7 @@ function URLInput({
     setTempLabel(val.label);
   }, [val]);
   return (
-    <Stack direction={"horizontal"} align="center">
+    <Stack direction="horizontal" align="center">
       <Input
         label=""
         placeholder="Label"
@@ -81,13 +79,13 @@ function URLInput({
           updateData(i, "", "");
         }}
       >
-        <IconClose size={"4"} color="accent" />
+        <IconClose size="4" color="accent" />
       </Button>
     </Stack>
   );
-}
+};
 
-export default function MultiURLField({
+const MultiURLField = ({
   disabled,
   updateFieldHasInvalidType,
   placeholder,
@@ -95,34 +93,31 @@ export default function MultiURLField({
   data,
   propertyName,
   setData,
-}: Props) {
+}: Props) => {
   const [urlArray, setUrlArray] = useState<Option[]>(value);
 
-  const updateData = (index: number, label: string, value: string) => {
+  const updateData = (index: number, label: string, cValue: string) => {
     let urls = Array.from(urlArray);
     urls[index].label = label;
-    urls[index].value = value;
-    urls = urls.filter((i) => i.value != "" || i.label != "");
+    urls[index].value = cValue;
+    urls = urls.filter((i) => i.value !== "" || i.label !== "");
     setUrlArray(urls);
-    setData({ ...data, [propertyName]: urls });
+    setData({ ...(data as Record<string, unknown>), [propertyName]: urls });
   };
   return (
-    <Stack direction={"vertical"}>
+    <Stack direction="vertical">
       {urlArray &&
-        urlArray?.map((val, i) => {
-          return (
-            <URLInput
-              key={i}
-              val={val}
-              updateFieldHasInvalidType={updateFieldHasInvalidType}
-              placeholder={placeholder}
-              disabled={disabled}
-              updateData={updateData}
-              propertyName={propertyName}
-              i={i}
-            />
-          );
-        })}
+        urlArray?.map((val, i) => (
+          <URLInput
+            key={val.label + val.value}
+            val={val}
+            updateFieldHasInvalidType={updateFieldHasInvalidType}
+            placeholder={placeholder}
+            disabled={disabled}
+            updateData={updateData}
+            i={i}
+          />
+        ))}
       <Tag tone="accent" size="medium" hover>
         <Box
           onClick={() => {
@@ -135,14 +130,16 @@ export default function MultiURLField({
             }
           }}
           display="flex"
-          flexDirection={"row"}
+          flexDirection="row"
           gap="1"
           cursor="pointer"
         >
-          <IconPlusSmall size={"4"} color="accent" />
+          <IconPlusSmall size="4" color="accent" />
           Add URL
         </Box>
       </Tag>
     </Stack>
   );
-}
+};
+
+export default MultiURLField;

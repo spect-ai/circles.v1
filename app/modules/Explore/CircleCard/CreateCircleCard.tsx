@@ -1,15 +1,13 @@
 import { useState } from "react";
-
 import { Box, Button, Input, MediaPicker, Stack, useTheme } from "degen";
 import styled from "styled-components";
 import { useMutation } from "react-query";
 import { useRouter } from "next/router";
 import Modal from "@/app/common/components/Modal";
 import { storeImage } from "@/app/common/utils/ipfs";
-import Tabs from "@/app/common/components/Tabs";
 import { generateColorHEX } from "@/app/common/utils/utils";
 import { AnimatePresence } from "framer-motion";
-import { createDefaultProject } from "@/app/services/Defaults";
+import createDefaultProject from "@/app/services/Defaults";
 
 const Container = styled(Box)<{ mode: string }>`
   border: 0.1rem solid transparent;
@@ -32,7 +30,7 @@ type CreateCircleDto = {
 
 const CreateCircleCard = () => {
   const [modalOpen, setModalOpen] = useState(false);
-  const [visibilityTab, setVisibilityTab] = useState(0);
+  const [visibilityTab] = useState(0);
   const close = () => setModalOpen(false);
   const open = () => setModalOpen(true);
 
@@ -45,8 +43,8 @@ const CreateCircleCard = () => {
 
   const [loading, setLoading] = useState(false);
 
-  const { mutateAsync } = useMutation((circle: CreateCircleDto) => {
-    return fetch(`${process.env.API_HOST}/circle/v1`, {
+  const { mutateAsync } = useMutation((circle: CreateCircleDto) =>
+    fetch(`${process.env.API_HOST}/circle/v1`, {
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
@@ -54,14 +52,13 @@ const CreateCircleCard = () => {
       method: "POST",
       body: JSON.stringify(circle),
       credentials: "include",
-    });
-  });
+    })
+  );
 
   const uploadFile = async (file: File) => {
     if (file) {
       setUploading(true);
       const { imageGatewayURL } = await storeImage(file);
-      console.log({ imageGatewayURL });
       setLogo(imageGatewayURL);
       setUploading(false);
     }
@@ -146,18 +143,17 @@ const CreateCircleCard = () => {
                       })
                         .then(async (res) => {
                           const resJson = await res.json();
-                          console.log({ resJson });
                           const response = await createDefaultProject(
                             resJson.id
                           );
                           if (response) {
-                            void router.push(`/${resJson.slug}`);
+                            router.push(`/${resJson.slug}`);
                           }
                           close();
                           setLoading(false);
                         })
                         .catch((err) => {
-                          console.log({ err });
+                          console.error({ err });
                           setLoading(false);
                         });
                     }}

@@ -1,9 +1,9 @@
 import Dropdown from "@/app/common/components/Dropdown";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
+import { Option } from "@/app/types";
 import { Box, Button, IconTrash, Input, Stack, Text } from "degen";
 import { AnimatePresence, motion } from "framer-motion";
-import React, { useEffect, useState } from "react";
-import { Option } from "./Chain";
+import { useEffect, useState } from "react";
 
 type Props = {
   paymentType: "paywall" | "donation";
@@ -17,7 +17,7 @@ type Props = {
   onUpdateToken: (token: Option) => void;
 };
 
-export default function Token({
+const Token = ({
   paymentType,
   tokenOptions,
   token,
@@ -27,14 +27,11 @@ export default function Token({
   onTokenAmountChange,
   onDollarAmountChange,
   onUpdateToken,
-}: Props) {
+}: Props) => {
   const [settingToken, setSettingToken] = useState(true);
   const [isInputFocused, setIsInputFocused] = useState(false);
 
   useEffect(() => {
-    if (token.label === "BNB") {
-      console.log({ tokenAmount, dollarAmount });
-    }
     if (tokenAmount) setSettingToken(true);
     if (dollarAmount) setSettingToken(false);
   }, [tokenAmount, dollarAmount]);
@@ -110,4 +107,6 @@ export default function Token({
       </AnimatePresence>
     </Stack>
   );
-}
+};
+
+export default Token;

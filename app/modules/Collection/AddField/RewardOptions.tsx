@@ -14,24 +14,27 @@ type Props = {
   setNetworks: React.Dispatch<React.SetStateAction<Registry | undefined>>;
 };
 
-export default function RewardOptions({ networks, setNetworks }: Props) {
+const ScrollContainer = styled(Box)`
+  ::-webkit-scrollbar {
+    width: 4px;
+  }
+`;
 
+const RewardOptions = ({ networks, setNetworks }: Props) => {
   const { registry } = useCircle();
   const [settingCustom, setSettingCustom] = useState(false);
   const [address, setAddress] = useState("");
   const [tokenSymbol, setTokenSymbol] = useState("");
   const [tokenName, setTokenName] = useState("");
 
-  const [tokenLoading, setTokenLoading] = useState(false);
+  const [, setTokenLoading] = useState(false);
   const { symbol, name } = useERC20();
-  const [options, setOptions] = useState(
+  const [options] = useState(
     registry
-      ? Object.entries(registry).map(([chainId, network]) => {
-          return {
-            label: network.name,
-            value: chainId,
-          };
-        })
+      ? Object.entries(registry).map(([chainId, network]) => ({
+          label: network.name,
+          value: chainId,
+        }))
       : ([] as OptionType[])
   );
   const [selectedOption, setSelectedOption] = useState({
@@ -83,8 +86,8 @@ export default function RewardOptions({ networks, setNetworks }: Props) {
                     setTokenName(
                       await name(e.target.value, selectedOption.value)
                     );
-                  } catch (e) {
-                    console.log(e);
+                  } catch (err) {
+                    console.error(err);
                     setTokenLoading(false);
                   }
                   setTokenLoading(false);
@@ -109,7 +112,7 @@ export default function RewardOptions({ networks, setNetworks }: Props) {
             >
               <Button
                 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                //@ts-ignore
+                // @ts-ignore
                 marginRight="2"
                 variant="secondary"
                 size="small"
@@ -155,81 +158,72 @@ export default function RewardOptions({ networks, setNetworks }: Props) {
         )}
 
         {networks &&
-          Object.entries(networks).map(([chainId, network]) => {
-            return (
-              <Accordian
-                key={chainId}
-                name={`${network.name}`}
-                defaultOpen={false}
-              >
-                <Box width="full">
-                  <Stack
-                    direction="horizontal"
-                    space="1"
-                    justify="flex-start"
-                    wrap
-                  >
-                    {Object.entries(network.tokenDetails).map(
-                      ([address, token]) => {
-                        return (
-                          <Box
-                            key={token.address}
-                            display="flex"
-                            flexDirection="column"
-                          >
-                            <Stack direction="horizontal" align="center">
-                              <Text>{token.symbol}</Text>
-                              <Button
-                                shape="circle"
-                                size="small"
-                                width="2"
-                                variant="transparent"
-                                onClick={() => {
-                                  const newNetworks = { ...networks };
-                                  delete newNetworks[chainId].tokenDetails[
-                                    address
-                                  ];
-                                  if (
-                                    Object.keys(
-                                      newNetworks[chainId].tokenDetails
-                                    ).length === 0
-                                  ) {
-                                    delete newNetworks[chainId];
-                                  }
-                                  setNetworks(newNetworks);
-                                }}
-                              >
-                                <IconClose size="4" />
-                              </Button>
-                            </Stack>
-                          </Box>
-                        );
-                      }
-                    )}
-                  </Stack>
-                </Box>
-                <Box
-                  display="flex"
-                  flexDirection="column"
-                  justifyContent="flex-end"
-                  width="full"
-                  marginTop="2"
+          Object.entries(networks).map(([chainId, network]) => (
+            <Accordian
+              key={chainId}
+              name={`${network.name}`}
+              defaultOpen={false}
+            >
+              <Box width="full">
+                <Stack
+                  direction="horizontal"
+                  space="1"
+                  justify="flex-start"
+                  wrap
                 >
-                  <Button
-                    size="small"
-                    variant="tertiary"
-                    onClick={() => {
-                      const newNetworks = { ...networks };
-                      delete newNetworks[chainId];
-                      setNetworks(newNetworks);
-                    }}
-                  >
-                    Remove Network
-                  </Button>
-                </Box>
-              </Accordian>
-            );
-          })}
+                  {Object.entries(network.tokenDetails).map(([addr, token]) => (
+                    <Box
+                      key={token.address}
+                      display="flex"
+                      flexDirection="column"
+                    >
+                      <Stack direction="horizontal" align="center">
+                        <Text>{token.symbol}</Text>
+                        <Button
+                          shape="circle"
+                          size="small"
+                          width="2"
+                          variant="transparent"
+                          onClick={() => {
+                            const newNetworks = { ...networks };
+                            delete newNetworks[chainId].tokenDetails[addr];
+                            if (
+                              Object.keys(newNetworks[chainId].tokenDetails)
+                                .length === 0
+                            ) {
+                              delete newNetworks[chainId];
+                            }
+                            setNetworks(newNetworks);
+                          }}
+                        >
+                          <IconClose size="4" />
+                        </Button>
+                      </Stack>
+                    </Box>
+                  ))}
+                </Stack>
+              </Box>
+              <Box
+                display="flex"
+                flexDirection="column"
+                justifyContent="flex-end"
+                width="full"
+                marginTop="2"
+              >
+                <Button
+                  size="small"
+                  variant="tertiary"
+                  onClick={() => {
+                    const newNetworks = { ...networks };
+                    delete newNetworks[chainId];
+                    setNetworks(newNetworks);
+                  }}
+                >
+                  Remove Network
+                </Button>
+              </Box>
+            </Accordian>
+          ))}
         {!networks ||
           (!Object.keys(networks)?.length && (
             <Text variant="label">No reward options added yet</Text>
@@ -237,25 +231,6 @@ export default function RewardOptions({ networks, setNetworks }: Props) {
       </Stack>
     </ScrollContainer>
   );
-}
+};
 
-const OptionInput = styled.input<{ mode: string }>`
-  background: transparent;
-  border: 0;
-  border-style: none;
-  border-color: transparent;
-  outline: none;
-  outline-offset: 0;
-  box-shadow: none;
-  font-size: 1rem;
-  caret-color: rgb(255, 255, 255, 0.85);
-  color: ${(props) =>
-    props.mode === "dark" ? "rgb(255, 255, 255, 0.8)" : "rgb(20, 20, 20, 0.8)"};
-  font-weight: 500;
-`;
-
-const ScrollContainer = styled(Box)`
-  ::-webkit-scrollbar {
-    width: 4px;
-  }
-`;
+export default RewardOptions;

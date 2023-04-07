@@ -1,21 +1,23 @@
+/* eslint-disable no-continue */
+/* eslint-disable no-restricted-syntax */
 import Modal from "@/app/common/components/Modal";
-import Popover from "@/app/common/components/Popover";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import Select from "@/app/common/components/Select";
 import { updateFormCollection } from "@/app/services/Collection";
-import { Box, IconPlusSmall, Input, Stack, Tag, Text } from "degen";
-import { AnimatePresence, motion } from "framer-motion";
-import React, { useEffect, useState } from "react";
+import { Box, IconPlusSmall, Stack, Text } from "degen";
+import { AnimatePresence } from "framer-motion";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useCircle } from "../../Circle/CircleContext";
 import AddToken from "../../Circle/CircleSettingsModal/CirclePayment/AddToken";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
 import Chain from "./Chain";
+
 type Props = {
   handleClose: () => void;
 };
 
-export default function Payments({ handleClose }: Props) {
+const Payments = ({ handleClose }: Props) => {
   const [updateLoading, setUpdateLoading] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [isAddTokenOpen, setIsAddTokenOpen] = useState(false);
@@ -30,12 +32,10 @@ export default function Payments({ handleClose }: Props) {
 
   const { registry } = useCircle();
 
-  const networks = Object.keys(registry || {}).map((key) => {
-    return {
-      label: (registry && registry[key].name) || "",
-      value: key,
-    };
-  });
+  const networks = Object.keys(registry || {}).map((key) => ({
+    label: (registry && registry[key].name) || "",
+    value: key,
+  }));
   const [addedNetworks, setAddedNetworks] = useState([networks[0]]);
 
   const { localCollection: collection, updateCollection } =
@@ -46,12 +46,10 @@ export default function Payments({ handleClose }: Props) {
   } = Object.keys(registry || {}).reduce((acc, key) => {
     const tokensList = Object.keys(
       (registry && registry[key].tokenDetails) || {}
-    ).map((tokenKey) => {
-      return {
-        label: (registry && registry[key].tokenDetails[tokenKey].symbol) || "",
-        value: tokenKey,
-      };
-    });
+    ).map((tokenKey) => ({
+      label: (registry && registry[key].tokenDetails[tokenKey].symbol) || "",
+      value: tokenKey,
+    }));
     return {
       ...acc,
       [key]: tokensList,
@@ -79,7 +77,7 @@ export default function Payments({ handleClose }: Props) {
 
   useEffect(() => {
     if (collection.formMetadata.paymentConfig) {
-      const paymentConfig = collection.formMetadata.paymentConfig;
+      const { paymentConfig } = collection.formMetadata;
       setPaymentType({
         label: paymentConfig.type === "donation" ? "Donation" : "Paywall",
         value: paymentConfig.type,
@@ -88,52 +86,43 @@ export default function Payments({ handleClose }: Props) {
         label: paymentConfig.required ? "Yes" : "No",
         value: paymentConfig.required ? "yes" : "no",
       });
-      const networks = Object.keys(paymentConfig.networks).map((key) => {
-        return {
-          label: (registry && registry[key].name) || "",
-          value: key,
-        };
-      });
-      setAddedNetworks(networks);
+      const newNetworks = Object.keys(paymentConfig.networks).map((key) => ({
+        label: (registry && registry[key].name) || "",
+        value: key,
+      }));
+      setAddedNetworks(newNetworks);
       const tokens: {
         [key: string]: { label: string; value: string }[];
       } = Object.keys(paymentConfig.networks).reduce((acc, key) => {
         const tokensList = Object.keys(
           paymentConfig.networks[key].tokens || {}
-        ).map((tokenKey) => {
-          return {
-            label:
-              (registry && registry[key].tokenDetails[tokenKey].symbol) || "",
-            value: tokenKey,
-          };
-        });
+        ).map((tokenKey) => ({
+          label:
+            (registry && registry[key].tokenDetails[tokenKey].symbol) || "",
+          value: tokenKey,
+        }));
         return {
           ...acc,
           [key]: tokensList,
         };
       }, {});
-      console.log({ tokens });
       setAddedTokens(tokens);
-      const receiverAddresses = Object.keys(paymentConfig.networks).reduce(
-        (acc, key) => {
-          return {
-            ...acc,
-            [key]: paymentConfig.networks[key].receiverAddress,
-          };
-        },
+      const receiverAddr = Object.keys(paymentConfig.networks).reduce(
+        (acc, key) => ({
+          ...acc,
+          [key]: paymentConfig.networks[key].receiverAddress,
+        }),
         {}
       );
-      setReceiverAddresses(receiverAddresses);
+      setReceiverAddresses(receiverAddr);
 
-      const tokenAmounts = Object.keys(paymentConfig.networks).reduce(
+      const tokenAmnts = Object.keys(paymentConfig.networks).reduce(
         (acc, key) => {
           const amounts = Object.keys(paymentConfig.networks[key].tokens).map(
-            (tokenKey) => {
-              return {
-                [tokenKey]:
-                  paymentConfig.networks[key].tokens[tokenKey].tokenAmount,
-              };
-            }
+            (tokenKey) => ({
+              [tokenKey]:
+                paymentConfig.networks[key].tokens[tokenKey].tokenAmount,
+            })
           );
           return {
             ...acc,
@@ -142,16 +131,14 @@ export default function Payments({ handleClose }: Props) {
         },
         {}
       );
-      setTokenAmounts(tokenAmounts);
-      const dollarAmounts = Object.keys(paymentConfig.networks).reduce(
+      setTokenAmounts(tokenAmnts);
+      const dollarAmnts = Object.keys(paymentConfig.networks).reduce(
         (acc, key) => {
           const amounts = Object.keys(paymentConfig.networks[key].tokens).map(
-            (tokenKey) => {
-              return {
-                [tokenKey]:
-                  paymentConfig.networks[key].tokens[tokenKey].dollarAmount,
-              };
-            }
+            (tokenKey) => ({
+              [tokenKey]:
+                paymentConfig.networks[key].tokens[tokenKey].dollarAmount,
+            })
           );
           return {
             ...acc,
@@ -160,7 +147,7 @@ export default function Payments({ handleClose }: Props) {
         },
         {}
       );
-      setDollarAmounts(dollarAmounts);
+      setDollarAmounts(dollarAmnts);
     }
   }, []);
 
@@ -172,13 +159,11 @@ export default function Payments({ handleClose }: Props) {
       } = Object.keys(registry || {}).reduce((acc, key) => {
         const tokensList = Object.keys(
           (registry && registry[key].tokenDetails) || {}
-        ).map((tokenKey) => {
-          return {
-            label:
-              (registry && registry[key].tokenDetails[tokenKey].symbol) || "",
-            value: tokenKey,
-          };
-        });
+        ).map((tokenKey) => ({
+          label:
+            (registry && registry[key].tokenDetails[tokenKey].symbol) || "",
+          value: tokenKey,
+        }));
         return {
           ...acc,
           [key]: tokensList,
@@ -216,7 +201,6 @@ export default function Payments({ handleClose }: Props) {
               dollarAmounts[network.value][token.value]
             )
           ) {
-            console.log("here");
             errMessages.push(
               `Amount is required for ${token.label} on ${network.label}`
             );
@@ -271,8 +255,8 @@ export default function Payments({ handleClose }: Props) {
       <AnimatePresence>
         {isAddTokenOpen && (
           <AddToken
-            chainId={"1"}
-            chainName={"Ethereum"}
+            chainId="1"
+            chainName="Ethereum"
             handleClose={() => {
               setIsAddTokenOpen(false);
             }}
@@ -294,7 +278,17 @@ export default function Payments({ handleClose }: Props) {
                 { label: "Donation", value: "donation" },
               ]}
               value={paymentType}
-              onChange={setPaymentType as any}
+              onChange={(value) => {
+                setPaymentType(
+                  value as {
+                    label: string;
+                    value: "paywall" | "donation";
+                  }
+                );
+                if (value.value === "donation") {
+                  setRequired({ label: "No", value: "no" });
+                }
+              }}
               variant="secondary"
             />
           </Stack>
@@ -368,7 +362,6 @@ export default function Payments({ handleClose }: Props) {
                           initTokens[updatedNetwork.value],
                       });
                     }
-                    console.log({ newNetworks });
                   }}
                   onAddToken={() => {
                     if (!addedTokens[network.value]) {
@@ -383,8 +376,7 @@ export default function Payments({ handleClose }: Props) {
                       ],
                     });
                   }}
-                  onUpdateToken={(token, index) => {
-                    console.log({ token, index });
+                  onUpdateToken={(token) => {
                     if (token.value === "custom") {
                       setIsAddTokenOpen(true);
                       return;
@@ -408,19 +400,18 @@ export default function Payments({ handleClose }: Props) {
                         return t;
                       }
                     );
-                    console.log({ newTokens });
                     setAddedTokens({
                       ...addedTokens,
                       [network.value]: newTokens,
                     });
                   }}
-                  onRemoveToken={(token, index) => {
+                  onRemoveToken={(token, tokenIndex) => {
                     if (addedTokens[network.value].length === 1) {
                       toast.error("At least one token is required");
                       return;
                     }
                     const newTokens = addedTokens[network.value].filter(
-                      (t, idx) => idx !== index
+                      (t, idx) => idx !== tokenIndex
                     );
                     setAddedTokens({
                       ...addedTokens,
@@ -469,7 +460,7 @@ export default function Payments({ handleClose }: Props) {
             </Box>
           </Stack>
           <Stack direction="horizontal">
-            <Box width={"1/2"}>
+            <Box width="1/2">
               <PrimaryButton
                 loading={updateLoading}
                 onClick={async () => {
@@ -486,10 +477,10 @@ export default function Payments({ handleClose }: Props) {
                             chainName: network.label,
                             receiverAddress: receiverAddresses[network.value],
                             tokens: addedTokens[network.value].reduce(
-                              (acc, token) => {
+                              (tokenAcc, token) => {
                                 if (token.value) {
                                   return {
-                                    ...acc,
+                                    ...tokenAcc,
                                     [token.value]: {
                                       address: token.value,
                                       symbol: token.label,
@@ -512,7 +503,7 @@ export default function Payments({ handleClose }: Props) {
                                     },
                                   };
                                 }
-                                return acc;
+                                return tokenAcc;
                               },
                               {}
                             ),
@@ -531,7 +522,6 @@ export default function Payments({ handleClose }: Props) {
                     },
                   });
                   if (res.id) {
-                    console.log({ res });
                     setUpdateLoading(false);
                     updateCollection(res);
                     handleClose();
@@ -546,12 +536,11 @@ export default function Payments({ handleClose }: Props) {
                 Payment
               </PrimaryButton>
             </Box>
-            <Box width={"1/2"}>
+            <Box width="1/2">
               <PrimaryButton
                 tone="red"
                 loading={deleteLoading}
                 onClick={async () => {
-                  console.log({ addedTokens });
                   setDeleteLoading(true);
                   const res = await updateFormCollection(collection.id, {
                     formMetadata: {
@@ -561,7 +550,6 @@ export default function Payments({ handleClose }: Props) {
                   });
 
                   if (res.id) {
-                    console.log({ res });
                     setDeleteLoading(false);
                     updateCollection(res);
                     handleClose();
@@ -580,4 +568,6 @@ export default function Payments({ handleClose }: Props) {
       </Box>
     </Modal>
   );
-}
+};
+
+export default Payments;

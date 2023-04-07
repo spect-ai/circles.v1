@@ -10,7 +10,7 @@ type Props = {
   handleClose: () => void;
 };
 
-export default function FAQModal({ handleClose }: Props) {
+const FAQModal = ({ handleClose }: Props) => {
   const [, setIsScribeOpen] = useAtom(scribeOpenAtom);
   const [, setScribeUrl] = useAtom(scribeUrlAtom);
   return (
@@ -65,4 +65,6 @@ export default function FAQModal({ handleClose }: Props) {
       </Box>
     </Modal>
   );
-}
+};
+
+export default FAQModal;

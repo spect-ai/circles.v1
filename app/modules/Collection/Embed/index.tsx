@@ -1,25 +1,18 @@
 import Modal from "@/app/common/components/Modal";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { Box, Stack, Tag, Text, useTheme } from "degen";
-import React, { useState } from "react";
+import { useState } from "react";
 import { Copy, HelpCircle } from "react-feather";
 import { Tooltip } from "react-tippy";
 import { toast } from "react-toastify";
-import { useLocalCollection } from "../Context/LocalCollectionContext";
 
 type EmbedProps = {
-  isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
   component: "form" | "members";
   routeId: string;
 };
 
-export const Embed = ({
-  isOpen,
-  setIsOpen,
-  component,
-  routeId,
-}: EmbedProps) => {
+const Embed = ({ setIsOpen, component, routeId }: EmbedProps) => {
   const [selectedMode, setSelectedMode] = useState(0);
   const { mode } = useTheme();
   return (
@@ -82,3 +75,5 @@ export const Embed = ({
     </Modal>
   );
 };
+
+export default Embed;

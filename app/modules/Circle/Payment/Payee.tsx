@@ -3,13 +3,13 @@ import Dropdown from "@/app/common/components/Dropdown";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { Option, PaymentDetails, UserType } from "@/app/types";
 import { Box, IconTrash, Input, Stack, Text } from "degen";
-import usePaymentViewCommon from "./Common/usePaymentCommon";
 import { ethers } from "ethers";
-import { useCircle } from "../CircleContext";
 import { useEffect, useState } from "react";
 import { smartTrim } from "@/app/common/utils/utils";
-import AddToken from "../CircleSettingsModal/CirclePayment/AddToken";
 import { AnimatePresence } from "framer-motion";
+import AddToken from "../CircleSettingsModal/CirclePayment/AddToken";
+import { useCircle } from "../CircleContext";
+import usePaymentViewCommon from "./Common/usePaymentCommon";
 
 type Props = {
   value: PaymentDetails;
@@ -19,44 +19,39 @@ type Props = {
   shortenEthAddress?: boolean;
 };
 
-export default function Payee({
+const Payee = ({
   value,
   mode,
   setValue,
   newCard,
   shortenEthAddress,
-}: Props) {
+}: Props) => {
   const [isAddTokenModalOpen, setIsAddTokenModalOpen] = useState(false);
 
   const { memberDetails } = usePaymentViewCommon();
   const memberOptions = Object.entries(memberDetails?.memberDetails || {}).map(
-    ([id, member]) => {
-      return {
-        label: member.username,
-        value: id,
-      };
-    }
+    ([id, member]) => ({
+      label: member.username,
+      value: id,
+    })
   );
   const { registry } = useCircle();
-  const networkOptions = Object.entries(registry || {}).map(([id, network]) => {
-    return {
+  const networkOptions = Object.entries(registry || {}).map(
+    ([id, network]) => ({
       label: network.name,
       value: id,
-    };
-  });
+    })
+  );
   const [tokenOptions, setTokenOptions] = useState<Option[]>([]);
 
   useEffect(() => {
-    console.log({ value });
     if (value.chain && value.chain.value && registry) {
       const tOptions =
         (Object.entries(registry[value.chain.value].tokenDetails).map(
-          ([address, token]) => {
-            return {
-              label: token.symbol,
-              value: address,
-            };
-          }
+          ([address, token]) => ({
+            label: token.symbol,
+            value: address,
+          })
         ) as Option[]) || [];
       // add custom token option in the beginning
       tOptions.unshift({
@@ -64,7 +59,7 @@ export default function Payee({
         value: "__custom__",
       });
       setTokenOptions(tOptions);
-      if (setValue)
+      if (setValue) {
         setValue({
           ...value,
           token: value.token?.value ? value.token : tOptions[1],
@@ -77,7 +72,7 @@ export default function Payee({
               },
             })) || [],
         });
-      console.log({ tOptions });
+      }
     }
   }, [value.chain, registry]);
 
@@ -108,13 +103,7 @@ export default function Payee({
   }, []);
 
   return (
-    <Box
-      display="flex"
-      flexDirection="column"
-      width="full"
-      gap="2"
-      onClick={(e) => {}}
-    >
+    <Box display="flex" flexDirection="column" width="full" gap="2">
       {mode === "edit" && (
         <Box
           display="flex"
@@ -208,11 +197,12 @@ export default function Payee({
                   flexDirection="row"
                   cursor="pointer"
                   onClick={() => {
-                    if (setValue)
+                    if (setValue) {
                       setValue({
                         ...value,
                         paidTo: value.paidTo.filter((_, i) => i !== index),
                       });
+                    }
                   }}
                 >
                   <Text>
@@ -280,14 +270,14 @@ export default function Payee({
                           };
                           setValue({
                             ...value,
-                            paidTo: value.paidTo.map((p, i) =>
-                              i === index ? newPaidTo : p
+                            paidTo: value.paidTo.map((p2, i) =>
+                              i === index ? newPaidTo : p2
                             ),
                           });
                         }
                       }}
                       isClearable={false}
-                      portal={true}
+                      portal
                     />
                   </Box>
                 </Box>
@@ -316,7 +306,7 @@ export default function Payee({
                 >
                   <Input
                     label=""
-                    placeholder={`Enter Eth Address`}
+                    placeholder="Enter Eth Address"
                     value={p?.value}
                     onChange={(e) => {
                       if (setValue) {
@@ -330,8 +320,8 @@ export default function Payee({
                         };
                         setValue({
                           ...value,
-                          paidTo: value.paidTo.map((p, i) =>
-                            i === index ? newPaidTo : p
+                          paidTo: value.paidTo.map((p2, i) =>
+                            i === index ? newPaidTo : p2
                           ),
                         });
                       }
@@ -371,7 +361,7 @@ export default function Payee({
                   <Box>
                     <Input
                       label=""
-                      placeholder={`Enter Reward Amount`}
+                      placeholder="Enter Reward Amount"
                       value={p.reward?.value}
                       onChange={(e) => {
                         if (setValue) {
@@ -382,11 +372,11 @@ export default function Payee({
                           };
                           setValue({
                             ...value,
-                            paidTo: value.paidTo.map((p, i) =>
-                              i === index ? newPaidTo : p
+                            paidTo: value.paidTo.map((p2, i) =>
+                              i === index ? newPaidTo : p2
                             ),
                             value: value.paidTo.reduce(
-                              (acc, p) => acc + p.reward.value,
+                              (acc, p2) => acc + p2.reward.value,
                               0
                             ),
                           });
@@ -407,7 +397,7 @@ export default function Payee({
           <PrimaryButton
             variant="tertiary"
             onClick={() => {
-              if (setValue)
+              if (setValue) {
                 setValue({
                   ...value,
                   paidTo: [
@@ -423,6 +413,7 @@ export default function Payee({
                     },
                   ],
                 });
+              }
             }}
           >
             Add Eth Address
@@ -430,7 +421,7 @@ export default function Payee({
           <PrimaryButton
             variant="tertiary"
             onClick={() => {
-              if (setValue)
+              if (setValue) {
                 setValue({
                   ...value,
                   paidTo: [
@@ -446,20 +437,15 @@ export default function Payee({
                     },
                   ],
                 });
+              }
             }}
           >
             Add User
           </PrimaryButton>
-          {/* <PrimaryButton
-            variant="transparent"
-            onClick={() => {
-              setAddRewardFromCard(true);
-            }}
-          >
-            Add Reward From Card
-          </PrimaryButton> */}
         </Box>
       )}
     </Box>
   );
-}
+};
+
+export default Payee;

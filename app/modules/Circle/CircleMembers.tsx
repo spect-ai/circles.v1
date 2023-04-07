@@ -1,28 +1,23 @@
 import { joinCircle } from "@/app/services/JoinCircle";
 import useRoleGate from "@/app/services/RoleGate/useRoleGate";
 import { connectedUserAtom } from "@/app/state/global";
-import { UserType } from "@/app/types";
 import { Box, IconSearch, Input, Stack, useTheme, Button } from "degen";
 import { useAtom } from "jotai";
 import { matchSorter } from "match-sorter";
 import React, { useEffect, useState } from "react";
-import { useQuery } from "react-query";
 import { Tooltip } from "react-tippy";
-import { toast } from "react-toastify";
 import { useCircle } from "./CircleContext";
 import InviteMemberModal from "./ContributorsModal/InviteMembersModal";
 // import ContributorTable from "./ContributorTable";
 
-function CircleMembers() {
+const CircleMembers = () => {
   const { circle, memberDetails, setCircleData, fetchMemberDetails } =
     useCircle();
-  const [connectedUser, setConnectedUser] = useAtom(connectedUserAtom);
+  const [connectedUser] = useAtom(connectedUserAtom);
 
   const { canDo } = useRoleGate();
 
-  const [filteredMembers, setFilteredMembers] = useState<
-    { name: string; id: string }[]
-  >([]);
+  const [, setFilteredMembers] = useState<{ name: string; id: string }[]>([]);
   const [circleMembers, setCircleMembers] = useState<
     {
       name: string;
@@ -108,6 +103,6 @@ function CircleMembers() {
       {/* <ContributorTable filteredMembers={filteredMembers} /> */}
     </Stack>
   );
-}
+};
 
 export default CircleMembers;

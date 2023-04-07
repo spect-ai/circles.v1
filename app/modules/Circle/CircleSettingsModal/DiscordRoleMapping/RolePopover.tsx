@@ -1,4 +1,5 @@
 import Popover from "@/app/common/components/Popover";
+import { DiscordRoleMappingType, GuildxyzToCircleRoles } from "@/app/types";
 import { Box, Tag, Text, useTheme } from "degen";
 import React, { useState } from "react";
 import styled from "styled-components";
@@ -9,16 +10,48 @@ type Props = {
     name: string;
   }[];
   circleRole: string;
-  roleMap: any;
-  setRoleMap: (roleMap: any) => void;
+  roleMap: GuildxyzToCircleRoles | DiscordRoleMappingType;
+  setRoleMap: (roleMap: GuildxyzToCircleRoles) => void;
 };
 
-export default function RolePopover({
-  setRoleMap,
-  roleMap,
-  circleRole,
-  roles,
-}: Props) {
+const PopoverOptionContainer = styled(Box)<{ mode: string }>`
+  &:hover {
+    background-color: ${({ mode }) =>
+      mode === "dark" ? "rgba(255, 255, 255, 0.1)" : "rgba(20, 20, 20, 0.1)"};
+  }
+`;
+
+type PopoverOptionProps = {
+  onClick: (e?: React.MouseEvent<HTMLElement>) => void;
+  children: React.ReactNode;
+  tourId?: string;
+};
+
+export const PopoverOption = ({
+  children,
+  onClick,
+  tourId,
+}: PopoverOptionProps) => {
+  const { mode } = useTheme();
+
+  return (
+    <PopoverOptionContainer
+      padding="4"
+      overflow="hidden"
+      cursor="pointer"
+      onClick={onClick}
+      borderRadius="2xLarge"
+      data-tour={tourId}
+      mode={mode}
+    >
+      <Text variant="small" weight="semiBold" ellipsis color="textSecondary">
+        {children}
+      </Text>
+    </PopoverOptionContainer>
+  );
+};
+
+const RolePopover = ({ setRoleMap, roleMap, circleRole, roles }: Props) => {
   const [isOpen, setIsOpen] = useState(false);
   return (
     <Popover
@@ -58,6 +91,7 @@ export default function RolePopover({
                   [role.id]: {
                     circleRole: [circleRole],
                     name: role.name,
+                    id: role.id,
                   },
                 });
               }
@@ -71,42 +105,6 @@ export default function RolePopover({
       </Box>
     </Popover>
   );
-}
-
-const PopoverOptionContainer = styled(Box)<{ mode: string }>`
-  &:hover {
-    // background-color: rgba(255, 255, 255, 0.1);
-    background-color: ${({ mode }) =>
-      mode === "dark" ? "rgba(255, 255, 255, 0.1)" : "rgba(20, 20, 20, 0.1)"};
-  }
-`;
-
-type PopoverOptionProps = {
-  onClick: (e?: React.MouseEvent<HTMLElement>) => void;
-  children: React.ReactNode;
-  tourId?: string;
 };
 
-export const PopoverOption = ({
-  children,
-  onClick,
-  tourId,
-}: PopoverOptionProps) => {
-  const { mode } = useTheme();
-
-  return (
-    <PopoverOptionContainer
-      padding="4"
-      overflow="hidden"
-      cursor="pointer"
-      onClick={onClick}
-      borderRadius="2xLarge"
-      data-tour={tourId}
-      mode={mode}
-    >
-      <Text variant="small" weight="semiBold" ellipsis color="textSecondary">
-        {children}
-      </Text>
-    </PopoverOptionContainer>
-  );
-};
+export default RolePopover;

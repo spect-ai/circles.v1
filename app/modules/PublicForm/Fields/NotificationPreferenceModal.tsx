@@ -10,7 +10,7 @@ type Props = {
   handleClose: () => void;
 };
 
-export default function NotificationPreferenceModal({ handleClose }: Props) {
+const NotificationPreferenceModal = ({ handleClose }: Props) => {
   const [selectedNotificationOption, setSelectedNotificationOption] =
     useState("email");
   const [email, setEmail] = useState("");
@@ -21,7 +21,7 @@ export default function NotificationPreferenceModal({ handleClose }: Props) {
       handleClose={() => {
         handleClose();
       }}
-      title={`Notification Preferences`}
+      title="Notification Preferences"
     >
       <Box
         paddingTop={{
@@ -97,7 +97,7 @@ export default function NotificationPreferenceModal({ handleClose }: Props) {
               <Text variant="label">Email Address</Text>
               <Input
                 label=""
-                placeholder={`Enter email`}
+                placeholder="Enter email"
                 value={email}
                 inputMode="email"
                 onChange={(e) => {
@@ -117,7 +117,7 @@ export default function NotificationPreferenceModal({ handleClose }: Props) {
           >
             <Button
               // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-              //@ts-ignore
+              // @ts-ignore
               marginRight="2"
               variant="secondary"
               size="small"
@@ -127,10 +127,9 @@ export default function NotificationPreferenceModal({ handleClose }: Props) {
                   // setEmailIsEmptyWarning(true);
                   return;
                 }
-                const res = await updateProfile({
+                await updateProfile({
                   email,
                 });
-                console.log(res);
                 toast("Profile updated successfully");
                 handleClose();
               }}
@@ -142,4 +141,6 @@ export default function NotificationPreferenceModal({ handleClose }: Props) {
       </Box>
     </Modal>
   );
-}
+};
+
+export default NotificationPreferenceModal;

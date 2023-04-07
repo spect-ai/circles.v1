@@ -1,15 +1,13 @@
 import { Box, Tag } from "degen";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
 
-type Props = {};
-
-export default function MyTasks({}: Props) {
+const MyTasks = () => {
   const {
     showMyTasks,
     setShowMyTasks,
     localCollection: collection,
   } = useLocalCollection();
-  if (collection.collectionType === 1)
+  if (collection.collectionType === 1) {
     return (
       <Box
         cursor="pointer"
@@ -23,5 +21,8 @@ export default function MyTasks({}: Props) {
         </Tag>
       </Box>
     );
-  else return null;
-}
+  }
+  return null;
+};
+
+export default MyTasks;

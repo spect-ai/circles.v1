@@ -1,5 +1,5 @@
-import { Stack, IconTokens, Heading, Text, Box, Button } from "degen";
-import { NameInput } from "./BasicProfile";
+/* eslint-disable react/no-unescaped-entities */
+import { Stack, Heading, Text, Box, Button } from "degen";
 import { useState } from "react";
 import { RocketOutlined } from "@ant-design/icons";
 import { useMutation, useQuery } from "react-query";
@@ -8,8 +8,9 @@ import mixpanel from "@/app/common/utils/mixpanel";
 import { UserType } from "@/app/types";
 import { joinCirclesFromGuildxyz } from "@/app/services/JoinCircle";
 import { useRouter } from "next/router";
-import { createDefaultProject } from "@/app/services/Defaults";
 import { MdGroupWork } from "react-icons/md";
+import createDefaultProject from "@/app/services/Defaults";
+import { NameInput } from "./BasicProfile";
 
 type CreateCircleDto = {
   name: string;
@@ -19,12 +20,7 @@ type CreateCircleDto = {
   gradient: string;
 };
 
-interface Props {
-  setStep: (step: number) => void;
-  setOnboardType: (type: "profile" | "circle") => void;
-}
-
-export function CreateCircle({ setStep, setOnboardType }: Props) {
+const CreateCircle = () => {
   const router = useRouter();
   const [circleName, setCircleName] = useState("");
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
@@ -32,8 +28,8 @@ export function CreateCircle({ setStep, setOnboardType }: Props) {
   });
   const [loading, setLoading] = useState(false);
 
-  const { mutateAsync } = useMutation((circle: CreateCircleDto) => {
-    return fetch(`${process.env.API_HOST}/circle/v1`, {
+  const { mutateAsync } = useMutation((circle: CreateCircleDto) =>
+    fetch(`${process.env.API_HOST}/circle/v1`, {
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
@@ -41,16 +37,16 @@ export function CreateCircle({ setStep, setOnboardType }: Props) {
       method: "POST",
       body: JSON.stringify(circle),
       credentials: "include",
-    });
-  });
+    })
+  );
 
   return (
     <Box
-      display={"flex"}
+      display="flex"
       flexDirection="column"
-      gap={"5"}
+      gap="5"
       alignItems="center"
-      marginTop={"48"}
+      marginTop="48"
     >
       <Stack align="center">
         {/* <IconTokens color={"accent"} size="8" /> */}
@@ -59,10 +55,10 @@ export function CreateCircle({ setStep, setOnboardType }: Props) {
           <MdGroupWork size="40" />
         </Text>
         <Box
-          width={"3/4"}
+          width="3/4"
           style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
         >
-          <Text align={"center"}>
+          <Text align="center">
             Give your space a name and we&apos;ll get you started
           </Text>
         </Box>
@@ -91,30 +87,26 @@ export function CreateCircle({ setStep, setOnboardType }: Props) {
             })
               .then(async (res) => {
                 const resJson = await res.json();
-                console.log({ resJson });
                 if (resJson.slug) {
-                  void joinCirclesFromGuildxyz(
-                    currentUser?.ethAddress as string
-                  );
+                  joinCirclesFromGuildxyz(currentUser?.ethAddress as string);
                   await createDefaultProject(resJson.id);
                   process.env.NODE_ENV === "production" &&
                     mixpanel.track("Onboard circle", {
                       user: currentUser?.username,
                     });
-                  console.log("redirecting to circle");
-                  void router.push(`/${resJson.slug}`);
+                  router.push(`/${resJson.slug}`);
                 }
                 setLoading(false);
               })
               .catch((err) => {
-                console.log({ err });
+                console.error({ err });
                 setLoading(false);
               });
           }}
           prefix={<RocketOutlined style={{ fontSize: "1.2rem" }} rotate={30} />}
           variant="secondary"
           size="small"
-          disabled={circleName.length == 0}
+          disabled={circleName.length === 0}
         >
           Let's goo
         </Button>
@@ -139,4 +131,6 @@ export function CreateCircle({ setStep, setOnboardType }: Props) {
       </Stack>
     </Box>
   );
-}
+};
+
+export default CreateCircle;

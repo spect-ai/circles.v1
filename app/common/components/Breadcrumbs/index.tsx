@@ -1,9 +1,10 @@
+/* eslint-disable react/no-unused-prop-types */
 import { FC, useState } from "react";
 import { Box, IconChevronDown, Stack, Text, useTheme } from "degen";
 import styled from "styled-components";
-import Popover from "../Popover";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import Popover from "../Popover";
 
 type Crumb = {
   name: string;
@@ -64,7 +65,7 @@ const PopoverOption = ({ children, onClick, tourId }: PopoverOptionProps) => {
   );
 };
 
-const DropdownOption = ({ name, href, children }: CrumbWithChildren) => {
+const DropdownOption = ({ children }: CrumbWithChildren) => {
   // use state
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
@@ -94,7 +95,7 @@ const DropdownOption = ({ name, href, children }: CrumbWithChildren) => {
         {children?.map(({ name, href }) => (
           <PopoverOption
             onClick={() => {
-              void router.push(href);
+              router.push(href);
               setIsOpen(false);
             }}
             key={name}
@@ -107,30 +108,28 @@ const DropdownOption = ({ name, href, children }: CrumbWithChildren) => {
   );
 };
 
-const Breadcrumbs: FC<Props> = ({ crumbs }) => {
-  return (
-    <Stack direction="horizontal" space="2">
-      {crumbs.map((crumb, index) => (
-        <Stack direction="horizontal" space="2" key={crumb.href}>
-          <Container key={crumb.href}>
-            <Text variant="small">
-              {crumb.href ? (
-                <Link href={crumb.href}>{crumb.name}</Link>
-              ) : (
-                crumb.name
-              )}
-            </Text>
-          </Container>
+const Breadcrumbs: FC<Props> = ({ crumbs }) => (
+  <Stack direction="horizontal" space="2">
+    {crumbs.map((crumb, index) => (
+      <Stack direction="horizontal" space="2" key={crumb.href}>
+        <Container key={crumb.href}>
+          <Text variant="small">
+            {crumb.href ? (
+              <Link href={crumb.href}>{crumb.name}</Link>
+            ) : (
+              crumb.name
+            )}
+          </Text>
+        </Container>
 
-          {crumb.children && crumb.children?.length > 0 && (
-            <DropdownOption {...crumb} />
-          )}
-          {index !== crumbs.length - 1 && <Text>/</Text>}
-        </Stack>
-      ))}
-    </Stack>
-  );
-};
+        {crumb.children && crumb.children?.length > 0 && (
+          <DropdownOption {...crumb} />
+        )}
+        {index !== crumbs.length - 1 && <Text>/</Text>}
+      </Stack>
+    ))}
+  </Stack>
+);
 
 export default Breadcrumbs;
 

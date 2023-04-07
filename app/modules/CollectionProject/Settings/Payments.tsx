@@ -1,7 +1,6 @@
 import Dropdown from "@/app/common/components/Dropdown";
 import { Option } from "@/app/types";
 import { Stack, Text } from "degen";
-import React, { useState } from "react";
 import { useLocalCollection } from "../../Collection/Context/LocalCollectionContext";
 
 type Props = {
@@ -11,32 +10,35 @@ type Props = {
   setPayeeField: (value: Option) => void;
 };
 
-export default function Payments({
+const Payments = ({
   rewardField,
   setRewardField,
   payeeField,
   setPayeeField,
-}: Props) {
+}: Props) => {
   const { localCollection: collection } = useLocalCollection();
 
   const rewardOptions = collection.propertyOrder
     .map((prop) => {
-      if (collection.properties[prop].type === "reward")
+      if (collection.properties[prop].type === "reward") {
         return {
           value: collection.properties[prop].name,
           label: collection.properties[prop].name,
         };
+      }
+      return null;
     })
     .filter((x) => x);
-  console.log({ rewardOptions });
   const payeeOptions = collection.propertyOrder
     .map((prop) => {
       const propertyType = collection.properties[prop].type;
-      if (["user", "user[]", "ethAddress"].includes(propertyType))
+      if (["user", "user[]", "ethAddress"].includes(propertyType)) {
         return {
           value: collection.properties[prop].name,
           label: collection.properties[prop].name,
         };
+      }
+      return null;
     })
     .filter((x) => x);
   return (
@@ -44,25 +46,27 @@ export default function Payments({
       <Stack space="1">
         <Text variant="label">Reward Field</Text>
         <Dropdown
-          options={rewardOptions as any}
+          options={rewardOptions}
           selected={rewardField}
           onChange={(value) => setRewardField(value)}
           multiple={false}
           isClearable={false}
-          placeholder={`Set reward field`}
+          placeholder="Set reward field"
         />
       </Stack>
       <Stack space="1">
         <Text variant="label">Payee Field</Text>
         <Dropdown
-          options={payeeOptions as any}
+          options={payeeOptions}
           selected={payeeField}
           onChange={(value) => setPayeeField(value)}
           multiple={false}
           isClearable={false}
-          placeholder={`Set reward field`}
+          placeholder="Set reward field"
         />
       </Stack>
     </Stack>
   );
-}
+};
+
+export default Payments;

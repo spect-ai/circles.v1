@@ -114,15 +114,15 @@ const AddLookup = ({ lookupTokens, setLookupTokens }: Props) => {
           }
         )
           .then(async (res) => {
-            let tokens = [];
+            let tokensArr = [];
             try {
-              tokens = await res.json();
+              tokensArr = await res.json();
             } catch (err) {
-              console.log(err);
+              console.error(err);
             }
             if (tokenType === "erc20") {
               // sort such that tokens with logos are first
-              tokens.sort((a: Token, b: Token) => {
+              tokensArr.sort((a: Token, b: Token) => {
                 if (a.logo && !b.logo) {
                   return -1;
                 }
@@ -131,44 +131,44 @@ const AddLookup = ({ lookupTokens, setLookupTokens }: Props) => {
                 }
                 return 0;
               });
-              console.log({ tokens });
-              setTokens(tokens);
+              setTokens(tokensArr);
             } else if (tokenType === "nft") {
               // only show 1 nft from each collection
               try {
-                const nfts = tokens.reduce((acc: NFT[], nft: NFT) => {
+                const nftsArr = tokensArr.reduce((acc: NFT[], nft: NFT) => {
                   if (
                     !acc.find(
                       (a) => a.contract.address === nft.contract.address
                     ) &&
                     nft.tokenType === "ERC721" &&
                     nft.contract.name
-                  )
+                  ) {
                     acc.push(nft);
-                  else if (
+                  } else if (
                     nft.tokenType === "ERC1155" &&
                     nft.title &&
                     nft.contract.address !==
                       "0x60576a64851c5b42e8c57e3e4a5cf3cf4eeb2ed6"
-                  )
+                  ) {
                     acc.push(nft);
+                  }
                   return acc;
                 }, []);
-                setNfts(nfts);
+                setNfts(nftsArr);
               } catch (err) {
                 setNfts([]);
-                console.log(err);
+                console.error(err);
               }
             } else if (tokenType === "kudos") {
-              setKudos(tokens);
+              setKudos(tokensArr);
             } else if (tokenType === "poaps") {
-              setPoaps(tokens);
+              setPoaps(tokensArr);
             }
             setLoading(false);
             //
           })
           .catch((err) => {
-            console.log(err);
+            console.error(err);
             toast.error("Error fetching tokens");
             setLoading(false);
           });
@@ -420,7 +420,6 @@ const AddLookup = ({ lookupTokens, setLookupTokens }: Props) => {
                               }
                             )
                           ).json();
-                          console.log({ res });
                           setFetchingMetadata(false);
                           setNfts([
                             {
@@ -496,7 +495,6 @@ const AddLookup = ({ lookupTokens, setLookupTokens }: Props) => {
                                 )
                               );
                             } else {
-                              console.log({ nft });
                               setLookupTokens([
                                 ...lookupTokens,
                                 {
@@ -578,13 +576,13 @@ const AddLookup = ({ lookupTokens, setLookupTokens }: Props) => {
                             lookupTokens.find(
                               (t) => t.contractAddress === kudo.id
                             )
-                          )
+                          ) {
                             setLookupTokens(
                               lookupTokens.filter(
                                 (t) => t.contractAddress !== kudo.id
                               )
                             );
-                          else
+                          } else {
                             setLookupTokens([
                               ...lookupTokens,
                               {
@@ -597,6 +595,7 @@ const AddLookup = ({ lookupTokens, setLookupTokens }: Props) => {
                                 chainId: 137,
                               },
                             ]);
+                          }
                         }}
                       >
                         <Box
@@ -636,20 +635,19 @@ const AddLookup = ({ lookupTokens, setLookupTokens }: Props) => {
                           width: "19%",
                         }}
                         onClick={() => {
-                          console.log({ poap });
                           if (
                             lookupTokens.find(
                               (t) =>
                                 t.contractAddress === poap.event.id.toString()
                             )
-                          )
+                          ) {
                             setLookupTokens(
                               lookupTokens.filter(
                                 (t) =>
                                   t.contractAddress !== poap.event.id.toString()
                               )
                             );
-                          else
+                          } else {
                             setLookupTokens([
                               ...lookupTokens,
                               {
@@ -662,6 +660,7 @@ const AddLookup = ({ lookupTokens, setLookupTokens }: Props) => {
                                 chainId: 1,
                               },
                             ]);
+                          }
                         }}
                       >
                         <Box

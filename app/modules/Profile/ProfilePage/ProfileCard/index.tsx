@@ -1,13 +1,4 @@
-import {
-  Box,
-  Avatar,
-  Tag,
-  Text,
-  AvatarGroup,
-  Button,
-  Heading,
-  useTheme,
-} from "degen";
+import { Box, Avatar, Tag, Text, Button, Heading, useTheme } from "degen";
 import styled from "styled-components";
 import {
   BehanceOutlined,
@@ -18,14 +9,14 @@ import {
 } from "@ant-design/icons";
 import { UserType } from "@/app/types";
 import { useQuery } from "react-query";
-import React, { useEffect, useState } from "react";
-import ProfileModal from "../../ProfileSettings";
+import { useEffect, useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import { smartTrim } from "@/app/common/utils/utils";
-import LensImportModal from "../LensImportModal";
 import { useAtom } from "jotai";
 import { userDataAtom } from "@/app/state/global";
 import { toast } from "react-toastify";
+import LensImportModal from "../LensImportModal";
+import ProfileModal from "../../ProfileSettings";
 
 const Profile = styled(Box)<{ mode: string }>`
   @media (max-width: 768px) {
@@ -113,30 +104,24 @@ const ProfileCard = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isLensProfileSelectModalOpen, setIsLensProfileSelectModalOpen] =
     useState(false);
-  const [loading, setLoading] = useState(false);
-  const [user, setUserData] = useAtom(userDataAtom);
+  const [, setLoading] = useState(false);
+  const [user] = useAtom(userDataAtom);
 
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
-  const [userCircles, setUserCircles] = useState([]);
-
-  // // console.log({ user });
-  // const circlesArray = userCircles?.map((aCircle: any) => ({
-  //   label: aCircle?.slug,
-  //   src: aCircle?.avatar,
-  // }));
+  const [, setUserCircles] = useState([]);
 
   useEffect(() => {
     if (user?.id) {
       setLoading(true);
-      void fetch(`${process.env.API_HOST}/user/v1/${user?.id}/circles`)
+      fetch(`${process.env.API_HOST}/user/v1/${user?.id}/circles`)
         .then((res) =>
           res.json().then((res2) => {
             setUserCircles(res2);
           })
         )
-        .catch((err) => console.log({ err }))
+        .catch((err) => console.error({ err }))
         .finally(() => setLoading(false));
     }
   }, [user?.id]);
@@ -272,7 +257,7 @@ const ProfileCard = () => {
                 variant="transparent"
                 shape="circle"
                 onClick={() => {
-                  void navigator.clipboard.writeText(user?.username);
+                  navigator.clipboard.writeText(user?.username);
                   toast.success("Copied Username!");
                 }}
               >
@@ -313,8 +298,8 @@ const ProfileCard = () => {
           </TextInfo>
           <Text variant="label"> Skills </Text>
           <InfoBox gap="0.5" paddingTop="2">
-            {user?.skillsV2?.slice(0, 10).map((skill: any, index: any) => (
-              <SkillTag mode={mode} key={index}>
+            {user?.skillsV2?.slice(0, 10).map((skill) => (
+              <SkillTag mode={mode} key={skill.title}>
                 <Box
                   display="flex"
                   flexDirection="column"
@@ -331,7 +316,7 @@ const ProfileCard = () => {
           </InfoBox>
         </Box>
         <Footer>
-          {currentUser?.id == user?.id && (
+          {currentUser?.id === user?.id && (
             <Box display="flex" flexDirection="column" gap="4">
               {/* {!user?.lensHandle && (
                 <Button

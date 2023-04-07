@@ -3,45 +3,79 @@ import { Box, Text } from "degen";
 import { FaTelegram } from "react-icons/fa";
 
 type Props = {
-  setData: (data: any) => void;
-  data: any;
+  setData: (data: {
+    [key: string]: {
+      id: string;
+      username: string;
+    };
+  }) => void;
+  data: {
+    [key: string]: {
+      id: string;
+      username: string;
+    };
+  };
   propertyName: string;
-  updateRequiredFieldNotSet: (key: string, value: any) => void;
+  updateRequiredFieldNotSet: (
+    key: string,
+    value: {
+      id: string;
+      username: string;
+    }
+  ) => void;
 };
 
-export default function TelegramField({
+type Window = {
+  Telegram: {
+    Login: {
+      auth: (
+        data: {
+          bot_id: string;
+          request_access: boolean;
+        },
+        callback: (data: unknown) => void
+      ) => void;
+    };
+  };
+};
+
+const TelegramField = ({
   data,
   setData,
   propertyName,
   updateRequiredFieldNotSet,
-}: Props) {
-  return (
-    <Box marginTop="4" width="64">
-      {data[propertyName] && data[propertyName].id ? (
-        <Box borderWidth="0.375" borderRadius="2xLarge" padding="2">
-          <Box>
-            <Text size="extraSmall" font="mono" weight="bold">
-              {data[propertyName].username}
-            </Text>
-          </Box>
+}: Props) => (
+  <Box marginTop="4" width="64">
+    {data[propertyName] && data[propertyName]?.id ? (
+      <Box borderWidth="0.375" borderRadius="2xLarge" padding="2">
+        <Box>
+          <Text size="extraSmall" font="mono" weight="bold">
+            {data[propertyName].username}
+          </Text>
         </Box>
-      ) : (
-        <PrimaryButton
-          variant="tertiary"
-          icon={<FaTelegram size={24} />}
-          onClick={async () => {
-            (window as any).Telegram.Login.auth(
-              { bot_id: "5655889542", request_access: true },
-              (telegramData: any) => {
-                setData({ ...data, [propertyName]: telegramData });
-                updateRequiredFieldNotSet(propertyName, telegramData);
-              }
-            );
-          }}
-        >
-          Connect Telegram
-        </PrimaryButton>
-      )}
-    </Box>
-  );
-}
+      </Box>
+    ) : (
+      <PrimaryButton
+        variant="tertiary"
+        icon={<FaTelegram size={24} />}
+        onClick={async () => {
+          (window as unknown as Window).Telegram.Login.auth(
+            { bot_id: "5655889542", request_access: true },
+            (telegramData: unknown) => {
+              const typedData = telegramData as {
+                id: string;
+                username: string;
+              };
+              setData({ ...data, [propertyName]: typedData });
+              updateRequiredFieldNotSet(propertyName, typedData);
+            }
+          );
+        }}
+      >
+        Connect Telegram
+      </PrimaryButton>
+    )}
+  </Box>
+);
+
+export default TelegramField;

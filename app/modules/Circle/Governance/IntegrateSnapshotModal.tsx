@@ -1,19 +1,19 @@
 import Modal from "@/app/common/components/Modal";
 import { updateCircle } from "@/app/services/UpdateCircle";
 
-import { useQuery as useApolloQuery, gql } from "@apollo/client";
+import { useQuery as useApolloQuery } from "@apollo/client";
 import { Space } from "@/app/modules/Collection/VotingModule";
 import { useState } from "react";
 import { Box, Input, Text } from "degen";
-import { useCircle } from "../CircleContext";
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { toast } from "react-toastify";
+import { useCircle } from "../CircleContext";
 
 type Props = {
   handleClose: () => void;
 };
 
-export default function IntegrateSnapshotModal({ handleClose }: Props) {
+const IntegrateSnapshotModal = ({ handleClose }: Props) => {
   const { circle, setCircleData } = useCircle();
   const [loading, setLoading] = useState(false);
   const [snapshotSpace, setSnapshotSpace] = useState(
@@ -71,11 +71,11 @@ export default function IntegrateSnapshotModal({ handleClose }: Props) {
         {snapshotSpace &&
           !isLoading &&
           (data?.space?.id ? (
-            <Text size={"extraSmall"} color="accent">
+            <Text size="extraSmall" color="accent">
               Snapshot Space - {data?.space?.name}
             </Text>
           ) : (
-            <Text color={"red"}>Incorrect URL</Text>
+            <Text color="red">Incorrect URL</Text>
           ))}
       </Box>
       <Box
@@ -97,4 +97,6 @@ export default function IntegrateSnapshotModal({ handleClose }: Props) {
       </Box>
     </Modal>
   );
-}
+};
+
+export default IntegrateSnapshotModal;

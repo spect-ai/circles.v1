@@ -6,13 +6,13 @@ import { useState, useEffect } from "react";
 import { useQuery } from "react-query";
 import styled from "styled-components";
 import { SettingOutlined } from "@ant-design/icons";
-import ProfileModal from "../../Profile/ProfileSettings";
 import mixpanel from "@/app/common/utils/mixpanel";
 import { useAtom } from "jotai";
 import {
   isProfilePanelExpandedAtom,
   quickProfileUserAtom,
 } from "@/app/state/global";
+import ProfileModal from "../../Profile/ProfileSettings";
 
 const Container = styled(Box)<{ mode: string }>`
   cursor: pointer;
@@ -23,7 +23,7 @@ const Container = styled(Box)<{ mode: string }>`
   }
 `;
 
-export default function ProfileButton() {
+const ProfileButton = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { mode } = useTheme();
 
@@ -35,24 +35,20 @@ export default function ProfileButton() {
     }
   );
 
-  const [isProfilePanelExpanded, setIsProfilePanelExpanded] = useAtom(
-    isProfilePanelExpandedAtom
-  );
+  const [, setIsProfilePanelExpanded] = useAtom(isProfilePanelExpandedAtom);
 
-  const [quickProfileUser, setQuickProfileUser] = useAtom(quickProfileUserAtom);
+  const [, setQuickProfileUser] = useAtom(quickProfileUserAtom);
 
   useEffect(() => {
-    void fetchUser();
+    fetchUser();
   }, [currentUser, fetchUser, isOpen]);
 
   useEffect(() => {
     if ((currentUser as UserType)?.notifications?.length > 0) {
       currentUser?.notifications?.map((notif) => {
-        if (notif.read == false) setNotifIds([...notifIds, notif.timestamp]);
+        if (notif.read === false) setNotifIds([...notifIds, notif.timestamp]);
+        return null;
       });
-      // setTimeout(() => {
-      //   if (notifIds.length > 0) setNotifSeen(false);
-      // }, 10000);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentUser?.notifications]);
@@ -144,4 +140,6 @@ export default function ProfileButton() {
       </AnimatePresence>
     </>
   );
-}
+};
+
+export default ProfileButton;
