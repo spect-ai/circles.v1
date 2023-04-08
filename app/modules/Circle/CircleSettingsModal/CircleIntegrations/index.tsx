@@ -2,7 +2,7 @@ import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { Box, Input, Stack, Text } from "degen";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React, { useState } from "react";
+import { useState } from "react";
 import DiscordIcon from "@/app/assets/icons/discordIcon.svg";
 import { useLocation } from "react-use";
 import { useQuery as useApolloQuery } from "@apollo/client";

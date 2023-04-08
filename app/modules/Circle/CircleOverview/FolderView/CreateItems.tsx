@@ -134,6 +134,7 @@ const CreateItems = () => {
       setLoading(false);
     }
   }, [circle?.folderOrder?.length, circle?.id]);
+
   return (
     <Box paddingX="2">
       <AnimatePresence>

@@ -27,7 +27,8 @@ export default function useRoleGate() {
     }
     const userRoles = circle?.memberRoles[connectedUser];
     if (userRoles) {
-      Object.keys(circle.roles).forEach((role) => {
+      for (let i = 0; i < Object.keys(circle.roles).length; i += 1) {
+        const role = Object.keys(circle.roles)[i];
         if (userRoles.includes(role)) {
           if (
             circle.roles[role].permissions[roleAction as NonCardPermissions] ===
@@ -38,8 +39,7 @@ export default function useRoleGate() {
             return true;
           }
         }
-        return false;
-      });
+      }
     }
     return false;
   };

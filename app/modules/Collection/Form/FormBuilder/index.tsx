@@ -115,7 +115,7 @@ const FormBuilder = () => {
 
   const [connectedUser] = useAtom(connectedUserAtom);
 
-  const [formData, setFormData] = useState<Record<string, unknown>>();
+  const [formData, setFormData] = useState<Record<string, unknown>>({});
   const { pages } = collection.formMetadata;
   const { pageOrder } = collection.formMetadata;
 

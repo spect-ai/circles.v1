@@ -127,10 +127,7 @@ const RewardTokenOptions = ({
         {networks &&
           Object.entries(networks).map(([chainId, network]) => (
             <>
-              <Text variant="label">
-                On
-                {network.name}
-              </Text>
+              <Text variant="label">{network.name}</Text>
               <OptionContainer>
                 {Object.entries(network.tokenDetails).map(
                   ([tokenAddress, token]) => (

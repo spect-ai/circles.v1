@@ -1,6 +1,5 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import PrimaryButton from "@/app/common/components/PrimaryButton";
-import { MemberDetails, Registry, UserType } from "@/app/types";
+import { MemberDetails, Option, Registry, Reward, UserType } from "@/app/types";
 import {
   Box,
   IconPencil,
@@ -34,8 +33,8 @@ type Props = {
   index: number;
   setIsEditFieldOpen: (value: boolean) => void;
   setPropertyName: (value: string) => void;
-  formData: any;
-  setFormData: (value: any) => void;
+  formData: Record<string, unknown>;
+  setFormData: (value: Record<string, unknown>) => void;
 };
 
 const Container = styled(Box)<{ isDragging: boolean; mode: string }>`
@@ -231,12 +230,12 @@ const FieldComponent = ({
               <SingleSelect
                 allowCustom={collection.properties[id]?.allowCustom || false}
                 options={
-                  collection.properties[id]?.type === "user"
-                    ? (memberOptions as any)
-                    : collection.properties[id]?.options
+                  memberOptions && collection.properties[id]?.type === "user"
+                    ? memberOptions
+                    : (collection.properties[id].options as Option[])
                 }
-                selected={formData[id]}
-                onSelect={(value: any) => {
+                selected={formData[id] as Option}
+                onSelect={(value) => {
                   setFormData({ ...formData, [id]: value });
                 }}
                 propertyName={id}
@@ -249,23 +248,25 @@ const FieldComponent = ({
               <MultiSelect
                 allowCustom={collection.properties[id]?.allowCustom || false}
                 options={
-                  collection.properties[id]?.type === "user[]"
-                    ? (memberOptions as any)
-                    : collection.properties[id]?.options
+                  memberOptions && collection.properties[id]?.type === "user[]"
+                    ? memberOptions
+                    : (collection.properties[id]?.options as Option[])
                 }
-                selected={formData[id]}
-                onSelect={(value: any) => {
+                selected={formData[id] as Option[]}
+                onSelect={(value) => {
                   if (!formData[id]) {
                     setFormData({ [id]: [value] });
-                  } else if (formData[id]?.includes(value)) {
+                  } else if ((formData[id] as Option[])?.includes(value)) {
                     setFormData({
                       ...formData,
-                      [id]: formData[id].filter((item: any) => item !== value),
+                      [id]: (formData[id] as Option[]).filter(
+                        (item) => item !== value
+                      ),
                     });
                   } else {
                     setFormData({
                       ...formData,
-                      [id]: [...formData[id], value],
+                      [id]: [...(formData[id] as Option[]), value],
                     });
                   }
                 }}
@@ -280,7 +281,7 @@ const FieldComponent = ({
                   collection.properties[id]?.rewardOptions as Registry
                 }
                 updateData={() => {}}
-                value={{} as any}
+                value={{} as Reward}
               />
             </Box>
           )}
