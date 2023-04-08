@@ -489,12 +489,21 @@ export const postFormMessage = async (
 };
 
 export type PostSocialsPayload = {
-  discordId?: string;
-  discordUsername?: string;
-  githubId?: string;
-  githubUsername?: string;
-  telegramId?: string;
-  telegramUsername?: string;
+  discordId: string;
+  discord?: {
+    id: string;
+    username: string;
+  };
+  telegram?: {
+    id: string;
+    username: string;
+    first_name: string;
+  };
+  github?: {
+    id: string;
+    username: string;
+    name: string;
+  };
   ethAddress?: string;
 };
 

@@ -20,7 +20,7 @@ const ConnectPage: NextPage = () => {
   const router = useRouter();
   const { query } = router;
   const [data, setData] = useState<any>({});
-  const [hasAllConnections, setHasAllConnections] = useState(false);
+  const [backToDiscordMessage, setBackToDiscordMessage] = useState("");
 
   useEffect(() => {
     if (query.discord && profileContext.discordId?.length) {
@@ -37,7 +37,7 @@ const ConnectPage: NextPage = () => {
         ...d,
         telegram: {
           id: profileContext.telegramId,
-          username: "gm",
+          username: profileContext.telegramUsername,
         },
       }));
     }
@@ -46,7 +46,7 @@ const ConnectPage: NextPage = () => {
         ...d,
         github: {
           id: profileContext.githubId,
-          username: "fg",
+          username: profileContext.githubUsername,
         },
       }));
     }
@@ -57,44 +57,55 @@ const ConnectPage: NextPage = () => {
   ]);
 
   useEffect(() => {
-    if (!query) return;
-    console.log({ query, data, profileContext });
-
-    if (
-      (query.discord === "true" && !data["discord"]) ||
-      (query.telegram === "true" && !data["telegram"]) ||
-      (query.github === "true" && !data["github"]) ||
-      (query.wallet === "true" && !profileContext)
-    ) {
-      console.log("setting has all connections to false");
-      setHasAllConnections(false);
-      return;
-    }
-    setHasAllConnections(true);
-  }, [data, profileContext]);
-
-  useEffect(() => {
-    console.log({ hasAllConnections });
+    const hasAllConnections =
+      Object.keys(query).length > 0 &&
+      Object.keys(query)
+        .filter((key) => ["discord", "github", "telegram"].includes(key))
+        .every((key) => {
+          return data[key] && data[key] !== "undefined";
+        }) &&
+      (!query.wallet || profileContext);
     if (hasAllConnections) {
       const payload = {} as PostSocialsPayload;
       if (data["discord"]) {
         payload.discordId = data["discord"].id;
-        payload.discordUsername = data["discord"].username;
+        payload.discord = {
+          username: data["discord"].username,
+          id: data["discord"].id,
+        };
       }
       if (data["telegram"]) {
-        payload.telegramId = data["telegram"].id;
-        payload.telegramUsername = data["telegram"].username;
+        payload.telegram = {
+          id: data["telegram"].id,
+          username: data["telegram"].username,
+          first_name: data["telegram"].first_name,
+        };
       }
       if (data["github"]) {
-        payload.githubId = data["github"].id;
-        payload.githubUsername = data["github"].username;
+        payload.github = {
+          id: data["github"].id,
+          username: data["github"].login,
+          name: data["github"].name,
+        };
       }
-
-      postSocials(query.channelId as string, payload).then((res) =>
-        console.log({ res })
-      );
+      setBackToDiscordMessage("Linking your socials...");
+      postSocials(query.channelId as string, payload)
+        .then((res) => {
+          console.log({ res });
+          if (res.success) {
+            setBackToDiscordMessage(
+              "🎊 Your socials are successfully linked! You can now close this window and go back to Discord."
+            );
+          }
+        })
+        .catch((err) => {
+          console.log({ err });
+          setBackToDiscordMessage(
+            "🤔 Something went wrong. Please contact support."
+          );
+        });
     }
-  }, [hasAllConnections]);
+  }, [data]);
 
   return (
     <>
@@ -122,41 +133,88 @@ const ConnectPage: NextPage = () => {
             <Box
               display="flex"
               flexDirection="column"
-              width="full"
               overflow="hidden"
               justifyContent="center"
-              alignItems="center"
+              alignItems="flex-start"
+              padding="4"
+              gap="2"
             >
               <Avatar
                 src="https://spect.infura-ipfs.io/ipfs/QmcBLdB23dQkXdMKFHAjVKMKBPJF82XkqR5ZkxyCk6aset"
                 label=""
                 size="16"
               />
-              {query.wallet && query.discord && (
-                <Box
-                  width="96"
-                  display="flex"
-                  flexDirection="column"
-                  justifyContent="flex-start"
-                  alignItems="flex-start"
-                  gap="2"
-                >
-                  <Text variant="large" weight="bold">
-                    Sign in to Spect & connect Discord to be able do the
-                    follwing.
-                  </Text>
-                  <Text>😀 Prove that you're human</Text>
-                  <Text>
-                    🤝 Prove that you have roles on Guild.xyz to respond to role
-                    gated forms
-                  </Text>
-                  <Text>
-                    💰 Receive NFTs & ERC-20s for filling out incentivized forms
-                    on Discord
-                  </Text>
-                  <Text>🙌 Show off your NFTs & ERC-20s in form responses</Text>
-                </Box>
-              )}
+              {query.wallet &&
+                query.discord &&
+                !query.telegram &&
+                !query.github && (
+                  <Box
+                    width={{
+                      xs: "full",
+                      lg: "96",
+                    }}
+                    display="flex"
+                    flexDirection="column"
+                    justifyContent="center"
+                    alignItems="flex-start"
+                    gap="4"
+                  >
+                    <Text variant="large" weight="bold">
+                      Sign in & connect Discord to
+                    </Text>
+                    <Text>😀 Prove that you're human</Text>
+                    <Text>
+                      🤝 Prove that you have roles on Guild.xyz to respond to
+                      role gated forms
+                    </Text>
+                    <Text>
+                      💰 Receive NFTs & ERC-20s for filling out forms on Discord
+                    </Text>
+                    <Text>
+                      🙌 Show off your NFTs & ERC-20s in form responses
+                    </Text>
+                  </Box>
+                )}
+              {query.telegram &&
+                query.discord &&
+                !query.github &&
+                !query.wallet && (
+                  <Box
+                    width={{
+                      xs: "full",
+                      lg: "96",
+                    }}
+                    display="flex"
+                    flexDirection="column"
+                    justifyContent="center"
+                    alignItems="flex-start"
+                    gap="4"
+                  >
+                    <Text variant="large" weight="bold">
+                      Connect your Telegram account to continue
+                    </Text>
+                  </Box>
+                )}
+              {query.github &&
+                query.discord &&
+                !query.telegram &&
+                !query.wallet && (
+                  <Box
+                    width={{
+                      xs: "full",
+                      lg: "96",
+                    }}
+                    display="flex"
+                    flexDirection="column"
+                    justifyContent="center"
+                    alignItems="flex-start"
+                    gap="4"
+                  >
+                    <Text variant="large" weight="bold">
+                      Connect your Github account to continue
+                    </Text>
+                  </Box>
+                )}
               {query.wallet === "true" && (
                 <Box marginTop="4" width="64">
                   <Connect variant="tertiary" text="Sign In" />
@@ -186,6 +244,12 @@ const ConnectPage: NextPage = () => {
                   updateRequiredFieldNotSet={() => {}}
                 />
               )}
+              <Box marginTop="4" padding="2">
+                {" "}
+                <Text variant="base" weight="bold">
+                  {backToDiscordMessage}
+                </Text>
+              </Box>
             </Box>
           </Box>
         </DesktopContainer>

@@ -381,6 +381,7 @@ export default function PublicField({
           setData={setData}
           propertyName={propertyName}
           updateRequiredFieldNotSet={updateRequiredFieldNotSet}
+          showAvatar={true}
         />
       )}
       {form.properties[propertyName]?.type === "github" && (
@@ -389,6 +390,7 @@ export default function PublicField({
           setData={setData}
           propertyName={propertyName}
           updateRequiredFieldNotSet={updateRequiredFieldNotSet}
+          showAvatar={true}
         />
       )}
       {form.properties[propertyName]?.type === "telegram" && (
