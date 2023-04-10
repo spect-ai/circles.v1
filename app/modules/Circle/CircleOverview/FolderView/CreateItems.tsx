@@ -84,7 +84,7 @@ const Item = ({ name, Icon, description, onClick }: Props) => (
       >
         <Stack align="center" space="2">
           <Text color="accent">
-            <Icon />
+            <Icon size="24" />
           </Text>
           <Text>{name}</Text>
           <Text variant="label" align="center">

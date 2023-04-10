@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-syntax */
 import { useLocalCollection } from "@/app/modules/Collection/Context/LocalCollectionContext";
 import {
   CardPermissions,
@@ -50,12 +51,11 @@ export default function useRoleGate() {
     }
     const userRoles = circle?.memberRoles[connectedUser];
     if (userRoles) {
-      Object.keys(userRoles).forEach((role) => {
+      for (const role of userRoles) {
         if (circle.roles[role].permissions.manageCardProperties) {
           return true;
         }
-        return false;
-      });
+      }
     }
 
     return (
@@ -75,42 +75,35 @@ export default function useRoleGate() {
       case "manageSettings":
         if (connectedUser === collection.creator) return true;
         if (collection?.permissions?.manageSettings?.length > 0) {
-          // for (const role of userRoles) {
-          //   if (collection?.permissions?.manageSettings?.includes(role))
-          //     return true;
-          // }
-          Object.keys(userRoles).forEach((role) => {
+          for (const role of userRoles) {
             if (collection?.permissions?.manageSettings?.includes(role)) {
               return true;
             }
-            return false;
-          });
+          }
         }
         return false;
 
       case "updateResponsesManually":
         if (connectedUser === collection.creator) return true;
         if (collection?.permissions?.updateResponsesManually?.length > 0) {
-          Object.keys(userRoles).forEach((role) => {
+          for (const role of userRoles) {
             if (
               collection?.permissions?.updateResponsesManually?.includes(role)
             ) {
               return true;
             }
-            return false;
-          });
+          }
         }
         return false;
 
       case "addComments":
         if (connectedUser === collection.creator) return true;
         if (collection?.permissions?.addComments?.length > 0) {
-          Object.keys(userRoles).forEach((role) => {
-            if (collection?.permissions?.addComments?.includes(role)) {
+          for (const role of userRoles) {
+            if (collection?.permissions?.addComments.includes(role)) {
               return true;
             }
-            return false;
-          });
+          }
         } else if (
           collection?.permissions?.addComments?.length === 0 &&
           circle?.members?.includes(connectedUser)
@@ -122,12 +115,11 @@ export default function useRoleGate() {
       case "viewResponses":
         if (connectedUser === collection.creator) return true;
         if (collection?.permissions?.viewResponses?.length > 0) {
-          Object.keys(userRoles).forEach((role) => {
+          for (const role of userRoles) {
             if (collection?.permissions?.viewResponses?.includes(role)) {
               return true;
             }
-            return false;
-          });
+          }
         } else if (
           collection?.permissions?.viewResponses?.length === 0 &&
           circle?.members?.includes(connectedUser)

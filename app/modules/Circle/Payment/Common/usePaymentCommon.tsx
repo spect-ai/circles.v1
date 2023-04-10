@@ -95,13 +95,13 @@ export default function usePaymentViewCommon() {
               .join(", ")}`
           );
         }
-
         const tokensWithSufficientBalance = filterTokensByAllowanceOrBalance(
           chainId,
           hasRequiredBalances,
           registry as Registry,
           true
         );
+
         if (tokensWithSufficientBalance.length === 0) return;
 
         await toast.promise(

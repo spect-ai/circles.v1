@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-syntax */
 import PrimaryButton from "@/app/common/components/PrimaryButton";
 import { getUniqueNetworks } from "@/app/services/Paymentv2/utils";
 import { Box, Stack, Text, useTheme } from "degen";
@@ -144,13 +145,13 @@ const PendingPayments = () => {
                           circle.pendingPayments,
                           circle.paymentDetails
                         );
-                        uniqueNetworks.forEach(async (chainId) => {
+                        for await (const chainId of uniqueNetworks) {
                           if (!circle.safeAddresses?.[chainId]?.length) {
                             await pay(chainId);
                           } else {
                             await pay(chainId, true);
                           }
-                        });
+                        }
                         setIsGnosisPayLoading(false);
                       }}
                       loading={isGnosisPayLoading}
@@ -167,9 +168,9 @@ const PendingPayments = () => {
                     circle.pendingPayments,
                     circle.paymentDetails
                   );
-                  uniqueNetworks.forEach(async (chainId) => {
+                  for await (const chainId of uniqueNetworks) {
                     await pay(chainId);
-                  });
+                  }
                   setIsPayLoading(false);
                 }}
                 loading={isPayLoading}

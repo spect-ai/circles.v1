@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-syntax */
 import { MemberDetails, PaymentDetails, Registry } from "@/app/types";
 // eslint-disable-next-line import/no-extraneous-dependencies
 import {
@@ -186,7 +187,10 @@ export const hasBalances = async (
   aggregatedAmounts: { [tokenAddress: string]: number }
 ) => {
   const hasBalance = {} as { [tokenAddress: string]: boolean };
-  Object.entries(aggregatedAmounts).forEach(async ([tokenAddress, amount]) => {
+  // eslint-disable-next-line no-restricted-syntax
+  for await (const [tokenAddress, amount] of Object.entries(
+    aggregatedAmounts
+  )) {
     let balanceObj: WagmiBalanceObject;
     if (tokenAddress === "0x0") {
       balanceObj = await fetchBalance({
@@ -203,9 +207,11 @@ export const hasBalances = async (
       });
     }
     let balance = parseFloat(balanceObj.formatted);
-    if (balanceObj.decimals !== 18) balance *= 10 ** (18 - balanceObj.decimals);
+    if (balanceObj.decimals !== 18) {
+      balance *= 10 ** (18 - balanceObj.decimals);
+    }
     hasBalance[tokenAddress] = balance >= amount;
-  });
+  }
 
   return hasBalance;
 };
@@ -328,7 +334,7 @@ export const approveUsingEOA = async (
   registry: Registry
 ) => {
   const tokensApproved = [] as string[];
-  tokenAddresses.forEach(async (tokenAddress) => {
+  for await (const tokenAddress of tokenAddresses) {
     if (tokenAddress !== "0x0") {
       await toast.promise(
         approveOneTokenUsingEOA(chainId, tokenAddress, registry).then(() =>
@@ -345,7 +351,7 @@ export const approveUsingEOA = async (
         }
       );
     }
-  });
+  }
 
   return tokensApproved;
 };
@@ -380,7 +386,7 @@ export const approveUsingGnosis = async (
 ) => {
   const tokensApproved = [] as string[];
   let nonce = startNonce;
-  tokenAddresses.forEach(async (tokenAddress) => {
+  for await (const tokenAddress of tokenAddresses) {
     if (tokenAddress !== "0x0") {
       await toast.promise(
         approveOneUsingGnosis(
@@ -389,6 +395,7 @@ export const approveUsingGnosis = async (
           registry,
           nonce,
           gnosisSafeAddress
+          // eslint-disable-next-line @typescript-eslint/no-loop-func
         ).then(() => {
           tokensApproved.push(tokenAddress);
           nonce += 1;
@@ -404,7 +411,7 @@ export const approveUsingGnosis = async (
         }
       );
     }
-  });
+  }
 
   return { tokensApproved, nonce };
 };
@@ -413,13 +420,14 @@ export const convertToWei = async (
   amounts: { ethAddress: string; token: string; amount: number }[]
 ) => {
   const valuesInWei = [] as ethers.BigNumber[];
-  amounts.forEach(async (amt) => {
+  // eslint-disable-next-line no-restricted-syntax
+  for await (const amt of amounts) {
     const numDecimals = amt.token === "0x0" ? 18 : await getDecimals(amt.token);
     const wei = ethers.utils
       .parseEther(amt.amount.toString())
       .div(ethers.BigNumber.from(10).pow(18 - numDecimals));
     valuesInWei.push(wei);
-  });
+  }
   const values = amounts.map((v, index) => ({
     ethAddress: v.ethAddress,
     token: v.token,
@@ -682,7 +690,6 @@ export const payUsingEOA = async (
       !tokensWithoutAllowance.includes(a.token) &&
       !tokensWithoutBalance.includes(a.token)
   );
-
   let tokensDistributed = [] as string[];
   // Distribute tokens
   const txHash = {} as { [key: string]: string };

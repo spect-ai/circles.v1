@@ -104,7 +104,6 @@ export default function useERC20() {
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/require-await
   async function approveAll(
     chainId: string,
     erc20Addresses: string[],
@@ -194,7 +193,8 @@ export default function useERC20() {
     const uniqueTokenAddresses: string[] = [];
     const aggregatedTokenValues: number[] = [];
 
-    Object.entries(aggregateValues).forEach(async ([erc20Address, value]) => {
+    // eslint-disable-next-line no-restricted-syntax
+    for await (const [erc20Address, value] of Object.entries(aggregateValues)) {
       if ((value as number) > 0) {
         const tokenIsApproved = await isApproved(
           erc20Address,
@@ -205,10 +205,10 @@ export default function useERC20() {
 
         if (!tokenIsApproved) {
           uniqueTokenAddresses.push(erc20Address);
-          aggregatedTokenValues.push(value as number);
+          aggregatedTokenValues.push(value);
         }
       }
-    });
+    }
     return [uniqueTokenAddresses, aggregatedTokenValues];
   }
 
