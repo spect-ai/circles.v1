@@ -24,6 +24,8 @@ const SubmittedPage = ({
   const { data: currentUser } = useQuery<UserType>("getMyUser", {
     enabled: false,
   });
+
+  console.log({ form: form.formMetadata });
   return (
     <Box
       style={{
@@ -113,7 +115,7 @@ const SubmittedPage = ({
         >
           {form.formMetadata.updatingResponseAllowed &&
             form.formMetadata.active &&
-            form.formMetadata.walletConnectionRequired && (
+            !form.formMetadata.allowAnonymousResponses && (
               <PrimaryButton
                 variant="transparent"
                 onClick={() => {
