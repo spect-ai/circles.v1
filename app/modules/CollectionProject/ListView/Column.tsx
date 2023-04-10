@@ -148,7 +148,7 @@ const Column = ({ column, groupByColumn, setDefaultValue, cardIds }: Props) => {
                           });
                         }}
                         cursor="pointer"
-                        ref={provided.innerRef}
+                        ref={provided2.innerRef}
                         {...provided2.draggableProps}
                         {...provided2.dragHandleProps}
                       >
@@ -209,7 +209,6 @@ const Column = ({ column, groupByColumn, setDefaultValue, cardIds }: Props) => {
                                         mode={mode}
                                         borderCol={colorMapping[value.value]}
                                       >
-                                        {/* <Text weight="semiBold">{property.name}</Text> */}
                                         <Text variant="label">
                                           {value.label}
                                         </Text>
@@ -221,7 +220,6 @@ const Column = ({ column, groupByColumn, setDefaultValue, cardIds }: Props) => {
                               if (property.type === "multiSelect") {
                                 return (
                                   <Box key={propertyId}>
-                                    {/* <Text weight="semiBold">{property.name}</Text> */}
                                     <Stack
                                       direction="horizontal"
                                       wrap
@@ -233,7 +231,9 @@ const Column = ({ column, groupByColumn, setDefaultValue, cardIds }: Props) => {
                                           mode={mode}
                                           borderCol={colorMapping[value2.value]}
                                         >
-                                          <Text> {value.label}</Text>
+                                          <Text size="extraSmall">
+                                            {value2.label}
+                                          </Text>
                                         </CustomTag>
                                       ))}
                                     </Stack>
@@ -243,7 +243,6 @@ const Column = ({ column, groupByColumn, setDefaultValue, cardIds }: Props) => {
                               if (property.type === "user") {
                                 return (
                                   <Box key={propertyId}>
-                                    {/* <Text weight="semiBold">{property.name}</Text> */}
                                     <Tag>
                                       <Stack
                                         direction="horizontal"

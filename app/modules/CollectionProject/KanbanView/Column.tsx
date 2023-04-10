@@ -216,7 +216,6 @@ const Column = ({ column, groupByColumn, setDefaultValue, cardIds }: Props) => {
                             if (property.type === "multiSelect") {
                               return (
                                 <Box key={propertyId}>
-                                  {/* <Text weight="semiBold">{property.name}</Text> */}
                                   <Stack direction="horizontal" wrap space="1">
                                     {value.map((value2: Option) => (
                                       <CustomTag
@@ -224,7 +223,9 @@ const Column = ({ column, groupByColumn, setDefaultValue, cardIds }: Props) => {
                                         mode={mode}
                                         borderCol={colorMapping[value2.value]}
                                       >
-                                        <Text>{value.label}</Text>
+                                        <Text size="extraSmall">
+                                          {value2.label}
+                                        </Text>
                                       </CustomTag>
                                     ))}
                                   </Stack>

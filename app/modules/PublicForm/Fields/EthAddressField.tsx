@@ -19,9 +19,9 @@ const EthAddressField = ({ value, onChange, disabled }: Props) => {
       onChange={(e) => {
         const tempVal = e.target.value as `0x${string}`;
         setTempValue(tempVal);
-        if (value.endsWith(".eth")) {
+        if (tempVal.endsWith(".eth")) {
           fetchEnsAddress({
-            name: value,
+            name: tempVal,
             chainId: 1,
           }).then((address) => {
             if (
@@ -32,14 +32,14 @@ const EthAddressField = ({ value, onChange, disabled }: Props) => {
               setError("Invalid ENS name");
             } else {
               setError("");
-              onChange(value);
+              onChange(tempVal);
             }
           });
-        } else if (!ethers.utils.isAddress(value)) {
+        } else if (!ethers.utils.isAddress(tempVal)) {
           setError("Invalid address or ENS name");
         } else {
           setError("");
-          onChange(value);
+          onChange(tempVal);
         }
       }}
       disabled={disabled}

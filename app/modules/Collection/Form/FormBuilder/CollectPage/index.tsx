@@ -15,9 +15,7 @@ type Props = {
   preview?: boolean;
 };
 
-const CollectPage = ({
-  form, currentPage, setCurrentPage, preview,
-}: Props) => {
+const CollectPage = ({ form, currentPage, setCurrentPage, preview }: Props) => {
   const { pageOrder } = form.formMetadata;
   const { pages } = form.formMetadata;
   const [claimedJustNow, setClaimedJustNow] = useState(false);
@@ -70,7 +68,7 @@ const CollectPage = ({
             variant="transparent"
             onClick={() => {
               setCurrentPage(
-                pageOrder[pageOrder.indexOf(currentPage || "") - 1],
+                pageOrder[pageOrder.indexOf(currentPage || "") - 1]
               );
             }}
           >

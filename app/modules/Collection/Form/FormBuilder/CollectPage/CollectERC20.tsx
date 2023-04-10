@@ -54,7 +54,12 @@ const CollectERC20 = ({ form, setClaimedJustNow, preview }: Props) => {
     () =>
       fetch(
         `${process.env.API_HOST}/circle/slug/${form.parents[0].slug}/getRegistry`
-      ).then((res) => res.json()),
+      ).then((res) => {
+        if (res.ok) {
+          return res.json();
+        }
+        throw new Error("Error fetching registry");
+      }),
     {
       enabled: false,
     }
@@ -295,7 +300,7 @@ const CollectERC20 = ({ form, setClaimedJustNow, preview }: Props) => {
                 </Text>
               </Stack>
             )}
-          {(preview ||
+          {((preview && form.formMetadata?.surveyTokenId) ||
             (form.formMetadata?.previousResponses?.length > 0 &&
               form.formMetadata?.surveyTokenId &&
               !surveyIsLotteryYetToBeDrawn &&
@@ -368,7 +373,9 @@ const CollectERC20 = ({ form, setClaimedJustNow, preview }: Props) => {
               </Stack>
             </Stack>
           )}
-          {(preview ||
+          {((preview &&
+            form.formMetadata?.surveyTokenId &&
+            surveyIsLotteryYetToBeDrawn) ||
             (form.formMetadata?.previousResponses?.length > 0 &&
               form.formMetadata?.surveyTokenId &&
               surveyIsLotteryYetToBeDrawn &&

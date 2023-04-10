@@ -259,7 +259,7 @@ const SingleAutomation = ({
               },
             ];
       setWhenOptions([
-        ...whenOptions,
+        ...whenOptions2,
         {
           label:
             (collection as CollectionType)?.collectionType === 0
@@ -517,7 +517,6 @@ const SingleAutomation = ({
                 selected={collectionOption}
                 onChange={(value) => {
                   setCollectionOption(value);
-
                   fetchCollection();
                 }}
                 multiple={false}

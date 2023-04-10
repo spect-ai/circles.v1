@@ -27,13 +27,17 @@ const Footer = ({
       }}
     >
       <Stack>
-        {collection.formMetadata.captchaEnabled && (
-        <Captcha setCaptchaVerified={setCaptchaVerified} />
-        )}
+        <Box
+          style={{
+            marginLeft: "-7rem",
+          }}
+        >
+          {collection.formMetadata.captchaEnabled && (
+            <Captcha setCaptchaVerified={setCaptchaVerified} />
+          )}
+        </Box>
         <PrimaryButton
-          disabled={
-              collection.formMetadata.captchaEnabled && !captchaVerified
-            }
+          disabled={collection.formMetadata.captchaEnabled && !captchaVerified}
           onClick={() => {
             setCurrentPage(collection.formMetadata.pageOrder[1]);
           }}

@@ -7,6 +7,7 @@ import { useRouter } from "next/router";
 import { useLayoutEffect, useRef } from "react";
 import { useQuery } from "react-query";
 import Select from "react-select";
+import { toast } from "react-toastify";
 import { useLocalCollection } from "../Context/LocalCollectionContext";
 
 type Props = {
@@ -98,6 +99,7 @@ const SelectComponent = ({
         if (
           collection.collectionType === 0 ? columnData.isPartOfFormView : false
         ) {
+          toast.error("Cannot edit this field as it is part of the form");
           return;
         }
         setRowData(option);
