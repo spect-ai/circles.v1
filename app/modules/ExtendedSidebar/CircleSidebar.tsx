@@ -118,7 +118,7 @@ function CircleSidebar() {
         {templateModalOpen && (
           <TemplateModal
             handleClose={() => {
-              close();
+              setTemplateModalOpen(false);
             }}
           />
         )}

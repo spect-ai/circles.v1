@@ -44,6 +44,7 @@ export default function TemplateModal({ handleClose }: Props) {
       handleClose={() => handleClose(false)}
       title="Use Template"
       size="large"
+      zIndex={3}
     >
       <Box padding="8">
         {!template && (
